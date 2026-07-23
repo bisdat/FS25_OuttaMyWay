@@ -83,17 +83,17 @@ The explicit review of Accepted, Deferred and Rejected concepts performed before
 ## Engineering Cycle
 
 ```text
-Observe → Discuss → Hypothesise → Implement → Validate → Record → Review → Release → Repeat
+Observe → Discuss → Hypothesise → Decide → Implement → Validate → Engineering Consolidation → Repository Transition → Repeat
 ```
 
 - **Observe:** collect facts before proposing change.
 - **Discuss:** separate facts, interpretations, decisions and implementation ideas.
 - **Hypothesise:** state what is expected and what evidence could disprove it.
+- **Decide:** make the deliberate project choice that authorises a bounded transformation.
 - **Implement:** make the smallest isolated change that can test the hypothesis while preserving architectural intent.
 - **Validate:** compare expected and observed outcomes.
-- **Record:** preserve durable discoveries, decisions, test evidence and current status.
-- **Review:** inspect concept registers and repository coherence.
-- **Release:** publish a complete canonical package only after automated and editorial checks pass.
+- **Engineering Consolidation:** promote durable architectural, implementation and operational knowledge into its authoritative repository homes, then review that promotion for completeness.
+- **Repository Transition:** use the Repository Release System to transform the exact canonical baseline into a validated Release Candidate; independent review and explicit Canonicalisation remain human decisions.
 
 Skipping directly from observation to implementation is discouraged because it allows implementation convenience to choose the architecture.
 
@@ -110,7 +110,7 @@ The development repository is intentionally richer than a future public distribu
 | Evolving evidence and discoveries | `ENGINEERING_JOURNAL.md`, test records and design history |
 | Driving-system architecture | `ARCHITECTURE.md`, `DESIGN.md` and the handbook |
 | Release history | root and documentation changelogs |
-| Automated enforcement | `tools/` |
+| Repository transformation and evidence | `REPOSITORY_RELEASE_SYSTEM.md` and `rrs/` |
 
 Every enduring item should have one authoritative home. Other documents may reference it, but should not create competing definitions.
 
@@ -191,3 +191,14 @@ Any modification to the repository shall begin with the current canonical reposi
 Tooling enforces selected properties of this architecture; it does not define them.
 
 A check that is not automated remains an engineering obligation. A passing tool cannot prove that the architecture is correct; it can only prove that specified repository invariants were satisfied.
+
+
+## Repository Release Governance
+
+An **Engineering Increment** is the bounded unit of engineering purpose. It closes at a coherent breakpoint established by engineering judgement; time, chat boundaries and version numbering do not define completion.
+
+After an increment closes, Engineering Consolidation promotes its durable knowledge. Repository Transition then begins only from the exact established canonical repository. The Repository Release System governs three distinct authority states: Working, Release Candidate and Canonical. Version identity does not itself confer authority.
+
+Candidate Production is the Engineering Transformation that applies declared substantive changes to the canonical baseline. Review acceptance and Canonicalisation are separate human decisions. Candidate-to-canonical processing is an Authority Transformation and must not alter approved substantive engineering content. Only the repository owner may declare the exact reviewed candidate canonical.
+
+The RRS produces provenance, declared and observed change, repository findings and validation evidence so that review can concentrate on engineering judgement. Authorship does not confer approval, and authority states may be entered only through their defined gates. The detailed state model, roles, gates and findings are owned by `REPOSITORY_RELEASE_SYSTEM.md`; the executable candidate-production boundary is owned by `rrs/`.

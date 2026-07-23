@@ -42,3 +42,10 @@ Every run creates a controlled workspace named `rrs_workspace` beneath the outpu
 A retained workspace is never overwritten implicitly. Resolve, move, or remove it before repeating the workflow in the same output directory.
 
 Repository text is read and written as strict UTF-8. Invalid text encoding is treated as an execution failure and recorded in the evidence package rather than silently replaced.
+
+
+## Current implementation boundary
+
+The recovered implementation owns Candidate Production only. It accepts the exact canonical ZIP and a declarative planning handoff, applies controlled operations, validates declared against observed change, classifies repository findings, regenerates the manifest and emits deterministic candidate and evidence packages.
+
+It does not yet perform Authority Transformation, enforce the complete ordered authority-state sequence, prove candidate-to-canonical substantive purity, accept review, or declare Canonicalisation. Those remain human-governed or future implementation responsibilities.

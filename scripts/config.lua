@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.5.9
+-- FS25_OuttaMyWay v4.6.0
 -- Cooperative collision avoidance for base-game AI field workers.
 
 OuttaMyWay = {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.5.9"
+OuttaMyWay.VERSION = "4.6.0"
 OuttaMyWay.BLOCKED_FOLD_DELAY_MS = 6500
 OuttaMyWay.WAIT_FOLD_DELAY_MS = 4500
 OuttaMyWay.HEAD_ON_FOLLOW_HOLD_DISTANCE = 55.0

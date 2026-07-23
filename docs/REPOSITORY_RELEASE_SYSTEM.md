@@ -1,8 +1,8 @@
 # Repository Release System Architecture
 
-> **Authority:** TEST Release Candidate — engineering architecture
+> **Authority:** Canonical repository-release architecture
 >
-> **Currency:** Reconstructed and tested for v4.5.10 TEST
+> **Currency:** Promoted for candidate release v4.6.0
 >
 > **Owner:** Repository governance
 

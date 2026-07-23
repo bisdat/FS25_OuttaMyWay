@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** Last reviewed for canonical release v4.5.9
+> **Currency:** Reviewed for candidate release v4.6.0
 
 This development repository is a self-sustaining engineering knowledge system. Its first responsibility is to preserve project continuity independently of any chat, engineer, AI system or platform. Its second is to remain understandable to future contributors.
 
@@ -12,12 +12,13 @@ Read these in order when inheriting or resuming the project:
 
 1. [`PROJECT_VISION.md`](PROJECT_VISION.md) — what player outcome the project exists to create.
 2. [`ENGINEERING_ARCHITECTURE.md`](ENGINEERING_ARCHITECTURE.md) — how the project is engineered and governed.
-3. [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — the current canonical state and immediate objective.
-4. [`ENGINEERING_HANDOVER.md`](ENGINEERING_HANDOVER.md) — the precise continuation point.
-5. [`PROJECT_CONTINUITY.md`](PROJECT_CONTINUITY.md) — how to continue correctly using only this repository.
-6. [`CONCEPT_REGISTER.md`](CONCEPT_REGISTER.md) — Accepted, Deferred and Rejected architectural concepts.
-7. [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`DESIGN.md`](DESIGN.md) — current driving-system responsibilities and boundaries.
-8. [`ROADMAP.md`](ROADMAP.md) — future direction after the immediate objective.
+3. [`REPOSITORY_RELEASE_SYSTEM.md`](REPOSITORY_RELEASE_SYSTEM.md) — how repository authority, candidate production, review and Canonicalisation are governed.
+4. [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — the current repository state and immediate objective.
+5. [`ENGINEERING_HANDOVER.md`](ENGINEERING_HANDOVER.md) — the precise continuation point.
+6. [`PROJECT_CONTINUITY.md`](PROJECT_CONTINUITY.md) — how to continue correctly using only this repository.
+7. [`CONCEPT_REGISTER.md`](CONCEPT_REGISTER.md) — Accepted, Deferred and Rejected architectural concepts.
+8. [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`DESIGN.md`](DESIGN.md) — current driving-system responsibilities and boundaries.
+9. [`ROADMAP.md`](ROADMAP.md) — future direction after the immediate objective.
 
 The remaining documents deepen or verify that journey; they are classified below so no first-class document is orphaned.
 
@@ -68,7 +69,8 @@ The remaining documents deepen or verify that journey; they are classified below
 - [`RELEASE_MANIFEST_SHA256.txt`](RELEASE_MANIFEST_SHA256.txt) — generated integrity manifest.
 - [`../CHANGELOG.md`](../CHANGELOG.md) — package-level release summary.
 - [`../README.txt`](../README.txt) — packaged release entry point.
-- [`../tools/README.md`](../tools/README.md) — repository verification and packaging tools.
+- [`REPOSITORY_RELEASE_SYSTEM.md`](REPOSITORY_RELEASE_SYSTEM.md) — authoritative repository-release architecture.
+- [`../rrs/README.md`](../rrs/README.md) — repository-owned candidate-production implementation and local workflow.
 - [`../scenarios/README.md`](../scenarios/README.md) — scenario evidence structure.
 
 ## Archive

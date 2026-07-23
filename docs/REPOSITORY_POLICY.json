@@ -65,6 +65,18 @@
       "path": "docs/CHANGELOG.md",
       "role": "history"
     },
+    "repository_release_system": {
+      "path": "docs/REPOSITORY_RELEASE_SYSTEM.md",
+      "role": "knowledge"
+    },
+    "documentation_map": {
+      "path": "docs/README.md",
+      "role": "knowledge"
+    },
+    "rrs_operational_readme": {
+      "path": "rrs/README.md",
+      "role": "knowledge"
+    },
     "release_manifest": {
       "path": "docs/RELEASE_MANIFEST_SHA256.txt",
       "role": "generated"

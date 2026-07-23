@@ -123,3 +123,10 @@ Its documentation should allow future engineering work to resume from repository
 Every enduring architectural discovery should eventually become repository knowledge.
 
 The Repository Release System exists to protect that knowledge while enabling safe, repeatable and traceable repository evolution.
+
+
+## RRS Recovery Continuation Point
+
+The accepted RRS decisions D-RRS-01 through D-RRS-23 have been promoted into the repository's governing and supporting knowledge stores. Continue by independently reviewing the v4.6.0 candidate and its RRS evidence. The repository owner alone may Canonicalise the exact reviewed candidate.
+
+Do not treat candidate production as Canonicalisation. The recovered implementation currently ends after candidate validation and evidence production. Authority Transformation, ordered state enforcement and candidate-to-canonical purity verification remain explicit future implementation boundaries.

@@ -1,11 +1,11 @@
-FS25_OuttaMyWay v4.5.9
+FS25_OuttaMyWay v4.6.0
 
-Seminar Knowledge Distribution Release
+Repository Release System Recovery Candidate
 
-v4.5.8 classifies the complete Seminar 01–06 output across the repository's
-active knowledge stores. It updates concept state, explicit decisions, current
-status and shared vocabulary while preserving the seminar series as discovery
-history.
+v4.6.0 promotes the accepted Repository Release System decisions into the
+repository's authoritative engineering, continuity, vocabulary, policy and
+operational knowledge homes. The recovered RRS implementation remains a
+candidate-production system; Authority Transformation remains future work.
 
 No intentional vehicle-control behaviour changes are included.
 

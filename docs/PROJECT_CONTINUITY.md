@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical continuity procedure
 >
-> **Currency:** Last reviewed for canonical release v4.5.8
+> **Currency:** Reviewed for candidate release v4.6.0
 
 ## Purpose
 
@@ -19,7 +19,7 @@ A canonical release must make the answer **yes**.
 3. Read the immediate objective and resume point before proposing implementation.
 4. Read the relevant architecture, concept register, decisions, evidence and known issues.
 5. Distinguish facts, observations, interpretations, decisions and implementation ideas.
-6. Run `python tools/verify_repository.py --version <version>` before trusting repository coherence.
+6. Run the repository-owned RRS against the exact canonical ZIP and review its candidate and evidence packages before trusting the transition.
 7. Treat reality, logs, measurements and tests as capable of disproving repository knowledge.
 
 ## Canonical Baseline Rule
@@ -70,3 +70,10 @@ When found:
 3. place the knowledge in one authoritative home;
 4. update navigation and verification where practical;
 5. release the correction as a new canonical version.
+
+
+## Candidate and Canonical Continuity
+
+Working, Release Candidate and Canonical are distinct authority states. A candidate inherits authority only after completed validation, accepted independent review and explicit Canonicalisation by the repository owner. A version number, filename or successful tool run cannot substitute for that decision.
+
+Every new Engineering Transformation begins from the exact established canonical repository. The planning handoff declares the intended transition; `python -m rrs evolve` applies it to a copy, regenerates the manifest, compares declared and observed change and packages evidence. The resulting candidate must remain unchanged between accepted review and Canonicalisation except for a future governed Authority Transformation that is proven substantively pure.

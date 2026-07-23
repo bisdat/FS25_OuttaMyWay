@@ -59,3 +59,28 @@ The player's confidence that autonomous workers can complete their work without 
 
 ## Decision Output — Name Pending
 The realizable, least-disruptive change selected by Decision when passivity is no longer justified. Remedy and Variance remain candidate names, not accepted terminology.
+
+
+## Engineering Increment
+A bounded unit of engineering purpose that closes at a coherent breakpoint rather than at a time, chat or version boundary.
+
+## Engineering Consolidation
+Human-governed promotion and review of durable knowledge into authoritative repository homes.
+
+## Repository Transition
+The governed movement from exact canonical baseline through Release Candidate to explicit Canonicalisation.
+
+## Release Candidate
+The governed unit comprising the candidate repository, provenance, declared transformation, findings and evidence.
+
+## Repository Authority State
+The authority classification Working, Release Candidate or Canonical; it is distinct from version identity.
+
+## Engineering Transformation
+Substantive repository change performed during Candidate Production from the exact canonical baseline.
+
+## Authority Transformation
+The substantively pure candidate-to-canonical transformation performed only after validation, accepted review and explicit Canonicalisation.
+
+## Canonicalisation
+The repository owner's explicit declaration that the exact reviewed candidate is canonical.

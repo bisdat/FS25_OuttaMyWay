@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for canonical release v4.5.9.
+Review status: reviewed for candidate release v4.6.0.
 
 ## Accepted Concepts
 
@@ -69,3 +69,28 @@ Time is the dimension in which Reality evolves, observations occur, Knowledge ch
 ## Review Rule
 
 At every canonical release, review all sections against current evidence. Promotion, deferral, rejection or demotion requires a recorded rationale in `DECISION_LOG.md` or an ADR. An unchanged review is still recorded in the release changelog.
+
+
+### Engineering Increment
+
+The bounded unit of engineering purpose. It closes when its declared purpose reaches a coherent breakpoint; time, chat boundaries and version numbering do not define completion.
+
+### Engineering Consolidation
+
+The human-governed promotion of durable architectural, implementation and operational knowledge into authoritative repository homes, followed by review for completeness.
+
+### Repository Transition
+
+The governed transformation from the exact canonical baseline to a Release Candidate and, only after accepted review and explicit Canonicalisation, to the next canonical repository.
+
+### Repository Authority State
+
+Working, Release Candidate and Canonical are distinct authority states independent of version identity.
+
+### Engineering Transformation
+
+The declared substantive repository change performed during Candidate Production from the exact canonical baseline.
+
+### Authority Transformation
+
+The candidate-to-canonical authority change. It must not alter approved substantive engineering content.

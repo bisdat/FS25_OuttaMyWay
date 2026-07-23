@@ -1,8 +1,8 @@
 # Project Status
 
-Version: 4.5.9
-Status: Canonical candidate pending independent user verification
-Baseline package: v4.5.9
+Version: 4.6.0
+Status: RRS recovery Release Candidate pending independent user verification and Canonicalisation
+Baseline package: canonical v4.5.9
 Behavioural baseline: unchanged from v4.3.5
 
 ## Current Focus
@@ -62,7 +62,7 @@ Authoritative engineering records:
 - `ENGINEERING_JOURNAL.md` and `ARCHITECTURAL_SEMINARS.md` — discovery history.
 - `GLOSSARY.md` — current shared vocabulary.
 - `PROJECT_CONTINUITY.md` — inheritance procedure and Engineering Continuity Test.
-- `tools/README.md` — automated enforcement.
+- `REPOSITORY_RELEASE_SYSTEM.md` and `../rrs/README.md` — repository transformation, validation evidence and operational boundary.
 
 ## Known Constraints
 
@@ -82,3 +82,10 @@ Authoritative engineering records:
 ## Release Character
 
 No intentional vehicle-control, steering, speed, recovery or AI-job behaviour changed in v4.5.8.
+
+
+## Repository Release System Recovery
+
+The current Engineering Increment promotes D-RRS-01 through D-RRS-23 into their authoritative repository homes. The decision set is recorded in `DECISION_LOG.md`; the resulting architecture is owned by `ENGINEERING_ARCHITECTURE.md` and `REPOSITORY_RELEASE_SYSTEM.md`.
+
+The repository-owned implementation under `rrs/` currently performs Candidate Production from an exact canonical ZIP and declarative planning handoff, producing candidate and evidence packages without changing Git state or declaring authority. Authority Transformation, complete ordered authority-state enforcement and independent candidate-to-canonical purity verification remain future implementation work.

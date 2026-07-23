@@ -1,6 +1,14 @@
 # Changelog
 
-## v4.5.9 Candidate
+## v4.6.0 — Repository Release System Recovery Candidate
+
+- Recorded D-RRS-01 through D-RRS-23 as the accepted Repository Release System decision set.
+- Promoted the RRS lifecycle, authority states, roles, gates, transformations and evidence responsibilities into authoritative repository knowledge homes.
+- Registered the RRS architecture and operational documentation in repository policy and navigation.
+- Documented the recovered candidate-production implementation boundary and its deferred Authority Transformation work.
+- No intentional vehicle-control behaviour changes.
+
+## v4.5.9
 - Seminar Series 4 repository mining.
 - Decision Engine refined as continuous commitment evaluator.
 - Adopted Least Intervention and Grace as architectural quality attributes.
