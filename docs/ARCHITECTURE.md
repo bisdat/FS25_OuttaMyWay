@@ -1,0 +1,110 @@
+# Architecture
+
+## Entry point
+
+`modDesc.xml` loads only `scripts/main.lua`. The main script sources the remaining modules in dependency order.
+
+## Modules
+
+### `scripts/config.lua`
+Global constants, version, tuning values and runtime state tables.
+
+### `scripts/core/Runtime.lua`
+Main update loop and established reactive behaviour. Owns active-worker collection, wait/release, recovery, passage assist, AI restart handling and map lifecycle.
+
+### `scripts/prediction/CourseLookahead.lua`
+Reads `AIDriveStrategyFieldCourse`, extracts ordered segment positions, estimates the active course location, builds future polylines, predicts route intersections and logs completion-priority diagnostics. In the current branch this is observer-only.
+
+### `scripts/prediction/VectorPrediction.lua`
+Constant-velocity TCPA/CPA prediction and working-width clearance envelopes. Retained as a secondary and emergency predictor.
+
+### `scripts/decision/DecisionEngine.lua`
+Scores predictive actions, manages commitment stability and exposes the primary recommendation. Predictive control must respect encounter authority.
+
+### `scripts/reservation/ReservationEngine.lua`
+Creates time-bounded corridor reservations from predictions and tracks the primary reservation.
+
+### `scripts/control/EncounterController.lua`
+Authoritative pair controller. Issues GO, WAIT or DIRECT_CONTROL commands and prevents predictive logic from reversing an active reactive encounter.
+
+### `scripts/geometry/FieldBoundary.lua`
+GIANTS-backed field-boundary discovery and rearward/forward edge measurements.
+
+### `scripts/settings/Settings.lua`
+Runtime settings and debug-channel state.
+
+### `scripts/settings/ConsoleCommands.lua`
+Console commands for enabling the mod, simulation mode, HUD, warnings and debug channels.
+
+### `scripts/ui/Hud.lua`
+Custom status panel and warnings.
+
+### `scripts/events/OuttaMyWayStateEvent.lua`
+Multiplayer state synchronisation for HUD/status information.
+
+## Authority order
+
+```text
+Direct recovery / re-entry
+        >
+Encounter controller
+        >
+Committed predictive action
+        >
+New traffic recommendation
+        >
+Diagnostic-only forecast
+```
+
+## Update cadence
+
+- Runtime conflict loop: 100 ms.
+- Expensive geometry/course work: throttled and cached.
+- HUD: draw callback with cached state.
+- Diagnostic logging: change-driven plus heartbeat.
+
+## Current 4.0 limitation
+
+The active course segment estimate can jump during turns because proximity alone may select a nearby parallel segment. Until corrected, course ETAs and completion priority are diagnostics only.
+
+## Observer contract (4.2.3)
+
+The Observer is global and read-only. It broadcasts facts for every active AI field worker without grouping by field, farmland, job or conflict.
+
+`EventBus` events include `workerObserved`, `workerAttached`, `workerDetached`, `workerStateChanged`, `workerPhaseChanged`, `workerTurnStarted`, `workerTurnCompleted`, and `workerBlockedChanged`.
+
+Consumers decide relevance locally. The diagnostic `InteractionContexts` consumer creates persistent contexts from spatial proximity and observed movement only. Field IDs are deliberately not part of the grouping rule. Contexts preserve identity across temporary dormancy and are not route or terrain-connectivity claims.
+
+### Candidate pairs and interaction contexts
+
+The locality consumer uses two stages. Candidate pairs are broad, temporary observations. Promotion to an interaction group requires movement evidence or close-range relevance. A straight-line field-continuity sample may be recorded as supporting evidence, but it is not authoritative because U-shaped fields, islands, ditches, hedges, and map-specific ground APIs can invalidate a simple line test.
+
+
+### Persistent context lifecycle
+
+A context is created on the first promoted encounter, becomes `ACTIVE` while movement evidence is present, and becomes `DORMANT` when that evidence fades. The same member set reactivates the same context ID during the retention window. Contexts record first seen time, last active time, cumulative active time, and encounter count.
+
+## Logging vocabulary (4.2.6)
+
+Runtime diagnostics use the full searchable mod name followed by an architectural category.
+
+| Prefix | Meaning | Responsibility |
+|---|---|---|
+| `INFO` | Information | Lifecycle, version and configuration events. |
+| `OBS` | Observation | Facts read from the world without influencing it. |
+| `DEC` | Decision | Why a course of action was selected. |
+| `CTL` | Control | Commands issued to influence vehicle behaviour. |
+| `VAL` | Validation | Comparison of expected and observed outcomes. |
+| `REC` | Recovery | Degraded situations, handoff and recovery activity. |
+| `PERF` | Performance | Timing, update frequency and resource-use diagnostics. |
+
+Example: `[OuttaMyWay][OBS] Worker attached ...`
+
+These abbreviations are part of the project vocabulary, not merely debugging shorthand.
+
+## Architectural Concept Governance
+
+The authoritative Accepted, Deferred and Rejected concept classifications are maintained in `CONCEPT_REGISTER.md`. Engineering promotion and review rules are defined in `ENGINEERING_ARCHITECTURE.md`.
+
+## Decision Engine refinement (v4.5.9)
+The Decision Engine continuously evaluates the current Commitment against the Operational Picture. 'Maintain current commitment' is an explicit successful outcome. The design objective is least intervention, producing graceful behaviour while remaining largely invisible to the player.

@@ -1,0 +1,13 @@
+# Local operating-system files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Python runtime artefacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local RRS output
+rrs_output/
+release_output/
