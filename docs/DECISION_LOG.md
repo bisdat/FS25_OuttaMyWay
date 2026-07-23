@@ -2,6 +2,35 @@
 
 This log records Accepted, Deferred, Rejected and Superseded project choices that do not require a full Architecture Decision Record. Newer decisions appear first.
 
+## Repository Release System Decisions
+
+- **D-RRS-23 — Engineering Increment Boundary:** an increment closes when its declared engineering purpose reaches a coherent breakpoint; time, chat boundaries and version numbering do not define completion.
+- **D-RRS-22 — Knowledge Promotion Completeness:** working artefacts may be retired only after durable architectural, implementation and operational knowledge has been promoted into authoritative repository homes.
+- **D-RRS-21 — Evidence-Driven Confidence:** the RRS produces evidence sufficient for review to focus on engineering judgement rather than re-verifying unchanged content.
+- **D-RRS-20 — Authority Transformation Purity:** candidate-to-canonical transformation must not alter approved substantive engineering content.
+- **D-RRS-19 — Ordered State Transitions:** authority states may be entered only through their defined gates.
+- **D-RRS-18 — Canonical Baseline Gate:** Candidate Production begins only from the exact established canonical repository.
+- **D-RRS-17 — Authority Transformation:** authority state changes only after completed transformation, validation, accepted review and explicit Canonicalisation.
+- **D-RRS-16 — Engineering Transformation:** substantive repository change occurs only during Candidate Production from the exact canonical baseline.
+- **D-RRS-15 — Candidate and Canonical Are Separate Transformations.**
+- **D-RRS-14 — Repository Authority States:** Working, Release Candidate and Canonical are distinct from version identity.
+- **D-RRS-13 — Controlled Repository Transformation.**
+- **D-RRS-12 — Review and Canonicalisation Are Separate Decisions.**
+- **D-RRS-11 — Authorship Does Not Confer Approval.**
+- **D-RRS-10 — Explicit Release Roles.**
+- **D-RRS-09 — Canonicalisation Authority:** only the repository owner may declare the exact reviewed candidate canonical.
+- **D-RRS-08 — Consolidation Review.**
+- **D-RRS-07 — Human-Governed Consolidation.**
+- **D-RRS-06 — Knowledge Promotion.**
+- **D-RRS-05 — Release Initiation.**
+- **D-RRS-04 — Engineering Closure Is External.**
+- **D-RRS-03 — Release Findings.**
+- **D-RRS-02 — Dual Validation.**
+- **D-RRS-01 — Release Candidate:** the governed unit includes repository, provenance, declared transformation, findings and evidence.
+
+**Recovery finding:** failure to promote the executable RRS implementation caused avoidable capability loss. Repository-owned implementation is now required.
+
+
 ## D-0014 — Reject Conditions and demote Conflict Zone from root primitive
 
 **Status:** Accepted in v4.5.7
