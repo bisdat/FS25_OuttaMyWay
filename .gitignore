@@ -11,3 +11,5 @@ __pycache__/
 # Local RRS output
 rrs_output/
 release_output/
+
+.venv/
