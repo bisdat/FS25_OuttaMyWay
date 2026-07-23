@@ -7,9 +7,15 @@ Desktop.ini
 __pycache__/
 *.py[cod]
 .pytest_cache/
+*.pyc
+
+.coverage
+htmlcov/
+
 
 # Local RRS output
 rrs_output/
 release_output/
 
 .venv/
+

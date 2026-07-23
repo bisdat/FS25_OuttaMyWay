@@ -1,42 +1,125 @@
-# Engineering Handover — v4.5.9
+# Engineering Handover
+
+## Purpose
+
+This document provides the context required for an engineer to resume work on the repository after any interruption. It is intentionally version-independent and complements the repository's permanent engineering records. Its purpose is to explain where engineering should continue, not to record release history.
+
+
 
 ## Canonical Baseline
 
-Package: `FS25_OuttaMyWay_v4.5.9.zip`
+The current canonical repository is always supplied separately by the engineer.
 
-Status: Seminar Knowledge Distribution Release; canonical candidate pending independent user verification.
+The Repository Release System (RRS) consumes that canonical baseline together with a declared repository transition and produces:
 
-Behavioural change: none intended. The Lua vehicle-control baseline remains unchanged from v4.3.5.
+- a candidate repository package;
+- an accompanying evidence package.
 
-## Why This Release Exists
+The RRS validates the repository transition but does not declare a repository canonical. Canonical status is an explicit engineering decision made only after independent verification.
 
-Review of v4.5.4 found that the seminar discovery sequence was preserved correctly, but its outcomes were concentrated in `ARCHITECTURAL_SEMINARS.md`. The active Concept Register, Decision Log, Glossary and Project Status did not fully express the architecture that the seminars had earned.
 
-This release records a new repository-mining rule: seminar output must be classified by knowledge type rather than copied into one document.
 
-## Findings Incorporated
+## Current Engineering Focus
 
-- Situation Space, Future Space and Action Space are Accepted as an architectural family.
-- Current Situation is the estimated present point within Situation Space.
-- Situation Assessment is a transformation that reconstructs Knowledge from observations.
-- Reality and Knowledge are explicitly distinct.
-- Time is the dimension in which the architecture evolves, not another component.
-- Conflict Zone is retained as a derived operational concept rather than a root primitive.
-- Conditions is explicitly Rejected.
-- Entity naming and Operational Picture versus Current Situation terminology remain Deferred.
-- The Glossary now defines the shared seminar vocabulary.
+Continue architectural discovery at the boundary between Situation Assessment and Commitment.
+
+Implementation should not begin until:
+
+- ownership is understood;
+- evidence thresholds are defined;
+- commitment lifecycle transitions are understood.
+
+Vocabulary reviews (for example Entity naming or Operational Picture terminology) should remain architectural discussions rather than implementation work.
+
+
+
+## Architectural Context
+
+The architectural seminar series established several enduring concepts that now form part of the repository knowledge.
+
+Accepted concepts include:
+
+- Situation Space
+- Future Space
+- Action Space
+- Current Situation
+- Situation Assessment
+- Reality and Knowledge as distinct concepts
+- Time as the dimension in which the architecture evolves
+- Conflict Zone as a derived operational concept
+
+Rejected concepts include:
+
+- Conditions
+
+Deferred concepts include:
+
+- Entity naming
+- Operational Picture terminology
+
+The authoritative status of every concept is maintained within the Concept Register rather than this document.
+
+
 
 ## Repository Entry Point
 
-Start at `docs/README.md`. Read `PROJECT_STATUS.md` for the current snapshot, `CONCEPT_REGISTER.md` for concept state, `DECISION_LOG.md` for explicit choices, `GLOSSARY.md` for vocabulary and `ARCHITECTURAL_SEMINARS.md` for the discovery sequence.
+When resuming engineering work, read the repository in the following order:
 
-## Resume Point
+1. `docs/README.md`
+2. `PROJECT_STATUS.md`
+3. `CONCEPT_REGISTER.md`
+4. `DECISION_LOG.md`
+5. `GLOSSARY.md`
+6. `ARCHITECTURAL_SEMINARS.md`
 
-Continue architectural discovery at the Situation Assessment to Commitment boundary. Do not begin implementation until ownership, evidence thresholds and commitment lifecycle transitions are defined. Treat Entity and Operational Picture naming as vocabulary reviews, not implementation tasks.
+This sequence provides project status, accepted concepts, engineering decisions, shared vocabulary and the reasoning behind the architecture.
 
-## Baseline Validation
 
-1. Confirm the supplied package and embedded version are 4.5.9.
-2. Run `python tools/verify_repository.py --version 4.5.9`.
-3. Independently inspect the packaged ZIP using the Repository Identity Check.
-4. Treat the package as canonical only after the user completes independent verification.
+
+## Repository Release System
+
+The Repository Release System exists to support disciplined repository evolution.
+
+Its responsibilities are to:
+
+- Preserve Engineering Knowledge
+- Protect Repository Transitions
+- Validate Repository State
+
+The Repository Release System is responsible for validating repository transitions and producing release artefacts.
+
+The engineer remains responsible for:
+
+- architectural intent;
+- engineering judgement;
+- implementation decisions;
+- reviewing release evidence;
+- declaring a repository canonical.
+
+
+
+## Engineering Principles
+
+Engineering work should continue using the established workflow:
+
+> Observe → Discuss → Hypothesise → Implement → Validate → Record → Repeat
+
+Evidence takes precedence over assumptions.
+
+Architecture should describe the observed system rather than implementation convenience.
+
+When evidence contradicts architecture, the architecture should evolve.
+
+Implementation should preserve architectural intent while minimising behavioural change.
+
+
+
+## Repository Philosophy
+
+The repository is intended to be a self-sustaining engineering system.
+
+Its documentation should allow future engineering work to resume from repository knowledge rather than conversation history.
+
+Every enduring architectural discovery should eventually become repository knowledge.
+
+The Repository Release System exists to protect that knowledge while enabling safe, repeatable and traceable repository evolution.
