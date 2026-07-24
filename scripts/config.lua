@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.6.5
+-- FS25_OuttaMyWay v4.6.6
 -- Cooperative collision avoidance for base-game AI field workers.
 
 OuttaMyWay = {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.6.5"
+OuttaMyWay.VERSION = "4.6.6"
 OuttaMyWay.BLOCKED_FOLD_DELAY_MS = 6500
 OuttaMyWay.WAIT_FOLD_DELAY_MS = 4500
 OuttaMyWay.HEAD_ON_FOLLOW_HOLD_DISTANCE = 55.0
@@ -123,7 +123,18 @@ OuttaMyWay.PROTOTYPE_04_MIN_OPERATIONAL_SPEED_KMH = 2.0
 OuttaMyWay.PROTOTYPE_04_SAFE_CONFIRM_S = 3.0
 OuttaMyWay.PROTOTYPE_04_TRIAL_RETENTION_S = 120.0
 
--- First live Traffic Manager v2 prototype. Disabled for passive Prototypes 01, 02, 03 and 04.
+-- Prototype 05: passive Field World vehicle observation. The field polygon
+-- bounds one Operation's world. Vehicle membership is retained independently
+-- of active AI membership; relevance is interpreted dynamically. Current
+-- envelope rectangles are conservative diagnostics only and issue no control.
+OuttaMyWay.PROTOTYPE_05_ENABLED = true
+OuttaMyWay.PROTOTYPE_05_INTERVAL_MS = 250
+OuttaMyWay.PROTOTYPE_05_HEARTBEAT_MS = 15000
+OuttaMyWay.PROTOTYPE_05_RELEVANCE_HORIZON_S = 45.0
+OuttaMyWay.PROTOTYPE_05_RELEVANCE_MARGIN_M = 5.0
+OuttaMyWay.PROTOTYPE_05_CONTAINMENT_LOG_MS = 3000
+
+-- First live Traffic Manager v2 prototype. Disabled for passive Prototypes 01, 02, 03, 04 and 05.
 -- Its retained settings are not executed in this candidate.
 OuttaMyWay.TRAFFIC_V2_ENABLED = false
 OuttaMyWay.TRAFFIC_V2_MIN_CONFIDENCE = 0.80

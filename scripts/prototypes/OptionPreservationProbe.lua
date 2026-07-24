@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.5
+-- FS25_OuttaMyWay v4.6.6
 -- Prototype 03: passive evidence capture for the Candidate Option Preservation Window.
 -- This module observes manoeuvre ordering, intent revelation and response margin.
 -- It never selects a Commitment and never controls vehicles.

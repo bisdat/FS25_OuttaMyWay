@@ -4,58 +4,65 @@
 
 The exact reviewed v4.6.5 candidate was tested, accepted and explicitly declared canonical by the repository owner.
 
-Accepted candidate SHA-256:
+Canonical package SHA-256:
 
-`3ec478110839e25f2d38c07ae0e5eb521da5ca54021d2378eeda9edae62c94ee`
+`3c7cfa56fe0bd74dc3d3aabbcaddf52c1d49e10637b248ce75a7193e264d9431`
 
-Every new Engineering Transformation must begin from the complete canonical v4.6.5 package supplied as its immutable baseline.
+Prototype 05 candidate v4.6.6 was produced from that immutable baseline.
 
-## Completed increment
+## Current candidate
 
-Prototype 04 tested whether Situation Assessment could separate local settled intent from route continuation, expire stale intent at a new manoeuvre, and assess release through a limited continuation horizon.
+Prototype 05 restores the missing architectural boundary and tests physical observation beyond active AI membership.
 
-The local-intent lifecycle is strongly supported. A settled path produced bounded epochs, and each epoch expired when Condor began a later manoeuvre or left active observation.
+The field polygon defines one bounded **Field World**. **Full-Envelope Field Containment** requires the complete vehicle–implement collision envelope, including projected swept geometry, to remain wholly inside that polygon. External objects should therefore never become obstacles merely because an implement sweeps beyond the boundary.
 
-## Accepted evidence
+The candidate separates:
 
-Patriot was manually stopped at the prior candidate wait position, abandoning its GIANTS AI job. Condor first continued away, later settled into another work segment, then began a new repositioning manoeuvre toward the physically parked Patriot. Condor became blocked until the player moved Patriot.
+- Field World Membership;
+- Operational Membership;
+- Situation Relevance.
 
-The stop removed Patriot from the active-worker observer. Prototype 04 therefore preserved the Progress Entity and encounter correlation but could not see the parked physical participant or classify the unsafe encounter automatically.
+## Implementation
 
-After manual relocation, Patriot was restarted and both workers continued without a working-path conflict. Condor eventually completed and parked. Patriot later became blocked when GIANTS attempted to use the same finishing position already occupied by completed Condor.
+The passive `FieldWorldProbe` enumerates all mission vehicles, groups attached implements under their root vehicle, tests a conservative current occupied envelope against the GIANTS field polygon and retains vehicles after their active AI job ends.
 
-## Architectural result
+It records dynamic relevance between active Operation members and all other vehicle Field World Members. It also records field-island counts and native static-collision signals, but exact static-object identity remains incomplete.
 
-- Local Intent Horizon is useful only for the immediate settled path.
-- Intent Expiry at a new manoeuvre is supported.
-- Current-lane intent is not complete route intent.
-- A later clear continuation after manual relocation does not validate the original Safe Release Point.
-- Active-worker observation is insufficient for Situation Assessment because physically relevant vehicles can leave Operational Membership while remaining inside the field.
+No containment, hold, release, Decision, Commitment or vehicle-control action exists in this candidate.
 
-The final point is evidence for the next hypothesis; v4.6.5 does not yet observe the complete Field World.
+## Immediate validation
 
-## Immediate continuation
+Repeat the limited TS001 sequence:
 
-The next substantive increment should remain passive and should:
+1. stop Patriot at the previous wait position;
+2. leave it parked while Condor begins the later diagonal repositioning;
+3. confirm that the log retains Patriot with `operationalMember=false`;
+4. confirm that the Condor–Patriot relation becomes `RELEVANT`;
+5. move Patriot before collision if desired, then restart it after Condor clears;
+6. let Condor complete and remain parked;
+7. let Patriot approach the shared finishing position and confirm completed Condor remains physically observed and relevant;
+8. upload the complete game log and visual observations.
 
-1. recover **Full-Envelope Field Containment** into the authoritative architecture: the maximum collision geometry of vehicle plus every attached or towed implement, including projected swept geometry, remains wholly inside the field polygon at all times;
-2. define the field polygon as the bounded Field World for the Operation;
-3. separate Field World Membership, Operational Membership and Situation Relevance;
-4. observe active, inactive, completed and player-controlled vehicles within that boundary;
-5. validate parked Patriot and completed Condor as non-operational but physically relevant conflict participants;
-6. defer static internal objects and broader scenarios until the vehicle cases establish the observation boundary.
+## Evidence boundary
 
-Do not implement an active Information-Gaining Delay until a physically complete Situation Assessment can observe both the Progress Entity and the held Entity throughout the hold/release lifecycle.
+Success would establish the vehicle observation boundary only. It would not validate:
+
+- exact maximum collision geometry;
+- projected envelope sweep;
+- active field containment;
+- complete internal static-object observation;
+- safe release or Information-Gaining Delay.
 
 ## Repository entry point
 
 1. `docs/README.md`
 2. `docs/PROJECT_STATUS.md`
-3. `docs/prototypes/PROTOTYPE_04_CONTINUATION_INTENT.md`
-4. `docs/CONCEPT_REGISTER.md`
-5. `docs/DECISION_LOG.md`
-6. `docs/ENGINEERING_JOURNAL.md`
-7. `docs/ROADMAP.md`
+3. `docs/prototypes/PROTOTYPE_05_FIELD_WORLD_OBSERVATION.md`
+4. `docs/ARCHITECTURE.md`
+5. `docs/CONCEPT_REGISTER.md`
+6. `docs/DECISION_LOG.md`
+7. `docs/ENGINEERING_JOURNAL.md`
+8. `docs/ROADMAP.md`
 
 Continue using:
 

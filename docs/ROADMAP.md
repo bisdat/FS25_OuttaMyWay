@@ -55,13 +55,15 @@ Development remains in a private repository until the first GIANTS ModHub releas
 
 ### Prototype 05 — Field World Observation
 
-- [ ] Recover and promote Full-Envelope Field Containment into authoritative architecture and vocabulary.
-- [ ] Define the field polygon as the bounded Field World for one Operation.
-- [ ] Separate Field World Membership, Operational Membership and Situation Relevance.
-- [ ] Observe parked Patriot after its AI job ends and detect Condor's repositioning conflict.
-- [ ] Observe completed Condor after its AI job ends and detect Patriot's terminal occupancy conflict.
-- [ ] Extend later evidence to a moving player-controlled vehicle and static objects wholly inside the field polygon.
-- [ ] Keep external hedges, trees and other geometry outside the field obstacle scope by enforcing complete vehicle–implement envelope containment.
+- [x] Recover and promote Full-Envelope Field Containment into authoritative architecture and vocabulary.
+- [x] Define the field polygon as the bounded Field World for one Operation.
+- [x] Separate Field World Membership, Operational Membership and Situation Relevance.
+- [ ] Validate parked Patriot after its AI job ends and detect Condor's repositioning conflict.
+- [ ] Validate completed Condor after its AI job ends and detect Patriot's terminal occupancy conflict.
+- [x] Include moving player-controlled vehicles in the vehicle observation boundary.
+- [ ] Extend later evidence to complete static-object identity wholly inside the field polygon.
+- [x] Record external hedges, trees and other geometry as outside obstacle scope under Full-Envelope Field Containment.
+- [ ] Implement and validate exact full-envelope containment control.
 - [ ] Reconsider an active Information-Gaining Delay only after held and completed physical Entities remain observable.
 
 ## Repository Release System follow-up

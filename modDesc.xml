@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <modDesc descVersion="92">
     <author>bisdat</author>
-    <version value="4.6.5">4.6.5</version>
+    <version value="4.6.6">4.6.6</version>
     <title>
         <en>Outta My Way</en>
         <de>Aus dem Weg</de>
@@ -10,11 +10,11 @@
         <it>Fuori dai piedi</it>
     </title>
     <description>
-        <en>Passive architectural prototype that records when changing AI trajectories settle and a projected conflict becomes persistent. No vehicle control.</en>
-        <de>Passiver Architekturprototyp, der aufzeichnet, wann sich verändernde KI-Trajektorien stabilisieren und ein prognostizierter Konflikt dauerhaft wird. Keine Fahrzeugsteuerung.</de>
-        <fr>Prototype architectural passif qui enregistre le moment où les trajectoires IA se stabilisent et où un conflit prévu devient persistant. Aucun contrôle des véhicules.</fr>
-        <es>Prototipo arquitectónico pasivo que registra cuándo se estabilizan las trayectorias de la IA y un conflicto previsto se vuelve persistente. Sin control de vehículos.</es>
-        <it>Prototipo architetturale passivo che registra quando le traiettorie IA si stabilizzano e un conflitto previsto diventa persistente. Nessun controllo dei veicoli.</it>
+        <en>Passive architectural prototype that observes all vehicles inside the field polygon independently of active AI membership and records dynamic situation relevance. No vehicle control.</en>
+        <de>Passiver Architekturprototyp, der alle Fahrzeuge innerhalb des Feldpolygons unabhängig von aktiver KI-Mitgliedschaft beobachtet und dynamische Situationsrelevanz aufzeichnet. Keine Fahrzeugsteuerung.</de>
+        <fr>Prototype architectural passif qui observe tous les véhicules dans le polygone du champ indépendamment de leur participation IA active et enregistre leur pertinence dynamique. Aucun contrôle des véhicules.</fr>
+        <es>Prototipo arquitectónico pasivo que observa todos los vehículos dentro del polígono del campo independientemente de su participación activa en la IA y registra su relevancia dinámica. Sin control de vehículos.</es>
+        <it>Prototipo architetturale passivo che osserva tutti i veicoli entro il poligono del campo indipendentemente dalla partecipazione IA attiva e registra la rilevanza dinamica. Nessun controllo dei veicoli.</it>
     </description>
     <iconFilename>icon.dds</iconFilename>
     <multiplayer supported="true" />

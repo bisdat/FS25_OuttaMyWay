@@ -28,7 +28,10 @@ Creates time-bounded corridor reservations from predictions and tracks the prima
 Authoritative pair controller. Issues GO, WAIT or DIRECT_CONTROL commands and prevents predictive logic from reversing an active reactive encounter.
 
 ### `scripts/geometry/FieldBoundary.lua`
-GIANTS-backed field-boundary discovery and rearward/forward edge measurements.
+GIANTS-backed field-boundary discovery and rearward/forward edge measurements. Retains the reported root boundary and field islands for passive Field World evidence.
+
+### `scripts/prototypes/FieldWorldProbe.lua`
+Passive Prototype 05 observer. Discovers the bounded Field World, retains active and non-active mission vehicles independently of Operational Membership, and records dynamic Situation Relevance. Current envelope geometry is diagnostic only and never issues Control.
 
 ### `scripts/settings/Settings.lua`
 Runtime settings and debug-channel state.
@@ -83,6 +86,26 @@ The locality consumer uses two stages. Candidate pairs are broad, temporary obse
 ### Persistent context lifecycle
 
 A context is created on the first promoted encounter, becomes `ACTIVE` while movement evidence is present, and becomes `DORMANT` when that evidence fades. The same member set reactivates the same context ID during the retention window. Contexts record first seen time, last active time, cumulative active time, and encounter count.
+
+## Field World and Full-Envelope Field Containment (v4.6.6)
+
+The field boundary polygon defines the bounded **Field World** for one field Operation. OuttaMyWay is not responsible for map-wide navigation or arbitrary external obstacles.
+
+**Full-Envelope Field Containment** is an architectural invariant:
+
+> The complete operational collision envelope of an AI worker — vehicle plus every attached or towed implement, including configuration-dependent maximum extent and projected swept geometry — remains wholly inside the field polygon at all times.
+
+Containment applies to the complete geometry, not the vehicle root node, tractor body, centreline or nominal working width. A deployed boom must never sweep partially outside the polygon. Objects immediately beyond the polygon, including hedges, trees, ditches and pylons, therefore remain outside normal obstacle scope. The hedges removed from TS001 were a test workaround for missing containment behaviour and must not become a final-system requirement.
+
+Situation Assessment separates three classifications:
+
+- **Field World Membership:** physical geometry intersects the bounded Field World;
+- **Operational Membership:** the Entity actively participates in the Operation;
+- **Situation Relevance:** the Field World Member can currently affect an Operation member or a plausible future.
+
+A stopped, completed or player-controlled vehicle can remain a Field World Member and become Situation-relevant after leaving Operational Membership. Static geometry wholly inside the polygon also belongs to the Field World.
+
+Prototype 05 implements passive vehicle observation using conservative current-envelope rectangles. It does not yet implement exact maximum geometry, projected sweep or active containment.
 
 ## Logging vocabulary (4.2.6)
 

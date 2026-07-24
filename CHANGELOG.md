@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.6.6 — Prototype 05: Field World Observation
+
+- Recovered and promoted Full-Envelope Field Containment: the complete vehicle–implement collision envelope, including projected swept geometry, remains wholly inside the field polygon at all times.
+- Defined the field polygon as the bounded Field World for one Operation.
+- Separated Field World Membership, Operational Membership and dynamic Situation Relevance.
+- Added passive Prototype 05 vehicle observation across active, inactive, completed and player-controlled mission vehicles.
+- Retains physically present vehicles after active GIANTS AI membership ends and records dynamic closest-approach relevance to active workers.
+- Preserves GIANTS field-island counts and native static-collision signals as limited static-world evidence.
+- Uses conservative current-envelope rectangles for diagnostics only; exact maximum collision geometry, projected sweep and containment control remain unimplemented.
+- Added the parked-Patriot and completed-Condor TS001 validation procedure.
+- Traffic Manager v2 remains disabled; no hold, release, Decision, Commitment, containment or vehicle-control behaviour is introduced.
+
 ## v4.6.5 — Prototype 04: Continuation Intent and Safe Release
 
 - Added passive Prototype 04 instrumentation for Local Intent Horizon, Intent Expiry and retrospective next-manoeuvre release safety.

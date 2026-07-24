@@ -30,6 +30,24 @@ A provisional general label for something that participates in Situation Space. 
 ## Conflict Zone
 A derived spatial-temporal region in which intended motion cannot safely coexist without coordination.
 
+## Field World
+The bounded physical world defined by one field boundary polygon for one Operation. It is not the entire map.
+
+## Field World Membership
+The classification that physical geometry intersects the Field World. Membership does not imply active participation or current relevance.
+
+## Operational Membership
+Active participation in one Operation. Membership is dynamic and may end while the Entity remains physically present inside the Field World.
+
+## Situation Relevance
+The dynamic relationship by which a Field World Member can affect an Operation member or a plausible future.
+
+## Operational Collision Envelope
+The complete collision geometry of the vehicle plus every attached or towed implement, including configuration-dependent maximum extent and projected swept geometry.
+
+## Full-Envelope Field Containment
+The invariant that the complete Operational Collision Envelope remains wholly inside the field polygon at all times.
+
 ## Conflict Relevance Transition
 A provisional change in the Current Situation whereby an Entity or object becomes a participant in a plausible conflict rather than merely being present nearby. The concept remains Deferred pending prototype evidence.
 

@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for canonical release v4.6.5.
+Review status: reviewed for Prototype 05 candidate v4.6.6.
 
 ## Accepted Concepts
 
@@ -31,6 +31,30 @@ A persistent intention to perform an action. Commitment owns creation, maintenan
 ### Conflict Zone
 
 A derived operational concept: a spatial-temporal region in which intended motion cannot safely coexist without coordination. It remains useful for describing elevated interaction risk, but is no longer treated as a root architectural primitive.
+
+### Field World
+
+The bounded physical world defined by one field boundary polygon for one Operation. It includes physical geometry within the polygon but does not expand to the whole map.
+
+### Field World Membership
+
+The classification that physical geometry intersects the bounded Field World. Membership does not imply active participation, agency or current relevance.
+
+### Operational Membership
+
+The dynamic subset of Entities actively participating in one Operation. An Entity may leave Operational Membership while remaining physically present and relevant inside the Field World.
+
+### Situation Relevance
+
+The dynamic relationship by which a Field World Member can affect an Operation member or a plausible future. Relevance is not inferred from membership alone.
+
+### Operational Collision Envelope
+
+The complete collision geometry of the vehicle and every attached or towed implement, including configuration-dependent maximum extent and the projected swept geometry of the intended movement.
+
+### Full-Envelope Field Containment
+
+The invariant that every AI worker's complete Operational Collision Envelope remains wholly inside the field polygon at all times. External geometry should not require obstacle handling because the worker envelope must never reach beyond the boundary.
 
 ## Deferred Concepts
 

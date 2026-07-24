@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.5
+-- FS25_OuttaMyWay v4.6.6
 -- Prototype 04: passive evidence capture for continuation intent and safe release.
 -- This module expires locally revealed intent when a new manoeuvre begins and
 -- retrospectively evaluates an observed release through the Progress Entity's

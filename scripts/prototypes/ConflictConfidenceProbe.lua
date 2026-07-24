@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.5
+-- FS25_OuttaMyWay v4.6.6
 -- Prototype 02: passive evidence capture for Trajectory Settlement and Conflict Confidence.
 -- This module reads Observer state and Prototype 01 kinematics only. It never controls vehicles.
 

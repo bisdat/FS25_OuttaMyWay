@@ -1,77 +1,82 @@
 # Project Status
 
-Version: 4.6.5
+Version: 4.6.6
 
-Authority state: Canonical — Prototype 04 evidence reviewed; local-intent lifecycle supported; Safe Release Point unresolved
+Authority state: Release Candidate — Prototype 05 passive Field World evidence awaiting in-game validation
 
-Canonical source: exact accepted v4.6.5 candidate
+Canonical baseline: exact accepted v4.6.5 canonical package
 
-Accepted candidate SHA-256: 3ec478110839e25f2d38c07ae0e5eb521da5ca54021d2378eeda9edae62c94ee
+Canonical baseline SHA-256: 3c7cfa56fe0bd74dc3d3aabbcaddf52c1d49e10637b248ce75a7193e264d9431
 
-Current focus: recover Full-Envelope Field Containment and observe the Field World independently of active Operational Membership before any active Information-Gaining Delay
+Current focus: validate Field World observation independently of active Operational Membership before any active Information-Gaining Delay
 
-## Engineering Increment Result
+## Engineering Increment Hypothesis
 
-Prototype 04 asked:
+Prototype 05 asks:
 
-> Can Situation Assessment distinguish locally revealed intent from continuing route intent, expire stale intent when a new manoeuvre begins, and determine retrospectively whether an observed release remained safe through the Progress Entity's next repositioning event?
+> Can Situation Assessment retain vehicle Field World Members independently of active GIANTS AI membership and identify when inactive, completed or player-controlled vehicles become relevant to an active Operation member's plausible trajectory?
 
-**Result:** The local-intent and Intent Expiry portions are strongly supported. The original candidate wait position was shown unsafe through a later Condor repositioning, but automatic Safe Release classification remained incomplete because manually stopping Patriot removed it from active AI-worker observation and the player moved it before collision.
+The candidate remains passive. It does not hold or release either worker, select a Commitment, constrain the field boundary or alter GIANTS AI behaviour.
 
-The canonical release remains passive. It does not hold or release either worker, select a Commitment or alter GIANTS AI behaviour.
+## Recovered Architecture
 
-## Accepted Evidence
+The field polygon defines the bounded Field World for one field Operation.
 
-The limited TS001 run produced the following sequence:
+**Full-Envelope Field Containment** is an accepted invariant: the complete operational collision envelope of the vehicle and every attached or towed implement, including configuration-dependent maximum extent and projected swept geometry, remains wholly inside the field polygon at all times.
 
-- `t=90.5s`: Patriot was manually stopped; its GIANTS AI job ended and it left the active-worker observer while remaining physically parked in the field;
-- `t=93.0s`: Condor received a new bounded local intent epoch;
-- `t=147.7s`: that epoch expired immediately when Condor began another repositioning manoeuvre;
-- `t=166.0s`: Condor's next settled work segment produced another local intent epoch;
-- `t=176.0s`: the epoch expired at the next manoeuvre;
-- `t=200.5s`: Condor became blocked during that manoeuvre while the player observed it travelling directly toward parked Patriot;
-- the player repositioned Patriot before collision and Condor resumed, completing the manoeuvre at `t=212.7s`;
-- Patriot later restarted after being moved, so the subsequent clear continuation was not a test of the original hold position;
-- `t=627.7s`: Condor completed work and left the active-worker observer;
-- `t=796.5s`: Patriot became blocked at the normal shared finishing position already occupied by completed Condor.
+External hedges, trees, ditches and pylons are therefore outside normal obstacle scope. Their removal from TS001 was a workaround for missing containment behaviour, not an acceptable requirement.
 
-The player's observations provide the causal interpretation that the first blocked state was caused by parked Patriot and the final blocked state by completed Condor occupying the shared GIANTS parking position.
+The architecture now separates:
 
-## Interpretation
+- **Field World Membership** — physical presence within the bounded field world;
+- **Operational Membership** — active participation in the Operation;
+- **Situation Relevance** — current ability to affect an Operation member or plausible future.
 
-Prototype 04 supports:
+## Candidate Implementation
 
-- **Local Intent Horizon** as bounded knowledge of the immediate settled path;
-- **Intent Expiry** at a new manoeuvre or loss of active observation;
-- the conclusion that current-lane intent is not route-continuation knowledge;
-- the possibility of an **Encounter Chain**, where avoiding one conflict exposes a later conflict.
+Prototype 05:
 
-Prototype 04 does not establish a Safe Release Point. The observed safe continuation after Patriot restarted followed manual relocation, while the physically unsafe parked encounter could not be evaluated automatically after Patriot left Operational Membership.
+- discovers the GIANTS field boundary while observer-only mode is active;
+- retains every mission vehicle whose conservative current envelope intersects that polygon;
+- observes active, inactive, completed and player-controlled vehicles independently of active-worker state;
+- records Operational Membership transitions without discarding physical membership;
+- records dynamic relevance using separation, closing rate and closest-approach evidence;
+- preserves GIANTS field-island counts and native static-collision signals as limited static-world evidence;
+- records conservative current-envelope containment candidates without issuing Control.
+
+The current geometry is a diagnostic rectangle approximation. It does not yet implement exact maximum collision geometry or projected sweep.
 
 ## Passive Guarantee
 
 - `AI_EXPLORER_ONLY = true`;
 - `TRAFFIC_V2_ENABLED = false`;
-- Prototypes 01 through 04 run before the observer-only return;
-- no speed, steering, implement, route, AI-job, Decision, Commitment, hold or release action is permitted.
+- Prototypes 01 through 05 run before the observer-only return;
+- no speed, steering, implement, route, AI-job, Decision, Commitment, hold, release or containment action is permitted.
 
-## Next Evidence Boundary
+## Immediate Test
 
-The next declared Engineering Increment should:
+Use the limited TS001 stop/restart scenario:
 
-1. recover and promote the previously agreed **Full-Envelope Field Containment** invariant: the maximum collision geometry of the complete vehicle–implement combination, including projected sweep, remains wholly inside the field polygon at all times;
-2. distinguish Field World Membership from Operational Membership and dynamic Situation Relevance;
-3. retain physically relevant vehicles after their GIANTS AI job ends;
-4. detect parked-Patriot and completed-Condor conflicts as natural TS001 evidence cases;
-5. later extend the same observation boundary to moving player-controlled vehicles and static objects inside the field polygon.
+1. stop Patriot at the previous candidate wait position;
+2. verify that it remains a Field World Member after leaving active AI membership;
+3. observe Condor's later repositioning toward parked Patriot;
+4. move Patriot before collision if desired and restart it after Condor clears;
+5. allow Condor to finish and park;
+6. observe Patriot's terminal approach to the occupied GIANTS finishing position;
+7. upload the complete log and visual observations.
 
-These are continuation requirements, not behaviour implemented by v4.6.5.
+## Expected Evidence
+
+- parked Patriot remains `operationalMember=false` but physically observed;
+- Condor-to-Patriot relevance changes to `RELEVANT`;
+- moving Patriot is classified as player-controlled rather than disappearing;
+- completed Condor remains a Field World Member;
+- Patriot-to-Condor terminal relevance becomes visible.
 
 ## Known Constraints
 
 - Manual stop/restart contains Job Restart Perturbation.
-- Manual repositioning prevented automatic validation of the original physical collision.
-- Prototype 04 observes active GIANTS workers, not the complete physical Field World.
-- Safe/unsafe continuation classification is invalid when a relevant physical participant disappears from the observer.
-- The complete GIANTS route remains unknown and must not be inferred from a simple alternating-lane description.
+- Exact full-envelope collision geometry and projected sweep are not implemented.
+- Internal static-object identity is incomplete; field islands and native collision signals are evidence only.
+- The test map currently lacks the deleted external hedges, so containment itself is not validated.
 - Older control code remains in the repository but is bypassed by the observer-only boundary.

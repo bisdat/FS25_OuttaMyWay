@@ -123,7 +123,8 @@ function OuttaMyWay:startGiantsBoundaryProbe(d)
             if success and result ~= nil and result.fieldRootBoundary ~= nil
                 and result.fieldRootBoundary.boundaryLine ~= nil then
                 state.boundary = result.fieldRootBoundary.boundaryLine
-                state.islandCount = result.islands ~= nil and #result.islands or 0
+                state.islands = result.islands or {}
+                state.islandCount = #state.islands
                 state.error = nil
                 info("GIANTS FIELD BOUNDARY POC: %s success after %d updates; points=%d islands=%d",
                     vehicleName(vehicle), state.updates or 0, #state.boundary, state.islandCount)

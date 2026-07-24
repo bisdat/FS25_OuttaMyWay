@@ -2909,6 +2909,10 @@ function OuttaMyWay:update(dt)
         self.ContinuationIntentProbe:update(dt)
     end
 
+    if self.FieldWorldProbe ~= nil and self.FieldWorldProbe.update ~= nil then
+        self.FieldWorldProbe:update(dt)
+    end
+
     if self.AI_EXPLORER_ENABLED == true and self.AIFieldCourseExplorer ~= nil and self.AIFieldCourseExplorer.update ~= nil then
         self.AIFieldCourseExplorer:update(dt)
     end
@@ -3038,6 +3042,9 @@ function OuttaMyWay:deleteMap()
     end
     if self.ContinuationIntentProbe ~= nil and self.ContinuationIntentProbe.clear ~= nil then
         self.ContinuationIntentProbe:clear()
+    end
+    if self.FieldWorldProbe ~= nil and self.FieldWorldProbe.clear ~= nil then
+        self.FieldWorldProbe:clear()
     end
     if self.clearEncounterController ~= nil then self:clearEncounterController() end
 end

@@ -34,6 +34,26 @@ This log records Accepted, Deferred, Rejected and Superseded project choices tha
 **Recovery finding:** failure to promote the executable RRS implementation caused avoidable capability loss. Repository-owned implementation is now required.
 
 
+## D-0021 — Test Field World observation passively
+
+**Status:** Accepted for Prototype 05 candidate v4.6.6
+
+**Decision:** Prototype 05 shall observe mission vehicles inside the field polygon independently of active GIANTS AI membership and shall record Field World Membership, Operational Membership and Situation Relevance separately. It shall remain passive.
+
+**Validation focus:** parked Patriot after AI detachment and completed Condor at the shared GIANTS finishing position are the first positive cases. Moving player-controlled vehicles are naturally included. Static evidence is limited to GIANTS field islands and native static-collision signals until exact object identity is available.
+
+**Boundary:** The prototype may use conservative current-envelope geometry for evidence but shall not claim exact maximum collision geometry, projected sweep, active containment, safe release or Information-Gaining Delay.
+
+## D-0020 — Define the Field World and require Full-Envelope Field Containment
+
+**Status:** Accepted in Prototype 05 candidate v4.6.6 as recovered architectural knowledge
+
+**Decision:** One field boundary polygon defines the bounded Field World for one Operation. Every AI worker's complete vehicle–implement collision envelope, including configuration-dependent maximum extent and projected swept geometry, must remain wholly inside that polygon at all times.
+
+**Reason:** A vehicle root node or centreline can remain inside while a boom or implement sweeps into hedges, trees, ditches or other external geometry. TS001 required hedges to be deleted only because containment behaviour is missing; this workaround must not become a product requirement.
+
+**Consequence:** External objects just beyond the polygon are outside normal obstacle scope. Physical objects wholly inside the Field World remain observable independently of Operational Membership, and their Situation Relevance is assessed dynamically.
+
 ## D-0019 — Test continuation intent and safe release passively
 
 **Status:** Accepted in canonical v4.6.5

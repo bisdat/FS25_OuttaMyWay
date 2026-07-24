@@ -1,5 +1,17 @@
 # Engineering Journal
 
+## 2026-07-24 — Prototype 05: the field polygon defines a bounded physical world
+
+**Recovered architecture:** The maximum collision geometry of the complete vehicle–implement combination, including projected swept geometry, must remain wholly inside the field polygon. A boom must never sweep partially outside the boundary. External hedges, trees, ditches and pylons are therefore outside normal obstacle scope. The hedges removed from TS001 were a workaround for missing containment, not an acceptable requirement.
+
+**Classification discovery:** Field World Membership, Operational Membership and Situation Relevance answer different questions. Patriot remained physically present after its AI job ended, and completed Condor remained physically present after leaving active-worker observation. Both later affected an active worker.
+
+**Hypothesis:** Situation Assessment can retain vehicle Field World Members independently of active GIANTS AI membership and identify when inactive, completed or player-controlled vehicles become relevant to an active Operation member's plausible trajectory.
+
+**Implementation:** Prototype 05 discovers the GIANTS field polygon in observer-only mode, enumerates all mission vehicles, groups attached implements with their root vehicle, applies a conservative current-envelope intersection test and records dynamic closest-approach relevance. It also retains field-island counts and native static-collision signals.
+
+**Boundary:** Exact maximum collision geometry, projected sweep, active containment and complete static-object identity are not solved by this increment. The prototype remains passive and must be validated against parked Patriot and completed Condor.
+
 ## 2026-07-24 — Prototype 04: local intent expires; physical relevance does not
 
 **Hypothesis:** Situation Assessment can represent locally revealed intent as a bounded epoch, expire it when a new manoeuvre begins, and classify an observed release retrospectively against the Progress Entity's next repositioning event.
