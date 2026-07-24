@@ -27,6 +27,29 @@ Development remains in a private repository until the first GIANTS ModHub releas
 - [x] Record that future-projection decay after collision is not equivalent to real conflict resolution.
 - [ ] Consolidate the realised-conflict boundary into the next single-hypothesis increment before active intervention.
 
+### Prototype 03 — Option Preservation Window
+
+- [x] Name Candidate Option Preservation Window, Progress Entity, Intent Revelation Point, Response Margin and Alternate Exhaustion Point as provisional concepts.
+- [x] Scope Information-Gaining Delay and the Progress Preservation Invariant.
+- [x] Define one passive hypothesis and evidence contract.
+- [x] Add manoeuvre-ordering, intent-revelation and response-margin instrumentation.
+- [x] Run unchanged TS001 through the complete encounter.
+- [x] Observe a real `ACTIONABLE` interval approximately 12 s before conflict establishment.
+- [x] Validate that Condor's local intent became clear while Patriot retained approximately 7.42 s of conservative temporal margin.
+- [x] Preserve one Progress Entity and avoid Observation Deadlock in the evidence model.
+- [x] Record Startup Manoeuvre Contamination and Exhaustion Event Repetition as instrumentation defects.
+- [x] Run a limited manual continuation test and disprove current-lane intent as sufficient safe-release evidence.
+- [x] Decide that an active Information-Gaining Delay is not yet justified because continuation and release safety remain unproven.
+
+### Prototype 04 — Continuation Intent and Safe Release
+
+- [ ] Define one passive hypothesis separating locally revealed intent from route continuation.
+- [ ] Expire previously revealed intent when a new manoeuvre begins or materially changes the trajectory.
+- [ ] Observe whether a hypothetical release remains clear through the Progress Entity's next repositioning event.
+- [ ] Distinguish a resolved encounter from a later linked Encounter Chain.
+- [ ] Correct Prototype 03 startup contamination and repeated exhaustion-event logging within the declared increment.
+- [ ] Consider an active Information-Gaining Delay only after a Safe Release Point is observable.
+
 ## Repository Release System follow-up
 
 The v4.6.0 recovery cycle validated Candidate Production sufficiently to return project focus to OuttaMyWay. The following work remains deliberately deferred:

@@ -60,6 +60,33 @@ Legacy descriptive term for the current understanding of nearby traffic. Prefer 
 ## Operational Picture
 The existing name for the single current interpretation of decision-relevant observations maintained by Situation Assessment. Its relationship to Current Situation remains under review.
 
+## Candidate Option Preservation Window
+A provisional observed interval in which waiting by one participant might preserve alternatives while a Progress Entity reveals intent.
+
+## Progress Entity
+The participant allowed to continue so Reality can generate the evidence required for reassessment.
+
+## Intent Revelation Point
+The provisional point at which an Entity's resulting trajectory becomes settled enough to provide useful knowledge to other participants.
+
+## Response Margin
+The remaining time and manoeuvre freedom after intent revelation. No single stopping estimate is accepted as its complete representation.
+
+## Alternate Exhaustion Point
+A provisional boundary after which ordinary graceful alternatives appear to have been consumed.
+
+## Information-Gaining Delay
+A possible temporary Commitment whose purpose is to gain useful evidence before a stronger Commitment is made.
+
+## Progress Preservation Invariant
+An Information-Gaining Delay must leave at least one relevant moving participant able to generate its completion evidence.
+
+## Observation Deadlock
+A soft lock produced when all relevant moving participants are held while the wait can complete only through movement that reveals intent.
+
+## Mutual Commitment Trap
+A provisional situation in which independently acting participants commit before either can adapt to the other's revealed intention.
+
 ## Commitment
 A persistent intention with explicit creation, maintenance, completion and cancellation lifecycle semantics.
 

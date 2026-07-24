@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.3
+-- FS25_OuttaMyWay v4.6.4
 -- Prototype 02: passive evidence capture for Trajectory Settlement and Conflict Confidence.
 -- This module reads Observer state and Prototype 01 kinematics only. It never controls vehicles.
 
@@ -157,6 +157,26 @@ function Probe:updateEntity(state, nowSeconds)
     }
     self.entityHistory[key] = current
     return current
+end
+
+-- Publish read-only diagnostic accessors for later passive evidence probes.
+-- Prototype 02 remains the owner of its motion and confidence interpretations.
+function Probe.motionFor(stateOrKey)
+    if Probe.entityHistory == nil then return nil end
+    local key = stateOrKey
+    if type(stateOrKey) == "table" then
+        local kinematics = OuttaMyWay.ConflictEmergenceProbe
+        if kinematics == nil or type(kinematics.vehicleKey) ~= "function" then return nil end
+        key = kinematics.vehicleKey(stateOrKey)
+    end
+    return Probe.entityHistory[key]
+end
+
+function Probe.pairStateFor(a, b)
+    if Probe.pairs == nil then return nil end
+    local kinematics = OuttaMyWay.ConflictEmergenceProbe
+    if kinematics == nil or type(kinematics.pairKey) ~= "function" then return nil end
+    return Probe.pairs[kinematics.pairKey(a, b)]
 end
 
 function Probe:isConflictPositive(result)

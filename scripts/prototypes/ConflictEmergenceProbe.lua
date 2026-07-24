@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.3
+-- FS25_OuttaMyWay v4.6.4
 -- Prototype 01: passive evidence capture for Conflict Emergence Point.
 -- This module reads only the central Observer model and never controls vehicles.
 

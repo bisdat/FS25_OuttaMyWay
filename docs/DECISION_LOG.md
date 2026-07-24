@@ -34,6 +34,18 @@ This log records Accepted, Deferred, Rejected and Superseded project choices tha
 **Recovery finding:** failure to promote the executable RRS implementation caused avoidable capability loss. Repository-owned implementation is now required.
 
 
+## D-0018 — Test the Candidate Option Preservation Window passively
+
+**Status:** Accepted in canonical v4.6.4
+
+**Decision:** Prototype 03 shall reuse the unchanged TS001 encounter to test whether manoeuvre ordering, a unique Progress Entity, an Intent Revelation Point and remaining Response Margin expose a Candidate Option Preservation Window before conflict establishment. It shall remain passive and may produce knowledge only.
+
+**Invariant:** An Information-Gaining Delay may never hold all relevant moving participants. At least one Progress Entity must remain able to generate the evidence required for reassessment. This scope does not prohibit a future Emergency Arrest Commitment with an independent release mechanism.
+
+**Rationale:** The accepted Prototype 02 run showed Condor and Patriot entering overlapping turns before either could adapt to the other's revealed lane. The player's observation suggested a brief wait might preserve alternatives, but passive evidence was required to establish whether a useful window actually existed.
+
+**Validation:** The unchanged TS001 run strongly supported an observable `CANDIDATE_OPEN → ACTIONABLE → EXHAUSTED` sequence. Condor's intent was revealed while Patriot remained about 56% through its manoeuvre, with approximately 12 s before conflict establishment and about 7.42 s of conservative temporal margin. The Progress Preservation Invariant held for the pair. A manual stop/restart follow-up disproved current-lane intent as sufficient safe-release evidence because Condor later repositioned across Patriot's resumed path; that run is qualified by Job Restart Perturbation. No hold, Decision, Commitment or Control action exists in the canonical implementation.
+
 ## D-0017 — Test Conflict Confidence through passive trajectory evidence
 
 **Status:** Accepted in canonical v4.6.3

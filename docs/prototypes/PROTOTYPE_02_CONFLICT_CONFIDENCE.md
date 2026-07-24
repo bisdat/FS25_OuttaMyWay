@@ -130,6 +130,11 @@ The probe:
 - runs before the observer-only runtime return;
 - disables itself if observer-only mode or Traffic Manager v2 configuration cannot guarantee passivity.
 
+
+## Diagnostic reuse in Prototype 03
+
+Candidate v4.6.4 retains Prototype 02's accepted evidence behaviour and publishes read-only accessors for its per-Entity motion interpretation and pair confidence state. Prototype 03 consumes those observations without altering Prototype 02 ownership, thresholds or lifecycle labels.
+
 ## Retained TS001 test procedure
 
 The accepted evidence run used this procedure.

@@ -2901,6 +2901,10 @@ function OuttaMyWay:update(dt)
         self.ConflictConfidenceProbe:update(dt)
     end
 
+    if self.OptionPreservationProbe ~= nil and self.OptionPreservationProbe.update ~= nil then
+        self.OptionPreservationProbe:update(dt)
+    end
+
     if self.AI_EXPLORER_ENABLED == true and self.AIFieldCourseExplorer ~= nil and self.AIFieldCourseExplorer.update ~= nil then
         self.AIFieldCourseExplorer:update(dt)
     end
@@ -3024,6 +3028,9 @@ function OuttaMyWay:deleteMap()
     end
     if self.ConflictConfidenceProbe ~= nil and self.ConflictConfidenceProbe.clear ~= nil then
         self.ConflictConfidenceProbe:clear()
+    end
+    if self.OptionPreservationProbe ~= nil and self.OptionPreservationProbe.clear ~= nil then
+        self.OptionPreservationProbe:clear()
     end
     if self.clearEncounterController ~= nil then self:clearEncounterController() end
 end

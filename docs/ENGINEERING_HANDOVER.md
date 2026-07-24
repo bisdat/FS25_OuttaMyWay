@@ -2,67 +2,63 @@
 
 ## Canonical baseline
 
-The exact reviewed v4.6.3 candidate was tested, accepted and explicitly declared canonical by the repository owner.
+The exact reviewed v4.6.4 candidate was tested, accepted and explicitly declared canonical by the repository owner.
 
 Accepted candidate SHA-256:
 
-`7f2563ac7b9af43d471a77cd06ae3c532b0e1c826b94e324a761be1d34d18856`
+`11928affbc62d41b3a67534147266ffdfc1a0cdd1915c062010094a9705fc13c`
 
-Every new Engineering Transformation must begin from the complete canonical v4.6.3 package supplied as its immutable baseline.
+Every new Engineering Transformation must begin from the complete canonical v4.6.4 package supplied as its immutable baseline.
 
 ## Completed increment
 
-Prototype 02 tested:
+Prototype 03 tested:
 
-> Situation Assessment can distinguish a transient projected intersection from an established future conflict by observing Trajectory Settlement and prediction persistence.
+> Situation Assessment can identify a Candidate Option Preservation Window using manoeuvre ordering, a Progress Entity, an Intent Revelation Point and remaining Response Margin before both trajectories settle into an established conflict.
 
 The unchanged TS001 run strongly supported the hypothesis.
 
 ## Accepted evidence
 
-- The earlier harmless head-on pass remained `CLEAR`.
-- The later encounter entered `FORMING` while the projected conflict and Patriot's trajectory were still unstable.
-- The relationship entered `ESTABLISHED` at approximately `t=107.5s`, 266.5 m separation and about 18.5 s before both workers became blocked.
-- Neither worker made a further material direction change after settlement.
-- The player visually confirmed the final outcome remained a head-on collision.
-- GIANTS marked Condor blocked at approximately `t=125.7s` and Patriot blocked at `t=126.0s`.
+Condor began manoeuvring before Patriot. Patriot began its own manoeuvre before Condor's resulting trajectory had settled, opening a candidate window. Condor's intent was declared sufficiently revealed while Patriot remained approximately 56% through its turn and travelling at about 15 km/h.
 
-The evidence supports distinct responsibilities for per-Entity Trajectory Settlement and relationship-level Conflict Confidence, while both remain Deferred.
+Conflict establishment occurred approximately 12.0 s after intent revelation. The provisional stop-time estimate was approximately 2.58 s, leaving about 7.42 s after the exposed 2.0 s safety buffer. The player independently observed that Patriot still had time to wait.
 
-## Disproved lifecycle assumption
+The evidence supports an observable temporal option-preservation interval and demonstrates the Progress Preservation Invariant for this pair: Condor could continue as Progress Entity while Patriot remained the hypothetical hold candidate.
 
-After collision-induced stopping, the future projection disappeared and Prototype 02 reported `ESTABLISHED → DECAYING → CLEARED` even though both workers remained physically blocked.
+## Disproved release assumption
 
-This is the **Projection Clearance Fallacy**: absence of a future collision projection does not prove that an already realised conflict is resolved.
+A manual follow-up stopped Patriot when Condor appeared established in the lane. Stopping abandoned Patriot's GIANTS AI job. Condor initially moved away. After Patriot's AI job restarted and Patriot entered its lane, Condor performed a later repositioning turn across Patriot's path, producing a new crossing conflict.
 
-A later increment must examine the boundary by which future conflict becomes present unresolved Reality. No new concept is accepted by canonical v4.6.3 merely because it has been named in evidence review.
+This disproved the assumption that revelation of the current lane is sufficient evidence for safe release. It also reduced confidence in the simple alternating-lane route model. The result is qualified by Job Restart Perturbation and must not be treated as evidence that a future speed-zero hold would produce the same route sequence.
+
+The next hypothesis must distinguish local intent from continuation intent and identify when previously revealed intent expires.
 
 ## Implementation state
 
-- `ConflictEmergenceProbe.lua` retains Prototype 01 evidence and side-effect-free kinematic helpers.
-- `ConflictConfidenceProbe.lua` records per-Entity motion stability and pair-level prediction persistence.
-- Both probes are passive and execute before the observer-only runtime return.
-- Traffic Manager v2 remains disabled.
-- No Decision, Commitment or Control behaviour is enabled.
+- `ConflictEmergenceProbe.lua` retains pair kinematics and emergence evidence.
+- `ConflictConfidenceProbe.lua` retains trajectory-settlement and conflict-confidence evidence.
+- `OptionPreservationProbe.lua` retains manoeuvre ordering, Progress Entity, Intent Revelation, response-margin and exhaustion evidence.
+- all three probes run before the observer-only runtime return;
+- Traffic Manager v2 remains disabled;
+- no Decision, Commitment or Control behaviour is enabled.
+
+Two instrumentation defects remain recorded for a future declared increment: startup manoeuvre contamination and repeated exhaustion-candidate logging.
 
 ## Immediate continuation point
 
-Before any active waiting, yielding or avoidance test:
+The next single-hypothesis increment should remain passive and test:
 
-1. begin from the exact canonical v4.6.3 package;
-2. consolidate the Prototype 02 evidence into one next architectural hypothesis;
-3. distinguish safely dissolving future conflict from realised unresolved conflict;
-4. define the evidence contract before implementation;
-5. preserve Progress, Decision, Commitment and Control as separate responsibilities.
+> Situation Assessment can distinguish locally revealed intent from continuing route intent, expire stale intent when a new manoeuvre begins, and determine whether a hypothetical release remains safe through the Progress Entity's next repositioning event.
 
-Do not tune Prototype 02 merely to prevent its post-collision state labels from looking wrong. First determine which missing architectural knowledge caused the interpretation failure.
+This work should expose the boundary between a Local Intent Horizon and a Safe Release Point. It must not yet implement a hold or release.
 
 ## Repository entry point
 
 1. `docs/README.md`
 2. `docs/PROJECT_STATUS.md`
-3. `docs/prototypes/PROTOTYPE_02_CONFLICT_CONFIDENCE.md`
-4. `docs/prototypes/PROTOTYPE_01_CONFLICT_EMERGENCE.md`
+3. `docs/prototypes/PROTOTYPE_03_OPTION_PRESERVATION.md`
+4. `docs/prototypes/PROTOTYPE_02_CONFLICT_CONFIDENCE.md`
 5. `docs/CONCEPT_REGISTER.md`
 6. `docs/DECISION_LOG.md`
 7. `docs/ENGINEERING_JOURNAL.md`

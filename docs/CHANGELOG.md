@@ -1,5 +1,21 @@
 # Changelog
 
+## v4.6.4 — Prototype 03: Option Preservation Window
+
+- Added passive Prototype 03 instrumentation for manoeuvre ordering, Intent Revelation and provisional Response Margin.
+- Named Candidate Option Preservation Window, Progress Entity, Alternate Exhaustion Point, Information-Gaining Delay, Observation Deadlock, Mutual Commitment Trap and the Progress Preservation Invariant as Deferred concepts under test.
+- Recorded the invariant that an observation-enabling delay must preserve at least one participant able to generate completion evidence; Prototype 03 never represents holding all participants as valid.
+- Added `CANDIDATE_OPEN`, `OBSERVING`, `ACTIONABLE`, `EXHAUSTED` and `CLOSED_SAFE` diagnostic states.
+- Added provisional stopping-time, stopping-distance, manoeuvre-progress and response-time-margin evidence with every assumption exposed in the log.
+- Published read-only Prototype 02 motion/confidence accessors for passive diagnostic reuse.
+- Added the Prototype 03 hypothesis, evidence contract and unchanged TS001 procedure.
+- Traffic Manager v2 remains disabled; no Decision, Commitment, hold or vehicle-control behaviour is introduced.
+- The unchanged TS001 run produced an `ACTIONABLE` window approximately 12 s before conflict establishment and about 7.42 s of conservative temporal margin after the diagnostic stopping allowance and safety buffer.
+- The player independently observed that Patriot still had time to wait after Condor became established in the lane; the Prototype 03 hypothesis is strongly supported.
+- A manual stop/restart follow-up avoided the original head-on encounter but later produced a crossing conflict when Condor repositioned across Patriot's resumed path, disproving current-lane intent as sufficient safe-release evidence and reducing confidence in the simple alternating-lane model.
+- Recorded Job Restart Perturbation, Startup Manoeuvre Contamination and Exhaustion Event Repetition as evidence and diagnostic constraints requiring later declared work.
+- The repository owner reviewed and tested the exact v4.6.4 candidate and explicitly declared v4.6.4 canonical.
+
 ## v4.6.3 — Prototype 02: Conflict Confidence
 
 - Added passive Prototype 02 instrumentation for Trajectory Settlement and conflict-persistence evidence.

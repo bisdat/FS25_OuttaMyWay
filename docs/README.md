@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** Reviewed for candidate release v4.6.3
+> **Currency:** Reviewed for candidate release v4.6.4
 
 This development repository is a self-sustaining engineering knowledge system. Its first responsibility is to preserve project continuity independently of any chat, engineer, AI system or platform. Its second is to remain understandable to future contributors.
 
@@ -49,7 +49,8 @@ The remaining documents deepen or verify that journey; they are classified below
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — current driving-system architecture.
 - [`DESIGN.md`](DESIGN.md) — component responsibilities and design boundaries.
 - [`ENGINEERING_HANDBOOK.md`](ENGINEERING_HANDBOOK.md) — accumulated engineering reference.
-- [`prototypes/PROTOTYPE_02_CONFLICT_CONFIDENCE.md`](prototypes/PROTOTYPE_02_CONFLICT_CONFIDENCE.md) — current hypothesis, evidence contract and TS001 validation procedure.
+- [`prototypes/PROTOTYPE_03_OPTION_PRESERVATION.md`](prototypes/PROTOTYPE_03_OPTION_PRESERVATION.md) — current hypothesis, evidence contract and TS001 validation procedure.
+- [`prototypes/PROTOTYPE_02_CONFLICT_CONFIDENCE.md`](prototypes/PROTOTYPE_02_CONFLICT_CONFIDENCE.md) — accepted prior confidence result and retained formation evidence.
 - [`prototypes/PROTOTYPE_01_CONFLICT_EMERGENCE.md`](prototypes/PROTOTYPE_01_CONFLICT_EMERGENCE.md) — accepted prior prototype result and retained emergence evidence.
 - [`adr/README.md`](adr/README.md) — Architecture Decision Record index.
 - [`adr/ADR-0001-respect-the-native-ai.md`](adr/ADR-0001-respect-the-native-ai.md) — respect native AI authority.
