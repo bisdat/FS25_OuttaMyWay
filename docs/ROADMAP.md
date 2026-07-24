@@ -43,12 +43,26 @@ Development remains in a private repository until the first GIANTS ModHub releas
 
 ### Prototype 04 — Continuation Intent and Safe Release
 
-- [ ] Define one passive hypothesis separating locally revealed intent from route continuation.
-- [ ] Expire previously revealed intent when a new manoeuvre begins or materially changes the trajectory.
-- [ ] Observe whether a hypothetical release remains clear through the Progress Entity's next repositioning event.
-- [ ] Distinguish a resolved encounter from a later linked Encounter Chain.
-- [ ] Correct Prototype 03 startup contamination and repeated exhaustion-event logging within the declared increment.
-- [ ] Consider an active Information-Gaining Delay only after a Safe Release Point is observable.
+- [x] Define one passive hypothesis separating locally revealed intent from route continuation.
+- [x] Expire previously revealed intent when a new manoeuvre begins or the worker detaches.
+- [x] Run the limited TS001 stop/reposition/restart procedure.
+- [x] Validate bounded local intent epochs and immediate Intent Expiry.
+- [x] Observe that the original parked position became unsafe during a later Condor repositioning.
+- [x] Record that the active-worker observer could not classify the physical encounter after Patriot left Operational Membership.
+- [x] Observe a later terminal occupancy conflict after completed Condor left active observation.
+- [x] Correct Prototype 03 startup contamination, stale intent and repeated exhaustion-event logging within the declared increment.
+- [x] Decide that an active Information-Gaining Delay remains unjustified because complete physical observation and Safe Release evidence are missing.
+
+### Prototype 05 — Field World Observation
+
+- [ ] Recover and promote Full-Envelope Field Containment into authoritative architecture and vocabulary.
+- [ ] Define the field polygon as the bounded Field World for one Operation.
+- [ ] Separate Field World Membership, Operational Membership and Situation Relevance.
+- [ ] Observe parked Patriot after its AI job ends and detect Condor's repositioning conflict.
+- [ ] Observe completed Condor after its AI job ends and detect Patriot's terminal occupancy conflict.
+- [ ] Extend later evidence to a moving player-controlled vehicle and static objects wholly inside the field polygon.
+- [ ] Keep external hedges, trees and other geometry outside the field obstacle scope by enforcing complete vehicle–implement envelope containment.
+- [ ] Reconsider an active Information-Gaining Delay only after held and completed physical Entities remain observable.
 
 ## Repository Release System follow-up
 

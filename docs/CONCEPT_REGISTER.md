@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for canonical release v4.6.4.
+Review status: reviewed for canonical release v4.6.5.
 
 ## Accepted Concepts
 
@@ -89,6 +89,26 @@ A state in which every relevant moving participant is held while the completion 
 ### Mutual Commitment Trap
 
 A provisional situation in which independently acting participants cross their respective Commitment Points before either can adapt to the other's revealed intention. Prototype 03 observed useful precursors and temporal margin before establishment, but the later crossing encounter showed that avoiding one trap may expose another. The concept remains Deferred.
+
+### Local Intent Horizon
+
+The provisional interval during which an Entity's settled trajectory remains useful knowledge of its immediate path. Prototype 04 observed stable bounded epochs and directly disproved their interpretation as complete route knowledge. The concept remains Deferred pending broader Entities, manoeuvres and Field World observation.
+
+### Intent Expiry
+
+The provisional transition by which previously useful local intent becomes stale. Prototype 04 strongly supported new manoeuvre and worker detachment as explicit expiry evidence. The concept remains Deferred pending generalisation beyond active GIANTS workers and the single TS001 fixture.
+
+### Encounter Chain
+
+A provisional sequence of linked conflicts in which an intervention changes the timing or form of an encounter without eliminating the underlying coordination problem. Prototype 04 observed an unsafe later repositioning toward parked Patriot and a final shared-position conflict after completed Condor left active observation. The concept remains Deferred and the manual intervention remains qualified by Job Restart Perturbation.
+
+### Safe Release Point
+
+A provisional boundary at which releasing a held Entity leaves its resumed path clear through a defined continuation horizon. Prototype 04 did not establish this boundary: the original parked position became unsafe, while the later clear continuation followed manual relocation and could not validate the original hold site. The concept remains Deferred and no release authority exists.
+
+### Continuation Safety Horizon
+
+The bounded future continuation that must remain clear before release can be considered safe. Prototype 04 supports the next manoeuvre as a useful limited horizon, but also shows that the horizon is incomplete when physically relevant non-workers disappear from observation. The concept remains Deferred and does not imply knowledge of a complete GIANTS route.
 
 ### Opportunity
 

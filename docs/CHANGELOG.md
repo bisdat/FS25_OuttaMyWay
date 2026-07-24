@@ -1,5 +1,24 @@
 # Changelog
 
+## v4.6.5 — Prototype 04: Continuation Intent and Safe Release
+
+- Added passive Prototype 04 instrumentation for Local Intent Horizon, Intent Expiry and retrospective next-manoeuvre release safety.
+- Correlates Prototype 03 Progress Entity/hold-candidate evidence across worker detachment and reattachment without issuing control.
+- Records local intent epochs, explicit expiry at a new manoeuvre, observed release timing, continuation manoeuvres and later conflict-positive evidence.
+- Adds retrospective `SAFE_THROUGH_NEXT_MANOEUVRE` and `UNSAFE_THROUGH_NEXT_MANOEUVRE` outcomes within a deliberately limited Continuation Safety Horizon.
+- Names Local Intent Horizon, Intent Expiry, Encounter Chain, Safe Release Point and Continuation Safety Horizon as Deferred concepts under test.
+- Corrects Prototype 03 Startup Manoeuvre Contamination by requiring meaningful motion from both participants before opening a window.
+- Corrects stale Prototype 03 `ACTIONABLE` evidence by expiring local intent when the Progress Entity begins a new manoeuvre.
+- Latches Prototype 03 Alternate Exhaustion evidence so it is emitted once per completed window.
+- Adds the Prototype 04 hypothesis, evidence contract and limited player stop/restart TS001 procedure.
+- Traffic Manager v2 remains disabled; no hold, release, Decision, Commitment or vehicle-control behaviour is introduced.
+- The limited TS001 run confirmed bounded local intent epochs and immediate Intent Expiry when Condor began a new manoeuvre or left active observation.
+- Patriot was manually stopped at the candidate wait position and left active AI-worker observation; Condor later repositioned toward the physically parked Patriot and became blocked until the player moved Patriot.
+- The original stopped position was therefore unsafe through a later repositioning, while the probe could not classify the encounter automatically because the parked non-worker was outside its observation scope.
+- A later restart after manual relocation remained clear through the measured continuation but does not validate a Safe Release Point for the original hold site.
+- Completed Condor later occupied the normal GIANTS finishing position and Patriot became blocked when it attempted to use the same location, exposing physical relevance beyond active Operational Membership.
+- The repository owner reviewed and tested the exact v4.6.5 candidate and explicitly declared v4.6.5 canonical.
+
 ## v4.6.4 — Prototype 03: Option Preservation Window
 
 - Added passive Prototype 03 instrumentation for manoeuvre ordering, Intent Revelation and provisional Response Margin.

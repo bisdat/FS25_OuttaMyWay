@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.6.4
+-- FS25_OuttaMyWay v4.6.5
 -- Cooperative collision avoidance for base-game AI field workers.
 
 OuttaMyWay = {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.6.4"
+OuttaMyWay.VERSION = "4.6.5"
 OuttaMyWay.BLOCKED_FOLD_DELAY_MS = 6500
 OuttaMyWay.WAIT_FOLD_DELAY_MS = 4500
 OuttaMyWay.HEAD_ON_FOLLOW_HOLD_DISTANCE = 55.0
@@ -110,8 +110,20 @@ OuttaMyWay.PROTOTYPE_03_ASSUMED_DECELERATION_MPS2 = 2.0
 OuttaMyWay.PROTOTYPE_03_REACTION_TIME_S = 0.5
 OuttaMyWay.PROTOTYPE_03_RESPONSE_SAFETY_BUFFER_S = 2.0
 OuttaMyWay.PROTOTYPE_03_COMPLETED_RETENTION_MS = 5000
+OuttaMyWay.PROTOTYPE_03_MIN_OPERATIONAL_SPEED_KMH = 2.0
 
--- First live Traffic Manager v2 prototype. Disabled for passive Prototypes 01, 02 and 03.
+-- Prototype 04: passive evidence capture for Local Intent Horizon, Intent
+-- Expiry and retrospective Safe Release assessment through the Progress
+-- Entity's next repositioning event. It never issues a hold or release.
+OuttaMyWay.PROTOTYPE_04_ENABLED = true
+OuttaMyWay.PROTOTYPE_04_INTERVAL_MS = 250
+OuttaMyWay.PROTOTYPE_04_LOG_INTERVAL_MS = 1000
+OuttaMyWay.PROTOTYPE_04_HEARTBEAT_MS = 15000
+OuttaMyWay.PROTOTYPE_04_MIN_OPERATIONAL_SPEED_KMH = 2.0
+OuttaMyWay.PROTOTYPE_04_SAFE_CONFIRM_S = 3.0
+OuttaMyWay.PROTOTYPE_04_TRIAL_RETENTION_S = 120.0
+
+-- First live Traffic Manager v2 prototype. Disabled for passive Prototypes 01, 02, 03 and 04.
 -- Its retained settings are not executed in this candidate.
 OuttaMyWay.TRAFFIC_V2_ENABLED = false
 OuttaMyWay.TRAFFIC_V2_MIN_CONFIDENCE = 0.80

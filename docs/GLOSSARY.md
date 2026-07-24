@@ -87,6 +87,21 @@ A soft lock produced when all relevant moving participants are held while the wa
 ## Mutual Commitment Trap
 A provisional situation in which independently acting participants commit before either can adapt to the other's revealed intention.
 
+## Local Intent Horizon
+The interval during which a settled trajectory remains useful evidence of an Entity's immediate path, without implying knowledge of its complete route.
+
+## Intent Expiry
+The transition by which locally revealed intent becomes stale because the Entity begins another manoeuvre, detaches or is no longer observed reliably.
+
+## Encounter Chain
+A sequence of linked conflicts in which changing one encounter's timing or form does not remove the underlying coordination problem.
+
+## Safe Release Point
+A provisional retrospective boundary at which release remains clear through a defined continuation horizon.
+
+## Continuation Safety Horizon
+The bounded future continuation that must remain clear before release can be considered safe. Prototype 04 uses the next observed repositioning manoeuvre and subsequent settlement.
+
 ## Commitment
 A persistent intention with explicit creation, maintenance, completion and cancellation lifecycle semantics.
 

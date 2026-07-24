@@ -1,27 +1,28 @@
-FS25_OuttaMyWay v4.6.4
+FS25_OuttaMyWay v4.6.5
 
-Prototype 03: Option Preservation Window — Canonical
+Prototype 04: Continuation Intent and Safe Release — Canonical
 
-v4.6.4 passively observes whether overlapping native AI manoeuvres create a
-Candidate Option Preservation Window before both workers settle into an
-established conflict.
+The limited TS001 run supports the core Prototype 04 distinction: a settled
+trajectory provides bounded local intent, not complete route intent. Condor's
+local intent epochs expired immediately when later repositioning manoeuvres
+began or active observation ended.
 
-The unchanged TS001 evidence strongly supported the Prototype 03 hypothesis.
-Condor's local intent became sufficiently clear while Patriot remained
-manoeuvring, leaving approximately 12 seconds before conflict establishment and
-about 7.42 seconds of conservative temporal margin after the diagnostic stopping
-allowance and safety buffer.
+Patriot was manually stopped at the candidate wait position, which abandoned
+its GIANTS AI job. Condor later repositioned toward the physically parked
+Patriot and became blocked until the player moved Patriot. Because the stopped
+vehicle had left the active-worker observer, the prototype could not classify
+that physical encounter automatically. A later restart after manual relocation
+therefore does not establish a Safe Release Point for the original hold site.
 
-A manual stop/restart follow-up avoided the original head-on encounter but was
-followed by a later crossing conflict when Condor repositioned across Patriot's
-lane. This disproved the assumption that current-lane intent alone is sufficient
-release evidence. The intervention also abandoned and restarted Patriot's GIANTS
-AI job, so it is evidence about continuation uncertainty rather than a validated
-OuttaMyWay hold.
+Both workers subsequently completed their working paths, but completed Condor
+remained parked in the shared GIANTS finishing position and Patriot became
+blocked when it attempted to occupy the same place. This confirms that physical
+relevance can outlive active AI-worker membership and is evidence for the next
+passive observation increment.
 
 Traffic Manager v2 remains disabled and observer-only mode is enforced before
 any decision or control consumer. No hold, release, avoidance response or
 Commitment change is included.
 
-Start with docs/README.md. The accepted evidence and retained procedure are in
-docs/prototypes/PROTOTYPE_03_OPTION_PRESERVATION.md.
+Start with docs/README.md. The accepted evidence is recorded in
+docs/prototypes/PROTOTYPE_04_CONTINUATION_INTENT.md.

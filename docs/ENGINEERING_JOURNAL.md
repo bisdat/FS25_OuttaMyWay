@@ -1,5 +1,35 @@
 # Engineering Journal
 
+## 2026-07-24 — Prototype 04: local intent expires; physical relevance does not
+
+**Hypothesis:** Situation Assessment can represent locally revealed intent as a bounded epoch, expire it when a new manoeuvre begins, and classify an observed release retrospectively against the Progress Entity's next repositioning event.
+
+### Validation result
+
+The local-intent lifecycle is strongly supported. Condor's settled work segments produced bounded intent epochs. Each epoch expired immediately when Condor began another manoeuvre, and worker detachment also expired previously valid intent.
+
+The test decisively disproved the stronger interpretation that a current settled lane establishes a safe release. Patriot was manually stopped at the candidate wait position and left active AI-worker observation. Condor later began a repositioning manoeuvre directly toward the physically parked Patriot and became blocked until the player moved Patriot.
+
+### Instrumentation boundary exposed
+
+Prototype 04 retained the trial while Patriot was absent, but could not observe Patriot's physical position after the AI job ended. It therefore saw Condor's continuation uncertainty and blocked state but could not identify the parked vehicle as the conflict participant or emit a valid unsafe-release classification.
+
+After manual relocation, Patriot restarted and a later continuation remained clear. That result does not validate the original hold position because the world state had been changed by the player.
+
+### Terminal evidence
+
+Condor eventually completed and left active-worker observation. Patriot later became blocked when GIANTS attempted to use the same finishing position already occupied by completed Condor. Physical relevance therefore persisted after Operational Membership ended.
+
+### Learning
+
+- **Local Intent Horizon** is bounded immediate-path knowledge, not route knowledge.
+- **Intent Expiry** at a new manoeuvre is supported.
+- **Safe Release Point** remains unresolved.
+- A continuation horizon is only meaningful when all physically relevant participants remain observable.
+- The active-worker observer is insufficient for the next architectural question.
+
+The agreed next substantive increment will recover Full-Envelope Field Containment and test Field World observation independently of Operational Membership. Those concepts are not implemented by v4.6.5.
+
 ## 2026-07-24 — Prototype 03: preserving options while intent emerges
 
 **Observation:** Condor began manoeuvring first; Patriot began its own turn before Condor's resulting lane was fully revealed. Both then settled into opposite ends of the same lane and collided.

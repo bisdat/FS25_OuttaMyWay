@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.4
+-- FS25_OuttaMyWay v4.6.5
 -- Prototype 03: passive evidence capture for the Candidate Option Preservation Window.
 -- This module observes manoeuvre ordering, intent revelation and response margin.
 -- It never selects a Commitment and never controls vehicles.
@@ -155,6 +155,8 @@ function Probe:openWindow(a, b, aEntity, bEntity, nowSeconds, nowMs, result)
     local lead = (later.manoeuvreStartAt or nowSeconds) - (earlier.manoeuvreStartAt or nowSeconds)
     if lead < (OuttaMyWay.PROTOTYPE_03_MIN_MANOEUVRE_LEAD_S or 0.5) then return end
     if earlier.settled == true or earlier.blocked == true or later.blocked == true then return end
+    local minimumOperationalSpeed = OuttaMyWay.PROTOTYPE_03_MIN_OPERATIONAL_SPEED_KMH or 2.0
+    if (earlier.speed or 0) < minimumOperationalSpeed or (later.speed or 0) < minimumOperationalSpeed then return end
     if result == nil or result.distance > (OuttaMyWay.PROTOTYPE_03_OBSERVATION_RADIUS_M or 500.0) then return end
 
     local window = {
@@ -262,6 +264,21 @@ function Probe:updateWindow(a, b, stateByKey, motionByKey, nowSeconds, nowMs)
         and progressState.blocked ~= true
 
     local observationAge = nowSeconds - (window.openedAt or nowSeconds)
+
+    if window.revealAt ~= nil
+        and progressState ~= nil and progressState.isTurn == true
+        and window.completed ~= true then
+        OuttaMyWay.Logger:val(
+            "PROTOTYPE03 LOCAL_INTENT_EXPIRED t=%.1fs pair=%s progressEntity=%s holdCandidate=%s previousRevealAt=%.1fs validFor=%.2fs reason=progress-entity-entered-new-manoeuvre",
+            nowSeconds, p1.pairNames(a, b), window.progressName, window.holdName,
+            window.revealAt, math.max(0, nowSeconds - window.revealAt))
+        window.revealAt = nil
+        window.revealSnapshot = nil
+        window.actionableAt = nil
+        window.state = "OBSERVING"
+        reason = "progress-local-intent-expired-at-new-manoeuvre"
+    end
+
     if window.state == "CANDIDATE_OPEN"
         and observationAge >= (OuttaMyWay.PROTOTYPE_03_OBSERVING_CONFIRM_S or 0.5) then
         window.state = "OBSERVING"
@@ -307,7 +324,7 @@ function Probe:updateWindow(a, b, stateByKey, motionByKey, nowSeconds, nowMs)
         reason = "progress-intent-revealed-while-hold-candidate-remains-unsettled"
     end
 
-    if confidence ~= nil and confidence.state == "ESTABLISHED" then
+    if window.completed ~= true and confidence ~= nil and confidence.state == "ESTABLISHED" then
         window.establishedAt = window.establishedAt or nowSeconds
         window.state = "EXHAUSTED"
         window.completed = true
@@ -329,7 +346,8 @@ function Probe:updateWindow(a, b, stateByKey, motionByKey, nowSeconds, nowMs)
             window.revealSnapshot ~= nil and formatNumber(window.revealSnapshot.stopDistance, "%.2f", "m") or "unknown",
             formatNumber(retrospectiveMargin, "%.2f", "s"),
             tostring(confidence.state), tostring(window.progressInvariant))
-    elseif confidence ~= nil and (confidence.state == "CLEAR" or confidence.state == "CLEARED")
+    elseif window.completed ~= true
+        and confidence ~= nil and (confidence.state == "CLEAR" or confidence.state == "CLEARED")
         and progressMotion ~= nil and progressMotion.settled == true
         and holdMotion ~= nil and holdMotion.settled == true
         and observationAge >= (OuttaMyWay.PROTOTYPE_03_SAFE_CLOSE_DURATION_S or 2.0) then

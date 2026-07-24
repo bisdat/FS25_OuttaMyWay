@@ -207,3 +207,13 @@ The hypothesis loses confidence if:
 - the probe oscillates without a meaningful world change.
 
 A failed result remains useful when it identifies which part of Option Preservation is not observable.
+## Candidate v4.6.5 diagnostic corrections
+
+Prototype 04 carries three declared corrections to the retained Prototype 03 instrumentation:
+
+- both participants must exceed the minimum operational speed before a candidate window opens, reducing stationary startup contamination;
+- a Progress Entity's revealed local intent is cleared when it begins a new manoeuvre, preventing stale `ACTIONABLE` evidence;
+- Alternate Exhaustion evidence is latched and emitted once per completed window.
+
+These are diagnostic corrections only. They do not change the accepted v4.6.4 evidence or introduce vehicle control.
+

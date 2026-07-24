@@ -34,6 +34,20 @@ This log records Accepted, Deferred, Rejected and Superseded project choices tha
 **Recovery finding:** failure to promote the executable RRS implementation caused avoidable capability loss. Repository-owned implementation is now required.
 
 
+## D-0019 — Test continuation intent and safe release passively
+
+**Status:** Accepted in canonical v4.6.5
+
+**Decision:** Prototype 04 shall distinguish locally revealed intent from route continuation, expire local intent when the Progress Entity begins a new manoeuvre, and assess an observed release retrospectively through the next repositioning event. It shall remain passive and may use a player-performed stop/restart only as test stimulus.
+
+**Boundary:** The next observed manoeuvre and subsequent local settlement define the provisional Continuation Safety Horizon. The prototype shall not infer a complete GIANTS route, authorise release or issue Control.
+
+**Rationale:** Prototype 03 established temporal margin but the manual continuation test produced a later crossing conflict after the original head-on encounter disappeared. Current-lane intent was useful locally but insufficient as safe-release evidence.
+
+**Instrumentation correction:** The same declared increment may remove Prototype 03 startup contamination, expire stale `ACTIONABLE` evidence and latch repeated exhaustion logging because these defects directly obstruct the new evidence contract.
+
+**Validation:** The limited TS001 run strongly supported bounded local intent and Intent Expiry. Condor's settled paths produced local epochs that expired at each new manoeuvre. Patriot's manual stop removed it from active-worker observation; Condor later repositioned toward the physically parked Patriot and became blocked until the player moved Patriot. The original wait position was therefore unsafe through a later continuation, but the probe could not classify that physical encounter because the parked vehicle was no longer an observed worker. A later clear result followed manual relocation and does not establish a Safe Release Point. Completed Condor later remained physically relevant at the shared finishing position after leaving active observation, where Patriot became blocked. No hold, release, Decision, Commitment or Control behaviour exists in the canonical implementation.
+
 ## D-0018 — Test the Candidate Option Preservation Window passively
 
 **Status:** Accepted in canonical v4.6.4

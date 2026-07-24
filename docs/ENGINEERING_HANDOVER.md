@@ -2,66 +2,60 @@
 
 ## Canonical baseline
 
-The exact reviewed v4.6.4 candidate was tested, accepted and explicitly declared canonical by the repository owner.
+The exact reviewed v4.6.5 candidate was tested, accepted and explicitly declared canonical by the repository owner.
 
 Accepted candidate SHA-256:
 
-`11928affbc62d41b3a67534147266ffdfc1a0cdd1915c062010094a9705fc13c`
+`3ec478110839e25f2d38c07ae0e5eb521da5ca54021d2378eeda9edae62c94ee`
 
-Every new Engineering Transformation must begin from the complete canonical v4.6.4 package supplied as its immutable baseline.
+Every new Engineering Transformation must begin from the complete canonical v4.6.5 package supplied as its immutable baseline.
 
 ## Completed increment
 
-Prototype 03 tested:
+Prototype 04 tested whether Situation Assessment could separate local settled intent from route continuation, expire stale intent at a new manoeuvre, and assess release through a limited continuation horizon.
 
-> Situation Assessment can identify a Candidate Option Preservation Window using manoeuvre ordering, a Progress Entity, an Intent Revelation Point and remaining Response Margin before both trajectories settle into an established conflict.
-
-The unchanged TS001 run strongly supported the hypothesis.
+The local-intent lifecycle is strongly supported. A settled path produced bounded epochs, and each epoch expired when Condor began a later manoeuvre or left active observation.
 
 ## Accepted evidence
 
-Condor began manoeuvring before Patriot. Patriot began its own manoeuvre before Condor's resulting trajectory had settled, opening a candidate window. Condor's intent was declared sufficiently revealed while Patriot remained approximately 56% through its turn and travelling at about 15 km/h.
+Patriot was manually stopped at the prior candidate wait position, abandoning its GIANTS AI job. Condor first continued away, later settled into another work segment, then began a new repositioning manoeuvre toward the physically parked Patriot. Condor became blocked until the player moved Patriot.
 
-Conflict establishment occurred approximately 12.0 s after intent revelation. The provisional stop-time estimate was approximately 2.58 s, leaving about 7.42 s after the exposed 2.0 s safety buffer. The player independently observed that Patriot still had time to wait.
+The stop removed Patriot from the active-worker observer. Prototype 04 therefore preserved the Progress Entity and encounter correlation but could not see the parked physical participant or classify the unsafe encounter automatically.
 
-The evidence supports an observable temporal option-preservation interval and demonstrates the Progress Preservation Invariant for this pair: Condor could continue as Progress Entity while Patriot remained the hypothetical hold candidate.
+After manual relocation, Patriot was restarted and both workers continued without a working-path conflict. Condor eventually completed and parked. Patriot later became blocked when GIANTS attempted to use the same finishing position already occupied by completed Condor.
 
-## Disproved release assumption
+## Architectural result
 
-A manual follow-up stopped Patriot when Condor appeared established in the lane. Stopping abandoned Patriot's GIANTS AI job. Condor initially moved away. After Patriot's AI job restarted and Patriot entered its lane, Condor performed a later repositioning turn across Patriot's path, producing a new crossing conflict.
+- Local Intent Horizon is useful only for the immediate settled path.
+- Intent Expiry at a new manoeuvre is supported.
+- Current-lane intent is not complete route intent.
+- A later clear continuation after manual relocation does not validate the original Safe Release Point.
+- Active-worker observation is insufficient for Situation Assessment because physically relevant vehicles can leave Operational Membership while remaining inside the field.
 
-This disproved the assumption that revelation of the current lane is sufficient evidence for safe release. It also reduced confidence in the simple alternating-lane route model. The result is qualified by Job Restart Perturbation and must not be treated as evidence that a future speed-zero hold would produce the same route sequence.
+The final point is evidence for the next hypothesis; v4.6.5 does not yet observe the complete Field World.
 
-The next hypothesis must distinguish local intent from continuation intent and identify when previously revealed intent expires.
+## Immediate continuation
 
-## Implementation state
+The next substantive increment should remain passive and should:
 
-- `ConflictEmergenceProbe.lua` retains pair kinematics and emergence evidence.
-- `ConflictConfidenceProbe.lua` retains trajectory-settlement and conflict-confidence evidence.
-- `OptionPreservationProbe.lua` retains manoeuvre ordering, Progress Entity, Intent Revelation, response-margin and exhaustion evidence.
-- all three probes run before the observer-only runtime return;
-- Traffic Manager v2 remains disabled;
-- no Decision, Commitment or Control behaviour is enabled.
+1. recover **Full-Envelope Field Containment** into the authoritative architecture: the maximum collision geometry of vehicle plus every attached or towed implement, including projected swept geometry, remains wholly inside the field polygon at all times;
+2. define the field polygon as the bounded Field World for the Operation;
+3. separate Field World Membership, Operational Membership and Situation Relevance;
+4. observe active, inactive, completed and player-controlled vehicles within that boundary;
+5. validate parked Patriot and completed Condor as non-operational but physically relevant conflict participants;
+6. defer static internal objects and broader scenarios until the vehicle cases establish the observation boundary.
 
-Two instrumentation defects remain recorded for a future declared increment: startup manoeuvre contamination and repeated exhaustion-candidate logging.
-
-## Immediate continuation point
-
-The next single-hypothesis increment should remain passive and test:
-
-> Situation Assessment can distinguish locally revealed intent from continuing route intent, expire stale intent when a new manoeuvre begins, and determine whether a hypothetical release remains safe through the Progress Entity's next repositioning event.
-
-This work should expose the boundary between a Local Intent Horizon and a Safe Release Point. It must not yet implement a hold or release.
+Do not implement an active Information-Gaining Delay until a physically complete Situation Assessment can observe both the Progress Entity and the held Entity throughout the hold/release lifecycle.
 
 ## Repository entry point
 
 1. `docs/README.md`
 2. `docs/PROJECT_STATUS.md`
-3. `docs/prototypes/PROTOTYPE_03_OPTION_PRESERVATION.md`
-4. `docs/prototypes/PROTOTYPE_02_CONFLICT_CONFIDENCE.md`
-5. `docs/CONCEPT_REGISTER.md`
-6. `docs/DECISION_LOG.md`
-7. `docs/ENGINEERING_JOURNAL.md`
+3. `docs/prototypes/PROTOTYPE_04_CONTINUATION_INTENT.md`
+4. `docs/CONCEPT_REGISTER.md`
+5. `docs/DECISION_LOG.md`
+6. `docs/ENGINEERING_JOURNAL.md`
+7. `docs/ROADMAP.md`
 
 Continue using:
 
