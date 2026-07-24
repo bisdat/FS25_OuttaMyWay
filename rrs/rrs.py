@@ -69,12 +69,17 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+def ordered_files(root: Path) -> list[Path]:
+    """Return repository files in one platform-neutral relative POSIX-path order."""
+    files = (path for path in root.rglob('*') if path.is_file())
+    return sorted(files, key=lambda path: path.relative_to(root).as_posix())
+
+
 def inventory(root: Path) -> dict[str, dict[str, Any]]:
     result: dict[str, dict[str, Any]] = {}
-    for path in sorted(root.rglob('*')):
-        if path.is_file():
-            rel = path.relative_to(root).as_posix()
-            result[rel] = {'sha256': sha256_file(path), 'size': path.stat().st_size}
+    for path in ordered_files(root):
+        rel = path.relative_to(root).as_posix()
+        result[rel] = {'sha256': sha256_file(path), 'size': path.stat().st_size}
     return result
 
 
@@ -112,13 +117,12 @@ def safe_extract(zip_path: Path, destination: Path) -> None:
 def deterministic_zip(source: Path, destination: Path) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     timestamp = (2026, 1, 1, 0, 0, 0)
-    with zipfile.ZipFile(destination, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
-        for path in sorted(source.rglob('*')):
-            if not path.is_file():
-                continue
+    with zipfile.ZipFile(destination, 'w', compression=zipfile.ZIP_STORED) as zf:
+        for path in ordered_files(source):
             rel = path.relative_to(source).as_posix()
             info = zipfile.ZipInfo(rel, date_time=timestamp)
-            info.compress_type = zipfile.ZIP_DEFLATED
+            info.create_system = 3
+            info.compress_type = zipfile.ZIP_STORED
             info.external_attr = (0o100644 & 0xFFFF) << 16
             zf.writestr(info, path.read_bytes())
 
@@ -246,9 +250,7 @@ def apply_plan(root: Path, plan: dict[str, Any]) -> list[dict[str, Any]]:
 def regenerate_manifest(root: Path) -> None:
     manifest = root / 'docs/RELEASE_MANIFEST_SHA256.txt'
     entries = []
-    for path in sorted(root.rglob('*')):
-        if not path.is_file():
-            continue
+    for path in ordered_files(root):
         rel = path.relative_to(root).as_posix()
         if rel in SKIP_MANIFEST:
             continue
@@ -422,7 +424,7 @@ def _write_execution_failure_evidence(
 ) -> None:
     evidence_dir.mkdir(parents=True, exist_ok=True)
     failure_record = {
-        'rrs_version': '1.1.0',
+        'rrs_version': '1.2.0',
         'result': 'EXECUTION_FAILURE',
         'phase': phase,
         'exception_type': type(failure).__name__,
@@ -521,7 +523,7 @@ def build_candidate(baseline_zip: Path, plan_path: Path, output_dir: Path) -> Bu
         evidence_zip = output_dir / evidence_name
 
         report = {
-            'rrs_version': '1.1.0',
+            'rrs_version': '1.2.0',
             'generated_at_utc': plan.get('generated_at_utc', '2026-07-23T00:00:00+00:00'),
             'result': status,
             'release_name': plan.get('release_name'),

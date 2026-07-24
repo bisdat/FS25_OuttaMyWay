@@ -1,15 +1,15 @@
 # Project Status
 
-Version: 4.6.0
-Status: RRS recovery Release Candidate pending independent user verification and Canonicalisation
-Baseline package: canonical v4.5.9
+Version: 4.6.1
+Status: RRS consolidation Release Candidate pending independent user verification and Canonicalisation
+Baseline package: canonical v4.6.0
 Behavioural baseline: unchanged from v4.3.5
 
 ## Current Focus
 
 Milestone 4 — Architectural Prototyping: validate architectural hypotheses through targeted prototypes.
 
-Version 4.5.9 is the Seminar Knowledge Distribution Release. It classifies the Seminar 01–06 outputs across the Concept Register, Decision Log, Glossary and current status so that the repository expresses both the discovery history and the resulting current architecture.
+Version 4.6.0 is the canonical Repository Release System recovery release. The v4.6.1 consolidation increment captures the operational discoveries proven while producing, reviewing, Canonicalising and synchronising that release, after which project focus returns to OuttaMyWay architectural prototyping.
 
 ## Project Purpose
 
@@ -81,11 +81,15 @@ Authoritative engineering records:
 
 ## Release Character
 
-No intentional vehicle-control, steering, speed, recovery or AI-job behaviour changed in v4.5.8.
+No intentional vehicle-control, steering, speed, recovery or AI-job behaviour changes are included in v4.6.1.
 
 
-## Repository Release System Recovery
+## Repository Release System Consolidation
 
-The current Engineering Increment promotes D-RRS-01 through D-RRS-23 into their authoritative repository homes. The decision set is recorded in `DECISION_LOG.md`; the resulting architecture is owned by `ENGINEERING_ARCHITECTURE.md` and `REPOSITORY_RELEASE_SYSTEM.md`.
+The current Engineering Increment records D-RRS-24, D-RRS-25 and D-RRS-26 and promotes Engineering Intent, Canonical Repository Snapshot, Repository Transformation and Candidate Determinism into the repository's authoritative vocabulary and architecture.
 
-The repository-owned implementation under `rrs/` currently performs Candidate Production from an exact canonical ZIP and declarative planning handoff, producing candidate and evidence packages without changing Git state or declaring authority. Authority Transformation, complete ordered authority-state enforcement and independent candidate-to-canonical purity verification remain future implementation work.
+The v4.6.0 cycle validated that the consolidation author can supply declarative intent while local `rrs evolve` performs the Repository Transformation. The fingerprint gate correctly blocked a handoff after its baseline changed; regeneration against the new fingerprint passed. Independent owner review then Canonicalised the exact candidate, and the accepted content was synchronised into Git with a clean, up-to-date working tree.
+
+The first v4.6.1 cross-platform run exposed the Artifact Determinism Gap: semantically equivalent Windows and Linux candidates had different package hashes because manifest ordering and ZIP origin metadata were platform-dependent. Candidate Production now applies one relative POSIX-path order, explicit archive metadata and platform-independent stored entries. Matching Linux and Windows candidate SHA-256 values are required before this increment may be Canonicalised.
+
+The repository-owned implementation still performs Candidate Production only. Authority Transformation, complete ordered authority-state enforcement, independent candidate-to-canonical purity verification, a Repository Challenge Suite and a non-blocking dirty-working-tree notice remain future RRS work. They are recorded without delaying return to OuttaMyWay after the current determinism gate passes.

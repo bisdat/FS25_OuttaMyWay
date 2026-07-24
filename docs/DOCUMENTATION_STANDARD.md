@@ -1,7 +1,7 @@
 # Documentation Standard
 
 > **Authority:** Canonical  
-> **Currency:** Last reviewed for canonical release v4.5.9  
+> **Currency:** Reviewed for candidate release v4.6.1  
 > **Owner:** Repository governance
 
 This document defines the mandatory conventions for documentation in the OuttaMyWay repository. It governs presentation and discoverability; it does not redefine engineering architecture or project behaviour.
@@ -80,6 +80,18 @@ Use headings in descending hierarchy without skipping levels solely for visual e
 - `###` subsection
 
 Do not use headings as captions or emphasis.
+
+## Document Ordering
+
+Each document uses the ordering that best serves its human reader and its responsibility; the repository does not impose one global alphabetical rule.
+
+- glossaries normally favour alphabetical lookup, but the accepted legacy ordering may remain until a deliberate reordering increment is justified;
+- decision logs preserve decision identity and place current or newer decisions first;
+- changelogs place newer releases first;
+- roadmaps follow lifecycle, dependency or priority;
+- architecture follows conceptual dependency and explanatory flow.
+
+Reordering must not alter meaning, authority or historical identity.
 
 ## Terminology
 

@@ -8,9 +8,9 @@ This document provides the context required for an engineer to resume work on th
 
 ## Canonical Baseline
 
-The current canonical repository is always supplied separately by the engineer.
+The current canonical repository is always supplied separately by the engineer as an exact Canonical Repository Snapshot.
 
-The Repository Release System (RRS) consumes that canonical baseline together with a declared repository transition and produces:
+The Repository Release System (RRS) consumes that fingerprint-bound snapshot together with a declarative Engineering Intent handoff and produces:
 
 - a candidate repository package;
 - an accompanying evidence package.
@@ -102,7 +102,7 @@ The engineer remains responsible for:
 
 Engineering work should continue using the established workflow:
 
-> Observe → Discuss → Hypothesise → Implement → Validate → Record → Repeat
+> Observe → Discuss → Hypothesise → Decide → Implement → Validate → Engineering Consolidation → Repository Transition → Repeat
 
 Evidence takes precedence over assumptions.
 
@@ -125,8 +125,12 @@ Every enduring architectural discovery should eventually become repository knowl
 The Repository Release System exists to protect that knowledge while enabling safe, repeatable and traceable repository evolution.
 
 
-## RRS Recovery Continuation Point
+## RRS Consolidation Continuation Point
 
-The accepted RRS decisions D-RRS-01 through D-RRS-23 have been promoted into the repository's governing and supporting knowledge stores. Continue by independently reviewing the v4.6.0 candidate and its RRS evidence. The repository owner alone may Canonicalise the exact reviewed candidate.
+The v4.6.0 recovery cycle proved the current end-to-end Candidate Production workflow. D-RRS-24 and D-RRS-25 establish Engineering Intent as the collaboration boundary and bind every handoff to one exact Canonical Repository Snapshot. D-RRS-26 requires the same snapshot and handoff to produce a byte-identical candidate package across supported platforms.
 
-Do not treat candidate production as Canonicalisation. The recovered implementation currently ends after candidate validation and evidence production. Authority Transformation, ordered state enforcement and candidate-to-canonical purity verification remain explicit future implementation boundaries.
+The first v4.6.1 cross-platform comparison exposed and named the Artifact Determinism Gap. The revised RRS applies platform-neutral relative POSIX-path ordering, explicit ZIP origin and permission metadata, and stored entries. The Linux and Windows candidate SHA-256 values must match before independent repository review proceeds.
+
+If that gate passes and the candidate is accepted, the repository owner alone may Canonicalise that exact candidate; then synchronise it into Git, commit, push and confirm a clean working tree. After that, begin a new engineering conversation from canonical v4.6.1 and return to the OuttaMyWay architectural-prototyping objective at the Situation Assessment–Commitment boundary.
+
+Authority Transformation, complete ordered state enforcement, candidate-to-canonical purity verification, the Repository Challenge Suite and a non-blocking dirty-working-tree notice remain deferred RRS work rather than prerequisites for returning to OuttaMyWay.

@@ -537,3 +537,50 @@ def test_invalid_utf8_repository_text_fails_with_evidence(tmp_path: Path):
 
     assert (out / 'probe_evidence.zip').exists()
     assert (out / 'rrs_workspace').exists()
+
+
+
+def test_manifest_uses_platform_neutral_posix_path_order(tmp_path: Path):
+    repo = tmp_path / 'repo'
+    (repo / 'docs').mkdir(parents=True)
+    paths = ['Zebra.txt', 'alpha.txt', 'docs/Beta.txt', 'docs/apple.txt']
+    for rel in reversed(paths):
+        path = repo / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(rel, encoding='utf-8')
+
+    regenerate_manifest(repo)
+
+    listed = [
+        line.split(maxsplit=1)[1]
+        for line in (repo / 'docs/RELEASE_MANIFEST_SHA256.txt')
+        .read_text(encoding='utf-8')
+        .splitlines()
+    ]
+    assert listed == sorted(paths)
+
+
+def test_deterministic_zip_is_creation_order_independent_and_portable(tmp_path: Path):
+    paths = ['Zebra.txt', 'alpha.txt', 'docs/Beta.txt', 'docs/apple.txt']
+    repositories = []
+    for name, creation_order in [('forward', paths), ('reverse', reversed(paths))]:
+        repo = tmp_path / name
+        for rel in creation_order:
+            path = repo / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(f'{rel}\n', encoding='utf-8')
+        repositories.append(repo)
+
+    first_zip = tmp_path / 'first.zip'
+    second_zip = tmp_path / 'second.zip'
+    deterministic_zip(repositories[0], first_zip)
+    deterministic_zip(repositories[1], second_zip)
+
+    assert sha256_file(first_zip) == sha256_file(second_zip)
+    with zipfile.ZipFile(first_zip) as archive:
+        infos = archive.infolist()
+        assert [info.filename for info in infos] == sorted(paths)
+        assert all(info.create_system == 3 for info in infos)
+        assert all(info.compress_type == zipfile.ZIP_STORED for info in infos)
+        assert all(info.date_time == (2026, 1, 1, 0, 0, 0) for info in infos)
+        assert all((info.external_attr >> 16) == 0o100644 for info in infos)

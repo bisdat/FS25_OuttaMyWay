@@ -4,6 +4,15 @@
 
 Development remains in a private repository until the first GIANTS ModHub release. Internal builds use 4-part development versions. The first submitted/public ModHub release will use `1.0.0.0` in `modDesc.xml`.
 
+## Repository Release System follow-up
+
+The v4.6.0 recovery cycle validated Candidate Production sufficiently to return project focus to OuttaMyWay. The following work remains deliberately deferred:
+
+- [ ] Add a non-blocking dirty-working-tree notice that explains local changes are not included when a separate canonical ZIP is the declared baseline.
+- [ ] Architect and run the adversarial Repository Challenge Suite.
+- [ ] Implement governed Authority Transformation and candidate-to-canonical substantive-purity verification.
+- [ ] Enforce the complete ordered repository-authority-state sequence.
+
 ## 4.0 — Predictive traffic manager
 
 ### Current

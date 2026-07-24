@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.0.
+Review status: reviewed for candidate release v4.6.1.
 
 ## Accepted Concepts
 
@@ -71,6 +71,8 @@ Time is the dimension in which Reality evolves, observations occur, Knowledge ch
 At every canonical release, review all sections against current evidence. Promotion, deferral, rejection or demotion requires a recorded rationale in `DECISION_LOG.md` or an ADR. An unchanged review is still recorded in the release changelog.
 
 
+## Repository Release Concepts
+
 ### Engineering Increment
 
 The bounded unit of engineering purpose. It closes when its declared purpose reaches a coherent breakpoint; time, chat boundaries and version numbering do not define completion.
@@ -79,17 +81,33 @@ The bounded unit of engineering purpose. It closes when its declared purpose rea
 
 The human-governed promotion of durable architectural, implementation and operational knowledge into authoritative repository homes, followed by review for completeness.
 
+### Engineering Intent
+
+The declarative description of the repository change that has been discussed, decided and approved for Candidate Production. It crosses the collaboration boundary without requiring the consolidation author to modify repository files directly.
+
+### Canonical Repository Snapshot
+
+The exact immutable package and integrity fingerprint established as the baseline for one Candidate Production run. It represents the canonical repository at a specific point and is distinct from an editable Git working tree.
+
+### Repository Transformation
+
+The controlled application of declared Engineering Intent to one exact Canonical Repository Snapshot, with observed delta, validation findings and evidence. It changes repository content; it does not itself confer authority.
+
+### Candidate Determinism
+
+The invariant that the same exact Canonical Repository Snapshot and fingerprint-bound Engineering Intent produce one byte-identical candidate package across supported execution platforms. Platform-neutral path ordering and platform-independent archive metadata are implementation obligations of Candidate Production.
+
 ### Repository Transition
 
-The governed transformation from the exact canonical baseline to a Release Candidate and, only after accepted review and explicit Canonicalisation, to the next canonical repository.
+The governed movement from the exact canonical baseline through Release Candidate, accepted review and explicit Canonicalisation to the next canonical repository.
 
 ### Repository Authority State
 
-Working, Release Candidate and Canonical are distinct authority states independent of version identity.
+Working, Release Candidate and Canonical are distinct authority states independent of version identity and Git working state.
 
 ### Engineering Transformation
 
-The declared substantive repository change performed during Candidate Production from the exact canonical baseline.
+The declared substantive Repository Transformation performed during Candidate Production from the exact Canonical Repository Snapshot.
 
 ### Authority Transformation
 

@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical continuity procedure
 >
-> **Currency:** Reviewed for candidate release v4.6.0
+> **Currency:** Reviewed for candidate release v4.6.1
 
 ## Purpose
 
@@ -19,14 +19,14 @@ A canonical release must make the answer **yes**.
 3. Read the immediate objective and resume point before proposing implementation.
 4. Read the relevant architecture, concept register, decisions, evidence and known issues.
 5. Distinguish facts, observations, interpretations, decisions and implementation ideas.
-6. Run the repository-owned RRS against the exact canonical ZIP and review its candidate and evidence packages before trusting the transition.
+6. Express the approved change as a fingerprint-bound Engineering Intent handoff, run the repository-owned RRS against the exact Canonical Repository Snapshot, and review its candidate and evidence packages before trusting the transition.
 7. Treat reality, logs, measurements and tests as capable of disproving repository knowledge.
 
 ## Canonical Baseline Rule
 
 > Any modification to the repository shall begin with the current canonical repository being supplied as the implementation baseline.
 
-This is state-oriented rather than session-oriented. Discussion, review and hypothesis work may occur without modifying the repository. Once repository modification begins, the supplied canonical package is the only permitted baseline.
+This is state-oriented rather than session-oriented. Discussion, review and hypothesis work may occur without modifying the repository. Once repository modification begins, the supplied Canonical Repository Snapshot and its fingerprint are the only permitted baseline. An editable Git working tree, including any uncommitted changes, is not an implicit substitute.
 
 Every repository modification:
 
@@ -76,4 +76,6 @@ When found:
 
 Working, Release Candidate and Canonical are distinct authority states. A candidate inherits authority only after completed validation, accepted independent review and explicit Canonicalisation by the repository owner. A version number, filename or successful tool run cannot substitute for that decision.
 
-Every new Engineering Transformation begins from the exact established canonical repository. The planning handoff declares the intended transition; `python -m rrs evolve` applies it to a copy, regenerates the manifest, compares declared and observed change and packages evidence. The resulting candidate must remain unchanged between accepted review and Canonicalisation except for a future governed Authority Transformation that is proven substantively pure.
+Every new Engineering Transformation begins from the exact established Canonical Repository Snapshot. The planning handoff declares Engineering Intent and binds it to that snapshot by fingerprint; `python -m rrs evolve` applies it to a copy, regenerates the manifest, compares declared and observed change and packages evidence. A changed snapshot invalidates the handoff. The resulting candidate must remain unchanged between accepted review and Canonicalisation except for a future governed Authority Transformation that is proven substantively pure.
+
+After explicit Canonicalisation, synchronise the exact accepted package into the local Git repository, commit and push it, and confirm a clean, up-to-date working tree before further engineering. Git working state and repository authority state are distinct: uncommitted local changes do not become part of Candidate Production unless they are first incorporated into the declared canonical snapshot and the handoff is regenerated.

@@ -67,6 +67,18 @@ A bounded unit of engineering purpose that closes at a coherent breakpoint rathe
 ## Engineering Consolidation
 Human-governed promotion and review of durable knowledge into authoritative repository homes.
 
+## Engineering Intent
+The declarative description of the accepted repository change supplied to Candidate Production instead of direct repository editing by the consolidation author.
+
+## Canonical Repository Snapshot
+The exact immutable canonical package and fingerprint used as the baseline for one Candidate Production run. It is distinct from an editable Git working tree.
+
+## Repository Transformation
+The controlled application of declared Engineering Intent to one exact Canonical Repository Snapshot, producing observable change and validation evidence without conferring authority.
+
+## Candidate Determinism
+The requirement that the same exact Canonical Repository Snapshot and fingerprint-bound Engineering Intent produce a byte-identical candidate package across supported execution platforms.
+
 ## Repository Transition
 The governed movement from exact canonical baseline through Release Candidate to explicit Canonicalisation.
 
@@ -74,7 +86,7 @@ The governed movement from exact canonical baseline through Release Candidate to
 The governed unit comprising the candidate repository, provenance, declared transformation, findings and evidence.
 
 ## Repository Authority State
-The authority classification Working, Release Candidate or Canonical; it is distinct from version identity.
+The authority classification Working, Release Candidate or Canonical; it is distinct from version identity and Git working state.
 
 ## Engineering Transformation
 Substantive repository change performed during Candidate Production from the exact canonical baseline.

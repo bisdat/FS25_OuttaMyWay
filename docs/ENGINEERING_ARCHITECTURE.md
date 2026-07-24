@@ -93,7 +93,7 @@ Observe → Discuss → Hypothesise → Decide → Implement → Validate → En
 - **Implement:** make the smallest isolated change that can test the hypothesis while preserving architectural intent.
 - **Validate:** compare expected and observed outcomes.
 - **Engineering Consolidation:** promote durable architectural, implementation and operational knowledge into its authoritative repository homes, then review that promotion for completeness.
-- **Repository Transition:** use the Repository Release System to transform the exact canonical baseline into a validated Release Candidate; independent review and explicit Canonicalisation remain human decisions.
+- **Repository Transition:** express the approved change as fingerprint-bound Engineering Intent, then use the local Repository Release System to transform the exact Canonical Repository Snapshot into a validated Release Candidate; independent review and explicit Canonicalisation remain human decisions.
 
 Skipping directly from observation to implementation is discouraged because it allows implementation convenience to choose the architecture.
 
@@ -183,6 +183,7 @@ A canonical development release must satisfy all of the following:
 12. Every first-class document is classified and discoverable through the documentation map.
 13. The packaged ZIP passes an independent Repository Identity Check.
 14. Repository Review findings are recorded as evidence for the next architecture cycle.
+15. After explicit Canonicalisation, the local Git repository is synchronised to the exact accepted package, committed, pushed and confirmed clean before further engineering begins.
 
 Any modification to the repository shall begin with the current canonical repository being supplied as the implementation baseline. Any change to code, documentation, tooling or package content requires a new version and a complete canonical package. Canonical releases are immutable once issued.
 
@@ -197,8 +198,10 @@ A check that is not automated remains an engineering obligation. A passing tool 
 
 An **Engineering Increment** is the bounded unit of engineering purpose. It closes at a coherent breakpoint established by engineering judgement; time, chat boundaries and version numbering do not define completion.
 
-After an increment closes, Engineering Consolidation promotes its durable knowledge. Repository Transition then begins only from the exact established canonical repository. The Repository Release System governs three distinct authority states: Working, Release Candidate and Canonical. Version identity does not itself confer authority.
+After an increment closes, Engineering Consolidation promotes its durable knowledge. The resulting approved change is expressed as declarative **Engineering Intent** rather than direct repository modification by the consolidation author. Repository Transition then begins only from the exact **Canonical Repository Snapshot** identified by integrity fingerprint. The Repository Release System governs three distinct authority states: Working, Release Candidate and Canonical. Version identity and Git working state do not themselves confer authority.
 
-Candidate Production is the Engineering Transformation that applies declared substantive changes to the canonical baseline. Review acceptance and Canonicalisation are separate human decisions. Candidate-to-canonical processing is an Authority Transformation and must not alter approved substantive engineering content. Only the repository owner may declare the exact reviewed candidate canonical.
+Candidate Production is the Engineering Transformation that applies the fingerprint-bound Engineering Intent to the Canonical Repository Snapshot. Review acceptance and Canonicalisation are separate human decisions. Candidate-to-canonical processing is an Authority Transformation and must not alter approved substantive engineering content. Only the repository owner may declare the exact reviewed candidate canonical.
 
-The RRS produces provenance, declared and observed change, repository findings and validation evidence so that review can concentrate on engineering judgement. Authorship does not confer approval, and authority states may be entered only through their defined gates. The detailed state model, roles, gates and findings are owned by `REPOSITORY_RELEASE_SYSTEM.md`; the executable candidate-production boundary is owned by `rrs/`.
+The RRS is the execution boundary that makes repository evolution independent of the consolidation author's file-editing environment. It produces provenance, declared and observed change, repository findings and validation evidence so that review can concentrate on engineering judgement.
+
+For the same exact Canonical Repository Snapshot and fingerprint-bound Engineering Intent, Candidate Production must emit one byte-identical candidate package across supported execution platforms. Evidence packages retain execution provenance and may differ in non-substantive run metadata, but must identify the same candidate and agree on substantive findings. Authorship does not confer approval, and authority states may be entered only through their defined gates. The detailed state model, roles, gates and findings are owned by `REPOSITORY_RELEASE_SYSTEM.md`; the executable candidate-production boundary is owned by `rrs/`.

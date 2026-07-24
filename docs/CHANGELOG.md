@@ -1,6 +1,19 @@
 # Changelog
 
-## v4.6.0 — Repository Release System Recovery Candidate
+## v4.6.1 — Repository Release System Consolidation Candidate
+
+- Accepted D-RRS-24 (Engineering Intent Boundary), D-RRS-25 (Fingerprint-Bound Engineering Intent) and D-RRS-26 (Candidate Determinism and Evidence Provenance).
+- Promoted Engineering Intent, Canonical Repository Snapshot, Repository Transformation and Candidate Determinism into authoritative architecture and vocabulary.
+- Recorded the first complete local RRS evolution, fingerprint-block, regenerated-handoff, owner-review, Canonicalisation and Git-synchronisation cycle.
+- Disproved the assumption that fixed timestamps and permissions alone guaranteed cross-platform package determinism; named the Artifact Determinism Gap.
+- Implemented one relative POSIX-path ordering rule for inventory, manifest and package generation, explicit ZIP origin/permission metadata, and stored entries independent of host compression libraries.
+- Added focused regression tests for mixed-case path ordering, creation-order independence and ZIP metadata.
+- Documented post-Canonicalisation Git alignment and clarified that Git working state is distinct from repository authority state.
+- Clarified that documents use the ordering natural to their human-reading purpose; no global sorting rule applies.
+- Recorded dirty-working-tree awareness and the remaining RRS assurance boundaries as deferred follow-up.
+- No intentional vehicle-control behaviour changes.
+
+## v4.6.0 — Repository Release System Recovery
 
 - Recorded D-RRS-01 through D-RRS-23 as the accepted Repository Release System decision set.
 - Promoted the RRS lifecycle, authority states, roles, gates, transformations and evidence responsibilities into authoritative repository knowledge homes.
