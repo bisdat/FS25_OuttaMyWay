@@ -1,5 +1,20 @@
 # Changelog
 
+## v4.6.3 — Prototype 02: Conflict Confidence
+
+- Added passive Prototype 02 instrumentation for Trajectory Settlement and conflict-persistence evidence.
+- Named Conflict Formation Window and Sequential Manoeuvre Conflict from the first TS001 evidence without assigning fault to either worker.
+- Added per-Entity heading/speed change rates, stable-motion duration and provisional settlement interpretation.
+- Added pair-level conflict-positive persistence, dCPA spread, projected Conflict Zone drift and tCPA countdown-consistency evidence.
+- Added provisional `CLEAR`, `FORMING`, `ESTABLISHED`, `DECAYING` and `CLEARED` diagnostic states with every threshold exposed in the log.
+- Retained Prototype 01 and published only its side-effect-free kinematic helpers for diagnostic reuse.
+- Added the Prototype 02 hypothesis, evidence contract, unchanged TS001 procedure and validation questions.
+- Traffic Manager v2 remains disabled; no Decision, Commitment or vehicle-control behaviour is introduced.
+- The unchanged TS001 run kept the earlier harmless head-on pass `CLEAR`, produced a meaningful `FORMING` interval, and reached `ESTABLISHED` at approximately 266.5 m separation, about 18.5 s before both workers became blocked.
+- The player observed no further direction change after settlement and confirmed the final outcome remained a head-on collision.
+- Disproved the provisional assumption that loss of future-trajectory evidence means resolution: after collision the probe reported `DECAYING` then `CLEARED` while both workers remained physically blocked.
+- The repository owner reviewed and tested the exact v4.6.3 candidate and explicitly declared v4.6.3 canonical.
+
 ## v4.6.2 — Prototype 01: Conflict Emergence Point
 
 - Added passive Prototype 01 instrumentation for the unchanged TS001 two-worker head-on encounter.

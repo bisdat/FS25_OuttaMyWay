@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <modDesc descVersion="92">
     <author>bisdat</author>
-    <version value="4.6.2">4.6.2</version>
+    <version value="4.6.3">4.6.3</version>
     <title>
         <en>Outta My Way</en>
         <de>Aus dem Weg</de>
@@ -10,11 +10,11 @@
         <it>Fuori dai piedi</it>
     </title>
     <description>
-        <en>Passive architectural prototype that observes native GIANTS AI workers and records when converging trajectories become a plausible conflict. No vehicle control.</en>
-        <de>Passiver Architekturprototyp, der native GIANTS-KI-Arbeiter beobachtet und aufzeichnet, wann konvergierende Trajektorien zu einem plausiblen Konflikt werden. Keine Fahrzeugsteuerung.</de>
-        <fr>Prototype architectural passif qui observe les ouvriers IA natifs de GIANTS et enregistre le moment où des trajectoires convergentes deviennent un conflit plausible. Aucun contrôle des véhicules.</fr>
-        <es>Prototipo arquitectónico pasivo que observa a los trabajadores de IA nativos de GIANTS y registra cuándo las trayectorias convergentes se convierten en un conflicto plausible. Sin control de vehículos.</es>
-        <it>Prototipo architetturale passivo che osserva i lavoratori IA nativi di GIANTS e registra quando traiettorie convergenti diventano un conflitto plausibile. Nessun controllo dei veicoli.</it>
+        <en>Passive architectural prototype that records when changing AI trajectories settle and a projected conflict becomes persistent. No vehicle control.</en>
+        <de>Passiver Architekturprototyp, der aufzeichnet, wann sich verändernde KI-Trajektorien stabilisieren und ein prognostizierter Konflikt dauerhaft wird. Keine Fahrzeugsteuerung.</de>
+        <fr>Prototype architectural passif qui enregistre le moment où les trajectoires IA se stabilisent et où un conflit prévu devient persistant. Aucun contrôle des véhicules.</fr>
+        <es>Prototipo arquitectónico pasivo que registra cuándo se estabilizan las trayectorias de la IA y un conflicto previsto se vuelve persistente. Sin control de vehículos.</es>
+        <it>Prototipo architetturale passivo che registra quando le traiettorie IA si stabilizzano e un conflitto previsto diventa persistente. Nessun controllo dei veicoli.</it>
     </description>
     <iconFilename>icon.dds</iconFilename>
     <multiplayer supported="true" />

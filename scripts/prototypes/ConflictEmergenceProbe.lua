@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.2
+-- FS25_OuttaMyWay v4.6.3
 -- Prototype 01: passive evidence capture for Conflict Emergence Point.
 -- This module reads only the central Observer model and never controls vehicles.
 
@@ -141,6 +141,15 @@ local function shouldTrack(result)
     return result.distance <= radius
         or (result.tcpa ~= nil and result.tcpa >= 0 and result.tcpa <= horizon)
 end
+
+-- Publish only the passive, side-effect-free kinematic helpers required by
+-- later evidence probes. Prototype 01 remains the owner of its stage labels.
+Probe.vehicleKey = vehicleKey
+Probe.pairKey = pairKey
+Probe.pairNames = pairNames
+Probe.relationship = relationship
+Probe.closestApproach = closestApproach
+Probe.shouldTrack = shouldTrack
 
 function Probe:init()
     self.elapsedMs = 0

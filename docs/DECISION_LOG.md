@@ -34,6 +34,16 @@ This log records Accepted, Deferred, Rejected and Superseded project choices tha
 **Recovery finding:** failure to promote the executable RRS implementation caused avoidable capability loss. Repository-owned implementation is now required.
 
 
+## D-0017 — Test Conflict Confidence through passive trajectory evidence
+
+**Status:** Accepted in canonical v4.6.3
+
+**Decision:** Prototype 02 shall reuse the unchanged TS001 encounter to test whether Trajectory Settlement and prediction persistence can distinguish a transient projected intersection from an established plausible conflict. It remains passive and may produce knowledge only; Decision, Commitment and Control are excluded.
+
+**Reason:** Prototype 01 detected conflict early but showed that closest-approach estimates changed drastically while the workers manoeuvred. Treating the first projected intersection as stable knowledge would collapse uncertainty prematurely.
+
+**Validation:** The unchanged TS001 run strongly supported the `FORMING → ESTABLISHED` distinction and the separate explanatory value of per-Entity Trajectory Settlement and relationship-level Conflict Confidence. The post-collision `DECAYING → CLEARED` interpretation was disproved because both workers remained physically blocked after the future projection disappeared. Thresholds and state labels remain diagnostic.
+
 ## D-0016 — Use unchanged TS001 as a passive Conflict Emergence prototype
 
 **Status:** Accepted in canonical v4.6.2

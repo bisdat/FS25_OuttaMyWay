@@ -77,6 +77,10 @@ The probe currently labels evidence as:
 
 These labels make the evidence searchable. The first run must validate or disprove whether they correspond to the observed encounter.
 
+## Diagnostic reuse in Prototype 02
+
+Candidate v4.6.3 retains Prototype 01's accepted behaviour and publishes only its side-effect-free pair identity, relationship and closest-approach helpers for Prototype 02. Prototype 01 remains the owner of its provisional stage labels; the new confidence probe does not reinterpret those labels as decisions.
+
 ## Passive boundary
 
 Prototype 01 must not change speed, steering, implements, priority, AI state or route.

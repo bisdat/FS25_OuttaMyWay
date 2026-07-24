@@ -14,7 +14,18 @@ Development remains in a private repository until the first GIANTS ModHub releas
 - [x] Place the observer-only guard before decision and control consumers.
 - [x] Run TS001 and upload the complete game log plus visual observations.
 - [x] Validate the Prototype 01 hypothesis: early Conflict Emergence detection is supported.
-- [ ] Consolidate missing architectural knowledge in the next single-hypothesis increment before considering intervention behaviour.
+- [x] Consolidate the changing-projection evidence into the Prototype 02 hypothesis before considering intervention behaviour.
+
+### Prototype 02 — Conflict Confidence
+
+- [x] Name Trajectory Settlement, Conflict Confidence and Conflict Formation Window as provisional concepts.
+- [x] Define one passive hypothesis and evidence contract.
+- [x] Add per-Entity stability and pair-level persistence instrumentation.
+- [x] Run unchanged TS001 through the complete encounter.
+- [x] Validate the `FORMING → ESTABLISHED` interpretation: the Prototype 02 hypothesis is strongly supported.
+- [x] Establish that Trajectory Settlement and Conflict Confidence have useful distinct provisional responsibilities.
+- [x] Record that future-projection decay after collision is not equivalent to real conflict resolution.
+- [ ] Consolidate the realised-conflict boundary into the next single-hypothesis increment before active intervention.
 
 ## Repository Release System follow-up
 

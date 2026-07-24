@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.6.2
+-- FS25_OuttaMyWay v4.6.3
 -- Cooperative collision avoidance for base-game AI field workers.
 
 OuttaMyWay = {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.6.2"
+OuttaMyWay.VERSION = "4.6.3"
 OuttaMyWay.BLOCKED_FOLD_DELAY_MS = 6500
 OuttaMyWay.WAIT_FOLD_DELAY_MS = 4500
 OuttaMyWay.HEAD_ON_FOLLOW_HOLD_DISTANCE = 55.0
@@ -56,9 +56,8 @@ OuttaMyWay.CONFLICT_PREDICTOR_CRITICAL_TIME_S = 10.0
 OuttaMyWay.CONFLICT_PREDICTOR_ACTIVE_LOG_INTERVAL_S = 3.0
 OuttaMyWay.CONFLICT_PREDICTOR_RETENTION_S = 15.0
 
--- Prototype 01: passive Conflict Emergence Point evidence capture. Thresholds
--- are deliberately exposed in every log sample and remain provisional until
--- TS001 evidence validates or disproves them.
+-- Prototype 01: retained passive Conflict Emergence Point evidence capture.
+-- Detectability is supported; its thresholds and stage labels remain provisional.
 OuttaMyWay.PROTOTYPE_01_ENABLED = true
 OuttaMyWay.PROTOTYPE_01_INTERVAL_MS = 500
 OuttaMyWay.PROTOTYPE_01_LOG_INTERVAL_MS = 2000
@@ -74,8 +73,30 @@ OuttaMyWay.PROTOTYPE_01_LOW_SPEED_KMH = 0.75
 OuttaMyWay.PROTOTYPE_01_HEAD_ON_MIN_DEG = 150.0
 OuttaMyWay.PROTOTYPE_01_SAME_DIRECTION_MAX_DEG = 30.0
 
--- First live Traffic Manager v2 prototype. Disabled for passive Prototype 01. This proves the Observer-to-control
--- path with a short, non-folding HOLD; it is not yet a complete head-on solution.
+-- Prototype 02: passive evidence capture for Trajectory Settlement and Conflict
+-- Confidence. These thresholds are provisional interpretations and are emitted
+-- in the log so the TS001 run can validate or disprove them.
+OuttaMyWay.PROTOTYPE_02_ENABLED = true
+OuttaMyWay.PROTOTYPE_02_INTERVAL_MS = 500
+OuttaMyWay.PROTOTYPE_02_LOG_INTERVAL_MS = 2000
+OuttaMyWay.PROTOTYPE_02_HEARTBEAT_MS = 15000
+OuttaMyWay.PROTOTYPE_02_MIN_SPEED_KMH = 0.75
+OuttaMyWay.PROTOTYPE_02_MIN_CLOSING_RATE_MPS = 0.10
+OuttaMyWay.PROTOTYPE_02_CONFLICT_CLEARANCE_M = 14.0
+OuttaMyWay.PROTOTYPE_02_CONFLICT_TIME_S = 30.0
+OuttaMyWay.PROTOTYPE_02_MAX_HEADING_RATE_DEG_S = 4.0
+OuttaMyWay.PROTOTYPE_02_MAX_SPEED_RATE_KMH_S = 2.0
+OuttaMyWay.PROTOTYPE_02_SETTLEMENT_DURATION_S = 2.0
+OuttaMyWay.PROTOTYPE_02_PERSISTENCE_DURATION_S = 2.0
+OuttaMyWay.PROTOTYPE_02_WINDOW_S = 3.0
+OuttaMyWay.PROTOTYPE_02_MAX_DCPA_SPREAD_M = 5.0
+OuttaMyWay.PROTOTYPE_02_MAX_ZONE_DRIFT_MPS = 2.0
+OuttaMyWay.PROTOTYPE_02_MAX_TCPA_COUNTDOWN_ERROR_S = 1.5
+OuttaMyWay.PROTOTYPE_02_CLEAR_DURATION_S = 2.0
+OuttaMyWay.PROTOTYPE_02_OUTCOME_LOW_SPEED_KMH = 0.75
+
+-- First live Traffic Manager v2 prototype. Disabled for passive Prototypes 01 and 02.
+-- Its retained settings are not executed in this candidate.
 OuttaMyWay.TRAFFIC_V2_ENABLED = false
 OuttaMyWay.TRAFFIC_V2_MIN_CONFIDENCE = 0.80
 OuttaMyWay.TRAFFIC_V2_HOLD_MS = 4000 -- legacy prototype value, retained for compatibility

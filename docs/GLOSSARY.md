@@ -36,6 +36,18 @@ A provisional change in the Current Situation whereby an Entity or object become
 ## Conflict Emergence Point
 The provisional earliest observed point at which previously independent plausible trajectories form a shared Conflict Zone. Prototype 01 tests whether this point can be identified before immediate physical conflict.
 
+## Trajectory Settlement
+A provisional condition in which observed motion remains sufficiently consistent for a near-future trajectory to be treated as stable knowledge rather than a temporary manoeuvre projection.
+
+## Conflict Confidence
+A provisional relationship-level assessment that a projected Conflict Zone is persistent rather than a transient result of manoeuvring or observation variability.
+
+## Conflict Formation Window
+The provisional interval in which changing trajectories are forming a possible conflict but have not yet produced stable conflict knowledge.
+
+## Sequential Manoeuvre Conflict
+An encounter in which one Entity's manoeuvre establishes one future trajectory and another Entity's later or overlapping manoeuvre completes the shared conflict trajectory. The first TS001 evidence is consistent with this interpretation but does not assign fault.
+
 ## Passive Boundary Ordering Gap
 An implementation condition in which a control consumer executes before an observer-only runtime guard, so passivity is declared but not structurally guaranteed. Discovered and corrected during Prototype 01 preparation.
 

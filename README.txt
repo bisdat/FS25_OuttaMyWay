@@ -1,18 +1,23 @@
-FS25_OuttaMyWay v4.6.2
+FS25_OuttaMyWay v4.6.3
 
-Prototype 01: Conflict Emergence Point — Canonical
+Prototype 02: Conflict Confidence — Canonical
 
-v4.6.2 passively observes the existing TS001 two-worker head-on encounter.
-It records motion, closest-approach and provisional conflict-stage evidence so
-Situation Assessment hypotheses can be validated before any intervention
-behaviour is designed.
+v4.6.3 passively observes whether changing AI trajectories settle and whether a
+projected conflict persists consistently enough to become established Current
+Situation knowledge.
 
-The first TS001 evidence run supported the Prototype 01 hypothesis: the probe
-distinguished harmless head-on proximity from an emerging projected conflict
-and recorded a Conflict Emergence Point well before immediate physical conflict.
+The unchanged TS001 evidence supported the Prototype 02 hypothesis. The earlier
+harmless head-on pass remained CLEAR; the later collision progressed through a
+meaningful FORMING interval and became ESTABLISHED while useful time and distance
+still remained.
 
-Traffic Manager v2 is disabled and observer-only mode is enforced before any
-decision or control consumer. No avoidance response is included.
+The run also disproved the provisional assumption that disappearance of a future
+collision projection means the conflict has cleared: after physical contact the
+workers remained blocked even though the diagnostic state decayed and cleared.
 
-Start with docs/README.md. The accepted evidence and retained test procedure are
-in docs/prototypes/PROTOTYPE_01_CONFLICT_EMERGENCE.md.
+Traffic Manager v2 remains disabled and observer-only mode is enforced before
+any decision or control consumer. No avoidance response or Commitment change is
+included.
+
+Start with docs/README.md. The accepted evidence and retained procedure are in
+docs/prototypes/PROTOTYPE_02_CONFLICT_CONFIDENCE.md.
