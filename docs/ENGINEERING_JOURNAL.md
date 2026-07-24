@@ -26,7 +26,9 @@ Prototype 01 adds a read-only Observer consumer that records raw pair evidence, 
 
 ### Validation
 
-The first TS001 run must be reviewed as evidence, not tuned on sight. Success means the log can reconstruct the encounter and distinguish convergence, conflict relevance and immediate conflict. Failure is useful when it identifies missing knowledge such as Trajectory Confidence, Prediction Stability or working-geometry representation.
+The first unchanged TS001 run supported the hypothesis. The log reconstructed an earlier harmless head-on pass with approximately 72 m projected closest separation and a later projected conflict. The later `Conflict Emergence Point` was recorded at 318.38 m separation, 29.66 s projected time to closest approach and 1.98 m projected closest separation.
+
+The player exited before collision, so final encounter outcome and the provisional immediate-conflict state were not captured. The run nevertheless answered Prototype 01's single question because conflict relevance was identified well before immediate physical conflict. Changing closest-approach estimates during manoeuvring remain evidence to consolidate before the next hypothesis; no new architectural concept is accepted by v4.6.2.
 
 ## v4.6.1 — Engineering Intent became the resilience boundary
 

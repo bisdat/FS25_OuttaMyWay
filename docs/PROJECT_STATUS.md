@@ -1,31 +1,40 @@
 # Project Status
 
 Version: 4.6.2
-Status: Prototype 01 Release Candidate awaiting TS001 game evidence and independent owner review
-Baseline package: canonical v4.6.1
+Status: Canonical — Prototype 01 evidence reviewed and hypothesis supported
+Canonical source: exact accepted v4.6.2 candidate
+Accepted candidate SHA-256: 1d4f02cd6204f13ecfa870ca4492b67ed255902aba8623f7b30eb2e4872f2945
 Behavioural mode: passive observation only; no avoidance or vehicle-control action
 
 ## Current Focus
 
 Milestone 4 — Architectural Prototyping.
 
-Prototype 01 tests whether Situation Assessment can identify a **Conflict Emergence Point** before two native GIANTS AI workers reach immediate physical conflict.
+Prototype 01 tested whether Situation Assessment can identify a **Conflict Emergence Point** before two native GIANTS AI workers reach immediate physical conflict.
 
-The existing TS001 save is the unchanged observation fixture. Its two workers follow independent native routes that ultimately converge head-on.
+The existing TS001 save remained unchanged. Its two workers followed independent native routes that produced both a harmless head-on pass and a later projected head-on conflict.
 
-## Architectural Hypothesis Under Test
+## Prototype 01 Result
+
+The first TS001 evidence run supported the architectural hypothesis.
+
+The probe:
+
+- observed the worker pair early enough to reconstruct both encounters;
+- distinguished an earlier head-on pass with approximately 72 m projected closest separation from the later conflict;
+- recorded the later `Conflict Emergence Point` at 318.38 m separation, 29.66 s projected time to closest approach and 1.98 m projected closest separation;
+- continued to report a near-zero projected miss distance as the vehicles approached;
+- remained passive throughout the run.
+
+The player exited before collision, so Prototype 01 did not capture the final encounter outcome or enter its provisional immediate-conflict state. This does not invalidate its single tested hypothesis, which concerned detection before immediate physical conflict.
+
+## Architectural Hypothesis Result
 
 > Situation Assessment can detect the transition from independent trajectories to a plausible shared Conflict Zone before immediate conflict, using observable position, heading and motion evidence.
 
-The probe records a provisional sequence:
+**Result:** Supported by the first TS001 evidence run.
 
-1. independent;
-2. converging;
-3. conflict-relevant;
-4. immediate conflict;
-5. encounter outcome.
-
-These labels are diagnostic aids, not accepted architecture and not decisions to intervene.
+The provisional stage labels remain diagnostic aids rather than accepted architectural states or decisions to intervene.
 
 ## Current Architectural Understanding
 
@@ -42,23 +51,15 @@ These labels are diagnostic aids, not accepted architecture and not decisions to
 - Outcomes return as observations through Situation Assessment before further decisions.
 - Native GIANTS AI remains authoritative unless OuttaMyWay has a specific, bounded reason to intervene.
 
-## Immediate Development Objective
+## Next Engineering Boundary
 
-Run Prototype 01 against TS001 and review the resulting evidence before changing thresholds or adding behaviour.
+Prototype 01 has reached a coherent breakpoint. Before further implementation, its evidence must be consolidated into the next single architectural hypothesis.
 
-The first evidence review must determine:
-
-- whether the pair is observed early enough;
-- whether proximity can be distinguished from convergence;
-- whether a Conflict Emergence Point appears before immediate conflict;
-- whether the relationship is correctly recognised as head-on;
-- whether time and distance at closest approach are stable enough to support Situation Assessment;
-- whether GIANTS turns or speed changes cause diagnostic oscillation;
-- whether the final encounter outcome can be reconstructed.
+Any new Engineering Transformation must begin from this exact canonical v4.6.2 repository snapshot. Prototype 01 code must not be tuned merely because individual diagnostic samples look surprising.
 
 ## Prototype 01 Implementation Boundary
 
-The candidate adds a read-only `ConflictEmergenceProbe` that consumes the central Observer state and records:
+v4.6.2 contains a read-only `ConflictEmergenceProbe` that consumes the central Observer state and records:
 
 - vehicle identity, position, heading and speed;
 - worker phase, turn state and blocked state;
@@ -74,7 +75,7 @@ No steering, speed, implement, route, priority or AI-job changes are permitted.
 
 Review of v4.6.1 found that Traffic Manager v2 updated before the runtime reached its `AI_EXPLORER_ONLY` return. The observer-only declaration therefore did not structurally guarantee passivity by itself.
 
-v4.6.2 corrects that ordering, disables Traffic Manager v2 explicitly for Prototype 01, and causes the probe to disable itself if its passive configuration is not satisfied.
+v4.6.2 corrects that ordering, disables Traffic Manager v2 explicitly for Prototype 01, and causes the probe to disable itself if its passive configuration is not satisfied. The TS001 evidence run confirmed `passive=true` and contained no OuttaMyWay control action.
 
 ## Engineering Baseline
 
@@ -86,28 +87,29 @@ The repository is the source of project knowledge. Authoritative engineering rec
 - `DECISION_LOG.md` — explicit choices and rationale;
 - `ENGINEERING_JOURNAL.md` — durable discoveries;
 - `GLOSSARY.md` — current shared vocabulary;
-- `prototypes/PROTOTYPE_01_CONFLICT_EMERGENCE.md` — current hypothesis, evidence contract and test procedure;
+- `prototypes/PROTOTYPE_01_CONFLICT_EMERGENCE.md` — hypothesis, evidence contract, result and retained test procedure;
 - `REPOSITORY_RELEASE_SYSTEM.md` and `../rrs/README.md` — repository transition and candidate-production boundary.
 
 ## Known Constraints
 
 - Prototype 01 uses constant-velocity closest-approach prediction; this is an evidence instrument, not an accepted predictive model.
-- Provisional distance and time thresholds are deliberately exposed in every sample and may be disproved.
+- Provisional distance and time thresholds remain exposed in every sample and may be disproved by later evidence.
+- The first TS001 run ended before collision, so final encounter-outcome reconstruction remains untested.
 - Active GIANTS course-segment mapping remains unreliable through some turns.
 - Course-relative ETA and remaining-distance estimates are not yet trustworthy enough for broad live priority decisions.
 - Multiplayer testing remains limited.
 - Older reactive and recovery systems remain in the repository but are bypassed in observer-only mode.
 - A passing repository pipeline validates packaging and selected knowledge invariants, not in-game behaviour.
 
-## Concept Review — v4.6.2
+## Concept Review — Canonical v4.6.2
 
 - Accepted concepts remain unchanged.
-- `Conflict Relevance Transition` and `Conflict Emergence Point` are Deferred while Prototype 01 seeks evidence for stable boundaries.
-- `Commitment Stability Boundary` remains discussion language and is not promoted by this candidate.
+- `Conflict Relevance Transition` and `Conflict Emergence Point` remain Deferred: the first evidence supports detectability but does not yet establish their stable architectural boundaries.
+- `Commitment Stability Boundary` remains discussion language and is not promoted by v4.6.2.
 - No existing Deferred or Rejected concept changes status.
 
 ## Release Character
 
 v4.6.2 adds passive diagnostic instrumentation and strengthens the observer-only execution boundary. It adds no avoidance response and makes no positive vehicle-control intervention.
 
-The candidate must be validated in the unchanged TS001 save before any tuning, Commitment work or Control implementation begins.
+The exact reviewed candidate was explicitly accepted and declared canonical by the repository owner.

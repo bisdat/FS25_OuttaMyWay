@@ -1,8 +1,8 @@
 # Prototype 01 — Conflict Emergence Point
 
-> **Status:** Awaiting first TS001 evidence run
+> **Status:** First TS001 evidence run completed; hypothesis supported
 >
-> **Candidate:** v4.6.2
+> **Release:** Canonical v4.6.2
 >
 > **Mode:** Passive observation only
 
@@ -19,6 +19,24 @@ The prototype is intended to distinguish:
 5. the encounter outcome.
 
 The provisional stage labels are diagnostic aids, not accepted architecture and not control decisions.
+
+## Validation result
+
+The first unchanged TS001 run supported the hypothesis. The passive probe distinguished:
+
+- an earlier head-on pass with approximately 72 m projected closest separation; and
+- a later projected head-on conflict whose closest separation stabilised near zero.
+
+The later `Conflict Emergence Point` was recorded at `t=105.0s` with:
+
+- 318.38 m current separation;
+- 29.66 s projected time to closest approach;
+- 1.98 m projected closest separation;
+- a head-on relationship.
+
+The player exited before collision, so the final encounter outcome and provisional `IMMEDIATE_CONFLICT` stage were not captured. Prototype 01 nevertheless answered its single question because detection occurred well before immediate physical conflict.
+
+The evidence also showed that projected closest approach can change substantially during manoeuvring. That observation must be consolidated before any later prototype treats one prediction as stable knowledge. No new concept is accepted by this release.
 
 ## Observation fixture
 
@@ -63,7 +81,7 @@ These labels make the evidence searchable. The first run must validate or dispro
 
 Prototype 01 must not change speed, steering, implements, priority, AI state or route.
 
-The candidate therefore:
+Canonical v4.6.2 therefore:
 
 - runs with `AI_EXPLORER_ONLY = true`;
 - disables Traffic Manager v2 explicitly;
@@ -72,9 +90,11 @@ The candidate therefore:
 
 This corrects the **Passive Boundary Ordering Gap** discovered in v4.6.1: Traffic Manager v2 was updated before the runtime reached its observer-only return, so the observer-only declaration was not structurally sufficient by itself.
 
-## Test procedure
+## Retained test procedure
 
-1. Install the complete v4.6.2 candidate as the active OuttaMyWay mod.
+The accepted evidence run used this procedure:
+
+1. Install the complete v4.6.2 build as the active OuttaMyWay mod.
 2. Start the existing TS001 save without changing the vehicle setup or routes.
 3. Allow both AI workers to continue through the complete head-on encounter.
 4. Do not intervene unless required to prevent loss of the test save.
@@ -94,16 +114,16 @@ Useful log filters are:
 
 ## Validation questions
 
-The first evidence review should answer:
+The first evidence review answered:
 
-- Was the pair observed early enough?
-- Did the evidence distinguish proximity from convergence?
-- Was a Conflict Emergence Point logged before immediate conflict?
-- Was the reported relationship correctly classified as head-on?
-- Were tCPA and dCPA stable enough to support an architectural transition?
-- Did stage changes oscillate during normal GIANTS turns?
-- Did the log preserve the final encounter outcome?
-- Which observations or concepts are missing?
+- **Yes:** the pair was observed early enough to reconstruct both encounters.
+- **Yes:** harmless head-on proximity was distinguished from the later converging conflict.
+- **Yes:** a Conflict Emergence Point was logged before immediate conflict.
+- **Yes:** the established relationship was classified as head-on.
+- **Partly:** tCPA and dCPA became stable after manoeuvring, but changed substantially during turns.
+- **No harmful stage oscillation was observed**, although the changing projections during manoeuvring remain important evidence.
+- **No:** the final encounter outcome was not preserved because the player exited before collision.
+- **Open:** later consolidation must determine what knowledge is required before a changing projected conflict may be treated as stable.
 
 ## Conditions that decrease confidence
 

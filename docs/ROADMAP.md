@@ -12,9 +12,9 @@ Development remains in a private repository until the first GIANTS ModHub releas
 - [x] Define a passive evidence contract.
 - [x] Add read-only pair instrumentation and explicit provisional thresholds.
 - [x] Place the observer-only guard before decision and control consumers.
-- [ ] Run TS001 and upload the complete game log plus visual observations.
-- [ ] Validate or disprove the provisional Conflict Emergence Point boundary.
-- [ ] Record missing architectural knowledge before considering intervention behaviour.
+- [x] Run TS001 and upload the complete game log plus visual observations.
+- [x] Validate the Prototype 01 hypothesis: early Conflict Emergence detection is supported.
+- [ ] Consolidate missing architectural knowledge in the next single-hypothesis increment before considering intervention behaviour.
 
 ## Repository Release System follow-up
 

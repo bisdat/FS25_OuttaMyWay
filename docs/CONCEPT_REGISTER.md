@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.2.
+Review status: reviewed for canonical release v4.6.2.
 
 ## Accepted Concepts
 
@@ -40,7 +40,7 @@ A change in the Current Situation whereby an Entity or object moves from being m
 
 ### Conflict Emergence Point
 
-The earliest observed point at which previously independent plausible trajectories form a shared Conflict Zone. The concept remains Deferred until TS001 evidence establishes whether its boundary is stable, early enough to matter and distinguishable from immediate obstacle reaction.
+The earliest observed point at which previously independent plausible trajectories form a shared Conflict Zone. The first TS001 evidence supports detectability well before immediate physical conflict, but the concept remains Deferred until its stability and architectural lifecycle are established.
 
 ### Opportunity
 

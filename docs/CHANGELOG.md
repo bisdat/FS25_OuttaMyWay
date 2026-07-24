@@ -1,6 +1,6 @@
 # Changelog
 
-## v4.6.2 — Prototype 01: Conflict Emergence Point Candidate
+## v4.6.2 — Prototype 01: Conflict Emergence Point
 
 - Added passive Prototype 01 instrumentation for the unchanged TS001 two-worker head-on encounter.
 - Recorded position, heading, speed, separation, closing rate, closest-approach time/distance, projected conflict location and provisional stage transitions.
@@ -9,6 +9,8 @@
 - Disabled Traffic Manager v2 explicitly and added a runtime passive-configuration check for the probe.
 - Added the evidence contract, TS001 procedure, validation questions and searchable log prefixes.
 - No avoidance response, Commitment change or positive vehicle-control action is introduced.
+- First TS001 evidence distinguished harmless head-on proximity from an emerging projected conflict and recorded the Conflict Emergence Point at 318.38 m separation with 29.66 s projected time to closest approach.
+- The repository owner reviewed and tested the exact v4.6.2 candidate and explicitly declared v4.6.2 canonical.
 
 ## v4.6.1 — Repository Release System Consolidation Candidate
 
