@@ -2893,17 +2893,21 @@ function OuttaMyWay:update(dt)
         self.ConflictPredictor:update(dt)
     end
 
-    if self.TRAFFIC_V2_ENABLED == true and self.TrafficManagerV2 ~= nil and self.TrafficManagerV2.update ~= nil then
-        self.TrafficManagerV2:update(dt)
+    if self.ConflictEmergenceProbe ~= nil and self.ConflictEmergenceProbe.update ~= nil then
+        self.ConflictEmergenceProbe:update(dt)
     end
 
     if self.AI_EXPLORER_ENABLED == true and self.AIFieldCourseExplorer ~= nil and self.AIFieldCourseExplorer.update ~= nil then
         self.AIFieldCourseExplorer:update(dt)
     end
 
-    -- v4.1 explorer builds are intentionally observer-only. Returning here
-    -- guarantees that diagnostics cannot alter any AI vehicle state.
+    -- Observer-only mode is an execution boundary, not merely a diagnostic
+    -- label. It must be evaluated before any decision or control consumer.
     if self.AI_EXPLORER_ONLY == true then return end
+
+    if self.TRAFFIC_V2_ENABLED == true and self.TrafficManagerV2 ~= nil and self.TrafficManagerV2.update ~= nil then
+        self.TrafficManagerV2:update(dt)
+    end
 
     self.strandedWorkers = self.strandedWorkers or {}
     for vehicle,state in pairs(self.strandedWorkers) do
@@ -3011,6 +3015,9 @@ function OuttaMyWay:deleteMap()
     self.vectorDebugState = {}
     self.vectorPredictions = {}
     self.decisions = {}
+    if self.ConflictEmergenceProbe ~= nil and self.ConflictEmergenceProbe.clear ~= nil then
+        self.ConflictEmergenceProbe:clear()
+    end
     if self.clearEncounterController ~= nil then self:clearEncounterController() end
 end
 

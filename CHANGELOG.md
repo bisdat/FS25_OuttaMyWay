@@ -1,5 +1,15 @@
 # Changelog
 
+## v4.6.2 — Prototype 01: Conflict Emergence Point Candidate
+
+- Added passive Prototype 01 instrumentation for the unchanged TS001 two-worker head-on encounter.
+- Recorded position, heading, speed, separation, closing rate, closest-approach time/distance, projected conflict location and provisional stage transitions.
+- Deferred Conflict Relevance Transition and Conflict Emergence Point pending in-game evidence.
+- Discovered and corrected the Passive Boundary Ordering Gap: observer-only mode now returns before Traffic Manager v2 can decide or execute.
+- Disabled Traffic Manager v2 explicitly and added a runtime passive-configuration check for the probe.
+- Added the evidence contract, TS001 procedure, validation questions and searchable log prefixes.
+- No avoidance response, Commitment change or positive vehicle-control action is introduced.
+
 ## v4.6.1 — Repository Release System Consolidation Candidate
 
 - Accepted D-RRS-24 (Engineering Intent Boundary), D-RRS-25 (Fingerprint-Bound Engineering Intent) and D-RRS-26 (Candidate Determinism and Evidence Provenance).

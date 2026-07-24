@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.1.
+Review status: reviewed for candidate release v4.6.2.
 
 ## Accepted Concepts
 
@@ -33,6 +33,14 @@ A persistent intention to perform an action. Commitment owns creation, maintenan
 A derived operational concept: a spatial-temporal region in which intended motion cannot safely coexist without coordination. It remains useful for describing elevated interaction risk, but is no longer treated as a root architectural primitive.
 
 ## Deferred Concepts
+
+### Conflict Relevance Transition
+
+A change in the Current Situation whereby an Entity or object moves from being merely present to participating in a plausible conflict. Prototype 01 seeks evidence that this transition can be observed consistently without treating proximity alone as conflict.
+
+### Conflict Emergence Point
+
+The earliest observed point at which previously independent plausible trajectories form a shared Conflict Zone. The concept remains Deferred until TS001 evidence establishes whether its boundary is stable, early enough to matter and distinguishable from immediate obstacle reaction.
 
 ### Opportunity
 

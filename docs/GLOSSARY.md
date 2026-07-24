@@ -30,6 +30,15 @@ A provisional general label for something that participates in Situation Space. 
 ## Conflict Zone
 A derived spatial-temporal region in which intended motion cannot safely coexist without coordination.
 
+## Conflict Relevance Transition
+A provisional change in the Current Situation whereby an Entity or object becomes a participant in a plausible conflict rather than merely being present nearby. The concept remains Deferred pending prototype evidence.
+
+## Conflict Emergence Point
+The provisional earliest observed point at which previously independent plausible trajectories form a shared Conflict Zone. Prototype 01 tests whether this point can be identified before immediate physical conflict.
+
+## Passive Boundary Ordering Gap
+An implementation condition in which a control consumer executes before an observer-only runtime guard, so passivity is declared but not structurally guaranteed. Discovered and corrected during Prototype 01 preparation.
+
 ## Commitment Point
 The point at which preserving the existing course becomes more disruptive or risky than committing to a coordinated response.
 

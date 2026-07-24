@@ -34,6 +34,16 @@ This log records Accepted, Deferred, Rejected and Superseded project choices tha
 **Recovery finding:** failure to promote the executable RRS implementation caused avoidable capability loss. Repository-owned implementation is now required.
 
 
+## D-0016 — Use unchanged TS001 as a passive Conflict Emergence prototype
+
+**Status:** Accepted in v4.6.2 Candidate
+
+**Decision:** Prototype 01 shall observe the existing TS001 two-worker head-on convergence without changing routes or controlling either vehicle. It shall record sufficient motion and closest-approach evidence to distinguish independent, converging, conflict-relevant and immediate-conflict phases.
+
+**Reason:** A naturally occurring GIANTS AI encounter tests the Situation Assessment hypothesis without constructing a scenario around implementation thresholds. Passive observation isolates interpretation from Decision, Commitment and Control.
+
+**Validation:** The decision remains subject to game evidence. Thresholds and provisional stage labels may change; the passive and single-hypothesis boundaries do not.
+
 ## D-0014 — Reject Conditions and demote Conflict Zone from root primitive
 
 **Status:** Accepted in v4.5.7

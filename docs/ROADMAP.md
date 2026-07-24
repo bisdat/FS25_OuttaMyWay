@@ -4,6 +4,18 @@
 
 Development remains in a private repository until the first GIANTS ModHub release. Internal builds use 4-part development versions. The first submitted/public ModHub release will use `1.0.0.0` in `modDesc.xml`.
 
+## Architectural Prototyping
+
+### Prototype 01 — Conflict Emergence Point
+
+- [x] Select the unchanged TS001 two-worker head-on encounter as the natural observation fixture.
+- [x] Define a passive evidence contract.
+- [x] Add read-only pair instrumentation and explicit provisional thresholds.
+- [x] Place the observer-only guard before decision and control consumers.
+- [ ] Run TS001 and upload the complete game log plus visual observations.
+- [ ] Validate or disprove the provisional Conflict Emergence Point boundary.
+- [ ] Record missing architectural knowledge before considering intervention behaviour.
+
 ## Repository Release System follow-up
 
 The v4.6.0 recovery cycle validated Candidate Production sufficiently to return project focus to OuttaMyWay. The following work remains deliberately deferred:

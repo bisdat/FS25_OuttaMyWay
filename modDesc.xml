@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <modDesc descVersion="92">
     <author>bisdat</author>
-    <version value="4.6.0">4.6.0</version>
+    <version value="4.6.2">4.6.2</version>
     <title>
         <en>Outta My Way</en>
         <de>Aus dem Weg</de>
@@ -10,11 +10,11 @@
         <it>Fuori dai piedi</it>
     </title>
     <description>
-        <en>Coordinates multiple base-game AI field workers to reduce collisions. Observer architecture development build. Reads and normalises native GIANTS AI worker state without controlling vehicles.</en>
-        <de>Koordiniert mehrere KI-Feldarbeiter des Basisspiels, um Kollisionen zu reduzieren. Entwicklungsversion mit konservativer GIANTS-Kursvorschau und kurzen vorausschauenden Stopps.</de>
-        <fr>Coordonne plusieurs ouvriers IA du jeu de base afin de réduire les collisions. Version de développement avec prévision prudente des parcours GIANTS et arrêts prédictifs brefs.</fr>
-        <es>Coordina varios trabajadores de campo de la IA del juego base para reducir colisiones. Versión de desarrollo con previsión conservadora de rutas GIANTS y pausas predictivas breves.</es>
-        <it>Coordina più lavoratori IA del gioco base per ridurre le collisioni. Versione di sviluppo con previsione prudente dei percorsi GIANTS e brevi attese predittive.</it>
+        <en>Passive architectural prototype that observes native GIANTS AI workers and records when converging trajectories become a plausible conflict. No vehicle control.</en>
+        <de>Passiver Architekturprototyp, der native GIANTS-KI-Arbeiter beobachtet und aufzeichnet, wann konvergierende Trajektorien zu einem plausiblen Konflikt werden. Keine Fahrzeugsteuerung.</de>
+        <fr>Prototype architectural passif qui observe les ouvriers IA natifs de GIANTS et enregistre le moment où des trajectoires convergentes deviennent un conflit plausible. Aucun contrôle des véhicules.</fr>
+        <es>Prototipo arquitectónico pasivo que observa a los trabajadores de IA nativos de GIANTS y registra cuándo las trayectorias convergentes se convierten en un conflicto plausible. Sin control de vehículos.</es>
+        <it>Prototipo architetturale passivo che osserva i lavoratori IA nativi di GIANTS e registra quando traiettorie convergenti diventano un conflitto plausibile. Nessun controllo dei veicoli.</it>
     </description>
     <iconFilename>icon.dds</iconFilename>
     <multiplayer supported="true" />

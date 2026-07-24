@@ -2,135 +2,110 @@
 
 ## Purpose
 
-This document provides the context required for an engineer to resume work on the repository after any interruption. It is intentionally version-independent and complements the repository's permanent engineering records. Its purpose is to explain where engineering should continue, not to record release history.
-
-
+This document provides the context required to resume engineering from the repository alone. It explains the immediate continuation point rather than duplicating release history.
 
 ## Canonical Baseline
 
-The current canonical repository is always supplied separately by the engineer as an exact Canonical Repository Snapshot.
-
-The Repository Release System (RRS) consumes that fingerprint-bound snapshot together with a declarative Engineering Intent handoff and produces:
-
-- a candidate repository package;
-- an accompanying evidence package.
-
-The RRS validates the repository transition but does not declare a repository canonical. Canonical status is an explicit engineering decision made only after independent verification.
-
-
+The supplied baseline for this increment was the exact canonical v4.6.1 package. Candidate Production is governed by the Repository Release System and does not itself confer canonical authority.
 
 ## Current Engineering Focus
 
-Continue architectural discovery at the boundary between Situation Assessment and Commitment.
+Validate Prototype 01 at the Situation Assessment–Commitment boundary.
 
-Implementation should not begin until:
+The prototype asks one question:
 
-- ownership is understood;
-- evidence thresholds are defined;
-- commitment lifecycle transitions are understood.
+> Can Situation Assessment detect a Conflict Emergence Point before two native GIANTS AI workers reach immediate physical conflict?
 
-Vocabulary reviews (for example Entity naming or Operational Picture terminology) should remain architectural discussions rather than implementation work.
+Use the existing TS001 save unchanged. Two workers already follow native routes that ultimately converge head-on.
 
+## Implementation State
 
+Candidate v4.6.2 adds `scripts/prototypes/ConflictEmergenceProbe.lua`.
+
+The probe reads only the central Observer model. It records position, heading, speed, separation, closing rate, heading relationship, closest-approach estimates, projected conflict location, worker state and provisional stage transitions.
+
+The stage labels are diagnostic aids:
+
+- `INDEPENDENT`
+- `CONVERGING_OUTSIDE_HORIZON`
+- `CONVERGING`
+- `CONFLICT_RELEVANT`
+- `IMMEDIATE_CONFLICT`
+- `ENCOUNTER_STALLED`
+- `RESOLVING`
+
+Do not interpret them as accepted architectural states until game evidence supports stable boundaries.
+
+## Passive Guarantee
+
+Prototype 01 must not control vehicles.
+
+The candidate:
+
+- sets `AI_EXPLORER_ONLY = true`;
+- sets `TRAFFIC_V2_ENABLED = false`;
+- processes the observer-only return before Traffic Manager v2 can update;
+- disables the probe and emits an error if the passive configuration is not satisfied.
+
+This addresses the **Passive Boundary Ordering Gap** found in v4.6.1, where Traffic Manager v2 could update before the observer-only return.
+
+## Next Action — TS001 Evidence Run
+
+1. Install the complete v4.6.2 candidate.
+2. Load the existing TS001 save without changing the two-worker setup.
+3. Allow the full head-on encounter to unfold under GIANTS AI.
+4. Avoid manual intervention unless necessary to protect the save.
+5. Note when the conflict first appears visually plausible and what the workers eventually do.
+6. Exit normally and upload the complete `log.txt` plus those brief observations.
+
+Searchable evidence prefixes include:
+
+- `PROTOTYPE 01 ACTIVE`
+- `PROTOTYPE01 TRANSITION`
+- `PROTOTYPE01 SAMPLE`
+- `PROTOTYPE01 CONFLICT_EMERGENCE_POINT`
+- `PROTOTYPE01 PAIR_EXIT`
+- `PROTOTYPE01 PAIR_ENDED`
+- `PROTOTYPE01 HEARTBEAT`
+
+The complete evidence contract and validation questions are in `prototypes/PROTOTYPE_01_CONFLICT_EMERGENCE.md`.
+
+## Validation Discipline
+
+Do not tune thresholds merely because a line looks surprising. First reconstruct the observed sequence and classify each result as:
+
+- fact from the game/log;
+- interpretation produced by the probe;
+- architectural implication;
+- implementation defect;
+- missing evidence.
+
+A disproven hypothesis is useful if it reveals a missing concept such as Trajectory Confidence, Prediction Stability or a better representation of working geometry.
 
 ## Architectural Context
 
-The architectural seminar series established several enduring concepts that now form part of the repository knowledge.
+Accepted concepts include Situation Space, Current Situation, Future Space, Action Space, Situation Assessment, Commitment and derived Conflict Zone.
 
-Accepted concepts include:
+`Conflict Relevance Transition` and `Conflict Emergence Point` are Deferred pending Prototype 01 evidence. Entity naming and Operational Picture terminology also remain Deferred.
 
-- Situation Space
-- Future Space
-- Action Space
-- Current Situation
-- Situation Assessment
-- Reality and Knowledge as distinct concepts
-- Time as the dimension in which the architecture evolves
-- Conflict Zone as a derived operational concept
-
-Rejected concepts include:
-
-- Conditions
-
-Deferred concepts include:
-
-- Entity naming
-- Operational Picture terminology
-
-The authoritative status of every concept is maintained within the Concept Register rather than this document.
-
-
+Situation Assessment owns interpretation. It may report that a plausible conflict exists, but it must not issue stop, yield or steering commands. Decision and Commitment remain later responsibilities.
 
 ## Repository Entry Point
 
-When resuming engineering work, read the repository in the following order:
+Read in this order when resuming:
 
 1. `docs/README.md`
-2. `PROJECT_STATUS.md`
-3. `CONCEPT_REGISTER.md`
-4. `DECISION_LOG.md`
-5. `GLOSSARY.md`
-6. `ARCHITECTURAL_SEMINARS.md`
+2. `docs/PROJECT_STATUS.md`
+3. `docs/prototypes/PROTOTYPE_01_CONFLICT_EMERGENCE.md`
+4. `docs/CONCEPT_REGISTER.md`
+5. `docs/DECISION_LOG.md`
+6. `docs/ENGINEERING_JOURNAL.md`
+7. `docs/GLOSSARY.md`
 
-This sequence provides project status, accepted concepts, engineering decisions, shared vocabulary and the reasoning behind the architecture.
+## Engineering Method
 
+Continue using:
 
+> Observe → Discuss → Hypothesise → Implement → Validate → Record → Repeat
 
-## Repository Release System
-
-The Repository Release System exists to support disciplined repository evolution.
-
-Its responsibilities are to:
-
-- Preserve Engineering Knowledge
-- Protect Repository Transitions
-- Validate Repository State
-
-The Repository Release System is responsible for validating repository transitions and producing release artefacts.
-
-The engineer remains responsible for:
-
-- architectural intent;
-- engineering judgement;
-- implementation decisions;
-- reviewing release evidence;
-- declaring a repository canonical.
-
-
-
-## Engineering Principles
-
-Engineering work should continue using the established workflow:
-
-> Observe → Discuss → Hypothesise → Decide → Implement → Validate → Engineering Consolidation → Repository Transition → Repeat
-
-Evidence takes precedence over assumptions.
-
-Architecture should describe the observed system rather than implementation convenience.
-
-When evidence contradicts architecture, the architecture should evolve.
-
-Implementation should preserve architectural intent while minimising behavioural change.
-
-
-
-## Repository Philosophy
-
-The repository is intended to be a self-sustaining engineering system.
-
-Its documentation should allow future engineering work to resume from repository knowledge rather than conversation history.
-
-Every enduring architectural discovery should eventually become repository knowledge.
-
-The Repository Release System exists to protect that knowledge while enabling safe, repeatable and traceable repository evolution.
-
-
-## RRS Consolidation Continuation Point
-
-The v4.6.0 recovery cycle proved the current end-to-end Candidate Production workflow. D-RRS-24 and D-RRS-25 establish Engineering Intent as the collaboration boundary and bind every handoff to one exact Canonical Repository Snapshot. D-RRS-26 requires the same snapshot and handoff to produce a byte-identical candidate package across supported platforms.
-
-The first v4.6.1 cross-platform comparison exposed and named the Artifact Determinism Gap. The revised RRS applies platform-neutral relative POSIX-path ordering, explicit ZIP origin and permission metadata, and stored entries. The Linux and Windows candidate SHA-256 values must match before independent repository review proceeds.
-
-If that gate passes and the candidate is accepted, the repository owner alone may Canonicalise that exact candidate; then synchronise it into Git, commit, push and confirm a clean working tree. After that, begin a new engineering conversation from canonical v4.6.1 and return to the OuttaMyWay architectural-prototyping objective at the Situation Assessment–Commitment boundary.
-
-Authority Transformation, complete ordered state enforcement, candidate-to-canonical purity verification, the Repository Challenge Suite and a non-blocking dirty-working-tree notice remain deferred RRS work rather than prerequisites for returning to OuttaMyWay.
+Reality remains the final architect. Do not advance to avoidance behaviour until Prototype 01 evidence has been reviewed and the architectural hypothesis has either gained or lost confidence.

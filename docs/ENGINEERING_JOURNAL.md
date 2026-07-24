@@ -1,5 +1,33 @@
 # Engineering Journal
 
+## v4.6.2 — Prototype 01 and the Passive Boundary Ordering Gap
+
+### Observation
+
+The existing TS001 save contains two native GIANTS AI workers whose routes ultimately converge head-on. This provides a natural observation fixture for testing whether Situation Assessment can identify conflict relevance before immediate physical conflict.
+
+Review of the v4.6.1 runtime found that Traffic Manager v2 was updated before the `AI_EXPLORER_ONLY` return. The configuration described the build as observer-only, but the execution order did not make that boundary authoritative.
+
+### Disproved hypothesis
+
+Setting `AI_EXPLORER_ONLY = true` was not, by itself, sufficient to guarantee passive behaviour when a control-capable consumer executed before the guard.
+
+### Discovery
+
+**Passive Boundary Ordering Gap:** a declared passive mode is not an execution boundary unless every decision and control consumer lies beyond the guard. Architectural intent must be reflected by call ordering as well as configuration.
+
+### Prototype hypothesis
+
+Situation Assessment can detect a **Conflict Emergence Point** before immediate conflict by observing position, heading, speed, closing rate and predicted closest approach. `Conflict Relevance Transition` and `Conflict Emergence Point` remain Deferred until evidence shows a stable boundary.
+
+### Implementation
+
+Prototype 01 adds a read-only Observer consumer that records raw pair evidence, provisional stage transitions, closest-approach estimates and the thresholds used. Traffic Manager v2 is disabled, the observer-only return is moved before control consumers, and the probe disables itself if the passive configuration is not satisfied.
+
+### Validation
+
+The first TS001 run must be reviewed as evidence, not tuned on sight. Success means the log can reconstruct the encounter and distinguish convergence, conflict relevance and immediate conflict. Failure is useful when it identifies missing knowledge such as Trajectory Confidence, Prediction Stability or working-geometry representation.
+
 ## v4.6.1 — Engineering Intent became the resilience boundary
 
 ### Observations

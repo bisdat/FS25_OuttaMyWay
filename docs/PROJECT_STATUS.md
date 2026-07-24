@@ -1,25 +1,31 @@
 # Project Status
 
-Version: 4.6.1
-Status: RRS consolidation Release Candidate pending independent user verification and Canonicalisation
-Baseline package: canonical v4.6.0
-Behavioural baseline: unchanged from v4.3.5
+Version: 4.6.2
+Status: Prototype 01 Release Candidate awaiting TS001 game evidence and independent owner review
+Baseline package: canonical v4.6.1
+Behavioural mode: passive observation only; no avoidance or vehicle-control action
 
 ## Current Focus
 
-Milestone 4 — Architectural Prototyping: validate architectural hypotheses through targeted prototypes.
+Milestone 4 — Architectural Prototyping.
 
-Version 4.6.0 is the canonical Repository Release System recovery release. The v4.6.1 consolidation increment captures the operational discoveries proven while producing, reviewing, Canonicalising and synchronising that release, after which project focus returns to OuttaMyWay architectural prototyping.
+Prototype 01 tests whether Situation Assessment can identify a **Conflict Emergence Point** before two native GIANTS AI workers reach immediate physical conflict.
 
-## Project Purpose
+The existing TS001 save is the unchanged observation fixture. Its two workers follow independent native routes that ultimately converge head-on.
 
-Enable players to trust autonomous workers to complete their work without supervision.
+## Architectural Hypothesis Under Test
 
-Mission: preserve autonomous continuity through the least disruptive justified intervention.
+> Situation Assessment can detect the transition from independent trajectories to a plausible shared Conflict Zone before immediate conflict, using observable position, heading and motion evidence.
 
-Success criterion:
+The probe records a provisional sequence:
 
-> A successful autonomous worker is one the player stops thinking about.
+1. independent;
+2. converging;
+3. conflict-relevant;
+4. immediate conflict;
+5. encounter outcome.
+
+These labels are diagnostic aids, not accepted architecture and not decisions to intervene.
 
 ## Current Architectural Understanding
 
@@ -30,66 +36,78 @@ Success criterion:
 - Future Space preserves multiple plausible futures rather than committing to one prediction.
 - Action Space describes the actions currently available; anticipation is valuable because it preserves Action Space.
 - Time is the dimension in which Reality, observations, Knowledge, Future Space and Action Space evolve.
-- Conflict Zone remains operationally useful but is now treated as a derived phenomenon rather than a root primitive.
+- Conflict Zone remains operationally useful but is a derived phenomenon rather than a root primitive.
 - Commitment remains an Accepted concept with creation, maintenance, completion and cancellation lifecycle semantics.
-- Execution acts within an active commitment and validated capability boundaries.
+- Execution acts within an active Commitment and validated capability boundaries.
 - Outcomes return as observations through Situation Assessment before further decisions.
 - Native GIANTS AI remains authoritative unless OuttaMyWay has a specific, bounded reason to intervene.
 
 ## Immediate Development Objective
 
-Define the architectural contract connecting Situation Assessment to Commitment.
+Run Prototype 01 against TS001 and review the resulting evidence before changing thresholds or adding behaviour.
 
-Questions to resolve before implementation:
+The first evidence review must determine:
 
-- What evidence is sufficient to create a commitment?
-- What evidence maintains, completes or cancels it?
-- Which component owns each lifecycle transition?
-- How is a commitment protected from continuous reassessment and oscillation?
-- How do execution outcomes alter the Current Situation without bypassing Situation Assessment?
-- Does the provisional Entity concept require independent ownership or only shared vocabulary?
+- whether the pair is observed early enough;
+- whether proximity can be distinguished from convergence;
+- whether a Conflict Emergence Point appears before immediate conflict;
+- whether the relationship is correctly recognised as head-on;
+- whether time and distance at closest approach are stable enough to support Situation Assessment;
+- whether GIANTS turns or speed changes cause diagnostic oscillation;
+- whether the final encounter outcome can be reconstructed.
+
+## Prototype 01 Implementation Boundary
+
+The candidate adds a read-only `ConflictEmergenceProbe` that consumes the central Observer state and records:
+
+- vehicle identity, position, heading and speed;
+- worker phase, turn state and blocked state;
+- separation and closing rate;
+- heading relationship;
+- time to closest approach and distance at closest approach;
+- projected closest-approach midpoint;
+- provisional stage transitions and thresholds.
+
+No steering, speed, implement, route, priority or AI-job changes are permitted.
+
+## Passive Boundary Ordering Gap
+
+Review of v4.6.1 found that Traffic Manager v2 updated before the runtime reached its `AI_EXPLORER_ONLY` return. The observer-only declaration therefore did not structurally guarantee passivity by itself.
+
+v4.6.2 corrects that ordering, disables Traffic Manager v2 explicitly for Prototype 01, and causes the probe to disable itself if its passive configuration is not satisfied.
 
 ## Engineering Baseline
 
-The repository is the source of project knowledge. Its primary operational audience is the continuing collaboration across new sessions; its secondary audience is future intelligent contributors.
+The repository is the source of project knowledge. Authoritative engineering records include:
 
-Authoritative engineering records:
-
-- `ENGINEERING_ARCHITECTURE.md` — constitution and release contract.
-- `ENGINEERING_HANDOVER.md` — current continuation guidance.
-- `CONCEPT_REGISTER.md` — accepted, deferred and rejected concepts.
-- `DECISION_LOG.md` — explicit choices and rationale.
-- `ENGINEERING_JOURNAL.md` and `ARCHITECTURAL_SEMINARS.md` — discovery history.
-- `GLOSSARY.md` — current shared vocabulary.
-- `PROJECT_CONTINUITY.md` — inheritance procedure and Engineering Continuity Test.
-- `REPOSITORY_RELEASE_SYSTEM.md` and `../rrs/README.md` — repository transformation, validation evidence and operational boundary.
+- `ENGINEERING_ARCHITECTURE.md` — constitution and release contract;
+- `ENGINEERING_HANDOVER.md` — current continuation and test guidance;
+- `CONCEPT_REGISTER.md` — accepted, deferred and rejected concepts;
+- `DECISION_LOG.md` — explicit choices and rationale;
+- `ENGINEERING_JOURNAL.md` — durable discoveries;
+- `GLOSSARY.md` — current shared vocabulary;
+- `prototypes/PROTOTYPE_01_CONFLICT_EMERGENCE.md` — current hypothesis, evidence contract and test procedure;
+- `REPOSITORY_RELEASE_SYSTEM.md` and `../rrs/README.md` — repository transition and candidate-production boundary.
 
 ## Known Constraints
 
+- Prototype 01 uses constant-velocity closest-approach prediction; this is an evidence instrument, not an accepted predictive model.
+- Provisional distance and time thresholds are deliberately exposed in every sample and may be disproved.
 - Active GIANTS course-segment mapping remains unreliable through some turns.
 - Course-relative ETA and remaining-distance estimates are not yet trustworthy enough for broad live priority decisions.
 - Multiplayer testing remains limited.
-- Older reactive and recovery systems coexist with the newer architecture and must not be casually rewritten.
-- A passing repository pipeline validates packaging and selected knowledge invariants, not vehicle behaviour.
+- Older reactive and recovery systems remain in the repository but are bypassed in observer-only mode.
+- A passing repository pipeline validates packaging and selected knowledge invariants, not in-game behaviour.
 
-## Concept Review — v4.5.8
+## Concept Review — v4.6.2
 
-- Accepted: Situation Space, Current Situation, Future Space, Action Space, Situation Assessment, Commitment and derived operational Conflict Zone.
-- Deferred: Opportunity; Entity naming; repository folder numbering; Operational Picture versus Current Situation terminology.
-- Rejected: Conditions as a separate concept.
-- Architectural distinctions: Reality versus Knowledge; Time as the evolution dimension.
+- Accepted concepts remain unchanged.
+- `Conflict Relevance Transition` and `Conflict Emergence Point` are Deferred while Prototype 01 seeks evidence for stable boundaries.
+- `Commitment Stability Boundary` remains discussion language and is not promoted by this candidate.
+- No existing Deferred or Rejected concept changes status.
 
 ## Release Character
 
-No intentional vehicle-control, steering, speed, recovery or AI-job behaviour changes are included in v4.6.1.
+v4.6.2 adds passive diagnostic instrumentation and strengthens the observer-only execution boundary. It adds no avoidance response and makes no positive vehicle-control intervention.
 
-
-## Repository Release System Consolidation
-
-The current Engineering Increment records D-RRS-24, D-RRS-25 and D-RRS-26 and promotes Engineering Intent, Canonical Repository Snapshot, Repository Transformation and Candidate Determinism into the repository's authoritative vocabulary and architecture.
-
-The v4.6.0 cycle validated that the consolidation author can supply declarative intent while local `rrs evolve` performs the Repository Transformation. The fingerprint gate correctly blocked a handoff after its baseline changed; regeneration against the new fingerprint passed. Independent owner review then Canonicalised the exact candidate, and the accepted content was synchronised into Git with a clean, up-to-date working tree.
-
-The first v4.6.1 cross-platform run exposed the Artifact Determinism Gap: semantically equivalent Windows and Linux candidates had different package hashes because manifest ordering and ZIP origin metadata were platform-dependent. Candidate Production now applies one relative POSIX-path order, explicit archive metadata and platform-independent stored entries. Matching Linux and Windows candidate SHA-256 values are required before this increment may be Canonicalised.
-
-The repository-owned implementation still performs Candidate Production only. Authority Transformation, complete ordered authority-state enforcement, independent candidate-to-canonical purity verification, a Repository Challenge Suite and a non-blocking dirty-working-tree notice remain future RRS work. They are recorded without delaying return to OuttaMyWay after the current determinism gate passes.
+The candidate must be validated in the unchanged TS001 save before any tuning, Commitment work or Control implementation begins.

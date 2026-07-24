@@ -1,13 +1,14 @@
-FS25_OuttaMyWay v4.6.1
+FS25_OuttaMyWay v4.6.2
 
-Repository Release System Consolidation Candidate
+Prototype 01: Conflict Emergence Point Candidate
 
-v4.6.1 records the validated Engineering Intent workflow, binds each handoff
-to one exact Canonical Repository Snapshot, and promotes the operational
-discoveries from the first complete local RRS evolution and canonicalisation
-cycle. Authority Transformation remains future work.
+v4.6.2 passively observes the existing TS001 two-worker head-on encounter.
+It records motion, closest-approach and provisional conflict-stage evidence so
+the Situation Assessment hypothesis can be validated before any intervention
+behaviour is designed.
 
-No intentional vehicle-control behaviour changes are included.
+Traffic Manager v2 is disabled and observer-only mode is enforced before any
+decision or control consumer. No avoidance response is included.
 
-Start with docs/README.md for the engineering breadcrumb journey.
-
+Start with docs/README.md. The test procedure is in
+docs/prototypes/PROTOTYPE_01_CONFLICT_EMERGENCE.md.
