@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** Reviewed for candidate release v4.6.8
+> **Currency:** Reviewed for candidate release v4.6.10
 
 This development repository is a self-sustaining engineering knowledge system. Its first responsibility is to preserve project continuity independently of any chat, engineer, AI system or platform. Its second is to remain understandable to future contributors.
 
@@ -49,7 +49,8 @@ The remaining documents deepen or verify that journey; they are classified below
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — current driving-system architecture.
 - [`DESIGN.md`](DESIGN.md) — component responsibilities and design boundaries.
 - [`ENGINEERING_HANDBOOK.md`](ENGINEERING_HANDBOOK.md) — accumulated engineering reference.
-- [`prototypes/PROTOTYPE_07_PHYSICAL_OCCUPANCY_EVIDENCE.md`](prototypes/PROTOTYPE_07_PHYSICAL_OCCUPANCY_EVIDENCE.md) — current physical-geometry evidence-discovery hypothesis.
+- [`prototypes/PROTOTYPE_08_COLLISION_NODE_POSE_AND_CATALOGUE.md`](prototypes/PROTOTYPE_08_COLLISION_NODE_POSE_AND_CATALOGUE.md) — current collision-node pose and model-derived catalogue hypothesis.
+- [`prototypes/PROTOTYPE_07_PHYSICAL_OCCUPANCY_EVIDENCE.md`](prototypes/PROTOTYPE_07_PHYSICAL_OCCUPANCY_EVIDENCE.md) — accepted negative evidence for the rejected direct runtime-bound route.
 - [`prototypes/PROTOTYPE_06_MEMBERSHIP_RECLASSIFICATION.md`](prototypes/PROTOTYPE_06_MEMBERSHIP_RECLASSIFICATION.md) — accepted prior membership-transition and relationship-reclassification hypothesis.
 - [`prototypes/PROTOTYPE_05_FIELD_WORLD_OBSERVATION.md`](prototypes/PROTOTYPE_05_FIELD_WORLD_OBSERVATION.md) — accepted Field World vehicle observation result and recovered containment invariant.
 - [`prototypes/PROTOTYPE_04_CONTINUATION_INTENT.md`](prototypes/PROTOTYPE_04_CONTINUATION_INTENT.md) — accepted prior local-intent lifecycle and continuation evidence.
@@ -66,6 +67,7 @@ The remaining documents deepen or verify that journey; they are classified below
 - [`AI_DISCOVERIES.md`](AI_DISCOVERIES.md) — observed AI behaviour and findings.
 - [`GIANTS_AI_NOTES.md`](GIANTS_AI_NOTES.md) — GIANTS AIFieldCourse observations.
 - [`50_Research/DESIGN_HISTORY.md`](50_Research/DESIGN_HISTORY.md) — historical design evolution.
+- [`../research/model_geometry/README.md`](../research/model_geometry/README.md) — Prototype 08B offline collision-catalogue extraction workflow.
 
 ## Delivery and Operations
 

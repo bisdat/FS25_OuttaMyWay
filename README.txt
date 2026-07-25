@@ -1,34 +1,34 @@
-FS25_OuttaMyWay v4.6.8
+FS25_OuttaMyWay v4.6.10
 
-Prototype 07: Physical Occupancy Evidence — Canonical
+Prototype 08: Collision Node Pose and Model-Derived Catalogue — Canonical
 
-Prototype 07 tested whether GIANTS-accessible collision, physics and bounding evidence
-could be aggregated across the complete vehicle–implement Entity into a conservative
-current Physical Occupancy Envelope.
+Prototype 08 separates collision-node identity and live pose from collision-mesh
+extent. The corrected TS001 run enumerated Condor through the authoritative vehicle
+system collection, attached one persistent Entity and resolved all eight physical
+boom collision nodes active for its purchased 36 m Geometry Family.
 
-The tested Direct Geometry Retrieval route is not supported. In TS003 the runtime
-exposed rigid-body type, but not the attempted shape, local or world bounding APIs or
-collision-mask query. Condor and Patriot each reached the 800-node hierarchy scan
-limit with zero bounded nodes, zero physics-bound nodes, coverage NONE and confidence
-UNKNOWN. Across approximately 337 seconds, no physical envelope, pair clearance or
-configuration-change evidence could be produced.
+The complete live fold lifecycle was observed. `foldAnimTime=1.0` corresponded to the
+stationary folded endpoint; manual AI start produced one continuous transition; and
+`foldAnimTime=0.0` corresponded to stable deployed work. The collision-node origin
+span changed from approximately 2.8237 m folded to 30.2403 m deployed while all node
+identities remained resolved.
 
-This is accepted negative evidence, not a rejection of the architecture. GIANTS uses
-physical collision geometry internally, but the tested Lua boundary does not disclose
-usable bounds for complete-Entity occupancy derivation. This is named the Runtime
-Geometry Access Gap.
+The offline catalogue correctly establishes 29 physical compound-child shapes,
+configuration membership, eight active 36 m boom nodes and the principal folded and
+deployed lateral spans. Its complete endpoint pose reconstruction is not
+authoritative: the folded outer `Col04` longitudinal prediction was materially wrong
+and stable deployed per-node comparison retained approximately 0.55 m RMS error.
+Runtime node transforms are therefore the authoritative pose source.
 
-No Silent Under-Approximation held: each 36 m working-marker width remained separate
-agronomic evidence and was never substituted for unknown physical geometry.
+Condor has four boom sections per side and appears progressively thinner toward the
+tips, supporting a segmented tapered compound representation for this machine only.
+Other foldable implements may use entirely different geometry and must be discovered
+from their own model, configuration and live pose evidence.
 
-The final sweeping turn, near miss and observed reverse deadlock reinforced the need
-for current and swept physical knowledge. Situation Assessment retained parked
-Condor as relevant, but could not know the actual clearance or swept occupancy. This
-is recorded as Retained Entity, Missing Spatial Truth.
+Binary `.i3d.shapes` local mesh extents remain unresolved. Collision-node origins are
+not mesh bounds, working width is not physical occupancy, and no Physical Occupancy
+Envelope, containment, projected sweep, hold, release or vehicle-control behaviour is
+claimed. Traffic Manager v2 remains disabled and observer-only mode is enforced.
 
-Traffic Manager v2 remains disabled and observer-only mode is enforced before any
-decision or control consumer. No containment, projected sweep, safety padding, hold,
-release, route change, Commitment or vehicle-control behaviour is included.
-
-Start with docs/README.md. The accepted negative evidence and next investigation
-boundary are recorded in docs/prototypes/PROTOTYPE_07_PHYSICAL_OCCUPANCY_EVIDENCE.md.
+Start with docs/README.md and
+docs/prototypes/PROTOTYPE_08_COLLISION_NODE_POSE_AND_CATALOGUE.md.

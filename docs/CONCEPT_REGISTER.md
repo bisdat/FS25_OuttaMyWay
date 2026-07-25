@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for canonical release v4.6.8.
+Review status: reviewed for canonical release v4.6.10.
 
 ## Accepted Concepts
 
@@ -58,7 +58,7 @@ Physics evidence attached to GIANTS model components. It is an implementation ev
 
 ### Physical Occupancy Envelope
 
-A conservative ground-plane representation of the complete Entity's current physical extent, aggregated across the vehicle and every attached or towed implement. Prototype 07 confirmed the architectural need but disproved the tested direct Lua-bound retrieval route; a trustworthy evidence source remains unresolved.
+A conservative ground-plane representation of the complete Entity's current physical extent, aggregated across the vehicle and every attached or towed implement. Prototype 08 validated configuration-aware live collision-node identity and pose for Condor, but local collision-mesh extents remain unresolved; no authoritative envelope yet exists.
 
 ### Working Footprint
 
@@ -79,6 +79,26 @@ The complete collision geometry of the vehicle and every attached or towed imple
 ### Full-Envelope Field Containment
 
 The invariant that every AI worker's complete Operational Collision Envelope remains wholly inside the field polygon at all times. External geometry should not require obstacle handling because the worker envelope must never reach beyond the boundary. Prototype 05 promoted the invariant but did not validate exact envelope geometry, projected sweep or active containment.
+
+### Configuration–Pose Separation
+
+The purchased Geometry Family, current Physical Pose and Operational State are independent dimensions. Configuration selects the applicable collision-node family; live transforms establish current pose. Prototype 08A strongly validated this separation for the 36 m Condor through one complete folded-to-deployed lifecycle.
+
+### Save-State Geometry Bridge
+
+Model assets provide collision identity, hierarchy and configuration membership, while save/runtime state provides persistent Entity identity, selected configuration, root pose, fold state and authoritative live node transforms. Prototype 08 showed that offline animation reconstruction is useful diagnostic evidence but must not replace live pose.
+
+### Collision Mesh Extraction Gap
+
+The I3D XML exposes physical collision-node identity and transforms, but trustworthy local mesh extents remain inside the binary `.i3d.shapes` asset until a validated extraction route exists. The gap must remain explicit.
+
+### Live Collision Node Pose
+
+The current runtime transform of a named physical collision node relative to its complete Entity root. Prototype 08A strongly validated that all eight configured Condor boom collision nodes can retain identity and move continuously through a full fold transition. Node pose is not node extent.
+
+### Segmented Tapered Occupancy
+
+A model-specific compound-geometry pattern in which articulated sections have distinct dimensions and may become progressively narrower toward an outer tip. Condor's four sections per side support this interpretation visually, but the concept does not prescribe a generic shape: every foldable implement must derive segmentation, dimensions, activation and articulation from its own evidence.
 
 ## Deferred Concepts
 

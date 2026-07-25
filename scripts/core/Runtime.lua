@@ -2917,6 +2917,10 @@ function OuttaMyWay:update(dt)
         self.PhysicalOccupancyProbe:update(dt)
     end
 
+    if self.CollisionNodePoseProbe ~= nil and self.CollisionNodePoseProbe.update ~= nil then
+        self.CollisionNodePoseProbe:update(dt)
+    end
+
     if self.AI_EXPLORER_ENABLED == true and self.AIFieldCourseExplorer ~= nil and self.AIFieldCourseExplorer.update ~= nil then
         self.AIFieldCourseExplorer:update(dt)
     end
@@ -3052,6 +3056,9 @@ function OuttaMyWay:deleteMap()
     end
     if self.PhysicalOccupancyProbe ~= nil and self.PhysicalOccupancyProbe.clear ~= nil then
         self.PhysicalOccupancyProbe:clear()
+    end
+    if self.CollisionNodePoseProbe ~= nil and self.CollisionNodePoseProbe.clear ~= nil then
+        self.CollisionNodePoseProbe:clear()
     end
     if self.clearEncounterController ~= nil then self:clearEncounterController() end
 end

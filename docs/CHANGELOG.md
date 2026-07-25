@@ -1,5 +1,30 @@
 # Changelog
 
+## v4.6.10 — Prototype 08: Collision Node Pose and Model-Derived Catalogue
+
+- Supersedes archival noncanonical v4.6.9, whose TS001 run exposed a Diagnostic Enumeration Blind Spot: the probe inspected only an empty `g_currentMission.vehicles` collection.
+- Enumerates both `g_currentMission.vehicles` and `g_currentMission.vehicleSystem.vehicles`, deduplicates by root Entity, logs source counts and emits an explicit no-match warning.
+
+- Named Configuration–Pose Separation, Save-State Geometry Bridge and Collision Mesh Extraction Gap.
+- Split geometry reconstruction into Prototype 08A live collision-node pose observation and Prototype 08B offline model-derived catalogue extraction.
+- Added an asset-fingerprinted extractor for vehicle XML, I3D hierarchy, collision filters, configuration membership and fold-animation endpoint prediction without distributing GIANTS assets.
+- Generated a Condor 36 m catalogue containing 29 physical compound-child shapes, the eight active boom collision nodes, all eight I3D mapping paths and explicit unresolved mesh extents.
+- Added a runtime Condor pose probe that resolves the eight named collision nodes, records root-local origins and axes, follows `foldAnimTime`, and compares live poses with offline folded/deployed predictions.
+- Uses TS001 and TS003 as a controlled same-Entity folded/deployed pair; TS001 is the primary live transition fixture.
+- Disables the expensive completed Prototype 07 hierarchy-bound scan while retaining its canonical negative evidence.
+- Preserves No Silent Under-Approximation: collision-node origins are not collision-mesh bounds, working width is never substituted, and no Physical Occupancy Envelope is claimed.
+- Traffic Manager v2 remains disabled; no containment, projected sweep, Decision, Commitment, hold, release or vehicle-control behaviour is introduced.
+- Candidate implementation completed in observer-only mode; accepted validation evidence follows.
+- Corrected enumeration observed `missionVehicles=0`, `vehicleSystemVehicles=54`, `uniqueRoots=53` and `condorCandidates=1`; Condor attached once and no no-match warning occurred.
+- All eight configured 36 m boom collision nodes resolved once through I3D mappings and retained one Entity identity throughout the run.
+- TS001 produced one complete `FOLDED -> TRANSITION -> DEPLOYED` lifecycle: `foldAnimTime=1.0000` at `t=0.1s`, transition from `t=8.3s`, and stable deployment at `foldAnimTime=0.0000` from `t=25.4s`.
+- The live collision-node origin span changed continuously from approximately 2.8237 m folded to 30.2403 m deployed, strongly supporting runtime collision-node pose reconstruction.
+- Prototype 08B correctly predicted the folded and deployed lateral origin spans and retained exact collision identity/configuration membership, but complete per-node endpoint reconstruction remained approximate: the folded `Col04` longitudinal prediction was materially wrong and stable deployed RMS error remained approximately 0.55 m.
+- The accepted reconstruction boundary is therefore static catalogue identity and future local mesh extents plus authoritative live runtime node transforms; offline animation pose is diagnostic, not authoritative.
+- Condor's four boom segments per side appear progressively thinner toward the tips, supporting Segmented Tapered Occupancy for this model. This observation must not be generalised: other foldable implements may use different segmentation, proportions, activation or articulation.
+- Binary `.i3d.shapes` collision-mesh extents remain unresolved, so no Physical Occupancy Envelope, containment, projected sweep or Control claim is made.
+- The repository owner reviewed and tested the exact v4.6.10 candidate and explicitly declared v4.6.10 canonical.
+
 ## v4.6.8 — Prototype 07: Physical Occupancy Evidence
 
 - Named Geometry Domain Separation and Physical–Agronomic Separation: GIANTS collision geometry, Physical Occupancy Envelope and Working Footprint are distinct evidence domains.

@@ -57,6 +57,19 @@ The ground area receiving agricultural work. It may differ from physical occupan
 ## No Silent Under-Approximation
 The invariant that uncertain or incomplete geometry remains explicit rather than being represented as exact or smaller than the available evidence supports.
 
+## Geometry Family
+The purchased/configured model variant that selects the applicable collision-node, animation and working-width family. It does not describe current fold pose.
+
+## Physical Pose
+The current spatial arrangement of an Entity's physical components, including folded, transitional, deployed and articulated states.
+
+## Model-Derived Collision Catalogue
+Source-fingerprinted static knowledge of physical collision-node identity, hierarchy, configuration membership, filters and, when available, local mesh extents.
+
+## Collision Mesh Extraction Gap
+The current inability to extract trustworthy local collision-mesh bounds from the binary `.i3d.shapes` asset in the available environment.
+
+
 ## Operational Collision Envelope
 The complete collision geometry of the vehicle plus every attached or towed implement, including configuration-dependent maximum extent and projected swept geometry.
 

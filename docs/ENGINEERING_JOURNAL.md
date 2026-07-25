@@ -1,5 +1,25 @@
 # Engineering Journal
 
+## v4.6.10 — Model-Derived Geometry Investigation
+
+**Archival candidate learning:** v4.6.9 loaded successfully but observed no Condor because Prototype 08A read only `g_currentMission.vehicles`; TS001 showed that the authoritative population was available through `g_currentMission.vehicleSystem.vehicles`. This is named the **Diagnostic Enumeration Blind Spot**. v4.6.10 was rebuilt from v4.6.8 canonical and made enumeration explicit evidence before node resolution.
+
+Asset inspection narrowed Runtime Geometry Access Gap into Collision Mesh Extraction Gap. Condor contains 29 physical compound-child shapes, with eight explicit collision nodes activated by the purchased 36 m folding configuration. TS001 and TS003 provide the same persistent Entity at opposite fold endpoints. Prototype 08 separates live node pose from offline mesh extent and refuses to confuse collision-node origin span with physical occupancy.
+
+### Accepted validation result
+
+Corrected TS001 reported `missionVehicles=0`, `vehicleSystemVehicles=54`, `uniqueRoots=53` and `condorCandidates=1`. Condor attached once; all eight named collision nodes resolved through I3D mappings; no no-match or missing-node event occurred.
+
+The probe observed one complete lifecycle: folded at `foldAnimTime=1.0000`, transition beginning at approximately `t=8.3s`, and stable deployed pose at `foldAnimTime=0.0000` from approximately `t=25.4s`. Sixty-two pose samples showed continuous origin movement. Lateral origin span changed from approximately 2.8237 m folded to 30.2403 m deployed while Entity identity remained stable.
+
+**Result:** Prototype 08A is strongly supported. Runtime collision-node identity and live pose are available even though runtime collision-mesh bounds are not.
+
+Prototype 08B correctly predicted the principal folded and deployed lateral spans and established physical collision identity, hierarchy and configuration membership. It did not reconstruct every live endpoint transform exactly: the two folded `Col04` longitudinal positions were materially wrong and the stable deployed endpoint retained approximately 0.55 m RMS difference. Offline pose is therefore diagnostic only; live transforms own pose truth.
+
+**Owner observation:** Condor has four boom sections per side and visually tapers toward the outer tips. This is named **Segmented Tapered Occupancy** as a Condor-supported compound pattern, with an explicit caution that other foldable implements may use different geometry and must be independently discovered.
+
+**Remaining gap:** local mesh extents inside `.i3d.shapes`. No Physical Occupancy Envelope, containment or Control claim is justified yet.
+
 ## 2026-07-25 — Prototype 07: physical extent is not working width
 
 **Observation:** Condor and Patriot can pass safely in adjacent opposing lanes. Their physical boom extent, agricultural working width and active GIANTS collision geometry therefore cannot be assumed equal.

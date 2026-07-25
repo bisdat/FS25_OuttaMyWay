@@ -2,59 +2,31 @@
 
 ## Canonical baseline
 
-Canonical v4.6.8 derives from the exact tested Prototype 07 candidate.
-
-Accepted candidate SHA-256:
-
-`97e46f233320d15110343faf481bb08b19bc26f298cbc165ff9b028742d9d34c`
+v4.6.10 is canonical. It was derived from canonical v4.6.8 after archival noncanonical v4.6.9 exposed the Diagnostic Enumeration Blind Spot. The corrected TS001 run validated Prototype 08A.
 
 ## Accepted result
 
-Prototype 07 disproved the tested Direct Geometry Retrieval route without weakening
-the Physical Occupancy Envelope architecture.
+- both GIANTS vehicle collections were enumerated explicitly;
+- Condor attached once from the vehicle-system population;
+- all eight configured 36 m physical boom collision nodes resolved through I3D mappings;
+- one persistent Entity completed `FOLDED -> TRANSITION -> DEPLOYED`;
+- live origin span changed continuously from approximately 2.8237 m to 30.2403 m;
+- no no-match, missing-node, runtime-error or Control event occurred.
 
-In TS003:
+Prototype 08B remains the static catalogue source for collision identity, hierarchy and configuration membership. Its offline endpoint reconstruction is diagnostic rather than authoritative; live runtime transforms own pose truth.
 
-- `getRigidBodyType` was available;
-- tested shape, local and world bounding functions and collision-mask query were not;
-- Condor and Patriot each scanned 800 nodes with truncation;
-- bounded nodes and physics-bound nodes remained zero;
-- both Entities remained `coverage=NONE`, `confidence=UNKNOWN`;
-- approximately 337 s of heartbeats retained two Entities but zero envelopes;
-- no pair-clearance or envelope-change evidence could be produced;
-- both 36 m working-marker widths remained separate and were never used as physical
-  geometry.
+## Model-specific observation
 
-This is named the Runtime Geometry Access Gap. GIANTS has internal collision geometry,
-but the tested mod Lua boundary did not expose usable complete-Entity bounds.
+Condor has four boom sections on each side and appears progressively thinner toward each tip. This supports a segmented tapered compound representation for Condor, but not a generic foldable-implement template. Every model must supply its own segmentation, activation, dimensions and articulation evidence.
 
-## Secondary operational evidence
+## Current gap
 
-The final TS003 sequence contained a sweeping Patriot manoeuvre, a near miss and an
-observed reverse deadlock against parked Condor. Situation Assessment retained Condor
-as a relevant Field World Entity, but current clearance, rotation sweep and reverse
-occupancy remained unknown. This is Retained Entity, Missing Spatial Truth.
+The binary `.i3d.shapes` local collision-mesh extents remain unresolved. Collision-node origins are not mesh bounds and no Physical Occupancy Envelope is yet authoritative.
 
-## Current boundary
+## Next focus
 
-Select one alternative physical-evidence route before further implementation:
+Select and validate a trustworthy collision-mesh extent extraction route, initially for Condor's eight active boom nodes and permanent chassis collision parts. Combine those static local extents with the already validated live node transforms only after extraction evidence passes.
 
-1. inspect loaded vehicle/implement runtime structures and XML metadata;
-2. reconstruct configured geometry from XML/I3D model information;
-3. test indirect physics-world overlap or raycast queries as an occupancy oracle;
-4. design controlled empirical envelope discovery.
+## Boundary
 
-Do not enlarge hierarchy traversal, implement containment mathematics, create a
-folding fixture or add Control until one evidence route is justified.
-
-## Repository entry point
-
-1. `docs/PROJECT_STATUS.md`
-2. `docs/prototypes/PROTOTYPE_07_PHYSICAL_OCCUPANCY_EVIDENCE.md`
-3. `docs/ARCHITECTURE.md`
-4. `docs/CONCEPT_REGISTER.md`
-5. `docs/ROADMAP.md`
-
-Continue using:
-
-> Observe → Discuss → Hypothesise → Implement → Validate → Record → Repeat
+Do not infer segment dimensions from visual taper, working width, AI trigger width or origin spacing. Do not implement containment, swept geometry, Decision, Commitment or Control before current physical occupancy is trustworthy.

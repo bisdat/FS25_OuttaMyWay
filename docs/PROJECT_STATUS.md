@@ -1,57 +1,37 @@
 # Project Status
 
-Version: 4.6.8
+Version: 4.6.10
 
-Authority state: Canonical — Prototype 07 accepted as negative evidence for direct runtime geometry retrieval
+Authority state: Canonical — Prototype 08 live collision-node pose validated
 
-Canonical baseline: v4.6.8 canonical package derived from the exact tested candidate
+Canonical package: v4.6.10
 
-Accepted candidate SHA-256: 97e46f233320d15110343faf481bb08b19bc26f298cbc165ff9b028742d9d34c
+Current focus: extract trustworthy local collision-mesh extents and combine them with validated live node transforms
 
-Current focus: select one alternative evidence source for the complete Entity's current Physical Occupancy Envelope
+## Prototype 08A result
 
-## Accepted engineering result
+Strongly supported. Corrected TS001 enumerated Condor from the vehicle-system collection, resolved all eight configured 36 m physical boom collision nodes, preserved one Entity identity and observed one complete `FOLDED -> TRANSITION -> DEPLOYED` lifecycle.
 
-Prototype 07 asked:
+The lateral collision-node origin span changed continuously from approximately 2.8237 m folded to 30.2403 m deployed. Live runtime transforms are accepted as authoritative pose evidence.
 
-> Can GIANTS-accessible collision, physics and bounding evidence be aggregated across a complete vehicle–implement Entity into a conservative current Physical Occupancy Envelope?
+## Prototype 08B result
 
-The tested Direct Geometry Retrieval route is not supported.
+Supported for collision identity, hierarchy, configuration membership and source fingerprinting. Its principal folded/deployed lateral spans matched live evidence, but full offline endpoint pose remained approximate. Offline pose is diagnostic, not authoritative.
 
-## TS003 evidence
+The binary `.i3d.shapes` local mesh extents remain unresolved. No Physical Occupancy Envelope is yet derived.
 
-- `getRigidBodyType=true`;
-- tested shape, local and world bounding functions and collision-mask query unavailable;
-- Condor and Patriot each scanned 800 nodes with truncation;
-- zero bounded nodes and zero physics-bound nodes;
-- `coverage=NONE`, `confidence=UNKNOWN` for both Entities;
-- approximately 337 s with two retained Entities and zero physical envelopes;
-- no node evidence, pair clearance or envelope-change event;
-- 36 m working-marker widths remained separate and were not substituted.
+## Geometry caution
 
-This accepted finding is named the Runtime Geometry Access Gap.
-
-## Secondary operational evidence
-
-The final sweeping turn, near miss and observed reverse deadlock retained parked
-Condor as Situation-relevant while actual physical clearance and swept occupancy
-remained unknown. This is Retained Entity, Missing Spatial Truth.
+Condor's four boom sections per side appear progressively thinner toward the tips. This supports a segmented tapered representation for Condor only. Other foldable implements may have different segmentation, geometry, activation and articulation.
 
 ## Passive guarantee
 
 - `AI_EXPLORER_ONLY = true`;
 - `TRAFFIC_V2_ENABLED = false`;
-- Prototypes 01 through 07 execute before the observer-only return;
-- no containment, projected sweep, safety padding, speed, steering, implement, route,
-  AI-job, Decision, Commitment, hold or release action is permitted.
+- Prototype 07's expensive completed bound scan remains disabled;
+- Prototype 08 runs before the observer-only return;
+- no containment, projected sweep, Decision, Commitment or Control is permitted.
 
-## Next evidence routes
+## Next gate
 
-- loaded vehicle/implement runtime structures and XML metadata;
-- configured XML/I3D geometry reconstruction;
-- indirect physics overlap or raycast queries as an occupancy oracle;
-- controlled empirical envelope discovery.
-
-Choose and test one route at a time. Do not increase hierarchy depth merely because
-the first route failed, and do not implement containment until physical evidence is
-trustworthy.
+Do not implement containment until local collision-mesh extents are extracted or otherwise established conservatively and validated against the live node-pose source.

@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.6.8
+-- FS25_OuttaMyWay v4.6.10
 -- Cooperative collision avoidance for base-game AI field workers.
 
 OuttaMyWay = {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.6.8"
+OuttaMyWay.VERSION = "4.6.10"
 OuttaMyWay.BLOCKED_FOLD_DELAY_MS = 6500
 OuttaMyWay.WAIT_FOLD_DELAY_MS = 4500
 OuttaMyWay.HEAD_ON_FOLLOW_HOLD_DISTANCE = 55.0
@@ -143,7 +143,7 @@ OuttaMyWay.PROTOTYPE_06_ENABLED = true
 -- complete-Entity aggregation and a conservative current Physical Occupancy
 -- Envelope. Working width is logged separately and never substitutes for physical
 -- geometry. No containment, projected sweep or vehicle control is permitted.
-OuttaMyWay.PROTOTYPE_07_ENABLED = true
+OuttaMyWay.PROTOTYPE_07_ENABLED = false
 OuttaMyWay.PROTOTYPE_07_INTERVAL_MS = 500
 OuttaMyWay.PROTOTYPE_07_HEARTBEAT_MS = 15000
 OuttaMyWay.PROTOTYPE_07_PAIR_LOG_MS = 1000
@@ -151,7 +151,21 @@ OuttaMyWay.PROTOTYPE_07_PAIR_WATCH_DISTANCE_M = 150.0
 OuttaMyWay.PROTOTYPE_07_NODE_SCAN_BUDGET = 800
 OuttaMyWay.PROTOTYPE_07_INVENTORY_REFRESH_MS = 5000
 
--- First live Traffic Manager v2 prototype. Disabled for passive Prototypes 01, 02, 03, 04, 05, 06 and 07.
+-- Prototype 08A/08B: passive model-derived collision-node pose validation.
+-- 08A resolves the eight active 36 m Condor boom collision nodes and samples
+-- their live transforms through folded, transitional and deployed poses. 08B
+-- supplies asset-bound identity/hierarchy/offline endpoint predictions while
+-- keeping binary mesh extents explicitly unresolved.
+OuttaMyWay.PROTOTYPE_08_ENABLED = true
+OuttaMyWay.PROTOTYPE_08_INTERVAL_MS = 100
+OuttaMyWay.PROTOTYPE_08_TRANSITION_LOG_MS = 250
+OuttaMyWay.PROTOTYPE_08_ENDPOINT_LOG_MS = 2000
+OuttaMyWay.PROTOTYPE_08_NODE_DETAIL_MS = 5000
+OuttaMyWay.PROTOTYPE_08_NODE_SCAN_BUDGET = 1800
+OuttaMyWay.PROTOTYPE_08_ENUMERATION_LOG_MS = 2000
+OuttaMyWay.PROTOTYPE_08_NO_MATCH_WARNING_MS = 5000
+
+-- First live Traffic Manager v2 prototype. Disabled for passive Prototypes 01 through 08.
 -- Its retained settings are not executed in this candidate.
 OuttaMyWay.TRAFFIC_V2_ENABLED = false
 OuttaMyWay.TRAFFIC_V2_MIN_CONFIDENCE = 0.80

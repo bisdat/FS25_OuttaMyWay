@@ -34,6 +34,20 @@ This log records Accepted, Deferred, Rejected and Superseded project choices tha
 **Recovery finding:** failure to promote the executable RRS implementation caused avoidable capability loss. Repository-owned implementation is now required.
 
 
+## D-0023 — Separate collision-node pose from collision-mesh extent
+
+**Status:** Accepted in canonical v4.6.10; archival v4.6.9 superseded
+
+**Decision:** Model-derived physical geometry remains split into 08A authoritative live collision-node pose and 08B offline collision identity, hierarchy, configuration membership and future local mesh extent. Collision-node origins and transforms shall not be represented as collision-mesh bounds.
+
+**Validation:** Corrected TS001 enumeration found Condor through `g_currentMission.vehicleSystem.vehicles`, attached one Entity and resolved all eight configured 36 m boom collision nodes exactly once. The live origin span moved continuously from approximately 2.8237 m folded to 30.2403 m deployed through one `FOLDED -> TRANSITION -> DEPLOYED` lifecycle with preserved identity.
+
+**08B result:** The catalogue correctly established 29 physical compound-child shapes, eight active 36 m nodes, mappings and principal lateral endpoint spans. Full offline pose reconstruction is non-authoritative: the folded `Col04` longitudinal prediction was materially wrong and the deployed endpoint retained approximately 0.55 m RMS error. Runtime transforms therefore own pose truth.
+
+**Geometry caution:** Condor's four sections per side appear tapered toward the tips, but this is model-specific supporting evidence. Other foldable implements may have different segmentation, dimensions, activation and articulation and shall not inherit a Condor-shaped template.
+
+**Boundary:** `.i3d.shapes` local mesh extents remain unresolved. Working width, AI collision-trigger width and collision-node origin span shall not substitute for a Physical Occupancy Envelope. No containment, projected sweep or Control is included.
+
 ## D-0022 — Separate physical geometry from agronomic working width and test evidence discovery
 
 **Status:** Accepted in canonical v4.6.8

@@ -1,29 +1,19 @@
 # Roadmap
 
-## Immediate — Select the next Physical Occupancy evidence route
+## Immediate — Resolve local collision-mesh extents
 
-Prototype 07 is complete as accepted negative evidence. The tested Lua runtime route
-exposed rigid-body type but no usable bounds, so complete-Entity occupancy remains
-unknown. The next increment must investigate one source boundary rather than combine
-fallbacks for implementation convenience.
+Prototype 08A is complete and strongly supports authoritative live collision-node pose. Prototype 08B supplies reproducible identity, hierarchy and configuration membership but not local mesh dimensions.
 
-Candidate evidence routes:
+Next evidence order:
 
-1. loaded vehicle/implement runtime structures and XML metadata;
-2. configured XML/I3D model reconstruction;
-3. indirect physics-world overlap or raycast queries as a Physical Occupancy Oracle;
-4. controlled empirical envelope discovery.
+1. select one trustworthy `.i3d.shapes` or GIANTS Editor extraction route;
+2. extract local extents for Condor's permanent chassis shapes and eight active 36 m boom shapes;
+3. preserve segment-specific dimensions rather than inventing one uniform boom rectangle;
+4. transform extracted local extents using the validated live node transforms;
+5. compare folded, transitional and deployed compound occupancy against observed geometry;
+6. only then evaluate current field containment.
 
-Selection criteria:
-
-- complete root vehicle plus attached/towed implement coverage;
-- configuration awareness;
-- conservative evidence with no silent under-approximation;
-- acceptable observation cost;
-- no use of working width as physical geometry.
-
-Containment mathematics, projected sweep, folding fixtures and Control remain
-deferred until one source is justified.
+Condor's apparent segmented taper is useful model-specific evidence, not a generic foldable-implement template.
 
 ## Development policy
 
@@ -123,6 +113,21 @@ Development remains in a private repository until the first GIANTS ModHub releas
 - [x] Defer folded/unfolded validation because Stage 1 discovered no usable source.
 - [x] Record Runtime Geometry Access Gap and reject the tested Direct Geometry Retrieval route.
 - [x] Decide that the discovered evidence is insufficient for current field containment.
+
+### Prototype 08 — Collision Node Pose and Model-Derived Catalogue
+
+- [x] Extract Condor physical collision identities, mappings and configuration membership.
+- [x] Generate source-fingerprinted 08B catalogue and endpoint origin predictions.
+- [x] Expose and correct the Diagnostic Enumeration Blind Spot through explicit dual-source enumeration.
+- [x] Resolve all eight active 36 m collision nodes through I3D mappings.
+- [x] Validate one persistent `FOLDED -> TRANSITION -> DEPLOYED` lifecycle in TS001.
+- [x] Validate continuous lateral origin-span growth from approximately 2.8237 m to 30.2403 m.
+- [x] Establish live runtime transforms as authoritative pose evidence.
+- [x] Restrict offline endpoint reconstruction to diagnostic status because full per-node comparison remained approximate.
+- [x] Record Condor's Segmented Tapered Occupancy observation with an explicit model-specific caution.
+- [ ] Extract trustworthy local mesh extents for chassis and active boom collision shapes.
+- [ ] Derive and validate the current compound Physical Occupancy Envelope.
+- [ ] Generalise only after at least one materially different foldable implement is observed.
 
 ## Repository Release System follow-up
 

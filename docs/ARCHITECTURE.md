@@ -121,6 +121,12 @@ Working width shall never substitute for physical geometry. The Condor and Patri
 
 **No Silent Under-Approximation** is an invariant: Situation Assessment must expose unknown, partial or low-confidence geometry rather than representing an Entity as smaller than the available evidence supports. A conservative broad-phase approximation may exclude distant cases, but it cannot become authoritative containment knowledge merely because it is convenient.
 
+### Configuration–Pose Separation and the Model-Derived Route (v4.6.10)
+
+A purchased **Geometry Family** selects the collision-node family available to an Entity. **Physical Pose** determines where those nodes are now; **Operational State** is independent again. The same 36 m Condor may be folded and stationary, transitioning, deployed and working, or deployed and parked.
+
+The Model-Derived Collision Catalogue binds static asset knowledge—collision identity, hierarchy, filters, configuration membership and local mesh extent—to live node transforms. Prototype 08 currently provides identity/hierarchy and pose only. Collision-node origins are not mesh bounds, and the Collision Mesh Extraction Gap remains explicit.
+
 Prototype 07 passively inventories GIANTS-accessible geometry and derives a current compound envelope with explicit provenance and confidence. It does not claim exact collision truth, configuration-transition sweep, projected motion sweep or containment.
 
 ## Logging vocabulary (4.2.6)
