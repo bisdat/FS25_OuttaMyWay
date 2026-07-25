@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for Prototype 05 candidate v4.6.6.
+Review status: reviewed for canonical release v4.6.6.
 
 ## Accepted Concepts
 
@@ -38,15 +38,15 @@ The bounded physical world defined by one field boundary polygon for one Operati
 
 ### Field World Membership
 
-The classification that physical geometry intersects the bounded Field World. Membership does not imply active participation, agency or current relevance.
+The classification that physical geometry intersects the bounded Field World. Membership does not imply active participation, agency or current relevance. Prototype 05 strongly validated vehicle membership independently of active AI state, including completed Condor discovered at TS002 save load.
 
 ### Operational Membership
 
-The dynamic subset of Entities actively participating in one Operation. An Entity may leave Operational Membership while remaining physically present and relevant inside the Field World.
+The dynamic subset of Entities actively participating in one Operation. Prototype 05 validated that a completed vehicle may remain a Field World Member while excluded from Operational Membership. Reliable evidence latching and relationship reclassification at a live membership transition remain implementation work.
 
 ### Situation Relevance
 
-The dynamic relationship by which a Field World Member can affect an Operation member or a plausible future. Relevance is not inferred from membership alone.
+The dynamic relationship by which a Field World Member can affect an Operation member or a plausible future. Prototype 05 strongly validated this as a changing relationship: parked Condor began not relevant in TS002 and became relevant as Patriot approached. Relevance is not inferred from membership alone.
 
 ### Operational Collision Envelope
 
@@ -54,7 +54,7 @@ The complete collision geometry of the vehicle and every attached or towed imple
 
 ### Full-Envelope Field Containment
 
-The invariant that every AI worker's complete Operational Collision Envelope remains wholly inside the field polygon at all times. External geometry should not require obstacle handling because the worker envelope must never reach beyond the boundary.
+The invariant that every AI worker's complete Operational Collision Envelope remains wholly inside the field polygon at all times. External geometry should not require obstacle handling because the worker envelope must never reach beyond the boundary. Prototype 05 promoted the invariant but did not validate exact envelope geometry, projected sweep or active containment.
 
 ## Deferred Concepts
 

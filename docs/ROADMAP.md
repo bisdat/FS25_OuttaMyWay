@@ -58,13 +58,16 @@ Development remains in a private repository until the first GIANTS ModHub releas
 - [x] Recover and promote Full-Envelope Field Containment into authoritative architecture and vocabulary.
 - [x] Define the field polygon as the bounded Field World for one Operation.
 - [x] Separate Field World Membership, Operational Membership and Situation Relevance.
-- [ ] Validate parked Patriot after its AI job ends and detect Condor's repositioning conflict.
-- [ ] Validate completed Condor after its AI job ends and detect Patriot's terminal occupancy conflict.
+- [x] Validate stopped/player-controlled Patriot as a retained non-operational Field World Member and detect relevance during Condor approaches in supporting TS001 runs.
+- [x] Validate completed Condor as a retained non-operational Field World Member and detect Patriot's terminal approach in repeatable TS002.
 - [x] Include moving player-controlled vehicles in the vehicle observation boundary.
 - [ ] Extend later evidence to complete static-object identity wholly inside the field polygon.
 - [x] Record external hedges, trees and other geometry as outside obstacle scope under Full-Envelope Field Containment.
 - [ ] Implement and validate exact full-envelope containment control.
-- [ ] Reconsider an active Information-Gaining Delay only after held and completed physical Entities remain observable.
+- [x] Establish the vehicle observation boundary before reconsidering active Information-Gaining Delay.
+- [ ] Correct Operational Membership event latching and live relationship reclassification.
+- [ ] Validate a repeatable live `OPERATION_MEMBER → NON_OPERATION_VEHICLE` transition.
+- [ ] Reconsider active Information-Gaining Delay only after transition evidence, internal static-world observation and exact geometry boundaries are sufficiently understood.
 
 ## Repository Release System follow-up
 

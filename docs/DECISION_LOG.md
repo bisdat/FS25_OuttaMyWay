@@ -36,7 +36,7 @@ This log records Accepted, Deferred, Rejected and Superseded project choices tha
 
 ## D-0021 — Test Field World observation passively
 
-**Status:** Accepted for Prototype 05 candidate v4.6.6
+**Status:** Accepted in canonical v4.6.6
 
 **Decision:** Prototype 05 shall observe mission vehicles inside the field polygon independently of active GIANTS AI membership and shall record Field World Membership, Operational Membership and Situation Relevance separately. It shall remain passive.
 
@@ -44,9 +44,11 @@ This log records Accepted, Deferred, Rejected and Superseded project choices tha
 
 **Boundary:** The prototype may use conservative current-envelope geometry for evidence but shall not claim exact maximum collision geometry, projected sweep, active containment, safe release or Information-Gaining Delay.
 
+**Validation:** The vehicle observation hypothesis is strongly supported. TS002 discovered completed Condor at save load as `NON_OPERATION_VEHICLE`, kept Patriot as the sole `OPERATION_MEMBER`, changed the relation from `NOT_RELEVANT` to `RELEVANT` as Patriot approached and ended with Patriot blocked in the observed collision. Supporting TS001 runs retained stopped/player-controlled Patriot and completed Condor. Membership-event repetition, live relationship reclassification, exact containment geometry and complete static-object identity remain unresolved. No Control behaviour exists in the canonical implementation.
+
 ## D-0020 — Define the Field World and require Full-Envelope Field Containment
 
-**Status:** Accepted in Prototype 05 candidate v4.6.6 as recovered architectural knowledge
+**Status:** Accepted in canonical v4.6.6 as recovered architectural knowledge
 
 **Decision:** One field boundary polygon defines the bounded Field World for one Operation. Every AI worker's complete vehicle–implement collision envelope, including configuration-dependent maximum extent and projected swept geometry, must remain wholly inside that polygon at all times.
 

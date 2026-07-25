@@ -11,6 +11,12 @@
 - Uses conservative current-envelope rectangles for diagnostics only; exact maximum collision geometry, projected sweep and containment control remain unimplemented.
 - Added the parked-Patriot and completed-Condor TS001 validation procedure.
 - Traffic Manager v2 remains disabled; no hold, release, Decision, Commitment, containment or vehicle-control behaviour is introduced.
+- Variable TS001 runs confirmed that stopped or player-controlled Patriot and completed Condor remained Field World vehicle members after leaving active Operational Membership; manual timing and movement prevented a clean terminal regression result.
+- Added TS002 as a repeatable pre-existing non-operational vehicle relevance fixture: completed Condor is parked, Patriot remains active and approaches the same finishing area without player intervention.
+- In TS002, Condor was discovered at `t=6.2s` as `NON_OPERATION_VEHICLE` while Patriot was the sole `OPERATION_MEMBER`; the relation began `NOT_RELEVANT`, became `RELEVANT` at `t=241.7s`, and Patriot became blocked at `t=290.7s` in the observed collision.
+- Prototype 05 therefore strongly supports independent Field World Membership, Operational Membership and dynamic Situation Relevance for vehicle members.
+- The test also exposed repeated Operational Membership event logging, incomplete relationship reclassification after a live worker completes, and noisy provisional containment candidates; exact static-object identity and exact full-envelope geometry remain unresolved.
+- The repository owner reviewed and tested the exact v4.6.6 candidate and explicitly declared v4.6.6 canonical.
 
 ## v4.6.5 — Prototype 04: Continuation Intent and Safe Release
 

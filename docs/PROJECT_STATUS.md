@@ -2,49 +2,60 @@
 
 Version: 4.6.6
 
-Authority state: Release Candidate — Prototype 05 passive Field World evidence awaiting in-game validation
+Authority state: Canonical — Prototype 05 vehicle Field World observation strongly supported; exact geometry and static-world observation unresolved
 
-Canonical baseline: exact accepted v4.6.5 canonical package
+Canonical source: exact accepted v4.6.6 candidate
 
-Canonical baseline SHA-256: 3c7cfa56fe0bd74dc3d3aabbcaddf52c1d49e10637b248ce75a7193e264d9431
+Accepted candidate SHA-256: cef9190ae6738caae66b2efb375bce1c6f94100bd8e967daaeb7260e34b14658
 
-Current focus: validate Field World observation independently of active Operational Membership before any active Information-Gaining Delay
+Current focus: correct Field World membership-transition evidence and relationship reclassification, then extend observation toward exact internal static objects and full-envelope geometry before any active Information-Gaining Delay
 
-## Engineering Increment Hypothesis
+## Engineering Increment Result
 
-Prototype 05 asks:
+Prototype 05 asked:
 
 > Can Situation Assessment retain vehicle Field World Members independently of active GIANTS AI membership and identify when inactive, completed or player-controlled vehicles become relevant to an active Operation member's plausible trajectory?
 
-The candidate remains passive. It does not hold or release either worker, select a Commitment, constrain the field boundary or alter GIANTS AI behaviour.
+**Result:** Strongly supported for vehicle members. A clean TS002 fixture discovered completed Condor as a non-operational Field World Member at save load, kept Patriot as the sole Operation member, and promoted Condor from `NOT_RELEVANT` to `RELEVANT` as Patriot approached the occupied finishing area. Patriot later became blocked in the visually observed collision.
 
-## Recovered Architecture
+The canonical release remains passive. It does not hold or release either worker, select a Commitment, constrain the field boundary or alter GIANTS AI behaviour.
 
-The field polygon defines the bounded Field World for one field Operation.
+## Accepted Evidence
 
-**Full-Envelope Field Containment** is an accepted invariant: the complete operational collision envelope of the vehicle and every attached or towed implement, including configuration-dependent maximum extent and projected swept geometry, remains wholly inside the field polygon at all times.
+TS002 provided a repeatable pre-existing non-operational vehicle relevance fixture with no manual intervention after the run began:
 
-External hedges, trees, ditches and pylons are therefore outside normal obstacle scope. Their removal from TS001 was a workaround for missing containment behaviour, not an acceptable requirement.
+- `t=6.2s`: the field polygon was discovered with 12 boundary points and no reported field islands;
+- `t=6.2s`: Condor was attached as `NON_OPERATION_VEHICLE`, `operationalMember=false`;
+- `t=6.2s`: Patriot was attached as the sole `OPERATION_MEMBER`;
+- `t=6.2s`: Patriot-to-Condor relevance began `NOT_RELEVANT` at 462.99 m separation with a projected closest distance of 301.04 m;
+- a brief relationship transition occurred during earlier manoeuvring and cleared again, demonstrating that relevance is dynamic rather than permanent;
+- `t=241.7s`: Condor became `RELEVANT` as Patriot approached the shared finishing area, with 227.95 m separation and a projected closest distance of 40.22 m against the provisional 41.35 m envelope clearance;
+- `t=290.7s`: Patriot became `BLOCKED`, consistent with the player's observed collision with parked Condor;
+- throughout the run the heartbeat retained one active Operation member, two Field World vehicle members and one relevance relationship;
+- no OuttaMyWay Lua runtime error or vehicle-control action occurred.
 
-The architecture now separates:
+Variable TS001 runs additionally showed stopped or player-controlled Patriot and completed Condor remaining physically observed after Operational Membership ended. Manual movement and timing made those runs unsuitable as the clean terminal regression fixture, which is why TS002 was created.
 
-- **Field World Membership** — physical presence within the bounded field world;
-- **Operational Membership** — active participation in the Operation;
-- **Situation Relevance** — current ability to affect an Operation member or plausible future.
+## Interpretation
 
-## Candidate Implementation
+Prototype 05 supports:
 
-Prototype 05:
+- **Field World Membership** as physical vehicle presence independent of active AI participation;
+- **Operational Membership** as a distinct, dynamic participation classification;
+- **Situation Relevance** as a changing relationship rather than a property inherited from membership;
+- TS002 as a repeatable completed-vehicle relevance fixture rather than a terminal-parking special case.
 
-- discovers the GIANTS field boundary while observer-only mode is active;
-- retains every mission vehicle whose conservative current envelope intersects that polygon;
-- observes active, inactive, completed and player-controlled vehicles independently of active-worker state;
-- records Operational Membership transitions without discarding physical membership;
-- records dynamic relevance using separation, closing rate and closest-approach evidence;
-- preserves GIANTS field-island counts and native static-collision signals as limited static-world evidence;
-- records conservative current-envelope containment candidates without issuing Control.
+The evidence does not validate exact full-envelope collision geometry, projected swept geometry, active containment or complete internal static-object identity.
 
-The current geometry is a diagnostic rectangle approximation. It does not yet implement exact maximum collision geometry or projected sweep.
+## Instrumentation Findings
+
+Three diagnostic defects remain:
+
+1. `OPERATIONAL_MEMBERSHIP_CHANGED` was emitted repeatedly for an unchanged non-operational Condor and must be latched to actual transitions.
+2. An existing active-worker relationship was not reliably rebuilt when a live worker completed and changed classification; this Relationship Reclassification Gap remains to be corrected and validated.
+3. Conservative rectangle containment candidates were noisy and must not be treated as evidence of actual Full-Envelope Field Containment compliance.
+
+These are observation and interpretation defects. They do not weaken the clean TS002 result that a pre-existing non-operational vehicle can be retained and promoted to Situation-relevant.
 
 ## Passive Guarantee
 
@@ -53,30 +64,22 @@ The current geometry is a diagnostic rectangle approximation. It does not yet im
 - Prototypes 01 through 05 run before the observer-only return;
 - no speed, steering, implement, route, AI-job, Decision, Commitment, hold, release or containment action is permitted.
 
-## Immediate Test
+## Next Evidence Boundary
 
-Use the limited TS001 stop/restart scenario:
+The next declared Engineering Increment should:
 
-1. stop Patriot at the previous candidate wait position;
-2. verify that it remains a Field World Member after leaving active AI membership;
-3. observe Condor's later repositioning toward parked Patriot;
-4. move Patriot before collision if desired and restart it after Condor clears;
-5. allow Condor to finish and park;
-6. observe Patriot's terminal approach to the occupied GIANTS finishing position;
-7. upload the complete log and visual observations.
-
-## Expected Evidence
-
-- parked Patriot remains `operationalMember=false` but physically observed;
-- Condor-to-Patriot relevance changes to `RELEVANT`;
-- moving Patriot is classified as player-controlled rather than disappearing;
-- completed Condor remains a Field World Member;
-- Patriot-to-Condor terminal relevance becomes visible.
+1. latch Operational Membership events to real state changes;
+2. rebuild or reclassify Situation Relevance when an existing Field World Member enters or leaves Operational Membership;
+3. retain TS002 as a regression fixture for a pre-existing completed vehicle;
+4. establish a repeatable live `OPERATION_MEMBER → NON_OPERATION_VEHICLE` transition fixture;
+5. separate provisional current-envelope diagnostics from exact Operational Collision Envelope knowledge;
+6. extend Field World observation toward identifiable internal static objects before active hold/release behaviour is reconsidered.
 
 ## Known Constraints
 
-- Manual stop/restart contains Job Restart Perturbation.
-- Exact full-envelope collision geometry and projected sweep are not implemented.
-- Internal static-object identity is incomplete; field islands and native collision signals are evidence only.
-- The test map currently lacks the deleted external hedges, so containment itself is not validated.
+- Exact maximum collision geometry and projected swept geometry are not implemented.
+- Current containment rectangles generate false or ambiguous breach candidates.
+- Internal static-object identity remains incomplete; field islands and native collision signals are evidence only.
+- TS002 begins after Condor has completed, so it does not itself validate live relationship reclassification at job completion.
+- The test map still lacks the external hedges removed to work around missing containment behaviour.
 - Older control code remains in the repository but is bypassed by the observer-only boundary.
