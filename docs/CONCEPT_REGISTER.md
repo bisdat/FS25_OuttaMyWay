@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for canonical release v4.6.6.
+Review status: reviewed for canonical release v4.6.7.
 
 ## Accepted Concepts
 
@@ -38,15 +38,15 @@ The bounded physical world defined by one field boundary polygon for one Operati
 
 ### Field World Membership
 
-The classification that physical geometry intersects the bounded Field World. Membership does not imply active participation, agency or current relevance. Prototype 05 strongly validated vehicle membership independently of active AI state, including completed Condor discovered at TS002 save load.
+The classification that physical geometry intersects the bounded Field World. Membership does not imply active participation, agency or current relevance. Prototype 05 strongly validated vehicle membership independently of active AI state, and Prototype 06 retained the same Condor Field World identity through a live completion transition in TS003.
 
 ### Operational Membership
 
-The dynamic subset of Entities actively participating in one Operation. Prototype 05 validated that a completed vehicle may remain a Field World Member while excluded from Operational Membership. Reliable evidence latching and relationship reclassification at a live membership transition remain implementation work.
+The dynamic subset of Entities actively participating in one Operation. Prototype 05 validated that a completed vehicle may remain a Field World Member while excluded from Operational Membership. Prototype 06 strongly validated that a live `OPERATION_MEMBER -> NON_OPERATION_VEHICLE` transition can be latched exactly once while Field World identity is retained.
 
 ### Situation Relevance
 
-The dynamic relationship by which a Field World Member can affect an Operation member or a plausible future. Prototype 05 strongly validated this as a changing relationship: parked Condor began not relevant in TS002 and became relevant as Patriot approached. Relevance is not inferred from membership alone.
+The dynamic relationship by which a Field World Member can affect an Operation member or a plausible future. Prototype 05 strongly validated changing geometric relevance. Prototype 06 additionally validated role-aware relationship reclassification when a participant leaves Operational Membership, even when the relevant/not-relevant result itself does not change. Relevance is not inferred from membership alone.
 
 ### Operational Collision Envelope
 

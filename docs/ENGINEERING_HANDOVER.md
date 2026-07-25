@@ -1,42 +1,53 @@
 # Engineering Handover
 
-## Baseline
+## Canonical baseline
 
-Prototype 06 Candidate v4.6.7 derives from the owner-supplied clean v4.6.6 canonical package.
+Canonical v4.6.7 derives from the exact tested Prototype 06 candidate.
 
-Baseline SHA-256:
+Accepted candidate SHA-256:
 
-`9a1c73138ad824ce48cf364f20e2f008f31223d4f3509a7d0f48ac7df0ce1823`
+`bee9382bc8f4f6a187aacbae43b8adefdf117eeb92f14c5e123da17a9de8a9b9`
 
-## Current hypothesis
+## Accepted result
 
-Situation Assessment should preserve one Field World identity while Operational Membership changes, latch the transition once, and reclassify every existing relation whose participant role changed.
+Prototype 06 strongly supports the hypothesis that Situation Assessment can preserve
+one Field World identity while Operational Membership changes, latch the transition
+once and reclassify every existing relation whose participant role changed.
 
-## Implementation result
+### TS002 negative control
 
-The Field World probe now:
+- Condor began and remained `NON_OPERATION_VEHICLE`;
+- no membership transition, relationship reclassification or relationship removal
+  was emitted merely because that state persisted;
+- the Patriot-to-Condor relation still became `RELEVANT` during the terminal approach;
+- the observed finishing-area collision remained detectable.
 
-- preserves previous Boolean false membership correctly;
-- increments a classification revision only on attach or real class/membership change;
-- includes classification revisions in relationship signatures;
-- emits explicit membership-transition and relationship-reclassification evidence;
-- explicitly retires directional relations whose source is no longer operational.
+### TS003 positive case
 
-No control path is enabled.
+- both workers began active;
+- Condor completed at approximately `t=225.5s` while Patriot remained active;
+- exactly one `PROTOTYPE06 MEMBERSHIP_TRANSITION` was emitted;
+- exactly one `PROTOTYPE06 RELATIONSHIP_RECLASSIFIED` was emitted with
+  `identityPreserved=true`;
+- the obsolete Condor-as-active-source relation was retired explicitly once;
+- Condor retained the same Field World identity;
+- no unchanged event repeated and no OuttaMyWay runtime or control error occurred.
 
-## Validation order
+Several transient relevance and GIANTS blocked episodes cleared without deadlock.
+Blocked state remains evidence requiring interpretation, not a deadlock conclusion.
 
-1. Run TS002 as a regression fixture. Confirm no repeated unchanged Condor membership events and preserve the existing relevance/collision result.
-2. Create or use a repeatable live completion fixture (provisionally TS003) where both workers begin active and one completes while the other remains active.
-3. Upload the complete game log and record the visual completion event and subsequent vehicle positions.
+## Current boundary
 
-## Expected searchable evidence
+Prototype 06 closes the vehicle Operational Membership transition defect. The next
+architectural discussion should remain passive and select one evidence boundary at a
+time from:
 
-```text
-PROTOTYPE06 MEMBERSHIP_TRANSITION
-PROTOTYPE06 RELATIONSHIP_RECLASSIFIED
-PROTOTYPE06 RELATIONSHIP_REMOVED
-```
+1. complete identity of static Field World Members wholly inside the field polygon;
+2. exact current and maximum Operational Collision Envelope sources;
+3. projected swept-envelope containment.
+
+Active containment, hold/release, Conflict Realisation and Information-Gaining Delay
+remain deferred.
 
 ## Repository entry point
 

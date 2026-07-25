@@ -1,23 +1,15 @@
 # Roadmap
 
-## Immediate — Prototype 06: Membership Transition Reclassification
+## Immediate — Select the next passive Field World boundary
 
-Validate that a retained Field World vehicle changes Operational Membership exactly once and that every existing Situation Relevance relationship is reclassified by participant role without losing identity.
+Prototype 06 is complete. TS002 passed as the negative control and TS003 validated one latched live Operational Membership transition, retained Field World identity and one explicit relationship reclassification.
 
-Required fixtures:
+The next increment must preserve one-hypothesis scope and choose one of the following evidence boundaries rather than combining them for implementation convenience:
 
-- TS002 regression: pre-existing non-operational Condor;
-- TS003 or equivalent: live worker completion while another worker remains active.
-
-This increment remains passive. Static-object identity, exact Operational Collision Envelope geometry, projected sweep and active containment remain separate later work.
-
-## Following evidence boundaries
-
-1. complete live relationship-transition validation;
-2. identify internal static Field World Members rather than relying only on field-island counts and native collision signals;
-3. discover exact current and maximum Operational Collision Envelope sources;
-4. validate projected swept-envelope containment;
-5. return to Conflict Realisation and active Information-Gaining Delay only after Situation Assessment retains every relevant participant.
+1. identify internal static Field World Members rather than relying only on field-island counts and native collision signals;
+2. discover exact current and maximum Operational Collision Envelope sources;
+3. validate projected swept-envelope containment;
+4. return to Conflict Realisation and active Information-Gaining Delay only after Situation Assessment retains every relevant participant.
 
 ## Development policy
 
@@ -84,9 +76,22 @@ Development remains in a private repository until the first GIANTS ModHub releas
 - [x] Record external hedges, trees and other geometry as outside obstacle scope under Full-Envelope Field Containment.
 - [ ] Implement and validate exact full-envelope containment control.
 - [x] Establish the vehicle observation boundary before reconsidering active Information-Gaining Delay.
-- [ ] Correct Operational Membership event latching and live relationship reclassification.
-- [ ] Validate a repeatable live `OPERATION_MEMBER → NON_OPERATION_VEHICLE` transition.
+- [x] Correct Operational Membership event latching and live relationship reclassification.
+- [x] Validate a repeatable live `OPERATION_MEMBER → NON_OPERATION_VEHICLE` transition in TS003.
 - [ ] Reconsider active Information-Gaining Delay only after transition evidence, internal static-world observation and exact geometry boundaries are sufficiently understood.
+
+### Prototype 06 — Membership Transition Reclassification
+
+- [x] Preserve Boolean false when comparing previous Operational Membership.
+- [x] Assign and retain per-Entity classification revisions.
+- [x] Preserve TS002 relevance behaviour with zero false role-transition events.
+- [x] Establish repeatable TS003 live completion despite GIANTS restart repositioning.
+- [x] Emit exactly one live membership transition when Condor completes.
+- [x] Retain the same Condor Field World identity.
+- [x] Reclassify the active Patriot-to-Condor relationship exactly once.
+- [x] Retire the obsolete reverse directional relationship explicitly.
+- [x] Confirm no repeated unchanged event, Lua error or vehicle-control action.
+- [x] Record that transient GIANTS blocked warnings may clear without deadlock.
 
 ## Repository Release System follow-up
 

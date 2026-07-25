@@ -2,37 +2,45 @@
 
 Version: 4.6.7
 
-Authority state: Release Candidate — Prototype 06 membership transition and relationship reclassification awaiting passive in-game evidence
+Authority state: Canonical — Prototype 06 membership transition and relationship reclassification accepted
 
-Canonical baseline: owner-supplied clean v4.6.6 canonical package
+Canonical baseline: v4.6.7 canonical package derived from the exact tested candidate
 
-Canonical baseline SHA-256: 9a1c73138ad824ce48cf364f20e2f008f31223d4f3509a7d0f48ac7df0ce1823
+Accepted candidate SHA-256: bee9382bc8f4f6a187aacbae43b8adefdf117eeb92f14c5e123da17a9de8a9b9
 
-Current focus: validate one latched live `OPERATION_MEMBER -> NON_OPERATION_VEHICLE` transition and explicit reclassification of the retained relationship
+Current focus: choose the next single passive Field World evidence boundary after closing vehicle Operational Membership transition defects
 
-## Engineering Increment
+## Accepted engineering result
 
-Prototype 06 asks:
+Prototype 06 asked:
 
 > Can Situation Assessment latch Operational Membership transitions to one real state change and reclassify existing Situation Relevance relationships when a retained Field World Member changes operational role?
 
-The candidate corrects the false-to-nil latching defect and adds classification revisions to retained members and relation signatures. A role change can now be logged independently of whether geometric relevance changes.
+The hypothesis is strongly supported.
 
-## Regression boundary
+## Validation fixtures
 
-TS002 remains the repeatable pre-existing non-operational vehicle relevance fixture. It must continue to discover completed Condor at load, retain Patriot as the sole Operation member and promote Condor to Situation-relevant during Patriot's terminal approach.
+### TS002 — negative control
 
-## New evidence requirement
+- Condor began and remained non-operational;
+- zero false membership transitions;
+- zero role reclassifications or relationship removals without a real role change;
+- Condor still became Situation-relevant during Patriot's terminal approach;
+- the finishing-area collision remained observable.
 
-A repeatable live completion-transition fixture is still required. Both workers should begin active, one should complete shortly after load, and the other should remain active. This fixture may be named TS003.
+### TS003 — live completion
 
-Expected evidence:
+- both workers began active;
+- Condor completed at approximately `t=225.5s` while Patriot remained active;
+- exactly one latched `OPERATION_MEMBER -> NON_OPERATION_VEHICLE` transition;
+- exactly one identity-preserving relationship reclassification;
+- exactly one explicit retirement of the obsolete reverse directional relation;
+- same Condor Field World identity retained;
+- no repeated unchanged event, Lua runtime error or vehicle-control action.
 
-- one `PROTOTYPE06 MEMBERSHIP_TRANSITION`;
-- retained Field World identity;
-- one `PROTOTYPE06 RELATIONSHIP_RECLASSIFIED`;
-- explicit retirement of the obsolete reverse directional relation;
-- no repeated unchanged membership event.
+Transient relevance and GIANTS blocked episodes cleared without deadlock. Blocked
+state is retained as an operational symptom, not proof of deadlock or realised
+collision.
 
 ## Passive guarantee
 
@@ -41,10 +49,10 @@ Expected evidence:
 - Prototypes 01 through 06 execute before the observer-only return;
 - no speed, steering, implement, route, AI-job, Decision, Commitment, hold, release or containment action is permitted.
 
-## Unchanged unresolved boundaries
+## Next evidence boundaries
 
+- complete identity of internal static Field World Members;
 - exact maximum collision geometry and projected swept geometry;
 - active Full-Envelope Field Containment;
-- complete identity of internal static objects;
 - Conflict Realisation;
 - active Information-Gaining Delay and Safe Release.

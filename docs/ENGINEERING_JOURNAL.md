@@ -8,6 +8,25 @@
 
 **Hypothesis:** preserving the actual prior Boolean and including participant classification revisions in relation identity will produce one membership transition and one explicit relationship reclassification without losing the retained Field World Entity.
 
+### Validation result
+
+TS002 passed as the negative control: Condor remained non-operational from save load,
+no false membership or reclassification event appeared, and relevance to parked
+Condor still emerged during Patriot's terminal approach.
+
+TS003 supplied the repeatable live transition after substantial setup to control
+GIANTS restart repositioning. At approximately `t=225.5s`, Condor completed while
+Patriot remained active. Exactly one latched membership transition, one
+identity-preserving relationship reclassification and one retirement of the obsolete
+reverse directional relation were recorded. Condor was not removed and rediscovered,
+and no unchanged event repeated.
+
+Several near-miss relevance episodes and GIANTS blocked warnings cleared without
+deadlock. The observation reinforces that blocked state is a symptom rather than an
+architectural conclusion.
+
+**Result:** Prototype 06 is strongly supported.
+
 **Boundary:** this is an observation correction only. Exact geometry, static-object identity, containment and active hold/release remain separate work.
 
 ## 2026-07-24 — Prototype 05: the field polygon defines a bounded physical world

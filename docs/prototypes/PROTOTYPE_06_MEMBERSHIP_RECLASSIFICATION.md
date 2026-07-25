@@ -2,7 +2,7 @@
 
 ## Status
 
-Release Candidate v4.6.7. Passive validation pending.
+Canonical v4.6.7. Hypothesis strongly supported by TS002 and TS003.
 
 ## Observation
 
@@ -104,17 +104,16 @@ TS002 begins with Condor already non-operational and Patriot active. It should c
 TS002 cannot validate a live completion transition because Condor is already complete
 when the save loads.
 
-### Live completion transition fixture
+### TS003 live completion transition
 
-A repeatable fixture is required in which:
+TS003 was created as a repeatable fixture in which:
 
-- Condor and Patriot are both active Operation members;
-- Condor is close enough to job completion that the transition occurs shortly after
-  the save loads;
-- Patriot remains active after Condor completes;
+- Condor and Patriot begin as active Operation members;
+- Condor completes while Patriot remains active;
 - no player repositioning is required before the transition.
 
-The fixture may be named TS003 if created.
+Reloading partially completed GIANTS jobs often causes initial repositioning, so the
+fixture required substantial setup. The eventual completion transition is repeatable.
 
 ## Success criteria
 
@@ -139,3 +138,58 @@ Prototype 06 is supported when:
 Prototype 06 does not address exact Operational Collision Envelope geometry, projected
 sweep, active Field Containment, complete static-object identity or active
 Information-Gaining Delay.
+
+## Accepted validation evidence
+
+### TS002 negative control
+
+TS002 began with Condor already non-operational and Patriot active.
+
+- Condor attached once as `NON_OPERATION_VEHICLE`.
+- `PROTOTYPE06 MEMBERSHIP_TRANSITION`: zero events.
+- `PROTOTYPE06 RELATIONSHIP_RECLASSIFIED`: zero events.
+- `PROTOTYPE06 RELATIONSHIP_REMOVED`: zero events.
+- Patriot-to-Condor relevance still changed dynamically and became relevant during
+  the terminal approach before the observed finishing-area collision.
+- No OuttaMyWay runtime error or control action occurred.
+
+These zero counts are correct because no participant role changed during TS002.
+
+### TS003 positive case
+
+TS003 was created as a repeatable live Operational Completion fixture. Setup was
+substantial because reloading partially completed GIANTS jobs often causes initial
+repositioning, but the eventual completion transition is repeatable.
+
+At approximately `t=225.5s`:
+
+- Condor completed while Patriot remained active;
+- exactly one `PROTOTYPE06 MEMBERSHIP_TRANSITION` changed Condor from
+  `OPERATION_MEMBER` to `NON_OPERATION_VEHICLE`;
+- exactly one `PROTOTYPE06 RELATIONSHIP_RECLASSIFIED` retained the active
+  Patriot-to-Condor relationship with `identityPreserved=true`;
+- one `PROTOTYPE06 RELATIONSHIP_REMOVED` retired only the obsolete direction whose
+  source Condor was no longer operational;
+- Condor retained the same Field World identity and advanced to classification
+  revision 2;
+- no identical membership event repeated;
+- no OuttaMyWay Lua runtime error or vehicle-control action occurred.
+
+Several transient relevance episodes and GIANTS blocked warnings cleared without
+collision deadlock. A blocked state is therefore an operational symptom requiring
+interpretation, not by itself proof of deadlock.
+
+## Result
+
+**Strongly supported.**
+
+Situation Assessment can latch a real Operational Membership transition once,
+preserve the Entity as the same Field World Member and reclassify existing relevance
+relationships independently of geometric relevance change.
+
+## Retained boundaries
+
+Prototype 06 does not address exact Operational Collision Envelope geometry,
+projected sweep, active Field Containment, complete static-object identity, Conflict
+Realisation or active Information-Gaining Delay.
+

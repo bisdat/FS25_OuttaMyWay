@@ -10,7 +10,14 @@
 - Retains TS002 as the pre-existing non-operational regression fixture and defines a planned TS003 live-completion fixture.
 - Regenerates the release manifest from the clean owner-supplied v4.6.6 baseline, excluding transient local environments and caches.
 - Traffic Manager v2 remains disabled; no Decision, Commitment, hold, release, containment or vehicle-control behaviour is introduced.
-- Release Candidate; passive in-game validation pending.
+- Candidate implementation completed in observer-only mode; accepted validation evidence follows.
+- TS002 passed as the negative control: Condor remained `NON_OPERATION_VEHICLE` from save load, produced no `PROTOTYPE06 MEMBERSHIP_TRANSITION`, `RELATIONSHIP_RECLASSIFIED` or `RELATIONSHIP_REMOVED` events, and still became `RELEVANT` during Patriot's terminal approach before the observed collision.
+- Added TS003 as the repeatable live Operational Completion fixture after substantial setup to control GIANTS restart repositioning.
+- At approximately `t=225.5s` in TS003, Condor completed while Patriot remained active; the probe emitted exactly one latched membership transition from `OPERATION_MEMBER` to `NON_OPERATION_VEHICLE`, exactly one relationship reclassification with `identityPreserved=true`, and one explicit retirement of the obsolete reverse directional relation.
+- Condor retained the same Field World identity, no unchanged membership event repeated, and no OuttaMyWay Lua runtime error or vehicle-control action occurred.
+- Several transient relevance and GIANTS blocked episodes cleared without deadlock; a blocked warning remains an operational symptom rather than proof of realised collision or deadlock.
+- Prototype 06 therefore strongly supports latched Operational Membership transitions and role-aware relationship reclassification independently of geometric relevance change.
+- The repository owner reviewed and tested the exact v4.6.7 candidate and explicitly declared v4.6.7 canonical.
 
 ## v4.6.6 — Prototype 05: Field World Observation
 
