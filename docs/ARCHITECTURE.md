@@ -129,6 +129,27 @@ The Model-Derived Collision Catalogue binds static asset knowledge—collision i
 
 Prototype 07 passively inventories GIANTS-accessible geometry and derives a current compound envelope with explicit provenance and confidence. It does not claim exact collision truth, configuration-transition sweep, projected motion sweep or containment.
 
+### Component-Local Sphere Bridge and Extent Truth–Utility Separation (v4.6.13)
+
+Prototype 09 strongly supported a runtime bridge from source collision identity through a correctly resolved runtime collision node to a conservative component-local geometry sphere. All eight active Condor 36 m boom nodes retained stable local centre/radius through articulation and transformed coherently into engine world bounds.
+
+The source asset `shapeId` is retained as provenance metadata, not yet as a proven runtime selector. Exact mesh dimensions remain unresolved. Sphere Precision Tax means long thin or tapered components may be truthfully bounded while still including too much empty space for operational containment.
+
+### Runtime Geometry Identity Separation (v4.6.13)
+
+Prototype 10 disproved the stronger assumption that `vehicle.rootNode + source asset shapeId` selects arbitrary descendant geometry. All tested physical IDs and a nonphysical control aliased to one root-Entity sphere. This established two constraints:
+
+- **Self-Coherence Blind Spot:** internally coherent local/world bounds can still describe the wrong Entity;
+- **Source-to-Runtime Shape Resolution:** source shape identity and runtime Entity identity require an explicit bridge.
+
+Situation Assessment must therefore keep three domains separate:
+
+1. source collision identity and configuration membership;
+2. resolved runtime Entity identity and live pose;
+3. geometry-bound identity returned by the runtime API.
+
+Prototype 11 strongly supported first-argument runtime Entity geometry authority and Second-Argument Non-Authority for the tested calls. No complete physical coverage is claimed until the remaining current physical source shapes are resolved to runtime Entities.
+
 ## Logging vocabulary (4.2.6)
 
 Runtime diagnostics use the full searchable mod name followed by an architectural category.
@@ -153,3 +174,45 @@ The authoritative Accepted, Deferred and Rejected concept classifications are ma
 
 ## Decision Engine refinement (v4.5.9)
 The Decision Engine continuously evaluates the current Commitment against the Operational Picture. 'Maintain current commitment' is an explicit successful outcome. The design objective is least intervention, producing graceful behaviour while remaining largely invisible to the player.
+
+
+## Physical Assembly Ownership (v4.6.15)
+
+### Runtime Entity Geometry Authority
+
+Prototype 11 strongly supports that a resolved runtime Entity owns geometry selection for the tested sphere APIs. Source asset `shapeId` remains provenance metadata and did not select sibling or descendant geometry.
+
+### Mapping-Key Locality
+
+Asset mapping keys such as Condor's `colPart` are local vocabulary. A mapping mechanism may help resolution, but key spelling has no universal physical meaning.
+
+### Operational Entity–Physical Assembly Separation
+
+The Operation-facing AI worker and the complete physical working combination are separate architectural identities. Condor currently forms one integrated member. Tractor–implement combinations form multiple attached members with independent asset files and runtime roots.
+
+### Physical Assembly Search Boundary
+
+Prototype 12 strongly supported the following resolution order across one integrated and two attached fixtures:
+
+```text
+Operational Worker
+    -> Current Physical Assembly
+        -> Assembly Member
+            -> Member-local source identity
+            -> Member-local runtime Entity identity
+            -> Runtime geometry and live pose
+```
+
+Assembly discovery uses protected attachment evidence and preserves each member's asset, root and attachment relationship. It does not infer collision membership.
+
+### Attached-Assembly Replication
+
+S 416 + Tiger 8 MT and 8RX 410 + TopDown 600 produced the same two-member structural classification despite different manufacturers, mappings, component counts and hierarchy sizes. This supports the architecture while leaving additional vehicle classes for later validation.
+
+### Working-State Motion Divergence
+
+GIANTS' declared `WORKING` state is an observation, not proof of productive movement. In one attached fixture the state remained active while motion stayed effectively zero; the same equipment could cultivate manually. A second fixture sustained normal work. Situation Assessment must therefore keep declared AI state and demonstrated motion as separate evidence.
+
+### Next gate: Member-Local Physical Resolution
+
+Source collision metadata remains physical authority. Configuration remains current-inclusion authority. Runtime Entity identity remains geometry authority. The next prototype must connect these independently inside every current assembly member, reject aliases and retain unresolved current shapes explicitly. No assembly-level Physical Occupancy Envelope is authorised before that gate succeeds.

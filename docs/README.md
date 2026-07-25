@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** Reviewed for candidate release v4.6.10
+> **Currency:** Reviewed for candidate release v4.6.15
 
 This development repository is a self-sustaining engineering knowledge system. Its first responsibility is to preserve project continuity independently of any chat, engineer, AI system or platform. Its second is to remain understandable to future contributors.
 
@@ -49,7 +49,11 @@ The remaining documents deepen or verify that journey; they are classified below
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — current driving-system architecture.
 - [`DESIGN.md`](DESIGN.md) — component responsibilities and design boundaries.
 - [`ENGINEERING_HANDBOOK.md`](ENGINEERING_HANDBOOK.md) — accumulated engineering reference.
-- [`prototypes/PROTOTYPE_08_COLLISION_NODE_POSE_AND_CATALOGUE.md`](prototypes/PROTOTYPE_08_COLLISION_NODE_POSE_AND_CATALOGUE.md) — current collision-node pose and model-derived catalogue hypothesis.
+- [`prototypes/PROTOTYPE_12_PHYSICAL_ASSEMBLY_DISCOVERY.md`](prototypes/PROTOTYPE_12_PHYSICAL_ASSEMBLY_DISCOVERY.md) — accepted physical-assembly discovery result and next member-local resolution gate.
+- [`prototypes/PROTOTYPE_11_RUNTIME_GEOMETRY_SELECTOR_SEMANTICS.md`](prototypes/PROTOTYPE_11_RUNTIME_GEOMETRY_SELECTOR_SEMANTICS.md) — accepted runtime geometry-selector result.
+- [`prototypes/PROTOTYPE_10_PHYSICAL_SHAPE_COVERAGE.md`](prototypes/PROTOTYPE_10_PHYSICAL_SHAPE_COVERAGE.md) — accepted disproval of vehicle-root descendant selection.
+- [`prototypes/PROTOTYPE_09_RUNTIME_SHAPE_BOUND_EVIDENCE.md`](prototypes/PROTOTYPE_09_RUNTIME_SHAPE_BOUND_EVIDENCE.md) — accepted runtime component-local sphere result.
+- [`prototypes/PROTOTYPE_08_COLLISION_NODE_POSE_AND_CATALOGUE.md`](prototypes/PROTOTYPE_08_COLLISION_NODE_POSE_AND_CATALOGUE.md) — accepted collision-node pose and model-derived catalogue result.
 - [`prototypes/PROTOTYPE_07_PHYSICAL_OCCUPANCY_EVIDENCE.md`](prototypes/PROTOTYPE_07_PHYSICAL_OCCUPANCY_EVIDENCE.md) — accepted negative evidence for the rejected direct runtime-bound route.
 - [`prototypes/PROTOTYPE_06_MEMBERSHIP_RECLASSIFICATION.md`](prototypes/PROTOTYPE_06_MEMBERSHIP_RECLASSIFICATION.md) — accepted prior membership-transition and relationship-reclassification hypothesis.
 - [`prototypes/PROTOTYPE_05_FIELD_WORLD_OBSERVATION.md`](prototypes/PROTOTYPE_05_FIELD_WORLD_OBSERVATION.md) — accepted Field World vehicle observation result and recovered containment invariant.

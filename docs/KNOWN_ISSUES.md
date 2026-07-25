@@ -1,5 +1,25 @@
 # Known Issues
 
+## Physical assembly coverage
+
+- Physical Assembly Discovery is validated for one integrated self-propelled fixture and two tractor–cultivator fixtures. Other attachment chains, front/rear combinations, trailed subassemblies and mod-defined attachment mechanisms remain untested.
+- Attachment membership is not collision membership. Physical shapes inside each member remain unresolved.
+- Member-local source-to-runtime identity resolution has not yet been implemented.
+
+## AI progression evidence
+
+- GIANTS may report an active `WORKING` state while measured physical movement remains effectively zero.
+- The S 416 + Tiger 8 MT could cultivate manually, so its observed AI stall was not simple equipment incapability. The cause remains unresolved.
+- Declared AI state, drive-strategy state and demonstrated motion must remain separate observations until stronger evidence exists.
+
+## Physical geometry identity
+
+- Runtime component-local spheres are established for the eight resolved active Condor boom collision nodes only.
+- `vehicle.rootNode + source asset shapeId` aliases to root-Entity geometry and must not be used for descendant physical coverage.
+- Local/general/world sphere self-coherence does not independently prove intended shape identity.
+- Runtime Entities for the five permanent current physical collision shapes remain unresolved.
+- Exact mesh dimensions and operationally useful compound occupancy remain unresolved; bounding spheres carry a substantial Sphere Precision Tax.
+
 ## 4.0.0.1 course lookahead
 
 - Active segment estimation may jump to a nearby parallel segment during headland turns.

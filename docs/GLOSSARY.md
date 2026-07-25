@@ -69,6 +69,75 @@ Source-fingerprinted static knowledge of physical collision-node identity, hiera
 ## Collision Mesh Extraction Gap
 The current inability to extract trustworthy local collision-mesh bounds from the binary `.i3d.shapes` asset in the available environment.
 
+## Component-Local Extent
+A static conservative representation of one identified physical component's geometry in a stable local frame, before live pose transforms place it in world space.
+
+## Component-Local Sphere Bridge
+The runtime-validated connection from source physical collision identity through a correctly resolved runtime collision node to a conservative component-local bounding sphere placed by authoritative live pose. Source asset `shapeId` is provenance metadata until selector semantics are independently established.
+
+## Shape-Bound Capability Blind Spot
+The discovery that Prototype 07's negative runtime-bound result did not cover the documented per-shape bounding-sphere API family or its two-argument identity semantics.
+
+## Extent Truth–Utility Separation
+The distinction between a geometric extent being trustworthy and being sufficiently precise for its proposed operational use.
+
+## Sphere Precision Tax
+The conservative empty space added when a bounding sphere represents an elongated or tapered physical component.
+
+## Geometry Availability–Physical Membership Separation
+The rule that geometry-bound availability does not establish collision membership or current configuration inclusion.
+
+## Root-Entity Sphere Aliasing
+The observed behaviour where source asset `shapeId` variations paired with a vehicle root all return the same root-Entity geometry sphere rather than selecting descendant shapes.
+
+## Self-Coherence Blind Spot
+The inability of local/general/world bound agreement to prove that the intended source shape or runtime Entity was selected.
+
+## Source Shape Identity
+Asset-side identity consisting of name, hierarchy, source `shapeId`, collision metadata and configuration membership.
+
+## Runtime Entity Identity
+The instantiated engine node that owns current geometry and live pose.
+
+## Geometry-Bound Identity
+The geometry actually returned by a shape-bound API invocation.
+
+## Source-to-Runtime Shape Resolution
+The bridge that associates one source collision identity with the instantiated runtime Entity that owns its geometry and pose.
+
+## Runtime Entity Geometry Authority
+The Prototype 11 hypothesis that the first shape-bound API argument selects the geometry owner while known second-argument variants are non-selective on that Entity.
+
+## Current Physical Set
+All source-identified physical shapes active in the current Geometry Family together with permanent physical shapes. Runtime resolution of each member is a separate requirement.
+
+
+## Physical Assembly
+The current runtime object graph whose powered vehicle and attached implements together form the physical working combination associated with one operational worker.
+
+## Physical Assembly Search Boundary
+The resolution order from operational worker to current assembly to individual member-local asset/runtime hierarchies.
+
+## Attached-Assembly Replication
+The repeated Prototype 12 discovery of coherent two-member attached assemblies across materially different tractor–implement combinations.
+
+## Working-State Motion Divergence
+A condition where GIANTS reports active `WORKING` state while measured physical movement does not demonstrate continued progression.
+
+## Member-Local Physical Resolution
+The proposed mapping of source physical collision identities to runtime Entities independently inside each Physical Assembly member.
+
+## Operational Entity–Physical Assembly Separation
+The distinction between the Entity that owns the AI job and the potentially multi-member runtime assembly whose physical geometry must eventually be represented.
+
+## Mapping-Key Locality
+The rule that an asset mapping key has meaning only within the asset that defines it; names such as `colPart` are not universal FS25 semantics.
+
+## Fixture-Absence Warning Noise
+A diagnostic defect where the intentional absence of one prototype's vehicle fixture is repeatedly reported as a warning during a different experiment.
+
+## Second-Argument Non-Authority
+The Prototype 11 finding that changing the second `shapeId` argument did not redirect geometry selection for the tested runtime Entities and sphere APIs. Wider engine semantics remain unknown.
 
 ## Operational Collision Envelope
 The complete collision geometry of the vehicle plus every attached or towed implement, including configuration-dependent maximum extent and projected swept geometry.

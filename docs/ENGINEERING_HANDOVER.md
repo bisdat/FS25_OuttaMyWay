@@ -2,31 +2,50 @@
 
 ## Canonical baseline
 
-v4.6.10 is canonical. It was derived from canonical v4.6.8 after archival noncanonical v4.6.9 exposed the Diagnostic Enumeration Blind Spot. The corrected TS001 run validated Prototype 08A.
+v4.6.10 remains canonical and the implementation baseline. v4.6.11 through v4.6.14 are evidence-bearing noncanonical candidates whose validated discoveries are consolidated into v4.6.15.
 
-## Accepted result
+## Accepted discoveries
 
-- both GIANTS vehicle collections were enumerated explicitly;
-- Condor attached once from the vehicle-system population;
-- all eight configured 36 m physical boom collision nodes resolved through I3D mappings;
-- one persistent Entity completed `FOLDED -> TRANSITION -> DEPLOYED`;
-- live origin span changed continuously from approximately 2.8237 m to 30.2403 m;
-- no no-match, missing-node, runtime-error or Control event occurred.
+### Prototype 09 — Component-local sphere evidence
 
-Prototype 08B remains the static catalogue source for collision identity, hierarchy and configuration membership. Its offline endpoint reconstruction is diagnostic rather than authoritative; live runtime transforms own pose truth.
+Correctly resolved runtime collision nodes expose stable conservative component-local geometry spheres. Exact mesh geometry and operational precision remain unresolved.
 
-## Model-specific observation
+### Prototype 10 — Productive disproval
 
-Condor has four boom sections on each side and appears progressively thinner toward each tip. This supports a segmented tapered compound representation for Condor, but not a generic foldable-implement template. Every model must supply its own segmentation, activation, dimensions and articulation evidence.
+Vehicle-root calls cannot select descendant geometry using source asset `shapeId`. Root-Entity Sphere Aliasing and the Self-Coherence Blind Spot are accepted negative evidence.
 
-## Current gap
+### Prototype 11 — Runtime Entity Geometry Authority
 
-The binary `.i3d.shapes` local collision-mesh extents remain unresolved. Collision-node origins are not mesh bounds and no Physical Occupancy Envelope is yet authoritative.
+The first argument selected the geometry owner in every tested case. Changing the second argument, including to a deliberately invalid high value, did not redirect geometry selection. Source `shapeId` remains provenance metadata rather than a demonstrated runtime selector.
 
-## Next focus
+### Prototype 12 — Physical Assembly Discovery
 
-Select and validate a trustworthy collision-mesh extent extraction route, initially for Condor's eight active boom nodes and permanent chassis collision parts. Combine those static local extents with the already validated live node transforms only after extraction evidence passes.
+Strongly supported across one integrated and two attached fixtures. The operational worker is the Operation-facing identity; its current Physical Assembly defines the set of member-local asset/runtime hierarchies that must be searched for physical geometry.
+
+- Condor: one member, one asset, one runtime root.
+- S 416 + Tiger 8 MT: two members, two assets, two roots, one attachment edge.
+- 8RX 410 + TopDown 600: the same attached structure replicated with different assets and hierarchy vocabularies.
+
+### Working-State Motion Divergence
+
+The S 416 remained logically active and reported `WORKING` while effectively stationary for at least fifteen seconds. Manual cultivation disproved simple equipment incapability. The cause remains unresolved. The later 8RX/TopDown run sustained normal work, separating AI progression from assembly discovery.
+
+## Candidate increment
+
+v4.6.15 records the validated evidence and disables Prototype 12 after completion. No new active experiment is introduced.
+
+## Immediate continuation point
+
+Return to **Source-to-Runtime Shape Resolution**, now scoped per assembly member. Before implementation, separate:
+
+1. source collision and configuration authority;
+2. member-local asset references and mapping vocabulary;
+3. member-local runtime hierarchy evidence;
+4. independent identity-validation signals;
+5. unresolved-shape handling and alias rejection.
+
+The likely next experiment is **Prototype 13 — Member-Local Runtime Identity Resolution**, but its precise hypothesis and fixture scope must be agreed before code is written. Condor can test completion of its thirteen-member Current Physical Set; TopDown 600 can test whether a materially different attached implement exposes viable evidence inputs without requiring immediate complete coverage.
 
 ## Boundary
 
-Do not infer segment dimensions from visual taper, working width, AI trigger width or origin spacing. Do not implement containment, swept geometry, Decision, Commitment or Control before current physical occupancy is trustworthy.
+Do not aggregate a Physical Occupancy Envelope until every included current physical source identity has a trustworthy runtime Entity mapping. Geometry availability, attachment membership and names remain insufficient to establish physical membership.

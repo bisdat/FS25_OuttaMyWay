@@ -19,6 +19,14 @@ This file records observations from the deterministic TS001 save. Versions 4.1.x
 
 The explorer does not call native `getDriveData()` itself because that method may advance or mutate the native cursor. Instead it observes `AIDriveStrategyFieldCourse.lastVehiclePosition` and `lastTargetPosition`, which are populated by the base-game strategy after its normal drive call.
 
+## Prototype 12 assembly and motion observations
+
+- Condor exposed one integrated runtime assembly member.
+- S 416 + Tiger 8 MT and 8RX 410 + TopDown 600 exposed two-member attached assemblies with independent assets and roots.
+- In the first attached run, GIANTS retained active `WORKING` state while measured movement remained effectively zero for at least fifteen seconds.
+- The same equipment cultivated manually, disproving simple equipment incapability without revealing the AI cause.
+- The second attached fixture sustained normal work, so assembly discovery and AI progression must remain separate concerns.
+
 ## TS001 objective
 
 Correlate changes in active/next segment return values with the repeatable Condor/Patriot encounter and identify the engine-owned traversal cursor.

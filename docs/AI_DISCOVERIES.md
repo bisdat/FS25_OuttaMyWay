@@ -7,3 +7,5 @@
 5. Speed must be treated as observed runtime intent. Cruise control, terrain, traction, implements and other mods may all alter it.
 6. A low actual/requested speed ratio is meaningful only when combined with progress and target trends.
 7. A settled working trajectory reveals only local intent; later GIANTS repositioning can cross another worker's resumed lane without being explained by a simple alternating-lane model.
+8. An operational AI worker may own a multi-member Physical Assembly containing separate attached runtime assets and roots.
+9. GIANTS `WORKING` state does not by itself prove sustained physical progression; declared state and measured motion are separate evidence.

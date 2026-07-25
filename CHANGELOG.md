@@ -1,5 +1,77 @@
 # Changelog
 
+## v4.6.15 — Prototype 12 Validation Consolidation
+
+- Records Prototype 12 Physical Assembly Discovery as strongly supported across one integrated and two attached base-game fixtures.
+- Condor resolved as an `INTEGRATED_SINGLE_MEMBER` assembly with one asset and one runtime root.
+- Valtra S 416 plus Horsch Tiger 8 MT and John Deere 8RX 410 plus Väderstad TopDown 600 each resolved as `ATTACHED_MULTI_MEMBER` assemblies with two assets, two runtime roots and one explicit attachment edge.
+- Names the Physical Assembly Search Boundary: geometry discovery begins with the operational worker, expands to the current assembly, and then proceeds independently inside each member-local asset/runtime hierarchy.
+- Names Attached-Assembly Replication after the same structural result transferred across different manufacturers, mapping vocabularies, component counts and hierarchy sizes.
+- Names Working-State Motion Divergence after the S 416 remained logically active and reported `WORKING` while measured movement stayed effectively zero for at least fifteen seconds.
+- Records that the S 416 plus Tiger 8 MT could cultivate manually, disproving simple equipment incapability while leaving the GIANTS AI progression cause unresolved.
+- Separates assembly discovery from AI work progression: assembly identity remained coherent in both the stalled and normally progressing attached fixtures.
+- Retains the three dismissed raw HUD texture warnings as unrelated performance noise and records no OuttaMyWay runtime errors or control intervention.
+- Disables completed Prototype 12 after validation while retaining its passive implementation and evidence contract.
+- Establishes Member-Local Physical Resolution as the next discussion gate before Prototype 13 implementation.
+- Preserves observer-only execution; no collision membership inference, Physical Occupancy Envelope, containment, sweep, Decision, Commitment or Control is introduced.
+
+## v4.6.14 — Prototype 12: Physical Assembly Discovery
+
+- Consolidates the strongly supported Prototype 11 result: runtime Entity identity, not source asset `shapeId`, selected geometry in every tested shape-bound invocation.
+- Names Second-Argument Non-Authority for the tested API/Entity combinations while retaining the argument's wider engine semantics as unknown.
+- Records Mapping-Key Locality: Condor mapping keys such as `colPart` are asset-local vocabulary, not FS25-wide collision semantics.
+- Records the base-game Valtra S 416 plus Horsch Tiger 8 MT contrast reconnaissance.
+- Names Operational Entity–Physical Assembly Separation: the AI worker identity may own a multi-object powered/attached physical assembly.
+- Names Fixture-Absence Warning Noise after the Condor-specific probe repeatedly warned during an intentionally non-Condor run.
+- Adds passive Prototype 12 Physical Assembly Discovery.
+- Enumerates active workers from both mission vehicle collections and recursively follows protected runtime attachment evidence.
+- Records each assembly member's asset identity, runtime root, components, mapping availability, hierarchy summary and attachment relationship.
+- Adds continuous worker motion samples so declared AI state can be compared with demonstrated movement.
+- Disables completed Condor-specific Prototypes 08, 09 and 11 during the generic assembly experiment while retaining their code and evidence.
+- Defers collision-node resolution until the current assembly search boundaries are established.
+- Preserves observer-only execution; no collision inference, Physical Occupancy Envelope, containment, sweep, Decision, Commitment or Control is introduced.
+
+## v4.6.13 — Prototype 11: Runtime Geometry Selector Semantics
+
+- Begins from the exact v4.6.10 canonical baseline and consolidates accepted evidence from noncanonical v4.6.11 and v4.6.12 candidates.
+- Retains Prototype 09's strongly supported component-local sphere evidence and corrected successful-call error reporting.
+- Refines the Component-Local Sphere Bridge: source collision identity is joined to a correctly resolved runtime collision node; source asset `shapeId` remains provenance metadata until selector semantics are established.
+- Records Prototype 10 as a productive disproval: all 29 physical source IDs and one nonphysical control paired with `vehicle.rootNode` returned the same root-Entity sphere.
+- Names Root-Entity Sphere Aliasing, Self-Coherence Blind Spot and Source-to-Runtime Shape Resolution.
+- Retains the complete 29-shape source collision catalogue as identity and membership knowledge while refusing to claim runtime coverage.
+- Does not carry the disproved `PhysicalShapeCoverageProbe` forward as active implementation.
+- Adds passive Prototype 11 selector testing across all eight resolved active boom collision nodes.
+- Compares zero, own-source, sibling-source and deliberately invalid second arguments and performs a known-ID vehicle-root control.
+- Separates internal local/world coherence from cross-invocation and cross-Entity identity evidence.
+- Rechecks representative selector behaviour through folded, transition and deployed states.
+- Preserves observer-only execution; no Physical Occupancy Envelope, containment, transition sweep, projected motion sweep, Decision, Commitment or Control is introduced.
+
+## v4.6.12 — Prototype 10: Physical Shape Coverage — noncanonical evidence candidate
+
+- Expanded the source catalogue to all 29 physical Condor `compoundChild` identities and classified eight active boom shapes, five permanent physical shapes and sixteen inactive alternatives.
+- Tested the proposed `vehicle.rootNode + source asset shapeId` descendant-selection route and selected one geometry-bearing nonphysical control.
+- TS001 disproved the selector hypothesis: every physical ID and the control returned the same root-local centre `0.000000,2.253981,1.032253` and radius `4.363019 m`.
+- The resulting `8.726038 m` cube remained unchanged through `FOLDED -> TRANSITION -> DEPLOYED`, so the apparent `29/29` coverage was false.
+- Named Root-Entity Sphere Aliasing and Self-Coherence Blind Spot.
+- Established Source-to-Runtime Shape Resolution as the remaining coverage gap.
+- Corrected Prototype 09 Successful-Call Error Residue.
+- This candidate was not declared canonical and its disproved runtime coverage probe is not carried forward as active code.
+
+## v4.6.11 — Prototype 09: Runtime Shape-Bound Evidence
+
+- Retains v4.6.10 as the canonical implementation baseline and introduces a passive validation candidate only.
+- Names the Shape-Bound Capability Blind Spot: Prototype 07 disproved the tested box-oriented route but did not test the documented two-argument shape-sphere API family.
+- Names the possible Shape-ID Geometry Bridge between Prototype 08B asset `shapeId` identity and Prototype 08A resolved runtime collision nodes.
+- Names Extent Truth–Utility Separation: a trustworthy conservative sphere may still be too coarse for operational containment.
+- Adds `scripts/prototypes/ShapeBoundProbe.lua`, consuming Prototype 08 state without independently rediscovering vehicle or collision identity.
+- Tests four protected identity/frame routes for each of Condor's eight active physical boom collision shapes.
+- Requires valid geometry, general-shape and world spheres plus local-to-world centre/radius coherence before selecting an identity route.
+- Records geometry-local stability, general shape-bound stability, `usesGeometry`, world coherence and geometry-versus-shape differences throughout the fold lifecycle.
+- Keeps unavailable APIs, invalid values, missing routes and partial evidence explicit under No Silent Under-Approximation.
+- Records that permanent chassis and deliberately nonphysical render controls are not present in the canonical runtime catalogue rather than fabricating source identities.
+- Adds the Prototype 09 hypothesis, validation fixture, result classifications and searchable log contract.
+- Preserves observer-only execution; no Physical Occupancy Envelope, containment, transition sweep, projected sweep, Decision, Commitment or Control is introduced.
+
 ## v4.6.10 — Prototype 08: Collision Node Pose and Model-Derived Catalogue
 
 - Supersedes archival noncanonical v4.6.9, whose TS001 run exposed a Diagnostic Enumeration Blind Spot: the probe inspected only an empty `g_currentMission.vehicles` collection.

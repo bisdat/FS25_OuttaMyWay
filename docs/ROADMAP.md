@@ -1,19 +1,19 @@
 # Roadmap
 
-## Immediate — Resolve local collision-mesh extents
+## Immediate — Resolve member-local physical identity
 
-Prototype 08A is complete and strongly supports authoritative live collision-node pose. Prototype 08B supplies reproducible identity, hierarchy and configuration membership but not local mesh dimensions.
+Prototype 12 established that physical discovery must cross the current Physical Assembly and then proceed independently inside each member's own source asset and runtime hierarchy. Prototype 11 established runtime Entity geometry authority; source collision metadata and configuration still own physical meaning and current inclusion.
 
 Next evidence order:
 
-1. select one trustworthy `.i3d.shapes` or GIANTS Editor extraction route;
-2. extract local extents for Condor's permanent chassis shapes and eight active 36 m boom shapes;
-3. preserve segment-specific dimensions rather than inventing one uniform boom rectangle;
-4. transform extracted local extents using the validated live node transforms;
-5. compare folded, transitional and deployed compound occupancy against observed geometry;
-6. only then evaluate current field containment.
+1. agree the precise Prototype 13 member-local identity hypothesis before implementation;
+2. inventory source references, hierarchy paths, mappings and transforms per assembly member;
+3. resolve Condor's five permanent current physical source shapes to distinct runtime Entities;
+4. reject aliases and retain unresolved current shapes explicitly;
+5. use TopDown 600 only to test whether the same evidence categories exist under different asset vocabulary and structure;
+6. only after trustworthy member-local coverage, derive sufficiently precise local extents and assembly-level occupancy.
 
-Condor's apparent segmented taper is useful model-specific evidence, not a generic foldable-implement template.
+Condor's names, segment count and apparent taper remain fixture evidence rather than a generic foldable-implement template.
 
 ## Development policy
 
@@ -125,9 +125,52 @@ Development remains in a private repository until the first GIANTS ModHub releas
 - [x] Establish live runtime transforms as authoritative pose evidence.
 - [x] Restrict offline endpoint reconstruction to diagnostic status because full per-node comparison remained approximate.
 - [x] Record Condor's Segmented Tapered Occupancy observation with an explicit model-specific caution.
-- [ ] Extract trustworthy local mesh extents for chassis and active boom collision shapes.
+
+### Prototype 09 — Runtime Shape-Bound Evidence
+
+- [x] Discover the untested runtime shape-sphere API family.
+- [x] Resolve stable component-local spheres for all eight active 36 m boom collision nodes.
+- [x] Validate `usesGeometry=true` and local-to-world coherence through a full fold lifecycle.
+- [x] Record Component-Local Sphere Bridge, Extent Truth–Utility Separation and Sphere Precision Tax.
+
+### Prototype 10 — Physical Shape Coverage
+
+- [x] Expand the source catalogue to all 29 physical `compoundChild` identities.
+- [x] Test `vehicle.rootNode + source asset shapeId` descendant selection.
+- [x] Disprove the route through repeated root-Entity sphere aliasing.
+- [x] Record Self-Coherence Blind Spot and Source-to-Runtime Shape Resolution.
+
+### Prototype 11 — Runtime Geometry Selector Semantics
+
+- [x] Determine that the runtime Entity first argument owns geometry selection.
+- [x] Compare zero, own, sibling and invalid second arguments across all eight resolved boom nodes.
+- [x] Confirm cross-Entity geometry differentiation independently of self-coherence.
+- [x] Confirm vehicle-root known-ID aliasing and selector stability through articulation.
+
+### Prototype 12 — Physical Assembly Discovery
+
+- [x] Validate an integrated single-member assembly with Condor.
+- [x] Validate attached multi-member assemblies with two different tractor–cultivator combinations.
+- [x] Confirm distinct per-member asset identities and runtime roots.
+- [x] Confirm coherent attachment edges through unfolding and work observation.
+- [x] Replicate the attached structure across different manufacturers and runtime hierarchies.
+- [x] Use continuous motion evidence to distinguish declared AI state from demonstrated progress.
+- [x] Record Working-State Motion Divergence without inventing a cause.
+
+### Prototype 13 — Member-Local Runtime Identity Resolution
+
+- [ ] Separate architectural requirements, evidence sources, provenance and vehicle-specific vocabulary before implementation.
+- [ ] Define a one-to-one member-local source-to-runtime identity hypothesis with alias rejection.
+- [ ] Resolve Condor's five permanent current physical shapes in addition to the eight active boom shapes.
+- [ ] Use TopDown 600 as contrasting evidence-input reconnaissance rather than demanding immediate complete coverage.
+- [ ] Keep unresolved current shapes explicit and inactive alternative shapes excluded by configuration authority.
+
+### After member-local resolution
+
+- [ ] Extract or derive sufficiently precise local extents for chassis and active collision shapes.
 - [ ] Derive and validate the current compound Physical Occupancy Envelope.
-- [ ] Generalise only after at least one materially different foldable implement is observed.
+- [ ] Validate assembly-level occupancy across integrated and attached equipment.
+- [ ] Generalise further only after additional materially different equipment structures are observed.
 
 ## Repository Release System follow-up
 

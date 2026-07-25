@@ -1,37 +1,60 @@
 # Project Status
 
-Version: 4.6.10
+Version: 4.6.15
 
-Authority state: Canonical — Prototype 08 live collision-node pose validated
+Authority state: Release Candidate — validated Prototype 09–12 consolidation awaiting repository-owner review
 
-Canonical package: v4.6.10
+Canonical baseline: v4.6.10
 
-Current focus: extract trustworthy local collision-mesh extents and combine them with validated live node transforms
+Evidence-bearing noncanonical candidates: v4.6.11 Prototype 09, v4.6.12 Prototype 10, v4.6.13 Prototype 11 and v4.6.14 Prototype 12
 
-## Prototype 08A result
+Current focus: define Member-Local Physical Resolution and the precise Prototype 13 hypothesis before implementation
 
-Strongly supported. Corrected TS001 enumerated Condor from the vehicle-system collection, resolved all eight configured 36 m physical boom collision nodes, preserved one Entity identity and observed one complete `FOLDED -> TRANSITION -> DEPLOYED` lifecycle.
+## Established geometry evidence
 
-The lateral collision-node origin span changed continuously from approximately 2.8237 m folded to 30.2403 m deployed. Live runtime transforms are accepted as authoritative pose evidence.
+Prototype 08A established authoritative live collision-node pose for all eight active Condor 36 m boom collision nodes. Prototype 08B established source collision identity, hierarchy and configuration membership.
 
-## Prototype 08B result
+Prototype 09 strongly supported stable geometry-derived component-local spheres on all eight resolved boom collision nodes. Prototype 10 disproved `vehicle.rootNode + source asset shapeId` as a descendant selector and exposed Root-Entity Sphere Aliasing plus the Self-Coherence Blind Spot. Prototype 11 strongly supported Runtime Entity Geometry Authority and Second-Argument Non-Authority for the tested APIs and Entity types.
 
-Supported for collision identity, hierarchy, configuration membership and source fingerprinting. Its principal folded/deployed lateral spans matched live evidence, but full offline endpoint pose remained approximate. Offline pose is diagnostic, not authoritative.
+The accepted geometry chain is:
 
-The binary `.i3d.shapes` local mesh extents remain unresolved. No Physical Occupancy Envelope is yet derived.
+```text
+source physical identity
+    -> source-to-runtime Entity resolution
+    -> runtime Entity geometry sphere
+    -> authoritative live Entity pose
+```
 
-## Geometry caution
+## Established assembly evidence
 
-Condor's four boom sections per side appear progressively thinner toward the tips. This supports a segmented tapered representation for Condor only. Other foldable implements may have different segmentation, geometry, activation and articulation.
+Prototype 12 is strongly supported across three base-game fixtures:
 
-## Passive guarantee
+| Fixture | Classification | Members | Runtime roots | Result |
+|---|---|---:|---:|---|
+| Condor Endurance II | Integrated single member | 1 | 1 | Supported |
+| Valtra S 416 + Horsch Tiger 8 MT | Attached multi-member | 2 | 2 | Supported |
+| John Deere 8RX 410 + Väderstad TopDown 600 | Attached multi-member | 2 | 2 | Supported and replicated |
 
-- `AI_EXPLORER_ONLY = true`;
-- `TRAFFIC_V2_ENABLED = false`;
-- Prototype 07's expensive completed bound scan remains disabled;
-- Prototype 08 runs before the observer-only return;
-- no containment, projected sweep, Decision, Commitment or Control is permitted.
+Both attached fixtures exposed one explicit attachment edge and retained independent member assets, roots, components, mappings and runtime hierarchy boundaries. This establishes the **Physical Assembly Search Boundary**:
+
+```text
+Operational Worker
+    -> Current Physical Assembly
+    -> Individual Assembly Members
+    -> Member-local source/runtime identity resolution
+```
+
+## AI progression observation
+
+The S 416 plus Tiger 8 MT remained logically active and reported `WORKING` while measured movement remained effectively zero for at least fifteen seconds. The combination could cultivate manually, so simple equipment incapability is disproved. The cause remains unresolved and is not attributed to OuttaMyWay. The 8RX 410 plus TopDown 600 subsequently sustained normal AI work, confirming that assembly discovery and AI progression are separate concerns.
+
+## Candidate implementation state
+
+- Prototypes 08, 09, 11 and 12 are disabled after completing their current evidence roles.
+- Prototype 10 remains retained as recorded disproval only.
+- Prototype 12's passive implementation and log contract remain available for future replication.
+- No collision membership inference, compound occupancy, containment, sweep or control exists.
 
 ## Next gate
 
-Do not implement containment until local collision-mesh extents are extracted or otherwise established conservatively and validated against the live node-pose source.
+Discuss **Member-Local Physical Resolution** before implementation. The next experiment should resolve source physical identities independently inside each discovered assembly member while preserving source collision metadata as physical authority and runtime Entity identity as geometry authority.

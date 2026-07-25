@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.6.10
+-- FS25_OuttaMyWay v4.6.15
 -- Cooperative collision avoidance for base-game AI field workers.
 
 OuttaMyWay = {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.6.10"
+OuttaMyWay.VERSION = "4.6.15"
 OuttaMyWay.BLOCKED_FOLD_DELAY_MS = 6500
 OuttaMyWay.WAIT_FOLD_DELAY_MS = 4500
 OuttaMyWay.HEAD_ON_FOLLOW_HOLD_DISTANCE = 55.0
@@ -156,7 +156,7 @@ OuttaMyWay.PROTOTYPE_07_INVENTORY_REFRESH_MS = 5000
 -- their live transforms through folded, transitional and deployed poses. 08B
 -- supplies asset-bound identity/hierarchy/offline endpoint predictions while
 -- keeping binary mesh extents explicitly unresolved.
-OuttaMyWay.PROTOTYPE_08_ENABLED = true
+OuttaMyWay.PROTOTYPE_08_ENABLED = false
 OuttaMyWay.PROTOTYPE_08_INTERVAL_MS = 100
 OuttaMyWay.PROTOTYPE_08_TRANSITION_LOG_MS = 250
 OuttaMyWay.PROTOTYPE_08_ENDPOINT_LOG_MS = 2000
@@ -165,7 +165,49 @@ OuttaMyWay.PROTOTYPE_08_NODE_SCAN_BUDGET = 1800
 OuttaMyWay.PROTOTYPE_08_ENUMERATION_LOG_MS = 2000
 OuttaMyWay.PROTOTYPE_08_NO_MATCH_WARNING_MS = 5000
 
--- First live Traffic Manager v2 prototype. Disabled for passive Prototypes 01 through 08.
+-- Prototype 09: passive Runtime Shape-Bound Evidence. It consumes Prototype
+-- 08's source-bound collision identities and live nodes, tests documented
+-- entityId+shapeId sphere APIs through a protected invocation matrix, and
+-- records local stability plus local-to-world coherence. Bounding spheres are
+-- evidence candidates only; no Physical Occupancy Envelope or Control follows.
+OuttaMyWay.PROTOTYPE_09_ENABLED = false
+OuttaMyWay.PROTOTYPE_09_INTERVAL_MS = 100
+OuttaMyWay.PROTOTYPE_09_TRANSITION_LOG_MS = 250
+OuttaMyWay.PROTOTYPE_09_ENDPOINT_LOG_MS = 2000
+OuttaMyWay.PROTOTYPE_09_TRANSITION_DETAIL_MS = 1000
+OuttaMyWay.PROTOTYPE_09_ENDPOINT_DETAIL_MS = 5000
+OuttaMyWay.PROTOTYPE_09_SOURCE_WARNING_MS = 5000
+OuttaMyWay.PROTOTYPE_09_COHERENCE_TOLERANCE_M = 0.05
+OuttaMyWay.PROTOTYPE_09_MAX_ABS_CENTRE_M = 10000.0
+OuttaMyWay.PROTOTYPE_09_MAX_RADIUS_M = 500.0
+
+-- Prototype 11: passive runtime geometry-selector semantics. It compares
+-- zero, own-asset, sibling-asset and deliberately invalid shapeId arguments on
+-- already resolved runtime collision nodes and on the vehicle root. Geometry
+-- identity is evaluated independently from local/world self-coherence.
+OuttaMyWay.PROTOTYPE_11_ENABLED = false
+OuttaMyWay.PROTOTYPE_11_INTERVAL_MS = 250
+OuttaMyWay.PROTOTYPE_11_TRANSITION_LOG_MS = 1000
+OuttaMyWay.PROTOTYPE_11_ENDPOINT_LOG_MS = 4000
+OuttaMyWay.PROTOTYPE_11_SOURCE_WARNING_MS = 5000
+OuttaMyWay.PROTOTYPE_11_COHERENCE_TOLERANCE_M = 0.05
+OuttaMyWay.PROTOTYPE_11_IDENTITY_TOLERANCE_M = 0.0001
+OuttaMyWay.PROTOTYPE_11_MAX_ABS_CENTRE_M = 10000.0
+OuttaMyWay.PROTOTYPE_11_MAX_RADIUS_M = 500.0
+OuttaMyWay.PROTOTYPE_11_INVALID_SHAPE_OFFSET = 1000
+
+-- Prototype 12: completed passive Physical Assembly Discovery. Retained for
+-- future replication but disabled after strong integrated/attached validation.
+-- It does not infer collision membership or physical occupancy.
+OuttaMyWay.PROTOTYPE_12_ENABLED = false
+OuttaMyWay.PROTOTYPE_12_INTERVAL_MS = 250
+OuttaMyWay.PROTOTYPE_12_ENUMERATION_LOG_MS = 3000
+OuttaMyWay.PROTOTYPE_12_MOTION_LOG_MS = 2000
+OuttaMyWay.PROTOTYPE_12_MEMBER_BUDGET = 16
+OuttaMyWay.PROTOTYPE_12_NODE_SCAN_BUDGET = 3000
+OuttaMyWay.PROTOTYPE_12_SUMMARY_NODE_SCAN_BUDGET = 1
+
+-- First live Traffic Manager v2 prototype. Disabled while validated passive prototype evidence is consolidated.
 -- Its retained settings are not executed in this candidate.
 OuttaMyWay.TRAFFIC_V2_ENABLED = false
 OuttaMyWay.TRAFFIC_V2_MIN_CONFIDENCE = 0.80

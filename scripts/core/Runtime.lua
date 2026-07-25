@@ -2921,6 +2921,18 @@ function OuttaMyWay:update(dt)
         self.CollisionNodePoseProbe:update(dt)
     end
 
+    if self.ShapeBoundProbe ~= nil and self.ShapeBoundProbe.update ~= nil then
+        self.ShapeBoundProbe:update(dt)
+    end
+
+    if self.RuntimeGeometrySelectorProbe ~= nil and self.RuntimeGeometrySelectorProbe.update ~= nil then
+        self.RuntimeGeometrySelectorProbe:update(dt)
+    end
+
+    if self.PhysicalAssemblyProbe ~= nil and self.PhysicalAssemblyProbe.update ~= nil then
+        self.PhysicalAssemblyProbe:update(dt)
+    end
+
     if self.AI_EXPLORER_ENABLED == true and self.AIFieldCourseExplorer ~= nil and self.AIFieldCourseExplorer.update ~= nil then
         self.AIFieldCourseExplorer:update(dt)
     end
@@ -3059,6 +3071,15 @@ function OuttaMyWay:deleteMap()
     end
     if self.CollisionNodePoseProbe ~= nil and self.CollisionNodePoseProbe.clear ~= nil then
         self.CollisionNodePoseProbe:clear()
+    end
+    if self.ShapeBoundProbe ~= nil and self.ShapeBoundProbe.clear ~= nil then
+        self.ShapeBoundProbe:clear()
+    end
+    if self.RuntimeGeometrySelectorProbe ~= nil and self.RuntimeGeometrySelectorProbe.clear ~= nil then
+        self.RuntimeGeometrySelectorProbe:clear()
+    end
+    if self.PhysicalAssemblyProbe ~= nil and self.PhysicalAssemblyProbe.clear ~= nil then
+        self.PhysicalAssemblyProbe:clear()
     end
     if self.clearEncounterController ~= nil then self:clearEncounterController() end
 end

@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for canonical release v4.6.10.
+Review status: reviewed for candidate release v4.6.15.
 
 ## Accepted Concepts
 
@@ -100,7 +100,76 @@ The current runtime transform of a named physical collision node relative to its
 
 A model-specific compound-geometry pattern in which articulated sections have distinct dimensions and may become progressively narrower toward an outer tip. Condor's four sections per side support this interpretation visually, but the concept does not prescribe a generic shape: every foldable implement must derive segmentation, dimensions, activation and articulation from its own evidence.
 
+### Shape-Bound Capability Blind Spot
+
+The implementation finding that Prototype 07's tested box-oriented runtime route did not cover the documented two-argument shape-sphere API family. Negative evidence remains scoped to the capabilities and signatures actually tested.
+
+### Component-Local Sphere Bridge
+
+The runtime-validated route joining source physical collision identity to a correctly resolved runtime collision node whose geometry sphere can be placed by authoritative live pose. Prototype 09 strongly supported this bridge for all eight active Condor 36 m boom nodes. Source asset `shapeId` is provenance metadata until its selector semantics are independently established.
+
+### Extent Truth–Utility Separation
+
+The architectural distinction between a geometry representation being trustworthy and being sufficiently precise for an operational use. Prototype 09 established truthful component-local spheres while also exposing their potential coarseness.
+
+### Sphere Precision Tax
+
+The excess empty space introduced when a long, thin or tapered component is represented by a bounding sphere. The representation remains conservative and truthful, but its operational utility requires separate validation.
+
+### Geometry Availability–Physical Membership Separation
+
+A runtime geometry bound says that geometry exists; it does not say the shape is physical or active now. Source collision metadata establishes physical membership, and configuration classification establishes current inclusion. Prototype 10's nonphysical control reinforced this separation even though its descendant-selection route failed.
+
+### Root-Entity Sphere Aliasing
+
+The observed behaviour in Prototype 10 where every tested source asset `shapeId` paired with `vehicle.rootNode` returned the same root-Entity sphere. Vehicle-root self-coherence must not be interpreted as descendant geometry coverage.
+
+### Self-Coherence Blind Spot
+
+The limitation that geometry-local, general-shape and world bounds may agree internally while all describing the wrong Entity. Intended identity must be validated through evidence independent of the bound's own transform coherence.
+
+### Source-to-Runtime Shape Resolution
+
+The required bridge from source asset collision identity and configuration membership to the instantiated runtime Entity that owns the corresponding geometry and live pose.
+
+### Current Physical Set
+
+The source-identified physical shapes active for the current Geometry Family plus permanent physical shapes. For the Condor 36 m source catalogue this is eight active boom shapes plus five permanent physical shapes; complete runtime resolution of that set remains unresolved.
+
+### Runtime Entity Geometry Authority
+
+The strongly supported finding that the runtime Entity first argument selected geometry for all tested shape-bound calls. Known and invalid second-argument variants were invariant on each Entity, while different runtime Entities remained geometrically differentiated.
+
+### Mapping-Key Locality
+
+An asset mapping key is local vocabulary. Mapping mechanisms may assist resolution, but key spelling does not provide universal collision semantics.
+
+### Operational Entity–Physical Assembly Separation
+
+The accepted distinction between the Operation-facing AI worker and the current physical assembly, which may contain separate powered and attached runtime objects.
+
+### Physical Assembly
+
+The current runtime graph of the operational worker and recursively attached vehicle/implement members. Prototype 12 strongly supported this concept across one integrated and two attached base-game fixtures.
+
+### Physical Assembly Search Boundary
+
+The accepted resolution order in which the operational worker identifies the Operation participant, assembly discovery identifies the current member set, and physical identity resolution proceeds independently inside each member's own source asset and runtime root.
+
+### Attached-Assembly Replication
+
+The Prototype 12 result that the same two-member attached structure was discovered for both S 416 + Tiger 8 MT and 8RX 410 + TopDown 600 despite different manufacturers, mapping vocabularies, components and hierarchy sizes.
+
+### Working-State Motion Divergence
+
+The observed condition in which GIANTS reports an active `WORKING` state while measured physical movement remains effectively zero. It establishes an observation distinction, not a cause or control policy.
+
 ## Deferred Concepts
+
+### Member-Local Physical Resolution
+
+The proposed process that maps current source physical identities to distinct runtime Entities independently inside every discovered Physical Assembly member. The concept is deferred until Prototype 13's precise evidence contract is agreed and tested.
+
 
 ### Conflict Relevance Transition
 

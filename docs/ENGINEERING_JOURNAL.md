@@ -1,5 +1,85 @@
 # Engineering Journal
 
+## 2026-07-25 — Prototype 12 establishes the Physical Assembly Search Boundary
+
+**Observation:** Condor appeared as one integrated runtime member. S 416 + Tiger 8 MT and 8RX 410 + TopDown 600 each appeared as two distinct runtime objects with separate assets, roots and hierarchies connected by one attachment edge.
+
+**Discovery:** Physical Assembly Search Boundary. The operational worker identifies the Operation participant; the current assembly identifies the member set; geometry identity must then be resolved independently inside each member.
+
+**Replication:** the attached structure transferred across different manufacturers, mappings, component counts and hierarchy sizes. This is Attached-Assembly Replication, not proof that all vehicle classes use the same attachment APIs.
+
+**Disproved hypothesis:** the first attached worker stall was not simple inability to pull the implement. The same S 416 + Tiger 8 MT combination cultivated manually.
+
+**Discovery:** Working-State Motion Divergence. GIANTS reported active `WORKING` while measured motion remained effectively zero for at least fifteen seconds. The later 8RX + TopDown fixture sustained normal work, separating AI progression from assembly discovery.
+
+**Decision:** record Prototype 12 as strongly supported, disable the completed diagnostic, and discuss Member-Local Physical Resolution before Prototype 13 implementation.
+
+## 2026-07-25 — Physical assembly precedes collision identity
+
+**Observation:** a base-game Valtra S 416 with Horsch Tiger 8 MT unfolded as a two-asset working combination while the tractor remained the AI worker identity.
+
+**Discovery:** Operational Entity–Physical Assembly Separation. Condor's integrated hierarchy is not a universal ownership pattern.
+
+**Diagnostic finding:** Fixture-Absence Warning Noise. A Condor-specific probe repeatedly warned during an intentionally different fixture. Completed fixture-specific probes should be inactive during generic contrast experiments.
+
+**Decision:** implement passive Physical Assembly Discovery before general collision-node resolution. Record continuous movement because declared `WORKING` state alone did not demonstrate sustained progress in the contrast log.
+
+**Implementation:** v4.6.14 adds recursive protected attachment discovery, per-member asset/runtime-root evidence, attachment edges, hierarchy summaries and motion samples.
+
+## 2026-07-25 — Prototype 10 disproves root-scoped coverage; selector semantics become the next question
+
+**Observation:** all 29 source-catalogued physical asset IDs and one nonphysical control returned the same vehicle-root sphere: centre `0.000000,2.253981,1.032253`, radius `4.363019 m`. The derived span remained an unchanged `8.726038 m` cube through folded, transition and deployed states.
+
+**Disproved hypothesis:** `vehicle.rootNode + source asset shapeId` does not select arbitrary descendant geometry.
+
+**Named discovery:** Root-Entity Sphere Aliasing.
+
+**Named discovery:** Self-Coherence Blind Spot. Geometry-local, general and world bounds agreed perfectly while describing the wrong Entity; self-coherence is not intended-identity evidence.
+
+**Named gap:** Source-to-Runtime Shape Resolution. Source collision identity and runtime geometry ownership require an explicit bridge.
+
+**Preserved result:** Prototype 09 remains strongly supported because its distinct component spheres came from distinct resolved runtime collision nodes. The source asset `shapeId` remains provenance metadata until its selector role is understood.
+
+**Next hypothesis:** Runtime Entity Geometry Authority. On a resolved runtime node, zero, own and sibling known shape IDs should be invariant while different runtime nodes return differentiated component geometry; vehicle-root known-ID calls should remain aliased.
+
+**Implementation:** v4.6.13 removes the disproved Prototype 10 probe from active code and adds a passive selector matrix across all eight resolved boom nodes plus a root control, with representative lifecycle checks.
+
+**Validation state:** candidate implementation prepared; no Prototype 11 runtime conclusion accepted yet.
+
+## 2026-07-25 — Prototype 09 succeeds; coverage becomes the next question
+
+**Observation:** all eight active Condor 36 m boom shapes returned finite geometry/general/world spheres through a complete fold lifecycle. Component-local centres and radii were stable at logged precision, `usesGeometry=true`, and transformed centres matched engine world centres.
+
+**Disproved concern:** the shape-sphere family was not blocked by the Runtime Geometry Access Gap. Prototype 07's negative result remains valid only for its tested box-oriented route.
+
+**Named discovery:** Component-Local Sphere Bridge. Source collision identity plus a correctly resolved runtime collision node and live pose produce trustworthy conservative component-local sphere extent. Prototype 10 later showed that the asset `shapeId` is not an independent vehicle-root descendant selector.
+
+**Named limitation:** Sphere Precision Tax. The deployed eight-sphere union produced plausible cross-boom span but several metres of thickness around thin components. Truth and operational utility remain separate gates.
+
+**Diagnostic finding:** Successful-Call Error Residue. Lua's `valid and nil or "invalid-return"` expression emitted false error text on successful calls. The correction is carried forward in v4.6.13.
+
+**Historical next hypothesis:** complete physical-shape coverage was tested through the apparently coherent vehicle-root + asset-shape-ID route. Prototype 10 subsequently disproved that selector interpretation.
+
+**Implementation:** Prototype 10 expands runtime data to all 29 physical compound-child identities, classifies eight active boom, five permanent controls and sixteen inactive alternatives, probes one nonphysical geometry control, and emits non-authoritative diagnostic sphere unions.
+
+**Validation outcome:** the noncanonical v4.6.12 runtime run disproved the root-scoped descendant-selection route; see the newer entry above.
+
+## 2026-07-25 — Prototype 09: test the bridge before decoding the mesh
+
+**Observation:** the official FS25 Shape reference documents geometry-local, general shape-local and world bounding spheres addressed by `entityId + shapeId`. Prototype 07 did not test this sphere family; its negative result remains valid for the attempted route.
+
+**Named discovery:** Shape-Bound Capability Blind Spot.
+
+**Candidate concept:** Shape-ID Geometry Bridge. Prototype 08B already knows the physical asset `shapeId`; Prototype 08A already resolves the corresponding live collision node. A protected runtime experiment can test whether these identities jointly expose component-local extent.
+
+**Architectural separation:** Extent Truth–Utility Separation. Even a correct sphere may be too coarse for a tapered boom and cannot be promoted directly into a final Physical Occupancy Envelope.
+
+**Hypothesis:** all eight identified physical Condor boom shapes expose finite non-zero local geometry spheres that remain stable through `FOLDED -> TRANSITION -> DEPLOYED`, while transformed general shape-bound centres remain coherent with engine world bounds.
+
+**Implementation:** Prototype 09 consumes 08 state, tests four identity/frame routes once, selects no route from partial evidence, then records local drift and world coherence throughout articulation. Permanent chassis and nonphysical render controls are not source-catalogued in the canonical runtime catalogue and are explicitly deferred rather than invented.
+
+**Validation state:** candidate implementation prepared; no runtime conclusion accepted yet. No envelope, containment, sweep or Control exists.
+
 ## v4.6.10 — Model-Derived Geometry Investigation
 
 **Archival candidate learning:** v4.6.9 loaded successfully but observed no Condor because Prototype 08A read only `g_currentMission.vehicles`; TS001 showed that the authoritative population was available through `g_currentMission.vehicleSystem.vehicles`. This is named the **Diagnostic Enumeration Blind Spot**. v4.6.10 was rebuilt from v4.6.8 canonical and made enumeration explicit evidence before node resolution.

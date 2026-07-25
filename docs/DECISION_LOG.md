@@ -2,6 +2,46 @@
 
 This log records Accepted, Deferred, Rejected and Superseded project choices that do not require a full Architecture Decision Record. Newer decisions appear first.
 
+## D-0030 — Adopt the Physical Assembly Search Boundary
+
+**Status:** Strongly supported by Prototype 12 runtime evidence and accepted in candidate v4.6.15
+
+**Decision:** physical geometry discovery shall begin from the operational worker, enumerate its current Physical Assembly, and then perform source-to-runtime physical identity resolution independently inside each member's own asset and runtime root.
+
+**Validation:** Condor produced one integrated member. S 416 + Tiger 8 MT and 8RX 410 + TopDown 600 each produced two distinct assets, two distinct runtime roots and one coherent attachment edge. The second attached fixture replicated the structure across different manufacturers and hierarchies.
+
+**Boundary:** attachment establishes assembly ownership only. Collision metadata and configuration remain the authorities for physical membership and current inclusion. No compound occupancy is authorised until member-local resolution is complete.
+
+## D-0029 — Separate declared AI working state from demonstrated motion
+
+**Status:** Accepted observational distinction in candidate v4.6.15
+
+**Decision:** GIANTS `WORKING` state and measured physical progression shall remain separate observations. A stationary active worker may not be classified as progressing solely from the declared state.
+
+**Evidence:** the S 416 + Tiger 8 MT remained active and reported `WORKING` while movement stayed effectively zero for at least fifteen seconds. Manual cultivation disproved simple equipment incapability. The 8RX 410 + TopDown 600 later sustained normal AI work.
+
+**Boundary:** no cause, fault classification or control response is inferred from this evidence alone.
+
+## D-0028 — Discover physical assembly ownership before collision-node generalisation
+
+**Status:** Strongly supported by Prototype 12 evidence; superseded in ordering detail by D-0030
+
+**Decision:** Prototype 12 shall discover the active operational worker and its current attached runtime object graph before attempting general source-to-runtime collision-node resolution. Each member shall retain its own asset identity and runtime root.
+
+**Evidence basis:** Condor is integrated into one asset, while a Valtra S 416 plus Horsch Tiger 8 MT presented one operational worker with a separately attached implement asset. The worker identity therefore cannot serve as the universal physical hierarchy root.
+
+**Validation:** one integrated and two attached base-game fixtures satisfied the member-identity and relationship criteria.
+
+**Boundary:** attachment establishes assembly structure only. It does not establish collision membership, component extent or complete occupancy.
+
+## D-0027 — Accept Runtime Entity Geometry Authority and reject mapping-key generalisation
+
+**Status:** Strongly supported by Prototype 11 TS001 evidence
+
+**Decision:** runtime Entity identity is the demonstrated geometry selector for the tested shape-bound APIs. Source asset `shapeId` is retained as provenance but not used as a descendant selector. Asset mapping keys are local vocabulary and shall not become universal collision-node naming conventions.
+
+**Validation:** all eight resolved boom nodes were invariant across zero, own, sibling and invalid second arguments while remaining differentiated across runtime Entities; vehicle-root calls remained root aliases through the full fold lifecycle.
+
 ## Repository Release System Decisions
 
 - **D-RRS-26 — Candidate Determinism and Evidence Provenance:** given the same exact Canonical Repository Snapshot and fingerprint-bound Engineering Intent, Candidate Production must emit a byte-identical candidate repository package across supported execution platforms. Evidence packages may contain execution-specific provenance and need not be byte-identical, but must identify the same candidate and agree on all substantive repository findings.
@@ -33,6 +73,54 @@ This log records Accepted, Deferred, Rejected and Superseded project choices tha
 
 **Recovery finding:** failure to promote the executable RRS implementation caused avoidable capability loss. Repository-owned implementation is now required.
 
+
+## D-0026 — Test runtime geometry selector semantics before further coverage work
+
+**Status:** Strongly supported by repeated TS001 runtime evidence from noncanonical candidate v4.6.13
+
+**Decision:** Prototype 11 shall determine whether the first shape-bound API argument owns geometry selection by comparing zero, own, sibling and invalid second arguments on all eight already-resolved Condor boom collision nodes and known-ID variants on the vehicle root.
+
+**Evidence basis:** Prototype 09 produced distinct stable component bounds from distinct resolved runtime nodes. Prototype 10 returned one repeated root-Entity sphere for every source asset ID, disproving vehicle-root descendant selection and exposing the Self-Coherence Blind Spot.
+
+**Validation requirement:** identity evidence must compare results across invocations and across runtime Entities. Local/world self-coherence alone is insufficient. The invalid high ID is diagnostic and is not required for support.
+
+**Reason:** geometry extraction is available; selector semantics and Source-to-Runtime Shape Resolution are now the limiting architectural questions.
+
+**Validation result:** all eight resolved nodes were invariant across zero, own, sibling and invalid-high second arguments, while seven local and eight world signatures preserved cross-Entity differentiation. Vehicle-root known-ID calls remained aliased. Runtime Entity Geometry Authority is accepted for the tested APIs and Entity types.
+
+**Boundary:** no remaining physical nodes are resolved, no complete physical coverage or occupancy aggregation is claimed, and no containment, sweep, Decision, Commitment or Control is authorised.
+
+## D-0025 — Test complete physical-shape coverage before occupancy design
+
+**Status:** Hypothesis disproved by TS001 runtime evidence from noncanonical v4.6.12
+
+**Decision tested:** Prototype 10 tested the proposed root-scoped shape-bound route across all 29 source-catalogued Condor physical `compoundChild` shapes while preserving current configuration membership and a nonphysical geometry control.
+
+**Hypothesis boundary:** geometry-bound availability does not establish physical membership. The source collision catalogue owns physical meaning; configuration classification owns current inclusion; runtime sphere APIs own conservative extent evidence.
+
+**Validation:** every physical ID and the nonphysical control returned the same root-local centre and radius. The aggregate remained an unchanged `8.726038 m` cube through the fold lifecycle. The route is rejected as Root-Entity Sphere Aliasing.
+
+**Discovery:** local/world coherence validated the returned root bound internally but did not validate intended descendant identity. This is the Self-Coherence Blind Spot.
+
+**Retained knowledge:** source collision metadata and configuration membership remain valid; complete runtime coverage still requires Source-to-Runtime Shape Resolution.
+
+**Boundary:** diagnostic sphere unions are not an authoritative Physical Occupancy Envelope. No containment, transition sweep, projected motion sweep, Decision, Commitment or Control is authorised.
+
+## D-0024 — Test the documented per-shape sphere bridge before binary mesh extraction
+
+**Status:** Strongly supported by TS001 runtime evidence; consolidated in candidate v4.6.13
+
+**Decision:** Prototype 09 shall test whether documented runtime shape-sphere APIs can expose trustworthy conservative component-local physical extents from Prototype 08A resolved live collision nodes while retaining Prototype 08B source collision provenance.
+
+**Hypothesis boundary:** the experiment tests runtime availability, identity semantics, physical provenance, local stability and local-to-world coherence. It does not derive compound occupancy or establish that spheres are precise enough for containment.
+
+**Implementation:** consumed Prototype 08 state, tested a protected identity/frame matrix and sampled selected routes through the full fold lifecycle. All eight intended physical boom shapes selected coherent resolved-node routes. Prototype 10 later showed that source asset `shapeId` is not an independent vehicle-root descendant selector.
+
+**Validation:** all eight shapes returned stable finite component-local geometry spheres with `usesGeometry=true` and effectively exact local-to-world centre coherence. The hypothesis is strongly supported at bounding-sphere resolution. Exact mesh geometry and representation utility remain unresolved.
+
+**Reason:** this is the highest-value low-cost experiment before reverse-engineering or exporting binary `.i3d.shapes` geometry. A positive result could establish direct conservative extent evidence; a negative result would decisively redirect the next cycle.
+
+**Boundary:** No Physical Occupancy Envelope, field containment, Configuration Transition Sweep, Projected Motion Sweep, Decision, Commitment or Control is authorised.
 
 ## D-0023 — Separate collision-node pose from collision-mesh extent
 
