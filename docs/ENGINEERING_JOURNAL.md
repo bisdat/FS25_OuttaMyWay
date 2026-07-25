@@ -1,5 +1,15 @@
 # Engineering Journal
 
+## 2026-07-25 — Prototype 06: membership is a transition, not repeated state
+
+**Observation:** Prototype 05 repeated membership-change evidence for an unchanged false state and did not explicitly reclassify an existing relationship when a participant changed operational role.
+
+**Implementation discovery:** Lua `previous ~= nil and previous.operational or nil` cannot preserve `false`; it converts false to nil. The defect made every later false sample appear different from the previous state.
+
+**Hypothesis:** preserving the actual prior Boolean and including participant classification revisions in relation identity will produce one membership transition and one explicit relationship reclassification without losing the retained Field World Entity.
+
+**Boundary:** this is an observation correction only. Exact geometry, static-object identity, containment and active hold/release remain separate work.
+
 ## 2026-07-24 — Prototype 05: the field polygon defines a bounded physical world
 
 **Recovered architecture:** The maximum collision geometry of the complete vehicle–implement combination, including projected swept geometry, must remain wholly inside the field polygon. A boom must never sweep partially outside the boundary. External hedges, trees, ditches and pylons are therefore outside normal obstacle scope. The hedges removed from TS001 were a workaround for missing containment, not an acceptable requirement.

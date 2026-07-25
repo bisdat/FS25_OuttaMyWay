@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.6.7 — Prototype 06: Membership Transition Reclassification
+
+- Corrected the Lua false-to-nil latching defect that caused repeated `OPERATIONAL_MEMBERSHIP_CHANGED` events for an unchanged non-operational vehicle.
+- Added per-Entity classification revisions that advance only on attach or real Operational Membership/control-class change.
+- Added relationship signatures containing source and target role/classification revisions.
+- Added explicit `PROTOTYPE06 MEMBERSHIP_TRANSITION`, `RELATIONSHIP_RECLASSIFIED` and `RELATIONSHIP_REMOVED` evidence.
+- Preserves one Field World identity while participant roles change and reclassifies relationships independently of geometric relevance changes.
+- Retains TS002 as the pre-existing non-operational regression fixture and defines a planned TS003 live-completion fixture.
+- Regenerates the release manifest from the clean owner-supplied v4.6.6 baseline, excluding transient local environments and caches.
+- Traffic Manager v2 remains disabled; no Decision, Commitment, hold, release, containment or vehicle-control behaviour is introduced.
+- Release Candidate; passive in-game validation pending.
+
 ## v4.6.6 — Prototype 05: Field World Observation
 
 - Recovered and promoted Full-Envelope Field Containment: the complete vehicle–implement collision envelope, including projected swept geometry, remains wholly inside the field polygon at all times.

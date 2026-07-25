@@ -1,31 +1,25 @@
-FS25_OuttaMyWay v4.6.6
+FS25_OuttaMyWay v4.6.7
 
-Prototype 05: Field World Observation — Canonical
+Prototype 06: Membership Transition Reclassification — Release Candidate
 
-The field polygon is the bounded Field World for one Operation.
-Full-Envelope Field Containment is an accepted architectural invariant: the
-complete vehicle–implement collision envelope, including configuration-dependent
-maximum extent and projected swept geometry, must remain wholly inside that
-polygon at all times. External hedges, trees and other geometry are therefore
-outside normal obstacle scope.
+Prototype 05 established that Field World Membership, Operational Membership and
+Situation Relevance are separate. Prototype 06 now tests the transition boundary:
+when a retained Field World Member changes between operational and non-operational,
+the membership event must occur once and every existing relevance relationship must
+be reclassified without losing Entity identity.
 
-Prototype 05 remained passive and strongly supported the vehicle observation
-boundary. In the repeatable TS002 fixture, completed Condor was discovered at
-save load as a non-operational Field World Member while Patriot was the sole
-Operation member. Condor was initially not relevant, became Situation-relevant
-as Patriot approached the shared finishing area, and remained present through
-the observed collision and Patriot blocked state.
+This candidate corrects the false-to-nil latching defect that caused repeated
+Operational Membership events. Relationship state now includes participant role and
+classification revisions, so a live worker completing can produce an explicit
+RELATIONSHIP_RECLASSIFIED event even when geometric relevance itself is unchanged.
 
-The evidence confirms that Field World Membership, Operational Membership and
-Situation Relevance are separate. It also exposes follow-up work: membership
-transition events require latching, existing relationships must be reclassified
-when a live worker completes, provisional containment rectangles are noisy, and
-exact internal static-object identity and exact maximum collision geometry remain
-unvalidated.
+TS002 remains the regression fixture for a vehicle already non-operational at load.
+A repeatable live-completion fixture is still required to validate the full
+OPERATION_MEMBER -> NON_OPERATION_VEHICLE transition in game.
 
-Traffic Manager v2 remains disabled and observer-only mode is enforced before
-any decision or control consumer. No hold, release, avoidance response,
-containment action or Commitment change is included.
+Traffic Manager v2 remains disabled and observer-only mode is enforced before any
+decision or control consumer. No hold, release, containment action, route change,
+Commitment or vehicle-control behaviour is included.
 
-Start with docs/README.md. The accepted evidence is recorded in
-docs/prototypes/PROTOTYPE_05_FIELD_WORLD_OBSERVATION.md.
+Start with docs/README.md. The current hypothesis and test contract are recorded in
+docs/prototypes/PROTOTYPE_06_MEMBERSHIP_RECLASSIFICATION.md.

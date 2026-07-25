@@ -1,5 +1,24 @@
 # Roadmap
 
+## Immediate — Prototype 06: Membership Transition Reclassification
+
+Validate that a retained Field World vehicle changes Operational Membership exactly once and that every existing Situation Relevance relationship is reclassified by participant role without losing identity.
+
+Required fixtures:
+
+- TS002 regression: pre-existing non-operational Condor;
+- TS003 or equivalent: live worker completion while another worker remains active.
+
+This increment remains passive. Static-object identity, exact Operational Collision Envelope geometry, projected sweep and active containment remain separate later work.
+
+## Following evidence boundaries
+
+1. complete live relationship-transition validation;
+2. identify internal static Field World Members rather than relying only on field-island counts and native collision signals;
+3. discover exact current and maximum Operational Collision Envelope sources;
+4. validate projected swept-envelope containment;
+5. return to Conflict Realisation and active Information-Gaining Delay only after Situation Assessment retains every relevant participant.
+
 ## Development policy
 
 Development remains in a private repository until the first GIANTS ModHub release. Internal builds use 4-part development versions. The first submitted/public ModHub release will use `1.0.0.0` in `modDesc.xml`.

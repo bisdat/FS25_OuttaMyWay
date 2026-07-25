@@ -1,5 +1,5 @@
--- FS25_OuttaMyWay v4.6.6
--- Prototype 05: passive Field World observation independent of active AI membership.
+-- FS25_OuttaMyWay v4.6.7
+-- Prototypes 05/06: passive Field World observation and membership-transition reclassification.
 -- This module never controls a vehicle. Current envelope geometry is a conservative
 -- diagnostic approximation; it does not implement the accepted containment invariant.
 
@@ -236,6 +236,7 @@ end
 
 function Probe:init()
     self.enabled = OuttaMyWay.PROTOTYPE_05_ENABLED == true
+    self.transitionEnabled = OuttaMyWay.PROTOTYPE_06_ENABLED == true
     self.elapsedMs = 0
     self.startedAtMs = g_time or 0
     self.worlds = {}
@@ -245,6 +246,9 @@ function Probe:init()
     self.lastHeartbeatMs = 0
     if self.enabled then
         OuttaMyWay.Logger:info("PROTOTYPE05 ACTIVE: passive Field World vehicle observation; operational membership separated; no vehicle control")
+        if self.transitionEnabled then
+            OuttaMyWay.Logger:info("PROTOTYPE06 ACTIVE: latched membership transitions and relationship reclassification; no vehicle control")
+        end
     else
         OuttaMyWay.Logger:info("PROTOTYPE05 DISABLED")
     end
@@ -307,8 +311,14 @@ function Probe:observeMembers(activeByVehicle, nowSeconds)
                 if inside then
                     present[memberKey] = true
                     local previous = self.members[memberKey]
-                    local previousOperational = previous ~= nil and previous.operational or nil
-                    local previousClass = previous ~= nil and previous.controlClass or nil
+                    local previousOperational = nil
+                    local previousClass = nil
+                    local previousRevision = 0
+                    if previous ~= nil then
+                        previousOperational = previous.operational
+                        previousClass = previous.controlClass
+                        previousRevision = previous.classificationRevision or 0
+                    end
                     local speed = math.abs((vehicle.lastSpeedReal or 0) * 3600)
                     local member = previous or {key=memberKey,worldKey=key,vehicle=vehicle,firstSeen=nowSeconds}
                     member.name = objectName(vehicle)
@@ -320,16 +330,30 @@ function Probe:observeMembers(activeByVehicle, nowSeconds)
                     member.controlClass = vehicleControlClass(vehicle, operational)
                     member.componentCount = #components
                     member.lastSeen = nowSeconds
-                    self.members[memberKey] = member
                     local attached = previous == nil
                     local membershipChanged = previous ~= nil and previousOperational ~= operational
                     local classChanged = previous ~= nil and previousClass ~= member.controlClass
+                    member.classificationRevision = previousRevision
+                    if attached then
+                        member.classificationRevision = 1
+                    elseif membershipChanged or classChanged then
+                        member.classificationRevision = previousRevision + 1
+                    end
+                    self.members[memberKey] = member
                     if attached or membershipChanged or classChanged then
+                        local event = attached and "ATTACHED"
+                            or (membershipChanged and "OPERATIONAL_MEMBERSHIP_CHANGED" or "CONTROL_CLASS_CHANGED")
                         OuttaMyWay.Logger:obs(
-                            "PROTOTYPE05 FIELD_WORLD_MEMBER t=%.1fs world=%s entity=%s class=%s operationalMember=%s components=%d currentEnvelopeContained=%s geometry=conservative-rectangle-v1 projectedSweep=not-evaluated event=%s",
+                            "PROTOTYPE05 FIELD_WORLD_MEMBER t=%.1fs world=%s entity=%s class=%s operationalMember=%s components=%d currentEnvelopeContained=%s geometry=conservative-rectangle-v1 projectedSweep=not-evaluated event=%s classificationRevision=%d",
                             nowSeconds, key, member.name, member.controlClass, tostring(operational),
-                            member.componentCount, tostring(contained),
-                            attached and "ATTACHED" or (membershipChanged and "OPERATIONAL_MEMBERSHIP_CHANGED" or "CONTROL_CLASS_CHANGED"))
+                            member.componentCount, tostring(contained), event, member.classificationRevision or 0)
+                        if self.transitionEnabled and (membershipChanged or classChanged) then
+                            OuttaMyWay.Logger:val(
+                                "PROTOTYPE06 MEMBERSHIP_TRANSITION t=%.1fs world=%s entity=%s previousClass=%s class=%s previousOperationalMember=%s operationalMember=%s membershipChanged=%s classChanged=%s classificationRevision=%d latched=true action=none",
+                                nowSeconds, key, member.name, tostring(previousClass), member.controlClass,
+                                tostring(previousOperational), tostring(operational), tostring(membershipChanged),
+                                tostring(classChanged), member.classificationRevision or 0)
+                        end
                     end
                     if operational and contained == false then
                         OuttaMyWay.Logger:rateLimited(
@@ -362,6 +386,17 @@ function Probe:observeMembers(activeByVehicle, nowSeconds)
     end
 end
 
+local function relationshipSignature(operationMember, worldMember)
+    return table.concat({
+        tostring(operationMember.controlClass),
+        tostring(operationMember.operational),
+        tostring(operationMember.classificationRevision or 0),
+        tostring(worldMember.controlClass),
+        tostring(worldMember.operational),
+        tostring(worldMember.classificationRevision or 0)
+    }, "|")
+end
+
 function Probe:observeRelevance(activeByVehicle, nowSeconds)
     local horizon = OuttaMyWay.PROTOTYPE_05_RELEVANCE_HORIZON_S or 45.0
     local margin = OuttaMyWay.PROTOTYPE_05_RELEVANCE_MARGIN_M or 5.0
@@ -379,15 +414,37 @@ function Probe:observeRelevance(activeByVehicle, nowSeconds)
                         or (closing > 0.05 and tcpa <= horizon and dcpa <= clearance)
                         or ((operationState.blocked == true or operationState.staticCollision == true) and distance <= clearance + 25)
                     local relationKey = operationMemberKey .. "->" .. memberKey
-                    current[relationKey] = relevant
+                    local signature = relationshipSignature(operationMember, member)
+                    current[relationKey] = {relevant=relevant,signature=signature}
                     local previous = self.relevance[relationKey]
-                    if previous == nil or previous.relevant ~= relevant then
-                        self.relevance[relationKey] = {relevant=relevant,lastSeen=nowSeconds}
+                    local relevanceChanged = previous ~= nil and previous.relevant ~= relevant
+                    local classificationChanged = previous ~= nil and previous.signature ~= signature
+                    if previous == nil or relevanceChanged or classificationChanged then
+                        local event = previous == nil and "ATTACHED"
+                            or (classificationChanged and "RELATIONSHIP_RECLASSIFIED" or "RELEVANCE_CHANGED")
+                        local transition = relevant and "RELEVANT" or "NOT_RELEVANT"
+                        self.relevance[relationKey] = {
+                            relevant=relevant,
+                            signature=signature,
+                            lastSeen=nowSeconds,
+                            operationClass=operationMember.controlClass,
+                            operationOperational=operationMember.operational,
+                            worldClass=member.controlClass,
+                            worldOperational=member.operational
+                        }
                         OuttaMyWay.Logger:val(
-                            "PROTOTYPE05 SITUATION_RELEVANCE t=%.1fs world=%s operationMember=%s worldMember=%s worldClass=%s worldOperationalMember=%s transition=%s distance=%.2fm closing=%.2fm/s tCPA=%.2fs dCPA=%.2fm envelopeClearance=%.2fm basis=constant-velocity-plus-envelope action=none",
-                            nowSeconds, member.worldKey, operationMember.name, member.name, member.controlClass,
-                            tostring(member.operational), relevant and "RELEVANT" or "NOT_RELEVANT",
-                            distance, closing, tcpa, dcpa, clearance)
+                            "PROTOTYPE05 SITUATION_RELEVANCE t=%.1fs world=%s operationMember=%s operationClass=%s operationOperationalMember=%s worldMember=%s worldClass=%s worldOperationalMember=%s transition=%s event=%s distance=%.2fm closing=%.2fm/s tCPA=%.2fs dCPA=%.2fm envelopeClearance=%.2fm basis=constant-velocity-plus-envelope action=none",
+                            nowSeconds, member.worldKey, operationMember.name, operationMember.controlClass,
+                            tostring(operationMember.operational), member.name, member.controlClass,
+                            tostring(member.operational), transition, event, distance, closing, tcpa, dcpa, clearance)
+                        if self.transitionEnabled and classificationChanged then
+                            OuttaMyWay.Logger:val(
+                                "PROTOTYPE06 RELATIONSHIP_RECLASSIFIED t=%.1fs world=%s operationMember=%s previousOperationClass=%s operationClass=%s worldMember=%s previousWorldClass=%s worldClass=%s previousWorldOperationalMember=%s worldOperationalMember=%s relevance=%s identityPreserved=true action=none",
+                                nowSeconds, member.worldKey, operationMember.name, tostring(previous.operationClass),
+                                operationMember.controlClass, member.name, tostring(previous.worldClass),
+                                member.controlClass, tostring(previous.worldOperational), tostring(member.operational),
+                                transition)
+                        end
                     else
                         previous.lastSeen = nowSeconds
                     end
@@ -398,6 +455,12 @@ function Probe:observeRelevance(activeByVehicle, nowSeconds)
 
     for key, state in pairs(self.relevance) do
         if current[key] == nil and nowSeconds - (state.lastSeen or nowSeconds) > 2.0 then
+            if self.transitionEnabled then
+                OuttaMyWay.Logger:obs(
+                "PROTOTYPE06 RELATIONSHIP_REMOVED t=%.1fs relation=%s previousOperationClass=%s previousWorldClass=%s previousRelevance=%s reason=no-active-operation-source-or-world-member action=none",
+                nowSeconds, key, tostring(state.operationClass), tostring(state.worldClass),
+                state.relevant == true and "RELEVANT" or "NOT_RELEVANT")
+            end
             self.relevance[key] = nil
         end
     end
@@ -432,7 +495,7 @@ function Probe:update(dt)
     if nowMs - (self.lastHeartbeatMs or 0) >= (OuttaMyWay.PROTOTYPE_05_HEARTBEAT_MS or 15000) then
         self.lastHeartbeatMs = nowMs
         OuttaMyWay.Logger:val(
-            "PROTOTYPE05 HEARTBEAT t=%.1fs activeOperationMembers=%d fieldWorlds=%d fieldWorldVehicleMembers=%d relevanceRelations=%d passive=true staticObservation=field-islands-plus-native-signal fullEnvelopeContainment=enforced-by-architecture-not-control",
+            "PROTOTYPE05 HEARTBEAT t=%.1fs activeOperationMembers=%d fieldWorlds=%d fieldWorldVehicleMembers=%d relevanceRelations=%d passive=true membershipTransitionLatching=prototype06 relationshipReclassification=prototype06 staticObservation=field-islands-plus-native-signal fullEnvelopeContainment=enforced-by-architecture-not-control",
             nowSeconds, #activeStates, countTable(self.worlds), countTable(self.members), countTable(self.relevance))
     end
 end

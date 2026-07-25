@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** Reviewed for candidate release v4.6.6
+> **Currency:** Reviewed for candidate release v4.6.7
 
 This development repository is a self-sustaining engineering knowledge system. Its first responsibility is to preserve project continuity independently of any chat, engineer, AI system or platform. Its second is to remain understandable to future contributors.
 
@@ -49,7 +49,8 @@ The remaining documents deepen or verify that journey; they are classified below
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — current driving-system architecture.
 - [`DESIGN.md`](DESIGN.md) — component responsibilities and design boundaries.
 - [`ENGINEERING_HANDBOOK.md`](ENGINEERING_HANDBOOK.md) — accumulated engineering reference.
-- [`prototypes/PROTOTYPE_05_FIELD_WORLD_OBSERVATION.md`](prototypes/PROTOTYPE_05_FIELD_WORLD_OBSERVATION.md) — current hypothesis, recovered containment invariant and TS001 Field World validation procedure.
+- [`prototypes/PROTOTYPE_06_MEMBERSHIP_RECLASSIFICATION.md`](prototypes/PROTOTYPE_06_MEMBERSHIP_RECLASSIFICATION.md) — current membership-transition and relationship-reclassification hypothesis.
+- [`prototypes/PROTOTYPE_05_FIELD_WORLD_OBSERVATION.md`](prototypes/PROTOTYPE_05_FIELD_WORLD_OBSERVATION.md) — accepted Field World vehicle observation result and recovered containment invariant.
 - [`prototypes/PROTOTYPE_04_CONTINUATION_INTENT.md`](prototypes/PROTOTYPE_04_CONTINUATION_INTENT.md) — accepted prior local-intent lifecycle and continuation evidence.
 - [`prototypes/PROTOTYPE_03_OPTION_PRESERVATION.md`](prototypes/PROTOTYPE_03_OPTION_PRESERVATION.md) — accepted prior temporal-window result and retained manual continuation evidence.
 - [`prototypes/PROTOTYPE_02_CONFLICT_CONFIDENCE.md`](prototypes/PROTOTYPE_02_CONFLICT_CONFIDENCE.md) — accepted prior confidence result and retained formation evidence.
