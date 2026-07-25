@@ -15,15 +15,24 @@ TS002 begins with Condor already completed and parked while Patriot remains acti
 
 TS002 does not contain a live Operational Membership transition.
 
-## TS003 — Live completion transition (planned)
+## TS003 — Live completion transition
 
-Create a repeatable save in which both workers begin active, one completes shortly after load, and the other remains active. No player repositioning should be needed before completion.
+TS003 is the repeatable save in which Condor and Patriot begin active, Condor completes while Patriot remains active, and no player repositioning is required before completion.
 
-TS003 will validate:
+TS003 validates:
 
 - one latched `OPERATION_MEMBER -> NON_OPERATION_VEHICLE` transition;
 - preserved Field World identity;
 - relationship reclassification after live completion;
 - explicit retirement of the obsolete reverse directional relation.
 
+Prototype 06 passed this fixture in v4.6.7.
+
 See `docs/prototypes/PROTOTYPE_06_MEMBERSHIP_RECLASSIFICATION.md`.
+
+
+## TS004 — Physical configuration change (planned)
+
+Create only after the first Prototype 07 capability run. The fixture should contain one complete Entity whose physical configuration can change repeatably without changing its attachments, for example a folded/unfolded sprayer or articulated combination.
+
+TS004 will test whether the discovered Physical Occupancy Envelope changes because physical geometry changed rather than because the Entity translated or rotated.

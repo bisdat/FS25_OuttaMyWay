@@ -34,6 +34,20 @@ This log records Accepted, Deferred, Rejected and Superseded project choices tha
 **Recovery finding:** failure to promote the executable RRS implementation caused avoidable capability loss. Repository-owned implementation is now required.
 
 
+## D-0022 — Separate physical geometry from agronomic working width and test evidence discovery
+
+**Status:** Accepted in canonical v4.6.8
+
+**Decision:** Situation Assessment shall distinguish GIANTS Collision Geometry, the derived Physical Occupancy Envelope and the agronomic Working Footprint. Physical occupancy remains a complete-Entity requirement, while working width and size metadata are diagnostic comparisons only and shall never substitute for unknown physical geometry.
+
+**Validation:** Prototype 07 found `getRigidBodyType=true`, but the tested shape, local and world bounding functions and collision-mask query were unavailable. Condor and Patriot each scanned 800 hierarchy nodes with zero bounded evidence, `coverage=NONE` and `confidence=UNKNOWN`. No physical envelope or pair clearance was produced during the approximately 337 s TS003 run. No Silent Under-Approximation passed because the 36 m working-marker widths remained separate.
+
+**Finding:** the tested Direct Geometry Retrieval route is unsupported. This is the Runtime Geometry Access Gap: GIANTS' internal collision geometry is not necessarily exposed as queryable complete-Entity bounds through the mod Lua runtime.
+
+**Consequence:** retain the Physical Occupancy Envelope architecture and investigate one alternative evidence route at a time. Increasing hierarchy scan depth alone is not justified while no usable bound API exists.
+
+**Boundary:** no field containment, projected motion sweep, configuration-transition sweep, safety padding, static-object identity or Control behaviour is included.
+
 ## D-0021 — Test Field World observation passively
 
 **Status:** Accepted in canonical v4.6.6

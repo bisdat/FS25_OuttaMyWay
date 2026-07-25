@@ -1,58 +1,57 @@
 # Project Status
 
-Version: 4.6.7
+Version: 4.6.8
 
-Authority state: Canonical — Prototype 06 membership transition and relationship reclassification accepted
+Authority state: Canonical — Prototype 07 accepted as negative evidence for direct runtime geometry retrieval
 
-Canonical baseline: v4.6.7 canonical package derived from the exact tested candidate
+Canonical baseline: v4.6.8 canonical package derived from the exact tested candidate
 
-Accepted candidate SHA-256: bee9382bc8f4f6a187aacbae43b8adefdf117eeb92f14c5e123da17a9de8a9b9
+Accepted candidate SHA-256: 97e46f233320d15110343faf481bb08b19bc26f298cbc165ff9b028742d9d34c
 
-Current focus: choose the next single passive Field World evidence boundary after closing vehicle Operational Membership transition defects
+Current focus: select one alternative evidence source for the complete Entity's current Physical Occupancy Envelope
 
 ## Accepted engineering result
 
-Prototype 06 asked:
+Prototype 07 asked:
 
-> Can Situation Assessment latch Operational Membership transitions to one real state change and reclassify existing Situation Relevance relationships when a retained Field World Member changes operational role?
+> Can GIANTS-accessible collision, physics and bounding evidence be aggregated across a complete vehicle–implement Entity into a conservative current Physical Occupancy Envelope?
 
-The hypothesis is strongly supported.
+The tested Direct Geometry Retrieval route is not supported.
 
-## Validation fixtures
+## TS003 evidence
 
-### TS002 — negative control
+- `getRigidBodyType=true`;
+- tested shape, local and world bounding functions and collision-mask query unavailable;
+- Condor and Patriot each scanned 800 nodes with truncation;
+- zero bounded nodes and zero physics-bound nodes;
+- `coverage=NONE`, `confidence=UNKNOWN` for both Entities;
+- approximately 337 s with two retained Entities and zero physical envelopes;
+- no node evidence, pair clearance or envelope-change event;
+- 36 m working-marker widths remained separate and were not substituted.
 
-- Condor began and remained non-operational;
-- zero false membership transitions;
-- zero role reclassifications or relationship removals without a real role change;
-- Condor still became Situation-relevant during Patriot's terminal approach;
-- the finishing-area collision remained observable.
+This accepted finding is named the Runtime Geometry Access Gap.
 
-### TS003 — live completion
+## Secondary operational evidence
 
-- both workers began active;
-- Condor completed at approximately `t=225.5s` while Patriot remained active;
-- exactly one latched `OPERATION_MEMBER -> NON_OPERATION_VEHICLE` transition;
-- exactly one identity-preserving relationship reclassification;
-- exactly one explicit retirement of the obsolete reverse directional relation;
-- same Condor Field World identity retained;
-- no repeated unchanged event, Lua runtime error or vehicle-control action.
-
-Transient relevance and GIANTS blocked episodes cleared without deadlock. Blocked
-state is retained as an operational symptom, not proof of deadlock or realised
-collision.
+The final sweeping turn, near miss and observed reverse deadlock retained parked
+Condor as Situation-relevant while actual physical clearance and swept occupancy
+remained unknown. This is Retained Entity, Missing Spatial Truth.
 
 ## Passive guarantee
 
 - `AI_EXPLORER_ONLY = true`;
 - `TRAFFIC_V2_ENABLED = false`;
-- Prototypes 01 through 06 execute before the observer-only return;
-- no speed, steering, implement, route, AI-job, Decision, Commitment, hold, release or containment action is permitted.
+- Prototypes 01 through 07 execute before the observer-only return;
+- no containment, projected sweep, safety padding, speed, steering, implement, route,
+  AI-job, Decision, Commitment, hold or release action is permitted.
 
-## Next evidence boundaries
+## Next evidence routes
 
-- complete identity of internal static Field World Members;
-- exact maximum collision geometry and projected swept geometry;
-- active Full-Envelope Field Containment;
-- Conflict Realisation;
-- active Information-Gaining Delay and Safe Release.
+- loaded vehicle/implement runtime structures and XML metadata;
+- configured XML/I3D geometry reconstruction;
+- indirect physics overlap or raycast queries as an occupancy oracle;
+- controlled empirical envelope discovery.
+
+Choose and test one route at a time. Do not increase hierarchy depth merely because
+the first route failed, and do not implement containment until physical evidence is
+trustworthy.

@@ -2913,6 +2913,10 @@ function OuttaMyWay:update(dt)
         self.FieldWorldProbe:update(dt)
     end
 
+    if self.PhysicalOccupancyProbe ~= nil and self.PhysicalOccupancyProbe.update ~= nil then
+        self.PhysicalOccupancyProbe:update(dt)
+    end
+
     if self.AI_EXPLORER_ENABLED == true and self.AIFieldCourseExplorer ~= nil and self.AIFieldCourseExplorer.update ~= nil then
         self.AIFieldCourseExplorer:update(dt)
     end
@@ -3045,6 +3049,9 @@ function OuttaMyWay:deleteMap()
     end
     if self.FieldWorldProbe ~= nil and self.FieldWorldProbe.clear ~= nil then
         self.FieldWorldProbe:clear()
+    end
+    if self.PhysicalOccupancyProbe ~= nil and self.PhysicalOccupancyProbe.clear ~= nil then
+        self.PhysicalOccupancyProbe:clear()
     end
     if self.clearEncounterController ~= nil then self:clearEncounterController() end
 end

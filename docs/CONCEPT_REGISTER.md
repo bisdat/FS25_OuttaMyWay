@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for canonical release v4.6.7.
+Review status: reviewed for canonical release v4.6.8.
 
 ## Accepted Concepts
 
@@ -47,6 +47,30 @@ The dynamic subset of Entities actively participating in one Operation. Prototyp
 ### Situation Relevance
 
 The dynamic relationship by which a Field World Member can affect an Operation member or a plausible future. Prototype 05 strongly validated changing geometric relevance. Prototype 06 additionally validated role-aware relationship reclassification when a participant leaves Operational Membership, even when the relevant/not-relevant result itself does not change. Relevance is not inferred from membership alone.
+
+### Geometry Domain Separation
+
+The accepted separation between GIANTS Collision Geometry, the derived Physical Occupancy Envelope, the agronomic Working Footprint, Configuration Transition Sweep and Projected Motion Sweep. None may silently substitute for another.
+
+### GIANTS Collision Geometry
+
+Physics evidence attached to GIANTS model components. It is an implementation evidence source for physical contact, not the same as visible model width or agricultural working width.
+
+### Physical Occupancy Envelope
+
+A conservative ground-plane representation of the complete Entity's current physical extent, aggregated across the vehicle and every attached or towed implement. Prototype 07 confirmed the architectural need but disproved the tested direct Lua-bound retrieval route; a trustworthy evidence source remains unresolved.
+
+### Working Footprint
+
+The area currently affected agronomically. It may be wider, equal to or narrower than the Physical Occupancy Envelope and shall not be used as a substitute for collision geometry.
+
+### No Silent Under-Approximation
+
+The invariant that unknown, partial or low-confidence geometry remains explicit. Situation Assessment may not present an Entity as physically smaller than the discovered evidence supports.
+
+### Runtime Geometry Access Gap
+
+The accepted implementation finding that GIANTS' internal collision geometry is not necessarily exposed as usable bounds through the mod Lua runtime. Prototype 07 found rigid-body type but no tested shape/local/world bounding functions or collision-mask query, and therefore produced no complete-Entity Physical Occupancy Envelope.
 
 ### Operational Collision Envelope
 

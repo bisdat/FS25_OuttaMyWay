@@ -2,59 +2,57 @@
 
 ## Canonical baseline
 
-Canonical v4.6.7 derives from the exact tested Prototype 06 candidate.
+Canonical v4.6.8 derives from the exact tested Prototype 07 candidate.
 
 Accepted candidate SHA-256:
 
-`bee9382bc8f4f6a187aacbae43b8adefdf117eeb92f14c5e123da17a9de8a9b9`
+`97e46f233320d15110343faf481bb08b19bc26f298cbc165ff9b028742d9d34c`
 
 ## Accepted result
 
-Prototype 06 strongly supports the hypothesis that Situation Assessment can preserve
-one Field World identity while Operational Membership changes, latch the transition
-once and reclassify every existing relation whose participant role changed.
+Prototype 07 disproved the tested Direct Geometry Retrieval route without weakening
+the Physical Occupancy Envelope architecture.
 
-### TS002 negative control
+In TS003:
 
-- Condor began and remained `NON_OPERATION_VEHICLE`;
-- no membership transition, relationship reclassification or relationship removal
-  was emitted merely because that state persisted;
-- the Patriot-to-Condor relation still became `RELEVANT` during the terminal approach;
-- the observed finishing-area collision remained detectable.
+- `getRigidBodyType` was available;
+- tested shape, local and world bounding functions and collision-mask query were not;
+- Condor and Patriot each scanned 800 nodes with truncation;
+- bounded nodes and physics-bound nodes remained zero;
+- both Entities remained `coverage=NONE`, `confidence=UNKNOWN`;
+- approximately 337 s of heartbeats retained two Entities but zero envelopes;
+- no pair-clearance or envelope-change evidence could be produced;
+- both 36 m working-marker widths remained separate and were never used as physical
+  geometry.
 
-### TS003 positive case
+This is named the Runtime Geometry Access Gap. GIANTS has internal collision geometry,
+but the tested mod Lua boundary did not expose usable complete-Entity bounds.
 
-- both workers began active;
-- Condor completed at approximately `t=225.5s` while Patriot remained active;
-- exactly one `PROTOTYPE06 MEMBERSHIP_TRANSITION` was emitted;
-- exactly one `PROTOTYPE06 RELATIONSHIP_RECLASSIFIED` was emitted with
-  `identityPreserved=true`;
-- the obsolete Condor-as-active-source relation was retired explicitly once;
-- Condor retained the same Field World identity;
-- no unchanged event repeated and no OuttaMyWay runtime or control error occurred.
+## Secondary operational evidence
 
-Several transient relevance and GIANTS blocked episodes cleared without deadlock.
-Blocked state remains evidence requiring interpretation, not a deadlock conclusion.
+The final TS003 sequence contained a sweeping Patriot manoeuvre, a near miss and an
+observed reverse deadlock against parked Condor. Situation Assessment retained Condor
+as a relevant Field World Entity, but current clearance, rotation sweep and reverse
+occupancy remained unknown. This is Retained Entity, Missing Spatial Truth.
 
 ## Current boundary
 
-Prototype 06 closes the vehicle Operational Membership transition defect. The next
-architectural discussion should remain passive and select one evidence boundary at a
-time from:
+Select one alternative physical-evidence route before further implementation:
 
-1. complete identity of static Field World Members wholly inside the field polygon;
-2. exact current and maximum Operational Collision Envelope sources;
-3. projected swept-envelope containment.
+1. inspect loaded vehicle/implement runtime structures and XML metadata;
+2. reconstruct configured geometry from XML/I3D model information;
+3. test indirect physics-world overlap or raycast queries as an occupancy oracle;
+4. design controlled empirical envelope discovery.
 
-Active containment, hold/release, Conflict Realisation and Information-Gaining Delay
-remain deferred.
+Do not enlarge hierarchy traversal, implement containment mathematics, create a
+folding fixture or add Control until one evidence route is justified.
 
 ## Repository entry point
 
 1. `docs/PROJECT_STATUS.md`
-2. `docs/prototypes/PROTOTYPE_06_MEMBERSHIP_RECLASSIFICATION.md`
-3. `docs/prototypes/PROTOTYPE_05_FIELD_WORLD_OBSERVATION.md`
-4. `docs/ARCHITECTURE.md`
+2. `docs/prototypes/PROTOTYPE_07_PHYSICAL_OCCUPANCY_EVIDENCE.md`
+3. `docs/ARCHITECTURE.md`
+4. `docs/CONCEPT_REGISTER.md`
 5. `docs/ROADMAP.md`
 
 Continue using:

@@ -107,6 +107,22 @@ A stopped, completed or player-controlled vehicle can remain a Field World Membe
 
 Prototype 05 implements passive vehicle observation using conservative current-envelope rectangles. It does not yet implement exact maximum geometry, projected sweep or active containment.
 
+### Geometry Domain Separation (v4.6.8)
+
+Situation Assessment must not collapse different spatial truths into one width value:
+
+- **GIANTS Collision Geometry** is physics evidence attached to model components;
+- **Physical Occupancy Envelope** is the conservative ground-plane area occupied now by the complete vehicle–implement Entity;
+- **Working Footprint** is the area receiving agricultural work and may be wider, equal to or narrower than physical occupancy;
+- **Configuration Transition Sweep** is the area occupied while folding, unfolding, raising or lowering;
+- **Projected Motion Sweep** is the area likely to be occupied through translation, steering and articulation.
+
+Working width shall never substitute for physical geometry. The Condor and Patriot can pass safely in adjacent opposing lanes, demonstrating that physical boom extent, working width and active GIANTS collision geometry can differ.
+
+**No Silent Under-Approximation** is an invariant: Situation Assessment must expose unknown, partial or low-confidence geometry rather than representing an Entity as smaller than the available evidence supports. A conservative broad-phase approximation may exclude distant cases, but it cannot become authoritative containment knowledge merely because it is convenient.
+
+Prototype 07 passively inventories GIANTS-accessible geometry and derives a current compound envelope with explicit provenance and confidence. It does not claim exact collision truth, configuration-transition sweep, projected motion sweep or containment.
+
 ## Logging vocabulary (4.2.6)
 
 Runtime diagnostics use the full searchable mod name followed by an architectural category.

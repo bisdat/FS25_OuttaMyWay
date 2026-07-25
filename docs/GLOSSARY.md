@@ -42,6 +42,21 @@ Active participation in one Operation. Membership is dynamic and may end while t
 ## Situation Relevance
 The dynamic relationship by which a Field World Member can affect an Operation member or a plausible future.
 
+## Geometry Domain Separation
+The separation of GIANTS Collision Geometry, Physical Occupancy Envelope, Working Footprint, Configuration Transition Sweep and Projected Motion Sweep.
+
+## GIANTS Collision Geometry
+Physics geometry attached to model components in the GIANTS modelling environment and game runtime. It is evidence of physical contact and is not synonymous with visible width or agricultural working width.
+
+## Physical Occupancy Envelope
+The conservative ground-plane area currently occupied by the complete vehicle–implement Entity.
+
+## Working Footprint
+The ground area receiving agricultural work. It may differ from physical occupancy.
+
+## No Silent Under-Approximation
+The invariant that uncertain or incomplete geometry remains explicit rather than being represented as exact or smaller than the available evidence supports.
+
 ## Operational Collision Envelope
 The complete collision geometry of the vehicle plus every attached or towed implement, including configuration-dependent maximum extent and projected swept geometry.
 

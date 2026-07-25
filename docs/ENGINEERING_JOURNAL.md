@@ -1,5 +1,45 @@
 # Engineering Journal
 
+## 2026-07-25 — Prototype 07: physical extent is not working width
+
+**Observation:** Condor and Patriot can pass safely in adjacent opposing lanes. Their physical boom extent, agricultural working width and active GIANTS collision geometry therefore cannot be assumed equal.
+
+**Named discovery:** Geometry Domain Separation, with the narrower Physical–Agronomic Separation between physical occupancy and working effect.
+
+**Hypothesis:** GIANTS-accessible component, rigid-body, collision-mask and bounding evidence can be aggregated across a complete vehicle–implement Entity into a conservative current Physical Occupancy Envelope with explicit provenance and confidence.
+
+**Invariant:** No Silent Under-Approximation. Missing or partial evidence remains visible; working width is never promoted into physical geometry merely to obtain a convenient answer.
+
+**Implementation boundary:** Prototype 07 inventories engine capabilities, refreshes model-hierarchy evidence infrequently, samples discovered bounds, records Entity-local compound-envelope changes and reports pair clearance separately from AI marker width. It remains observer-only and performs no containment or projected-sweep decision.
+
+**Validation sequence:** begin with known Condor/Patriot fixtures to establish available runtime evidence and adjacent-lane clearance. Only then create a dedicated folded/unfolded or articulated fixture if the discovered sources justify it.
+
+### Validation result
+
+TS003 disproved the tested direct-bound retrieval route. The runtime exposed
+`getRigidBodyType`, but not the attempted shape, local or world bounding functions or
+collision-mask query. Condor and Patriot each scanned 800 nodes with truncation and
+produced zero bounded nodes, zero physics-bound nodes, `coverage=NONE` and
+`confidence=UNKNOWN`. Approximately 337 s of heartbeats retained two Entities but no
+physical envelope, pair clearance or envelope-change event.
+
+**Named discovery:** Runtime Geometry Access Gap. GIANTS' internal physics truth is not
+necessarily disclosed as queryable complete-Entity bounds through the mod Lua
+boundary.
+
+**Invariant result:** No Silent Under-Approximation passed. The 36 m working-marker
+widths remained separate agronomic evidence and were never promoted into physical
+geometry.
+
+**Secondary observation:** Patriot's final 76.99 s sweeping manoeuvre, near miss and
+observed reverse deadlock against parked Condor showed that Field World identity and
+Situation Relevance can be known while current clearance and swept occupancy remain
+unknown. This is Retained Entity, Missing Spatial Truth.
+
+**Result:** the tested Direct Geometry Retrieval route is unsupported. The Physical
+Occupancy Envelope remains an architectural requirement; the next cycle must compare
+alternative evidence sources rather than add fallbacks or containment mathematics.
+
 ## 2026-07-25 — Prototype 06: membership is a transition, not repeated state
 
 **Observation:** Prototype 05 repeated membership-change evidence for an unchanged false state and did not explicitly reclassify an existing relationship when a participant changed operational role.

@@ -1,15 +1,29 @@
 # Roadmap
 
-## Immediate — Select the next passive Field World boundary
+## Immediate — Select the next Physical Occupancy evidence route
 
-Prototype 06 is complete. TS002 passed as the negative control and TS003 validated one latched live Operational Membership transition, retained Field World identity and one explicit relationship reclassification.
+Prototype 07 is complete as accepted negative evidence. The tested Lua runtime route
+exposed rigid-body type but no usable bounds, so complete-Entity occupancy remains
+unknown. The next increment must investigate one source boundary rather than combine
+fallbacks for implementation convenience.
 
-The next increment must preserve one-hypothesis scope and choose one of the following evidence boundaries rather than combining them for implementation convenience:
+Candidate evidence routes:
 
-1. identify internal static Field World Members rather than relying only on field-island counts and native collision signals;
-2. discover exact current and maximum Operational Collision Envelope sources;
-3. validate projected swept-envelope containment;
-4. return to Conflict Realisation and active Information-Gaining Delay only after Situation Assessment retains every relevant participant.
+1. loaded vehicle/implement runtime structures and XML metadata;
+2. configured XML/I3D model reconstruction;
+3. indirect physics-world overlap or raycast queries as a Physical Occupancy Oracle;
+4. controlled empirical envelope discovery.
+
+Selection criteria:
+
+- complete root vehicle plus attached/towed implement coverage;
+- configuration awareness;
+- conservative evidence with no silent under-approximation;
+- acceptable observation cost;
+- no use of working width as physical geometry.
+
+Containment mathematics, projected sweep, folding fixtures and Control remain
+deferred until one source is justified.
 
 ## Development policy
 
@@ -92,6 +106,23 @@ Development remains in a private repository until the first GIANTS ModHub releas
 - [x] Retire the obsolete reverse directional relationship explicitly.
 - [x] Confirm no repeated unchanged event, Lua error or vehicle-control action.
 - [x] Record that transient GIANTS blocked warnings may clear without deadlock.
+
+### Prototype 07 — Physical Occupancy Evidence
+
+- [x] Name Geometry Domain Separation and Physical–Agronomic Separation.
+- [x] Establish No Silent Under-Approximation.
+- [x] Define one passive evidence-discovery hypothesis.
+- [x] Inventory GIANTS geometry capabilities without assuming a single collision-box API.
+- [x] Aggregate root vehicle and attached/towed implements as one Entity in the evidence model.
+- [x] Record provenance, coverage, confidence and frame stability.
+- [x] Keep working width separate from physical occupancy.
+- [x] Validate runtime capability inventory for Condor and Patriot.
+- [x] Confirm both Entities remained `coverage=NONE`, `confidence=UNKNOWN` with zero bounded evidence.
+- [x] Confirm the probe never substituted 36 m working-marker width for physical geometry.
+- [x] Close the adjacent-lane clearance stage as unexecutable under the tested source because no envelope existed.
+- [x] Defer folded/unfolded validation because Stage 1 discovered no usable source.
+- [x] Record Runtime Geometry Access Gap and reject the tested Direct Geometry Retrieval route.
+- [x] Decide that the discovered evidence is insufficient for current field containment.
 
 ## Repository Release System follow-up
 

@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.6.7
+-- FS25_OuttaMyWay v4.6.8
 -- Cooperative collision avoidance for base-game AI field workers.
 
 OuttaMyWay = {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.6.7"
+OuttaMyWay.VERSION = "4.6.8"
 OuttaMyWay.BLOCKED_FOLD_DELAY_MS = 6500
 OuttaMyWay.WAIT_FOLD_DELAY_MS = 4500
 OuttaMyWay.HEAD_ON_FOLLOW_HOLD_DISTANCE = 55.0
@@ -139,7 +139,19 @@ OuttaMyWay.PROTOTYPE_05_CONTAINMENT_LOG_MS = 3000
 -- role or control class. It adds no control behaviour.
 OuttaMyWay.PROTOTYPE_06_ENABLED = true
 
--- First live Traffic Manager v2 prototype. Disabled for passive Prototypes 01, 02, 03, 04, 05 and 06.
+-- Prototype 07: passive evidence discovery for GIANTS collision/physics geometry,
+-- complete-Entity aggregation and a conservative current Physical Occupancy
+-- Envelope. Working width is logged separately and never substitutes for physical
+-- geometry. No containment, projected sweep or vehicle control is permitted.
+OuttaMyWay.PROTOTYPE_07_ENABLED = true
+OuttaMyWay.PROTOTYPE_07_INTERVAL_MS = 500
+OuttaMyWay.PROTOTYPE_07_HEARTBEAT_MS = 15000
+OuttaMyWay.PROTOTYPE_07_PAIR_LOG_MS = 1000
+OuttaMyWay.PROTOTYPE_07_PAIR_WATCH_DISTANCE_M = 150.0
+OuttaMyWay.PROTOTYPE_07_NODE_SCAN_BUDGET = 800
+OuttaMyWay.PROTOTYPE_07_INVENTORY_REFRESH_MS = 5000
+
+-- First live Traffic Manager v2 prototype. Disabled for passive Prototypes 01, 02, 03, 04, 05, 06 and 07.
 -- Its retained settings are not executed in this candidate.
 OuttaMyWay.TRAFFIC_V2_ENABLED = false
 OuttaMyWay.TRAFFIC_V2_MIN_CONFIDENCE = 0.80

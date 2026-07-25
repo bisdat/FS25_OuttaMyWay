@@ -1,5 +1,29 @@
 # Changelog
 
+## v4.6.8 — Prototype 07: Physical Occupancy Evidence
+
+- Named Geometry Domain Separation and Physical–Agronomic Separation: GIANTS collision geometry, Physical Occupancy Envelope and Working Footprint are distinct evidence domains.
+- Added the No Silent Under-Approximation invariant: unknown or partial geometry must remain explicit and may not masquerade as exact physical occupancy.
+- Added a passive GIANTS geometry capability inventory covering shape/local/world bounds, rigid-body evidence, collision masks and hierarchy traversal.
+- Isolated geometry discovery/derivation in `scripts/geometry/PhysicalEnvelopeEvidence.lua` and lifecycle/logging in `scripts/prototypes/PhysicalOccupancyProbe.lua`.
+- Aggregates the root vehicle and every attached or towed implement as one complete Entity.
+- Derives a conservative current compound ground-plane envelope only from discovered bounded evidence and records provenance, coverage, confidence and frame stability.
+- Logs AI marker working width and vehicle size metadata separately; neither substitutes for physical geometry.
+- Adds pair diagnostics for physical-envelope clearance during known encounters such as adjacent-lane Condor/Patriot passes.
+- Detects configuration or evidence changes in Entity-local envelope signatures while treating ordinary translation separately.
+- Separates infrequent hierarchy inventory from frequent bound sampling to reduce diagnostic performance distortion.
+- Adds the Prototype 07 hypothesis, staged validation contract and planned configuration-change fixture.
+- Traffic Manager v2 remains disabled; no containment, projected sweep, safety padding, Decision, Commitment, hold, release or vehicle-control behaviour is introduced.
+- Candidate implementation completed in observer-only mode; accepted validation evidence follows.
+- TS003 exposed the tested runtime capability boundary: `getRigidBodyType=true`, while `getShapeBoundingBox`, `getBoundingBox`, `getWorldBoundingBox` and `getCollisionMask` were unavailable.
+- Condor and Patriot each scanned 800 hierarchy nodes with truncation but produced zero bounded nodes, zero physics-bound nodes, `coverage=NONE`, `confidence=UNKNOWN` and no compound envelope.
+- Across approximately 337 s, every Prototype 07 heartbeat retained two Entities but reported zero discovered envelopes and zero Entities with physics-bound evidence; no `NODE_EVIDENCE`, `PAIR_GEOMETRY` or `ENVELOPE_CHANGED` event could be produced.
+- The probe correctly retained `workingMarkerWidth=36.00` as separate agronomic evidence and never substituted it for unknown physical geometry, satisfying No Silent Under-Approximation.
+- Named the Runtime Geometry Access Gap: GIANTS uses physical collision geometry internally, but the tested Lua runtime boundary did not expose usable bounds for complete-Entity occupancy derivation.
+- The final sweeping manoeuvre, near miss and observed reverse deadlock retained the relevant parked Entity but left current clearance and swept occupancy unknown, exposing Retained Entity, Missing Spatial Truth.
+- Prototype 07 therefore disproves the tested Direct Geometry Retrieval route while preserving Physical Occupancy Envelope as an architectural requirement; alternative evidence sources must be investigated before containment mathematics or Control.
+- The repository owner reviewed and tested the exact v4.6.8 candidate and explicitly declared v4.6.8 canonical.
+
 ## v4.6.7 — Prototype 06: Membership Transition Reclassification
 
 - Corrected the Lua false-to-nil latching defect that caused repeated `OPERATIONAL_MEMBERSHIP_CHANGED` events for an unchanged non-operational vehicle.
