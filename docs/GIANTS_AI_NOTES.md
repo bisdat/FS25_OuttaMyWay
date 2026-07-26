@@ -52,3 +52,16 @@ Static TS004 source examination found:
 
 These are static asset observations, not runtime identity-resolution proof.
 
+
+## Prototype 13A hierarchy notes
+
+- Condor provides direct collision-node mappings for the positive-control boom family.
+- Tiger exposes collision-bearing wing descendants beneath separate physics-component roots.
+- TopDown exposes unmapped collision-bearing descendants beneath mapped folding-arm anchors inside one physics component.
+- Runtime rotations are radians; source-authored I3D/XML rotations are interpreted in their source format and must not be compared without explicit conversion.
+
+## TS004 work-engagement state evidence
+
+For TopDown 600, GIANTS AI used an extended-raised pose for initial positioning and end-of-pass repositioning, then lowered the implement for direct-soil-contact work. The raw foldable timeline held a stable interior value at `0.1250` while raised and moved toward `0.0000` while lowering. `WORKING` phase began before the stable low endpoint was reached.
+
+This evidence is fixture-specific. It supports separating deployment, vertical configuration, terrain contact, functional engagement and AI phase; it does not justify universal numerical meanings for fold animation values.

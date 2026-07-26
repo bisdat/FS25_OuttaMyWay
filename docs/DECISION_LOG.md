@@ -387,3 +387,20 @@ This log records Accepted, Deferred, Rejected and Superseded project choices tha
 **Status:** Accepted in v4.5.9
 
 The project transitions from architecture-only seminars to architecture–prototype cycles. Each prototype shall validate one architectural hypothesis.
+
+## D-0015 — Prototype 13A uses declared routes before automated discovery
+
+**Decision:** Test explicit fixture-declared routes for Condor, Tiger 8 MT and TopDown 600 through a common candidate evaluator before implementing automated route discovery. Preserve every candidate, convergence/disagreement and negative control. Route type does not grant physical authority.
+
+**Reason:** A first-success lookup would allow implementation order to determine physical identity. Explicit routes isolate hypotheses while the common evaluator discovers which evidence patterns are trustworthy.
+
+**Status:** Accepted for v4.6.17 evidence candidate.
+
+
+## D-0016 — Separate physical state dimensions and stop inferring fold semantics from raw animation progress
+
+**Decision:** Treat deployment, vertical configuration, terrain contact, functional engagement and GIANTS operational phase as separate architectural dimensions. Prototype diagnostics may record raw animation values and observed motion but must not infer universal semantic state from endpoint distance alone. Player-controlled assemblies remain outside cooperative-worker behaviour and are represented only as possible obstacles to AI workers.
+
+**Reason:** TS004 TopDown held a stable interior `foldAnimTime=0.1250` while extended and raised for manoeuvring, then lowered toward `0.0000` for work. `WORKING` phase began before the stable low pose. Direct-soil-contact implements and non-contact sprayer booms also give raise/lower different functional meanings.
+
+**Status:** Accepted for v4.6.18 correction candidate.

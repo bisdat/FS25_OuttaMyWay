@@ -1,12 +1,22 @@
 # Project Status
 
-Version: 4.6.16
+Version: 4.6.18
 
-Authority state: Release Candidate — Physical Representation architecture consolidation awaiting repository-owner review
+Authority state: Release Candidate — Prototype 13A evidence consolidated; corrected neutral animation-state logging awaiting focused validation and repository-owner review
 
-Canonical baseline: v4.6.15
+Implementation baseline: exact tested v4.6.17 candidate
 
-Current focus: define and validate Member-Local Physical Resolution without making exact shape identity a prerequisite for all useful occupancy
+Last canonical baseline: v4.6.16
+
+Current focus: validate the corrected neutral animation logger against TopDown stable interior and moving animation states; do not begin route discovery or footprint construction
+
+## Prototype 13A evidence result and correction candidate
+
+Prototype 13A's declared route hypothesis is supported for the tested matrix. All ten source shapes resolved through A/B route convergence and all ten invalid C controls were rejected. The result validates the tested route mechanisms and common evaluator, not complete physical inventory, footprints or Coverage Closure.
+
+TS004 also disproved the generic `foldState=TRANSITION` label for all interior animation values. TopDown held a stable `foldAnimTime=0.1250` in an extended-raised manoeuvring pose. v4.6.18 therefore logs neutral animation region and motion with semantic state explicitly not inferred.
+
+The current validation objective is one focused TopDown AI cycle confirming `INTERIOR + STABLE` at the raised plateau and `CHANGING` while lowering/raising.
 
 ## Established geometry and assembly evidence
 
@@ -54,10 +64,11 @@ The contrast establishes that physics-component count, mapping count and working
 
 - Prototypes 08, 09, 11 and 12 remain disabled after completing their present evidence roles.
 - Prototype 10 remains recorded disproval only.
-- No Prototype 13 code is enabled.
-- No Physical Occupancy Envelope, containment, sweep prediction, Decision, Commitment or Control is introduced.
-- `.gitattributes` establishes repository-native LF text; four inherited CRLF files are normalised.
+- Prototype 13A remains enabled only to validate corrected neutral animation-state logging; route evidence is already consolidated.
+- Four fixture, resolver, evaluator and orchestration modules are isolated under `scripts/prototypes/`.
+- No Physical Occupancy Envelope, Coverage Closure, containment, sweep prediction, Decision, Commitment or Control is introduced.
+- Repository-native LF text established in v4.6.16 remains intact.
 
 ## Next gate
 
-Agree the precise **Prototype 13 — Member-Local Runtime Identity Resolution** hypothesis and fixture scope. The prototype should test more than one source structure, retain unresolved current shapes explicitly, reject runtime aliases and distinguish identity resolution from fallback occupancy construction.
+Run the Condor, Tiger 8 MT and TopDown 600 fixture matrix through folded, transition and fully extended states. Review route convergence/disagreement, control rejection, alias evidence, Entity-local geometry and family consistency before considering Prototype 13B automated route discovery.

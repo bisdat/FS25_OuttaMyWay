@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.16 entry point.
+-- FS25_OuttaMyWay v4.6.18 entry point.
 -- modDesc.xml loads only this file; this loader owns module ordering.
 
 local modDirectory = g_currentModDirectory or ""
@@ -30,6 +30,10 @@ local modules = {
     "scripts/prototypes/ShapeBoundProbe.lua",
     "scripts/prototypes/RuntimeGeometrySelectorProbe.lua",
     "scripts/prototypes/PhysicalAssemblyProbe.lua",
+    "scripts/prototypes/Prototype13Fixtures.lua",
+    "scripts/prototypes/Prototype13Resolver.lua",
+    "scripts/prototypes/Prototype13Evaluator.lua",
+    "scripts/prototypes/DeclaredRouteEvaluationProbe.lua",
     "scripts/control/TrafficDecisionEngineV2.lua",
     "scripts/control/TrafficPermissionGate.lua",
     "scripts/control/RecoveryHandoff.lua",

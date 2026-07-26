@@ -1,20 +1,31 @@
 # Roadmap
 
-## Immediate — Define Prototype 13 from the Physical Representation architecture
+## Active — Prototype 13A Animation-State Correction Validation
 
-The architecture now separates exact identity, fallback occupancy and Coverage Closure. Before implementation, agree a precise Prototype 13 hypothesis that tests member-local source-to-runtime identity across materially different asset structures.
+- [x] Run Condor, Tiger 8 MT and TopDown 600 declared-route fixtures.
+- [x] Observe ten A/B route convergences and rejection of all ten invalid C controls.
+- [x] Consolidate Route-Independent Resolution Contract support for the tested fixtures.
+- [x] Observe TopDown stable interior `foldAnimTime=0.1250` while extended and raised.
+- [x] Separate deployment, vertical configuration, terrain contact, functional engagement and operational phase.
+- [x] Preserve the Player Obstacle Boundary.
+- [x] Replace semantic `foldState` inference in Prototype 13A with neutral animation region and motion evidence.
+- [ ] Run one focused TopDown AI work-engagement cycle with v4.6.18.
+- [ ] Confirm `INTERIOR + STABLE` at the raised plateau and `CHANGING` during raise/lower motion.
+- [ ] Canonicalise only after the corrected diagnostic evidence is reviewed.
 
-Required boundaries:
+## Next after Prototype 13A evidence
+
+Consolidate which explicit routes succeeded, failed, converged or disagreed. Decide whether the evidence justifies Prototype 13B automated route discovery, a narrower second declared-route probe, or an architectural correction.
+
+Required boundaries remain:
 
 - source collision metadata owns physical membership;
-- saved/current configuration owns inclusion;
+- current configuration owns inclusion;
 - Physical Assembly discovery owns member scope;
 - runtime Entity identity owns geometry and live pose;
 - unresolved identities and runtime aliases remain explicit;
 - fallback occupancy does not claim exact identity;
 - no containment, sweep prediction or Control is introduced.
-
-TS004 supplies the Tiger and TopDown as static contrast evidence. GIANTS source assets must be supplied again for any future runtime implementation work.
 
 ## Development policy
 

@@ -49,6 +49,7 @@ The remaining documents deepen or verify that journey; they are classified below
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — current driving-system architecture.
 - [`DESIGN.md`](DESIGN.md) — component responsibilities and design boundaries.
 - [`ENGINEERING_HANDBOOK.md`](ENGINEERING_HANDBOOK.md) — accumulated engineering reference.
+- [`prototypes/PROTOTYPE_13_DECLARED_ROUTE_EVALUATION.md`](prototypes/PROTOTYPE_13_DECLARED_ROUTE_EVALUATION.md) — active declared-route evaluation contract and fixture matrix.
 - [`prototypes/PROTOTYPE_12_PHYSICAL_ASSEMBLY_DISCOVERY.md`](prototypes/PROTOTYPE_12_PHYSICAL_ASSEMBLY_DISCOVERY.md) — accepted physical-assembly discovery result and next member-local resolution gate.
 - [`prototypes/PROTOTYPE_11_RUNTIME_GEOMETRY_SELECTOR_SEMANTICS.md`](prototypes/PROTOTYPE_11_RUNTIME_GEOMETRY_SELECTOR_SEMANTICS.md) — accepted runtime geometry-selector result.
 - [`prototypes/PROTOTYPE_10_PHYSICAL_SHAPE_COVERAGE.md`](prototypes/PROTOTYPE_10_PHYSICAL_SHAPE_COVERAGE.md) — accepted disproval of vehicle-root descendant selection.

@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.6.16
+-- FS25_OuttaMyWay v4.6.18
 -- Cooperative collision avoidance for base-game AI field workers.
 
 OuttaMyWay = {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.6.16"
+OuttaMyWay.VERSION = "4.6.18"
 OuttaMyWay.BLOCKED_FOLD_DELAY_MS = 6500
 OuttaMyWay.WAIT_FOLD_DELAY_MS = 4500
 OuttaMyWay.HEAD_ON_FOLLOW_HOLD_DISTANCE = 55.0
@@ -206,6 +206,23 @@ OuttaMyWay.PROTOTYPE_12_MOTION_LOG_MS = 2000
 OuttaMyWay.PROTOTYPE_12_MEMBER_BUDGET = 16
 OuttaMyWay.PROTOTYPE_12_NODE_SCAN_BUDGET = 3000
 OuttaMyWay.PROTOTYPE_12_SUMMARY_NODE_SCAN_BUDGET = 1
+
+-- Prototype 13A: passive Declared Route Evaluation. Fixture-specific Lua tables
+-- declare candidate lookup routes for Condor, Tiger 8 MT and TopDown 600. The
+-- common evaluator preserves all candidates, route convergence/disagreement,
+-- Entity-local geometry evidence and negative controls. No footprint or control.
+OuttaMyWay.PROTOTYPE_13_ENABLED = true
+OuttaMyWay.PROTOTYPE_13_INTERVAL_MS = 100
+OuttaMyWay.PROTOTYPE_13_ENUMERATION_LOG_MS = 3000
+OuttaMyWay.PROTOTYPE_13_CHANGING_LOG_MS = 250
+OuttaMyWay.PROTOTYPE_13_STABLE_LOG_MS = 2000
+OuttaMyWay.PROTOTYPE_13_ANIMATION_CHANGE_EPSILON = 0.0005
+OuttaMyWay.PROTOTYPE_13_ANIMATION_STABLE_MS = 500
+OuttaMyWay.PROTOTYPE_13_COHERENCE_TOLERANCE_M = 0.05
+OuttaMyWay.PROTOTYPE_13_ALIAS_TOLERANCE_M = 0.0001
+OuttaMyWay.PROTOTYPE_13_MOTION_THRESHOLD_M = 0.02
+OuttaMyWay.PROTOTYPE_13_MAX_ABS_CENTRE_M = 10000.0
+OuttaMyWay.PROTOTYPE_13_MAX_RADIUS_M = 500.0
 
 -- First live Traffic Manager v2 prototype. Disabled while validated passive prototype evidence is consolidated.
 -- Its retained settings are not executed in this candidate.

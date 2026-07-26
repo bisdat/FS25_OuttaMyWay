@@ -1,31 +1,38 @@
-FS25_OuttaMyWay v4.6.16
+FS25_OuttaMyWay v4.6.18
 
-Physical Representation Architecture Consolidation — Release Candidate
+Prototype 13A Evidence Consolidation and Animation-State Correction — Release Candidate
 
-Canonical implementation baseline: v4.6.15
-Current package authority: noncanonical candidate awaiting repository-owner review
+Implementation baseline: exact tested v4.6.17 candidate
+Current package authority: noncanonical correction candidate awaiting focused in-game validation and repository-owner review
 
-This candidate records the agreed architecture for constructing and interpreting plan-view
-Physical Representations without requiring exact runtime collision identity as a prerequisite
-for all useful occupancy knowledge. It accepts component footprints, a Convex Planar Envelope
-and member/assembly rectangles as an explicitly qualified representation portfolio.
+Prototype 13A successfully demonstrated route convergence for all ten declared source shapes across
+Condor, Tiger 8 MT and TopDown 600. Every real A/B route pair converged on one runtime Entity and
+every deliberately wrong C control was rejected. Runtime handles remained stable through observed
+configuration motion. These findings support the Route-Independent Resolution Contract for the
+tested fixtures; they do not establish complete physical inventory, footprints or Coverage Closure.
 
-The Job-Scoped Representation Catalogue is built once at job start. Stable templates are
-realised from current physical state and plan-view pose. Mixed precision is permitted: exact
-and fallback regions may coexist, uncertainty remains local, and coverage takes priority over
-uniform precision.
+The TopDown AI run also disproved Prototype 13A's generic interior-value label. A stable
+`foldAnimTime=0.1250` plateau represented an extended, raised manoeuvring pose rather than a fold
+transition. Prototype 13A now logs neutral animation evidence only: raw value, endpoint/interior
+region and observed changing/stable motion. It does not infer deployment, vertical configuration,
+terrain contact, functional engagement or AI operational phase from one animation value.
 
-Coverage Closure is separated from Inventory Closure and may be enumerative, enclosing or
-hybrid. Structural Closure belongs to the catalogue; Realised Closure additionally requires
-current valid pose. Partial knowledge continues, but any relevant gap yields Clearance
-Unresolved rather than an unsupported all-clear or an invented collision.
+Recorded architecture separates:
 
-TS004 records the Valtra S 416 + Tiger 8 MT and John Deere 8RX 410 + TopDown 600 as static
-contrast fixtures. Their different physics-component, hierarchy and mapping structures show
-that component counts and direct mappings cannot establish collision inventory.
+- deployment state;
+- vertical configuration;
+- terrain contact;
+- functional engagement;
+- AI operational phase.
 
-Repository text is now governed as LF through .gitattributes. Four historical CRLF files are
-normalised to LF in this candidate. No Prototype 13 implementation or runtime behaviour is
-introduced.
+The TS004 TopDown establishes an AI Work Engagement Cycle: extended-raised for positioning and
+repositioning, then lowering for direct-soil-contact work. Certain towed sprayers provide a contrasting
+non-contact vertical configuration whose height has role-play significance but no crop-contact effect.
+Player-controlled behaviour remains outside cooperative-worker modelling; a player assembly is relevant
+only as a potential obstacle to AI workers.
 
-See docs/PHYSICAL_REPRESENTATION_ARCHITECTURE.md.
+Prototype 13A remains passive. This candidate does not automate route discovery, construct footprints,
+claim Coverage Closure, predict sweep, assess conflict, create a Commitment or issue Control.
+
+See docs/prototypes/PROTOTYPE_13_DECLARED_ROUTE_EVALUATION.md and
+docs/PHYSICAL_REPRESENTATION_ARCHITECTURE.md.

@@ -13,3 +13,13 @@
 11. Physics-component count is not a universal inventory of plan-view articulation: Tiger 8 MT uses separate wing components while TopDown 600 moves collision-bearing descendants inside one physics component.
 12. Direct `i3dMapping` coverage varies by asset and cannot establish collision inventory or Coverage Closure.
 13. Working width, base size and AI course offsets are state-scoped operational evidence, not automatic collision authority.
+
+## Mapping and hierarchy evidence relevant to Prototype 13A
+
+GIANTS vehicle loading uses components and `i3dMappings` as node-resolution inputs, while physically relevant descendants may remain unmapped and inherit changing world poses from mapped ancestors. Mappings are therefore useful anchors, not physical inventories or proof of Coverage Closure. Prototype 13A tests this interpretation at runtime.
+
+## TS004 TopDown AI work-engagement observation
+
+The AI-controlled 8RX 410 + TopDown 600 unfolded, retained an extended-raised pose while moving forward and reversing into its start position, lowered for a working pass, raised for repositioning, then lowered for the next pass. The same run showed GIANTS phase `WORKING` before the TopDown reached its stable low animation endpoint. AI operational phase is therefore not authoritative physical-pose evidence.
+
+The stable `foldAnimTime=0.1250` manoeuvring plateau disproved the assumption that every interior animation value is a transition. Prototype 13A now records neutral animation region and motion rather than semantic fold state.

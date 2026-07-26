@@ -466,3 +466,18 @@ Key discoveries:
 
 ## v4.5.9 — Transition to Architectural Prototyping
 The project reached sufficient architectural maturity to begin evidence-led prototyping. Prototypes exist to answer architectural questions rather than deliver production features.
+
+## v4.6.17 — Prototype 13A implementation boundary
+
+Discussion separated route discovery from identity authority. Prototype 13A therefore preserves explicit A/B/C candidates for three known fixture structures and asks the common evaluator to prove or disprove them. Diagnostic Lua fixture tables were selected over external configuration to avoid designing a schema before the required evidence is known.
+
+
+## v4.6.18 — Prototype 13A evidence consolidation
+
+Three manual fixture runs resolved all ten declared source shapes through A/B route convergence: four Condor boom shapes, two Tiger wing shapes and two TopDown folding-arm shapes, with the TS004 save exposing both cultivators in each run. All deliberately invalid C controls were rejected by the expected hierarchy-name or component-ownership evidence. No ambiguity, root alias, cross-source alias, geometry-unproven or unresolved result was observed. Handles remained stable through observed configuration motion.
+
+A short AI-controlled TopDown run then disproved the diagnostic assumption that every interior `foldAnimTime` value means transition. GIANTS unfolded the TopDown, held it at `0.1250` while extended and raised for positioning, lowered toward `0.0000` for work, raised for repositioning, and lowered for the next pass. GIANTS `WORKING` phase began before the low endpoint was reached.
+
+The resulting architecture separates deployment, vertical configuration, terrain contact, functional engagement and operational phase. Direct-soil-contact implements use realised terrain contact as part of functional capability; non-contact sprayer-boom height is a contrasting configuration dimension with no soil-contact requirement. Player-controlled behaviour was explicitly returned to scope: player assemblies matter only as possible obstacles to AI workers.
+
+The v4.6.18 implementation changes Prototype 13A logging only. It records raw animation value, endpoint/interior region and observed changing/stable motion, with `semanticState=not-inferred`. No production resolver, footprint, closure, sweep, conflict or control behaviour is introduced.

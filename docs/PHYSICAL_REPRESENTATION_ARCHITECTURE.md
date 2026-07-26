@@ -215,8 +215,63 @@ This supports **Internal Articulation Representation Diversity**, **Direct-Mappi
 
 The supplied GIANTS assets are temporary research evidence and are not redistributed in this repository. Runtime validation remains required before source observations become runtime resolution claims.
 
+## Orthogonal Physical State Dimensions
+
+Runtime evidence disproves a universal one-dimensional `folded → transition → extended` model. A physical assembly may expose several independently meaningful dimensions:
+
+- **Deployment State** — folded, extended or unknown;
+- **Vertical Configuration** — raised, lowered, intermediate or unknown;
+- **Terrain Contact** — contacting, clear, not applicable or unknown;
+- **Functional Engagement** — engaged, disengaged, not applicable or unknown;
+- **Operational Phase** — GIANTS AI activity such as manoeuvring or working.
+
+These dimensions may correlate for one implement but are not universally equivalent. One asset may encode several of them inside one animation timeline, while another may use separate controls or specialisations. Runtime physical pose remains authoritative; implementation values and AI phase are supporting evidence only.
+
+### Stable Interior Animation State and Compound Animation Timeline
+
+TS004 TopDown remained stably at `foldAnimTime=0.1250` while extended and raised for manoeuvring. It later moved from `0.1250` toward `0.0000` while lowering for work. Therefore an interior numerical animation value may be a stable physical pose, not incomplete transition.
+
+A **Compound Animation Timeline** is an implementation timeline that encodes more than one architectural state dimension. Its numerical endpoints and interior plateaus must not be assigned universal physical semantics without asset-specific evidence.
+
+### Extended Manoeuvring State and Work Engagement Cycle
+
+For the AI-controlled TopDown fixture, GIANTS unfolded the implement, retained an extended-raised pose for positioning, lowered it for direct-soil-contact work, raised it for end-of-pass repositioning, then lowered it for the next pass. This establishes the observed **Extended Manoeuvring State** and **Work Engagement Cycle** for that fixture:
+
+```text
+EXTENDED + RAISED
+→ lower
+→ EXTENDED + CONTACTING / functionally capable of work
+→ raise
+→ EXTENDED + RAISED
+```
+
+GIANTS `WORKING` began before the implement reached its stable low animation endpoint. This is **Operational Phase–Physical State Separation**: operational phase must not be used as authoritative pose evidence.
+
+### Raise/Lower Semantic Diversity
+
+Raise/lower controls do not have one universal functional meaning.
+
+- Direct-soil-contact implements such as ploughs, cultivators and rollers must lower until their working elements contact the soil before their intended ground operation can occur.
+- Non-contact implements such as sprayer booms may change vertical configuration for role-play or real-world crop-clearance plausibility without requiring soil contact and without changing crop treatment in the current game simulation.
+
+This supports **Configuration–Function Separation**, **Contact-Dependent Functional Engagement** and **Commanded State–Realised Contact Separation**. A lower command describes intended configuration movement; it does not prove realised terrain contact or functional engagement.
+
+The Planar Relevance Test remains decisive for collision representation. A vertical change matters to OuttaMyWay only where its realised pose or transition materially changes plan-view occupancy or sweep.
+
+### Player Obstacle Boundary
+
+Player-controlled assemblies are outside cooperative-worker behavioural modelling. They are observed only insofar as their physical occupancy may obstruct an AI worker. OuttaMyWay does not infer, optimise or correct player operating policy.
+
 ## Current Boundary
 
 Member-Local Physical Resolution remains the next prototype gate. Prototype 13 must investigate how source collision identities are connected to distinct runtime Entities inside each assembly member while retaining unresolved identities and alias detection. Physical Representation construction may then test exact and fallback routes without requiring exact identity as a prerequisite for all useful occupancy.
 
-No implementation is authorised until the Prototype 13 hypothesis and validation fixture are agreed.
+Prototype 13A is authorised as a passive declared-route evidence probe only; automated route discovery and footprint construction remain unauthorised pending evidence.
+
+## Member-Local Physical Resolution
+
+Physical identity resolution may follow different asset-specific routes while emitting one Route-Independent Resolution Contract. Direct mapping, physics-component descendants and mapped-ancestor descendants are candidate-generation methods, not authority rankings.
+
+Each source physical shape owns a Resolution Candidate Set. Applicable routes are evaluated through common evidence: member/component ownership, hierarchy coherence, distinct runtime identity, Entity-local geometry authority, current pose and alias rejection. Multiple routes reaching one Entity provide Resolution Route Convergence; coherent disagreement remains `AMBIGUOUS`. A found node with unproven geometry remains `NODE_RESOLVED_GEOMETRY_UNPROVEN`.
+
+Prototype 13A tests explicit Disposable Fixture Declarations before any automated route discovery. Complete footprint construction and Coverage Closure remain separate later activities.

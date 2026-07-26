@@ -1,5 +1,31 @@
 # Changelog
 
+## v4.6.18 — Prototype 13A Evidence Consolidation and Animation-State Correction
+
+- Consolidates successful Prototype 13A runtime evidence from Condor, Tiger 8 MT and TopDown 600: ten declared source shapes resolved through A/B route convergence and all ten deliberately invalid C controls were rejected.
+- Preserves Route–Authority Separation: the successful route classes remain corroborating lookup mechanisms, not authority rankings or proof of complete physical inventory.
+- Replaces Prototype 13A's generic `foldState` inference with neutral animation evidence: raw `foldAnimTime`, endpoint/interior region and observed changing/stable motion.
+- Records Stable Interior Animation State after TopDown held `foldAnimTime=0.1250` while extended and raised for manoeuvring.
+- Records Compound Animation Timeline and Operational Phase–Physical State Separation; one animation may encode deployment and vertical configuration, while GIANTS `WORKING` may begin before the implement reaches its stable lowered pose.
+- Records Extended Manoeuvring State and the AI Work Engagement Cycle for TS004 TopDown: extended-raised repositioning followed by lowering for direct-soil-contact work.
+- Separates deployment, vertical configuration, terrain contact, functional engagement and operational phase as independent architectural dimensions.
+- Records Raise/Lower Semantic Diversity, Configuration–Function Separation, Contact-Dependent Functional Engagement and Commanded State–Realised Contact Separation.
+- Preserves the Player Obstacle Boundary: player-controlled assemblies are relevant only as possible obstacles to AI workers, not as cooperative workers or behavioural models.
+- Introduces no route discovery, footprint construction, Coverage Closure, sweep, conflict assessment, Decision, Commitment or Control behaviour.
+
+## v4.6.17 — Prototype 13A: Declared Route Evaluation
+
+- Adds passive Prototype 13A to test resolution-route diversity before any complete footprint construction.
+- Introduces isolated fixture declarations for Condor, Tiger 8 MT and TopDown 600; declarations identify where to look but do not assert correctness.
+- Tests direct mapping, physics-component descendant and mapped-ancestor descendant routes through one common evaluator.
+- Preserves Candidate A/B/C records, route convergence, route disagreement and deliberately invalid controls.
+- Distinguishes resolved runtime nodes from proven Entity-local physical geometry through `NODE_RESOLVED_GEOMETRY_UNPROVEN`.
+- Rejects route priority: resolution-route type remains separate from physical authority.
+- Tests four Condor boom controls, Tiger left/right wing `colPart` shapes and TopDown left/right folding-arm collision descendants.
+- Adds motion-derived corroboration through folded, transition and extended states without making motion mandatory for rigid shapes.
+- Adds cross-source handle-reuse detection and member-root alias rejection.
+- Defers automated route discovery, complete physical inventory, footprint construction, Coverage Closure, sweep, conflict assessment, Decision, Commitment and Control.
+
 ## v4.6.16 — Physical Representation Architecture Consolidation
 
 - Separates authoritative runtime collision-shape identity from usable physical occupancy; unresolved exact identity no longer forbids explicitly qualified conservative fallback.

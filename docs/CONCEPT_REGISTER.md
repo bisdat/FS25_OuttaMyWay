@@ -449,3 +449,32 @@ The declared substantive Repository Transformation performed during Candidate Pr
 ### Authority Transformation
 
 The candidate-to-canonical authority change. It must not alter approved substantive engineering content.
+
+## Accepted in Prototype 13A design
+
+- **Route-Independent Resolution Contract** — different asset-specific routes produce one common evidence record.
+- **Resolution Candidate Set** — every applicable declared route produces a candidate before selection.
+- **Resolution Route Convergence** — independent routes reaching one Entity are corroborating evidence.
+- **Resolution Route Disagreement** — coherent routes reaching different Entities remain visible as ambiguity.
+- **Route–Authority Separation** — discovery route type does not determine physical authority.
+- **Disposable Fixture Declaration** — asset-specific Lua tables are diagnostic scaffolding, not production configuration.
+- **Runtime Distinctness Proof** — handle inequality is necessary but insufficient; ownership, hierarchy, geometry authority and pose are required.
+- **Signature Equality Is Not Aliasing** — symmetric family members may share geometry signatures while remaining distinct Entities.
+
+## Accepted from Prototype 13A validation and TS004 state observation
+
+- **Stable Interior Animation State** — a numerical value inside an animation range may represent a stable physical pose rather than incomplete movement.
+- **Compound Animation Timeline** — one asset animation timeline may encode multiple architectural state dimensions.
+- **Orthogonal Physical State Dimensions** — deployment, vertical configuration, terrain contact, functional engagement and operational phase remain separate concepts.
+- **Extended Manoeuvring State** — an implement remains extended but raised while an AI worker positions or repositions it.
+- **Work Engagement Cycle** — repeated AI-controlled raising for manoeuvring and lowering for direct-soil-contact work within one deployed job.
+- **Operational Phase–Physical State Separation** — GIANTS AI phase is contextual evidence, not authoritative physical-pose evidence.
+- **Raise/Lower Semantic Diversity** — raising/lowering has implement-family-specific meaning and cannot be mapped universally to engagement.
+- **Configuration–Function Separation** — a physical configuration change may not alter gameplay function.
+- **Contact-Dependent Functional Engagement** — some implements require realised terrain contact before their intended ground operation can occur.
+- **Commanded State–Realised Contact Separation** — a lower command or animation target does not prove terrain contact.
+- **Player Obstacle Boundary** — player-controlled assemblies are relevant only as potential obstacles to AI workers, not as cooperative workers or behavioural models.
+
+## Deferred after Prototype 13A
+
+- **Prototype 13B Route Discovery** — automated route discovery begins only after declared-route evidence identifies reusable patterns.

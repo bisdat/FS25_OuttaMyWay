@@ -127,6 +127,48 @@ A condition where GIANTS reports active `WORKING` state while measured physical 
 ## Member-Local Physical Resolution
 The proposed mapping of source physical collision identities to runtime Entities independently inside each Physical Assembly member.
 
+## Stable Interior Animation State
+A stable physical pose represented by a numerical animation value that lies between the animation's endpoints. Interior value does not imply ongoing transition.
+
+## Compound Animation Timeline
+An asset implementation timeline that encodes more than one architectural state dimension, such as deployment and vertical configuration.
+
+## Deployment State
+Whether a physical assembly is folded, extended or otherwise deployed. It is separate from vertical configuration and functional engagement.
+
+## Vertical Configuration
+The raised, lowered or intermediate physical height configuration of an implement or implement subassembly.
+
+## Terrain Contact
+Whether the relevant working elements are physically contacting terrain. It may be required for direct-soil-contact work or not applicable to a non-contact implement.
+
+## Functional Engagement
+Whether an implement is physically configured and able to perform its intended operation. It is not universally equivalent to `LOWERED` or to GIANTS AI `WORKING` phase.
+
+## Extended Manoeuvring State
+An observed AI state in which an implement remains deployed but is raised while the assembly positions or repositions.
+
+## Work Engagement Cycle
+The repeated within-job sequence of raising a deployed direct-soil-contact implement for manoeuvring and lowering it for work.
+
+## Operational Phase–Physical State Separation
+The rule that GIANTS AI activity phase is contextual evidence and does not establish the implement's realised physical pose.
+
+## Raise/Lower Semantic Diversity
+The implement-family-specific meaning of vertical movement. Lowering may establish soil contact, may merely change boom height, or may have another physical role.
+
+## Configuration–Function Separation
+The distinction between changing physical pose and changing the gameplay function currently performed.
+
+## Contact-Dependent Functional Engagement
+The requirement that some direct-soil-contact implements establish realised terrain contact before their intended ground operation can occur.
+
+## Commanded State–Realised Contact Separation
+The distinction between a command or animation target to lower and the observed fact of terrain contact.
+
+## Player Obstacle Boundary
+The scope rule that player-controlled assemblies are represented only as potential physical obstacles to AI workers, not as cooperative workers whose behaviour is modelled or controlled.
+
 ## Planar Collision Semantics
 Physical occupancy is represented in collision-relevant ground-plane projection because GIANTS AI does not exploit hypothetical vertical underpass clearance.
 

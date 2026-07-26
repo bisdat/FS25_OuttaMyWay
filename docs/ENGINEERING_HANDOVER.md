@@ -1,51 +1,68 @@
 # Engineering Handover
 
-## Canonical baseline
+## Authority state
 
-v4.6.15 is canonical and the implementation baseline. v4.6.16 is a noncanonical consolidation candidate until independently reviewed and explicitly Canonicalised by the repository owner.
+v4.6.16 remains the last canonical repository. v4.6.17 was the exact tested noncanonical Prototype 13A candidate. v4.6.18 is a narrow correction candidate built from that exact tested package; it consolidates the evidence and corrects one misleading diagnostic label.
 
-## Accepted architecture
+## Prototype 13A result
 
-The complete agreed model is owned by `PHYSICAL_REPRESENTATION_ARCHITECTURE.md`. The essential continuation facts are:
+The declared-route matrix produced ten `RESOLVED / ROUTE_CONVERGENCE` results:
 
-1. Exact runtime collision identity and useful occupancy are separate claims.
-2. Plan-view representations retain Spatial Core, Validity Context and Evidence Quality.
-3. A job-start Representation Catalogue owns stable templates; Situation Assessment realises current pose and state.
-4. Component, Convex Planar Envelope and conservative member/assembly representations may coexist.
-5. Mixed precision is accepted; fallbacks are introduced at the smallest safe scope and uncertainty stays local.
-6. Coverage Closure may be enumerative, enclosing or hybrid. Structural Closure and Realised Closure are distinct.
-7. Incomplete relevant coverage produces Clearance Unresolved, not all-clear and not invented conflict.
-8. Deployment and manoeuvre sweeps remain separate; steering-mode-dependent manoeuvre kinematics are deferred.
+- Condor: four representative boom collision shapes;
+- Tiger 8 MT: left and right wing `colPart` shapes;
+- TopDown 600: left and right folding-arm collision descendants.
 
-## TS004 fixture
+Every A/B route pair converged on one runtime Entity. All ten deliberately invalid C controls were rejected through the expected hierarchy-name or component-ownership evidence. No ambiguity, alias, geometry-unproven or unresolved result occurred. Runtime handles remained stable through observed configuration motion.
 
-TS004 is now the static contrast fixture:
+This supports the Route-Independent Resolution Contract for the tested fixture routes. It does not establish complete physical inventory, footprint construction or Coverage Closure.
 
-- unit1: Valtra S 416 + Horsch Tiger 8 MT;
-- unit2: John Deere 8RX 410 + Väderstad TopDown 600.
+## Disproved assumption and correction
 
-Tiger represents wing articulation through multiple physics components. TopDown represents folding collision-bearing descendants within one physics component. Direct mapping coverage also differs. These assets demonstrate that Prototype 13 cannot assume Condor-style mapping vocabulary or use physics-component count as collision inventory. GIANTS assets are not retained in the repository and must be supplied again when required.
+TopDown held a stable raw `foldAnimTime=0.1250` while extended and raised for AI manoeuvring. The v4.6.17 diagnostic labelled all interior values `TRANSITION`; that generalisation is disproved.
 
-## Immediate continuation point
+v4.6.18 records only:
 
-Discuss the exact Prototype 13 hypothesis before implementation. The next experiment should answer:
+- raw animation value;
+- numerical region: high endpoint, interior or low endpoint;
+- observed animation motion: unobserved, settling, changing or stable;
+- `semanticState=not-inferred`.
 
-> Can configuration-aware source collision identities be connected to distinct runtime Entities inside materially different assembly-member structures, while retaining unresolved identities, alias evidence and independently qualified occupancy fallbacks?
+Do not reintroduce semantic fold state from endpoint distance alone.
 
-Candidate scope should likely include:
+## Accepted physical-state architecture
 
-- Condor for known repeated-family resolution;
-- Tiger or TopDown for a contrasting member-local hierarchy route;
-- no assembly envelope or active containment until the evidence supports it.
+Deployment, vertical configuration, terrain contact, functional engagement and GIANTS operational phase are separate dimensions. For TS004 TopDown, AI uses an Extended Manoeuvring State and Work Engagement Cycle: extended-raised for positioning/repositioning, lowered for direct-soil-contact work. GIANTS `WORKING` may begin before the implement reaches its stable low pose.
 
-## Deferred questions
+Raise/lower semantics are family-specific. Direct-soil-contact implements such as ploughs, cultivators and rollers require realised terrain contact for intended ground operation. Towed sprayer boom height is a contrasting non-contact configuration with role-play significance but no soil-contact requirement or crop-damage effect in current gameplay.
 
-- Envelope Anchor Selection for the Convex Planar Envelope;
-- exact Deployment Clearance Envelope construction;
-- manoeuvre sweep, turning radius and steering kinematics;
-- representation behaviour for unusual plan-view effects from vertical articulation;
-- Decision Engine response to Clearance Unresolved.
+Player-controlled assemblies remain inside the Field World only as possible obstacles to AI workers. Their operating behaviour is outside cooperative-worker modelling.
 
-## Repository operation
+## Immediate validation objective
 
-Text files are now governed as LF by `.gitattributes`. The four inherited CRLF files are normalised in v4.6.16. Candidate packaging and release-manifest generation must therefore preserve the LF bytes declared by the repository.
+Run one short AI-controlled 8RX 410 + TopDown 600 cycle:
+
+```text
+unfold
+→ extended-raised positioning
+→ lower for pass
+→ raise for reposition
+→ lower for next pass
+```
+
+Confirm that the v4.6.18 log reports:
+
+- the stable `0.1250` plateau as `animationRegion=INTERIOR animationMotion=STABLE`;
+- raising/lowering movement as `animationMotion=CHANGING`;
+- no semantic `foldState` field in Prototype 13A motion records.
+
+No Condor or Tiger rerun is required unless the correction unexpectedly affects route resolution.
+
+## Deferred work
+
+- Prototype 13B automated route discovery;
+- complete physical inventory and Coverage Closure;
+- Physical Occupancy Envelope construction;
+- Deployment and Manoeuvre Sweep construction;
+- conflict assessment and Decision Engine response to Clearance Unresolved.
+
+None is authorised by v4.6.18.
