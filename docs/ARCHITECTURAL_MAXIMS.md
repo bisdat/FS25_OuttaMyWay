@@ -19,3 +19,11 @@
 - Coverage before uniform precision.
 - Uncertainty prevents clearance; it does not manufacture collision.
 - Sweep follows observed kinematics, not visual symmetry.
+- Resolve identity rigorously; represent uncertainty honestly.
+- Route is for navigation; Resolution Path is for evidence.
+- Class is context, not structural authority.
+- Admissibility before optimisation.
+- The best representation is sufficient, defensible and timely—not merely detailed.
+- Situation Assessment judges fitness; representations expose evidence and limits.
+- Refresh the smallest invalidated scope.
+- Job completion ends cooperation, not physical relevance.

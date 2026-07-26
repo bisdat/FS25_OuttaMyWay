@@ -13,6 +13,9 @@
 11. Physics-component count is not a universal inventory of plan-view articulation: Tiger 8 MT uses separate wing components while TopDown 600 moves collision-bearing descendants inside one physics component.
 12. Direct `i3dMapping` coverage varies by asset and cannot establish collision inventory or Coverage Closure.
 13. Working width, base size and AI course offsets are state-scoped operational evidence, not automatic collision authority.
+14. Two implements in the same gameplay class may expose materially different physics-component, hierarchy, mapping and articulation structures; class is not structural authority.
+15. GIANTS job completion ends active worker membership but leaves the physical assembly in its final pose as a potentially significant obstacle.
+16. GIANTS does not necessarily fold wide implements at job completion; OuttaMyWay currently accepts that final configuration and leaves relocation to the player.
 
 ## Mapping and hierarchy evidence relevant to Prototype 13A
 

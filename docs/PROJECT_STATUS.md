@@ -1,26 +1,57 @@
 # Project Status
 
-Version: 4.6.18
+Version: 4.6.20
 
-Authority state: Release Candidate — Prototype 13A evidence consolidated; corrected neutral animation-state logging awaiting focused validation and repository-owner review
+Authority state: Release Candidate — Prototype 13A Resolution Knowledge Consolidation Completion Patch awaiting repository-owner review
 
-Implementation baseline: exact tested v4.6.17 candidate
+Implementation baseline: exact canonical v4.6.18
 
-Last canonical baseline: v4.6.16
+Last canonical baseline: v4.6.18
 
-Current focus: validate the corrected neutral animation logger against TopDown stable interior and moving animation states; do not begin route discovery or footprint construction
+Current focus: review and canonicalise the 13A consolidation completion patch; future test-subject data mining and scenario selection remain a later session
 
-## Prototype 13A evidence result and correction candidate
+The noncanonical v4.6.19 candidate was discarded after repository-owner review found stale review markers in `docs/README.md` and `docs/CONCEPT_REGISTER.md`. v4.6.20 is rebuilt from exact canonical v4.6.18, retains the full consolidation and advances only those markers whose documents were substantively reviewed.
 
-Prototype 13A's declared route hypothesis is supported for the tested matrix. All ten source shapes resolved through A/B route convergence and all ten invalid C controls were rejected. The result validates the tested route mechanisms and common evaluator, not complete physical inventory, footprints or Coverage Closure.
+## Prototype 13A final result
 
-TS004 also disproved the generic `foldState=TRANSITION` label for all interior animation values. TopDown held a stable `foldAnimTime=0.1250` in an extended-raised manoeuvring pose. v4.6.18 therefore logs neutral animation region and motion with semantic state explicitly not inferred.
+Prototype 13A is complete for its declared matrix. All ten declared source shapes resolved through A/B Resolution Path convergence and all ten invalid C controls were rejected. No ambiguity, alias, geometry-unproven or unresolved result occurred. Runtime handles remained stable through observed configuration motion.
 
-The current validation objective is one focused TopDown AI cycle confirming `INTERIOR + STABLE` at the raised plateau and `CHANGING` while lowering/raising.
+The focused v4.6.18 TopDown cycle validated the diagnostic correction: the stable `foldAnimTime=0.1250` plateau was reported as `animationRegion=INTERIOR animationMotion=STABLE`, raising/lowering was reported as `CHANGING`, and no semantic `foldState` field was emitted. v4.6.18 was explicitly declared canonical and locally reproduced twice with the exact canonical SHA-256.
+
+The result establishes the tested Resolution Path mechanisms and common evidence contract. It does not establish complete physical inventory, footprint construction, Coverage Closure or arbitrary-asset resolution.
+
+## Prototype 13A consolidation
+
+The repository now distinguishes:
+
+- **Resolution** — defensible source identity, runtime identity, Entity-local geometry authority and current pose;
+- **Assessment Representation** — the best currently defensible spatial knowledge available within the assessment budget for the relevant plausible futures and horizon;
+- **Situation Assessment** — the arbiter of representation fitness, assessment-relative staleness and refresh need;
+- **Decision Engine** — responsible for any response when knowledge remains insufficient, including any future deadline-escalation policy.
+
+A source shape is `RESOLVED` only when the mandatory evidence floor is satisfied and no unresolved contradictory identity evidence remains. Resolution Path convergence, negative controls, motion-derived distinctness, symmetry and repeated observation corroborate claims but are not universal gates.
+
+Situation Assessment receives a minimum sufficient defensible portfolio rather than necessarily one universal shape. Every representation remains self-describing through scope, evidence authority, validity dependencies, coverage limits, freshness, cost profile and permitted conclusions. Admissibility precedes optimisation; uncertainty remains explicit and cannot support conflict exclusion where relevant coverage is incomplete.
+
+## Implement-class evidence
+
+Tiger 8 MT and TopDown 600 are both cultivators but expose materially different physics-component, hierarchy, mapping and articulation structures. This decreases confidence in implement-class structural homogeneity and supports **Class as Context, Not Contract**. Gameplay class may guide operational questions; it cannot establish physical structure or select a Resolution Path authoritatively.
+
+## Invalidation and completion
+
+Material change invalidates only the claims that depended on the previous state:
+
+- speed or heading change invalidates prior future projection;
+- translation or rotation refreshes pose while preserving stable identity and geometry;
+- implement articulation refreshes affected member pose and occupancy;
+- attachment or configuration change may invalidate the assembly catalogue;
+- AI job completion invalidates active membership and prior motion expectation while preserving physical identity and obstacle relevance.
+
+OuttaMyWay accepts GIANTS' final job location and configuration. A completed worker becomes a persistent non-member obstacle represented in its actual final pose. Off-field movement and final disposition remain player responsibilities. Post-Job Configuration Normalisation and Assessment Deadline Escalation are named but deferred.
 
 ## Established geometry and assembly evidence
 
-Prototype 08 established Condor source collision identity and authoritative live pose. Prototype 09 strongly supported component-local runtime geometry spheres. Prototype 10 disproved vehicle-root source-ID selection. Prototype 11 strongly supported Runtime Entity Geometry Authority. Prototype 12 established the Physical Assembly Search Boundary across one integrated and two attached fixtures.
+Prototype 08 established Condor source collision identity and authoritative live pose. Prototype 09 strongly supported component-local runtime geometry spheres. Prototype 10 disproved vehicle-root source-ID selection. Prototype 11 strongly supported Runtime Entity Geometry Authority. Prototype 12 established the Physical Assembly Search Boundary across one integrated and two attached fixtures. Prototype 13A established a common resolution evidence contract across three structurally heterogeneous fixtures.
 
 The accepted search chain remains:
 
@@ -29,46 +60,17 @@ Operational Worker
     -> Current Physical Assembly
     -> Individual Assembly Members
     -> Member-local source/runtime identity resolution
+    -> Self-describing representations
+    -> Situation Assessment fitness judgement
 ```
-
-## Agreed Physical Representation architecture
-
-- Exact physical identity and usable occupancy are separate claims.
-- Physical Representation uses Planar Collision Semantics and excludes height as a current clearance dimension.
-- The portfolio supports Component Footprint Sets, Convex Planar Envelopes and conservative member/assembly fallbacks.
-- Envelope Anchor Selection remains deferred pending comparative evidence.
-- A Job-Scoped Representation Catalogue contains stable templates and expires at job end.
-- Pose Realisation updates current plan-view state without rebuilding the catalogue.
-- Homologous components share family strategy while retaining individual parameters.
-- Heterogeneous Footprint Composition permits mixed precision with smallest-scope fallback and localised uncertainty.
-- Folded and working are the principal stable states; deployment is Stationary Configuration Motion governed by a Deployment Clearance Envelope before its Commitment Point.
-- Deployment Sweep and Manoeuvre Sweep remain separate. Manoeuvre sweep must account for steering mode and observed kinematics rather than a midpoint-pivot assumption.
-- Coverage Closure is distinct from Inventory Closure and may be enumerative, enclosing or hybrid.
-- Structural Coverage Closure belongs to the catalogue; Realised Coverage Closure additionally requires current valid pose.
-- Partial knowledge continues as Clearance Unresolved wherever a relevant coverage gap prevents safe exclusion.
-
-The authoritative detail is in `PHYSICAL_REPRESENTATION_ARCHITECTURE.md`.
-
-## TS004 contrast evidence
-
-TS004 now contains:
-
-| Unit | Combination | Static structural contrast |
-|---|---|---|
-| unit1 | Valtra S 416 + Horsch Tiger 8 MT | Multi-component implement with separate wing physics components |
-| unit2 | John Deere 8RX 410 + Väderstad TopDown 600 | Single physics component with internally animated collision-bearing descendants |
-
-The contrast establishes that physics-component count, mapping count and working width cannot establish collision inventory or Coverage Closure. Runtime validation remains outstanding.
 
 ## Candidate implementation state
 
-- Prototypes 08, 09, 11 and 12 remain disabled after completing their present evidence roles.
-- Prototype 10 remains recorded disproval only.
-- Prototype 13A remains enabled only to validate corrected neutral animation-state logging; route evidence is already consolidated.
-- Four fixture, resolver, evaluator and orchestration modules are isolated under `scripts/prototypes/`.
-- No Physical Occupancy Envelope, Coverage Closure, containment, sweep prediction, Decision, Commitment or Control is introduced.
-- Repository-native LF text established in v4.6.16 remains intact.
+- v4.6.20 contains knowledge and version-metadata changes only.
+- Prototype 13A fixture, resolver, evaluator and logging behaviour is unchanged.
+- Historical implementation labels such as `ROUTE_CONVERGENCE` remain for evidence traceability; architectural prose now uses **Resolution Path** to avoid collision with worker navigation routes.
+- No automated Resolution Path discovery, Physical Occupancy Envelope, Coverage Closure, containment, sweep prediction, Decision, Commitment or Control is introduced.
 
 ## Next gate
 
-Run the Condor, Tiger 8 MT and TopDown 600 fixture matrix through folded, transition and fully extended states. Review route convergence/disagreement, control rejection, alias evidence, Entity-local geometry and family consistency before considering Prototype 13B automated route discovery.
+In a future session, identify candidate test subjects—potentially through data mining—selected for representation diversity and their ability to challenge the Resolution Contract. Do not begin Prototype 13B implementation until those scenarios test whether the mandatory evidence floor is insufficient, unobservable or falsely rejects a valid runtime Entity.

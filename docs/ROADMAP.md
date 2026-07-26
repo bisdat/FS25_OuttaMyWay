@@ -1,31 +1,34 @@
 # Roadmap
 
-## Active — Prototype 13A Animation-State Correction Validation
+## Active — Prototype 13A Resolution Knowledge Consolidation
 
-- [x] Run Condor, Tiger 8 MT and TopDown 600 declared-route fixtures.
-- [x] Observe ten A/B route convergences and rejection of all ten invalid C controls.
-- [x] Consolidate Route-Independent Resolution Contract support for the tested fixtures.
-- [x] Observe TopDown stable interior `foldAnimTime=0.1250` while extended and raised.
-- [x] Separate deployment, vertical configuration, terrain contact, functional engagement and operational phase.
-- [x] Preserve the Player Obstacle Boundary.
-- [x] Replace semantic `foldState` inference in Prototype 13A with neutral animation region and motion evidence.
-- [ ] Run one focused TopDown AI work-engagement cycle with v4.6.18.
-- [ ] Confirm `INTERIOR + STABLE` at the raised plateau and `CHANGING` during raise/lower motion.
-- [ ] Canonicalise only after the corrected diagnostic evidence is reviewed.
+- [x] Validate all ten declared source-shape outcomes across Condor, Tiger 8 MT and TopDown 600.
+- [x] Validate neutral TopDown animation evidence in the focused v4.6.18 AI work-engagement cycle.
+- [x] Declare and deterministically reproduce exact v4.6.18 canonical.
+- [x] Replace ambiguous architectural `route` terminology with **Resolution Path** while retaining legacy implementation labels for traceability.
+- [x] Define the Resolution Contract, Resolution Claim Set, mandatory evidence floor and corroborating evidence.
+- [x] Separate Resolution from the best currently defensible Assessment Representation Portfolio.
+- [x] Define Situation Assessment as representation-fitness and refresh-need arbiter.
+- [x] Record dependency-scoped invalidation, class heterogeneity evidence and the GIANTS Completion Acceptance Boundary.
+- [x] Park Post-Job Configuration Normalisation and Assessment Deadline Escalation.
+- [ ] Review and canonicalise the exact v4.6.20 candidate.
 
-## Next after Prototype 13A evidence
+## Next after 13A consolidation
 
-Consolidate which explicit routes succeeded, failed, converged or disagreed. Decide whether the evidence justifies Prototype 13B automated route discovery, a narrower second declared-route probe, or an architectural correction.
+In a future session, identify and, where useful, data-mine candidate test subjects that challenge the Resolution Contract. Fixture selection should maximise representation diversity rather than merely adding gameplay classes.
 
-Required boundaries remain:
+The next evidence matrix should attempt to disprove one or more assumptions:
 
-- source collision metadata owns physical membership;
-- current configuration owns inclusion;
-- Physical Assembly discovery owns member scope;
-- runtime Entity identity owns geometry and live pose;
-- unresolved identities and runtime aliases remain explicit;
-- fallback occupancy does not claim exact identity;
-- no containment, sweep prediction or Control is introduced.
+- mandatory evidence may be insufficient to distinguish a valid runtime Entity;
+- a mandatory check may be unobservable for a legitimate asset;
+- a valid Entity may be falsely rejected;
+- a single-path result may remain defensible without convergence;
+- gameplay class may fail to predict structure or may span multiple structures;
+- similar structure may appear across unrelated gameplay classes;
+- motion, symmetry or repeated-observation corroboration may be unavailable;
+- assembly or configuration change may invalidate only part of the claim set.
+
+Prototype 13B automated Resolution Path discovery remains deferred until test-subject strategy and disproof questions are agreed. No footprint construction, Coverage Closure, conflict assessment or Control is authorised.
 
 ## Development policy
 

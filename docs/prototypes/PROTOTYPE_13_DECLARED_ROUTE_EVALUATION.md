@@ -1,20 +1,26 @@
-# Prototype 13A — Declared Route Evaluation
+# Prototype 13A — Declared Resolution Path Evaluation
 
 ## Status
 
-**Runtime route hypothesis supported for the tested fixtures; animation-state correction active in v4.6.18.**
+**Complete for the declared fixture matrix. Runtime Resolution Path hypotheses and the neutral animation diagnostic are supported for the tested fixtures.**
 
 Prototype 13A remains passive. It does not construct a Physical Occupancy Envelope, claim Coverage Closure, predict sweep, assess conflict, create a Commitment or issue Control.
 
+## Terminology note
+
+The original implementation used `route` in filenames, Lua identifiers and log outcomes. In architecture, use **Resolution Path** for a source-to-runtime candidate-generation method and reserve **route** for a worker's navigable field path.
+
+Historical implementation labels such as `DeclaredRouteEvaluationProbe` and `ROUTE_CONVERGENCE` remain unchanged for evidence traceability. They should be interpreted as Resolution Path evidence.
+
 ## Question
 
-Can fixture-declared source-to-runtime routes be evaluated through one common evidence contract, preserving convergence, disagreement, aliasing and deliberately invalid controls rather than accepting the first successful lookup?
+Can fixture-declared source-to-runtime Resolution Paths be evaluated through one common evidence contract, preserving convergence, disagreement, aliasing and deliberately invalid controls rather than accepting the first successful lookup?
 
 ## Architectural boundary
 
-Different assets may use different resolution routes while producing one **Route-Independent Resolution Contract**. Route type says how a runtime candidate was found; it does not grant physical authority.
+Different assets may use different Resolution Paths while satisfying one class-independent **Resolution Contract**. Path type says how a runtime candidate was proposed; it does not grant physical authority.
 
-The first phase uses **Disposable Fixture Declarations** in isolated Lua tables. They state where to look and remain diagnostic scaffolding. Automated route discovery and external configuration remain deferred until evidence identifies reusable patterns.
+The first phase used **Disposable Fixture Declarations** in isolated Lua tables. They stated where to look and remain diagnostic scaffolding. Automated Resolution Path discovery and external configuration remain deferred until wider evidence identifies reusable patterns.
 
 ## Fixtures and runtime result
 
@@ -48,13 +54,26 @@ Corresponding collision-bearing descendants beneath the internally animated fold
 
 **Observed:** both A/B pairs converged. Both C controls were rejected by hierarchy-name evidence. Selected runtime handles remained stable through unfolding, raising and lowering motion.
 
-Across the matrix, all ten declared source shapes resolved through `ROUTE_CONVERGENCE`; no ambiguity, root alias, cross-source alias, geometry-unproven result or unresolved result was observed. The result supports the declared route mechanisms for these fixtures only. It does not establish Inventory Closure or Coverage Closure.
+Across the matrix, all ten declared source shapes resolved through the legacy implementation reason `ROUTE_CONVERGENCE`; no ambiguity, root alias, cross-source alias, geometry-unproven result or unresolved result was observed. The result supports the declared Resolution Path mechanisms for these fixtures only. It does not establish Inventory Closure or Coverage Closure.
 
 The proprietary GIANTS source assets used to prepare these declarations are not redistributed.
 
-## Common evidence checks
+## Resolution Contract supported by 13A
 
-Every real candidate and control records:
+A source physical shape may be classified `RESOLVED` only when one runtime Entity satisfies the mandatory evidence floor:
+
+1. runtime candidate exists;
+2. assembly-member ownership is coherent;
+3. component and hierarchy evidence is compatible with the source shape;
+4. Entity-local physical geometry authority is established;
+5. a current valid runtime pose is observable;
+6. no unresolved contradictory coherent identity remains.
+
+The result records source identity, runtime identity, geometry and pose authority, supporting evidence, validity dependencies and explicit limits. It does not claim complete physical representation.
+
+## Evidence contribution model
+
+Every real candidate and control records evidence for distinct claims:
 
 1. runtime-node existence;
 2. assembly-member ownership;
@@ -67,25 +86,23 @@ Every real candidate and control records:
 9. cross-source runtime-handle reuse;
 10. motion-derived corroboration through observed runtime pose change.
 
-A separate result is retained when a runtime node is found but physical geometry authority is unproven.
+Resolution Path convergence, negative controls and motion-derived distinctness strengthen the claim but are not universal gates. A decisive contradiction prevents resolution. A found node with unproven physical geometry remains a separate result.
 
 ## Outcomes
 
 - `RESOLVED` — one coherent runtime Entity remains.
-- `AMBIGUOUS` — coherent routes disagree.
+- `AMBIGUOUS` — coherent Resolution Paths disagree.
 - `ALIASED` — a root/shared or cross-source Entity is selected.
 - `NODE_RESOLVED_GEOMETRY_UNPROVEN` — node identity is coherent but Entity-local physical geometry is not established.
 - `UNRESOLVED` — no coherent candidate remains.
 
-`ROUTE_CONVERGENCE` and `SINGLE_ROUTE` are evidence reasons within `RESOLVED`; candidate labels A/B/C do not imply priority.
+Legacy `ROUTE_CONVERGENCE` and `SINGLE_ROUTE` are evidence reasons within `RESOLVED`; candidate labels A/B/C do not imply priority.
 
-## Disproved diagnostic assumption
+## Disproved diagnostic assumption and v4.6.18 validation
 
-The v4.6.17 logger interpreted any raw `foldAnimTime` value between its numerical endpoints as `TRANSITION`. TS004 disproved that generalisation. TopDown remained stably at `foldAnimTime=0.1250` while extended and raised for AI manoeuvring, then moved toward `0.0000` while lowering for work.
+The v4.6.17 logger interpreted any raw `foldAnimTime` value between numerical endpoints as `TRANSITION`. TS004 disproved that generalisation. TopDown remained stably at `foldAnimTime=0.1250` while extended and raised for AI manoeuvring, then moved toward `0.0000` while lowering for work.
 
-This is **Stable Interior Animation State**: an interior numerical value can be a stable operational pose rather than incomplete movement. TopDown also demonstrates a **Compound Animation Timeline** in which one implementation timeline appears to encode both deployment and vertical configuration.
-
-Prototype 13A therefore records neutral evidence only:
+v4.6.18 recorded neutral evidence only:
 
 ```text
 animationSource=foldAnimTime
@@ -95,15 +112,21 @@ animationMotion=UNOBSERVED|SETTLING|CHANGING|STABLE|UNKNOWN
 semanticState=not-inferred
 ```
 
-Deployment, vertical configuration, terrain contact, functional engagement and AI operational phase are not inferred from this field.
+The focused AI cycle confirmed `INTERIOR + STABLE` at the raised plateau, `CHANGING` during actual raising/lowering and no semantic `foldState` field. Deployment, vertical configuration, terrain contact, functional engagement and AI operational phase remain separate architectural dimensions.
+
+## Functional-class result
+
+Tiger and TopDown are both cultivators but expose materially different physical structures and successful Resolution Paths. Prototype 13A therefore decreased confidence in implement-class structural homogeneity and increased confidence in a class-independent Resolution Contract.
+
+Use class information as contextual evidence only. It must not establish component structure, mapping coverage, articulation or a privileged Resolution Path.
 
 ## Logging contract
 
-For each source shape:
+For each source shape, the legacy implementation emits:
 
 ```text
 PROTOTYPE13A SOURCE_SHAPE
-PROTOTYPE13A CANDIDATE        # A, B and control C
+PROTOTYPE13A CANDIDATE
 PROTOTYPE13A CONTROL_RESULT
 PROTOTYPE13A RESOLUTION_OUTCOME
 PROTOTYPE13A MOTION_SAMPLE
@@ -111,8 +134,8 @@ PROTOTYPE13A MOTION_SAMPLE
 
 Each fixture also emits `FIXTURE_ATTACHED`, `FAMILY_SUMMARY` and periodic `FIXTURE_ENUMERATION` records.
 
-## Remaining validation
+## Remaining work
 
-The route-evaluation question is answered for the declared matrix. v4.6.18 requires only a focused TopDown observation confirming that the corrected logger reports the stable `0.1250` plateau as `animationRegion=INTERIOR` and `animationMotion=STABLE`, not as a semantic fold transition.
+The declared Resolution Path evaluation question is answered for the fixture matrix. Future work should select representation-diverse fixtures that try to disprove the Resolution Contract before automated Resolution Path discovery is implemented.
 
-Automated route discovery and footprint construction remain separate future activities.
+Automated discovery, complete inventory, footprint construction and Coverage Closure remain separate future activities.

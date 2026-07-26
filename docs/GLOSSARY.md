@@ -169,6 +169,102 @@ The distinction between a command or animation target to lower and the observed 
 ## Player Obstacle Boundary
 The scope rule that player-controlled assemblies are represented only as potential physical obstacles to AI workers, not as cooperative workers whose behaviour is modelled or controlled.
 
+## Resolution Path
+A method that proposes a runtime Entity candidate from source, component, mapping and assembly relationships; distinct from a worker navigation route.
+
+## Resolution Contract
+The mandatory evidence required before one source physical shape may be classified `RESOLVED`.
+
+## Resolution Claim Set
+The bounded source identity, runtime identity, geometry authority, pose authority, evidence, validity dependencies and explicit limits produced by resolution.
+
+## Resolution Path Convergence
+Corroborating evidence produced when independent Resolution Paths reach one coherent runtime Entity.
+
+## Resolution Path Disagreement
+An ambiguity state in which coherent Resolution Paths reach different runtime Entities.
+
+## Resolution Path–Authority Separation
+The rule that candidate-generation mechanism does not grant physical authority.
+
+## Mandatory Evidence Floor
+Candidate existence, assembly and structural coherence, Entity-local geometry authority, current pose authority and no unresolved contradictory runtime identity.
+
+## Corroboration Without Gatekeeping
+The rule that convergence, negative controls, motion, symmetry and repeated observation strengthen claims when available but are not universal resolution requirements.
+
+## Claim-Specific Confidence
+Confidence retained separately for identity, geometry, pose, freshness, path corroboration and closure rather than collapsed into one score.
+
+## Functional Class–Structural Representation Separation
+The distinction between what an implement does in gameplay and how its physical assembly is represented at runtime.
+
+## Class as Context, Not Contract
+The rule that gameplay class may guide questions but cannot establish physical structure or Resolution Path authority.
+
+## Best Available Defensible Representation
+The most informative defensible spatial account achievable within the assessment budget for the current question and future horizon.
+
+## Assessment-Horizon Fitness
+Suitability of a representation for the plausible futures and time horizon currently being assessed.
+
+## Assessment Representation Portfolio
+A complementary collection of exact, derived, fallback and unknown spatial layers supplied to Situation Assessment.
+
+## Minimum Sufficient Defensible Portfolio
+The least-cost admissible portfolio sufficient for the assessment conclusion being attempted.
+
+## Conclusion-Relative Sufficiency
+The rule that representation adequacy depends on whether assessment seeks conflict support, possibility, exclusion or unresolved clearance.
+
+## Representation Claim Permission
+The explicit assessment conclusions that one representation's evidence is allowed to support.
+
+## Representation Passport
+A representation's self-description of scope, authority, validity, coverage, freshness, cost and permitted conclusions.
+
+## Self-Describing Representation
+A representation that downstream assessment can use without reconstructing its discovery mechanism.
+
+## Discovery Independence
+The rule that representations are consumed according to established claims rather than lookup mechanics.
+
+## Representation Cost Profile
+The multidimensional acquisition, refresh, projection, volatility, composition and delay-exposure cost of a representation.
+
+## Admissibility Before Optimisation
+The rule that cost comparison operates only among defensible representations.
+
+## Dependency-Scoped Invalidation
+Invalidation of only the representation claims that depended on a materially changed state.
+
+## Smallest-Scope Refresh
+Refresh limited to the affected projection, pose, member or assembly rather than indiscriminate rebuilding.
+
+## Assessment-Relative Staleness
+The condition in which evidence is no longer adequate for the current question and horizon, rather than merely old by a fixed clock threshold.
+
+## Situation Assessment as Representation-Fitness Arbiter
+The responsibility of Situation Assessment to judge representation usability and refresh need while producing Knowledge only.
+
+## Completed Worker Obstacle Transition
+The role change from active AI worker to non-member physical obstacle when GIANTS completes the job.
+
+## GIANTS Completion Acceptance Boundary
+The policy that OuttaMyWay accepts GIANTS' final job location and configuration and does not relocate the completed vehicle.
+
+## No Correct Parking Inference
+The finding that no universally safe or player-preferred post-job destination can be inferred.
+
+## Persistent Completed-Worker Obstacle
+A completed assembly retained in the Operational Picture while its physical occupancy can affect remaining workers.
+
+## Post-Job Configuration Normalisation
+Deferred possible in-place raising or folding after job completion to reduce obstruction without relocating the vehicle.
+
+## Assessment Deadline Escalation
+Deferred Decision Engine handling when useful knowledge cannot be refreshed before the available decision time expires.
+
 ## Planar Collision Semantics
 Physical occupancy is represented in collision-relevant ground-plane projection because GIANTS AI does not exploit hypothetical vertical underpass clearance.
 

@@ -481,3 +481,22 @@ A short AI-controlled TopDown run then disproved the diagnostic assumption that 
 The resulting architecture separates deployment, vertical configuration, terrain contact, functional engagement and operational phase. Direct-soil-contact implements use realised terrain contact as part of functional capability; non-contact sprayer-boom height is a contrasting configuration dimension with no soil-contact requirement. Player-controlled behaviour was explicitly returned to scope: player assemblies matter only as possible obstacles to AI workers.
 
 The v4.6.18 implementation changes Prototype 13A logging only. It records raw animation value, endpoint/interior region and observed changing/stable motion, with `semanticState=not-inferred`. No production resolver, footprint, closure, sweep, conflict or control behaviour is introduced.
+
+
+## v4.6.20 — Prototype 13A Resolution Knowledge Consolidation Completion Patch
+
+Prototype 13A ended with a clean evidence result: ten declared source shapes resolved through paired candidate convergence, ten invalid controls were rejected, runtime handles remained stable, and the v4.6.18 TopDown logger correction passed its focused AI cycle. The exact v4.6.18 candidate was declared canonical and reproduced twice from a clean Git commit with byte-identical SHA-256.
+
+Consolidation exposed a terminology collision: `route` naturally means a worker's navigable field path. The architectural term is now **Resolution Path**. Legacy code and log labels remain unchanged for traceability.
+
+The discussion separated a strict Resolution Contract from the best currently defensible Assessment Representation. Resolution establishes source/runtime identity, Entity-local geometry authority and current pose without implying complete inventory or coverage. Situation Assessment consumes a minimum sufficient defensible portfolio whose layers retain scope, provenance, validity, coverage, freshness, cost and permitted conclusions. Situation Assessment—not the representation itself—arbitrates fitness, assessment-relative staleness and refresh need.
+
+Tiger and TopDown disproved implement-class structural homogeneity: both are cultivators but use materially different physics and hierarchy patterns. The failed universal hypothesis is retained as **Class as Context, Not Contract**.
+
+Material change now has a dependency-scoped interpretation. Speed/heading changes invalidate future projection; articulation invalidates affected pose and footprint; attachment/configuration may invalidate the assembly catalogue; job completion invalidates role and motion expectation while preserving physical identity and obstacle relevance.
+
+The repository also records the **GIANTS Completion Acceptance Boundary**. OuttaMyWay accepts the location and configuration in which GIANTS finishes, retains the completed assembly as a persistent non-member obstacle and leaves relocation to the player. Safe in-place folding is preserved as Deferred Post-Job Configuration Normalisation. Assessment Deadline Escalation is named and parked for a future Decision Engine session without selecting a failsafe.
+
+Repository-owner review of the first consolidation package found that `docs/README.md` and `docs/CONCEPT_REGISTER.md` still claimed v4.6.16 review. That noncanonical v4.6.19 candidate was discarded rather than repaired in place. v4.6.20 was rebuilt from exact canonical v4.6.18, preserves the consolidation and advances only those two review markers because those documents were substantively reviewed. Older currency markers remain historical evidence rather than mechanical release counters.
+
+No runtime resolution, footprint, assessment or control behaviour changed in v4.6.20. Future fixture selection may use data mining and should attempt to disprove the Resolution Contract across representation-diverse assets before Prototype 13B implementation.

@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.18
+-- FS25_OuttaMyWay v4.6.20
 -- Prototype 13A: explicit fixture route evaluation with candidate-preserving logs.
 -- Passive only: no footprint, closure, conflict, Decision, Commitment or Control.
 

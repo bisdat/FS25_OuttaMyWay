@@ -213,9 +213,23 @@ S 416 + Tiger 8 MT and 8RX 410 + TopDown 600 produced the same two-member struct
 
 GIANTS' declared `WORKING` state is an observation, not proof of productive movement. In one attached fixture the state remained active while motion stayed effectively zero; the same equipment could cultivate manually. A second fixture sustained normal work. Situation Assessment must therefore keep declared AI state and demonstrated motion as separate evidence.
 
-### Next gate: Member-Local Physical Resolution
+### Member-Local Physical Resolution result
 
-Source collision metadata remains physical authority. Configuration remains current-inclusion authority. Runtime Entity identity remains geometry authority. The next prototype must connect these independently inside every current assembly member, reject aliases and retain unresolved current shapes explicitly. Exact resolution and fallback occupancy remain separate claims.
+Prototype 13A connected declared source collision identities to coherent runtime Entities across Condor, Tiger 8 MT and TopDown 600. Source collision metadata remains physical authority, configuration remains current-inclusion authority and runtime Entity identity remains geometry and live-pose authority. Exact resolution and fallback occupancy remain separate claims.
+
+Architectural prose uses **Resolution Path** for source-to-runtime candidate generation; `route` remains reserved for worker navigation. Historical implementation labels retain `route` for evidence traceability.
+
+### Resolution-to-assessment boundary
+
+```text
+Resolution Claim Set
+    -> Self-Describing Representation / Representation Passport
+        -> Minimum Sufficient Defensible Portfolio
+            -> Situation Assessment fitness judgement
+                -> Operational Picture Knowledge
+```
+
+Situation Assessment judges assessment-relative staleness, horizon fitness and refresh need. It does not reconstruct discovery mechanics or issue Control. Prototype 13B automated Resolution Path discovery remains deferred pending representation-diverse disproof scenarios.
 
 ## Physical Representation Architecture (v4.6.16)
 

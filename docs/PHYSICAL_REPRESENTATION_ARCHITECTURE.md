@@ -262,16 +262,177 @@ The Planar Relevance Test remains decisive for collision representation. A verti
 
 Player-controlled assemblies are outside cooperative-worker behavioural modelling. They are observed only insofar as their physical occupancy may obstruct an AI worker. OuttaMyWay does not infer, optimise or correct player operating policy.
 
+## Prototype 13A Resolution Knowledge Consolidation
+
+Prototype 13A completed the declared fixture matrix and validated one common evidence contract across Condor, Tiger 8 MT and TopDown 600. It did not automate candidate discovery, prove complete inventory, construct footprints or establish Coverage Closure.
+
+### Resolution Path terminology
+
+A **Resolution Path** is one method of proposing a runtime candidate from known source, component, mapping and assembly relationships. The term replaces the ambiguous architectural use of `route`, which remains reserved for a worker's navigable field path.
+
+Historical Prototype 13A file names, Lua identifiers and log reasons such as `ROUTE_CONVERGENCE` remain unchanged for traceability. They are legacy implementation labels for Resolution Path evidence and do not describe vehicle navigation.
+
+### Resolution Contract and Claim Set
+
+A source physical shape is `RESOLVED` only when one runtime Entity can be defensibly identified as its corresponding physical runtime representation. The mandatory evidence floor is:
+
+1. the candidate runtime Entity exists and remains addressable;
+2. it belongs to the expected Physical Assembly member;
+3. its component and hierarchy relationships are compatible with known source evidence;
+4. physical geometry queries are attributable to that Entity rather than an unrelated or shared root alias;
+5. a current runtime pose can be observed and located coherently within the assembly;
+6. no unresolved contradictory evidence establishes a competing coherent runtime identity.
+
+A successful result emits a **Resolution Claim Set**:
+
+- source physical identity;
+- runtime Entity identity;
+- geometry authority;
+- pose authority;
+- supporting and contradictory evidence;
+- validity dependencies;
+- explicit limits.
+
+`RESOLVED` does not mean perfect, complete or closed. It establishes defensible identity, geometry and pose for the stated source shape. It does not establish Inventory Closure, Coverage Closure or footprint correctness.
+
+### Resolution Evidence Model
+
+Different evidence contributes to different claims:
+
+- node existence establishes candidate availability;
+- assembly/component/hierarchy coherence supports correspondence;
+- Entity-local geometry establishes physical geometry authority;
+- current transform establishes pose authority;
+- Resolution Path convergence corroborates independence from one lookup assumption;
+- negative-control rejection demonstrates discrimination capability;
+- motion-derived distinctness corroborates independent physical identity;
+- symmetry and repeated temporal observation may provide further corroboration.
+
+This is **Evidence Contribution Separation**. Corroborating evidence strengthens confidence when available but is not a universal gate. A rigid or asymmetric asset must not fail solely because motion or symmetry evidence is unavailable. Conversely, a decisive mandatory contradiction cannot be outweighed by several weaker passes.
+
+Confidence remains **Claim-Specific**. Identity, geometry authority, pose freshness, path corroboration and inventory completeness are separate claims; they must not be collapsed prematurely into one confidence percentage.
+
+### Discovery Independence and Resolution Path provenance
+
+Resolution Path type records how a candidate was proposed; it does not grant physical authority. Situation Assessment consumes what was established, not the lookup mechanism. Path provenance remains attached for audit and reassessment without leaking discovery mechanics into downstream assessment logic.
+
+### Functional Class–Structural Representation Separation
+
+Tiger 8 MT and TopDown 600 share the cultivator gameplay class but expose materially different physics-component, hierarchy, mapping and articulation structures. Their successful Resolution Paths also differ.
+
+Therefore:
+
+> Gameplay class is context, not structural authority.
+
+Class information may guide operational questions, expected work semantics or candidate priorities. It must not establish physical structure, mapping coverage, articulation model or a privileged Resolution Path. Prototype 13A decreased confidence in implement-class structural homogeneity while increasing confidence that one class-independent Resolution Contract can evaluate heterogeneous assets.
+
+## Assessment Representation Contract
+
+Resolution answers what can be defensibly identified. Assessment Representation answers what spatial knowledge is useful now.
+
+> At each assessment cycle, Situation Assessment receives the most informative defensible spatial account achievable within the assessment budget, fit for the relevant plausible futures and future horizon, with coverage limits, evidence age and uncertainty preserved.
+
+“Most informative defensible” is preferred to “most complete”: a representation may be the best available while remaining explicitly partial. The assessment budget, evidence age and future horizon are independent dimensions.
+
+### Assessment Representation Portfolio
+
+Situation Assessment need not select one universal geometry. It may compose a portfolio such as:
+
+```text
+resolved rigid vehicle core
++
+resolved articulated members
++
+conservative envelope for unresolved regions
++
+explicit unknown remainder
+```
+
+Selection occurs at the smallest useful scope: physical region, assembly member, plausible future and assessment horizon. The goal is the **Minimum Sufficient Defensible Portfolio**, not maximum detail or minimum computational cost in isolation.
+
+Sufficiency is conclusion-relative:
+
+- known overlap may be sufficient for `CONFLICT_SUPPORTED`;
+- incomplete or conservative evidence may support `CONFLICT_POSSIBLE`;
+- only current relevant non-underestimating closed coverage may support `CONFLICT_EXCLUDED`;
+- insufficient defensible evidence remains `CLEARANCE_UNRESOLVED`.
+
+### Representation Passport and self-description
+
+Every representation offered downstream must be self-describing through a **Representation Passport**:
+
+- physical scope and ownership;
+- evidence authority and provenance;
+- validity dependencies;
+- coverage statement and underestimation risk;
+- observation and refresh time;
+- cost profile;
+- permitted assessment conclusions.
+
+This is **Discovery Independence** and **Representation Claim Permission**. Situation Assessment should not need to reconstruct how a representation was discovered before deciding how it may be used.
+
+### Representation Cost Profile
+
+Representation cost is multidimensional:
+
+- acquisition latency;
+- refresh cost;
+- future-projection cost;
+- volatility and expected invalidation rate;
+- portfolio composition and synchronisation cost;
+- assessment-delay exposure.
+
+Cost remains separate from fitness and evidence quality. **Admissibility Before Optimisation** is mandatory: unsupported cheap geometry cannot defeat slower defensible evidence. The architecture retains a cost vector; exact weighting or a single scalar score remains an implementation and measurement question.
+
+### Situation Assessment as Representation-Fitness Arbiter
+
+Representations report evidence, dependencies, age and observed changes. Situation Assessment determines whether each remains fit for the current question, plausible futures and horizon. Possible Knowledge states include:
+
+- `CURRENTLY_FIT`;
+- `FIT_FOR_LIMITED_HORIZON`;
+- `USABLE_WITH_UNCERTAINTY`;
+- `REFRESH_REQUIRED`;
+- `STRUCTURALLY_INVALID`.
+
+Staleness is assessment-relative. Older evidence is not discarded automatically; its permitted conclusions are restricted. Situation Assessment produces Knowledge and may identify refresh need, while observation and representation maintenance perform routine refresh. Any active response to unresolved knowledge remains a Decision Engine concern.
+
+### Dependency-Scoped Invalidation
+
+A material change invalidates only the claims that depended on the previous steady state:
+
+- speed or direction change invalidates the previous future projection;
+- normal translation or rotation refreshes pose while stable identity and geometry remain valid;
+- implement articulation invalidates affected member pose, footprint and sweep assumptions;
+- attachment or configuration change may invalidate assembly structure and the catalogue;
+- AI job completion invalidates active membership and prior motion expectation while preserving physical identity and obstacle relevance.
+
+This is **Smallest-Scope Refresh**. Implementation tolerances must later distinguish meaningful change from physics settling or sensor noise.
+
+## Completion and persistent obstacle boundary
+
+### GIANTS Completion Acceptance Boundary
+
+Wherever and however GIANTS AI finishes an original job is accepted as the final disposition. OuttaMyWay does not choose a parking position, move the vehicle off-field or continue navigation after job completion. There is no universally correct post-job location and relocation remains a player responsibility.
+
+At completion:
+
+```text
+ACTIVE_COOPERATIVE_WORKER
+→ COMPLETED_NONMEMBER_OBSTACLE
+```
+
+The role, membership and future-motion assumptions change. Physical identity and geometry remain valid, the final pose is refreshed, and the assembly remains spatially relevant for as long as it can affect remaining workers. This is **Operational Membership–Spatial Relevance Separation**, **Role-State Invalidation** and the **Persistent Completed-Worker Obstacle**.
+
+### Deferred Post-Job Configuration Normalisation
+
+Safe in-place raising or folding may later be examined as footprint reduction without relocating the vehicle. It is not current behaviour. Any future commitment requires evidence that control remains available, the correct sequence is known, the configuration sweep is clear, the compact state materially reduces relevant occupancy and failure leaves a known safe condition.
+
+### Parked Assessment Deadline Escalation
+
+When useful representation cannot be refreshed before decision time expires, Situation Assessment reports the remaining insufficiency. A future Decision Engine session may examine selective hold, emergency freeze or another failsafe. No timeout, all-stop or escalation policy is selected by this consolidation.
+
 ## Current Boundary
 
-Member-Local Physical Resolution remains the next prototype gate. Prototype 13 must investigate how source collision identities are connected to distinct runtime Entities inside each assembly member while retaining unresolved identities and alias detection. Physical Representation construction may then test exact and fallback routes without requiring exact identity as a prerequisite for all useful occupancy.
+Prototype 13A is complete for its declared fixture matrix. Prototype 13B automated Resolution Path discovery remains deferred. The next evidence activity is selection—potentially through data mining—of fixtures that attempt to disprove the Resolution Contract across broader representation structures.
 
-Prototype 13A is authorised as a passive declared-route evidence probe only; automated route discovery and footprint construction remain unauthorised pending evidence.
-
-## Member-Local Physical Resolution
-
-Physical identity resolution may follow different asset-specific routes while emitting one Route-Independent Resolution Contract. Direct mapping, physics-component descendants and mapped-ancestor descendants are candidate-generation methods, not authority rankings.
-
-Each source physical shape owns a Resolution Candidate Set. Applicable routes are evaluated through common evidence: member/component ownership, hierarchy coherence, distinct runtime identity, Entity-local geometry authority, current pose and alias rejection. Multiple routes reaching one Entity provide Resolution Route Convergence; coherent disagreement remains `AMBIGUOUS`. A found node with unproven geometry remains `NODE_RESOLVED_GEOMETRY_UNPROVEN`.
-
-Prototype 13A tests explicit Disposable Fixture Declarations before any automated route discovery. Complete footprint construction and Coverage Closure remain separate later activities.
+No Physical Occupancy Envelope, Inventory Closure, Coverage Closure, containment, sweep prediction, Decision, Commitment or Control behaviour is authorised by v4.6.20.

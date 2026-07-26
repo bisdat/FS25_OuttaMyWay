@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.16.
+Review status: reviewed for candidate release v4.6.20.
 
 ## Accepted Concepts
 
@@ -450,19 +450,23 @@ The declared substantive Repository Transformation performed during Candidate Pr
 
 The candidate-to-canonical authority change. It must not alter approved substantive engineering content.
 
-## Accepted in Prototype 13A design
+## Accepted from Prototype 13A design, validation and consolidation
 
-- **Route-Independent Resolution Contract** — different asset-specific routes produce one common evidence record.
-- **Resolution Candidate Set** — every applicable declared route produces a candidate before selection.
-- **Resolution Route Convergence** — independent routes reaching one Entity are corroborating evidence.
-- **Resolution Route Disagreement** — coherent routes reaching different Entities remain visible as ambiguity.
-- **Route–Authority Separation** — discovery route type does not determine physical authority.
+- **Resolution Path** — a source-to-runtime candidate-generation method; distinct from a worker navigation route.
+- **Resolution Contract** — the mandatory claims required before one source shape may be classified `RESOLVED`.
+- **Resolution Claim Set** — source identity, runtime identity, geometry authority, pose authority, evidence, dependencies and explicit limits produced by resolution.
+- **Resolution Candidate Set** — every applicable declared Resolution Path produces a candidate before selection.
+- **Resolution Path Convergence** — independent paths reaching one Entity are corroborating evidence.
+- **Resolution Path Disagreement** — coherent paths reaching different Entities remain visible as ambiguity.
+- **Resolution Path–Authority Separation** — path type does not determine physical authority.
+- **Resolution Path Provenance** — discovery mechanics remain attached for audit without becoming downstream assessment logic.
 - **Disposable Fixture Declaration** — asset-specific Lua tables are diagnostic scaffolding, not production configuration.
 - **Runtime Distinctness Proof** — handle inequality is necessary but insufficient; ownership, hierarchy, geometry authority and pose are required.
 - **Signature Equality Is Not Aliasing** — symmetric family members may share geometry signatures while remaining distinct Entities.
-
-## Accepted from Prototype 13A validation and TS004 state observation
-
+- **Evidence Contribution Separation** — each observation supports a specific resolution claim rather than standing in for the whole contract.
+- **Mandatory Evidence Floor** — candidate existence, assembly/structural coherence, Entity-local geometry, pose and no unresolved contradictory identity.
+- **Corroboration Without Gatekeeping** — convergence, controls, motion, symmetry and repeated observation strengthen claims but are not universal gates.
+- **Claim-Specific Confidence** — confidence attaches to identity, geometry, pose, freshness and closure claims separately rather than one percentage.
 - **Stable Interior Animation State** — a numerical value inside an animation range may represent a stable physical pose rather than incomplete movement.
 - **Compound Animation Timeline** — one asset animation timeline may encode multiple architectural state dimensions.
 - **Orthogonal Physical State Dimensions** — deployment, vertical configuration, terrain contact, functional engagement and operational phase remain separate concepts.
@@ -474,7 +478,37 @@ The candidate-to-canonical authority change. It must not alter approved substant
 - **Contact-Dependent Functional Engagement** — some implements require realised terrain contact before their intended ground operation can occur.
 - **Commanded State–Realised Contact Separation** — a lower command or animation target does not prove terrain contact.
 - **Player Obstacle Boundary** — player-controlled assemblies are relevant only as potential obstacles to AI workers, not as cooperative workers or behavioural models.
+- **Functional Class–Structural Representation Separation** — shared gameplay function does not imply shared runtime physical structure.
+- **Class as Context, Not Contract** — class may guide questions but cannot establish component, hierarchy, mapping or Resolution Path authority.
+- **Best Available Defensible Representation** — the most informative defensible spatial account achievable within the assessment budget for the current horizon.
+- **Assessment-Horizon Fitness** — representation suitability is relative to the plausible futures and horizon being assessed.
+- **Progressive Representation Refinement** — assessment proceeds with explicit uncertainty and refines spatial knowledge over later cycles.
+- **Assessment Representation Portfolio** — complementary exact, derived, fallback and unknown layers may be composed rather than selecting one universal shape.
+- **Minimum Sufficient Defensible Portfolio** — the least-cost admissible collection sufficient for the attempted assessment conclusion.
+- **Conclusion-Relative Sufficiency** — representation adequacy depends on whether assessment seeks conflict support, possibility, exclusion or unresolved clearance.
+- **Representation Claim Permission** — each layer declares which assessment conclusions its evidence may support.
+- **Representation Passport** — self-description of scope, authority, dependencies, coverage, freshness, cost and permitted conclusions.
+- **Self-Describing Representation** — downstream assessment can use a representation without reconstructing its discovery mechanism.
+- **Discovery Independence** — representations are consumed according to established claims, not lookup mechanics.
+- **Representation Cost Profile** — acquisition, refresh, projection, volatility, composition and delay-exposure costs remain explicit and multidimensional.
+- **Admissibility Before Optimisation** — cost comparison occurs only among defensible representations.
+- **Context-Weighted Representation Selection** — assessment context may prioritise cost components; exact weighting remains unimplemented.
+- **Dependency-Scoped Invalidation** — material change invalidates only claims that depended on the prior state.
+- **Material Change Invalidation** — previous steady-state knowledge requires reassessment when relevant motion, pose, structure or role changes.
+- **Smallest-Scope Refresh** — refresh pose, projection, member or assembly only at the affected scope.
+- **Assessment-Relative Staleness** — age becomes stale only relative to the current question, horizon and changes observed.
+- **Representation Usability Knowledge** — Situation Assessment may classify representations as current, horizon-limited, uncertain, refresh-required or structurally invalid.
+- **Situation Assessment as Representation-Fitness Arbiter** — Situation Assessment decides usability and refresh need while producing Knowledge only.
+- **Operational Membership–Spatial Relevance Separation** — job membership may end while physical obstacle relevance remains.
+- **Completed Worker Obstacle Transition** — an active AI worker becomes a non-member obstacle when its GIANTS job completes.
+- **GIANTS Completion Acceptance Boundary** — OuttaMyWay accepts GIANTS' final location/configuration and does not relocate the completed vehicle.
+- **No Correct Parking Inference** — no universally safe or player-preferred post-job destination can be inferred.
+- **Persistent Completed-Worker Obstacle** — a completed assembly remains represented while it can affect remaining workers.
+- **Role-State Invalidation** — completion invalidates role and motion expectations while physical identity and geometry remain valid.
 
 ## Deferred after Prototype 13A
 
-- **Prototype 13B Route Discovery** — automated route discovery begins only after declared-route evidence identifies reusable patterns.
+- **Prototype 13B Resolution Path Discovery** — automated candidate generation begins only after representation-diverse fixtures challenge the Resolution Contract.
+- **Post-Job Configuration Normalisation** — possible safe in-place raise/fold action to reduce obstruction without relocation; control, sequence, sweep and benefit remain unproven.
+- **Assessment Deadline Escalation** — possible Decision Engine response when useful knowledge cannot be refreshed before decision time expires; no all-stop, selective-hold or other failsafe is selected.
+- **Representation weighting mechanism** — retain cost vectors and context priorities until measurement shows whether thresholds, Pareto comparison or a scalar score are justified.

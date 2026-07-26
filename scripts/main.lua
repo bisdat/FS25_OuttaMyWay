@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.18 entry point.
+-- FS25_OuttaMyWay v4.6.20 entry point.
 -- modDesc.xml loads only this file; this loader owns module ordering.
 
 local modDirectory = g_currentModDirectory or ""

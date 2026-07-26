@@ -1,5 +1,22 @@
 # Changelog
 
+## v4.6.20 — Prototype 13A Resolution Knowledge Consolidation Completion Patch
+
+- Declared exact canonical v4.6.18 as the implementation baseline and recorded its deterministic local reproduction.
+- Replaces the discarded noncanonical v4.6.19 candidate after review found stale currency markers in two substantively reviewed documents.
+- Advances `docs/README.md` and `docs/CONCEPT_REGISTER.md` review markers to v4.6.20; older markers remain unchanged where no substantive review occurred.
+- Consolidated the strict Resolution Contract, Resolution Claim Set, mandatory evidence floor and claim-specific confidence model.
+- Replaced ambiguous architectural `route` terminology with **Resolution Path** while retaining historical implementation labels for traceability.
+- Separated Resolution from the best currently defensible Assessment Representation Portfolio.
+- Added Representation Passport, self-describing layers, conclusion-relative sufficiency, claim permissions and multidimensional cost profiles.
+- Established Situation Assessment as representation-fitness and refresh-need arbiter while preserving its Knowledge-only boundary.
+- Added dependency-scoped invalidation, assessment-relative staleness and smallest-scope refresh.
+- Recorded that Tiger and TopDown disprove implement-class structural homogeneity; class remains context, not structural authority.
+- Accepted GIANTS' final job disposition, retained completed workers as persistent non-member obstacles and deferred Post-Job Configuration Normalisation.
+- Parked Assessment Deadline Escalation for a future Decision Engine session without selecting a failsafe.
+- Updated handover, roadmap, status, concepts, decisions, glossary, architecture and journal for future representation-diverse fixture selection.
+- Introduced no runtime resolver, footprint, assessment, Commitment or Control behaviour beyond version metadata.
+
 ## v4.6.18 — Prototype 13A Evidence Consolidation and Animation-State Correction
 
 - Consolidates successful Prototype 13A runtime evidence from Condor, Tiger 8 MT and TopDown 600: ten declared source shapes resolved through A/B route convergence and all ten deliberately invalid C controls were rejected.

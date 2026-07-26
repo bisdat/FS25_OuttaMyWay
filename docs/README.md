@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** Reviewed for candidate release v4.6.16
+> **Currency:** Reviewed for candidate release v4.6.20
 
 This development repository is a self-sustaining engineering knowledge system. Its first responsibility is to preserve project continuity independently of any chat, engineer, AI system or platform. Its second is to remain understandable to future contributors.
 

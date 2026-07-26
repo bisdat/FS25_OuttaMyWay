@@ -1,38 +1,48 @@
-FS25_OuttaMyWay v4.6.18
+FS25_OuttaMyWay v4.6.20
 
-Prototype 13A Evidence Consolidation and Animation-State Correction — Release Candidate
+Prototype 13A Resolution Knowledge Consolidation Completion Patch — Release Candidate
 
-Implementation baseline: exact tested v4.6.17 candidate
-Current package authority: noncanonical correction candidate awaiting focused in-game validation and repository-owner review
+Implementation baseline: exact canonical v4.6.18
+Baseline SHA-256: 27259e823e3893f2508fd2f526b23ade00a3aad52e4aba18c04f75c73b5cb681
+Current package authority: noncanonical completion-patch candidate awaiting repository-owner review
 
-Prototype 13A successfully demonstrated route convergence for all ten declared source shapes across
-Condor, Tiger 8 MT and TopDown 600. Every real A/B route pair converged on one runtime Entity and
-every deliberately wrong C control was rejected. Runtime handles remained stable through observed
-configuration motion. These findings support the Route-Independent Resolution Contract for the
-tested fixtures; they do not establish complete physical inventory, footprints or Coverage Closure.
+The earlier v4.6.19 candidate was discarded before canonicalisation after review found stale currency
+markers in two substantively reviewed documents. v4.6.20 is rebuilt independently from exact canonical
+v4.6.18 and contains the complete consolidation with those review markers corrected.
 
-The TopDown AI run also disproved Prototype 13A's generic interior-value label. A stable
-`foldAnimTime=0.1250` plateau represented an extended, raised manoeuvring pose rather than a fold
-transition. Prototype 13A now logs neutral animation evidence only: raw value, endpoint/interior
-region and observed changing/stable motion. It does not infer deployment, vertical configuration,
-terrain contact, functional engagement or AI operational phase from one animation value.
+Prototype 13A is complete for its declared fixture matrix. Ten declared source shapes across Condor,
+Tiger 8 MT and TopDown 600 resolved to coherent runtime Entities; every legitimate A/B Resolution Path
+pair converged and every deliberately invalid C control was rejected. Runtime handles remained stable
+through observed configuration motion. The focused v4.6.18 TopDown run also validated neutral animation
+evidence: a stable interior value remained `INTERIOR + STABLE`, moving values became `CHANGING`, and no
+semantic fold state was inferred.
 
-Recorded architecture separates:
+This release consolidates the enduring knowledge rather than adding behaviour. It defines:
 
-- deployment state;
-- vertical configuration;
-- terrain contact;
-- functional engagement;
-- AI operational phase.
+- a strict Resolution Contract and Resolution Claim Set;
+- mandatory evidence versus corroborating evidence;
+- Resolution Path as distinct from a worker's navigable route;
+- claim-specific confidence and explicit limits;
+- the best currently defensible Assessment Representation Portfolio;
+- representation passports, cost profiles, admissibility and conclusion-relative sufficiency;
+- Situation Assessment as the arbiter of representation fitness and refresh need;
+- dependency-scoped invalidation and smallest-scope refresh;
+- Functional Class–Structural Representation Separation;
+- the GIANTS Completion Acceptance Boundary and completed-worker obstacle transition.
 
-The TS004 TopDown establishes an AI Work Engagement Cycle: extended-raised for positioning and
-repositioning, then lowering for direct-soil-contact work. Certain towed sprayers provide a contrasting
-non-contact vertical configuration whose height has role-play significance but no crop-contact effect.
-Player-controlled behaviour remains outside cooperative-worker modelling; a player assembly is relevant
-only as a potential obstacle to AI workers.
+The two cultivator fixtures decreased confidence that implement gameplay classes are structurally
+homogeneous while increasing confidence that one class-independent Resolution Contract can assess
+heterogeneous assets. Implement class remains context, not structural authority.
 
-Prototype 13A remains passive. This candidate does not automate route discovery, construct footprints,
-claim Coverage Closure, predict sweep, assess conflict, create a Commitment or issue Control.
+OuttaMyWay accepts wherever and however GIANTS ends an AI job. The completed assembly becomes a
+non-member obstacle in its actual final pose; relocation remains the player's responsibility. In-place
+Post-Job Configuration Normalisation, such as safe folding, is deferred for later investigation.
+Assessment Deadline Escalation is also parked for a future Decision Engine session without selecting
+an all-stop or other failsafe policy.
 
-See docs/prototypes/PROTOTYPE_13_DECLARED_ROUTE_EVALUATION.md and
-docs/PHYSICAL_REPRESENTATION_ARCHITECTURE.md.
+No resolver discovery, footprint construction, Coverage Closure, sweep prediction, conflict assessment,
+Commitment or Control behaviour is introduced or changed by v4.6.20. Prototype implementation and
+logging remain unchanged apart from package version metadata.
+
+See docs/prototypes/PROTOTYPE_13_DECLARED_ROUTE_EVALUATION.md,
+docs/PHYSICAL_REPRESENTATION_ARCHITECTURE.md and docs/ENGINEERING_HANDOVER.md.

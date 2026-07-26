@@ -1,5 +1,49 @@
 # Decision Log
 
+## D-0044 — Make Situation Assessment the Representation-Fitness Arbiter
+
+**Status:** Accepted for candidate v4.6.20
+
+**Decision:** Representations report scope, evidence, dependencies, age, changes, coverage, cost and permitted conclusions. Situation Assessment decides whether they remain fit for the current question, plausible futures and horizon, and may emit `CURRENTLY_FIT`, `FIT_FOR_LIMITED_HORIZON`, `USABLE_WITH_UNCERTAINTY`, `REFRESH_REQUIRED` or `STRUCTURALLY_INVALID`. Stale evidence is retained with restricted authority rather than discarded automatically.
+
+**Boundary:** Situation Assessment produces Knowledge and does not execute vehicle Control. Routine observation/representation refresh remains maintenance of the Operational Picture. Any active response when decision time expires belongs to a later Decision Engine decision.
+
+## D-0043 — Adopt the Resolution Contract and self-describing assessment portfolio
+
+**Status:** Accepted for candidate v4.6.20
+
+**Decision:** `RESOLVED` requires candidate existence, assembly and structural coherence, Entity-local geometry authority, observable current pose and no unresolved contradictory identity. Resolution emits a claim set with explicit limits and does not imply Inventory Closure, Coverage Closure or footprint correctness. Situation Assessment receives a minimum sufficient defensible portfolio whose layers carry Representation Passports, cost profiles and permitted conclusions. Admissibility precedes optimisation.
+
+**Evidence rule:** Resolution Path convergence, negative controls, motion-derived distinctness, symmetry and repeated observation corroborate claim-specific confidence but are not universal gates. A decisive mandatory contradiction prevents resolution.
+
+## D-0042 — Treat implement class as context, not structural authority
+
+**Status:** Accepted for candidate v4.6.20
+
+**Decision:** Gameplay class may guide operational questions and expected semantics but cannot establish physics-component structure, hierarchy, mapping coverage, articulation or a privileged Resolution Path. Physical authority remains source metadata, current assembly, runtime Entity geometry and observed pose.
+
+**Evidence:** Tiger 8 MT and TopDown 600 are both cultivators yet expose materially different structures and successful Resolution Paths. Prototype 13A decreased confidence in class homogeneity and increased confidence in a class-independent Resolution Contract.
+
+## D-0041 — Accept GIANTS job completion disposition and retain the obstacle
+
+**Status:** Accepted baseline policy; Post-Job Configuration Normalisation Deferred
+
+**Decision:** Wherever and however GIANTS ends an original AI job is accepted. OuttaMyWay does not choose a parking position, move the vehicle off-field or continue driving it. The completed assembly loses active membership and motion expectation but remains represented in its actual final pose as a non-member obstacle. Final relocation remains the player's responsibility.
+
+**Deferred:** Safe in-place raising or folding may later be investigated only after control availability, sequence, sweep clearance and actual footprint reduction are proven.
+
+## D-0040 — Park Assessment Deadline Escalation
+
+**Status:** Deferred
+
+**Decision:** When useful representation cannot be refreshed before assessment time expires, Situation Assessment reports the unresolved knowledge. A later Decision Engine session may consider selective hold, emergency freeze or another failsafe. No all-stop or timeout policy is selected by Prototype 13A consolidation.
+
+## D-0039 — Reserve route for navigation and use Resolution Path
+
+**Status:** Accepted for candidate v4.6.20
+
+**Decision:** Architectural prose uses **Resolution Path** for a method that proposes a runtime candidate from source and assembly relationships. The unqualified word **route** remains available for a worker's navigable field path. Historical Prototype 13A filenames, Lua identifiers and log outcomes retain `route` vocabulary for evidence traceability.
+
 ## D-0038 — Adopt Repository-Native Line-Ending Authority
 
 **Status:** Accepted for candidate v4.6.16
