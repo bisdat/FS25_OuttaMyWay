@@ -1,19 +1,20 @@
 # Roadmap
 
-## Immediate — Resolve member-local physical identity
+## Immediate — Define Prototype 13 from the Physical Representation architecture
 
-Prototype 12 established that physical discovery must cross the current Physical Assembly and then proceed independently inside each member's own source asset and runtime hierarchy. Prototype 11 established runtime Entity geometry authority; source collision metadata and configuration still own physical meaning and current inclusion.
+The architecture now separates exact identity, fallback occupancy and Coverage Closure. Before implementation, agree a precise Prototype 13 hypothesis that tests member-local source-to-runtime identity across materially different asset structures.
 
-Next evidence order:
+Required boundaries:
 
-1. agree the precise Prototype 13 member-local identity hypothesis before implementation;
-2. inventory source references, hierarchy paths, mappings and transforms per assembly member;
-3. resolve Condor's five permanent current physical source shapes to distinct runtime Entities;
-4. reject aliases and retain unresolved current shapes explicitly;
-5. use TopDown 600 only to test whether the same evidence categories exist under different asset vocabulary and structure;
-6. only after trustworthy member-local coverage, derive sufficiently precise local extents and assembly-level occupancy.
+- source collision metadata owns physical membership;
+- saved/current configuration owns inclusion;
+- Physical Assembly discovery owns member scope;
+- runtime Entity identity owns geometry and live pose;
+- unresolved identities and runtime aliases remain explicit;
+- fallback occupancy does not claim exact identity;
+- no containment, sweep prediction or Control is introduced.
 
-Condor's names, segment count and apparent taper remain fixture evidence rather than a generic foldable-implement template.
+TS004 supplies the Tiger and TopDown as static contrast evidence. GIANTS source assets must be supplied again for any future runtime implementation work.
 
 ## Development policy
 
@@ -159,11 +160,16 @@ Development remains in a private repository until the first GIANTS ModHub releas
 
 ### Prototype 13 — Member-Local Runtime Identity Resolution
 
-- [ ] Separate architectural requirements, evidence sources, provenance and vehicle-specific vocabulary before implementation.
-- [ ] Define a one-to-one member-local source-to-runtime identity hypothesis with alias rejection.
-- [ ] Resolve Condor's five permanent current physical shapes in addition to the eight active boom shapes.
-- [ ] Use TopDown 600 as contrasting evidence-input reconnaissance rather than demanding immediate complete coverage.
-- [ ] Keep unresolved current shapes explicit and inactive alternative shapes excluded by configuration authority.
+**Status:** discussion gate; not implemented.
+
+Test whether configuration-aware source collision identities can be connected to distinct runtime Entities inside materially different assembly-member structures while preserving unresolved identities and alias evidence.
+
+Candidate fixtures:
+
+- Condor: repeated-family resolution and completion of the known current physical catalogue;
+- Tiger or TopDown: contrast between multi-component and internally articulated single-component hierarchy routes.
+
+Prototype 13 must distinguish exact identity resolution from fallback Physical Representation construction. It may collect the evidence needed for later Coverage Closure, but must not introduce aggregate occupancy, containment, sweep prediction or Control.
 
 ### After member-local resolution
 

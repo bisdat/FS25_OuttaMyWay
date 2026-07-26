@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** Reviewed for candidate release v4.6.15
+> **Currency:** Reviewed for candidate release v4.6.16
 
 This development repository is a self-sustaining engineering knowledge system. Its first responsibility is to preserve project continuity independently of any chat, engineer, AI system or platform. Its second is to remain understandable to future contributors.
 
@@ -17,7 +17,7 @@ Read these in order when inheriting or resuming the project:
 5. [`ENGINEERING_HANDOVER.md`](ENGINEERING_HANDOVER.md) — the precise continuation point.
 6. [`PROJECT_CONTINUITY.md`](PROJECT_CONTINUITY.md) — how to continue correctly using only this repository.
 7. [`CONCEPT_REGISTER.md`](CONCEPT_REGISTER.md) — Accepted, Deferred and Rejected architectural concepts.
-8. [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`DESIGN.md`](DESIGN.md) — current driving-system responsibilities and boundaries.
+8. [`ARCHITECTURE.md`](ARCHITECTURE.md), [`PHYSICAL_REPRESENTATION_ARCHITECTURE.md`](PHYSICAL_REPRESENTATION_ARCHITECTURE.md) and [`DESIGN.md`](DESIGN.md) — current system and physical-representation responsibilities.
 9. [`ROADMAP.md`](ROADMAP.md) — future direction after the immediate objective.
 
 The remaining documents deepen or verify that journey; they are classified below so no first-class document is orphaned.

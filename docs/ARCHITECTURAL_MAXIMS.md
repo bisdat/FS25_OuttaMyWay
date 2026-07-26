@@ -16,3 +16,6 @@
 - Least intervention is preferable to rare intervention.
 - Grace emerges from continuous evaluation and proportionate commitment.
 - Complexity belongs beneath the waterline; simplicity belongs in the player experience.
+- Coverage before uniform precision.
+- Uncertainty prevents clearance; it does not manufacture collision.
+- Sweep follows observed kinematics, not visual symmetry.

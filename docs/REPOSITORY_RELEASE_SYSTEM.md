@@ -113,6 +113,12 @@ An RRS process cannot use implementation changes that exist only inside the cand
 
 This is an implementation bootstrap, not an authority shortcut: the external runner does not modify the canonical Git repository, approve its own output or bypass independent review.
 
+## Repository-Native Line-Ending Authority
+
+Repository text is stored and checked out with LF line endings under `.gitattributes`. Candidate Production and release-manifest generation preserve those repository-declared bytes. Contributor operating-system defaults and Git checkout settings must not silently redefine canonical release content.
+
+The v4.6.16 transition normalises four inherited CRLF files: `.gitignore`, `rrs/__init__.py`, `rrs/__main__.py` and `rrs/requirements-dev.txt`. Earlier v4.6.15 canonical bytes remain historically valid; the normalisation is a declared Engineering Transformation, not a retrospective change.
+
 ## Ordered Gates
 
 ### Canonical Baseline Gate

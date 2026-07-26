@@ -9,3 +9,7 @@
 7. A settled working trajectory reveals only local intent; later GIANTS repositioning can cross another worker's resumed lane without being explained by a simple alternating-lane model.
 8. An operational AI worker may own a multi-member Physical Assembly containing separate attached runtime assets and roots.
 9. GIANTS `WORKING` state does not by itself prove sustained physical progression; declared state and measured motion are separate evidence.
+10. GIANTS AI keeps the base vehicle stationary until an implement has unfolded or lowered into its working state; configuration motion can still occupy changing plan-view space.
+11. Physics-component count is not a universal inventory of plan-view articulation: Tiger 8 MT uses separate wing components while TopDown 600 moves collision-bearing descendants inside one physics component.
+12. Direct `i3dMapping` coverage varies by asset and cannot establish collision inventory or Coverage Closure.
+13. Working width, base size and AI course offsets are state-scoped operational evidence, not automatic collision authority.

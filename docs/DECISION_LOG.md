@@ -1,5 +1,55 @@
 # Decision Log
 
+## D-0038 — Adopt Repository-Native Line-Ending Authority
+
+**Status:** Accepted for candidate v4.6.16
+
+**Decision:** Repository text is stored and checked out as LF under `.gitattributes`. The four inherited CRLF files are normalised during the v4.6.16 Engineering Transformation. Release manifests and canonical packages preserve repository-declared bytes rather than contributor-platform defaults.
+
+**Reason:** Native Linux Git and deterministic packaging exposed historical Git-blob/release-byte divergence. Repository policy should remove that anomaly for future releases.
+
+## D-0037 — Continue assessment through Clearance Unresolved
+
+**Status:** Accepted architectural decision
+
+**Decision:** Incomplete relevant Realised Coverage Closure does not halt Situation Assessment and does not manufacture conflict. It removes authority to claim all-clear only in the affected scope; the knowledge state becomes `CLEARANCE_UNRESOLVED`. Decision and Commitment remain responsible for any caution or intervention.
+
+## D-0036 — Adopt Coverage Closure and the Coverage Ledger
+
+**Status:** Accepted architectural decision
+
+**Decision:** Inventory Closure and Coverage Closure are distinct. Coverage Closure may be enumerative, enclosing or hybrid and is divided into Structural and Realised Closure. Every closure claim records scope, basis, contributors, unresolved regions, underestimation risk and pose status in a Coverage Ledger.
+
+## D-0035 — Separate stable occupancy, deployment and manoeuvre sweep
+
+**Status:** Accepted architectural decision
+
+**Decision:** Folded and working are the principal stable occupancy states. GIANTS implement deployment is Stationary Configuration Motion assessed through a Deployment Clearance Envelope before its Commitment Point. Deployment Sweep and steering-dependent Manoeuvre Sweep remain separate; midpoint-pivot prediction is rejected as an unsupported assumption.
+
+## D-0034 — Permit heterogeneous, family-based footprint composition
+
+**Status:** Accepted architectural decision
+
+**Decision:** Homologous components share a family representation strategy while retaining member-specific parameters. Exact, derived and fallback representations may coexist. Fallback is introduced at the smallest safe scope, uncertainty remains local and coverage takes priority over uniform precision.
+
+## D-0033 — Use a Job-Scoped Representation Catalogue
+
+**Status:** Accepted architectural decision
+
+**Decision:** Construct stable Representation Templates once at AI job start and expire the catalogue at job end. During the job, Situation Assessment selects physical state and performs Pose Realisation from current plan-view transforms. Equipment or configuration changes belong to a new job and new catalogue.
+
+## D-0032 — Accept the Planar Representation Portfolio and Convex Planar Envelope
+
+**Status:** Accepted architectural decision
+
+**Decision:** Physical Representation uses Planar Collision Semantics and may preserve Component Footprint Sets, a Convex Planar Envelope, member rectangles, assembly rectangles and explicit unknown occupancy. Convex Planar Envelope is accepted as an intermediate fallback; Envelope Anchor Selection is Deferred.
+
+## D-0031 — Separate exact physical identity from occupancy fallback
+
+**Status:** Accepted architectural decision
+
+**Decision:** The complete source/configuration/member/runtime evidence chain is required before claiming exact collision-shape identity. Failure to complete that chain does not forbid clearly qualified conservative occupancy fallback. Fallback geometry must never be presented as resolved collision geometry.
+
 This log records Accepted, Deferred, Rejected and Superseded project choices that do not require a full Architecture Decision Record. Newer decisions appear first.
 
 ## D-0030 — Adopt the Physical Assembly Search Boundary

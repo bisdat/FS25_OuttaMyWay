@@ -215,4 +215,24 @@ GIANTS' declared `WORKING` state is an observation, not proof of productive move
 
 ### Next gate: Member-Local Physical Resolution
 
-Source collision metadata remains physical authority. Configuration remains current-inclusion authority. Runtime Entity identity remains geometry authority. The next prototype must connect these independently inside every current assembly member, reject aliases and retain unresolved current shapes explicitly. No assembly-level Physical Occupancy Envelope is authorised before that gate succeeds.
+Source collision metadata remains physical authority. Configuration remains current-inclusion authority. Runtime Entity identity remains geometry authority. The next prototype must connect these independently inside every current assembly member, reject aliases and retain unresolved current shapes explicitly. Exact resolution and fallback occupancy remain separate claims.
+
+## Physical Representation Architecture (v4.6.16)
+
+`PHYSICAL_REPRESENTATION_ARCHITECTURE.md` owns the detailed model. The architectural summary is:
+
+```text
+Job-start Physical Assembly
+    -> Job-Scoped Representation Catalogue
+        -> Representation Templates and Component Families
+            -> current state and Pose Realisation
+                -> heterogeneous plan-view representations
+                    -> Structural and Realised Coverage Closure
+                        -> Layered Occupancy Claims
+```
+
+Situation Assessment preserves exact and fallback layers with explicit validity and evidence. Convex Planar Envelope is accepted as an intermediate fallback; its anchor selection remains deferred. Coverage Closure may be enumerative, enclosing or hybrid. Partial relevant coverage yields Clearance Unresolved and removes only the scoped authority to claim all-clear.
+
+Folded and working are the principal stable states. Deployment is stationary configuration motion governed by a Deployment Clearance Envelope before commitment. Deployment Sweep and steering-dependent Manoeuvre Sweep remain separate future problems.
+
+No Physical Occupancy Envelope or control behaviour is implemented by this release.

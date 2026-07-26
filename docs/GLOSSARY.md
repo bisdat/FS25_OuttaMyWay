@@ -127,6 +127,87 @@ A condition where GIANTS reports active `WORKING` state while measured physical 
 ## Member-Local Physical Resolution
 The proposed mapping of source physical collision identities to runtime Entities independently inside each Physical Assembly member.
 
+## Planar Collision Semantics
+Physical occupancy is represented in collision-relevant ground-plane projection because GIANTS AI does not exploit hypothetical vertical underpass clearance.
+
+## Physical Representation Portfolio
+The set of exact, derived and fallback plan-view representations simultaneously available for one subject.
+
+## Component Footprint Set
+Positioned plan-view component shapes whose union represents current assembly occupancy at component precision.
+
+## Convex Planar Envelope
+A conservative simplified polygon between component composition and a full width-by-breadth rectangle.
+
+## Spatial Core
+The geometry, ownership and current pose asserted by a Physical Representation.
+
+## Validity Context
+The state, ownership, freshness and evidence conditions under which a representation may still be used.
+
+## Evidence Quality
+The provenance, completeness, conservatism and Fitness Profile that limit conclusions drawn from a representation.
+
+## Job-Scoped Representation Catalogue
+The stable catalogue of Representation Templates constructed at AI job start and expired at job end.
+
+## Representation Template
+A stable local definition from which current plan-view geometry is produced.
+
+## Pose Realisation
+Application of current physical state and plan-view pose to Representation Templates.
+
+## Component Family
+Homologous components sharing representation strategy while retaining individual parameters.
+
+## Heterogeneous Footprint Composition
+Composition of exact, derived and fallback representations within one assembly without forcing uniform precision.
+
+## Coverage-First Composition
+The rule that complete trustworthy coverage takes priority over equal local precision.
+
+## Stationary Configuration Motion
+Implement geometry motion while the AI-controlled base vehicle remains stationary.
+
+## Deployment Clearance Envelope
+The plan-view area that may be occupied while moving between folded and working states.
+
+## Deployment Commitment Point
+The pre-deployment boundary at which clearance for expected configuration motion must already be established.
+
+## Endpoint–Sweep Distinction
+The rule that stable endpoint footprints do not necessarily contain intermediate swept occupancy.
+
+## Planar Rigidity
+Constancy of relative plan-view geometry despite movement that does not materially change ground-plane projection.
+
+## Steering-Mode Sweep Dependency
+Dependence of manoeuvre sweep on active steering mode and actual kinematics.
+
+## Inventory Closure
+Evidence that all relevant physical components have been discovered for a stated scope and state.
+
+## Coverage Closure
+Evidence that all relevant plan-view occupancy is represented for a stated scope and state.
+
+## Structural Coverage Closure
+Catalogue-level evidence that applicable templates cover all relevant occupancy.
+
+## Realised Coverage Closure
+Structural Coverage Closure with current valid pose for every applicable representation.
+
+## Coverage Ledger
+The evidence record supporting and limiting one Coverage Closure claim.
+
+## Known-Coverage Trap
+The false inference that every discovered component being represented proves complete inventory.
+
+## Clearance Unresolved
+Knowledge that available evidence establishes neither conflict nor safe clearance.
+
+## Scope-Local Non-Exclusion
+A coverage gap removes authority to exclude conflict only where that gap could affect the assessment.
+
 ## Operational Entity–Physical Assembly Separation
 The distinction between the Entity that owns the AI job and the potentially multi-member runtime assembly whose physical geometry must eventually be represented.
 

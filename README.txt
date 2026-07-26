@@ -1,30 +1,31 @@
-FS25_OuttaMyWay v4.6.15
+FS25_OuttaMyWay v4.6.16
 
-Prototype 12 Validation Consolidation — Release Candidate
+Physical Representation Architecture Consolidation — Release Candidate
 
-Canonical implementation baseline: v4.6.10
+Canonical implementation baseline: v4.6.15
 Current package authority: noncanonical candidate awaiting repository-owner review
 
-This candidate consolidates the validated Physical Geometry prototyping sequence from
-Prototype 09 through Prototype 12. Prototype 12 is now strongly supported across
-one integrated self-propelled assembly and two materially different tractor–cultivator
-assemblies.
+This candidate records the agreed architecture for constructing and interpreting plan-view
+Physical Representations without requiring exact runtime collision identity as a prerequisite
+for all useful occupancy knowledge. It accepts component footprints, a Convex Planar Envelope
+and member/assembly rectangles as an explicitly qualified representation portfolio.
 
-The operational AI worker and the complete Physical Assembly are separate concepts.
-Geometry discovery must begin with the worker, enumerate the current powered/attached
-assembly, and then search independently inside each member's own asset and runtime root.
+The Job-Scoped Representation Catalogue is built once at job start. Stable templates are
+realised from current physical state and plan-view pose. Mixed precision is permitted: exact
+and fallback regions may coexist, uncertainty remains local, and coverage takes priority over
+uniform precision.
 
-The S 416 plus Tiger 8 MT run also established Working-State Motion Divergence: GIANTS
-reported an active WORKING state while the assembly remained effectively stationary.
-Manual cultivation disproved simple equipment incapability, but no unsupported cause is
-assigned. A second attached fixture, 8RX 410 plus TopDown 600, replicated assembly
-discovery while sustaining normal AI work.
+Coverage Closure is separated from Inventory Closure and may be enumerative, enclosing or
+hybrid. Structural Closure belongs to the catalogue; Realised Closure additionally requires
+current valid pose. Partial knowledge continues, but any relevant gap yields Clearance
+Unresolved rather than an unsupported all-clear or an invented collision.
 
-Prototype 12 is disabled after completion. Its implementation and evidence contract remain
-in the repository. No collision membership, compound occupancy, containment, projected
-sweep, Decision, Commitment or Control behaviour is introduced.
+TS004 records the Valtra S 416 + Tiger 8 MT and John Deere 8RX 410 + TopDown 600 as static
+contrast fixtures. Their different physics-component, hierarchy and mapping structures show
+that component counts and direct mappings cannot establish collision inventory.
 
-Next engineering discussion: Member-Local Physical Resolution and the precise Prototype 13
-hypothesis.
+Repository text is now governed as LF through .gitattributes. Four historical CRLF files are
+normalised to LF in this candidate. No Prototype 13 implementation or runtime behaviour is
+introduced.
 
-See docs/prototypes/PROTOTYPE_12_PHYSICAL_ASSEMBLY_DISCOVERY.md.
+See docs/PHYSICAL_REPRESENTATION_ARCHITECTURE.md.

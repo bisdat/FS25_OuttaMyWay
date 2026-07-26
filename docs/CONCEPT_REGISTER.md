@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.15.
+Review status: reviewed for candidate release v4.6.16.
 
 ## Accepted Concepts
 
@@ -164,7 +164,131 @@ The Prototype 12 result that the same two-member attached structure was discover
 
 The observed condition in which GIANTS reports an active `WORKING` state while measured physical movement remains effectively zero. It establishes an observation distinction, not a cause or control policy.
 
+### Planar Collision Semantics
+
+The accepted restriction of physical occupancy reasoning to collision-relevant ground-plane projection because GIANTS AI does not exploit hypothetical vertical underpass clearance.
+
+### Physical Representation Portfolio
+
+The simultaneous set of exact, derived and fallback plan-view representations available for one subject, each retaining validity, provenance, completeness, conservatism and fitness.
+
+### Component Footprint Set
+
+The union-ready collection of positioned plan-view component footprints belonging to a Physical Assembly.
+
+### Convex Planar Envelope
+
+A conservative simplified plan-view polygon between component composition and a full bounding rectangle. Accepted as a fallback class; anchor selection remains Deferred.
+
+### Representation Contract
+
+The separation of Spatial Core, Validity Context and Evidence Quality carried by every Physical Representation.
+
+### Job-Scoped Representation Catalogue
+
+The job-bounded catalogue of stable Representation Templates constructed at AI job start and expired at job end.
+
+### Representation Template
+
+A job-stable definition of component ownership, local geometry, placement, construction method, applicability and evidence quality from which current world-space occupancy is realised.
+
+### Pose Realisation
+
+The application of current physical state and plan-view pose to applicable Representation Templates.
+
+### Component Family
+
+A set of homologous components sharing one representation strategy while retaining member-specific dimensions, identity, placement and pose.
+
+### Heterogeneous Footprint Composition
+
+The accepted combination of representations with differing precision and pose authority inside one assembly while preserving their individual limitations.
+
+### Coverage-First Composition
+
+The rule that trustworthy coverage takes priority over uniform precision, with fallback introduced at the smallest safe scope.
+
+### Stationary Configuration Motion
+
+Implement geometry motion while the AI-controlled base vehicle remains stationary during folding, unfolding, raising or lowering.
+
+### Deployment Clearance Envelope
+
+The conservative plan-view area that may be occupied between folded and working endpoints and must be assessed before deployment commitment.
+
+### Deployment Commitment Point
+
+The pre-deployment boundary at which sufficient clearance for expected configuration motion must already be established.
+
+### Endpoint–Sweep Distinction
+
+The rule that folded and working endpoint footprints do not necessarily contain the intermediate deployment sweep.
+
+### Planar Rigidity
+
+Relative plan-view geometry remains effectively constant even when contributors move vertically or otherwise articulate outside the ground plane.
+
+### Steering-Mode Sweep Dependency
+
+The dependency of manoeuvre sweep on active steering mode and actual kinematics rather than a naïve midpoint-pivot model.
+
+### Inventory Closure
+
+Evidence that all collision-relevant components in the stated scope and physical state have been discovered.
+
+### Coverage Closure
+
+Evidence that all collision-relevant plan-view occupancy is represented for the stated scope and physical state.
+
+### Structural Coverage Closure
+
+A job-catalogue claim that applicable templates cover all relevant occupancy for one physical state.
+
+### Realised Coverage Closure
+
+Structural Coverage Closure whose applicable representations all have current valid poses.
+
+### Coverage Ledger
+
+The persistent record of closure scope, basis, contributors, unresolved regions, underestimation risk, pose authority and status.
+
+### Known-Coverage Trap
+
+The false inference that representing every discovered component proves that no relevant component remains undiscovered.
+
+### Clearance Unresolved
+
+A Situation Assessment knowledge state where evidence cannot establish either conflict or safe separation.
+
+### Scope-Local Non-Exclusion
+
+The rule that a coverage gap removes authority to exclude conflict only where that gap could affect the scoped assessment.
+
+### Internal Articulation Representation Diversity
+
+The TS004 finding that plan-view articulation may be encoded through multiple physics components or through moving collision-bearing descendants inside one component.
+
+### Direct-Mapping Coverage Variability
+
+The TS004 finding that asset mappings may expose many, some or almost none of the collision Entities needed for physical resolution.
+
+### State-Scoped Dimensional Evidence
+
+Declared dimensions are useful only with their physical-state and semantic scope; working width, transport width and AI offsets are not automatic collision authority.
+
 ## Deferred Concepts
+
+### Envelope Anchor Selection
+
+The method used to construct a conservative Convex Planar Envelope from available anchor points or component footprints. Options A, B and C remain implementation hypotheses pending comparative evidence.
+
+### Deployment Sweep Construction
+
+The exact method for establishing the area occupied during stationary configuration motion. Endpoint union, live transform accumulation and conservative precomputed sweep remain untested alternatives.
+
+### Manoeuvre Sweep and Steering Kinematics
+
+Prediction of assembly occupancy through translation, steering and articulation. Steering mode, turning radius, instantaneous centre of rotation and observed GIANTS control behaviour require future evidence.
 
 ### Member-Local Physical Resolution
 

@@ -39,3 +39,16 @@ Correlate changes in active/next segment return values with the repeatable Condo
 
 A manual stop/restart test showed that a worker's settled current lane is not a complete prediction of its subsequent route. Condor completed the observed lane, later performed additional repositioning, and then crossed Patriot's resumed lane. The stop/restart introduced Job Restart Perturbation, so the exact continuation cannot be assumed deterministic, but the observation establishes that immediate kinematic intent and route continuation are separate evidence responsibilities.
 
+## TS004 stationary deployment and asset-structure contrast
+
+The repository owner observed that GIANTS AI holds the base vehicle stationary until a foldable implement is fully extended or lowered. This creates two principal stable occupancy states, folded and working, separated by stationary configuration motion whose Deployment Clearance Envelope must be assessed before commitment.
+
+Static TS004 source examination found:
+
+- Tiger 8 MT: multi-component wing articulation;
+- TopDown 600: one physics component with internally animated collision-bearing descendants;
+- materially different direct mapping coverage;
+- base width and working width with different physical meanings.
+
+These are static asset observations, not runtime identity-resolution proof.
+

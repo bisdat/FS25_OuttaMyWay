@@ -1,5 +1,19 @@
 # Engineering Journal
 
+## 2026-07-26 — Physical representation becomes a portfolio with explicit closure
+
+**Observation:** exact source-to-runtime collision identity is valuable but cannot be the sole gate for useful occupancy. Condor is naturally T-shaped in plan view; a full rectangle wastes large empty corners, while a Convex Planar Envelope offers an intermediate conservative fallback. Tractor–cultivator combinations also change plan-view shape through articulation.
+
+**Owner challenge:** the word `only` initially risked excluding fallback when exact identity evidence was incomplete. The architecture was corrected to separate identity validity from occupancy continuity.
+
+**Decisions:** accept Planar Collision Semantics, the Physical Representation Portfolio, Convex Planar Envelope, Job-Scoped Representation Catalogue, Pose Realisation, family-based heterogeneous composition, Coverage Closure and Clearance Unresolved. Defer Envelope Anchor Selection and sweep construction.
+
+**Reality correction:** folded and working are the principal stable AI states; deployment is stationary configuration motion. Turning sweep cannot assume midpoint rotation because steering mode changes kinematics. Deployment and manoeuvre sweep remain distinct.
+
+**TS004 evidence:** Tiger 8 MT uses multiple physics components for wing articulation; TopDown 600 uses internally animated collision-bearing descendants inside one physics component. Mapping and dimension evidence vary by asset. This prevents Condor-specific structure from becoming universal architecture.
+
+**Release-process discovery:** native Linux packaging exposed four historical CRLF release files. v4.6.16 establishes repository-native LF through `.gitattributes` and normalises those files.
+
 ## 2026-07-25 — Prototype 12 establishes the Physical Assembly Search Boundary
 
 **Observation:** Condor appeared as one integrated runtime member. S 416 + Tiger 8 MT and 8RX 410 + TopDown 600 each appeared as two distinct runtime objects with separate assets, roots and hierarchies connected by one attachment edge.

@@ -2,50 +2,50 @@
 
 ## Canonical baseline
 
-v4.6.10 remains canonical and the implementation baseline. v4.6.11 through v4.6.14 are evidence-bearing noncanonical candidates whose validated discoveries are consolidated into v4.6.15.
+v4.6.15 is canonical and the implementation baseline. v4.6.16 is a noncanonical consolidation candidate until independently reviewed and explicitly Canonicalised by the repository owner.
 
-## Accepted discoveries
+## Accepted architecture
 
-### Prototype 09 — Component-local sphere evidence
+The complete agreed model is owned by `PHYSICAL_REPRESENTATION_ARCHITECTURE.md`. The essential continuation facts are:
 
-Correctly resolved runtime collision nodes expose stable conservative component-local geometry spheres. Exact mesh geometry and operational precision remain unresolved.
+1. Exact runtime collision identity and useful occupancy are separate claims.
+2. Plan-view representations retain Spatial Core, Validity Context and Evidence Quality.
+3. A job-start Representation Catalogue owns stable templates; Situation Assessment realises current pose and state.
+4. Component, Convex Planar Envelope and conservative member/assembly representations may coexist.
+5. Mixed precision is accepted; fallbacks are introduced at the smallest safe scope and uncertainty stays local.
+6. Coverage Closure may be enumerative, enclosing or hybrid. Structural Closure and Realised Closure are distinct.
+7. Incomplete relevant coverage produces Clearance Unresolved, not all-clear and not invented conflict.
+8. Deployment and manoeuvre sweeps remain separate; steering-mode-dependent manoeuvre kinematics are deferred.
 
-### Prototype 10 — Productive disproval
+## TS004 fixture
 
-Vehicle-root calls cannot select descendant geometry using source asset `shapeId`. Root-Entity Sphere Aliasing and the Self-Coherence Blind Spot are accepted negative evidence.
+TS004 is now the static contrast fixture:
 
-### Prototype 11 — Runtime Entity Geometry Authority
+- unit1: Valtra S 416 + Horsch Tiger 8 MT;
+- unit2: John Deere 8RX 410 + Väderstad TopDown 600.
 
-The first argument selected the geometry owner in every tested case. Changing the second argument, including to a deliberately invalid high value, did not redirect geometry selection. Source `shapeId` remains provenance metadata rather than a demonstrated runtime selector.
-
-### Prototype 12 — Physical Assembly Discovery
-
-Strongly supported across one integrated and two attached fixtures. The operational worker is the Operation-facing identity; its current Physical Assembly defines the set of member-local asset/runtime hierarchies that must be searched for physical geometry.
-
-- Condor: one member, one asset, one runtime root.
-- S 416 + Tiger 8 MT: two members, two assets, two roots, one attachment edge.
-- 8RX 410 + TopDown 600: the same attached structure replicated with different assets and hierarchy vocabularies.
-
-### Working-State Motion Divergence
-
-The S 416 remained logically active and reported `WORKING` while effectively stationary for at least fifteen seconds. Manual cultivation disproved simple equipment incapability. The cause remains unresolved. The later 8RX/TopDown run sustained normal work, separating AI progression from assembly discovery.
-
-## Candidate increment
-
-v4.6.15 records the validated evidence and disables Prototype 12 after completion. No new active experiment is introduced.
+Tiger represents wing articulation through multiple physics components. TopDown represents folding collision-bearing descendants within one physics component. Direct mapping coverage also differs. These assets demonstrate that Prototype 13 cannot assume Condor-style mapping vocabulary or use physics-component count as collision inventory. GIANTS assets are not retained in the repository and must be supplied again when required.
 
 ## Immediate continuation point
 
-Return to **Source-to-Runtime Shape Resolution**, now scoped per assembly member. Before implementation, separate:
+Discuss the exact Prototype 13 hypothesis before implementation. The next experiment should answer:
 
-1. source collision and configuration authority;
-2. member-local asset references and mapping vocabulary;
-3. member-local runtime hierarchy evidence;
-4. independent identity-validation signals;
-5. unresolved-shape handling and alias rejection.
+> Can configuration-aware source collision identities be connected to distinct runtime Entities inside materially different assembly-member structures, while retaining unresolved identities, alias evidence and independently qualified occupancy fallbacks?
 
-The likely next experiment is **Prototype 13 — Member-Local Runtime Identity Resolution**, but its precise hypothesis and fixture scope must be agreed before code is written. Condor can test completion of its thirteen-member Current Physical Set; TopDown 600 can test whether a materially different attached implement exposes viable evidence inputs without requiring immediate complete coverage.
+Candidate scope should likely include:
 
-## Boundary
+- Condor for known repeated-family resolution;
+- Tiger or TopDown for a contrasting member-local hierarchy route;
+- no assembly envelope or active containment until the evidence supports it.
 
-Do not aggregate a Physical Occupancy Envelope until every included current physical source identity has a trustworthy runtime Entity mapping. Geometry availability, attachment membership and names remain insufficient to establish physical membership.
+## Deferred questions
+
+- Envelope Anchor Selection for the Convex Planar Envelope;
+- exact Deployment Clearance Envelope construction;
+- manoeuvre sweep, turning radius and steering kinematics;
+- representation behaviour for unusual plan-view effects from vertical articulation;
+- Decision Engine response to Clearance Unresolved.
+
+## Repository operation
+
+Text files are now governed as LF by `.gitattributes`. The four inherited CRLF files are normalised in v4.6.16. Candidate packaging and release-manifest generation must therefore preserve the LF bytes declared by the repository.

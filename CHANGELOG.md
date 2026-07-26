@@ -1,5 +1,25 @@
 # Changelog
 
+## v4.6.16 — Physical Representation Architecture Consolidation
+
+- Separates authoritative runtime collision-shape identity from usable physical occupancy; unresolved exact identity no longer forbids explicitly qualified conservative fallback.
+- Accepts a Physical Representation Portfolio containing Component Footprint Sets, a Convex Planar Envelope, member rectangles, assembly rectangles and explicit unknown occupancy.
+- Accepts the Convex Planar Envelope as an intermediate conservative fallback and defers Envelope Anchor Selection pending comparative evidence.
+- Defines the Representation Contract as Spatial Core, Validity Context and Evidence Quality, including provenance, completeness, conservatism and purpose-specific Fitness Profile.
+- Establishes the Job-Scoped Representation Catalogue, Job-Bounded Catalogue Lifetime, Representation Templates, Pose Realisation and Stable Structure–Dynamic Pose Separation.
+- Accepts Component Families, Family Strategy–Member Parameter Separation and defensive Localised–Common-Mode Failure distinction.
+- Accepts Heterogeneous Footprint Composition, Smallest-Scope Fallback, Coverage-First Composition, Localised Uncertainty, Precision–Coverage Separation and Layer-Preserving Composition.
+- Establishes Planar Collision Semantics, Planar Rigidity and the Planar Relevance Test; height is excluded as a current clearance dimension because GIANTS AI does not exploit vertical underpass clearance.
+- Defines folded and working as principal stable occupancy states and separates Stationary Configuration Motion through a Deployment Clearance Envelope and Deployment Commitment Point.
+- Records Endpoint–Sweep Distinction and separates Deployment Sweep from Manoeuvre Sweep.
+- Records Steering-Mode Sweep Dependency and rejects naïve midpoint-pivot turning assumptions pending observed kinematic evidence.
+- Defines Inventory Closure, Coverage Closure, Enumerative Closure, Enclosing Closure, Hybrid Closure, Structural Coverage Closure, Realised Coverage Closure, Closure Composition and the Coverage Ledger.
+- Names the Known-Coverage Trap and permits continued partial assessment through Clearance Unresolved and Scope-Local Non-Exclusion.
+- Records TS004 static contrast evidence for Valtra S 416 + Tiger 8 MT and John Deere 8RX 410 + TopDown 600, including Internal Articulation Representation Diversity, Direct-Mapping Coverage Variability and State-Scoped Dimensional Evidence.
+- Adds `docs/PHYSICAL_REPRESENTATION_ARCHITECTURE.md` as the authoritative home for this model.
+- Adds repository `.gitattributes`, normalises `.gitignore`, `rrs/__init__.py`, `rrs/__main__.py` and `rrs/requirements-dev.txt` from CRLF to LF, and establishes Repository-Native Line-Ending Authority.
+- Preserves observer-only implementation; no Prototype 13, Physical Occupancy Envelope, containment, sweep prediction, Decision, Commitment or Control behaviour is introduced.
+
 ## v4.6.15 — Prototype 12 Validation Consolidation
 
 - Records Prototype 12 Physical Assembly Discovery as strongly supported across one integrated and two attached base-game fixtures.
