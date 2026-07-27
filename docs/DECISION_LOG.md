@@ -1,5 +1,37 @@
 # Decision Log
 
+## D-0048 — Freeze the reviewed base-game Semantic Catalogue as evidence, not scope
+
+**Status:** Accepted for candidate v4.6.21
+
+**Decision:** Preserve one human-reviewed Semantic Profile for each of the 606 base-game definitions as the current semantic evidence baseline. The catalogue records family, primary role, secondary roles, capabilities and provenance. It does not assign OuttaMyWay control, Operation participation, assembly relevance, obstacle relevance or structural representation.
+
+**Boundary:** Paid DLC and modded definitions remain parked. Reviewer notes that mention likely scope are evidence inputs for the next discussion, not pre-approved scope decisions.
+
+## D-0047 — Adopt Minimum Sufficient Semantic Resolution and Scope-Driven Review Depth
+
+**Status:** Accepted for candidate v4.6.21
+
+**Decision:** Semantic review depth is determined by the architectural conclusion it must support. Likely in-scope and boundary cases receive full review; excluded but representation-relevant cases receive enough resolution to support exclusion and physical relevance; clearly irrelevant cases may use coarse exclusion. Material identity errors are always corrected. Refinements that cannot change a control, participation, assembly or obstacle conclusion may be parked.
+
+**Reason:** Completion means complete decision coverage, not exhaustive taxonomy.
+
+## D-0046 — Separate semantic classification, scope and structural challenge
+
+**Status:** Accepted for candidate v4.6.21
+
+**Decision:** Semantic family, role and capability describe what an asset is and does. Scope determines how OuttaMyWay may treat it. Structural Challenge describes how difficult its physical representation may be. No layer may silently stand in for another.
+
+**Consequences:** Active-control exclusion does not automatically remove attached-assembly or obstacle relevance. Purchase category, declared type and function remain evidence; they do not establish physical structure.
+
+## D-0045 — Use Semantic Profiles with cohort review and Approval Inheritance
+
+**Status:** Accepted for candidate v4.6.21
+
+**Decision:** Replace flat category normalisation with a Semantic Profile containing primary family, primary role, secondary roles and orthogonal capabilities. Declared-function cohorts reduce review effort but remain anchors rather than decisions; evidence may split a cohort or require an asset exception.
+
+**Review rule:** `APPROVED` accepts the complete suggested profile unchanged, including intentional blanks. `AMENDED` supplies the complete replacement profile. Vocabulary gaps are named and resolved explicitly rather than forced into an inaccurate existing term.
+
 ## D-0044 — Make Situation Assessment the Representation-Fitness Arbiter
 
 **Status:** Accepted for candidate v4.6.20

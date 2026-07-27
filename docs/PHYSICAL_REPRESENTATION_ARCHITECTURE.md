@@ -435,4 +435,31 @@ When useful representation cannot be refreshed before decision time expires, Sit
 
 Prototype 13A is complete for its declared fixture matrix. Prototype 13B automated Resolution Path discovery remains deferred. The next evidence activity is selection—potentially through data mining—of fixtures that attempt to disprove the Resolution Contract across broader representation structures.
 
-No Physical Occupancy Envelope, Inventory Closure, Coverage Closure, containment, sweep prediction, Decision, Commitment or Control behaviour is authorised by v4.6.20.
+No Physical Occupancy Envelope, Inventory Closure, Coverage Closure, containment, sweep prediction, Decision, Commitment or Control behaviour is authorised by v4.6.21.
+
+## Semantic catalogue and structural challenge boundary (v4.6.21)
+
+The reviewed Semantic Catalogue is an input to fixture selection, not a Physical Representation.
+
+A semantic role can suggest useful disproof questions but cannot establish:
+
+- Physical Assembly membership;
+- source collision membership;
+- runtime Entity identity;
+- geometry or pose authority;
+- Inventory or Coverage Closure;
+- a preferred Resolution Path.
+
+The required sequence is:
+
+```text
+Reviewed Semantic Catalogue
+    -> explicit Scope Overlay
+        -> control / participation / assembly / obstacle relevance
+            -> targeted Structural Challenge Profile
+                -> source/runtime evidence and Resolution Contract
+```
+
+Structural profiling should be limited to control-eligible or representation-relevant assets plus deliberate controls. Exhaustively profiling all 606 semantic definitions would confuse taxonomy completion with architectural evidence.
+
+An excluded active-control role may still require physical representation as an attached member or obstacle. Conversely, an in-scope semantic role still requires asset-specific structural evidence.

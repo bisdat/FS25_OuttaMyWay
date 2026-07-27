@@ -1,76 +1,89 @@
 # Project Status
 
-Version: 4.6.20
+Version: 4.6.21
 
-Authority state: Release Candidate — Prototype 13A Resolution Knowledge Consolidation Completion Patch awaiting repository-owner review
+Authority state: Release Candidate — Base-Game Vehicle Semantic Catalogue Consolidation awaiting repository-owner review
 
-Implementation baseline: exact canonical v4.6.18
+Implementation baseline: exact canonical v4.6.20
 
-Last canonical baseline: v4.6.18
+Baseline SHA-256: `08000f111892e076fe68972ae08a129e652dacea77a8a2428b3739c212847a52`
 
-Current focus: review and canonicalise the 13A consolidation completion patch; future test-subject data mining and scenario selection remain a later session
+Last canonical baseline: v4.6.20
 
-The noncanonical v4.6.19 candidate was discarded after repository-owner review found stale review markers in `docs/README.md` and `docs/CONCEPT_REGISTER.md`. v4.6.20 is rebuilt from exact canonical v4.6.18, retains the full consolidation and advances only those markers whose documents were substantively reviewed.
+Current focus: review and canonicalise the consolidated semantic catalogue; then design the Scope Overlay before selecting targeted structural challenges
 
-## Prototype 13A final result
+## Completed evidence chain
 
-Prototype 13A is complete for its declared matrix. All ten declared source shapes resolved through A/B Resolution Path convergence and all ten invalid C controls were rejected. No ambiguity, alias, geometry-unproven or unresolved result occurred. Runtime handles remained stable through observed configuration motion.
-
-The focused v4.6.18 TopDown cycle validated the diagnostic correction: the stable `foldAnimTime=0.1250` plateau was reported as `animationRegion=INTERIOR animationMotion=STABLE`, raising/lowering was reported as `CHANGING`, and no semantic `foldState` field was emitted. v4.6.18 was explicitly declared canonical and locally reproduced twice with the exact canonical SHA-256.
-
-The result establishes the tested Resolution Path mechanisms and common evidence contract. It does not establish complete physical inventory, footprint construction, Coverage Closure or arbitrary-asset resolution.
-
-## Prototype 13A consolidation
-
-The repository now distinguishes:
-
-- **Resolution** — defensible source identity, runtime identity, Entity-local geometry authority and current pose;
-- **Assessment Representation** — the best currently defensible spatial knowledge available within the assessment budget for the relevant plausible futures and horizon;
-- **Situation Assessment** — the arbiter of representation fitness, assessment-relative staleness and refresh need;
-- **Decision Engine** — responsible for any response when knowledge remains insufficient, including any future deadline-escalation policy.
-
-A source shape is `RESOLVED` only when the mandatory evidence floor is satisfied and no unresolved contradictory identity evidence remains. Resolution Path convergence, negative controls, motion-derived distinctness, symmetry and repeated observation corroborate claims but are not universal gates.
-
-Situation Assessment receives a minimum sufficient defensible portfolio rather than necessarily one universal shape. Every representation remains self-describing through scope, evidence authority, validity dependencies, coverage limits, freshness, cost profile and permitted conclusions. Admissibility precedes optimisation; uncertainty remains explicit and cannot support conflict exclusion where relevant coverage is incomplete.
-
-## Implement-class evidence
-
-Tiger 8 MT and TopDown 600 are both cultivators but expose materially different physics-component, hierarchy, mapping and articulation structures. This decreases confidence in implement-class structural homogeneity and supports **Class as Context, Not Contract**. Gameplay class may guide operational questions; it cannot establish physical structure or select a Resolution Path authoritatively.
-
-## Invalidation and completion
-
-Material change invalidates only the claims that depended on the previous state:
-
-- speed or heading change invalidates prior future projection;
-- translation or rotation refreshes pose while preserving stable identity and geometry;
-- implement articulation refreshes affected member pose and occupancy;
-- attachment or configuration change may invalidate the assembly catalogue;
-- AI job completion invalidates active membership and prior motion expectation while preserving physical identity and obstacle relevance.
-
-OuttaMyWay accepts GIANTS' final job location and configuration. A completed worker becomes a persistent non-member obstacle represented in its actual final pose. Off-field movement and final disposition remain player responsibilities. Post-Job Configuration Normalisation and Assessment Deadline Escalation are named but deferred.
-
-## Established geometry and assembly evidence
-
-Prototype 08 established Condor source collision identity and authoritative live pose. Prototype 09 strongly supported component-local runtime geometry spheres. Prototype 10 disproved vehicle-root source-ID selection. Prototype 11 strongly supported Runtime Entity Geometry Authority. Prototype 12 established the Physical Assembly Search Boundary across one integrated and two attached fixtures. Prototype 13A established a common resolution evidence contract across three structurally heterogeneous fixtures.
-
-The accepted search chain remains:
+The base-game vehicle research now forms one traceable chain:
 
 ```text
-Operational Worker
-    -> Current Physical Assembly
-    -> Individual Assembly Members
-    -> Member-local source/runtime identity resolution
-    -> Self-describing representations
-    -> Situation Assessment fitness judgement
+Vehicle Definition Corpus Extraction
+    -> Raw Definition Evidence
+    -> Selected-Field Inheritance Projection
+    -> Runtime English Localisation
+    -> Semantic Suggestion Cohorts
+    -> Human Review and Asset Exceptions
+    -> Reviewed Semantic Catalogue
 ```
+
+The selected Stage 1 corpus contained 1,365 XML/I3D files from the base-game installation. Stage 2A identified 606 vehicle or implement definitions, including 41 inherited variants and three bundle definitions. The inherited variants contain arbitrary GIANTS `<set>` and `<remove>` operations, so the catalogue claims selected-field inheritance projection rather than a complete GIANTS merge implementation.
+
+Readable installation and user-data search found references to all 567 localisation keys but no authoritative readable definitions. The temporary runtime probe then resolved all 567 keys in English through `g_i18n:getText`. The deliberately missing key returned a GIANTS missing-key diagnostic; the consolidation classifies that independently rather than trusting the probe's original `RESOLVED` label.
+
+## Human semantic review result
+
+The 606 definitions were grouped into 147 declared-function cohorts and split where type, category or role evidence required distinct treatment. This produced 170 review units:
+
+- 166 `APPROVED` through Approval Inheritance;
+- 2 `AMENDED`;
+- 2 initially `DEFERRED`, then resolved by adding `LIQUID_TANK_TRAILER` and `FUEL_TRAILER`;
+- 0 unresolved review units;
+- 0 definitions without a reviewed semantic profile.
+
+Propagation produced 600 definitions accepted from the initial suggestion, three definitions changed by human amendment and three definitions changed by the two vocabulary additions.
+
+The accepted catalogue contains 11 broad families, 90 used primary roles and 42 used capabilities. Reviewer notes that mention likely scope remain preserved as evidence but are not formal scope assignments.
+
+## Architectural result
+
+A flat replacement category is insufficient. Each definition now carries a **Semantic Profile**:
+
+```text
+Primary Family
+Primary Role
+Secondary Roles
+Capabilities
+Evidence and Review Provenance
+```
+
+Role and capability remain orthogonal. Purchase category, declared GIANTS type and declared functions are preserved as evidence rather than promoted automatically to semantic truth.
+
+Function cohorts are review anchors, not decisions. One cohort may require several review units, while asset-specific contradictions remain explicit exceptions.
+
+Semantic classification is separate from:
+
+- OuttaMyWay control eligibility;
+- active Operation participation;
+- attached-assembly relevance;
+- obstacle relevance;
+- physical-structure or representation difficulty.
 
 ## Candidate implementation state
 
-- v4.6.20 contains knowledge and version-metadata changes only.
-- Prototype 13A fixture, resolver, evaluator and logging behaviour is unchanged.
-- Historical implementation labels such as `ROUTE_CONVERGENCE` remain for evidence traceability; architectural prose now uses **Resolution Path** to avoid collision with worker navigation routes.
-- No automated Resolution Path discovery, Physical Occupancy Envelope, Coverage Closure, containment, sweep prediction, Decision, Commitment or Control is introduced.
+- v4.6.21 adds a self-contained reviewed semantic research catalogue and deterministic consolidation script.
+- The canonical v4.6.20 runtime implementation is otherwise unchanged.
+- The repository contains no GIANTS proprietary source assets and no temporary diagnostic mod.
+- Paid DLC and modded vehicle definitions remain parked.
+- No Scope Overlay assignments have been made.
+- No Prototype 13B fixture or implementation has been selected.
 
 ## Next gate
 
-In a future session, identify candidate test subjects—potentially through data mining—selected for representation diversity and their ability to challenge the Resolution Contract. Do not begin Prototype 13B implementation until those scenarios test whether the mandatory evidence floor is insufficient, unobservable or falsely rejects a valid runtime Entity.
+Discuss and define the **Scope Overlay** at the highest useful architectural level. At minimum it should determine separately whether a semantic role is:
+
+1. eligible for active OuttaMyWay control;
+2. eligible for active Operation membership;
+3. relevant as part of an attached or integrated Physical Assembly;
+4. relevant as a non-controlled obstacle.
+
+Only after those dimensions are agreed should the catalogue be filtered for targeted structural challenge profiling and future Resolution Contract disproof fixtures.

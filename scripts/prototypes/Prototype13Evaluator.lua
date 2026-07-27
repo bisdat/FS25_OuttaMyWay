@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.20
+-- FS25_OuttaMyWay v4.6.21
 -- Prototype 13A common candidate evaluator. Route type never grants authority;
 -- every candidate is judged through the same identity/geometry/pose evidence.
 

@@ -1,0 +1,42 @@
+{
+  "asset_resolution_counts": {
+    "APPROVAL_INHERITANCE": 600,
+    "HUMAN_AMENDMENT": 3,
+    "VOCABULARY_ADDITION": 3
+  },
+  "capability_count": 42,
+  "catalogue_sha256": "149853a8770b0538a415c97c3693dd765324dcf7442dec54c5c5d8fc472741e4",
+  "definition_count": 606,
+  "family_count": 11,
+  "family_distribution": {
+    "CROP_CARE": 46,
+    "CROP_ESTABLISHMENT": 30,
+    "FORESTRY": 31,
+    "GRASSLAND_AND_FORAGE": 64,
+    "HARVEST": 94,
+    "LIVESTOCK_AND_FEED": 10,
+    "MATERIAL_HANDLING": 95,
+    "POWER_AND_MOBILITY": 64,
+    "SOIL_PREPARATION": 53,
+    "SUPPORT_AND_UTILITY": 41,
+    "TRANSPORT_AND_LOGISTICS": 78
+  },
+  "primary_role_count": 90,
+  "review_complete": true,
+  "review_unit_count": 170,
+  "review_unit_resolution_counts": {
+    "APPROVAL_INHERITANCE": 166,
+    "HUMAN_AMENDMENT": 2,
+    "VOCABULARY_ADDITION": 2
+  },
+  "review_unit_status_counts": {
+    "AMENDED": 2,
+    "APPROVED": 166,
+    "DEFERRED": 2
+  },
+  "schema_version": 1,
+  "scope_assigned": false,
+  "semantic_catalogue_version": "1.0",
+  "unresolved_definitions": 0,
+  "unresolved_review_units": 0
+}

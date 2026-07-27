@@ -493,3 +493,61 @@ The substantively pure candidate-to-canonical transformation performed only afte
 
 ## Canonicalisation
 The repository owner's explicit declaration that the exact reviewed candidate is canonical.
+
+## Vehicle semantic research vocabulary
+
+### Semantic Profile
+
+A reviewed description of an asset's primary family, primary role, secondary roles and orthogonal capabilities, with preserved source and review provenance.
+
+### Primary Family
+
+A broad operational domain used to organise semantic roles without defining OuttaMyWay scope or physical structure.
+
+### Primary Role
+
+The principal real-world purpose of an asset for the current semantic catalogue.
+
+### Secondary Role
+
+A genuine additional purpose that remains subordinate to the selected primary role.
+
+### Capability
+
+An additional ability or configuration-dependent function that does not replace the asset's primary semantic identity.
+
+### Effective Definition Boundary
+
+The declared limit of Raw Definition Evidence plus Selected-Field Inheritance Projection. It prevents a partial catalogue projection from being presented as the complete GIANTS parent-file merge result.
+
+### Runtime Localisation Authority
+
+The observed authority of the running GIANTS localisation service to provide displayed text when the underlying readable definition source is unavailable.
+
+### Function Cohort
+
+A review group formed from a shared declared-function set. It is an efficiency mechanism, not a guaranteed semantic decision.
+
+### Review Unit
+
+The smallest grouped semantic profile presented for one human decision after evidence splits a Function Cohort where necessary.
+
+### Approval Inheritance Rule
+
+The rule that `APPROVED` accepts every suggested semantic field unchanged, including intentional blanks, while `AMENDED` supplies a complete replacement profile.
+
+### Minimum Sufficient Semantic Resolution
+
+The least semantic detail required to support the current scope, representation or fixture-selection conclusion defensibly.
+
+### Scope-Driven Review Depth
+
+The practice of investing full review in likely or boundary cases, sufficient review in representation-relevant exclusions and coarse review where no architectural conclusion can change.
+
+### Scope Overlay
+
+The future layer that assigns OuttaMyWay treatment independently from semantic identity, potentially separating Control Eligibility, Operation Participation, Assembly Relevance and Obstacle Relevance.
+
+### Catalogue–Structure Separation
+
+The rule that semantic catalogue membership cannot establish runtime hierarchy, geometry authority, occupancy representation or Resolution Path difficulty.

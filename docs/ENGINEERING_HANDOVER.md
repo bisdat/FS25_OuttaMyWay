@@ -2,122 +2,82 @@
 
 ## Authority state
 
-v4.6.18 is the exact canonical baseline for this increment. Canonical SHA-256:
+v4.6.20 is the exact canonical baseline for this increment. Canonical SHA-256:
 
 ```text
-27259e823e3893f2508fd2f526b23ade00a3aad52e4aba18c04f75c73b5cb681
+08000f111892e076fe68972ae08a129e652dacea77a8a2428b3739c212847a52
 ```
 
-v4.6.20 is a noncanonical Prototype 13A Resolution Knowledge Consolidation Completion Patch candidate. It changes documentation and package version metadata only; Prototype 13A runtime behaviour and logging are unchanged.
+v4.6.21 is a noncanonical Base-Game Vehicle Semantic Catalogue Consolidation candidate awaiting repository-owner review.
 
-The earlier v4.6.19 candidate was discarded before canonicalisation because two substantively reviewed documents retained stale v4.6.16 review markers. v4.6.20 is rebuilt from exact canonical v4.6.18 and corrects `docs/README.md` plus `docs/CONCEPT_REGISTER.md`; older review markers remain unchanged where no substantive review occurred.
+The candidate adds research data and enduring architectural knowledge only. Runtime behaviour is unchanged apart from package version metadata.
 
-## Prototype 13A accepted result
+## Consolidated research result
 
-The declared fixture matrix produced ten coherent `RESOLVED / ROUTE_CONVERGENCE` implementation outcomes:
+The repository now contains a self-contained semantic evidence set under `research/vehicle_semantics/`:
 
-- Condor: four representative boom collision shapes;
-- Tiger 8 MT: left and right wing `colPart` shapes;
-- TopDown 600: left and right folding-arm collision descendants.
+- `stage2c_semantic_assignments.csv` — 606 machine-generated suggestions with preserved source evidence;
+- `review_unit_decisions.csv` — the complete 170-unit human review and notes;
+- `reviewed_semantic_catalogue.csv` — one propagated reviewed profile per definition;
+- `reviewed_semantic_vocabulary.csv` — accepted vocabulary for the current base-game corpus;
+- `semantic_catalogue_summary.json` and `PROVENANCE.json`;
+- `consolidate_review.py` — deterministic reconstruction of the final catalogue.
 
-Every legitimate A/B pair converged on one runtime Entity. All deliberately invalid C controls were rejected through hierarchy-name or component-ownership evidence. No ambiguity, alias, geometry-unproven or unresolved result occurred. Runtime handles remained stable through observed configuration motion.
+The source chain is bound by hashes recorded in `PROVENANCE.json`. No proprietary GIANTS game asset is included.
 
-The focused v4.6.18 TopDown run validated the corrected neutral logger: `0.1250` remained `INTERIOR + STABLE`, actual raise/lower motion became `CHANGING`, and semantic fold state was not inferred. v4.6.18 was explicitly declared canonical and deterministically regenerated twice from clean Git commit `fd1ae00675f1a9c5817f361a6565d8d1f7586912` with an exact hash match.
+## Accepted review result
 
-## Terminology correction
+The final review contained:
 
-In architectural language, use **Resolution Path** for a source-to-runtime candidate-generation method. Reserve **route** for a worker's navigable field path.
+- 166 approved review units;
+- 2 amended review units;
+- 2 deferred units resolved through vocabulary additions;
+- 0 unresolved units;
+- 606 reviewed definitions.
 
-Historical prototype filenames, Lua symbols and log reasons such as `DeclaredRouteEvaluationProbe` and `ROUTE_CONVERGENCE` remain unchanged for evidence traceability. They should be read as legacy implementation labels for Resolution Paths, not worker navigation routes.
+Approval Inheritance means `APPROVED` accepts the complete suggested profile unchanged. Blank replacement fields are intentional and do not mean missing data.
 
-## Resolution Contract
+The two human amendments were:
 
-A source physical shape is `RESOLVED` only when one runtime Entity is defensibly established through:
+- `SC-R054` -> `FORESTRY / TIMBER_TRAILER`;
+- `SC-R112` -> `CROP_CARE / SLURRY_DISTRIBUTOR`, secondary `CULTIVATOR`, capability `FERTILISING`.
 
-1. candidate existence;
-2. assembly-member coherence;
-3. compatible component and hierarchy evidence;
-4. Entity-local geometry authority;
-5. observable current pose authority;
-6. absence of unresolved contradictory runtime identity evidence.
+The two vocabulary additions were:
 
-The resulting **Resolution Claim Set** records source identity, runtime identity, geometry authority, pose authority, supporting evidence, validity dependencies and explicit limits. Resolution never implies complete inventory, Coverage Closure or footprint correctness.
+- `SC-R139` -> `TRANSPORT_AND_LOGISTICS / LIQUID_TANK_TRAILER`, capability `LIQUID_TRANSPORT`;
+- `SC-R140` -> `SUPPORT_AND_UTILITY / FUEL_TRAILER`, capability `LIQUID_TRANSPORT`.
 
-Resolution Path convergence, negative-control rejection, motion-derived distinctness, symmetry and repeated observation are corroborating evidence. Their absence does not universally prevent resolution; a decisive contradiction does. Confidence remains claim-specific rather than one scalar score.
+Reviewer scope notes are retained but remain observations for the next stage rather than final scope decisions.
 
-## Assessment representation boundary
+## Architectural boundaries
 
-Resolution and Assessment Representation are separate contracts:
+Use **Semantic Profile, Not Category**. Preserve primary family, primary role, secondary roles and capabilities separately.
+
+Use **Function Cohort Is an Anchor, Not a Decision**. Cohorts reduce review effort, but evidence may require split review units or asset exceptions.
+
+Use **Semantic Classification–Scope Separation** and **Catalogue–Structure Separation**:
 
 ```text
-Resolution
-    establishes defensible identity, geometry and pose claims
-
-Assessment Representation
-    supplies the best currently defensible spatial account for the question,
-    plausible futures, horizon and time budget
+Reviewed Semantic Catalogue
+    -> Scope Overlay
+        -> control / participation / assembly / obstacle relevance
+            -> targeted Structural Challenge Profile
+                -> representation-diverse fixture selection
 ```
 
-Situation Assessment receives a **minimum sufficient defensible portfolio** of complementary representations rather than necessarily one universal geometry. Each layer carries a Representation Passport:
+A semantic family or role must not silently determine physical structure. Conversely, clear exclusion from active control does not necessarily remove obstacle or attached-assembly relevance.
 
-- physical scope;
-- evidence authority and provenance;
-- validity dependencies;
-- coverage statement and underestimation risk;
-- freshness and observed change;
-- cost profile;
-- permitted assessment conclusions.
+## Next discussion
 
-Admissibility precedes cost optimisation. A partial representation may support `CONFLICT_SUPPORTED` or `CONFLICT_POSSIBLE` while remaining forbidden from supporting `CONFLICT_EXCLUDED`.
+Do not begin another broad spreadsheet review or Prototype 13B implementation.
 
-## Situation Assessment responsibility
+First discuss the Scope Overlay concepts and decision dimensions. The current working proposal separates:
 
-Representations report evidence, dependencies, age and observed changes. Situation Assessment decides whether they are fit for the current question and horizon and may produce knowledge such as:
+- Control Eligibility;
+- Operation Participation;
+- Assembly Relevance;
+- Obstacle Relevance.
 
-- `CURRENTLY_FIT`;
-- `FIT_FOR_LIMITED_HORIZON`;
-- `USABLE_WITH_UNCERTAINTY`;
-- `REFRESH_REQUIRED`;
-- `STRUCTURALLY_INVALID`.
+Test whether these dimensions describe the experienced world before implementing scope assignments. Then apply Minimum Sufficient Semantic Resolution: fully review likely or boundary cases, establish only exclusion-supporting detail for representation-relevant exclusions, and avoid exhaustive taxonomy where no architectural conclusion can change.
 
-Assessment-relative staleness does not automatically destroy older evidence. Situation Assessment restricts the claims it may still support. Refresh execution remains part of observation/representation maintenance; Situation Assessment produces Knowledge and does not issue vehicle Control.
-
-## Dependency-scoped invalidation
-
-Refresh occurs at the smallest affected scope:
-
-- speed or heading change invalidates the old future projection;
-- normal translation/rotation refreshes pose while retaining stable identity and geometry;
-- implement articulation invalidates affected member pose and occupancy;
-- attachment/configuration change may invalidate assembly structure and catalogue;
-- job completion invalidates active membership and motion expectation but not physical identity or obstacle relevance.
-
-## Implement-class result
-
-Tiger and TopDown are both cultivators yet use materially different physical structures and successful Resolution Paths. Prototype 13A therefore decreased confidence in implement-class structural homogeneity while increasing confidence in one class-independent Resolution Contract.
-
-Use **Class as Context, Not Contract**. Gameplay class may inform likely operational semantics and candidate questions, but source hierarchy, runtime assembly and observed pose remain physical authorities.
-
-## Completion boundary
-
-OuttaMyWay accepts wherever and however GIANTS finishes an AI job. The completed assembly transitions from active cooperative worker to persistent non-member obstacle. Its actual final pose is refreshed and retained in the Operational Picture. OuttaMyWay does not choose a parking location, move it off-field or infer the player's preferred disposition.
-
-**Post-Job Configuration Normalisation**—for example safe in-place raising or folding to reduce footprint—is deferred for later investigation. It requires proven control availability, correct sequence, sweep safety and actual spatial benefit.
-
-**Assessment Deadline Escalation** is also parked. A later Decision Engine session may examine selective hold, emergency freeze or other failsafe responses when useful knowledge cannot be refreshed before decision time expires. No policy is selected here.
-
-## Next session
-
-The repository owner has ideas for future test subjects that may require data mining. Select fixtures for representation diversity and their ability to disprove the Resolution Contract, not simply to add more implement classes.
-
-Useful challenges include:
-
-- one legitimate Resolution Path only;
-- similar physical structure across different gameplay classes;
-- radically different structures within one class;
-- rigid or asymmetric assets where motion or symmetry corroboration is unavailable;
-- coherent hierarchy with no Entity-local geometry;
-- deliberate root/shared alias cases;
-- structural or attachment changes that invalidate prior claims.
-
-Do not begin Prototype 13B implementation until the fixture strategy and disproof questions are agreed.
+After the Scope Overlay is reviewed, profile structural challenges only for control-eligible, assembly-relevant or obstacle-relevant assets plus a limited set of disproof controls.

@@ -1,34 +1,45 @@
 # Roadmap
 
-## Active — Prototype 13A Resolution Knowledge Consolidation
+## Active — Base-Game Vehicle Semantic Catalogue Consolidation
 
-- [x] Validate all ten declared source-shape outcomes across Condor, Tiger 8 MT and TopDown 600.
-- [x] Validate neutral TopDown animation evidence in the focused v4.6.18 AI work-engagement cycle.
-- [x] Declare and deterministically reproduce exact v4.6.18 canonical.
-- [x] Replace ambiguous architectural `route` terminology with **Resolution Path** while retaining legacy implementation labels for traceability.
-- [x] Define the Resolution Contract, Resolution Claim Set, mandatory evidence floor and corroborating evidence.
-- [x] Separate Resolution from the best currently defensible Assessment Representation Portfolio.
-- [x] Define Situation Assessment as representation-fitness and refresh-need arbiter.
-- [x] Record dependency-scoped invalidation, class heterogeneity evidence and the GIANTS Completion Acceptance Boundary.
-- [x] Park Post-Job Configuration Normalisation and Assessment Deadline Escalation.
-- [ ] Review and canonicalise the exact v4.6.20 candidate.
+- [x] Establish exact canonical v4.6.20 as the implementation baseline.
+- [x] Extract the base-game Vehicle Definition Corpus without copying proprietary geometry binaries.
+- [x] Resolve direct, inherited and bundle definition evidence within the Effective Definition Boundary.
+- [x] Exhaust readable localisation sources and establish Runtime Localisation Authority.
+- [x] Resolve all 567 Stage 2A localisation keys in the observed English runtime.
+- [x] Build 147 function cohorts and refine them into 170 semantic review units.
+- [x] Complete human review of all 170 units.
+- [x] Add `LIQUID_TANK_TRAILER` and `FUEL_TRAILER` from review-time vocabulary discovery.
+- [x] Propagate reviewed decisions to all 606 definitions.
+- [x] Add deterministic consolidation, provenance and reviewed catalogue evidence to the repository.
+- [ ] Review and canonicalise the exact v4.6.21 candidate.
 
-## Next after 13A consolidation
+## Next — Scope Overlay Architecture
 
-In a future session, identify and, where useful, data-mine candidate test subjects that challenge the Resolution Contract. Fixture selection should maximise representation diversity rather than merely adding gameplay classes.
+Discuss and test whether these are the minimum sufficient independent dimensions:
 
-The next evidence matrix should attempt to disprove one or more assumptions:
+- Control Eligibility;
+- Operation Participation;
+- Assembly Relevance;
+- Obstacle Relevance.
 
-- mandatory evidence may be insufficient to distinguish a valid runtime Entity;
-- a mandatory check may be unobservable for a legitimate asset;
-- a valid Entity may be falsely rejected;
-- a single-path result may remain defensible without convergence;
-- gameplay class may fail to predict structure or may span multiple structures;
-- similar structure may appear across unrelated gameplay classes;
-- motion, symmetry or repeated-observation corroboration may be unavailable;
-- assembly or configuration change may invalidate only part of the claim set.
+The overlay must preserve Semantic Classification–Scope Separation. A family or role may be excluded from active control while remaining relevant as attached geometry or a physical obstacle. Reviewer notes are evidence inputs, not pre-approved scope assignments.
 
-Prototype 13B automated Resolution Path discovery remains deferred until test-subject strategy and disproof questions are agreed. No footprint construction, Coverage Closure, conflict assessment or Control is authorised.
+Do not implement a broad scope table until the concepts, outcome states and evidence requirements are agreed.
+
+## After Scope Overlay — Targeted structural challenge profiling
+
+Apply structural analysis only to:
+
+- control-eligible assets;
+- potential active Operation participants;
+- members of relevant working assemblies;
+- non-controlled assets that remain obstacle-relevant;
+- a limited set of representation-diverse disproof controls.
+
+Do not exhaustively profile all 606 definitions. Structural challenge describes how difficult an asset is to represent; it is not a semantic role or capability.
+
+Prototype 13B automated Resolution Path discovery remains deferred until the scope-filtered fixture strategy identifies explicit attempts to disprove the Resolution Contract.
 
 ## Development policy
 

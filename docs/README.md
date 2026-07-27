@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** Reviewed for candidate release v4.6.20
+> **Currency:** Reviewed for candidate release v4.6.21
 
 This development repository is a self-sustaining engineering knowledge system. Its first responsibility is to preserve project continuity independently of any chat, engineer, AI system or platform. Its second is to remain understandable to future contributors.
 
@@ -18,7 +18,8 @@ Read these in order when inheriting or resuming the project:
 6. [`PROJECT_CONTINUITY.md`](PROJECT_CONTINUITY.md) — how to continue correctly using only this repository.
 7. [`CONCEPT_REGISTER.md`](CONCEPT_REGISTER.md) — Accepted, Deferred and Rejected architectural concepts.
 8. [`ARCHITECTURE.md`](ARCHITECTURE.md), [`PHYSICAL_REPRESENTATION_ARCHITECTURE.md`](PHYSICAL_REPRESENTATION_ARCHITECTURE.md) and [`DESIGN.md`](DESIGN.md) — current system and physical-representation responsibilities.
-9. [`ROADMAP.md`](ROADMAP.md) — future direction after the immediate objective.
+9. [`50_Research/VEHICLE_DEFINITION_CORPUS.md`](50_Research/VEHICLE_DEFINITION_CORPUS.md) — the reviewed base-game semantic evidence and its boundaries.
+10. [`ROADMAP.md`](ROADMAP.md) — future direction after the immediate objective.
 
 The remaining documents deepen or verify that journey; they are classified below so no first-class document is orphaned.
 
@@ -73,6 +74,8 @@ The remaining documents deepen or verify that journey; they are classified below
 - [`GIANTS_AI_NOTES.md`](GIANTS_AI_NOTES.md) — GIANTS AIFieldCourse observations.
 - [`50_Research/DESIGN_HISTORY.md`](50_Research/DESIGN_HISTORY.md) — historical design evolution.
 - [`../research/model_geometry/README.md`](../research/model_geometry/README.md) — Prototype 08B offline collision-catalogue extraction workflow.
+- [`50_Research/VEHICLE_DEFINITION_CORPUS.md`](50_Research/VEHICLE_DEFINITION_CORPUS.md) — base-game definition mining, localisation and semantic-review result.
+- [`../research/vehicle_semantics/README.md`](../research/vehicle_semantics/README.md) — self-contained reviewed semantic catalogue and deterministic consolidation.
 
 ## Delivery and Operations
 

@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.20
+-- FS25_OuttaMyWay v4.6.21
 -- Prototype 13A declared-route executor. It resolves diagnostic candidates but
 -- does not decide physical authority, construct footprints or discover routes.
 

@@ -250,3 +250,21 @@ Situation Assessment preserves exact and fallback layers with explicit validity 
 Folded and working are the principal stable states. Deployment is stationary configuration motion governed by a Deployment Clearance Envelope before commitment. Deployment Sweep and steering-dependent Manoeuvre Sweep remain separate future problems.
 
 No Physical Occupancy Envelope or control behaviour is implemented by this release.
+
+## Vehicle Semantic Catalogue Boundary (v4.6.21)
+
+The reviewed base-game catalogue supports future fixture and scope reasoning without becoming runtime structural authority.
+
+```text
+Raw Definition and Runtime Localisation Evidence
+    -> Reviewed Semantic Profile
+        -> future Scope Overlay
+            -> targeted Structural Challenge Profile
+                -> representation-diverse fixture selection
+```
+
+A Semantic Profile records primary family, primary role, secondary roles and capabilities. Purchase category, declared GIANTS type and declared functions remain evidence with provenance.
+
+Semantic classification does not decide Control Eligibility, Operation Participation, Assembly Relevance or Obstacle Relevance. Those are separate future Scope Overlay conclusions. Structural Challenge is later again: it describes representation difficulty and may not be inferred from family or role.
+
+This preserves **Class as Context, Not Contract** while making the context more accurate and reviewable.

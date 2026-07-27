@@ -1,5 +1,20 @@
 # Changelog
 
+## v4.6.21 — Base-Game Vehicle Semantic Catalogue Consolidation
+
+- Begins from exact canonical v4.6.20, SHA-256 `08000f111892e076fe68972ae08a129e652dacea77a8a2428b3739c212847a52`.
+- Consolidates a 606-definition base-game vehicle and implement evidence catalogue without including proprietary GIANTS assets.
+- Records the Effective Definition Boundary: Raw Definition Evidence plus Selected-Field Inheritance Projection rather than an unverified complete parent-file merge.
+- Records Readable-Source Exhaustion and Runtime Localisation Authority after all 567 required keys resolved through the observed English GIANTS runtime.
+- Preserves the missing-key diagnostic result and corrects the temporary probe's Negative-Control Classification Gap during consolidation.
+- Establishes Semantic Profile, Not Category; Role–Capability Separation; Purchase Category as Context, Not Contract; and Catalogue–Structure Separation.
+- Consolidates 147 function cohorts into 170 review units and records Function Cohort Is an Anchor, Not a Decision plus Group Decision–Asset Exception.
+- Records complete human review: 166 units approved unchanged, two amended and two resolved through the new roles `LIQUID_TANK_TRAILER` and `FUEL_TRAILER`.
+- Propagates reviewed decisions to all 606 definitions and adds a deterministic self-contained research catalogue under `research/vehicle_semantics/`.
+- Establishes Approval Inheritance, Minimum Sufficient Semantic Resolution, Scope-Driven Review Depth and Semantic Classification–Scope Separation.
+- Defers the exact Scope Overlay, paid DLC, modded vehicles, targeted Structural Challenge Profiles and Prototype 13B fixture selection.
+- Changes no gameplay, assessment, Decision, Commitment or Control behaviour; Lua modifications are version metadata only.
+
 ## v4.6.20 — Prototype 13A Resolution Knowledge Consolidation Completion Patch
 
 - Declared exact canonical v4.6.18 as the implementation baseline and recorded its deterministic local reproduction.

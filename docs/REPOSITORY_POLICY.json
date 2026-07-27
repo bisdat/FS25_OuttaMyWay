@@ -1,12 +1,11 @@
 {
-  "schema_version": 1,
   "documents": {
-    "architecture": {
-      "path": "docs/ARCHITECTURE.md",
-      "role": "knowledge"
-    },
     "architectural_maxims": {
       "path": "docs/ARCHITECTURAL_MAXIMS.md",
+      "role": "knowledge"
+    },
+    "architecture": {
+      "path": "docs/ARCHITECTURE.md",
       "role": "knowledge"
     },
     "concept_register": {
@@ -17,6 +16,14 @@
       "path": "docs/DECISION_LOG.md",
       "role": "knowledge"
     },
+    "docs_changelog": {
+      "path": "docs/CHANGELOG.md",
+      "role": "history"
+    },
+    "documentation_map": {
+      "path": "docs/README.md",
+      "role": "knowledge"
+    },
     "engineering_architecture": {
       "path": "docs/ENGINEERING_ARCHITECTURE.md",
       "role": "knowledge"
@@ -25,12 +32,12 @@
       "path": "docs/ENGINEERING_CONTRACT.md",
       "role": "knowledge"
     },
-    "engineering_handover": {
-      "path": "docs/ENGINEERING_HANDOVER.md",
-      "role": "knowledge"
-    },
     "engineering_handbook": {
       "path": "docs/ENGINEERING_HANDBOOK.md",
+      "role": "knowledge"
+    },
+    "engineering_handover": {
+      "path": "docs/ENGINEERING_HANDOVER.md",
       "role": "knowledge"
     },
     "engineering_journal": {
@@ -39,6 +46,14 @@
     },
     "glossary": {
       "path": "docs/GLOSSARY.md",
+      "role": "knowledge"
+    },
+    "mod_description": {
+      "path": "modDesc.xml",
+      "role": "configuration"
+    },
+    "physical_representation_architecture": {
+      "path": "docs/PHYSICAL_REPRESENTATION_ARCHITECTURE.md",
       "role": "knowledge"
     },
     "project_continuity": {
@@ -53,6 +68,14 @@
       "path": "docs/PROJECT_VISION.md",
       "role": "knowledge"
     },
+    "release_manifest": {
+      "path": "docs/RELEASE_MANIFEST_SHA256.txt",
+      "role": "generated"
+    },
+    "repository_release_system": {
+      "path": "docs/REPOSITORY_RELEASE_SYSTEM.md",
+      "role": "knowledge"
+    },
     "roadmap": {
       "path": "docs/ROADMAP.md",
       "role": "knowledge"
@@ -61,33 +84,18 @@
       "path": "CHANGELOG.md",
       "role": "history"
     },
-    "docs_changelog": {
-      "path": "docs/CHANGELOG.md",
-      "role": "history"
-    },
-    "repository_release_system": {
-      "path": "docs/REPOSITORY_RELEASE_SYSTEM.md",
-      "role": "knowledge"
-    },
-    "documentation_map": {
-      "path": "docs/README.md",
-      "role": "knowledge"
-    },
     "rrs_operational_readme": {
       "path": "rrs/README.md",
       "role": "knowledge"
     },
-    "release_manifest": {
-      "path": "docs/RELEASE_MANIFEST_SHA256.txt",
-      "role": "generated"
+    "vehicle_definition_corpus": {
+      "path": "docs/50_Research/VEHICLE_DEFINITION_CORPUS.md",
+      "role": "knowledge"
     },
-    "mod_description": {
-      "path": "modDesc.xml",
-      "role": "configuration"
-    },
-    "physical_representation_architecture": {
-      "path": "docs/PHYSICAL_REPRESENTATION_ARCHITECTURE.md",
+    "vehicle_semantics_readme": {
+      "path": "research/vehicle_semantics/README.md",
       "role": "knowledge"
     }
-  }
+  },
+  "schema_version": 1
 }

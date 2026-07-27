@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.20.
+Review status: reviewed for candidate release v4.6.21.
 
 ## Accepted Concepts
 
@@ -512,3 +512,31 @@ The candidate-to-canonical authority change. It must not alter approved substant
 - **Post-Job Configuration Normalisation** — possible safe in-place raise/fold action to reduce obstruction without relocation; control, sequence, sweep and benefit remain unproven.
 - **Assessment Deadline Escalation** — possible Decision Engine response when useful knowledge cannot be refreshed before decision time expires; no all-stop, selective-hold or other failsafe is selected.
 - **Representation weighting mechanism** — retain cost vectors and context priorities until measurement shows whether thresholds, Pareto comparison or a scalar score are justified.
+
+## Accepted from Base-Game Vehicle Corpus and Semantic Review
+
+- **Vehicle Definition Corpus Extraction** — read-only selection of catalogue-relevant base-game XML/I3D evidence from the manufacturer-organised installation corpus.
+- **Definition Inheritance Resolution** — explicit tracing of parent-definition relationships before catalogue inference.
+- **Effective Definition Boundary** — the accepted limit of Raw Definition Evidence plus Selected-Field Inheritance Projection; not a complete GIANTS merge implementation.
+- **Purchase Category as Context, Not Contract** — shop placement is useful evidence but cannot establish semantic identity, scope or physical structure alone.
+- **Type–Capability Entanglement** — declared GIANTS type names may combine role and optional capability and must not be copied directly into semantic identity.
+- **Function Declaration–Specialization Separation** — declared shop functions express intended capability but do not prove implementation method, active configuration or participating geometry.
+- **Runtime Localisation Authority** — the running GIANTS localisation service is authoritative for the text it presents in the observed environment when readable source storage is opaque.
+- **Readable-Source Exhaustion** — a bounded search completed without finding authoritative readable localisation definitions.
+- **Semantic Profile, Not Category** — classification preserves primary family, primary role, secondary roles and capabilities rather than one replacement category.
+- **Role–Capability Separation** — additional abilities remain orthogonal to an asset's principal semantic identity.
+- **Function Cohort Is an Anchor, Not a Decision** — shared declared functions define an efficient review group but do not guarantee one final profile.
+- **Group Decision–Asset Exception** — repeated evidence is reviewed once where defensible while contradictions and minority profiles remain explicit.
+- **Approval Inheritance Rule** — `APPROVED` accepts the complete suggestion unchanged; blank replacement fields are intentional.
+- **Minimum Sufficient Semantic Resolution** — review stops when the semantic evidence is sufficient for the architectural conclusion being attempted.
+- **Scope-Driven Review Depth** — likely scope and boundary cases receive greater review depth than clearly irrelevant exclusions.
+- **Semantic Classification–Scope Separation** — what an asset is remains separate from how OuttaMyWay may treat it.
+- **Control Eligibility–Representation Relevance Separation** — an asset excluded from active control may remain relevant as assembly geometry or an obstacle.
+- **Catalogue–Structure Separation** — semantic catalogue evidence does not establish physical hierarchy, geometry authority or Resolution Path difficulty.
+
+## Deferred after Base-Game Vehicle Semantic Consolidation
+
+- **Scope Overlay outcome model** — exact states and evidence requirements for Control Eligibility, Operation Participation, Assembly Relevance and Obstacle Relevance.
+- **Targeted Structural Challenge Profile** — scope-filtered classification of representation difficulty; not an exhaustive pass across all 606 definitions.
+- **Paid DLC semantic corpus** — parked until the base-game scope and fixture process is proven.
+- **Modded vehicle semantic corpus** — parked because mod variability should not precede a stable base-game method.

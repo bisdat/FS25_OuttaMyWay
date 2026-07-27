@@ -500,3 +500,19 @@ The repository also records the **GIANTS Completion Acceptance Boundary**. Outta
 Repository-owner review of the first consolidation package found that `docs/README.md` and `docs/CONCEPT_REGISTER.md` still claimed v4.6.16 review. That noncanonical v4.6.19 candidate was discarded rather than repaired in place. v4.6.20 was rebuilt from exact canonical v4.6.18, preserves the consolidation and advances only those two review markers because those documents were substantively reviewed. Older currency markers remain historical evidence rather than mechanical release counters.
 
 No runtime resolution, footprint, assessment or control behaviour changed in v4.6.20. Future fixture selection may use data mining and should attempt to disprove the Resolution Contract across representation-diverse assets before Prototype 13B implementation.
+
+## v4.6.21 — Base-Game Vehicle Semantic Catalogue Consolidation
+
+The test-subject question expanded into a bounded evidence-mining exercise because the base-game vehicle directory is organised by manufacturer and GIANTS shop categories/types entangle purchase placement, implementation and capability.
+
+Stage 1 reduced 17.61 GB and 10,695 files to a verified 1,365-file, 58.76 MB XML/I3D corpus. Stage 2A found 606 definitions, 41 inherited variants and three bundles. The inherited variants contained 516 arbitrary `<set>` and `<remove>` operations, disproving the assumption that a few projected fields constituted a complete effective definition. The result was renamed Raw Definition Evidence plus Selected-Field Inheritance Projection.
+
+Readable localisation discovery found every required key only as a reference, not an authoritative definition. A disposable runtime probe resolved all 567 keys in English, but its negative control revealed that GIANTS returns a readable missing-key diagnostic. The probe's `RESOLVED` label for that control was wrong; independent consolidation preserved the real 567 results while naming the Negative-Control Classification Gap. The user corrected a separate probe packaging omission by adding the required root DDS icon and `iconFilename`.
+
+Stage 2C rejected a flat replacement-category model. Semantic Profiles separated family, primary role, secondary roles and capabilities. The 147 function cohorts expanded to 170 review units, proving that Function Cohort Is an Anchor, Not a Decision.
+
+The repository owner completed the human review despite the spreadsheet's high navigation cost. The review approved 166 units unchanged, amended two and exposed two missing roles. Consolidation added `LIQUID_TANK_TRAILER` and `FUEL_TRAILER`, propagated all decisions to 606 definitions and retained scope-related notes without converting them into scope decisions.
+
+The experience produced a further process discovery: an exhaustive semantic taxonomy is not the architectural objective. Minimum Sufficient Semantic Resolution and Scope-Driven Review Depth preserve complete decision coverage while avoiding equal effort on assets that cannot change an OuttaMyWay conclusion.
+
+No runtime behaviour changed. The next discussion is the Scope Overlay, followed by targeted rather than exhaustive structural challenge profiling.
