@@ -1,20 +1,20 @@
 # Project Status
 
-Version: 4.6.21
+Version: 4.6.22
 
-Authority state: Release Candidate — Base-Game Vehicle Semantic Catalogue Consolidation awaiting repository-owner review
+Authority state: Release Candidate — Scope Overlay Architecture Consolidation awaiting repository-owner review
 
-Implementation baseline: exact canonical v4.6.20
+Implementation baseline: exact canonical v4.6.21
 
-Baseline SHA-256: `08000f111892e076fe68972ae08a129e652dacea77a8a2428b3739c212847a52`
+Baseline SHA-256: `a905d5b419f6f3e75c46224aa7b218d453b7ffb8c3409844a85260a964d12361`
 
-Last canonical baseline: v4.6.20
+Last canonical baseline: v4.6.21
 
-Current focus: review and canonicalise the consolidated semantic catalogue; then design the Scope Overlay before selecting targeted structural challenges
+Current focus: review and canonicalise the Scope Overlay architecture; then select targeted structural challenges and positive/bounded-negative test candidates before Prototype 13B implementation
 
 ## Completed evidence chain
 
-The base-game vehicle research now forms one traceable chain:
+The base-game semantic evidence remains the reviewed Stage 2C result:
 
 ```text
 Vehicle Definition Corpus Extraction
@@ -26,64 +26,59 @@ Vehicle Definition Corpus Extraction
     -> Reviewed Semantic Catalogue
 ```
 
-The selected Stage 1 corpus contained 1,365 XML/I3D files from the base-game installation. Stage 2A identified 606 vehicle or implement definitions, including 41 inherited variants and three bundle definitions. The inherited variants contain arbitrary GIANTS `<set>` and `<remove>` operations, so the catalogue claims selected-field inheritance projection rather than a complete GIANTS merge implementation.
+The catalogue contains 606 reviewed definitions, 170 review units, 11 broad families, 90 used primary roles, 42 used capabilities and no unresolved semantic profiles. It remains complete for the declared base-game corpus and is not reduced by Scope Overlay conclusions.
 
-Readable installation and user-data search found references to all 567 localisation keys but no authoritative readable definitions. The temporary runtime probe then resolved all 567 keys in English through `g_i18n:getText`. The deliberately missing key returned a GIANTS missing-key diagnostic; the consolidation classifies that independently rather than trusting the probe's original `RESOLVED` label.
+## Scope Overlay architectural result
 
-## Human semantic review result
+The Scope Overlay is not one in-scope/out-of-scope label. It owns four independent contextual dimensions:
 
-The 606 definitions were grouped into 147 declared-function cohorts and split where type, category or role evidence required distinct treatment. This produced 170 review units:
+1. Control Eligibility Profile;
+2. Operation Participation;
+3. Assembly Relevance;
+4. Obstacle Relevance.
 
-- 166 `APPROVED` through Approval Inheritance;
-- 2 `AMENDED`;
-- 2 initially `DEFERRED`, then resolved by adding `LIQUID_TANK_TRAILER` and `FUEL_TRAILER`;
-- 0 unresolved review units;
-- 0 definitions without a reviewed semantic profile.
+Catalogue membership does not imply support. Semantic identity informs questions but cannot establish any overlay result or physical structure.
 
-Propagation produced 600 definitions accepted from the initial suggestion, three definitions changed by human amendment and three definitions changed by the two vocabulary additions.
+### Supported operational envelope
 
-The accepted catalogue contains 11 broad families, 90 used primary roles and 42 used capabilities. Reviewer notes that mention likely scope remain preserved as evidence but are not formal scope assignments.
+The declared capability baseline is the unmodified Giants base game. The capability subject is the Giants AI job configuration as a whole. Job Admission, Job Configuration Viability and OuttaMyWay Control Eligibility remain distinct. Mods and paid DLC do not automatically extend the supported envelope.
 
-## Architectural result
+The Player Responsibility Boundary assumes operationally reasonable equipment use while retaining unsupported physical Entities in the Operational Picture when relevant.
 
-A flat replacement category is insufficient. Each definition now carries a **Semantic Profile**:
+### Control and testing
 
-```text
-Primary Family
-Primary Role
-Secondary Roles
-Capabilities
-Evidence and Review Provenance
-```
+Control Eligibility Profile guides support and test selection. Runtime Control Admissibility remains a downstream contextual conclusion. Known ineligibility becomes a Control Exclusion Constraint rather than a representation exclusion.
 
-Role and capability remain orthogonal. Purchase category, declared GIANTS type and declared functions are preserved as evidence rather than promoted automatically to semantic truth.
+Positive candidates and Bounded Negative Test Candidates may both be selected. Testing an ineligible configuration validates the boundary but does not change support status.
 
-Function cohorts are review anchors, not decisions. One cohort may require several review units, while asset-specific contradictions remain explicit exceptions.
+### Runtime relationships
 
-Semantic classification is separate from:
+Operation Participation is a temporal functional relationship, separate from presence, Operational Influence and Obstacle Relevance.
 
-- OuttaMyWay control eligibility;
-- active Operation participation;
-- attached-assembly relevance;
-- obstacle relevance;
-- physical-structure or representation difficulty.
+Assembly Relevance identifies a Behavioural Assembly whose combined state determines relevant behaviour and space. Membership, control and relevance remain separate. Player detachment ends the former assembly relationship and produces an independently represented Entity.
+
+Obstacle Relevance is contextual, directional and assessed against another Entity or the Operation. It may arise from current occupancy, Future Space or configuration motion. Environmental obstacles remain part of the wider Situation Assessment model outside the semantic catalogue.
+
+### Persistent obstruction
+
+Repeated local diversion may fail to resolve the Operation. Stable unavailable space may become a Persistent Spatial Constraint and Denied Work Space. Repeated reconstruction of the same situation forms a Recurring Commitment Loop; likely prevention of original-job completion becomes a Completion Blocker and may require player escalation.
 
 ## Candidate implementation state
 
-- v4.6.21 adds a self-contained reviewed semantic research catalogue and deterministic consolidation script.
-- The canonical v4.6.20 runtime implementation is otherwise unchanged.
-- The repository contains no GIANTS proprietary source assets and no temporary diagnostic mod.
-- Paid DLC and modded vehicle definitions remain parked.
-- No Scope Overlay assignments have been made.
-- No Prototype 13B fixture or implementation has been selected.
+- v4.6.22 adds architectural and governance knowledge only.
+- Runtime implementation remains the exact canonical v4.6.21 behaviour apart from version metadata.
+- No machine-readable Scope Overlay table or assignment set exists.
+- No runtime Control Eligibility, Participation, Assembly or Obstacle evaluator is implemented.
+- No player UI behaviour is implemented.
+- No Structural Challenge Profile or Prototype 13B fixture is selected.
 
 ## Next gate
 
-Discuss and define the **Scope Overlay** at the highest useful architectural level. At minimum it should determine separately whether a semantic role is:
+Review and canonicalise this exact candidate. Then define the minimum evidence and candidate matrix needed to challenge the Scope Overlay and Resolution Contract:
 
-1. eligible for active OuttaMyWay control;
-2. eligible for active Operation membership;
-3. relevant as part of an attached or integrated Physical Assembly;
-4. relevant as a non-controlled obstacle.
+- representation-diverse positive candidates;
+- limited Bounded Negative Test Candidates;
+- candidate job configurations that test the Capability Confirmation Point;
+- persistent-obstacle fixtures that distinguish Local from Operational Resolution.
 
-Only after those dimensions are agreed should the catalogue be filtered for targeted structural challenge profiling and future Resolution Contract disproof fixtures.
+Implementation remains deferred until that test-selection model is discussed and agreed.

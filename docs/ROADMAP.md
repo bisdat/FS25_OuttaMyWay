@@ -1,45 +1,42 @@
 # Roadmap
 
-## Active — Base-Game Vehicle Semantic Catalogue Consolidation
+## Active — Scope Overlay Architecture Consolidation
 
-- [x] Establish exact canonical v4.6.20 as the implementation baseline.
-- [x] Extract the base-game Vehicle Definition Corpus without copying proprietary geometry binaries.
-- [x] Resolve direct, inherited and bundle definition evidence within the Effective Definition Boundary.
-- [x] Exhaust readable localisation sources and establish Runtime Localisation Authority.
-- [x] Resolve all 567 Stage 2A localisation keys in the observed English runtime.
-- [x] Build 147 function cohorts and refine them into 170 semantic review units.
-- [x] Complete human review of all 170 units.
-- [x] Add `LIQUID_TANK_TRAILER` and `FUEL_TRAILER` from review-time vocabulary discovery.
-- [x] Propagate reviewed decisions to all 606 definitions.
-- [x] Add deterministic consolidation, provenance and reviewed catalogue evidence to the repository.
-- [ ] Review and canonicalise the exact v4.6.21 candidate.
+- [x] Establish exact canonical v4.6.21 as the implementation baseline.
+- [x] Preserve the complete reviewed Stage 2C base-game Semantic Catalogue.
+- [x] Separate catalogue membership from support eligibility.
+- [x] Define the Player Responsibility Boundary and Base-Game AI Capability Envelope.
+- [x] Select the Giants AI job configuration as the capability subject.
+- [x] Separate Job Admission, Job Configuration Viability and the Capability Confirmation Point.
+- [x] Define Control Eligibility Profile, Control Exclusion Constraint and Runtime Control Admissibility.
+- [x] Establish Independent Test Admission and Bounded Negative Test Candidates.
+- [x] Define contextual Operation Participation and Operational Influence.
+- [x] Define Behavioural Assembly and Membership–Relevance Separation.
+- [x] Define contextual, directional Obstacle Relevance and Entity–Environment Separation.
+- [x] Define Persistent Spatial Constraint, Denied Work Space, Recurring Commitment Loop and Completion Blocker.
+- [x] Consolidate the accepted architecture without implementing runtime behaviour.
+- [ ] Review and canonicalise the exact v4.6.22 candidate.
 
-## Next — Scope Overlay Architecture
+## Next — Targeted Scope Overlay and structural-challenge test selection
 
-Discuss and test whether these are the minimum sufficient independent dimensions:
+Define the minimum evidence and a bounded fixture matrix before implementation:
 
-- Control Eligibility;
-- Operation Participation;
-- Assembly Relevance;
-- Obstacle Relevance.
+- Positive Test Candidates whose complete Giants AI job configurations reach the Capability Confirmation Point;
+- representation-diverse Behavioural Assemblies;
+- limited Bounded Negative Test Candidates that prove Control Exclusion and persistent representation;
+- participant/non-participant obstacle contrasts;
+- a persistent obstruction fixture that distinguishes Local Resolution from Operational Resolution;
+- explicit attempts to disprove the existing Resolution Contract.
 
-The overlay must preserve Semantic Classification–Scope Separation. A family or role may be excluded from active control while remaining relevant as attached geometry or a physical obstacle. Reviewer notes are evidence inputs, not pre-approved scope assignments.
+Do not create an exhaustive assignment table across all 606 definitions. Apply Minimum Sufficient Semantic Resolution and select only enough evidence to change or defend an architectural conclusion.
 
-Do not implement a broad scope table until the concepts, outcome states and evidence requirements are agreed.
+## After test selection — Targeted Structural Challenge Profiles
 
-## After Scope Overlay — Targeted structural challenge profiling
+Profile representation difficulty only for selected control-eligible, participation-relevant, assembly-relevant or obstacle-relevant assets plus deliberate negative and disproof controls.
 
-Apply structural analysis only to:
+Structural Challenge describes how difficult an asset is to represent. It is not a semantic role, support promise or Scope Overlay result.
 
-- control-eligible assets;
-- potential active Operation participants;
-- members of relevant working assemblies;
-- non-controlled assets that remain obstacle-relevant;
-- a limited set of representation-diverse disproof controls.
-
-Do not exhaustively profile all 606 definitions. Structural challenge describes how difficult an asset is to represent; it is not a semantic role or capability.
-
-Prototype 13B automated Resolution Path discovery remains deferred until the scope-filtered fixture strategy identifies explicit attempts to disprove the Resolution Contract.
+Prototype 13B automated Resolution Path discovery remains deferred until the selected fixtures and evidence obligations are agreed.
 
 ## Development policy
 

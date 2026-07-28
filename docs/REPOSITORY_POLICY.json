@@ -88,6 +88,10 @@
       "path": "rrs/README.md",
       "role": "knowledge"
     },
+    "scope_overlay_architecture": {
+      "path": "docs/SCOPE_OVERLAY_ARCHITECTURE.md",
+      "role": "knowledge"
+    },
     "vehicle_definition_corpus": {
       "path": "docs/50_Research/VEHICLE_DEFINITION_CORPUS.md",
       "role": "knowledge"

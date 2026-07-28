@@ -159,7 +159,7 @@ This protects engineering time without weakening decision coverage.
 
 ## Deferred
 
-- exact Scope Overlay states and evidence requirements;
+- machine-readable Scope Overlay assignments and runtime evidence rules;
 - paid DLC definitions;
 - modded vehicle definitions;
 - targeted Structural Challenge Profiles;

@@ -546,7 +546,63 @@ The practice of investing full review in likely or boundary cases, sufficient re
 
 ### Scope Overlay
 
-The future layer that assigns OuttaMyWay treatment independently from semantic identity, potentially separating Control Eligibility, Operation Participation, Assembly Relevance and Obstacle Relevance.
+The accepted contextual knowledge layer that assigns Control Eligibility Profile, Operation Participation, Assembly Relevance and Obstacle Relevance independently from semantic identity. It is not one scalar in-scope/out-of-scope property.
+
+### Control Eligibility Profile
+
+Scope Overlay knowledge describing whether a Giants AI job configuration belongs inside the supported control-investigation envelope under the declared capability baseline.
+
+### Runtime Control Admissibility
+
+The downstream contextual conclusion that a proposed OuttaMyWay intervention may target a particular runtime Entity now.
+
+### Control Exclusion Constraint
+
+Authoritative Operational Picture knowledge that an Entity or configuration must not be selected for unsupported intervention while remaining represented for assessment.
+
+### Base-Game AI Capability Envelope
+
+The set of working configurations executable by unmodified Giants AI under the declared base-game baseline.
+
+### Giants AI Job Configuration
+
+The complete powered vehicle, attached working assembly, selected Giants AI job and required working behaviour considered as one capability subject.
+
+### Capability Confirmation Point
+
+The first evidence point at which Giants AI successfully controls the working behaviour required by the complete job configuration, rather than merely admitting and initialising the job.
+
+### Player Responsibility Boundary
+
+The support boundary that assumes operationally reasonable player deployment without making unsupported physical presence invisible.
+
+### Operational Influence
+
+The contextual relationship by which an Entity affects an Operation's progress, options or completion without necessarily participating in its work.
+
+### Behavioural Assembly
+
+The connected runtime Entities and components whose combined state determines relevant working behaviour, occupied space, future movement or control response.
+
+### Bounded Negative Test Candidate
+
+A known or expected control-ineligible configuration explicitly selected to validate safe exclusion, persistent representation, obstacle assessment and player communication without expanding support.
+
+### Persistent Spatial Constraint
+
+A continuing incompatibility between stable occupied or unavailable space and Operation space that remains required or repeatedly requested.
+
+### Denied Work Space
+
+Operation-required or repeatedly requested space that remains unavailable because of a Persistent Spatial Constraint.
+
+### Recurring Commitment Loop
+
+Repeated application of a locally valid commitment followed by Giants reconstruction of a materially equivalent unresolved situation.
+
+### Completion Blocker
+
+A Persistent Spatial Constraint that prevents, or increasingly appears likely to prevent, completion of the original Giants AI job without an external change.
 
 ### Catalogue–Structure Separation
 

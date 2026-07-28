@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** Reviewed for candidate release v4.6.21
+> **Currency:** Reviewed for candidate release v4.6.22
 
 This development repository is a self-sustaining engineering knowledge system. Its first responsibility is to preserve project continuity independently of any chat, engineer, AI system or platform. Its second is to remain understandable to future contributors.
 
@@ -17,7 +17,7 @@ Read these in order when inheriting or resuming the project:
 5. [`ENGINEERING_HANDOVER.md`](ENGINEERING_HANDOVER.md) — the precise continuation point.
 6. [`PROJECT_CONTINUITY.md`](PROJECT_CONTINUITY.md) — how to continue correctly using only this repository.
 7. [`CONCEPT_REGISTER.md`](CONCEPT_REGISTER.md) — Accepted, Deferred and Rejected architectural concepts.
-8. [`ARCHITECTURE.md`](ARCHITECTURE.md), [`PHYSICAL_REPRESENTATION_ARCHITECTURE.md`](PHYSICAL_REPRESENTATION_ARCHITECTURE.md) and [`DESIGN.md`](DESIGN.md) — current system and physical-representation responsibilities.
+8. [`ARCHITECTURE.md`](ARCHITECTURE.md), [`SCOPE_OVERLAY_ARCHITECTURE.md`](SCOPE_OVERLAY_ARCHITECTURE.md), [`PHYSICAL_REPRESENTATION_ARCHITECTURE.md`](PHYSICAL_REPRESENTATION_ARCHITECTURE.md) and [`DESIGN.md`](DESIGN.md) — current system, scope and physical-representation responsibilities.
 9. [`50_Research/VEHICLE_DEFINITION_CORPUS.md`](50_Research/VEHICLE_DEFINITION_CORPUS.md) — the reviewed base-game semantic evidence and its boundaries.
 10. [`ROADMAP.md`](ROADMAP.md) — future direction after the immediate objective.
 
@@ -48,6 +48,7 @@ The remaining documents deepen or verify that journey; they are classified below
 
 - [`PROJECT_VISION.md`](PROJECT_VISION.md) — intended player experience and mission.
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — current driving-system architecture.
+- [`SCOPE_OVERLAY_ARCHITECTURE.md`](SCOPE_OVERLAY_ARCHITECTURE.md) — independent control, participation, assembly and obstacle scope claims.
 - [`DESIGN.md`](DESIGN.md) — component responsibilities and design boundaries.
 - [`ENGINEERING_HANDBOOK.md`](ENGINEERING_HANDBOOK.md) — accumulated engineering reference.
 - [`prototypes/PROTOTYPE_13_DECLARED_ROUTE_EVALUATION.md`](prototypes/PROTOTYPE_13_DECLARED_ROUTE_EVALUATION.md) — active declared-route evaluation contract and fixture matrix.

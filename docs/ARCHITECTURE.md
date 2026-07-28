@@ -251,20 +251,25 @@ Folded and working are the principal stable states. Deployment is stationary con
 
 No Physical Occupancy Envelope or control behaviour is implemented by this release.
 
-## Vehicle Semantic Catalogue Boundary (v4.6.21)
+## Semantic Catalogue and Scope Overlay Boundary (v4.6.22)
 
-The reviewed base-game catalogue supports future fixture and scope reasoning without becoming runtime structural authority.
+The reviewed base-game catalogue remains complete semantic evidence and does not become support, runtime or structural authority. `SCOPE_OVERLAY_ARCHITECTURE.md` owns the detailed overlay model.
 
 ```text
 Raw Definition and Runtime Localisation Evidence
     -> Reviewed Semantic Profile
-        -> future Scope Overlay
-            -> targeted Structural Challenge Profile
-                -> representation-diverse fixture selection
+        -> Scope Overlay
+            -> Control Eligibility Profile
+            -> Operation Participation
+            -> Assembly Relevance
+            -> Obstacle Relevance
+                -> targeted Structural Challenge and test selection
 ```
 
-A Semantic Profile records primary family, primary role, secondary roles and capabilities. Purchase category, declared GIANTS type and declared functions remain evidence with provenance.
+A Semantic Profile records primary family, primary role, secondary roles and capabilities. Catalogue membership does not imply support. The declared control capability baseline is the unmodified Giants base game, assessed at the Giants AI job-configuration level rather than from vehicle category or successful job admission.
 
-Semantic classification does not decide Control Eligibility, Operation Participation, Assembly Relevance or Obstacle Relevance. Those are separate future Scope Overlay conclusions. Structural Challenge is later again: it describes representation difficulty and may not be inferred from family or role.
+The four Scope Overlay dimensions are independent contextual claims. Known control ineligibility becomes a downstream Control Exclusion Constraint while representation persists. Operation Participation is functional and temporal; Behavioural Assembly does not merely reproduce attachment hierarchy; Obstacle Relevance is relational and may arise from Future Space.
 
-This preserves **Class as Context, Not Contract** while making the context more accurate and reviewable.
+A persistent obstacle can create Denied Work Space, a Recurring Commitment Loop and a Completion Blocker even when each local diversion succeeds. This separates Local Resolution from Operational Resolution.
+
+This preserves **Semantic Classification–Scope Separation**, **Control Eligibility–Representation Relevance Separation** and **Class as Context, Not Contract**. No runtime Scope Overlay or control behaviour is implemented by this release.

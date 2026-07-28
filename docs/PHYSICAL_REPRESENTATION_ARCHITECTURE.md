@@ -435,13 +435,13 @@ When useful representation cannot be refreshed before decision time expires, Sit
 
 Prototype 13A is complete for its declared fixture matrix. Prototype 13B automated Resolution Path discovery remains deferred. The next evidence activity is selection—potentially through data mining—of fixtures that attempt to disprove the Resolution Contract across broader representation structures.
 
-No Physical Occupancy Envelope, Inventory Closure, Coverage Closure, containment, sweep prediction, Decision, Commitment or Control behaviour is authorised by v4.6.21.
+No Physical Occupancy Envelope, Inventory Closure, Coverage Closure, containment, sweep prediction, Decision, Commitment or Control behaviour is authorised by v4.6.22.
 
-## Semantic catalogue and structural challenge boundary (v4.6.21)
+## Semantic catalogue, Scope Overlay and structural challenge boundary (v4.6.22)
 
-The reviewed Semantic Catalogue is an input to fixture selection, not a Physical Representation.
+The reviewed Semantic Catalogue is an input to Scope Overlay and fixture selection, not a Physical Representation. The detailed overlay is owned by `SCOPE_OVERLAY_ARCHITECTURE.md`.
 
-A semantic role can suggest useful disproof questions but cannot establish:
+A semantic role or overlay result can suggest useful disproof questions but cannot establish:
 
 - Physical Assembly membership;
 - source collision membership;
@@ -454,12 +454,12 @@ The required sequence is:
 
 ```text
 Reviewed Semantic Catalogue
-    -> explicit Scope Overlay
-        -> control / participation / assembly / obstacle relevance
-            -> targeted Structural Challenge Profile
+    -> Scope Overlay
+        -> Control Eligibility / Participation / Assembly / Obstacle claims
+            -> targeted Structural Challenge and test selection
                 -> source/runtime evidence and Resolution Contract
 ```
 
-Structural profiling should be limited to control-eligible or representation-relevant assets plus deliberate controls. Exhaustively profiling all 606 semantic definitions would confuse taxonomy completion with architectural evidence.
+Assembly Relevance identifies the Behavioural Assembly that matters to assessment; it does not authorise a geometry representation or copy the attachment hierarchy. Obstacle Relevance may require representation even when Control Eligibility is negative.
 
-An excluded active-control role may still require physical representation as an attached member or obstacle. Conversely, an in-scope semantic role still requires asset-specific structural evidence.
+Structural profiling should be limited to selected positive candidates, representation-relevant assets and bounded negative or disproof controls. Exhaustively profiling all 606 definitions would confuse taxonomy completion with architectural evidence. Every selected semantic role or overlay claim still requires asset-specific structural evidence.

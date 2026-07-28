@@ -1,5 +1,29 @@
 # Engineering Journal
 
+## 2026-07-28 — Scope Overlay becomes independent contextual knowledge
+
+**Baseline:** exact canonical v4.6.21, SHA-256 `a905d5b419f6f3e75c46224aa7b218d453b7ffb8c3409844a85260a964d12361`.
+
+**Observation:** the complete Stage 2C catalogue was intentionally retained even though only some Giants base-game job configurations are useful primary control candidates. Catalogue reduction would confuse semantic evidence with support selection.
+
+**Discovery:** Catalogue Membership–Support Eligibility Separation. The Scope Overlay is not one static classification attached to every definition; its four claims can have different subjects, evidence and lifetimes.
+
+**Capability evidence:** a Giants job can be admitted, start the tractor engine and then abort when the worker reaches an unsupported working unit. This disproved the assumption that job startup establishes controllability. The capability subject is the complete Giants AI job configuration, and the Capability Confirmation Point requires demonstrated working behaviour.
+
+**Control boundary:** Control Eligibility Profile guides support and test selection. Runtime Control Admissibility remains downstream. Known ineligibility becomes a Control Exclusion Constraint while representation persists: Observe Broadly, Control Narrowly.
+
+**Testing discovery:** Control ineligibility does not imply test ineligibility. Bounded Negative Test Candidates can prove exclusion, persistent representation, obstacle reasoning, downstream refusal and player communication without expanding support.
+
+**Participation discovery:** physical presence and Operational Influence do not establish Operation Participation. Participation is a temporal functional relationship; a completed or unrelated Entity may remain obstacle-relevant without becoming an Operation member.
+
+**Assembly discovery:** the useful architectural unit is the Behavioural Assembly, not a copied attachment or visual hierarchy. Membership and relevance are separate. Under the present baseline, implement detachment is player-mediated and triggers relationship reassessment.
+
+**Obstacle discovery:** obstacle is not a permanent semantic type. Obstacle Relevance is contextual, directional and assessed against another Entity or Operation demand, including Future Space.
+
+**Operation-level discovery:** repeatedly diverting around a detached implement can succeed locally while Giants repeatedly returns to the blocked unfinished work. This named Local Resolution–Operational Resolution Separation, Persistent Spatial Constraint, Denied Work Space, Recurring Commitment Loop and Completion Blocker. Player escalation may be necessary when the required physical change is outside OuttaMyWay authority.
+
+**Decision:** consolidate the architecture only. Defer machine-readable states, assignment tables, runtime evidence sources, test matrix, UI policy and Prototype 13B implementation.
+
 ## 2026-07-26 — Physical representation becomes a portfolio with explicit closure
 
 **Observation:** exact source-to-runtime collision identity is valuable but cannot be the sole gate for useful occupancy. Condor is naturally T-shaped in plan view; a full rectangle wastes large empty corners, while a Convex Planar Envelope offers an intermediate conservative fallback. Tractor–cultivator combinations also change plan-view shape through articulation.

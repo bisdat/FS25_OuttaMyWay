@@ -1,5 +1,79 @@
 # Decision Log
 
+## D-0058 — Escalate persistent spatial constraints before indefinite repetition
+
+**Status:** Accepted for candidate v4.6.22
+
+**Decision:** Separate Local Resolution from Operational Resolution. Situation Assessment may identify Persistent Spatial Constraint, Denied Work Space, recurring materially equivalent situations and a possible Completion Blocker. The Decision Engine must not treat repeated local diversion as proof of progress and may escalate to the player when completion requires an external physical change beyond OuttaMyWay authority.
+
+**Consequence:** A blocking Entity remains represented. Player escalation replaces neither the obstacle model nor the original Giants job; it prevents an ineffective Recurring Commitment Loop from masquerading as successful cooperation.
+
+## D-0057 — Define Obstacle Relevance as contextual and assessed-against
+
+**Status:** Accepted for candidate v4.6.22
+
+**Decision:** Physical occupancy alone does not establish Obstacle Relevance. Relevance is a temporal and directional relationship between current or plausible future space and another Entity's viable behaviour or Operation demand. Participation and Control Eligibility do not determine it.
+
+**Boundary:** Environmental obstacles remain part of wider Situation Assessment without semantic catalogue membership. Situation Assessment establishes spatial knowledge; the Decision Engine selects any intervention.
+
+## D-0056 — Adopt Behavioural Assembly and Membership–Relevance Separation
+
+**Status:** Accepted for candidate v4.6.22
+
+**Decision:** OuttaMyWay reasons about a Behavioural Assembly: connected runtime Entities and components whose combined state determines relevant behaviour, occupancy, future movement or control response. Assembly membership does not automatically establish relevance, and relevance does not depend on independent controllability.
+
+**Clarification:** Under the current base-game capability baseline, implement detachment is player-mediated. Detachment ends the former assembly relationship, triggers reassessment and leaves the detached implement independently represented and potentially obstacle-relevant.
+
+## D-0055 — Define Operation Participation as a functional temporal relationship
+
+**Status:** Accepted for candidate v4.6.22
+
+**Decision:** Presence inside the Field World and Operational Influence do not by themselves establish Operation Participation. Runtime participation requires a recognised functional relationship between a particular Entity and a particular Operation and changes with current work state.
+
+**Consequence:** A completed, unrelated or unsupported Entity may cease or never begin participation while remaining represented, operationally influential and obstacle-relevant.
+
+## D-0054 — Permit Independent Test Admission
+
+**Status:** Accepted for candidate v4.6.22
+
+**Decision:** Control ineligibility does not imply test ineligibility. Scope Overlay test selection may include Positive Test Candidates and explicitly bounded negative candidates selected to validate control exclusion, persistent representation, obstacle assessment, downstream refusal and player communication.
+
+**Boundary:** Test admission does not change eligibility, extend the supported operational envelope or imply general category, DLC or mod compatibility.
+
+## D-0053 — Separate Control Eligibility Profile from Runtime Control Admissibility
+
+**Status:** Accepted for candidate v4.6.22
+
+**Decision:** Control Eligibility Profile remains inside Scope Overlay for support and candidate selection. Runtime Control Admissibility is a downstream contextual conclusion about whether a proposed intervention may target a particular Entity now. Known ineligibility becomes a Control Exclusion Constraint in the Operational Picture.
+
+**Principle:** Observe Broadly, Control Narrowly. Control exclusion must never remove a physically or operationally relevant Entity from Situation Assessment.
+
+## D-0052 — Assess Giants capability at complete job-configuration viability
+
+**Status:** Accepted for candidate v4.6.22
+
+**Decision:** The capability subject is the Giants AI job configuration as a whole, including powered vehicle, attached working assembly, selected job and required working behaviour. Successful Job Admission, engine start or brief active state is insufficient. Viability evidence requires the Capability Confirmation Point where Giants successfully controls the required working behaviour.
+
+## D-0051 — Adopt the Base-Game AI Capability Envelope
+
+**Status:** Accepted for candidate v4.6.22
+
+**Decision:** The present supported investigation baseline is the unmodified Giants base game. Mods, paid DLC or specialization changes do not automatically extend OuttaMyWay's supported operational envelope or semantic catalogue. A future external experiment must be explicitly bounded to its declared configuration.
+
+## D-0050 — Establish the Player Responsibility Boundary
+
+**Status:** Accepted for candidate v4.6.22
+
+**Decision:** OuttaMyWay assumes operationally reasonable player deployment and does not promise to coordinate every physically possible but nonsensical arrangement permitted by the game. Unsupported presence remains representable and may remain obstacle-relevant or operationally influential.
+
+## D-0049 — Adopt the independent contextual Scope Overlay
+
+**Status:** Accepted for candidate v4.6.22
+
+**Decision:** The Scope Overlay is not a scalar asset property. It maintains independent contextual claims for Control Eligibility Profile, Operation Participation, Assembly Relevance and Obstacle Relevance. The claims may have different subjects, evidence and lifetimes, and none may silently determine another.
+
+**Consequence:** Catalogue membership remains semantic evidence only. Runtime representation is broader than control support, and structural challenge remains a later asset-specific question.
+
 ## D-0048 — Freeze the reviewed base-game Semantic Catalogue as evidence, not scope
 
 **Status:** Accepted for candidate v4.6.21

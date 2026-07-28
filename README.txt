@@ -1,46 +1,49 @@
-FS25_OuttaMyWay v4.6.21
+FS25_OuttaMyWay v4.6.22
 
-Base-Game Vehicle Semantic Catalogue Consolidation — Release Candidate
+Scope Overlay Architecture Consolidation — Release Candidate
 
-Implementation baseline: exact canonical v4.6.20
-Baseline SHA-256: 08000f111892e076fe68972ae08a129e652dacea77a8a2428b3739c212847a52
+Implementation baseline: exact canonical v4.6.21
+Baseline SHA-256: a905d5b419f6f3e75c46224aa7b218d453b7ffb8c3409844a85260a964d12361
 Current package authority: noncanonical candidate awaiting repository-owner review
 
-This increment consolidates the completed base-game vehicle-definition mining and human semantic review
-used to select future physical-representation test subjects. It introduces no gameplay behaviour.
+This increment consolidates the agreed Scope Overlay architecture that follows the completed Stage 2C
+base-game semantic catalogue and human review. It introduces no gameplay behaviour.
 
-The research chain established:
+The complete reviewed catalogue remains intact. Catalogue membership records semantic evidence; it does
+not imply support, Giants AI controllability, Operation Participation, Assembly Relevance, Obstacle
+Relevance, physical structure or test admission. Paid DLC and modded definitions remain parked.
 
-- 606 base-game vehicle and implement definitions from a 1,365-file selected corpus;
-- Raw Definition Evidence plus Selected-Field Inheritance Projection for 41 inherited definitions;
-- 567/567 English localisation keys resolved through the running GIANTS localisation authority;
-- 147 declared-function cohorts refined into 170 review units;
-- a complete human review: 166 units approved unchanged, two amended and two resolved through vocabulary
-  additions;
-- one reviewed semantic profile for every definition, using 11 broad families, 90 primary roles and
-  42 capabilities.
+The supported investigation baseline is the unmodified Giants base game. Controllability is assessed
+against the Giants AI job configuration as a whole, not the powered vehicle alone. Job admission or a
+brief engine-start sequence does not establish configuration viability; capability evidence must pass
+the Capability Confirmation Point where Giants controls the required working behaviour.
 
-The catalogue preserves raw category, declared type, function, inheritance and localisation evidence.
-It records what an asset is and what it can do. It deliberately does not assign OuttaMyWay control
-eligibility, Operation participation, attached-assembly relevance, obstacle relevance or structural
-challenge.
+The Scope Overlay separates four independent dimensions:
 
-The two review-time vocabulary discoveries are `LIQUID_TANK_TRAILER` and `FUEL_TRAILER`. Approval
-Inheritance is explicit: an `APPROVED` review accepts the complete suggested profile unchanged, even
-when replacement cells were left blank.
+- Control Eligibility Profile;
+- Operation Participation;
+- Assembly Relevance;
+- Obstacle Relevance.
 
-This release names and records Semantic Profile, Not Category; Role–Capability Separation; Function
-Cohort Is an Anchor, Not a Decision; Group Decision–Asset Exception; Minimum Sufficient Semantic
-Resolution; Scope-Driven Review Depth; Semantic Classification–Scope Separation; Control
-Eligibility–Representation Relevance Separation; and Catalogue–Structure Separation.
+Control Eligibility guides support and test selection while Runtime Control Admissibility remains a
+downstream contextual conclusion. Known ineligibility becomes a Control Exclusion Constraint rather
+than removing the Entity from the Operational Picture: Observe Broadly, Control Narrowly.
 
-The next architectural gate is the Scope Overlay. It must distinguish active control, Operation
-participation, assembly relevance and obstacle relevance before structural challenge profiling or
-Prototype 13B fixture selection begins.
+Operation Participation is a temporal functional relationship, not mere field presence or obstruction.
+Assembly Relevance identifies the Behavioural Assembly needed to understand behaviour and space rather
+than copying the attachment hierarchy. Obstacle Relevance is an assessed relationship between current
+or future occupancy and another Entity or the Operation; an obstacle is not a permanent semantic type.
 
-No automated resolution discovery, Physical Occupancy Envelope, Coverage Closure, conflict assessment,
-Commitment or Control behaviour is introduced or changed by v4.6.21. Runtime Lua changes are limited
-to version metadata.
+Control-ineligible configurations may be admitted as Bounded Negative Test Candidates to prove safe
+exclusion, persistent representation, obstacle assessment, downstream refusal and player communication.
+Test admission does not expand support.
 
-See docs/50_Research/VEHICLE_DEFINITION_CORPUS.md,
-research/vehicle_semantics/README.md and docs/ENGINEERING_HANDOVER.md.
+The architecture also separates Local Resolution from Operational Resolution. Repeated diversion around
+stable occupied space may form a Persistent Spatial Constraint, Denied Work Space, a Recurring Commitment
+Loop and ultimately a Completion Blocker requiring player action rather than indefinite augmentation.
+
+No Scope Overlay table, runtime assessment, Resolution Path discovery, Physical Occupancy Envelope,
+Commitment or Control behaviour is implemented by v4.6.22. Runtime Lua changes are limited to version
+metadata.
+
+See docs/SCOPE_OVERLAY_ARCHITECTURE.md, docs/PROJECT_STATUS.md and docs/ENGINEERING_HANDOVER.md.

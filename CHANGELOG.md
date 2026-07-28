@@ -1,5 +1,21 @@
 # Changelog
 
+## v4.6.22 — Scope Overlay Architecture Consolidation
+
+- Begins from exact canonical v4.6.21, SHA-256 `a905d5b419f6f3e75c46224aa7b218d453b7ffb8c3409844a85260a964d12361`.
+- Adds the dedicated `docs/SCOPE_OVERLAY_ARCHITECTURE.md` ownership document and integrates it into repository navigation and policy.
+- Preserves the complete Stage 2C base-game Semantic Catalogue while establishing Catalogue Membership–Support Eligibility Separation.
+- Defines the Player Responsibility Boundary, Base-Game AI Capability Envelope and External Capability Non-Expansion.
+- Selects the Giants AI job configuration as the capability subject and separates Job Admission, Job Configuration Viability and the Capability Confirmation Point.
+- Defines Control Eligibility Profile, Runtime Control Admissibility, Control Exclusion Constraint and Observe Broadly, Control Narrowly.
+- Establishes Independent Test Admission and Bounded Negative Test Candidates without expanding support status.
+- Defines Presence–Participation Separation, Operational Influence, Participation Transition and Participation–Obstacle Separation.
+- Defines Membership–Relevance Separation, Behavioural Assembly, Dynamic Assembly Relevance and player-mediated detachment reassessment.
+- Defines contextual and directional Obstacle Relevance, Occupancy–Obstacle Separation, Future-Space Inclusion and Entity–Environment Separation.
+- Adds Local Resolution–Operational Resolution Separation, Persistent Spatial Constraint, Denied Work Space, Recurring Commitment Loop and Completion Blocker.
+- Defers machine-readable overlay states, evidence sources, assignment tables, fixture selection, player-message policy and Prototype 13B implementation.
+- Changes no gameplay, Situation Assessment, Decision, Commitment or Control behaviour; Lua modifications are version metadata only.
+
 ## v4.6.21 — Base-Game Vehicle Semantic Catalogue Consolidation
 
 - Begins from exact canonical v4.6.20, SHA-256 `08000f111892e076fe68972ae08a129e652dacea77a8a2428b3739c212847a52`.

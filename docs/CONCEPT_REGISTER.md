@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.21.
+Review status: reviewed for candidate release v4.6.22.
 
 ## Accepted Concepts
 
@@ -534,9 +534,41 @@ The candidate-to-canonical authority change. It must not alter approved substant
 - **Control Eligibility–Representation Relevance Separation** — an asset excluded from active control may remain relevant as assembly geometry or an obstacle.
 - **Catalogue–Structure Separation** — semantic catalogue evidence does not establish physical hierarchy, geometry authority or Resolution Path difficulty.
 
+## Accepted from Scope Overlay Architecture
+
+- **Independent Contextual Scope Overlay** — Control Eligibility Profile, Operation Participation, Assembly Relevance and Obstacle Relevance are separate claims whose subjects, evidence and lifetimes may differ.
+- **Catalogue Membership–Support Eligibility Separation** — inclusion in the complete Semantic Catalogue does not imply support, controllability, participation, representation structure or test admission.
+- **Player Responsibility Boundary** — OuttaMyWay assumes operationally plausible player deployment while retaining unsupported physical Entities when they affect the situation.
+- **Base-Game AI Capability Envelope** — supported control investigation uses the unmodified Giants base-game capability baseline; external capability changes do not expand it implicitly.
+- **Giants AI Job Configuration** — the complete powered vehicle, attached working assembly, selected job and required working behaviour form the capability subject.
+- **Job Admission–Viability Separation** — job acceptance, engine start or brief activity does not prove the complete job configuration can execute.
+- **Capability Confirmation Point** — the evidence boundary where Giants successfully exercises the required working behaviour.
+- **Control Eligibility Profile** — Scope Overlay support and test-selection knowledge for a Giants AI job configuration.
+- **Runtime Control Admissibility** — downstream contextual permission for a proposed OuttaMyWay intervention against one runtime Entity.
+- **Control Exclusion Constraint** — authoritative knowledge that prevents unsupported intervention while preserving representation.
+- **Observe Broadly, Control Narrowly** — every relevant Entity may be assessed, while only a narrower admissible subset may be controlled.
+- **Independent Test Admission** — positive and bounded-negative candidates may be tested independently from support status.
+- **Bounded Negative Test Candidate** — an ineligible configuration selected to prove safe exclusion, persistent representation, obstacle assessment and player communication.
+- **Presence–Participation Separation** — Field World presence does not establish Operation Participation.
+- **Participation–Obstacle Separation** — an Entity may obstruct or influence an Operation without participating in its work.
+- **Operational Influence** — the broader relationship by which an Entity affects progress, options or completion without necessarily participating.
+- **Participation Transition** — runtime participation changes with the Entity's functional relationship to one Operation.
+- **Membership–Relevance Separation** — assembly membership does not automatically establish Assembly Relevance.
+- **Behavioural Assembly** — connected Entities and components whose combined state determines relevant behaviour, occupancy, movement or control response.
+- **Dynamic Assembly Relevance** — a member's contribution may change with pose, articulation or configuration.
+- **Player-Mediated Assembly Transition** — attachment or detachment changes assembly relationships through player action under the current baseline.
+- **Occupancy–Obstacle Separation** — physical occupancy becomes obstacle-relevant only relative to another Entity or Operation demand.
+- **Assessed-Against Relationship** — Obstacle Relevance is contextual and directional rather than a permanent object type.
+- **Entity Obstacle–Environment Obstacle Separation** — catalogue-derived Entity scope remains distinct from environmental obstacle knowledge.
+- **Local Resolution–Operational Resolution Separation** — successful immediate avoidance does not prove the Operation can progress or complete.
+- **Persistent Spatial Constraint** — stable unavailable space continues to conflict with required or repeatedly requested Operation space.
+- **Denied Work Space** — Operation-required space remains unavailable because of a persistent constraint.
+- **Recurring Commitment Loop** — a locally valid commitment returns control and materially the same unresolved situation is reconstructed.
+- **Completion Blocker** — a persistent constraint prevents or increasingly threatens completion of the original Giants job without external change.
+
 ## Deferred after Base-Game Vehicle Semantic Consolidation
 
-- **Scope Overlay outcome model** — exact states and evidence requirements for Control Eligibility, Operation Participation, Assembly Relevance and Obstacle Relevance.
+- **Scope Overlay implementation model** — machine-readable states, evidence requirements, confidence encoding and runtime refresh rules.
 - **Targeted Structural Challenge Profile** — scope-filtered classification of representation difficulty; not an exhaustive pass across all 606 definitions.
 - **Paid DLC semantic corpus** — parked until the base-game scope and fixture process is proven.
 - **Modded vehicle semantic corpus** — parked because mod variability should not precede a stable base-game method.

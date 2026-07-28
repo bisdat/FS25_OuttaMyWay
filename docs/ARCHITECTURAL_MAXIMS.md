@@ -27,3 +27,12 @@
 - Situation Assessment judges fitness; representations expose evidence and limits.
 - Refresh the smallest invalidated scope.
 - Job completion ends cooperation, not physical relevance.
+
+## Scope and control
+
+- Observe broadly; control narrowly.
+- Catalogue membership is evidence, not a support promise.
+- Job admission is not job-configuration viability.
+- Control ineligibility does not imply test ineligibility.
+- Presence is not participation; occupancy is not obstacle relevance.
+- Repeated local resolution is not proof of Operational Resolution.
