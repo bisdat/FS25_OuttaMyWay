@@ -1,5 +1,24 @@
 # Changelog
 
+## v4.6.23 — Scope Overlay Test-Role Calibration Consolidation
+
+- Begins from exact canonical v4.6.22, SHA-256 `b636bafdd59afcedba133b2dac65a19286f3dc980734eac63b612c0aaf3a941f`.
+- Adds `docs/SCOPE_OVERLAY_TEST_CALIBRATION.md` as the authoritative record for the bounded TS005–TS010 calibration.
+- Defines Complete Test Configuration, State Sufficiency, Essential Evidence Horizon, Coverage Compression and Fixture-Generation Evidence.
+- Records exact positive evidence for the reference tractor-cultivator, combine-header specialist assembly, dynamic 36 m Condor assembly and right-offset mower assembly.
+- Records configuration-level and crop-system admission rejection through TS007 and TS009 without expanding support status.
+- Establishes the Material-Chain Control Boundary from the TS006/TS007 pair and the Agronomic State Gate from TS008-N.
+- Renames TR-03 to Non-Tractor Operational Assembly and TR-04 to Material-Chain Boundary.
+- Retires the mandatory Distinct Spatial-Regime Positive role after Native Crop-System Exclusion prevented olive-row admission.
+- Retires Persistent/Regrowing Lifecycle as Agronomic Proxy Drift and replaces it with the architecturally relevant Asymmetric Working Envelope role.
+- Establishes Offset Working Envelope, Trajectory–Work Displacement and Work-Envelope-Anchored Routing from TS010.
+- Preserves Valid Boundary Straddling as a provisional containment-review obligation rather than silently changing Full-Envelope Field Containment.
+- Tags TS005–TS009 to FS25 1.21.0.0 and TS010 to the undocumented FS25 1.21.1.0 build b40785 Silent Baseline Transition.
+- Adds Runtime Baseline Governance, Patch Impact Watch, Patch Sentinel Set and the Current/Version-bound/Revalidation candidate/Invalidated evidence states.
+- Closes Scope Overlay Test-Role Calibration while leaving implementation, multi-worker conflict, intervention, performance and targeted revalidation work open.
+- Removes the inherited stale repository-policy entry for absent active `docs/ENGINEERING_CONTRACT.md`; archived compatibility history remains unchanged.
+- Changes no gameplay, Situation Assessment, Decision, Commitment or Control behaviour; Lua modifications are version metadata only.
+
 ## v4.6.22 — Scope Overlay Architecture Consolidation
 
 - Begins from exact canonical v4.6.21, SHA-256 `a905d5b419f6f3e75c46224aa7b218d453b7ffb8c3409844a85260a964d12361`.

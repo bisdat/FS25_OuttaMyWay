@@ -1,5 +1,47 @@
 # Decision Log
 
+## D-0063 — Govern empirical evidence by runtime baseline and patch impact
+
+**Status:** Accepted for candidate v4.6.23
+
+**Decision:** Every empirical result is tagged with FS25 version/build/revision where available, OuttaMyWay version, date, fixture and exact configuration. Later patches do not automatically erase earlier evidence. Results are classified as Current, Version-bound, Revalidation candidate or Invalidated. Patch Impact Watch and a small Patch Sentinel Set trigger targeted revalidation when a release intersects an architectural claim.
+
+**Consequence:** TS005–TS009 remain evidence for FS25 1.21.0.0; TS010 is evidence for FS25 1.21.1.0 build b40785. The undocumented transition is recorded as Silent Baseline Transition rather than assumed equivalent or automatically breaking.
+
+## D-0062 — Accept asymmetric working envelopes as an in-scope requirement
+
+**Status:** Accepted for candidate v4.6.23
+
+**Decision:** Replace the rejected Persistent/Regrowing Lifecycle test obligation with Asymmetric Working Envelope. A powered-vehicle trajectory, working-envelope trajectory and Physical Assembly envelope may be materially different. Directional left/right extents are required architectural knowledge; centred half-width assumptions are invalid.
+
+**Evidence:** TS010 admitted the DEUTZ-FAHR 6135 C RVshift with SaMASZ XT 390, sustained right-offset mowing and used a spiral route that kept the mower at the field edge.
+
+**Boundary:** Left-offset, mirrored and reversible asymmetry remain unproven. Valid Boundary Straddling is provisional and does not yet revise Full-Envelope Field Containment.
+
+## D-0061 — Accept material-chain and admission boundaries from exact configurations
+
+**Status:** Accepted for candidate v4.6.23
+
+**Decision:** TS006 and TS007 form a Material-Chain Boundary Pair: native Giants AI can harvest wheat and create straw, while the downstream base-game baler configuration remains manually viable but cannot admit a native baling job. TS009 adds Native Crop-System Exclusion for grapes and olives. Continuity of agricultural purpose or material does not imply continuity of Giants AI Control Eligibility.
+
+**Consequence:** A downstream or unsupported assembly may remain represented, player-controlled, Assembly Relevant or Obstacle Relevant without becoming an Operation participant or valid control target.
+
+## D-0060 — Calibrate and close the Scope Overlay test-role portfolio
+
+**Status:** Accepted for candidate v4.6.23
+
+**Decision:** Treat the eight original test roles as hypotheses, not mandatory permanent categories. Accept TR-01, TR-02, TR-03, TR-04, TR-06 and TR-07 as satisfied; retain TR-08 as strongly supported with a declared observer-sampling limitation; retire TR-05 after its strongest positive candidate was excluded at admission. Rename TR-03 Non-Tractor Operational Assembly and TR-04 Material-Chain Boundary.
+
+**Reason:** Preserving a disproved or irrelevant role for numerical completeness would allow the test plan to dictate architecture.
+
+## D-0059 — Adopt Complete Test Configuration and Essential Evidence Horizon
+
+**Status:** Accepted for candidate v4.6.23
+
+**Decision:** Test conclusions belong to the complete declared configuration and its runtime baseline. Candidate selection proceeds from Test-Role Obligation to Agronomic Role Candidate to Configuration Candidate to Verified Test Configuration. Negative evidence requires State Sufficiency. Testing ends at the Essential Evidence Horizon unless the declared claim requires completion or another late lifecycle event.
+
+**Consequence:** Full-field completion is evidence-driven rather than habitual. Coverage Compression and Fixture-Generation Evidence may reduce test cost without broadening conclusions.
+
 ## D-0058 — Escalate persistent spatial constraints before indefinite repetition
 
 **Status:** Accepted for candidate v4.6.22

@@ -28,10 +28,6 @@
       "path": "docs/ENGINEERING_ARCHITECTURE.md",
       "role": "knowledge"
     },
-    "engineering_contract": {
-      "path": "docs/ENGINEERING_CONTRACT.md",
-      "role": "knowledge"
-    },
     "engineering_handbook": {
       "path": "docs/ENGINEERING_HANDBOOK.md",
       "role": "knowledge"
@@ -98,6 +94,10 @@
     },
     "vehicle_semantics_readme": {
       "path": "research/vehicle_semantics/README.md",
+      "role": "knowledge"
+    },
+    "scope_overlay_test_calibration": {
+      "path": "docs/SCOPE_OVERLAY_TEST_CALIBRATION.md",
       "role": "knowledge"
     }
   },

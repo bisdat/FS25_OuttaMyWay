@@ -165,6 +165,21 @@ At every canonical release:
 
 Architecture is not defended because it already exists. It remains provisional against reality.
 
+## Runtime Evidence Governance
+
+Empirical evidence is part of the repository knowledge model and remains bound to the runtime baseline on which it was observed. Every durable test record identifies the FS25 version, build and revision when available, OuttaMyWay version, date, map/fixture and exact configuration.
+
+A game update does not automatically invalidate earlier evidence. Evidence is classified as:
+
+- **Current** — observed on the active runtime baseline;
+- **Version-bound** — valid for an earlier baseline with no known contradiction;
+- **Revalidation candidate** — a relevant change may affect the claim;
+- **Invalidated** — later evidence directly disproves continued applicability.
+
+Patch Impact Watch reviews GIANTS releases for changes to categories, AI admission/routing/manoeuvring/completion/parking, attachment/folding/collision/physics, SDK/API evidence, crop-system eligibility or any other recorded assumption. A small Patch Sentinel Set supports targeted revalidation. The complete portfolio is not rerun after every patch unless evidence shows that broader confidence has decreased.
+
+This process does not outsource architectural judgement to patch notes. Published notes, runtime logs and sentinel observations are evidence inputs; the repository records the resulting impact decision.
+
 ## Canonical Release Contract
 
 A canonical development release must satisfy all of the following:

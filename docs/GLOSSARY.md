@@ -607,3 +607,78 @@ A Persistent Spatial Constraint that prevents, or increasingly appears likely to
 ### Catalogue–Structure Separation
 
 The rule that semantic catalogue membership cannot establish runtime hierarchy, geometry authority, occupancy representation or Resolution Path difficulty.
+
+## Scope Overlay Test Calibration Vocabulary
+
+### Complete Test Configuration
+
+The complete runtime baseline, fixture, agronomic state, operation, exact powered vehicle, working assembly, required behaviour, pose, claim, contradiction and Evidence Horizon to which a test conclusion belongs.
+
+### State Sufficiency
+
+The requirement that all known operation prerequisites are satisfied before a negative result is interpreted as capability evidence.
+
+### Essential Evidence Horizon
+
+The earliest point at which the declared test claim is decided. Full completion is required only when the claim depends on a late lifecycle event.
+
+### Coverage Compression
+
+The valid acquisition of several separately bounded evidence claims from one controlled session.
+
+### Admission-Rejection Boundary
+
+The boundary where an agriculturally and manually valid configuration remains outside native Giants AI Control Eligibility because no suitable job is admitted.
+
+### Execution-Time State Rejection
+
+Failure after admission when a necessary condition not rejected at job creation is discovered to be unsatisfied during execution.
+
+### Agronomic State Gate
+
+The contextual crop or field-state condition that can make a particular operation non-viable without making the underlying configuration generally Control Ineligible.
+
+### Material-Chain Control Boundary
+
+The point at which agricultural material or process continuity continues but native Giants AI Control Eligibility does not.
+
+### Native Crop-System Exclusion
+
+Native Giants AI rejection caused by an unsupported crop system rather than by manual invalidity of the assembly.
+
+### Agronomic Proxy Drift
+
+Mistaking a crop property for a system test obligation even though OuttaMyWay neither controls nor reasons about that property.
+
+### Offset Working Envelope
+
+An active working area materially displaced to one side of the powered-vehicle trajectory.
+
+### Trajectory–Work Displacement
+
+The lateral separation between the powered-vehicle trajectory and the effective centre of the active working area.
+
+### Work-Envelope-Anchored Routing
+
+Routing in which Giants displaces the powered-vehicle path so an asymmetric implement's effective work area follows the required operational boundary.
+
+### Silent Baseline Transition
+
+A game executable change without enough published information to determine which earlier empirical assumptions remain invariant.
+
+### Patch Impact Watch
+
+The governance process that reviews GIANTS changes for intersections with recorded architecture, tests and supported categories.
+
+### Patch Sentinel Set
+
+A small representative scenario set used for targeted revalidation after a relevant game change.
+
+### Evidence Currency State
+
+One of Current, Version-bound, Revalidation candidate or Invalidated, describing how an empirical conclusion relates to the active runtime baseline.
+
+### Valid Boundary Straddling
+
+A provisional interpretation in which a legitimate working or physical envelope uses the immediate field margin while a coarse representation reports non-containment. It is not yet accepted as a replacement for Full-Envelope Field Containment.
+

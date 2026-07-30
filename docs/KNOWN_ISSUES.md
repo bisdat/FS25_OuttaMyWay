@@ -37,6 +37,14 @@
 - Offset implements need asymmetric left/right corridor extents.
 - Large worker counts can increase conflicts and CPU cost; current recommendation is no more than four workers on one field.
 
+
+## Scope Overlay calibration boundaries
+
+- TS008-N's brief post-admission rejection was directly observed but occurred between current observer samples; the Transient Admission Visibility Gap remains an instrumentation limitation.
+- TS010's conservative current envelope reported non-containment during visually valid right-offset mowing. Valid Boundary Straddling, coarse rectangle overreach and immediate-margin use have not yet been distinguished.
+- Left-offset, mirrored and reversible working-envelope asymmetry remain untested.
+- Empirical results are version-bound. TS005–TS009 use FS25 1.21.0.0; TS010 uses the undocumented 1.21.1.0 build b40785.
+
 ## Testing gaps
 
 - Multiplayer has only limited host/admin smoke-test coverage.

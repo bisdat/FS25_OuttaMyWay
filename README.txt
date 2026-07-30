@@ -1,49 +1,32 @@
-FS25_OuttaMyWay v4.6.22
+FS25_OuttaMyWay v4.6.23
 
-Scope Overlay Architecture Consolidation — Release Candidate
+Scope Overlay Test-Role Calibration Consolidation — Release Candidate
 
-Implementation baseline: exact canonical v4.6.21
-Baseline SHA-256: a905d5b419f6f3e75c46224aa7b218d453b7ffb8c3409844a85260a964d12361
+Implementation baseline: exact canonical v4.6.22
+Baseline SHA-256: b636bafdd59afcedba133b2dac65a19286f3dc980734eac63b612c0aaf3a941f
 Current package authority: noncanonical candidate awaiting repository-owner review
 
-This increment consolidates the agreed Scope Overlay architecture that follows the completed Stage 2C
-base-game semantic catalogue and human review. It introduces no gameplay behaviour.
+This increment consolidates the completed Scope Overlay Test-Role Calibration performed through TS005–TS010. It introduces no new gameplay, Decision, Commitment or Control behaviour.
 
-The complete reviewed catalogue remains intact. Catalogue membership records semantic evidence; it does
-not imply support, Giants AI controllability, Operation Participation, Assembly Relevance, Obstacle
-Relevance, physical structure or test admission. Paid DLC and modded definitions remain parked.
+The calibration replaced the assumption that eight proposed roles required eight substantial full-field tests with a bounded evidence model based on Complete Test Configuration, State Sufficiency and Essential Evidence Horizon. Exact configurations support exact conclusions; full completion is required only when the lifecycle claim needs it.
 
-The supported investigation baseline is the unmodified Giants base game. Controllability is assessed
-against the Giants AI job configuration as a whole, not the powered vehicle alone. Job admission or a
-brief engine-start sequence does not establish configuration viability; capability evidence must pass
-the Capability Confirmation Point where Giants controls the required working behaviour.
+Final role disposition:
 
-The Scope Overlay separates four independent dimensions:
+- TR-01 Reference Positive — satisfied by TS005;
+- TR-02 Dynamic-Extent Positive — satisfied by TS008-P;
+- TR-03 Non-Tractor Operational Assembly — satisfied by TS006 and supported by TS008-P;
+- TR-04 Material-Chain Boundary — satisfied by TS006 + TS007;
+- TR-05 Distinct Spatial-Regime Positive — retired after TS009 exposed Native Crop-System Exclusion;
+- TR-06 Asymmetric Working Envelope — satisfied by TS010;
+- TR-07 Admission-Rejection Negative — satisfied by TS007 and TS009;
+- TR-08 Post-Admission Failure Negative — strongly supported by TS008-N with a declared transient-observation limitation.
 
-- Control Eligibility Profile;
-- Operation Participation;
-- Assembly Relevance;
-- Obstacle Relevance.
+The evidence establishes configuration-level and crop-system admission boundaries, an Agronomic State Gate, Material-Chain Control Boundary, Non-Tractor Operational Assembly, Offset Working Envelope, Trajectory–Work Displacement and Work-Envelope-Anchored Routing. Persistent/regrowing crop lifecycle was retired as Agronomic Proxy Drift because OuttaMyWay does not control crop biology.
 
-Control Eligibility guides support and test selection while Runtime Control Admissibility remains a
-downstream contextual conclusion. Known ineligibility becomes a Control Exclusion Constraint rather
-than removing the Entity from the Operational Picture: Observe Broadly, Control Narrowly.
+TS005–TS009 are tagged to FS25 1.21.0.0. TS010 is tagged to the undocumented 1.21.1.0 build b40785. Runtime evidence is now governed as Current, Version-bound, Revalidation candidate or Invalidated, supported by Patch Impact Watch and a small Patch Sentinel Set.
 
-Operation Participation is a temporal functional relationship, not mere field presence or obstruction.
-Assembly Relevance identifies the Behavioural Assembly needed to understand behaviour and space rather
-than copying the attachment hierarchy. Obstacle Relevance is an assessed relationship between current
-or future occupancy and another Entity or the Operation; an obstacle is not a permanent semantic type.
+The possible Valid Boundary Straddling interpretation from TS010 is preserved as provisional evidence. It does not yet replace Full-Envelope Field Containment.
 
-Control-ineligible configurations may be admitted as Bounded Negative Test Candidates to prove safe
-exclusion, persistent representation, obstacle assessment, downstream refusal and player communication.
-Test admission does not expand support.
+No machine-readable Scope Overlay table, runtime eligibility evaluator, Physical Occupancy Envelope, new Resolution Path, Commitment, Control or player UI behaviour is implemented by v4.6.23. Runtime Lua changes are version metadata only.
 
-The architecture also separates Local Resolution from Operational Resolution. Repeated diversion around
-stable occupied space may form a Persistent Spatial Constraint, Denied Work Space, a Recurring Commitment
-Loop and ultimately a Completion Blocker requiring player action rather than indefinite augmentation.
-
-No Scope Overlay table, runtime assessment, Resolution Path discovery, Physical Occupancy Envelope,
-Commitment or Control behaviour is implemented by v4.6.22. Runtime Lua changes are limited to version
-metadata.
-
-See docs/SCOPE_OVERLAY_ARCHITECTURE.md, docs/PROJECT_STATUS.md and docs/ENGINEERING_HANDOVER.md.
+See docs/SCOPE_OVERLAY_TEST_CALIBRATION.md, docs/SCOPE_OVERLAY_ARCHITECTURE.md, docs/PROJECT_STATUS.md and docs/ENGINEERING_HANDOVER.md.

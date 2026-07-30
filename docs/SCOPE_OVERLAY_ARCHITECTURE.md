@@ -1,6 +1,6 @@
 # Scope Overlay Architecture
 
-> **Authority:** Accepted architecture for candidate v4.6.22
+> **Authority:** Accepted architecture and calibrated evidence for candidate v4.6.23
 >
 > **Implementation state:** Architectural knowledge only; no runtime Scope Overlay is implemented
 
@@ -294,6 +294,49 @@ A successful negative test demonstrates that OuttaMyWay:
 
 Test admission does not change support status, imply category compatibility or expand the supported operational envelope.
 
+
+## Empirical Test-Role Calibration
+
+The bounded TS005–TS010 investigation has calibrated the proposed Scope Overlay evidence roles. `SCOPE_OVERLAY_TEST_CALIBRATION.md` owns the complete configurations, runtime baselines and bounded conclusions.
+
+Testing follows:
+
+```text
+Test-Role Obligation
+    -> Agronomic Role Candidate
+        -> Configuration Candidate
+            -> Verified Test Configuration
+                -> Essential Evidence Horizon
+                    -> bounded conclusion
+```
+
+The final role portfolio is:
+
+- Reference Positive — satisfied;
+- Dynamic-Extent Positive — satisfied;
+- Non-Tractor Operational Assembly — satisfied;
+- Material-Chain Boundary — satisfied;
+- Distinct Spatial-Regime Positive — retired after Native Crop-System Exclusion prevented admission;
+- Asymmetric Working Envelope — satisfied;
+- Admission-Rejection Negative — satisfied at configuration and crop-system boundaries;
+- Post-Admission Failure Negative — strongly supported with a declared transient-observation limitation.
+
+The role count is not an architectural invariant. A role may be renamed, retired or replaced when evidence shows that it does not describe an OuttaMyWay responsibility.
+
+### Control boundary evidence
+
+TS006 and TS007 establish that material-chain continuity does not imply Control Eligibility continuity. TS007 and TS009 establish that manual agricultural viability does not imply native Job Admission. TS008 establishes that Control Eligibility does not imply viability in every agronomic state.
+
+### Assembly and routing evidence
+
+TS006 and TS008-P establish valid Non-Tractor Operational Assemblies. TS008-P establishes dynamic Physical Assembly extent. TS010 establishes an Offset Working Envelope and Work-Envelope-Anchored Routing: Giants may deliberately displace the powered-vehicle path so the active implement follows the operational boundary.
+
+Therefore a Scope Overlay or later Conflict Zone model must not infer a centred working envelope from powered-vehicle trajectory or total working width alone.
+
+### Test closure boundary
+
+The calibration closes test-role discovery, not implementation validation. Multi-worker conflicts, interventions, performance, containment enforcement and patch-triggered revalidation remain separate claim-driven activities.
+
 ## Persistent obstruction and completion
 
 A locally successful diversion may leave the underlying Operation problem unchanged.
@@ -383,8 +426,7 @@ This architecture does not yet select:
 - recurrence-equivalence thresholds;
 - Completion Blocker confidence thresholds;
 - player-message wording, timing or suppression;
-- the targeted Structural Challenge Profile;
-- the positive and bounded-negative fixture matrix;
+- the targeted Structural Challenge Profile derived from the calibrated configurations;
 - Prototype 13B implementation;
 - paid-DLC or general mod compatibility.
 

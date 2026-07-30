@@ -1,5 +1,35 @@
 # Engineering Journal
 
+## 2026-07-30 — Test roles become evidence questions, not a machine checklist
+
+**Baseline:** exact canonical v4.6.22, SHA-256 `b636bafdd59afcedba133b2dac65a19286f3dc980734eac63b612c0aaf3a941f`.
+
+**Initial concern:** eight proposed test roles appeared likely to require eight substantial field tests. The investigation instead showed that the roles were hypotheses about architectural coverage. Essential Evidence Horizon, Coverage Compression and fixture reuse reduced cost without reducing evidential discipline.
+
+**TS005:** the DEUTZ-FAHR 6135 C RVshift with ECO-CULTIVATOR 300 completed the reference cultivation fixture and established the ordinary positive baseline.
+
+**TS006 and TS007:** EVION 450 + VARIO 620 completed wheat harvesting and generated a straw fixture. The base-game VB 3190 baler then worked manually but could not admit a native AI job. This named Fixture-Generation Evidence, Admission-Rejection Boundary and Material-Chain Control Boundary.
+
+**TS008:** the initial harvest-ready crop state produced a brief post-admission rejection before current instrumentation sampled the worker. Changing the state to `green big` allowed the 36 m Condor to unfold, work, manoeuvre and complete. The paired result separated Agronomic State Gate from Control Eligibility and exposed Transient Admission Visibility Gap. Field 4 also proved that a Reference Field Fixture is not a Universal Field Fixture.
+
+**TR-04 review:** the original Material-Chain and Secondary-Activity wording risked combine/offloading scope bleed. It was narrowed to Material-Chain Boundary. TS006 + TS007 satisfy the role as a boundary pair without adding forage-wagon or AI-baler-mod scope.
+
+**TR-03 review:** Specialist Agricultural Operation was too vague. It became Non-Tractor Operational Assembly, satisfied by the combine-header configuration and supported by the integrated self-propelled Condor.
+
+**TS009:** the Landini REX 4 GT + DISC-O-Vigne V cultivated manually between three painted olive rows, but Giants refused AI work with `Grapes and olives not supported`. The positive permanent-row hypothesis was disproved before route reasoning began. Native Crop-System Exclusion retired TR-05 rather than forcing another exotic crop into the plan.
+
+**Owner correction:** Persistent/Regrowing Lifecycle did not test an OuttaMyWay responsibility. This named Agronomic Proxy Drift. Grass remained useful only as a fixture for an uncovered geometry concept.
+
+**TS010:** the DEUTZ-FAHR 6135 C RVshift + SaMASZ XT 390 worked with the mower offset to the tractor's right. Giants kept the mower at the field edge and used a spiral route. This established Offset Working Envelope, Trajectory–Work Displacement and Work-Envelope-Anchored Routing. Full completion was unnecessary once repeated work and manoeuvre cycles satisfied the claim.
+
+**Containment challenge:** the coarse current envelope repeatedly reported non-containment during visually valid offset mowing. Valid Boundary Straddling is preserved as a provisional interpretation; the evidence decreases confidence in strict coarse-rectangle enforcement but does not yet replace Full-Envelope Field Containment.
+
+**Baseline change:** TS005–TS009 ran under FS25 1.21.0.0. TS010 revealed an unnoticed update to 1.21.1.0 build b40785. No separate change description was available. The project now uses Runtime Baseline Governance, Patch Impact Watch, evidence currency states and a Patch Sentinel Set.
+
+**Repository validation discovery:** independent policy-path validation exposed an inherited active-policy entry for absent `docs/ENGINEERING_CONTRACT.md`. The active documentation map already routes readers to current governance and archived compatibility history, so the stale policy entry was removed without altering the archive.
+
+**Closure:** Scope Overlay Test-Role Calibration is complete. Future tests start from a named architecture or implementation claim. The project does not accumulate machine coverage for its own sake.
+
 ## 2026-07-28 — Scope Overlay becomes independent contextual knowledge
 
 **Baseline:** exact canonical v4.6.21, SHA-256 `a905d5b419f6f3e75c46224aa7b218d453b7ffb8c3409844a85260a964d12361`.

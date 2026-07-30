@@ -1,84 +1,78 @@
 # Project Status
 
-Version: 4.6.22
+Version: 4.6.23
 
-Authority state: Release Candidate — Scope Overlay Architecture Consolidation awaiting repository-owner review
+Authority state: Release Candidate — Scope Overlay Test-Role Calibration Consolidation awaiting repository-owner review
 
-Implementation baseline: exact canonical v4.6.21
+Implementation baseline: exact canonical v4.6.22
 
-Baseline SHA-256: `a905d5b419f6f3e75c46224aa7b218d453b7ffb8c3409844a85260a964d12361`
+Baseline SHA-256: `b636bafdd59afcedba133b2dac65a19286f3dc980734eac63b612c0aaf3a941f`
 
-Last canonical baseline: v4.6.21
+Last canonical baseline: v4.6.22
 
-Current focus: review and canonicalise the Scope Overlay architecture; then select targeted structural challenges and positive/bounded-negative test candidates before Prototype 13B implementation
+Current focus: review and canonicalise the completed Scope Overlay Test-Role Calibration; then select the next architectural or implementation claim without reopening machine coverage by default
 
-## Completed evidence chain
+## Preserved architectural baseline
 
-The base-game semantic evidence remains the reviewed Stage 2C result:
-
-```text
-Vehicle Definition Corpus Extraction
-    -> Raw Definition Evidence
-    -> Selected-Field Inheritance Projection
-    -> Runtime English Localisation
-    -> Semantic Suggestion Cohorts
-    -> Human Review and Asset Exceptions
-    -> Reviewed Semantic Catalogue
-```
-
-The catalogue contains 606 reviewed definitions, 170 review units, 11 broad families, 90 used primary roles, 42 used capabilities and no unresolved semantic profiles. It remains complete for the declared base-game corpus and is not reduced by Scope Overlay conclusions.
-
-## Scope Overlay architectural result
-
-The Scope Overlay is not one in-scope/out-of-scope label. It owns four independent contextual dimensions:
+The complete Stage 2C base-game Semantic Catalogue remains authoritative evidence for 606 reviewed definitions. The Scope Overlay remains four independent contextual dimensions:
 
 1. Control Eligibility Profile;
 2. Operation Participation;
 3. Assembly Relevance;
 4. Obstacle Relevance.
 
-Catalogue membership does not imply support. Semantic identity informs questions but cannot establish any overlay result or physical structure.
+Catalogue membership does not imply support. The capability subject remains the complete Giants AI job configuration. Job Admission, Job Configuration Viability, Control Eligibility and runtime Control Admissibility remain distinct.
 
-### Supported operational envelope
+## Completed Scope Overlay Test-Role Calibration
 
-The declared capability baseline is the unmodified Giants base game. The capability subject is the Giants AI job configuration as a whole. Job Admission, Job Configuration Viability and OuttaMyWay Control Eligibility remain distinct. Mods and paid DLC do not automatically extend the supported envelope.
+The bounded TS005–TS010 investigation is complete. It used Complete Test Configuration, State Sufficiency and Essential Evidence Horizon rather than exhaustive machine or full-field testing.
 
-The Player Responsibility Boundary assumes operationally reasonable equipment use while retaining unsupported physical Entities in the Operational Picture when relevant.
+| Role | Disposition | Evidence |
+|---|---|---|
+| TR-01 Reference Positive | Satisfied | TS005 |
+| TR-02 Dynamic-Extent Positive | Satisfied | TS008-P |
+| TR-03 Non-Tractor Operational Assembly | Satisfied | TS006, supported by TS008-P |
+| TR-04 Material-Chain Boundary | Satisfied | TS006 + TS007 |
+| TR-05 Distinct Spatial-Regime Positive | Retired | TS009 exposed Native Crop-System Exclusion before route testing |
+| TR-06 Asymmetric Working Envelope | Satisfied | TS010 |
+| TR-07 Admission-Rejection Negative | Satisfied | TS007 and TS009 |
+| TR-08 Post-Admission Failure Negative | Strongly supported | TS008-N; observer corroboration incomplete |
 
-### Control and testing
+The complete evidence and bounded conclusions are owned by `SCOPE_OVERLAY_TEST_CALIBRATION.md`.
 
-Control Eligibility Profile guides support and test selection. Runtime Control Admissibility remains a downstream contextual conclusion. Known ineligibility becomes a Control Exclusion Constraint rather than a representation exclusion.
+## Accepted discoveries
 
-Positive candidates and Bounded Negative Test Candidates may both be selected. Testing an ineligible configuration validates the boundary but does not change support status.
+- Continuity of an agricultural material chain does not imply continuity of Giants AI Control Eligibility.
+- A valid Operation participant may be a specialist or integrated Non-Tractor Operational Assembly.
+- Agricultural and manual viability do not establish native AI Job Admission.
+- Crop-system support may reject an otherwise valid assembly before any route reasoning begins.
+- Control Eligibility does not imply viability in every agronomic state.
+- Working width is not necessarily symmetric about the powered-vehicle trajectory.
+- Giants may displace the vehicle route so an asymmetric working envelope follows the field boundary.
+- Crop persistence or regrowth is not an OuttaMyWay test obligation unless it enables a separate architectural claim.
 
-### Runtime relationships
+## Runtime baseline governance
 
-Operation Participation is a temporal functional relationship, separate from presence, Operational Influence and Obstacle Relevance.
+- TS005–TS009: FS25 1.21.0.0.
+- TS010: FS25 1.21.1.0, build b40785, revision 81824.
+- Evidence is classified as Current, Version-bound, Revalidation candidate or Invalidated.
+- Patch Impact Watch reviews relevant GIANTS changes and triggers targeted rather than indiscriminate revalidation.
+- The initial Patch Sentinel Set is TS005, TS008-P, TS010, TS007 or TS009, and TS008-N when practical.
 
-Assembly Relevance identifies a Behavioural Assembly whose combined state determines relevant behaviour and space. Membership, control and relevance remain separate. Player detachment ends the former assembly relationship and produces an independently represented Entity.
+The 1.21.0.0 to 1.21.1.0 change is recorded as a Silent Baseline Transition because no separate patch description was available during testing.
 
-Obstacle Relevance is contextual, directional and assessed against another Entity or the Operation. It may arise from current occupancy, Future Space or configuration motion. Environmental obstacles remain part of the wider Situation Assessment model outside the semantic catalogue.
+## Provisional review obligation
 
-### Persistent obstruction
-
-Repeated local diversion may fail to resolve the Operation. Stable unavailable space may become a Persistent Spatial Constraint and Denied Work Space. Repeated reconstruction of the same situation forms a Recurring Commitment Loop; likely prevention of original-job completion becomes a Completion Blocker and may require player escalation.
+TS010 produced conservative-envelope containment warnings during visibly valid offset mowing. **Valid Boundary Straddling** remains provisional. It may reflect legitimate immediate-margin use, conservative rectangle overreach or both. Full-Envelope Field Containment is not revised until targeted evidence distinguishes those explanations.
 
 ## Candidate implementation state
 
-- v4.6.22 adds architectural and governance knowledge only.
-- Runtime implementation remains the exact canonical v4.6.21 behaviour apart from version metadata.
-- No machine-readable Scope Overlay table or assignment set exists.
-- No runtime Control Eligibility, Participation, Assembly or Obstacle evaluator is implemented.
-- No player UI behaviour is implemented.
-- No Structural Challenge Profile or Prototype 13B fixture is selected.
+- v4.6.23 adds architectural, evidence and governance knowledge only.
+- Runtime behaviour remains exact canonical v4.6.22 behaviour apart from version metadata.
+- No machine-readable Scope Overlay table or runtime eligibility evaluator exists.
+- No new Physical Occupancy Envelope, Resolution Path, Decision, Commitment, Control or UI behaviour is implemented.
+- No paid-DLC or general mod support is added.
 
 ## Next gate
 
-Review and canonicalise this exact candidate. Then define the minimum evidence and candidate matrix needed to challenge the Scope Overlay and Resolution Contract:
-
-- representation-diverse positive candidates;
-- limited Bounded Negative Test Candidates;
-- candidate job configurations that test the Capability Confirmation Point;
-- persistent-obstacle fixtures that distinguish Local from Operational Resolution.
-
-Implementation remains deferred until that test-selection model is discussed and agreed.
+Review and canonicalise this exact candidate. After Canonicalisation, choose the next claim at the highest useful abstraction level. Valid next subjects include targeted Structural Challenge profiling, containment review prompted by TS010, or the first minimum Scope Overlay implementation hypothesis. None is selected automatically by this release.

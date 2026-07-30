@@ -1,36 +1,32 @@
 # Roadmap
 
-## Active — Scope Overlay Architecture Consolidation
+## Active — Scope Overlay Test-Role Calibration Consolidation
 
-- [x] Establish exact canonical v4.6.21 as the implementation baseline.
-- [x] Preserve the complete reviewed Stage 2C base-game Semantic Catalogue.
-- [x] Separate catalogue membership from support eligibility.
-- [x] Define the Player Responsibility Boundary and Base-Game AI Capability Envelope.
-- [x] Select the Giants AI job configuration as the capability subject.
-- [x] Separate Job Admission, Job Configuration Viability and the Capability Confirmation Point.
-- [x] Define Control Eligibility Profile, Control Exclusion Constraint and Runtime Control Admissibility.
-- [x] Establish Independent Test Admission and Bounded Negative Test Candidates.
-- [x] Define contextual Operation Participation and Operational Influence.
-- [x] Define Behavioural Assembly and Membership–Relevance Separation.
-- [x] Define contextual, directional Obstacle Relevance and Entity–Environment Separation.
-- [x] Define Persistent Spatial Constraint, Denied Work Space, Recurring Commitment Loop and Completion Blocker.
-- [x] Consolidate the accepted architecture without implementing runtime behaviour.
-- [ ] Review and canonicalise the exact v4.6.22 candidate.
+- [x] Establish exact canonical v4.6.22 as the implementation baseline.
+- [x] Define Complete Test Configuration, Candidate Ladder, State Sufficiency and Essential Evidence Horizon.
+- [x] Validate the ordinary reference configuration in TS005.
+- [x] Validate Non-Tractor Operational Assembly and Fixture-Generation Evidence in TS006.
+- [x] Establish configuration-level Admission-Rejection Boundary and Material-Chain Control Boundary through TS006 + TS007.
+- [x] Establish Dynamic-Extent Positive and Agronomic State Gate through TS008-P and TS008-N.
+- [x] Retire the mandatory permanent-row positive role after Native Crop-System Exclusion in TS009.
+- [x] Retire Persistent/Regrowing Lifecycle as Agronomic Proxy Drift.
+- [x] Replace it with Asymmetric Working Envelope and validate right-offset Work-Envelope-Anchored Routing in TS010.
+- [x] Establish Runtime Baseline Governance, Patch Impact Watch and the Patch Sentinel Set.
+- [x] Close Scope Overlay Test-Role Calibration without implementing runtime behaviour.
+- [ ] Review and canonicalise the exact v4.6.23 candidate.
 
-## Next — Targeted Scope Overlay and structural-challenge test selection
+## Next — Select one bounded architectural or implementation claim
 
-Define the minimum evidence and a bounded fixture matrix before implementation:
+After Canonicalisation, discuss rather than assume the next activity. Candidate subjects are:
 
-- Positive Test Candidates whose complete Giants AI job configurations reach the Capability Confirmation Point;
-- representation-diverse Behavioural Assemblies;
-- limited Bounded Negative Test Candidates that prove Control Exclusion and persistent representation;
-- participant/non-participant obstacle contrasts;
-- a persistent obstruction fixture that distinguishes Local Resolution from Operational Resolution;
-- explicit attempts to disprove the existing Resolution Contract.
+- targeted containment review prompted by TS010 and the provisional Valid Boundary Straddling observation;
+- minimum Structural Challenge Profiles for the calibrated positive and negative configurations;
+- the first machine-readable Scope Overlay hypothesis with explicit evidence and refresh rules;
+- a persistent-obstacle fixture that distinguishes Local Resolution from Operational Resolution.
 
-Do not create an exhaustive assignment table across all 606 definitions. Apply Minimum Sufficient Semantic Resolution and select only enough evidence to change or defend an architectural conclusion.
+Do not create an exhaustive assignment table across all 606 definitions. Do not resume broad equipment testing without an uncovered architectural claim.
 
-## After test selection — Targeted Structural Challenge Profiles
+## After next-claim selection — Targeted Structural Challenge Profiles
 
 Profile representation difficulty only for selected control-eligible, participation-relevant, assembly-relevant or obstacle-relevant assets plus deliberate negative and disproof controls.
 

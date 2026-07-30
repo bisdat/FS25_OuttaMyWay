@@ -251,7 +251,7 @@ Folded and working are the principal stable states. Deployment is stationary con
 
 No Physical Occupancy Envelope or control behaviour is implemented by this release.
 
-## Semantic Catalogue and Scope Overlay Boundary (v4.6.22)
+## Semantic Catalogue and Scope Overlay Boundary (v4.6.23)
 
 The reviewed base-game catalogue remains complete semantic evidence and does not become support, runtime or structural authority. `SCOPE_OVERLAY_ARCHITECTURE.md` owns the detailed overlay model.
 
@@ -273,3 +273,17 @@ The four Scope Overlay dimensions are independent contextual claims. Known contr
 A persistent obstacle can create Denied Work Space, a Recurring Commitment Loop and a Completion Blocker even when each local diversion succeeds. This separates Local Resolution from Operational Resolution.
 
 This preserves **Semantic Classification–Scope Separation**, **Control Eligibility–Representation Relevance Separation** and **Class as Context, Not Contract**. No runtime Scope Overlay or control behaviour is implemented by this release.
+
+
+The TS005–TS010 calibration adds empirical boundaries without implementing the overlay:
+
+- manual viability does not imply Job Admission;
+- material-chain continuity does not imply Control Eligibility continuity;
+- an admitted configuration may still fail an Agronomic State Gate;
+- specialist self-propelled and attached-header assemblies are valid Operation subjects;
+- Physical Assembly extent may change materially through configuration;
+- an Offset Working Envelope may require Giants to displace the powered-vehicle trajectory.
+
+The powered-vehicle trajectory, working-envelope trajectory and Physical Assembly envelope are therefore distinct architectural objects. Exact directional extents cannot be replaced by a centred half-width assumption.
+
+Test evidence remains bound to its runtime baseline. Patch Impact Watch moves affected conclusions from Current or Version-bound to Revalidation candidate only when a relevant change intersects the claim.

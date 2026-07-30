@@ -9,6 +9,14 @@
 - [ ] ZIP contains `modDesc.xml` directly at its root.
 - [ ] Independent Repository Identity Check performed against the packaged ZIP, not only the working tree.
 
+## Empirical Evidence Baseline
+
+- [ ] Every new test record declares FS25 version/build/revision when available.
+- [ ] OuttaMyWay version, date, fixture and exact configuration are recorded.
+- [ ] Relevant GIANTS update notes and runtime changes were reviewed through Patch Impact Watch.
+- [ ] Affected evidence is classified as Current, Version-bound, Revalidation candidate or Invalidated.
+- [ ] Targeted Patch Sentinel tests were run when a relevant change reduced confidence.
+
 ## Repository Governance
 
 - [ ] Every first-class Markdown document is classified in `docs/README.md`.

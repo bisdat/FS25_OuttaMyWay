@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.22.
+Review status: reviewed for candidate release v4.6.23.
 
 ## Accepted Concepts
 
@@ -572,3 +572,37 @@ The candidate-to-canonical authority change. It must not alter approved substant
 - **Targeted Structural Challenge Profile** — scope-filtered classification of representation difficulty; not an exhaustive pass across all 606 definitions.
 - **Paid DLC semantic corpus** — parked until the base-game scope and fixture process is proven.
 - **Modded vehicle semantic corpus** — parked because mod variability should not precede a stable base-game method.
+
+## Accepted from Scope Overlay Test-Role Calibration
+
+- **Complete Test Configuration** — the full runtime baseline, fixture, agronomic state, operation, exact powered vehicle, working assembly, required behaviour, pose, claim, contradiction and Evidence Horizon to which a test conclusion belongs.
+- **Candidate Ladder** — Test-Role Obligation to Agronomic Role Candidate to Configuration Candidate to Verified Test Configuration.
+- **State Sufficiency** — all known prerequisites must be satisfied before a negative result is interpreted as capability evidence.
+- **Essential Evidence Horizon** — the earliest point at which the declared claim is decided; completion is required only for a completion-sensitive claim.
+- **Coverage Compression** — one controlled session may validly answer several independent claims when each conclusion remains separately bounded.
+- **Fixture-Generation Evidence** — a preparation operation may also become evidence when its exact configuration, state and outcome are sufficiently observed.
+- **Admission-Rejection Boundary** — agricultural and manual viability can coexist with native Giants AI Control Ineligibility because no suitable job is admitted.
+- **Execution-Time State Rejection** — an otherwise viable job is admitted but aborts when a necessary condition not rejected at admission is discovered during execution.
+- **Agronomic State Gate** — Control Eligibility of a configuration does not imply operation viability in every crop or field state.
+- **Transient Admission Visibility Gap** — a short-lived admitted job may begin and terminate between observer samples; absence from periodic observation does not prove admission never occurred.
+- **Material-Chain Boundary Pair** — adjacent upstream and downstream configurations reveal where native Giants AI control stops while agricultural material continuity persists.
+- **Material-Chain Control Boundary** — continuity of agricultural material or purpose does not imply continuity of Giants AI Control Eligibility.
+- **Non-Tractor Operational Assembly** — a valid Operation participant may be an integrated or specialist powered machine with required attached or integrated working systems.
+- **Native Crop-System Exclusion** — Giants AI may reject an otherwise valid assembly because the crop system itself is unsupported.
+- **Agronomic Proxy Drift** — a crop characteristic is mistaken for an OuttaMyWay test obligation even though the system neither controls nor reasons about that characteristic.
+- **Fixture-to-Assembly Scale Compatibility** — a valid fixture may be poorly scaled for a particular working width or manoeuvring claim; a Reference Field Fixture is not a Universal Field Fixture.
+- **Offset Working Envelope** — the active working area is materially displaced from the powered-vehicle trajectory rather than symmetrically centred on it.
+- **Trajectory–Work Displacement** — lateral separation between powered-vehicle trajectory and effective working-area centre.
+- **Work-Envelope-Anchored Routing** — Giants displaces the powered-vehicle route so an asymmetric working envelope follows the operational boundary.
+- **Silent Baseline Transition** — the executable game baseline changes without enough published information to determine which earlier empirical assumptions remain invariant.
+- **Runtime Baseline Governance** — empirical evidence remains bound to its declared game and mod versions until targeted revalidation or contradiction changes its status.
+- **Patch Impact Watch** — review of GIANTS releases for changes that intersect categories, AI behaviour, physics, SDK/API evidence, crop eligibility or recorded tests.
+- **Patch Sentinel Set** — a small representative set of high-value scenarios used for targeted post-patch confidence checks.
+- **Evidence Currency State** — Current, Version-bound, Revalidation candidate or Invalidated classification for empirical conclusions.
+
+## Retired or provisional after Scope Overlay Test-Role Calibration
+
+- **Distinct Spatial-Regime Positive as a mandatory role** — retired after the strongest permanent-row candidate was excluded at native job admission; reconsider only when an in-scope native AI regime is evidenced.
+- **Persistent/Regrowing Lifecycle as a test role** — retired as Agronomic Proxy Drift; crop biology is not an OuttaMyWay responsibility.
+- **Valid Boundary Straddling** — provisional interpretation that legitimate working or physical space may use the immediate field margin while a coarse envelope reports non-containment; requires targeted evidence before changing Full-Envelope Field Containment.
+- **Mirrored Working Envelope** — deferred reserve question for reversible implements whose active offset changes side between passes.

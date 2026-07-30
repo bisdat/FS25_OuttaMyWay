@@ -16,6 +16,11 @@
 14. Two implements in the same gameplay class may expose materially different physics-component, hierarchy, mapping and articulation structures; class is not structural authority.
 15. GIANTS job completion ends active worker membership but leaves the physical assembly in its final pose as a potentially significant obstacle.
 16. GIANTS does not necessarily fold wide implements at job completion; OuttaMyWay currently accepts that final configuration and leaves relocation to the player.
+17. Native job admission can reject an agriculturally valid configuration even when manual operation succeeds, as observed with the base-game VB 3190 baler.
+18. GIANTS explicitly rejects grapes and olives for native AI work under the tested 1.21.0.0 baseline despite successful manual inter-row cultivation.
+19. An otherwise Control-Eligible crop-care configuration can be admitted and then fail because the encountered agronomic state is incompatible.
+20. GIANTS routes a right-offset mower by displacing the tractor path so the mower follows the field edge; powered-vehicle trajectory is not working-envelope trajectory.
+21. A short-lived admitted job can begin and terminate between periodic observer samples, so absence from observer history is not proof that admission never occurred.
 
 ## Mapping and hierarchy evidence relevant to Prototype 13A
 
