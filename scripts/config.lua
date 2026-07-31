@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.6.32
+-- FS25_OuttaMyWay v4.6.33
 -- Cooperative collision avoidance for base-game AI field workers.
 
 OuttaMyWay = {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.6.32"
+OuttaMyWay.VERSION = "4.6.33"
 OuttaMyWay.BLOCKED_FOLD_DELAY_MS = 6500
 OuttaMyWay.WAIT_FOLD_DELAY_MS = 4500
 OuttaMyWay.HEAD_ON_FOLLOW_HOLD_DISTANCE = 55.0
@@ -244,15 +244,19 @@ OuttaMyWay.SINGLE_WORKER_DELAY_MIN_PRIORITY_SPEED_KMH = 2.0
 OuttaMyWay.SINGLE_WORKER_DELAY_EFFECT_SPEED_KMH = 0.75
 OuttaMyWay.SINGLE_WORKER_DELAY_EFFECT_DEADLINE_MS = 4000
 
--- Prototype 16 / TS015-B remains the validated manually armed Condor-yields /
--- Patriot-progresses passage actuator. Its confirmed-stop reference, fixed 28 m lateral
--- target, 12 m rearward retreat, 15/6 km/h speed profile, passage evidence and known
--- test-command side inversion remain behaviourally unchanged.
+-- Prototype 16 / TS015-B remains the validated Condor-yields / Patriot-progresses
+-- passage actuator. Its confirmed-stop reference, fixed physical-right fixture side,
+-- fixed 28 m lateral target, 12 m rearward retreat and 15/6 km/h speed profile remain
+-- behaviourally unchanged.
 --
--- Prototype 17 / TS017-B observes the same run in Shadow Clearance Calculation mode.
--- It derives a physical contact threshold from opposing facing extents, then applies
--- explicit margin components as a separate policy-clearance budget. Shadow results have
--- no role, side, distance, trigger or Control authority in this candidate.
+-- Prototype 17 / TS017-B continues Shadow Clearance Calculation. Physical and policy
+-- results remain Knowledge with authority=false and do not select trigger, role, side,
+-- distance or Progress control.
+--
+-- Prototype 18 replaces manual arming with fixture-bounded Automatic Encounter Admission.
+-- Exactly two active workers, the fixed Condor/Patriot roles, straight productive motion,
+-- opposed headings and a closing conflict-relevant projection must persist through the
+-- confirmation interval. One commitment is permitted per continuous worker episode.
 OuttaMyWay.UNILATERAL_SIDESTEP_ENABLED = true
 OuttaMyWay.UNILATERAL_SIDESTEP_EXCLUSIVE = true
 OuttaMyWay.TS015_INTERVAL_MS = 100
@@ -291,6 +295,13 @@ OuttaMyWay.TS015_PROGRESS_BLOCKED_CONFIRM_MS = 1500
 OuttaMyWay.TS015_PAIR_GEOMETRY_INTERVAL_MS = 500
 OuttaMyWay.TS015_PAIR_GEOMETRY_SCAN_BUDGET = 1000
 OuttaMyWay.TS015_HANDOFF_OBSERVE_MS = 20000
+
+OuttaMyWay.TS018_AUTOMATIC_ADMISSION_ENABLED = true
+OuttaMyWay.TS018_ADMISSION_CONFIRM_MS = 3000
+OuttaMyWay.TS018_EPISODE_RESET_MS = 5000
+OuttaMyWay.TS018_MIN_CLOSING_RATE_MPS = 0.10
+OuttaMyWay.TS018_MAX_TCPA_S = 30.0
+OuttaMyWay.TS018_MAX_DCPA_M = 14.0
 
 -- Prototype 17 shadow-only policy-clearance margins. They are evidence hypotheses,
 -- individually logged, excluded from the physical contact threshold and deliberately

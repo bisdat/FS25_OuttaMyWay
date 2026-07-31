@@ -2,87 +2,75 @@
 
 ## Authority
 
-Canonical implementation authority is the owner-declared v4.6.31 package with SHA-256 `2f54f3a01aaf41bd6f9fd798ce672e1631dbb9e6c9e811ac4ce6acb0b676c25b`.
+Canonical implementation authority is the owner-declared v4.6.32 package with SHA-256 `37cfd18d959cdbec43818265c7bcda789b2f3c7ce6df16210daec469b80206c7`.
 
-v4.6.32 is the next candidate. It implements observer-only evidence separation and has not yet been validated in FS25 or Canonicalised by the repository owner.
+v4.6.33 is the next candidate. It removes the required manual arming command and introduces fixture-bounded Automatic Encounter Admission. Runtime validation and repository-owner Canonicalisation remain pending.
+
+## Incoming validated result
+
+The v4.6.32 repeat empirically validated Physical and Policy Clearance Evidence Separation:
+
+```text
+physicalContactThreshold = 25.37 m
+physicalClearanceReserve = +2.01 m
+policyMarginBudget = 3.75 m
+policyRequiredSeparation = 29.12 m
+policyReserve = -1.74 m
+```
+
+The existing actuator completed passage, rejoin and GIANTS handback with `failure=nil`; every calculated field remained `authority=false`.
 
 ## Implemented change
 
-Shadow Clearance Calculation now reports two different questions explicitly:
+Prototype 18 adds a Decision-side **Automatic Encounter Admission** module. It consumes Observer state and Prototype 01 constant-velocity kinematics but does not own physical representation or Control.
+
+Admission requires the exact exclusive Condor/Patriot pair, straight productive motion, no turn or blockage, opposed headings, positive closing rate, `tCPA` within 30 seconds, `dCPA` within 14 m and three seconds of continuous evidence.
+
+The progression is:
 
 ```text
-physicalContactThreshold
-= Progress Facing Clearance Extent
-+ compact Yield Facing Clearance Extent
-
-physicalClearanceReserve
-= live reference separation
-- physicalContactThreshold
-
-policyMarginBudget
-= geometry uncertainty
-+ tracking tolerance
-+ motion allowance
-+ policy margin
-
-policyRequiredSeparation
-= physicalContactThreshold
-+ policyMarginBudget
-
-policyReserve
-= live reference separation
-- policyRequiredSeparation
+Situation Assessment evidence
+→ Admission Candidate
+→ sustained confirmation
+→ Commitment Point
+→ existing Unilateral Sidestep actuator
 ```
 
-The ambiguous combined `requiredSeparation` and `reserve` fields were removed from the calculator and all prototype diagnostics. Stage logs, continuous samples, console status and final summary now identify physical and policy values separately.
+`otmTS015Arm` and its handler are removed from active code and are not registered. `otmTS015Status` and `otmTS015Cancel` remain diagnostic and emergency controls.
 
 ## Protected invariants
 
 - Condor remains fixed Yield and Patriot remains fixed GIANTS Progress.
 - Patriot receives no hold, steering, speed or implement command.
-- Arming remains manual; the side is still forced and the known console-label inversion is preserved.
+- The selected side remains the validated physical-right fixture side.
 - Control remains fixed at 28 m lateral and 12 m rearward.
-- Every calculated field remains `authority=false`.
-- Automatic trigger, role assignment, side selection and geometry-derived movement remain absent.
+- Shadow Clearance remains `authority=false` and cannot trigger or modify the manoeuvre.
+- No autonomous role assignment, side selection or geometry-derived movement is introduced.
 
-## Expected comparison
+## Encounter Episode Latch
 
-The established fixture evidence was:
-
-```text
-physical contact threshold = 25.37 m
-observed reference separation = 27.38 m
-physical clearance reserve = +2.01 m
-policy margin budget = 3.75 m
-policy required separation = 29.12 m
-policy reserve = -1.74 m
-```
-
-v4.6.32 must reproduce these as distinct runtime values while passage, rejoin, handback and the complete 20-second observation remain successful. The values above are comparison targets from canonical evidence, not a claim that the new output has already passed.
+One automatic commitment is permitted per continuous fixture episode. The same pair cannot re-trigger after handback while it remains continuously active. This protects later known Split-Start Pass Recovery from being mistaken for a new eligible head-on admission.
 
 ## Exact continuation point
 
-1. Install the exact v4.6.32 candidate.
+1. Install the exact v4.6.33 candidate.
 2. Recreate the established Condor/Patriot head-on fixture.
-3. Arm the same manual Condor-yields side using the existing command and remember the labels remain inverted.
-4. Capture the complete game log and uninterrupted visible passage evidence.
-5. Verify the five separated fields at `PRE_ESTIMATE`, `REFUGE_LIVE`, `CLOSEST_APPROACH`, `PASSAGE_CONFIRMED` and `SHADOW_SUMMARY`.
-6. Verify `HOLD_CONFIRMED` still reports 28.0 m lateral and 12.0 m rearward, Patriot remains GIANTS-controlled, and every shadow record states `authority=false`.
-7. Record what was learned before discussing automatic trigger, role transfer or side choice.
+3. Enter no OuttaMyWay console command.
+4. Capture the complete game log and uninterrupted video.
+5. Confirm `ADMISSION_CANDIDATE` appears only for the exact straight-working head-on pair.
+6. Confirm one `COMMITMENT_POINT` follows after approximately three seconds.
+7. Confirm the validated sidestep, passage, rejoin and complete 20-second handback observation remain successful.
+8. Confirm Patriot remains `GIANTS_UNMODIFIED` and every shadow record states `authority=false`.
+9. Continue observing through the known Split-Start Pass Recovery and confirm no second automatic activation.
+10. Verify `otmTS015Arm` is unavailable and was not needed.
 
-## Deferred after evidence separation
+## Failure conditions
 
-The intended production flow remains:
+The experiment fails if admission occurs during turning, harmless separated work, a non-exclusive fixture, later Split-Start coverage behaviour or more than once in the same episode. It also fails if the expected head-on encounter is missed or if protected actuator behaviour changes.
 
-```text
-Situation Assessment detects a conflict
-→ Decision generates role/side Refuge Pose candidates
-→ feasibility and clearance are assessed
-→ one bounded Commitment is selected
-→ Control executes it
-```
+## Deferred after automatic admission
 
-Automatic role transfer, escape-side choice, field/margin availability, obstacle checks, complete swept-envelope protection and geometry-derived movement remain unimplemented.
+Only after this gate is validated should shadow comparison of role/side candidates begin. Candidate comparison must remain observer-only until field-margin feasibility, obstacle evidence, complete assembly protection and policy authority are separately justified.
 
 ## Deferred Publication Readiness Review
 

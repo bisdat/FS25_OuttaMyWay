@@ -41,7 +41,7 @@
 - [ ] No Lua errors in repeated test scenarios.
 - [ ] Debug-only code disabled or gated.
 - [ ] Observer and live modes both verified.
-- [ ] TS017-B requires exactly the active Condor/Patriot fixture pair and starts only after explicit `otmTS015Arm left|right`.
+- [ ] TS018 requires exactly the active Condor/Patriot fixture pair, starts automatically after sustained eligible evidence, and does not register `otmTS015Arm`.
 - [ ] Condor remains the fixed Yield Entity; Patriot remains the fixed, unmodified Giants Progress Entity.
 - [ ] Runtime `HOLD_CONFIRMED` reports lateral=28.0m, rearward=12.0m and all validated TS015-B movement parameters remain unchanged.
 - [ ] Prototype 17 logs `PRE_ESTIMATE`, `REFUGE_LIVE`, `CLOSEST_APPROACH`, `PASSAGE_CONFIRMED` and `SHADOW_SUMMARY` when evidence is available.

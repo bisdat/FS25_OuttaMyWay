@@ -1,5 +1,11 @@
 # Glossary
 
+**Automatic Encounter Admission** — Decision-side conversion of sustained eligible encounter evidence into permission to begin an already bounded Commitment; it does not select role, side or movement.
+
+**Admission Candidate** — provisional eligible encounter awaiting sustained confirmation; evidence loss withdraws it without Control.
+
+**Encounter Episode Latch** — one-shot guard preventing more than one automatic Commitment during one continuously active fixture episode.
+
 **Origin Coverage Is Not Bound Coverage** — complete resolution of physical identities and node origins does not establish usable shape bounds or Coverage Closure.
 
 **Physical Contact Threshold** — sum of the opposing one-sided Facing Clearance Extents in a shared reference frame.

@@ -1,10 +1,12 @@
--- FS25_OuttaMyWay v4.6.32
--- Prototype 16 / TS015-B actuator plus Prototype 17 / TS017-B shadow clearance calculation.
+-- FS25_OuttaMyWay v4.6.33
+-- Prototype 16 / TS015-B actuator, Prototype 17 shadow clearance, and Prototype 18
+-- fixture-bounded Automatic Encounter Admission.
 --
--- The validated Condor-yields/Patriot-progresses manoeuvre remains behaviourally
--- unchanged: manual arm, fixed test side and fixed 28 m lateral Control target.
--- Prototype 17 observes the same run and logs a geometry-derived required separation
--- before movement, at refuge and through passage. Shadow values have no Control authority.
+-- Condor remains fixed Yield, Patriot remains unmodified GIANTS Progress, the
+-- physical-right fixture side remains fixed, and Control still commands exactly
+-- 28 m lateral / 12 m rearward movement. Prototype 18 replaces manual arming
+-- with one automatically admitted commitment per continuous worker episode.
+-- Shadow Clearance Knowledge remains authority=false.
 OuttaMyWay.UnilateralSidestepController = OuttaMyWay.UnilateralSidestepController or {}
 local Controller = OuttaMyWay.UnilateralSidestepController
 
@@ -184,14 +186,13 @@ end
 function Controller:init()
     self.enabled = OuttaMyWay.UNILATERAL_SIDESTEP_ENABLED == true
     self.elapsedMs = 0
-    self.armedSide = nil
     self.run = nil
     self.lastHeartbeatMs = 0
     self.driveHookInstalled = false
     self.originalDriveToPoint = nil
 
     OuttaMyWay.Logger:info(
-        "PROTOTYPE 16 ACTIVE: TS015-B validated passage actuator enabled=%s exclusive=%s trigger=manual fixture=Condor-yields/Patriot-progresses controlTarget=28m progressHold=false testSideMapping=known-inverted",
+        "PROTOTYPE 16 ACTIVE: TS015-B validated passage actuator enabled=%s exclusive=%s trigger=automatic-encounter-admission fixture=Condor-yields/Patriot-progresses fixedSide=right controlTarget=28m progressHold=false",
         tostring(self.enabled), tostring(OuttaMyWay.UNILATERAL_SIDESTEP_EXCLUSIVE == true))
     OuttaMyWay.Logger:info(
         "PROTOTYPE 17 ACTIVE: TS017-B shadow-clearance calculation enabled=%s authority=false stages=pre-estimate/refuge-live/closest-approach/passage-confirmed controlTargetSource=TS015-fixed",
@@ -306,30 +307,8 @@ function Controller:setPhase(phase, reason, nowMs)
         run.sideSign == 1 and "right" or "left")
 end
 
-function Controller:arm(side)
-    if self.enabled ~= true then return false, "TS015 is disabled" end
-    if self.run ~= nil then return false, "TS015 already active; use otmTS015Status or otmTS015Cancel" end
-
-    side = string.lower(tostring(side or ""))
-    if side ~= "left" and side ~= "right" then
-        return false, "Usage: otmTS015Arm left|right"
-    end
-
-    local states = activeStates()
-    if #states > 2 then
-        return false, string.format("TS015 requires the Condor/Patriot pair only; observed %d active workers", #states)
-    end
-
-    self.armedSide = side
-    OuttaMyWay.Logger:val(
-        "PROTOTYPE16 ARMED t=%.1fs requestedSide=%s resolvedLateralSign=%s activeWorkers=%d trigger=pending-two-worker-head-on testSideMapping=known-inverted progressHold=false",
-        nowSeconds(), side, side == "right" and "+1" or "-1", #states)
-    return true, string.format("TS015 armed %s; waiting for active Condor and Patriot in stable opposed work", side)
-end
-
 function Controller:cancel()
-    self.armedSide = nil
-    if self.run == nil then return true, "TS015 arm cleared; no active manoeuvre" end
+    if self.run == nil then return true, "TS015 automatic admission idle; no active manoeuvre" end
     local nowMs = g_time or 0
     self.run.cancelRequested = true
     if self.run.phase == "STABILISING" then
@@ -362,11 +341,13 @@ function Controller:statusText()
             shadow ~= nil and shadow.policyRequiredSeparation ~= nil and string.format("%.2fm", shadow.policyRequiredSeparation) or "n/a",
             shadow ~= nil and shadow.policyReserve ~= nil and string.format("%.2fm", shadow.policyReserve) or "n/a")
     end
-    if self.armedSide ~= nil then return "TS015 armed " .. self.armedSide .. "; waiting for Condor/Patriot pair" end
-    return "TS015 idle"
+    local admission = OuttaMyWay.AutomaticEncounterAdmission
+    local admissionText = admission ~= nil and admission.statusText ~= nil and admission:statusText()
+        or "state=unavailable"
+    return "TS015 idle automaticAdmission={" .. admissionText .. "}"
 end
 
-function Controller:startRun(state, progressState, side, nowMs)
+function Controller:startRun(state, progressState, side, nowMs, trigger)
     if state == nil or state.vehicle == nil or progressState == nil or progressState.vehicle == nil then return false end
     local vehicle = state.vehicle
     local progressVehicle = progressState.vehicle
@@ -382,8 +363,8 @@ function Controller:startRun(state, progressState, side, nowMs)
     local rightX, rightZ = directionVector(node, 1, 0)
     if forwardX == nil or rightX == nil then return false end
 
-    -- Preserve the validated TS014 movement mapping unchanged. Runtime evidence
-    -- shows the human test labels are inverted relative to physical motion.
+    -- Preserve the validated physical-right TS015-B fixture movement unchanged.
+    -- Prototype 18 supplies this fixed side directly; no console label participates.
     local sideSign = side == "right" and 1 or -1
     local px, _, pz = positionOf(progressVehicle)
     local initialSeparation = distance2d(x, z, px, pz)
@@ -392,6 +373,7 @@ function Controller:startRun(state, progressState, side, nowMs)
         vehicle = vehicle,
         progressVehicle = progressVehicle,
         requestedSide = side,
+        trigger = trigger or "automatic-encounter-admission",
         phase = "STABILISING",
         phaseStartedAt = nowMs,
         startedAt = nowMs,
@@ -460,11 +442,9 @@ function Controller:startRun(state, progressState, side, nowMs)
         shadowClosestLogged = false,
         shadowPassage = nil
     }
-    self.armedSide = nil
-
     OuttaMyWay.Logger:val(
-        "PROTOTYPE16 RUN_START t=%.1fs scenario=TS017-B-FACING-EXTENT-PROVIDER yield=%s progress=%s requestedSide=%s resolvedLateralSign=%d initialSeparation=%s yieldHeading=%.1f progressHeading=%.1f headingDelta=%s targetReference=confirmed-stop egress=rearward-outward foldOverlap=candidate-threshold progressControl=GIANTS_UNMODIFIED testSideMapping=known-inverted",
-        nowSeconds(), nameOf(vehicle), nameOf(progressVehicle), side, sideSign,
+        "PROTOTYPE16 RUN_START t=%.1fs scenario=TS018-AUTOMATIC-ENCOUNTER-ADMISSION yield=%s progress=%s trigger=%s selectedFixtureSide=%s resolvedLateralSign=%d initialSeparation=%s yieldHeading=%.1f progressHeading=%.1f headingDelta=%s targetReference=confirmed-stop egress=rearward-outward foldOverlap=candidate-threshold progressControl=GIANTS_UNMODIFIED shadowClearanceAuthority=false",
+        nowSeconds(), nameOf(vehicle), nameOf(progressVehicle), tostring(self.run.trigger), side, sideSign,
         initialSeparation ~= nil and string.format("%.2fm", initialSeparation) or "unknown",
         tonumber(state.heading) or -1, tonumber(progressState.heading) or -1,
         headingDifference(state.heading, progressState.heading) ~= nil and string.format("%.1fdeg", headingDifference(state.heading, progressState.heading)) or "unknown")
@@ -1193,36 +1173,32 @@ function Controller:update(dt)
 
     if self.run ~= nil then
         self:updateRun(nowMs)
-    elseif self.armedSide ~= nil then
-        local states = activeStates()
-        if #states == 2 then
-            local yieldState, progressState, reason = findFixtureStates(states)
-            if yieldState ~= nil and progressState ~= nil then
-                self:startRun(yieldState, progressState, self.armedSide, nowMs)
-            else
-                OuttaMyWay.Logger:error("VAL",
-                    "PROTOTYPE16 ARM_CANCELLED t=%.1fs reason=%s activeWorkers=%d fixture=Condor+Patriot-required",
-                    nowSeconds(), tostring(reason), #states)
-                self.armedSide = nil
-            end
-        elseif #states > 2 then
-            OuttaMyWay.Logger:error("VAL",
-                "PROTOTYPE16 ARM_CANCELLED t=%.1fs reason=unexpected-active-workers count=%d",
-                nowSeconds(), #states)
-            self.armedSide = nil
-        end
     else
-        OuttaMyWay.activeWaitCount = 0
-        OuttaMyWay.priorityName = ""
+        local states = activeStates()
+        local yieldState, progressState = findFixtureStates(states)
+        local admission = OuttaMyWay.AutomaticEncounterAdmission
+        local decision = admission ~= nil and admission.evaluate ~= nil
+            and admission:evaluate(yieldState, progressState, #states, nowMs)
+            or {admitted=false, state="UNAVAILABLE", reason="admission-module-unavailable"}
+        if decision.admitted == true then
+            local started = self:startRun(yieldState, progressState, decision.side or "right", nowMs,
+                decision.reason or "automatic-encounter-admission")
+            if started then self:beginHold(nowMs) end
+        else
+            OuttaMyWay.activeWaitCount = 0
+            OuttaMyWay.priorityName = ""
+        end
     end
 
     if nowMs - (self.lastHeartbeatMs or 0) >= (OuttaMyWay.TS015_HEARTBEAT_MS or 15000) then
         self.lastHeartbeatMs = nowMs
         OuttaMyWay.Logger:val(
-            "PROTOTYPE16 HEARTBEAT t=%.1fs activeWorkers=%d armed=%s run=%s phase=%s passage=%s exclusive=true progressHold=false",
-            nowSeconds(), #activeStates(), tostring(self.armedSide), tostring(self.run ~= nil),
+            "PROTOTYPE16 HEARTBEAT t=%.1fs activeWorkers=%d trigger=automatic run=%s phase=%s passage=%s exclusive=true progressHold=false admission=%s",
+            nowSeconds(), #activeStates(), tostring(self.run ~= nil),
             self.run ~= nil and tostring(self.run.phase) or "IDLE",
-            self.run ~= nil and tostring(self.run.passageConfirmedAt ~= nil) or "false")
+            self.run ~= nil and tostring(self.run.passageConfirmedAt ~= nil) or "false",
+            OuttaMyWay.AutomaticEncounterAdmission ~= nil
+                and tostring(OuttaMyWay.AutomaticEncounterAdmission.lastState or "IDLE") or "UNAVAILABLE")
     end
 end
 
@@ -1238,8 +1214,9 @@ function Controller:clear()
             "PROTOTYPE16 CLEAR t=%.1fs vehicle=%s phase=%s restoration=requested-not-confirmed",
             nowSeconds(), nameOf(self.run.vehicle), tostring(self.run.phase))
     end
-    self.armedSide = nil
     self.run = nil
+    local admission = OuttaMyWay.AutomaticEncounterAdmission
+    if admission ~= nil and admission.clear ~= nil then admission:clear() end
     self.elapsedMs = 0
     self.lastHeartbeatMs = nowMs
     OuttaMyWay.activeWaitCount = 0

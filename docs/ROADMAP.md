@@ -1,24 +1,22 @@
 # Roadmap
 
-## Current increment — Clearance evidence separation
+## Current increment — Fixture-Bounded Automatic Encounter Admission
 
-Preserve the validated Condor-yields actuator and fixture-bounded Facing Extent Provider. Separate physical contact evidence from policy-margin evidence before introducing automatic decisions.
+Remove the required manual arm command while preserving the validated fixed Condor/Patriot role, side, movement and observer-only clearance boundaries.
 
-## Active — Prototype 17 consolidation and next validation
+## Active — Prototype 18 admission validation
 
-- [x] Validate the isolated and two-worker Unilateral Sidestep actuator through TS013–TS015-B.
-- [x] Establish the failed 21.44 m and successful 27.38 m actual lateral fixture observations.
-- [x] Add observer-only Facing Clearance Extent and explicit margin calculation.
-- [x] Run TS017-A and confirm Patriot extent acquisition plus safe `n/a` handling for missing Condor extent.
-- [x] Add exact Condor current-physical catalogue resolution and runtime-bound/origin fallback.
-- [x] Run TS017-B and complete the full handoff observation.
-- [x] Resolve 13/13 Condor identities/origins and record 0/13 usable runtime bounds.
-- [x] Compare the 25.37 m live physical threshold against the failed and successful fixture evidence.
-- [x] Name Origin Coverage Is Not Bound Coverage and Physical Clearance Is Not Policy Clearance.
-- [x] Separate `physicalContactThreshold` and `physicalClearanceReserve` from `policyMarginBudget`, `policyRequiredSeparation` and `policyReserve` in v4.6.32 candidate output.
-- [ ] Repeat the established manual run to validate the separated output without actuator change.
-- [ ] After validation, discuss shadow generation and comparison of Condor/Patriot Yield and escape-side candidates.
-- [ ] Keep derived movement, automatic trigger, role selection and side selection without authority until their own evidence increments.
+- [x] Validate v4.6.32 Physical and Policy Clearance Evidence Separation in the established runtime fixture.
+- [x] Preserve the successful 28 m lateral / 12 m rearward actuator and Patriot `GIANTS_UNMODIFIED`.
+- [x] Name Automatic Encounter Admission, Admission Candidate and Encounter Episode Latch.
+- [x] Add exact-pair, straight-working, opposed-heading and conflict-projection admission conditions.
+- [x] Require three seconds of continuous evidence before the Commitment Point.
+- [x] Permit one commitment per continuous worker episode.
+- [x] Disable and unregister `otmTS015Arm`.
+- [ ] Run the established fixture with no OuttaMyWay console command.
+- [ ] Confirm exactly one candidate, one commitment and no later Split-Start reactivation.
+- [ ] Confirm passage, rejoin, handback and all `authority=false` clearance evidence remain unchanged.
+- [ ] After validation, begin observer-only role/side candidate comparison without granting selection authority.
 
 ## Deferred Publication Readiness Review
 

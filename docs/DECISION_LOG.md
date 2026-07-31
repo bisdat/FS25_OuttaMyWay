@@ -1,8 +1,20 @@
 # Decision Log
 
+## D-0074 — Admit the fixed fixture automatically before generalising Decision authority
+
+**Status:** Accepted for candidate v4.6.33
+
+**Context:** v4.6.32 validated that physical-contact and policy-clearance evidence can remain distinct without changing the successful Condor/Patriot actuator. The next operational dependency was the manual `otmTS015Arm right` command, which supplied encounter admission while roles, side and movement were already fixed by the fixture.
+
+**Decision:** Introduce Fixture-Bounded Automatic Encounter Admission. Admit exactly one commitment when the exclusive Condor/Patriot pair remains straight, working, moving, unblocked, opposed and conflict-relevant for three seconds. Preserve Condor as Yield, Patriot as unmodified GIANTS Progress, the physical-right side and the 28 m lateral / 12 m rearward actuator. Add one Encounter Episode Latch per continuous worker episode. Remove the manual arm command.
+
+**Boundary:** Admission may consume observer state and constant-velocity projection, but it does not own role selection, side selection, movement derivation, clearance policy or Progress control. Shadow Clearance remains `authority=false`.
+
+**Consequences:** The next runtime test can begin with no OuttaMyWay console command. A missed encounter, premature or harmless-pass trigger, second activation in the same episode, or any protected actuator drift disproves the gate. General encounter identity and recurring production commitments remain deferred.
+
 ## D-0073 — Separate physical clearance evidence from policy clearance before authority
 
-**Status:** Accepted in canonical v4.6.31; implemented for candidate v4.6.32
+**Status:** Accepted in canonical v4.6.31; implemented and empirically validated in owner-declared canonical v4.6.32
 
 **Context:** TS017-B produced a successful physical passage at approximately 27.38 m reference separation. The fixture-bounded physical contact threshold was 25.37 m, giving approximately +2.01 m physical reserve. The existing combined calculation added 3.75 m of provisional margins and reported a 29.12 m requirement with approximately -1.74 m reserve. One combined `required`/`reserve` pair therefore obscured the difference between observed physical clearance and an unmet provisional policy target.
 
@@ -20,7 +32,7 @@ The physical threshold is the sum of opposing Facing Clearance Extents. Policy r
 
 **Consequences:** Physical representation assumptions can be tested independently from safety-policy choices. A positive physical reserve with a negative policy reserve is valid evidence, not a contradiction. Automatic role selection, side selection and geometry-derived movement remain deferred.
 
-**Implementation:** Candidate v4.6.32 removes the ambiguous combined calculator and logging fields and emits the five separated Knowledge fields. Runtime validation remains pending.
+**Outcome:** v4.6.32 removed the ambiguous combined fields and empirically reproduced +2.01 m physical reserve alongside -1.74 m policy reserve while the passage actuator completed unchanged with `failure=nil`.
 
 ## D-0072 — Introduce a fixture-bounded Facing Extent Provider before granting clearance authority
 

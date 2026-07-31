@@ -2954,10 +2954,10 @@ function OuttaMyWay:update(dt)
     end
 
     -- Active prototype execution boundary. Prototype 14 remains disabled but
-    -- available for TS012 reproduction. Prototype 16 exclusively owns the
-    -- TS015-B unprotected two-worker passage experiment; Patriot remains
-    -- under GIANTS control while legacy traffic, recovery, reservation and
-    -- Decision paths remain dormant.
+    -- available for TS012 reproduction. Prototype 18 admits the exact fixture
+    -- into the Prototype 16 passage actuator; Prototype 17 remains observer-only.
+    -- Patriot remains under GIANTS control while legacy traffic, recovery,
+    -- reservation and other Decision paths remain dormant.
     if self.SINGLE_WORKER_DELAY_EXCLUSIVE == true
         or self.UNILATERAL_SIDESTEP_EXCLUSIVE == true then return end
 

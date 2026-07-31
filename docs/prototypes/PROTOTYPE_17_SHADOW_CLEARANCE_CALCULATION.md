@@ -2,7 +2,7 @@
 
 ## Scenario
 
-TS017-B reuses the successful TS015-B Condor Endurance II / Patriot 4450 head-on fixture. Condor remains fixed Yield, Patriot remains unmodified GIANTS Progress, arming remains manual and Control remains fixed at 28 m lateral / 12 m rearward.
+TS017-B reused the successful TS015-B Condor Endurance II / Patriot 4450 head-on fixture. Condor remained fixed Yield, Patriot remained unmodified GIANTS Progress, arming was manual and Control remained fixed at 28 m lateral / 12 m rearward.
 
 ## Observation from TS017-A
 
@@ -127,3 +127,9 @@ v4.6.32 implements the five separated fields in the calculator, stage logs, cont
 The next action is empirical validation, not automation: repeat the established manual Condor-yields run and confirm approximately 25.37 m physical threshold, +2.01 m physical reserve, 3.75 m policy budget, 29.12 m policy requirement and -1.74 m policy reserve while visible passage and the complete actuator sequence remain unchanged.
 
 All values remain `authority=false`. Automatic trigger, role selection, side selection and derived movement remain outside Prototype 17's current authority.
+
+## v4.6.32 runtime validation
+
+The separated evidence repeat passed under FS25 1.21.1.0 build b40785. Closest approach reported a 25.37 m physical threshold, 27.38 m reference separation and +2.01 m physical reserve. The separate 3.75 m policy budget produced a 29.12 m policy requirement and -1.74 m policy reserve. Passage, rejoin and the complete handback observation succeeded with `failure=nil`.
+
+This validates evidence separation, not the provisional margin values as production policy. All fields remain `authority=false`. Prototype 18 may consume conflict kinematics for admission, but does not consume these clearance values as trigger or movement authority.

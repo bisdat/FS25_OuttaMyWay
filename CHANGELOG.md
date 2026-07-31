@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.6.33 — Fixture-Bounded Automatic Encounter Admission
+
+- Begins from owner-declared canonical v4.6.32, SHA-256 `37cfd18d959cdbec43818265c7bcda789b2f3c7ce6df16210daec469b80206c7`.
+- Records the v4.6.32 runtime repeat as a pass: physical threshold 25.37 m, physical reserve +2.01 m, policy budget 3.75 m, policy requirement 29.12 m, policy reserve -1.74 m, unchanged passage and `failure=nil`.
+- Adds Prototype 18 / Automatic Encounter Admission as a Decision-side boundary between Situation Assessment evidence and the existing fixed Unilateral Sidestep actuator.
+- Requires exactly two active workers resolving uniquely to Condor Yield and Patriot Progress, straight productive motion, no turn or blockage, opposed headings, positive closing, `tCPA` within 30 s and `dCPA` within 14 m for three continuous seconds.
+- Adds an Encounter Episode Latch allowing one automatic commitment per continuous fixture episode.
+- Disables and unregisters `otmTS015Arm`; normal validation requires no OuttaMyWay console command. `otmTS015Status` and `otmTS015Cancel` remain.
+- Preserves the validated physical-right fixture side, fixed 28 m lateral / 12 m rearward actuator, Patriot `GIANTS_UNMODIFIED` and all Shadow Clearance output as `authority=false`.
+- Treats later Split-Start Pass Recovery as established coverage behaviour and explicitly prevents it from re-arming the same continuous episode.
+- Carries forward the deferred Publication Readiness Review item **Mod Description Drift**.
+
 ## v4.6.32 — Physical and Policy Clearance Evidence Separation
 
 - Begins from exact canonical v4.6.31, SHA-256 `2f54f3a01aaf41bd6f9fd798ce672e1631dbb9e6c9e811ac4ce6acb0b676c25b`.

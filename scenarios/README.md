@@ -139,3 +139,12 @@ The 25.37 m physical contact threshold predicted approximately 2.01 m clearance 
 Passage, rejoin, handback and the full 20-second observation completed with `failure=nil`. All provider results remain `authority=false`.
 
 See `docs/prototypes/PROTOTYPE_17_SHADOW_CLEARANCE_CALCULATION.md`.
+
+
+## TS018 — Fixture-Bounded Automatic Encounter Admission
+
+TS018 retains the validated TS015-B actuator and TS017-B clearance evidence but removes manual arming. Exactly one active Condor and one active Patriot must remain straight, working, moving, unblocked, opposed and conflict-relevant for three seconds. Condor remains fixed Yield, Patriot remains unmodified GIANTS Progress, the physical-right side remains fixed and Control remains 28 m lateral / 12 m rearward.
+
+The run requires no OuttaMyWay console command. Evidence must show one `ADMISSION_CANDIDATE`, one `COMMITMENT_POINT`, successful passage/rejoin/handoff, and no second activation during known Split-Start Pass Recovery. `otmTS015Status` and `otmTS015Cancel` remain diagnostic/emergency commands; `otmTS015Arm` is disabled.
+
+See `docs/prototypes/PROTOTYPE_18_AUTOMATIC_ENCOUNTER_ADMISSION.md`.

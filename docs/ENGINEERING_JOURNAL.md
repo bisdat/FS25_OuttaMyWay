@@ -691,3 +691,20 @@ A failed unprotected run is not wasted. It will quantify the boundary at which E
 
 **Validation intent:** A failed calculation is valuable. It would identify a representation, pose or margin assumption that must change before role/side automation.
 
+
+
+## v4.6.33 — From manual arming to Automatic Encounter Admission
+
+**Observation:** The v4.6.32 repeat preserved the existing actuator while exposing +2.01 m physical reserve and -1.74 m policy reserve as separate, simultaneous facts. Passage, rejoin and handback completed with `failure=nil`.
+
+**Correction retained:** Condor's later return toward its starting region was the already documented Split-Start Pass Recovery / Start-State-Dependent Coverage sequence, not a new discovery. Repository knowledge must be consulted before naming new concepts from an isolated log.
+
+**Problem:** The validated fixture still depended on `otmTS015Arm right`. That command supplied encounter admission even though role, side and movement remained deliberately fixed.
+
+**Named concepts:** Automatic Encounter Admission, Admission Candidate and Encounter Episode Latch.
+
+**Decision:** Add a Decision-side gate requiring exactly two active workers, unique Condor/Patriot fixture identity, straight productive motion, no blockage or turn, opposed headings and sustained conflict-relevant constant-velocity projection. Confirm for three seconds, then admit one fixed commitment per continuous worker episode.
+
+**Implementation boundary:** Remove and unregister `otmTS015Arm`. Preserve Condor Yield, Patriot `GIANTS_UNMODIFIED`, physical-right side, 28 m lateral / 12 m rearward movement and all Shadow Clearance output as `authority=false`.
+
+**Validation hypothesis:** The established encounter should produce exactly one Admission Candidate and Commitment Point without console input, while harmless work, turns and later Split-Start recovery produce no activation. A failed gate is useful evidence about encounter admission, not a reason to alter the validated actuator.

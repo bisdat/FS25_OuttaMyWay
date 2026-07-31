@@ -4,15 +4,16 @@
 
 - **Mod Description Drift:** `modDesc.xml` currently acts as an active prototype/release summary rather than a stable description of the mod. Correct this during Publication Readiness Review, not during the current evidence increment.
 
-## Prototype 17 and clearance authority
+## Prototype 18 admission and Prototype 17 clearance authority
 
-- Shadow Clearance Calculation remains observer-only and fixture-specific. It must not be read as automatic Decision or Control authority.
+- v4.6.32 empirically validated separate physical-contact and policy-clearance output; both remain Knowledge only and must not be read as Control authority.
+- Automatic Encounter Admission is fixture-bounded. It requires exactly the exclusive Condor/Patriot active pair and does not generalise encounter identity.
+- Condor remains hard-coded as Yield, Patriot as Progress, and the physical-right side is fixed. Patriot-yields role-transfer and autonomous side selection are untested.
+- `otmTS015Arm` is disabled. Automatic triggering now depends on straight-working Observer state plus constant-velocity projection; false positive, missed-admission and timing boundaries require runtime validation.
+- One Encounter Episode Latch allows one commitment per continuous fixture episode; production recurrence and multi-encounter identity remain unresolved.
 - All 13 current Condor identities and origins resolved, but no usable runtime shape bounds were exposed through the tested APIs.
 - The 2.50 m unresolved physical allowance is a fixture hypothesis, not Coverage Closure or a production constant.
-- v4.6.32 separates physical threshold/reserve from policy budget/requirement/reserve, but that output still requires an empirical repetition before it is accepted as validated evidence.
-- Condor remains hard-coded as Yield and Patriot as Progress. Patriot-yields role-transfer validity is untested.
-- The console direction labels remain inverted relative to observed physical movement.
-- Triggering and side choice remain manual; field/margin refuge availability, obstacles and complete assembly swept paths are not evaluated.
+- Field/margin refuge availability, obstacles and complete assembly swept paths are not evaluated.
 - The 28 m movement, 3.75 m margin budget and 36 m working-marker fallback are fixture evidence rather than universal values.
 
 ## Prototype 15 / TS014
@@ -31,7 +32,7 @@
 - Later-admitted selection was a bounded TS012 experiment, not an accepted general priority policy.
 - Predictor `CLEAR` is known to occur after collision or blocked convergence and cannot authorise release.
 - Automatic Safe Release was deliberately absent and remains unvalidated.
-- Prototype 14 is disabled in v4.6.32; only one active hold was supported and multi-conflict arbitration remains unimplemented.
+- Prototype 14 is disabled in v4.6.33; only one active hold was supported and multi-conflict arbitration remains unimplemented.
 
 ## Physical assembly coverage
 

@@ -1,6 +1,18 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.32.
+Review status: reviewed for candidate release v4.6.33.
+
+### Automatic Encounter Admission
+
+A Decision-side gate that converts sustained conflict-relevant Situation Assessment evidence into permission to begin an already bounded Commitment. It does not itself choose role, side, distance or Control method.
+
+### Admission Candidate
+
+A provisional encounter that currently satisfies the bounded admission conditions but has not yet persisted through the confirmation interval. Loss of evidence withdraws it without intervention.
+
+### Encounter Episode Latch
+
+A one-shot guard that prevents the same continuously active fixture episode from producing more than one automatic Commitment. Prototype 18 uses it to protect known later GIANTS coverage behaviour from re-admission.
 
 ### Shadow Clearance Calculation
 

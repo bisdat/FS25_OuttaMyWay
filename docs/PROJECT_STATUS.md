@@ -1,58 +1,76 @@
 # Project Status
 
-Version: 4.6.32
-Canonical implementation authority: v4.6.31, SHA-256 `2f54f3a01aaf41bd6f9fd798ce672e1631dbb9e6c9e811ac4ce6acb0b676c25b`
-Authority state: Candidate — observer-only physical/policy clearance evidence separation implemented; runtime validation and repository-owner Canonicalisation pending
+Version: 4.6.33
+Canonical implementation authority: owner-declared v4.6.32, SHA-256 `37cfd18d959cdbec43818265c7bcda789b2f3c7ce6df16210daec469b80206c7`
+Authority state: Candidate — fixture-bounded Automatic Encounter Admission implemented; runtime validation and repository-owner Canonicalisation pending
 Runtime baseline: FS25 1.21.1.0 build b40785 revision 81824 unless the test record states otherwise
+
+## Validated incoming evidence
+
+The v4.6.32 Condor/Patriot repeat passed. Physical and policy evidence remained explicitly separate while actuator behaviour remained unchanged:
+
+```text
+physicalContactThreshold = 25.37 m
+liveReferenceSeparation   = 27.38 m
+physicalClearanceReserve  = +2.01 m
+policyMarginBudget        = 3.75 m
+policyRequiredSeparation  = 29.12 m
+policyReserve             = -1.74 m
+failure                   = nil
+```
+
+Passage, rejoin, GIANTS handback and the complete 20-second observation succeeded. All calculated geometry and clearance fields remained `authority=false`.
+
+The later Condor movement was the already documented Split-Start Pass Recovery / Start-State-Dependent Coverage sequence, not a new encounter discovery.
 
 ## Current engineering increment
 
-v4.6.32 begins from the exact owner-declared v4.6.31 canonical package. It changes Shadow Clearance calculation and diagnostics only.
+v4.6.33 introduces **Automatic Encounter Admission** as a Decision-side boundary between Situation Assessment evidence and the existing fixed actuator.
 
-The calculator now exposes separate Knowledge fields:
+An **Admission Candidate** exists only when:
 
-```text
-physicalContactThreshold
-physicalClearanceReserve
-policyMarginBudget
-policyRequiredSeparation
-policyReserve
-```
+- exactly two active workers are present;
+- the fixture resolves uniquely to Condor Yield and Patriot Progress;
+- both workers are straight, working, moving and unblocked;
+- headings differ by at least 150 degrees;
+- constant-velocity projection is closing, has `tCPA` between 0 and 30 seconds, and `dCPA` no greater than 14 m;
+- the evidence persists for three seconds;
+- no commitment has already been admitted in the continuous worker episode.
 
-Physical contact threshold is the sum of opposing Facing Clearance Extents. Policy margin budget is the explicit sum of geometry uncertainty, tracking tolerance, motion allowance and policy margin. Policy required separation adds that budget to the physical threshold. The previous ambiguous combined `requiredSeparation` and `reserve` fields are removed from runtime output.
+At the **Commitment Point**, the existing Unilateral Sidestep controller begins automatically. `otmTS015Arm` is disabled and no longer registered.
 
 ## Protected actuator invariants
 
 - Condor remains fixed Yield.
 - Patriot remains fixed, unmodified GIANTS Progress.
-- Arming remains manual and the test side remains forced.
-- Known inverted console labels remain unchanged.
+- The validated physical-right fixture side remains fixed.
 - The actuator remains fixed at 28 m lateral and 12 m rearward.
 - Every derived geometry and clearance field remains `authority=false`.
+- Automatic admission does not select role, side, movement distance or Progress control.
 
-## Expected repeated-run evidence
+## Encounter Episode Latch
 
-For the established TS017-B fixture, increasing confidence requires the separated output to reproduce approximately:
-
-- physical contact threshold: 25.37 m;
-- live reference separation: 27.38 m;
-- physical clearance reserve: +2.01 m;
-- policy margin budget: 3.75 m;
-- policy required separation: 29.12 m;
-- policy reserve: -1.74 m;
-- complete passage, rejoin, GIANTS handback and 20-second observation with `failure=nil`.
-
-These are expected comparisons, not new v4.6.32 empirical results.
+Prototype 18 permits one automatic commitment per continuous Condor/Patriot worker episode. The latch prevents a second intervention during later GIANTS coverage behaviour, including the known Split-Start Pass Recovery sequence. It resets only after the fixture pair is no longer continuously active for the configured absence interval.
 
 ## Exact continuation point
 
-Repeat the established manually armed Condor-yields run. Compare `PRE_ESTIMATE`, `REFUGE_LIVE`, `CLOSEST_APPROACH`, `PASSAGE_CONFIRMED`, continuous samples, console status and `SHADOW_SUMMARY`. Confirm that physical and policy values remain distinct while the validated actuator and visible passage behaviour remain unchanged.
+Install v4.6.33 and recreate the established Condor/Patriot same-pass fixture. Enter no OuttaMyWay console command. Capture the complete log and uninterrupted video.
 
-Only after that evidence is recorded should automatic encounter triggering and shadow candidate comparison for Yield/Progress and escape side be discussed. Geometry-derived Control remains prohibited.
+Validate:
+
+1. one `PROTOTYPE18 ADMISSION_CANDIDATE` appears only after the exact pair is straight, working and conflict-relevant;
+2. one `PROTOTYPE18 COMMITMENT_POINT` follows after approximately three seconds of sustained evidence;
+3. the established 28 m / 12 m passage, rejoin and GIANTS handback complete unchanged;
+4. Patriot remains `GIANTS_UNMODIFIED`;
+5. all Shadow Clearance output remains `authority=false`;
+6. no second activation occurs during later Split-Start Pass Recovery or other non-head-on manoeuvring;
+7. no `otmTS015Arm` command is available or required.
+
+A missed encounter, premature trigger, harmless-pass trigger, role/side drift or second activation disproves the admission gate.
 
 ## Current limits
 
-The provider remains fixture-bounded. Runtime shape bounds remain unavailable. The 2.50 m physical allowance, 3.75 m policy-margin budget and 28 m movement are not production constants. Full assembly swept paths, field/margin refuge feasibility, obstacles, autonomous role/side selection, multiple simultaneous encounters and generalisation beyond Condor/Patriot remain unresolved.
+Prototype 18 is fixture-bounded, not a production encounter selector. Exactly two active workers are required. Roles, side and movement remain fixed. Constant-velocity projection is admission evidence only. Full assembly swept paths, field/margin refuge feasibility, obstacles, autonomous role/side selection, multiple simultaneous encounters and generalisation beyond Condor/Patriot remain unresolved.
 
 ## Deferred Publication Readiness Review
 
