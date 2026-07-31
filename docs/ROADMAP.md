@@ -1,8 +1,16 @@
 # Roadmap
 
-## Current increment — Automatic Admission Evidence Consolidation
+## Current increment — Outboard Refuge Drift Correction
 
-Record the successful no-command TS018 result without changing runtime behaviour, then protect the abstraction boundary before Shadow Candidate Comparison.
+Restore the accepted outboard-only refuge architecture before any Shadow Candidate Comparison implementation. Runtime behaviour remains unchanged.
+
+## Completed — Outboard refuge correction
+
+- [x] Identify Outboard Refuge Drift in the v4.6.34 continuation wording.
+- [x] Reaffirm that Retreating Unilateral Sidestep permits one Outboard Refuge Region per proposed Yield Entity.
+- [x] Remove inboard/cross-lane refuge as a peer candidate or fallback.
+- [x] Reduce the first comparison space from four side-role combinations to two Yield-role candidates.
+- [x] Preserve world-space direction authority and explicit unresolved feasibility.
 
 ## Completed — Prototype 18 admission validation
 
@@ -19,11 +27,12 @@ Record the successful no-command TS018 result without changing runtime behaviour
 
 ## Next architectural activity — Shadow Candidate Comparison
 
-- [ ] Define candidate commitment content before implementation.
-- [ ] Replace left/right labels with world-space refuge-region evidence.
-- [ ] Define role-transfer candidates without granting role-selection authority.
+- [ ] Define Commitment Candidate content before implementation.
+- [ ] Derive one world-space Outboard Refuge Region for each proposed Yield Entity.
+- [ ] Compare exactly two Yield-role candidates: Condor-outboard and Patriot-outboard.
 - [ ] Define field/margin, obstacle, complete-assembly and Progress-preservation evidence per candidate.
-- [ ] Define candidate-invalidity rules separately from candidate preference.
+- [ ] Define candidate invalidation separately from missing evidence and later preference.
+- [ ] Forbid inboard/cross-lane substitution when an outboard candidate is unavailable.
 - [ ] Implement observer-only comparison logs only after the evidence contract is agreed.
 - [ ] Keep every comparison output `authority=false`; do not alter the validated automatic-admission actuator.
 

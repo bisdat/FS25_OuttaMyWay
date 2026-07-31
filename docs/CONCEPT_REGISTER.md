@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.34.
+Review status: reviewed for candidate release v4.6.35.
 
 ### Automatic Encounter Admission
 
@@ -143,9 +143,13 @@ Observed evidence that the Progress Entity has fully moved beyond the Yield Enti
 
 The requirement that a world-space direction selected by Decision is the same physical direction executed by Control. Console labels and local-axis names are test-harness conveniences, not spatial authority.
 
-### Escape-Side Candidate
+### Outboard Refuge Region
 
-One of the two world-space refuge directions available relative to a Yield Entity's established motion. Production selection must assess Protected Progress Corridor, field/margin space, obstacles, complete assembly sweep and rejoin geometry.
+The world-space refuge region on a proposed Yield Entity's outboard side, away from the Protected Progress Corridor and chosen so rejoin does not require cross-lane recovery. Retreating Unilateral Sidestep has one applicable Outboard Refuge Region per proposed Yield Entity. An inboard or cross-lane refuge is not a peer side candidate; it is a different intervention concept requiring separate architecture and evidence.
+
+### Outboard Refuge Drift
+
+A documentation or design regression that restores false left/right symmetry after Outboard Refuge Region has already been selected as the only refuge family for Retreating Unilateral Sidestep. The v4.6.34 continuation wording exhibited this drift and v4.6.35 corrects it before implementation.
 
 ### Egress Protection Hold
 

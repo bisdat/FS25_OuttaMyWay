@@ -2,13 +2,13 @@
 
 ## Authority
 
-Canonical implementation authority is owner-declared v4.6.33:
+Canonical implementation authority is owner-declared v4.6.34:
 
-- ZIP SHA-256: `87b24a0865929cdeffa44b7c035a90586ba537f6823e0959cacea1e3e85e74b2`
-- Git commit: `e3ca9d1bce58edaf4d245c609d03409d26fe1a22`
+- ZIP SHA-256: `808eb15a388586feabe69a49ec81756300e042af133b070fbc4752c40016dacc`
+- Git commit: `2ef9da18dc06df263e5705fa3d28b43c241fa0b8`
 - canonical generator: 132 files, clean Git status, all release bytes matched Git HEAD directly.
 
-v4.6.34 is an evidence-consolidation candidate. Runtime behaviour is unchanged; runtime files differ only in version metadata.
+v4.6.35 is a documentation-correction candidate. Runtime behaviour is unchanged; runtime files differ only in version metadata.
 
 ## Accepted runtime result
 
@@ -27,36 +27,32 @@ Exactly one admission and one commitment occurred. The Encounter Episode Latch r
 
 Shadow Clearance remained observer-only. Closest physical reserve was +2.03 m and closest policy reserve was -1.72 m; all records remained `authority=false`.
 
-## Architectural conclusion
+## Architectural correction
 
-Fixture-Bounded Automatic Encounter Admission is supported for the exact Condor/Patriot fixture. The result removes manual admission from the normal test path but does not generalise Decision authority.
+Canonical v4.6.34 contained **Outboard Refuge Drift** in its continuation wording: it described four alternatives formed from two possible Yield Entities and two refuge directions. Earlier accepted architecture had already selected outward-only refuge for Retreating Unilateral Sidestep.
 
-Do not infer from this result:
+The corrected comparison space is:
 
-- production Encounter identity;
-- permission for repeated commitments;
-- automatic Yield/Progress selection;
-- automatic side selection;
-- geometry-derived movement;
-- complete field, obstacle or swept-envelope feasibility;
-- multi-worker arbitration.
+```text
+Condor yields  → Condor Outboard Refuge Region
+Patriot yields → Patriot Outboard Refuge Region
+```
+
+Each proposed Yield Entity has one applicable outboard refuge family. An inboard or cross-lane refuge is not a peer alternative and must not be substituted when outboard refuge evidence is unavailable.
 
 ## Exact continuation point
 
-Discuss and define an observer-only **Shadow Candidate Comparison** before implementation.
+Define the observer-only **Commitment Candidate evidence contract** for the two Yield-role candidates before implementation.
 
-The intended first comparison space is four alternatives formed by two possible Yield Entities and two world-space refuge directions. The labels are provisional; candidate directions must ultimately be represented as world-space refuge regions rather than human left/right strings.
+The discussion must establish:
 
-The discussion must separate:
+- how Situation Assessment derives each Outboard Refuge Region in world space;
+- what minimum proposition turns a Yield-role alternative into a Commitment Candidate;
+- how candidate evidence records field/margin containment, obstacles, complete-assembly representation, physical clearance, policy clearance, transition sweep, Progress preservation and rejoin feasibility;
+- how `FAIL`, `UNKNOWN` and positive evidence aggregate without becoming preference or Control authority;
+- how an unavailable outboard refuge leaves a candidate `INVALIDATED` or `UNRESOLVED` rather than creating a cross-lane fallback.
 
-- facts available from Situation Assessment;
-- candidate commitment construction;
-- candidate invalidation;
-- comparison evidence;
-- selection authority;
-- Control execution.
-
-Only after the candidate evidence contract is agreed should a new prototype be implemented. Its first version must log all alternatives and exclusions without selecting one and without modifying the validated automatic-admission actuator.
+Only after that contract is agreed should Prototype 19 be implemented. Its first form must log both Yield-role candidates and exclusions without selecting one and without modifying the validated automatic-admission actuator.
 
 ## Protected invariants for the next implementation
 
@@ -64,7 +60,9 @@ Only after the candidate evidence contract is agreed should a new prototype be i
 - no console arming dependency returns;
 - the existing automatic gate remains fixture-bounded;
 - the current one-shot latch remains unchanged;
-- no candidate may alter role, side, movement or Progress control;
+- each proposed Yield Entity contributes only its Outboard Refuge Region;
+- no inboard or cross-lane fallback is introduced;
+- no candidate may alter role, refuge, movement or Progress control;
 - all candidate and clearance calculations remain `authority=false`;
 - field/margin, obstacle and complete-assembly uncertainty must remain explicit rather than silently approximated.
 

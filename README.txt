@@ -1,11 +1,11 @@
-FS25_OuttaMyWay v4.6.34
+FS25_OuttaMyWay v4.6.35
 
 Cooperative collision-avoidance research for native GIANTS AI field workers.
 
-Canonical implementation authority: owner-declared v4.6.33
-Canonical ZIP SHA-256: 87b24a0865929cdeffa44b7c035a90586ba537f6823e0959cacea1e3e85e74b2
-Canonical Git commit: e3ca9d1bce58edaf4d245c609d03409d26fe1a22
-Current package authority: candidate consolidating successful automatic-admission runtime evidence; runtime behaviour is unchanged and repository-owner Canonicalisation remains pending
+Canonical implementation authority: owner-declared v4.6.34
+Canonical ZIP SHA-256: 808eb15a388586feabe69a49ec81756300e042af133b070fbc4752c40016dacc
+Canonical Git commit: 2ef9da18dc06df263e5705fa3d28b43c241fa0b8
+Current package authority: candidate correcting Outboard Refuge Drift; runtime behaviour is unchanged and repository-owner Canonicalisation remains pending
 Runtime baseline: FS25 1.21.1.0 build b40785 revision 81824 unless a test record states otherwise
 
 TS018 validated Prototype 18 without any OuttaMyWay console command:
@@ -28,9 +28,9 @@ Prototype 17 evidence also remained observer-only and separate:
 - closest policy reserve: -1.72 m;
 - every derived clearance field: `authority=false`.
 
-Prototype 18 is supported only for the exact fixture. It does not establish production Encounter identity, recurring commitments, automatic Yield/Progress selection, escape-side selection, geometry-derived movement, field/margin refuge feasibility or obstacle clearance.
+Prototype 18 is supported only for the exact fixture. It does not establish production Encounter identity, recurring commitments, automatic Yield/Progress selection, world-space outboard-refuge feasibility, geometry-derived movement, field/margin refuge feasibility or obstacle clearance.
 
-The next architectural activity is observer-only Shadow Candidate Comparison. Candidate alternatives may be calculated and logged, but none may influence Control until their evidence and authority are separately justified.
+Outboard Refuge Drift is corrected: Retreating Unilateral Sidestep has one Outboard Refuge Region per proposed Yield Entity, not two symmetric side candidates. The next architectural activity is observer-only Shadow Candidate Comparison between Condor-outboard and Patriot-outboard role candidates. Neither may influence Control until its evidence and authority are separately justified.
 
 Diagnostic and emergency commands remain:
 

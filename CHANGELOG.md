@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.6.35 — Outboard Refuge Drift Correction
+
+- Begins from owner-declared canonical v4.6.34, SHA-256 `808eb15a388586feabe69a49ec81756300e042af133b070fbc4752c40016dacc`, Git commit `2ef9da18dc06df263e5705fa3d28b43c241fa0b8`.
+- Corrects **Outboard Refuge Drift** introduced by the v4.6.34 continuation wording, which incorrectly reopened two symmetric refuge directions for each proposed Yield Entity.
+- Reaffirms the accepted Retreating Unilateral Sidestep architecture: each proposed Yield Entity has one applicable **Outboard Refuge Region**, away from the Protected Progress Corridor and chosen to avoid later cross-lane recovery.
+- Defines the first Shadow Candidate Comparison space as two Yield-role alternatives only: Condor yields into Condor's Outboard Refuge Region, or Patriot yields into Patriot's Outboard Refuge Region.
+- States that an inboard or cross-lane refuge is not a peer alternative within Unilateral Sidestep; it would be a different intervention concept requiring separate architecture and evidence.
+- Requires an unavailable outboard refuge to leave that Yield-role candidate `INVALIDATED` or `UNRESOLVED`; the system must not silently substitute a cross-lane manoeuvre.
+- Preserves world-space direction authority: human left/right labels and vehicle-local axes remain test-harness conveniences, not refuge-selection semantics.
+- Changes runtime code only for version metadata; automatic admission, the episode latch, fixed roles, fixed physical-right fixture movement, clearance authority and actuator behaviour remain unchanged.
+- Carries forward the deferred Publication Readiness Review item **Mod Description Drift**.
+
 ## v4.6.34 — Automatic Admission Runtime Evidence Consolidation
 
 - Begins from owner-declared canonical v4.6.33, SHA-256 `87b24a0865929cdeffa44b7c035a90586ba537f6823e0959cacea1e3e85e74b2`, Git commit `e3ca9d1bce58edaf4d245c609d03409d26fe1a22`.

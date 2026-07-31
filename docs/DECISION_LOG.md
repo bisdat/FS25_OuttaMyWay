@@ -1,5 +1,17 @@
 # Decision Log
 
+## D-0076 — Restore outboard-only refuge semantics before candidate comparison
+
+**Status:** Accepted for candidate v4.6.35
+
+**Context:** The accepted Unilateral Sidestep decisions require the Yield Entity to move outward without crossing the protected-side boundary, specifically avoiding a later cross-lane recovery. The v4.6.34 continuation wording nevertheless described four alternatives formed from two Yield Entities and two refuge directions. That wording reopened a choice already closed by D-0067 and D-0068.
+
+**Decision:** Name the documentation defect **Outboard Refuge Drift** and correct it before implementation. For Retreating Unilateral Sidestep, each proposed Yield Entity contributes exactly one applicable Outboard Refuge Region. The first Shadow Candidate Comparison therefore contains two Yield-role candidates: Condor yields outboard, or Patriot yields outboard.
+
+**Boundary:** Outboard must ultimately be derived in world space from the Protected Progress Corridor and the proposed Yield Entity's working situation. Human left/right labels do not own direction authority. An inboard or cross-lane refuge is not a fallback side; it is a different intervention concept and remains outside the current candidate family.
+
+**Consequences:** If a proposed Yield Entity has no evidenced outboard refuge, that role candidate remains `INVALIDATED` or `UNRESOLVED`. The Decision layer may consider the other Yield-role candidate, but must not silently convert Unilateral Sidestep into a cross-lane manoeuvre. v4.6.35 changes no runtime behaviour beyond version metadata.
+
 ## D-0075 — Accept fixture-bounded automatic admission evidence before candidate comparison
 
 **Status:** Accepted for candidate v4.6.34

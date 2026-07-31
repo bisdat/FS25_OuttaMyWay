@@ -371,6 +371,8 @@ TS015-B changes only the lateral refuge to 28 m. Patriot remains unheld so the t
 Passage is a positive complete-assembly spatial conclusion, not merely predictor state or centre progression. Production displacement must eventually derive from complete assembly extents, configuration and steering sweep, alignment uncertainty and bounded margin.
 
 Direction commitments must ultimately be world-space refuge regions. Human left/right labels and vehicle-local axis names cannot own Decision-to-Motion Direction Integrity.
+
+For Retreating Unilateral Sidestep, the applicable region is specifically the proposed Yield Entity's **Outboard Refuge Region**: away from the Protected Progress Corridor and selected to avoid later cross-lane recovery. Each proposed Yield Entity therefore contributes one outboard refuge family. An inboard or cross-lane refuge is not a peer alternative inside this intervention; it would be a different manoeuvre concept with separate evidence and authority.
 ## Shadow clearance architecture — v4.6.29
 
 TS015-B established a successful fixture movement but not a general displacement rule. Prototype 17 therefore protects the actuator and observes a derived clearance requirement without granting authority.

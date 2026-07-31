@@ -54,7 +54,7 @@
 - [ ] Live discovered envelopes are treated as high-confidence inputs only when complete assembly coverage is established; otherwise the calculation declares marker, fixture-provider or metadata fallback.
 - [ ] Native permission-gate calls are observed and the Giants AI job remains active through hold and compacting.
 - [ ] Condor work-off, raised state, fold motion and the provisional Egress-Ready Candidate are observed before egress.
-- [ ] Egress remains on the selected side of the provisional centreline fence.
+- [ ] Egress remains on the selected outboard side of the provisional centreline fence and never substitutes an inboard/cross-lane route.
 - [ ] Patriot remains under unmodified Giants control; Condor refuge, positive passage, rejoin, deployment, work restoration and Giants handback are observed.
 - [ ] TS017-B evidence records 13/13 origins, 0/13 usable bounds, the 25.37 m physical threshold, +2.01 m physical reserve, 29.12 m policy target and -1.74 m policy reserve as distinct documented interpretations.
 - [ ] TS018 evidence records no console input, one Admission Candidate, one Commitment Point after approximately three seconds, one automatic run and no second activation in the same continuous fixture episode.

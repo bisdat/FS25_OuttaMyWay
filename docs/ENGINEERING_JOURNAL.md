@@ -1,5 +1,17 @@
 # Engineering Journal
 
+## v4.6.35 — Outboard Refuge Drift corrected before implementation
+
+**Observation:** The v4.6.34 continuation wording described four candidate alternatives by pairing two possible Yield Entities with two refuge directions. Earlier accepted decisions already required Unilateral Sidestep to move the Yield Entity outward without crossing the protected-side boundary, avoiding later cross-lane recovery.
+
+**Discovery:** Name the inconsistency **Outboard Refuge Drift**. Later summary wording had restored false left/right symmetry after the architecture had selected outboard-only refuge semantics.
+
+**Correction:** The first Shadow Candidate Comparison contains two role alternatives, not four side alternatives: Condor yields into Condor's Outboard Refuge Region, or Patriot yields into Patriot's Outboard Refuge Region. Each proposed Yield Entity owns one relevant outboard refuge family.
+
+**Boundary protected:** An unavailable outboard refuge invalidates or leaves unresolved that Yield-role candidate. It does not authorise a cross-lane substitute. World-space derivation remains unresolved and must be defined before implementation.
+
+**Implementation:** Documentation and version metadata only; no runtime behaviour changed.
+
 ## 2026-07-31 — v4.6.32 implements Evidence Separation
 
 **Implementation:** Shadow Clearance Calculation now derives physical contact solely from opposing Facing Clearance Extents. The four explicit operational margins form a separate `policyMarginBudget`, which is then added to the physical threshold. Stage logs, continuous samples, console status and final summary no longer use the ambiguous combined `requiredSeparation` and `reserve` fields.

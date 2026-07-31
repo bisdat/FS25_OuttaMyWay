@@ -30,6 +30,10 @@
 
 **Refuge Pose** — Yield Assembly position plus orientation while Progress passes.
 
+**Outboard Refuge Region** — world-space refuge region on a proposed Yield Entity's outward side, away from the Protected Progress Corridor and avoiding cross-lane recovery.
+
+**Outboard Refuge Drift** — accidental restoration of false left/right refuge symmetry after outboard-only refuge semantics have already been accepted.
+
 **Encounter Identity Is Not Entity-Pair Identity** — the same pair can form multiple independent Future-Space conflicts.
 
 **Perspective Is Not Role Authority** — player/camera viewpoint does not assign Progress or Yield responsibility.
