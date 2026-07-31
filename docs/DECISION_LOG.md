@@ -1,8 +1,102 @@
 # Decision Log
 
+## D-0073 — Separate physical clearance evidence from policy clearance before authority
+
+**Status:** Accepted for candidate v4.6.31
+
+**Context:** TS017-B produced a successful physical passage at approximately 27.38 m reference separation. The fixture-bounded physical contact threshold was 25.37 m, giving approximately +2.01 m physical reserve. The existing combined calculation added 3.75 m of provisional margins and reported a 29.12 m requirement with approximately -1.74 m reserve. One combined `required`/`reserve` pair therefore obscured the difference between observed physical clearance and an unmet provisional policy target.
+
+**Decision:** Shadow Clearance Calculation shall expose separate Knowledge fields:
+
+```text
+physicalContactThreshold
+physicalClearanceReserve
+policyMarginBudget
+policyRequiredSeparation
+policyReserve
+```
+
+The physical threshold is the sum of opposing Facing Clearance Extents. Policy required separation adds explicit margin components. Neither result grants Decision or Control authority. The validated 28 m actuator remains unchanged until the separated evidence is empirically validated.
+
+**Consequences:** Physical representation assumptions can be tested independently from safety-policy choices. A positive physical reserve with a negative policy reserve is valid evidence, not a contradiction. Automatic role selection, side selection and geometry-derived movement remain deferred.
+
+## D-0072 — Introduce a fixture-bounded Facing Extent Provider before granting clearance authority
+
+**Status:** Accepted in v4.6.30 and empirically validated for candidate v4.6.31
+
+**Decision:** Preserve the fixed 28 m TS015-B actuator and add an observer-only provider that converts exact Condor collision-catalogue identity plus live runtime bounds or origins into a one-sided compact Facing Clearance Extent. Prefer complete runtime bounds for all 13 current physical identities. When bounds are incomplete, use live origins plus a separately logged 2.50 m unresolved physical allowance. Use repeated folded-origin evidence for the pre-estimate. Grant no Decision or Control authority.
+
+**Rationale:** TS017-A closed Patriot's operand but correctly returned `n/a` for Condor. The missing concept is a representation adapter, not another hard-coded movement distance. Explicit coverage and allowance keep uncertainty visible while allowing the formula to be evaluated against the known failure/pass boundary.
+
+**Outcome:** TS017-B resolved all 13 identities and origins but no usable runtime bounds. The fallback produced a 7.37 m live compact extent and closed the fixture calculation. Its 25.37 m physical threshold distinguished the failed 21.44 m and successful 27.38 m observations. The provider remains fixture-bounded and observer-only.
+
+## D-0071 — Validate clearance derivation in shadow mode before automation
+
+**Status:** Accepted for candidate v4.6.29
+
+**Decision:** Preserve the successful TS015-B Condor-yields actuator, manual trigger, forced side and fixed 28 m movement. Add an observer-only Shadow Clearance Calculation that derives Progress and compact Yield Facing Clearance Extents plus explicit margin components. Log the result before movement, at refuge, at closest approach and at passage confirmation. Do not allow the derived result to select roles, sides, distance, triggering or Control.
+
+**Rationale:** Automatic selection would combine unvalidated representation, geometry, policy and actuation. Comparing a derived requirement against the known failed 21.44 m and successful 27.38 m actual fixture separations isolates the calculation before authority is granted.
+
+## D-0070 — Calibrate lateral refuge before adding Progress control
+
+**Status:** Accepted for candidate v4.6.28
+
+**Decision:** Classify TS015-A as actuator success with a Clearance Budget Underrun. Preserve Patriot under unmodified GIANTS control and preserve all validated Condor manoeuvre parameters except increasing the commanded lateral refuge from 22 m to 28 m for TS015-B. Do not add Egress Protection Hold because the observed failure occurred after ample egress time and was caused by insufficient lateral assembly clearance.
+
+**Rationale:** Changing one parameter protects the experiment's abstraction boundary. The next run tests whether lateral depth alone resolves the physical passage failure.
+
+## D-0069 — Introduce Patriot without a Progress hold
+
+**Status:** Accepted for candidate v4.6.27
+
+**Decision:** Preserve the validated TS014 Condor manoeuvre and introduce exactly one new behavioural variable: Patriot remains fully under GIANTS control while Condor performs the Retreating Unilateral Sidestep. Replace the fixed refuge dwell with sustained positive passage evidence before Condor rejoins. Do not add Egress Protection Hold in the same experiment. Retain the known test-command side inversion for this candidate.
+
+**Reason:** A first cooperative run must distinguish whether the existing sidestep creates physical passage from whether a second control action is required. Changing direction mapping, movement geometry and Progress control simultaneously would obscure causality. Production side selection remains a world-space Decision-to-Motion Direction Integrity requirement.
+
+## D-0068 — Prefer Retreating Unilateral Sidestep and test fold/egress overlap
+
+**Status:** Accepted for candidate v4.6.26
+
+**Decision:** Formalise the successful TS013 geometry as Retreating Unilateral Sidestep. Construct egress and rejoin targets from the confirmed stopped pose, move outward and rearward first, then rejoin slightly forward. For the Condor-only TS014 probe, permit movement up to the observed native 15 km/h repositioning pace and begin egress after a fixture-specific `foldAnimTime=0.15` candidate while folding continues. Require Full Compact Configuration before rejoin.
+
+**Reason:** Rearward movement increases longitudinal separation and produced a smooth Giants handback. Treating the complete fold duration as mandatory stationary latency is an untested serialisation assumption. The early threshold is isolated timing evidence, not complete-assembly clearance authority.
+
+## D-0067 — Authorise the Unilateral Sidestep probe
+
+**Status:** Accepted for candidate v4.6.25
+
+**Decision:** Implement exactly one manually armed, single-worker Bounded Route Deviation. Hold, turn work off, raise and fold, move to the selected outward side, pause, rejoin ahead, restore configuration and return the original job to Giants. Keep all legacy control paths dormant. Treat fixed distances and the vehicle-centre fence as fixture-specific prototype mechanisms, not architectural clearance proof.
+
+**Reason:** A live two-worker crossover would combine unresolved control, configuration, geometry and Route Reassertion assumptions. One worker isolates whether the intervention itself is compatible with continued Giants job ownership.
+
+## D-0066 — Replace passive post-commitment waiting with Minimum Necessary Authority
+
+**Status:** Accepted for candidate v4.6.25
+
+**Decision:** Passive holding is insufficient once two workers have made opposed commitments to the same corridor. OuttaMyWay may apply firm but bounded intervention—"just enough" authority—to one Yield Entity while preserving Giants ownership of the job and one unchanged Progress Entity. Prefer Unilateral Sidestep over bilateral deviation for the first investigation.
+
+**Reason:** TS012 proved the hold actuator but disproved hold placement through Static Obstacle Conversion. Altering geometry is necessary to create passage.
+
+## D-0065 — Separate conflict cessation from encounter resolution
+
+**Status:** Accepted for candidate v4.6.24
+
+**Decision:** Predictor `CLEAR`, non-closing motion or disappearance of future collision is never sufficient release authority. TS011-A and TS011-B both returned clear prediction after collision because both workers stopped closing while remaining blocked. Release requires positive continuation and separation evidence owned by a separate Safe Release assessment.
+
+**Why:** A prediction system describes future convergence, not the realised physical and operational state. Collapsing those responsibilities would release a worker precisely when a collision had made relative motion disappear.
+
+## D-0064 — Authorise one exclusive Single-Worker Information-Gaining Delay experiment
+
+**Status:** Accepted for candidate v4.6.24
+
+**Decision:** Implement Prototype 14 for TS012. After Prototype 02 establishes a settled head-on conflict, hold exactly the later-admitted worker through the native field-worker permission gate and allow the earlier-admitted worker to continue. Permit only one hold, keep legacy control paths dormant, and do not implement automatic release. Candidate release evidence may be logged but the hold remains until inactivity, map unload or player-ended observation.
+
+**Why:** TS011-A and TS011-B demonstrate a start-order-independent collision and a repeatable evidence window before blockage. One isolated Commitment is now justified; priority policy, release and recovery remain separate hypotheses.
+
 ## D-0063 — Govern empirical evidence by runtime baseline and patch impact
 
-**Status:** Accepted for candidate v4.6.23
+**Status:** Accepted in canonical v4.6.23
 
 **Decision:** Every empirical result is tagged with FS25 version/build/revision where available, OuttaMyWay version, date, fixture and exact configuration. Later patches do not automatically erase earlier evidence. Results are classified as Current, Version-bound, Revalidation candidate or Invalidated. Patch Impact Watch and a small Patch Sentinel Set trigger targeted revalidation when a release intersects an architectural claim.
 
@@ -10,7 +104,7 @@
 
 ## D-0062 — Accept asymmetric working envelopes as an in-scope requirement
 
-**Status:** Accepted for candidate v4.6.23
+**Status:** Accepted in canonical v4.6.23
 
 **Decision:** Replace the rejected Persistent/Regrowing Lifecycle test obligation with Asymmetric Working Envelope. A powered-vehicle trajectory, working-envelope trajectory and Physical Assembly envelope may be materially different. Directional left/right extents are required architectural knowledge; centred half-width assumptions are invalid.
 
@@ -20,7 +114,7 @@
 
 ## D-0061 — Accept material-chain and admission boundaries from exact configurations
 
-**Status:** Accepted for candidate v4.6.23
+**Status:** Accepted in canonical v4.6.23
 
 **Decision:** TS006 and TS007 form a Material-Chain Boundary Pair: native Giants AI can harvest wheat and create straw, while the downstream base-game baler configuration remains manually viable but cannot admit a native baling job. TS009 adds Native Crop-System Exclusion for grapes and olives. Continuity of agricultural purpose or material does not imply continuity of Giants AI Control Eligibility.
 
@@ -28,7 +122,7 @@
 
 ## D-0060 — Calibrate and close the Scope Overlay test-role portfolio
 
-**Status:** Accepted for candidate v4.6.23
+**Status:** Accepted in canonical v4.6.23
 
 **Decision:** Treat the eight original test roles as hypotheses, not mandatory permanent categories. Accept TR-01, TR-02, TR-03, TR-04, TR-06 and TR-07 as satisfied; retain TR-08 as strongly supported with a declared observer-sampling limitation; retire TR-05 after its strongest positive candidate was excluded at admission. Rename TR-03 Non-Tractor Operational Assembly and TR-04 Material-Chain Boundary.
 
@@ -36,7 +130,7 @@
 
 ## D-0059 — Adopt Complete Test Configuration and Essential Evidence Horizon
 
-**Status:** Accepted for candidate v4.6.23
+**Status:** Accepted in canonical v4.6.23
 
 **Decision:** Test conclusions belong to the complete declared configuration and its runtime baseline. Candidate selection proceeds from Test-Role Obligation to Agronomic Role Candidate to Configuration Candidate to Verified Test Configuration. Negative evidence requires State Sufficiency. Testing ends at the Essential Evidence Horizon unless the declared claim requires completion or another late lifecycle event.
 

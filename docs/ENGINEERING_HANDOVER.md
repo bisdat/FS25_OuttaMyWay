@@ -1,85 +1,75 @@
 # Engineering Handover
 
-## Authority state
+## Authority
 
-v4.6.22 is the exact canonical baseline for this increment. Canonical SHA-256:
+Canonical implementation authority remains v4.6.23 with SHA-256 `87d3548463c2f77b81e26098ecd9faa7dd88b498e628f24b13582738e4766db3` until the repository owner explicitly Canonicalises the exact v4.6.31 candidate.
 
-```text
-b636bafdd59afcedba133b2dac65a19286f3dc980734eac63b612c0aaf3a941f
-```
+v4.6.31 is the cumulative Prototype 14–17 evidence-consolidation candidate. Runtime behaviour is the tested v4.6.30 implementation with version metadata only changed.
 
-v4.6.23 is a noncanonical Scope Overlay Test-Role Calibration Consolidation candidate awaiting repository-owner review.
+## Proven actuator evidence
 
-The candidate adds enduring architecture, empirical evidence and runtime-baseline governance only. Runtime behaviour is unchanged apart from package version metadata.
+- A native permission-gate hold preserves the Condor GIANTS job.
+- Holding inside the contested pass does not resolve the conflict; it creates a static obstacle.
+- Retreating Unilateral Sidestep can fold, move outward/rearward, wait, rejoin, deploy and hand back Condor.
+- Condor's observed Native Motion Envelope is about 25 km/h working and 15 km/h repositioning.
+- Useful egress can overlap folding; complete folding remains about 15.5 seconds.
+- GIANTS accepted the forward rejoin and resumed useful work.
+- About 21.44 m actual lateral displacement failed complete Condor/Patriot assembly passage.
+- About 27.38 m actual lateral displacement passed with Patriot unheld and both original jobs preserved.
 
-## Required reading
+## TS017-B representation evidence
 
-Read in this order before continuing:
-
-1. `PROJECT_STATUS.md`;
-2. `SCOPE_OVERLAY_ARCHITECTURE.md`;
-3. `SCOPE_OVERLAY_TEST_CALIBRATION.md`;
-4. `PHYSICAL_REPRESENTATION_ARCHITECTURE.md`;
-5. `CONCEPT_REGISTER.md` and `DECISION_LOG.md`.
-
-## Preserved Scope Overlay architecture
-
-The complete reviewed base-game Semantic Catalogue remains evidence, not support. The Scope Overlay still maintains four independent contextual claims:
+The exact fixture provider resolved all 13 catalogued current Condor physical identities and origins. The tested runtime-bound APIs supplied zero usable bounds. The provider therefore used:
 
 ```text
-Control Eligibility Profile
-Operation Participation
-Assembly Relevance
-Obstacle Relevance
+4.87 m live origin projection
++ 2.50 m explicit unresolved physical allowance
+= 7.37 m compact Condor Facing Clearance Extent
 ```
 
-The capability subject is the complete Giants AI job configuration. Job Admission, Job Configuration Viability, Capability Confirmation Point, Control Eligibility and Runtime Control Admissibility remain separate.
+Patriot supplied 18.00 m from its live 36 m AI working marker.
 
-## Completed test-role calibration
+```text
+physical contact threshold = 18.00 + 7.37 = 25.37 m
+observed reference separation = 27.38 m
+physical clearance reserve = +2.01 m
 
-TS005–TS010 calibrated the proposed evidence roles without implementing a runtime overlay.
+provisional policy margin budget = 3.75 m
+policy required separation = 29.12 m
+policy reserve = -1.74 m
+```
 
-- TS005: ordinary tractor-cultivator reference positive.
-- TS006: combine-header Non-Tractor Operational Assembly and straw fixture generation.
-- TS007: manually viable baler configuration rejected at native job admission.
-- TS008-N: post-admission agronomic-state rejection, directly observed but not captured by current observer sampling.
-- TS008-P: positive dynamic 36 m Condor extent through working and manoeuvring.
-- TS009: manually viable olive assembly rejected because grapes and olives are unsupported by native AI.
-- TS010: positive right-offset mower; Giants routed the vehicle so the mower followed the field edge.
+The physical threshold correctly brackets prior evidence: the 21.44 m run lies about 3.93 m inside contact; the 27.38 m run lies about 2.01 m outside it. The pre-estimated physical threshold was 25.85 m, 0.48 m above the live result.
 
-The final role table is authoritative in `SCOPE_OVERLAY_TEST_CALIBRATION.md`. Do not recreate the original eight roles merely for numerical completeness. TR-05 was retired by evidence. Persistent/regrowing lifecycle was retired as Agronomic Proxy Drift and replaced by Asymmetric Working Envelope.
+## Named discoveries
 
-## Important boundaries
+- Origin Coverage Is Not Bound Coverage.
+- Physical Clearance Is Not Policy Clearance.
+- Encounter Identity Is Not Entity-Pair Identity.
+- Perspective Is Not Role Authority.
 
-- Exact configuration supports exact conclusion.
-- Full completion is optional unless the claim requires late lifecycle evidence.
-- A negative result requires State Sufficiency.
-- Test admission never expands support.
-- Manual viability does not establish Giants AI Control Eligibility.
-- Control Eligibility does not establish viability in every agronomic state.
-- Material-chain continuity does not imply control continuity.
-- The powered-vehicle path, working-envelope path and physical-assembly envelope are distinct.
+## Exact continuation point
 
-## Runtime baseline governance
+Begin the next engineering increment only from the exact owner-declared v4.6.31 canonical package.
 
-TS005–TS009 belong to FS25 1.21.0.0. TS010 belongs to FS25 1.21.1.0 build b40785 revision 81824. The transition is silent because no separate patch description was available at observation time.
+The first change should be evidence separation, not automation:
 
-Tag every future empirical result with game version/build/revision, OuttaMyWay version, date, fixture and exact assembly. Preserve evidence as Current, Version-bound, Revalidation candidate or Invalidated.
+1. Keep the validated actuator and fixed fixture roles unchanged.
+2. Refactor Shadow Clearance Calculation and logging to expose `physicalContactThreshold`, `physicalClearanceReserve`, `policyMarginBudget`, `policyRequiredSeparation` and `policyReserve` separately.
+3. Keep every derived field `authority=false`.
+4. Repeat the established manual Condor-yields run and compare the separated output with the same visible passage evidence.
+5. Record what was learned before discussing automatic trigger, role assignment or side selection.
 
-Patch Impact Watch must examine relevant changes to categories, AI admission/routing/manoeuvring/completion/parking, attachment/folding/collision/physics, SDK/API information and crop-system eligibility. Use the Patch Sentinel Set for targeted revalidation; do not rerun the full portfolio after every update.
+## Deferred after evidence separation
 
-## Provisional containment issue
+The intended production flow remains:
 
-TS010's coarse current envelope repeatedly reported containment breach while the visual operation appeared valid and the right-offset mower followed the field edge. Treat Valid Boundary Straddling as provisional. Do not silently weaken or enforce Full-Envelope Field Containment until a targeted review distinguishes legitimate margin use from representation over-approximation.
+```text
+Situation Assessment detects a conflict
+→ Decision generates role/side Refuge Pose candidates
+→ feasibility and clearance are assessed
+→ one bounded Commitment is selected
+→ Control executes it
+```
 
-## Next engineering activity
-
-First complete repository-owner review and Canonicalisation of the exact v4.6.23 candidate.
-
-After Canonicalisation, discuss which unresolved architectural claim has the highest evidence value. Plausible subjects are:
-
-- targeted containment review prompted by TS010;
-- minimum Structural Challenge Profiles derived from the calibrated configurations;
-- the first bounded Scope Overlay implementation hypothesis.
-
-Do not begin broad assignment tables, Prototype 13B automation, UI wording, paid-DLC support or general mod compatibility without a new agreed hypothesis and evidence contract.
+Automatic role transfer, escape-side choice, field/margin availability, obstacle checks, complete swept-envelope protection and geometry-derived movement remain unimplemented.

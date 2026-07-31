@@ -1,78 +1,58 @@
 # Project Status
 
-Version: 4.6.23
+Version: 4.6.31
+Canonical implementation authority: v4.6.23, SHA-256 `87d3548463c2f77b81e26098ecd9faa7dd88b498e628f24b13582738e4766db3`
+Authority state: Release Candidate — Unilateral Sidestep and Clearance Evidence Consolidation awaiting repository-owner review and Canonicalisation
+Runtime baseline: FS25 1.21.1.0 build b40785 revision 81824 unless the test record states otherwise
 
-Authority state: Release Candidate — Scope Overlay Test-Role Calibration Consolidation awaiting repository-owner review
+## Consolidated implementation state
 
-Implementation baseline: exact canonical v4.6.22
+The package contains the cumulative Prototype 14–17 implementation. Its runtime behaviour is the empirically tested v4.6.30 code with version metadata only changed for this consolidation.
 
-Baseline SHA-256: `b636bafdd59afcedba133b2dac65a19286f3dc980734eac63b612c0aaf3a941f`
+- Prototype 14 proved that a native permission-gate hold can preserve a GIANTS field-worker job, but an in-lane hold creates Static Obstacle Conversion.
+- Prototype 15 proved that Condor can be held, folded, displaced, rejoined, redeployed and handed back while retaining its original job.
+- TS014 established 15 km/h repositioning, Folding and Retreat Overlap and Forward Route Reacquisition.
+- Prototype 16 proved complete two-worker passage when Condor yields approximately 27.38 m laterally while Patriot remains under unmodified GIANTS control.
+- Prototype 17 remains observer-only and has no authority over trigger, roles, side or movement distance.
 
-Last canonical baseline: v4.6.22
+## TS017-B validated evidence
 
-Current focus: review and canonicalise the completed Scope Overlay Test-Role Calibration; then select the next architectural or implementation claim without reopening machine coverage by default
+- all four shadow stages and the summary were produced;
+- 13/13 current Condor physical identities and origins resolved;
+- 0/13 yielded usable runtime bounds through the tested APIs;
+- live compact Condor origin extent was 4.87 m;
+- the explicit unresolved physical allowance was 2.50 m;
+- compact Condor Facing Clearance Extent was 7.37 m;
+- Patriot Facing Clearance Extent was 18.00 m;
+- physical contact threshold was 25.37 m;
+- actual reference separation was approximately 27.38 m, giving about +2.01 m physical reserve;
+- provisional policy required separation was 29.12 m, giving about -1.74 m policy reserve;
+- passage, rejoin, handback and the full 20-second observation completed with `failure=nil` and `passageConfirmed=true`.
 
-## Preserved architectural baseline
-
-The complete Stage 2C base-game Semantic Catalogue remains authoritative evidence for 606 reviewed definitions. The Scope Overlay remains four independent contextual dimensions:
-
-1. Control Eligibility Profile;
-2. Operation Participation;
-3. Assembly Relevance;
-4. Obstacle Relevance.
-
-Catalogue membership does not imply support. The capability subject remains the complete Giants AI job configuration. Job Admission, Job Configuration Viability, Control Eligibility and runtime Control Admissibility remain distinct.
-
-## Completed Scope Overlay Test-Role Calibration
-
-The bounded TS005–TS010 investigation is complete. It used Complete Test Configuration, State Sufficiency and Essential Evidence Horizon rather than exhaustive machine or full-field testing.
-
-| Role | Disposition | Evidence |
-|---|---|---|
-| TR-01 Reference Positive | Satisfied | TS005 |
-| TR-02 Dynamic-Extent Positive | Satisfied | TS008-P |
-| TR-03 Non-Tractor Operational Assembly | Satisfied | TS006, supported by TS008-P |
-| TR-04 Material-Chain Boundary | Satisfied | TS006 + TS007 |
-| TR-05 Distinct Spatial-Regime Positive | Retired | TS009 exposed Native Crop-System Exclusion before route testing |
-| TR-06 Asymmetric Working Envelope | Satisfied | TS010 |
-| TR-07 Admission-Rejection Negative | Satisfied | TS007 and TS009 |
-| TR-08 Post-Admission Failure Negative | Strongly supported | TS008-N; observer corroboration incomplete |
-
-The complete evidence and bounded conclusions are owned by `SCOPE_OVERLAY_TEST_CALIBRATION.md`.
+The same physical threshold places the failed TS015-A 21.44 m refuge approximately 3.93 m inside contact and the successful run approximately 2.01 m outside contact. The pre-estimated physical threshold was 25.85 m, only 0.48 m above the live threshold.
 
 ## Accepted discoveries
 
-- Continuity of an agricultural material chain does not imply continuity of Giants AI Control Eligibility.
-- A valid Operation participant may be a specialist or integrated Non-Tractor Operational Assembly.
-- Agricultural and manual viability do not establish native AI Job Admission.
-- Crop-system support may reject an otherwise valid assembly before any route reasoning begins.
-- Control Eligibility does not imply viability in every agronomic state.
-- Working width is not necessarily symmetric about the powered-vehicle trajectory.
-- Giants may displace the vehicle route so an asymmetric working envelope follows the field boundary.
-- Crop persistence or regrowth is not an OuttaMyWay test obligation unless it enables a separate architectural claim.
+- Encounter Identity Is Not Entity-Pair Identity.
+- Perspective Is Not Role Authority.
+- Vehicle-Centre Passage Is Not Assembly Passage.
+- Clearance Budget Underrun.
+- Clearance Calculation Closure.
+- Origin Coverage Is Not Bound Coverage.
+- Physical Clearance Is Not Policy Clearance.
 
-## Runtime baseline governance
+## Immediate next increment
 
-- TS005–TS009: FS25 1.21.0.0.
-- TS010: FS25 1.21.1.0, build b40785, revision 81824.
-- Evidence is classified as Current, Version-bound, Revalidation candidate or Invalidated.
-- Patch Impact Watch reviews relevant GIANTS changes and triggers targeted rather than indiscriminate revalidation.
-- The initial Patch Sentinel Set is TS005, TS008-P, TS010, TS007 or TS009, and TS008-N when practical.
+Separate physical contact threshold/reserve from policy margin/required separation/reserve in runtime calculation and logging. Preserve:
 
-The 1.21.0.0 to 1.21.1.0 change is recorded as a Silent Baseline Transition because no separate patch description was available during testing.
+- fixed Condor Yield and Patriot Progress fixture roles;
+- manual trigger and forced side;
+- known inverted console labels;
+- fixed 28 m lateral / 12 m rearward actuator;
+- `authority=false` for all derived geometry.
 
-## Provisional review obligation
+After that isolated evidence change is validated, discuss automatic encounter triggering and shadow candidate comparison for Yield/Progress and escape side. Do not grant geometry-derived Control yet.
 
-TS010 produced conservative-envelope containment warnings during visibly valid offset mowing. **Valid Boundary Straddling** remains provisional. It may reflect legitimate immediate-margin use, conservative rectangle overreach or both. Full-Envelope Field Containment is not revised until targeted evidence distinguishes those explanations.
+## Current limits
 
-## Candidate implementation state
-
-- v4.6.23 adds architectural, evidence and governance knowledge only.
-- Runtime behaviour remains exact canonical v4.6.22 behaviour apart from version metadata.
-- No machine-readable Scope Overlay table or runtime eligibility evaluator exists.
-- No new Physical Occupancy Envelope, Resolution Path, Decision, Commitment, Control or UI behaviour is implemented.
-- No paid-DLC or general mod support is added.
-
-## Next gate
-
-Review and canonicalise this exact candidate. After Canonicalisation, choose the next claim at the highest useful abstraction level. Valid next subjects include targeted Structural Challenge profiling, containment review prompted by TS010, or the first minimum Scope Overlay implementation hypothesis. None is selected automatically by this release.
+The provider is fixture-bounded. Runtime shape bounds remain unavailable. The 2.50 m physical allowance, 3.75 m policy-margin budget and 28 m movement are not production constants. Full assembly swept paths, field/margin refuge feasibility, obstacles, autonomous role/side selection, multiple simultaneous encounters and generalisation beyond Condor/Patriot remain unresolved.

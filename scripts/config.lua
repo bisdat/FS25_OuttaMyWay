@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.6.23
+-- FS25_OuttaMyWay v4.6.31
 -- Cooperative collision avoidance for base-game AI field workers.
 
 OuttaMyWay = {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.6.23"
+OuttaMyWay.VERSION = "4.6.31"
 OuttaMyWay.BLOCKED_FOLD_DELAY_MS = 6500
 OuttaMyWay.WAIT_FOLD_DELAY_MS = 4500
 OuttaMyWay.HEAD_ON_FOLLOW_HOLD_DISTANCE = 55.0
@@ -26,7 +26,7 @@ OuttaMyWay.DEBUG_LEVEL = 3
 
 -- v4.1 native AIFieldCourse investigation. While enabled, OuttaMyWay is an
 -- observer only: no holds, recovery, folding, reversing or AI restart actions.
-OuttaMyWay.AI_EXPLORER_ONLY = true
+OuttaMyWay.AI_EXPLORER_ONLY = false
 OuttaMyWay.AI_EXPLORER_ENABLED = false
 OuttaMyWay.OBSERVER_INTERVAL_MS = 250
 OuttaMyWay.OBSERVER_HEARTBEAT_MS = 15000
@@ -98,7 +98,7 @@ OuttaMyWay.PROTOTYPE_02_OUTCOME_LOW_SPEED_KMH = 0.75
 -- Prototype 03: passive evidence capture for a Candidate Option Preservation
 -- Window. It observes manoeuvre ordering, Progress Entity viability, Intent
 -- Revelation and provisional Response Margin. It never issues a hold.
-OuttaMyWay.PROTOTYPE_03_ENABLED = true
+OuttaMyWay.PROTOTYPE_03_ENABLED = false
 OuttaMyWay.PROTOTYPE_03_INTERVAL_MS = 250
 OuttaMyWay.PROTOTYPE_03_LOG_INTERVAL_MS = 1000
 OuttaMyWay.PROTOTYPE_03_HEARTBEAT_MS = 15000
@@ -115,7 +115,7 @@ OuttaMyWay.PROTOTYPE_03_MIN_OPERATIONAL_SPEED_KMH = 2.0
 -- Prototype 04: passive evidence capture for Local Intent Horizon, Intent
 -- Expiry and retrospective Safe Release assessment through the Progress
 -- Entity's next repositioning event. It never issues a hold or release.
-OuttaMyWay.PROTOTYPE_04_ENABLED = true
+OuttaMyWay.PROTOTYPE_04_ENABLED = false
 OuttaMyWay.PROTOTYPE_04_INTERVAL_MS = 250
 OuttaMyWay.PROTOTYPE_04_LOG_INTERVAL_MS = 1000
 OuttaMyWay.PROTOTYPE_04_HEARTBEAT_MS = 15000
@@ -156,7 +156,7 @@ OuttaMyWay.PROTOTYPE_07_INVENTORY_REFRESH_MS = 5000
 -- their live transforms through folded, transitional and deployed poses. 08B
 -- supplies asset-bound identity/hierarchy/offline endpoint predictions while
 -- keeping binary mesh extents explicitly unresolved.
-OuttaMyWay.PROTOTYPE_08_ENABLED = false
+OuttaMyWay.PROTOTYPE_08_ENABLED = true
 OuttaMyWay.PROTOTYPE_08_INTERVAL_MS = 100
 OuttaMyWay.PROTOTYPE_08_TRANSITION_LOG_MS = 250
 OuttaMyWay.PROTOTYPE_08_ENDPOINT_LOG_MS = 2000
@@ -223,6 +223,94 @@ OuttaMyWay.PROTOTYPE_13_ALIAS_TOLERANCE_M = 0.0001
 OuttaMyWay.PROTOTYPE_13_MOTION_THRESHOLD_M = 0.02
 OuttaMyWay.PROTOTYPE_13_MAX_ABS_CENTRE_M = 10000.0
 OuttaMyWay.PROTOTYPE_13_MAX_RADIUS_M = 500.0
+
+-- Prototype 14: active Single-Worker Information-Gaining Delay. This is an
+-- exclusive, one-hold experiment for TS012. It consumes Prototype 02
+-- ESTABLISHED confidence, selects the later-admitted worker and uses the
+-- native field-worker permission gate. Predictor CLEAR never releases the hold;
+-- release candidates are logged only so Safe Release remains a separate claim.
+OuttaMyWay.SINGLE_WORKER_DELAY_ENABLED = false
+OuttaMyWay.SINGLE_WORKER_DELAY_EXCLUSIVE = false
+OuttaMyWay.SINGLE_WORKER_DELAY_INTERVAL_MS = 250
+OuttaMyWay.SINGLE_WORKER_DELAY_HEARTBEAT_MS = 15000
+OuttaMyWay.SINGLE_WORKER_DELAY_LOG_INTERVAL_MS = 1000
+OuttaMyWay.SINGLE_WORKER_DELAY_HEAD_ON_MIN_DEG = 150.0
+OuttaMyWay.SINGLE_WORKER_DELAY_MIN_TCPA_S = 5.0
+OuttaMyWay.SINGLE_WORKER_DELAY_OBSERVATION_TIMEOUT_MS = 90000
+OuttaMyWay.SINGLE_WORKER_DELAY_RELEASE_CANDIDATE_DISTANCE_M = 55.0
+OuttaMyWay.SINGLE_WORKER_DELAY_DIVERGENCE_EPSILON_M = 0.10
+OuttaMyWay.SINGLE_WORKER_DELAY_DIVERGENCE_CONFIRM_MS = 2000
+OuttaMyWay.SINGLE_WORKER_DELAY_MIN_PRIORITY_SPEED_KMH = 2.0
+OuttaMyWay.SINGLE_WORKER_DELAY_EFFECT_SPEED_KMH = 0.75
+OuttaMyWay.SINGLE_WORKER_DELAY_EFFECT_DEADLINE_MS = 4000
+
+-- Prototype 16 / TS015-B remains the validated manually armed Condor-yields /
+-- Patriot-progresses passage actuator. Its confirmed-stop reference, fixed 28 m lateral
+-- target, 12 m rearward retreat, 15/6 km/h speed profile, passage evidence and known
+-- test-command side inversion remain behaviourally unchanged.
+--
+-- Prototype 17 / TS017-B observes the same run in Shadow Clearance Calculation mode.
+-- It derives and logs a required reference separation from Progress facing extent,
+-- predicted/live compact Yield facing extent and explicit margin components. Shadow
+-- results have no role, side, distance, trigger or Control authority in this candidate.
+OuttaMyWay.UNILATERAL_SIDESTEP_ENABLED = true
+OuttaMyWay.UNILATERAL_SIDESTEP_EXCLUSIVE = true
+OuttaMyWay.TS015_INTERVAL_MS = 100
+OuttaMyWay.TS015_LOG_INTERVAL_MS = 500
+OuttaMyWay.TS015_HEARTBEAT_MS = 15000
+OuttaMyWay.TS015_STABLE_WORKING_MS = 3000
+OuttaMyWay.TS015_MIN_WORKING_SPEED_KMH = 2.0
+OuttaMyWay.TS015_MIN_PROGRESS_SPEED_KMH = 2.0
+OuttaMyWay.TS015_HEAD_ON_MIN_DEG = 150.0
+OuttaMyWay.TS015_ARM_TIMEOUT_MS = 90000
+OuttaMyWay.TS015_STOP_SPEED_KMH = 0.75
+OuttaMyWay.TS015_STOP_CONFIRM_MS = 1000
+OuttaMyWay.TS015_HOLD_EFFECT_TIMEOUT_MS = 10000
+OuttaMyWay.TS015_EGRESS_READY_TIMEOUT_MS = 12000
+OuttaMyWay.TS015_FOLD_TIMEOUT_MS = 22000
+OuttaMyWay.TS015_DRIVE_TIMEOUT_MS = 45000
+OuttaMyWay.TS015_EGRESS_SPEED_KMH = 15.0
+OuttaMyWay.TS015_INGRESS_SPEED_KMH = 15.0
+OuttaMyWay.TS015_PRECISION_SPEED_KMH = 6.0
+OuttaMyWay.TS015_EGRESS_PRECISION_RADIUS_M = 6.0
+OuttaMyWay.TS015_REJOIN_PRECISION_RADIUS_M = 8.0
+OuttaMyWay.TS015_LATERAL_OFFSET_M = 28.0
+OuttaMyWay.TS015_EGRESS_REARWARD_M = 12.0
+OuttaMyWay.TS015_REJOIN_FORWARD_M = 6.0
+OuttaMyWay.TS015_EGRESS_READY_FOLD_ANIM_TIME = 0.15
+OuttaMyWay.TS015_FULL_COMPACT_FOLD_ANIM_TIME = 0.98
+OuttaMyWay.TS015_TARGET_RADIUS_M = 1.0
+OuttaMyWay.TS015_FENCE_TOLERANCE_M = 0.75
+OuttaMyWay.TS015_PASS_BEHIND_STOP_M = 20.0
+OuttaMyWay.TS015_PASS_CLEAR_DISTANCE_M = 35.0
+OuttaMyWay.TS015_PASS_MIN_DIVERGENCE_MPS = 0.20
+OuttaMyWay.TS015_PASS_CONFIRM_MS = 1500
+OuttaMyWay.TS015_POST_PASS_DWELL_MS = 1000
+OuttaMyWay.TS015_PASSAGE_TIMEOUT_MS = 90000
+OuttaMyWay.TS015_PROGRESS_BLOCKED_CONFIRM_MS = 1500
+OuttaMyWay.TS015_PAIR_GEOMETRY_INTERVAL_MS = 500
+OuttaMyWay.TS015_PAIR_GEOMETRY_SCAN_BUDGET = 1000
+OuttaMyWay.TS015_HANDOFF_OBSERVE_MS = 20000
+
+-- Prototype 17 shadow-only clearance model. These values are evidence hypotheses,
+-- individually logged and deliberately excluded from live Control.
+OuttaMyWay.TS017_SHADOW_CLEARANCE_ENABLED = true
+OuttaMyWay.TS017_PROGRESS_WORKING_WIDTH_FALLBACK_M = 36.0
+OuttaMyWay.TS017_GEOMETRY_UNCERTAINTY_M = 0.75
+OuttaMyWay.TS017_TRACKING_TOLERANCE_M = 1.00
+OuttaMyWay.TS017_MOTION_ALLOWANCE_M = 0.50
+OuttaMyWay.TS017_POLICY_MARGIN_M = 1.50
+
+-- TS017-B fixture-bounded Condor Facing Extent Provider. The empirical folded
+-- origin template comes from repeated Prototype 08 runtime observations. The
+-- allowance closes unresolved mesh/chassis radius only for shadow evidence; it
+-- has no Control authority and is deliberately logged as a separate operand.
+OuttaMyWay.TS017_CONDOR_NODE_SCAN_BUDGET = 2200
+OuttaMyWay.TS017_CONDOR_FOLDED_ORIGIN_MIN_X_M = -1.42
+OuttaMyWay.TS017_CONDOR_FOLDED_ORIGIN_MAX_X_M = 1.42
+OuttaMyWay.TS017_CONDOR_FOLDED_ORIGIN_MIN_Z_M = -5.21
+OuttaMyWay.TS017_CONDOR_FOLDED_ORIGIN_MAX_Z_M = -1.61
+OuttaMyWay.TS017_CONDOR_ORIGIN_ALLOWANCE_M = 2.50
 
 -- First live Traffic Manager v2 prototype. Disabled while validated passive prototype evidence is consolidated.
 -- Its retained settings are not executed in this candidate.

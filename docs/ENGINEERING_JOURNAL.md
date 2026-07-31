@@ -1,5 +1,73 @@
 # Engineering Journal
 
+## 2026-07-31 — TS017-B closes the fixture calculation and separates physical from policy clearance
+
+**Observation:** The provider resolved all 13 current Condor physical identities and origins, but none yielded usable runtime bounds. Live compact origin projection was 4.87 m; adding the explicit 2.50 m unresolved allowance produced a 7.37 m Facing Clearance Extent. Patriot supplied 18.00 m from its live 36 m working marker.
+
+**Validated result:** The resulting 25.37 m physical contact threshold predicts approximately 3.93 m overlap for the failed 21.44 m run and approximately 2.01 m clearance for the successful 27.38 m run. The pre-estimate threshold was 25.85 m, only 0.48 m above the live threshold. The actuator again completed passage, rejoin, handback and the full observation horizon.
+
+**Discovery:** Origin Coverage Is Not Bound Coverage. Identity and origin completeness do not establish usable physical bounds or Coverage Closure.
+
+**Discovery:** Physical Clearance Is Not Policy Clearance. Adding the provisional 3.75 m margin budget produced a 29.12 m policy target and negative policy reserve even though the assemblies visibly passed.
+
+**Decision:** Preserve the tested actuator and provider. Before any automation, separate physical threshold/reserve from policy target/reserve in the calculation and logs. Treat both as observer-only Knowledge.
+
+**What was disproved:** One combined `requiredReferenceSeparation` and `reserve` field is not sufficient to communicate both physical geometry evidence and safety-policy evidence.
+
+## v4.6.30 — Clearance Calculation Closure investigation
+
+TS017-A repeated the successful passage but produced no derived separation because Condor had no accepted compact extent. This disproved the assumption that generic physical-envelope or size metadata would close both operands. The calculator's refusal to fabricate a value passed.
+
+The missing architectural concept is named **Facing Extent Provider**: a representation adapter that supplies a one-sided extent with source, coverage and confidence. TS017-B implements an exact-fixture provider using the retained Condor current-physical identity catalogue. Runtime bounds are preferred; live origins plus an explicit allowance remain a lower-confidence fallback. Control remains unchanged.
+
+## 2026-07-31 — Forward Route Reacquisition and explicit retreat
+
+**Observation:** TS013 completed hold, folding, direct displacement, rejoin, deployment and handback without ending the Condor job. Giants corrected slightly and continued forward instead of returning to the intervention point.
+
+**Discovery:** Name this **Forward Route Reacquisition**. The realised rearward/outward egress followed by a slightly forward rejoin appeared smoother than returning to the original hold point.
+
+**Decision:** Make the retreat explicit from the confirmed stopped pose. Test Condor's native 15 km/h repositioning pace and overlap folding with egress after a clearly labelled Egress-Ready Candidate. Enable live collision-node pose logging and separate all phase timings.
+
+**Uncertainty preserved:** Full folding took about 15.5 seconds in TS013, but the time before safe egress is unknown. `foldAnimTime=0.15` is not accepted geometry authority.
+
+## 2026-07-31 — From Static Obstacle Conversion to Unilateral Sidestep
+
+**Observation:** Prototype 14 held Condor without ending its job, but Patriot did not route around it. Both workers blocked. Route-control videos then showed that ordinary waiting positions can be consumed by continuing Giants work, with the sequence dependent on legitimate AI start state.
+
+**Disproved hypothesis:** Holding one worker after settled head-on confidence would preserve enough options for the other to pass and later support safe release.
+
+**Discovery:** Spatial Commitment precedes collision urgency. After Opposed Next-Pass Claim, an in-lane hold can only create Static Obstacle Conversion.
+
+**Architectural decision:** Permit Minimum Necessary Authority through Bounded Route Deviation. Investigate a single-worker Unilateral Sidestep before a live pair: compact, move outward without crossing the protected side, rejoin and return to Giants.
+
+**Implementation:** Added Prototype 15, manual left/right arming, exclusive direct-drive boundary, fixture-calibrated dogleg, provisional centreline fence, fail-closed restoration and post-handoff Route Reassertion evidence.
+
+**Uncertainty:** Full Behavioural Assembly swept-envelope compliance, general minimum clearance, automatic side choice and two-worker passage remain unproven.
+
+## 2026-07-30 — Prototype 14 implementation: delay before resolution
+
+**Decision:** Implement one exclusive Information-Gaining Delay rather than another layer of Scope architecture or a complete traffic policy.
+
+**Implementation:** `SingleWorkerDelayController` consumes Prototype 02 `ESTABLISHED`, tracks worker admission order and applies a native permission-gate hold to the later-admitted worker. Runtime returns immediately after this controller so legacy control paths remain dormant. Automatic release is deliberately absent.
+
+**Validation target:** TS012-A starts Patriot first and Condor second. The controller should hold Condor, preserve its Giants AI job and reveal whether Patriot can clear or turn without collision.
+
+**Protected boundary:** `CLEAR` prediction is not release authority. Safe Release Candidate evidence is logged only after positive continuation, completed turn and sustained divergence; the hold remains.
+
+## 2026-07-30 — TS011 reversed-order baseline
+
+**Observation:** TS011-A (Condor first) and TS011-B (Patriot first) both ended in head-on collision and stable blockage under FS25 1.21.1.0 build b40785 and OuttaMyWay v4.6.23.
+
+**Evidence:** Prototype 02 established the conflict before contact. The current `CRITICAL` predictor preceded first blockage by approximately 7.7 seconds in TS011-A and 7.2 seconds in TS011-B.
+
+**Named discovery:** Start-Order-Independent Conflict.
+
+**Named discovery:** Evidence-Bounded Intervention Window.
+
+**Disproved assumption:** Predictor clearance is not encounter resolution. In both runs the predictor returned `CLEAR` after collision because closing ceased while both workers remained blocked.
+
+**Consequence:** Additional passive repetition is not justified. The next test must change exactly one thing: hold one worker during the established evidence window.
+
 ## 2026-07-30 — Test roles become evidence questions, not a machine checklist
 
 **Baseline:** exact canonical v4.6.22, SHA-256 `b636bafdd59afcedba133b2dac65a19286f3dc980734eac63b612c0aaf3a941f`.
@@ -570,3 +638,46 @@ The repository owner completed the human review despite the spreadsheet's high n
 The experience produced a further process discovery: an exhaustive semantic taxonomy is not the architectural objective. Minimum Sufficient Semantic Resolution and Scope-Driven Review Depth preserve complete decision coverage while avoiding equal effort on assets that cannot change an OuttaMyWay conclusion.
 
 No runtime behaviour changed. The next discussion is the Scope Overlay, followed by targeted rather than exhaustive structural challenge profiling.
+
+
+## v4.6.28 — TS015-A clearance boundary and TS015-B calibration
+
+**Observation:** Condor completed the validated retreating sidestep and reached refuge with approximately 164 m pair separation. Patriot continued under GIANTS control but became blocked when the vehicles were approximately 22.33 m centre-to-centre, despite its centre moving about 5.17 m beyond Condor's stop anchor.
+
+**Disproved hypothesis:** A 22 m commanded lateral refuge is sufficient for complete Condor/Patriot assembly passage.
+
+**Discovery:** Vehicle-Centre Passage Is Not Assembly Passage. Reference-point progress can occur while a wide attached or deployed assembly remains obstructed.
+
+**Discovery:** Clearance Budget Underrun. The 22 m command produced approximately 21.44 m actual lateral displacement, leaving inadequate budget for Patriot's deployed half-width, Condor's compact width, alignment error and margin.
+
+**Interpretation:** Egress time was not the limiting variable in this run. Condor reached refuge and compacted while Patriot remained far away; a temporary Patriot hold would not have created lateral clearance.
+
+**Decision:** Preserve every validated TS015-A variable and test only a 28 m commanded lateral refuge in TS015-B.
+
+**Uncertainty:** 28 m remains fixture calibration. Complete-assembly geometry authority and a general Minimum Sufficient Displacement calculation remain open.
+
+## v4.6.27 — From solo sidestep to live passage
+
+TS014 disproved the serial assumption that Condor must wait stationary for its complete 15.5-second fold. Useful egress began after roughly 3.2 seconds and continued while folding, reaching refuge at approximately Full Compact Configuration. This discovery is named Configuration-Latency Hiding.
+
+The same evidence exposed Side-Semantic Inversion in the console harness. Rather than repair that label while adding Patriot, the experiment preserves the proven motion unchanged. Prototype 16 introduces exactly one new relationship: Patriot continues under GIANTS control while Condor yields.
+
+The fixed three-second refuge dwell was no longer adequate once a second worker existed. It has been replaced with Positive Passage Evidence based on reference-relative position, separation, divergence and continued Progress movement. Diagnostic envelope clearance is logged, but video remains authoritative because Coverage Closure is unresolved.
+
+A failed unprotected run is not wasted. It will quantify the boundary at which Egress Protection Hold becomes necessary.
+## v4.6.29 — From fixture calibration to shadow-derived clearance
+
+**Observation:** TS015-B succeeded with approximately 27.38 m actual lateral displacement where TS015-A failed at approximately 21.44 m. Patriot passed without blockage; Condor rejoined and both GIANTS jobs survived.
+
+**Discovery:** The later headland convergence was a new conflict, not recurrence of the resolved working-pass encounter. Encounter Identity Is Not Entity-Pair Identity.
+
+**Discovery:** Recording from Patriot's viewpoint did not change the fixed Condor Yield role. Perspective Is Not Role Authority.
+
+**Architectural question:** Can required lateral separation be derived from opposing one-sided assembly extents and explicit margins rather than a hard-coded fixture distance?
+
+**Decision:** Preserve the proven 28 m actuator and introduce observer-only Shadow Clearance Calculation. Log pre-estimate, live refuge, closest approach and passage-confirmed evidence before granting any automatic authority.
+
+**Implementation:** Added a modular calculator using discovered envelope evidence when available, AI working-marker width and size-metadata pose models as labelled fallbacks. Margin components remain explicit hypotheses.
+
+**Validation intent:** A failed calculation is valuable. It would identify a representation, pose or margin assumption that must change before role/side automation.
+

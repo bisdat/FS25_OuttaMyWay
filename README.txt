@@ -1,32 +1,37 @@
-FS25_OuttaMyWay v4.6.23
+FS25_OuttaMyWay v4.6.31
 
-Scope Overlay Test-Role Calibration Consolidation — Release Candidate
+Cooperative collision-avoidance research for native GIANTS AI field workers.
 
-Implementation baseline: exact canonical v4.6.22
-Baseline SHA-256: b636bafdd59afcedba133b2dac65a19286f3dc980734eac63b612c0aaf3a941f
-Current package authority: noncanonical candidate awaiting repository-owner review
+Current canonical authority: v4.6.23, SHA-256 87d3548463c2f77b81e26098ecd9faa7dd88b498e628f24b13582738e4766db3
+Current package authority: noncanonical consolidation candidate awaiting repository-owner review and Canonicalisation
+Runtime baseline: FS25 1.21.1.0 build b40785 revision 81824 unless a test record states otherwise
 
-This increment consolidates the completed Scope Overlay Test-Role Calibration performed through TS005–TS010. It introduces no new gameplay, Decision, Commitment or Control behaviour.
+v4.6.31 consolidates the Prototype 14–17 Unilateral Sidestep and Shadow Clearance evidence. Runtime behaviour is the empirically tested v4.6.30 implementation with version metadata only changed for this consolidation.
 
-The calibration replaced the assumption that eight proposed roles required eight substantial full-field tests with a bounded evidence model based on Complete Test Configuration, State Sufficiency and Essential Evidence Horizon. Exact configurations support exact conclusions; full completion is required only when the lifecycle claim needs it.
+Established fixture evidence:
 
-Final role disposition:
+- a native permission-gate hold can preserve the Yield worker's GIANTS job;
+- an in-lane hold creates a static obstacle rather than resolving the conflict;
+- Retreating Unilateral Sidestep can fold, displace, wait, rejoin, redeploy and hand back one worker;
+- the 22 m commanded refuge produced about 21.44 m actual lateral displacement and failed complete assembly passage;
+- the 28 m command produced about 27.38 m actual lateral displacement and passed, with Patriot unmodified and both jobs preserved;
+- TS017-B completed the full 20-second post-handoff observation with failure=nil and passageConfirmed=true.
 
-- TR-01 Reference Positive — satisfied by TS005;
-- TR-02 Dynamic-Extent Positive — satisfied by TS008-P;
-- TR-03 Non-Tractor Operational Assembly — satisfied by TS006 and supported by TS008-P;
-- TR-04 Material-Chain Boundary — satisfied by TS006 + TS007;
-- TR-05 Distinct Spatial-Regime Positive — retired after TS009 exposed Native Crop-System Exclusion;
-- TR-06 Asymmetric Working Envelope — satisfied by TS010;
-- TR-07 Admission-Rejection Negative — satisfied by TS007 and TS009;
-- TR-08 Post-Admission Failure Negative — strongly supported by TS008-N with a declared transient-observation limitation.
+Shadow Clearance evidence:
 
-The evidence establishes configuration-level and crop-system admission boundaries, an Agronomic State Gate, Material-Chain Control Boundary, Non-Tractor Operational Assembly, Offset Working Envelope, Trajectory–Work Displacement and Work-Envelope-Anchored Routing. Persistent/regrowing crop lifecycle was retired as Agronomic Proxy Drift because OuttaMyWay does not control crop biology.
+- Patriot facing extent: 18.00 m from its live 36 m AI working marker;
+- Condor current physical identities: 13/13 resolved;
+- runtime bounds: 0/13 available through the tested APIs;
+- compact Condor origin extent: 4.87 m;
+- explicit unresolved physical allowance: 2.50 m;
+- compact Condor facing extent: 7.37 m;
+- physical contact threshold: 25.37 m;
+- observed successful physical reserve: approximately +2.01 m at 27.38 m reference separation;
+- the same model places the failed 21.44 m run approximately 3.93 m inside the contact threshold;
+- the provisional 3.75 m policy-margin budget raises the policy target to 29.12 m, leaving a policy reserve of approximately -1.74 m despite successful physical passage.
 
-TS005–TS009 are tagged to FS25 1.21.0.0. TS010 is tagged to the undocumented 1.21.1.0 build b40785. Runtime evidence is now governed as Current, Version-bound, Revalidation candidate or Invalidated, supported by Patch Impact Watch and a small Patch Sentinel Set.
+This establishes Origin Coverage Is Not Bound Coverage and Physical Clearance Is Not Policy Clearance. The 2.50 m allowance, 3.75 m margin budget and 28 m movement remain fixture evidence rather than production constants.
 
-The possible Valid Boundary Straddling interpretation from TS010 is preserved as provisional evidence. It does not yet replace Full-Envelope Field Containment.
+Immediate continuation objective:
 
-No machine-readable Scope Overlay table, runtime eligibility evaluator, Physical Occupancy Envelope, new Resolution Path, Commitment, Control or player UI behaviour is implemented by v4.6.23. Runtime Lua changes are version metadata only.
-
-See docs/SCOPE_OVERLAY_TEST_CALIBRATION.md, docs/SCOPE_OVERLAY_ARCHITECTURE.md, docs/PROJECT_STATUS.md and docs/ENGINEERING_HANDOVER.md.
+Separate physical contact threshold/reserve from policy required separation/reserve in calculation and logging while preserving authority=false and the validated actuator unchanged. Automatic conflict triggering, Yield/Progress selection, refuge-side choice and geometry-derived Control remain deferred.

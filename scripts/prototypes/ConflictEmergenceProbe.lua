@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.6
+-- FS25_OuttaMyWay v4.6.31
 -- Prototype 01: passive evidence capture for Conflict Emergence Point.
 -- This module reads only the central Observer model and never controls vehicles.
 
@@ -159,15 +159,20 @@ function Probe:init()
 
     local observerOnly = OuttaMyWay.AI_EXPLORER_ONLY == true
     local trafficDisabled = OuttaMyWay.TRAFFIC_V2_ENABLED ~= true
-    local passive = observerOnly and trafficDisabled
+    local delayExperiment = OuttaMyWay.SINGLE_WORKER_DELAY_ENABLED == true
+    local sidestepExperiment = OuttaMyWay.UNILATERAL_SIDESTEP_ENABLED == true
+    local activeExperiment = delayExperiment or sidestepExperiment
+    local systemPassive = observerOnly and trafficDisabled and not activeExperiment
+    local authorisedConsumer = activeExperiment and trafficDisabled
 
     OuttaMyWay.Logger:info(
-        "PROTOTYPE 01 ACTIVE: Conflict Emergence Point evidence capture enabled=%s passive=%s observerOnly=%s trafficV2Enabled=%s no vehicle control",
-        tostring(self.enabled), tostring(passive), tostring(observerOnly), tostring(OuttaMyWay.TRAFFIC_V2_ENABLED == true))
+        "PROTOTYPE 01 ACTIVE: Conflict Emergence evidence component enabled=%s componentReadOnly=true systemPassive=%s authorisedActivePrototypeConsumer=%s trafficV2Enabled=%s",
+        tostring(self.enabled), tostring(systemPassive), tostring(authorisedConsumer),
+        tostring(OuttaMyWay.TRAFFIC_V2_ENABLED == true))
 
-    if self.enabled and not passive then
+    if self.enabled and not systemPassive and not authorisedConsumer then
         OuttaMyWay.Logger:error("VAL",
-            "PROTOTYPE 01 PASSIVE GUARANTEE FAILED: AI_EXPLORER_ONLY must be true and TRAFFIC_V2_ENABLED must be false")
+            "PROTOTYPE 01 EXECUTION BOUNDARY FAILED: expected observer-only operation or an exclusive authorised active prototype consumer")
         self.enabled = false
     end
 end

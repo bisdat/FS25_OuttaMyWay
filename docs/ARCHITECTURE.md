@@ -251,7 +251,7 @@ Folded and working are the principal stable states. Deployment is stationary con
 
 No Physical Occupancy Envelope or control behaviour is implemented by this release.
 
-## Semantic Catalogue and Scope Overlay Boundary (v4.6.23)
+## Semantic Catalogue and Scope Overlay Boundary (canonical v4.6.23)
 
 The reviewed base-game catalogue remains complete semantic evidence and does not become support, runtime or structural authority. `SCOPE_OVERLAY_ARCHITECTURE.md` owns the detailed overlay model.
 
@@ -287,3 +287,122 @@ The TS005–TS010 calibration adds empirical boundaries without implementing the
 The powered-vehicle trajectory, working-envelope trajectory and Physical Assembly envelope are therefore distinct architectural objects. Exact directional extents cannot be replaced by a centred half-width assumption.
 
 Test evidence remains bound to its runtime baseline. Patch Impact Watch moves affected conclusions from Current or Version-bound to Revalidation candidate only when a relevant change intersects the claim.
+
+## Prototype 14 active intervention boundary (v4.6.24 candidate)
+
+TS011-A and TS011-B establish a repeatable Start-Order-Independent Conflict and an Evidence-Bounded Intervention Window for the Condor/Patriot fixture. The first active hypothesis is intentionally narrower than a complete traffic policy.
+
+Prototype 14 consumes `ESTABLISHED` Conflict Confidence, selects the later-admitted worker and applies one native permission-gate HOLD while the earlier-admitted worker remains under Giants AI control.
+
+The runtime boundary is exclusive:
+
+```text
+Observer + passive assessment evidence
+        ↓
+Prototype 14 one-worker HOLD
+        ↓
+return before legacy traffic / recovery / reservation / Decision paths
+```
+
+Conflict Cessation Is Not Conflict Resolution is an architectural release invariant. Predictor `CLEAR` cannot release the hold because TS011 showed that collision and stable blockage also remove closing motion. Prototype 14 records Safe Release Candidate evidence but does not execute release.
+
+This candidate validates one Commitment and one execution mechanism only. General priority, automatic release, recovery, later repositioning and physical-clearance policy remain separate hypotheses.
+## Unilateral Sidestep intervention boundary (v4.6.25 candidate)
+
+TS012 separates actuator viability from solution viability. The native permission gate can preserve a held Giants job, but holding an assembly inside another worker's required path causes Static Obstacle Conversion.
+
+Least intervention is therefore interpreted as **Minimum Necessary Authority**, not minimal force. OuttaMyWay may temporarily own a Bounded Route Deviation while Giants continues to own the job, agronomic objective and nominal coverage strategy.
+
+The first authorised deviation family is Unilateral Sidestep:
+
+```text
+Giants Progress Entity continues unchanged
+Yield Entity: hold → compact → move outward → wait → rejoin → restore → Giants handback
+```
+
+The complete Yield Assembly swept envelope must remain outside the Protected Progress Corridor. Prototype 15 implements only a vehicle-centre negative control and explicitly does not claim complete geometry compliance.
+
+Coverage-Strategy Agnosticism remains mandatory. Route Reassertion is observed after handback rather than predicted from an assumed whole-field route.
+
+## Retreating Unilateral Sidestep refinement (v4.6.26 candidate)
+
+TS013 supports Bounded Route Deviation and Forward Route Reacquisition for the exact Condor fixture. The preferred departure is now rearward and outward from the confirmed stopped pose, followed by a slightly forward centreline rejoin.
+
+Least intervention remains **Minimum Necessary Authority**, not minimum force. Speeds should remain assembly-dependent and start from the assembly's Native Motion Envelope.
+
+Full Compact Configuration and Egress-Ready Configuration are separate. Folding and Retreat Overlap may reduce stationary latency, but any production egress trigger must be based on live complete-assembly swept-envelope compatibility with the Protected Progress Corridor. The TS014 `foldAnimTime=0.15` threshold is diagnostic and grants no such authority.
+
+A future Egress Protection Hold may temporarily stop the Progress Entity while the Yield Entity executes a defined escape. This does not revise the current candidate, which remains exactly-one-worker. The standing invariant is refined conceptually from “never hold all” to “never leave all participants under unresolved passive holds”; any simultaneous stop requires an active escape commitment and predetermined release order.
+
+
+## Cooperative passage experiment boundary — v4.6.28
+
+Prototype 16 keeps architectural ownership explicit:
+
+```text
+GIANTS owns Patriot route and job
+OuttaMyWay owns Condor's bounded deviation
+Situation Assessment observes pair geometry and passage evidence
+Control may rejoin Condor only after positive passage evidence
+```
+
+TS015-A showed that the validated Yield manoeuvre can complete in time while still failing physical passage. The 22 m command produced approximately 21.44 m lateral refuge, and Patriot's centre moved beyond Condor's stop anchor before its deployed assembly became blocked. This establishes Vehicle-Centre Passage Is Not Assembly Passage and a fixture-specific Clearance Budget Underrun.
+
+TS015-B changes only the lateral refuge to 28 m. Patriot remains unheld so the test isolates clearance depth from egress timing and Progress control. Egress Protection Hold remains a separate future response for encounters where the Progress Entity would consume the egress interval.
+
+Passage is a positive complete-assembly spatial conclusion, not merely predictor state or centre progression. Production displacement must eventually derive from complete assembly extents, configuration and steering sweep, alignment uncertainty and bounded margin.
+
+Direction commitments must ultimately be world-space refuge regions. Human left/right labels and vehicle-local axis names cannot own Decision-to-Motion Direction Integrity.
+## Shadow clearance architecture — v4.6.29
+
+TS015-B established a successful fixture movement but not a general displacement rule. Prototype 17 therefore protects the actuator and observes a derived clearance requirement without granting authority.
+
+Required reference separation is modelled as opposing Facing Clearance Extents plus explicit uncertainty and policy margins. Progress extent is measured toward the refuge; compact Yield extent is measured back toward the Protected Progress Corridor. Whole vehicle length is used only through pose projection when it contributes to that one-sided extent.
+
+Clearance belongs to a Refuge Pose, not merely a target point. An angled compact assembly can project materially more length into the lateral axis than a parallel assembly. Pre-manoeuvre prediction and live refuge measurement are therefore separate evidence stages.
+
+The staged authority boundary is:
+
+```text
+fixed role + fixed side + fixed 28 m Control
+→ shadow-derived requirement
+→ empirical comparison
+→ later candidate-role/side shadow selection
+→ only then possible automatic Commitment
+```
+
+The later headland convergence after successful handback confirms that Encounter identity is tied to current Future-Space convergence rather than entity-pair identity. Situation Assessment continues after each retired Encounter.
+## Facing Extent Provider and clearance evidence layers
+
+Shadow clearance assessment requires one-sided extents in a shared reference frame. Physical Representation may hold richer or incomplete evidence, so a dedicated Facing Extent Provider adapts that evidence to the assessment question without granting authority. Its output is Knowledge: extent, axis, reference, source, coverage, confidence and unresolved allowance. Decision remains responsible for selecting a candidate commitment; Control remains responsible for execution.
+
+A missing operand produces no clearance result. Implementation convenience must not replace Clearance Calculation Closure with a hidden hard-coded distance.
+
+TS017-B established fixture-bounded Closure for Condor/Patriot. Patriot supplied 18.00 m from its live 36 m AI working marker. All 13 current Condor physical identities and origins resolved, but none supplied usable runtime bounds through the tested APIs. The lower-confidence provider therefore projected 4.87 m from live origins and added a separately declared 2.50 m unresolved physical allowance, producing a 7.37 m compact Facing Clearance Extent.
+
+This establishes **Origin Coverage Is Not Bound Coverage**: complete identity/origin resolution does not imply that physical shape bounds are available or that Coverage Closure exists.
+
+Clearance evidence has two distinct layers:
+
+```text
+physical contact threshold
+= Progress Facing Clearance Extent
++ Yield Facing Clearance Extent
+
+physical clearance reserve
+= achieved reference separation
+- physical contact threshold
+
+policy required separation
+= physical contact threshold
++ explicit policy-margin budget
+
+policy reserve
+= achieved reference separation
+- policy required separation
+```
+
+For the TS017-B fixture, the physical threshold was 25.37 m. The successful 27.38 m passage therefore had approximately +2.01 m physical reserve. Applying the provisional 3.75 m combined margin budget produced a 29.12 m policy target and approximately -1.74 m policy reserve.
+
+This establishes **Physical Clearance Is Not Policy Clearance**. Physical passage evidence and a chosen clearance policy must not be collapsed into one value. Neither layer currently grants Decision or Control authority.
+

@@ -82,6 +82,32 @@ function OuttaMyWay:consoleDebug(channel, value)
     return self:consoleStatus()
 end
 
+
+function OuttaMyWay:consoleTS015Arm(side)
+    local controller = self.UnilateralSidestepController
+    if controller == nil or controller.arm == nil then return "TS015 controller unavailable" end
+    if controller.enabled == nil and controller.init ~= nil then controller:init() end
+    local _, message = controller:arm(side)
+    print("[OuttaMyWay] " .. tostring(message))
+    return message
+end
+
+function OuttaMyWay:consoleTS015Cancel()
+    local controller = self.UnilateralSidestepController
+    if controller == nil or controller.cancel == nil then return "TS015 controller unavailable" end
+    if controller.enabled == nil and controller.init ~= nil then controller:init() end
+    local _, message = controller:cancel()
+    print("[OuttaMyWay] " .. tostring(message))
+    return message
+end
+
+function OuttaMyWay:consoleTS015Status()
+    local controller = self.UnilateralSidestepController
+    local message = controller ~= nil and controller.statusText ~= nil and controller:statusText() or "TS015 controller unavailable"
+    print("[OuttaMyWay] " .. tostring(message))
+    return message
+end
+
 function OuttaMyWay:registerConsoleCommands()
     if addConsoleCommand == nil or self.consoleCommandsRegistered then return end
     addConsoleCommand("otmStatus", "Show OuttaMyWay settings and state", "consoleStatus", self)
@@ -92,5 +118,8 @@ function OuttaMyWay:registerConsoleCommands()
     addConsoleCommand("otmHudOpacity", "Set HUD background opacity: 0.15..0.85", "consoleHudOpacity", self)
     addConsoleCommand("otmWarnings", "Toggle OuttaMyWay warnings", "consoleWarnings", self)
     addConsoleCommand("otmDebug", "Toggle debug channel: otmDebug vector on", "consoleDebug", self)
+    addConsoleCommand("otmTS015Arm", "Arm TS017-B facing-extent run using unchanged 28 m Condor sidestep: otmTS015Arm left|right", "consoleTS015Arm", self)
+    addConsoleCommand("otmTS015Cancel", "Safely cancel TS015 and restore the worker", "consoleTS015Cancel", self)
+    addConsoleCommand("otmTS015Status", "Show TS017-B actuator and facing-extent shadow state", "consoleTS015Status", self)
     self.consoleCommandsRegistered = true
 end

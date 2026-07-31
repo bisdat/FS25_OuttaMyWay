@@ -41,6 +41,22 @@
 - [ ] No Lua errors in repeated test scenarios.
 - [ ] Debug-only code disabled or gated.
 - [ ] Observer and live modes both verified.
+- [ ] TS017-B requires exactly the active Condor/Patriot fixture pair and starts only after explicit `otmTS015Arm left|right`.
+- [ ] Condor remains the fixed Yield Entity; Patriot remains the fixed, unmodified Giants Progress Entity.
+- [ ] Runtime `HOLD_CONFIRMED` reports lateral=28.0m, rearward=12.0m and all validated TS015-B movement parameters remain unchanged.
+- [ ] Prototype 17 logs `PRE_ESTIMATE`, `REFUGE_LIVE`, `CLOSEST_APPROACH`, `PASSAGE_CONFIRMED` and `SHADOW_SUMMARY` when evidence is available.
+- [ ] Every shadow-clearance record states `authority=false` and the fixed 28 m Control target remains independent of the derived result.
+- [ ] Progress and Yield Facing Clearance Extents identify their evidence source and confidence.
+- [ ] Condor provider records expected/resolved/bounded/origin identity counts, coverage, bound APIs, pose source and scan truncation.
+- [ ] Complete runtime bounds and origin-plus-allowance fallback are visibly distinct; the 2.50 m physical allowance is logged separately.
+- [ ] Geometry, tracking, motion and policy margins remain explicit; the current combined requirement/reserve limitation is documented and no false physical-clearance claim is made.
+- [ ] Live discovered envelopes are treated as high-confidence inputs only when complete assembly coverage is established; otherwise the calculation declares marker, fixture-provider or metadata fallback.
+- [ ] Native permission-gate calls are observed and the Giants AI job remains active through hold and compacting.
+- [ ] Condor work-off, raised state, fold motion and the provisional Egress-Ready Candidate are observed before egress.
+- [ ] Egress remains on the selected side of the provisional centreline fence.
+- [ ] Patriot remains under unmodified Giants control; Condor refuge, positive passage, rejoin, deployment, work restoration and Giants handback are observed.
+- [ ] TS017-B evidence records 13/13 origins, 0/13 usable bounds, the 25.37 m physical threshold, +2.01 m physical reserve, 29.12 m policy target and -1.74 m policy reserve as distinct documented interpretations.
+- [ ] Legacy Traffic Manager, recovery, reservation and Decision paths remain dormant under the exclusive Prototype 16 actuator boundary.
 - [ ] No raw texture/audio performance warnings from this mod.
 
 ## Compatibility

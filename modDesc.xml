@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <modDesc descVersion="92">
     <author>bisdat</author>
-    <version value="4.6.23">4.6.23</version>
+    <version value="4.6.31">4.6.31</version>
     <title>
         <en>Outta My Way</en>
         <de>Aus dem Weg</de>
@@ -10,11 +10,11 @@
         <it>Fuori dai piedi</it>
     </title>
     <description>
-        <en>Passive architectural prototype that observes all vehicles inside the field polygon independently of active AI membership and records dynamic situation relevance. No vehicle control.</en>
-        <de>Passiver Architekturprototyp, der alle Fahrzeuge innerhalb des Feldpolygons unabhängig von aktiver KI-Mitgliedschaft beobachtet und dynamische Situationsrelevanz aufzeichnet. Keine Fahrzeugsteuerung.</de>
-        <fr>Prototype architectural passif qui observe tous les véhicules dans le polygone du champ indépendamment de leur participation IA active et enregistre leur pertinence dynamique. Aucun contrôle des véhicules.</fr>
-        <es>Prototipo arquitectónico pasivo que observa todos los vehículos dentro del polígono del campo independientemente de su participación activa en la IA y registra su relevancia dinámica. Sin control de vehículos.</es>
-        <it>Prototipo architetturale passivo che osserva tutti i veicoli entro il poligono del campo indipendentemente dalla partecipazione IA attiva e registra la rilevanza dinamica. Nessun controllo dei veicoli.</it>
+        <en>Experimental TS017-B facing-extent probe. The validated 28 m Condor sidestep remains unchanged while fixture-bounded clearance evidence is logged without Control authority.</en>
+        <de>Experimenteller TS017-B-Versuch zur seitlichen Ausdehnung. Das validierte 28-m-Condor-Ausweichmanöver bleibt unverändert; begrenzte Freiraumevidenz wird ohne Steuerungsbefugnis protokolliert.</de>
+        <fr>Prototype expérimental TS017-B d'étendue latérale. Le déplacement validé de 28 m du Condor reste inchangé; les preuves de dégagement bornées sont journalisées sans autorité de contrôle.</fr>
+        <es>Prototipo experimental TS017-B de extensión lateral. La maniobra validada de 28 m del Condor no cambia; la evidencia acotada de separación se registra sin autoridad de control.</es>
+        <it>Prototipo sperimentale TS017-B dell'estensione laterale. La manovra Condor validata di 28 m resta invariata; le prove di spazio limitate vengono registrate senza autorità di controllo.</it>
     </description>
     <iconFilename>icon.dds</iconFilename>
     <multiplayer supported="true" />

@@ -1,5 +1,35 @@
 # Known Issues
 
+## Prototype 17 and clearance authority
+
+- Shadow Clearance Calculation remains observer-only and fixture-specific. It must not be read as automatic Decision or Control authority.
+- All 13 current Condor identities and origins resolved, but no usable runtime shape bounds were exposed through the tested APIs.
+- The 2.50 m unresolved physical allowance is a fixture hypothesis, not Coverage Closure or a production constant.
+- Existing v4.6.30 logging combines physical geometry and provisional policy margins in one requirement/reserve pair. This obscures a positive physical reserve when the policy target remains unmet.
+- Physical threshold/reserve and policy target/reserve must be separated before further authority is considered.
+- Condor remains hard-coded as Yield and Patriot as Progress. Patriot-yields role-transfer validity is untested.
+- The console direction labels remain inverted relative to observed physical movement.
+- Triggering and side choice remain manual; field/margin refuge availability, obstacles and complete assembly swept paths are not evaluated.
+- The 28 m movement, 3.75 m margin budget and 36 m working-marker fallback are fixture evidence rather than universal values.
+
+## Prototype 15 / TS014
+
+- `foldAnimTime=0.15` is a fixture-specific Egress-Ready Candidate, not complete-assembly clearance authority.
+- Complete Behavioural Assembly swept-envelope compliance remains unresolved; only a vehicle-centre virtual fence is enforced.
+- The 15 km/h pace is justified only for the tested Condor Native Motion Envelope and still requires runtime overshoot/stopping validation.
+- TS014 excludes a second active worker, automatic role and side selection, refuge suitability and Egress Protection Hold.
+- Prototype 08 records collision-node origin spans but mesh extents and Coverage Closure remain unresolved.
+- `FAILED_HELD` still requires operator cancellation; production failure recovery is not designed.
+
+## Prototype 14 retained findings and limits
+
+- TS012 validated that the native permission-gate HOLD can arrest one selected worker while preserving its Giants AI job.
+- TS012 also disproved the in-lane Information-Gaining Delay as conflict resolution: the progressing worker did not route around the held assembly and both workers reached stable blockage through Static Obstacle Conversion.
+- Later-admitted selection was a bounded TS012 experiment, not an accepted general priority policy.
+- Predictor `CLEAR` is known to occur after collision or blocked convergence and cannot authorise release.
+- Automatic Safe Release was deliberately absent and remains unvalidated.
+- Prototype 14 is disabled in v4.6.31; only one active hold was supported and multi-conflict arbitration remains unimplemented.
+
 ## Physical assembly coverage
 
 - Physical Assembly Discovery is validated for one integrated self-propelled fixture and two tractor–cultivator fixtures. Other attachment chains, front/rear combinations, trailed subassemblies and mod-defined attachment mechanisms remain untested.

@@ -1,6 +1,6 @@
 # Scope Overlay Architecture
 
-> **Authority:** Accepted architecture and calibrated evidence for candidate v4.6.23
+> **Authority:** Canonical architecture and calibrated evidence since v4.6.23
 >
 > **Implementation state:** Architectural knowledge only; no runtime Scope Overlay is implemented
 

@@ -2941,6 +2941,26 @@ function OuttaMyWay:update(dt)
         self.AIFieldCourseExplorer:update(dt)
     end
 
+    if self.SINGLE_WORKER_DELAY_ENABLED == true
+        and self.SingleWorkerDelayController ~= nil
+        and self.SingleWorkerDelayController.update ~= nil then
+        self.SingleWorkerDelayController:update(dt)
+    end
+
+    if self.UNILATERAL_SIDESTEP_ENABLED == true
+        and self.UnilateralSidestepController ~= nil
+        and self.UnilateralSidestepController.update ~= nil then
+        self.UnilateralSidestepController:update(dt)
+    end
+
+    -- Active prototype execution boundary. Prototype 14 remains disabled but
+    -- available for TS012 reproduction. Prototype 16 exclusively owns the
+    -- TS015-B unprotected two-worker passage experiment; Patriot remains
+    -- under GIANTS control while legacy traffic, recovery, reservation and
+    -- Decision paths remain dormant.
+    if self.SINGLE_WORKER_DELAY_EXCLUSIVE == true
+        or self.UNILATERAL_SIDESTEP_EXCLUSIVE == true then return end
+
     -- Observer-only mode is an execution boundary, not merely a diagnostic
     -- label. It must be evaluated before any decision or control consumer.
     if self.AI_EXPLORER_ONLY == true then return end
@@ -3055,6 +3075,15 @@ function OuttaMyWay:deleteMap()
     self.vectorDebugState = {}
     self.vectorPredictions = {}
     self.decisions = {}
+    if self.SingleWorkerDelayController ~= nil and self.SingleWorkerDelayController.clear ~= nil then
+        self.SingleWorkerDelayController:clear()
+    end
+    if self.UnilateralSidestepController ~= nil and self.UnilateralSidestepController.clear ~= nil then
+        self.UnilateralSidestepController:clear()
+    end
+    if self.TrafficPermissionGate ~= nil and self.TrafficPermissionGate.clear ~= nil then
+        self.TrafficPermissionGate:clear()
+    end
     if self.ConflictEmergenceProbe ~= nil and self.ConflictEmergenceProbe.clear ~= nil then
         self.ConflictEmergenceProbe:clear()
     end

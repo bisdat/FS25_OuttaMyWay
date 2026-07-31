@@ -1,5 +1,67 @@
 # Glossary
 
+**Origin Coverage Is Not Bound Coverage** — complete resolution of physical identities and node origins does not establish usable shape bounds or Coverage Closure.
+
+**Physical Contact Threshold** — sum of the opposing one-sided Facing Clearance Extents in a shared reference frame.
+
+**Physical Clearance Reserve** — achieved reference separation minus the Physical Contact Threshold.
+
+**Policy Margin Budget** — explicit additional allowance for geometry uncertainty, tracking tolerance, motion and chosen safety policy.
+
+**Policy Required Separation** — Physical Contact Threshold plus Policy Margin Budget.
+
+**Policy Reserve** — achieved reference separation minus Policy Required Separation.
+
+**Physical Clearance Is Not Policy Clearance** — represented assemblies may pass without overlap while an additional policy-margin target remains unmet.
+
+**Facing Extent Provider** — A representation adapter that supplies a one-sided assembly extent for a declared axis, together with evidence source, coverage, confidence and any unresolved physical allowance.
+
+**Clearance Calculation Closure** — The state in which both opposing Facing Clearance Extents are available in the same reference frame so a required separation can be evaluated.
+
+**Shadow Clearance Calculation** — observer-only estimate of required separation for an already selected candidate, without Control authority.
+
+**Facing Clearance Extent** — one-sided projected assembly extent toward the opposing corridor or refuge.
+
+**Refuge Pose** — Yield Assembly position plus orientation while Progress passes.
+
+**Encounter Identity Is Not Entity-Pair Identity** — the same pair can form multiple independent Future-Space conflicts.
+
+**Perspective Is Not Role Authority** — player/camera viewpoint does not assign Progress or Yield responsibility.
+
+**Retreating Unilateral Sidestep** — outward and rearward first movement from a confirmed stopped pose, followed by a slightly forward rejoin.
+
+**Forward Route Reacquisition** — Giants accepts a worker rejoined farther ahead and continues useful work rather than returning to the intervention point.
+
+**Egress-Ready Configuration** — candidate assembly state permitting retreat before full compacting; requires geometry evidence before production authority.
+
+**Folding and Retreat Overlap** — compacting and rearward/outward movement occurring concurrently.
+
+**Native Motion Envelope** — assembly-specific speeds and manoeuvre behaviours already demonstrated by Giants.
+
+**Unilateral Sidestep** — one-worker outward route deviation that preserves an unchanged Progress Entity and later returns the Yield Entity to Giants.
+
+**Minimum Necessary Authority** — sufficient intervention strength for the minimum required distance and duration; least intervention is not necessarily gentle intervention.
+
+**Bounded Route Deviation** — temporary OuttaMyWay ownership of conflict-avoidance movement while Giants retains job and coverage ownership.
+
+**Compact Transit Configuration** — smallest practical assembly pose for controlled conflict-avoidance movement.
+
+**Protected Progress Corridor** — complete space reserved for the Progress Entity and forbidden to the Yield Assembly's swept envelope.
+
+**Minimum Sufficient Displacement** — smallest displacement that provides complete dynamic clearance rather than only static centre separation.
+
+**Route Reassertion** — Giants' attempt to resume or recover its route after temporary displacement.
+
+**Static Obstacle Conversion** — conversion of a moving encounter into a stationary blockage by holding within required Future Space.
+
+**Opposed Next-Pass Claim** — same next pass independently claimed from opposite ends.
+
+**Waiting-Position Closure** — later route use of an initially clear stopped position.
+
+**Start-State-Dependent Coverage** — dependence of Giants coverage ordering on legitimate AI start state.
+
+**Coverage-Strategy Agnosticism** — refusal to depend on a complete predicted Giants coverage plan.
+
 ## Reality
 The world as it exists independently of OuttaMyWay's observations or interpretation.
 
@@ -29,6 +91,21 @@ A provisional general label for something that participates in Situation Space. 
 
 ## Conflict Zone
 A derived spatial-temporal region in which intended motion cannot safely coexist without coordination.
+
+## Start-Order-Independent Conflict
+A conflict whose occurrence remains stable when worker admission precedence is reversed. It does not imply that admission order is irrelevant to priority selection.
+
+## Evidence-Bounded Intervention Window
+The measured interval between reliable conflict establishment and the observed loss of ordinary unhindered movement.
+
+## Conflict Cessation Is Not Conflict Resolution
+The rule that disappearance of closing motion or future collision prediction does not prove the realised encounter is safe or operationally resolved.
+
+## Information-Gaining Delay
+A bounded Commitment that holds exactly one worker while preserving another Progress Entity so subsequent behaviour can reveal intent or disprove the waiting hypothesis.
+
+## Safe Release Candidate
+Positive continuation and separation evidence that may justify a later release hypothesis but does not itself execute or authorise release.
 
 ## Field World
 The bounded physical world defined by one field boundary polygon for one Operation. It is not the entire map.
@@ -339,6 +416,12 @@ The evidence record supporting and limiting one Coverage Closure claim.
 
 ## Known-Coverage Trap
 The false inference that every discovered component being represented proves complete inventory.
+
+## Vehicle-Centre Passage Is Not Assembly Passage
+A vehicle centre or other reference point may move beyond a marker while the complete Behavioural Assembly remains obstructed.
+
+## Clearance Budget Underrun
+A refuge or corridor whose centre-line separation is insufficient for complete opposing assembly extents, uncertainty and safety margin.
 
 ## Clearance Unresolved
 Knowledge that available evidence establishes neither conflict nor safe clearance.

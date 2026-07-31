@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.21 entry point.
+-- FS25_OuttaMyWay v4.6.31 entry point.
 -- modDesc.xml loads only this file; this loader owns module ordering.
 
 local modDirectory = g_currentModDirectory or ""
@@ -12,6 +12,8 @@ local modules = {
     "scripts/geometry/FieldBoundary.lua",
     "scripts/geometry/PhysicalEnvelopeEvidence.lua",
     "scripts/geometry/catalogues/CondorEndurance2CollisionCatalogue.lua",
+    "scripts/geometry/FacingExtentProvider.lua",
+    "scripts/geometry/ShadowClearanceCalculator.lua",
     "scripts/prediction/VectorPrediction.lua",
     "scripts/prediction/CourseLookahead.lua",
     "scripts/observer/EventBus.lua",
@@ -36,6 +38,8 @@ local modules = {
     "scripts/prototypes/DeclaredRouteEvaluationProbe.lua",
     "scripts/control/TrafficDecisionEngineV2.lua",
     "scripts/control/TrafficPermissionGate.lua",
+    "scripts/control/SingleWorkerDelayController.lua",
+    "scripts/control/UnilateralSidestepController.lua",
     "scripts/control/RecoveryHandoff.lua",
     "scripts/control/TrafficExecutorV2.lua",
     "scripts/control/TrafficManagerV2.lua",

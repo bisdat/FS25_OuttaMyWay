@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** Reviewed for candidate release v4.6.23
+> **Currency:** Reviewed for candidate release v4.6.31
 
 This development repository is a self-sustaining engineering knowledge system. Its first responsibility is to preserve project continuity independently of any chat, engineer, AI system or platform. Its second is to remain understandable to future contributors.
 
@@ -74,6 +74,10 @@ The remaining documents deepen or verify that journey; they are classified below
 
 - [`AI_DISCOVERIES.md`](AI_DISCOVERIES.md) — observed AI behaviour and findings.
 - [`GIANTS_AI_NOTES.md`](GIANTS_AI_NOTES.md) — GIANTS AIFieldCourse observations.
+- [`prototypes/PROTOTYPE_14_SINGLE_WORKER_INFORMATION_GAINING_DELAY.md`](prototypes/PROTOTYPE_14_SINGLE_WORKER_INFORMATION_GAINING_DELAY.md) — retained TS012 one-worker delay hypothesis, validated hold mechanism and disproved in-lane resolution result.
+- [`prototypes/PROTOTYPE_15_UNILATERAL_SIDESTEP.md`](prototypes/PROTOTYPE_15_UNILATERAL_SIDESTEP.md) — validated TS013/TS014 Unilateral Sidestep and folding-overlap evidence.
+- [`prototypes/PROTOTYPE_16_TWO_WORKER_PASSAGE.md`](prototypes/PROTOTYPE_16_TWO_WORKER_PASSAGE.md) — validated TS015-A/B two-worker passage evidence.
+- [`prototypes/PROTOTYPE_17_SHADOW_CLEARANCE_CALCULATION.md`](prototypes/PROTOTYPE_17_SHADOW_CLEARANCE_CALCULATION.md) — active TS017-B observer-only derived-clearance probe.
 - [`50_Research/DESIGN_HISTORY.md`](50_Research/DESIGN_HISTORY.md) — historical design evolution.
 - [`../research/model_geometry/README.md`](../research/model_geometry/README.md) — Prototype 08B offline collision-catalogue extraction workflow.
 - [`50_Research/VEHICLE_DEFINITION_CORPUS.md`](50_Research/VEHICLE_DEFINITION_CORPUS.md) — base-game definition mining, localisation and semantic-review result.

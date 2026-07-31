@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.6
+-- FS25_OuttaMyWay v4.6.31
 -- Prototype 02: passive evidence capture for Trajectory Settlement and Conflict Confidence.
 -- This module reads Observer state and Prototype 01 kinematics only. It never controls vehicles.
 
@@ -93,21 +93,25 @@ function Probe:init()
 
     local observerOnly = OuttaMyWay.AI_EXPLORER_ONLY == true
     local trafficDisabled = OuttaMyWay.TRAFFIC_V2_ENABLED ~= true
+    local delayExperiment = OuttaMyWay.SINGLE_WORKER_DELAY_ENABLED == true
+    local sidestepExperiment = OuttaMyWay.UNILATERAL_SIDESTEP_ENABLED == true
+    local activeExperiment = delayExperiment or sidestepExperiment
     local prototype01 = OuttaMyWay.ConflictEmergenceProbe
     local kinematicsAvailable = prototype01 ~= nil
         and type(prototype01.closestApproach) == "function"
         and type(prototype01.pairKey) == "function"
         and type(prototype01.pairNames) == "function"
         and type(prototype01.shouldTrack) == "function"
-    local passive = observerOnly and trafficDisabled
+    local systemPassive = observerOnly and trafficDisabled and not activeExperiment
+    local authorisedConsumer = activeExperiment and trafficDisabled
 
     OuttaMyWay.Logger:info(
-        "PROTOTYPE 02 ACTIVE: Conflict Confidence evidence capture enabled=%s passive=%s kinematicsAvailable=%s no vehicle control",
-        tostring(self.enabled), tostring(passive), tostring(kinematicsAvailable))
+        "PROTOTYPE 02 ACTIVE: Conflict Confidence evidence component enabled=%s componentReadOnly=true systemPassive=%s authorisedActivePrototypeConsumer=%s kinematicsAvailable=%s",
+        tostring(self.enabled), tostring(systemPassive), tostring(authorisedConsumer), tostring(kinematicsAvailable))
 
-    if self.enabled and not passive then
+    if self.enabled and not systemPassive and not authorisedConsumer then
         OuttaMyWay.Logger:error("VAL",
-            "PROTOTYPE 02 PASSIVE GUARANTEE FAILED: AI_EXPLORER_ONLY must be true and TRAFFIC_V2_ENABLED must be false")
+            "PROTOTYPE 02 EXECUTION BOUNDARY FAILED: expected observer-only operation or an exclusive authorised active prototype consumer")
         self.enabled = false
     elseif self.enabled and not kinematicsAvailable then
         OuttaMyWay.Logger:error("VAL",

@@ -1,38 +1,24 @@
 # Roadmap
 
-## Active — Scope Overlay Test-Role Calibration Consolidation
+## Current increment — Clearance evidence separation
 
-- [x] Establish exact canonical v4.6.22 as the implementation baseline.
-- [x] Define Complete Test Configuration, Candidate Ladder, State Sufficiency and Essential Evidence Horizon.
-- [x] Validate the ordinary reference configuration in TS005.
-- [x] Validate Non-Tractor Operational Assembly and Fixture-Generation Evidence in TS006.
-- [x] Establish configuration-level Admission-Rejection Boundary and Material-Chain Control Boundary through TS006 + TS007.
-- [x] Establish Dynamic-Extent Positive and Agronomic State Gate through TS008-P and TS008-N.
-- [x] Retire the mandatory permanent-row positive role after Native Crop-System Exclusion in TS009.
-- [x] Retire Persistent/Regrowing Lifecycle as Agronomic Proxy Drift.
-- [x] Replace it with Asymmetric Working Envelope and validate right-offset Work-Envelope-Anchored Routing in TS010.
-- [x] Establish Runtime Baseline Governance, Patch Impact Watch and the Patch Sentinel Set.
-- [x] Close Scope Overlay Test-Role Calibration without implementing runtime behaviour.
-- [ ] Review and canonicalise the exact v4.6.23 candidate.
+Preserve the validated Condor-yields actuator and fixture-bounded Facing Extent Provider. Separate physical contact evidence from policy-margin evidence before introducing automatic decisions.
 
-## Next — Select one bounded architectural or implementation claim
+## Active — Prototype 17 consolidation and next validation
 
-After Canonicalisation, discuss rather than assume the next activity. Candidate subjects are:
-
-- targeted containment review prompted by TS010 and the provisional Valid Boundary Straddling observation;
-- minimum Structural Challenge Profiles for the calibrated positive and negative configurations;
-- the first machine-readable Scope Overlay hypothesis with explicit evidence and refresh rules;
-- a persistent-obstacle fixture that distinguishes Local Resolution from Operational Resolution.
-
-Do not create an exhaustive assignment table across all 606 definitions. Do not resume broad equipment testing without an uncovered architectural claim.
-
-## After next-claim selection — Targeted Structural Challenge Profiles
-
-Profile representation difficulty only for selected control-eligible, participation-relevant, assembly-relevant or obstacle-relevant assets plus deliberate negative and disproof controls.
-
-Structural Challenge describes how difficult an asset is to represent. It is not a semantic role, support promise or Scope Overlay result.
-
-Prototype 13B automated Resolution Path discovery remains deferred until the selected fixtures and evidence obligations are agreed.
+- [x] Validate the isolated and two-worker Unilateral Sidestep actuator through TS013–TS015-B.
+- [x] Establish the failed 21.44 m and successful 27.38 m actual lateral fixture observations.
+- [x] Add observer-only Facing Clearance Extent and explicit margin calculation.
+- [x] Run TS017-A and confirm Patriot extent acquisition plus safe `n/a` handling for missing Condor extent.
+- [x] Add exact Condor current-physical catalogue resolution and runtime-bound/origin fallback.
+- [x] Run TS017-B and complete the full handoff observation.
+- [x] Resolve 13/13 Condor identities/origins and record 0/13 usable runtime bounds.
+- [x] Compare the 25.37 m live physical threshold against the failed and successful fixture evidence.
+- [x] Name Origin Coverage Is Not Bound Coverage and Physical Clearance Is Not Policy Clearance.
+- [ ] Separate `physicalContactThreshold` and `physicalClearanceReserve` from `policyMarginBudget`, `policyRequiredSeparation` and `policyReserve`.
+- [ ] Repeat the established manual run to validate the separated output without actuator change.
+- [ ] After validation, discuss shadow generation and comparison of Condor/Patriot Yield and escape-side candidates.
+- [ ] Keep derived movement, automatic trigger, role selection and side selection without authority until their own evidence increments.
 
 ## Development policy
 
@@ -59,7 +45,7 @@ Development remains in a private repository until the first GIANTS ModHub releas
 - [x] Validate the `FORMING → ESTABLISHED` interpretation: the Prototype 02 hypothesis is strongly supported.
 - [x] Establish that Trajectory Settlement and Conflict Confidence have useful distinct provisional responsibilities.
 - [x] Record that future-projection decay after collision is not equivalent to real conflict resolution.
-- [ ] Consolidate the realised-conflict boundary into the next single-hypothesis increment before active intervention.
+- [x] Consolidate the realised-conflict boundary through TS011 and authorise one active Prototype 14 hypothesis.
 
 ### Prototype 03 — Option Preservation Window
 
@@ -73,7 +59,8 @@ Development remains in a private repository until the first GIANTS ModHub releas
 - [x] Preserve one Progress Entity and avoid Observation Deadlock in the evidence model.
 - [x] Record Startup Manoeuvre Contamination and Exhaustion Event Repetition as instrumentation defects.
 - [x] Run a limited manual continuation test and disprove current-lane intent as sufficient safe-release evidence.
-- [x] Decide that an active Information-Gaining Delay is not yet justified because continuation and release safety remain unproven.
+- [x] At that stage, defer active delay until complete physical observation and repeatable intervention evidence existed.
+- [x] Reopen only the bounded delay claim after TS011 established repeatable pre-blockage evidence; Safe Release remains deferred.
 
 ### Prototype 04 — Continuation Intent and Safe Release
 
@@ -85,7 +72,29 @@ Development remains in a private repository until the first GIANTS ModHub releas
 - [x] Record that the active-worker observer could not classify the physical encounter after Patriot left Operational Membership.
 - [x] Observe a later terminal occupancy conflict after completed Condor left active observation.
 - [x] Correct Prototype 03 startup contamination, stale intent and repeated exhaustion-event logging within the declared increment.
-- [x] Decide that an active Information-Gaining Delay remains unjustified because complete physical observation and Safe Release evidence are missing.
+- [x] Preserve this earlier deferral as valid for the evidence then available.
+- [x] Keep automatic Safe Release deferred while Prototype 14 tests only the one-worker delay Commitment.
+
+### Prototype 14 — Single-Worker Information-Gaining Delay
+
+- [x] Establish a Start-Order-Independent Conflict through TS011-A/B.
+- [x] Define one active Commitment: hold the later-admitted worker after `ESTABLISHED` confidence.
+- [x] Reuse the native field-worker permission gate without ending or restarting the Giants AI job.
+- [x] Enforce one active hold and an exclusive runtime boundary.
+- [x] Forbid predictor `CLEAR` from authorising release.
+- [x] Log Safe Release Candidate evidence without releasing.
+- [x] Run TS012-A/B and classify the outcome: control viability supported; in-lane delay disproved as conflict resolution through Static Obstacle Conversion.
+
+### Prototype 15 — Unilateral Sidestep
+
+- [x] Name Minimum Necessary Authority, Bounded Route Deviation, Compact Transit Configuration, Protected Progress Corridor, Minimum Sufficient Displacement and Route Reassertion.
+- [x] Prefer one diverted Yield Entity and one unchanged Progress Entity.
+- [x] Require initial movement to the selected outward side rather than across the unselected lane boundary.
+- [x] Implement manual left/right arming for a one-worker capability probe.
+- [x] Keep full Behavioural Assembly fence compliance explicitly unclaimed.
+- [x] Validate hold, compacting, egress, rejoin, deployment and handback in TS013.
+- [x] Establish Forward Route Reacquisition rather than return to the switch/departure point.
+- [x] Validate Retreating Unilateral Sidestep pace and folding overlap through TS014.
 
 ### Prototype 05 — Field World Observation
 
@@ -266,3 +275,4 @@ Multiplayer:
 - Farm-wide cost optimisation for three or more workers.
 - In-game settings page.
 - Additional localisations based on community contributions.
+

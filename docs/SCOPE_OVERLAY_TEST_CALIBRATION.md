@@ -1,6 +1,6 @@
 # Scope Overlay Test-Role Calibration
 
-> **Authority:** Accepted evidence and architecture for candidate v4.6.23
+> **Authority:** Canonical evidence and architecture since v4.6.23
 >
 > **Implementation state:** Knowledge and governance only; no new runtime Scope Overlay, Decision, Commitment or Control behaviour
 

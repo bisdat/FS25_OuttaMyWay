@@ -1,5 +1,120 @@
 # Changelog
 
+## v4.6.31 — Unilateral Sidestep and Clearance Evidence Consolidation
+
+- Begins from exact canonical v4.6.23, SHA-256 `87d3548463c2f77b81e26098ecd9faa7dd88b498e628f24b13582738e4766db3`, and consolidates the cumulative noncanonical Prototype 14–17 engineering increment.
+- Preserves the empirically tested v4.6.30 runtime behaviour; Lua changes are version metadata only.
+- Consolidates TS012 evidence that a native permission-gate hold preserves the GIANTS job but an in-lane hold causes Static Obstacle Conversion.
+- Consolidates TS013 and TS014 as successful Retreating Unilateral Sidestep capability evidence, including Forward Route Reacquisition, the Condor Native Motion Envelope and Folding and Retreat Overlap.
+- Consolidates TS015-A as a 21.44 m actual lateral clearance failure and TS015-B as a 27.38 m actual lateral complete-passage success with Patriot unmodified and both original GIANTS jobs preserved.
+- Confirms Encounter Identity Is Not Entity-Pair Identity and Perspective Is Not Role Authority.
+- Records TS017-A as correct unavailable-evidence handling and TS017-B as successful Clearance Calculation Closure for the exact Condor/Patriot fixture.
+- Records that all 13 catalogued current Condor physical identities and origins resolved while none exposed usable runtime bounds through the tested APIs: **Origin Coverage Is Not Bound Coverage**.
+- Consolidates the live compact Condor Facing Clearance Extent as 7.37 m from 4.87 m origin projection plus the explicit 2.50 m unresolved physical allowance.
+- Separates the 25.37 m physical contact threshold from the 29.12 m provisional policy target: the successful run had approximately +2.01 m physical reserve but -1.74 m policy reserve.
+- Records **Physical Clearance Is Not Policy Clearance** and accepts a separate physical/policy clearance evidence model before any derived movement or Decision authority.
+- Leaves the 2.50 m allowance, 3.75 m policy-margin budget, fixed 28 m movement, role assignment, side selection and manual trigger as fixture-bounded hypotheses or test-harness constraints.
+- Sets the next isolated increment to separate physical threshold/reserve from policy target/reserve in runtime output without changing the validated actuator or granting authority.
+
+## v4.6.30 — TS017-B Facing Extent Provider
+
+- Begins from exact canonical v4.6.23, SHA-256 `87d3548463c2f77b81e26098ecd9faa7dd88b498e628f24b13582738e4766db3`, through the cumulative noncanonical Prototype 14–17 release plan.
+- Preserves the validated TS015-B actuator unchanged: Condor remains fixed Yield, Patriot remains fixed GIANTS Progress, manual arming and the 28 m lateral / 12 m rearward movement remain authoritative.
+- Records TS017-A as an actuator regression pass and a safe calculation non-result: Patriot's 18 m facing extent resolved, while Condor's compact extent remained unavailable and the calculator correctly returned `n/a`.
+- Adds `scripts/geometry/FacingExtentProvider.lua` as an observer-only representation adapter between physical evidence and Shadow Clearance Calculation.
+- For the exact 36 m Condor fixture, resolves the 13 catalogued current physical collision identities and prefers live GIANTS runtime bounds projected from the AI steering-node reference.
+- Falls back explicitly to live catalogued node origins plus a separately logged 2.50 m unresolved physical allowance when runtime bounds are incomplete.
+- Adds a pre-manoeuvre fixture model based on repeated Prototype 08 folded-origin evidence (`x=-1.42..1.42 m`, `z=-5.21..-1.61 m`) plus the same explicit allowance.
+- Logs coverage, expected/resolved/bounded/origin counts, bound APIs, origin extent, allowance, pose source and confidence at every shadow stage.
+- Keeps every derived value `authority=false`; no automatic trigger, role selection, side selection or geometry-derived movement is introduced.
+
+## v4.6.29 — TS017-A Shadow Clearance Calculation
+
+- Retains exact canonical v4.6.23 as implementation authority and preserves the successful noncanonical TS015-B actuator unchanged.
+- Records TS015-B as a complete fixture pass: approximately 27.38 m lateral and 11.56 m rearward Condor displacement, uninterrupted Patriot passage, Condor rejoin, GIANTS handback and both-job survival.
+- Records **Encounter Identity Is Not Entity-Pair Identity**: the later headland convergence was a new conflict formed by new GIANTS intentions, not failure or recurrence of the resolved working-pass encounter.
+- Records **Perspective Is Not Role Authority** after a Patriot-viewpoint repetition still correctly selected the hard-coded Condor Yield role.
+- Adds Prototype 17 / TS017-A in observer-only Shadow Clearance Calculation mode.
+- Keeps Condor as fixed Yield, Patriot as fixed unheld Progress, manual console arming, known inverted test-side labels and the actual 28 m Control target.
+- Adds `scripts/geometry/ShadowClearanceCalculator.lua` to derive Progress Facing Clearance Extent, predicted/live compact Yield Facing Clearance Extent, explicit margin components, required reference separation and reserve.
+- Logs pre-manoeuvre estimate, live refuge calculation, closest-approach snapshot, passage-confirmed snapshot and final shadow summary.
+- Uses live discovered envelope evidence when available, then AI working-marker width and size-metadata pose models as explicitly labelled fallbacks.
+- Gives shadow results no role, side, distance, trigger or Control authority. Automatic decision selection remains deferred until the calculation is empirically compared with the validated 28 m run.
+
+## v4.6.28 — TS015-B Lateral Clearance Calibration
+
+- Retains exact canonical v4.6.23 as implementation authority and carries forward the validated noncanonical Prototype 16 controller.
+- Records TS015-A as a partial success: Condor completed the hold, folding/retreat overlap and refuge arrival while Patriot remained under GIANTS control, but the complete assemblies could not pass.
+- Records **Vehicle-Centre Passage Is Not Assembly Passage**: Patriot's centre moved approximately 5.17 m beyond Condor's stop anchor while its deployed boom remained obstructed.
+- Records **Clearance Budget Underrun**: the commanded 22 m lateral refuge produced approximately 21.44 m actual displacement and was insufficient for the deployed Patriot plus compact Condor assemblies.
+- Distinguishes the result from an egress-time failure: Condor reached refuge with approximately 164 m pair separation and became fully compact while Patriot was still about 159 m away.
+- Changes only the fixture-calibrated lateral target from 22 m to **28 m**; rearward offset, speeds, fold threshold, passage evidence, Progress authority and fail-closed behaviour remain unchanged.
+- Keeps Patriot unheld so TS015-B tests one variable: whether six additional metres of lateral refuge creates complete physical passage.
+- Retains the known inverted console-side labels as a documented test-harness defect.
+- Leaves full-assembly clearance authority, automatic side choice, general displacement calculation and Egress Protection Hold unresolved.
+
+## v4.6.27 — Unprotected Two-Worker Passage Probe
+
+- Retains exact canonical v4.6.23 as implementation authority while extending the validated noncanonical TS014 movement evidence.
+- Records TS014 as successful: 15 km/h retreat/rejoin, Folding and Retreat Overlap, Configuration-Latency Hiding, Forward Route Reacquisition and complete 20-second handoff observation.
+- Records the known test-command Side-Semantic Inversion without changing the validated movement mapping.
+- Adds Prototype 16 / TS015-A with fixed fixture roles: Condor yields and Patriot progresses.
+- Leaves Patriot fully under GIANTS control; no Egress Protection Hold, steering or implement command is issued to the Progress Entity.
+- Preserves the TS014 Condor waypoints, speeds, fold threshold and centreline fence unchanged.
+- Replaces the fixed refuge dwell with positive passage evidence: Patriot must be behind the Condor stop anchor, at least 35 m separated, diverging, moving and unblocked for 1.5 seconds.
+- Adds pair instrumentation for separation, longitudinal relation, divergence, blocked state, passage candidate/confirmation and minimum separation.
+- Adds non-authoritative diagnostic complete-Entity envelope clearance while retaining uninterrupted video as the full-assembly evidence authority.
+- Adds fail-closed handling for Progress blockage, worker loss, unexpected third workers, passage timeout and centreline-fence violation.
+- Replaces TS014 console controls with `otmTS015Arm left|right`, `otmTS015Status` and `otmTS015Cancel`.
+- Keeps the known inverted test labels for this run so introducing Patriot is the only behavioural change. Production side selection remains world-space and automatic.
+
+## v4.6.26 — Retreating Sidestep Pace and Folding-Overlap Probe
+
+- Retains exact canonical v4.6.23 as the implementation authority while extending the noncanonical v4.6.25 Prototype 15 candidate.
+- Records TS013 as a successful single-worker Unilateral Sidestep capability result under FS25 1.21.1.0 build b40785 revision 81824.
+- Records **Forward Route Reacquisition**: after rejoin and handback, Giants accepted the forward route position, made only a small lane correction and resumed useful work instead of returning to the intervention point.
+- Formalises **Retreating Unilateral Sidestep** as the preferred first manoeuvre: the Yield Entity moves outward and rearward relative to its confirmed stopped pose, then rejoins slightly forward on the original centreline.
+- Rebuilds the fixture waypoints from the confirmed stop pose rather than the earlier arming pose.
+- Raises Condor egress and ingress cruise limits from the proving value of 6 km/h to its observed native 15 km/h repositioning pace, retaining a 6 km/h precision approach near each target.
+- Separates Full Compact Configuration from an **Egress-Ready Candidate** and tests **Folding and Retreat Overlap** after `foldAnimTime >= 0.15`.
+- Treats the 0.15 threshold as fixture-specific timing evidence only; it grants no complete Behavioural Assembly clearance authority.
+- Enables Prototype 08 during TS014 so live Condor collision-node origin spans are recorded while folding and retreat overlap.
+- Adds explicit timing marks and a final phase-duration summary for hold request, confirmed stop, first fold motion, egress-ready candidate, full compact, egress, rejoin, deployment and handback.
+- Replaces TS013 console controls with `otmTS014Arm left|right`, `otmTS014Status` and `otmTS014Cancel`.
+- Keeps TS014 exactly-one-worker and manually armed. It does not yet introduce a live Progress Entity, Egress Protection Hold, automatic side selection or full swept-envelope clearance.
+
+## v4.6.25 — Unilateral Sidestep Route-Reassertion Probe
+
+- Begins from exact canonical v4.6.23, SHA-256 `87d3548463c2f77b81e26098ecd9faa7dd88b498e628f24b13582738e4766db3`; noncanonical v4.6.24 remains experimental evidence, not a baseline authority.
+- Consolidates TS012-A/B results: the permission gate successfully holds one Giants worker without ending its job, but an in-lane hold produces Static Obstacle Conversion and delayed stable blockage.
+- Records Opposed Next-Pass Claim, Spatial Commitment Precedes Collision Urgency, Waiting-Position Closure, Start-State-Dependent Coverage and Coverage-Strategy Agnosticism.
+- Records that the Patriot-only continuation immediately consumed Condor's parked location, while the Condor-only continuation reached Patriot after Split-Start Pass Recovery and a cross-field transition; the route mechanisms are not assumed symmetric.
+- Establishes Minimum Necessary Authority, Bounded Route Deviation, Compact Transit Configuration, Protected Progress Corridor and Minimum Sufficient Displacement as the architectural basis for a forceful but bounded intervention.
+- Selects **Unilateral Sidestep** as the first route-deviation hypothesis: one Progress Entity remains under Giants while one Yield Entity folds, moves outward without crossing the protected side boundary, rejoins and returns to Giants.
+- Adds Prototype 15 / TS013 as a manually armed, exactly-one-worker route-reassertion probe.
+- Adds console commands `otmTS013Arm left|right`, `otmTS013Status` and `otmTS013Cancel`.
+- Uses a fixture-calibrated 22 m lateral offset, 12 m forward egress and 32 m forward rejoin; these values are experimental and not a general clearance algorithm.
+- Adds a provisional original-lane centre-point fence and fails closed if the vehicle centre moves to the unselected side. Full Behavioural Assembly swept-envelope compliance remains unproven.
+- Holds, stops work, raises and folds before movement; drives outward and rejoins under a narrow `AIVehicleUtil.driveToPoint` interception; unfolds, restores work state and requests Giants AI continuation.
+- Observes post-handoff Route Reassertion for 20 seconds while retaining Giants ownership of the original job.
+- Disables Prototype 14 execution and gives Prototype 15 an exclusive runtime boundary; retained legacy Traffic Manager, recovery, reservation and Decision paths remain dormant.
+- Adds fail-closed `FAILED_HELD` behaviour and safe operator cancellation through configuration restoration before handback.
+
+## v4.6.24 — Single-Worker Information-Gaining Delay
+
+- Begins from exact canonical v4.6.23, SHA-256 `87d3548463c2f77b81e26098ecd9faa7dd88b498e628f24b13582738e4766db3`.
+- Records TS011-A and TS011-B as a repeatable Start-Order-Independent Conflict under FS25 1.21.1.0 build b40785.
+- Establishes an Evidence-Bounded Intervention Window: current `CRITICAL` prediction preceded first blockage by approximately seven seconds in both reversed-order runs.
+- Establishes Conflict Cessation Is Not Conflict Resolution after predictor `CLEAR` followed collision and stable blockage in both runs.
+- Adds Prototype 14 — Single-Worker Information-Gaining Delay and the TS012 evidence contract.
+- Selects the later-admitted worker as the only hold subject after Prototype 02 reaches `ESTABLISHED` confidence in a settled head-on relationship.
+- Reuses the native field-worker permission gate so the held worker remains under its Giants AI job rather than being stopped or restarted.
+- Adds an exclusive Prototype 14 execution boundary; retained legacy Traffic Manager, recovery, reservation and Decision paths remain dormant.
+- Disables passive Prototype 03 and Prototype 04 during the active experiment because their original evidence contracts assumed a wholly passive system.
+- Forbids release on predictor `CLEAR`; Safe Release Candidates are logged only after positive continuation, turn-completion and divergence evidence, and do not execute release.
+- Retains the hold on blocked or unresolved-timeout outcomes for player observation; automatic release remains a separate unproven claim.
+- Updates package descriptions, scenario records, decisions, concepts, handover, roadmap and release validation for the active TS012 candidate.
+
 ## v4.6.23 — Scope Overlay Test-Role Calibration Consolidation
 
 - Begins from exact canonical v4.6.22, SHA-256 `b636bafdd59afcedba133b2dac65a19286f3dc980734eac63b612c0aaf3a941f`.

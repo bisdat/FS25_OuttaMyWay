@@ -1,8 +1,165 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.23.
+Review status: reviewed for candidate release v4.6.31.
+
+### Shadow Clearance Calculation
+
+An observer-only estimate of the separation required by an already selected candidate commitment. It may inform later Decision design but has no current role, side, distance, trigger or Control authority.
+
+### Facing Clearance Extent
+
+The one-sided projection from an assembly reference to its furthest relevant physical point toward the opposing corridor or refuge. Required separation combines the opposing facing extents rather than using whole width or centre distance alone.
+
+### Clearance Calculation Closure
+
+Both opposing Facing Clearance Extents are available in one reference frame, allowing the required separation formula to be evaluated. Missing operands remain explicit rather than being replaced by a hidden constant.
+
+### Origin Coverage Is Not Bound Coverage
+
+Resolving every declared physical identity and node origin does not establish usable shape bounds, exact physical extents or Coverage Closure. Origin evidence may support a separately qualified fallback, but the unresolved physical remainder must remain explicit.
+
+### Physical Clearance Is Not Policy Clearance
+
+Physical clearance asks whether represented assemblies overlap. Policy clearance asks whether additional uncertainty, tracking, motion and safety margins are also satisfied. The two results must be reported separately and may legitimately disagree.
+
+### Refuge Pose
+
+The position and orientation occupied by a Yield Assembly while Progress passes. Clearance depends on pose, not merely target-point displacement.
+
+### Encounter Identity Is Not Entity-Pair Identity
+
+An Encounter belongs to a particular convergence of Future Spaces. The same two entities may form several independent encounters during one Operation.
+
+### Perspective Is Not Role Authority
+
+Player vehicle, camera location or observation viewpoint does not assign Progress or Yield responsibility. Role authority must come from an explicit Decision.
+
+### Vehicle-Centre Passage Is Not Assembly Passage
+
+A reference point or vehicle centre may cross a longitudinal marker while the complete Behavioural Assembly remains in conflict. Passage and release conclusions must use assembly geometry rather than centre progression alone.
+
+### Clearance Budget Underrun
+
+A commanded refuge displacement that separates vehicle centres but leaves insufficient space for the complete facing assembly extents, alignment uncertainty, movement sweep and safety margin. TS015-A demonstrated this for the 22 m Condor refuge.
+
+### Retreating Unilateral Sidestep
+
+A Unilateral Sidestep whose first movement is outward and rearward relative to the Yield Entity's confirmed stopped working direction. It increases longitudinal separation while clearing laterally, then rejoins slightly forward for handback.
+
+### Forward Route Reacquisition
+
+Giants accepts a displaced worker returned to its route farther ahead, makes only a bounded convergence correction and continues useful work rather than returning to the intervention point.
+
+### Egress-Ready Configuration
+
+A changing assembly state in which retreat may begin while compacting continues. It is distinct from Full Compact Configuration and requires physical-envelope evidence before production authority.
+
+### Folding and Retreat Overlap
+
+Concurrent compacting and rearward/outward movement intended to reduce stationary Configuration Latency. TS014 tests compatibility; it does not yet prove passing clearance.
+
+### Native Motion Envelope
+
+The speeds and movement behaviours Giants already demonstrates as normal for a specific Behavioural Assembly. For the tested Condor, observed working and repositioning speeds are approximately 25 km/h and 15 km/h.
+
+### Unilateral Sidestep
+
+A Bounded Route Deviation in which one Progress Entity remains on its Giants-selected route while one Yield Entity compacts, moves outward, waits, rejoins and returns to Giants. Only one worker receives route-deviation control.
+
+### Minimum Necessary Authority
+
+The minimum control strength, distance and duration required to change physical reality and resolve an otherwise unavoidable conflict. Least intervention does not require weak intervention.
+
+### Bounded Route Deviation
+
+A temporary spatial departure from a Giants-selected route, authorised only for conflict resolution and ended as soon as a safe handback is possible. Giants retains the job and coverage objective.
+
+### Compact Transit Configuration
+
+The smallest practical assembly configuration suitable for conflict-avoidance movement. For the Condor/Patriot fixture this means work off, raised and booms folded.
+
+### Protected Progress Corridor
+
+The space reserved for the unchanged Progress Entity during a Unilateral Sidestep. The Yield Assembly's complete swept envelope must not enter it.
+
+### Minimum Sufficient Displacement
+
+The smallest outward displacement that keeps both assemblies' passing and movement envelopes disjoint, including configuration transition, turning sweep, waiting and rejoin margins.
+
+### Route Reassertion
+
+Giants AI behaviour after OuttaMyWay releases a displaced worker: continuing ahead, converging onto the route, returning toward the departure point, recovering missed coverage or stopping.
+
+### Static Obstacle Conversion
+
+A failed resolution in which stopping one worker inside another's required path converts a moving conflict into a stationary obstruction.
+
+### Opposed Next-Pass Claim
+
+Two independent Giants workers select the same next working pass from opposite ends during separate headland turns.
+
+### Spatial Commitment Precedes Collision Urgency
+
+After both assemblies commit to incompatible space, a long time-to-collision does not preserve a passive waiting solution. Safe waiting or deviation must occur before or alter that commitment.
+
+### Waiting-Position Closure
+
+A location that appears clear when a worker stops but is later consumed by another worker's evolving route or transition space.
+
+### Start-State-Dependent Coverage
+
+Giants field coverage sequence is materially influenced by the legitimate position, orientation and incomplete work state from which the AI job begins.
+
+### Coverage-Strategy Agnosticism
+
+OuttaMyWay must not require knowledge of Giants' complete field-coverage ordering. It reacts to observable evolving Future Space and reassesses commitments.
+
+
+### Configuration-Latency Hiding
+
+Useful clearance movement performed while an assembly continues changing configuration, preventing the full configuration duration from becoming stationary delay. TS014 showed Condor reaching refuge almost simultaneously with Full Compact Configuration.
+
+### Unprotected Two-Worker Passage
+
+A bounded cooperative experiment in which the Progress Entity receives no OuttaMyWay control while the Yield Entity executes an already validated route deviation. Failure distinguishes inadequate egress opportunity from failure of the sidestep actuator itself.
+
+### Positive Passage Evidence
+
+Observed evidence that the Progress Entity has fully moved beyond the Yield Entity's rejoin conflict: it is behind a reference anchor, sufficiently separated, moving and diverging for a sustained interval. Absence of closing alone is insufficient.
+
+### Decision-to-Motion Direction Integrity
+
+The requirement that a world-space direction selected by Decision is the same physical direction executed by Control. Console labels and local-axis names are test-harness conveniences, not spatial authority.
+
+### Escape-Side Candidate
+
+One of the two world-space refuge directions available relative to a Yield Entity's established motion. Production selection must assess Protected Progress Corridor, field/margin space, obstacles, complete assembly sweep and rejoin geometry.
+
+### Egress Protection Hold
+
+A future bounded hold of the Progress Entity used only when continued approach would consume the space or time required for the Yield Entity to escape. It remains unimplemented in TS015-B.
 
 ## Accepted Concepts
+
+### Start-Order-Independent Conflict
+
+A conflict whose occurrence remains stable when worker admission precedence is reversed. TS011-A and TS011-B support this classification for the Condor/Patriot fixture; the concept does not imply that admission order is irrelevant to priority selection.
+
+### Evidence-Bounded Intervention Window
+
+The measured interval between reliable conflict establishment and observed loss of ordinary unhindered movement. TS011 produced several seconds of reliable evidence before first blockage under both start orders.
+
+### Conflict Cessation Is Not Conflict Resolution
+
+Relative closing can cease because participants collided and became blocked. Absence of future closing or predictor `CLEAR` is therefore not positive evidence that the encounter is resolved.
+
+### Information-Gaining Delay Commitment
+
+A bounded Commitment that holds exactly one worker while preserving another Progress Entity so the changing situation can reveal continuation intent or disprove the waiting hypothesis. Prototype 14 selects the later-admitted worker only for the TS012 experiment.
+
+### Safe Release Candidate
+
+Observed positive continuation evidence that may justify a later release hypothesis but does not itself execute or authorise release. Prototype 14 requires turn completion, movement, separation and sustained divergence, while retaining the hold.
 
 ### Situation Space
 

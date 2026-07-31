@@ -431,6 +431,23 @@ Safe in-place raising or folding may later be examined as footprint reduction wi
 
 When useful representation cannot be refreshed before decision time expires, Situation Assessment reports the remaining insufficiency. A future Decision Engine session may examine selective hold, emergency freeze or another failsafe. No timeout, all-stop or escalation policy is selected by this consolidation.
 
+
+## Facing Extent Provider evidence from TS017-B
+
+A Facing Extent Provider is an assessment adapter, not a replacement for Physical Representation. It asks a narrower question: what one-sided extent can current evidence support along a declared axis and reference?
+
+For the exact compact Condor fixture, TS017-B resolved all 13 catalogued current physical identities and node origins. The tested GIANTS runtime-bound APIs produced zero usable bounds. This establishes **Origin Coverage Is Not Bound Coverage** and preserves the distinction between identity/origin resolution and geometric Coverage Closure.
+
+The provider used a lower-confidence fixture model:
+
+```text
+4.87 m live one-sided origin projection
++ 2.50 m explicit unresolved physical allowance
+= 7.37 m compact Facing Clearance Extent
+```
+
+The allowance is part of the Representation Passport and must remain visible. It is not proof of full assembly bounds, a production constant or authority to exclude conflict. The provider output remains suitable for shadow comparison only until broader structural evidence and policy separation are validated.
+
 ## Current Boundary
 
 Prototype 13A is complete for its declared fixture matrix. Prototype 13B automated Resolution Path discovery remains deferred. The next evidence activity is selection—potentially through data mining—of fixtures that attempt to disprove the Resolution Contract across broader representation structures.

@@ -21,6 +21,34 @@
 19. An otherwise Control-Eligible crop-care configuration can be admitted and then fail because the encountered agronomic state is incompatible.
 20. GIANTS routes a right-offset mower by displacing the tractor path so the mower follows the field edge; powered-vehicle trajectory is not working-envelope trajectory.
 21. A short-lived admitted job can begin and terminate between periodic observer samples, so absence from observer history is not proof that admission never occurred.
+22. Condor Endurance II and Patriot 4450 produced the same stable head-on collision when worker start order was reversed; the tested conflict is not an artefact of one admission precedence.
+23. Current `CRITICAL` prediction preceded first blockage by approximately seven seconds in both TS011 runs, supporting a bounded active-intervention opportunity.
+24. Conflict prediction can return `CLEAR` after collision because closing ceases while both workers remain blocked; predictor clearance is not encounter resolution or release authority.
+25. The native field-worker permission gate can hold Condor at zero speed without ending its Giants AI job.
+26. Giants AI does not proactively route around a held field obstacle; stopping Condor inside Patriot's required pass converted the moving conflict into stable blockage.
+27. The Condor/Patriot head-on originated when opposite headland turns selected the same next pass from opposite ends, not when the later settled head-on projection appeared.
+28. A parked worker's ordinary pass-end location may be consumed by another worker's immediate or later route; initial route clearance is not permanent refuge evidence.
+29. Condor starting part-way down a pass later completed the omitted remainder and returned to its start position before a cross-field transition, demonstrating start-state-dependent coverage sequencing.
+30. For OuttaMyWay, Giants' complete coverage ordering is not required authority; local observable Future Space and repeated reassessment are the relevant evidence.
+31. A held Condor can be folded, directly displaced, rejoined, redeployed and returned to Giants without ending its field-worker job.
+32. After a forward rejoin, Giants accepted the new route position, made a small lateral correction and resumed useful work rather than returning to the intervention point: Forward Route Reacquisition.
+33. The Condor fixture uses approximately 25 km/h while working and 15 km/h while repositioning; these values belong to its Native Motion Envelope rather than a universal speed rule.
+34. Full Condor folding took approximately 15.5 seconds in TS013, but Full Compact Configuration and Egress Readiness are separate claims; stationary waiting for the entire fold remains an unvalidated serialisation assumption.
+
+35. TS014 began useful Condor egress approximately 3.2 seconds after confirmed stop while full folding still required approximately 15.5 seconds; useful movement hid most of the configuration latency.
+36. At 15 km/h, Condor reached refuge at approximately the same time it reached Full Compact Configuration, supporting Folding and Retreat Overlap for this fixture.
+37. The test command labels were inverted relative to physical Condor motion in both single-worker runs; local-axis names are not world-space direction authority.
+38. In TS015-A, Patriot's centre moved beyond Condor's stop anchor while the deployed Patriot assembly remained obstructed; vehicle-centre passage is not complete assembly passage.
+39. A 22 m commanded Condor refuge produced approximately 21.44 m actual lateral displacement and was insufficient, even though Condor reached refuge long before Patriot arrived; the failure was clearance depth rather than egress timing.
+
+
+40. TS015-B and TS017-B repeated the 28 m command as approximately 27.38 m actual lateral displacement and complete physical passage while Patriot remained under unmodified GIANTS control.
+41. The TS017-B provider resolved all 13 catalogued current Condor physical identities and origins but obtained usable runtime bounds for none of them through the tested APIs: Origin Coverage Is Not Bound Coverage.
+42. For the exact compact Condor refuge pose, 4.87 m one-sided origin projection plus the explicit 2.50 m unresolved physical allowance produced a 7.37 m Facing Clearance Extent.
+43. The resulting 25.37 m physical contact threshold distinguishes the failed 21.44 m run (approximately 3.93 m overlap) from the successful 27.38 m run (approximately 2.01 m clearance).
+44. The pre-manoeuvre physical threshold estimate was 25.85 m and the live threshold was 25.37 m, a 0.48 m difference; predicted and observed physical reserves differed by approximately 0.14 m.
+45. Adding the provisional 3.75 m policy-margin budget produced a 29.12 m policy target and a negative policy reserve despite observed passage: Physical Clearance Is Not Policy Clearance.
+46. TS017-B completed the 20-second handoff observation with both workers active, unblocked and working; the new provider did not disturb the validated actuator.
 
 ## Mapping and hierarchy evidence relevant to Prototype 13A
 

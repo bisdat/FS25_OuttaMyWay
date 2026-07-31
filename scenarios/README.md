@@ -73,5 +73,69 @@ Field 4 contained three painted north-south olive rows with approximately 5 m he
 
 Field 4 contained grass ready to cut. DEUTZ-FAHR 6135 C RVshift + SaMASZ XT 390 was admitted by native Giants AI. The mower remained offset to the tractor's right; Giants kept the mower at the field edge and used a spiral route through repeated working and manoeuvring. The Essential Evidence Horizon was reached before full completion. This satisfies Asymmetric Working Envelope and establishes Work-Envelope-Anchored Routing.
 
+## TS011 — Controlled Condor/Patriot head-on baseline
+
+Clivio's Mindenerwald same-lane spraying fixture under FS25 1.21.1.0 build b40785. TS011-A started Condor first; TS011-B started Patriot first. The second worker began after approximately 18 seconds. Both unassisted runs ended in head-on collision and stable blockage.
+
+The contrast establishes Start-Order-Independent Conflict for the exact fixture and an Evidence-Bounded Intervention Window before first blockage. It also repeats Conflict Cessation Is Not Conflict Resolution: predictor `CLEAR` followed collision because relative closing ceased.
+
+## TS012 — Single-Worker Information-Gaining Delay
+
+TS012 used the unchanged Condor/Patriot fixture with Prototype 14. The permission gate successfully held Condor at zero speed without ending its Giants AI job while Patriot continued.
+
+The resolution hypothesis failed. Condor was held only after both workers had entered the same contested pass. Because Giants does not proactively route around field obstacles, Patriot continued directly toward the held Condor and both became blocked. The run establishes Static Obstacle Conversion and confirms that predictor `CLEAR` after blockage is not release authority.
+
+TS012-B mapped the route origin: opposite headland turns independently selected the same next pass from opposite ends, named Opposed Next-Pass Claim. The useful Commitment Point preceded settled head-on confidence.
+
+Patriot-only and Condor-only continuation controls established Waiting-Position Closure. Patriot immediately consumed Condor's ordinary parked location. Condor reached Patriot later through Split-Start Pass Recovery and a cross-field transition. The exact Giants coverage sequence remains start-state dependent and is not an architectural dependency.
+
+## TS013 — Unilateral Sidestep Route-Reassertion Probe
+
+TS013 uses exactly one active Condor and one manually selected clear side. Prototype 15 holds the worker, folds it, drives outward, pauses, rejoins ahead, redeploys and returns control to Giants. The run observes whether Giants continues, returns to the departure/switch point, stops or otherwise reasserts its route.
+
+This is not a two-worker passing test. It validates or disproves compatibility between Bounded Route Deviation and continued Giants job ownership.
+
+See `docs/prototypes/PROTOTYPE_15_UNILATERAL_SIDESTEP.md`.
+
 Detailed runtime baselines, evidence contracts and bounded conclusions are in `docs/SCOPE_OVERLAY_TEST_CALIBRATION.md`.
 
+## TS014 — Retreating Unilateral Sidestep Pace and Folding-Overlap Probe
+
+- Runtime: FS25 1.21.1.0 build b40785 revision 81824 unless the test log records otherwise.
+- Mod: v4.6.26 candidate.
+- Active worker: Condor only; Patriot inactive.
+- Arm: `otmTS014Arm left|right` after stable straight work.
+- Purpose: validate confirmed-stop waypoint reference, rearward/outward egress, 15 km/h movement, precision target capture, fold/egress overlap and Forward Route Reacquisition.
+- Required evidence: uninterrupted video and complete log through at least 20 seconds after handback.
+- Boundary: no physical passing-clearance claim and no second active worker.
+
+
+## TS015 — Two-Worker Passage
+
+TS015 introduces Patriot to the validated Condor Retreating Unilateral Sidestep. Condor is the fixed Yield Entity; Patriot is the fixed Progress Entity and receives no OuttaMyWay control.
+
+### TS015-A — 22 m lateral refuge
+
+Condor reached approximately 21.44 m lateral / 11.45 m rearward refuge with ample separation and became fully compact before Patriot arrived. Patriot's centre moved beyond Condor's stop anchor, but the deployed Patriot assembly remained obstructed and the worker became blocked at approximately 22.33 m centre separation. This establishes Vehicle-Centre Passage Is Not Assembly Passage and Clearance Budget Underrun.
+
+### TS015-B — 28 m lateral clearance calibration
+
+The 28 m command produced approximately 27.38 m actual lateral displacement and 11.56 m rearward displacement. Patriot passed the compact Condor without being held, Condor rejoined, and both original Giants jobs remained active through the complete handoff observation. This is a full pass for the fixture and establishes a successful calibration point, not a universal production distance.
+
+A later headland convergence was a new Encounter created by new Giants intentions: Condor returned toward initial Coverage Debt while Patriot entered a headland transition. Encounter identity is therefore not entity-pair identity.
+
+The test still excludes Egress Protection Hold. Video remains the authority for real assembly clearance.
+
+See `docs/prototypes/PROTOTYPE_16_TWO_WORKER_PASSAGE.md`.
+
+## TS017-B — Facing Extent Provider
+
+TS017-B repeated the successful TS015-B Condor-yields fixture without changing its actuator. Condor remained fixed Yield, Patriot remained unmodified GIANTS Progress, the side was manually forced and Control still commanded exactly 28 m lateral / 12 m rearward movement.
+
+The run resolved 13/13 current Condor physical identities and origins but obtained usable bounds for 0/13. The fallback produced 7.37 m compact Condor facing extent from 4.87 m live origin projection plus the explicit 2.50 m unresolved physical allowance. Patriot supplied 18.00 m from its live 36 m AI working marker.
+
+The 25.37 m physical contact threshold predicted approximately 2.01 m clearance at the successful 27.38 m reference separation and approximately 3.93 m overlap at the failed 21.44 m calibration. The provisional policy target was 29.12 m, demonstrating that Physical Clearance Is Not Policy Clearance.
+
+Passage, rejoin, handback and the full 20-second observation completed with `failure=nil`. All provider results remain `authority=false`.
+
+See `docs/prototypes/PROTOTYPE_17_SHADOW_CLEARANCE_CALCULATION.md`.
