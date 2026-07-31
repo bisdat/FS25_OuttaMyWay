@@ -1,5 +1,15 @@
 # Engineering Journal
 
+## 2026-07-31 — v4.6.32 implements Evidence Separation
+
+**Implementation:** Shadow Clearance Calculation now derives physical contact solely from opposing Facing Clearance Extents. The four explicit operational margins form a separate `policyMarginBudget`, which is then added to the physical threshold. Stage logs, continuous samples, console status and final summary no longer use the ambiguous combined `requiredSeparation` and `reserve` fields.
+
+**Protected architecture:** Condor/Patriot fixture roles, manual trigger, forced side, known inverted labels, 28 m lateral / 12 m rearward actuator and `authority=false` remain unchanged.
+
+**Validation state:** Static inspection supports an isolated Knowledge-output change. Runtime behaviour and expected 25.37 m / +2.01 m physical versus 29.12 m / -1.74 m policy evidence still require repetition in FS25.
+
+**Deferred publication item:** Mod Description Drift remains for Publication Readiness Review; the prototype-specific `modDesc.xml` wording is deliberately not changed during this evidence increment.
+
 ## 2026-07-31 — TS017-B closes the fixture calculation and separates physical from policy clearance
 
 **Observation:** The provider resolved all 13 current Condor physical identities and origins, but none yielded usable runtime bounds. Live compact origin projection was 4.87 m; adding the explicit 2.50 m unresolved allowance produced a 7.37 m Facing Clearance Extent. Patriot supplied 18.00 m from its live 36 m working marker.

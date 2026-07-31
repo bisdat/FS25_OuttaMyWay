@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.31
+-- FS25_OuttaMyWay v4.6.32
 -- Prototype 16 / TS015-B actuator plus Prototype 17 / TS017-B shadow clearance calculation.
 --
 -- The validated Condor-yields/Patriot-progresses manoeuvre remains behaviourally
@@ -350,15 +350,17 @@ function Controller:statusText()
         local lateral = signedLateral(self.run, x, z)
         local forward = longitudinal(self.run, x, z)
         local shadow = self.run.shadowLatest or self.run.shadowPre
-        return string.format("TS015 phase=%s yield=%s progress=%s requestedSide=%s lateral=%s forward=%s separation=%s passage=%s shadowRequired=%s shadowReserve=%s",
+        return string.format("TS015 phase=%s yield=%s progress=%s requestedSide=%s lateral=%s forward=%s separation=%s passage=%s shadowPhysicalThreshold=%s shadowPhysicalReserve=%s shadowPolicyRequired=%s shadowPolicyReserve=%s",
             tostring(self.run.phase), nameOf(self.run.vehicle), nameOf(self.run.progressVehicle),
             tostring(self.run.requestedSide),
             lateral ~= nil and string.format("%.1fm", lateral) or "unknown",
             forward ~= nil and string.format("%.1fm", forward) or "unknown",
             self.run.lastPairSeparation ~= nil and string.format("%.1fm", self.run.lastPairSeparation) or "unknown",
             tostring(self.run.passageConfirmedAt ~= nil),
-            shadow ~= nil and shadow.requiredSeparation ~= nil and string.format("%.2fm", shadow.requiredSeparation) or "n/a",
-            shadow ~= nil and shadow.reserve ~= nil and string.format("%.2fm", shadow.reserve) or "n/a")
+            shadow ~= nil and shadow.physicalContactThreshold ~= nil and string.format("%.2fm", shadow.physicalContactThreshold) or "n/a",
+            shadow ~= nil and shadow.physicalClearanceReserve ~= nil and string.format("%.2fm", shadow.physicalClearanceReserve) or "n/a",
+            shadow ~= nil and shadow.policyRequiredSeparation ~= nil and string.format("%.2fm", shadow.policyRequiredSeparation) or "n/a",
+            shadow ~= nil and shadow.policyReserve ~= nil and string.format("%.2fm", shadow.policyReserve) or "n/a")
     end
     if self.armedSide ~= nil then return "TS015 armed " .. self.armedSide .. "; waiting for Condor/Patriot pair" end
     return "TS015 idle"
@@ -539,10 +541,12 @@ end
 
 local function logShadow(stage, run, sample, nowMs, pairSeparation)
     if run == nil or sample == nil then return end
-    local controlReserve = sample.requiredSeparation ~= nil
-        and sample.controlTarget - sample.requiredSeparation or nil
+    local physicalControlTargetReserve = sample.physicalContactThreshold ~= nil
+        and sample.controlTarget - sample.physicalContactThreshold or nil
+    local policyControlTargetReserve = sample.policyRequiredSeparation ~= nil
+        and sample.controlTarget - sample.policyRequiredSeparation or nil
     OuttaMyWay.Logger:val(
-        "PROTOTYPE17 SHADOW_CLEARANCE t=%.1fs stage=%s yield=%s progress=%s authority=false controlTarget=%.2fm progressExtent=%s progressSource=%s progressConfidence=%s yieldExtent=%s yieldSource=%s yieldConfidence=%s yieldCoverage=%s yieldCatalogue=%s/%s yieldBounded=%s yieldOrigins=%s yieldOriginExtent=%s yieldPhysicalAllowance=%s yieldBoundApis=%s yieldScanTruncated=%s yieldPoseSource=%s geometryMargin=%.2fm trackingMargin=%.2fm motionMargin=%.2fm policyMargin=%.2fm totalMargin=%.2fm requiredReferenceSeparation=%s controlTargetReserve=%s liveReferenceSeparation=%s liveReserve=%s pairSeparation=%s progressWorkingWidth=%s yieldMetadataWidth=%s yieldMetadataLength=%s pose=%s combinedConfidence=%s reference=%s corridorAssumption=%s diagnosticPolygonClearance=%s diagnosticIntersected=%s",
+        "PROTOTYPE17 SHADOW_CLEARANCE t=%.1fs stage=%s yield=%s progress=%s authority=false controlTarget=%.2fm progressExtent=%s progressSource=%s progressConfidence=%s yieldExtent=%s yieldSource=%s yieldConfidence=%s yieldCoverage=%s yieldCatalogue=%s/%s yieldBounded=%s yieldOrigins=%s yieldOriginExtent=%s yieldPhysicalAllowance=%s yieldBoundApis=%s yieldScanTruncated=%s yieldPoseSource=%s geometryMargin=%.2fm trackingMargin=%.2fm motionMargin=%.2fm policyMargin=%.2fm physicalContactThreshold=%s physicalControlTargetReserve=%s liveReferenceSeparation=%s physicalClearanceReserve=%s policyMarginBudget=%.2fm policyRequiredSeparation=%s policyControlTargetReserve=%s policyReserve=%s pairSeparation=%s progressWorkingWidth=%s yieldMetadataWidth=%s yieldMetadataLength=%s pose=%s combinedConfidence=%s reference=%s corridorAssumption=%s diagnosticPolygonClearance=%s diagnosticIntersected=%s",
         nowSeconds(), tostring(stage), nameOf(run.vehicle), nameOf(run.progressVehicle),
         tonumber(sample.controlTarget) or 0,
         fmtMetres(sample.progressExtent), tostring(sample.progressExtentSource), tostring(sample.progressExtentConfidence),
@@ -557,10 +561,12 @@ local function logShadow(stage, run, sample, nowMs, pairSeparation)
         tonumber(sample.margins and sample.margins.tracking) or 0,
         tonumber(sample.margins and sample.margins.motion) or 0,
         tonumber(sample.margins and sample.margins.policy) or 0,
-        tonumber(sample.margins and sample.margins.total) or 0,
-        fmtMetres(sample.requiredSeparation), fmtMetres(controlReserve),
+        fmtMetres(sample.physicalContactThreshold), fmtMetres(physicalControlTargetReserve),
         sample.mode == "PRE" and "n/a" or fmtMetres(sample.referenceSeparation),
-        sample.mode == "PRE" and "n/a" or fmtMetres(sample.reserve),
+        sample.mode == "PRE" and "n/a" or fmtMetres(sample.physicalClearanceReserve),
+        tonumber(sample.policyMarginBudget) or 0,
+        fmtMetres(sample.policyRequiredSeparation), fmtMetres(policyControlTargetReserve),
+        sample.mode == "PRE" and "n/a" or fmtMetres(sample.policyReserve),
         fmtMetres(pairSeparation), fmtMetres(sample.progressWorkingMarkerWidth),
         fmtMetres(sample.yieldMetadataWidth), fmtMetres(sample.yieldMetadataLength),
         tostring(sample.predictedPoseAssumption), tostring(sample.combinedConfidence),
@@ -657,21 +663,32 @@ function Controller:releaseToGiants(reason, nowMs)
         tostring(run.envelopeIntersected == true),
         fmtSeconds(elapsedSeconds(run.holdRequestedAt, nowMs)))
     OuttaMyWay.Logger:val(
-        "PROTOTYPE17 SHADOW_SUMMARY yield=%s progress=%s authority=false controlTarget=%.2fm preRequired=%s preControlReserve=%s refugeRequired=%s refugeReferenceSeparation=%s refugeReserve=%s closestPairSeparation=%s closestRequired=%s closestReferenceSeparation=%s closestReserve=%s passageRequired=%s passageReserve=%s result=observation-only",
+        "PROTOTYPE17 SHADOW_SUMMARY yield=%s progress=%s authority=false controlTarget=%.2fm prePhysicalContactThreshold=%s prePhysicalControlTargetReserve=%s prePolicyMarginBudget=%s prePolicyRequiredSeparation=%s prePolicyControlTargetReserve=%s refugeReferenceSeparation=%s refugePhysicalContactThreshold=%s refugePhysicalClearanceReserve=%s refugePolicyMarginBudget=%s refugePolicyRequiredSeparation=%s refugePolicyReserve=%s closestPairSeparation=%s closestReferenceSeparation=%s closestPhysicalClearanceReserve=%s closestPolicyReserve=%s passageReferenceSeparation=%s passagePhysicalContactThreshold=%s passagePhysicalClearanceReserve=%s passagePolicyMarginBudget=%s passagePolicyRequiredSeparation=%s passagePolicyReserve=%s result=observation-only",
         nameOf(run.vehicle), nameOf(run.progressVehicle),
         tonumber(OuttaMyWay.TS015_LATERAL_OFFSET_M) or 28.0,
-        run.shadowPre ~= nil and fmtMetres(run.shadowPre.requiredSeparation) or "n/a",
-        run.shadowPre ~= nil and run.shadowPre.requiredSeparation ~= nil
-            and fmtMetres((tonumber(OuttaMyWay.TS015_LATERAL_OFFSET_M) or 28.0) - run.shadowPre.requiredSeparation) or "n/a",
-        run.shadowRefuge ~= nil and fmtMetres(run.shadowRefuge.requiredSeparation) or "n/a",
+        run.shadowPre ~= nil and fmtMetres(run.shadowPre.physicalContactThreshold) or "n/a",
+        run.shadowPre ~= nil and run.shadowPre.physicalContactThreshold ~= nil
+            and fmtMetres((tonumber(OuttaMyWay.TS015_LATERAL_OFFSET_M) or 28.0) - run.shadowPre.physicalContactThreshold) or "n/a",
+        run.shadowPre ~= nil and fmtMetres(run.shadowPre.policyMarginBudget) or "n/a",
+        run.shadowPre ~= nil and fmtMetres(run.shadowPre.policyRequiredSeparation) or "n/a",
+        run.shadowPre ~= nil and run.shadowPre.policyRequiredSeparation ~= nil
+            and fmtMetres((tonumber(OuttaMyWay.TS015_LATERAL_OFFSET_M) or 28.0) - run.shadowPre.policyRequiredSeparation) or "n/a",
         run.shadowRefuge ~= nil and fmtMetres(run.shadowRefuge.referenceSeparation) or "n/a",
-        run.shadowRefuge ~= nil and fmtMetres(run.shadowRefuge.reserve) or "n/a",
+        run.shadowRefuge ~= nil and fmtMetres(run.shadowRefuge.physicalContactThreshold) or "n/a",
+        run.shadowRefuge ~= nil and fmtMetres(run.shadowRefuge.physicalClearanceReserve) or "n/a",
+        run.shadowRefuge ~= nil and fmtMetres(run.shadowRefuge.policyMarginBudget) or "n/a",
+        run.shadowRefuge ~= nil and fmtMetres(run.shadowRefuge.policyRequiredSeparation) or "n/a",
+        run.shadowRefuge ~= nil and fmtMetres(run.shadowRefuge.policyReserve) or "n/a",
         fmtMetres(run.shadowClosestPairSeparation),
-        run.shadowClosest ~= nil and fmtMetres(run.shadowClosest.requiredSeparation) or "n/a",
         run.shadowClosest ~= nil and fmtMetres(run.shadowClosest.referenceSeparation) or "n/a",
-        run.shadowClosest ~= nil and fmtMetres(run.shadowClosest.reserve) or "n/a",
-        run.shadowPassage ~= nil and fmtMetres(run.shadowPassage.requiredSeparation) or "n/a",
-        run.shadowPassage ~= nil and fmtMetres(run.shadowPassage.reserve) or "n/a")
+        run.shadowClosest ~= nil and fmtMetres(run.shadowClosest.physicalClearanceReserve) or "n/a",
+        run.shadowClosest ~= nil and fmtMetres(run.shadowClosest.policyReserve) or "n/a",
+        run.shadowPassage ~= nil and fmtMetres(run.shadowPassage.referenceSeparation) or "n/a",
+        run.shadowPassage ~= nil and fmtMetres(run.shadowPassage.physicalContactThreshold) or "n/a",
+        run.shadowPassage ~= nil and fmtMetres(run.shadowPassage.physicalClearanceReserve) or "n/a",
+        run.shadowPassage ~= nil and fmtMetres(run.shadowPassage.policyMarginBudget) or "n/a",
+        run.shadowPassage ~= nil and fmtMetres(run.shadowPassage.policyRequiredSeparation) or "n/a",
+        run.shadowPassage ~= nil and fmtMetres(run.shadowPassage.policyReserve) or "n/a")
     self:setPhase("OBSERVE_HANDOFF", reason, nowMs)
 end
 
@@ -843,7 +860,7 @@ function Controller:logSample(run, state, progressState, fold, nowMs)
     local handoffTravel = run.handoffX ~= nil and distance2d(run.handoffX, run.handoffZ, x, z) or nil
 
     OuttaMyWay.Logger:val(
-        "PROTOTYPE16 SAMPLE t=%.1fs yield=%s progress=%s phase=%s yieldActive=%s yieldWorkerPhase=%s yieldTurn=%s yieldBlocked=%s yieldSpeed=%.2f progressActive=%s progressWorkerPhase=%s progressTurn=%s progressBlocked=%s progressSpeed=%.2f pairSeparation=%s separationRate=%s progressLongitudinal=%s envelopeClearance=%s envelopeIntersected=%s geometryConfidence=%s/%s shadowRequired=%s shadowReferenceSeparation=%s shadowReserve=%s shadowConfidence=%s commandedMax=%.1f yieldPos=(%s,%s) lateral=%s forward=%s targetRemaining=%s foldObjects=%d foldHigh=%d foldLow=%d foldInterior=%d foldRange=%s..%s compact=%s deployed=%s passageConfirmed=%s handoffTravel=%s",
+        "PROTOTYPE16 SAMPLE t=%.1fs yield=%s progress=%s phase=%s yieldActive=%s yieldWorkerPhase=%s yieldTurn=%s yieldBlocked=%s yieldSpeed=%.2f progressActive=%s progressWorkerPhase=%s progressTurn=%s progressBlocked=%s progressSpeed=%.2f pairSeparation=%s separationRate=%s progressLongitudinal=%s envelopeClearance=%s envelopeIntersected=%s geometryConfidence=%s/%s shadowPhysicalContactThreshold=%s shadowReferenceSeparation=%s shadowPhysicalClearanceReserve=%s shadowPolicyMarginBudget=%s shadowPolicyRequiredSeparation=%s shadowPolicyReserve=%s shadowConfidence=%s commandedMax=%.1f yieldPos=(%s,%s) lateral=%s forward=%s targetRemaining=%s foldObjects=%d foldHigh=%d foldLow=%d foldInterior=%d foldRange=%s..%s compact=%s deployed=%s passageConfirmed=%s handoffTravel=%s",
         nowSeconds(), nameOf(run.vehicle), nameOf(run.progressVehicle), tostring(run.phase),
         tostring(state ~= nil and state.active == true), state ~= nil and tostring(state.phase) or "missing",
         tostring(state ~= nil and state.isTurn == true), tostring(state ~= nil and state.blocked == true),
@@ -857,9 +874,12 @@ function Controller:logSample(run, state, progressState, fold, nowMs)
         run.lastEnvelopeClearance ~= nil and string.format("%.2fm", run.lastEnvelopeClearance) or "unknown",
         tostring(run.lastEnvelopeIntersected == true),
         tostring(run.lastYieldGeometryConfidence or "unknown"), tostring(run.lastProgressGeometryConfidence or "unknown"),
-        run.shadowLatest ~= nil and fmtMetres(run.shadowLatest.requiredSeparation) or "n/a",
+        run.shadowLatest ~= nil and fmtMetres(run.shadowLatest.physicalContactThreshold) or "n/a",
         run.shadowLatest ~= nil and fmtMetres(run.shadowLatest.referenceSeparation) or "n/a",
-        run.shadowLatest ~= nil and fmtMetres(run.shadowLatest.reserve) or "n/a",
+        run.shadowLatest ~= nil and fmtMetres(run.shadowLatest.physicalClearanceReserve) or "n/a",
+        run.shadowLatest ~= nil and fmtMetres(run.shadowLatest.policyMarginBudget) or "n/a",
+        run.shadowLatest ~= nil and fmtMetres(run.shadowLatest.policyRequiredSeparation) or "n/a",
+        run.shadowLatest ~= nil and fmtMetres(run.shadowLatest.policyReserve) or "n/a",
         run.shadowLatest ~= nil and tostring(run.shadowLatest.combinedConfidence) or "UNKNOWN",
         tonumber(run.lastCommandedSpeed) or 0,
         x ~= nil and string.format("%.2f", x) or "unknown", z ~= nil and string.format("%.2f", z) or "unknown",

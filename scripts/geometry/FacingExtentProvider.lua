@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.31
+-- FS25_OuttaMyWay v4.6.32
 -- Prototype 17 / TS017-B: fixture-bounded Facing Extent Provider.
 --
 -- Converts the existing Condor collision-catalogue identity evidence into a

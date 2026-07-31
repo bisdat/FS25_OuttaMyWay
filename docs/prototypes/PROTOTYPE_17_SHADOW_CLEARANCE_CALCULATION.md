@@ -20,7 +20,7 @@ The provider sits between Physical Representation and Shadow Clearance Calculati
 collision identity + live pose/bounds
 → one-sided compact facing extent
 → source, coverage and confidence
-→ shadow required separation
+→ separate physical-contact and policy-clearance evidence
 ```
 
 For the exact Condor 36 m fixture it expects 13 current physical catalogue identities: eight active boom collision shapes and five permanent physical controls.
@@ -43,23 +43,39 @@ local Z: -5.21 .. -1.61 m
 
 Project that template at the predicted direct-egress bearing and add the same explicit 2.50 m unresolved physical allowance. This is a fixture model, not an authoritative envelope.
 
-## Clearance formula
+## Separated clearance formula
 
 ```text
-required reference separation
+physicalContactThreshold
 = Progress Facing Clearance Extent
 + compact Yield Facing Clearance Extent
-+ geometry uncertainty (0.75 m)
+
+physicalClearanceReserve
+= live reference separation
+- physicalContactThreshold
+
+policyMarginBudget
+= geometry uncertainty (0.75 m)
 + tracking tolerance (1.00 m)
 + motion allowance (0.50 m)
 + policy margin (1.50 m)
+
+policyRequiredSeparation
+= physicalContactThreshold
++ policyMarginBudget
+
+policyReserve
+= live reference separation
+- policyRequiredSeparation
 ```
+
+The physical threshold answers represented contact only. The policy calculation applies explicit operational margins as a separate question.
 
 ## Evidence stages
 
 `PRE_ESTIMATE`, `REFUGE_LIVE`, `CLOSEST_APPROACH`, `PASSAGE_CONFIRMED`, then `SHADOW_SUMMARY`.
 
-Each stage logs provider coverage, resolved/expected identities, bounded identities, origin count, origin extent, physical allowance, bound APIs, scan truncation, pose source and confidence.
+Each stage logs provider coverage, resolved/expected identities, bounded identities, origin count, origin extent, physical allowance, bound APIs, scan truncation, pose source and confidence. It also exposes `physicalContactThreshold`, `physicalClearanceReserve`, `policyMarginBudget`, `policyRequiredSeparation` and `policyReserve` separately.
 
 ## Control boundary
 
@@ -104,16 +120,10 @@ The same live physical threshold would classify the failed 21.44 m TS015-A resul
 
 **Physical Clearance Is Not Policy Clearance:** represented assemblies can have positive physical clearance while a separate policy-margin target remains unmet.
 
-## Next isolated change
+## v4.6.32 implementation and next validation
 
-Preserve the actuator and provider. Change only the calculation/output model so physical and policy evidence are logged separately:
+v4.6.32 implements the five separated fields in the calculator, stage logs, continuous samples, console status and final summary. The ambiguous combined `requiredSeparation` and `reserve` fields are no longer emitted.
 
-```text
-physicalContactThreshold
-physicalClearanceReserve
-policyMarginBudget
-policyRequiredSeparation
-policyReserve
-```
+The next action is empirical validation, not automation: repeat the established manual Condor-yields run and confirm approximately 25.37 m physical threshold, +2.01 m physical reserve, 3.75 m policy budget, 29.12 m policy requirement and -1.74 m policy reserve while visible passage and the complete actuator sequence remain unchanged.
 
-All remain `authority=false`. Automatic trigger, role selection, side selection and derived movement remain outside Prototype 17's current authority.
+All values remain `authority=false`. Automatic trigger, role selection, side selection and derived movement remain outside Prototype 17's current authority.

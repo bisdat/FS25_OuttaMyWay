@@ -49,7 +49,8 @@
 - [ ] Progress and Yield Facing Clearance Extents identify their evidence source and confidence.
 - [ ] Condor provider records expected/resolved/bounded/origin identity counts, coverage, bound APIs, pose source and scan truncation.
 - [ ] Complete runtime bounds and origin-plus-allowance fallback are visibly distinct; the 2.50 m physical allowance is logged separately.
-- [ ] Geometry, tracking, motion and policy margins remain explicit; the current combined requirement/reserve limitation is documented and no false physical-clearance claim is made.
+- [ ] Geometry, tracking, motion and policy margins remain explicit and sum only into `policyMarginBudget`; `physicalContactThreshold` excludes them.
+- [ ] Stage logs, continuous samples, console status and final summary expose `physicalContactThreshold`, `physicalClearanceReserve`, `policyMarginBudget`, `policyRequiredSeparation` and `policyReserve` without ambiguous combined aliases.
 - [ ] Live discovered envelopes are treated as high-confidence inputs only when complete assembly coverage is established; otherwise the calculation declares marker, fixture-provider or metadata fallback.
 - [ ] Native permission-gate calls are observed and the Giants AI job remains active through hold and compacting.
 - [ ] Condor work-off, raised state, fold motion and the provisional Egress-Ready Candidate are observed before egress.

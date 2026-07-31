@@ -1,37 +1,48 @@
-FS25_OuttaMyWay v4.6.31
+FS25_OuttaMyWay v4.6.32
 
 Cooperative collision-avoidance research for native GIANTS AI field workers.
 
-Current canonical authority: v4.6.23, SHA-256 87d3548463c2f77b81e26098ecd9faa7dd88b498e628f24b13582738e4766db3
-Current package authority: noncanonical consolidation candidate awaiting repository-owner review and Canonicalisation
+Current canonical authority: v4.6.31, SHA-256 2f54f3a01aaf41bd6f9fd798ce672e1631dbb9e6c9e811ac4ce6acb0b676c25b
+Current package authority: candidate implementing observer-only physical/policy clearance evidence separation; runtime validation and repository-owner Canonicalisation remain pending
 Runtime baseline: FS25 1.21.1.0 build b40785 revision 81824 unless a test record states otherwise
 
-v4.6.31 consolidates the Prototype 14–17 Unilateral Sidestep and Shadow Clearance evidence. Runtime behaviour is the empirically tested v4.6.30 implementation with version metadata only changed for this consolidation.
+v4.6.32 changes only Shadow Clearance Knowledge calculation, diagnostics and repository continuity. The validated Condor/Patriot actuator remains behaviourally unchanged.
 
-Established fixture evidence:
+Protected fixture behaviour:
 
-- a native permission-gate hold can preserve the Yield worker's GIANTS job;
-- an in-lane hold creates a static obstacle rather than resolving the conflict;
-- Retreating Unilateral Sidestep can fold, displace, wait, rejoin, redeploy and hand back one worker;
-- the 22 m commanded refuge produced about 21.44 m actual lateral displacement and failed complete assembly passage;
-- the 28 m command produced about 27.38 m actual lateral displacement and passed, with Patriot unmodified and both jobs preserved;
-- TS017-B completed the full 20-second post-handoff observation with failure=nil and passageConfirmed=true.
+- Condor remains fixed Yield and Patriot remains fixed, unmodified GIANTS Progress;
+- arming remains manual and the selected test side remains forced, including the known inverted console labels;
+- movement remains fixed at 28 m lateral and 12 m rearward;
+- every geometry-derived value remains `authority=false`.
 
-Shadow Clearance evidence:
+Separated Shadow Clearance evidence:
 
-- Patriot facing extent: 18.00 m from its live 36 m AI working marker;
-- Condor current physical identities: 13/13 resolved;
-- runtime bounds: 0/13 available through the tested APIs;
-- compact Condor origin extent: 4.87 m;
-- explicit unresolved physical allowance: 2.50 m;
-- compact Condor facing extent: 7.37 m;
-- physical contact threshold: 25.37 m;
-- observed successful physical reserve: approximately +2.01 m at 27.38 m reference separation;
-- the same model places the failed 21.44 m run approximately 3.93 m inside the contact threshold;
-- the provisional 3.75 m policy-margin budget raises the policy target to 29.12 m, leaving a policy reserve of approximately -1.74 m despite successful physical passage.
+```text
+physicalContactThreshold
+= Progress Facing Clearance Extent
++ compact Yield Facing Clearance Extent
 
-This establishes Origin Coverage Is Not Bound Coverage and Physical Clearance Is Not Policy Clearance. The 2.50 m allowance, 3.75 m margin budget and 28 m movement remain fixture evidence rather than production constants.
+physicalClearanceReserve
+= live reference separation
+- physicalContactThreshold
 
-Immediate continuation objective:
+policyMarginBudget
+= geometry uncertainty
++ tracking tolerance
++ motion allowance
++ policy margin
 
-Separate physical contact threshold/reserve from policy required separation/reserve in calculation and logging while preserving authority=false and the validated actuator unchanged. Automatic conflict triggering, Yield/Progress selection, refuge-side choice and geometry-derived Control remain deferred.
+policyRequiredSeparation
+= physicalContactThreshold
++ policyMarginBudget
+
+policyReserve
+= live reference separation
+- policyRequiredSeparation
+```
+
+The established TS017-B evidence predicts a 25.37 m physical contact threshold and approximately +2.01 m physical reserve at the successful 27.38 m reference separation. The separate 3.75 m policy-margin budget predicts a 29.12 m policy requirement and approximately -1.74 m policy reserve. v4.6.32 must repeat that manual run before these separated runtime fields are accepted as validated output.
+
+Automatic conflict triggering, Yield/Progress selection, refuge-side choice and geometry-derived Control remain deferred.
+
+Deferred Publication Readiness Review — **Mod Description Drift**: `modDesc.xml` currently summarises the active prototype. Before publication, it should return to a stable description of the mod while release-specific detail remains in the changelog and engineering documents.

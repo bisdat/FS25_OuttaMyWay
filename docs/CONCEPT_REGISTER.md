@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.31.
+Review status: reviewed for candidate release v4.6.32.
 
 ### Shadow Clearance Calculation
 

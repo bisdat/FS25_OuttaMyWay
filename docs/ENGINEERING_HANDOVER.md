@@ -2,63 +2,73 @@
 
 ## Authority
 
-Canonical implementation authority remains v4.6.23 with SHA-256 `87d3548463c2f77b81e26098ecd9faa7dd88b498e628f24b13582738e4766db3` until the repository owner explicitly Canonicalises the exact v4.6.31 candidate.
+Canonical implementation authority is the owner-declared v4.6.31 package with SHA-256 `2f54f3a01aaf41bd6f9fd798ce672e1631dbb9e6c9e811ac4ce6acb0b676c25b`.
 
-v4.6.31 is the cumulative Prototype 14–17 evidence-consolidation candidate. Runtime behaviour is the tested v4.6.30 implementation with version metadata only changed.
+v4.6.32 is the next candidate. It implements observer-only evidence separation and has not yet been validated in FS25 or Canonicalised by the repository owner.
 
-## Proven actuator evidence
+## Implemented change
 
-- A native permission-gate hold preserves the Condor GIANTS job.
-- Holding inside the contested pass does not resolve the conflict; it creates a static obstacle.
-- Retreating Unilateral Sidestep can fold, move outward/rearward, wait, rejoin, deploy and hand back Condor.
-- Condor's observed Native Motion Envelope is about 25 km/h working and 15 km/h repositioning.
-- Useful egress can overlap folding; complete folding remains about 15.5 seconds.
-- GIANTS accepted the forward rejoin and resumed useful work.
-- About 21.44 m actual lateral displacement failed complete Condor/Patriot assembly passage.
-- About 27.38 m actual lateral displacement passed with Patriot unheld and both original jobs preserved.
-
-## TS017-B representation evidence
-
-The exact fixture provider resolved all 13 catalogued current Condor physical identities and origins. The tested runtime-bound APIs supplied zero usable bounds. The provider therefore used:
+Shadow Clearance Calculation now reports two different questions explicitly:
 
 ```text
-4.87 m live origin projection
-+ 2.50 m explicit unresolved physical allowance
-= 7.37 m compact Condor Facing Clearance Extent
+physicalContactThreshold
+= Progress Facing Clearance Extent
++ compact Yield Facing Clearance Extent
+
+physicalClearanceReserve
+= live reference separation
+- physicalContactThreshold
+
+policyMarginBudget
+= geometry uncertainty
++ tracking tolerance
++ motion allowance
++ policy margin
+
+policyRequiredSeparation
+= physicalContactThreshold
++ policyMarginBudget
+
+policyReserve
+= live reference separation
+- policyRequiredSeparation
 ```
 
-Patriot supplied 18.00 m from its live 36 m AI working marker.
+The ambiguous combined `requiredSeparation` and `reserve` fields were removed from the calculator and all prototype diagnostics. Stage logs, continuous samples, console status and final summary now identify physical and policy values separately.
+
+## Protected invariants
+
+- Condor remains fixed Yield and Patriot remains fixed GIANTS Progress.
+- Patriot receives no hold, steering, speed or implement command.
+- Arming remains manual; the side is still forced and the known console-label inversion is preserved.
+- Control remains fixed at 28 m lateral and 12 m rearward.
+- Every calculated field remains `authority=false`.
+- Automatic trigger, role assignment, side selection and geometry-derived movement remain absent.
+
+## Expected comparison
+
+The established fixture evidence was:
 
 ```text
-physical contact threshold = 18.00 + 7.37 = 25.37 m
+physical contact threshold = 25.37 m
 observed reference separation = 27.38 m
 physical clearance reserve = +2.01 m
-
-provisional policy margin budget = 3.75 m
+policy margin budget = 3.75 m
 policy required separation = 29.12 m
 policy reserve = -1.74 m
 ```
 
-The physical threshold correctly brackets prior evidence: the 21.44 m run lies about 3.93 m inside contact; the 27.38 m run lies about 2.01 m outside it. The pre-estimated physical threshold was 25.85 m, 0.48 m above the live result.
-
-## Named discoveries
-
-- Origin Coverage Is Not Bound Coverage.
-- Physical Clearance Is Not Policy Clearance.
-- Encounter Identity Is Not Entity-Pair Identity.
-- Perspective Is Not Role Authority.
+v4.6.32 must reproduce these as distinct runtime values while passage, rejoin, handback and the complete 20-second observation remain successful. The values above are comparison targets from canonical evidence, not a claim that the new output has already passed.
 
 ## Exact continuation point
 
-Begin the next engineering increment only from the exact owner-declared v4.6.31 canonical package.
-
-The first change should be evidence separation, not automation:
-
-1. Keep the validated actuator and fixed fixture roles unchanged.
-2. Refactor Shadow Clearance Calculation and logging to expose `physicalContactThreshold`, `physicalClearanceReserve`, `policyMarginBudget`, `policyRequiredSeparation` and `policyReserve` separately.
-3. Keep every derived field `authority=false`.
-4. Repeat the established manual Condor-yields run and compare the separated output with the same visible passage evidence.
-5. Record what was learned before discussing automatic trigger, role assignment or side selection.
+1. Install the exact v4.6.32 candidate.
+2. Recreate the established Condor/Patriot head-on fixture.
+3. Arm the same manual Condor-yields side using the existing command and remember the labels remain inverted.
+4. Capture the complete game log and uninterrupted visible passage evidence.
+5. Verify the five separated fields at `PRE_ESTIMATE`, `REFUGE_LIVE`, `CLOSEST_APPROACH`, `PASSAGE_CONFIRMED` and `SHADOW_SUMMARY`.
+6. Verify `HOLD_CONFIRMED` still reports 28.0 m lateral and 12.0 m rearward, Patriot remains GIANTS-controlled, and every shadow record states `authority=false`.
+7. Record what was learned before discussing automatic trigger, role transfer or side choice.
 
 ## Deferred after evidence separation
 
@@ -73,3 +83,7 @@ Situation Assessment detects a conflict
 ```
 
 Automatic role transfer, escape-side choice, field/margin availability, obstacle checks, complete swept-envelope protection and geometry-derived movement remain unimplemented.
+
+## Deferred Publication Readiness Review
+
+**Mod Description Drift:** `modDesc.xml` currently summarises the active prototype/release. Before publication, return it to a stable mod description and keep release summaries in the changelog and engineering documents.

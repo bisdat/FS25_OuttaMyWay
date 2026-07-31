@@ -15,10 +15,14 @@ Preserve the validated Condor-yields actuator and fixture-bounded Facing Extent 
 - [x] Resolve 13/13 Condor identities/origins and record 0/13 usable runtime bounds.
 - [x] Compare the 25.37 m live physical threshold against the failed and successful fixture evidence.
 - [x] Name Origin Coverage Is Not Bound Coverage and Physical Clearance Is Not Policy Clearance.
-- [ ] Separate `physicalContactThreshold` and `physicalClearanceReserve` from `policyMarginBudget`, `policyRequiredSeparation` and `policyReserve`.
+- [x] Separate `physicalContactThreshold` and `physicalClearanceReserve` from `policyMarginBudget`, `policyRequiredSeparation` and `policyReserve` in v4.6.32 candidate output.
 - [ ] Repeat the established manual run to validate the separated output without actuator change.
 - [ ] After validation, discuss shadow generation and comparison of Condor/Patriot Yield and escape-side candidates.
 - [ ] Keep derived movement, automatic trigger, role selection and side selection without authority until their own evidence increments.
+
+## Deferred Publication Readiness Review
+
+- [ ] **Mod Description Drift:** return `modDesc.xml` to a stable mod description rather than an increment-specific release summary.
 
 ## Development policy
 

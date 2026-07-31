@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.6.31
+-- FS25_OuttaMyWay v4.6.32
 -- Cooperative collision avoidance for base-game AI field workers.
 
 OuttaMyWay = {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.6.31"
+OuttaMyWay.VERSION = "4.6.32"
 OuttaMyWay.BLOCKED_FOLD_DELAY_MS = 6500
 OuttaMyWay.WAIT_FOLD_DELAY_MS = 4500
 OuttaMyWay.HEAD_ON_FOLLOW_HOLD_DISTANCE = 55.0
@@ -250,9 +250,9 @@ OuttaMyWay.SINGLE_WORKER_DELAY_EFFECT_DEADLINE_MS = 4000
 -- test-command side inversion remain behaviourally unchanged.
 --
 -- Prototype 17 / TS017-B observes the same run in Shadow Clearance Calculation mode.
--- It derives and logs a required reference separation from Progress facing extent,
--- predicted/live compact Yield facing extent and explicit margin components. Shadow
--- results have no role, side, distance, trigger or Control authority in this candidate.
+-- It derives a physical contact threshold from opposing facing extents, then applies
+-- explicit margin components as a separate policy-clearance budget. Shadow results have
+-- no role, side, distance, trigger or Control authority in this candidate.
 OuttaMyWay.UNILATERAL_SIDESTEP_ENABLED = true
 OuttaMyWay.UNILATERAL_SIDESTEP_EXCLUSIVE = true
 OuttaMyWay.TS015_INTERVAL_MS = 100
@@ -292,8 +292,9 @@ OuttaMyWay.TS015_PAIR_GEOMETRY_INTERVAL_MS = 500
 OuttaMyWay.TS015_PAIR_GEOMETRY_SCAN_BUDGET = 1000
 OuttaMyWay.TS015_HANDOFF_OBSERVE_MS = 20000
 
--- Prototype 17 shadow-only clearance model. These values are evidence hypotheses,
--- individually logged and deliberately excluded from live Control.
+-- Prototype 17 shadow-only policy-clearance margins. They are evidence hypotheses,
+-- individually logged, excluded from the physical contact threshold and deliberately
+-- excluded from live Control.
 OuttaMyWay.TS017_SHADOW_CLEARANCE_ENABLED = true
 OuttaMyWay.TS017_PROGRESS_WORKING_WIDTH_FALLBACK_M = 36.0
 OuttaMyWay.TS017_GEOMETRY_UNCERTAINTY_M = 0.75

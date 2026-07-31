@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.31
+-- FS25_OuttaMyWay v4.6.32
 -- Prototype 17 / TS017-B: observer-only shadow clearance calculation with a fixture-bounded Facing Extent Provider.
 --
 -- This module derives a candidate lateral separation from current runtime evidence.
@@ -174,7 +174,7 @@ local function yieldFacingExtent(run, geometry, sideX, sideZ, mode, predictedFor
     return nil, "UNAVAILABLE", "UNKNOWN", nil
 end
 
-local function margins()
+local function policyMargins()
     local geometry = safeNumber(OuttaMyWay.TS017_GEOMETRY_UNCERTAINTY_M) or 0.75
     local tracking = safeNumber(OuttaMyWay.TS017_TRACKING_TOLERANCE_M) or 1.00
     local motion = safeNumber(OuttaMyWay.TS017_MOTION_ALLOWANCE_M) or 0.50
@@ -184,7 +184,7 @@ local function margins()
         tracking = tracking,
         motion = motion,
         policy = policy,
-        total = geometry + tracking + motion + policy
+        budget = geometry + tracking + motion + policy
     }
 end
 
@@ -216,9 +216,12 @@ function Calculator:sample(run, nowMs, mode)
         run, progressGeometry, sideX, sideZ)
     local yieldExtent, yieldSource, yieldConfidence, yieldProvider = yieldFacingExtent(
         run, yieldGeometry, sideX, sideZ, mode, predictedForwardX, predictedForwardZ)
-    local margin = margins()
-    local required = progressExtent ~= nil and yieldExtent ~= nil
-        and progressExtent + yieldExtent + margin.total or nil
+    local margin = policyMargins()
+    local physicalContactThreshold = progressExtent ~= nil and yieldExtent ~= nil
+        and progressExtent + yieldExtent or nil
+    local policyMarginBudget = margin.budget
+    local policyRequiredSeparation = physicalContactThreshold ~= nil
+        and physicalContactThreshold + policyMarginBudget or nil
 
     local yieldX, yieldZ = positionOf(run.vehicle)
     local progressX, progressZ = positionOf(run.progressVehicle)
@@ -226,8 +229,10 @@ function Calculator:sample(run, nowMs, mode)
     if yieldX ~= nil and progressX ~= nil then
         referenceSeparation = (yieldX - progressX) * sideX + (yieldZ - progressZ) * sideZ
     end
-    local reserve = required ~= nil and referenceSeparation ~= nil
-        and referenceSeparation - required or nil
+    local physicalClearanceReserve = physicalContactThreshold ~= nil and referenceSeparation ~= nil
+        and referenceSeparation - physicalContactThreshold or nil
+    local policyReserve = policyRequiredSeparation ~= nil and referenceSeparation ~= nil
+        and referenceSeparation - policyRequiredSeparation or nil
 
     local diagnosticClearance, diagnosticIntersected = nil, false
     local evidence = OuttaMyWay.PhysicalEnvelopeEvidence
@@ -269,9 +274,12 @@ function Calculator:sample(run, nowMs, mode)
         yieldProviderPoseSource = yieldProvider ~= nil and yieldProvider.poseSource or "none",
         combinedConfidence = combinedConfidence(progressConfidence, yieldConfidence),
         margins = margin,
-        requiredSeparation = required,
+        physicalContactThreshold = physicalContactThreshold,
+        physicalClearanceReserve = physicalClearanceReserve,
+        policyMarginBudget = policyMarginBudget,
+        policyRequiredSeparation = policyRequiredSeparation,
+        policyReserve = policyReserve,
         referenceSeparation = referenceSeparation,
-        reserve = reserve,
         yieldMetadataWidth = yieldWidth,
         yieldMetadataLength = yieldLength,
         progressMetadataWidth = progressWidth,

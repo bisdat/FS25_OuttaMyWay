@@ -1,12 +1,15 @@
 # Known Issues
 
+## Publication readiness
+
+- **Mod Description Drift:** `modDesc.xml` currently acts as an active prototype/release summary rather than a stable description of the mod. Correct this during Publication Readiness Review, not during the current evidence increment.
+
 ## Prototype 17 and clearance authority
 
 - Shadow Clearance Calculation remains observer-only and fixture-specific. It must not be read as automatic Decision or Control authority.
 - All 13 current Condor identities and origins resolved, but no usable runtime shape bounds were exposed through the tested APIs.
 - The 2.50 m unresolved physical allowance is a fixture hypothesis, not Coverage Closure or a production constant.
-- Existing v4.6.30 logging combines physical geometry and provisional policy margins in one requirement/reserve pair. This obscures a positive physical reserve when the policy target remains unmet.
-- Physical threshold/reserve and policy target/reserve must be separated before further authority is considered.
+- v4.6.32 separates physical threshold/reserve from policy budget/requirement/reserve, but that output still requires an empirical repetition before it is accepted as validated evidence.
 - Condor remains hard-coded as Yield and Patriot as Progress. Patriot-yields role-transfer validity is untested.
 - The console direction labels remain inverted relative to observed physical movement.
 - Triggering and side choice remain manual; field/margin refuge availability, obstacles and complete assembly swept paths are not evaluated.
@@ -28,7 +31,7 @@
 - Later-admitted selection was a bounded TS012 experiment, not an accepted general priority policy.
 - Predictor `CLEAR` is known to occur after collision or blocked convergence and cannot authorise release.
 - Automatic Safe Release was deliberately absent and remains unvalidated.
-- Prototype 14 is disabled in v4.6.31; only one active hold was supported and multi-conflict arbitration remains unimplemented.
+- Prototype 14 is disabled in v4.6.32; only one active hold was supported and multi-conflict arbitration remains unimplemented.
 
 ## Physical assembly coverage
 

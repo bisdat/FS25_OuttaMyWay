@@ -1,5 +1,17 @@
 # Changelog
 
+## v4.6.32 — Physical and Policy Clearance Evidence Separation
+
+- Begins from exact canonical v4.6.31, SHA-256 `2f54f3a01aaf41bd6f9fd798ce672e1631dbb9e6c9e811ac4ce6acb0b676c25b`.
+- Refactors observer-only Shadow Clearance Calculation to expose `physicalContactThreshold`, `physicalClearanceReserve`, `policyMarginBudget`, `policyRequiredSeparation` and `policyReserve` as distinct Knowledge fields.
+- Defines physical contact threshold solely as the sum of opposing Facing Clearance Extents; no uncertainty, tracking, motion or policy margin is included in physical contact.
+- Defines policy margin budget as the explicit 0.75 m geometry, 1.00 m tracking, 0.50 m motion and 1.50 m policy components, then adds that 3.75 m budget to the physical threshold.
+- Replaces ambiguous combined `requiredSeparation`/`reserve` output in stage logs, continuous samples, console status and final summary with explicit physical and policy values.
+- Preserves fixed Condor Yield and Patriot GIANTS Progress roles, manual arming, forced test side, known inverted console labels and the fixed 28 m lateral / 12 m rearward actuator.
+- Keeps every derived field `authority=false`; no automatic trigger, role selection, side selection, movement derivation or Progress control is introduced.
+- Requires repetition of the established manual Condor-yields run before the separated output is treated as empirically validated.
+- Carries forward the deferred Publication Readiness Review item **Mod Description Drift**: `modDesc.xml` still describes the active prototype rather than the stable mod purpose.
+
 ## v4.6.31 — Unilateral Sidestep and Clearance Evidence Consolidation
 
 - Begins from exact canonical v4.6.23, SHA-256 `87d3548463c2f77b81e26098ecd9faa7dd88b498e628f24b13582738e4766db3`, and consolidates the cumulative noncanonical Prototype 14–17 engineering increment.
