@@ -1,76 +1,104 @@
 # Project Status
 
-Version: 4.6.33
-Canonical implementation authority: owner-declared v4.6.32, SHA-256 `37cfd18d959cdbec43818265c7bcda789b2f3c7ce6df16210daec469b80206c7`
-Authority state: Candidate — fixture-bounded Automatic Encounter Admission implemented; runtime validation and repository-owner Canonicalisation pending
+Version: 4.6.34
+Canonical implementation authority: owner-declared v4.6.33, SHA-256 `87b24a0865929cdeffa44b7c035a90586ba537f6823e0959cacea1e3e85e74b2`, Git commit `e3ca9d1bce58edaf4d245c609d03409d26fe1a22`
+Authority state: Candidate — successful Automatic Encounter Admission evidence consolidated; runtime behaviour unchanged; repository-owner Canonicalisation pending
 Runtime baseline: FS25 1.21.1.0 build b40785 revision 81824 unless the test record states otherwise
 
-## Validated incoming evidence
+## Validated TS018 result
 
-The v4.6.32 Condor/Patriot repeat passed. Physical and policy evidence remained explicitly separate while actuator behaviour remained unchanged:
+Prototype 18's fixture-bounded hypothesis is supported.
+
+No OuttaMyWay console command was entered or required. The exact Condor/Patriot pair produced:
+
+```text
+ADMISSION_CANDIDATE  distance=316.78 m  tCPA=29.94 s  dCPA=2.06 m
+COMMITMENT_POINT     candidateFor=3.09 s  distance=277.92 m  tCPA=20.04 s  dCPA=0.03 m
+RUN_START            trigger=automatic-encounter-admission
+```
+
+The protected actuator then completed unchanged:
+
+```text
+reason=handoff-observation-complete
+failure=nil
+fenceViolation=false
+passageConfirmed=true
+minPairSeparation=27.40 m
+```
+
+Condor remained fixed Yield, Patriot remained `GIANTS_UNMODIFIED`, the physical-right fixture side remained fixed, and movement remained 28 m lateral / 12 m rearward.
+
+## Episode-latch evidence
+
+Exactly one Admission Candidate, one Commitment Point and one actuator run occurred. After handback, the known Split-Start Pass Recovery produced later GIANTS coverage movement, but the admission state remained `LATCHED` and no second intervention began.
+
+This validates the bounded one-shot guard. It does not define production Encounter identity or prove how recurring conflicts should be admitted.
+
+## Clearance evidence remained observer-only
+
+Closest-approach Shadow Clearance output remained explicitly separate:
 
 ```text
 physicalContactThreshold = 25.37 m
-liveReferenceSeparation   = 27.38 m
-physicalClearanceReserve  = +2.01 m
+liveReferenceSeparation   = 27.40 m
+physicalClearanceReserve  = +2.03 m
 policyMarginBudget        = 3.75 m
 policyRequiredSeparation  = 29.12 m
-policyReserve             = -1.74 m
-failure                   = nil
+policyReserve             = -1.72 m
+authority                 = false
 ```
 
-Passage, rejoin, GIANTS handback and the complete 20-second observation succeeded. All calculated geometry and clearance fields remained `authority=false`.
+The positive physical reserve and negative policy reserve remained simultaneous, non-contradictory Knowledge. Neither value changed the automatic admission or actuator.
 
-The later Condor movement was the already documented Split-Start Pass Recovery / Start-State-Dependent Coverage sequence, not a new encounter discovery.
+## Supported conclusion
 
-## Current engineering increment
+**Fixture-Bounded Automatic Encounter Admission** can replace the manual `otmTS015Arm right` dependency for the exact Condor/Patriot same-pass fixture while preserving the established Unilateral Sidestep behaviour.
 
-v4.6.33 introduces **Automatic Encounter Admission** as a Decision-side boundary between Situation Assessment evidence and the existing fixed actuator.
+Supported scope:
 
-An **Admission Candidate** exists only when:
+- exact exclusive Condor/Patriot active pair;
+- sustained straight-working head-on projection;
+- one commitment per continuous fixture episode;
+- fixed Condor Yield, Patriot GIANTS Progress, physical-right side and 28 m / 12 m movement.
 
-- exactly two active workers are present;
-- the fixture resolves uniquely to Condor Yield and Patriot Progress;
-- both workers are straight, working, moving and unblocked;
-- headings differ by at least 150 degrees;
-- constant-velocity projection is closing, has `tCPA` between 0 and 30 seconds, and `dCPA` no greater than 14 m;
-- the evidence persists for three seconds;
-- no commitment has already been admitted in the continuous worker episode.
+Not supported:
 
-At the **Commitment Point**, the existing Unilateral Sidestep controller begins automatically. `otmTS015Arm` is disabled and no longer registered.
-
-## Protected actuator invariants
-
-- Condor remains fixed Yield.
-- Patriot remains fixed, unmodified GIANTS Progress.
-- The validated physical-right fixture side remains fixed.
-- The actuator remains fixed at 28 m lateral and 12 m rearward.
-- Every derived geometry and clearance field remains `authority=false`.
-- Automatic admission does not select role, side, movement distance or Progress control.
-
-## Encounter Episode Latch
-
-Prototype 18 permits one automatic commitment per continuous Condor/Patriot worker episode. The latch prevents a second intervention during later GIANTS coverage behaviour, including the known Split-Start Pass Recovery sequence. It resets only after the fixture pair is no longer continuously active for the configured absence interval.
+- general Encounter identity;
+- recurring commitments in one Operation;
+- autonomous Yield/Progress selection;
+- autonomous escape-side selection;
+- geometry-derived movement authority;
+- field/margin refuge feasibility, obstacles or complete swept-envelope protection;
+- more than two active workers.
 
 ## Exact continuation point
 
-Install v4.6.33 and recreate the established Condor/Patriot same-pass fixture. Enter no OuttaMyWay console command. Capture the complete log and uninterrupted video.
+Define **Shadow Candidate Comparison** as an observer-only Decision experiment before implementation.
 
-Validate:
+The first bounded candidate set should compare, without selecting or acting:
 
-1. one `PROTOTYPE18 ADMISSION_CANDIDATE` appears only after the exact pair is straight, working and conflict-relevant;
-2. one `PROTOTYPE18 COMMITMENT_POINT` follows after approximately three seconds of sustained evidence;
-3. the established 28 m / 12 m passage, rejoin and GIANTS handback complete unchanged;
-4. Patriot remains `GIANTS_UNMODIFIED`;
-5. all Shadow Clearance output remains `authority=false`;
-6. no second activation occurs during later Split-Start Pass Recovery or other non-head-on manoeuvring;
-7. no `otmTS015Arm` command is available or required.
+```text
+Condor yields toward candidate refuge A
+Condor yields toward candidate refuge B
+Patriot yields toward candidate refuge A
+Patriot yields toward candidate refuge B
+```
 
-A missed encounter, premature trigger, harmless-pass trigger, role/side drift or second activation disproves the admission gate.
+Before code is written, agree:
 
-## Current limits
+1. what constitutes a candidate commitment rather than a mere geometric alternative;
+2. which evidence each candidate must contain;
+3. how world-space refuge direction replaces left/right label ambiguity;
+4. how field/margin feasibility, obstacles, assembly extents and progress preservation are represented;
+5. which candidate-invalidity rules can be established without granting selection authority;
+6. how comparison remains Knowledge only and cannot alter the validated fixture actuator.
 
-Prototype 18 is fixture-bounded, not a production encounter selector. Exactly two active workers are required. Roles, side and movement remain fixed. Constant-velocity projection is admission evidence only. Full assembly swept paths, field/margin refuge feasibility, obstacles, autonomous role/side selection, multiple simultaneous encounters and generalisation beyond Condor/Patriot remain unresolved.
+The next implementation, once agreed, should calculate and log candidate evidence only. It must not choose a Yield Entity, side or movement and must not change Control.
+
+## Runtime-change statement
+
+v4.6.34 changes runtime files only for version metadata. Admission thresholds, latch behaviour, roles, side, movement, clearance authority and actuator behaviour are unchanged from canonical v4.6.33.
 
 ## Deferred Publication Readiness Review
 

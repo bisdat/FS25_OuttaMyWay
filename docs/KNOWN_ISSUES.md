@@ -9,7 +9,7 @@
 - v4.6.32 empirically validated separate physical-contact and policy-clearance output; both remain Knowledge only and must not be read as Control authority.
 - Automatic Encounter Admission is fixture-bounded. It requires exactly the exclusive Condor/Patriot active pair and does not generalise encounter identity.
 - Condor remains hard-coded as Yield, Patriot as Progress, and the physical-right side is fixed. Patriot-yields role-transfer and autonomous side selection are untested.
-- `otmTS015Arm` is disabled. Automatic triggering now depends on straight-working Observer state plus constant-velocity projection; false positive, missed-admission and timing boundaries require runtime validation.
+- `otmTS015Arm` is disabled. TS018 validated one expected automatic admission, but false-positive, missed-admission and timing boundaries outside the exact fixture remain untested.
 - One Encounter Episode Latch allows one commitment per continuous fixture episode; production recurrence and multi-encounter identity remain unresolved.
 - All 13 current Condor identities and origins resolved, but no usable runtime shape bounds were exposed through the tested APIs.
 - The 2.50 m unresolved physical allowance is a fixture hypothesis, not Coverage Closure or a production constant.
@@ -32,7 +32,7 @@
 - Later-admitted selection was a bounded TS012 experiment, not an accepted general priority policy.
 - Predictor `CLEAR` is known to occur after collision or blocked convergence and cannot authorise release.
 - Automatic Safe Release was deliberately absent and remains unvalidated.
-- Prototype 14 is disabled in v4.6.33; only one active hold was supported and multi-conflict arbitration remains unimplemented.
+- Prototype 14 is disabled in v4.6.34; only one active hold was supported and multi-conflict arbitration remains unimplemented.
 
 ## Physical assembly coverage
 

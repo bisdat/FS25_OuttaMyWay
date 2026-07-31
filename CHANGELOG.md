@@ -1,5 +1,19 @@
 # Changelog
 
+## v4.6.34 — Automatic Admission Runtime Evidence Consolidation
+
+- Begins from owner-declared canonical v4.6.33, SHA-256 `87b24a0865929cdeffa44b7c035a90586ba537f6823e0959cacea1e3e85e74b2`, Git commit `e3ca9d1bce58edaf4d245c609d03409d26fe1a22`.
+- Records the successful TS018 runtime validation under FS25 1.21.1.0 build b40785 revision 81824.
+- Confirms that no OuttaMyWay console command was entered or required: one `ADMISSION_CANDIDATE` appeared at 316.78 m, one `COMMITMENT_POINT` followed after 3.09 s of sustained evidence at 277.92 m, and the run started with `trigger=automatic-encounter-admission`.
+- Confirms unchanged protected behaviour: Condor remained fixed Yield, Patriot remained `GIANTS_UNMODIFIED`, the physical-right fixture side remained fixed, and the actuator remained 28 m lateral / 12 m rearward.
+- Records successful passage, rejoin and full 20-second GIANTS handback observation with `failure=nil`, `fenceViolation=false`, `passageConfirmed=true` and 27.40 m minimum pair separation.
+- Confirms the Encounter Episode Latch remained `LATCHED` through the later known Split-Start Pass Recovery and prevented a second automatic activation.
+- Reconfirms separate observer-only clearance evidence at closest approach: +2.03 m physical reserve and -1.72 m policy reserve, both `authority=false`.
+- Closes Prototype 18's fixture-bounded admission hypothesis as supported without promoting it to general encounter identity, recurring commitment, role selection, side selection or movement authority.
+- Sets the next architectural activity to define observer-only Shadow Candidate Comparison before any candidate may influence Control.
+- Changes runtime code only for version metadata; no admission thresholds, role, side, movement, clearance authority or actuator behaviour changes.
+- Carries forward the deferred Publication Readiness Review item **Mod Description Drift**.
+
 ## v4.6.33 — Fixture-Bounded Automatic Encounter Admission
 
 - Begins from owner-declared canonical v4.6.32, SHA-256 `37cfd18d959cdbec43818265c7bcda789b2f3c7ce6df16210daec469b80206c7`.

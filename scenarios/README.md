@@ -145,6 +145,8 @@ See `docs/prototypes/PROTOTYPE_17_SHADOW_CLEARANCE_CALCULATION.md`.
 
 TS018 retains the validated TS015-B actuator and TS017-B clearance evidence but removes manual arming. Exactly one active Condor and one active Patriot must remain straight, working, moving, unblocked, opposed and conflict-relevant for three seconds. Condor remains fixed Yield, Patriot remains unmodified GIANTS Progress, the physical-right side remains fixed and Control remains 28 m lateral / 12 m rearward.
 
-The run requires no OuttaMyWay console command. Evidence must show one `ADMISSION_CANDIDATE`, one `COMMITMENT_POINT`, successful passage/rejoin/handoff, and no second activation during known Split-Start Pass Recovery. `otmTS015Status` and `otmTS015Cancel` remain diagnostic/emergency commands; `otmTS015Arm` is disabled.
+The validation run entered no OuttaMyWay console command. One `ADMISSION_CANDIDATE` appeared at 316.78 m; one `COMMITMENT_POINT` followed after 3.09 seconds at 277.92 m. Passage, rejoin and the 20-second handback observation completed with `failure=nil` and 27.40 m minimum pair separation. The latch remained `LATCHED` during later known Split-Start Pass Recovery and no second activation occurred.
+
+`otmTS015Status` and `otmTS015Cancel` remain diagnostic/emergency commands; `otmTS015Arm` is disabled. The result supports only fixture-bounded automatic admission.
 
 See `docs/prototypes/PROTOTYPE_18_AUTOMATIC_ENCOUNTER_ADMISSION.md`.

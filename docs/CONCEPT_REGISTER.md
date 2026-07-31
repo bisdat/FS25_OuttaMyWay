@@ -1,10 +1,10 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.33.
+Review status: reviewed for candidate release v4.6.34.
 
 ### Automatic Encounter Admission
 
-A Decision-side gate that converts sustained conflict-relevant Situation Assessment evidence into permission to begin an already bounded Commitment. It does not itself choose role, side, distance or Control method.
+A Decision-side gate that converts sustained conflict-relevant Situation Assessment evidence into permission to begin an already bounded Commitment. TS018 supports this for the exact Condor/Patriot fixture without console input. It does not itself choose role, side, distance or Control method.
 
 ### Admission Candidate
 
@@ -12,7 +12,7 @@ A provisional encounter that currently satisfies the bounded admission condition
 
 ### Encounter Episode Latch
 
-A one-shot guard that prevents the same continuously active fixture episode from producing more than one automatic Commitment. Prototype 18 uses it to protect known later GIANTS coverage behaviour from re-admission.
+A one-shot guard that prevents the same continuously active fixture episode from producing more than one automatic Commitment. TS018 showed the latch remaining active through later known Split-Start Pass Recovery. This validates bounded suppression, not production recurrence or general Encounter identity.
 
 ### Shadow Clearance Calculation
 

@@ -2,75 +2,71 @@
 
 ## Authority
 
-Canonical implementation authority is the owner-declared v4.6.32 package with SHA-256 `37cfd18d959cdbec43818265c7bcda789b2f3c7ce6df16210daec469b80206c7`.
+Canonical implementation authority is owner-declared v4.6.33:
 
-v4.6.33 is the next candidate. It removes the required manual arming command and introduces fixture-bounded Automatic Encounter Admission. Runtime validation and repository-owner Canonicalisation remain pending.
+- ZIP SHA-256: `87b24a0865929cdeffa44b7c035a90586ba537f6823e0959cacea1e3e85e74b2`
+- Git commit: `e3ca9d1bce58edaf4d245c609d03409d26fe1a22`
+- canonical generator: 132 files, clean Git status, all release bytes matched Git HEAD directly.
 
-## Incoming validated result
+v4.6.34 is an evidence-consolidation candidate. Runtime behaviour is unchanged; runtime files differ only in version metadata.
 
-The v4.6.32 repeat empirically validated Physical and Policy Clearance Evidence Separation:
+## Accepted runtime result
 
-```text
-physicalContactThreshold = 25.37 m
-physicalClearanceReserve = +2.01 m
-policyMarginBudget = 3.75 m
-policyRequiredSeparation = 29.12 m
-policyReserve = -1.74 m
-```
-
-The existing actuator completed passage, rejoin and GIANTS handback with `failure=nil`; every calculated field remained `authority=false`.
-
-## Implemented change
-
-Prototype 18 adds a Decision-side **Automatic Encounter Admission** module. It consumes Observer state and Prototype 01 constant-velocity kinematics but does not own physical representation or Control.
-
-Admission requires the exact exclusive Condor/Patriot pair, straight productive motion, no turn or blockage, opposed headings, positive closing rate, `tCPA` within 30 seconds, `dCPA` within 14 m and three seconds of continuous evidence.
-
-The progression is:
+TS018 ran without any OuttaMyWay console command.
 
 ```text
-Situation Assessment evidence
-→ Admission Candidate
-→ sustained confirmation
-→ Commitment Point
-→ existing Unilateral Sidestep actuator
+ADMISSION_CANDIDATE  at 316.78 m
+COMMITMENT_POINT     after 3.09 s at 277.92 m
+RUN_START            trigger=automatic-encounter-admission
+RUN_END              failure=nil, passageConfirmed=true, minPairSeparation=27.40 m
 ```
 
-`otmTS015Arm` and its handler are removed from active code and are not registered. `otmTS015Status` and `otmTS015Cancel` remain diagnostic and emergency controls.
+The complete fixed actuator sequence succeeded through passage, rejoin and the 20-second GIANTS handback observation. Condor remained fixed Yield; Patriot remained `GIANTS_UNMODIFIED`; the physical-right side and 28 m lateral / 12 m rearward movement remained unchanged.
 
-## Protected invariants
+Exactly one admission and one commitment occurred. The Encounter Episode Latch remained `LATCHED` through the later known Split-Start Pass Recovery and prevented a second activation.
 
-- Condor remains fixed Yield and Patriot remains fixed GIANTS Progress.
-- Patriot receives no hold, steering, speed or implement command.
-- The selected side remains the validated physical-right fixture side.
-- Control remains fixed at 28 m lateral and 12 m rearward.
-- Shadow Clearance remains `authority=false` and cannot trigger or modify the manoeuvre.
-- No autonomous role assignment, side selection or geometry-derived movement is introduced.
+Shadow Clearance remained observer-only. Closest physical reserve was +2.03 m and closest policy reserve was -1.72 m; all records remained `authority=false`.
 
-## Encounter Episode Latch
+## Architectural conclusion
 
-One automatic commitment is permitted per continuous fixture episode. The same pair cannot re-trigger after handback while it remains continuously active. This protects later known Split-Start Pass Recovery from being mistaken for a new eligible head-on admission.
+Fixture-Bounded Automatic Encounter Admission is supported for the exact Condor/Patriot fixture. The result removes manual admission from the normal test path but does not generalise Decision authority.
+
+Do not infer from this result:
+
+- production Encounter identity;
+- permission for repeated commitments;
+- automatic Yield/Progress selection;
+- automatic side selection;
+- geometry-derived movement;
+- complete field, obstacle or swept-envelope feasibility;
+- multi-worker arbitration.
 
 ## Exact continuation point
 
-1. Install the exact v4.6.33 candidate.
-2. Recreate the established Condor/Patriot head-on fixture.
-3. Enter no OuttaMyWay console command.
-4. Capture the complete game log and uninterrupted video.
-5. Confirm `ADMISSION_CANDIDATE` appears only for the exact straight-working head-on pair.
-6. Confirm one `COMMITMENT_POINT` follows after approximately three seconds.
-7. Confirm the validated sidestep, passage, rejoin and complete 20-second handback observation remain successful.
-8. Confirm Patriot remains `GIANTS_UNMODIFIED` and every shadow record states `authority=false`.
-9. Continue observing through the known Split-Start Pass Recovery and confirm no second automatic activation.
-10. Verify `otmTS015Arm` is unavailable and was not needed.
+Discuss and define an observer-only **Shadow Candidate Comparison** before implementation.
 
-## Failure conditions
+The intended first comparison space is four alternatives formed by two possible Yield Entities and two world-space refuge directions. The labels are provisional; candidate directions must ultimately be represented as world-space refuge regions rather than human left/right strings.
 
-The experiment fails if admission occurs during turning, harmless separated work, a non-exclusive fixture, later Split-Start coverage behaviour or more than once in the same episode. It also fails if the expected head-on encounter is missed or if protected actuator behaviour changes.
+The discussion must separate:
 
-## Deferred after automatic admission
+- facts available from Situation Assessment;
+- candidate commitment construction;
+- candidate invalidation;
+- comparison evidence;
+- selection authority;
+- Control execution.
 
-Only after this gate is validated should shadow comparison of role/side candidates begin. Candidate comparison must remain observer-only until field-margin feasibility, obstacle evidence, complete assembly protection and policy authority are separately justified.
+Only after the candidate evidence contract is agreed should a new prototype be implemented. Its first version must log all alternatives and exclusions without selecting one and without modifying the validated automatic-admission actuator.
+
+## Protected invariants for the next implementation
+
+- canonical v4.6.33 behaviour remains the reference actuator;
+- no console arming dependency returns;
+- the existing automatic gate remains fixture-bounded;
+- the current one-shot latch remains unchanged;
+- no candidate may alter role, side, movement or Progress control;
+- all candidate and clearance calculations remain `authority=false`;
+- field/margin, obstacle and complete-assembly uncertainty must remain explicit rather than silently approximated.
 
 ## Deferred Publication Readiness Review
 

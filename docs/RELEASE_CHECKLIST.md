@@ -57,6 +57,8 @@
 - [ ] Egress remains on the selected side of the provisional centreline fence.
 - [ ] Patriot remains under unmodified Giants control; Condor refuge, positive passage, rejoin, deployment, work restoration and Giants handback are observed.
 - [ ] TS017-B evidence records 13/13 origins, 0/13 usable bounds, the 25.37 m physical threshold, +2.01 m physical reserve, 29.12 m policy target and -1.74 m policy reserve as distinct documented interpretations.
+- [ ] TS018 evidence records no console input, one Admission Candidate, one Commitment Point after approximately three seconds, one automatic run and no second activation in the same continuous fixture episode.
+- [ ] TS018 completes passage, rejoin and the full handback observation with `failure=nil`, while Condor/Patriot role, physical-right side, 28 m / 12 m movement and Patriot `GIANTS_UNMODIFIED` remain unchanged.
 - [ ] Legacy Traffic Manager, recovery, reservation and Decision paths remain dormant under the exclusive Prototype 16 actuator boundary.
 - [ ] No raw texture/audio performance warnings from this mod.
 

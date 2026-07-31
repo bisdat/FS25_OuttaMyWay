@@ -1,45 +1,42 @@
-FS25_OuttaMyWay v4.6.33
+FS25_OuttaMyWay v4.6.34
 
 Cooperative collision-avoidance research for native GIANTS AI field workers.
 
-Current canonical authority: owner-declared v4.6.32, SHA-256 37cfd18d959cdbec43818265c7bcda789b2f3c7ce6df16210daec469b80206c7
-Current package authority: candidate implementing fixture-bounded Automatic Encounter Admission; runtime validation and repository-owner Canonicalisation remain pending
+Canonical implementation authority: owner-declared v4.6.33
+Canonical ZIP SHA-256: 87b24a0865929cdeffa44b7c035a90586ba537f6823e0959cacea1e3e85e74b2
+Canonical Git commit: e3ca9d1bce58edaf4d245c609d03409d26fe1a22
+Current package authority: candidate consolidating successful automatic-admission runtime evidence; runtime behaviour is unchanged and repository-owner Canonicalisation remains pending
 Runtime baseline: FS25 1.21.1.0 build b40785 revision 81824 unless a test record states otherwise
 
-v4.6.32 runtime validation passed. Physical and policy clearance evidence remained distinct while the established Condor/Patriot actuator completed passage, rejoin and GIANTS handback unchanged:
+TS018 validated Prototype 18 without any OuttaMyWay console command:
 
-- physical contact threshold: 25.37 m;
-- physical clearance reserve: +2.01 m at 27.38 m live reference separation;
-- policy margin budget: 3.75 m;
-- policy required separation: 29.12 m;
-- policy reserve: -1.74 m;
-- every derived clearance field: authority=false.
+- one `ADMISSION_CANDIDATE` appeared at 316.78 m;
+- one `COMMITMENT_POINT` followed after 3.09 s of sustained evidence at 277.92 m;
+- the run began with `trigger=automatic-encounter-admission`;
+- Condor remained fixed Yield;
+- Patriot remained fixed, unmodified GIANTS Progress;
+- the physical-right fixture side remained fixed;
+- movement remained fixed at 28 m lateral and 12 m rearward;
+- passage, rejoin and the complete 20-second handback observation succeeded;
+- `failure=nil`, `fenceViolation=false`, `passageConfirmed=true`;
+- minimum pair separation was 27.40 m;
+- the Encounter Episode Latch remained `LATCHED` and prevented a second activation during the known Split-Start Pass Recovery.
 
-v4.6.33 introduces Prototype 18 — Fixture-Bounded Automatic Encounter Admission. No manual OuttaMyWay arming command is required or registered.
+Prototype 17 evidence also remained observer-only and separate:
 
-Protected fixture behaviour:
+- closest physical clearance reserve: +2.03 m;
+- closest policy reserve: -1.72 m;
+- every derived clearance field: `authority=false`.
 
-- Condor remains fixed Yield;
-- Patriot remains fixed, unmodified GIANTS Progress;
-- the validated physical-right fixture side remains fixed;
-- movement remains fixed at 28 m lateral and 12 m rearward;
-- Shadow Clearance remains Knowledge only and cannot trigger or alter Control.
+Prototype 18 is supported only for the exact fixture. It does not establish production Encounter identity, recurring commitments, automatic Yield/Progress selection, escape-side selection, geometry-derived movement, field/margin refuge feasibility or obstacle clearance.
 
-Automatic admission requires exactly two active workers forming the exact Condor/Patriot fixture. Both must remain straight, working, moving and unblocked with opposed headings and a closing conflict-relevant projection for three seconds. One commitment is permitted per continuous worker episode.
-
-Normal validation procedure:
-
-1. Start Condor and Patriot in the established same-pass head-on fixture.
-2. Enter no OuttaMyWay arming command.
-3. Observe `PROTOTYPE18 ADMISSION_CANDIDATE` followed by one `PROTOTYPE18 COMMITMENT_POINT`.
-4. Confirm the existing passage, rejoin and 20-second handback observation.
-5. Confirm no second activation during later known Split-Start Pass Recovery.
+The next architectural activity is observer-only Shadow Candidate Comparison. Candidate alternatives may be calculated and logged, but none may influence Control until their evidence and authority are separately justified.
 
 Diagnostic and emergency commands remain:
 
 - `otmTS015Status`
 - `otmTS015Cancel`
 
-`otmTS015Arm` is disabled and is not registered.
+`otmTS015Arm` remains disabled and is not registered.
 
 Deferred Publication Readiness Review — Mod Description Drift: `modDesc.xml` still summarises the active prototype. Before publication, it should return to a stable description of the mod while release-specific detail remains in the changelog and engineering documents.

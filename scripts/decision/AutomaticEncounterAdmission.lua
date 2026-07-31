@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.33
+-- FS25_OuttaMyWay v4.6.34
 -- Prototype 18: fixture-bounded Automatic Encounter Admission.
 --
 -- This Decision-side module consumes Observer and Prototype 01 Situation

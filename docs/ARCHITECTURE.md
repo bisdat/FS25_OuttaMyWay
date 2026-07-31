@@ -307,7 +307,7 @@ return before legacy traffic / recovery / reservation / Decision paths
 Conflict Cessation Is Not Conflict Resolution is an architectural release invariant. Predictor `CLEAR` cannot release the hold because TS011 showed that collision and stable blockage also remove closing motion. Prototype 14 records Safe Release Candidate evidence but does not execute release.
 
 This candidate validates one Commitment and one execution mechanism only. General priority, automatic release, recovery, later repositioning and physical-clearance policy remain separate hypotheses.
-## Automatic Encounter Admission boundary (v4.6.33 candidate)
+## Automatic Encounter Admission boundary (validated in owner-declared canonical v4.6.33)
 
 Prototype 18 separates **encounter admission** from candidate selection and Control. The bounded flow is:
 
@@ -322,6 +322,8 @@ Observer facts + Prototype 01 kinematics
 For this fixture only, admission requires exactly two active workers uniquely resolving to Condor and Patriot; both straight, working, moving and unblocked; headings opposed by at least 150 degrees; positive closing; `tCPA` from 0 to 30 seconds; and `dCPA` no greater than 14 m. One Encounter Episode Latch permits one commitment per continuous worker episode.
 
 Admission does not choose the Yield Entity, Progress Entity, escape side, movement distance or clearance policy. Condor, Patriot, the physical-right side and the 28 m / 12 m actuator remain fixed experimental authority. Prototype 17 physical and policy evidence remains Knowledge with `authority=false`.
+
+TS018 empirically supported this boundary: one candidate was admitted after 3.09 seconds without console input, one fixed Commitment completed with `failure=nil`, and the episode latch prevented re-admission during later known Split-Start Pass Recovery. This is evidence for fixture-bounded admission only. It does not define production Encounter identity, repeated commitments or candidate selection.
 
 ## Unilateral Sidestep intervention boundary (v4.6.25 candidate)
 

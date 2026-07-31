@@ -708,3 +708,18 @@ A failed unprotected run is not wasted. It will quantify the boundary at which E
 **Implementation boundary:** Remove and unregister `otmTS015Arm`. Preserve Condor Yield, Patriot `GIANTS_UNMODIFIED`, physical-right side, 28 m lateral / 12 m rearward movement and all Shadow Clearance output as `authority=false`.
 
 **Validation hypothesis:** The established encounter should produce exactly one Admission Candidate and Commitment Point without console input, while harmless work, turns and later Split-Start recovery produce no activation. A failed gate is useful evidence about encounter admission, not a reason to alter the validated actuator.
+
+## v4.6.34 — Automatic admission evidence accepted without generalising authority
+
+**Observation:** TS018 required no OuttaMyWay console command. One Admission Candidate appeared at 316.78 m and one Commitment Point followed after 3.09 seconds at 277.92 m. The existing actuator completed passage, rejoin and the full handback observation with `failure=nil` and 27.40 m minimum pair separation.
+
+**Observation:** The Encounter Episode Latch remained `LATCHED` during later known Split-Start Pass Recovery and no second automatic intervention occurred.
+
+**Interpretation:** The manual command dependency has been removed for the exact fixture. The result supports Automatic Encounter Admission as a bounded Decision concept without supporting general Encounter identity or recurring commitments.
+
+**Boundary protected:** Condor remained fixed Yield, Patriot remained `GIANTS_UNMODIFIED`, the physical-right side and 28 m / 12 m movement remained fixed, and all Shadow Clearance output remained `authority=false`. Closest physical reserve was +2.03 m while policy reserve was -1.72 m.
+
+**Decision:** Consolidate this evidence in a no-behaviour-change release. Do not combine acceptance of automatic admission with role/side automation. The next activity is to define observer-only Shadow Candidate Comparison before implementation.
+
+**Implementation:** Runtime files changed only for version metadata.
+

@@ -50,6 +50,10 @@
 45. Adding the provisional 3.75 m policy-margin budget produced a 29.12 m policy target and a negative policy reserve despite observed passage: Physical Clearance Is Not Policy Clearance.
 46. TS017-B completed the 20-second handoff observation with both workers active, unblocked and working; the new provider did not disturb the validated actuator.
 
+47. TS018 admitted the exact Condor/Patriot encounter automatically after 3.09 seconds of sustained evidence, without any OuttaMyWay console command, while preserving the fixed role, side and actuator.
+48. The Prototype 18 Encounter Episode Latch remained `LATCHED` through later known Split-Start Pass Recovery and prevented a second activation; this supports bounded suppression but does not define general recurring Encounter identity.
+
+
 ## Mapping and hierarchy evidence relevant to Prototype 13A
 
 GIANTS vehicle loading uses components and `i3dMappings` as node-resolution inputs, while physically relevant descendants may remain unmapped and inherit changing world poses from mapped ancestors. Mappings are therefore useful anchors, not physical inventories or proof of Coverage Closure. Prototype 13A tests this interpretation at runtime.

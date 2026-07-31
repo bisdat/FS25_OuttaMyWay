@@ -1,10 +1,10 @@
 # Roadmap
 
-## Current increment — Fixture-Bounded Automatic Encounter Admission
+## Current increment — Automatic Admission Evidence Consolidation
 
-Remove the required manual arm command while preserving the validated fixed Condor/Patriot role, side, movement and observer-only clearance boundaries.
+Record the successful no-command TS018 result without changing runtime behaviour, then protect the abstraction boundary before Shadow Candidate Comparison.
 
-## Active — Prototype 18 admission validation
+## Completed — Prototype 18 admission validation
 
 - [x] Validate v4.6.32 Physical and Policy Clearance Evidence Separation in the established runtime fixture.
 - [x] Preserve the successful 28 m lateral / 12 m rearward actuator and Patriot `GIANTS_UNMODIFIED`.
@@ -13,10 +13,19 @@ Remove the required manual arm command while preserving the validated fixed Cond
 - [x] Require three seconds of continuous evidence before the Commitment Point.
 - [x] Permit one commitment per continuous worker episode.
 - [x] Disable and unregister `otmTS015Arm`.
-- [ ] Run the established fixture with no OuttaMyWay console command.
-- [ ] Confirm exactly one candidate, one commitment and no later Split-Start reactivation.
-- [ ] Confirm passage, rejoin, handback and all `authority=false` clearance evidence remain unchanged.
-- [ ] After validation, begin observer-only role/side candidate comparison without granting selection authority.
+- [x] Run the established fixture with no OuttaMyWay console command.
+- [x] Confirm exactly one candidate, one commitment and no later Split-Start reactivation.
+- [x] Confirm passage, rejoin, handback and all `authority=false` clearance evidence remained unchanged.
+
+## Next architectural activity — Shadow Candidate Comparison
+
+- [ ] Define candidate commitment content before implementation.
+- [ ] Replace left/right labels with world-space refuge-region evidence.
+- [ ] Define role-transfer candidates without granting role-selection authority.
+- [ ] Define field/margin, obstacle, complete-assembly and Progress-preservation evidence per candidate.
+- [ ] Define candidate-invalidity rules separately from candidate preference.
+- [ ] Implement observer-only comparison logs only after the evidence contract is agreed.
+- [ ] Keep every comparison output `authority=false`; do not alter the validated automatic-admission actuator.
 
 ## Deferred Publication Readiness Review
 

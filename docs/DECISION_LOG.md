@@ -1,8 +1,20 @@
 # Decision Log
 
+## D-0075 — Accept fixture-bounded automatic admission evidence before candidate comparison
+
+**Status:** Accepted for candidate v4.6.34
+
+**Context:** TS018 produced one automatic Admission Candidate and one Commitment Point without console input. The fixed actuator completed passage, rejoin and the 20-second handback observation with `failure=nil`. The Encounter Episode Latch remained active through later known Split-Start Pass Recovery and no second intervention occurred.
+
+**Decision:** Accept Fixture-Bounded Automatic Encounter Admission as empirically supported for the exact Condor/Patriot fixture. Preserve its current role, side, movement, threshold and one-shot boundaries unchanged while the evidence is consolidated. Begin the next activity with architecture for observer-only Shadow Candidate Comparison, not selection or Control.
+
+**Boundary:** This acceptance does not define general Encounter identity, recurring commitments, automatic Yield/Progress selection, escape-side selection, geometry-derived movement, field/margin feasibility, obstacle clearance or multi-worker arbitration. All candidate comparison evidence must initially remain `authority=false`.
+
+**Consequences:** v4.6.34 changes runtime files only for version metadata. A later candidate-comparison prototype must expose alternatives and exclusions without altering the validated actuator.
+
 ## D-0074 — Admit the fixed fixture automatically before generalising Decision authority
 
-**Status:** Accepted for candidate v4.6.33
+**Status:** Accepted in owner-declared canonical v4.6.33
 
 **Context:** v4.6.32 validated that physical-contact and policy-clearance evidence can remain distinct without changing the successful Condor/Patriot actuator. The next operational dependency was the manual `otmTS015Arm right` command, which supplied encounter admission while roles, side and movement were already fixed by the fixture.
 
@@ -10,7 +22,9 @@
 
 **Boundary:** Admission may consume observer state and constant-velocity projection, but it does not own role selection, side selection, movement derivation, clearance policy or Progress control. Shadow Clearance remains `authority=false`.
 
-**Consequences:** The next runtime test can begin with no OuttaMyWay console command. A missed encounter, premature or harmless-pass trigger, second activation in the same episode, or any protected actuator drift disproves the gate. General encounter identity and recurring production commitments remain deferred.
+**Consequences:** The runtime test began with no OuttaMyWay console command and produced exactly one candidate, one commitment and one successful actuator run. The latch prevented later re-admission. General encounter identity and recurring production commitments remain deferred.
+
+**Outcome:** TS018 admitted after 3.09 seconds of sustained evidence, completed with `failure=nil` and 27.40 m minimum pair separation, and remained latched through Split-Start Pass Recovery.
 
 ## D-0073 — Separate physical clearance evidence from policy clearance before authority
 
