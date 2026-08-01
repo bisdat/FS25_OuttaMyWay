@@ -1,16 +1,18 @@
 # Roadmap
 
-## Current increment — Outboard Refuge Drift Correction
+## Current increment — Clearance-First Refuge Selection Correction
 
-Restore the accepted outboard-only refuge architecture before any Shadow Candidate Comparison implementation. Runtime behaviour remains unchanged.
+Supersede the v4.6.35 outboard-only restriction before any Shadow Candidate Comparison implementation. Runtime behaviour remains unchanged.
 
-## Completed — Outboard refuge correction
+## Completed — refuge-selection correction
 
-- [x] Identify Outboard Refuge Drift in the v4.6.34 continuation wording.
-- [x] Reaffirm that Retreating Unilateral Sidestep permits one Outboard Refuge Region per proposed Yield Entity.
-- [x] Remove inboard/cross-lane refuge as a peer candidate or fallback.
-- [x] Reduce the first comparison space from four side-role combinations to two Yield-role candidates.
+- [x] Use equal-width coincident-centreline and unequal-width offset-centreline examples to test the outboard-only assumption.
+- [x] Disprove one mandatory refuge side per proposed Yield Entity.
+- [x] Name **Preferred Refuge Is Not Required Refuge**.
+- [x] Establish clearance-first, cost-second refuge selection.
+- [x] Restore both world-space lateral sides as possible candidates for each proposed Yield Entity.
 - [x] Preserve world-space direction authority and explicit unresolved feasibility.
+- [x] Keep Approach-Side Provenance out of side-selection authority.
 
 ## Completed — Prototype 18 admission validation
 
@@ -28,11 +30,12 @@ Restore the accepted outboard-only refuge architecture before any Shadow Candida
 ## Next architectural activity — Shadow Candidate Comparison
 
 - [ ] Define Commitment Candidate content before implementation.
-- [ ] Derive one world-space Outboard Refuge Region for each proposed Yield Entity.
-- [ ] Compare exactly two Yield-role candidates: Condor-outboard and Patriot-outboard.
+- [ ] Derive both world-space lateral Refuge Candidates for each proposed Yield Entity.
+- [ ] Permit up to four role/refuge candidates: two Yield-role assignments multiplied by two lateral sides.
+- [ ] Define transition-path and refuge-pose clearance as separate evidence.
 - [ ] Define field/margin, obstacle, complete-assembly and Progress-preservation evidence per candidate.
-- [ ] Define candidate invalidation separately from missing evidence and later preference.
-- [ ] Forbid inboard/cross-lane substitution when an outboard candidate is unavailable.
+- [ ] Define hard invalidation separately from missing evidence and later cost preference.
+- [ ] Compare displacement and interruption cost only among candidates that survive clearance constraints.
 - [ ] Implement observer-only comparison logs only after the evidence contract is agreed.
 - [ ] Keep every comparison output `authority=false`; do not alter the validated automatic-admission actuator.
 

@@ -30,9 +30,15 @@
 
 **Refuge Pose** — Yield Assembly position plus orientation while Progress passes.
 
-**Outboard Refuge Region** — world-space refuge region on a proposed Yield Entity's outward side, away from the Protected Progress Corridor and avoiding cross-lane recovery.
+**Lateral Refuge Candidate** — world-space refuge region on either lateral side of the Protected Progress Corridor for one proposed Yield Entity.
 
-**Outboard Refuge Drift** — accidental restoration of false left/right refuge symmetry after outboard-only refuge semantics have already been accepted.
+**Clearance-First, Cost-Second Refuge Selection** — candidate path and pose clearance determine survival before displacement or interruption cost is compared.
+
+**Preferred Refuge Is Not Required Refuge** — the least disruptive reachable refuge is preferred, while the opposite side remains valid when it is the only clear option.
+
+**Outboard Refuge Region** — context-specific lower-disruption lateral refuge; a preference when viable, not an exclusive refuge family. Symmetric geometry may have no unique outboard side.
+
+**Outboard Refuge Drift** — historical v4.6.35 label for a perceived symmetry regression; later evidence showed the outboard-only correction was too restrictive.
 
 **Encounter Identity Is Not Entity-Pair Identity** — the same pair can form multiple independent Future-Space conflicts.
 

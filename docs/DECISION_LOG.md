@@ -1,8 +1,23 @@
 # Decision Log
 
+## D-0077 — Select refuges clearance-first and cost-second
+
+**Status:** Accepted for candidate v4.6.36
+
+**Context:** The outboard-only correction in v4.6.35 was tested against two concrete geometries. Equal-width workers approaching on a coincident centre line may have two equivalent clear lateral refuges. With unequal widths and offset centre lines, one refuge may require less movement, while the opposite, longer path remains necessary when the preferred side is unavailable.
+
+**Decision:** Adopt the governing rule: **Refuge selection is clearance-first and cost-second. Both lateral sides may be candidates. The preferred refuge is the least disruptive reachable refuge, but the opposite side remains valid when it is the only clear option.** Name the discovery **Preferred Refuge Is Not Required Refuge**.
+
+**Candidate scope:** For each proposed Yield Entity, Situation Assessment may construct two world-space lateral Refuge Candidates. Candidate validity depends on evidence that the transition path and refuge pose are clear and preserve the Progress Entity's required Future Space. Only surviving candidates may later be compared by displacement, interruption or other operational cost.
+
+**Direction boundary:** Human left/right labels, vehicle-local axes and Approach-Side Provenance do not grant selection authority. Relative assembly geometry and environmental feasibility must assess both lateral sides. A longer opposite-side path is not invalid merely because it crosses the original lane; it is invalid only when evidence shows conflict, containment, obstacle or other declared constraint failure.
+
+**Consequences:** D-0076 is superseded but retained as decision history. Prototype 19 may observe up to four role/refuge alternatives, remains `authority=false`, and may not select or execute any candidate. v4.6.36 changes no runtime behaviour beyond version metadata.
+
+
 ## D-0076 — Restore outboard-only refuge semantics before candidate comparison
 
-**Status:** Accepted for candidate v4.6.35
+**Status:** Superseded by D-0077; retained as decision history
 
 **Context:** The accepted Unilateral Sidestep decisions require the Yield Entity to move outward without crossing the protected-side boundary, specifically avoiding a later cross-lane recovery. The v4.6.34 continuation wording nevertheless described four alternatives formed from two Yield Entities and two refuge directions. That wording reopened a choice already closed by D-0067 and D-0068.
 

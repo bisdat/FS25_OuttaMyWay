@@ -1,5 +1,18 @@
 # Engineering Journal
 
+## v4.6.36 — Preferred Refuge Is Not Required Refuge
+
+**Observation:** In a symmetric 36 m / 36 m head-on encounter on one centre line, either lateral refuge can be viable when its path and pose are clear. In an offset 36 m / 5 m encounter, one side can require materially less movement, but the longer opposite-side route remains necessary when the preferred side is unavailable.
+
+**Disproven hypothesis:** v4.6.35 treated one Outboard Refuge Region per proposed Yield Entity as mandatory and classified the opposite side as a different manoeuvre. The examples show that this restriction excludes valid solutions.
+
+**Discovery:** Name the corrected relationship **Preferred Refuge Is Not Required Refuge**.
+
+**Decision:** Refuge selection is clearance-first and cost-second. Both world-space lateral sides may be candidates. Clear transition and refuge evidence determine validity; movement and interruption cost compare only candidates that remain viable.
+
+**Boundary protected:** Human left/right labels and Approach-Side Provenance do not select a side. Relative assembly geometry and environmental feasibility assess both. Prototype 19 remains observer-only and grants no Control authority.
+
+
 ## v4.6.35 — Outboard Refuge Drift corrected before implementation
 
 **Observation:** The v4.6.34 continuation wording described four candidate alternatives by pairing two possible Yield Entities with two refuge directions. Earlier accepted decisions already required Unilateral Sidestep to move the Yield Entity outward without crossing the protected-side boundary, avoiding later cross-lane recovery.

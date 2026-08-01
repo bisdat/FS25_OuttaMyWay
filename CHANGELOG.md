@@ -1,5 +1,19 @@
 # Changelog
 
+## v4.6.36 — Clearance-First Refuge Selection Correction
+
+- Begins from owner-declared canonical v4.6.35, SHA-256 `d178145a5953fe5d46b86b04502e635e5ad221dded6b34e6433338862b5d9c04`, Git commit `ca983514ba18b104a185fc13534992a10ff8ae62`.
+- Records that equal-width coincident-centreline and unequal-width offset-centreline examples disprove the v4.6.35 outboard-only refuge restriction.
+- Names the discovery **Preferred Refuge Is Not Required Refuge**.
+- Establishes the governing rule: **Refuge selection is clearance-first and cost-second. Both lateral sides may be candidates. The preferred refuge is the least disruptive reachable refuge, but the opposite side remains valid when it is the only clear option.**
+- Restores both world-space lateral sides as possible refuge candidates for each proposed Yield Entity; human left/right labels remain diagnostic conveniences rather than spatial authority.
+- Separates validity from preference: path and refuge clearance determine whether a candidate survives; displacement and interruption cost compare only surviving candidates.
+- Rejects Approach-Side Provenance as a required side-selection authority. Relative assembly geometry and environmental feasibility must assess both sides directly.
+- Keeps Prototype 19 observer-only: no candidate may select a role, refuge, movement or Control action.
+- Changes runtime code only for version metadata; automatic admission, the episode latch, fixed roles, fixed physical-right fixture movement, clearance authority and actuator behaviour remain unchanged.
+- Carries forward the deferred Publication Readiness Review item **Mod Description Drift**.
+
+
 ## v4.6.35 — Outboard Refuge Drift Correction
 
 - Begins from owner-declared canonical v4.6.34, SHA-256 `808eb15a388586feabe69a49ec81756300e042af133b070fbc4752c40016dacc`, Git commit `2ef9da18dc06df263e5705fa3d28b43c241fa0b8`.

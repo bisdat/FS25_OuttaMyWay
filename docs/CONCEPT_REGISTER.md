@@ -1,6 +1,6 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.35.
+Review status: reviewed for candidate release v4.6.36.
 
 ### Automatic Encounter Admission
 
@@ -143,13 +143,25 @@ Observed evidence that the Progress Entity has fully moved beyond the Yield Enti
 
 The requirement that a world-space direction selected by Decision is the same physical direction executed by Control. Console labels and local-axis names are test-harness conveniences, not spatial authority.
 
+### Lateral Refuge Candidate
+
+A world-space refuge region on either lateral side of the Protected Progress Corridor for one proposed Yield Entity. Both sides may remain candidates until path, pose, containment, obstacle or other declared evidence invalidates or leaves one unresolved. Human left/right labels and local-axis signs do not own spatial authority.
+
+### Clearance-First, Cost-Second Refuge Selection
+
+The rule that candidate survival is determined first by transition-path and refuge-pose clearance, including preservation of the Progress Entity's required Future Space. Operational cost such as lateral displacement or interruption duration compares only candidates that survive those constraints.
+
+### Preferred Refuge Is Not Required Refuge
+
+The lower-disruption reachable refuge is preferred, but it is not mandatory. The opposite lateral side remains a legitimate candidate when it is the only clear option. Symmetric geometry may provide two equivalent refuges; unequal or offset geometry may produce a clear cost preference.
+
 ### Outboard Refuge Region
 
-The world-space refuge region on a proposed Yield Entity's outboard side, away from the Protected Progress Corridor and chosen so rejoin does not require cross-lane recovery. Retreating Unilateral Sidestep has one applicable Outboard Refuge Region per proposed Yield Entity. An inboard or cross-lane refuge is not a peer side candidate; it is a different intervention concept requiring separate architecture and evidence.
+A context-specific lower-disruption lateral refuge, commonly on the side requiring less displacement from the proposed Yield Assembly's current relation to the Protected Progress Corridor. It may be preferred when viable but is not the only permitted refuge family. Symmetric geometry may provide no unique outboard side.
 
 ### Outboard Refuge Drift
 
-A documentation or design regression that restores false left/right symmetry after Outboard Refuge Region has already been selected as the only refuge family for Retreating Unilateral Sidestep. The v4.6.34 continuation wording exhibited this drift and v4.6.35 corrects it before implementation.
+Historical name assigned in v4.6.35 to the perceived restoration of false left/right symmetry. Concrete symmetric and unequal-width examples subsequently showed that the outboard-only correction was itself too restrictive. The term is retained as design history, not current refuge-selection architecture.
 
 ### Egress Protection Hold
 

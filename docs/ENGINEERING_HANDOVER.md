@@ -2,13 +2,13 @@
 
 ## Authority
 
-Canonical implementation authority is owner-declared v4.6.34:
+Canonical implementation authority is owner-declared v4.6.35:
 
-- ZIP SHA-256: `808eb15a388586feabe69a49ec81756300e042af133b070fbc4752c40016dacc`
-- Git commit: `2ef9da18dc06df263e5705fa3d28b43c241fa0b8`
+- ZIP SHA-256: `d178145a5953fe5d46b86b04502e635e5ad221dded6b34e6433338862b5d9c04`
+- Git commit: `ca983514ba18b104a185fc13534992a10ff8ae62`
 - canonical generator: 132 files, clean Git status, all release bytes matched Git HEAD directly.
 
-v4.6.35 is a documentation-correction candidate. Runtime behaviour is unchanged; runtime files differ only in version metadata.
+v4.6.36 is a documentation-correction candidate. Runtime behaviour is unchanged; runtime files differ only in version metadata.
 
 ## Accepted runtime result
 
@@ -29,30 +29,30 @@ Shadow Clearance remained observer-only. Closest physical reserve was +2.03 m an
 
 ## Architectural correction
 
-Canonical v4.6.34 contained **Outboard Refuge Drift** in its continuation wording: it described four alternatives formed from two possible Yield Entities and two refuge directions. Earlier accepted architecture had already selected outward-only refuge for Retreating Unilateral Sidestep.
+Canonical v4.6.35 restricted each proposed Yield Entity to one Outboard Refuge Region. Equal-width coincident-centreline and unequal-width offset-centreline examples show that restriction is too strong.
 
-The corrected comparison space is:
+The corrected rule is:
 
-```text
-Condor yields  → Condor Outboard Refuge Region
-Patriot yields → Patriot Outboard Refuge Region
-```
+> **Refuge selection is clearance-first and cost-second. Both lateral sides may be candidates. The preferred refuge is the least disruptive reachable refuge, but the opposite side remains valid when it is the only clear option.**
 
-Each proposed Yield Entity has one applicable outboard refuge family. An inboard or cross-lane refuge is not a peer alternative and must not be substituted when outboard refuge evidence is unavailable.
+This names **Preferred Refuge Is Not Required Refuge**. A shorter or same-side refuge may be preferred, but it is not mandatory. A longer opposite-side route is legitimate when its transition path and refuge are clear and the Progress Entity's required Future Space remains protected.
+
+For each proposed Yield Entity, the comparison space may contain two world-space lateral Refuge Candidates. With two possible Yield-role assignments, Prototype 19 may therefore observe up to four role/refuge candidates. Human left/right labels remain diagnostics only. Approach-Side Provenance is not required as a selection authority; relative assembly geometry and environmental feasibility assess both sides.
 
 ## Exact continuation point
 
-Define the observer-only **Commitment Candidate evidence contract** for the two Yield-role candidates before implementation.
+Define the observer-only **Commitment Candidate evidence contract** before implementation.
 
 The discussion must establish:
 
-- how Situation Assessment derives each Outboard Refuge Region in world space;
-- what minimum proposition turns a Yield-role alternative into a Commitment Candidate;
+- how Situation Assessment constructs both world-space lateral Refuge Candidates for each proposed Yield Entity;
+- what minimum proposition turns a role/refuge alternative into a Commitment Candidate;
+- how transition path and refuge pose are independently assessed;
 - how candidate evidence records field/margin containment, obstacles, complete-assembly representation, physical clearance, policy clearance, transition sweep, Progress preservation and rejoin feasibility;
 - how `FAIL`, `UNKNOWN` and positive evidence aggregate without becoming preference or Control authority;
-- how an unavailable outboard refuge leaves a candidate `INVALIDATED` or `UNRESOLVED` rather than creating a cross-lane fallback.
+- how operational cost compares only candidates that remain viable.
 
-Only after that contract is agreed should Prototype 19 be implemented. Its first form must log both Yield-role candidates and exclusions without selecting one and without modifying the validated automatic-admission actuator.
+Only after that contract is agreed should Prototype 19 be implemented. Its first form must log all applicable role/refuge candidates and exclusions without selecting one and without modifying the validated automatic-admission actuator.
 
 ## Protected invariants for the next implementation
 
@@ -60,8 +60,10 @@ Only after that contract is agreed should Prototype 19 be implemented. Its first
 - no console arming dependency returns;
 - the existing automatic gate remains fixture-bounded;
 - the current one-shot latch remains unchanged;
-- each proposed Yield Entity contributes only its Outboard Refuge Region;
-- no inboard or cross-lane fallback is introduced;
+- both world-space lateral sides may be candidates for each proposed Yield Entity;
+- no human left/right label or arbitrary normal sign grants direction authority;
+- the selected path and refuge must preserve Progress Future Space;
+- candidate validity and later cost preference remain separate;
 - no candidate may alter role, refuge, movement or Progress control;
 - all candidate and clearance calculations remain `authority=false`;
 - field/margin, obstacle and complete-assembly uncertainty must remain explicit rather than silently approximated.

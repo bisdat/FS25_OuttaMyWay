@@ -372,7 +372,7 @@ Passage is a positive complete-assembly spatial conclusion, not merely predictor
 
 Direction commitments must ultimately be world-space refuge regions. Human left/right labels and vehicle-local axis names cannot own Decision-to-Motion Direction Integrity.
 
-For Retreating Unilateral Sidestep, the applicable region is specifically the proposed Yield Entity's **Outboard Refuge Region**: away from the Protected Progress Corridor and selected to avoid later cross-lane recovery. Each proposed Yield Entity therefore contributes one outboard refuge family. An inboard or cross-lane refuge is not a peer alternative inside this intervention; it would be a different manoeuvre concept with separate evidence and authority.
+For Retreating Unilateral Sidestep, each proposed Yield Entity may contribute two world-space **Lateral Refuge Candidates**, one on each side of the Protected Progress Corridor. Refuge selection is **clearance-first and cost-second**: transition-path and refuge-pose evidence determine whether a candidate survives; displacement and interruption cost compare only surviving candidates. The preferred refuge is the least disruptive reachable refuge, but the opposite side remains valid when it is the only clear option. Symmetric geometry may leave both candidates equivalent. Human left/right labels and vehicle-local axis signs remain diagnostics rather than Decision authority.
 ## Shadow clearance architecture — v4.6.29
 
 TS015-B established a successful fixture movement but not a general displacement rule. Prototype 17 therefore protects the actuator and observes a derived clearance requirement without granting authority.
