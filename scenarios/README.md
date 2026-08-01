@@ -150,3 +150,26 @@ The validation run entered no OuttaMyWay console command. One `ADMISSION_CANDIDA
 `otmTS015Status` and `otmTS015Cancel` remain diagnostic/emergency commands; `otmTS015Arm` is disabled. The result supports only fixture-bounded automatic admission.
 
 See `docs/prototypes/PROTOTYPE_18_AUTOMATIC_ENCOUNTER_ADMISSION.md`.
+## TS016 — Repeatable turn-exit head-on
+
+Condor and Patriot begin from altered locations. Patriot proceeds straight at working speed while Condor performs a headland manoeuvre, crosses Patriot's working lane and later settles into a head-on path. Lane crossing alone does not prove the final intent. v4.6.40 admitted once live collision geometry became relevant, selected Patriot as Yield and completed the calculated refuge twice.
+
+For continuation testing, do not stop at the first OuttaMyWay `RUN_END`. Allow both GIANTS jobs to continue. The second v4.6.40 continuation produced a later independent straight head-on at approximately 91.99 m / `tCPA=6.61 s` / `dCPA=6.38 m`. The permanent pair latch suppressed admission and both workers collided. v4.6.41 tests encounter 1 rearming followed by encounter 2 admission and Control.
+
+
+## TS015 — right-side refuge rejoin regression
+
+With v4.6.41, Condor completed a calculated right-side refuge and Patriot passed. The final rejoin target was almost exactly behind Condor; the forward-only controller drove away from the target and timed out before GIANTS handback. v4.6.42 tests a conditional Rejoin Orientation Phase plus target-progress watchdog. Repeat the original fixed-start TS015 unchanged.
+
+## v4.6.43 consolidated continuation status
+
+### TS015
+
+The primary straight-head-on episode now completes with a calculated right-side Condor refuge, bounded rearward-target orientation, direct rejoin, unfolding, GIANTS handback and encounter rearming. A later independent Headland Turn Overlap remains unresolved because both workers are manoeuvring when live collision geometry becomes compelling; no current admission mode accepts that state.
+
+Earlier left-side 15 km/h TS015 evidence also ended with a later headland convergence that was observed but not resolved. The v4.6.42 final collision is therefore an existing open encounter class rather than a newly introduced rejoin failure.
+
+### TS016
+
+The manoeuvre-aware first encounter and later rearmed straight-head-on encounter both complete. A subsequent conflict remains when Condor finishes work and becomes a static obstacle. Field World preserves relevance, but the active-worker pair ends and Patriot receives no obstacle-navigation Control. This Completion-Transition Control Gap is separate from TS015 dual-manoeuvre cooperation.
+

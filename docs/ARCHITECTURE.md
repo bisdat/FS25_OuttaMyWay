@@ -315,15 +315,52 @@ Prototype 18 separates **encounter admission** from candidate selection and Cont
 Observer facts + Prototype 01 kinematics
 → Admission Candidate
 → three-second evidence confirmation
+→ calculated role/refuge selection
 → Commitment Point
-→ fixed Prototype 16 Unilateral Sidestep
+→ Prototype 16 Unilateral Sidestep using the calculated target
 ```
 
-For this fixture only, admission requires exactly two active workers uniquely resolving to Condor and Patriot; both straight, working, moving and unblocked; headings opposed by at least 150 degrees; positive closing; `tCPA` from 0 to 30 seconds; and `dCPA` no greater than 14 m. One Encounter Episode Latch permits one commitment per continuous worker episode.
+For this fixture only, admission requires exactly two active workers uniquely resolving to Condor and Patriot. The straight-head-on mode requires both workers straight, working, moving and unblocked; headings opposed by at least 150 degrees; positive closing; `tCPA` from 0 to 30 seconds; and `dCPA` no greater than 14 m. Its evidence must persist for three seconds.
 
-Admission does not choose the Yield Entity, Progress Entity, escape side, movement distance or clearance policy. Condor, Patriot, the physical-right side and the 28 m / 12 m actuator remain fixed experimental authority. Prototype 17 physical and policy evidence remains Knowledge with `authority=false`.
+Temporary v4.6.40 also validated one bounded TS016 mode without treating lane crossing as intent. When exactly one fixture worker is straight-working and the other is manoeuvring, admission may occur before final straight settlement only if live headings are at least 150 degrees opposed, closure is positive, `tCPA` is 0–12 seconds and `dCPA` is at most 14 m. The straight-working worker becomes the early Yield role. Both modes withhold commitment below a 6.0 s `tCPA` floor. Confirmed-stop refuge recalculation remains the source of side and movement authority.
 
-TS018 empirically supported this boundary: one candidate was admitted after 3.09 seconds without console input, one fixed Commitment completed with `failure=nil`, and the episode latch prevented re-admission during later known Split-Start Pass Recovery. This is evidence for fixture-bounded admission only. It does not define production Encounter identity, repeated commitments or candidate selection.
+The original Encounter Episode Latch permitted one commitment per continuously active pair. Full TS016 continuation disproved that lifetime: after a successful first encounter, the same workers later created a new straight head-on while the controller was idle, but the pair latch suppressed admission. This is Pair-Latch Suppression.
+
+Temporary v4.6.41 scopes the latch to one encounter. Successful `RUN_END` enters `REARMING`; at least 35 m separation and three sustained seconds outside the opposed/closing conflict envelope remove the completed record. A successful pair may also rearm after five seconds of absence. Failed or unresolved records remain latched until explicit recovery. Successive records are numbered for evidence. This is still fixture-bounded and does not claim a general production encounter-identity system.
+
+## Rejoin Orientation and progress closure (temporary v4.6.42)
+
+A calculated refuge can leave the Yield vehicle facing away from its final rejoin target. A direct forward-only command is under-specified when the target is almost exactly rearward: the local target vector has no stable lateral turn component. This is **Forward-Only Rejoin Singularity**.
+
+Control therefore distinguishes orientation from translation. A rearward target first enters a bounded `REJOIN_ORIENTING` phase. The controller chooses the shortest target-bearing turn when available; at the singularity it curves inward toward the stop centreline. Direct rejoin begins only after the target enters the forward hemisphere. Forward-reachable targets retain the existing direct path.
+
+Rejoin is closed-loop rather than timeout-only. Orientation has explicit time and travel bounds. Direct translation must reduce target distance; sustained non-progress or divergence produces a safe held failure. This correction does not establish field-containment authority and does not address single-worker navigation around a completed static obstacle.
+
+## Cooperative passage evidence boundary — v4.6.43 candidate
+
+The calculated passage sequence is supported through successful GIANTS handback with either fixture worker as Yield and with refuge movement to both physical lateral sides. Successful encounter lifetime is no longer entity-pair lifetime: v4.6.41 rearmed after encounter 1 and admitted a later independent encounter 2.
+
+v4.6.42 also supports an explicit orientation-before-translation phase when the rejoin target is rearward. This closes the tested Forward-Only Rejoin Singularity without changing admission or refuge authority.
+
+Operation-level completion is not yet established. Two distinct relationships remain outside current Decision/Control authority:
+
+```text
+TS015 active + active
+both MANOEUVRING
+-> Future-Space convergence observable
+-> no eligible admission mode
+-> Dual-Manoeuvre Admission Gap
+
+TS016 active + completed obstacle
+completed assembly remains relevant
+-> active-worker pair ends
+-> no obstacle-navigation commitment
+-> Completion-Transition Control Gap
+```
+
+These are not variants of one controller defect. TS015 remains cooperative active-active traffic. TS016 becomes single-worker navigation around a static assembly. Their concepts, commitment lifecycles and validation criteria must remain separate.
+
+Movement speed affects phase separation and therefore later encounter geometry. That fact may inform future option cost and timing, but it cannot substitute for an admission concept that remains valid when trajectories change.
 
 ## Unilateral Sidestep intervention boundary (v4.6.25 candidate)
 
@@ -373,25 +410,33 @@ Passage is a positive complete-assembly spatial conclusion, not merely predictor
 Direction commitments must ultimately be world-space refuge regions. Human left/right labels and vehicle-local axis names cannot own Decision-to-Motion Direction Integrity.
 
 For Retreating Unilateral Sidestep, each proposed Yield Entity may contribute two world-space **Lateral Refuge Candidates**, one on each side of the Protected Progress Corridor. Refuge selection is **clearance-first and cost-second**: transition-path and refuge-pose evidence determine whether a candidate survives; displacement and interruption cost compare only surviving candidates. The preferred refuge is the least disruptive reachable refuge, but the opposite side remains valid when it is the only clear option. Symmetric geometry may leave both candidates equivalent. Human left/right labels and vehicle-local axis signs remain diagnostics rather than Decision authority.
-## Shadow clearance architecture — v4.6.29
 
-TS015-B established a successful fixture movement but not a general displacement rule. Prototype 17 therefore protects the actuator and observes a derived clearance requirement without granting authority.
+## Calculated Refuge Selection — temporary v4.6.39
 
-Required reference separation is modelled as opposing Facing Clearance Extents plus explicit uncertainty and policy margins. Progress extent is measured toward the refuge; compact Yield extent is measured back toward the Protected Progress Corridor. Whole vehicle length is used only through pose projection when it contributes to that one-sided extent.
+Automatic Encounter Admission recognises the exact Condor/Patriot fixture but does not assign fixed roles. At commitment, Calculated Refuge Selection evaluates both role assignments and both world-space lateral sides.
 
-Clearance belongs to a Refuge Pose, not merely a target point. An angled compact assembly can project materially more length into the lateral axis than a parallel assembly. Pre-manoeuvre prediction and live refuge measurement are therefore separate evidence stages.
-
-The staged authority boundary is:
+For each candidate:
 
 ```text
-fixed role + fixed side + fixed 28 m Control
-→ shadow-derived requirement
-→ empirical comparison
-→ later candidate-role/side shadow selection
-→ only then possible automatic Commitment
+physical separation = Progress facing extent + compact Yield facing extent
+policy separation   = physical separation + clearance-margin budget
+rearward capture    = compact Yield forward extent + geometry/tracking margin
 ```
 
-The later headland convergence after successful handback confirms that Encounter identity is tied to current Future-Space convergence rather than entity-pair identity. Situation Assessment continues after each retired Encounter.
+Current lateral offset and displacement cross-components are included in the coupled calculation. The selected admission candidate supplies the Yield role. At the confirmed stopped pose, both sides for that role are recalculated and the live result supplies side, lateral distance, rearward distance and target to Control.
+
+Selection is least lateral movement, then least total movement, with deterministic tie resolution. Calculation failure never falls back to fixed Condor Yield, physical-right, 28 m lateral or 12 m rearward values.
+
+The controller continues to own hold, configuration change, egress, passage confirmation, rejoin, restoration and GIANTS handback. The non-selected worker remains under unmodified GIANTS control.
+
+This transfer is runtime-test bounded. Field-polygon containment, obstacle occupancy and complete swept-path checking are not yet part of the selection gate, so v4.6.39 is limited to the established open fixture until evidence supports wider use.
+
+## Shadow clearance architecture — v4.6.29
+
+Prototype 17 remains a diagnostic measurement layer. It records physical-contact threshold, physical reserve, policy margin budget, policy-required separation and policy reserve at pre-estimate, refuge, closest approach and passage confirmation.
+
+Its measurements do not override the selected calculated Control target. They provide retrospective evidence for whether the executed target achieved the expected clearance.
+
 ## Facing Extent Provider and clearance evidence layers
 
 Shadow clearance assessment requires one-sided extents in a shared reference frame. Physical Representation may hold richer or incomplete evidence, so a dedicated Facing Extent Provider adapts that evidence to the assessment question without granting authority. Its output is Knowledge: extent, axis, reference, source, coverage, confidence and unresolved allowance. Decision remains responsible for selecting a candidate commitment; Control remains responsible for execution.

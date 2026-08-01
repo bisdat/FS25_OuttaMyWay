@@ -1,20 +1,34 @@
 # Known Issues
 
+## Current open encounter boundaries
+
+- **TS015 Headland Turn Overlap / Dual-Manoeuvre Admission Gap:** after a successful passage and GIANTS handback, both workers may enter interacting headland manoeuvres. Situation Assessment sees the convergence, but current admission accepts only straight/straight or one manoeuvring plus one straight-working. The later encounter is not new to v4.6.42; earlier left-side 15 km/h TS015 evidence also left a later headland convergence unresolved.
+- **TS016 Completion-Transition Control Gap:** a completed assembly remains a relevant static obstacle, but active-active admission ends and the remaining worker receives no obstacle-navigation Control.
+- Faster egress/ingress increases temporal and spatial separation, but no evidence yet proves that orientation speed is the direct cause or solution for the TS015 final collision.
+- `REJOIN_ORIENTING` is runtime-supported for the tested rearward right-side TS015 target. Its 5 km/h cap remains fixture-bounded and should not be generalised before additional assemblies are tested.
+
+
+- Encounter numbering and rearming remain fixture-bounded, not a general traffic-manager implementation.
+- Rearming currently uses the established 35 m passage-clear threshold plus three seconds outside the predicted conflict envelope. This remains a fixture-calibrated hypothesis, not a universal production threshold.
+- Failed or unresolved encounters remain latched until explicit recovery. Automated failure recovery is not designed.
+
 ## Publication readiness
 
 - **Mod Description Drift:** `modDesc.xml` currently acts as an active prototype/release summary rather than a stable description of the mod. Correct this during Publication Readiness Review, not during the current evidence increment.
 
-## Prototype 18 admission and Prototype 17 clearance authority
+## Calculated refuge authority, automatic admission and clearance evidence
 
-- v4.6.32 empirically validated separate physical-contact and policy-clearance output; both remain Knowledge only and must not be read as Control authority.
-- Automatic Encounter Admission is fixture-bounded. It requires exactly the exclusive Condor/Patriot active pair and does not generalise encounter identity.
-- Condor remains hard-coded as Yield, Patriot as Progress, and the physical-right fixture refuge is fixed. Patriot-yields role transfer and world-space derivation, path assessment and pose assessment for both lateral Refuge Candidates are untested.
-- `otmTS015Arm` is disabled. TS018 validated one expected automatic admission, but false-positive, missed-admission and timing boundaries outside the exact fixture remain untested.
-- One Encounter Episode Latch allows one commitment per continuous fixture episode; production recurrence and multi-encounter identity remain unresolved.
-- All 13 current Condor identities and origins resolved, but no usable runtime shape bounds were exposed through the tested APIs.
-- The 2.50 m unresolved physical allowance is a fixture hypothesis, not Coverage Closure or a production constant.
-- Field/margin refuge availability, obstacles and complete assembly swept paths are not evaluated.
-- The 28 m movement, 3.75 m margin budget and 36 m working-marker fallback are fixture evidence rather than universal values.
+- v4.6.40 runtime-validated calculated Yield-role, refuge-side, lateral-distance and rearward-distance authority with Patriot as Yield. v4.6.41 does not change that authority; it changes only successful encounter lifetime.
+- Automatic Encounter Admission remains fixture-bounded: exactly the exclusive Condor/Patriot active pair is required. v4.6.41 adds pair-local encounter numbering and rearming but does not establish general encounter identity across arbitrary operations.
+- The selected role is calculated at admission. Both sides for that role are recalculated from the confirmed stopped pose before Control receives a target.
+- No fixed Condor, physical-right, 28 m or 12 m fallback remains. Calculation failure withholds admission or leaves an already-held worker in the existing safe held failure state.
+- The rearward distance is calculated from predicted compact-assembly forward extent plus geometry/tracking margin so the complete compact assembly rests behind the stop line.
+- Field-polygon containment, obstacle occupancy and complete egress swept-space checks are not yet implemented in the calculated-selection gate. The current runtime test therefore remains limited to the known open Condor/Patriot fixture.
+- When compact Yield geometry is unavailable, the live AI working-marker half-width may be used as a labelled `LOW_CONSERVATIVE` upper-bound operand. This can overstate movement and is not compact-geometry closure.
+- Role comparison can still be influenced by unequal representation quality. TS016 deliberately selects the straight-working worker by runtime state before confirmed-stop side/distance calculation.
+- `otmTS015Arm` remains disabled. One Encounter Episode Latch permits one commitment per continuous fixture episode.
+- The 2.50 m Condor origin allowance and 3.75 m clearance-margin budget remain fixture/evidence assumptions, not universal production constants.
+- Prototype 17 clearance logs remain diagnostic Knowledge. The new calculated Control target is independently logged and must not be confused with retrospective closest-approach evidence.
 
 ## Prototype 15 / TS014
 
@@ -23,7 +37,7 @@
 - The 15 km/h pace is justified only for the tested Condor Native Motion Envelope and still requires runtime overshoot/stopping validation.
 - TS014 excludes a second active worker, automatic role and side selection, refuge suitability and Egress Protection Hold.
 - Prototype 08 records collision-node origin spans but mesh extents and Coverage Closure remain unresolved.
-- `FAILED_HELD` still requires operator cancellation; production failure recovery is not designed.
+- `FAILED_HELD` still requires operator cancellation; production failure recovery is not designed. v4.6.40 suppresses repeated terminal log spam but does not automate recovery.
 
 ## Prototype 14 retained findings and limits
 
@@ -32,7 +46,7 @@
 - Later-admitted selection was a bounded TS012 experiment, not an accepted general priority policy.
 - Predictor `CLEAR` is known to occur after collision or blocked convergence and cannot authorise release.
 - Automatic Safe Release was deliberately absent and remains unvalidated.
-- Prototype 14 remains disabled in v4.6.36; only one active hold was supported and multi-conflict arbitration remains unimplemented.
+- Prototype 14 remains disabled in v4.6.38; only one active hold was supported and multi-conflict arbitration remains unimplemented.
 
 ## Physical assembly coverage
 

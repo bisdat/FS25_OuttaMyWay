@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.6.36
+-- FS25_OuttaMyWay v4.6.43 cooperative passage evidence consolidation candidate build.
 -- Cooperative collision avoidance for base-game AI field workers.
 
 OuttaMyWay = {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.6.36"
+OuttaMyWay.VERSION = "4.6.43"
 OuttaMyWay.BLOCKED_FOLD_DELAY_MS = 6500
 OuttaMyWay.WAIT_FOLD_DELAY_MS = 4500
 OuttaMyWay.HEAD_ON_FOLLOW_HOLD_DISTANCE = 55.0
@@ -244,19 +244,13 @@ OuttaMyWay.SINGLE_WORKER_DELAY_MIN_PRIORITY_SPEED_KMH = 2.0
 OuttaMyWay.SINGLE_WORKER_DELAY_EFFECT_SPEED_KMH = 0.75
 OuttaMyWay.SINGLE_WORKER_DELAY_EFFECT_DEADLINE_MS = 4000
 
--- Prototype 16 / TS015-B remains the validated Condor-yields / Patriot-progresses
--- passage actuator. Its confirmed-stop reference, fixed physical-right fixture side,
--- fixed 28 m lateral target, 12 m rearward retreat and 15/6 km/h speed profile remain
--- behaviourally unchanged.
---
--- Prototype 17 / TS017-B continues Shadow Clearance Calculation. Physical and policy
--- results remain Knowledge with authority=false and do not select trigger, role, side,
--- distance or Progress control.
---
--- Prototype 18 replaces manual arming with fixture-bounded Automatic Encounter Admission.
--- Exactly two active workers, the fixed Condor/Patriot roles, straight productive motion,
--- opposed headings and a closing conflict-relevant projection must persist through the
--- confirmation interval. One commitment is permitted per continuous worker episode.
+-- Prototype 16 retains the validated hold/fold/egress/passage/rejoin/handback
+-- sequence. Prototype 18 admits the exact Condor/Patriot test pair without
+-- assigning roles. Prototype 19 calculates both role assignments and both
+-- lateral sides, then supplies the selected role and provisional refuge. At the
+-- confirmed stop, both sides for the selected Yield role are recalculated and
+-- the calculated lateral and rearward movements become Control authority.
+-- No fixed Yield role, side, 28 m lateral or 12 m rearward fallback remains.
 OuttaMyWay.UNILATERAL_SIDESTEP_ENABLED = true
 OuttaMyWay.UNILATERAL_SIDESTEP_EXCLUSIVE = true
 OuttaMyWay.TS015_INTERVAL_MS = 100
@@ -278,9 +272,21 @@ OuttaMyWay.TS015_INGRESS_SPEED_KMH = 15.0
 OuttaMyWay.TS015_PRECISION_SPEED_KMH = 6.0
 OuttaMyWay.TS015_EGRESS_PRECISION_RADIUS_M = 6.0
 OuttaMyWay.TS015_REJOIN_PRECISION_RADIUS_M = 8.0
-OuttaMyWay.TS015_LATERAL_OFFSET_M = 28.0
-OuttaMyWay.TS015_EGRESS_REARWARD_M = 12.0
 OuttaMyWay.TS015_REJOIN_FORWARD_M = 6.0
+-- Rejoin orientation is a separate low-speed phase. It is entered only when
+-- the final rejoin target is behind the Yield vehicle, avoiding the undefined
+-- forward-only steering command observed in TS015 with a right-side refuge.
+OuttaMyWay.TS015_REJOIN_ORIENTATION_SPEED_KMH = 5.0
+OuttaMyWay.TS015_REJOIN_ORIENTATION_STEER_LZ = 0.30
+OuttaMyWay.TS015_REJOIN_ORIENTATION_FORWARD_DOT = 0.25
+OuttaMyWay.TS015_REJOIN_ORIENTATION_TIMEOUT_MS = 12000
+OuttaMyWay.TS015_REJOIN_ORIENTATION_MAX_TRAVEL_M = 20.0
+-- Once the final target is in the forward hemisphere, a progress watchdog
+-- stops the vehicle promptly if target distance fails to improve or diverges.
+OuttaMyWay.TS015_REJOIN_PROGRESS_EPSILON_M = 0.25
+OuttaMyWay.TS015_REJOIN_PROGRESS_GRACE_MS = 2000
+OuttaMyWay.TS015_REJOIN_PROGRESS_TIMEOUT_MS = 3500
+OuttaMyWay.TS015_REJOIN_DIVERGENCE_LIMIT_M = 6.0
 OuttaMyWay.TS015_EGRESS_READY_FOLD_ANIM_TIME = 0.15
 OuttaMyWay.TS015_FULL_COMPACT_FOLD_ANIM_TIME = 0.98
 OuttaMyWay.TS015_TARGET_RADIUS_M = 1.0
@@ -302,6 +308,32 @@ OuttaMyWay.TS018_EPISODE_RESET_MS = 5000
 OuttaMyWay.TS018_MIN_CLOSING_RATE_MPS = 0.10
 OuttaMyWay.TS018_MAX_TCPA_S = 30.0
 OuttaMyWay.TS018_MAX_DCPA_M = 14.0
+OuttaMyWay.TS018_MIN_COMMIT_TCPA_S = 6.0
+-- Successful encounter completion does not permanently suppress the same pair.
+-- Rearming uses the already validated passage-clear distance and requires the
+-- pair to remain outside the predicted conflict envelope for a sustained period.
+OuttaMyWay.TS018_REARM_MIN_SEPARATION_M = OuttaMyWay.TS015_PASS_CLEAR_DISTANCE_M
+OuttaMyWay.TS018_REARM_CLEAR_CONFIRM_MS = 3000
+
+-- TS016 repeatable turn-exit head-on admission. Lane crossing alone is not
+-- authority. Admission requires exactly one straight-working worker, exactly one
+-- manoeuvring worker, live opposed headings, positive closure, and predicted
+-- closest approach inside the conflict envelope. The straight-working worker is
+-- the early Yield role for this path; confirmed-stop refuge calculation remains
+-- authoritative.
+OuttaMyWay.TS016_MANOEUVRE_ADMISSION_ENABLED = true
+OuttaMyWay.TS016_ADMISSION_CONFIRM_MS = 0
+OuttaMyWay.TS016_MIN_MANOEUVRE_SPEED_KMH = 1.0
+OuttaMyWay.TS016_MAX_TCPA_S = 12.0
+OuttaMyWay.TS016_MAX_DCPA_M = 14.0
+OuttaMyWay.TS016_MIN_COMMIT_TCPA_S = 6.0
+
+-- Prototype 19 calculated-refuge authority. Lateral separation is derived from
+-- the Progress working-width extent, the predicted compact Yield assembly extent
+-- and the existing clearance-margin budget. Rearward movement is derived from
+-- the compact assembly forward extent plus geometry and tracking margins so the
+-- complete compact assembly rests behind the confirmed stop line.
+OuttaMyWay.TS019_SHADOW_REFUGE_COMPARISON_ENABLED = true
 
 -- Prototype 17 shadow-only policy-clearance margins. They are evidence hypotheses,
 -- individually logged, excluded from the physical contact threshold and deliberately

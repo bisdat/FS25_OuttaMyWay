@@ -114,4 +114,26 @@ The closest centre separation was approximately 27.39 m. This brackets the fixtu
 A later convergence near the opposite headland was a new conflict formed by new GIANTS intentions, not failure of the completed working-pass encounter. Encounter identity is the current Future-Space convergence, not the persistent entity pair.
 
 A later run recorded from Patriot's viewpoint still selected Condor because the fixture roles were hard-coded. Perspective Is Not Role Authority.
+## Temporary v4.6.41 repeated-encounter integration
+
+The passage actuator is unchanged. The controller now preserves the admission encounter ID and reports the final outcome before clearing the run. A successful passage and handback allow admission to begin rearming; a failed passage retains the encounter latch. This separates actuator completion from admission readiness and permits a later independent encounter between the same workers.
+
+## Temporary v4.6.40 admission integration
+
+TS016 may now start the same passage controller while the Progress worker is still manoeuvring. The straight-working worker is held immediately after live conflict admission. Side, lateral distance, rearward distance and target are still recalculated from the confirmed stopped pose. The passage sequence itself is unchanged. `FAILED_HELD` is terminal and logged once.
+
+
+## Temporary v4.6.42 Rejoin Orientation correction
+
+The v4.6.41 TS015 regression reached a calculated right-side refuge and confirmed passage, then failed before handback. At rejoin start the target was almost exactly behind Condor. The forward-only command provided no turn bias, heading remained stable and target distance grew until timeout. This establishes Forward-Only Rejoin Singularity.
+
+v4.6.42 adds `REJOIN_ORIENTING` only for rearward targets. The phase turns slowly until the target enters the forward hemisphere, then returns to the existing direct rejoin. Time, travel and target-progress limits prevent another long uncontrolled departure. TS015 runtime repetition is required.
+
+## v4.6.42 runtime result — right-side refuge and rearward rejoin
+
+The unchanged TS015 fixture selected Condor as Yield and a calculated physical-right refuge. Passage completed. Because the final rejoin target lay behind Condor, Control entered `REJOIN_ORIENTING`, completed the orientation in 7.10 s after 6.42 m travel, then completed direct rejoin, unfolding, GIANTS handback and the successful observation interval. The encounter subsequently rearmed.
+
+This supports the v4.6.42 correction and closes Forward-Only Rejoin Singularity for the tested geometry.
+
+A later independent collision occurred during overlapping headland turns. This does not invalidate the completed passage episode. It repeats the previously observed later headland-convergence boundary from the earlier left-side 15 km/h TS015 work. When the collision prediction became compelling, both workers were manoeuvring and Automatic Encounter Admission had no eligible mode. The remaining issue is **Headland Turn Overlap / Dual-Manoeuvre Admission Gap**.
 

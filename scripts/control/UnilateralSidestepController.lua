@@ -1,12 +1,9 @@
--- FS25_OuttaMyWay v4.6.36
--- Prototype 16 / TS015-B actuator, Prototype 17 shadow clearance, and Prototype 18
--- fixture-bounded Automatic Encounter Admission.
+-- FS25_OuttaMyWay v4.6.43 cooperative passage evidence consolidation candidate.
+-- Prototype 16 passage controller with Prototype 18 admission and Prototype 19
+-- calculated role, side, lateral distance and rearward distance authority.
 --
--- Condor remains fixed Yield, Patriot remains unmodified GIANTS Progress, the
--- physical-right fixture side remains fixed, and Control still commands exactly
--- 28 m lateral / 12 m rearward movement. Prototype 18 replaces manual arming
--- with one automatically admitted commitment per continuous worker episode.
--- Shadow Clearance Knowledge remains authority=false.
+-- The established hold/fold/egress/passage/rejoin/handback sequence is retained.
+-- No Condor Yield, physical-right, 28 m or 12 m fallback remains in Control.
 OuttaMyWay.UnilateralSidestepController = OuttaMyWay.UnilateralSidestepController or {}
 local Controller = OuttaMyWay.UnilateralSidestepController
 
@@ -42,9 +39,9 @@ local function distance2d(ax, az, bx, bz)
 end
 
 local function signedLateral(run, x, z)
-    if run == nil or x == nil or z == nil then return nil end
+    if run == nil or x == nil or z == nil or run.refugeSideX == nil then return nil end
     local dx, dz = x - run.startX, z - run.startZ
-    return dx * run.rightX + dz * run.rightZ
+    return dx * run.refugeSideX + dz * run.refugeSideZ
 end
 
 local function longitudinal(run, x, z)
@@ -134,31 +131,31 @@ local function contains(value, token)
     return string.find(string.lower(tostring(value or "")), string.lower(tostring(token or "")), 1, true) ~= nil
 end
 
-local function fixtureRole(state)
+local function fixtureIdentity(state)
     if state == nil or state.vehicle == nil then return nil end
     local name = nameOf(state.vehicle)
     local asset = vehicleAsset(state.vehicle)
-    if contains(name, "condor") or contains(asset, "condor") then return "YIELD_CONDOR" end
-    if contains(name, "patriot") or contains(asset, "patriot") then return "PROGRESS_PATRIOT" end
+    if contains(name, "condor") or contains(asset, "condor") then return "CONDOR" end
+    if contains(name, "patriot") or contains(asset, "patriot") then return "PATRIOT" end
     return nil
 end
 
-local function findFixtureStates(states)
-    local yieldState, progressState = nil, nil
+local function findFixturePairStates(states)
+    local participantA, participantB = nil, nil
     for _, state in ipairs(states or {}) do
-        local role = fixtureRole(state)
-        if role == "YIELD_CONDOR" then
-            if yieldState ~= nil then return nil, nil, "multiple-condor-candidates" end
-            yieldState = state
-        elseif role == "PROGRESS_PATRIOT" then
-            if progressState ~= nil then return nil, nil, "multiple-patriot-candidates" end
-            progressState = state
+        local identity = fixtureIdentity(state)
+        if identity == "CONDOR" then
+            if participantA ~= nil then return nil, nil, "multiple-condor-candidates" end
+            participantA = state
+        elseif identity == "PATRIOT" then
+            if participantB ~= nil then return nil, nil, "multiple-patriot-candidates" end
+            participantB = state
         end
     end
-    if yieldState == nil or progressState == nil then
-        return yieldState, progressState, "fixture-pair-incomplete"
+    if participantA == nil or participantB == nil then
+        return participantA, participantB, "fixture-pair-incomplete"
     end
-    return yieldState, progressState, nil
+    return participantA, participantB, nil
 end
 
 local function headingDifference(a, b)
@@ -174,6 +171,18 @@ local function directionVector(node, localX, localZ)
     local length = math.sqrt(x * x + z * z)
     if length < 0.001 then return nil, nil end
     return x / length, z / length
+end
+
+local function localDirectionToTarget(node, targetX, targetZ)
+    if node == nil or targetX == nil or targetZ == nil then return nil, nil, nil end
+    local x, _, z = getWorldTranslation(node)
+    local dx, dz = targetX - x, targetZ - z
+    local remaining = math.sqrt(dx * dx + dz * dz)
+    if remaining < 0.001 then return 0, 1, remaining end
+    local localX, _, localZ = worldDirectionToLocal(node, dx, 0, dz)
+    local length = math.sqrt(localX * localX + localZ * localZ)
+    if length < 0.001 then return 0, 1, remaining end
+    return localX / length, localZ / length, remaining
 end
 
 local function nowSeconds()
@@ -192,11 +201,13 @@ function Controller:init()
     self.originalDriveToPoint = nil
 
     OuttaMyWay.Logger:info(
-        "PROTOTYPE 16 ACTIVE: TS015-B validated passage actuator enabled=%s exclusive=%s trigger=automatic-encounter-admission fixture=Condor-yields/Patriot-progresses fixedSide=right controlTarget=28m progressHold=false",
+        "PROTOTYPE 16 ACTIVE: passage actuator enabled=%s exclusive=%s trigger=automatic-encounter-admission+TS016-manoeuvre-aware fixturePair=Condor/Patriot role=calculated side=calculated lateral=calculated rearward=calculated progressHold=false",
         tostring(self.enabled), tostring(OuttaMyWay.UNILATERAL_SIDESTEP_EXCLUSIVE == true))
     OuttaMyWay.Logger:info(
-        "PROTOTYPE 17 ACTIVE: TS017-B shadow-clearance calculation enabled=%s authority=false stages=pre-estimate/refuge-live/closest-approach/passage-confirmed controlTargetSource=TS015-fixed",
+        "PROTOTYPE 17 ACTIVE: clearance observation enabled=%s authority=false stages=pre-estimate/refuge-live/closest-approach/passage-confirmed controlTargetSource=calculated-refuge",
         tostring(OuttaMyWay.TS017_SHADOW_CLEARANCE_ENABLED == true))
+    OuttaMyWay.Logger:info(
+        "PROTOTYPE 19 AUTHORITY: role and provisional refuge selected at admission; side and distances recalculated at confirmed stop; no fixed fallback")
 
     if self.enabled and OuttaMyWay.UNILATERAL_SIDESTEP_EXCLUSIVE ~= true then
         OuttaMyWay.Logger:error("VAL",
@@ -241,7 +252,7 @@ function Controller:driveCommand(vehicle)
     if phase == "STABILISING" or phase == "OBSERVE_HANDOFF" or phase == "COMPLETE" then
         return nil
     end
-    if phase ~= "EGRESS" and phase ~= "REJOIN" then
+    if phase ~= "EGRESS" and phase ~= "REJOIN_ORIENTING" and phase ~= "REJOIN" then
         return {acceleration=0, allowed=false, forward=true, lx=0, lz=1, maxSpeed=0}
     end
 
@@ -267,6 +278,23 @@ function Controller:driveCommand(vehicle)
         localX, localZ = localX / length, localZ / length
     else
         localX, localZ = 0, 1
+    end
+
+    if phase == "REJOIN_ORIENTING" then
+        local steerX = run.rejoinTurnSign or 1
+        local steerZ = OuttaMyWay.TS015_REJOIN_ORIENTATION_STEER_LZ or 0.30
+        local steerLength = math.sqrt(steerX * steerX + steerZ * steerZ)
+        steerX, steerZ = steerX / steerLength, steerZ / steerLength
+        local maxSpeed = OuttaMyWay.TS015_REJOIN_ORIENTATION_SPEED_KMH or 5.0
+        run.lastCommandedSpeed = maxSpeed
+        return {
+            acceleration = 1,
+            allowed = true,
+            forward = true,
+            lx = steerX,
+            lz = steerZ,
+            maxSpeed = maxSpeed
+        }
     end
 
     local precisionRadius = phase == "EGRESS"
@@ -296,15 +324,18 @@ function Controller:setPhase(phase, reason, nowMs)
     local previous = run.phase
     run.phase = phase
     run.phaseStartedAt = nowMs or (g_time or 0)
-    if phase ~= "EGRESS" and phase ~= "REJOIN" then run.lastCommandedSpeed = 0 end
+    if phase ~= "EGRESS" and phase ~= "REJOIN_ORIENTING" and phase ~= "REJOIN" then
+        run.lastCommandedSpeed = 0
+    end
     run.targetReached = false
     run.nextSampleAt = 0
     OuttaMyWay.transientText = string.format("TS015 %s: %s", phase, nameOf(run.vehicle))
     OuttaMyWay.transientUntil = (g_time or 0) + 4000
     OuttaMyWay.Logger:ctl(
-        "PROTOTYPE16 PHASE t=%.1fs vehicle=%s previous=%s phase=%s reason=%s side=%s",
+        "PROTOTYPE16 PHASE t=%.1fs vehicle=%s previous=%s phase=%s reason=%s refugeSide=(%s,%s)",
         nowSeconds(), nameOf(run.vehicle), tostring(previous), tostring(phase), tostring(reason or "none"),
-        run.sideSign == 1 and "right" or "left")
+        run.refugeSideX ~= nil and string.format("%.4f", run.refugeSideX) or "pending",
+        run.refugeSideZ ~= nil and string.format("%.4f", run.refugeSideZ) or "pending")
 end
 
 function Controller:cancel()
@@ -320,7 +351,7 @@ function Controller:cancel()
         return true, "TS015 observation ended"
     end
     self:setPhase("RESTORE_COMPACT", "operator-cancel", nowMs)
-    return true, "TS015 cancellation requested; restoring Condor before handback"
+    return true, "TS015 cancellation requested; restoring selected Yield vehicle before handback"
 end
 
 function Controller:statusText()
@@ -329,9 +360,12 @@ function Controller:statusText()
         local lateral = signedLateral(self.run, x, z)
         local forward = longitudinal(self.run, x, z)
         local shadow = self.run.shadowLatest or self.run.shadowPre
-        return string.format("TS015 phase=%s yield=%s progress=%s requestedSide=%s lateral=%s forward=%s separation=%s passage=%s shadowPhysicalThreshold=%s shadowPhysicalReserve=%s shadowPolicyRequired=%s shadowPolicyReserve=%s",
-            tostring(self.run.phase), nameOf(self.run.vehicle), nameOf(self.run.progressVehicle),
-            tostring(self.run.requestedSide),
+        return string.format("TS015 encounter=%s phase=%s yield=%s progress=%s refugeSide=%s controlLateral=%s controlRearward=%s lateral=%s forward=%s separation=%s passage=%s shadowPhysicalThreshold=%s shadowPhysicalReserve=%s shadowPolicyRequired=%s shadowPolicyReserve=%s",
+            tostring(self.run.encounterId or "n/a"), tostring(self.run.phase),
+            nameOf(self.run.vehicle), nameOf(self.run.progressVehicle),
+            self.run.refugeSideX ~= nil and string.format("(%.3f,%.3f)", self.run.refugeSideX, self.run.refugeSideZ) or "pending",
+            self.run.controlLateralM ~= nil and string.format("%.1fm", self.run.controlLateralM) or "pending",
+            self.run.controlRearwardM ~= nil and string.format("%.1fm", self.run.controlRearwardM) or "pending",
             lateral ~= nil and string.format("%.1fm", lateral) or "unknown",
             forward ~= nil and string.format("%.1fm", forward) or "unknown",
             self.run.lastPairSeparation ~= nil and string.format("%.1fm", self.run.lastPairSeparation) or "unknown",
@@ -347,10 +381,11 @@ function Controller:statusText()
     return "TS015 idle automaticAdmission={" .. admissionText .. "}"
 end
 
-function Controller:startRun(state, progressState, side, nowMs, trigger)
-    if state == nil or state.vehicle == nil or progressState == nil or progressState.vehicle == nil then return false end
-    local vehicle = state.vehicle
-    local progressVehicle = progressState.vehicle
+function Controller:startRun(selection, nowMs, trigger, pairKey, encounterId)
+    if selection == nil or selection.yieldState == nil or selection.progressState == nil then return false end
+    local state, progressState = selection.yieldState, selection.progressState
+    if state.vehicle == nil or progressState.vehicle == nil then return false end
+    local vehicle, progressVehicle = state.vehicle, progressState.vehicle
     local node = getNode(vehicle)
     if node == nil then return false end
     if not self:installDriveHook() then
@@ -362,92 +397,157 @@ function Controller:startRun(state, progressState, side, nowMs, trigger)
     local forwardX, forwardZ = directionVector(node, 0, 1)
     local rightX, rightZ = directionVector(node, 1, 0)
     if forwardX == nil or rightX == nil then return false end
-
-    -- Preserve the validated physical-right TS015-B fixture movement unchanged.
-    -- Prototype 18 supplies this fixed side directly; no console label participates.
-    local sideSign = side == "right" and 1 or -1
     local px, _, pz = positionOf(progressVehicle)
     local initialSeparation = distance2d(x, z, px, pz)
 
     self.run = {
-        vehicle = vehicle,
-        progressVehicle = progressVehicle,
-        requestedSide = side,
-        trigger = trigger or "automatic-encounter-admission",
-        phase = "STABILISING",
-        phaseStartedAt = nowMs,
-        startedAt = nowMs,
-        sideSign = sideSign,
-        armX = x,
-        armZ = z,
-        startX = x,
-        startZ = z,
-        startHeading = state.heading,
-        progressStartHeading = progressState.heading,
-        forwardX = forwardX,
-        forwardZ = forwardZ,
-        rightX = rightX,
-        rightZ = rightZ,
-        egressTargetX = nil,
-        egressTargetZ = nil,
-        rejoinTargetX = nil,
-        rejoinTargetZ = nil,
-        stableSince = nil,
-        stopSince = nil,
-        foldRequested = false,
-        unfoldRequested = false,
-        targetReached = false,
-        nextSampleAt = 0,
-        handoffX = nil,
-        handoffZ = nil,
-        fenceViolation = false,
-        cancelRequested = false,
-        holdRequestedAt = nil,
-        stopConfirmedAt = nil,
-        foldRequestedAt = nil,
-        foldMotionAt = nil,
-        egressReadyAt = nil,
-        egressMotionAt = nil,
-        fullCompactAt = nil,
-        egressTargetAt = nil,
-        passageCandidateAt = nil,
-        passageConfirmedAt = nil,
-        rejoinTargetAt = nil,
-        deployRequestedAt = nil,
-        deployedAt = nil,
-        dwellSince = nil,
-        rejoinStartedAt = nil,
-        lastCommandedSpeed = 0,
-        maxEgressSpeed = 0,
-        maxRejoinSpeed = 0,
-        minEgressRemaining = nil,
-        minRejoinRemaining = nil,
-        minPairSeparation = initialSeparation,
-        minEnvelopeClearance = nil,
-        envelopeIntersected = false,
-        lastPairSeparation = initialSeparation,
-        lastPairAt = nowMs,
-        lastSeparationRate = nil,
-        lastProgressLongitudinal = nil,
-        nextGeometryAt = 0,
-        yieldGeometryInventory = nil,
-        progressGeometryInventory = nil,
-        progressBlockedSince = nil,
-        shadowPre = nil,
-        shadowLatest = nil,
-        shadowRefuge = nil,
-        shadowRefugeLogged = false,
-        shadowClosest = nil,
-        shadowClosestPairSeparation = nil,
-        shadowClosestLogged = false,
-        shadowPassage = nil
+        vehicle=vehicle, progressVehicle=progressVehicle,
+        admissionSelection=selection, selectedCandidateId=selection.id,
+        pairKey=pairKey or selection.assessmentEpoch,
+        encounterId=encounterId or selection.encounterId,
+        trigger=trigger or "automatic-encounter-admission-calculated-refuge",
+        admissionMode=selection.admissionMode or "STRAIGHT_HEAD_ON",
+        phase="STABILISING", phaseStartedAt=nowMs, startedAt=nowMs,
+        armX=x, armZ=z, startX=x, startZ=z,
+        startHeading=state.heading, progressStartHeading=progressState.heading,
+        forwardX=forwardX, forwardZ=forwardZ, rightX=rightX, rightZ=rightZ,
+        refugeSideX=nil, refugeSideZ=nil, sideSign=nil, requestedSide="calculated-at-stop",
+        controlLateralM=nil, controlRearwardM=nil,
+        egressTargetX=nil, egressTargetZ=nil, rejoinTargetX=nil, rejoinTargetZ=nil,
+        stableSince=nil, stopSince=nil, foldRequested=false, unfoldRequested=false,
+        targetReached=false, nextSampleAt=0, handoffX=nil, handoffZ=nil,
+        fenceViolation=false, cancelRequested=false, holdRequestedAt=nil, stopConfirmedAt=nil,
+        foldRequestedAt=nil, foldMotionAt=nil, egressReadyAt=nil, egressMotionAt=nil,
+        fullCompactAt=nil, egressTargetAt=nil, passageCandidateAt=nil, passageConfirmedAt=nil,
+        rejoinTargetAt=nil, deployRequestedAt=nil, deployedAt=nil, dwellSince=nil,
+        rejoinStartedAt=nil, rejoinOrientationStartedAt=nil, rejoinOrientationCompletedAt=nil,
+        rejoinOrientationStartX=nil, rejoinOrientationStartZ=nil, rejoinTurnSign=nil,
+        rejoinStartRemaining=nil, rejoinBestRemaining=nil, rejoinLastProgressAt=nil,
+        rejoinWatchdogLogged=false,
+        lastCommandedSpeed=0, maxEgressSpeed=0, maxRejoinSpeed=0,
+        minEgressRemaining=nil, minRejoinRemaining=nil, minPairSeparation=initialSeparation,
+        minEnvelopeClearance=nil, envelopeIntersected=false, lastPairSeparation=initialSeparation,
+        lastPairAt=nowMs, lastSeparationRate=nil, lastProgressLongitudinal=nil,
+        nextGeometryAt=0, yieldGeometryInventory=nil, progressGeometryInventory=nil,
+        progressBlockedSince=nil, shadowPre=nil, shadowLatest=nil, shadowRefuge=nil,
+        shadowRefugeLogged=false, shadowClosest=nil, shadowClosestPairSeparation=nil,
+        shadowClosestLogged=false, shadowPassage=nil
     }
     OuttaMyWay.Logger:val(
-        "PROTOTYPE16 RUN_START t=%.1fs scenario=TS018-AUTOMATIC-ENCOUNTER-ADMISSION yield=%s progress=%s trigger=%s selectedFixtureSide=%s resolvedLateralSign=%d initialSeparation=%s yieldHeading=%.1f progressHeading=%.1f headingDelta=%s targetReference=confirmed-stop egress=rearward-outward foldOverlap=candidate-threshold progressControl=GIANTS_UNMODIFIED shadowClearanceAuthority=false",
-        nowSeconds(), nameOf(vehicle), nameOf(progressVehicle), tostring(self.run.trigger), side, sideSign,
-        initialSeparation ~= nil and string.format("%.2fm", initialSeparation) or "unknown",
-        tonumber(state.heading) or -1, tonumber(progressState.heading) or -1,
-        headingDifference(state.heading, progressState.heading) ~= nil and string.format("%.1fdeg", headingDifference(state.heading, progressState.heading)) or "unknown")
+        "PROTOTYPE16 RUN_START t=%.1fs encounter=%s scenario=CALCULATED-REFUGE-AUTHORITY admissionMode=%s yield=%s progress=%s trigger=%s admissionCandidate=%s provisionalSide=%s provisionalLateral=%.2fm provisionalRearward=%.2fm initialSeparation=%s fixedRole=false fixedSide=false fixed28=false fixed12=false targetReference=confirmed-stop progressControl=GIANTS_UNMODIFIED",
+        nowSeconds(), tostring(self.run.encounterId or "n/a"), tostring(self.run.admissionMode),
+        nameOf(vehicle), nameOf(progressVehicle), tostring(self.run.trigger),
+        tostring(selection.id), tostring(selection.sideDiagnostic),
+        tonumber(selection.lateralTravel) or -1, tonumber(selection.rearwardTravel) or -1,
+        initialSeparation ~= nil and string.format("%.2fm", initialSeparation) or "unknown")
+    return true
+end
+
+function Controller:chooseRejoinTurnSign(run)
+    local node = run ~= nil and getNode(run.vehicle) or nil
+    if node == nil then return 1, "fallback-no-node" end
+
+    -- Use the direct target bearing whenever it resolves a shortest turn.
+    local targetLocalX = select(1, localDirectionToTarget(node,
+        run.rejoinTargetX, run.rejoinTargetZ))
+    if math.abs(targetLocalX or 0) >= 0.05 then
+        return targetLocalX > 0 and 1 or -1, "rejoin-target-shortest-turn"
+    end
+
+    -- At the exact 180-degree singularity, curve back toward the stopped
+    -- centreline rather than continuing farther out into the refuge side.
+    local inwardX, inwardZ = -(run.refugeSideX or 0), -(run.refugeSideZ or 0)
+    local localInwardX = select(1, worldDirectionToLocal(node, inwardX, 0, inwardZ))
+    if math.abs(localInwardX or 0) >= 0.05 then
+        return localInwardX > 0 and 1 or -1, "centreline-inward"
+    end
+
+    -- Original working direction is the next stable orientation reference.
+    local localForwardX = select(1, worldDirectionToLocal(node,
+        run.forwardX or 0, 0, run.forwardZ or 0))
+    if math.abs(localForwardX or 0) >= 0.05 then
+        return localForwardX > 0 and 1 or -1, "original-working-forward"
+    end
+    return 1, "deterministic-fallback"
+end
+
+function Controller:beginRejoin(nowMs)
+    local run = self.run
+    if run == nil then return end
+    local node = getNode(run.vehicle)
+    local x, _, z = positionOf(run.vehicle)
+    local localX, localZ, remaining = localDirectionToTarget(node,
+        run.rejoinTargetX, run.rejoinTargetZ)
+    local threshold = OuttaMyWay.TS015_REJOIN_ORIENTATION_FORWARD_DOT or 0.25
+
+    run.rejoinStartedAt = nowMs
+    run.rejoinStartRemaining = remaining
+    run.rejoinBestRemaining = remaining
+    run.rejoinLastProgressAt = nowMs
+    run.rejoinOrientationStartX, run.rejoinOrientationStartZ = x, z
+
+    if localZ ~= nil and localZ >= threshold then
+        OuttaMyWay.Logger:val(
+            "PROTOTYPE16 REJOIN_ORIENTATION_SKIPPED t=%.1fs vehicle=%s targetLocal=(%.3f,%.3f) remaining=%s threshold=%.2f reason=target-already-forward",
+            nowSeconds(), nameOf(run.vehicle), localX or 0, localZ or 0,
+            remaining ~= nil and string.format("%.2fm", remaining) or "unknown", threshold)
+        self:setPhase("REJOIN", "rejoin-target-already-forward", nowMs)
+        return
+    end
+
+    local sign, source = self:chooseRejoinTurnSign(run)
+    run.rejoinTurnSign = sign
+    run.rejoinOrientationStartedAt = nowMs
+    self:setPhase("REJOIN_ORIENTING", "rejoin-target-behind", nowMs)
+    OuttaMyWay.Logger:val(
+        "PROTOTYPE16 REJOIN_ORIENTATION_START t=%.1fs vehicle=%s targetLocal=(%s,%s) remaining=%s turnSign=%d turnSource=%s speed=%.2fkmh threshold=%.2f target=(%.2f,%.2f)",
+        nowSeconds(), nameOf(run.vehicle),
+        localX ~= nil and string.format("%.3f", localX) or "unknown",
+        localZ ~= nil and string.format("%.3f", localZ) or "unknown",
+        remaining ~= nil and string.format("%.2fm", remaining) or "unknown",
+        sign, tostring(source), OuttaMyWay.TS015_REJOIN_ORIENTATION_SPEED_KMH or 5.0,
+        threshold, run.rejoinTargetX or 0, run.rejoinTargetZ or 0)
+end
+
+function Controller:logRejoinWatchdog(reason, nowMs, remaining)
+    local run = self.run
+    if run == nil or run.rejoinWatchdogLogged == true then return end
+    run.rejoinWatchdogLogged = true
+    OuttaMyWay.Logger:error("CTL",
+        "PROTOTYPE16 REJOIN_PROGRESS_WATCHDOG t=%.1fs vehicle=%s phase=%s reason=%s remaining=%s startRemaining=%s bestRemaining=%s noProgressFor=%s action=stop-and-hold",
+        nowSeconds(), nameOf(run.vehicle), tostring(run.phase), tostring(reason),
+        remaining ~= nil and string.format("%.2fm", remaining) or "unknown",
+        run.rejoinStartRemaining ~= nil and string.format("%.2fm", run.rejoinStartRemaining) or "unknown",
+        run.rejoinBestRemaining ~= nil and string.format("%.2fm", run.rejoinBestRemaining) or "unknown",
+        run.rejoinLastProgressAt ~= nil and string.format("%.2fs", (nowMs - run.rejoinLastProgressAt) / 1000) or "unknown")
+end
+
+function Controller:updateRejoinProgress(nowMs, remaining)
+    local run = self.run
+    if run == nil or remaining == nil then return true end
+    local epsilon = OuttaMyWay.TS015_REJOIN_PROGRESS_EPSILON_M or 0.25
+    if run.rejoinBestRemaining == nil or remaining <= run.rejoinBestRemaining - epsilon then
+        run.rejoinBestRemaining = remaining
+        run.rejoinLastProgressAt = nowMs
+        return true
+    end
+
+    local grace = OuttaMyWay.TS015_REJOIN_PROGRESS_GRACE_MS or 2000
+    if nowMs - (run.phaseStartedAt or nowMs) < grace then return true end
+
+    local divergence = OuttaMyWay.TS015_REJOIN_DIVERGENCE_LIMIT_M or 6.0
+    if run.rejoinStartRemaining ~= nil and remaining >= run.rejoinStartRemaining + divergence then
+        self:logRejoinWatchdog("distance-diverging", nowMs, remaining)
+        self:fail("rejoin-distance-diverging", nowMs)
+        return false
+    end
+
+    local timeout = OuttaMyWay.TS015_REJOIN_PROGRESS_TIMEOUT_MS or 3500
+    if run.rejoinLastProgressAt ~= nil and nowMs - run.rejoinLastProgressAt >= timeout then
+        self:logRejoinWatchdog("no-target-progress", nowMs, remaining)
+        self:fail("rejoin-no-target-progress", nowMs)
+        return false
+    end
     return true
 end
 
@@ -472,7 +572,8 @@ function Controller:beginHold(nowMs)
         run.holdStartX ~= nil and string.format("%.2f", run.holdStartX) or "unknown",
         run.holdStartZ ~= nil and string.format("%.2f", run.holdStartZ) or "unknown",
         run.lastPairSeparation ~= nil and string.format("%.2fm", run.lastPairSeparation) or "unknown")
-    self:setPhase("HOLD_EFFECT", "stable-opposed-working-pair", nowMs)
+    self:setPhase("HOLD_EFFECT", run.admissionMode == "TS016_TURN_EXIT_HEAD_ON"
+        and "ts016-live-trajectory-conflict" or "stable-opposed-working-pair", nowMs)
     return true
 end
 
@@ -561,7 +662,7 @@ function Controller:sampleShadow(mode, nowMs)
     local ok, sample = pcall(calculator.sample, calculator, self.run, nowMs, mode)
     if not ok then
         OuttaMyWay.Logger:error("VAL",
-            "PROTOTYPE17 SHADOW_CALCULATION_FAILED t=%.1fs stage=%s error=%s authority=false action=continue-fixed-28m-control",
+            "PROTOTYPE17 SHADOW_CALCULATION_FAILED t=%.1fs stage=%s error=%s authority=false action=continue-calculated-control",
             nowSeconds(), tostring(mode), tostring(sample))
         return nil
     end
@@ -645,14 +746,14 @@ function Controller:releaseToGiants(reason, nowMs)
     OuttaMyWay.Logger:val(
         "PROTOTYPE17 SHADOW_SUMMARY yield=%s progress=%s authority=false controlTarget=%.2fm prePhysicalContactThreshold=%s prePhysicalControlTargetReserve=%s prePolicyMarginBudget=%s prePolicyRequiredSeparation=%s prePolicyControlTargetReserve=%s refugeReferenceSeparation=%s refugePhysicalContactThreshold=%s refugePhysicalClearanceReserve=%s refugePolicyMarginBudget=%s refugePolicyRequiredSeparation=%s refugePolicyReserve=%s closestPairSeparation=%s closestReferenceSeparation=%s closestPhysicalClearanceReserve=%s closestPolicyReserve=%s passageReferenceSeparation=%s passagePhysicalContactThreshold=%s passagePhysicalClearanceReserve=%s passagePolicyMarginBudget=%s passagePolicyRequiredSeparation=%s passagePolicyReserve=%s result=observation-only",
         nameOf(run.vehicle), nameOf(run.progressVehicle),
-        tonumber(OuttaMyWay.TS015_LATERAL_OFFSET_M) or 28.0,
+        tonumber(run.controlLateralM) or 0,
         run.shadowPre ~= nil and fmtMetres(run.shadowPre.physicalContactThreshold) or "n/a",
         run.shadowPre ~= nil and run.shadowPre.physicalContactThreshold ~= nil
-            and fmtMetres((tonumber(OuttaMyWay.TS015_LATERAL_OFFSET_M) or 28.0) - run.shadowPre.physicalContactThreshold) or "n/a",
+            and fmtMetres((tonumber(run.controlLateralM) or 0) - run.shadowPre.physicalContactThreshold) or "n/a",
         run.shadowPre ~= nil and fmtMetres(run.shadowPre.policyMarginBudget) or "n/a",
         run.shadowPre ~= nil and fmtMetres(run.shadowPre.policyRequiredSeparation) or "n/a",
         run.shadowPre ~= nil and run.shadowPre.policyRequiredSeparation ~= nil
-            and fmtMetres((tonumber(OuttaMyWay.TS015_LATERAL_OFFSET_M) or 28.0) - run.shadowPre.policyRequiredSeparation) or "n/a",
+            and fmtMetres((tonumber(run.controlLateralM) or 0) - run.shadowPre.policyRequiredSeparation) or "n/a",
         run.shadowRefuge ~= nil and fmtMetres(run.shadowRefuge.referenceSeparation) or "n/a",
         run.shadowRefuge ~= nil and fmtMetres(run.shadowRefuge.physicalContactThreshold) or "n/a",
         run.shadowRefuge ~= nil and fmtMetres(run.shadowRefuge.physicalClearanceReserve) or "n/a",
@@ -674,26 +775,39 @@ end
 
 function Controller:fail(reason, nowMs)
     local run = self.run
-    if run == nil then return end
+    if run == nil or run.phase == "FAILED_HELD" then return end
     run.failureReason = reason
+    run.failureLoggedAt = nowMs or (g_time or 0)
     self:requestCompact(nowMs)
     self:setPhase("FAILED_HELD", reason, nowMs)
     OuttaMyWay.Logger:error("CTL",
-        "PROTOTYPE16 FAILED_HELD t=%.1fs vehicle=%s reason=%s action=remain-stopped-compact command=otmTS015Cancel",
-        nowSeconds(), nameOf(run.vehicle), tostring(reason))
+        "PROTOTYPE16 FAILED_HELD t=%.1fs encounter=%s vehicle=%s reason=%s action=remain-stopped-compact command=otmTS015Cancel terminalLog=one-shot",
+        nowSeconds(), tostring(run.encounterId or "n/a"), nameOf(run.vehicle), tostring(reason))
 end
 
 function Controller:clearRun(reason, nowMs)
     local run = self.run
     if run == nil then return end
+    nowMs = nowMs or (g_time or 0)
     local gate = OuttaMyWay.TrafficPermissionGate
     if gate ~= nil and gate.releaseHold ~= nil then gate:releaseHold(run.vehicle) end
     OuttaMyWay.activeWaitCount = 0
     OuttaMyWay.priorityName = ""
+
+    local successfulEncounter = run.failureReason == nil
+        and run.passageConfirmedAt ~= nil
+        and run.fenceViolation ~= true
+    local outcome = successfulEncounter and "SUCCESS" or "FAILED"
+    local admission = OuttaMyWay.AutomaticEncounterAdmission
+    if admission ~= nil and type(admission.markRunOutcome) == "function" then
+        admission:markRunOutcome(run.pairKey, run.encounterId, outcome, nowMs, reason)
+    end
+
     OuttaMyWay.Logger:val(
-        "PROTOTYPE16 RUN_END t=%.1fs yield=%s progress=%s reason=%s duration=%.1fs failure=%s fenceViolation=%s passageConfirmed=%s minPairSeparation=%s minDiagnosticEnvelopeClearance=%s diagnosticEnvelopeIntersected=%s",
-        nowSeconds(), nameOf(run.vehicle), nameOf(run.progressVehicle), tostring(reason),
-        ((nowMs or (g_time or 0)) - (run.startedAt or (nowMs or 0))) / 1000,
+        "PROTOTYPE16 RUN_END t=%.1fs encounter=%s yield=%s progress=%s reason=%s outcome=%s duration=%.1fs failure=%s fenceViolation=%s passageConfirmed=%s minPairSeparation=%s minDiagnosticEnvelopeClearance=%s diagnosticEnvelopeIntersected=%s",
+        nowSeconds(), tostring(run.encounterId or "n/a"), nameOf(run.vehicle),
+        nameOf(run.progressVehicle), tostring(reason), outcome,
+        (nowMs - (run.startedAt or nowMs)) / 1000,
         tostring(run.failureReason), tostring(run.fenceViolation == true), tostring(run.passageConfirmedAt ~= nil),
         run.minPairSeparation ~= nil and string.format("%.2fm", run.minPairSeparation) or "n/a",
         run.minEnvelopeClearance ~= nil and string.format("%.2fm", run.minEnvelopeClearance) or "n/a",
@@ -704,18 +818,17 @@ end
 function Controller:updateFence(run, x, z, nowMs)
     if run == nil or run.stopConfirmedAt == nil then return end
     if run.phase ~= "COMPACTING" and run.phase ~= "EGRESS"
-        and run.phase ~= "SIDESTEP_HOLD" and run.phase ~= "REJOIN"
-        and run.phase ~= "UNFOLDING" then return end
+        and run.phase ~= "SIDESTEP_HOLD" and run.phase ~= "REJOIN_ORIENTING"
+        and run.phase ~= "REJOIN" and run.phase ~= "UNFOLDING" then return end
     local lateral = signedLateral(run, x, z)
     if lateral == nil then return end
-    local signedForSide = lateral * run.sideSign
     local tolerance = OuttaMyWay.TS015_FENCE_TOLERANCE_M or 0.75
-    if signedForSide < -tolerance and run.fenceViolation ~= true then
+    if lateral < -tolerance and run.fenceViolation ~= true then
         run.fenceViolation = true
         OuttaMyWay.Logger:error("VAL",
-            "PROTOTYPE16 CENTRELINE_FENCE_VIOLATION t=%.1fs vehicle=%s lateral=%.2fm selectedSide=%s tolerance=%.2fm fullAssemblyFence=not-evaluated",
+            "PROTOTYPE16 CENTRELINE_FENCE_VIOLATION t=%.1fs vehicle=%s lateral=%.2fm selectedSide=(%.4f,%.4f) tolerance=%.2fm fullAssemblyFence=not-evaluated",
             nowSeconds(), nameOf(run.vehicle), lateral,
-            run.sideSign == 1 and "right" or "left", tolerance)
+            run.refugeSideX or 0, run.refugeSideZ or 0, tolerance)
         self:fail("centreline-fence-violation", nowMs)
     end
 end
@@ -833,9 +946,9 @@ function Controller:logSample(run, state, progressState, fold, nowMs)
     local lateral = signedLateral(run, x, z)
     local forward = longitudinal(run, x, z)
     local targetX = run.phase == "EGRESS" and run.egressTargetX
-        or (run.phase == "REJOIN" and run.rejoinTargetX or nil)
+        or ((run.phase == "REJOIN_ORIENTING" or run.phase == "REJOIN") and run.rejoinTargetX or nil)
     local targetZ = run.phase == "EGRESS" and run.egressTargetZ
-        or (run.phase == "REJOIN" and run.rejoinTargetZ or nil)
+        or ((run.phase == "REJOIN_ORIENTING" or run.phase == "REJOIN") and run.rejoinTargetZ or nil)
     local remaining = distance2d(x, z, targetX, targetZ)
     local handoffTravel = run.handoffX ~= nil and distance2d(run.handoffX, run.handoffZ, x, z) or nil
 
@@ -926,6 +1039,13 @@ function Controller:updateRun(nowMs)
         end
     end
 
+    if run.phase == "FAILED_HELD" then
+        self:requestCompact(nowMs)
+        OuttaMyWay.activeWaitCount = 1
+        OuttaMyWay.priorityName = "TS015 failed-held: " .. nameOf(run.vehicle)
+        return
+    end
+
     local x, _, z = positionOf(run.vehicle)
     self:updateFence(run, x, z, nowMs)
     if self.run == nil or self.run.phase == "FAILED_HELD" and run.failureReason == "centreline-fence-violation" then return end
@@ -961,7 +1081,7 @@ function Controller:updateRun(nowMs)
                 fmtSeconds(elapsedSeconds(run.egressReadyAt, nowMs)),
                 run.lastPairSeparation ~= nil and string.format("%.2fm", run.lastPairSeparation) or "unknown")
         end
-    elseif run.phase == "REJOIN" then
+    elseif run.phase == "REJOIN_ORIENTING" or run.phase == "REJOIN" then
         local remaining = distance2d(x, z, run.rejoinTargetX, run.rejoinTargetZ)
         if remaining ~= nil then
             run.minRejoinRemaining = run.minRejoinRemaining == nil and remaining or math.min(run.minRejoinRemaining, remaining)
@@ -1011,20 +1131,38 @@ function Controller:updateRun(nowMs)
                 run.startX, run.startZ = anchorX, anchorZ
                 run.forwardX, run.forwardZ = forwardX, forwardZ
                 run.rightX, run.rightZ = rightX, rightZ
-                local lateral = OuttaMyWay.TS015_LATERAL_OFFSET_M or 28.0
-                local rearward = OuttaMyWay.TS015_EGRESS_REARWARD_M or 12.0
+                local comparison = OuttaMyWay.ShadowRefugeCandidateComparison
+                local stoppedState, stoppedProgress = state, progressState
+                local selected, epoch
+                if comparison ~= nil and type(comparison.recalculateForRole) == "function" then
+                    local ok
+                    ok, selected, epoch = pcall(comparison.recalculateForRole, comparison,
+                        stoppedState, stoppedProgress, nowMs, run.pairKey)
+                    if not ok then selected = nil end
+                end
+                if selected == nil then
+                    self:fail("confirmed-stop-refuge-calculation-unavailable", nowMs)
+                    return
+                end
+                run.stopSelection = selected
+                run.selectedCandidateId = selected.id
+                run.refugeSideX, run.refugeSideZ = selected.sideX, selected.sideZ
+                run.sideSign = selected.sideSign
+                run.controlLateralM = selected.lateralTravel
+                run.controlRearwardM = selected.rearwardTravel
+                run.egressTargetX, run.egressTargetZ = selected.targetX, selected.targetZ
                 local rejoinForward = OuttaMyWay.TS015_REJOIN_FORWARD_M or 6.0
-                run.egressTargetX = anchorX - forwardX * rearward + rightX * run.sideSign * lateral
-                run.egressTargetZ = anchorZ - forwardZ * rearward + rightZ * run.sideSign * lateral
                 run.rejoinTargetX = anchorX + forwardX * rejoinForward
                 run.rejoinTargetZ = anchorZ + forwardZ * rejoinForward
+                local lateral, rearward = run.controlLateralM, run.controlRearwardM
                 OuttaMyWay.Logger:val(
-                    "PROTOTYPE16 HOLD_CONFIRMED t=%.1fs yield=%s progress=%s moved=%s speed=%.2f jobActive=%s pairSeparation=%s stopAnchor=(%.2f,%.2f) egressTarget=(%.2f,%.2f) rejoinTarget=(%.2f,%.2f) lateral=%.1fm rearward=%.1fm rejoinForward=%.1fm progressControl=GIANTS_UNMODIFIED",
+                    "PROTOTYPE16 HOLD_CONFIRMED t=%.1fs yield=%s progress=%s moved=%s speed=%.2f jobActive=%s pairSeparation=%s stopAnchor=(%.2f,%.2f) egressTarget=(%.2f,%.2f) rejoinTarget=(%.2f,%.2f) candidate=%s sideVector=(%.4f,%.4f) lateral=%.2fm rearward=%.2fm rejoinForward=%.1fm fixedRole=false fixedSide=false fixed28=false fixed12=false progressControl=GIANTS_UNMODIFIED",
                     nowSeconds(), nameOf(run.vehicle), nameOf(run.progressVehicle),
                     moved ~= nil and string.format("%.2fm", moved) or "unknown",
                     state.actualSpeed or 0, tostring(state.active == true),
                     run.lastPairSeparation ~= nil and string.format("%.2fm", run.lastPairSeparation) or "unknown",
                     anchorX, anchorZ, run.egressTargetX, run.egressTargetZ, run.rejoinTargetX, run.rejoinTargetZ,
+                    tostring(run.selectedCandidateId), run.refugeSideX, run.refugeSideZ,
                     lateral, rearward, rejoinForward)
                 self:logShadowPreEstimate(nowMs)
                 self:setPhase("COMPACTING", "hold-effective", nowMs)
@@ -1106,8 +1244,7 @@ function Controller:updateRun(nowMs)
         if run.passageConfirmedAt ~= nil and fold.compact then
             run.dwellSince = run.dwellSince or nowMs
             if nowMs - run.dwellSince >= (OuttaMyWay.TS015_POST_PASS_DWELL_MS or 1000) then
-                run.rejoinStartedAt = nowMs
-                self:setPhase("REJOIN", "positive-passage-confirmed", nowMs)
+                self:beginRejoin(nowMs)
             end
         elseif phaseElapsed >= (OuttaMyWay.TS015_PASSAGE_TIMEOUT_MS or 90000) then
             self:fail("passage-timeout", nowMs)
@@ -1116,11 +1253,46 @@ function Controller:updateRun(nowMs)
             self:fail("compact-timeout-at-refuge", nowMs)
         end
 
+    elseif run.phase == "REJOIN_ORIENTING" then
+        local node = getNode(run.vehicle)
+        local localX, localZ, remaining = localDirectionToTarget(node,
+            run.rejoinTargetX, run.rejoinTargetZ)
+        local orientationTravel = distance2d(run.rejoinOrientationStartX, run.rejoinOrientationStartZ, x, z)
+        local threshold = OuttaMyWay.TS015_REJOIN_ORIENTATION_FORWARD_DOT or 0.25
+
+        if run.targetReached == true then
+            run.rejoinTargetAt = nowMs
+            self:setPhase("UNFOLDING", "rejoin-target-reached-during-orientation", nowMs)
+            self:requestDeploy(nowMs)
+        elseif localZ ~= nil and localZ >= threshold then
+            run.rejoinOrientationCompletedAt = nowMs
+            run.rejoinStartRemaining = remaining
+            run.rejoinBestRemaining = remaining
+            run.rejoinLastProgressAt = nowMs
+            OuttaMyWay.Logger:val(
+                "PROTOTYPE16 REJOIN_ORIENTATION_COMPLETE t=%.1fs vehicle=%s targetLocal=(%.3f,%.3f) remaining=%s travel=%s duration=%.2fs next=direct-rejoin",
+                nowSeconds(), nameOf(run.vehicle), localX or 0, localZ or 0,
+                remaining ~= nil and string.format("%.2fm", remaining) or "unknown",
+                orientationTravel ~= nil and string.format("%.2fm", orientationTravel) or "unknown",
+                (nowMs - (run.rejoinOrientationStartedAt or nowMs)) / 1000)
+            self:setPhase("REJOIN", "target-entered-forward-hemisphere", nowMs)
+        elseif orientationTravel ~= nil
+            and orientationTravel >= (OuttaMyWay.TS015_REJOIN_ORIENTATION_MAX_TRAVEL_M or 20.0) then
+            self:logRejoinWatchdog("orientation-travel-limit", nowMs, remaining)
+            self:fail("rejoin-orientation-travel-limit", nowMs)
+        elseif phaseElapsed >= (OuttaMyWay.TS015_REJOIN_ORIENTATION_TIMEOUT_MS or 12000) then
+            self:logRejoinWatchdog("orientation-timeout", nowMs, remaining)
+            self:fail("rejoin-orientation-timeout", nowMs)
+        end
+
     elseif run.phase == "REJOIN" then
+        local remaining = distance2d(x, z, run.rejoinTargetX, run.rejoinTargetZ)
         if run.targetReached == true then
             run.rejoinTargetAt = nowMs
             self:setPhase("UNFOLDING", "rejoin-target-reached-after-passage", nowMs)
             self:requestDeploy(nowMs)
+        elseif not self:updateRejoinProgress(nowMs, remaining) then
+            return
         elseif phaseElapsed >= (OuttaMyWay.TS015_DRIVE_TIMEOUT_MS or 45000) then
             self:fail("rejoin-timeout", nowMs)
         end
@@ -1175,15 +1347,22 @@ function Controller:update(dt)
         self:updateRun(nowMs)
     else
         local states = activeStates()
-        local yieldState, progressState = findFixtureStates(states)
+        local participantA, participantB = findFixturePairStates(states)
         local admission = OuttaMyWay.AutomaticEncounterAdmission
         local decision = admission ~= nil and admission.evaluate ~= nil
-            and admission:evaluate(yieldState, progressState, #states, nowMs)
+            and admission:evaluate(participantA, participantB, #states, nowMs)
             or {admitted=false, state="UNAVAILABLE", reason="admission-module-unavailable"}
         if decision.admitted == true then
-            local started = self:startRun(yieldState, progressState, decision.side or "right", nowMs,
-                decision.reason or "automatic-encounter-admission")
-            if started then self:beginHold(nowMs) end
+            decision.selection.admissionMode = decision.admissionMode
+            local started = self:startRun(decision.selection, nowMs,
+                decision.reason or "automatic-encounter-admission-calculated-refuge",
+                decision.pairKey, decision.encounterId)
+            if started then
+                self:beginHold(nowMs)
+            elseif admission ~= nil and type(admission.markRunOutcome) == "function" then
+                admission:markRunOutcome(decision.pairKey, decision.encounterId,
+                    "FAILED", nowMs, "controller-start-failed")
+            end
         else
             OuttaMyWay.activeWaitCount = 0
             OuttaMyWay.priorityName = ""
@@ -1193,8 +1372,11 @@ function Controller:update(dt)
     if nowMs - (self.lastHeartbeatMs or 0) >= (OuttaMyWay.TS015_HEARTBEAT_MS or 15000) then
         self.lastHeartbeatMs = nowMs
         OuttaMyWay.Logger:val(
-            "PROTOTYPE16 HEARTBEAT t=%.1fs activeWorkers=%d trigger=automatic run=%s phase=%s passage=%s exclusive=true progressHold=false admission=%s",
+            "PROTOTYPE16 HEARTBEAT t=%.1fs activeWorkers=%d trigger=automatic run=%s encounter=%s phase=%s passage=%s exclusive=true progressHold=false admission=%s",
             nowSeconds(), #activeStates(), tostring(self.run ~= nil),
+            self.run ~= nil and tostring(self.run.encounterId or "n/a")
+                or tostring(OuttaMyWay.AutomaticEncounterAdmission ~= nil
+                    and OuttaMyWay.AutomaticEncounterAdmission.lastEncounterId or "none"),
             self.run ~= nil and tostring(self.run.phase) or "IDLE",
             self.run ~= nil and tostring(self.run.passageConfirmedAt ~= nil) or "false",
             OuttaMyWay.AutomaticEncounterAdmission ~= nil

@@ -6,6 +6,12 @@
 
 **Encounter Episode Latch** — one-shot guard preventing more than one automatic Commitment during one continuously active fixture episode.
 
+**Assessment Epoch Clock-Domain Drift** — one event logged against incompatible time origins, preventing clean evidence alignment even though the underlying snapshot may be the same.
+
+**Fixture-Distance Leakage** — a fixed test-actuator value appearing as derived candidate Knowledge when required geometry is unavailable.
+
+**Conservative Working-Width Upper Bound** — low-confidence use of a live AI working-marker half-width as a numerical upper-bound operand when compact Yield geometry is unavailable; it is not compact-geometry proof or authority.
+
 **Origin Coverage Is Not Bound Coverage** — complete resolution of physical identities and node origins does not establish usable shape bounds or Coverage Closure.
 
 **Physical Contact Threshold** — sum of the opposing one-sided Facing Clearance Extents in a shared reference frame.

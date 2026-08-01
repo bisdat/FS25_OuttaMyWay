@@ -1,5 +1,99 @@
 # Changelog
 
+## v4.6.43 — Cooperative Passage Evidence Consolidation Candidate
+
+- Begins from exact temporary v4.6.42, SHA-256 `205bb2f435c54bca5e280bffa64d3f1174b9ce4f77d31da23b1f35897d31f64e`; owner-declared canonical authority remains v4.6.36 until explicit Canonicalisation.
+- Makes no intentional behavioural change from v4.6.42; implementation edits are limited to coherent version identity.
+- Records successful v4.6.42 TS015 correction: `REJOIN_ORIENTING` completed in 7.10 s after 6.42 m travel, direct rejoin completed, Condor unfolded, GIANTS handback occurred and the encounter ended successfully before rearming.
+- Confirms the earlier Forward-Only Rejoin Singularity is resolved for the tested right-side refuge geometry.
+- Consolidates v4.6.39–v4.6.42 runtime support for calculated Yield role, calculated refuge side and movement, Patriot and Condor as Yield, both physical lateral refuge directions, TS016 manoeuvre-aware admission and successful same-pair encounter rearming.
+- Records the later TS015 collision as the existing **Headland Turn Overlap / Dual-Manoeuvre Admission Gap**, not a newly introduced rejoin failure. Earlier left-side 15 km/h TS015 evidence had already exposed an unresolved later headland convergence.
+- Records the separate TS016 **Completion-Transition Control Gap**: after Condor completed and became a relevant static obstacle, active-worker admission ended and Patriot received no obstacle-navigation Control.
+- Distinguishes the fact that faster egress/ingress increases separation from the unproven hypothesis that the 5 km/h orientation phase caused the later TS015 collision.
+- Establishes the next discovery sequence: address the active-active TS015 dual-manoeuvre encounter first; preserve completed-obstacle navigation as a separate architectural problem.
+- Proposed for owner review and Canonicalisation; this package does not declare itself canonical.
+
+## v4.6.42 — Temporary Rejoin Orientation Build
+
+- Begins from temporary non-canonical v4.6.41, SHA-256 `82cf4c6dfb049bbe20574a412d71336339c40145d3263a164595b7f823be9b40`; owner-declared canonical authority remains v4.6.36.
+- Records successful v4.6.41 TS016 continuation through two independent active-worker head-on encounters: encounter 1 rearmed and encounter 2 was admitted and escaped, validating the encounter-scoped lifecycle.
+- Records the later Completion-Transition Control Gap separately: after Condor completed and became a static relevant obstacle, the active-worker pair ended and Patriot was not given obstacle-navigation Control.
+- Records the v4.6.41 TS015 regression: Condor reached a calculated right-side refuge and confirmed passage, but the rejoin target lay almost exactly 180 degrees behind the vehicle. The forward-only command supplied no usable turn bias; target distance increased from approximately 31.50 m to 213.94 m before the 45 s timeout.
+- Names the defect **Forward-Only Rejoin Singularity** and confirms GIANTS handback was never reached; the neighbouring-field excursion remained under OuttaMyWay movement authority.
+- Adds a bounded `REJOIN_ORIENTING` phase only when the final rejoin target is outside the vehicle's forward hemisphere. It commands a low-speed deterministic turn, preferring the shortest target-bearing turn and using the inward centreline direction only at the near-180-degree singularity.
+- Transitions to normal direct rejoin as soon as the target enters the forward hemisphere. Previously successful forward-target rejoins skip the new phase.
+- Adds orientation time/travel limits and a direct-rejoin progress watchdog. Divergence or sustained absence of target-distance improvement stops and holds the vehicle rather than allowing a long uncontrolled departure.
+- Preserves TS016 admission, straight-head-on admission, encounter rearming, calculated role/side/distance authority, passage evidence and GIANTS handback behaviour otherwise unchanged.
+- Remains temporary and non-canonical pending repeatable TS015 runtime validation.
+
+## v4.6.41 — Temporary Encounter Rearming Build
+
+- Begins from temporary non-canonical v4.6.40, SHA-256 `db286ff876b825c23f93719ab62ebdd5995ba6316273032053d97851a2ee79aa`; owner-declared canonical authority remains v4.6.36.
+- Records two successful first TS016 encounters with Patriot selected as Yield from live state, calculated right-hand refuges, successful passage and GIANTS handback.
+- Records the continuation failure after the second successful first encounter: at approximately 91.99 m separation, `tCPA=6.61 s`, `dCPA=6.38 m` and 177.4 degrees opposition, both workers formed a later independent straight head-on while the controller was idle but Automatic Encounter Admission remained `LATCHED`; neither worker was selected and collision followed at approximately 10.39 m.
+- Names the defect **Pair-Latch Suppression**: a successful commitment was latched to the entity pair rather than the completed encounter, contradicting **Encounter Identity Is Not Entity-Pair Identity**.
+- Replaces the permanent pair latch with an encounter-scoped lifecycle: `COMMITTED -> REARMING -> REARMED` after successful Control completion.
+- Rearms only after the pair remains at least the established 35 m passage-clear distance apart and outside the predicted conflict envelope for three continuous seconds; successful completion may also rearm after the pair is absent for the existing five-second episode-reset interval.
+- Numbers successive pair encounters and propagates the encounter ID through admission, Control start, failure, completion, heartbeat and status logs.
+- Keeps failed or unresolved encounters latched until explicit recovery; absence alone cannot silently rearm them.
+- Preserves the validated TS016 admission path, straight-head-on confirmation, calculated role/side/lateral/rearward authority and confirmed-stop target recalculation unchanged.
+- Remains temporary and non-canonical pending a full TS016 continuation run demonstrating encounter 1 rearming and encounter 2 intervention.
+
+## v4.6.40 — Temporary TS016 Manoeuvre-Aware Admission Build
+
+- Begins from temporary non-canonical v4.6.39, SHA-256 `55eb69b2a0334817aa7c40b30f20f88ab8bb147e3b950fe5900e38f402f5de4a`; owner-declared canonical authority remains v4.6.36.
+- Records successful v4.6.39 calculated-refuge operation in the established straight head-on fixture: confirmed-stop Control used Condor Yield, a recalculated world-space side, 29.65 m lateral and 6.80 m rearward movement, with `failure=nil`, `fenceViolation=false`, `passageConfirmed=true` and 28.96 m minimum pair separation.
+- Records repeatable TS016 failure after altered start positions: Condor crossed Patriot's lane during a headland manoeuvre, the original straight-working admission committed only at 26.90 m and `tCPA=1.98 s`, and contact occurred before a refuge could begin.
+- Adds a TS016 manoeuvre-aware admission path for exactly one straight-working worker and one manoeuvring worker when headings are at least 150 degrees opposed, closure is positive, `tCPA` is 0–12 s and `dCPA` is at most 14 m.
+- Treats lane crossing as warning evidence only. The TS016 path commits immediately only after live kinematics already predict the converging head-on conflict.
+- Assigns the straight-working worker as the early Yield role for this bounded path; the choice is based on runtime state, not Condor/Patriot identity.
+- Preserves confirmed-stop recalculation as authority for refuge side, lateral distance, rearward distance and target. No fixed role, side, 28 m or 12 m fallback is reintroduced.
+- Adds a 6.0 s minimum `tCPA` commitment floor to both straight and TS016 admission paths so an already-expired intervention window is not accepted.
+- Makes `FAILED_HELD` terminal reporting one-shot while preserving the stopped, compact, operator-cancelled failure state.
+- Remains temporary and non-canonical pending repeatable TS016 runtime evidence.
+
+## v4.6.39 — Temporary Calculated Refuge Authority Build
+
+- Begins from temporary non-canonical v4.6.38, SHA-256 `47884281a377f340586db9d846c34958345403d09af1d329a338d1698d47b44f`; owner-declared canonical authority remains v4.6.36.
+- Transfers Yield-role authority from the fixed Condor fixture role to the least-cost geometry-solved role/refuge candidate calculated from both role assignments and both lateral sides.
+- Recalculates both refuge sides for the selected Yield worker from the confirmed stopped position before any egress target is issued.
+- Replaces the fixed 28 m lateral command with calculated separation: Progress working-width extent + predicted compact Yield assembly facing extent + the existing clearance-margin budget, corrected for current offset and rearward side contribution.
+- Replaces the fixed 12 m rearward command with calculated capture distance: complete compact-assembly forward extent + geometry/tracking margin, corrected for any forward component of lateral movement.
+- Uses the larger available compact-model, metadata-body or longitudinal complete-envelope operand so vehicle-body length is not omitted from the rearward calculation.
+- Retains the validated hold, fold, egress, passage confirmation, rejoin, deploy and GIANTS handback sequence.
+- Removes normal-Control fallback to fixed Condor Yield, physical-right, 28 m lateral or 12 m rearward values. If calculation fails at admission or confirmed stop, the intervention is withheld or held safely rather than substituting fixture constants.
+- Keeps the exact Condor/Patriot pair as the current admission fixture; runtime validation is required before this temporary build can be considered for Canonicalisation.
+
+## v4.6.38 — Temporary Prototype 19 Evidence-Correction Batch
+
+- Begins from temporary non-canonical v4.6.37, SHA-256 `747cc6b9a495faba4af52a4a511955ff6934b8a191c986925aca34912e5b46bc`; canonical implementation authority remains owner-declared v4.6.36.
+- Records the first Prototype 19 runtime run under FS25 1.21.1.0 build b40785 revision 81824: one Assessment Epoch, four role/refuge candidates, unchanged fixed actuator and successful passage with `failure=nil`, `fenceViolation=false`, `passageConfirmed=true` and 27.38 m minimum pair separation.
+- Records near-symmetric Condor-yields shadow travel of 29.66 m and 29.56 m, while both Patriot-yields candidates correctly lacked a compact Yield extent but incorrectly displayed the fixed 28 m actuator seed as apparent candidate movement.
+- Names **Assessment Epoch Clock-Domain Drift** after Prototype 19 logged 132.1 s while Prototype 18 logged the same event at Observer-relative 107.4 s.
+- Names **Fixture-Distance Leakage** after the fixed 28 m actuator value escaped an internal solver seed into unresolved candidate targets and costs.
+- Aligns Prototype 19 with the Observer-relative clock while retaining a separate raw-time epoch identifier.
+- Removes the fixed 28 m solver seed. Candidate iteration now begins from a geometry-derived Progress-extent-plus-policy estimate; missing required geometry emits `n/a` for target, proposed separation and every movement/cost field.
+- Adds a generic, explicitly low-confidence **Conservative Working-Width Upper Bound**: when compact Yield geometry is unavailable but a live AI working marker exists, its half-width may supply a conservative numerical operand without claiming compact geometry or Control authority.
+- Extends candidate logs with solution status, reason, coverage and extent-kind evidence, plus solved/unavailable matrix counts for direct same-fixture validation.
+- Preserves the live Condor Yield / Patriot GIANTS Progress / physical-right / 28 m lateral / 12 m rearward actuator unchanged; every Prototype 19 result remains `authority=false`, `action=none`.
+- Remains a temporary non-canonical evidence build. Runtime repetition is required before Authority Migration begins.
+- Carries forward the deferred Publication Readiness Review item **Mod Description Drift**.
+
+## v4.6.37 — Temporary Prototype 19 Shadow Refuge Candidate Comparison
+
+- Begins from owner-declared canonical v4.6.36, SHA-256 `5ec12f0e16d817f5193264a7003a228ce7ef75b05963f24e05e4968404b7b781`, Git commit `9f9ff7bdbe59945ea8b6ebf789f374262cf0d8e8`.
+- Is deliberately a temporary non-canonical evidence build; its runtime result will inform a later consolidated incremental version rather than making v4.6.37 a presumed Canonicalisation target.
+- Implements Prototype 19 / Shadow Refuge Candidate Comparison at the Automatic Encounter Admission assessment epoch.
+- Constructs both world-space lateral candidates for both possible fixture Yield-role assignments, producing up to four role/refuge candidates from one coherent epoch.
+- Records current signed offset, side-facing Progress extent, predicted compact Yield extent, physical threshold, policy requirement, proposed target, lateral/rearward/total travel, evidence outcomes and aggregate viability.
+- Uses `CLEAR`, `BLOCKED` and `UNKNOWN` per evidence question; aggregates to `VIABLE`, `REJECTED` or `UNRESOLVED` before any cost comparison.
+- Keeps field containment, obstacle clearance and complete egress swept-space evidence explicitly `UNKNOWN` rather than silently approximating them.
+- Applies cost only among fully `VIABLE` candidates, first by lateral travel and then total travel; unresolved candidates receive no preference.
+- Keeps all Prototype 19 output `authority=false`, `action=none`; a calculation failure is isolated and cannot block the validated actuator.
+- Preserves the live Condor Yield / Patriot GIANTS Progress / physical-right / 28 m lateral / 12 m rearward actuator unchanged.
+- Records **Authority Migration** as mandatory post-validation work: later increments must remove fixed role, side, lateral and rearward authority one assumption at a time.
+- Carries forward the deferred Publication Readiness Review item **Mod Description Drift**.
+
 ## v4.6.36 — Clearance-First Refuge Selection Correction
 
 - Begins from owner-declared canonical v4.6.35, SHA-256 `d178145a5953fe5d46b86b04502e635e5ad221dded6b34e6433338862b5d9c04`, Git commit `ca983514ba18b104a185fc13534992a10ff8ae62`.

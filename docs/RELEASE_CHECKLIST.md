@@ -41,26 +41,21 @@
 - [ ] No Lua errors in repeated test scenarios.
 - [ ] Debug-only code disabled or gated.
 - [ ] Observer and live modes both verified.
-- [ ] TS018 requires exactly the active Condor/Patriot fixture pair, starts automatically after sustained eligible evidence, and does not register `otmTS015Arm`.
-- [ ] Condor remains the fixed Yield Entity; Patriot remains the fixed, unmodified Giants Progress Entity.
-- [ ] Runtime `HOLD_CONFIRMED` reports lateral=28.0m, rearward=12.0m and all validated TS015-B movement parameters remain unchanged.
-- [ ] Prototype 17 logs `PRE_ESTIMATE`, `REFUGE_LIVE`, `CLOSEST_APPROACH`, `PASSAGE_CONFIRMED` and `SHADOW_SUMMARY` when evidence is available.
-- [ ] Every shadow-clearance record states `authority=false` and the fixed 28 m Control target remains independent of the derived result.
-- [ ] Progress and Yield Facing Clearance Extents identify their evidence source and confidence.
-- [ ] Condor provider records expected/resolved/bounded/origin identity counts, coverage, bound APIs, pose source and scan truncation.
-- [ ] Complete runtime bounds and origin-plus-allowance fallback are visibly distinct; the 2.50 m physical allowance is logged separately.
-- [ ] Geometry, tracking, motion and policy margins remain explicit and sum only into `policyMarginBudget`; `physicalContactThreshold` excludes them.
-- [ ] Stage logs, continuous samples, console status and final summary expose `physicalContactThreshold`, `physicalClearanceReserve`, `policyMarginBudget`, `policyRequiredSeparation` and `policyReserve` without ambiguous combined aliases.
-- [ ] Live discovered envelopes are treated as high-confidence inputs only when complete assembly coverage is established; otherwise the calculation declares marker, fixture-provider or metadata fallback.
-- [ ] Native permission-gate calls are observed and the Giants AI job remains active through hold and compacting.
-- [ ] Condor work-off, raised state, fold motion and the provisional Egress-Ready Candidate are observed before egress.
-- [ ] The selected refuge path and pose have explicit clearance evidence against the Protected Progress Future Space; an opposite-side route is permitted only when its longer transition is also clear.
-- [ ] Patriot remains under unmodified Giants control; Condor refuge, positive passage, rejoin, deployment, work restoration and Giants handback are observed.
-- [ ] TS017-B evidence records 13/13 origins, 0/13 usable bounds, the 25.37 m physical threshold, +2.01 m physical reserve, 29.12 m policy target and -1.74 m policy reserve as distinct documented interpretations.
-- [ ] TS018 evidence records no console input, one Admission Candidate, one Commitment Point after approximately three seconds, one automatic run and no second activation in the same continuous fixture episode.
-- [ ] TS018 completes passage, rejoin and the full handback observation with `failure=nil`, while Condor/Patriot role, physical-right side, 28 m / 12 m movement and Patriot `GIANTS_UNMODIFIED` remain unchanged.
-- [ ] Legacy Traffic Manager, recovery, reservation and Decision paths remain dormant under the exclusive Prototype 16 actuator boundary.
-- [ ] No raw texture/audio performance warnings from this mod.
+- [ ] Automatic admission requires exactly the active Condor/Patriot fixture pair and does not register `otmTS015Arm`.
+- [ ] Admission produces four calculated candidates and one selected Yield/Progress role when geometry resolves.
+- [ ] `PROTOTYPE18 COMMITMENT_POINT` states `fixedRole=false fixedSide=false fixed28=false fixed12=false`.
+- [ ] Confirmed-stop recalculation evaluates both sides for the selected role and supplies a fresh world-space target.
+- [ ] `HOLD_CONFIRMED` logs calculated lateral and rearward values and identifies the selected candidate.
+- [ ] No normal-Control reference or fallback remains for fixed Condor Yield, physical-right, 28 m lateral or 12 m rearward movement.
+- [ ] Calculation failure withholds admission or enters the existing safe held failure state without substituting former constants.
+- [ ] Progress remains under unmodified GIANTS control while the selected Yield performs the sidestep.
+- [ ] Hold, work-off, raise/fold, egress, passage confirmation, rejoin, deployment, work restoration and GIANTS handback complete in order.
+- [ ] Runtime evidence shows physical passage without contact, `failure=nil` and `fenceViolation=false`.
+- [ ] One Encounter Episode Latch prevents a second commitment in the same continuous fixture episode.
+- [ ] Representation sources, coverage and confidence are logged for Progress lateral, Yield lateral and Yield forward extents.
+- [ ] Conservative working-width fallback remains visibly distinct from compact or discovered representation.
+- [ ] Prototype 17 diagnostic records remain distinct from the calculated Control target.
+- [ ] Lua syntax and XML validation pass for the packaged release.
 
 ## Compatibility
 

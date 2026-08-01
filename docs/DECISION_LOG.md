@@ -1,5 +1,85 @@
 # Decision Log
 
+## D-0084 — Consolidate two remaining encounter classes separately
+
+**Status:** Accepted for v4.6.43 candidate
+
+**Decision:** Preserve the validated v4.6.42 passage and rejoin implementation unchanged. Treat the later TS015 active-active collision as Headland Turn Overlap / Dual-Manoeuvre Admission Gap, and treat the TS016 completed-Condor obstruction as Completion-Transition Control Gap. Address the TS015 active-active problem first; do not combine it with completed-obstacle navigation.
+
+**Rationale:** The v4.6.42 primary TS015 sequence reached successful GIANTS handback and rearming. Earlier 15 km/h left-side TS015 evidence already left a later headland encounter unresolved, so the later collision is not uniquely caused by the new 5 km/h orientation phase. TS016 loses active-worker membership at completion and therefore requires a different control lifecycle.
+
+**Consequence:** v4.6.43 is an evidence-consolidation candidate with no intentional runtime change. The next increment begins with observation and architectural discussion of dual-manoeuvre admission. Speed tuning and static-obstacle navigation remain separate hypotheses.
+
+## D-0083 — Orient before translating to a rearward rejoin target
+
+**Status:** Accepted for temporary v4.6.42 runtime-validation build
+
+**Context:** The v4.6.41 TS015 regression completed refuge and passage, but the final rejoin target lay almost exactly behind Condor. The controller always requested forward movement. With local target direction near `(0,-1)`, steering had no stable left/right choice; Condor retained heading, drove away and timed out before GIANTS handback. This is **Forward-Only Rejoin Singularity**.
+
+**Decision:** Preserve direct rejoin when the target is already forward-reachable. Otherwise enter a bounded low-speed `REJOIN_ORIENTING` phase. Prefer the shortest target-bearing turn; at the near-180-degree singularity resolve direction toward the stopped centreline, then original working direction. Start direct rejoin once the target enters the forward hemisphere. Add orientation time/travel limits and a direct-rejoin target-progress watchdog.
+
+**Consequences:** Right-side and other rearward refuge poses no longer depend on an undefined forward-only steering direction. A failed orientation or diverging rejoin stops and remains held instead of travelling until the existing 45-second timeout. This decision does not address static-obstacle navigation, field-containment authority or any admission/refuge formula.
+
+## D-0082 — Rearm successful encounters without releasing failed encounters
+
+**Status:** Accepted for temporary v4.6.41 runtime-validation build
+
+**Context:** v4.6.40 passed the initial TS016 refuge twice. In the full continuation, the same workers later formed a new straight head-on at approximately 91.99 m separation with `tCPA=6.61 s` and `dCPA=6.38 m`. Control was idle, but admission remained latched from the successful first encounter and no second commitment was considered. This is **Pair-Latch Suppression** and contradicts the accepted rule that Encounter identity is not entity-pair identity.
+
+**Decision:** Scope the latch to one encounter. A successful controller outcome moves the pair record from `COMMITTED` to `REARMING`. Rearm only after separation is at least the existing 35 m passage-clear threshold and conflict-relevant prediction remains absent for three continuous seconds, or after a successfully completed pair is absent for the existing five-second reset interval. Number successive encounters and propagate the ID through admission and Control logs. A failed or unresolved outcome remains latched until explicit recovery.
+
+**Consequences:** The same workers may receive a later independent commitment without reopening the completed encounter. The build changes no TS016 or straight-head-on admission threshold, refuge formula, role/side selection, movement calculation or passage controller behaviour. Runtime validation must show encounter 1 completion, explicit rearming and encounter 2 admission.
+
+## D-0081 — Admit repeatable TS016 before straight-working settlement
+
+**Status:** Accepted for temporary v4.6.40 runtime-validation build
+
+**Context:** v4.6.39 proved calculated refuge Control in the established straight fixture. In repeatable TS016, conflict became relevant while Condor was manoeuvring across Patriot's lane, but the straight-only admission path waited until both workers were straight and committed at `tCPA=1.98 s`. Contact occurred before refuge movement.
+
+**Decision:** Add a bounded TS016 admission mode for exactly one straight-working worker and one manoeuvring worker. Lane crossing alone is not sufficient; require live opposed headings, positive closure and predicted closest approach inside the configured `tCPA`/`dCPA` envelope. Once satisfied, admit immediately and use the straight-working worker as the early Yield role. Preserve confirmed-stop side/distance recalculation and all calculated-refuge authority. Apply a 6.0 s minimum commitment `tCPA` to both admission modes. Log `FAILED_HELD` once.
+
+**Consequences:** TS016 can intervene before the manoeuvring worker finishes its final head-on alignment without claiming intent from lane crossing alone. No fixed vehicle identity, side, 28 m or 12 m authority returns. Runtime validation is mandatory.
+
+## D-0080 — Transfer fixture movement authority to calculated refuge Control
+
+**Status:** Accepted for temporary v4.6.39 runtime-validation build
+
+**Context:** Prototype 19 v4.6.38 successfully calculated both role assignments and both lateral refuge sides, but live Control still ignored those results and forced Condor/right/28 m/12 m. The repository already contained sufficient geometry operands to calculate a refuge target.
+
+**Decision:** Select the least-cost geometry-solved Yield role at admission. Recalculate both sides for that selected Yield role from the confirmed stop position. Calculate lateral movement from Progress working extent + compact Yield facing extent + clearance margins. Calculate rearward movement from complete compact-assembly forward extent + geometry/tracking margin. Remove all normal-Control fallback to fixed Condor Yield, fixed side, 28 m or 12 m.
+
+**Consequences:** The exact Condor/Patriot pair remains the current admission fixture, but role, side and movement authority are no longer fixture constants. Calculation failure withholds intervention or enters the existing safe held failure state. Runtime validation is mandatory before Canonicalisation.
+
+## D-0079 — Correct Prototype 19 evidence before Authority Migration
+
+**Status:** Accepted for temporary v4.6.38 runtime-evidence build
+
+**Context:** The first v4.6.37 run generated one epoch and four candidates without influencing Control. Condor-yields geometry was calculated on both sides, while Patriot-yields compact geometry remained unavailable. Two implementation defects were exposed: Prototype 19 used raw mission time rather than the Observer-relative clock, and its fixed 28 m actuator seed escaped as an apparent target and cost when geometry was unavailable.
+
+**Decision:** Correct all four issues in one build before packaging again. Use the Observer-relative clock; remove the fixture distance from candidate solving; emit no target, separation or movement values when required geometry remains unavailable; and supply both role propositions with the best honest generic evidence already present in the representation system.
+
+**Generic evidence boundary:** Where compact Yield geometry is unavailable but a live AI working marker exists, its half-width may be retained as an explicitly low-confidence conservative upper-bound operand. This provides a numerical comparison input without asserting that compact geometry is known. Source, coverage, confidence and extent kind must be logged. It cannot become Decision or Control authority.
+
+**Solver boundary:** The iterative estimate begins from Progress extent plus the declared policy margin, adjusted by current signed offset. It must never seed from the live 28 m actuator. If either facing extent remains unavailable, `proposedSeparation`, target coordinates, lateral travel, rearward travel and total travel remain `n/a`.
+
+**Implementation boundary:** The live actuator remains fixed Condor Yield, Patriot GIANTS Progress, physical-right refuge, 28 m lateral and 12 m rearward. Every Prototype 19 result remains `authority=false`, `action=none`; comparison failure remains isolated from Control.
+
+**Validation gate:** Repeat the same Condor/Patriot fixture. Require one Observer-relative epoch, four candidate records, both role propositions numerically solved where working-marker evidence exists, no unresolved-value leakage, and unchanged successful actuator behaviour before beginning Authority Migration.
+
+## D-0078 — Implement Prototype 19 as a temporary observer-only evidence bridge
+
+**Status:** Accepted for temporary v4.6.37 runtime-evidence build
+
+**Context:** Canonical v4.6.36 established clearance-first, cost-second refuge selection and allowed two world-space lateral candidates for each proposed Yield Entity. The agreed next step is to observe all four role/refuge alternatives before any fixture constant is removed.
+
+**Decision:** Implement Prototype 19 / Shadow Refuge Candidate Comparison at the Automatic Encounter Admission Assessment Epoch. Construct two role propositions multiplied by two Progress-corridor lateral normals, record independent `CLEAR`, `BLOCKED` or `UNKNOWN` evidence, aggregate to `VIABLE`, `REJECTED` or `UNRESOLVED`, and apply cost only among `VIABLE` candidates.
+
+**Implementation boundary:** The live actuator remains fixed Condor Yield, Patriot GIANTS Progress, physical-right refuge, 28 m lateral and 12 m rearward. Every Prototype 19 result is `authority=false`, `action=none`. The comparison is isolated so failure cannot block the validated actuator.
+
+**Temporary-release boundary:** v4.6.37 is not presumed to be the next Canonicalisation target. It exists to collect runtime evidence that will be consolidated into a later owner-selected incremental version.
+
+**Mandatory continuation:** After Prototype 19 validation, begin **Authority Migration**. Remove fixed role, side, lateral and rearward authority in separate evidence-led increments rather than retaining the fixture constants indefinitely.
+
 ## D-0077 — Select refuges clearance-first and cost-second
 
 **Status:** Accepted for candidate v4.6.36

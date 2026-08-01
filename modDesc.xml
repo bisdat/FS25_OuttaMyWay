@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <modDesc descVersion="92">
     <author>bisdat</author>
-    <version value="4.6.36">4.6.36</version>
+    <version value="4.6.43">4.6.43</version>
     <title>
         <en>Outta My Way</en>
         <de>Aus dem Weg</de>
@@ -10,11 +10,11 @@
         <it>Fuori dai piedi</it>
     </title>
     <description>
-        <en>Experimental TS017-B facing-extent probe. The validated 28 m Condor sidestep remains unchanged while fixture-bounded clearance evidence is logged without Control authority.</en>
-        <de>Experimenteller TS017-B-Versuch zur seitlichen Ausdehnung. Das validierte 28-m-Condor-Ausweichmanöver bleibt unverändert; begrenzte Freiraumevidenz wird ohne Steuerungsbefugnis protokolliert.</de>
-        <fr>Prototype expérimental TS017-B d'étendue latérale. Le déplacement validé de 28 m du Condor reste inchangé; les preuves de dégagement bornées sont journalisées sans autorité de contrôle.</fr>
-        <es>Prototipo experimental TS017-B de extensión lateral. La maniobra validada de 28 m del Condor no cambia; la evidencia acotada de separación se registra sin autoridad de control.</es>
-        <it>Prototipo sperimentale TS017-B dell'estensione laterale. La manovra Condor validata di 28 m resta invariata; le prove di spazio limitate vengono registrate senza autorità di controllo.</it>
+        <en>Cooperative passage evidence consolidation candidate. Calculated refuge, repeated encounter handling and rearward-target rejoin orientation are retained; two distinct continuation conflict classes remain open.</en>
+        <de>Temporärer Build mit berechneter Ausweichposition. Ausweichrolle, Seite sowie seitliche und rückwärtige Bewegung werden zur Laufzeit berechnet; der bestehende Durchfahrtsablauf bleibt im Test.</de>
+        <fr>Build temporaire avec refuge calculé. Le rôle de cession, le côté du refuge et les déplacements latéral et arrière sont calculés à l’exécution; la séquence de passage reste en test.</fr>
+        <es>Compilación temporal con refugio calculado. El rol que cede, el lado del refugio y los desplazamientos lateral y hacia atrás se calculan en ejecución; la secuencia de paso sigue en prueba.</es>
+        <it>Build temporanea con rifugio calcolato. Ruolo di precedenza, lato del rifugio e spostamenti laterale e arretrato sono calcolati a runtime; la sequenza di passaggio resta in prova.</it>
     </description>
     <iconFilename>icon.dds</iconFilename>
     <multiplayer supported="true" />

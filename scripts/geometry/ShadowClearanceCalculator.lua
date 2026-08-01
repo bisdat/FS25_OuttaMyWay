@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.6.32
+-- FS25_OuttaMyWay v4.6.43 cooperative passage evidence consolidation candidate.
 -- Prototype 17 / TS017-B: observer-only shadow clearance calculation with a fixture-bounded Facing Extent Provider.
 --
 -- This module derives a candidate lateral separation from current runtime evidence.
--- It has no authority over role selection, side selection, movement distance or Control.
--- The validated 28 m TS015 target remains authoritative for the live manoeuvre.
+-- It remains an observer-only clearance reporter. Calculated refuge selection and
+-- confirmed-stop recalculation own current role, side and movement authority.
 
 OuttaMyWay.ShadowClearanceCalculator = OuttaMyWay.ShadowClearanceCalculator or {}
 local Calculator = OuttaMyWay.ShadowClearanceCalculator
@@ -130,9 +130,11 @@ local function progressFacingExtent(run, geometry, sideX, sideZ)
 end
 
 local function predictedRefugeDirection(run)
-    local lateral = safeNumber(OuttaMyWay.TS015_LATERAL_OFFSET_M) or 28.0
-    local rearward = safeNumber(OuttaMyWay.TS015_EGRESS_REARWARD_M) or 12.0
-    local sideX, sideZ = run.rightX * run.sideSign, run.rightZ * run.sideSign
+    local lateral = safeNumber(run ~= nil and run.controlLateralM or nil)
+    local rearward = safeNumber(run ~= nil and run.controlRearwardM or nil)
+    local sideX = run ~= nil and safeNumber(run.refugeSideX) or nil
+    local sideZ = run ~= nil and safeNumber(run.refugeSideZ) or nil
+    if lateral == nil or rearward == nil or sideX == nil or sideZ == nil then return nil, nil end
     return normalized(sideX * lateral - run.forwardX * rearward,
         sideZ * lateral - run.forwardZ * rearward)
 end
@@ -202,7 +204,7 @@ end
 function Calculator:sample(run, nowMs, mode)
     if run == nil or run.vehicle == nil or run.progressVehicle == nil then return nil end
     mode = mode == "PRE" and "PRE" or "LIVE"
-    local sideX, sideZ = normalized(run.rightX * run.sideSign, run.rightZ * run.sideSign)
+    local sideX, sideZ = normalized(run.refugeSideX, run.refugeSideZ)
     if sideX == nil then return nil end
 
     local budget = OuttaMyWay.TS015_PAIR_GEOMETRY_SCAN_BUDGET or 1000
@@ -255,7 +257,7 @@ function Calculator:sample(run, nowMs, mode)
         authority = false,
         sideX = sideX,
         sideZ = sideZ,
-        controlTarget = safeNumber(OuttaMyWay.TS015_LATERAL_OFFSET_M) or 28.0,
+        controlTarget = safeNumber(run.controlLateralM),
         progressExtent = progressExtent,
         progressExtentSource = progressSource,
         progressExtentConfidence = progressConfidence,

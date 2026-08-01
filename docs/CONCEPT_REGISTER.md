@@ -1,6 +1,34 @@
 # Architectural Concept Register
 
-Review status: reviewed for candidate release v4.6.36.
+Review status: reviewed for cooperative passage evidence consolidation candidate v4.6.43.
+
+### Headland Turn Overlap
+
+A later independent Encounter in which two GIANTS workers enter interacting headland manoeuvres before either has established a stable outbound working trajectory. Overlap is not itself a conflict; live Future-Space convergence must still be demonstrated.
+
+### Dual-Manoeuvre Admission Gap
+
+A Decision boundary in which Situation Assessment predicts a converging conflict while both workers are manoeuvring, but every current admission mode requires at least one straight-working worker. The relationship remains observable but cannot create a Commitment.
+
+### Completion-Transition Control Gap
+
+A boundary created when an active Operation member completes its job and becomes a static relevant obstacle. Field World may retain the obstacle relationship, while active-worker admission ends and no single-worker obstacle-navigation Control consumes the evidence.
+
+### Timing Changes Encounter Geometry
+
+Changing intervention duration or speed changes later worker phase and separation. This may prevent, delay or transform a particular encounter, but does not by itself resolve the architectural gap that permits a comparable future convergence.
+
+### Forward-Only Rejoin Singularity
+
+A steering singularity in which a forward-only controller receives a target almost exactly behind the vehicle. The local target direction contains virtually no lateral component, so a direct command cannot choose a stable turn direction.
+
+### Rejoin Orientation Phase
+
+A bounded low-speed Control phase that converts a rearward rejoin target into a forward-reachable target before direct translation begins. It is omitted when the target is already in the forward hemisphere.
+
+### Rejoin Progress Watchdog
+
+A closed-loop safeguard that requires rejoin target distance to improve. Sustained non-progress or divergence stops and holds the Yield vehicle before a long uncontrolled departure.
 
 ### Automatic Encounter Admission
 
@@ -10,9 +38,17 @@ A Decision-side gate that converts sustained conflict-relevant Situation Assessm
 
 A provisional encounter that currently satisfies the bounded admission conditions but has not yet persisted through the confirmation interval. Loss of evidence withdraws it without intervention.
 
+### Encounter Rearming
+
+The controlled transition from a successfully completed encounter latch back to admission readiness. Rearming requires positive evidence that the completed conflict is no longer active: the pair is at least the established passage-clear distance apart and remains outside the predicted conflict envelope for a sustained interval, or the successfully completed pair is no longer active for the existing absence interval.
+
+### Pair-Latch Suppression
+
+A defect in which a commitment latch is attached to the persistent entity pair rather than the specific Future-Space convergence it resolved. The first full TS016 continuation exposed this when a later independent straight head-on was ignored after a successful earlier passage.
+
 ### Encounter Episode Latch
 
-A one-shot guard that prevents the same continuously active fixture episode from producing more than one automatic Commitment. TS018 showed the latch remaining active through later known Split-Start Pass Recovery. This validates bounded suppression, not production recurrence or general Encounter identity.
+A guard that prevents duplicate commitment to one active encounter. Early TS018 attached it to the continuously active fixture pair. Full TS016 continuation disproved that lifetime: after successful completion the latch must enter Encounter Rearming, while failed or unresolved encounters remain latched until explicit recovery.
 
 ### Shadow Clearance Calculation
 
@@ -150,6 +186,30 @@ A world-space refuge region on either lateral side of the Protected Progress Cor
 ### Clearance-First, Cost-Second Refuge Selection
 
 The rule that candidate survival is determined first by transition-path and refuge-pose clearance, including preservation of the Progress Entity's required Future Space. Operational cost such as lateral displacement or interruption duration compares only candidates that survive those constraints.
+
+### Viability Before Preference
+
+The implementation consequence of clearance-first, cost-second selection. Evidence first classifies each candidate as `VIABLE`, `REJECTED` or `UNRESOLVED`; preference is calculated only among candidates whose mandatory evidence is fully clear.
+
+### Shadow Refuge Candidate Comparison
+
+An observer-only Decision experiment that evaluates both world-space lateral refuge candidates for both possible Yield-role assignments from one Assessment Epoch. It records evidence and travel cost without selecting or executing a candidate.
+
+### Authority Migration
+
+The staged transfer of runtime authority from validated fixture constants to evidence-backed Decision outputs. After Prototype 19, role, refuge side, lateral displacement and rearward displacement must each move from hard-coded Control inputs to validated runtime decisions in isolated increments.
+
+### Assessment Epoch Clock-Domain Drift
+
+An instrumentation defect in which evidence describing one real event is timestamped against different runtime origins. Prototype 19 v4.6.37 used raw mission time while Prototype 18 used Observer-relative time, obscuring direct epoch alignment without changing the underlying snapshot.
+
+### Fixture-Distance Leakage
+
+An evidence-integrity defect in which a fixed test-actuator distance escapes an internal calculation seed and appears as though it were derived candidate Knowledge. Unavailable geometry must produce unavailable target and cost fields rather than a plausible fixture value.
+
+### Conservative Working-Width Upper Bound
+
+A low-confidence numerical operand used only when compact Yield geometry is unavailable but a live AI working marker exists. The marker half-width is retained as an orientation-independent conservative upper bound for shadow comparison. It does not prove compact geometry, candidate viability or Control authority.
 
 ### Preferred Refuge Is Not Required Refuge
 

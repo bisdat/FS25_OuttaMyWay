@@ -2,6 +2,24 @@
 
 Status: empirically supported in owner-declared canonical v4.6.33.
 
+## Temporary v4.6.41 encounter lifecycle correction — runtime supported
+
+The full TS016 continuation disproved the original entity-pair latch lifetime. Encounter 1 completed successfully, but a later independent straight head-on was ignored while admission remained `LATCHED`.
+
+Runtime TS016 continuation produced encounter 1 success, explicit rearming, then encounter 2 admission and success. v4.6.41 retains all v4.6.40 eligibility and calculation behaviour but assigns a pair-local encounter number. Controller completion reports `SUCCESS` or `FAILED` to admission:
+
+- `SUCCESS` enters `REARMING`;
+- `FAILED` remains latched until explicit recovery;
+- rearming requires at least 35 m separation and three continuous seconds outside the predicted conflict envelope, or five seconds of pair absence after successful completion;
+- the next independent conflict may become encounter 2.
+
+The runtime acceptance fixture is the complete TS016 continuation, not merely the first passage.
+
+## Temporary v4.6.40 TS016 extension
+
+The original straight-working path remains available. Repeatable TS016 adds a second admission mode when exactly one worker is straight-working and the other is manoeuvring. Lane crossing alone is not authority. Admission requires heading difference at least 150 degrees, positive closure, `tCPA` 0–12 s and `dCPA` at most 14 m. Once these conditions exist, commitment is immediate and the straight-working worker is the early Yield role. Both admission modes require at least 6.0 s remaining `tCPA` at commitment. Confirmed-stop calculated refuge selection remains authoritative.
+
+
 ## Purpose
 
 Remove the required manual `otmTS015Arm right` command without simultaneously generalising role selection, side choice, movement derivation or clearance authority.
@@ -110,3 +128,15 @@ The result does not authorise general role, side, distance or recurring-encounte
 ## Deferred
 
 General Encounter identity, recurring commitments, automatic Yield/Progress selection, escape-side comparison, field-margin feasibility, obstacle checks, complete swept-envelope protection and geometry-derived movement remain separate future increments.
+
+## v4.6.41–v4.6.42 continuation evidence
+
+The full TS016 continuation validated successful encounter rearming: encounter 1 completed, rearmed, and a later straight head-on between the same pair became encounter 2 and also completed. This disproves permanent entity-pair latching for successful encounters.
+
+Two relationships remain outside current admission:
+
+- TS015 later headland overlap reaches serious collision geometry after both workers become manoeuvring; current modes cover straight/straight and one manoeuvring plus one straight-working only.
+- TS016 loses the active-active pair when Condor completes, even though Field World retains Condor as a relevant static obstacle to Patriot.
+
+These are separate future increments. The first asks whether dual-manoeuvre active-worker admission should exist. The second requires single-worker obstacle-navigation admission and Control.
+

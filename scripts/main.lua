@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.36 entry point.
+-- FS25_OuttaMyWay v4.6.43 cooperative passage evidence consolidation candidate entry point.
 -- modDesc.xml loads only this file; this loader owns module ordering.
 
 local modDirectory = g_currentModDirectory or ""
@@ -14,6 +14,7 @@ local modules = {
     "scripts/geometry/catalogues/CondorEndurance2CollisionCatalogue.lua",
     "scripts/geometry/FacingExtentProvider.lua",
     "scripts/geometry/ShadowClearanceCalculator.lua",
+    "scripts/decision/ShadowRefugeCandidateComparison.lua",
     "scripts/prediction/VectorPrediction.lua",
     "scripts/prediction/CourseLookahead.lua",
     "scripts/observer/EventBus.lua",

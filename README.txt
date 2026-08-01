@@ -1,42 +1,27 @@
-FS25_OuttaMyWay v4.6.36
+FS25_OuttaMyWay v4.6.43 — Cooperative passage evidence consolidation candidate
 
-Cooperative collision-avoidance research for native GIANTS AI field workers.
+Status
+------
+Release Candidate proposed for owner review and Canonicalisation. It is not canonical until the repository owner explicitly declares this exact package canonical. Owner-declared canonical authority remains v4.6.36 until that decision.
 
-Canonical implementation authority: owner-declared v4.6.35
-Canonical ZIP SHA-256: d178145a5953fe5d46b86b04502e635e5ad221dded6b34e6433338862b5d9c04
-Canonical Git commit: ca983514ba18b104a185fc13534992a10ff8ae62
-Current package authority: candidate correcting the outboard-only refuge restriction; runtime behaviour is unchanged and repository-owner Canonicalisation remains pending
-Runtime baseline: FS25 1.21.1.0 build b40785 revision 81824 unless a test record states otherwise
+Purpose
+-------
+This candidate consolidates the v4.6.39–v4.6.42 temporary implementation and runtime evidence without intentional behavioural change from v4.6.42.
 
-TS018 validated Prototype 18 without any OuttaMyWay console command:
+Validated boundary
+------------------
+- Calculated Yield role, refuge side, lateral distance and rearward distance have operated successfully with Condor and Patriot as Yield.
+- Both physical lateral refuge directions have been exercised; no fixed role, side, 28 m or 12 m authority remains.
+- TS016 manoeuvre-aware admission resolved the first turn-exit head-on, and encounter rearming allowed a later independent straight head-on between the same pair to be admitted and resolved.
+- TS015 right-side refuge, rearward-target orientation, direct rejoin, unfolding and GIANTS handback completed successfully.
 
-- one `ADMISSION_CANDIDATE` appeared at 316.78 m;
-- one `COMMITMENT_POINT` followed after 3.09 s of sustained evidence at 277.92 m;
-- the run began with `trigger=automatic-encounter-admission`;
-- Condor remained fixed Yield;
-- Patriot remained fixed, unmodified GIANTS Progress;
-- the physical-right fixture side remained fixed;
-- movement remained fixed at 28 m lateral and 12 m rearward;
-- passage, rejoin and the complete 20-second handback observation succeeded;
-- `failure=nil`, `fenceViolation=false`, `passageConfirmed=true`;
-- minimum pair separation was 27.40 m;
-- the Encounter Episode Latch remained `LATCHED` and prevented a second activation during the known Split-Start Pass Recovery.
+Open collision classes
+----------------------
+1. TS015 Headland Turn Overlap / Dual-Manoeuvre Admission Gap: after successful passage and handback, both workers entered interacting headland manoeuvres. Situation Assessment predicted convergence, but no current admission path accepts a conflict once both workers are manoeuvring.
+2. TS016 Completion-Transition Control Gap: Condor completed its job and remained a relevant static obstacle, but the two-active-worker pair ended and Patriot received no obstacle-navigation Control.
 
-Prototype 17 evidence also remained observer-only and separate:
+Faster egress and ingress increase separation as a physical fact, but the earlier 15 km/h left-side TS015 evidence also ended with an unresolved later headland conflict. The 5 km/h orientation phase may alter timing; it is not established as the cause of the final collision.
 
-- closest physical clearance reserve: +2.03 m;
-- closest policy reserve: -1.72 m;
-- every derived clearance field: `authority=false`.
-
-Prototype 18 is supported only for the exact fixture. It does not establish production Encounter identity, recurring commitments, automatic Yield/Progress selection, world-space refuge feasibility, geometry-derived movement, field/margin refuge feasibility or obstacle clearance.
-
-Refuge selection is clearance-first and cost-second. Both world-space lateral sides may be candidates for each proposed Yield Entity. The preferred refuge is the least disruptive reachable refuge, but the opposite side remains valid when it is the only clear option. The next architectural activity is an observer-only Commitment Candidate evidence contract covering role, path, refuge clearance and cost without granting Control authority.
-
-Diagnostic and emergency commands remain:
-
-- `otmTS015Status`
-- `otmTS015Cancel`
-
-`otmTS015Arm` remains disabled and is not registered.
-
-Deferred Publication Readiness Review — Mod Description Drift: `modDesc.xml` still summarises the active prototype. Before publication, it should return to a stable description of the mod while release-specific detail remains in the changelog and engineering documents.
+Next objective
+--------------
+Discuss and define the TS015 dual-manoeuvre encounter before implementation. Keep the TS016 completed-obstacle case as a separate single-worker obstacle-navigation problem.

@@ -1,43 +1,52 @@
 # Roadmap
 
-## Current increment — Clearance-First Refuge Selection Correction
+## Next increment — Active-active headland overlap discovery
 
-Supersede the v4.6.35 outboard-only restriction before any Shadow Candidate Comparison implementation. Runtime behaviour remains unchanged.
+1. Consolidate the TS015 final-encounter timeline as **Headland Turn Overlap**.
+2. Determine whether a Decision concept is missing for two simultaneously manoeuvring workers.
+3. Identify evidence that separates harmless overlapping turns from converging Future Spaces.
+4. Locate the latest safe Commitment Point before the encounter becomes physically unrecoverable.
+5. Design one bounded experiment only after the concept and evidence contract are agreed.
 
-## Completed — refuge-selection correction
+Keep **Completion-Transition Control Gap** as the subsequent, separate active-worker-versus-static-obstacle workstream. Do not solve it by extending the two-worker passage wait logic.
 
-- [x] Use equal-width coincident-centreline and unequal-width offset-centreline examples to test the outboard-only assumption.
-- [x] Disprove one mandatory refuge side per proposed Yield Entity.
-- [x] Name **Preferred Refuge Is Not Required Refuge**.
-- [x] Establish clearance-first, cost-second refuge selection.
-- [x] Restore both world-space lateral sides as possible candidates for each proposed Yield Entity.
-- [x] Preserve world-space direction authority and explicit unresolved feasibility.
-- [x] Keep Approach-Side Provenance out of side-selection authority.
+## Temporary v4.6.42 TS015 rejoin-orientation validation
 
-## Completed — Prototype 18 admission validation
+- [x] Confirm the TS015 field departure occurred before GIANTS handback and remained under OuttaMyWay Control.
+- [x] Name Forward-Only Rejoin Singularity.
+- [x] Add conditional low-speed Rejoin Orientation Phase.
+- [x] Preserve direct rejoin for forward-reachable targets.
+- [x] Add orientation bounds and direct-rejoin progress watchdog.
+- [x] Validate behind-target, forward-skip and divergence paths locally.
+- [ ] Repeat TS015 unchanged in FS25.
+- [ ] Confirm orientation completes without an extended outward excursion.
+- [ ] Confirm direct rejoin, deploy, GIANTS handback and observation complete.
+- [ ] Revisit Completion-Transition Control Gap only after TS015 closes.
 
-- [x] Validate v4.6.32 Physical and Policy Clearance Evidence Separation in the established runtime fixture.
-- [x] Preserve the successful 28 m lateral / 12 m rearward actuator and Patriot `GIANTS_UNMODIFIED`.
-- [x] Name Automatic Encounter Admission, Admission Candidate and Encounter Episode Latch.
-- [x] Add exact-pair, straight-working, opposed-heading and conflict-projection admission conditions.
-- [x] Require three seconds of continuous evidence before the Commitment Point.
-- [x] Permit one commitment per continuous worker episode.
-- [x] Disable and unregister `otmTS015Arm`.
-- [x] Run the established fixture with no OuttaMyWay console command.
-- [x] Confirm exactly one candidate, one commitment and no later Split-Start reactivation.
-- [x] Confirm passage, rejoin, handback and all `authority=false` clearance evidence remained unchanged.
+## Temporary v4.6.41 encounter-rearming validation
 
-## Next architectural activity — Shadow Candidate Comparison
+- [x] Runtime-validate the first TS016 Patriot refuge twice.
+- [x] Continue the operation and expose the later independent straight head-on.
+- [x] Identify Pair-Latch Suppression as the cause of non-intervention.
+- [x] Replace the permanent pair latch with `COMMITTED -> REARMING -> REARMED` after success.
+- [x] Retain failed/unresolved encounter latches until explicit recovery.
+- [x] Propagate encounter numbers through admission and Control evidence.
+- [x] Validate lifecycle and controller outcomes in local Lua harnesses.
+- [ ] Repeat full TS016 continuation with v4.6.41.
+- [ ] Confirm encounter 1 success and explicit `ENCOUNTER_REARMED` evidence.
+- [ ] Confirm the later straight head-on becomes encounter 2 and reaches Control.
+- [ ] Continue through encounter 2 passage/handback or capture the next real failure.
+- [ ] Run one original TS015 straight-head-on regression after encounter recurrence passes.
+- [ ] Consolidate accepted evidence into a later owner-selected Canonicalisation candidate.
 
-- [ ] Define Commitment Candidate content before implementation.
-- [ ] Derive both world-space lateral Refuge Candidates for each proposed Yield Entity.
-- [ ] Permit up to four role/refuge candidates: two Yield-role assignments multiplied by two lateral sides.
-- [ ] Define transition-path and refuge-pose clearance as separate evidence.
-- [ ] Define field/margin, obstacle, complete-assembly and Progress-preservation evidence per candidate.
-- [ ] Define hard invalidation separately from missing evidence and later cost preference.
-- [ ] Compare displacement and interruption cost only among candidates that survive clearance constraints.
-- [ ] Implement observer-only comparison logs only after the evidence contract is agreed.
-- [ ] Keep every comparison output `authority=false`; do not alter the validated automatic-admission actuator.
+## Completed Prototype 19 evidence chain
+
+- [x] Generate both role assignments and both lateral sides from one Assessment Epoch.
+- [x] Preserve unavailable geometry as unavailable rather than leaking the fixed 28 m seed.
+- [x] Align Prototype 19 and Prototype 18 on Observer-relative time.
+- [x] Numerically solve both Yield-role propositions with explicitly labelled representation evidence.
+- [x] Runtime-validate v4.6.38: four solved candidates, no fixture-value leakage, unchanged successful protected actuator.
+- [x] Use that evidence to transfer role, side, lateral and rearward authority in v4.6.39.
 
 ## Deferred Publication Readiness Review
 

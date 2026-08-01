@@ -1,74 +1,40 @@
 # Project Status
 
-Version: 4.6.36
-Canonical implementation authority: owner-declared v4.6.35, SHA-256 `d178145a5953fe5d46b86b04502e635e5ad221dded6b34e6433338862b5d9c04`, Git commit `ca983514ba18b104a185fc13534992a10ff8ae62`
-Authority state: Candidate — clearance-first refuge-selection correction; runtime behaviour unchanged; repository-owner Canonicalisation pending
+Version: 4.6.43 cooperative passage evidence consolidation candidate
+Canonical implementation authority: owner-declared v4.6.36, SHA-256 `5ec12f0e16d817f5193264a7003a228ce7ef75b05963f24e05e4968404b7b781`, Git commit `9f9ff7bdbe59945ea8b6ebf789f374262cf0d8e8`
+Candidate baseline: exact temporary v4.6.42, SHA-256 `205bb2f435c54bca5e280bffa64d3f1174b9ce4f77d31da23b1f35897d31f64e`
+Authority state: Release Candidate proposed for owner review; not canonical until explicit owner declaration
 Runtime baseline: FS25 1.21.1.0 build b40785 revision 81824 unless the test record states otherwise
 
-## Validated TS018 result
+## Consolidated validated boundary
 
-Prototype 18's fixture-bounded hypothesis is supported.
+Temporary v4.6.39 transferred role, side and movement authority to calculated refuge selection. Runtime subsequently exercised Condor and Patriot as Yield and both physical lateral refuge directions without reintroducing fixed Condor, fixed side, 28 m or 12 m authority.
 
-No OuttaMyWay console command was entered or required. The exact Condor/Patriot pair produced:
+Temporary v4.6.40 admitted repeatable TS016 while one worker was still manoeuvring and selected the straight-working Patriot as Yield. Temporary v4.6.41 rearmed after a successful encounter, allowing a later independent straight head-on between the same pair to become encounter 2 and complete successfully.
 
-```text
-ADMISSION_CANDIDATE  distance=316.78 m  tCPA=29.94 s  dCPA=2.06 m
-COMMITMENT_POINT     candidateFor=3.09 s  distance=277.92 m  tCPA=20.04 s  dCPA=0.03 m
-RUN_START            trigger=automatic-encounter-admission
-```
+Temporary v4.6.42 corrected Forward-Only Rejoin Singularity. In the TS015 repeat, Condor completed `REJOIN_ORIENTING` in 7.10 s after 6.42 m travel, completed direct rejoin, unfolded, returned to GIANTS, ended the encounter successfully and rearmed. The right-side calculated refuge sequence is therefore supported through handback.
 
-The protected actuator completed with `failure=nil`, `fenceViolation=false`, `passageConfirmed=true` and 27.40 m minimum pair separation. Condor remained fixed Yield, Patriot remained `GIANTS_UNMODIFIED`, the physical-right fixture side remained fixed, and movement remained 28 m lateral / 12 m rearward.
+## Two open continuation conflict classes
 
-Exactly one Admission Candidate, one Commitment Point and one actuator run occurred. The Encounter Episode Latch remained `LATCHED` during later known Split-Start Pass Recovery and no second intervention began.
+### TS015 — Headland Turn Overlap / Dual-Manoeuvre Admission Gap
 
-Closest Shadow Clearance remained observer-only: +2.03 m physical reserve and -1.72 m policy reserve, both `authority=false`.
+After the successful v4.6.42 passage and handback, Condor began a headland manoeuvre and Patriot began another shortly afterward. Situation Assessment predicted a serious convergence while both were manoeuvring, but no current admission mode accepts that state combination. Both became blocked after contact.
 
-## Corrected refuge architecture
+This is not a new failure introduced by Rejoin Orientation. Earlier left-side TS015 evidence using 15 km/h egress/ingress had already recorded a later unresolved headland convergence. Faster movement increases separation, but speed alone has not resolved the encounter class.
 
-The v4.6.35 outboard-only restriction is superseded by **Preferred Refuge Is Not Required Refuge**.
+### TS016 — Completion-Transition Control Gap
 
-Two geometry examples establish the boundary:
+After two active-worker head-ons were resolved, Condor completed its job and transitioned into a static relevant obstacle. Field World retained the assembly and recognised its relationship to Patriot, but the active-worker pair ended and no obstacle-navigation Control consumed the relationship. Patriot became blocked and did not recover.
 
-- equal-width workers on a coincident centre line may have two equivalent clear lateral refuges;
-- offset workers with unequal widths may have one lower-cost refuge, while the opposite, longer route remains valid when the preferred route is unavailable and the longer path is clear.
+This belongs to the separate active-worker-versus-completed-obstacle problem. The current two-worker passage controller cannot simply wait for a stationary Progress assembly to pass.
 
-The governing rule is:
+## Immediate next objective
 
-> **Refuge selection is clearance-first and cost-second. Both lateral sides may be candidates. The preferred refuge is the least disruptive reachable refuge, but the opposite side remains valid when it is the only clear option.**
+Observe and discuss the TS015 dual-manoeuvre encounter before implementation. Determine what commitment, if any, should exist while both workers are manoeuvring and what evidence identifies the latest safe commitment point. Keep TS016 completed-obstacle navigation architecturally separate.
 
-For each proposed Yield Entity, Situation Assessment may therefore produce two world-space lateral Refuge Candidates. Human left/right labels and vehicle-local axes do not own their meaning. Candidate validity depends on evidenced path and refuge clearance, including protection of the Progress Entity's required Future Space. Preference is considered only among candidates that survive those constraints.
+## Candidate scope
 
-## Supported conclusion
-
-Fixture-Bounded Automatic Encounter Admission can replace the manual command for the exact Condor/Patriot fixture while preserving the established actuator. Both lateral refuge sides may remain under consideration until evidence invalidates or leaves one unresolved.
-
-Not supported:
-
-- general Encounter identity;
-- recurring commitments in one Operation;
-- autonomous Yield/Progress selection;
-- world-space derivation or feasibility of either lateral Refuge Candidate;
-- geometry-derived movement authority;
-- field/margin refuge feasibility, obstacles or complete swept-envelope protection;
-- more than two active workers.
-
-## Exact continuation point
-
-Define the observer-only Commitment Candidate evidence contract before code is written. For each proposed Yield Entity, define both world-space lateral refuge candidates and record:
-
-- transition-path clearance;
-- refuge-pose clearance;
-- field/margin and obstacle evidence;
-- complete-assembly representation and swept-space limits;
-- Progress Future Space preservation;
-- required lateral and rearward movement;
-- hard invalidation, missing evidence and later cost comparison as separate outcomes.
-
-The first Prototype 19 implementation, once agreed, should calculate and log all applicable role/refuge candidates without selecting or acting. It must not alter the validated automatic-admission actuator, and all outputs remain `authority=false`.
-
-## Runtime-change statement
-
-v4.6.36 changes runtime files only for version metadata. Admission thresholds, latch behaviour, roles, fixed physical-right fixture movement, clearance authority and actuator behaviour are unchanged from canonical v4.6.35.
+v4.6.43 changes no runtime behaviour from v4.6.42. It consolidates evidence, names the remaining boundaries and provides a coherent candidate breakpoint for owner review and possible Canonicalisation.
 
 ## Deferred Publication Readiness Review
 

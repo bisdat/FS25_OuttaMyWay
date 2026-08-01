@@ -1,5 +1,81 @@
 # Engineering Journal
 
+## v4.6.43 — Two open conflicts, not one regression chain
+
+The v4.6.42 TS015 run completed the entire primary cooperative sequence, including rearward-target orientation, rejoin, unfolding, GIANTS handback and successful encounter rearming. The previous Forward-Only Rejoin Singularity is resolved for the tested geometry.
+
+The later collision is not evidence that the primary sequence failed. It repeats an already open class seen after earlier left-side 15 km/h TS015 work: both workers form a new headland encounter after the completed passage. The current admission model loses eligibility once both workers are manoeuvring. This is named **Headland Turn Overlap** and **Dual-Manoeuvre Admission Gap**.
+
+The full TS016 continuation exposes a different boundary. Condor completes, remains physically relevant as a static obstacle, and Patriot blocks because the two-active-worker admission relationship ends. This is **Completion-Transition Control Gap** and belongs to single-worker obstacle navigation.
+
+A useful distinction emerged: faster egress and ingress objectively increase separation, but a speed difference is not automatically the cause of a later encounter. Timing can change which encounter occurs without closing the architectural gap that allows it.
+
+The candidate therefore closes the current evidence increment without pretending the operation-level success criterion has been reached. The next work begins with the active-active dual-manoeuvre encounter; the static-obstacle case remains separate.
+
+## v4.6.42 — Forward-Only Rejoin Singularity
+
+**Observation:** TS015 reached a calculated right-side refuge and confirmed passage. At rejoin start, the final target was approximately 31.50 m away and almost exactly 180 degrees behind Condor. The forward-only steering command preserved heading while target distance grew to approximately 213.94 m. OuttaMyWay timed out and held the vehicle; GIANTS handback had never occurred.
+
+**Disproved hypothesis:** A direct world-space target is not sufficient input for a forward-only controller when that target lies in the rear singularity. Normalised local direction `(approximately 0,-1)` contains no stable turn choice.
+
+**Discovery:** Name the defect **Forward-Only Rejoin Singularity**.
+
+**Decision:** Add a separate Rejoin Orientation Phase only for rearward targets. Turn slowly and deterministically until the target enters the forward hemisphere, then use the established direct rejoin. Bound the orientation and add a target-progress watchdog so failed steering stops promptly.
+
+**Protected scope:** Do not address the separate Completion-Transition Control Gap in this increment. Do not change admission, calculated refuge selection, passage confirmation or successful forward-target rejoin behaviour.
+
+**Validation target:** Repeat TS015 unchanged and require orientation, decreasing target distance, rejoin completion, deployment and GIANTS handback.
+
+## v4.6.41 — Pair-Latch Suppression and Encounter Rearming
+
+**Observation:** The first encounter in the full TS016 continuation passed. More than three minutes later the predictor reported a new straight head-on at 91.99 m, `tCPA=6.61 s`, `dCPA=6.38 m` and 177.4 degrees opposition. The controller was idle, yet admission remained `LATCHED`; both workers continued to collision.
+
+**Disproved hypothesis:** One commitment per continuously active entity pair is not a safe approximation of one commitment per encounter.
+
+**Discovery:** Name the defect **Pair-Latch Suppression**. A persistent pair may create multiple independent Future-Space convergences during one Operation.
+
+**Decision:** Introduce **Encounter Rearming** after successful passage and handback. Require sustained clear separation before removing the completed encounter record. Preserve a failed encounter latch until explicit recovery.
+
+**Implementation:** Admission now assigns encounter numbers, receives the controller outcome, enters `REARMING` after success, confirms 35 m separation plus three seconds outside the conflict envelope, then accepts a later encounter from the same pair. The refuge and passage mechanism is unchanged.
+
+**Validation target:** Repeat full TS016 continuation. Require encounter 1 success, `ENCOUNTER_REARMED`, then a later encounter 2 candidate/commitment before collision.
+
+## v4.6.40 — TS016 turn-exit admission correction
+
+**Observation:** The v4.6.39 straight fixture completed cleanly with calculated role, side and movement authority. The repeatable TS016 altered-start fixture failed because Condor was still manoeuvring when conflict became relevant. Straight-only admission waited until both workers settled and committed at only `tCPA=1.98 s`; contact preceded refuge movement.
+
+**Implementation:** Add an immediate TS016 path only when one worker is straight-working, the other manoeuvring, headings are at least 150 degrees opposed, closure is positive, `tCPA` is within 12 s and `dCPA` within 14 m. Lane crossing alone remains insufficient. The straight-working worker is the early Yield role, after which confirmed-stop refuge recalculation remains authoritative. Add a 6.0 s commitment-time floor and one-shot `FAILED_HELD` reporting.
+
+**Validation target:** Repeat TS016 and require early Patriot hold, calculated refuge completion before contact, successful passage/rejoin/handback and no repeated failure log.
+
+## v4.6.39 — Calculated refuge becomes Control authority
+
+The v4.6.38 runtime evidence showed that the calculated refuge was available while Control still used fixed fixture values. This increment removes that contradiction. Prototype 19 selects the role at admission, recalculates both sides from the confirmed stop, and supplies calculated lateral and rearward movement to the existing controller. Local formula tests showed dynamic role selection, fresh stop-position targets and no 28/12 fallback leakage. Runtime FS25 evidence remains pending.
+
+## v4.6.38 — Prototype 19 evidence defects corrected in one batch
+
+**Observation:** The first runtime run validated the four-candidate observation boundary and preserved the fixed actuator, but it exposed two evidence-integrity defects. Prototype 19 logged the admission event in a different clock domain from Prototype 18, and the 28 m fixture actuator seed appeared as candidate movement even when Patriot compact geometry was unavailable.
+
+**Discoveries:** Name these defects **Assessment Epoch Clock-Domain Drift** and **Fixture-Distance Leakage**. Both are instrumentation defects: neither changed Control in the run, but either could corrupt later Authority Migration if left in place.
+
+**Implementation:** Prototype 19 now logs Observer-relative time, derives its iterative starting estimate from Progress extent plus policy margin, and suppresses target and movement outputs when required geometry is unavailable. Candidate logs now expose `solution`, `solutionReason`, coverage, extent kind and solved/unavailable matrix counts.
+
+**Generic evidence extension:** If compact Yield geometry is unavailable but a live AI working marker exists, the marker half-width is retained as a **Conservative Working-Width Upper Bound**. It is deliberately labelled `LOW_CONSERVATIVE`, `COMPACT_UNPROVEN_CURRENT_WORKING_UPPER_BOUND` and `CONSERVATIVE_UPPER_BOUND`. It is a numerical evidence operand, not compact-geometry proof.
+
+**Protected boundary:** The live Condor/right/28 m/12 m actuator remains unchanged and isolated from Prototype 19. Runtime repetition is still required before Authority Migration.
+
+## v4.6.37 — Prototype 19 as an evidence bridge to Authority Migration
+
+**Observation:** The fixed actuator can now be admitted automatically, but its role, refuge side and movement remain fixture constants. Removing all four constants before observing the alternative candidate geometry would combine too many untested assumptions.
+
+**Decision:** Build a temporary observer-only Prototype 19. At one admission epoch, calculate both lateral refuges for both possible Yield-role assignments and log viability before preference. Preserve missing field, obstacle and swept-path evidence as `UNKNOWN`.
+
+**Implementation:** Added `ShadowRefugeCandidateComparison.lua`. It derives the proposed Progress corridor frame from live heading, calculates both signed lateral candidates, estimates side-facing extents, places a shadow refuge on the policy-required line, and records lateral/rearward/total travel. The live Condor/right/28 m/12 m actuator remains unchanged.
+
+**Protected lesson:** A shadow calculation is valuable only when it cannot silently become authority. The module is isolated behind a protected call and explicitly emits `authority=false`, `action=none`.
+
+**Mandatory next phase:** Once runtime evidence is understood, begin **Authority Migration** so fixed role, side and distances do not become permanent architecture.
+
 ## v4.6.36 — Preferred Refuge Is Not Required Refuge
 
 **Observation:** In a symmetric 36 m / 36 m head-on encounter on one centre line, either lateral refuge can be viable when its path and pose are clear. In an offset 36 m / 5 m encounter, one side can require materially less movement, but the longer opposite-side route remains necessary when the preferred side is unavailable.

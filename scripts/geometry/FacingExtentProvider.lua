@@ -1,9 +1,10 @@
--- FS25_OuttaMyWay v4.6.32
--- Prototype 17 / TS017-B: fixture-bounded Facing Extent Provider.
+-- FS25_OuttaMyWay v4.6.43 cooperative passage evidence consolidation candidate.
+-- Fixture-bounded Facing Extent Provider.
 --
--- Converts the existing Condor collision-catalogue identity evidence into a
--- one-sided compact facing extent for Shadow Clearance Calculation. The module
--- is observer-only. It never selects roles, sides, targets or Control actions.
+-- Converts Condor collision-catalogue identity evidence into a one-sided
+-- predicted or live compact extent. The provider remains a pure geometry
+-- adapter: it does not select roles, sides, targets or actions, and its returned evidence may
+-- be consumed as an operand in calculated refuge Control.
 
 OuttaMyWay.FacingExtentProvider = OuttaMyWay.FacingExtentProvider or {}
 local Provider = OuttaMyWay.FacingExtentProvider

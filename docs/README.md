@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** Reviewed for candidate release v4.6.36
+> **Currency:** Reviewed for cooperative passage evidence consolidation candidate v4.6.43
 
 This development repository is a self-sustaining engineering knowledge system. Its first responsibility is to preserve project continuity independently of any chat, engineer, AI system or platform. Its second is to remain understandable to future contributors.
 
@@ -79,6 +79,7 @@ The remaining documents deepen or verify that journey; they are classified below
 - [`prototypes/PROTOTYPE_16_TWO_WORKER_PASSAGE.md`](prototypes/PROTOTYPE_16_TWO_WORKER_PASSAGE.md) — validated TS015-A/B two-worker passage evidence.
 - [`prototypes/PROTOTYPE_17_SHADOW_CLEARANCE_CALCULATION.md`](prototypes/PROTOTYPE_17_SHADOW_CLEARANCE_CALCULATION.md) — empirically validated observer-only derived-clearance result.
 - [`prototypes/PROTOTYPE_18_AUTOMATIC_ENCOUNTER_ADMISSION.md`](prototypes/PROTOTYPE_18_AUTOMATIC_ENCOUNTER_ADMISSION.md) — empirically supported fixture-bounded automatic admission result.
+- [`prototypes/PROTOTYPE_19_SHADOW_REFUGE_CANDIDATE_COMPARISON.md`](prototypes/PROTOTYPE_19_SHADOW_REFUGE_CANDIDATE_COMPARISON.md) — calculated four-candidate role/refuge selection and confirmed-stop Control target derivation.
 - [`50_Research/DESIGN_HISTORY.md`](50_Research/DESIGN_HISTORY.md) — historical design evolution.
 - [`../research/model_geometry/README.md`](../research/model_geometry/README.md) — Prototype 08B offline collision-catalogue extraction workflow.
 - [`50_Research/VEHICLE_DEFINITION_CORPUS.md`](50_Research/VEHICLE_DEFINITION_CORPUS.md) — base-game definition mining, localisation and semantic-review result.
