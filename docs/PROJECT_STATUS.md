@@ -1,41 +1,112 @@
 # Project Status
 
-Version: 4.6.43 cooperative passage evidence consolidation candidate
-Canonical implementation authority: owner-declared v4.6.36, SHA-256 `5ec12f0e16d817f5193264a7003a228ce7ef75b05963f24e05e4968404b7b781`, Git commit `9f9ff7bdbe59945ea8b6ebf789f374262cf0d8e8`
-Candidate baseline: exact temporary v4.6.42, SHA-256 `205bb2f435c54bca5e280bffa64d3f1174b9ce4f77d31da23b1f35897d31f64e`
-Authority state: Release Candidate proposed for owner review; not canonical until explicit owner declaration
-Runtime baseline: FS25 1.21.1.0 build b40785 revision 81824 unless the test record states otherwise
+Version: 4.6.50 Architecture Recovery Candidate  
+Canonical implementation authority: owner-declared v4.6.43, SHA-256 `c312d74eedb20d800253247b784a992073a4cf44c0413588fa7f382b801cba4c`, Git commit `7dfb9f466566bbae1d47a2a54d66c08177fbae5b`  
+Candidate baseline: exact canonical v4.6.43  
+Authority state: Release Candidate proposed for owner review; not canonical until explicit owner declaration  
+Runtime behaviour: unchanged from v4.6.43  
+Runtime evidence environment: FS25 1.21.1.0 build b40785 revision 81824 unless the test record states otherwise
 
-## Consolidated validated boundary
+## Current engineering phase
 
-Temporary v4.6.39 transferred role, side and movement authority to calculated refuge selection. Runtime subsequently exercised Condor and Patriot as Yield and both physical lateral refuge directions without reintroducing fixed Condor, fixed side, 28 m or 12 m authority.
+The project is paused at an **Architecture Recovery Baseline**. Temporary v4.6.44–v4.6.49 produced valuable capabilities and decisive runtime evidence, but the Architecture Compliance Audit found that the active TS015/TS016 path had accumulated observation, interpretation, Decision, Commitment and Control responsibilities inside fixture-bounded controllers.
 
-Temporary v4.6.40 admitted repeatable TS016 while one worker was still manoeuvring and selected the straight-working Patriot as Yield. Temporary v4.6.41 rearmed after a successful encounter, allowing a later independent straight head-on between the same pair to become encounter 2 and complete successfully.
+The candidate records the discoveries without promoting the temporary implementation.
 
-Temporary v4.6.42 corrected Forward-Only Rejoin Singularity. In the TS015 repeat, Condor completed `REJOIN_ORIENTING` in 7.10 s after 6.42 m travel, completed direct rejoin, unfolded, returned to GIANTS, ended the encounter successfully and rearmed. The right-side calculated refuge sequence is therefore supported through handback.
+## Confirmed architecture
 
-## Two open continuation conflict classes
+```text
+Reality
+    ↓
+Observation
+    ↓
+Situation Assessment
+    ↓
+Operational Picture Knowledge
+    ↓
+Decision Engine
+    ↓
+Commitment
+    ↓
+Control capability
+    ↓
+Outcome Observation
+    ↺ Situation Assessment
+```
 
-### TS015 — Headland Turn Overlap / Dual-Manoeuvre Admission Gap
+Situation Assessment remains aware of the complete bounded Field World. It interprets observations and publishes Knowledge. Decision consumes that Knowledge, evaluates candidate actions and continuing Commitments, applies every applicable constraint and selects the least-disruptive justified augmentation. Control executes bounded authority and reports observed outcomes.
 
-After the successful v4.6.42 passage and handback, Condor began a headland manoeuvre and Patriot began another shortly afterward. Situation Assessment predicted a serious convergence while both were manoeuvring, but no current admission mode accepts that state combination. Both became blocked after contact.
+## Architecture recovery conclusions
 
-This is not a new failure introduced by Rejoin Orientation. Earlier left-side TS015 evidence using 15 km/h egress/ingress had already recorded a later unresolved headland convergence. Faster movement increases separation, but speed alone has not resolved the encounter class.
+- **Prototype Boundary Leakage:** a fixture-bounded experiment became the active operating path.
+- **Assessment–Decision–Control Collapse:** controllers interpreted observations, selected actions and executed them inside private state machines.
+- **Architectural Constraint Enforcement Gap:** documented invariants were not universal admissibility gates.
+- **Fragmented Commitment Ownership:** multiple private episode records approximated one continuing encounter Commitment.
+- Temporary discoveries remain evidence and capability candidates; their present ownership is not promoted.
 
-### TS016 — Completion-Transition Control Gap
+## Retired underdefined terms
 
-After two active-worker head-ons were resolved, Condor completed its job and transitioned into a static relevant obstacle. Field World retained the assembly and recognised its relationship to Patriot, but the active-worker pair ended and no obstacle-navigation Control consumed the relationship. Patriot became blocked and did not recover.
+The following v4.3.8 labels are retired because no independent architectural distinction was recovered:
 
-This belongs to the separate active-worker-versus-completed-obstacle problem. The current two-worker passage controller cannot simply wait for a stationary Progress assembly to pass.
+- Relevance Envelope
+- Decision-Relevant World
+- Decision-Relevant Constraints as a standalone Situation Assessment output
+- Decision Readiness
+- Option Horizon as a standalone object
 
-## Immediate next objective
+Historical references remain as provenance. Current architecture uses Field World, Operational Picture, Situation Relevance, Future Space, Action Space, explicit constraint applicability and action-specific evidence sufficiency.
 
-Observe and discuss the TS015 dual-manoeuvre encounter before implementation. Determine what commitment, if any, should exist while both workers are manoeuvring and what evidence identifies the latest safe commitment point. Keep TS016 completed-obstacle navigation architecturally separate.
+## Refined Decision principles
 
-## Candidate scope
+- **Sufficiency over Completeness:** available Knowledge must be sufficient for the particular conclusion or action; complete Knowledge is not required.
+- **Option Preservation:** Decision considers how continued evolution changes the remaining Action Space.
+- **Earliest Sufficient Action:** do not choose unchanged continuation merely to obtain greater certainty when current Knowledge supports a proportionate action and waiting is likely to remove it.
+- **Minimum Effective Augmentation:** choose the least disruptive augmentation reasonably expected to preserve or improve safe Action Space.
+- **Option-Preserving Augmentation:** a small, proportionate and preferably reversible intervention whose purpose is to preserve or enlarge safe Action Space rather than resolve the complete encounter immediately.
+- Frequent reassessment may be normal; frequent intervention is not automatically justified.
 
-v4.6.43 changes no runtime behaviour from v4.6.42. It consolidates evidence, names the remaining boundaries and provides a coherent candidate breakpoint for owner review and possible Canonicalisation.
+## Experimental Capability Corpus
+
+The temporary v4.6.44–v4.6.49 work is retained as evidence, including:
+
+- Temporal Separation Reserve;
+- Persistent Speed Authority and exact restoration evidence;
+- Observation Ownership evidence for persistent Situation Relevance;
+- Post-Passage Continuation evidence;
+- Protected Controller Handoff semantics;
+- Future Corridor Frame;
+- Refuge Reachability and Viability evidence;
+- Unknown Is Not Reachable;
+- Refuge Occupancy Conflict;
+- Commitment Viability Decay;
+- hardcoded-authority and responsibility-location evidence.
+
+None of these temporary implementations is active in this candidate.
+
+## Immediate next objective after Canonicalisation
+
+Build a passive shadow path that produces a complete authority trace:
+
+```text
+Observation
+→ Situation Assessment Knowledge
+→ shared Operational Picture
+→ Decision evaluation
+→ shadow Commitment proposal
+→ proposed Control capability
+```
+
+The first increment must issue no vehicle-control authority. Existing logs and scenarios should be replayed through the shadow path before any active capability is migrated.
+
+## Open architecture questions
+
+- How should the shared Operational Picture be represented in code without narrowing the accepted architecture?
+- What is the minimum durable Commitment record and lifecycle?
+- How are action classes bound to mandatory constraint checks?
+- How are Safe Release Point and Continuation Safety Horizon applied to both assemblies?
+- How does Native Motion Envelope provide assembly-appropriate repositioning behaviour?
+- How are fixture-specific geometry assumptions removed before active migration?
 
 ## Deferred Publication Readiness Review
 
-**Mod Description Drift:** `modDesc.xml` currently acts as a prototype/release summary. Before publication readiness, restore it to a stable description of the mod and keep increment-specific reporting in the changelog and engineering documents.
+**Mod Description Drift:** `modDesc.xml` still acts as an engineering-candidate summary. Before publication readiness, restore it to a stable public description and keep increment-specific reporting in the changelog and engineering documents.

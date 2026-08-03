@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.43 cooperative passage evidence consolidation candidate.
+-- FS25_OuttaMyWay v4.6.50 architecture recovery candidate.
 -- Prototype 18: fixture-bounded Automatic Encounter Admission.
 -- TS016 retains the manoeuvre-aware path validated in v4.6.40. This increment
 -- replaces the permanent entity-pair latch with an encounter-scoped lifecycle:

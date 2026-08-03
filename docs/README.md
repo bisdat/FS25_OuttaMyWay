@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** Reviewed for cooperative passage evidence consolidation candidate v4.6.43
+> **Currency:** Reviewed for Architecture Recovery Candidate v4.6.50
 
 This development repository is a self-sustaining engineering knowledge system. Its first responsibility is to preserve project continuity independently of any chat, engineer, AI system or platform. Its second is to remain understandable to future contributors.
 
@@ -19,7 +19,8 @@ Read these in order when inheriting or resuming the project:
 7. [`CONCEPT_REGISTER.md`](CONCEPT_REGISTER.md) — Accepted, Deferred and Rejected architectural concepts.
 8. [`ARCHITECTURE.md`](ARCHITECTURE.md), [`SCOPE_OVERLAY_ARCHITECTURE.md`](SCOPE_OVERLAY_ARCHITECTURE.md), [`SCOPE_OVERLAY_TEST_CALIBRATION.md`](SCOPE_OVERLAY_TEST_CALIBRATION.md), [`PHYSICAL_REPRESENTATION_ARCHITECTURE.md`](PHYSICAL_REPRESENTATION_ARCHITECTURE.md) and [`DESIGN.md`](DESIGN.md) — current system, calibrated scope evidence and physical-representation responsibilities.
 9. [`50_Research/VEHICLE_DEFINITION_CORPUS.md`](50_Research/VEHICLE_DEFINITION_CORPUS.md) — the reviewed base-game semantic evidence and its boundaries.
-10. [`ROADMAP.md`](ROADMAP.md) — future direction after the immediate objective.
+10. [`50_Research/ARCHITECTURE_COMPLIANCE_AUDIT_V4.6.49.md`](50_Research/ARCHITECTURE_COMPLIANCE_AUDIT_V4.6.49.md) and [`50_Research/CANONICAL_KNOWLEDGE_CONSTRAINT_RECOVERY.md`](50_Research/CANONICAL_KNOWLEDGE_CONSTRAINT_RECOVERY.md) — why implementation paused and what canonical architecture was recovered.
+11. [`ROADMAP.md`](ROADMAP.md) — future direction after the immediate objective.
 
 The remaining documents deepen or verify that journey; they are classified below so no first-class document is orphaned.
 
@@ -69,9 +70,13 @@ The remaining documents deepen or verify that journey; they are classified below
 - [`adr/ADR-0001-respect-the-native-ai.md`](adr/ADR-0001-respect-the-native-ai.md) — respect native AI authority.
 - [`adr/ADR-0003_Situation_Assessment.md`](adr/ADR-0003_Situation_Assessment.md) — Situation Assessment ownership.
 - [`adr/ADR-0004-closed-loop-operational-truth.md`](adr/ADR-0004-closed-loop-operational-truth.md) — closed-loop outcome observation.
+- [`adr/ADR-0005-architecture-recovery.md`](adr/ADR-0005-architecture-recovery.md) — architecture recovery and experimental capability preservation.
 
 ## Evidence, Research and History
 
+- [`50_Research/ARCHITECTURE_COMPLIANCE_AUDIT_V4.6.49.md`](50_Research/ARCHITECTURE_COMPLIANCE_AUDIT_V4.6.49.md) — consolidated audit of the temporary active TS015/TS016 path.
+- [`50_Research/CANONICAL_KNOWLEDGE_CONSTRAINT_RECOVERY.md`](50_Research/CANONICAL_KNOWLEDGE_CONSTRAINT_RECOVERY.md) — recovered canonical Knowledge, constraints and final five-term disposition.
+- [`../research/architecture_recovery/README.md`](../research/architecture_recovery/README.md) — CSV inventories, discovery reconciliation and hardcoded-authority evidence.
 - [`AI_DISCOVERIES.md`](AI_DISCOVERIES.md) — observed AI behaviour and findings.
 - [`GIANTS_AI_NOTES.md`](GIANTS_AI_NOTES.md) — GIANTS AIFieldCourse observations.
 - [`prototypes/PROTOTYPE_14_SINGLE_WORKER_INFORMATION_GAINING_DELAY.md`](prototypes/PROTOTYPE_14_SINGLE_WORKER_INFORMATION_GAINING_DELAY.md) — retained TS012 one-worker delay hypothesis, validated hold mechanism and disproved in-lane resolution result.

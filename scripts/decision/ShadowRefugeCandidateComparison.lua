@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.43 cooperative passage evidence consolidation candidate.
+-- FS25_OuttaMyWay v4.6.50 architecture recovery candidate.
 -- Prototype 19: calculated refuge candidate comparison and Control selection.
 --
 -- At Automatic Encounter Admission this module calculates both lateral refuge

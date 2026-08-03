@@ -1,5 +1,21 @@
 # Changelog
 
+## v4.6.50 — Architecture Recovery Candidate
+
+- Begins from exact owner-declared canonical v4.6.43, SHA-256 `c312d74eedb20d800253247b784a992073a4cf44c0413588fa7f382b801cba4c`, Git commit `7dfb9f466566bbae1d47a2a54d66c08177fbae5b`.
+- Makes no intentional runtime behavioural change from v4.6.43; code edits are limited to coherent version identity and candidate description.
+- Does not promote temporary v4.6.44–v4.6.49 controller implementations.
+- Incorporates the Architecture Compliance Audit of the active temporary TS015/TS016 path and records **Prototype Boundary Leakage**, **Assessment–Decision–Control Collapse**, **Architectural Constraint Enforcement Gap** and **Fragmented Commitment Ownership**.
+- Incorporates the Canonical Knowledge and Constraint Recovery, preserving 36 recovered knowledge entries, 28 constraint entries, 23 temporary-discovery reconciliations and the 79-entry Hardcoded Authority Register as research evidence.
+- Preserves experimental discoveries and validated capabilities while separating them from their temporary controller ownership.
+- Retires the underdefined legacy terms **Relevance Envelope**, **Decision-Relevant World**, **Decision-Relevant Constraints** as a standalone Situation Assessment output, **Decision Readiness** and **Option Horizon** as a standalone object.
+- Reaffirms that Situation Assessment remains aware of the complete bounded Field World and publishes Knowledge through the Operational Picture; Decision determines what available Knowledge is material to each candidate action or continuing Commitment.
+- Strengthens constraint enforcement: every applicable architectural, environmental, representational and control constraint must support a candidate before authority is granted; Control cannot waive or bypass that conclusion.
+- Refines **Sufficiency over Completeness** and promotes **Option Preservation**, **Earliest Sufficient Action**, **Minimum Effective Augmentation** and **Option-Preserving Augmentation** as Decision principles rather than new subsystems.
+- Records that continued unchanged operation or passive observation is itself a Decision and must be assessed against its effect on the remaining Action Space.
+- Establishes the next implementation boundary as a passive shadow architecture and authority-trace path before any further vehicle control migration.
+- Proposed for owner review and Canonicalisation; this package does not declare itself canonical.
+
 ## v4.6.43 — Cooperative Passage Evidence Consolidation Candidate
 
 - Begins from exact temporary v4.6.42, SHA-256 `205bb2f435c54bca5e280bffa64d3f1174b9ce4f77d31da23b1f35897d31f64e`; owner-declared canonical authority remains v4.6.36 until explicit Canonicalisation.

@@ -1,5 +1,41 @@
 # Glossary
 
+## Architecture Recovery Vocabulary — v4.6.50
+
+**Architecture Recovery Baseline** — documentation-first checkpoint that preserves current canonical runtime behaviour while consolidating later experimental knowledge and restoring architectural ownership.
+
+**Prototype Boundary Leakage** — a fixture-bounded experiment becoming the active operating path without first generalising its assumptions and responsibilities.
+
+**Assessment–Decision–Control Collapse** — one implementation component privately interprets observations, selects action, owns commitment and executes control.
+
+**Architectural Constraint Enforcement Gap** — a documented invariant is not a mandatory admissibility gate for every action capable of violating it.
+
+**Fragmented Commitment Ownership** — one continuing operational commitment is represented by several private episodes or controller states.
+
+**Sufficiency over Completeness** — complete Knowledge is not required; available Knowledge must be sufficient for the particular conclusion or action.
+
+**Option Preservation** — consideration of how continued evolution changes or removes available Action Space.
+
+**Earliest Sufficient Action** — the earliest proportionate action supported by current Knowledge when waiting is likely to remove safer or less disruptive options.
+
+**Minimum Effective Augmentation** — the least disruptive augmentation reasonably expected to preserve or improve safe Action Space.
+
+**Option-Preserving Augmentation** — a small, proportionate and preferably reversible intervention intended to preserve or enlarge Action Space rather than resolve the complete encounter immediately.
+
+**Experimental Capability Corpus** — retained experimental mechanisms and evidence that may be reused only after relocation into architecture-conforming ownership.
+
+### Retired terms
+
+**Relevance Envelope — Retired.** No independent distinction beyond Field World, Operational Picture, Situation Relevance and Future Space.
+
+**Decision-Relevant World — Retired.** Decision evaluates which available Knowledge is material to the current candidate action or Commitment.
+
+**Decision-Relevant Constraints — Retired as a standalone output.** Constraint Knowledge, architectural invariants, applicability and admissibility remain active.
+
+**Decision Readiness — Retired.** Sufficiency is specific to each conclusion or action.
+
+**Option Horizon — Retired as a standalone object.** Action-specific expiry remains within Action Space and current Knowledge.
+
 **Automatic Encounter Admission** — Decision-side conversion of sustained eligible encounter evidence into permission to begin an already bounded Commitment; it does not select role, side or movement.
 
 **Admission Candidate** — provisional eligible encounter awaiting sustained confirmation; evidence loss withdraws it without Control.

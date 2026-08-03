@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.43 cooperative passage evidence consolidation candidate.
+-- FS25_OuttaMyWay v4.6.50 architecture recovery candidate.
 -- Fixture-bounded Facing Extent Provider.
 --
 -- Converts Condor collision-catalogue identity evidence into a one-sided

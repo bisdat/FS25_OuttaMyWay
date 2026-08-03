@@ -1,5 +1,42 @@
 # Engineering Journal
 
+## v4.6.50 — Architecture Recovery, not another behavioural patch
+
+Temporary v4.6.44–v4.6.49 made considerable progress:
+
+- persistent cruise authority physically regulated speed;
+- temporal reserve and post-passage continuation preserved separation;
+- observation ownership retained a relationship without immediate intervention;
+- protected handoff preserved authority continuity;
+- field-edge refuge viability rejected an unsafe lateral candidate.
+
+The extended TS015 run then exposed a new collision: Condor reached a viable in-field refuge, but Patriot's subsequent GIANTS headland turn consumed that occupied refuge. This was not another request for a local threshold. It revealed that a reachable refuge can lose validity when the other assembly's Future Space changes.
+
+The holistic audit found that the fixture-bounded controller had gradually become the place where observations were interpreted, actions chosen, commitments retained and commands executed. The repeated “one more fix” pattern was therefore named **Prototype Boundary Leakage** and **Assessment–Decision–Control Collapse**.
+
+The project paused implementation and recovered the canonical architecture. Existing concepts already covered most of the observed needs:
+
+- Situation Assessment awareness of the complete Field World;
+- Operational Picture Knowledge;
+- Situation Relevance;
+- Future Space and Action Space;
+- explicit constraints and representation fitness;
+- continuing Commitment evaluation;
+- Safe Release and continuation evidence.
+
+Five named v4.3.8 labels lacked durable definitions. Each was challenged against necessity and ownership. All five were retired rather than preserved by invention.
+
+The recovery also clarified that Option Preservation is not indecision. Decision always reaches a current conclusion. Continued unchanged operation or passive observation is one possible Decision, and its physical consequences must be evaluated. Small speed changes may become useful option-preserving augmentations, but only when purposeful, supported and proportionate.
+
+v4.6.50 therefore returns to exact canonical v4.6.43 runtime behaviour while preserving all experimental evidence. This is a deliberate separation:
+
+```text
+discovery retained
+implementation not promoted
+```
+
+The next implementation will be passive and traceable before it is behavioural.
+
 ## v4.6.43 — Two open conflicts, not one regression chain
 
 The v4.6.42 TS015 run completed the entire primary cooperative sequence, including rearward-target orientation, rejoin, unfolding, GIANTS handback and successful encounter rearming. The previous Forward-Only Rejoin Singularity is resolved for the tested geometry.

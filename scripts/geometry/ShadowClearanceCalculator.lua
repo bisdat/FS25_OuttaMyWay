@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.43 cooperative passage evidence consolidation candidate.
+-- FS25_OuttaMyWay v4.6.50 architecture recovery candidate.
 -- Prototype 17 / TS017-B: observer-only shadow clearance calculation with a fixture-bounded Facing Extent Provider.
 --
 -- This module derives a candidate lateral separation from current runtime evidence.

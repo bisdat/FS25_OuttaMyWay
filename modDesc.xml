@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <modDesc descVersion="92">
     <author>bisdat</author>
-    <version value="4.6.43">4.6.43</version>
+    <version value="4.6.50">4.6.50</version>
     <title>
         <en>Outta My Way</en>
         <de>Aus dem Weg</de>
@@ -10,11 +10,11 @@
         <it>Fuori dai piedi</it>
     </title>
     <description>
-        <en>Cooperative passage evidence consolidation candidate. Calculated refuge, repeated encounter handling and rearward-target rejoin orientation are retained; two distinct continuation conflict classes remain open.</en>
-        <de>Temporärer Build mit berechneter Ausweichposition. Ausweichrolle, Seite sowie seitliche und rückwärtige Bewegung werden zur Laufzeit berechnet; der bestehende Durchfahrtsablauf bleibt im Test.</de>
-        <fr>Build temporaire avec refuge calculé. Le rôle de cession, le côté du refuge et les déplacements latéral et arrière sont calculés à l’exécution; la séquence de passage reste en test.</fr>
-        <es>Compilación temporal con refugio calculado. El rol que cede, el lado del refugio y los desplazamientos lateral y hacia atrás se calculan en ejecución; la secuencia de paso sigue en prueba.</es>
-        <it>Build temporanea con rifugio calcolato. Ruolo di precedenza, lato del rifugio e spostamenti laterale e arretrato sono calcolati a runtime; la sequenza di passaggio resta in prova.</it>
+        <en>Architecture recovery candidate. Runtime behaviour remains unchanged from v4.6.43; temporary v4.6.44–v4.6.49 discoveries are documented but not promoted.</en>
+        <de>Kandidat zur Wiederherstellung der Architektur. Das Laufzeitverhalten bleibt gegenüber v4.6.43 unverändert; Erkenntnisse aus den temporären Versionen v4.6.44–v4.6.49 sind dokumentiert, aber nicht übernommen.</de>
+        <fr>Candidat de rétablissement de l’architecture. Le comportement d’exécution reste inchangé par rapport à v4.6.43 ; les découvertes temporaires v4.6.44–v4.6.49 sont documentées mais non intégrées.</fr>
+        <es>Candidato de recuperación de la arquitectura. El comportamiento en ejecución no cambia respecto a v4.6.43; los hallazgos temporales de v4.6.44–v4.6.49 se documentan pero no se incorporan.</es>
+        <it>Candidato di recupero dell’architettura. Il comportamento a runtime resta invariato rispetto a v4.6.43; le scoperte temporanee v4.6.44–v4.6.49 sono documentate ma non promosse.</it>
     </description>
     <iconFilename>icon.dds</iconFilename>
     <multiplayer supported="true" />

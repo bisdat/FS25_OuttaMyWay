@@ -1,5 +1,21 @@
 # Scenario Library
 
+## v4.6.50 architecture recovery status
+
+The scenarios remain evidence fixtures. v4.6.50 preserves v4.6.43 runtime behaviour and does not promote the temporary v4.6.44–v4.6.49 controllers.
+
+TS015 and TS016 remain central replay benchmarks for the next passive architecture path. They must be expressed through generic participants, Situation Assessment Knowledge, candidate actions, continuing Commitment and constraint conclusions rather than Condor/Patriot-specific production authority.
+
+The temporary evidence corpus includes:
+
+- early option-preserving temporal separation;
+- post-passage continued relevance;
+- protected authority continuity;
+- field-edge refuge rejection;
+- occupied-refuge invalidation after Progress Future Space changed.
+
+These are architectural replay obligations, not new scenario-specific patches.
+
 ## TS001 — Head-on convergence and continuation
 
 TS001 is the natural multi-worker conflict fixture used by Prototypes 01 through 05 and the folded-start fixture for Prototype 08A. It established harmless proximity, conflict emergence, conflict confidence, the Option Preservation Window, Local Intent Expiry and supporting Field World evidence. Manual stop/restart variants are supporting evidence because timing changes the later route.

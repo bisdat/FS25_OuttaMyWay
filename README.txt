@@ -1,27 +1,49 @@
-FS25_OuttaMyWay v4.6.43 — Cooperative passage evidence consolidation candidate
+FS25_OuttaMyWay v4.6.50 — Architecture Recovery Candidate
 
 Status
 ------
-Release Candidate proposed for owner review and Canonicalisation. It is not canonical until the repository owner explicitly declares this exact package canonical. Owner-declared canonical authority remains v4.6.36 until that decision.
+Release Candidate proposed for owner review and Canonicalisation. It is not canonical until the repository owner explicitly declares this exact package canonical.
+
+Baseline
+--------
+Built from exact owner-declared canonical v4.6.43:
+SHA-256 c312d74eedb20d800253247b784a992073a4cf44c0413588fa7f382b801cba4c
+Git commit 7dfb9f466566bbae1d47a2a54d66c08177fbae5b
 
 Purpose
 -------
-This candidate consolidates the v4.6.39–v4.6.42 temporary implementation and runtime evidence without intentional behavioural change from v4.6.42.
+This is an architecture-only recovery increment. Runtime behaviour remains that of v4.6.43. Temporary v4.6.44–v4.6.49 implementation is not promoted.
 
-Validated boundary
-------------------
-- Calculated Yield role, refuge side, lateral distance and rearward distance have operated successfully with Condor and Patriot as Yield.
-- Both physical lateral refuge directions have been exercised; no fixed role, side, 28 m or 12 m authority remains.
-- TS016 manoeuvre-aware admission resolved the first turn-exit head-on, and encounter rearming allowed a later independent straight head-on between the same pair to be admitted and resolved.
-- TS015 right-side refuge, rearward-target orientation, direct rejoin, unfolding and GIANTS handback completed successfully.
+The candidate records:
+- the Architecture Compliance Audit of the temporary TS015/TS016 path;
+- the Canonical Knowledge and Constraint Recovery;
+- preservation of valuable experimental discoveries and capabilities;
+- explicit retirement of five underdefined legacy terms;
+- strengthened Decision principles for sufficiency, option preservation and minimum effective augmentation;
+- the implementation boundary required before further behavioural work.
 
-Open collision classes
-----------------------
-1. TS015 Headland Turn Overlap / Dual-Manoeuvre Admission Gap: after successful passage and handback, both workers entered interacting headland manoeuvres. Situation Assessment predicted convergence, but no current admission path accepts a conflict once both workers are manoeuvring.
-2. TS016 Completion-Transition Control Gap: Condor completed its job and remained a relevant static obstacle, but the two-active-worker pair ended and Patriot received no obstacle-navigation Control.
+Retired legacy terms
+--------------------
+- Relevance Envelope
+- Decision-Relevant World
+- Decision-Relevant Constraints as a standalone Situation Assessment output
+- Decision Readiness
+- Option Horizon as a standalone object
 
-Faster egress and ingress increase separation as a physical fact, but the earlier 15 km/h left-side TS015 evidence also ended with an unresolved later headland conflict. The 5 km/h orientation phase may alter timing; it is not established as the cause of the final collision.
+Their valid concerns are retained through existing architecture: Field World, Operational Picture, Situation Relevance, Future Space, Action Space, explicit constraint enforcement, Sufficiency over Completeness and Option Preservation.
 
-Next objective
---------------
-Discuss and define the TS015 dual-manoeuvre encounter before implementation. Keep the TS016 completed-obstacle case as a separate single-worker obstacle-navigation problem.
+Implementation boundary
+-----------------------
+No further TS015/TS016 behavioural patch is included. The next implementation, after owner Canonicalisation and architectural review, is a passive shadow path:
+
+Observation -> Situation Assessment -> Operational Picture -> Decision evaluation -> shadow Commitment proposal -> authority trace
+
+It must not control, slow, hold or reposition vehicles.
+
+Experimental Capability Corpus
+------------------------------
+The temporary v4.6.44–v4.6.49 work remains valuable evidence. Persistent Speed Authority, Temporal Separation Reserve, Observation Ownership evidence, Protected Controller Handoff semantics, Future Corridor Frame, Refuge Viability evidence and structured outcome telemetry are preserved for later architectural relocation.
+
+Deferred publication item
+-------------------------
+Mod Description Drift remains open. The current description identifies the engineering candidate rather than providing the final stable public description.

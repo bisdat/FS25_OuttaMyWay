@@ -1,46 +1,71 @@
 # Engineering Handover
 
-## Current candidate: v4.6.43
+## Current candidate: v4.6.50
 
-v4.6.43 continues from exact temporary v4.6.42 (`205bb2f435c54bca5e280bffa64d3f1174b9ce4f77d31da23b1f35897d31f64e`). Canonical authority remains owner-declared v4.6.36 until the owner explicitly Canonicalises this exact candidate.
+v4.6.50 begins from exact owner-declared canonical v4.6.43 (`c312d74eedb20d800253247b784a992073a4cf44c0413588fa7f382b801cba4c`, Git `7dfb9f466566bbae1d47a2a54d66c08177fbae5b`).
 
-The candidate intentionally preserves v4.6.42 runtime behaviour. It consolidates the calculated-refuge, encounter-rearming and rejoin-orientation evidence into one coherent baseline.
+It is an architecture-only recovery candidate. Runtime behaviour remains v4.6.43. Temporary v4.6.44–v4.6.49 implementation is not promoted.
 
-## Current validated sequence
+## Why the recovery was required
+
+The temporary TS015/TS016 path proved several useful mechanisms but also revealed:
+
+- Prototype Boundary Leakage;
+- Assessment–Decision–Control Collapse;
+- Architectural Constraint Enforcement Gap;
+- Fragmented Commitment Ownership.
+
+Repeated local corrections were rational, but the fixture controller had become the easiest place to add observation, interpretation, Decision and Control. The candidate records this evidence and restores architectural precedence.
+
+## Recovered authority boundary
 
 ```text
-admit -> calculated Yield/refuge selection
--> hold -> confirmed stop -> compact
--> calculated egress -> passage confirmation
--> optional REJOIN_ORIENTING for rearward target
--> direct rejoin -> deploy -> GIANTS handback
--> successful encounter rearming
+Observation
+→ Situation Assessment
+→ Operational Picture Knowledge
+→ Decision
+→ Commitment
+→ Control
+→ Outcome Observation
+↺ Situation Assessment
 ```
 
-This sequence has completed with Condor and Patriot as Yield and with refuges on both physical lateral sides. No fixed role, side, 28 m or 12 m authority remains.
+Situation Assessment remains aware of the complete bounded Field World. Decision applies current Knowledge and every mandatory constraint to each candidate action and continuing Commitment. Control executes bounded requests and cannot decide role, refuge suitability, relevance, passage completion or release.
 
-## Open problem 1 — TS015 dual-manoeuvre encounter
+## Legacy-term disposition
 
-The first TS015 encounter now completes. A later independent collision occurs when both workers enter interacting headland manoeuvres. At the useful warning point only Condor was turning and predicted clearance remained broad; when collision geometry became convincing, both workers were manoeuvring and no admission path was eligible.
+Retired:
 
-Resume with architecture, not code:
+- Relevance Envelope
+- Decision-Relevant World
+- Decision-Relevant Constraints as a standalone Situation Assessment output
+- Decision Readiness
+- Option Horizon as a standalone object
 
-1. reconstruct the Headland Turn Overlap timeline;
-2. identify what evidence distinguishes harmless simultaneous turns from converging turns;
-3. determine the latest safe Commitment Point;
-4. decide whether one worker can be assigned Yield before either route settles;
-5. only then design an implementation experiment.
+Preserved and strengthened:
 
-Do not treat the 5 km/h orientation speed as the established cause. Faster movement increases separation, but the earlier 15 km/h left-side TS015 run also left the later headland encounter unresolved.
+- Sufficiency over Completeness;
+- Option Preservation;
+- Earliest Sufficient Action;
+- Minimum Effective Augmentation;
+- Option-Preserving Augmentation.
 
-## Open problem 2 — TS016 completion transition
+## Preserved experimental evidence
 
-Condor completed and became a static relevant obstacle while Patriot remained active. Situation Assessment retained the relationship, but active-active admission ended. This requires single-worker obstacle-navigation architecture, not the existing pass/wait/rejoin sequence. Keep it separate from the TS015 active-active problem.
+The v4.6.44–v4.6.49 discoveries and hardcoded-authority audit are retained under `docs/50_Research/` and `research/architecture_recovery/`. They are an Experimental Capability Corpus, not active architecture.
 
-## Repository continuation
+## Continuation after owner review
 
-If the owner declares this exact candidate canonical, synchronise the unchanged package into local and GitHub repositories, record its SHA-256 and Git commit, then begin the next discussion from v4.6.43 canonical.
+If the owner declares this exact candidate canonical:
+
+1. synchronise the unchanged package into local and GitHub repositories;
+2. record its SHA-256 and Git commit;
+3. begin the next increment from v4.6.50 canonical;
+4. implement only a passive shadow authority trace;
+5. issue no vehicle-control action until replay evidence demonstrates architectural conformance.
+
+Do not resume “one more fix” work on TS015/TS016 before the passive path is reviewed.
 
 ## Deferred Publication Readiness Review
 
-**Mod Description Drift:** restore `modDesc.xml` to a stable mod description before publication.
+**Mod Description Drift:** restore `modDesc.xml` to a stable public description before publication.

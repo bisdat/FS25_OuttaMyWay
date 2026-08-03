@@ -1,5 +1,55 @@
 # Roadmap
 
+## Immediate programme — Architecture Recovery to passive shadow Decision
+
+### Candidate and Canonicalisation gate
+
+- [x] Complete the Architecture Compliance Audit of temporary v4.6.49.
+- [x] Recover canonical Knowledge and constraints from v4.6.43.
+- [x] Reconcile v4.6.44–v4.6.49 discoveries without promoting temporary code.
+- [x] Review and retire the five underdefined v4.3.8 labels.
+- [x] Refine Sufficiency over Completeness and Option Preservation principles.
+- [x] Build v4.6.50 Architecture Recovery Candidate from exact canonical v4.6.43.
+- [ ] Complete owner review of the exact v4.6.50 candidate.
+- [ ] Resolve any candidate findings.
+- [ ] Owner explicitly declares an accepted package canonical.
+- [ ] Synchronise local and GitHub repositories and record ZIP SHA-256 and Git commit.
+
+### First post-canonical implementation — passive only
+
+- [ ] Define the minimum code representation of the existing Operational Picture without narrowing the architecture.
+- [ ] Trace every input as Observation and every interpretation as Situation Assessment Knowledge.
+- [ ] Represent one shadow continuing Commitment with assumptions, obligations, invalidation and release evidence.
+- [ ] Bind action classes to mandatory architectural constraints.
+- [ ] Emit a complete authority trace from Knowledge to proposed Control capability.
+- [ ] Replay existing TS015/TS016 logs and negative controls.
+- [ ] Confirm the passive path would reject the v4.6.48 field-edge refuge.
+- [ ] Confirm it would retain awareness after passage and completion.
+- [ ] Confirm Patriot's turn changes Future Space and invalidates the occupied-refuge assumption.
+- [ ] Confirm an early option-preserving speed proposal can be explained without issuing Control.
+- [ ] Issue no vehicle slow, hold, reposition, configuration or handback command.
+
+### Active migration gate
+
+No proven actuator may become active until:
+
+1. its Decision authority exists outside the capability;
+2. all required constraints are traceable;
+3. the continuing Commitment has one owner;
+4. Outcome Observation returns through Situation Assessment;
+5. old and new paths cannot own the same relationship simultaneously.
+
+Likely migration order after the gate:
+
+```text
+Persistent Speed Authority
+→ single-participant Hold
+→ configuration change
+→ Native Repositioning Motion
+→ refuge occupancy and continuation
+→ GIANTS handback
+```
+
 ## Next increment — Active-active headland overlap discovery
 
 1. Consolidate the TS015 final-encounter timeline as **Headland Turn Overlap**.

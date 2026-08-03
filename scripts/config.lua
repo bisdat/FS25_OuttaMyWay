@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.6.43 cooperative passage evidence consolidation candidate build.
+-- FS25_OuttaMyWay v4.6.50 architecture recovery candidate build.
 -- Cooperative collision avoidance for base-game AI field workers.
 
 OuttaMyWay = {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.6.43"
+OuttaMyWay.VERSION = "4.6.50"
 OuttaMyWay.BLOCKED_FOLD_DELAY_MS = 6500
 OuttaMyWay.WAIT_FOLD_DELAY_MS = 4500
 OuttaMyWay.HEAD_ON_FOLLOW_HOLD_DISTANCE = 55.0

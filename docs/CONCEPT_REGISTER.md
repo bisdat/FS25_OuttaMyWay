@@ -1,6 +1,66 @@
 # Architectural Concept Register
 
-Review status: reviewed for cooperative passage evidence consolidation candidate v4.6.43.
+## Architecture Recovery Decisions — v4.6.50
+
+Review status: accepted for the v4.6.50 Architecture Recovery Candidate; repository authority follows owner Canonicalisation.
+
+### Architecture Recovery Baseline
+
+A documentation-first checkpoint built from exact canonical v4.6.43. It preserves temporary discoveries and capability evidence without promoting v4.6.44–v4.6.49 controller behaviour.
+
+### Prototype Boundary Leakage
+
+A fixture-bounded experiment gradually becomes the active operating path while retaining assumptions, identities and state lifecycles intended only for evidence gathering.
+
+### Assessment–Decision–Control Collapse
+
+A controller consumes observations, creates private Knowledge, selects an action, owns the continuing episode and executes Control inside one state machine.
+
+### Architectural Constraint Enforcement Gap
+
+An architectural invariant exists, but a Control commitment capable of violating it can receive authority without passing a mandatory admissibility gate.
+
+### Fragmented Commitment Ownership
+
+Multiple private episode records approximate one continuing encounter, requiring manual transfer rather than preserving one architectural Commitment.
+
+### Sufficiency over Completeness
+
+Complete Knowledge is not required. Available Knowledge must be sufficient for the particular conclusion or action. Unresolved evidence cannot silently support an action that depends on it.
+
+### Option Preservation
+
+Decision considers how continued evolution changes or removes the remaining Action Space. Waiting or continued unchanged operation is itself a Decision.
+
+### Earliest Sufficient Action
+
+When current Knowledge supports a proportionate option-preserving action, Decision should not choose unchanged continuation merely to obtain greater certainty when continued evolution is likely to remove that action.
+
+### Minimum Effective Augmentation
+
+Choose the least disruptive augmentation reasonably expected to preserve or improve safe Action Space, and maintain it only while its purpose remains valid.
+
+### Option-Preserving Augmentation
+
+A small, proportionate and preferably reversible intervention whose immediate purpose is to preserve or enlarge safe Action Space rather than resolve the whole encounter.
+
+### Experimental Capability Corpus
+
+A preserved body of validated mechanisms, observations and disproven assumptions whose temporary implementation ownership is not promoted. v4.6.44–v4.6.49 form the current corpus.
+
+### Retired legacy labels
+
+The following terms have no recovered independent architectural distinction and are retired:
+
+- **Relevance Envelope** — covered by Field World, Operational Picture, Situation Relevance and Future Space.
+- **Decision-Relevant World** — materiality is ordinary Decision evaluation of Operational Picture Knowledge.
+- **Decision-Relevant Constraints** — retired as a standalone Situation Assessment output; constraints remain explicit and mandatory.
+- **Decision Readiness** — evidence sufficiency is conclusion- and action-specific.
+- **Option Horizon** — action-specific expiry remains a property of Action Space and current Knowledge.
+
+Historical references remain provenance only.
+
+Review status: reviewed for Architecture Recovery Candidate v4.6.50.
 
 ### Headland Turn Overlap
 

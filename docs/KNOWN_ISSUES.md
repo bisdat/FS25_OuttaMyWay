@@ -1,5 +1,18 @@
 # Known Issues
 
+## Architecture recovery boundaries
+
+- **Runtime remains v4.6.43:** v4.6.50 does not contain the temporary v4.6.44–v4.6.49 behavioural mechanisms.
+- **Prototype Boundary Leakage:** the audited temporary TS015/TS016 path accumulated top-level Situation Assessment, Decision, Commitment and Control responsibilities inside fixture-bounded controllers.
+- **Architectural Constraint Enforcement Gap:** full Field World containment and other invariants exist architecturally but are not yet universal runtime admissibility gates.
+- **Fragmented Commitment Ownership:** the current runtime has no shared continuing Commitment record spanning observation, regulation, hold, refuge, passage, continuation and handback.
+- **Passive architecture not implemented:** the agreed shadow Operational Picture and authority-trace path remains future work.
+- **Experimental Capability Corpus only:** Persistent Speed Authority, Temporal Separation Reserve, Protected Controller Handoff semantics and Refuge Viability evidence are not active in this candidate.
+- **Hardcoded authority remains unresolved:** the v4.6.49 audit identified 79 significant configured or embedded values. Several are harmless cadence/watchdog values; others stand in for richer concepts and require classification before reuse.
+- **Native Repositioning Motion unresolved:** fixed 5, 6, 7.5 and 15 km/h prototype values must not become architectural meanings. Assembly-appropriate repositioning remains to be derived from Native Motion Envelope.
+- **Fixture identity remains in canonical prototype code:** Condor/Patriot name and asset checks remain because runtime behaviour is intentionally unchanged from v4.6.43. They are not accepted production generalisation.
+- **Mutual continuation remains unresolved:** Safe Release Point and Continuation Safety Horizon exist, but their application to both assemblies after refuge occupancy has not yet been formalised in the implementation contract.
+
 ## Current open encounter boundaries
 
 - **TS015 Headland Turn Overlap / Dual-Manoeuvre Admission Gap:** after a successful passage and GIANTS handback, both workers may enter interacting headland manoeuvres. Situation Assessment sees the convergence, but current admission accepts only straight/straight or one manoeuvring plus one straight-working. The later encounter is not new to v4.6.42; earlier left-side 15 km/h TS015 evidence also left a later headland convergence unresolved.

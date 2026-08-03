@@ -1,5 +1,45 @@
 # Decision Log
 
+## D-0088 — Establish v4.6.50 as an Architecture Recovery Candidate
+
+**Status:** Accepted for v4.6.50 candidate; canonical authority pending owner declaration
+
+**Decision:** Build v4.6.50 from exact canonical v4.6.43, preserve v4.6.43 runtime behaviour and incorporate the v4.6.44–v4.6.49 discoveries as architectural and experimental knowledge. Do not promote temporary controller implementations.
+
+**Rationale:** The Architecture Compliance Audit found valuable capabilities alongside Prototype Boundary Leakage, Assessment–Decision–Control Collapse, Architectural Constraint Enforcement Gap and Fragmented Commitment Ownership. Continuing behavioural patches would deepen implementation-led architecture. Reverting without recording discoveries would discard evidence.
+
+**Consequence:** The next code increment, after Canonicalisation, is a passive shadow authority-trace path with no vehicle Control.
+
+## D-0087 — Retire five underdefined v4.3.8 labels
+
+**Status:** Accepted for v4.6.50 candidate
+
+**Decision:** Retire Relevance Envelope, Decision-Relevant World, Decision-Relevant Constraints as a standalone Situation Assessment output, Decision Readiness and Option Horizon as a standalone object.
+
+**Rationale:** Term-by-term review recovered no independent architectural distinction for the labels. Their valid concerns are already represented by Field World, Operational Picture, Situation Relevance, Future Space, Action Space, constraint applicability, Runtime Control Admissibility and evidence sufficiency.
+
+**Consequence:** Historical mentions remain provenance. No implementation may use the retired labels to create selective awareness, a second world, a global readiness gate or a universal encounter deadline.
+
+## D-0086 — Preserve options through sufficient, proportionate Decision
+
+**Status:** Accepted for v4.6.50 candidate
+
+**Decision:** Refine Sufficiency over Completeness and adopt Option Preservation, Earliest Sufficient Action, Minimum Effective Augmentation and Option-Preserving Augmentation as Decision principles.
+
+**Rationale:** Waiting for greater certainty can remove safer, less disruptive or more reversible actions. However, frequent reassessment must not become habitual interference. A small augmentation requires a named purpose, sufficient evidence, expected effect and release conditions.
+
+**Consequence:** Continued unchanged operation and passive observation are Decisions whose effect on Action Space must be assessed. Frequent reassessment may maintain an existing Commitment without issuing new Control commands.
+
+## D-0085 — Restore mandatory architectural ownership and constraint enforcement
+
+**Status:** Accepted for v4.6.50 candidate
+
+**Decision:** Reaffirm the closed loop `Observation → Situation Assessment → Operational Picture → Decision → Commitment → Control → Outcome Observation → Situation Assessment`. Architecture and policy define invariants; Situation Assessment publishes current constraint Knowledge; Decision applies every applicable constraint; Control cannot waive admissibility.
+
+**Rationale:** v4.6.48 Condor field departure and the later Refuge Occupancy Conflict were not absence of boundary or Future-Space concepts. They exposed local Control authority operating without universal constraint gates and without continuous Commitment revalidation.
+
+**Consequence:** The Field World boundary is automatically material to physical repositioning. A changing Progress Future Space must update the Operational Picture and can invalidate a continuing refuge Commitment.
+
 ## D-0084 — Consolidate two remaining encounter classes separately
 
 **Status:** Accepted for v4.6.43 candidate

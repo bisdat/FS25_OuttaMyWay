@@ -1,5 +1,26 @@
 # Engineering Handbook
 
+## v4.6.50 architecture recovery note
+
+Temporary v4.6.44–v4.6.49 is retained as an Experimental Capability Corpus, not promoted runtime architecture.
+
+The audit established four implementation findings: Prototype Boundary Leakage, Assessment–Decision–Control Collapse, Architectural Constraint Enforcement Gap and Fragmented Commitment Ownership.
+
+The governing route remains:
+
+```text
+Observation
+→ Situation Assessment
+→ Operational Picture Knowledge
+→ Decision
+→ Commitment
+→ Control
+→ Outcome Observation
+↺ Situation Assessment
+```
+
+The next code increment is passive and must trace this route without controlling a vehicle. See `50_Research/ARCHITECTURE_COMPLIANCE_AUDIT_V4.6.49.md`, `50_Research/CANONICAL_KNOWLEDGE_CONSTRAINT_RECOVERY.md` and ADR-0005.
+
 > **Authority:** Reference
 >
 > **Currency:** Last reviewed for canonical release v4.5.9

@@ -4,6 +4,12 @@
 - The handbook is the chart.
 - The chart is more valuable than the boats.
 - Reality is the final architect.
+- Complete Knowledge is unnecessary; Knowledge must be sufficient for the particular conclusion or action.
+- Continued unchanged operation and passive observation are Decisions whose consequences must be assessed.
+- Preserve options with the earliest sufficient, minimum effective augmentation.
+- Frequent reassessment does not automatically justify frequent intervention.
+- Applicable architectural constraints are mandatory gates, not optional controller checks.
+- Experimental capability may be retained without promoting its temporary ownership structure.
 - Decisions should consume understanding, not raw observations.
 - Optimise for understanding before behaviour.
 - Situation Assessment is the sole interpreter of observations.

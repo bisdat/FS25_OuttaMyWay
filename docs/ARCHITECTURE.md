@@ -1,5 +1,96 @@
 # Architecture
 
+## v4.6.50 Architecture Recovery Boundary
+
+This candidate begins from exact canonical v4.6.43 and preserves its runtime behaviour. Temporary v4.6.44–v4.6.49 implementations are evidence, not promoted operating architecture.
+
+### Recovered information flow
+
+```text
+Reality
+    ↓
+Observation
+    ↓
+Situation Assessment
+    ↓
+Operational Picture Knowledge
+    ↓
+Decision Engine
+    ↓
+Commitment
+    ↓
+Control capability
+    ↓
+Outcome Observation
+    ↺ Situation Assessment
+```
+
+Situation Assessment remains aware of the complete bounded Field World. It interprets observations and publishes Knowledge. Decision evaluates candidate actions and continuing Commitments using the current Operational Picture. Control executes bounded authority and reports observed outcomes.
+
+### Recovered ownership rule
+
+- Architecture and policy define non-negotiable invariants.
+- Situation Assessment maintains current constraint Knowledge, uncertainty and confidence.
+- Decision determines which available Knowledge is material to a candidate action or continuing Commitment and applies every mandatory constraint.
+- Control cannot waive, reinterpret or bypass admissibility.
+
+The temporary active path violated this separation through **Assessment–Decision–Control Collapse** and **Fragmented Commitment Ownership**. Those are implementation findings, not replacement architecture.
+
+### Constraint applicability
+
+A candidate action may receive authority only when every applicable architectural, environmental, representational and control constraint has been evaluated sufficiently to support that action.
+
+For example, `REPOSITION` necessarily requires:
+
+```text
+field containment
+destination occupancy clearance
+movement and configuration sweep clearance
+representation fitness
+native motion capability
+existing-Commitment compatibility
+```
+
+The Field World boundary does not become relevant only when a local controller remembers to query it. It is mandatory because physical repositioning is being considered.
+
+### Continuing Commitment evaluation
+
+A Commitment remains provisional until its intended operational effect is confirmed, superseded or abandoned through updated Situation Assessment.
+
+A change in Future Space, field constraint, participant state, representation fitness or Control outcome can invalidate the assumptions on which the Commitment depends. The Decision Engine must then maintain, revise, replace or cancel the Commitment. Controller exclusivity must not freeze an obsolete interpretation.
+
+### Decision principles
+
+**Sufficiency over Completeness** — complete Knowledge is not required. Available Knowledge must be sufficient for the particular conclusion or action.
+
+**Option Preservation** — Decision considers how continued evolution changes or removes the remaining Action Space.
+
+**Earliest Sufficient Action** — when current Knowledge supports a proportionate option-preserving action, Decision should not choose continued unchanged operation merely to obtain greater certainty when continued evolution is likely to remove that action.
+
+**Minimum Effective Augmentation** — choose the least disruptive augmentation reasonably expected to preserve or improve safe Action Space, and maintain it only while its purpose remains valid.
+
+**Option-Preserving Augmentation** — a small, proportionate and preferably reversible intervention whose purpose is to preserve or enlarge safe Action Space rather than resolve the entire encounter immediately.
+
+Frequent reassessment may be normal. Frequent intervention is not automatically justified.
+
+### Retired legacy labels
+
+The following underdefined v4.3.8 labels are retired as independent concepts:
+
+- Relevance Envelope
+- Decision-Relevant World
+- Decision-Relevant Constraints as a standalone Situation Assessment output
+- Decision Readiness
+- Option Horizon as a standalone object
+
+Their valid concerns remain represented by Field World, Operational Picture, Situation Relevance, Future Space, Action Space, explicit constraint applicability, Runtime Control Admissibility, Sufficiency over Completeness and Option Preservation.
+
+### Experimental Capability Corpus
+
+The temporary v4.6.44–v4.6.49 work retains evidential value, including Persistent Speed Authority, Temporal Separation Reserve, Observation Ownership evidence, Post-Passage Continuation evidence, Protected Controller Handoff semantics, Future Corridor Frame, Refuge Viability evidence and structured outcome telemetry.
+
+Those mechanisms require architectural relocation before active reuse. Their temporary controller state machines are not the future top-level Decision architecture.
+
 ## Entry point
 
 `modDesc.xml` loads only `scripts/main.lua`. The main script sources the remaining modules in dependency order.

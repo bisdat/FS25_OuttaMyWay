@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.6.43 cooperative passage evidence consolidation candidate.
+-- FS25_OuttaMyWay v4.6.50 architecture recovery candidate.
 -- Prototype 16 passage controller with Prototype 18 admission and Prototype 19
 -- calculated role, side, lateral distance and rearward distance authority.
 --

@@ -1,5 +1,26 @@
 # Design
 
+## Architecture recovery design boundary
+
+The active runtime in this candidate remains v4.6.43. The next implementation must not add another scenario-specific behaviour branch.
+
+The first new vertical slice is passive:
+
+```text
+Observation
+→ Situation Assessment Knowledge
+→ shared Operational Picture
+→ Decision evaluation
+→ shadow Commitment proposal
+→ authority trace
+```
+
+It issues no vehicle Control.
+
+Control capabilities must execute bounded requests such as hold, regulate speed, reposition, change configuration and restore to GIANTS. They must not decide participant roles, relevance, refuge suitability, passage completion or release.
+
+Motion should be requested through semantic intent and resolved through the assembly's Native Motion Envelope. Fixed prototype speeds such as 5, 6, 7.5 or 15 km/h must not silently become architectural definitions.
+
 ## Purpose
 
 OuttaMyWay coordinates multiple base-game FS25 AI field workers so they avoid preventable collisions and clear shared working corridors with the least disruption.
