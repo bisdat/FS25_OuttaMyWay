@@ -1,4 +1,97 @@
+## v4.6.71 consolidation boundary
+
+ADR-0018 resets active implementation to v4.6.56 while retaining v4.6.57–v4.6.70 as architectural and experimental knowledge. The sections below describe discoveries and attempted amendments; they are not all active runtime behaviour. An ADR status determines whether a principle is accepted, superseded, rejected or still unvalidated.
+
+The governing distinction is:
+
+```text
+accepted architecture
+≠ experimental implementation
+≠ validated runtime capability
+```
+
+The next implementation begins from current Reality and the accepted responsibilities, not from an assumption that v4.6.70 should be repaired in place.
+
+## Historical v4.6.70 leg-orientation and Hold-release amendment
+
+ADR-0017 distinguishes bounded steering acquisition from directional refuge progress. A manoeuvre leg retains one target while Control permits limited non-monotonic motion inside a validated orientation envelope; the side fence becomes authoritative only after positive side progress.
+
+Hold release is counterfactual: Situation Assessment projects the held assembly's native GIANTS continuation using retained operating speed. Decision cannot release from the calm state created by the Hold itself. Terminal failed-held reposition also activates the global no-all-held authority guard.
+
+## v4.6.69 settled-pose transition-frame amendment
+
+ADR-0016 separates the stable encounter stop anchor from the Control frame of each refuge manoeuvre leg. A new leg is anchored at the verified actual pose from which that movement begins. Decision publishes candidate-bound start coordinates and current-pose frame authority; Control revalidates freshness and commits target, side and leg anchor atomically.
+
+This closes the complete replacement transition:
+
+```text
+settled current pose
++ replacement side and endpoint
++ executable path and time budget
++ verified current-pose frame
+→ one admissible next manoeuvre leg
+```
+
+The correction does not weaken field containment, Progress preservation, cross-side viability or manoeuvre-leg commitment.
+
+## v4.6.66 provisional-refuge amendment
+
+## v4.6.67 atomic refuge-transition authority
+
+ADR-0014 separates replacement-refuge endpoint viability from transition executability. Decision may only revise an active Native Reposition when the current-pose path, optimistic travel duration, available temporal reserve and Progress preservation jointly support the move. Control treats that conclusion as candidate-bound authority and must validate it before changing target or side frame. An unsafe replacement leaves the occupied refuge authoritative.
+
+ADR-0013 makes refuge viability continuous. A selected refuge is a provisional safe state relative to current Knowledge. Material intent change reopens its Commitment Preconditions. Situation Assessment recalculates viable candidates from current Reality, Decision decides whether additional same-role movement is materially required, and Control revises the active target without restarting the bounded capability. Supporting speed authority is retained by purpose until passage or sustained clearance, preventing sample-level chatter.
+
+## v4.6.65 repeated-Encounter composition
+
+A persistent Situation is not a persistent Encounter or Commitment. Material manoeuvres expire local intent; Safe Release completes the current Encounter while retaining Situation relevance when appropriate. Returning manoeuvres publish an Option Preservation plan before emergency conflict. Decision prefers reversible speed shaping or safe waiting before spatial refuge. A Native Reposition Commitment may carry one bounded supporting speed lease on the other participant, with exact restoration authority retained across handover.
+
+## v4.6.64 central TS015 completion boundary
+
+Temporary Control owns reversal of its dynamic configuration mutations. Handover occurs only after a work-capable state is verified. After handover, persistent Situation relevance retains observation only; current conflict evidence must satisfy new Commitment Preconditions before Control can be reacquired.
+
+## v4.6.63 identity/value boundary
+
+Stable physical dimensions are captured once at job start as Knowledge. Live GIANTS objects remain identity references only. Decision and Commitment copy explicit scalar value schemas and never recursively traverse engine objects.
+
+## v4.6.62 Control teardown clarification
+
+Temporary authority is not relinquished until vehicle-specific interception is also relinquished. Permission interception is therefore an ephemeral, identity-safe Control lease: retain the exact pre-intervention method, install one owned wrapper, restore the exact original when the hold ends, and never overwrite a later replacement.
+
 # Architecture
+
+
+## v4.6.60 Native Handover Envelope amendment
+
+ADR-0009 narrows Native Reposition to the cooperative responsibility actually experienced in Reality:
+
+```text
+clear conflict
+→ enter refuge
+→ establish positive passage
+→ return approximately
+→ enter Native Handover Envelope
+→ relinquish all temporary authority
+→ resume normal Situation Assessment
+```
+
+The Native Handover Envelope replaces exact rejoin. OuttaMyWay does not own exact lane capture, deployment, lowering, work activation or native job recovery. GIANTS owns those tasks after unrestricted handover.
+
+Native Reposition capability completion means authority relinquishment. It does not complete the Commitment. The Operational Picture continues to carry the Situation until normal Situation Assessment observes independent continuation and Safe Release.
+
+Motion speed is purpose-derived from stopping distance and curvature under a transit ceiling. Return orientation is conditional; no turn exists without a clearance, refuge-entry or handover-alignment purpose.
+
+The other passing vehicle’s subsequent manoeuvring is not changed by this amendment.
+
+## v4.6.59 translation-authority amendment
+
+Reality disproved the assumption that the Traffic Permission Gate constrains translation only. ADR-0008 separates configuration authority, translation authority and field-worker progression authority. Delegated restoration now enables GIANTS field-worker progression under a separate reversible zero-speed translation lease. Terminal restoration failure is inert. A future unrestricted return-to-GIANTS architecture remains explicitly undecided.
+
+## v4.6.58 restoration-authority amendment
+
+ADR-0007 separates the restoration postcondition from its actuator. Native Reposition ends when the assembly reaches its rejoin position under the retained movement constraint. Restore then returns configuration authority to GIANTS without issuing direct fold, lower or work-state commands. GIANTS is asked to continue while translation remains constrained; OuttaMyWay observes terminal configuration settlement, releases movement on a later update, and requires sustained native continuation. Safe Release remains owned by Decision and Commitment.
+
+This amendment is generic. It applies to any native configuration transition that GIANTS owns, including unfolding, lowering or switching work state. It does not require route reconstruction and does not permit Control to infer Commitment completion from one motion sample.
 
 ## v4.6.50 Architecture Recovery Boundary
 
@@ -26,6 +119,29 @@ Outcome Observation
 ```
 
 Situation Assessment remains aware of the complete bounded Field World. It interprets observations and publishes Knowledge. Decision evaluates candidate actions and continuing Commitments using the current Operational Picture. Control executes bounded authority and reports observed outcomes.
+
+## v4.6.57 Active ADR-0006 Vertical Slice
+
+v4.6.57 implements the canonical contract through one generic active path. It does not introduce a TS015-specific trigger or controller.
+
+### Runtime representation
+
+- Observation publishes sourced runtime, field-boundary, assembly-dimension and Control-outcome facts.
+- Future-Space Assessment represents Current Motion, the next material manoeuvre sweep, trajectory settlement and Hold stopping space as bounded local geometry.
+- Situation Assessment publishes relationship and conflict Knowledge, temporal and spatial reserves, operational-sufficiency evidence, action admissibility, observation contracts and Safe-Release evidence.
+- Decision compares `REGULATE_SPEED`, `HOLD`, `REPOSITION`, `RESTORE`, bounded observation and explicit escalation.
+- Commitment Ledger preserves one Situation purpose across relationship and capability changes.
+- Control executes only the requested bounded capability and reports physical outcomes.
+
+A moving participant requires positive field-boundary evidence before its local continuation is classified as bounded. Unknown evidence yields `CLEARANCE_UNRESOLVED`; current straight-line motion cannot substitute for continuation clearance.
+
+### Capability and lifecycle rule
+
+An `EFFECTIVE` speed or Hold outcome is only mechanical evidence. If temporal reserve, Future-Space reserve or Action Space continues to degrade, Decision revises the same Commitment to another admissible capability. Restoration is explicit. Commitment completion remains prohibited until the Safe Release Point is positively established.
+
+### Validation status
+
+The geometry and lifecycle implementation are hypotheses pending runtime validation. Manually-started TS015 is the first test because it is repeatable, not because it owns policy.
 
 ## v4.6.56 Future-Space and Safe-Release Contract
 
@@ -111,6 +227,11 @@ A change in Future Space, field constraint, participant state, representation fi
 **Option-Preserving Augmentation** — a small, proportionate and preferably reversible intervention whose purpose is to preserve or enlarge safe Action Space rather than resolve the entire encounter immediately.
 
 Frequent reassessment may be normal. Frequent intervention is not automatically justified.
+
+### Manoeuvre-leg commitment
+
+Continuous Situation Assessment does not grant continuous steering revision. Once Decision commits a viable refuge movement, Control executes one bounded manoeuvre leg to a settled boundary. New candidate geometry remains advisory during that leg unless fresh evidence demonstrates that continuing is no longer admissible. At settlement, Decision reassesses from the new current pose and may commit another atomic leg. This enforces the existing rule that frequent reassessment does not automatically justify frequent intervention.
+
 
 ### Retired legacy labels
 
@@ -600,4 +721,3 @@ policy reserve
 For the TS017-B fixture, the physical threshold was 25.37 m. The successful 27.38 m passage therefore had approximately +2.01 m physical reserve. Applying the provisional 3.75 m combined margin budget produced a 29.12 m policy target and approximately -1.74 m policy reserve.
 
 This establishes **Physical Clearance Is Not Policy Clearance**. Physical passage evidence and a chosen clearance policy must not be collapsed into one value. Neither layer currently grants Decision or Control authority.
-

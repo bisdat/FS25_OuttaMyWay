@@ -1,8 +1,193 @@
+## v4.6.71 consolidation classification
+
+### Accepted architectural knowledge
+
+- Persistent Situation ≠ Encounter ≠ Commitment.
+- Intent Expiry and Commitment Preconditions.
+- Native Handover Envelope and Control-to-Awareness Reversion.
+- Identity Reference–Value Snapshot Separation.
+- Work Recovery–Movement Recovery Separation.
+- Option Preservation Window.
+- Provisional refuge.
+- Atomic refuge-transition viability.
+- Manoeuvre Leg and Reassessment–Redirection Separation.
+- Settled Movement Boundary and settled-pose transition frame.
+- Bounded leg orientation.
+- Coherent Control lease, counterfactual Safe Release and never-hold-all invariant.
+
+### Accepted runtime instances
+
+- v4.6.63 removed the recursive live-reference freeze boundary.
+- v4.6.64 completed refuge, restoration and Native Handover with work-capable state.
+- v4.6.65 demonstrated multiple independent Encounters within one persistent Situation.
+- v4.6.68 removed ordinary mid-leg redirection.
+- v4.6.69 validated current-pose anchoring through Decision and Control.
+- v4.6.70 validated bounded orientation for the first tested leg.
+
+### Rejected or superseded implementation hypotheses
+
+- exact rejoin and delegated native-restoration chains;
+- zero-speed cruise authority as a proven translation constraint;
+- generic recursive table copying;
+- sample-owned speed support;
+- geometrically viable endpoint as sufficient transition authority;
+- ordinary mid-leg target replacement;
+- inherited original anchor for a later leg;
+- immediately monotonic side progress;
+- cruise-control ceiling as Native Continuation Speed Estimate;
+- non-closing motion as a universal Safe Release precondition.
+
+### Unresolved candidate term
+
+**Native Continuation Speed Estimate** — bounded evidence about the speed and phase with which GIANTS is likely to continue after temporary authority is removed. Current evidence suggests recent unmodified operating behaviour is relevant; no implementation is accepted.
+
+## Historical v4.6.70 implementation refinements
+
+- **Manoeuvre-Leg Orientation Envelope** — bounded non-monotonic steering acquisition under one fixed target before directional progress enforcement. **Classification:** refinement of Manoeuvre Leg and Commitment Preconditions.
+- **Intervention-Induced Clearance Illusion** — apparent safety caused by active Control cannot alone justify release of that Control. **Classification:** runtime instance and refinement of Safe Release Point.
+- **Counterfactual Hold Release** — release evidence evaluates predicted native continuation after authority relinquishment, not only current held Reality. **Classification:** refinement of Safe Release.
+- **Global No-All-Held Authority Invariant** — Control composition must preserve at least one mobile participant; terminal failed-held reposition forbids another Hold. **Classification:** enforcement of the existing never-hold-all rule.
+
+## v4.6.66 reconciliation
+
+## v4.6.67 reconciliation
+
+### Refuge transition executability — Refinement of Commitment Preconditions
+
+A viable destination does not make the movement to it viable. Replacement refuge authority requires a current-pose path and time budget that preserve Progress Future Space. This refines **Commitment Preconditions** and **Commitment Viability Decay**; it is not a new discovery stack.
+
+### Atomic target authority — Control contract refinement
+
+Decision authorises one candidate-bound transition. Control either accepts the whole target/side-frame change or preserves the existing refuge unchanged. Partial target mutation is invalid.
+
+### Provisional refuge — Refinement of existing concepts
+
+A refuge is an accepted current safe state, not a permanent destination. Material intent change invokes **Intent Expiry**, revalidates Commitment Preconditions and may expose **Commitment Viability Decay** because **Passage Corridor Is Not Continuation Corridor**. This is a refinement and runtime application, not a new discovery stack.
+
+### Purpose-bound supporting speed — Implementation refinement
+
+Supporting speed authority persists while its named option-preservation purpose remains unresolved. Individual noisy samples do not acquire and release authority. Release requires positive passage or sustained clear and improving evidence.
+
+## v4.6.65 discovery reconciliation and implementation
+
+### Option Preservation Window — Existing concept, refined instance
+
+The useful intervention interval before spatial commitments collapse. v4.6.64 locates a concrete repeated-TS015 instance during or immediately after the Progress participant's preceding headland turn. The proposed term **Option Creation Window** is retired as an alias, not added as a new discovery.
+
+### Repeated Encounter — Existing architecture composition
+
+One persistent Situation may contain multiple Encounter identities and Commitments. A completed Encounter does not prevent later fresh assessment after Intent Expiry.
+
+### Supporting Speed Lease — Implementation mechanism
+
+A bounded, reversible temporal Control lease on the non-repositioning participant while the primary Native Reposition Commitment remains active. It preserves its original forward/reverse cruise snapshot and may be promoted after handover without recapture.
+
+### Control Outcome Projection Gap — Implementation discovery
+
+A Control capability observes a required postcondition but omits it from the outcome contract consumed by Decision and Commitment. v4.6.64 physically restored work configuration, but the public Native Reposition outcome discarded that evidence; v4.6.65 preserves it.
+
+### Discovery governance
+
+Every future proposed named discovery must first be classified as `NEW`, `REFINEMENT`, `INSTANCE`, `ALIAS`, `SUPERSEDED` or `DISPROVED` against this register.
+
+## v4.6.64 work-recovery concepts
+
+### Intervention Configuration Snapshot
+
+A bounded record of mutable fold, lowered and work states captured immediately before temporary Control changes them. It contains identity references plus scalar state only; stable dimensions remain separate job-start Knowledge.
+
+### Motion Recovery–Work Recovery Separation
+
+Native movement after handover does not prove that the implement is physically configured and active for agronomic work.
+
+### Persistent Relevance Is Not Persistent Control Authority
+
+A Situation may remain operationally relevant while physical Control authority has expired. Continued relevance authorises assessment; a new capability requires fresh Commitment Preconditions.
+
+### Post-Handover Authority Guard
+
+A bounded observation state preserving `NO_PHYSICAL_CONTROL` until Safe Release or fresh current conflict evidence justifies a new intervention.
+
+## Identity and value concepts — v4.6.63
+
+### Live Reference Deep-Copy Trap
+
+Architectural copy logic recursively traverses an engine-owned identity object as if it were plain value data, risking unbounded main-thread work or recursion.
+
+### Identity Reference–Value Snapshot Separation
+
+Engine objects are retained by exact identity for Control addressing. Architectural evidence is represented by explicit immutable value snapshots. Neither category substitutes for the other.
+
+### Job-Start Physical Snapshot
+
+Durable assembly dimensions and stable physical facts captured once at job admission and reused as Knowledge. It is not a clone of the live vehicle object.
+
+## Intervention teardown concepts — v4.6.62
+
+### Intervention-Conditioned Failure
+
+A failure that appears only after an admitted intervention has mutated runtime state; merely loading the same observation and interception infrastructure is insufficient.
+
+### Loaded Interception–Activated Interception Separation
+
+An installed interception mechanism may be harmless while dormant yet become operationally significant after it acquires vehicle-specific state.
+
+### Command Release–Execution-Path Restoration Separation
+
+Removing an active command or hold record is distinct from restoring the exact native function path that existed before the intervention.
+
+### Ephemeral Permission Interception
+
+A bounded Control lease that retains and later restores the exact pre-intervention permission method, subject to identity-safe non-clobbering of later replacements.
+
 # Architectural Concept Register
+
+
+## Native Handover amendment — v4.6.60
+
+### Exact Rejoin Overreach — Accepted discovery
+
+OuttaMyWay reconstructs more of the interrupted worker state than the cooperative obligation requires, creating unnecessary pose, configuration and authority-transition machinery.
+
+### Native Handover Envelope — Accepted for validation
+
+A bounded approximate position-and-heading region from which GIANTS can plausibly reacquire and continue the existing job. The envelope is a handover admissibility concept, not an exact route target.
+
+### Control-to-Awareness Reversion — Accepted for validation
+
+After all temporary authority is relinquished, the dedicated controller ends and ordinary Situation Assessment observes GIANTS recovery. Capability completion does not complete the governing Commitment.
+
+### Purpose-Derived Motion — Accepted implementation rule
+
+Motion commands derive from stopping distance, curvature and a transit ceiling. Phase labels do not own arbitrary speed literals.
+
+### Other Passing Vehicle Manoeuvring — Deferred
+
+The Progress participant’s later manoeuvring requires a separate architecture discussion after the handover hypothesis is tested.
+
+## v4.6.59 translation-authority amendment
+
+Reality disproved the assumption that the Traffic Permission Gate constrains translation only. ADR-0008 separates configuration authority, translation authority and field-worker progression authority. Delegated restoration now enables GIANTS field-worker progression under a separate reversible zero-speed translation lease. Terminal restoration failure is inert. A future unrestricted return-to-GIANTS architecture remains explicitly undecided.
+
+## Restoration authority amendment — v4.6.58
+
+Review status: accepted architecture amendment; runtime validation pending.
+
+### Restoration Obligation–Actuation Separation
+
+The Commitment owns the required restored postcondition. The physical restoration mechanism may be OuttaMyWay-controlled or delegated to GIANTS. Native job configuration should preferentially be restored by GIANTS when its behaviour is observable and movement can remain constrained.
+
+### Configuration Authority
+
+Authority to determine and actuate fold, lower, work-on and other job-required assembly state.
+
+### Movement Authority
+
+Authority to permit or prevent assembly translation. Configuration authority may be returned while movement authority remains constrained.
 
 ## Future-Space and Safe-Release Contract — v4.6.56
 
-Review status: accepted for the v4.6.56 candidate; repository authority follows owner Canonicalisation.
+Review status: accepted and canonical in v4.6.56; first active implementation under validation in v4.6.57.
 
 ### Transient Clearance
 
@@ -34,7 +219,7 @@ Completion or release of one Control capability does not complete the persistent
 
 ## Architecture Recovery Decisions — v4.6.50
 
-Review status: accepted for the v4.6.50 Architecture Recovery Candidate; repository authority follows owner Canonicalisation.
+Review status: accepted architecture-recovery knowledge; superseded operationally by canonical ADR-0006 where applicable.
 
 ### Architecture Recovery Baseline
 
@@ -943,3 +1128,17 @@ The candidate-to-canonical authority change. It must not alter approved substant
 - **Persistent/Regrowing Lifecycle as a test role** — retired as Agronomic Proxy Drift; crop biology is not an OuttaMyWay responsibility.
 - **Valid Boundary Straddling** — provisional interpretation that legitimate working or physical space may use the immediate field margin while a coarse envelope reports non-containment; requires targeted evidence before changing Full-Envelope Field Containment.
 - **Mirrored Working Envelope** — deferred reserve question for reversible implements whose active offset changes side between passes.
+
+
+## Accepted implementation refinement — v4.6.68
+
+- **Manoeuvre Leg** — one bounded, coherent physical movement from an authorised current pose to a settled movement boundary. It is an implementation structure beneath Commitment, not a new architectural layer.
+- **Reassessment–Redirection Separation** — Situation Assessment may update Knowledge continuously while Decision withholds new steering authority until a legitimate movement boundary or demonstrated loss of admissibility.
+- **Settled Movement Boundary** — the point at which the current leg has reached its target or a deliberate controlled stop and current-pose reassessment may authorise another leg.
+
+
+## Accepted implementation refinement — v4.6.69
+
+- **Leg-Local Control Frame** — the target, side and fence frame for one manoeuvre leg, anchored at the verified actual pose where that leg begins.
+- **Settled-Pose Frame Closure** — proof that the current settled pose, replacement frame and endpoint form one executable Control transition. This refines Atomic Refuge Transition Viability; it is not a new architectural layer.
+- **Encounter Anchor–Leg Anchor Separation** — the original stop anchor remains passage/handover evidence while each later physical movement owns a separate Control origin.

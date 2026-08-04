@@ -1,6 +1,6 @@
 # ADR-0006 — Future Space, Persistent Situation Relevance and Safe Release
 
-Status: Accepted for v4.6.56 candidate; repository authority pending owner Canonicalisation
+Status: Accepted and canonical in v4.6.56; first active implementation candidate v4.6.57
 
 ## Context
 
@@ -143,3 +143,12 @@ The next active candidate must demonstrate that:
 5. Commitment completion cannot occur before the Safe Release Point gate passes;
 6. blockage or exhausted Action Space cannot silently return to normal operation;
 7. the same implementation contract is exercised by TS015, TS015b, TS016 and TS016b without fixture-specific Decision branches.
+
+
+## Subsequent amendment
+
+ADR-0007 clarifies that the restoration obligation belongs to the Commitment while configuration actuation may be delegated to GIANTS under a separately retained movement constraint. This preserves ADR-0006 Safe Release and capability-separation rules.
+
+## v4.6.71 implementation boundary
+
+This ADR remains canonical architecture. v4.6.71 does not claim that the v4.6.57–v4.6.70 implementations satisfy it; they remain evidence used to refine its preconditions and Safe Release semantics.

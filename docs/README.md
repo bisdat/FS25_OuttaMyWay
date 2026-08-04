@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** Reviewed for Future-Space and Safe-Release Contract Candidate v4.6.56
+> **Currency:** Reviewed for v4.6.71 Architecture Consolidation and Experimental Reset Candidate
 
 This development repository is a self-sustaining engineering knowledge system. Its first responsibility is to preserve project continuity independently of any chat, engineer, AI system or platform. Its second is to remain understandable to future contributors.
 
@@ -15,12 +15,13 @@ Read these in order when inheriting or resuming the project:
 3. [`REPOSITORY_RELEASE_SYSTEM.md`](REPOSITORY_RELEASE_SYSTEM.md) — how repository authority, candidate production, review and Canonicalisation are governed.
 4. [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — the current repository state and immediate objective.
 5. [`ENGINEERING_HANDOVER.md`](ENGINEERING_HANDOVER.md) — the precise continuation point.
-6. [`PROJECT_CONTINUITY.md`](PROJECT_CONTINUITY.md) — how to continue correctly using only this repository.
-7. [`CONCEPT_REGISTER.md`](CONCEPT_REGISTER.md) — Accepted, Deferred and Rejected architectural concepts.
-8. [`ARCHITECTURE_FLOW.md`](ARCHITECTURE_FLOW.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), [`SCOPE_OVERLAY_ARCHITECTURE.md`](SCOPE_OVERLAY_ARCHITECTURE.md), [`SCOPE_OVERLAY_TEST_CALIBRATION.md`](SCOPE_OVERLAY_TEST_CALIBRATION.md), [`PHYSICAL_REPRESENTATION_ARCHITECTURE.md`](PHYSICAL_REPRESENTATION_ARCHITECTURE.md) and [`DESIGN.md`](DESIGN.md) — current system, calibrated scope evidence and physical-representation responsibilities.
-9. [`50_Research/VEHICLE_DEFINITION_CORPUS.md`](50_Research/VEHICLE_DEFINITION_CORPUS.md) — the reviewed base-game semantic evidence and its boundaries.
-10. [`50_Research/ARCHITECTURE_COMPLIANCE_AUDIT_V4.6.49.md`](50_Research/ARCHITECTURE_COMPLIANCE_AUDIT_V4.6.49.md) and [`50_Research/CANONICAL_KNOWLEDGE_CONSTRAINT_RECOVERY.md`](50_Research/CANONICAL_KNOWLEDGE_CONSTRAINT_RECOVERY.md) — why implementation paused and what canonical architecture was recovered.
-11. [`ROADMAP.md`](ROADMAP.md) — future direction after the immediate objective.
+6. [`EXPERIMENTAL_LINEAGE_V4.6.57-V4.6.70.md`](EXPERIMENTAL_LINEAGE_V4.6.57-V4.6.70.md) — consolidated evidence, fingerprints and disposition of the temporary implementation cycle.
+7. [`PROJECT_CONTINUITY.md`](PROJECT_CONTINUITY.md) — how to continue correctly using only this repository.
+8. [`CONCEPT_REGISTER.md`](CONCEPT_REGISTER.md) — Accepted, Deferred and Rejected architectural concepts.
+9. [`ARCHITECTURE_FLOW.md`](ARCHITECTURE_FLOW.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), [`SCOPE_OVERLAY_ARCHITECTURE.md`](SCOPE_OVERLAY_ARCHITECTURE.md), [`SCOPE_OVERLAY_TEST_CALIBRATION.md`](SCOPE_OVERLAY_TEST_CALIBRATION.md), [`PHYSICAL_REPRESENTATION_ARCHITECTURE.md`](PHYSICAL_REPRESENTATION_ARCHITECTURE.md) and [`DESIGN.md`](DESIGN.md) — current system, calibrated scope evidence and physical-representation responsibilities.
+10. [`50_Research/VEHICLE_DEFINITION_CORPUS.md`](50_Research/VEHICLE_DEFINITION_CORPUS.md) — the reviewed base-game semantic evidence and its boundaries.
+11. [`50_Research/ARCHITECTURE_COMPLIANCE_AUDIT_V4.6.49.md`](50_Research/ARCHITECTURE_COMPLIANCE_AUDIT_V4.6.49.md) and [`50_Research/CANONICAL_KNOWLEDGE_CONSTRAINT_RECOVERY.md`](50_Research/CANONICAL_KNOWLEDGE_CONSTRAINT_RECOVERY.md) — why implementation paused and what canonical architecture was recovered.
+12. [`ROADMAP.md`](ROADMAP.md) — future direction after the immediate objective.
 
 The remaining documents deepen or verify that journey; they are classified below so no first-class document is orphaned.
 
@@ -30,6 +31,8 @@ The remaining documents deepen or verify that journey; they are classified below
 - [`ENGINEERING_HANDOVER.md`](ENGINEERING_HANDOVER.md) — current continuation guidance.
 - [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) — known limitations and unresolved risks.
 - [`ROADMAP.md`](ROADMAP.md) — planned development direction.
+- [`EXPERIMENTAL_LINEAGE_V4.6.57-V4.6.70.md`](EXPERIMENTAL_LINEAGE_V4.6.57-V4.6.70.md) — temporary-candidate evidence and disposition.
+- [`adr/ADR-0018-architecture-consolidation-experimental-reset.md`](adr/ADR-0018-architecture-consolidation-experimental-reset.md) — consolidation and reset authority.
 
 ## Engineering Governance
 
@@ -38,6 +41,12 @@ The remaining documents deepen or verify that journey; they are classified below
 - [`CONCEPT_REGISTER.md`](CONCEPT_REGISTER.md) — architectural concept governance.
 - [`DECISION_LOG.md`](DECISION_LOG.md) — significant project choices and rationale.
 - [`adr/ADR-0006-future-space-safe-release.md`](adr/ADR-0006-future-space-safe-release.md) — governing Future-Space, observation and Commitment-release contract.
+- [`adr/ADR-0007-delegated-native-configuration-restoration.md`](adr/ADR-0007-delegated-native-configuration-restoration.md) — configuration/movement authority separation and delegated native restoration.
+- [`adr/ADR-0012-repeated-encounter-option-preservation.md`](adr/ADR-0012-repeated-encounter-option-preservation.md) — repeated Encounter identity, Intent Expiry and early Option Preservation composition.
+- [`adr/ADR-0013-provisional-refuge-revalidation.md`](adr/ADR-0013-provisional-refuge-revalidation.md) — continuous refuge viability, current-pose revision and purpose-bound supporting speed.
+- [`adr/ADR-0014-atomic-refuge-transition-viability.md`](adr/ADR-0014-atomic-refuge-transition-viability.md) — executable and atomic current-pose refuge transition.
+- [`adr/ADR-0015-manoeuvre-leg-commitment.md`](adr/ADR-0015-manoeuvre-leg-commitment.md) — decisive movement legs and reassessment–redirection separation.
+- [`adr/ADR-0016-settled-pose-transition-frame.md`](adr/ADR-0016-settled-pose-transition-frame.md) — verified settled-pose anchors for replacement Control frames.
 - [`ENGINEERING_JOURNAL.md`](ENGINEERING_JOURNAL.md) — durable discoveries and evolution.
 - [`ARCHITECTURAL_SEMINARS.md`](ARCHITECTURAL_SEMINARS.md) — complete seminar discovery sequence from Conflict Zone through Time.
 - [`REPOSITORY_REVIEW.md`](REPOSITORY_REVIEW.md) — repository review lifecycle, completion patches and identity verification.
@@ -73,6 +82,7 @@ The remaining documents deepen or verify that journey; they are classified below
 - [`adr/ADR-0003_Situation_Assessment.md`](adr/ADR-0003_Situation_Assessment.md) — Situation Assessment ownership.
 - [`adr/ADR-0004-closed-loop-operational-truth.md`](adr/ADR-0004-closed-loop-operational-truth.md) — closed-loop outcome observation.
 - [`adr/ADR-0005-architecture-recovery.md`](adr/ADR-0005-architecture-recovery.md) — architecture recovery and experimental capability preservation.
+- [`adr/ADR-0009-native-handover-envelope.md`](adr/ADR-0009-native-handover-envelope.md) — Native Handover Envelope and Control-to-Awareness Reversion.
 
 ## Evidence, Research and History
 

@@ -1,4 +1,150 @@
+## Immediate next phase — post-v4.6.71 discovery
+
+1. Canonicalise the exact v4.6.71 package only after owner review.
+2. Start the next conversation from v4.6.71 as the sole repository baseline.
+3. Observe unmodified GIANTS working speed and phase before, during and after comparable encounters.
+4. Discuss what evidence is stable enough to form a bounded Native Continuation Speed Estimate.
+5. Hypothesise counterfactual release without treating closing motion as automatic failure.
+6. Implement one isolated vertical slice only after the Knowledge contract is agreed.
+7. Validate first against regression of v4.6.56 behaviour, then against TS015.
+
+Do not resume by copying v4.6.70 forward wholesale.
+
+## Archived v4.6.70 immediate validation
+
+- Verify the second refuge leg logs bounded orientation and then arms the directional fence.
+- Verify no centreline failure occurs from normal steering acquisition.
+- Verify Patriot receives at most one coherent Hold lease and no Hold/Restore limit cycle.
+- Verify terminal failed-held reposition cannot produce an all-held authority combination.
+- Verify positive passage, configuration restoration, Native Handover and independent GIANTS continuation.
+
+## v4.6.66 provisional-refuge revalidation
+
+## v4.6.67 atomic refuge-transition validation
+
+- [x] Separate endpoint viability from transition executability.
+- [x] Reject the observed 58.20 m / 5.52 s cross-side replacement in packaged Decision tests.
+- [x] Preserve current refuge and side frame on rejection.
+- [x] Bind viable transition authority to candidate identity.
+- [x] Make Control target/side mutation atomic.
+- [x] Add temporary fence-frame handling for authorised cross-side movement.
+- [x] Preserve supporting-speed hysteresis and role integrity.
+- [ ] Run TS015 through the initial rejected revision and later executable revision.
+- [ ] Confirm no all-hold state, positive passage and exact work recovery.
+
+- [x] Classify the final v4.6.65 failure as Commitment Viability Decay / continuation-corridor evidence.
+- [x] Preserve the first refuge as provisional rather than final.
+- [x] Invalidate cached refuge assessment on material intent change.
+- [x] Reassess across OPPOSED, CROSSING and other conflict-relevant relations.
+- [x] Permit same-role target revision from the current pose.
+- [x] Preserve the active Control run, configuration snapshot and GIANTS job.
+- [x] Add purpose-bound supporting-speed hysteresis.
+- [x] Add packaged Decision, Control and hysteresis tests.
+- [ ] Run TS015 continuously through the final Condor refuge.
+- [ ] Confirm at least one additional refuge movement when current Knowledge requires it.
+- [ ] Confirm no speed-control chatter and exact cruise restoration.
+- [ ] Confirm positive passage, work restoration and independent GIANTS continuation.
+
+## v4.6.65 repeated-Encounter and Option Preservation validation
+
+- [x] Validate the primary v4.6.64 refuge, work recovery and native handover.
+- [x] Reconcile `Option Creation Window` with the existing Option Preservation Window.
+- [x] Separate Situation, Encounter and Commitment identity.
+- [x] Stabilise Intent Expiry across one material turn.
+- [x] Derive a generic return-aware distance/time speed plan.
+- [x] Add a bounded supporting speed lease with exact restoration and promotion.
+- [x] Add abstract chained-Encounter and supporting-lease tests.
+- [ ] Run TS015 continuously through Patriot's return and Condor's later return.
+- [ ] Confirm early option preservation prevents terminal deadlock.
+- [ ] Confirm every new Encounter receives fresh role and field-safe refuge assessment.
+- [ ] Confirm speed authority is restored after each Encounter.
+
+## v4.6.64 work recovery and Authority Guard
+
+- [x] Retain the v4.6.63 freeze correction.
+- [x] Name dynamic configuration mutation ownership.
+- [x] Capture mutable fold/lowered/work state before mutation.
+- [x] Restore only owned mutations before handover.
+- [x] Verify work-capable configuration before authority relinquishment.
+- [x] Prohibit post-handover Control from historical Situation relevance.
+- [x] Require fresh conflict evidence for any new capability.
+- [x] Add bounded missing-pair Safe Release confirmation.
+- [x] Add packaged Lua lifecycle tests.
+- [ ] Run manually-started TS015.
+- [ ] Confirm Condor work recovery and Patriot independent continuation.
+- [ ] Confirm Safe Release and Commitment completion.
+- [ ] Discuss later Patriot manoeuvring architecture only after this lifecycle is stable.
+
+## v4.6.63 identity-reference/value-snapshot validation
+
+- [x] Re-establish exact known-good evidence at v4.6.49 under FS25 1.21.1.
+- [x] Retain v4.6.55 as the latest known-good architecture evidence.
+- [x] Narrow first repeatable freeze to v4.6.57.
+- [x] Compare unchanged physical Control against new architecture-layer mutations.
+- [x] Remove generic recursive copying from Decision and Commitment.
+- [x] Separate Hold value evidence from Yield/Progress identity references.
+- [x] Add cyclic-reference branch smoke test.
+- [x] Restore protected shadow diagnostics.
+- [ ] Run manually-started TS015 with v4.6.63.
+- [ ] Confirm responsiveness through post-Control Decision reassessment.
+- [ ] Record whether GIANTS continuation succeeds independently of the freeze result.
+
+## v4.6.62 ephemeral permission-interception validation
+
+- [x] Establish Intervention-Conditioned Failure through absent-mod and loaded/no-encounter controls.
+- [x] Exclude increased logging and dormant global wrappers as sufficient causes.
+- [x] Convert the vehicle-specific permission overwrite into a reversible interception lease.
+- [x] Add exact-identity restoration and identity-mismatch safety.
+- [x] Add symmetric teardown for handover, cancellation, external job termination and clear paths.
+- [x] Clear configuration bookkeeping without actuation when an AI job ends externally.
+- [ ] Run manually-started TS015 with v4.6.62.
+- [ ] Confirm `permissionMethodRestored=true` before GIANTS resumes.
+- [ ] Confirm game responsiveness and independent GIANTS route/configuration recovery.
+- [ ] If the freeze remains, audit OuttaMyWay configuration actuation as the next isolated mutation class.
+
+## v4.6.61 compacting-to-egress validation
+
+Validate that the real runtime commits `COMPACTING → EGRESS`, performs the refuge manoeuvre, and reaches the still-untested Native Handover Envelope path. No architecture or passing-vehicle policy change belongs in this candidate.
+
 # Roadmap
+
+
+## v4.6.61 Native Handover Envelope validation
+
+- [x] Name Exact Rejoin Overreach.
+- [x] Define the Native Handover Envelope.
+- [x] Remove deployment, constrained native restoration, translation leasing and handback retries from the active path.
+- [x] Replace phase-owned 4/6 km/h commands with purpose-derived motion.
+- [x] Make return orientation conditional.
+- [x] Add Control-to-Awareness Reversion.
+- [ ] Run manually-started TS015.
+- [ ] Validate unrestricted GIANTS handover and game responsiveness.
+- [ ] Observe GIANTS route/configuration recovery through normal Situation Assessment.
+- [ ] Discuss the other passing vehicle and its later manoeuvring after this evidence.
+
+## v4.6.59 translation-authority amendment
+
+Reality disproved the assumption that the Traffic Permission Gate constrains translation only. ADR-0008 separates configuration authority, translation authority and field-worker progression authority. Delegated restoration now enables GIANTS field-worker progression under a separate reversible zero-speed translation lease. Terminal restoration failure is inert. A future unrestricted return-to-GIANTS architecture remains explicitly undecided.
+
+## Immediate objective — validate separated translation authority
+
+- [x] Record the repeatable v4.6.57 near-deployment freeze.
+- [x] Reject bundled Native Reposition handback as a generic capability boundary.
+- [x] Accept ADR-0007 Restoration Obligation–Actuation Separation.
+- [x] End Native Reposition at positional completion under retained movement constraint.
+- [x] Return configuration authority to GIANTS without direct restoration actuation.
+- [x] Require stable native configuration before movement release.
+- [x] Separate movement release from `aiContinue` and require sustained continuation evidence.
+- [x] Run manually-started TS015 with v4.6.58.
+- [x] Determine that GIANTS does not restore configuration while the Traffic Permission Gate remains active.
+- [x] Record the restoration-timeout freeze and unsafe repeated-toggle failure path.
+- [x] Separate field-worker progression from translation authority in v4.6.59.
+- [ ] Run manually-started TS015 with v4.6.59.
+- [ ] Confirm GIANTS begins configuration restoration after permission-gate release.
+- [ ] Confirm the zero-speed translation lease prevents material displacement.
+- [ ] Confirm responsiveness through terminal deployment or inert timeout failure.
+- [ ] Confirm translation release and sustained continuation or record the first explicit failure.
+- [ ] Evaluate Safe Release and later continuation only after the restore boundary is understood.
 
 ## Immediate phase — implement ADR-0006 generically
 
@@ -9,13 +155,14 @@
 - [x] Separate Control capability completion from Commitment completion.
 - [x] Define the Bounded Observation Contract.
 - [x] Establish Safe Release Point as the normal Commitment-completion gate.
-- [ ] Design one Situation identity that persists across relationship-classification changes.
-- [ ] Define the Operational Picture representation for plausible local manoeuvre continuations and `CLEARANCE_UNRESOLVED`.
-- [ ] Define operational-sufficiency evaluation and degradation-triggered Commitment revision.
-- [ ] Enforce the Bounded Observation Contract in Decision.
-- [ ] Enforce Safe Release Point and failure-aftermath gates in Commitment lifecycle.
-- [ ] Implement one generic active vertical slice from the accepted v4.6.56 baseline.
-- [ ] Validate first with TS015, then TS015b, TS016 and TS016b against the same contract.
+- [x] Design one Situation identity that persists across relationship-classification changes.
+- [x] Define the Operational Picture representation for plausible local manoeuvre continuations and `CLEARANCE_UNRESOLVED`.
+- [x] Define operational-sufficiency evaluation and degradation-triggered Commitment revision.
+- [x] Enforce the Bounded Observation Contract in Decision.
+- [x] Enforce Safe Release Point and failure-aftermath gates in Commitment lifecycle.
+- [x] Implement one generic active vertical slice from the accepted v4.6.56 baseline.
+- [ ] Validate manually-started TS015 against the generic contract.
+- [ ] After TS015 is understood, validate TS015b, TS016 and TS016b against the same contract.
 
 No fixture-specific second-headland rule, distance threshold or relationship sequence is an acceptable completion of this phase.
 
@@ -29,9 +176,9 @@ No fixture-specific second-headland rule, distance threshold or relationship seq
 - [x] Review and retire the five underdefined v4.3.8 labels.
 - [x] Refine Sufficiency over Completeness and Option Preservation principles.
 - [x] Build v4.6.50 Architecture Recovery Candidate from exact canonical v4.6.43.
-- [ ] Complete owner review of the exact v4.6.50 candidate.
+- [x] Complete owner review and later architecture recovery progression.
 - [ ] Resolve any candidate findings.
-- [ ] Owner explicitly declares an accepted package canonical.
+- [x] Owner declared v4.6.56 canonical for the current implementation phase.
 - [ ] Synchronise local and GitHub repositories and record ZIP SHA-256 and Git commit.
 
 ### First post-canonical implementation — passive only
@@ -377,3 +524,18 @@ Multiplayer:
 - In-game settings page.
 - Additional localisations based on community contributions.
 
+
+## Immediate validation — v4.6.68
+
+- Verify one decisive movement per refuge manoeuvre leg.
+- Verify pending Knowledge becomes authoritative after `REFUGE_REACHED` / `SIDESTEP_HOLD`.
+- Verify any second move starts from the settled current pose and retains ADR-0014 transition viability.
+- Observe whether a genuine emergency-interruption contract is required; do not invent one without runtime evidence.
+
+
+## Immediate validation — v4.6.69
+
+- Verify the second refuge leg carries exact settled-pose start evidence.
+- Verify `authority=atomic-settled-pose-transition` precedes visible movement.
+- Verify no immediate inherited-frame centreline failure.
+- Verify leg 2 settles, Patriot passes, Condor restores work configuration and both GIANTS workers continue.

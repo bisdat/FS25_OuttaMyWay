@@ -1,6 +1,6 @@
 # ADR-0005 — Architecture Recovery and Experimental Capability Preservation
 
-Status: Accepted for v4.6.50 candidate; repository authority pending owner Canonicalisation
+Status: Accepted; architecture recovery authority established before canonical v4.6.56
 
 ## Context
 
@@ -64,3 +64,7 @@ Frequent reassessment may be normal. Frequent intervention is not automatically 
 - Proven actuators may later be migrated one capability at a time.
 - Old and new paths must never own the same relationship simultaneously.
 - The next implementation must trace Observation, Knowledge, constraint conclusions, proposed Decision, shadow Commitment and proposed Control capability without moving a vehicle.
+
+## v4.6.71 application
+
+ADR-0018 applies this recovery pattern again: experimental capability and knowledge are preserved, while executable authority returns to the last trusted canonical runtime.

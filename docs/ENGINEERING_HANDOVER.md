@@ -1,63 +1,41 @@
 # Engineering Handover
 
-## Current candidate: v4.6.56
+## Candidate
 
-v4.6.56 begins from exact owner-declared canonical v4.6.50 (`a7d6fbde4da9299878926a7d54b29f9665ee4269107f748ff180ba833ead4392`, Git `18dc8338ee5e442a5097a366a80c1ac69ad29c4f`).
+v4.6.71 — Architecture Consolidation and Experimental Reset Candidate.
 
-It is a documentation-governance candidate. Runtime behaviour remains canonical v4.6.50. Temporary v4.6.51–v4.6.55 implementation is not promoted.
+Built from owner-declared canonical v4.6.56 (`9e2ed98a89ba7ffb3babb7669abf26a8db52a5f04b97829900c1b0d4a44b8066`, Git `99ae108ca589a2930b562c19ae560d3ecf580426`).
 
-## Why this contract was required
+## Authority boundary
 
-The temporary active path recovered useful mechanisms and achieved one complete TS015 cooperative passage. The later continuation disproved fixture-led completion logic:
+- **Repository/architecture candidate:** v4.6.71.
+- **Active runtime implementation:** v4.6.56.
+- **Latest experimental donor:** v4.6.70, evidence only and explicitly non-canonical.
+- **Experimental lineage:** v4.6.57–v4.6.70, indexed in `EXPERIMENTAL_LINEAGE_V4.6.57-V4.6.70.md`.
 
-- `CM-00002` completed when current motion was separating at approximately 80 m;
-- Condor's next GIANTS headland manoeuvre then entered Patriot's path;
-- `CM-00003` reported speed regulation `EFFECTIVE` while distance and time reserve continued to collapse;
-- both workers became blocked.
+No v4.6.57–v4.6.70 executable code or candidate-only tests are active in this package.
 
-The missing responsibility was not another TS015 trigger. It was a generic Future-Space and Commitment-release contract.
+## Durable discoveries carried forward
 
-## Governing decisions
+1. Future Space must extend through the next material local manoeuvre and trajectory settlement.
+2. Situation relevance may persist while Encounters and Commitments complete and renew.
+3. Control capability success does not prove operational sufficiency or Safe Release.
+4. Native Handover should return bounded authority rather than reconstruct GIANTS route/job state.
+5. Live GIANTS object identity must never be recursively copied as value data.
+6. Temporary dynamic mutations require immediate pre-mutation snapshots and verified work recovery.
+7. A refuge is provisional; endpoint viability does not prove transition executability.
+8. Physical redirection occurs through coherent manoeuvre legs, not every assessment update.
+9. Each later leg begins from its verified settled pose and may require bounded orientation.
+10. Hold release must assess post-release Reality and must never create an all-held authority state.
 
-Read in this order:
+## Last runtime evidence
 
-1. [`adr/ADR-0006-future-space-safe-release.md`](adr/ADR-0006-future-space-safe-release.md)
-2. [`ARCHITECTURE_FLOW.md`](ARCHITECTURE_FLOW.md)
-3. [`ARCHITECTURE.md`](ARCHITECTURE.md)
-4. [`PROJECT_STATUS.md`](PROJECT_STATUS.md)
+v4.6.70 passed its first encounter and later trapped Patriot in one coherent Hold. Release remained false because the counterfactual used the 60 km/h cruise ceiling and a mandatory non-closing gate. Map-clear teardown eventually restored Patriot. The orientation correction itself was supported; the continuation-speed and release semantics were not.
 
-The accepted rules are:
+## Next-session opening
 
-- Future Space extends through the next material local manoeuvre and subsequent trajectory settlement.
-- Situation identity persists across relationship-label changes.
-- Intent Expiry invalidates stale local continuation evidence.
-- Commitment Preconditions govern every material transition.
-- `CONTINUE_OBSERVATION` requires a Bounded Observation Contract.
-- Control effectiveness and operational sufficiency are separate conclusions.
-- Control capability completion and Commitment completion are separate lifecycles.
-- Safe Release Point is the only normal Commitment-completion gate.
-- failed or blocked Reality remains augmentation-relevant.
+Treat v4.6.71 as the sole repository baseline only after explicit owner Canonicalisation. Begin with Observe → Discuss → Hypothesise. The first subject is Native Continuation Speed estimation and counterfactual Hold release. Do not implement until the evidence model is agreed.
 
-## Continuation after owner review
+## Required optional evidence uploads
 
-If the owner declares this exact candidate canonical:
-
-1. synchronise the package into local and GitHub repositories;
-2. record its SHA-256 and Git commit;
-3. begin the next increment from v4.6.56 canonical;
-4. design the implementation against ADR-0006 before changing Control behaviour;
-5. preserve useful v4.6.51–v4.6.55 mechanisms only as Observation adapters or bounded Control capabilities;
-6. validate first with TS015, then with TS015b, TS016 and TS016b against the same generic contract.
-
-Do not add a special rule for the second TS015 headland, a longer hold, a new distance threshold or a fixture-specific relationship sequence. Any implementation proposal must state which ADR-0006 obligation it fulfils.
-
-## Permanent scope exclusions
-
-- multiple combines;
-- combine unloading;
-- cross-field coordination;
-- general route planning.
-
-## Deferred Publication Readiness Review
-
-**Mod Description Drift:** restore `modDesc.xml` to a stable public description before publication.
+The consolidation package is self-contained for architecture and governance. Upload v4.6.70, `log(66).txt` or the final video only when byte-level implementation or detailed runtime replay is required.

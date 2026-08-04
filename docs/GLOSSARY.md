@@ -1,4 +1,91 @@
+## v4.6.71 consolidation vocabulary
+
+**Experimental Reset**  
+A governance action that preserves durable architecture, decisions and evidence while removing unvalidated experimental implementation from active authority.
+
+**Native Continuation Speed Estimate**  
+An unresolved Knowledge object intended to bound likely GIANTS post-release motion using evidence from recent unmodified native operation. It is not the cruise-control ceiling.
+
+**Counterfactual Safe Release**  
+A Safe Release conclusion based on the predicted native continuation after temporary Control is removed, not on the calm physical state created by that Control.
+
+### Manoeuvre-Leg Orientation Envelope
+A bounded steering-acquisition interval at the start of a manoeuvre leg during which the fixed target remains authoritative but limited non-monotonic displacement is permitted before the directional fence arms.
+
+### Intervention-Induced Clearance Illusion
+A state that appears safe only because an active intervention suppresses the motion that would recreate the conflict.
+
+### Counterfactual Hold Release
+The requirement to evaluate predicted native continuation after a Hold is removed rather than treating the current held state as release evidence.
+
+**Atomic refuge transition** — A candidate-bound replacement movement whose endpoint, path, temporal budget and Progress preservation are validated before Control changes the active target or side frame. Rejection leaves the current refuge unchanged.
+
+## v4.6.66 additions
+
+**Provisional refuge** — A currently viable refuge whose authority remains conditional on current intent, continuation space and Commitment Preconditions until passage and Safe Release.
+
+**Refuge revision** — Additional same-role movement calculated from the assembly's current pose after the occupied refuge loses viability.
+
+**Purpose-bound speed lease** — A reversible speed constraint retained for a named option-preservation purpose and released only after sustained completion evidence, rather than per observation sample.
+
+## v4.6.65 additions and reconciliation
+
+**Repeated Encounter** — A fresh local convergence and Commitment between assemblies that may already share a persistent Situation.
+
+**Supporting Speed Lease** — A bounded reversible speed constraint applied to one participant while another primary Control capability remains active, preserving the original restoration snapshot.
+
+**Option Preservation Window** — The established interval in which a low-disruption action can retain or enlarge later Action Space. `Option Creation Window` is a retired alias.
+
+**Intent Token** — The pair of current participant intent epochs used to distinguish one local continuation assumption from the next.
+
+**Control Outcome Projection Gap** — Loss of already-observed physical evidence while translating a Control capability result into the public outcome consumed by Decision and Commitment.
+
+## v4.6.64 additions
+
+**Intervention Configuration Snapshot** — Mutable fold, lowered and work state captured immediately before temporary Control mutation.
+
+**Work Recovery** — Observed restoration of the physical configuration required for the assembly’s original agronomic task; distinct from movement recovery.
+
+**Post-Handover Authority Guard** — Commitment state that permits observation but prohibits renewed physical Control without fresh conflict evidence.
+
+## v4.6.63 additions
+
+**Identity Reference** — An exact reference to a live GIANTS object used to address the real assembly; never recursively copied or treated as evidence.
+
+**Value Snapshot** — An explicit, allowlisted architectural record containing immutable scalar evidence independent from later source mutation.
+
+**Live Reference Deep-Copy Trap** — Unbounded traversal caused by recursively copying an engine identity graph as though it were plain value data.
+
+**Job-Start Physical Snapshot** — Stable dimensions and durable physical facts captured once at job admission as Knowledge.
+
+## v4.6.62 additions
+
+**Ephemeral Permission Interception** — A vehicle-specific, bounded permission wrapper whose exact pre-intervention function identity is restored when the Control hold ends.
+
+**Intervention-Conditioned Failure** — A failure requiring state or behaviour created by an admitted intervention; loaded but dormant infrastructure is insufficient.
+
+**Command Release–Execution-Path Restoration Separation** — The distinction between ceasing an active command and restoring the exact native function path through which the receiving system operates.
+
 # Glossary
+
+
+## v4.6.60 Native Handover vocabulary
+
+**Exact Rejoin Overreach**  
+An architectural failure in which OuttaMyWay attempts to reproduce the interrupted worker’s exact pose, lane, configuration and continuation although only a viable native handover is required.
+
+**Native Handover Envelope**  
+A bounded approximate position-and-heading region that is safe for unrestricted return of movement, configuration and job-progression authority to GIANTS.
+
+**Control-to-Awareness Reversion**  
+The transition in which a completed bounded Control capability ends and OuttaMyWay returns to ordinary Situation Assessment instead of maintaining a private restoration controller.
+
+**Purpose-Derived Motion**  
+A Control rule under which speed and turning are justified by stopping distance, curvature, clearance and target capture rather than by phase-specific literals.
+
+## v4.6.59 translation-authority amendment
+
+Reality disproved the assumption that the Traffic Permission Gate constrains translation only. ADR-0008 separates configuration authority, translation authority and field-worker progression authority. Delegated restoration now enables GIANTS field-worker progression under a separate reversible zero-speed translation lease. Terminal restoration failure is inert. A future unrestricted return-to-GIANTS architecture remains explicitly undecided.
 
 ## Architecture Recovery Vocabulary — v4.6.50
 
@@ -845,3 +932,22 @@ One of Current, Version-bound, Revalidation candidate or Invalidated, describing
 
 A provisional interpretation in which a legitimate working or physical envelope uses the immediate field margin while a coarse representation reports non-containment. It is not yet accepted as a replacement for Full-Envelope Field Containment.
 
+
+### Manoeuvre Leg
+A bounded, coherent physical movement executed under one authorised target until a settled movement boundary or separately authorised emergency interruption.
+
+### Reassessment–Redirection Separation
+The rule that updated Knowledge during movement does not automatically become new steering authority.
+
+### Settled Movement Boundary
+A reached target or deliberate controlled stop from which the next physical movement may be assessed and authorised.
+
+
+### Leg-Local Control Frame
+The side, target and fence reference owned by one manoeuvre leg and anchored at that leg's verified actual starting pose.
+
+### Settled-Pose Frame Closure
+Evidence that a replacement manoeuvre leg begins from the observed settled pose under a complete, internally consistent Control frame.
+
+### Encounter Anchor–Leg Anchor Separation
+The distinction between the original intervention stop anchor used for passage and handover evidence and the per-leg anchor used for physical movement Control.

@@ -1,4 +1,199 @@
+## v4.6.71 — Architecture Consolidation and Experimental Reset Candidate
+
+- Begins from exact owner-declared canonical v4.6.56, SHA-256 `9e2ed98a89ba7ffb3babb7669abf26a8db52a5f04b97829900c1b0d4a44b8066`, Git commit `99ae108ca589a2930b562c19ae560d3ecf580426`.
+- Preserves the v4.6.56 runtime implementation. No temporary v4.6.57–v4.6.70 controller, architecture module, candidate-only test or experimental threshold is active.
+- Adds ADR-0018 and an explicit experimental-lineage index covering candidate and evidence fingerprints, runtime outcomes, retained discoveries and rejected hypotheses.
+- Integrates ADR-0007–ADR-0017 as decision history and architectural knowledge, with status revised to distinguish accepted principles from superseded, rejected or unvalidated implementations.
+- Records successful experimental evidence including Identity Reference–Value Snapshot Separation, work-capable restoration, Native Handover, repeated Encounter identity, provisional-refuge reassessment, atomic transition authority, manoeuvre-leg commitment, settled-pose framing and bounded orientation.
+- Records failed implementation hypotheses including recursive live-object copying, exact rejoin/restoration overreach, zero-speed translation authority, sample-owned speed leases, non-atomic target changes, ordinary mid-leg redirection, inherited transition frames, immediately monotonic steering fences and v4.6.70 Hold-release projection.
+- Records the v4.6.70 result: the first encounter completed, but a later Patriot Hold remained until map-clear because the projection used the 60 km/h cruise ceiling and required non-closing motion.
+- Rejects cruise-control ceiling as a Native Continuation Speed Estimate and rejects non-closing motion as a universal release gate. Closing is evidence; bounded conflict exclusion is the required conclusion.
+- Establishes recent unmodified GIANTS operating behaviour as the next evidence subject, not an accepted implementation.
+- Proposed for owner review and Canonicalisation; this package does not declare itself canonical.
+
+## v4.6.70 — Leg Orientation and Counterfactual Hold Release Candidate
+
+- Begins from owner-declared canonical v4.6.56, SHA-256 `9e2ed98a89ba7ffb3babb7669abf26a8db52a5f04b97829900c1b0d4a44b8066`, Git `99ae108ca589a2930b562c19ae560d3ecf580426`.
+- Carries forward v4.6.69 settled-pose transition frames, manoeuvre-leg commitment, atomic transition viability and repeated-Encounter/work-recovery architecture.
+- Records v4.6.69 runtime evidence that the second Condor leg began from the correct local frame but failed after a normal steering-acquisition displacement reached `-0.77 m`, just beyond the monotonic side fence.
+- Adds a bounded manoeuvre-leg orientation envelope. The directional fence becomes authoritative only after positive side progress; time, travel and reverse-lateral limits prevent unbounded wandering.
+- Records the Patriot slowdown as a binary Hold/Restore limit cycle rather than supporting-speed chatter.
+- Adds counterfactual post-release projection Knowledge. A Hold remains one coherent lease until predicted native GIANTS continuation is conflict-excluded and non-closing for a sustained confirmation interval.
+- Prevents held-state calm from being treated as release evidence created by the Hold itself.
+- Enforces the global `never hold all participants` invariant in Decision and Control; terminal `FAILED_HELD` reposition cannot be followed by a Hold on the remaining mover.
+- Adds ADR-0017 and packaged regression tests for bounded leg orientation, counterfactual Hold release and failed-held all-hold prevention.
+- Temporary and non-canonical pending continuous TS015 runtime validation.
+
+## v4.6.69 — Settled-Pose Transition Frame Candidate
+
+- Begins from owner-declared canonical v4.6.56, SHA-256 `9e2ed98a89ba7ffb3babb7669abf26a8db52a5f04b97829900c1b0d4a44b8066`, Git `99ae108ca589a2930b562c19ae560d3ecf580426`.
+- Carries forward v4.6.68 manoeuvre-leg commitment, atomic transition viability and the validated repeated-Encounter/work-recovery paths.
+- Records v4.6.68 runtime evidence that Decision correctly selected a second refuge leg after settlement, but Control inherited the original stop-centreline frame and rejected the stationary starting pose 96 ms later.
+- Adds ADR-0016. Every refuge leg now owns a leg-local Control frame anchored to its verified actual start pose; the original stop anchor remains separate encounter and handover evidence.
+- Requires Decision to publish candidate-bound transition start coordinates and `CURRENT_POSE_ANCHORED` frame authority.
+- Requires Control to reject stale or unverified start-pose evidence before mutating target, side or frame.
+- Atomically commits the new target, side and leg-start anchor only after start-pose, path, field, Progress-preservation and time-budget checks all pass.
+- Adds packaged regression evidence reproducing the observed inherited-frame `-1.32 m` fence result and proving the same settled pose maps to zero in the replacement leg frame.
+- Temporary and non-canonical pending continuous TS015 runtime validation.
+
+## v4.6.68 — Manoeuvre Leg Commitment Candidate
+
+- Begins from owner-declared canonical v4.6.56, SHA-256 `9e2ed98a89ba7ffb3babb7669abf26a8db52a5f04b97829900c1b0d4a44b8066`, Git `99ae108ca589a2930b562c19ae560d3ecf580426`.
+- Carries forward v4.6.67 atomic refuge-transition viability and the validated repeated-Encounter, work-recovery and field-containment paths.
+- Records v4.6.67 runtime evidence that five individually executable refuge revisions, including four side changes, produced repeated direction reversal during one physical movement.
+- Adds ADR-0015. Situation Assessment remains continuous, but ordinary target replacement is advisory while a viable manoeuvre leg is active.
+- Commits one decisive movement to a settled leg boundary before current-pose refuge revalidation may authorise another movement.
+- Preserves emergency interruption as a separate authority requiring demonstrated loss of admissibility; no ordinary preference change grants it.
+- Adds Decision, Ledger, Control and controller state for pending reassessment, leg identity and settled-boundary transition authority.
+- Adds packaged tests proving mid-leg redirection is rejected and a replacement may be committed after settlement.
+- Temporary and non-canonical pending continuous TS015 runtime validation.
+
+## v4.6.67 — Atomic Refuge Transition Viability Candidate
+
+- Rejects geometrically valid refuge replacements whose path or time budget is not executable.
+- Keeps the current refuge authoritative until Control atomically accepts the replacement target and side frame.
+- Adds ADR-0014 and packaged transition-authority tests.
+
+## v4.6.66 — Provisional Refuge Revalidation Candidate
+
+- Treats every refuge as provisional until passage and Safe Release.
+- Revalidates after material intent changes and permits additional current-pose movement.
+- Stabilises the supporting speed lease until sustained clearance or passage.
+- Records ADR-0013 and adds chained branch tests.
+
+## v4.6.65 — Repeated Encounter and Option Preservation Candidate
+
+- Records that v4.6.64 completed the primary TS015 refuge, work restoration and native handover without a freeze, but admitted a later convergence only after the Option Preservation Window had closed.
+- Reconciles the duplicate proposed term `Option Creation Window` as an alias of the existing canonical **Option Preservation Window**.
+- Adds ADR-0012 by composing existing Intent Expiry, Encounter identity, Earliest Sufficient Action, Option-Preserving Augmentation and Commitment Viability concepts.
+- Separates persistent Situation identity from Encounter and Commitment identity; every completed Encounter can be followed by a fresh Encounter inside the same Situation.
+- Fixes **Control Outcome Projection Gap**: Native Reposition release evidence (`configurationRestored`, `workCapable`, `handoverAtMs` and authority relinquishment) is now preserved from the controller through Control Outcomes into Decision and Commitment.
+- Replaces noisy per-heading-step intent epochs with one `TURNING` epoch and a new epoch after settlement into a materially different heading sector.
+- Publishes a generic distance/time option plan when a returning manoeuvre redirects Future Space toward another still-relevant assembly.
+- Adds a bounded supporting speed lease so the Progress participant can create temporal separation while the primary refuge Commitment remains active.
+- Preserves the original cruise snapshot across supporting-lease promotion and restores it before Safe Release.
+- Reassesses Yield/Progress roles for every new Encounter and reuses the field-constrained, clearance-first refuge and work-recovery lifecycle.
+- Adds packaged chained-Encounter and supporting-speed tests using abstract A/B assemblies with no fixture identities.
+- Temporary and non-canonical pending chained TS015 runtime validation.
+
+## v4.6.64 — Work Recovery and Post-Handover Authority Guard Candidate
+
+- Adds ADR-0011.
+- Preserves ADR-0009 approximate return and ADR-0010 identity/value separation.
+- Captures mutable fold, lowered and work state immediately before Control mutation; stable dimensions remain job-start Knowledge.
+- Adds a bounded `RESTORING_CONFIGURATION` phase that restores only OuttaMyWay-owned mutations and verifies a work-capable state before authority relinquishment.
+- Adds a post-handover `NO_PHYSICAL_CONTROL` guard. Persistent Situation relevance retains observation only; renewed physical Control requires fresh current closing-conflict evidence and new Commitment Preconditions.
+- Allows Safe Release after bounded independent continuation when the pair leaves the observation radius.
+- Leaves later Patriot manoeuvring architecture unchanged and reserved for subsequent discussion.
+- Temporary and non-canonical pending TS015 runtime validation.
+
+## v4.6.63 — Identity Reference–Value Snapshot Separation Candidate
+
+- Begins from owner-declared canonical v4.6.56; v4.6.62 supplies only the already-reviewed ADR-0009 and reversible permission-interception donor path.
+- Records v4.6.49 and v4.6.55 as successful active-job intervention evidence under FS25 1.21.1, narrowing the regression boundary to v4.6.57.
+- Identifies generic recursive copying introduced in Decision and Commitment as the first failure candidate matching that boundary.
+- Adds ADR-0010 and separates live GIANTS identity references from architectural value snapshots.
+- Removes all generic recursive copy functions from `DecisionEngineActive.lua` and `CommitmentLedger.lua`.
+- Adds explicit allowlisted snapshots for Safe Release, speed plans, observation contracts, hold evidence and scalar lists.
+- Removes live vehicle references from the Hold candidate value snapshot; exact Yield and Progress references are carried separately.
+- Preserves the agreed job-start rule: durable dimensions are captured once as Knowledge and are not obtained by cloning live engine objects.
+- Adds a packaged Lua test with deliberately cyclic GIANTS-like vehicle references through the actual Hold Decision and Commitment path.
+- Restores the missing `logShadow` diagnostic and routes it through non-blocking `safeDiagnostic`.
+- Preserves ADR-0009, purpose-derived motion, Native Handover Envelope, ephemeral permission interception and all physical behaviour.
+- Remains temporary and non-canonical pending TS015 runtime validation.
+
+## v4.6.62 — Ephemeral Permission Interception Candidate
+
+- Begins from owner-declared canonical v4.6.56; v4.6.61 is used only as the donor for the validated refuge/passage/approximate-return path.
+- Records successful controls with OuttaMyWay absent and with v4.6.61 loaded but no encounter admitted: manual stop, displacement and new GIANTS job all completed normally.
+- Excludes increased logging as causal because the successful loaded/no-encounter run retained normal OuttaMyWay diagnostics.
+- Names **Intervention-Conditioned Failure**, **Loaded Interception–Activated Interception Separation** and **Command Release–Execution-Path Restoration Separation**.
+- Converts the vehicle-specific `getCanAIFieldWorkerContinueWork` overwrite into an ephemeral, reversible interception lease.
+- Retains the exact pre-intervention function reference and restores that exact identity whenever the hold ends.
+- Restores only when the current method is still the exact wrapper owned by OuttaMyWay, preventing a later GIANTS or other-mod replacement from being overwritten.
+- Applies symmetric restoration at native handover, operator cancellation, external AI-job termination, controller clear, generic Control release and map/runtime clear.
+- Clears configuration-authority bookkeeping without physical actuation when the AI job ends externally.
+- Adds packaged-byte Lua tests for normal restoration, identity-mismatch safety and gate-clear restoration.
+- Makes no change to refuge geometry, passage evidence, motion policy, handover envelope, GIANTS restart behaviour or Patriot behaviour.
+- Remains temporary and non-canonical pending TS015 runtime validation.
+
+## v4.6.61 — Native Handover Diagnostic Isolation Candidate
+
+- Preserves ADR-0009 and the v4.6.60 Native Handover Envelope architecture unchanged.
+- Records that v4.6.60 did not test the architecture: missing diagnostic-format helpers raised repeated Lua errors before `COMPACTING → EGRESS`.
+- Restores bounded time/distance diagnostic formatting helpers.
+- Commits `COMPACTING → EGRESS` before emitting the readiness diagnostic.
+- Makes phase, compact-request, failure, handover and relevant fold/timing diagnostics non-blocking.
+- Adds a packaged-byte Lua smoke test that executes the real `COMPACTING → EGRESS` branch while deliberately throwing from the readiness logger; the transition must still complete.
+- Remains temporary and non-canonical pending owner runtime validation.
+
 # Changelog
+
+## v4.6.60 — Native Handover Envelope Candidate
+
+- Begins from owner-declared canonical v4.6.56, SHA-256 `9e2ed98a89ba7ffb3babb7669abf26a8db52a5f04b97829900c1b0d4a44b8066`, Git commit `99ae108ca589a2930b562c19ae560d3ecf580426`.
+- Uses temporary v4.6.57–v4.6.59 only as implementation donors and runtime evidence; none becomes repository authority.
+- Records **Exact Rejoin Overreach** after three restoration/handback implementations produced repeatable freezes at progressively earlier authority transitions.
+- Adds ADR-0009 and the **Native Handover Envelope** as the completion target for Native Reposition.
+- Replaces exact pose, lane and working-configuration reconstruction with a bounded approximate position-and-heading handover region.
+- Returns movement, configuration and field-worker progression authority to GIANTS without OuttaMyWay unfolding, a translation lease, an `aiContinue`/continuation-event restart burst, handback retries or native-motion nudges.
+- Adds **Control-to-Awareness Reversion**: after handover, the dedicated controller ends and ordinary Situation Assessment observes GIANTS recovery.
+- Keeps capability completion separate from Commitment completion and retains Safe Release as the normal completion gate.
+- Removes the inherited `4 km/h`, `6 km/h` and phase-owned `15 km/h` sequence; motion is now purpose-derived from stopping distance, curvature and a transit ceiling.
+- Makes return orientation conditional and requires every turn to serve clearance, refuge entry or minimum handover alignment.
+- Records the possible CPU/physics-call stress contribution as an unproven hypothesis rather than a diagnosed cause.
+- Explicitly reserves the architecture of the other passing vehicle and its later manoeuvring for subsequent discussion.
+- Remains temporary and non-canonical pending manually-started TS015 runtime validation.
+
+## v4.6.59 — Translation-Authority Separation Candidate
+
+- Begins from owner-declared canonical v4.6.56, SHA-256 `9e2ed98a89ba7ffb3babb7669abf26a8db52a5f04b97829900c1b0d4a44b8066`, Git commit `99ae108ca589a2930b562c19ae560d3ecf580426`.
+- Uses temporary v4.6.58 only as an implementation donor and evidence source.
+- Records that GIANTS did not begin native configuration restoration while `getCanAIFieldWorkerContinueWork` remained denied.
+- Names **Constraint Semantics Mismatch**: the Traffic Permission Gate suppresses field-worker progression, not translation alone.
+- Adds ADR-0008 and separates configuration authority, translation authority and field-worker progression authority.
+- Adds a reversible zero-speed Translation Authority Lease that snapshots and restores both forward and reverse cruise limits.
+- Acquires the translation lease before releasing the Traffic Permission Gate, then requests GIANTS continuation once.
+- Observes native configuration restoration while checking that speed and displacement remain bounded.
+- Releases translation authority only after stable terminal configuration evidence and on a later controller update.
+- Makes delegated-restoration failure inert: no repeated fold/unfold/work-state commands and no repeated `aiContinue` request.
+- Preserves explicit operator recovery through `otmTS015Cancel` without configuration actuation.
+- Explicitly reserves judgement on a future unrestricted return-to-GIANTS architecture.
+- Remains temporary and non-canonical pending manually-started TS015 runtime validation.
+
+## v4.6.58 — Delegated Native Configuration-Restoration Candidate
+
+- Begins from owner-declared canonical v4.6.56, SHA-256 `9e2ed98a89ba7ffb3babb7669abf26a8db52a5f04b97829900c1b0d4a44b8066`, Git commit `99ae108ca589a2930b562c19ae560d3ecf580426`.
+- Retains the generic ADR-0006 active architecture slice from temporary v4.6.57, but does not accept v4.6.57 as canonical authority.
+- Records two repeatable v4.6.57 freezes at the same physical boundary: Condor nearly completed OuttaMyWay-driven unfolding, then Native Reposition synchronously restored configuration state, released the permission gate and called `aiContinue`.
+- Rejects the v4.6.57 `SUCCESS` classification because one initial motion sample did not prove stable independent continuation.
+- Names **Restoration Obligation–Actuation Separation**: Commitment owns the required restored postcondition, while the restoration mechanism may be delegated to GIANTS.
+- Separates Native Reposition positional completion from the subsequent Restore capability.
+- Returns configuration authority to GIANTS without issuing unfold, lower or work-on commands.
+- Requests native continuation while the movement constraint remains held, allowing GIANTS to restore its required working configuration.
+- Requires stable terminal configuration evidence across multiple observations before movement authority is released.
+- Releases movement on a later update without repeating `aiContinue` on the deployment-completion tick.
+- Requires both material travel and sustained motion before Restore reports `COMPLETED`.
+- Keeps Commitment completion under the existing Safe Release Point gate.
+- Remains temporary and non-canonical pending manually-started TS015 runtime validation.
+
+## v4.6.57 — Persistent Situation and Safe-Release Implementation Candidate
+
+- Begins from owner-declared canonical v4.6.56, SHA-256 `9e2ed98a89ba7ffb3babb7669abf26a8db52a5f04b97829900c1b0d4a44b8066`, Git commit `99ae108ca589a2930b562c19ae560d3ecf580426`.
+- Implements ADR-0006 as one generic active vertical slice; TS015 remains a validation fixture and contributes no fixture-specific Decision rule.
+- Activates one responsibility path from Observation through bounded Future Space, Situation Assessment, Operational Picture, Decision, persistent Commitment, bounded Control and Outcome Observation.
+- Adds bounded local Future-Space Knowledge for current motion, next material manoeuvre, manoeuvre sweep and trajectory settlement without reconstructing a GIANTS route.
+- Requires positive field-boundary evidence before a moving participant's continuation can be classified as bounded; missing evidence yields `CLEARANCE_UNRESOLVED`.
+- Preserves one Situation identity across relationship-label changes and records material local-intent changes through an Intent Epoch.
+- Enforces the Bounded Observation Contract before `CONTINUE_OBSERVATION` is admitted.
+- Separates Control capability effectiveness from Decision's operational-sufficiency conclusion.
+- Adds explicit Commitment-controlled `HOLD` and `RESTORE` capabilities alongside distance/time speed regulation and bounded Native Reposition.
+- Allows an effective but insufficient capability to revise to another admissible capability before Action Space is exhausted.
+- Separates capability completion from Commitment completion and makes Safe Release Point the normal completion gate.
+- Keeps blocked, failed and temporarily unobservable situations operationally relevant rather than returning them to normal operation.
+- Disables the donor controller's internal TS015 post-passage speed guard so continuation authority remains in Decision and Commitment.
+- Removes the obsolete single-distance architecture completion literal; no separation distance can substitute for Safe Release.
+- Remains temporary and non-canonical pending runtime validation, beginning with manually-started TS015.
 
 ## v4.6.56 — Future-Space and Safe-Release Contract Candidate
 

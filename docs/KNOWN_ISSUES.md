@@ -1,17 +1,107 @@
+## v4.6.71 consolidation boundary
+
+### Native Continuation Speed Estimate unresolved
+
+The repository has no accepted method for predicting post-release GIANTS speed and phase. v4.6.70 incorrectly used the 60 km/h cruise-control ceiling. Recent unmodified GIANTS operating behaviour is the next evidence subject.
+
+### Counterfactual Hold-release semantics unresolved
+
+The principle is accepted: intervention-created calm is not release evidence. The v4.6.70 implementation is rejected because it also required non-closing motion universally. A closing continuation may still be safe when its bounded closest approach remains outside all relevant clearance envelopes.
+
+### Experimental architecture not active
+
+ADR-0007–ADR-0017 contain accepted knowledge and historical implementation decisions. Their candidate modules and tests are not present as active runtime in v4.6.71. Future work must not infer implementation availability from documentation alone.
+
+### Mod Description Drift
+
+The engineering description remains candidate-oriented rather than the final public ModHub description.
+
+## Historical v4.6.70 runtime validation risk — orientation and Hold causality
+
+The packaged path permits bounded steering acquisition and stabilises Hold ownership. Runtime must establish that the orientation envelope is sufficient without concealing genuine path or field loss, and that counterfactual release avoids chatter without retaining a Hold after safe passage.
+
+## v4.6.66 active validation risks
+
+## v4.6.67 active validation risks
+
+- **Optimistic transition time:** required duration uses the purpose-derived transit ceiling plus response margin; runtime may show that turn curvature requires a more conservative model.
+- **Cross-side transition frame:** the temporary frame is packaged and tested but remains runtime-unvalidated.
+- **Temporal fallback:** when no sufficient speed plan exists, retaining the current refuge is preferred to an infeasible move; later role reassessment remains a separate Decision path.
+- **No chained success claim:** v4.6.67 remains temporary until the complete TS015 continuation succeeds.
+
+- **Runtime proof pending:** current-pose refuge revision is packaged but not yet observed in GIANTS runtime.
+- **Revision threshold:** the 2 m additional-travel and target-delta thresholds are implementation hypotheses, not architectural constants.
+- **Same-role boundary:** an active target revision cannot change Yield/Progress roles; a better opposite-role candidate requires a separate Decision path.
+- **Speed-release timing:** the 2.5 s sustained-clear interval is a hysteresis hypothesis requiring runtime validation.
+- **Representation limits remain:** refuge viability still depends on current physical-envelope evidence and field-boundary knowledge.
+
+## v4.6.65 validation risks
+
+- The v4.6.64 primary TS015 lifecycle is runtime-validated; the repeated-Encounter composition is not.
+- The 35–140 m Option Preservation Window bounds, 12 s target reserve, 30-degree settled-heading sector and clearance margin are implementation hypotheses requiring runtime evidence across assemblies.
+- A supporting speed lease must not overwrite the original cruise restoration snapshot when promoted after native handover.
+- Early slowing may be insufficient; Decision must still revise to a field-contained safe wait or calculated refuge before Commitment Viability collapses.
+- The later Condor return is expected to exercise fresh role selection and field-safe refuge. Success is not claimed until observed.
+
+## v4.6.64 validation boundary
+
+- Dynamic configuration restoration is architecturally defined but still requires runtime validation against GIANTS acknowledgement timing.
+- Post-handover Authority Guard must prove that Patriot continues and that a genuinely new conflict can still re-authorise Control.
+- Later Patriot manoeuvring after the central encounter is not addressed in this candidate.
+
+## v4.6.63 regression-candidate status
+
+- The Live Reference Deep-Copy Trap is strongly supported by the v4.6.55/v4.6.57 code boundary but is not yet runtime-proven.
+- A remaining freeze would disprove it as the root cause while leaving Identity Reference–Value Snapshot Separation as a required correctness rule.
+- v4.6.62 also exposed missing `logShadow` diagnostics; v4.6.63 restores them through a protected diagnostic path.
+
+## v4.6.62 intervention-teardown validation risk
+
+- The post-handover freeze is intervention-conditioned, but the precise causal mutation is not yet proven.
+- v4.6.62 tests exact restoration of the Condor-specific permission method; a remaining freeze would move configuration actuation to the highest-priority suspect.
+- Identity-safe restoration deliberately refuses to overwrite a later GIANTS or other-mod replacement. In that exceptional case the release diagnostic reports `identity-mismatch`.
+- Increased logging, dormant global wrappers, manual displacement and GIANTS job replacement are excluded as sufficient causes by successful controls.
+
+## v4.6.61 validation risk
+
+- The Native Handover Envelope remains unvalidated because v4.6.60 never entered egress.
+- Diagnostic Path Coupling is corrected in the affected lifecycle boundary, but runtime evidence is still required.
+
 # Known Issues
 
-## Future-Space and Safe-Release implementation gap
 
-- Canonical v4.6.50 runtime does not implement ADR-0006.
-- Temporary v4.6.51–v4.6.55 implementations are evidence only and must not be promoted wholesale.
-- Current straight-line and constant-velocity prediction cannot represent continuation through the next material headland manoeuvre.
-- Relationship changes can fragment one continuing Situation into multiple episode records.
-- A Control capability can report `EFFECTIVE` while operational reserve continues to collapse.
-- Commitment completion can occur on current separation without proving a Safe Release Point.
-- `CONTINUE_OBSERVATION` lacks a universal bounded evidence-and-option-preservation contract.
-- Blocked or failed Reality can fall back to normal operation without an authorised recovery or explicit unresolved state.
+## v4.6.61 Native Handover Envelope validation risks
 
-The next active candidate must correct these ownership and lifecycle gaps generically. TS015 is the first validation fixture, not the policy definition.
+- The v4.6.57–v4.6.59 freeze root cause remains unknown. A CPU/physics-call contribution is possible but unproven.
+- The Native Handover Envelope thresholds are implementation hypotheses and have not yet been validated across assemblies.
+- Unrestricted handover may permit GIANTS to move before configuration settles; v4.6.61 intentionally delegates that complete recovery and observes the result rather than constraining it.
+- Normal Situation Assessment must retain the Situation and Commitment until independent continuation and Safe Release are evidenced.
+- The other passing vehicle’s later manoeuvring is deliberately unchanged and may still expose the known subsequent-conflict problem.
+
+## v4.6.59 translation-authority amendment
+
+Reality disproved the assumption that the Traffic Permission Gate constrains translation only. ADR-0008 separates configuration authority, translation authority and field-worker progression authority. Delegated restoration now enables GIANTS field-worker progression under a separate reversible zero-speed translation lease. Terminal restoration failure is inert. A future unrestricted return-to-GIANTS architecture remains explicitly undecided.
+
+## v4.6.58 delegated-restoration validation risks
+
+- It is unproven that the GIANTS field-worker configuration state machine progresses while the Traffic Permission Gate prevents translation.
+- Returning OuttaMyWay bookkeeping authority without a physical restore command assumes GIANTS will infer the required fold/lower/work state from its active job.
+- Stable deployment currently requires terminal fold evidence with low inter-sample movement for 1.2 seconds; this is an implementation hypothesis, not an architectural constant.
+- Movement release occurs without repeating `aiContinue`; GIANTS may require a later, safely separated continuation request.
+- Native delegated Restore completion currently requires at least 2 m travel and 2 seconds of sustained qualifying motion. Runtime evidence may refine the observation contract.
+- v4.6.57 `SUCCESS` logs are rejected as stable handback evidence because the game froze repeatably immediately afterwards.
+- No runtime success is claimed until manually-started TS015 passes the delegated sequence.
+
+## v4.6.57 active implementation validation risks
+
+- The bounded local manoeuvre geometry is conservative and has not yet been runtime-validated.
+- Field-boundary probe latency intentionally produces `CLEARANCE_UNRESOLVED`; this may temporarily withhold action.
+- Hold admissibility currently tests the selected stopping space against the other participant's bounded Future Space; runtime evidence must validate that this protects the complete assembly and continuation.
+- Operational sufficiency currently uses temporal-reserve trend, Future-Space reserve and blockage evidence. The selected evidence may prove insufficient or over-conservative.
+- Safe Release requires both participants moving and trajectory-settled. Completed or legitimately stationary participants are outside this active-active validation slice.
+- Native Reposition remains the recovered calculated-refuge mechanism and carries its existing representation limits.
+- The broader inherited-literal and prototype-parameter audit remains deferred. No runtime value is architectural merely because it is configured.
+- No runtime success is claimed until manually-started TS015 validates the generic lifecycle.
 
 ## Architecture recovery boundaries
 
@@ -123,3 +213,13 @@ The next active candidate must correct these ownership and lifecycle gaps generi
 
 - Multiplayer has only limited host/admin smoke-test coverage.
 - Full dedicated-server and second-client testing is not currently available.
+
+
+## v4.6.68 runtime validation risk — manoeuvre-leg completion
+
+The implementation now defers ordinary refuge revision during active egress. Runtime must establish that the first target is reached early enough to permit useful boundary reassessment and that no unsafe current leg requires an interruption authority not yet evidenced.
+
+
+## v4.6.69 runtime validation risk — replacement-frame execution
+
+The packaged path closes the inherited-anchor failure. Runtime must establish that the final second refuge leg becomes visible movement and that a leg-local frame does not hide a genuine cross-corridor or field-containment violation.

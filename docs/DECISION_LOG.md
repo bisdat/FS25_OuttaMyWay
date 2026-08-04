@@ -1,8 +1,142 @@
+## D-0021 — Consolidate architecture and reset experimental implementation
+
+**Date:** 2026-08-04  
+**Status:** Accepted for v4.6.71 owner review; canonical only after explicit owner declaration.
+
+**Decision:** Build v4.6.71 from exact canonical v4.6.56 runtime bytes. Integrate durable v4.6.57–v4.6.70 architecture, decision history and evidence fingerprints as documentation. Do not activate later controller modules, candidate-only tests or experimental thresholds.
+
+**Reason:** The cycle materially improved architectural understanding but did not produce a stable complete runtime path. Promoting v4.6.70 would convert a known permanent-Hold failure into canonical implementation authority. Discarding the cycle would lose validated discoveries and disproven hypotheses.
+
+**Consequence:** v4.6.71 is a clean architectural checkpoint. The next implementation is a new hypothesis from the canonical runtime baseline, not an implicit continuation of the latest donor.
+
+## D-0022 — Reject v4.6.70 continuation-speed and universal non-closing release assumptions
+
+**Date:** 2026-08-04  
+**Status:** Accepted evidence conclusion.
+
+**Decision:** A cruise-control ceiling is not a Native Continuation Speed Estimate. Closing motion is an input to bounded conflict assessment, not an automatic veto on release. Safe Release requires conflict-excluded continuation under an evidence-supported native behaviour estimate.
+
+## D-0022 — Bound leg orientation and evaluate Hold release counterfactually
+
+**Status:** Accepted for v4.6.70 runtime validation.
+
+**Decision:** A refuge manoeuvre leg shall receive a bounded orientation envelope before monotonic side progress is enforced. A Hold shall remain one coherent lease until projected post-release native continuation is sustainably admissible. Terminal failed-held reposition prohibits Hold or repeated reposition authority on the remaining mover.
+
+**Reason:** v4.6.69 correctly closed the replacement frame but treated 0.77 m of steering acquisition as side abandonment. Its failure then produced 117 Hold decisions and 112 restores because the Hold's own stopping effect was mistaken for release safety.
+
+## D-0098 — Revalidate provisional refuge and bind supporting speed to purpose
+
+**Status:** Accepted implementation amendment; validation active in temporary v4.6.66.
+
+**Evidence:** v4.6.65 created and completed repeated Encounters and avoided the previous Patriot-return deadlock. In EN-00009 Condor reached an initially viable field-contained refuge, but Patriot's later headland intent rotated its continuation corridor through that refuge. Fresh candidate assessments changed while the active Commitment did not. Supporting speed also alternated request/restore on adjacent samples.
+
+**Decision:** A refuge remains provisional until passage and Safe Release. Intent change invalidates cached assessment. Decision may revise the active same-role refuge using a current-pose candidate, and Control updates the existing Native Reposition target without restarting the run or recapturing configuration. Supporting speed remains active until passage or sustained clear/improving evidence.
+
+**Reconciliation:** This applies Commitment Viability Decay, Passage Corridor Is Not Continuation Corridor, Intent Expiry and Option Preservation Window. It introduces no duplicate named discovery.
+
+## D-0097 — Compose repeated Encounters through Intent Expiry and Option Preservation
+
+**Status:** Accepted implementation composition; validation active in temporary v4.6.65.
+
+**Evidence:** v4.6.64 passed the complete primary TS015 refuge and handover, then admitted a later convergence at approximately 27 m and 3 s to closest approach. Useful Action Space had already collapsed. The earlier headland turn was the existing Option Preservation Window.
+
+**Decision:** Preserve one Situation identity while assigning fresh Encounter and Commitment identities after material intent change and Safe Release. Represent one active turn as `TURNING`, renew intent after settlement, publish a generic distance/time Option Preservation plan, and allow a bounded supporting speed lease on the non-repositioning participant. Reassess roles and refuge candidates for every Encounter.
+
+**Implementation correction:** Preserve the complete Native Reposition release outcome from controller to Decision, including configuration restoration, work capability, handover time and authority relinquishment. Physical completion without outcome projection cannot complete the Commitment.
+
+**Discovery reconciliation:** `Option Creation Window` is an alias of the established **Option Preservation Window** and is retired. This decision composes existing architecture rather than declaring a new discovery stack.
+
+**Scope:** Generic local A/B assemblies only. No fixture identity, route reconstruction, multiple-combine coordination, combine unloading or cross-field coordination is authorised.
+
+## D-0096 — Restore owned dynamic mutations and guard post-handover authority
+
+**Status:** Accepted implementation amendment; validation active in temporary v4.6.64.
+
+**Decision:** Temporary Control captures mutable configuration immediately before mutation and retains restoration responsibility until the pre-intervention work-capable state is observed. Persistent Situation relevance authorises observation only after handover. A new physical capability requires fresh current closing-conflict evidence and revalidated Commitment Preconditions.
+
+**Rationale:** v4.6.63 removed the freeze but Condor remained compact and Patriot remained held without current conflict. Motion recovery and work recovery are distinct; persistent relevance and persistent Control authority are distinct.
+
+**Scope:** Central TS015 only. Approximate return, purpose-derived motion and GIANTS route ownership remain. Later Patriot manoeuvring is reserved.
+
+## D-0095 — Separate engine identity references from architectural value snapshots
+
+**Status:** Accepted implementation correction; validation active in temporary v4.6.63.
+
+**Decision:** Live GIANTS objects are identity references, never recursively copied values. Decision and Commitment may copy only explicitly defined scalar value schemas. Hold evidence excludes vehicle references; Yield and Progress identities are carried separately. Stable dimensions remain immutable job-start Knowledge captured once.
+
+**Evidence:** v4.6.49 and v4.6.55 completed active-job intervention under FS25 1.21.1. v4.6.57 introduced generic recursive copying while the physical controller remained materially unchanged, matching the first repeatable hard-freeze boundary.
+
+**Consequence:** Remove generic recursive copy utilities, add schema-specific snapshot functions and test the actual Hold revision path with cyclic identity objects. Physical Control and ADR-0009 remain unchanged.
+
+## D-0094 — Make permission interception ephemeral and identity-safe
+
+**Status:** Accepted implementation correction; validation active in temporary v4.6.62.
+
+**Decision:** A vehicle-specific `getCanAIFieldWorkerContinueWork` interception is a bounded Control lease, not a permanent transparent wrapper. OuttaMyWay shall retain the exact pre-intervention method, install one owned wrapper, remove the hold, and restore the exact original identity at every authority-release boundary. Restoration occurs only when the current method is still OuttaMyWay’s exact wrapper; a later replacement is never overwritten. External AI-job termination also clears OuttaMyWay configuration bookkeeping without configuration actuation.
+
+**Evidence:** Manual stop, displacement and GIANTS restart succeeded with OuttaMyWay absent and with v4.6.61 loaded when no encounter was admitted. Increased logging and dormant wrappers are therefore excluded as sufficient causes. Failure requires an activated intervention.
+
+**Consequence:** ADR-0009, refuge geometry, purpose-derived motion and the Native Handover Envelope remain unchanged. TS015 now tests whether execution-path restoration removes the freeze.
+
+## D-0048 — Diagnostics shall not own lifecycle progression
+
+**Status:** Accepted implementation correction; architecture unchanged.
+
+Control state transitions shall be committed from evidence independently of diagnostic emission. Failure to format or emit a diagnostic must not veto `COMPACTING → EGRESS`, native handover, or fail-safe state entry.
+
 # Decision Log
+
+## D-0093 — Replace Exact Rejoin with a Native Handover Envelope
+
+**Status:** Accepted implementation amendment; validation active in temporary v4.6.61
+
+**Decision:** OuttaMyWay shall clear the conflict, wait for positive passage, return the displaced assembly to a bounded approximate position-and-heading envelope, then relinquish all temporary authority to GIANTS. Exact route reacquisition, lane alignment, working-configuration restoration and job continuation remain GIANTS responsibilities. Native Reposition completion reverts Control to normal Situation Assessment; Safe Release remains the Commitment-completion gate.
+
+**Rationale:** v4.6.57–v4.6.59 repeatedly froze while attempting increasingly elaborate restoration and constrained handback sequences. Those implementations exceeded the cooperative obligation. Removing Exact Rejoin Overreach is a discovered architecture correction, not a fixture fix.
+
+**Implementation consequence:** Remove phase-owned 4/6 km/h speed literals, mandatory exact-return turns, OuttaMyWay deployment, delegated native restoration, translation leasing, retries and nudges. Derive motion from stopping distance and curvature. Reserve the other passing vehicle’s later manoeuvring for subsequent architecture discussion.
+
+## D-0092 — Separate translation authority from field-worker progression
+
+**Status:** Accepted implementation amendment; validation active in temporary v4.6.59
+
+**Context:** v4.6.58 returned configuration authority to GIANTS but retained the Traffic Permission Gate. GIANTS never began unfolding. The gate denies `getCanAIFieldWorkerContinueWork`, so Reality showed that it suppresses the field-worker state machine rather than translation alone. The timeout failure then entered a repeated toggle-based compact path and coincided with the game freeze.
+
+**Decision:** Name **Constraint Semantics Mismatch**. During delegated native restoration, acquire a reversible zero-speed translation lease first, return configuration authority, release the Traffic Permission Gate, request GIANTS continuation once, observe stable configuration under the translation lease, then restore normal translation authority on a later update. Terminal failure is inert and issues no repeated configuration or continuation commands.
+
+**Reserved question:** This decision neither adopts nor rejects a future unrestricted return-to-GIANTS architecture.
+
+
+
+## v4.6.59 translation-authority amendment
+
+Reality disproved the assumption that the Traffic Permission Gate constrains translation only. ADR-0008 separates configuration authority, translation authority and field-worker progression authority. Delegated restoration now enables GIANTS field-worker progression under a separate reversible zero-speed translation lease. Terminal restoration failure is inert. A future unrestricted return-to-GIANTS architecture remains explicitly undecided.
+
+## D-0091 — Separate restoration obligation from restoration actuation
+
+**Status:** Accepted architecture amendment; implemented in temporary v4.6.58 candidate
+
+**Context:** Two v4.6.57 TS015 runs froze repeatably as Condor was almost fully unfolded. The controller reacted to the first deployed sample by restoring configuration state, releasing the movement hold and calling `aiContinue` synchronously. One subsequent motion sample was incorrectly sufficient for Control `SUCCESS`.
+
+**Decision:** Treat restored working configuration as a Commitment postcondition rather than an unconditional OuttaMyWay actuation. End Native Reposition at positional completion under the retained movement constraint. Revise the same Commitment to Restore, return configuration authority to GIANTS without issuing fold/lower/work commands, request native continuation under the hold, observe stable native configuration, release movement on a later update without another same-tick `aiContinue`, and require sustained movement plus material travel before Restore completion. Safe Release remains separate.
+
+**Consequences:** This amends the generic Control lifecycle rather than adding a TS015 rule. If GIANTS cannot restore configuration under the retained hold, the hypothesis is disproved and the Situation remains explicitly held/relevant.
+
+## D-0090 — Implement ADR-0006 through one generic active vertical slice
+
+**Status:** Implemented in temporary v4.6.57 candidate; runtime validation pending
+
+**Context:** Canonical v4.6.56 established that current kinematic clearance, relationship labels and capability completion cannot govern Situation or Commitment completion. Further fixture-level repairs were prohibited.
+
+**Decision:** Implement bounded local Future Space, Persistent Situation Relevance, Intent Epoch, Bounded Observation Contract enforcement, operational-sufficiency evaluation, explicit Hold and Restore capabilities, persistent Commitment lifecycle and Safe Release gating in the sole active runtime path. Require field-boundary evidence before moving continuation is classified as bounded. Disable the donor Native Reposition controller's private post-passage speed guard.
+
+**Scope:** The implementation is generic and local. TS015 is the first validation fixture only. It does not authorise route planning, cross-field coordination, multiple-combine coordination or combine unloading.
+
+**Consequence:** Runtime evidence must now test whether the implementation fulfils ADR-0006. A failure must identify the first incorrect responsibility, Knowledge claim, admissibility conclusion, capability outcome or release obligation; it must not produce another fixture-shaped rule.
 
 ## D-0089 — Govern continuation and Commitment completion through Future Space
 
-**Status:** Accepted for v4.6.56 candidate; repository authority pending owner Canonicalisation
+**Status:** Accepted and canonical in v4.6.56
 
 **Context:** Temporary v4.6.55 completed one TS015 Commitment when the workers were separating at approximately 80 m and constant-velocity conflict was excluded. Condor's next GIANTS headland manoeuvre then entered Patriot's path. A later speed capability remained mechanically `EFFECTIVE` while separation and time reserve collapsed until both workers were blocked.
 
@@ -877,3 +1011,30 @@ The project transitions from architecture-only seminars to architecture–protot
 **Reason:** TS004 TopDown held a stable interior `foldAnimTime=0.1250` while extended and raised for manoeuvring, then lowered toward `0.0000` for work. `WORKING` phase began before the stable low pose. Direct-soil-contact implements and non-contact sprayer booms also give raise/lower different functional meanings.
 
 **Status:** Accepted for v4.6.18 correction candidate.
+
+
+## D-0019 — Require executable and atomic refuge replacement
+
+**Status:** Accepted for v4.6.67 runtime validation.
+
+**Decision:** A replacement refuge shall not become authoritative from endpoint viability alone. Decision must prove candidate-bound transition executability from current Reality, and Control must accept target and side-frame mutation atomically. Unsafe or unresolved replacements preserve the current refuge.
+
+**Reason:** v4.6.66 committed a 58.20 m opposite-side replacement with only 5.52 s to closest approach. Partial side-frame mutation converted a safe occupied refuge into an immediate centreline-fence failure and later all-hold state.
+
+
+## D-0020 — Commit one manoeuvre leg before ordinary refuge redirection
+
+**Status:** Accepted for v4.6.68 runtime validation.
+
+**Decision:** Continuous reassessment may record a preferred replacement refuge while a movement is active, but ordinary target authority shall not change until the current manoeuvre leg reaches a settled boundary. Early interruption requires separate evidence that continuing is no longer admissible.
+
+**Reason:** v4.6.67 accepted five individually executable target revisions during one movement. Local executability did not provide coherent Control; repeated side changes produced indecision and final failure.
+
+
+## D-0021 — Anchor each refuge manoeuvre leg at its verified start pose
+
+**Status:** Accepted for v4.6.69 runtime validation.
+
+**Decision:** A replacement refuge leg shall carry exact current-pose start evidence through Decision and Commitment. Control shall verify that evidence remains fresh and atomically install a leg-local anchor with the replacement target and side. The original encounter stop anchor shall not be reused as the fence origin for later legs.
+
+**Reason:** v4.6.68 selected one valid second leg after settlement, but the rotated replacement side was applied to the first encounter's stop anchor. The stationary Condor immediately appeared 1.32 m across the fence and failed before movement.
