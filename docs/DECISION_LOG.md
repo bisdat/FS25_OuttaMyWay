@@ -1,5 +1,17 @@
 # Decision Log
 
+## D-0089 — Govern continuation and Commitment completion through Future Space
+
+**Status:** Accepted for v4.6.56 candidate; repository authority pending owner Canonicalisation
+
+**Context:** Temporary v4.6.55 completed one TS015 Commitment when the workers were separating at approximately 80 m and constant-velocity conflict was excluded. Condor's next GIANTS headland manoeuvre then entered Patriot's path. A later speed capability remained mechanically `EFFECTIVE` while separation and time reserve collapsed until both workers were blocked.
+
+**Decision:** Accept ADR-0006. Future Space must cover each relevant participant's next material local manoeuvre and subsequent trajectory settlement; Situation identity persists across relationship changes; Intent Expiry is explicit; Commitment Preconditions govern every material transition; `CONTINUE_OBSERVATION` requires a Bounded Observation Contract; Control effectiveness is separate from operational sufficiency; Control capability completion is separate from Commitment completion; Safe Release Point is the normal completion gate; failed or blocked Reality remains augmentation-relevant.
+
+**Scope:** The contract is local and event-bounded. It does not authorise general route planning, cross-field coordination, multiple-combine coordination or combine unloading.
+
+**Consequence:** No further TS015-specific correction is justified. The next active implementation must enforce the generic contract and then use TS015, TS015b, TS016 and TS016b as validation fixtures rather than policy definitions.
+
 ## D-0088 — Establish v4.6.50 as an Architecture Recovery Candidate
 
 **Status:** Accepted for v4.6.50 candidate; canonical authority pending owner declaration

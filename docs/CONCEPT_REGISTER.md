@@ -1,5 +1,37 @@
 # Architectural Concept Register
 
+## Future-Space and Safe-Release Contract — v4.6.56
+
+Review status: accepted for the v4.6.56 candidate; repository authority follows owner Canonicalisation.
+
+### Transient Clearance
+
+Current trajectories are clear or separating while plausible near-term continuations remain mutually unsafe.
+
+### Persistent Situation Relevance
+
+A participant remains relevant while its Current Space or any plausible Future Space within the Continuation Safety Horizon can affect another participant's continuation. Relationship labels are Knowledge, not Situation lifecycle states.
+
+### Commitment Preconditions
+
+Before beginning or materially changing a manoeuvre or authority transition, the proposed Future Space must remain admissible in the current Operational Picture.
+
+### Bounded Observation Contract
+
+`CONTINUE_OBSERVATION` requires a named Knowledge gap, expected evidence source, preserved useful action, exhaustion condition, reassessment deadline and Progress participant. Without those obligations it is passive delay and is inadmissible.
+
+### Operational Sufficiency
+
+Decision's conclusion that the realised Reality is sufficient for the governing Commitment purpose. It is evaluated separately from Control capability effectiveness.
+
+### Capability Effectiveness–Operational Sufficiency Separation
+
+A Control capability may physically achieve its command while the operational reserve, Future-Space clearance or Commitment purpose continues to degrade.
+
+### Capability Completion–Commitment Completion Separation
+
+Completion or release of one Control capability does not complete the persistent Commitment that requested it.
+
 ## Architecture Recovery Decisions — v4.6.50
 
 Review status: accepted for the v4.6.50 Architecture Recovery Candidate; repository authority follows owner Canonicalisation.
@@ -662,7 +694,7 @@ The provisional interval during which an Entity's settled trajectory remains use
 
 ### Intent Expiry
 
-The provisional transition by which previously useful local intent becomes stale. Prototype 04 strongly supported new manoeuvre and worker detachment as explicit expiry evidence. The concept remains Deferred pending generalisation beyond active GIANTS workers and the single TS001 fixture.
+Previously useful local intent becomes stale after a material change in manoeuvre, configuration, participation, representation fitness or realised Control outcome. Accepted in v4.6.56 as a universal revalidation trigger; it does not imply complete route knowledge.
 
 ### Encounter Chain
 
@@ -670,11 +702,11 @@ A provisional sequence of linked conflicts in which an intervention changes the 
 
 ### Safe Release Point
 
-A provisional boundary at which releasing a held Entity leaves its resumed path clear through a defined continuation horizon. Prototype 04 did not establish this boundary: the original parked position became unsafe, while the later clear continuation followed manual relocation and could not validate the original hold site. The concept remains Deferred and no release authority exists.
+The boundary at which every applicable release obligation is positively satisfied: intended operational effect, observed Control outcome, no blocked participant, relevant Future-Space clearance through the Continuation Safety Horizon, resolved material uncertainty, restoration safety and observed independent GIANTS continuation. Accepted in v4.6.56; no single distance, relationship label or capability completion can substitute for the gate.
 
 ### Continuation Safety Horizon
 
-The bounded future continuation that must remain clear before release can be considered safe. Prototype 04 supports the next manoeuvre as a useful limited horizon, but also shows that the horizon is incomplete when physically relevant non-workers disappear from observation. The concept remains Deferred and does not imply knowledge of a complete GIANTS route.
+The event-bounded future continuation that must remain clear before release can be considered safe. Its minimum extent is each relevant participant's next material local manoeuvre, manoeuvre sweep and subsequent trajectory settlement. Accepted in v4.6.56; it does not imply knowledge of a complete GIANTS route.
 
 ### Opportunity
 

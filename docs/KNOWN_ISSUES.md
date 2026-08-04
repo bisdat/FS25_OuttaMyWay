@@ -1,5 +1,18 @@
 # Known Issues
 
+## Future-Space and Safe-Release implementation gap
+
+- Canonical v4.6.50 runtime does not implement ADR-0006.
+- Temporary v4.6.51–v4.6.55 implementations are evidence only and must not be promoted wholesale.
+- Current straight-line and constant-velocity prediction cannot represent continuation through the next material headland manoeuvre.
+- Relationship changes can fragment one continuing Situation into multiple episode records.
+- A Control capability can report `EFFECTIVE` while operational reserve continues to collapse.
+- Commitment completion can occur on current separation without proving a Safe Release Point.
+- `CONTINUE_OBSERVATION` lacks a universal bounded evidence-and-option-preservation contract.
+- Blocked or failed Reality can fall back to normal operation without an authorised recovery or explicit unresolved state.
+
+The next active candidate must correct these ownership and lifecycle gaps generically. TS015 is the first validation fixture, not the policy definition.
+
 ## Architecture recovery boundaries
 
 - **Runtime remains v4.6.43:** v4.6.50 does not contain the temporary v4.6.44–v4.6.49 behavioural mechanisms.

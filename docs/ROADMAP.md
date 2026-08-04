@@ -1,5 +1,24 @@
 # Roadmap
 
+## Immediate phase — implement ADR-0006 generically
+
+- [x] Record the governing Architecture Flow.
+- [x] Accept bounded local Future Space through the next material manoeuvre and trajectory settlement.
+- [x] Accept Persistent Situation Relevance, Intent Expiry and Commitment Preconditions.
+- [x] Separate Control effectiveness from operational sufficiency.
+- [x] Separate Control capability completion from Commitment completion.
+- [x] Define the Bounded Observation Contract.
+- [x] Establish Safe Release Point as the normal Commitment-completion gate.
+- [ ] Design one Situation identity that persists across relationship-classification changes.
+- [ ] Define the Operational Picture representation for plausible local manoeuvre continuations and `CLEARANCE_UNRESOLVED`.
+- [ ] Define operational-sufficiency evaluation and degradation-triggered Commitment revision.
+- [ ] Enforce the Bounded Observation Contract in Decision.
+- [ ] Enforce Safe Release Point and failure-aftermath gates in Commitment lifecycle.
+- [ ] Implement one generic active vertical slice from the accepted v4.6.56 baseline.
+- [ ] Validate first with TS015, then TS015b, TS016 and TS016b against the same contract.
+
+No fixture-specific second-headland rule, distance threshold or relationship sequence is an acceptable completion of this phase.
+
 ## Immediate programme — Architecture Recovery to passive shadow Decision
 
 ### Candidate and Canonicalisation gate

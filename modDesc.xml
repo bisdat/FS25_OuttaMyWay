@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <modDesc descVersion="92">
     <author>bisdat</author>
-    <version value="4.6.50">4.6.50</version>
+    <version value="4.6.56">4.6.56</version>
     <title>
         <en>Outta My Way</en>
         <de>Aus dem Weg</de>
@@ -10,11 +10,11 @@
         <it>Fuori dai piedi</it>
     </title>
     <description>
-        <en>Architecture recovery candidate. Runtime behaviour remains unchanged from v4.6.43; temporary v4.6.44–v4.6.49 discoveries are documented but not promoted.</en>
-        <de>Kandidat zur Wiederherstellung der Architektur. Das Laufzeitverhalten bleibt gegenüber v4.6.43 unverändert; Erkenntnisse aus den temporären Versionen v4.6.44–v4.6.49 sind dokumentiert, aber nicht übernommen.</de>
-        <fr>Candidat de rétablissement de l’architecture. Le comportement d’exécution reste inchangé par rapport à v4.6.43 ; les découvertes temporaires v4.6.44–v4.6.49 sont documentées mais non intégrées.</fr>
-        <es>Candidato de recuperación de la arquitectura. El comportamiento en ejecución no cambia respecto a v4.6.43; los hallazgos temporales de v4.6.44–v4.6.49 se documentan pero no se incorporan.</es>
-        <it>Candidato di recupero dell’architettura. Il comportamento a runtime resta invariato rispetto a v4.6.43; le scoperte temporanee v4.6.44–v4.6.49 sono documentate ma non promosse.</it>
+        <en>Future-Space and Safe-Release architecture contract candidate. Runtime behaviour remains unchanged from canonical v4.6.50; temporary v4.6.51–v4.6.55 evidence is documented but not promoted.</en>
+        <de>Kandidat für den Architekturvertrag zu Zukunftsraum und sicherer Freigabe. Das Laufzeitverhalten bleibt gegenüber der kanonischen Version v4.6.50 unverändert; Erkenntnisse aus den temporären Versionen v4.6.51–v4.6.55 sind dokumentiert, aber nicht übernommen.</de>
+        <fr>Candidat de contrat d’architecture pour l’espace futur et la libération sûre. Le comportement d’exécution reste inchangé par rapport à la version canonique v4.6.50 ; les preuves temporaires v4.6.51–v4.6.55 sont documentées mais non intégrées.</fr>
+        <es>Candidato de contrato de arquitectura para Espacio Futuro y Liberación Segura. El comportamiento en ejecución no cambia respecto a la versión canónica v4.6.50; la evidencia temporal de v4.6.51–v4.6.55 se documenta pero no se incorpora.</es>
+        <it>Candidato del contratto architetturale per Spazio Futuro e Rilascio Sicuro. Il comportamento a runtime resta invariato rispetto alla versione canonica v4.6.50; le evidenze temporanee v4.6.51–v4.6.55 sono documentate ma non promosse.</it>
     </description>
     <iconFilename>icon.dds</iconFilename>
     <multiplayer supported="true" />

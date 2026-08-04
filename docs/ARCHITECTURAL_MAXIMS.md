@@ -1,5 +1,14 @@
 # Architectural Maxims
 
+## Continuation and release
+
+- **Current clearance is not continuation clearance.** Separating motion or constant-velocity exclusion cannot prove safety through the next material manoeuvre.
+- **Relationship labels are Knowledge, not lifecycle.** One Situation may remain relevant through crossing, parallel, separating, manoeuvring and opposed classifications.
+- **Capability effectiveness is not operational sufficiency.** Decision must judge whether realised Control preserves or achieves the Commitment purpose.
+- **Capability completion is not Commitment completion.** Persistent intent ends only at a Safe Release Point, cancellation or explicit failure.
+- **Observation must preserve an option.** `CONTINUE_OBSERVATION` is valid only with a bounded evidence, exhaustion and reassessment contract.
+- **Failure remains part of Reality.** Blockage or exhausted Action Space cannot be renamed normal operation.
+
 - Facts before decisions.
 - The handbook is the chart.
 - The chart is more valuable than the boats.

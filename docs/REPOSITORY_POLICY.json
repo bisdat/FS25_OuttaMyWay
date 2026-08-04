@@ -99,6 +99,10 @@
     "scope_overlay_test_calibration": {
       "path": "docs/SCOPE_OVERLAY_TEST_CALIBRATION.md",
       "role": "knowledge"
+    },
+    "architecture_flow": {
+      "path": "docs/ARCHITECTURE_FLOW.md",
+      "role": "knowledge"
     }
   },
   "schema_version": 1

@@ -1,111 +1,85 @@
 # Project Status
 
-Version: 4.6.50 Architecture Recovery Candidate  
-Canonical implementation authority: owner-declared v4.6.43, SHA-256 `c312d74eedb20d800253247b784a992073a4cf44c0413588fa7f382b801cba4c`, Git commit `7dfb9f466566bbae1d47a2a54d66c08177fbae5b`  
-Candidate baseline: exact canonical v4.6.43  
+Version: 4.6.56 Future-Space and Safe-Release Contract Candidate  
+Canonical implementation authority: owner-declared v4.6.50, SHA-256 `a7d6fbde4da9299878926a7d54b29f9665ee4269107f748ff180ba833ead4392`, Git commit `18dc8338ee5e442a5097a366a80c1ac69ad29c4f`  
+Candidate baseline: exact canonical v4.6.50  
 Authority state: Release Candidate proposed for owner review; not canonical until explicit owner declaration  
-Runtime behaviour: unchanged from v4.6.43  
+Runtime behaviour: unchanged from canonical v4.6.50  
 Runtime evidence environment: FS25 1.21.1.0 build b40785 revision 81824 unless the test record states otherwise
 
 ## Current engineering phase
 
-The project is paused at an **Architecture Recovery Baseline**. Temporary v4.6.44–v4.6.49 produced valuable capabilities and decisive runtime evidence, but the Architecture Compliance Audit found that the active TS015/TS016 path had accumulated observation, interpretation, Decision, Commitment and Control responsibilities inside fixture-bounded controllers.
+The project is paused at **Future-Space and Safe-Release Contract Consolidation**.
 
-The candidate records the discoveries without promoting the temporary implementation.
+Temporary v4.6.51–v4.6.55 activated parts of the recovered architecture and demonstrated one successful TS015 cooperative passage through observed GIANTS handback. They also reproduced fixture-led correction pressure. The decisive v4.6.55 evidence showed that a Commitment could complete on current separation and later be recreated when Condor's next GIANTS headland manoeuvre entered Patriot's path. A speed capability could be mechanically effective while the operational reserve continued to collapse.
 
-## Confirmed architecture
+v4.6.56 records the generic architecture correction and does not promote the temporary runtime implementation.
+
+## Governing architecture
 
 ```text
 Reality
-    ↓
-Observation
-    ↓
-Situation Assessment
-    ↓
-Operational Picture Knowledge
-    ↓
-Decision Engine
-    ↓
-Commitment
-    ↓
-Control capability
-    ↓
-Outcome Observation
-    ↺ Situation Assessment
+→ Observation Adapters
+→ Situation Assessment
+→ Operational Picture
+→ Decision Evaluation
+→ Commitment Ledger
+→ bounded Control
+→ Reality
+→ Outcome Observation
 ```
 
-Situation Assessment remains aware of the complete bounded Field World. It interprets observations and publishes Knowledge. Decision consumes that Knowledge, evaluates candidate actions and continuing Commitments, applies every applicable constraint and selects the least-disruptive justified augmentation. Control executes bounded authority and reports observed outcomes.
+The complete map is [`ARCHITECTURE_FLOW.md`](ARCHITECTURE_FLOW.md).
 
-## Architecture recovery conclusions
+## Accepted contract
 
-- **Prototype Boundary Leakage:** a fixture-bounded experiment became the active operating path.
-- **Assessment–Decision–Control Collapse:** controllers interpreted observations, selected actions and executed them inside private state machines.
-- **Architectural Constraint Enforcement Gap:** documented invariants were not universal admissibility gates.
-- **Fragmented Commitment Ownership:** multiple private episode records approximated one continuing encounter Commitment.
-- Temporary discoveries remain evidence and capability candidates; their present ownership is not promoted.
+- **Bounded local Future Space:** through the next material manoeuvre, its sweep and subsequent trajectory settlement; not general route planning.
+- **Persistent Situation Relevance:** relationship-label changes do not end one continuing Situation.
+- **Intent Expiry:** changed manoeuvre, configuration, participation, representation or Control outcome invalidates stale local intent.
+- **Commitment Preconditions:** every material manoeuvre or authority transition requires admissible proposed Future Space.
+- **Bounded Observation Contract:** `CONTINUE_OBSERVATION` must preserve a useful option and name its Knowledge gap, evidence source, exhaustion condition and reassessment deadline.
+- **Capability Effectiveness–Operational Sufficiency Separation:** realised command response is not proof that the Commitment purpose is being achieved.
+- **Capability Completion–Commitment Completion Separation:** one completed capability does not complete persistent intent.
+- **Safe Release Point:** normal Commitment completion requires positive continuation clearance through the Continuation Safety Horizon and observed independent GIANTS continuation.
+- **Failure remains relevant:** blockage or exhausted Action Space cannot silently become normal operation.
 
-## Retired underdefined terms
+## Evidence interpretation
 
-The following v4.3.8 labels are retired because no independent architectural distinction was recovered:
+### Supported
 
-- Relevance Envelope
-- Decision-Relevant World
-- Decision-Relevant Constraints as a standalone Situation Assessment output
-- Decision Readiness
-- Option Horizon as a standalone object
+- The recovered architecture can execute a full cooperative-passage sequence in the bounded Condor/Patriot fixture.
+- Field-boundary evidence, calculated refuge motion, distance/time speed regulation and observed GIANTS handback are useful capability evidence.
+- Current separation and constant-velocity conflict exclusion do not prove safe continuation.
+- A mechanically effective speed command can be operationally insufficient.
 
-Historical references remain as provenance. Current architecture uses Field World, Operational Picture, Situation Relevance, Future Space, Action Space, explicit constraint applicability and action-specific evidence sufficiency.
+### Not promoted
 
-## Refined Decision principles
+- v4.6.51–v4.6.55 runtime modules;
+- TS015-specific parallel-headway policy;
+- any fixture-specific Decision branch;
+- any claim that TS015 as a whole is solved.
 
-- **Sufficiency over Completeness:** available Knowledge must be sufficient for the particular conclusion or action; complete Knowledge is not required.
-- **Option Preservation:** Decision considers how continued evolution changes the remaining Action Space.
-- **Earliest Sufficient Action:** do not choose unchanged continuation merely to obtain greater certainty when current Knowledge supports a proportionate action and waiting is likely to remove it.
-- **Minimum Effective Augmentation:** choose the least disruptive augmentation reasonably expected to preserve or improve safe Action Space.
-- **Option-Preserving Augmentation:** a small, proportionate and preferably reversible intervention whose purpose is to preserve or enlarge safe Action Space rather than resolve the complete encounter immediately.
-- Frequent reassessment may be normal; frequent intervention is not automatically justified.
+## Permanent scope exclusions
 
-## Experimental Capability Corpus
+- multiple combines;
+- combine unloading;
+- cross-field coordination;
+- general route planning.
 
-The temporary v4.6.44–v4.6.49 work is retained as evidence, including:
-
-- Temporal Separation Reserve;
-- Persistent Speed Authority and exact restoration evidence;
-- Observation Ownership evidence for persistent Situation Relevance;
-- Post-Passage Continuation evidence;
-- Protected Controller Handoff semantics;
-- Future Corridor Frame;
-- Refuge Reachability and Viability evidence;
-- Unknown Is Not Reachable;
-- Refuge Occupancy Conflict;
-- Commitment Viability Decay;
-- hardcoded-authority and responsibility-location evidence.
-
-None of these temporary implementations is active in this candidate.
+Completed-worker static-obstacle navigation and arbitrary modded assembly support remain possible future, separately governed work.
 
 ## Immediate next objective after Canonicalisation
 
-Build a passive shadow path that produces a complete authority trace:
+Implement ADR-0006 against the recovered architecture in one generic vertical slice:
 
-```text
-Observation
-→ Situation Assessment Knowledge
-→ shared Operational Picture
-→ Decision evaluation
-→ shadow Commitment proposal
-→ proposed Control capability
-```
+1. persistent Situation identity across relationship changes;
+2. bounded local manoeuvre Future Space;
+3. explicit operational-sufficiency assessment;
+4. Bounded Observation Contract enforcement;
+5. Safe Release Point completion gate;
+6. failure aftermath that remains augmentation-relevant.
 
-The first increment must issue no vehicle-control authority. Existing logs and scenarios should be replayed through the shadow path before any active capability is migrated.
-
-## Open architecture questions
-
-- How should the shared Operational Picture be represented in code without narrowing the accepted architecture?
-- What is the minimum durable Commitment record and lifecycle?
-- How are action classes bound to mandatory constraint checks?
-- How are Safe Release Point and Continuation Safety Horizon applied to both assemblies?
-- How does Native Motion Envelope provide assembly-appropriate repositioning behaviour?
-- How are fixture-specific geometry assumptions removed before active migration?
+TS015 is the first validation fixture because it is familiar and repeatable. TS015b, TS016 and TS016b then validate the same contract. No fixture-specific rule is permitted to define the implementation.
 
 ## Deferred Publication Readiness Review
 

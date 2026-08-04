@@ -27,6 +27,45 @@ Outcome Observation
 
 Situation Assessment remains aware of the complete bounded Field World. It interprets observations and publishes Knowledge. Decision evaluates candidate actions and continuing Commitments using the current Operational Picture. Control executes bounded authority and reports observed outcomes.
 
+## v4.6.56 Future-Space and Safe-Release Contract
+
+Temporary v4.6.51–v4.6.55 runtime work is evidence, not promoted implementation. It demonstrated that the recovered responsibility flow can execute a cooperative passage, but also that current kinematic clearance and mechanically effective Control are insufficient release evidence.
+
+### Bounded local Future Space
+
+Situation Assessment shall publish plausible local continuations through each relevant participant's next material manoeuvre, manoeuvre sweep and subsequent trajectory settlement. This is the minimum local continuation Knowledge needed to evaluate simultaneous GIANTS operation. It is explicitly not general route planning.
+
+When that continuation cannot yet be bounded and the uncertainty is material, the Operational Picture records `CLEARANCE_UNRESOLVED`.
+
+### Persistent Situation Relevance
+
+A Situation persists across relationship classifications while any participant's Current Space or plausible Future Space can affect another participant's continuation. `CROSSING`, `PARALLEL`, `SEPARATING`, `MANOEUVRING` and `OPPOSED` are Knowledge labels, not encounter lifecycle states.
+
+### Commitment Preconditions
+
+Before beginning or materially changing any manoeuvre or authority transition, Decision must establish that the proposed Future Space remains admissible in the current Operational Picture. The rule applies to unchanged continuation, speed restoration, hold release, refuge movement, configuration transition, rejoin and GIANTS handback.
+
+### Bounded Observation Contract
+
+`CONTINUE_OBSERVATION` is admissible only when Decision declares the unresolved Knowledge, expected evidence, preserved useful action, exhaustion condition, reassessment deadline and Progress participant. Passive observation without that contract is not a valid default.
+
+### Operational sufficiency
+
+Control reports mechanical outcomes. Situation Assessment interprets realised change. Decision separately determines whether the effect is sufficient for the Commitment purpose. An `EFFECTIVE` capability can therefore require Commitment revision.
+
+### Safe Release Point
+
+A Commitment may complete only when its intended operational effect is achieved, realised outcomes are observed, no participant is blocked, relevant Future Spaces remain clear through the Continuation Safety Horizon, material uncertainty is resolved, restoration cannot immediately recreate the Situation and independent GIANTS continuation is observed.
+
+Current separation, negative closing rate, constant-velocity clearance or completion of one Control capability is not sufficient release evidence.
+
+### Failure aftermath
+
+A failed capability or blocked participant remains augmentation-relevant. Decision must revise, remain explicitly failed but relevant, or escalate; it cannot silently return the Situation to normal operation.
+
+The detailed governing decision is recorded in [`adr/ADR-0006-future-space-safe-release.md`](adr/ADR-0006-future-space-safe-release.md), and the responsibility map is recorded in [`ARCHITECTURE_FLOW.md`](ARCHITECTURE_FLOW.md).
+
+
 ### Recovered ownership rule
 
 - Architecture and policy define non-negotiable invariants.

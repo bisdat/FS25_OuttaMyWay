@@ -1,5 +1,19 @@
 # Engineering Journal
 
+## 2026-08-04 — Future-Space and Safe-Release contract recovered from v4.6.55
+
+**Observation:** The first TS015 cooperative-passage Commitment completed through calculated refuge movement and observed GIANTS handback. Condor came to a confirmed stop as part of the reposition capability. A later speed Commitment completed at approximately 80 m because the pair was separating and constant-velocity conflict was excluded. Condor then entered its next GIANTS headland manoeuvre and turned into Patriot's path. A subsequent speed command was reported mechanically `EFFECTIVE` while distance and time-to-closest-approach continued to collapse until both workers were blocked.
+
+**Disproved hypotheses:** Current kinematic clearance does not prove safe continuation. A mechanically effective Control capability does not prove that the governing Commitment purpose is being achieved. Completion of one capability does not complete persistent intent.
+
+**Named discoveries:** **Transient Clearance**, **Capability Effectiveness–Operational Sufficiency Separation**, and **Capability Completion–Commitment Completion Separation**.
+
+**Architecture recovery:** Promote Intent Expiry, Safe Release Point and Continuation Safety Horizon from Deferred to Accepted. Consolidate Persistent Situation Relevance and Commitment Preconditions as governing contracts. Define a Bounded Observation Contract so `CONTINUE_OBSERVATION` cannot become passive delay.
+
+**Decision:** Stop the TS015 test/fix sequence. Record ADR-0006 before any more runtime change. The next implementation must be generic and must extend Future Space only through the next material local manoeuvre and trajectory settlement, preserving the permanent exclusion of general route planning.
+
+**What was learned:** v4.6.53–v4.6.55 recovered useful mechanisms, but v4.6.55 shaped Decision around one fixture sequence. The failed run is valuable because it exposes the missing release contract rather than merely another late trigger.
+
 ## v4.6.50 — Architecture Recovery, not another behavioural patch
 
 Temporary v4.6.44–v4.6.49 made considerable progress:

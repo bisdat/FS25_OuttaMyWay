@@ -1,5 +1,21 @@
 # Changelog
 
+## v4.6.56 — Future-Space and Safe-Release Contract Candidate
+
+- Begins from exact owner-declared canonical v4.6.50, SHA-256 `a7d6fbde4da9299878926a7d54b29f9665ee4269107f748ff180ba833ead4392`, Git commit `18dc8338ee5e442a5097a366a80c1ac69ad29c4f`.
+- Makes no intentional runtime behavioural change from v4.6.50; code edits are limited to coherent version identity.
+- Does not promote temporary v4.6.51–v4.6.55 active implementation.
+- Records the v4.6.55 TS015 evidence that current separation and constant-velocity conflict exclusion can form **Transient Clearance** before a later GIANTS manoeuvre recreates conflict.
+- Records **Capability Effectiveness–Operational Sufficiency Separation** and **Capability Completion–Commitment Completion Separation** after speed Control remained mechanically effective while the operational reserve collapsed.
+- Adds ADR-0006 and the governing Architecture Flow.
+- Promotes Intent Expiry, Safe Release Point and Continuation Safety Horizon from Deferred to Accepted architecture.
+- Accepts Persistent Situation Relevance, Commitment Preconditions and the Bounded Observation Contract.
+- Defines Future Space as bounded local continuation through the next material manoeuvre, manoeuvre sweep and subsequent trajectory settlement; this does not expand scope into route planning.
+- Establishes Safe Release Point as the only normal Commitment-completion gate.
+- Requires blocked or failed Reality to remain augmentation-relevant rather than silently returning to normal operation.
+- Keeps TS015 as the first validation fixture without allowing the fixture to define implementation policy.
+- Proposed for owner review and Canonicalisation; this package does not declare itself canonical.
+
 ## v4.6.50 — Architecture Recovery Candidate
 
 - Begins from exact owner-declared canonical v4.6.43, SHA-256 `c312d74eedb20d800253247b784a992073a4cf44c0413588fa7f382b801cba4c`, Git commit `7dfb9f466566bbae1d47a2a54d66c08177fbae5b`.

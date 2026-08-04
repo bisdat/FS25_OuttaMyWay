@@ -139,10 +139,32 @@ The system's present estimated point within Situation Space. It is Knowledge, no
 The transformation that interprets observations and maintains the most plausible Current Situation.
 
 ## Future Space
-The set of plausible future situations currently under consideration.
+The bounded set of plausible future situations currently under consideration. For cooperative continuation, it extends through each relevant participant's next material local manoeuvre, manoeuvre sweep and subsequent trajectory settlement. It does not imply knowledge of a complete GIANTS route.
 
 ## Action Space
 The set of actions currently available to an entity or system.
+
+
+## Transient Clearance
+Current trajectories are clear or separating while plausible near-term continuations remain mutually unsafe.
+
+## Persistent Situation Relevance
+The rule that a participant remains relevant while its Current Space or any plausible Future Space within the Continuation Safety Horizon can affect another participant's continuation. Relationship-classification changes do not end relevance by themselves.
+
+## Commitment Preconditions
+The universal requirement that a proposed Future Space remain admissible in the current Operational Picture before beginning or materially changing a manoeuvre or authority transition.
+
+## Bounded Observation Contract
+The explicit Knowledge gap, expected evidence, preserved useful action, exhaustion condition, reassessment deadline and Progress participant required before `CONTINUE_OBSERVATION` is admissible.
+
+## Operational Sufficiency
+Decision's conclusion that a realised change is sufficient for the governing Commitment purpose. It is distinct from Control's report that a requested command was physically achieved.
+
+## Capability Effectiveness–Operational Sufficiency Separation
+The rule that a Control capability may be mechanically effective while the resulting Reality remains insufficient for the governing Commitment.
+
+## Capability Completion–Commitment Completion Separation
+The rule that completion or release of one Control capability does not complete the persistent Commitment that requested it.
 
 ## Entity
 A provisional general label for something that participates in Situation Space. The label remains under review.
@@ -566,16 +588,16 @@ A provisional situation in which independently acting participants commit before
 The interval during which a settled trajectory remains useful evidence of an Entity's immediate path, without implying knowledge of its complete route.
 
 ## Intent Expiry
-The transition by which locally revealed intent becomes stale because the Entity begins another manoeuvre, detaches or is no longer observed reliably.
+The accepted transition by which previously useful local intent becomes stale after a material change in manoeuvre, configuration, participation, representation fitness or realised Control outcome.
 
 ## Encounter Chain
 A sequence of linked conflicts in which changing one encounter's timing or form does not remove the underlying coordination problem.
 
 ## Safe Release Point
-A provisional retrospective boundary at which release remains clear through a defined continuation horizon.
+The accepted boundary at which every applicable release obligation is positively satisfied: intended operational effect, observed Control outcome, no blocked participant, Future-Space clearance through the Continuation Safety Horizon, resolved material uncertainty, restoration safety and observed independent GIANTS continuation.
 
 ## Continuation Safety Horizon
-The bounded future continuation that must remain clear before release can be considered safe. Prototype 04 uses the next observed repositioning manoeuvre and subsequent settlement.
+The accepted event-bounded future continuation that must remain clear before release can be considered safe. Its minimum extent is each relevant participant's next material local manoeuvre, manoeuvre sweep and subsequent trajectory settlement.
 
 ## Commitment
 A persistent intention with explicit creation, maintenance, completion and cancellation lifecycle semantics.

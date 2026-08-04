@@ -1,70 +1,62 @@
 # Engineering Handover
 
-## Current candidate: v4.6.50
+## Current candidate: v4.6.56
 
-v4.6.50 begins from exact owner-declared canonical v4.6.43 (`c312d74eedb20d800253247b784a992073a4cf44c0413588fa7f382b801cba4c`, Git `7dfb9f466566bbae1d47a2a54d66c08177fbae5b`).
+v4.6.56 begins from exact owner-declared canonical v4.6.50 (`a7d6fbde4da9299878926a7d54b29f9665ee4269107f748ff180ba833ead4392`, Git `18dc8338ee5e442a5097a366a80c1ac69ad29c4f`).
 
-It is an architecture-only recovery candidate. Runtime behaviour remains v4.6.43. Temporary v4.6.44–v4.6.49 implementation is not promoted.
+It is a documentation-governance candidate. Runtime behaviour remains canonical v4.6.50. Temporary v4.6.51–v4.6.55 implementation is not promoted.
 
-## Why the recovery was required
+## Why this contract was required
 
-The temporary TS015/TS016 path proved several useful mechanisms but also revealed:
+The temporary active path recovered useful mechanisms and achieved one complete TS015 cooperative passage. The later continuation disproved fixture-led completion logic:
 
-- Prototype Boundary Leakage;
-- Assessment–Decision–Control Collapse;
-- Architectural Constraint Enforcement Gap;
-- Fragmented Commitment Ownership.
+- `CM-00002` completed when current motion was separating at approximately 80 m;
+- Condor's next GIANTS headland manoeuvre then entered Patriot's path;
+- `CM-00003` reported speed regulation `EFFECTIVE` while distance and time reserve continued to collapse;
+- both workers became blocked.
 
-Repeated local corrections were rational, but the fixture controller had become the easiest place to add observation, interpretation, Decision and Control. The candidate records this evidence and restores architectural precedence.
+The missing responsibility was not another TS015 trigger. It was a generic Future-Space and Commitment-release contract.
 
-## Recovered authority boundary
+## Governing decisions
 
-```text
-Observation
-→ Situation Assessment
-→ Operational Picture Knowledge
-→ Decision
-→ Commitment
-→ Control
-→ Outcome Observation
-↺ Situation Assessment
-```
+Read in this order:
 
-Situation Assessment remains aware of the complete bounded Field World. Decision applies current Knowledge and every mandatory constraint to each candidate action and continuing Commitment. Control executes bounded requests and cannot decide role, refuge suitability, relevance, passage completion or release.
+1. [`adr/ADR-0006-future-space-safe-release.md`](adr/ADR-0006-future-space-safe-release.md)
+2. [`ARCHITECTURE_FLOW.md`](ARCHITECTURE_FLOW.md)
+3. [`ARCHITECTURE.md`](ARCHITECTURE.md)
+4. [`PROJECT_STATUS.md`](PROJECT_STATUS.md)
 
-## Legacy-term disposition
+The accepted rules are:
 
-Retired:
-
-- Relevance Envelope
-- Decision-Relevant World
-- Decision-Relevant Constraints as a standalone Situation Assessment output
-- Decision Readiness
-- Option Horizon as a standalone object
-
-Preserved and strengthened:
-
-- Sufficiency over Completeness;
-- Option Preservation;
-- Earliest Sufficient Action;
-- Minimum Effective Augmentation;
-- Option-Preserving Augmentation.
-
-## Preserved experimental evidence
-
-The v4.6.44–v4.6.49 discoveries and hardcoded-authority audit are retained under `docs/50_Research/` and `research/architecture_recovery/`. They are an Experimental Capability Corpus, not active architecture.
+- Future Space extends through the next material local manoeuvre and subsequent trajectory settlement.
+- Situation identity persists across relationship-label changes.
+- Intent Expiry invalidates stale local continuation evidence.
+- Commitment Preconditions govern every material transition.
+- `CONTINUE_OBSERVATION` requires a Bounded Observation Contract.
+- Control effectiveness and operational sufficiency are separate conclusions.
+- Control capability completion and Commitment completion are separate lifecycles.
+- Safe Release Point is the only normal Commitment-completion gate.
+- failed or blocked Reality remains augmentation-relevant.
 
 ## Continuation after owner review
 
 If the owner declares this exact candidate canonical:
 
-1. synchronise the unchanged package into local and GitHub repositories;
+1. synchronise the package into local and GitHub repositories;
 2. record its SHA-256 and Git commit;
-3. begin the next increment from v4.6.50 canonical;
-4. implement only a passive shadow authority trace;
-5. issue no vehicle-control action until replay evidence demonstrates architectural conformance.
+3. begin the next increment from v4.6.56 canonical;
+4. design the implementation against ADR-0006 before changing Control behaviour;
+5. preserve useful v4.6.51–v4.6.55 mechanisms only as Observation adapters or bounded Control capabilities;
+6. validate first with TS015, then with TS015b, TS016 and TS016b against the same generic contract.
 
-Do not resume “one more fix” work on TS015/TS016 before the passive path is reviewed.
+Do not add a special rule for the second TS015 headland, a longer hold, a new distance threshold or a fixture-specific relationship sequence. Any implementation proposal must state which ADR-0006 obligation it fulfils.
+
+## Permanent scope exclusions
+
+- multiple combines;
+- combine unloading;
+- cross-field coordination;
+- general route planning.
 
 ## Deferred Publication Readiness Review
 
