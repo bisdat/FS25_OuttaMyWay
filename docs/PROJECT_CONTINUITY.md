@@ -1,5 +1,9 @@
 # Project Continuity
 
+## v4.6.78 continuity note
+
+This candidate derives only from owner-declared canonical v4.6.71 (`c675911413c7898b047252ccf764ee5154ecbcfeb3704b80af58f0b3370a0a4f`, Git `aa9a32846c082d41142558145000dd0971216d7a`). It changes documentation and package metadata only. Active runtime behaviour remains v4.6.56.
+
 > **Authority:** Canonical continuity procedure
 >
 > **Currency:** Reviewed for candidate release v4.6.1

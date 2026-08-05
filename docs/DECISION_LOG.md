@@ -1,3 +1,28 @@
+# D-0024 — Preserve v4.6.72–v4.6.77 as failed evidence and build v4.6.78 from canonical v4.6.71
+
+**Status:** Accepted for v4.6.78 owner review.
+
+**Decision:** v4.6.72–v4.6.77 remain temporary non-canonical runtime-validation evidence. v4.6.78 is documentation-only and derives from exact owner-declared canonical v4.6.71. No active branch logic from the failed line is promoted automatically.
+
+**Reason:** v4.6.77 completed a Commitment with `safeRelease=false`, admitted a new Commitment against unresolved responsibility and demonstrated that architecture-shaped procedural code did not enforce the accepted architecture.
+
+**Consequence:** future implementation starts with an offline enforcing Architecture Kernel and deterministic replay, using experimental mechanisms only as bounded donors.
+
+## D-0099 — Adopt the replacement-core Commitment lifecycle and Obligation Continuity
+
+**Date:** 2026-08-05  
+**Status:** Accepted architecture; proposed for Canonicalisation in v4.6.78
+
+**Decision:** Adopt ADR-0019. Commitments use `ACTIVE`, `WAITING_FOR_EVIDENCE` and `SETTLING`, followed by one of five terminal dispositions. Every Commitment records a Governing Basis and owns an explicit Obligation Set. An Obligation settles only through satisfaction, evidenced basis cessation or atomic accepted transfer to an eligible Commitment.
+
+Only one Commitment may own objective-progress actuation for an assembly at a time. Decision and Control validate the complete Effective Actuation Composition, including existing commands, capability reservations, residual predecessor effects and concurrent relevant-assembly actions.
+
+`SUPERSEDED_BY_NEW_INTENT` is a first-class terminal disposition. Player takeover changes physical agency but does not transfer internal Obligation objects to the player. Terminal Occupancy, Operation termination and Intent Supersession use the same settlement model.
+
+**Reason:** Paper validation showed that separate cancellation, handoff and remnant mechanisms would duplicate responsibility and permit ownerless obligations. The unified model reached valid continuing or terminal states across twelve representative scenarios.
+
+**Consequences:** The replacement architecture is complete enough for documentation Canonicalisation. Runtime implementation remains separate and must begin with passive contracts, lifecycle tests and composition tracing.
+
 ## D-0021 — Consolidate architecture and reset experimental implementation
 
 **Date:** 2026-08-04  

@@ -1,3 +1,55 @@
+# v4.6.78 closure and validation concepts
+
+- **Architectural Constraint Enforcement Gap** — accepted diagnosis: invariants are ineffective when no natural owner rejects violations.
+- **Composition Validation Gap** — accepted diagnosis: module-local correctness does not prove system composition.
+- **Architecture Kernel** — accepted implementation boundary: deterministic records and enforcement independent of GIANTS actuation.
+- **Replay Conformance** — accepted implementation gate: historical traces must pass architecture invariants before live authority.
+- **Experimental Donor** — accepted classification: a mechanism may be consulted without inheriting its surrounding branch logic or authority semantics.
+
+## v4.6.78 replacement-core concepts
+
+### Accepted root concepts
+
+- **Governing Basis** — the admitted intent or intent set and Operation context that make one Commitment objective applicable.
+- **Commitment Obligation Set** — the explicit set of owned requirements that remain terminal dependencies until accounted for.
+- **Obligation Continuity** — an Obligation may settle or transfer but may never become ownerless.
+- **`SETTLING`** — non-terminal state after objective-progress authority ends and before all terminal obligations are accounted for.
+- **Terminal Settlement Point** — the point at which every Obligation is satisfied, closed through evidenced basis cessation or atomically transferred.
+- **Safe Handover Point** — Terminal Settlement with continuing responsibility correctly transferred or external physical agency changed while internal responsibilities remain owned.
+- **Intent Supersession** — replacement of a live Commitment's Governing Basis by a newly admitted authoritative intent.
+- **Supersession Handover Interval** — bounded coexistence of a Governing Successor and Settling Predecessor without conflicting progress authority.
+- **Effective Actuation Composition** — the combined effect of proposed, existing, residual and concurrent Control across relevant assemblies.
+- **Progress-Actuation Ownership** — exactly one Commitment owns objective-progress actuation for one assembly at a time.
+- **Committed Demand** — space required by current admitted continuation.
+- **Potential Demand** — space plausibly required by a bounded future continuation.
+- **Temporary Slack** — currently unused intra-field space that has not been permanently released.
+- **Terminal Occupancy Commitment** — Commitment owning completed-worker occupancy that materially affects active demand.
+
+### Accepted refinements
+
+- **First Authoritative Invalidation** — the first authoritative event invalidating Governing Basis determines the terminal cause.
+- **Player Agency–Internal Obligation Separation** — player takeover changes physical agency but does not transfer internal Obligation objects.
+- **Configuration Integrity over Exact Restoration** — the durable obligation is stable, representable and controllable configuration; exact former-state restoration is only one strategy.
+- **Preference-Band Exhaustion** — lower-preference supportable candidates remain available after preferred candidates fail.
+- **Representation Fitness Contract** — representation sufficiency is evaluated for each conclusion or action.
+
+### Terminal dispositions
+
+- `SUCCEEDED`
+- `FAILED`
+- `SUPERSEDED_BY_NEW_INTENT`
+- `CANCELLED_BY_SOURCE_INTENT_TERMINATION`
+- `CANCELLED_BY_OPERATION_TERMINATION`
+
+### Rejected alternatives
+
+- generic Operation/system cleanup owner;
+- internal Obligation transfer to the player;
+- terminal entry when Control capability completes;
+- permanent release of intra-field space while workers remain active;
+- unrestricted predecessor/successor Control overlap;
+- event callback order as terminal-cause authority.
+
 ## v4.6.71 consolidation classification
 
 ### Accepted architectural knowledge

@@ -1,6 +1,6 @@
 # ADR-0018 — Architecture Consolidation and Experimental Reset
 
-**Status:** Proposed for owner Canonicalisation in v4.6.71  
+**Status:** Accepted; owner-declared canonical in v4.6.71  
 **Date:** 2026-08-04
 
 ## Context

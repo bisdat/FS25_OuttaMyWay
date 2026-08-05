@@ -1,3 +1,36 @@
+# v4.6.78 — Replacement-Core Architecture Closure
+
+The v4.6.72–v4.6.77 runtime-validation line was recovered before candidate production. Its final audit confirmed Architectural Constraint Enforcement and Composition Validation gaps. The line is retained as failed evidence; the documentation candidate derives from exact canonical v4.6.71 runtime bytes.
+
+The architecture was then closed through the unified Obligation model, `SETTLING`, Intent Supersession, player takeover, Terminal Occupancy, Operation termination, Governing Basis, terminal-cause precedence and Effective Actuation Composition. Twelve paper walkthroughs exposed no lifecycle dead end or additional subsystem requirement.
+
+## 2026-08-05 — Replacement-core lifecycle closure
+
+**Baseline:** owner-declared canonical v4.6.71, ZIP SHA-256 `c675911413c7898b047252ccf764ee5154ecbcfeb3704b80af58f0b3370a0a4f`, Git `aa9a32846c082d41142558145000dd0971216d7a`.
+
+**Observation:** Completed-worker relevance, Terminal Occupancy, evidence waiting, preference exhaustion, Representation Fitness and independent Job Episode admission were substantially understood, but terminal ownership remained fragmented across supersession, player takeover and Operation termination.
+
+**Hypothesis:** One shared obligation and settlement model could close all lifecycle boundaries without a generic cleanup owner or special-case terminal states.
+
+**Discoveries:**
+
+- `SETTLING` is the shared non-terminal state after progress authority ends.
+- Every open Obligation requires exactly one owning Commitment.
+- Obligations settle through satisfaction, evidenced basis cessation or atomic accepted transfer.
+- The player acquires physical agency but does not accept internal Obligation objects.
+- A completed worker remains relevant only while occupancy or another open obligation materially affects active demand.
+- Operation membership may reach zero while a Commitment remains in `SETTLING`.
+- `SUPERSEDED_BY_NEW_INTENT` is a first-class terminal disposition.
+- Predecessor and successor may coexist, but conflicting progress authority is forbidden.
+- Every Commitment requires a Governing Basis.
+- The first authoritative invalidation of that basis determines terminal cause.
+- Isolated capability validity is insufficient; the complete Effective Actuation Composition must be validated.
+- Only one Commitment may own objective-progress actuation for one assembly.
+
+**Validation:** Twelve paper walkthroughs covered ordinary success, multi-stage resolution, evidence insufficiency, candidate exhaustion, Representation Fitness failure, Terminal Occupancy, player takeover, restart, GIANTS abort/fault, supersession, Operation termination and invalid action composition. No lifecycle dead end or ownerless Obligation was found.
+
+**Result:** Architecture is sufficiently complete for a documentation-only candidate. Further conceptual expansion is paused unless documentation synthesis or implementation evidence exposes a contradiction.
+
 ## v4.6.71 — Architecture Consolidation and Experimental Reset
 
 The v4.6.57–v4.6.70 loop repeatedly advanced the failure boundary. That is useful architectural work, but the accumulated implementation was not a stable release candidate. v4.6.71 therefore returns executable authority to v4.6.56 while promoting the learning itself.

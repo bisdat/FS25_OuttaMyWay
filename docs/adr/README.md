@@ -18,4 +18,5 @@ Architectural Decision Records preserve why significant choices were made. Statu
 - [ADR-0015 — Manoeuvre Leg Commitment](ADR-0015-manoeuvre-leg-commitment.md) — Accepted and runtime-supported
 - [ADR-0016 — Settled-Pose Transition Frame Closure](ADR-0016-settled-pose-transition-frame.md) — Accepted and runtime-supported
 - [ADR-0017 — Manoeuvre-Leg Orientation and Counterfactual Hold Release](ADR-0017-manoeuvre-leg-orientation-counterfactual-hold-release.md) — Orientation accepted; final speed/release implementation rejected
-- [ADR-0018 — Architecture Consolidation and Experimental Reset](ADR-0018-architecture-consolidation-experimental-reset.md) — Proposed v4.6.71 consolidation authority
+- [ADR-0018 — Architecture Consolidation and Experimental Reset](ADR-0018-architecture-consolidation-experimental-reset.md) — Accepted; canonical v4.6.71 consolidation authority
+- [ADR-0019 — Replacement-Core Commitment Lifecycle and Obligation Continuity](ADR-0019-replacement-core-commitment-lifecycle.md) — Proposed v4.6.78 normative architecture; paper-validated after v4.6.77 audit

@@ -1,5 +1,11 @@
 # Engineering Architecture
 
+## v4.6.78 driving-system authority boundary
+
+Engineering governance in this document remains authoritative. Normative driving-system architecture now resides in `ARCHITECTURE.md`, `ARCHITECTURE_FLOW.md`, `DESIGN.md` and ADR-0019.
+
+Implementation must treat architecture, implementation and testing as separate activities. The first replacement-core implementation is passive lifecycle, Obligation and authority tracing; physical Control follows only after deterministic contract tests.
+
 ## Purpose
 
 This document defines how FS25_OuttaMyWay is engineered.

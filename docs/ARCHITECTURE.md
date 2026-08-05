@@ -1,723 +1,608 @@
-## v4.6.71 consolidation boundary
-
-ADR-0018 resets active implementation to v4.6.56 while retaining v4.6.57–v4.6.70 as architectural and experimental knowledge. The sections below describe discoveries and attempted amendments; they are not all active runtime behaviour. An ADR status determines whether a principle is accepted, superseded, rejected or still unvalidated.
-
-The governing distinction is:
-
-```text
-accepted architecture
-≠ experimental implementation
-≠ validated runtime capability
-```
-
-The next implementation begins from current Reality and the accepted responsibilities, not from an assumption that v4.6.70 should be repaired in place.
-
-## Historical v4.6.70 leg-orientation and Hold-release amendment
-
-ADR-0017 distinguishes bounded steering acquisition from directional refuge progress. A manoeuvre leg retains one target while Control permits limited non-monotonic motion inside a validated orientation envelope; the side fence becomes authoritative only after positive side progress.
-
-Hold release is counterfactual: Situation Assessment projects the held assembly's native GIANTS continuation using retained operating speed. Decision cannot release from the calm state created by the Hold itself. Terminal failed-held reposition also activates the global no-all-held authority guard.
-
-## v4.6.69 settled-pose transition-frame amendment
-
-ADR-0016 separates the stable encounter stop anchor from the Control frame of each refuge manoeuvre leg. A new leg is anchored at the verified actual pose from which that movement begins. Decision publishes candidate-bound start coordinates and current-pose frame authority; Control revalidates freshness and commits target, side and leg anchor atomically.
-
-This closes the complete replacement transition:
-
-```text
-settled current pose
-+ replacement side and endpoint
-+ executable path and time budget
-+ verified current-pose frame
-→ one admissible next manoeuvre leg
-```
-
-The correction does not weaken field containment, Progress preservation, cross-side viability or manoeuvre-leg commitment.
-
-## v4.6.66 provisional-refuge amendment
-
-## v4.6.67 atomic refuge-transition authority
-
-ADR-0014 separates replacement-refuge endpoint viability from transition executability. Decision may only revise an active Native Reposition when the current-pose path, optimistic travel duration, available temporal reserve and Progress preservation jointly support the move. Control treats that conclusion as candidate-bound authority and must validate it before changing target or side frame. An unsafe replacement leaves the occupied refuge authoritative.
-
-ADR-0013 makes refuge viability continuous. A selected refuge is a provisional safe state relative to current Knowledge. Material intent change reopens its Commitment Preconditions. Situation Assessment recalculates viable candidates from current Reality, Decision decides whether additional same-role movement is materially required, and Control revises the active target without restarting the bounded capability. Supporting speed authority is retained by purpose until passage or sustained clearance, preventing sample-level chatter.
-
-## v4.6.65 repeated-Encounter composition
-
-A persistent Situation is not a persistent Encounter or Commitment. Material manoeuvres expire local intent; Safe Release completes the current Encounter while retaining Situation relevance when appropriate. Returning manoeuvres publish an Option Preservation plan before emergency conflict. Decision prefers reversible speed shaping or safe waiting before spatial refuge. A Native Reposition Commitment may carry one bounded supporting speed lease on the other participant, with exact restoration authority retained across handover.
-
-## v4.6.64 central TS015 completion boundary
-
-Temporary Control owns reversal of its dynamic configuration mutations. Handover occurs only after a work-capable state is verified. After handover, persistent Situation relevance retains observation only; current conflict evidence must satisfy new Commitment Preconditions before Control can be reacquired.
-
-## v4.6.63 identity/value boundary
-
-Stable physical dimensions are captured once at job start as Knowledge. Live GIANTS objects remain identity references only. Decision and Commitment copy explicit scalar value schemas and never recursively traverse engine objects.
-
-## v4.6.62 Control teardown clarification
-
-Temporary authority is not relinquished until vehicle-specific interception is also relinquished. Permission interception is therefore an ephemeral, identity-safe Control lease: retain the exact pre-intervention method, install one owned wrapper, restore the exact original when the hold ends, and never overwrite a later replacement.
-
 # Architecture
 
+> **Authority:** Normative replacement-core architecture
+>
+> **Currency:** v4.6.78 Replacement-Core Architecture Candidate
+>
+> **Implementation status:** Documentation only; active runtime remains v4.6.56
+>
+> **Governing ADR:** [ADR-0019](adr/ADR-0019-replacement-core-commitment-lifecycle.md)
 
-## v4.6.60 Native Handover Envelope amendment
+## 1. Purpose
 
-ADR-0009 narrows Native Reposition to the cooperative responsibility actually experienced in Reality:
+OuttaMyWay augments native GIANTS AI field workers so that independently generated jobs can coexist inside one field without preventable collision, deadlock or repeated player rescue.
+
+The architecture defines what the cooperative system must achieve. Implementation will discover how those responsibilities can be realised through GIANTS extension points. Runtime convenience must not weaken architectural obligations.
+
+The system remains a light-touch exception handler:
 
 ```text
-clear conflict
-→ enter refuge
-→ establish positive passage
-→ return approximately
-→ enter Native Handover Envelope
-→ relinquish all temporary authority
-→ resume normal Situation Assessment
+normal GIANTS operation
+        ↓
+Situation Assessment detects material augmentation need
+        ↓
+Decision establishes one bounded Commitment
+        ↓
+Control executes only authorised capabilities
+        ↓
+observed Reality validates, revises or disproves the hypothesis
+        ↓
+GIANTS resumes unrestricted ownership when terminal settlement permits
 ```
 
-The Native Handover Envelope replaces exact rejoin. OuttaMyWay does not own exact lane capture, deployment, lowering, work activation or native job recovery. GIANTS owns those tasks after unrestricted handover.
+OuttaMyWay does not replace GIANTS route generation, agronomic job ownership or ordinary field-work execution.
 
-Native Reposition capability completion means authority relinquishment. It does not complete the Commitment. The Operational Picture continues to carry the Situation until normal Situation Assessment observes independent continuation and Safe Release.
+## 2. Scope boundary
 
-Motion speed is purpose-derived from stopping distance and curvature under a transit ceiling. Return orientation is conditional; no turn exists without a clearance, refuge-entry or handover-alignment purpose.
+### In scope
 
-The other passing vehicle’s subsequent manoeuvring is not changed by this amendment.
+- simultaneous native GIANTS AI field workers inside one Field World;
+- player-controlled and completed assemblies when their occupancy affects active workers;
+- bounded local prediction through the next material manoeuvre and trajectory settlement;
+- temporary speed, hold, movement, orientation and configuration-related authority where supported;
+- Terminal Occupancy resolution;
+- continuing observation, evidence acquisition and obligation settlement;
+- safe return of authority to GIANTS.
 
-## v4.6.59 translation-authority amendment
+### Out of scope
 
-Reality disproved the assumption that the Traffic Permission Gate constrains translation only. ADR-0008 separates configuration authority, translation authority and field-worker progression authority. Delegated restoration now enables GIANTS field-worker progression under a separate reversible zero-speed translation lease. Terminal restoration failure is inert. A future unrestricted return-to-GIANTS architecture remains explicitly undecided.
+- map-wide navigation to a field;
+- general route planning or route substitution;
+- replacement worker AI;
+- Courseplay-style predetermined multi-vehicle routing;
+- combine/wagon offloading coordination;
+- multiple-combine harvesting systems;
+- behavioural control of the player;
+- treating Temporary Slack as permanently released space.
 
-## v4.6.58 restoration-authority amendment
+Reverse is architecturally available as a possible movement capability. Reverse Actuation Discovery remains an implementation and validation activity.
 
-ADR-0007 separates the restoration postcondition from its actuator. Native Reposition ends when the assembly reaches its rejoin position under the retained movement constraint. Restore then returns configuration authority to GIANTS without issuing direct fold, lower or work-state commands. GIANTS is asked to continue while translation remains constrained; OuttaMyWay observes terminal configuration settlement, releases movement on a later update, and requires sustained native continuation. Safe Release remains owned by Decision and Commitment.
+## 3. Foundational distinctions
 
-This amendment is generic. It applies to any native configuration transition that GIANTS owns, including unfolding, lowering or switching work state. It does not require route reconstruction and does not permit Control to infer Commitment completion from one motion sample.
+### Reality, Observation and Knowledge
 
-## v4.6.50 Architecture Recovery Boundary
+- **Reality** is the world as it exists.
+- **Observation** is sourced evidence sampled from Reality.
+- **Knowledge** is the system's current interpretation of those observations.
+- **Situation Assessment** produces Knowledge only.
+- **Decision** decides whether augmentation is required and what action is admissible.
+- **Control** executes bounded authority and reports realised outcomes.
 
-This candidate begins from exact canonical v4.6.43 and preserves its runtime behaviour. Temporary v4.6.44–v4.6.49 implementations are evidence, not promoted operating architecture.
+No layer may silently substitute its interpretation for another layer's responsibility.
 
-### Recovered information flow
+### Situation, Encounter and Commitment
+
+- A **Situation** may persist while entities remain materially relevant.
+- An **Encounter** is one locally coherent interaction within that Situation.
+- A **Commitment** is Decision-owned continuing responsibility established to achieve one governing objective.
+
+A persistent Situation does not imply a permanent Encounter or Commitment. Repeated Encounters may occur between the same assemblies.
+
+### Assembly and Job Episode identity
+
+Assembly identity may persist across stops, player control and restarted work.
+
+A **Job Episode** is one independently admitted GIANTS AI job instance. Its identity ends when:
+
+- the player manually stops the worker;
+- the player enters or takes control;
+- GIANTS aborts or faults the job;
+- the job is replaced or restarted.
+
+The following do not end a Job Episode:
+
+- the worker becomes blocked;
+- OuttaMyWay temporarily Holds it;
+- temporary loss of movement while the admitted job remains authoritative.
+
+A restarted or replacement job is independently admitted even when the assembly, work type and apparent purpose are unchanged.
+
+## 4. Bounded Field World and space knowledge
+
+The field polygon defines the bounded Field World for one Operation. OuttaMyWay does not assume responsibility for arbitrary external navigation or obstacles.
+
+Full-Envelope Field Containment remains mandatory: the complete represented assembly and its relevant movement/configuration sweep must remain within the field polygon for any OuttaMyWay-authorised repositioning.
+
+While any worker remains active, intra-field space is not permanently released. Situation Assessment may support only:
+
+- **Committed Demand** — space required by current admitted continuation;
+- **Potential Demand** — space plausibly required by a future local continuation;
+- **Temporary Slack** — space not currently demanded but not permanently relinquished.
+
+Historical coverage, current vacancy or completion of one pass cannot establish permanent release.
+
+## 5. Replacement-core information flow
 
 ```text
 Reality
     ↓
-Observation
+Observation adapters
     ↓
 Situation Assessment
     ↓
 Operational Picture Knowledge
     ↓
-Decision Engine
+Complete supportable Candidate Action Space
+    ↓
+Mandatory constraint and composition verdicts
+    ↓
+Decision selection
     ↓
 Commitment
     ↓
-Control capability
+Bounded Control authority
     ↓
 Outcome Observation
-    ↺ Situation Assessment
+    ↺
 ```
 
-Situation Assessment remains aware of the complete bounded Field World. It interprets observations and publishes Knowledge. Decision evaluates candidate actions and continuing Commitments using the current Operational Picture. Control executes bounded authority and reports observed outcomes.
+### Situation Assessment
 
-## v4.6.57 Active ADR-0006 Vertical Slice
+Situation Assessment maintains:
 
-v4.6.57 implements the canonical contract through one generic active path. It does not introduce a TS015-specific trigger or controller.
+- Entity and assembly identity;
+- Operation Participation and Situation Relevance;
+- Current Space and bounded Future Space;
+- Committed Demand, Potential Demand and Temporary Slack;
+- representation provenance, confidence and Representation Fitness;
+- applicable environmental and architectural constraints;
+- observed Control outcomes;
+- uncertainty and evidence gaps.
 
-### Runtime representation
+Situation Assessment does not select roles, strategies, terminal dispositions or Control actions.
 
-- Observation publishes sourced runtime, field-boundary, assembly-dimension and Control-outcome facts.
-- Future-Space Assessment represents Current Motion, the next material manoeuvre sweep, trajectory settlement and Hold stopping space as bounded local geometry.
-- Situation Assessment publishes relationship and conflict Knowledge, temporal and spatial reserves, operational-sufficiency evidence, action admissibility, observation contracts and Safe-Release evidence.
-- Decision compares `REGULATE_SPEED`, `HOLD`, `REPOSITION`, `RESTORE`, bounded observation and explicit escalation.
-- Commitment Ledger preserves one Situation purpose across relationship and capability changes.
-- Control executes only the requested bounded capability and reports physical outcomes.
+### Candidate Action Space
 
-A moving participant requires positive field-boundary evidence before its local continuation is classified as bounded. Unknown evidence yields `CLEARANCE_UNRESOLVED`; current straight-line motion cannot substitute for continuation clearance.
+Decision must evaluate the complete set of actions currently supportable by available representation, authority and capability. Preference-band exhaustion is not total candidate exhaustion.
 
-### Capability and lifecycle rule
+A candidate may be rejected because it is:
 
-An `EFFECTIVE` speed or Hold outcome is only mechanical evidence. If temporal reserve, Future-Space reserve or Action Space continues to degrade, Decision revises the same Commitment to another admissible capability. Restoration is explicit. Commitment completion remains prohibited until the Safe Release Point is positively established.
+- physically inadmissible;
+- outside Field World containment;
+- unsupported by Representation Fitness;
+- incompatible with current obligations or authority;
+- compositionally unsafe;
+- unavailable through proven Control capability;
+- insufficient for the governing purpose.
 
-### Validation status
+The absence of a preferred candidate does not authorise an unsafe special case.
 
-The geometry and lifecycle implementation are hypotheses pending runtime validation. Manually-started TS015 is the first test because it is repeatable, not because it owns policy.
+### Mandatory constraint enforcement
 
-## v4.6.56 Future-Space and Safe-Release Contract
+Architectural constraints are admissibility gates, not advisory annotations. A candidate receives authority only after every applicable constraint has been evaluated sufficiently for that action.
 
-Temporary v4.6.51–v4.6.55 runtime work is evidence, not promoted implementation. It demonstrated that the recovered responsibility flow can execute a cooperative passage, but also that current kinematic clearance and mechanically effective Control are insufficient release evidence.
+Control may reject stale or compositionally changed authority. It may not waive or reinterpret Decision constraints.
 
-### Bounded local Future Space
+## 6. Continuing Intent Priority
 
-Situation Assessment shall publish plausible local continuations through each relevant participant's next material manoeuvre, manoeuvre sweep and subsequent trajectory settlement. This is the minimum local continuation Knowledge needed to evaluate simultaneous GIANTS operation. It is explicitly not general route planning.
+A live admitted intent continues to govern ordinary resolution until it genuinely ends or another independently admitted authoritative intent replaces it.
 
-When that continuation cannot yet be bounded and the uncertainty is material, the Operational Picture records `CLEARANCE_UNRESOLVED`.
+Therefore:
 
-### Persistent Situation Relevance
+- blockage does not end intent;
+- temporary inactivity does not end intent;
+- OuttaMyWay Hold does not end intent;
+- strategy failure does not end intent;
+- insufficient evidence does not end intent;
+- confirmed player stop/takeover ends the affected AI Job Episode;
+- confirmed GIANTS abort/fault ends it;
+- a newly admitted replacement intent supersedes it.
 
-A Situation persists across relationship classifications while any participant's Current Space or plausible Future Space can affect another participant's continuation. `CROSSING`, `PARALLEL`, `SEPARATING`, `MANOEUVRING` and `OPPOSED` are Knowledge labels, not encounter lifecycle states.
+Continuing Intent Priority governs ordinary `ACTIVE` and `WAITING_FOR_EVIDENCE` behaviour. It ends when the Commitment enters `SETTLING`.
 
-### Commitment Preconditions
+## 7. Commitment contract
 
-Before beginning or materially changing any manoeuvre or authority transition, Decision must establish that the proposed Future Space remains admissible in the current Operational Picture. The rule applies to unchanged continuation, speed restoration, hold release, refuge movement, configuration transition, rejoin and GIANTS handback.
+A Commitment begins only after Decision establishes enforceable continuing intent. Candidate proposals are not Commitments.
 
-### Bounded Observation Contract
+Conceptually, each Commitment records:
 
-`CONTINUE_OBSERVATION` is admissible only when Decision declares the unresolved Knowledge, expected evidence, preserved useful action, exhaustion condition, reassessment deadline and Progress participant. Passive observation without that contract is not a valid default.
+```text
+Identity
+Objective
+Governing Basis
+Lifecycle state
+Strategy
+Situation dependencies
+Obligation Set
+Progress-actuation owner
+Capability reservations
+Validated Effective Actuation Composition
+Evidence contracts
+Intended terminal disposition
+Terminal cause
+Terminal settlement evidence
+```
 
-### Operational sufficiency
+### Governing Basis
 
-Control reports mechanical outcomes. Situation Assessment interprets realised change. Decision separately determines whether the effect is sufficient for the Commitment purpose. An `EFFECTIVE` capability can therefore require Commitment revision.
+The **Governing Basis** identifies the admitted intent or intent set and Operation context that make the Commitment objective applicable.
+
+A participant state change terminates or supersedes a Commitment only when it invalidates that Governing Basis. Incidental changes to another participant do not automatically terminate every Commitment that observes it.
+
+The first authoritative event that invalidates the Governing Basis determines the intended terminal cause. Later events may affect settlement or create a successor, but do not rewrite history.
+
+## 8. Commitment lifecycle
+
+The replacement core has three non-terminal states.
+
+### `ACTIVE`
+
+The Commitment owns an applicable objective and may progress toward it.
+
+It may:
+
+- observe and reassess;
+- revise strategy;
+- evaluate candidates;
+- issue authorised progress Control;
+- preserve immediate safety;
+- create, satisfy or transfer eligible obligations;
+- enter `WAITING_FOR_EVIDENCE`;
+- begin terminal settlement.
+
+Multi-stage movement, capability changes, retries and refuge revisions remain one Commitment while the Governing Basis and objective remain applicable.
+
+### `WAITING_FOR_EVIDENCE`
+
+The Commitment remains responsible, but evidence is insufficient to justify further progress Control.
+
+It may:
+
+- observe;
+- acquire evidence under an explicit evidence contract;
+- maintain bounded immediate safety;
+- preserve only necessary existing effects;
+- return to `ACTIVE` when sufficient evidence arrives;
+- enter `SETTLING` through a fail-safe or terminal cause.
+
+It may not:
+
+- treat elapsed time as confirmation;
+- infer success from silence or inactivity;
+- initiate speculative progress;
+- abandon responsibility because evidence is unavailable.
+
+Every evidence contract identifies:
+
+- the unresolved proposition;
+- expected evidence;
+- evidence provenance;
+- preserved useful action;
+- exhaustion condition;
+- reassessment deadline;
+- fail-safe exit.
+
+### `SETTLING`
+
+Ordinary objective-progress authority has ended, but unresolved obligations remain.
+
+It may:
+
+- observe;
+- reconcile Control it issued;
+- obtain settlement evidence;
+- release capability authority;
+- satisfy obligations;
+- establish evidenced basis cessation;
+- transfer eligible obligations atomically;
+- maintain bounded immediate safety.
+
+It may not:
+
+- revive the ended objective;
+- select a new strategy for that objective;
+- issue new objective-progress Control;
+- terminate while an obligation remains unaccounted for.
+
+`SETTLING` carries an intended terminal disposition. The disposition becomes final only at Terminal Settlement.
+
+## 9. Obligation architecture
+
+An **Obligation** is an owned requirement that remains in force while its basis remains valid and until an evidenced settlement disposition occurs.
+
+Every obligation has:
+
+- stable identity;
+- origin;
+- basis;
+- exactly one current owning Commitment;
+- required outcome;
+- required authority;
+- evidence contract;
+- transfer policy;
+- terminal dependency;
+- settlement disposition.
+
+An obligation settles only through:
+
+1. **Satisfaction** — its required outcome is achieved and evidenced.
+2. **Basis cessation** — authoritative evidence proves the condition requiring it no longer exists.
+3. **Accepted transfer** — an eligible successor Commitment atomically accepts ownership.
+
+No obligation may become ownerless.
+
+### Ownership classes
+
+#### Origin-bound
+
+Cannot transfer:
+
+- reconcile Control issued by the Commitment;
+- prove predecessor effects ceased;
+- release acquired authority;
+- record terminal cause and provenance;
+- record accepted transfers.
+
+#### Continuity
+
+May transfer to an eligible accepting Commitment:
+
+- immediate physical safety;
+- stable Configuration Integrity;
+- continuing clearance;
+- Terminal Occupancy resolution;
+- observation of a still-relevant hazard.
+
+#### Intent-relative
+
+Remain valid only while a particular intent requirement remains authoritative:
+
+- return to the former working line;
+- resume the former Job Episode;
+- complete a former refuge strategy;
+- restore a configuration required only by the displaced intent.
+
+A new authoritative intent may close these through evidenced basis cessation.
+
+### Recognised internal owner
+
+All internal obligations are owned by Commitments.
+
+The Operation, Situation Assessment, Decision and Control layers are not fallback obligation owners. The player is an external actor with physical agency, not an internal Obligation owner.
+
+If no eligible successor exists, the current Commitment remains in `SETTLING`.
+
+## 10. Authority integrity
+
+Many Commitments may observe or reason about one assembly. Only one Commitment may own objective-progress actuation for that assembly at a time.
+
+Capability reservations refine that ownership but do not permit independent progress authorities to act through different capabilities on the same assembly.
+
+### Effective Actuation Composition
+
+Every proposed action must be validated as part of the complete **Effective Actuation Composition**, including:
+
+- existing commands;
+- capability reservations;
+- residual predecessor effects;
+- simultaneous actions on relevant assemblies;
+- Future-Space interactions;
+- global invariants such as never holding all participants.
+
+Decision validates the composition before authorisation. Control validates that the composition remains materially current immediately before actuation.
+
+A mechanically valid action is inadmissible when its combined effect is unsafe.
+
+### Safety authority
+
+Bounded safety inhibition may prevent unsafe progress while ordinary capability ownership is unavailable or ambiguous. Safety authority is a veto/protective constraint, not a second progress owner.
+
+## 11. Terminal settlement
+
+A Commitment may enter a terminal disposition only after every obligation has been:
+
+- satisfied;
+- closed through evidenced basis cessation; or
+- atomically transferred to an eligible accepting Commitment.
+
+This point is the **Terminal Settlement Point**.
 
 ### Safe Release Point
 
-A Commitment may complete only when its intended operational effect is achieved, realised outcomes are observed, no participant is blocked, relevant Future Spaces remain clear through the Continuation Safety Horizon, material uncertainty is resolved, restoration cannot immediately recreate the Situation and independent GIANTS continuation is observed.
+A Terminal Settlement Point where no continuing responsibility transfers to a successor.
 
-Current separation, negative closing rate, constant-velocity clearance or completion of one Control capability is not sufficient release evidence.
+### Safe Handover Point
 
-### Failure aftermath
+A Terminal Settlement Point where continuing obligations transfer to a successor Commitment, or where external physical agency changes while internal coordination responsibilities remain correctly owned.
 
-A failed capability or blocked participant remains augmentation-relevant. Decision must revise, remain explicitly failed but relevant, or escalate; it cannot silently return the Situation to normal operation.
+Intent authority may change immediately. Physical actuation authority transfers only when conflicting predecessor effects are reconciled.
 
-The detailed governing decision is recorded in [`adr/ADR-0006-future-space-safe-release.md`](adr/ADR-0006-future-space-safe-release.md), and the responsibility map is recorded in [`ARCHITECTURE_FLOW.md`](ARCHITECTURE_FLOW.md).
+## 12. Terminal dispositions
 
+### `SUCCEEDED`
 
-### Recovered ownership rule
+The objective was achieved and Terminal Settlement completed.
 
-- Architecture and policy define non-negotiable invariants.
-- Situation Assessment maintains current constraint Knowledge, uncertainty and confidence.
-- Decision determines which available Knowledge is material to a candidate action or continuing Commitment and applies every mandatory constraint.
-- Control cannot waive, reinterpret or bypass admissibility.
+### `FAILED`
 
-The temporary active path violated this separation through **Assessment–Decision–Control Collapse** and **Fragmented Commitment Ownership**. Those are implementation findings, not replacement architecture.
+The applicable objective could not be achieved, but all resulting obligations were safely settled. Structured causes may include:
 
-### Constraint applicability
+- supportable candidates exhausted;
+- Representation Fitness insufficient;
+- required capability unavailable;
+- Control failure;
+- evidence fail-safe exhausted;
+- autonomous resolution unavailable.
 
-A candidate action may receive authority only when every applicable architectural, environmental, representational and control constraint has been evaluated sufficiently to support that action.
+### `SUPERSEDED_BY_NEW_INTENT`
 
-For example, `REPOSITION` necessarily requires:
+A newly admitted authoritative intent displaced the Governing Basis of a still-live Commitment.
 
-```text
-field containment
-destination occupancy clearance
-movement and configuration sweep clearance
-representation fitness
-native motion capability
-existing-Commitment compatibility
-```
+The successor owns progress under the new intent. The predecessor enters `SETTLING`, retains origin-bound obligations and may transfer eligible continuity obligations.
 
-The Field World boundary does not become relevant only when a local controller remembers to query it. It is mandatory because physical repositioning is being considered.
+### `CANCELLED_BY_SOURCE_INTENT_TERMINATION`
 
-### Continuing Commitment evaluation
+The governing source Job Episode genuinely ended without being replaced by a newly admitted authoritative intent.
 
-A Commitment remains provisional until its intended operational effect is confirmed, superseded or abandoned through updated Situation Assessment.
+Structured causes include player stop, player takeover, GIANTS abort and GIANTS fault.
 
-A change in Future Space, field constraint, participant state, representation fitness or Control outcome can invalidate the assumptions on which the Commitment depends. The Decision Engine must then maintain, revise, replace or cancel the Commitment. Controller exclusivity must not freeze an obsolete interpretation.
+### `CANCELLED_BY_OPERATION_TERMINATION`
 
-### Decision principles
+The Operation context forming the Governing Basis ended and no continuing operational basis remained.
 
-**Sufficiency over Completeness** — complete Knowledge is not required. Available Knowledge must be sufficient for the particular conclusion or action.
+Operation membership reaching zero does not instantly terminate the Commitment. Origin-bound Control, authority, configuration and evidence obligations keep it in `SETTLING` until resolved.
 
-**Option Preservation** — Decision considers how continued evolution changes or removes the remaining Action Space.
+## 13. Intent Supersession
 
-**Earliest Sufficient Action** — when current Knowledge supports a proportionate option-preserving action, Decision should not choose continued unchanged operation merely to obtain greater certainty when continued evolution is likely to remove that action.
+A newly admitted replacement Job Episode becomes authoritative immediately.
 
-**Minimum Effective Augmentation** — choose the least disruptive augmentation reasonably expected to preserve or improve safe Action Space, and maintain it only while its purpose remains valid.
+During the bounded **Supersession Handover Interval**:
 
-**Option-Preserving Augmentation** — a small, proportionate and preferably reversible intervention whose purpose is to preserve or enlarge safe Action Space rather than resolve the entire encounter immediately.
+- the successor is the Governing Successor;
+- the predecessor is the Settling Predecessor;
+- old objective-progress authority ends immediately;
+- the predecessor reconciles its own effects;
+- the successor may assess and prepare immediately;
+- successor actuation is bounded by unavailable or reserved capabilities;
+- eligible obligations transfer only through atomic acceptance;
+- conflicting progress Control is forbidden.
 
-Frequent reassessment may be normal. Frequent intervention is not automatically justified.
+`SUPERSEDED_BY_NEW_INTENT` becomes terminal only after predecessor Terminal Settlement.
 
-### Manoeuvre-leg commitment
+## 14. Player takeover
 
-Continuous Situation Assessment does not grant continuous steering revision. Once Decision commits a viable refuge movement, Control executes one bounded manoeuvre leg to a settled boundary. New candidate geometry remains advisory during that leg unless fresh evidence demonstrates that continuing is no longer admissible. At settlement, Decision reassesses from the new current pose and may commit another atomic leg. This enforces the existing rule that frequent reassessment does not automatically justify frequent intervention.
+Player takeover ends the affected AI Job Episode and OuttaMyWay progress authority over that player-controlled assembly.
 
+It does not transfer internal Obligation objects to the player.
 
-### Retired legacy labels
+The settling Commitment must still:
 
-The following underdefined v4.3.8 labels are retired as independent concepts:
+- reconcile OuttaMyWay-issued Control;
+- release acquired authority;
+- reassess intent-relative obligations;
+- preserve or transfer continuing safety and spatial obligations;
+- continue representing the player-controlled assembly as an obstacle where relevant.
 
-- Relevance Envelope
-- Decision-Relevant World
-- Decision-Relevant Constraints as a standalone Situation Assessment output
-- Decision Readiness
-- Option Horizon as a standalone object
+Player control transfers physical actuation agency, not necessarily Situation responsibility.
 
-Their valid concerns remain represented by Field World, Operational Picture, Situation Relevance, Future Space, Action Space, explicit constraint applicability, Runtime Control Admissibility, Sufficiency over Completeness and Option Preservation.
+## 15. Terminal Occupancy
 
-### Experimental Capability Corpus
+A completed worker may leave ordinary Operation Participation while its assembly remains Situation-relevant.
 
-The temporary v4.6.44–v4.6.49 work retains evidential value, including Persistent Speed Authority, Temporal Separation Reserve, Observation Ownership evidence, Post-Passage Continuation evidence, Protected Controller Handoff semantics, Future Corridor Frame, Refuge Viability evidence and structured outcome telemetry.
-
-Those mechanisms require architectural relocation before active reuse. Their temporary controller state machines are not the future top-level Decision architecture.
-
-## Entry point
-
-`modDesc.xml` loads only `scripts/main.lua`. The main script sources the remaining modules in dependency order.
-
-## Modules
-
-### `scripts/config.lua`
-Global constants, version, tuning values and runtime state tables.
-
-### `scripts/core/Runtime.lua`
-Main update loop and established reactive behaviour. Owns active-worker collection, wait/release, recovery, passage assist, AI restart handling and map lifecycle.
-
-### `scripts/prediction/CourseLookahead.lua`
-Reads `AIDriveStrategyFieldCourse`, extracts ordered segment positions, estimates the active course location, builds future polylines, predicts route intersections and logs completion-priority diagnostics. In the current branch this is observer-only.
-
-### `scripts/prediction/VectorPrediction.lua`
-Constant-velocity TCPA/CPA prediction and working-width clearance envelopes. Retained as a secondary and emergency predictor.
-
-### `scripts/decision/DecisionEngine.lua`
-Scores predictive actions, manages commitment stability and exposes the primary recommendation. Predictive control must respect encounter authority.
-
-### `scripts/reservation/ReservationEngine.lua`
-Creates time-bounded corridor reservations from predictions and tracks the primary reservation.
-
-### `scripts/control/EncounterController.lua`
-Authoritative pair controller. Issues GO, WAIT or DIRECT_CONTROL commands and prevents predictive logic from reversing an active reactive encounter.
-
-### `scripts/geometry/FieldBoundary.lua`
-GIANTS-backed field-boundary discovery and rearward/forward edge measurements. Retains the reported root boundary and field islands for passive Field World evidence.
-
-### `scripts/prototypes/FieldWorldProbe.lua`
-Passive Prototype 05 observer. Discovers the bounded Field World, retains active and non-active mission vehicles independently of Operational Membership, and records dynamic Situation Relevance. Current envelope geometry is diagnostic only and never issues Control.
-
-### `scripts/settings/Settings.lua`
-Runtime settings and debug-channel state.
-
-### `scripts/settings/ConsoleCommands.lua`
-Console commands for enabling the mod, simulation mode, HUD, warnings and debug channels.
-
-### `scripts/ui/Hud.lua`
-Custom status panel and warnings.
-
-### `scripts/events/OuttaMyWayStateEvent.lua`
-Multiplayer state synchronisation for HUD/status information.
-
-## Authority order
+A Terminal Occupancy Commitment is justified when:
 
 ```text
-Direct recovery / re-entry
-        >
-Encounter controller
-        >
-Committed predictive action
-        >
-New traffic recommendation
-        >
-Diagnostic-only forecast
+completed-worker occupancy
+materially affects
+Committed Demand or Potential Demand
+of active workers
 ```
 
-## Update cadence
+Its obligations may include:
 
-- Runtime conflict loop: 100 ms.
-- Expensive geometry/course work: throttled and cached.
-- HUD: draw callback with cached state.
-- Diagnostic logging: change-driven plus heartbeat.
+- Spatial Responsibility;
+- Physical Safety;
+- Evidence Integrity;
+- Configuration Integrity.
 
-## Current 4.0 limitation
+It settles when:
 
-The active course segment estimate can jump during turns because proximity alone may select a nearby parallel segment. Until corrected, course ETAs and completion priority are diagnostics only.
+- occupancy is physically resolved;
+- an eligible successor Commitment accepts the continuing obligation; or
+- relevant active demand demonstrably ceases.
 
-## Observer contract (4.2.3)
+Physical presence alone does not create a permanent obligation after all active demand has ended.
 
-The Observer is global and read-only. It broadcasts facts for every active AI field worker without grouping by field, farmland, job or conflict.
+## 16. Operation termination
 
-`EventBus` events include `workerObserved`, `workerAttached`, `workerDetached`, `workerStateChanged`, `workerPhaseChanged`, `workerTurnStarted`, `workerTurnCompleted`, and `workerBlockedChanged`.
+Commitment lifecycle and Operation membership are separate.
 
-Consumers decide relevance locally. The diagnostic `InteractionContexts` consumer creates persistent contexts from spatial proximity and observed movement only. Field IDs are deliberately not part of the grouping rule. Contexts preserve identity across temporary dormancy and are not route or terrain-connectivity claims.
+When ordinary Operation membership reaches zero:
 
-### Candidate pairs and interaction contexts
+- demand-dependent spatial obligations may close through basis cessation;
+- issued Control must still be reconciled;
+- authority must still be released;
+- the assembly must remain in a stable, representable and controllable state;
+- terminal evidence and provenance remain required.
 
-The locality consumer uses two stages. Candidate pairs are broad, temporary observations. Promotion to an interaction group requires movement evidence or close-range relevance. A straight-line field-continuity sample may be recorded as supporting evidence, but it is not authoritative because U-shaped fields, islands, ditches, hedges, and map-specific ground APIs can invalidate a simple line test.
+A Commitment may outlive ordinary Operation participation in `SETTLING`. No generic remnant owner is required.
 
+## 17. Representation Fitness and candidate exhaustion
 
-### Persistent context lifecycle
+Representation Fitness determines which conclusions and actions available Knowledge can support.
 
-A context is created on the first promoted encounter, becomes `ACTIVE` while movement evidence is present, and becomes `DORMANT` when that evidence fades. The same member set reactivates the same context ID during the retention window. Contexts record first seen time, last active time, cumulative active time, and encounter count.
+Partial representation does not necessarily prevent every action. It removes only claims whose safety depends on missing evidence.
 
-## Field World and Full-Envelope Field Containment (v4.6.6)
+No Silent Under-Approximation remains mandatory: unknown or partial geometry must not be represented as smaller than the available evidence supports.
 
-The field boundary polygon defines the bounded **Field World** for one field Operation. OuttaMyWay is not responsible for map-wide navigation or arbitrary external obstacles.
+Preference bands are exhausted sequentially. Only exhaustion of the complete supportable Candidate Action Space may justify autonomous-resolution failure.
 
-**Full-Envelope Field Containment** is an architectural invariant:
+## 18. Multi-stage strategy continuity
 
-> The complete operational collision envelope of an AI worker — vehicle plus every attached or towed implement, including configuration-dependent maximum extent and projected swept geometry — remains wholly inside the field polygon at all times.
+A Commitment remains one Commitment across:
 
-Containment applies to the complete geometry, not the vehicle root node, tractor body, centreline or nominal working width. A deployed boom must never sweep partially outside the polygon. Objects immediately beyond the polygon, including hedges, trees, ditches and pylons, therefore remain outside normal obstacle scope. The hedges removed from TS001 were a test workaround for missing containment behaviour and must not become a final-system requirement.
+- slow/hold/refuge progression;
+- multiple manoeuvre legs;
+- orientation before translation;
+- candidate revision at settled boundaries;
+- configuration transition;
+- Native Handover;
+- return to GIANTS;
+- bounded evidence waits.
 
-Situation Assessment separates three classifications:
+A stage or capability may complete without the Commitment completing.
 
-- **Field World Membership:** physical geometry intersects the bounded Field World;
-- **Operational Membership:** the Entity actively participates in the Operation;
-- **Situation Relevance:** the Field World Member can currently affect an Operation member or a plausible future.
+Strategy revision must preserve:
 
-A stopped, completed or player-controlled vehicle can remain a Field World Member and become Situation-relevant after leaving Operational Membership. Static geometry wholly inside the polygon also belongs to the Field World.
+- Commitment identity;
+- Governing Basis;
+- open Obligation Set;
+- authority history;
+- evidence provenance.
 
-Prototype 05 implements passive vehicle observation using conservative current-envelope rectangles. It does not yet implement exact maximum geometry, projected sweep or active containment.
+## 19. Eight must-not-be-deferred questions
 
-### Geometry Domain Separation (v4.6.8)
+1. **When does a completed worker remain relevant?**  
+   While its assembly materially affects active demand, safety, representation, evidence, configuration or another open obligation.
 
-Situation Assessment must not collapse different spatial truths into one width value:
+2. **Does Continuing Intent Priority govern ordinary resolution?**  
+   Yes, until the source intent genuinely ends or a new authoritative intent is independently admitted.
 
-- **GIANTS Collision Geometry** is physics evidence attached to model components;
-- **Physical Occupancy Envelope** is the conservative ground-plane area occupied now by the complete vehicle–implement Entity;
-- **Working Footprint** is the area receiving agricultural work and may be wider, equal to or narrower than physical occupancy;
-- **Configuration Transition Sweep** is the area occupied while folding, unfolding, raising or lowering;
-- **Projected Motion Sweep** is the area likely to be occupied through translation, steering and articulation.
+3. **What obligations does Terminal Occupancy create?**  
+   Spatial Responsibility, Physical Safety, Evidence Integrity and, where required, Configuration Integrity.
 
-Working width shall never substitute for physical geometry. The Condor and Patriot can pass safely in adjacent opposing lanes, demonstrating that physical boom extent, working width and active GIANTS collision geometry can differ.
+4. **How do multi-stage strategies remain one Commitment?**  
+   Stages and capability changes revise execution without replacing the Governing Basis, identity or Obligation Set.
 
-**No Silent Under-Approximation** is an invariant: Situation Assessment must expose unknown, partial or low-confidence geometry rather than representing an Entity as smaller than the available evidence supports. A conservative broad-phase approximation may exclude distant cases, but it cannot become authoritative containment knowledge merely because it is convenient.
+5. **What constitutes terminal settlement?**  
+   Every obligation is satisfied, closed through evidenced basis cessation or atomically transferred to an eligible accepting Commitment.
 
-### Configuration–Pose Separation and the Model-Derived Route (v4.6.10)
+6. **When may responsibility transfer to the player?**  
+   Physical actuation agency changes when player control is evidenced. Internal obligations do not transfer to the player; continuing coordination remains internally owned.
 
-A purchased **Geometry Family** selects the collision-node family available to an Entity. **Physical Pose** determines where those nodes are now; **Operational State** is independent again. The same 36 m Condor may be folded and stationary, transitioning, deployed and working, or deployed and parked.
+7. **What is the scope of route substitution?**  
+   General route substitution and route ownership are outside the replacement core.
 
-The Model-Derived Collision Catalogue binds static asset knowledge—collision identity, hierarchy, filters, configuration membership and local mesh extent—to live node transforms. Prototype 08 currently provides identity/hierarchy and pose only. Collision-node origins are not mesh bounds, and the Collision Mesh Extraction Gap remains explicit.
+8. **What happens if an Operation ends with an unresolved remnant?**  
+   The owning Commitment remains in `SETTLING`; demand-dependent obligations may lose basis, while origin-bound obligations remain until settled.
 
-Prototype 07 passively inventories GIANTS-accessible geometry and derives a current compound envelope with explicit provenance and confidence. It does not claim exact collision truth, configuration-transition sweep, projected motion sweep or containment.
+## 20. Implementation boundary
 
-### Component-Local Sphere Bridge and Extent Truth–Utility Separation (v4.6.13)
+This architecture is not implemented by v4.6.78.
 
-Prototype 09 strongly supported a runtime bridge from source collision identity through a correctly resolved runtime collision node to a conservative component-local geometry sphere. All eight active Condor 36 m boom nodes retained stable local centre/radius through articulation and transformed coherently into engine world bounds.
+The active runtime remains the v4.6.56 implementation retained by canonical v4.6.71. Historical v4.6.57–v4.6.70 mechanisms remain evidence only.
 
-The source asset `shapeId` is retained as provenance metadata, not yet as a proven runtime selector. Exact mesh dimensions remain unresolved. Sphere Precision Tax means long thin or tapered components may be truthfully bounded while still including too much empty space for operational containment.
+Implementation must proceed separately from architecture and should begin with:
 
-### Runtime Geometry Identity Separation (v4.6.13)
+1. explicit value contracts and identities;
+2. passive lifecycle and obligation traces;
+3. state-transition tests;
+4. Effective Actuation Composition shadow validation;
+5. isolated migration of one bounded Control capability;
+6. runtime validation against observed Reality.
 
-Prototype 10 disproved the stronger assumption that `vehicle.rootNode + source asset shapeId` selects arbitrary descendant geometry. All tested physical IDs and a nonphysical control aliased to one root-Entity sphere. This established two constraints:
+Numerical thresholds, Native Continuation Speed estimation, Reverse Actuation Discovery and exact capability adapters remain implementation or empirical discoveries. They may refine implementation without altering the ownership and lifecycle model unless Reality disproves it.
 
-- **Self-Coherence Blind Spot:** internally coherent local/world bounds can still describe the wrong Entity;
-- **Source-to-Runtime Shape Resolution:** source shape identity and runtime Entity identity require an explicit bridge.
+## 21. Normative companion contracts
 
-Situation Assessment must therefore keep three domains separate:
+Implementation must also conform to:
 
-1. source collision identity and configuration membership;
-2. resolved runtime Entity identity and live pose;
-3. geometry-bound identity returned by the runtime API.
+- `ARCHITECTURE_CONFORMANCE_MATRIX.md`;
+- `COMMITMENT_STATE_MACHINE.md`;
+- `CANDIDATE_ACTION_CONTRACT.md`;
+- `RESPONSIBILITY_MAP.md`;
+- `REPLAY_VALIDATION_SPECIFICATION.md`;
+- `MIGRATION_PLAN.md`;
+- `REMOVAL_REGISTER.md`.
 
-Prototype 11 strongly supported first-argument runtime Entity geometry authority and Second-Argument Non-Authority for the tested calls. No complete physical coverage is claimed until the remaining current physical source shapes are resolved to runtime Entities.
-
-## Logging vocabulary (4.2.6)
-
-Runtime diagnostics use the full searchable mod name followed by an architectural category.
-
-| Prefix | Meaning | Responsibility |
-|---|---|---|
-| `INFO` | Information | Lifecycle, version and configuration events. |
-| `OBS` | Observation | Facts read from the world without influencing it. |
-| `DEC` | Decision | Why a course of action was selected. |
-| `CTL` | Control | Commands issued to influence vehicle behaviour. |
-| `VAL` | Validation | Comparison of expected and observed outcomes. |
-| `REC` | Recovery | Degraded situations, handoff and recovery activity. |
-| `PERF` | Performance | Timing, update frequency and resource-use diagnostics. |
-
-Example: `[OuttaMyWay][OBS] Worker attached ...`
-
-These abbreviations are part of the project vocabulary, not merely debugging shorthand.
-
-## Architectural Concept Governance
-
-The authoritative Accepted, Deferred and Rejected concept classifications are maintained in `CONCEPT_REGISTER.md`. Engineering promotion and review rules are defined in `ENGINEERING_ARCHITECTURE.md`.
-
-## Decision Engine refinement (v4.5.9)
-The Decision Engine continuously evaluates the current Commitment against the Operational Picture. 'Maintain current commitment' is an explicit successful outcome. The design objective is least intervention, producing graceful behaviour while remaining largely invisible to the player.
-
-
-## Physical Assembly Ownership (v4.6.15)
-
-### Runtime Entity Geometry Authority
-
-Prototype 11 strongly supports that a resolved runtime Entity owns geometry selection for the tested sphere APIs. Source asset `shapeId` remains provenance metadata and did not select sibling or descendant geometry.
-
-### Mapping-Key Locality
-
-Asset mapping keys such as Condor's `colPart` are local vocabulary. A mapping mechanism may help resolution, but key spelling has no universal physical meaning.
-
-### Operational Entity–Physical Assembly Separation
-
-The Operation-facing AI worker and the complete physical working combination are separate architectural identities. Condor currently forms one integrated member. Tractor–implement combinations form multiple attached members with independent asset files and runtime roots.
-
-### Physical Assembly Search Boundary
-
-Prototype 12 strongly supported the following resolution order across one integrated and two attached fixtures:
-
-```text
-Operational Worker
-    -> Current Physical Assembly
-        -> Assembly Member
-            -> Member-local source identity
-            -> Member-local runtime Entity identity
-            -> Runtime geometry and live pose
-```
-
-Assembly discovery uses protected attachment evidence and preserves each member's asset, root and attachment relationship. It does not infer collision membership.
-
-### Attached-Assembly Replication
-
-S 416 + Tiger 8 MT and 8RX 410 + TopDown 600 produced the same two-member structural classification despite different manufacturers, mappings, component counts and hierarchy sizes. This supports the architecture while leaving additional vehicle classes for later validation.
-
-### Working-State Motion Divergence
-
-GIANTS' declared `WORKING` state is an observation, not proof of productive movement. In one attached fixture the state remained active while motion stayed effectively zero; the same equipment could cultivate manually. A second fixture sustained normal work. Situation Assessment must therefore keep declared AI state and demonstrated motion as separate evidence.
-
-### Member-Local Physical Resolution result
-
-Prototype 13A connected declared source collision identities to coherent runtime Entities across Condor, Tiger 8 MT and TopDown 600. Source collision metadata remains physical authority, configuration remains current-inclusion authority and runtime Entity identity remains geometry and live-pose authority. Exact resolution and fallback occupancy remain separate claims.
-
-Architectural prose uses **Resolution Path** for source-to-runtime candidate generation; `route` remains reserved for worker navigation. Historical implementation labels retain `route` for evidence traceability.
-
-### Resolution-to-assessment boundary
-
-```text
-Resolution Claim Set
-    -> Self-Describing Representation / Representation Passport
-        -> Minimum Sufficient Defensible Portfolio
-            -> Situation Assessment fitness judgement
-                -> Operational Picture Knowledge
-```
-
-Situation Assessment judges assessment-relative staleness, horizon fitness and refresh need. It does not reconstruct discovery mechanics or issue Control. Prototype 13B automated Resolution Path discovery remains deferred pending representation-diverse disproof scenarios.
-
-## Physical Representation Architecture (v4.6.16)
-
-`PHYSICAL_REPRESENTATION_ARCHITECTURE.md` owns the detailed model. The architectural summary is:
-
-```text
-Job-start Physical Assembly
-    -> Job-Scoped Representation Catalogue
-        -> Representation Templates and Component Families
-            -> current state and Pose Realisation
-                -> heterogeneous plan-view representations
-                    -> Structural and Realised Coverage Closure
-                        -> Layered Occupancy Claims
-```
-
-Situation Assessment preserves exact and fallback layers with explicit validity and evidence. Convex Planar Envelope is accepted as an intermediate fallback; its anchor selection remains deferred. Coverage Closure may be enumerative, enclosing or hybrid. Partial relevant coverage yields Clearance Unresolved and removes only the scoped authority to claim all-clear.
-
-Folded and working are the principal stable states. Deployment is stationary configuration motion governed by a Deployment Clearance Envelope before commitment. Deployment Sweep and steering-dependent Manoeuvre Sweep remain separate future problems.
-
-No Physical Occupancy Envelope or control behaviour is implemented by this release.
-
-## Semantic Catalogue and Scope Overlay Boundary (canonical v4.6.23)
-
-The reviewed base-game catalogue remains complete semantic evidence and does not become support, runtime or structural authority. `SCOPE_OVERLAY_ARCHITECTURE.md` owns the detailed overlay model.
-
-```text
-Raw Definition and Runtime Localisation Evidence
-    -> Reviewed Semantic Profile
-        -> Scope Overlay
-            -> Control Eligibility Profile
-            -> Operation Participation
-            -> Assembly Relevance
-            -> Obstacle Relevance
-                -> targeted Structural Challenge and test selection
-```
-
-A Semantic Profile records primary family, primary role, secondary roles and capabilities. Catalogue membership does not imply support. The declared control capability baseline is the unmodified Giants base game, assessed at the Giants AI job-configuration level rather than from vehicle category or successful job admission.
-
-The four Scope Overlay dimensions are independent contextual claims. Known control ineligibility becomes a downstream Control Exclusion Constraint while representation persists. Operation Participation is functional and temporal; Behavioural Assembly does not merely reproduce attachment hierarchy; Obstacle Relevance is relational and may arise from Future Space.
-
-A persistent obstacle can create Denied Work Space, a Recurring Commitment Loop and a Completion Blocker even when each local diversion succeeds. This separates Local Resolution from Operational Resolution.
-
-This preserves **Semantic Classification–Scope Separation**, **Control Eligibility–Representation Relevance Separation** and **Class as Context, Not Contract**. No runtime Scope Overlay or control behaviour is implemented by this release.
-
-
-The TS005–TS010 calibration adds empirical boundaries without implementing the overlay:
-
-- manual viability does not imply Job Admission;
-- material-chain continuity does not imply Control Eligibility continuity;
-- an admitted configuration may still fail an Agronomic State Gate;
-- specialist self-propelled and attached-header assemblies are valid Operation subjects;
-- Physical Assembly extent may change materially through configuration;
-- an Offset Working Envelope may require Giants to displace the powered-vehicle trajectory.
-
-The powered-vehicle trajectory, working-envelope trajectory and Physical Assembly envelope are therefore distinct architectural objects. Exact directional extents cannot be replaced by a centred half-width assumption.
-
-Test evidence remains bound to its runtime baseline. Patch Impact Watch moves affected conclusions from Current or Version-bound to Revalidation candidate only when a relevant change intersects the claim.
-
-## Prototype 14 active intervention boundary (v4.6.24 candidate)
-
-TS011-A and TS011-B establish a repeatable Start-Order-Independent Conflict and an Evidence-Bounded Intervention Window for the Condor/Patriot fixture. The first active hypothesis is intentionally narrower than a complete traffic policy.
-
-Prototype 14 consumes `ESTABLISHED` Conflict Confidence, selects the later-admitted worker and applies one native permission-gate HOLD while the earlier-admitted worker remains under Giants AI control.
-
-The runtime boundary is exclusive:
-
-```text
-Observer + passive assessment evidence
-        ↓
-Prototype 14 one-worker HOLD
-        ↓
-return before legacy traffic / recovery / reservation / Decision paths
-```
-
-Conflict Cessation Is Not Conflict Resolution is an architectural release invariant. Predictor `CLEAR` cannot release the hold because TS011 showed that collision and stable blockage also remove closing motion. Prototype 14 records Safe Release Candidate evidence but does not execute release.
-
-This candidate validates one Commitment and one execution mechanism only. General priority, automatic release, recovery, later repositioning and physical-clearance policy remain separate hypotheses.
-## Automatic Encounter Admission boundary (validated in owner-declared canonical v4.6.33)
-
-Prototype 18 separates **encounter admission** from candidate selection and Control. The bounded flow is:
-
-```text
-Observer facts + Prototype 01 kinematics
-→ Admission Candidate
-→ three-second evidence confirmation
-→ calculated role/refuge selection
-→ Commitment Point
-→ Prototype 16 Unilateral Sidestep using the calculated target
-```
-
-For this fixture only, admission requires exactly two active workers uniquely resolving to Condor and Patriot. The straight-head-on mode requires both workers straight, working, moving and unblocked; headings opposed by at least 150 degrees; positive closing; `tCPA` from 0 to 30 seconds; and `dCPA` no greater than 14 m. Its evidence must persist for three seconds.
-
-Temporary v4.6.40 also validated one bounded TS016 mode without treating lane crossing as intent. When exactly one fixture worker is straight-working and the other is manoeuvring, admission may occur before final straight settlement only if live headings are at least 150 degrees opposed, closure is positive, `tCPA` is 0–12 seconds and `dCPA` is at most 14 m. The straight-working worker becomes the early Yield role. Both modes withhold commitment below a 6.0 s `tCPA` floor. Confirmed-stop refuge recalculation remains the source of side and movement authority.
-
-The original Encounter Episode Latch permitted one commitment per continuously active pair. Full TS016 continuation disproved that lifetime: after a successful first encounter, the same workers later created a new straight head-on while the controller was idle, but the pair latch suppressed admission. This is Pair-Latch Suppression.
-
-Temporary v4.6.41 scopes the latch to one encounter. Successful `RUN_END` enters `REARMING`; at least 35 m separation and three sustained seconds outside the opposed/closing conflict envelope remove the completed record. A successful pair may also rearm after five seconds of absence. Failed or unresolved records remain latched until explicit recovery. Successive records are numbered for evidence. This is still fixture-bounded and does not claim a general production encounter-identity system.
-
-## Rejoin Orientation and progress closure (temporary v4.6.42)
-
-A calculated refuge can leave the Yield vehicle facing away from its final rejoin target. A direct forward-only command is under-specified when the target is almost exactly rearward: the local target vector has no stable lateral turn component. This is **Forward-Only Rejoin Singularity**.
-
-Control therefore distinguishes orientation from translation. A rearward target first enters a bounded `REJOIN_ORIENTING` phase. The controller chooses the shortest target-bearing turn when available; at the singularity it curves inward toward the stop centreline. Direct rejoin begins only after the target enters the forward hemisphere. Forward-reachable targets retain the existing direct path.
-
-Rejoin is closed-loop rather than timeout-only. Orientation has explicit time and travel bounds. Direct translation must reduce target distance; sustained non-progress or divergence produces a safe held failure. This correction does not establish field-containment authority and does not address single-worker navigation around a completed static obstacle.
-
-## Cooperative passage evidence boundary — v4.6.43 candidate
-
-The calculated passage sequence is supported through successful GIANTS handback with either fixture worker as Yield and with refuge movement to both physical lateral sides. Successful encounter lifetime is no longer entity-pair lifetime: v4.6.41 rearmed after encounter 1 and admitted a later independent encounter 2.
-
-v4.6.42 also supports an explicit orientation-before-translation phase when the rejoin target is rearward. This closes the tested Forward-Only Rejoin Singularity without changing admission or refuge authority.
-
-Operation-level completion is not yet established. Two distinct relationships remain outside current Decision/Control authority:
-
-```text
-TS015 active + active
-both MANOEUVRING
--> Future-Space convergence observable
--> no eligible admission mode
--> Dual-Manoeuvre Admission Gap
-
-TS016 active + completed obstacle
-completed assembly remains relevant
--> active-worker pair ends
--> no obstacle-navigation commitment
--> Completion-Transition Control Gap
-```
-
-These are not variants of one controller defect. TS015 remains cooperative active-active traffic. TS016 becomes single-worker navigation around a static assembly. Their concepts, commitment lifecycles and validation criteria must remain separate.
-
-Movement speed affects phase separation and therefore later encounter geometry. That fact may inform future option cost and timing, but it cannot substitute for an admission concept that remains valid when trajectories change.
-
-## Unilateral Sidestep intervention boundary (v4.6.25 candidate)
-
-TS012 separates actuator viability from solution viability. The native permission gate can preserve a held Giants job, but holding an assembly inside another worker's required path causes Static Obstacle Conversion.
-
-Least intervention is therefore interpreted as **Minimum Necessary Authority**, not minimal force. OuttaMyWay may temporarily own a Bounded Route Deviation while Giants continues to own the job, agronomic objective and nominal coverage strategy.
-
-The first authorised deviation family is Unilateral Sidestep:
-
-```text
-Giants Progress Entity continues unchanged
-Yield Entity: hold → compact → move outward → wait → rejoin → restore → Giants handback
-```
-
-The complete Yield Assembly swept envelope must remain outside the Protected Progress Corridor. Prototype 15 implements only a vehicle-centre negative control and explicitly does not claim complete geometry compliance.
-
-Coverage-Strategy Agnosticism remains mandatory. Route Reassertion is observed after handback rather than predicted from an assumed whole-field route.
-
-## Retreating Unilateral Sidestep refinement (v4.6.26 candidate)
-
-TS013 supports Bounded Route Deviation and Forward Route Reacquisition for the exact Condor fixture. The preferred departure is now rearward and outward from the confirmed stopped pose, followed by a slightly forward centreline rejoin.
-
-Least intervention remains **Minimum Necessary Authority**, not minimum force. Speeds should remain assembly-dependent and start from the assembly's Native Motion Envelope.
-
-Full Compact Configuration and Egress-Ready Configuration are separate. Folding and Retreat Overlap may reduce stationary latency, but any production egress trigger must be based on live complete-assembly swept-envelope compatibility with the Protected Progress Corridor. The TS014 `foldAnimTime=0.15` threshold is diagnostic and grants no such authority.
-
-A future Egress Protection Hold may temporarily stop the Progress Entity while the Yield Entity executes a defined escape. This does not revise the current candidate, which remains exactly-one-worker. The standing invariant is refined conceptually from “never hold all” to “never leave all participants under unresolved passive holds”; any simultaneous stop requires an active escape commitment and predetermined release order.
-
-
-## Cooperative passage experiment boundary — v4.6.28
-
-Prototype 16 keeps architectural ownership explicit:
-
-```text
-GIANTS owns Patriot route and job
-OuttaMyWay owns Condor's bounded deviation
-Situation Assessment observes pair geometry and passage evidence
-Control may rejoin Condor only after positive passage evidence
-```
-
-TS015-A showed that the validated Yield manoeuvre can complete in time while still failing physical passage. The 22 m command produced approximately 21.44 m lateral refuge, and Patriot's centre moved beyond Condor's stop anchor before its deployed assembly became blocked. This establishes Vehicle-Centre Passage Is Not Assembly Passage and a fixture-specific Clearance Budget Underrun.
-
-TS015-B changes only the lateral refuge to 28 m. Patriot remains unheld so the test isolates clearance depth from egress timing and Progress control. Egress Protection Hold remains a separate future response for encounters where the Progress Entity would consume the egress interval.
-
-Passage is a positive complete-assembly spatial conclusion, not merely predictor state or centre progression. Production displacement must eventually derive from complete assembly extents, configuration and steering sweep, alignment uncertainty and bounded margin.
-
-Direction commitments must ultimately be world-space refuge regions. Human left/right labels and vehicle-local axis names cannot own Decision-to-Motion Direction Integrity.
-
-For Retreating Unilateral Sidestep, each proposed Yield Entity may contribute two world-space **Lateral Refuge Candidates**, one on each side of the Protected Progress Corridor. Refuge selection is **clearance-first and cost-second**: transition-path and refuge-pose evidence determine whether a candidate survives; displacement and interruption cost compare only surviving candidates. The preferred refuge is the least disruptive reachable refuge, but the opposite side remains valid when it is the only clear option. Symmetric geometry may leave both candidates equivalent. Human left/right labels and vehicle-local axis signs remain diagnostics rather than Decision authority.
-
-## Calculated Refuge Selection — temporary v4.6.39
-
-Automatic Encounter Admission recognises the exact Condor/Patriot fixture but does not assign fixed roles. At commitment, Calculated Refuge Selection evaluates both role assignments and both world-space lateral sides.
-
-For each candidate:
-
-```text
-physical separation = Progress facing extent + compact Yield facing extent
-policy separation   = physical separation + clearance-margin budget
-rearward capture    = compact Yield forward extent + geometry/tracking margin
-```
-
-Current lateral offset and displacement cross-components are included in the coupled calculation. The selected admission candidate supplies the Yield role. At the confirmed stopped pose, both sides for that role are recalculated and the live result supplies side, lateral distance, rearward distance and target to Control.
-
-Selection is least lateral movement, then least total movement, with deterministic tie resolution. Calculation failure never falls back to fixed Condor Yield, physical-right, 28 m lateral or 12 m rearward values.
-
-The controller continues to own hold, configuration change, egress, passage confirmation, rejoin, restoration and GIANTS handback. The non-selected worker remains under unmodified GIANTS control.
-
-This transfer is runtime-test bounded. Field-polygon containment, obstacle occupancy and complete swept-path checking are not yet part of the selection gate, so v4.6.39 is limited to the established open fixture until evidence supports wider use.
-
-## Shadow clearance architecture — v4.6.29
-
-Prototype 17 remains a diagnostic measurement layer. It records physical-contact threshold, physical reserve, policy margin budget, policy-required separation and policy reserve at pre-estimate, refuge, closest approach and passage confirmation.
-
-Its measurements do not override the selected calculated Control target. They provide retrospective evidence for whether the executed target achieved the expected clearance.
-
-## Facing Extent Provider and clearance evidence layers
-
-Shadow clearance assessment requires one-sided extents in a shared reference frame. Physical Representation may hold richer or incomplete evidence, so a dedicated Facing Extent Provider adapts that evidence to the assessment question without granting authority. Its output is Knowledge: extent, axis, reference, source, coverage, confidence and unresolved allowance. Decision remains responsible for selecting a candidate commitment; Control remains responsible for execution.
-
-A missing operand produces no clearance result. Implementation convenience must not replace Clearance Calculation Closure with a hidden hard-coded distance.
-
-TS017-B established fixture-bounded Closure for Condor/Patriot. Patriot supplied 18.00 m from its live 36 m AI working marker. All 13 current Condor physical identities and origins resolved, but none supplied usable runtime bounds through the tested APIs. The lower-confidence provider therefore projected 4.87 m from live origins and added a separately declared 2.50 m unresolved physical allowance, producing a 7.37 m compact Facing Clearance Extent.
-
-This establishes **Origin Coverage Is Not Bound Coverage**: complete identity/origin resolution does not imply that physical shape bounds are available or that Coverage Closure exists.
-
-Clearance evidence has two distinct layers:
-
-```text
-physical contact threshold
-= Progress Facing Clearance Extent
-+ Yield Facing Clearance Extent
-
-physical clearance reserve
-= achieved reference separation
-- physical contact threshold
-
-policy required separation
-= physical contact threshold
-+ explicit policy-margin budget
-
-policy reserve
-= achieved reference separation
-- policy required separation
-```
-
-For the TS017-B fixture, the physical threshold was 25.37 m. The successful 27.38 m passage therefore had approximately +2.01 m physical reserve. Applying the provisional 3.75 m combined margin budget produced a 29.12 m policy target and approximately -1.74 m policy reserve.
-
-This establishes **Physical Clearance Is Not Policy Clearance**. Physical passage evidence and a chosen clearance policy must not be collapsed into one value. Neither layer currently grants Decision or Control authority.
+These documents refine implementation proof and migration discipline. They do not introduce another architectural subsystem.

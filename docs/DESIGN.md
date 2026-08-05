@@ -1,101 +1,198 @@
 # Design
 
-## Architecture recovery design boundary
-
-The active runtime in this candidate remains v4.6.43. The next implementation must not add another scenario-specific behaviour branch.
-
-The first new vertical slice is passive:
-
-```text
-Observation
-→ Situation Assessment Knowledge
-→ shared Operational Picture
-→ Decision evaluation
-→ shadow Commitment proposal
-→ authority trace
-```
-
-It issues no vehicle Control.
-
-Control capabilities must execute bounded requests such as hold, regulate speed, reposition, change configuration and restore to GIANTS. They must not decide participant roles, relevance, refuge suitability, passage completion or release.
-
-Motion should be requested through semantic intent and resolved through the assembly's Native Motion Envelope. Fixed prototype speeds such as 5, 6, 7.5 or 15 km/h must not silently become architectural definitions.
+> **Authority:** Replacement-core design boundary
+>
+> **Currency:** v4.6.78 Replacement-Core Architecture Candidate
+>
+> **Implementation status:** Documentation only
 
 ## Purpose
 
-OuttaMyWay coordinates multiple base-game FS25 AI field workers so they avoid preventable collisions and clear shared working corridors with the least disruption.
+OuttaMyWay coordinates native GIANTS AI field workers inside one field through the least disruptive justified augmentation. It preserves GIANTS ownership of job generation, route execution and agronomic work.
 
-The long-term goal is cooperative traffic management rather than repeated collision recovery.
+The replacement core is designed around explicit responsibility rather than scenario-specific controller phases.
 
-## Design principles
-
-1. **Look ahead before reacting.** Prefer the GIANTS AI field course over extrapolating current velocity alone.
-2. **Use the least disruptive action.** Brief hold, then slow, then yield, then fold/backout only when needed.
-3. **Keep decisions stable.** A committed encounter must not alternate ownership every update.
-4. **Remain vehicle agnostic.** Use AI state, course geometry, working width, implement state and field boundaries rather than vehicle names.
-5. **Fail safely.** When route or AI state is unavailable, retain conservative reactive handling and clear warnings.
-6. **Do not fake certainty.** Diagnostics distinguish confirmed course information from inferred geometry.
-
-## Traffic-manager model
+## Architectural shape
 
 ```text
-Active AI workers
-       |
-       v
-GIANTS course reader
-       |
-       v
-Future corridor builder
-       |
-       v
-Intersection + arrival-time predictor
-       |
-       v
-Priority / cost evaluator
-       |
-       v
-Traffic reservation
-       |
-       v
-Vehicle controller
-       |
-       v
-Reactive emergency fallback
+Observation
+→ Situation Assessment
+→ Operational Picture
+→ Candidate Action Space
+→ mandatory constraint and composition validation
+→ Decision
+→ Commitment
+→ bounded Control
+→ Outcome Observation
 ```
 
-## Priority policy
+## Component responsibilities
 
-Priority is not simply first-come-first-served. Candidate decisions may consider:
+### Observation
 
-- estimated arrival time at the conflict;
-- current committed lane ownership;
-- distance to a safe field edge;
-- working width and turn sweep;
-- whether one worker is already yielding or under direct control;
-- estimated course completion time;
-- whether allowing one worker through removes it from the field sooner;
-- total delay imposed on all affected workers.
+- sample Reality;
+- retain source, timestamp and provenance;
+- expose uncertainty;
+- report Control outcomes.
 
-Completion priority is advisory until course-relative remaining-time estimates are stable.
+Observation does not interpret operational meaning.
 
-## Action ladder
+### Situation Assessment
 
-1. **HOLD** — wait briefly so another planned path clears.
-2. **SLOW** — adjust arrival time without stopping fieldwork.
-3. **YIELD** — stop one worker while preserving its AI course where possible.
-4. **PASSAGE ASSIST** — raise/fold only when physical overlap requires it.
-5. **BACKOUT** — reverse toward a confirmed rearward field edge.
-6. **MANUAL WARNING** — when safe automated recovery is not available.
+- maintain identity and relevance;
+- construct Current and bounded Future Space;
+- assess Committed Demand, Potential Demand and Temporary Slack;
+- evaluate Representation Fitness;
+- publish constraints, uncertainty and evidence gaps.
 
-## Course completion parking
+Situation Assessment produces Knowledge only.
 
-Future feature only. When a worker finishes, OuttaMyWay may move it to a nearby safe field edge. This requires reliable detection of true job completion, safe direction, implement/towed geometry and available field-edge clearance.
+### Decision
 
-## Rejected or limited approaches
+- determine whether augmentation is required;
+- construct the complete supportable Candidate Action Space;
+- apply mandatory architectural constraints;
+- validate Effective Actuation Composition;
+- create, maintain, revise or settle Commitments.
 
-- Nearest-edge scans alone: they do not identify the required rearward intersection.
-- Constant-velocity vectors alone: useful as emergency fallback, but cannot predict planned headland turns.
-- Saving deleted drive-strategy objects: GIANTS destroys and recreates strategies; old references are unsafe.
-- Blind `aiContinue()`: clears blocked state but does not create a missing course strategy.
-- Short AI restart timeout: partly worked fields can require extended course generation.
-- Unlimited reverse to a distant field edge: may create a larger obstruction and excessive disruption.
+Decision does not actuate vehicles.
+
+### Commitment
+
+- preserve continuing objective and Governing Basis;
+- own the lifecycle state;
+- own the Obligation Set;
+- own objective-progress actuation authority for the selected assembly;
+- preserve evidence contracts, capability reservations and terminal cause;
+- prevent capability completion from being mistaken for terminal completion.
+
+### Control
+
+- accept only bounded capability requests;
+- validate current authority and composition;
+- execute the requested capability;
+- report physical outcomes;
+- reconcile and release owned temporary effects.
+
+Control does not choose roles, strategies, refuge policy or terminal dispositions.
+
+## Commitment state model
+
+The only non-terminal states are:
+
+- `ACTIVE`
+- `WAITING_FOR_EVIDENCE`
+- `SETTLING`
+
+The terminal dispositions are:
+
+- `SUCCEEDED`
+- `FAILED`
+- `SUPERSEDED_BY_NEW_INTENT`
+- `CANCELLED_BY_SOURCE_INTENT_TERMINATION`
+- `CANCELLED_BY_OPERATION_TERMINATION`
+
+Strategy stages are not lifecycle states.
+
+## Data design principles
+
+### Identity and value separation
+
+Live GIANTS objects remain exact identity references. Architectural evidence is carried as allowlisted value snapshots. Generic recursive copying of engine objects is forbidden.
+
+### Stable obligation identity
+
+An Obligation retains identity and provenance across transfer. Transfer changes the current owning Commitment; it does not replace the obligation with an unrelated copy.
+
+### Explicit Governing Basis
+
+Every Commitment records which admitted intent and Operation context make its objective applicable.
+
+### Evidence contracts
+
+Any wait, release, settlement or transfer conclusion must identify the evidence required and the fail-safe response when evidence is not obtained.
+
+### Representation Fitness
+
+Representation is action-specific. Missing evidence may prohibit one action without prohibiting every conservative action. Unknown geometry may never be silently under-approximated.
+
+## Authority design
+
+- one objective-progress actuation owner per assembly;
+- capability reservations subordinate to that owner;
+- bounded safety veto available without becoming a second progress owner;
+- predecessor/successor coexistence permitted only with authority partitioning;
+- all proposed actions validated in the full Effective Actuation Composition.
+
+## Candidate policy
+
+Decision evaluates viability before preference.
+
+A lower-preference candidate remains valid when it is the only clear supportable option. The opposite lateral side is not excluded merely because another side is normally cheaper.
+
+Preference bands:
+
+1. least disruptive temporal shaping;
+2. safe waiting outside another worker's required space;
+3. bounded spatial displacement;
+4. more disruptive but still supportable movement/configuration;
+5. explicit failure/escalation when no supportable autonomous candidate remains.
+
+The architecture does not require this exact numerical ordering in code; it requires preference exhaustion not to masquerade as candidate exhaustion.
+
+## Movement capability boundary
+
+Movement is requested semantically and resolved through available assembly capability and current evidence.
+
+Possible capabilities include:
+
+- regulate speed;
+- hold;
+- forward movement;
+- reverse movement;
+- orientation;
+- bounded reposition;
+- configuration transition;
+- authority release.
+
+Reverse remains architecturally available but unproven. No fixed prototype speed, distance or manoeuvre is an architectural definition.
+
+## Native handover
+
+OuttaMyWay does not own exact lane reconstruction or GIANTS route recreation.
+
+It owns:
+
+- clearing the conflict;
+- leaving the assembly in a stable, representable and controllable state;
+- releasing temporary authority;
+- observing native continuation;
+- completing terminal obligations.
+
+GIANTS owns the exact continuation once unrestricted authority is returned.
+
+## Player boundary
+
+The player is not a cooperative worker controlled by OuttaMyWay and is not an internal Obligation owner.
+
+Player-controlled assemblies remain represented as physical entities when they affect active AI demand.
+
+## Terminal Occupancy boundary
+
+A completed worker may become a Terminal Occupancy subject. This is a Decision/Commitment concern, not a continuation of the completed Job Episode.
+
+## Implementation order
+
+1. introduce passive contracts and identities;
+2. implement lifecycle trace without physical Control;
+3. test transition precedence and obligation settlement;
+4. implement shadow composition validation;
+5. migrate one capability at a time;
+6. validate against runtime evidence;
+7. update architecture when Reality disproves it.
+
+The v4.6.56 runtime remains the behavioural baseline. Experimental v4.6.57–v4.6.70 controllers are evidence donors only.
+
+## Conformance artefacts
+
+The replacement implementation is accepted only when the conformance matrix, state machine, Candidate Action contract, responsibility map and replay specification agree with the normative architecture. Module names or isolated tests are not sufficient evidence.

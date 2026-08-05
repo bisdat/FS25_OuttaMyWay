@@ -1,349 +1,381 @@
-## v4.6.71 active flow and experimental boundary
-
-```text
-active runtime: v4.6.56
-        ↓
-normal v4.6.56 Observation / Decision / Control behaviour
-
-repository knowledge: ADR-0006–ADR-0018
-        ↓
-next Observe → Discuss → Hypothesise cycle
-        ↓
-future isolated implementation candidate
-```
-
-The historical flows below record attempted compositions. They are evidence and design knowledge, not executable v4.6.71 authority.
-
-## Historical v4.6.70 leg orientation and coherent Hold flow
-
-```text
-leg start anchored
-→ ORIENTATION ENVELOPE
-   fixed target; bounded time/travel/reverse lateral
-→ positive refuge-side progress
-→ directional fence armed
-→ leg target reached
-
-Hold lease active
-→ project native post-release motion
-   unsafe/unresolved: maintain same lease
-   admissible and stable: RESTORE once
-→ observe independent GIANTS continuation
-```
-
-## v4.6.69 settled-pose transition-frame flow
-
-```text
-leg 1 SETTLED
-→ calculate replacement from current Reality
-→ publish exact transition start pose
-→ validate endpoint + path + time + frame closure
-→ Control verifies start-pose freshness
-   stale/unresolved: retain current refuge unchanged
-   verified: atomically commit target + side + leg-local anchor
-→ leg 2 ACTIVE
-→ settle and reassess
-```
-
-## v4.6.68 manoeuvre-leg flow
-
-```text
-continuous Knowledge updates
-→ current refuge leg ACTIVE
-   → better candidate: advisory only; mark reassessment pending
-   → demonstrated loss of admissibility: separate interruption authority
-→ current refuge leg SETTLED
-   → reassess from current pose
-   → current refuge viable: remain
-   → replacement transition viable: atomically commit one next leg
-→ repeat until passage and Safe Release
-```
-
-## v4.6.66 provisional-refuge flow
-
-## v4.6.67 atomic refuge-transition flow
-
-```text
-fresh candidate geometry
-→ endpoint viable
-→ assess current-pose transition
-   path clear + field-contained + Progress-preserving
-   required Control time <= available temporal reserve
-→ unsafe/unresolved: retain current refuge; temporal support only when admissible
-→ viable: Decision authorises exact candidate
-          → Control validates same evidence
-          → atomically commit target and side frame
-          → authorised side transition uses temporary fence frame
-→ continue passage assessment
-```
-
-```text
-select viable refuge
-→ move and occupy provisional refuge
-→ observe current pair intent
-→ material intent change?
-    no: continue passage observation
-    yes: invalidate refuge assessment cache
-         → reassess current-role candidates from current Reality
-         → current refuge still viable: remain
-         → material additional travel required: revise same Commitment
-              → continue movement from current pose
-→ supporting speed remains purpose-bound while viability/passage unresolved
-→ positive passage
-→ work restoration and Native Handover
-→ Safe Release
-```
-
-## v4.6.65 repeated-Encounter flow
-
-```text
-Persistent Situation
-→ Encounter EN-n / Commitment CM-n
-→ material manoeuvre creates Intent Expiry
-→ Option Preservation Window
-→ supporting REGULATE_SPEED or safe wait
-→ refuge only if temporal shaping is insufficient
-→ work restoration and native handover
-→ Safe Release completes EN-n
-→ later material manoeuvre creates EN-(n+1)
-→ roles and options reassessed from current Reality
-```
-
-## v4.6.64 TS015 lifecycle
-
-```text
-Situation admission
-→ Yield/Progress Commitment
-→ capture dynamic configuration
-→ compact and refuge
-→ positive passage
-→ approximate Native Handover Envelope
-→ stop under temporary Control
-→ restore owned fold/lowered/work mutations
-→ verify work-capable state
-→ relinquish authority
-→ bounded NO_PHYSICAL_CONTROL observation
-→ independent GIANTS continuation
-→ Safe Release
-```
-
-## v4.6.63 identity/value flow
-
-```text
-Job start → stable physical facts captured once → immutable Knowledge values
-Runtime observation → live vehicle identity reference retained without traversal
-Decision → explicit value snapshot + named identity references
-Commitment → independent value snapshot + exact identity references
-Control → addresses the live assembly through identity only
-```
-
-## v4.6.62 authority-release boundary
-
-```text
-Control acquires vehicle-specific permission interception
-→ hold is exercised
-→ release condition occurs
-→ hold record is removed
-→ exact pre-intervention permission method is restored
-→ configuration bookkeeping is relinquished without actuation
-→ Native Handover / normal Situation Assessment
-```
-
-Command release and execution-path restoration are separate obligations.
-
 # Architecture Flow
 
-
-## v4.6.60 Native Handover flow
-
-```text
-Operational Picture identifies admissible refuge need
-        ↓
-Decision grants NATIVE_REPOSITION
-        ↓
-Control clears conflict and enters refuge
-        ↓
-Observation establishes positive passage
-        ↓
-Control performs purpose-derived approximate return
-        ↓
-Native Handover Envelope passes
-        ↓
-Control removes movement + configuration + job-progression constraints without restarting GIANTS
-        ↓
-GIANTS owns exact recovery
-        ↓
-Control-to-Awareness Reversion
-        ↓
-Normal Situation Assessment updates the Operational Picture
-        ↓
-Decision maintains, revises or completes the same Commitment through Safe Release
-```
-
-There is no active delegated-configuration Restore sequence, translation lease, deployment controller, `aiContinue`/continuation-event restart burst, retry or nudge in this path.
-
-## v4.6.59 translation-authority amendment
-
-Reality disproved the assumption that the Traffic Permission Gate constrains translation only. ADR-0008 separates configuration authority, translation authority and field-worker progression authority. Delegated restoration now enables GIANTS field-worker progression under a separate reversible zero-speed translation lease. Terminal restoration failure is inert. A future unrestricted return-to-GIANTS architecture remains explicitly undecided.
-
-> **Authority:** Governing driving-system responsibility map
+> **Authority:** Normative replacement-core responsibility and lifecycle map
 >
-> **Currency:** Translation-Authority Separation Candidate v4.6.59
+> **Currency:** v4.6.78 Replacement-Core Architecture Candidate
 >
-> **Runtime note:** v4.6.59 retains the generic ADR-0006/ADR-0007 slice and implements ADR-0008 by enabling GIANTS field-worker progression under a separate reversible zero-speed translation lease.
+> **Implementation status:** Documentation only; active runtime remains v4.6.56
 
-## Restore capability authority sequence
-
-```text
-NATIVE_REPOSITION position achieved
-→ Commitment REVISE to RESTORE
-→ acquire zero-speed translation authority lease
-→ return configuration authority to GIANTS
-→ release the Traffic Permission Gate
-→ request native continuation once
-→ observe stable native configuration while translation remains constrained
-→ restore normal translation authority on a later update
-→ observe sustained continuation
-→ Safe Release remains a separate Decision conclusion
-```
+## 1. Closed-loop responsibility flow
 
 ```text
-┌──────────────────────────────────────────────────────────────┐
-│                           REALITY                            │
-│  GIANTS workers, vehicles, implements, field, obstacles,    │
-│  motion, configuration and realised Control outcomes        │
-└──────────────────────────────┬───────────────────────────────┘
-                               │ sampled/exposed
+┌─────────────────────────────────────────────────────────────┐
+│                           REALITY                           │
+│ workers, assemblies, field, motion, configuration, player, │
+│ GIANTS Job Episodes and realised Control effects           │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ sampled
                                ▼
-┌──────────────────────────────────────────────────────────────┐
-│                    OBSERVATION ADAPTERS                      │
-│  Runtime state │ geometry │ environment │ Control feedback  │
-└──────────────────────────────┬───────────────────────────────┘
-                               │ factual, sourced observations
+┌─────────────────────────────────────────────────────────────┐
+│                         OBSERVATION                         │
+│ sourced facts, timestamps, provenance and uncertainty      │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ interpreted
                                ▼
-┌──────────────────────────────────────────────────────────────┐
-│                    SITUATION ASSESSMENT                      │
-│                                                              │
-│  ┌─────────────────┐  ┌─────────────────┐                   │
-│  │ Assembly and    │  │ Motion and      │                   │
-│  │ representation  │  │ relationship    │                   │
-│  │ assessment      │  │ assessment      │                   │
-│  └─────────────────┘  └─────────────────┘                   │
-│                                                              │
-│  ┌─────────────────┐  ┌─────────────────┐                   │
-│  │ Space and       │  │ Constraint and  │                   │
-│  │ Future Space    │  │ outcome         │                   │
-│  │ assessment      │  │ assessment      │                   │
-│  └─────────────────┘  └─────────────────┘                   │
-└──────────────────────────────┬───────────────────────────────┘
-                               │ produces Knowledge
+┌─────────────────────────────────────────────────────────────┐
+│                    SITUATION ASSESSMENT                     │
+│ identity │ participation │ relevance │ representation      │
+│ Current/Future Space │ demand │ constraints │ outcomes     │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ publishes Knowledge
                                ▼
-┌──────────────────────────────────────────────────────────────┐
-│                    OPERATIONAL PICTURE                       │
-│                                                              │
-│  Current Situation                                           │
-│  Field World membership and participation                    │
-│  assemblies, relationships and Situation Relevance           │
-│  Current/Future Spaces and reserves                          │
-│  constraints and representation fitness                      │
-│  uncertainty, provenance and material change                 │
-└──────────────────────────────┬───────────────────────────────┘
-                               │ one coherent revision
+┌─────────────────────────────────────────────────────────────┐
+│                    OPERATIONAL PICTURE                      │
+│ current supported interpretation; no action selection      │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ evaluated
                                ▼
-                 ┌─────────────────────────────┐
-                 │       DECISION ENGINE       │
-                 │                             │
-                 │  ┌───────────────────────┐  │
-                 │  │  DECISION EVALUATION  │◄─┼──────────────┐
-                 │  │                       │  │              │
-                 │  │ evaluate current      │  │              │
-                 │  │ Commitment            │  │              │
-                 │  │ evaluate unchanged    │  │              │
-                 │  │ continuation          │  │              │
-                 │  │ generate/evaluate     │  │              │
-                 │  │ candidate actions     │  │              │
-                 │  │ apply sufficiency     │  │              │
-                 │  │ apply admissibility   │  │              │
-                 │  │ compare effective     │  │              │
-                 │  │ augmentations         │  │              │
-                 │  └───────────┬───────────┘  │              │
-                 └──────────────┼──────────────┘              │
-                                │ lifecycle conclusion          │
-                                │ CREATE / MAINTAIN / REVISE    │
-                                │ COMPLETE / CANCEL / FAIL      │
-                                ▼                               │
-┌──────────────────────────────────────────────────────────────┐
-│                     COMMITMENT LEDGER                        │
-│                                                              │
-│  purpose │ scope │ obligations │ relied-upon Knowledge       │
-│  validity conditions │ intended effect │ release/recovery    │
-└──────────────────────────────┬───────────────────────────────┘
-                               │ bounded capability request
+┌─────────────────────────────────────────────────────────────┐
+│                          DECISION                           │
+│ complete supportable Candidate Action Space                │
+│ mandatory constraints + Effective Actuation Composition    │
+│ maintain / revise / create / settle Commitment             │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ grants bounded authority
                                ▼
-┌──────────────────────────────────────────────────────────────┐
-│                         CONTROL                              │
-│                                                              │
-│  speed regulation │ hold │ native reposition │ configuration │
-│  authority lease │ execution state │ restoration/handback   │
-└──────────────────────────────┬───────────────────────────────┘
-                               │ changes Reality
+┌─────────────────────────────────────────────────────────────┐
+│                        COMMITMENT                           │
+│ objective │ Governing Basis │ lifecycle │ Obligation Set   │
+│ progress owner │ reservations │ evidence contracts         │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ requests capability
                                ▼
-                            REALITY
-                               │
-                               └──── realised outcomes return
-                                     through Observation
-
-
-
-Observation reports what Reality exposed.
-
-Situation Assessment determines what the evidence means.
-
-Operational Picture publishes one coherent understanding.
-
-Decision Engine determines what should be done.
-
-Decision Evaluation performs one temporary assessment.
-
-Commitment preserves selected intent over time.
-
-Control executes only bounded, admissible capability requests.
-
-Outcome Observation returns realised behaviour to Situation Assessment.
+┌─────────────────────────────────────────────────────────────┐
+│                          CONTROL                            │
+│ validates current authority and composition                │
+│ executes bounded capability; reports physical outcome      │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ observed
+                               └───────────────────────────────↺
 ```
 
-## Governing lifecycle rule
-
-The flow is closed by Outcome Observation, but the lifecycle is governed by Commitment rather than by one Control capability:
+## 2. Decision admission flow
 
 ```text
-Relevant Situation
-→ Commitment CREATE
-→ capability REQUESTED / ACKNOWLEDGED / EFFECTIVE / COMPLETED or FAILED
-→ Situation Assessment interprets realised effect
-→ Decision judges operational sufficiency
-→ Commitment MAINTAIN / REVISE / COMPLETE / CANCEL / FAIL
+Operational Picture
+    ↓
+Is augmentation materially required?
+    ├── no → normal GIANTS operation; continue observation
+    └── yes
+          ↓
+Complete supportable Candidate Action Space
+          ↓
+Evaluate every applicable architectural constraint
+          ↓
+Evaluate Effective Actuation Composition
+          ↓
+Any admissible candidate?
+    ├── yes → select minimum effective option-preserving action
+    │          ↓
+    │       create or revise Commitment
+    └── no  → WAITING_FOR_EVIDENCE, bounded safety,
+              or SETTLING toward FAILED
 ```
 
-A capability may be mechanically effective and still operationally insufficient. A capability may complete while the governing Commitment remains active and requests a different capability.
+Preference exhaustion is not candidate exhaustion.
 
-## Future-Space responsibility
+## 3. Commitment lifecycle
 
-Situation Assessment publishes bounded plausible local continuations through each relevant participant's next material manoeuvre and subsequent trajectory settlement. This is not route planning. It is the minimum local continuation Knowledge required to determine whether simultaneous GIANTS continuation remains admissible.
+```text
+Decision establishes enforceable continuing intent
+                         │
+                         ▼
+                     ┌────────┐
+             ┌──────▶│ ACTIVE │◀─────────────┐
+             │       └────────┘              │
+             │            │                  │
+             │            │ evidence         │ evidence
+             │            │ insufficient     │ contract met
+             │            ▼                  │
+             │  ┌──────────────────────┐     │
+             └──│ WAITING_FOR_EVIDENCE │─────┘
+                └──────────────────────┘
+                         │
+                         │ objective ends,
+                         │ authority changes,
+                         │ fail-safe or terminal cause
+                         ▼
+                    ┌──────────┐
+                    │ SETTLING │
+                    └──────────┘
+                         │
+                         │ all obligations accounted for
+                         ▼
+                  TERMINAL DISPOSITION
+```
 
-## Safe-release responsibility
+A Commitment does not normally return from `SETTLING` to `ACTIVE`. A new objective requires a new Commitment.
 
-Decision may complete a Commitment only when the Safe Release Point gate is positively satisfied. Current separation, negative closing rate, a `CLEAR` constant-velocity prediction or completion of one actuator phase is insufficient by itself.
+## 4. Lifecycle authority matrix
 
-## Observation responsibility
+| Authority | `ACTIVE` | `WAITING_FOR_EVIDENCE` | `SETTLING` | Terminal |
+|---|---:|---:|---:|---:|
+| Observe Situation | Yes | Yes | Yes | No active authority |
+| Acquire evidence | Yes | Yes | Yes | No |
+| Revise strategy | Yes | After sufficient evidence | No | No |
+| Initiate objective-progress Control | Yes | No | No | No |
+| Continue existing progress Control | While valid | Only if explicitly required for safety | No; reconcile | No |
+| Immediate safety inhibition | Yes | Yes | Yes | No |
+| Reconcile issued Control | Yes | Yes | Yes | Completed |
+| Release capability authority | Yes | Yes | Yes | Completed |
+| Satisfy obligations | Yes | Yes | Yes | Completed |
+| Transfer eligible obligations | Yes | Yes | Yes | No |
+| Enter terminal disposition | No | No | After settlement only | Recorded fact |
 
-`CONTINUE_OBSERVATION` is an active Decision only when it declares:
+## 5. Obligation flow
 
-- the unresolved material Knowledge;
-- the expected evidence source;
-- the useful action preserved while waiting;
-- the exhaustion condition;
-- the reassessment deadline;
-- the participant that remains able to generate the evidence.
+```text
+Obligation created
+      │
+      ▼
+Exactly one owning Commitment
+      │
+      ├── required outcome achieved and evidenced
+      │       → SATISFIED
+      │
+      ├── authoritative evidence proves basis ended
+      │       → BASIS_CEASED
+      │
+      └── eligible successor accepts atomically
+              → TRANSFERRED
+```
 
-Without that bounded contract, passive observation is not admissible.
+Until one branch completes, the obligation remains open and terminal entry is forbidden.
+
+### Transfer flow
+
+```text
+Predecessor owns obligation
+        ↓
+transferability confirmed
+        ↓
+successor basis and eligibility confirmed
+        ↓
+required authority available or safely deferred
+        ↓
+successor acceptance recorded atomically
+        ↓
+successor owns obligation
+```
+
+No intermediate ownerless state exists.
+
+## 6. Authority composition flow
+
+```text
+Proposed action
+    +
+existing commands
+    +
+capability reservations
+    +
+residual predecessor effects
+    +
+concurrent relevant-assembly actions
+    +
+Future-Space interactions
+        ↓
+Decision composition verdict
+        ↓
+Commitment authority
+        ↓
+Control current-composition validation
+    ├── unchanged/supportable → actuate
+    └── stale/unsafe          → reject or defer
+```
+
+Only one Commitment owns objective-progress actuation for an assembly at a time.
+
+## 7. Ordinary successful resolution
+
+```text
+ACTIVE Commitment
+    ↓
+bounded capability sequence
+    ↓
+objective achieved
+    ↓
+SETTLING
+    ↓
+Control reconciled
+Configuration Integrity established
+authority released
+all obligations accounted for
+    ↓
+SUCCEEDED
+```
+
+Capability completion is not Commitment completion.
+
+## 8. Multi-stage strategy
+
+```text
+ACTIVE Commitment
+    ↓
+speed shaping
+    ↓
+hold or refuge selection
+    ↓
+manoeuvre leg
+    ↓
+settled-boundary reassessment
+    ↓
+additional leg / orientation / handover
+    ↓
+Safe Release
+```
+
+The Commitment identity, Governing Basis and Obligation Set persist across stages.
+
+## 9. Evidence insufficiency
+
+```text
+ACTIVE
+    ↓ evidence no longer supports progress
+WAITING_FOR_EVIDENCE
+    ├── contract satisfied → ACTIVE
+    ├── objective invalidated → SETTLING
+    └── autonomous resolution unsupported → SETTLING / intended FAILED
+```
+
+Missing evidence does not prove safety or success.
+
+## 10. Intent Supersession
+
+```text
+Predecessor ACTIVE or WAITING_FOR_EVIDENCE
+        ↓
+new Job Episode independently admitted
+        ↓
+new intent becomes authoritative
+        ├── successor Commitment owns new progress
+        └── predecessor enters SETTLING
+                ↓
+        reconcile predecessor Control
+        satisfy origin-bound obligations
+        transfer eligible continuity obligations
+        close obsolete intent-relative obligations by evidence
+                ↓
+        predecessor → SUPERSEDED_BY_NEW_INTENT
+```
+
+### Supersession Handover Interval
+
+```text
+Governing Successor
+- owns new intent
+- observes and assesses immediately
+- actuates only available authority
+
+Settling Predecessor
+- no old objective progress
+- reconciles its own effects
+- retains origin-bound obligations
+- transfers only through acceptance
+```
+
+Lifecycle coexistence is permitted. Conflicting progress authority is not.
+
+## 11. Player takeover
+
+```text
+player gains control
+    ↓
+affected AI Job Episode ends
+    ↓
+OuttaMyWay progress authority over that assembly ends
+    ↓
+Commitment enters SETTLING
+    ↓
+reconcile OuttaMyWay Control
+release authority
+close obsolete intent-relative obligations
+retain/transfer continuing AI-coordination obligations
+    ↓
+CANCELLED_BY_SOURCE_INTENT_TERMINATION
+```
+
+The player is not an internal Obligation owner. The assembly remains observable and obstacle-relevant while active AI demand exists.
+
+## 12. Terminal Occupancy
+
+```text
+worker Job Episode completes
+    ↓
+ordinary Operation Participation may end
+    ↓
+does occupancy affect active Committed/Potential Demand?
+    ├── no → no Terminal Occupancy Commitment required
+    └── yes
+          ↓
+       Terminal Occupancy Commitment
+          ↓
+       resolve occupancy
+       OR transfer to eligible Commitment
+       OR active demand demonstrably ceases
+          ↓
+       terminal settlement
+```
+
+Job completion ends ordinary cooperation, not necessarily physical relevance.
+
+## 13. Operation termination with unresolved obligations
+
+```text
+ordinary Operation membership reaches zero
+    ↓
+reassess obligation bases
+    ├── demand-dependent spatial obligations may cease
+    └── origin-bound Control, authority, stability and evidence remain
+             ↓
+          Commitment remains SETTLING
+             ↓
+          obligations settled
+             ↓
+          CANCELLED_BY_OPERATION_TERMINATION
+          or more precise earlier terminal cause
+```
+
+The first authoritative invalidation of the Governing Basis determines the cause.
+
+## 14. Terminal disposition matrix
+
+| Objective condition | Governing event | Terminal disposition after settlement |
+|---|---|---|
+| Objective achieved | No replacement | `SUCCEEDED` |
+| Objective remains applicable but cannot be achieved | Autonomous resolution unavailable | `FAILED` |
+| New authoritative intent replaces Governing Basis | Intent replacement | `SUPERSEDED_BY_NEW_INTENT` |
+| Source Job Episode ends without replacement | Player stop/takeover, GIANTS abort/fault | `CANCELLED_BY_SOURCE_INTENT_TERMINATION` |
+| Operation basis ends | Operation termination | `CANCELLED_BY_OPERATION_TERMINATION` |
+
+## 15. Implementation sequence boundary
+
+```text
+normative documents accepted
+        ↓
+passive identities and value contracts
+        ↓
+lifecycle + Obligation Set trace
+        ↓
+state-transition and terminal-settlement tests
+        ↓
+shadow Effective Actuation Composition
+        ↓
+one isolated bounded capability
+        ↓
+runtime validation
+        ↓
+record, revise and repeat
+```
+
+No stage authorises copying the v4.6.57–v4.6.70 experimental controller chain into the replacement core.

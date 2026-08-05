@@ -1,5 +1,18 @@
 # Engineering Handbook
 
+## v4.6.78 replacement-core authority note
+
+The Handbook preserves accumulated engineering history and explanatory material. Current normative driving-system authority resides in:
+
+- `ARCHITECTURE.md`;
+- `ARCHITECTURE_FLOW.md`;
+- `DESIGN.md`;
+- ADR-0019.
+
+Where older chapters describe Negotiation Manager, Permission Gate or controller-specific lifecycle ownership, treat those sections as historical explanation rather than the current replacement-core contract.
+
+The current core is organised around Situation Assessment, Decision, Commitment, explicit Obligation ownership, bounded Control and observed terminal settlement.
+
 ## v4.6.50 architecture recovery note
 
 Temporary v4.6.44–v4.6.49 is retained as an Experimental Capability Corpus, not promoted runtime architecture.

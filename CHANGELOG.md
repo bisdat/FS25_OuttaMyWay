@@ -1,5 +1,23 @@
 # Changelog
 
+
+## v4.6.78 — Replacement-Core Architecture Candidate
+
+- Begins from owner-declared canonical v4.6.71, ZIP SHA-256 `c675911413c7898b047252ccf764ee5154ecbcfeb3704b80af58f0b3370a0a4f`, Git commit `aa9a32846c082d41142558145000dd0971216d7a`.
+- Changes documentation and package metadata only. Active runtime implementation remains v4.6.56; no Lua behaviour changes.
+- Adds ADR-0019 and establishes the normative Commitment lifecycle: `ACTIVE`, `WAITING_FOR_EVIDENCE`, `SETTLING`, followed by five terminal dispositions.
+- Accepts Governing Basis, Obligation Continuity, Terminal Settlement, Safe Handover, Intent Supersession, Terminal Occupancy and Effective Actuation Composition.
+- Requires exactly one owning Commitment for each open Obligation and exactly one objective-progress actuation owner per assembly.
+- Closes player takeover, Operation termination, completed-worker relevance and Intent Supersession under one obligation and settlement model.
+- Records normative answers to all eight must-not-be-deferred architectural questions.
+- Replaces the chronological active `ARCHITECTURE.md`, `ARCHITECTURE_FLOW.md`, `DESIGN.md` and `KNOWN_ISSUES.md` with current normative documents; preserves their exact v4.6.71 forms under `docs/archive/architecture/`.
+- Updates Project Status, Engineering Handover, Roadmap, Decision Log, Concept Register, Glossary, Engineering Journal, Architectural Maxims, Handbook authority note and documentation map.
+- Returns `modDesc.xml` to a stable project description, resolving Mod Description Drift.
+- Proposed for owner review and Canonicalisation before implementation begins.
+- Recovers and preserves the actual v4.6.72–v4.6.77 temporary runtime-validation lineage, including exact package and RRS fingerprints.
+- Incorporates the v4.6.77 Holistic Architecture Compliance Audit and classifies that line as failed experimental evidence rather than executable ancestry.
+- Adds the Architecture Conformance Matrix, formal Commitment State Machine, Candidate Action/Constraint Verdict contract, Responsibility Map, Replay Validation Specification, Migration Plan and Removal Register.
+
 ## v4.6.71 — Architecture Consolidation and Experimental Reset Candidate
 
 - Begins from exact owner-declared canonical v4.6.56, SHA-256 `9e2ed98a89ba7ffb3babb7669abf26a8db52a5f04b97829900c1b0d4a44b8066`, Git commit `99ae108ca589a2930b562c19ae560d3ecf580426`.

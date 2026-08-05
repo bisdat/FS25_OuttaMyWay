@@ -1,51 +1,87 @@
 # Project Status
 
-Version: 4.6.71 Architecture Consolidation and Experimental Reset Candidate  
-Status: proposed consolidation candidate; non-canonical until owner declaration  
-Canonical implementation baseline: v4.6.56 — `9e2ed98a89ba7ffb3babb7669abf26a8db52a5f04b97829900c1b0d4a44b8066` — Git `99ae108ca589a2930b562c19ae560d3ecf580426`
+Version: 4.6.78 Replacement-Core Architecture Candidate  
+Status: documentation-only Release Candidate; non-canonical until owner declaration  
+Canonical repository baseline: v4.6.71 — `c675911413c7898b047252ccf764ee5154ecbcfeb3704b80af58f0b3370a0a4f` — Git `aa9a32846c082d41142558145000dd0971216d7a`  
+Active runtime implementation: v4.6.56
 
 ## Current engineering phase
 
-Architecture consolidation and implementation reset after the v4.6.57–v4.6.70 experimental cycle.
+Replacement-core architecture closure and documentation synthesis.
 
-## Active runtime
+No runtime, Control, Decision or behaviour implementation is changed by this candidate.
 
-The v4.6.56 runtime implementation is active. No later experimental architecture/control modules are loaded by v4.6.71.
+## Architectural completion
 
-## Current understanding
+The replacement core has passed a twelve-scenario paper validation without exposing:
 
-The experimental cycle increased confidence in the architecture while repeatedly disproving specific implementations. The durable outcome is a clearer set of responsibilities and preconditions, not a stable later controller.
+- a lifecycle dead end;
+- an ownerless obligation;
+- conflicting terminal semantics;
+- a need for another architectural subsystem.
 
-Accepted architectural knowledge includes:
+The validated core now includes:
 
-- bounded Future Space and Safe Release;
-- Situation, Encounter and Commitment identity separation;
-- Native Handover and post-handover observation-only authority;
-- identity references separated from immutable value snapshots;
-- dynamic intervention configuration captured immediately before mutation;
-- repeated Encounter handling and Option Preservation;
-- provisional refuge with continuous Commitment-precondition revalidation;
-- executable and atomic refuge transitions;
-- one decisive manoeuvre leg followed by settled-boundary reassessment;
-- settled-pose leg-local Control frames;
-- bounded steering acquisition before directional progress enforcement;
-- coherent leases, counterfactual release assessment and the never-hold-all invariant.
+- three non-terminal Commitment states: `ACTIVE`, `WAITING_FOR_EVIDENCE`, `SETTLING`;
+- five terminal dispositions;
+- Governing Basis and first-authoritative-invalidation precedence;
+- first-class Obligation identity and exactly-one-owner continuity;
+- terminal settlement through satisfaction, evidenced basis cessation or accepted transfer;
+- one objective-progress actuation owner per assembly;
+- Effective Actuation Composition validation;
+- Terminal Occupancy;
+- player takeover without fictional internal transfer to the player;
+- Operation termination with surviving settlement responsibility;
+- Intent Supersession and bounded predecessor/successor coexistence;
+- independent Job Episode admission;
+- Continuing Intent Priority;
+- Committed Demand, Potential Demand and Temporary Slack;
+- Preference-band exhaustion and Representation Fitness contracts.
 
-## Last observed Reality
+## Eight must-not-be-deferred questions
 
-v4.6.70 completed the first refuge, passage, work restoration and Native Handover. A later Encounter held Patriot for approximately 96 seconds until map-clear. The Hold-release projection used a 60 km/h cruise-control ceiling rather than realistic GIANTS field-working continuation and imposed non-closing motion as a universal release condition. The Hold was coherent but permanently conservative.
+All eight now have normative answers in `ARCHITECTURE.md` and ADR-0019:
 
-## Disproved current implementation assumptions
+1. completed-worker relevance;
+2. Continuing Intent Priority;
+3. Terminal Occupancy obligations;
+4. multi-stage strategy continuity;
+5. terminal settlement;
+6. player responsibility boundary;
+7. route-substitution scope;
+8. unresolved remnants after Operation termination.
 
-- a cruise-control ceiling represents expected native GIANTS continuation speed;
-- every safe release must be non-closing;
-- threshold accumulation alone can substitute for a correct physical continuation model;
-- the latest experimental candidate is a suitable canonical baseline merely because it contains more architectural code.
+## Runtime boundary
 
-## Next unresolved subject
+The active executable implementation remains v4.6.56, as retained in canonical v4.6.71.
 
-Observe recent unmodified GIANTS operating behaviour and determine what evidence can support a bounded Native Continuation Speed Estimate. Discussion and hypothesis formation precede implementation.
+Historical v4.6.57–v4.6.70 and v4.6.72–v4.6.77 implementations remain non-authoritative evidence. The replacement architecture is not claimed to be implemented.
 
-## Canonicalisation condition
+## Remaining non-architectural discoveries
 
-The owner may declare this exact package canonical after repository review. Canonicalisation would establish v4.6.71 as the documentation/architecture baseline while retaining v4.6.56 runtime behaviour.
+These do not block architectural Canonicalisation:
+
+- Native Continuation Speed Estimate;
+- Reverse Actuation Discovery;
+- action-specific Representation Fitness implementation;
+- exact candidate-generation geometry;
+- capability adapters and GIANTS extension points;
+- numerical thresholds and time budgets;
+- runtime validation of Effective Actuation Composition.
+
+## Candidate review condition
+
+Review must confirm that:
+
+- the current normative documents agree;
+- historical architecture is preserved in archive snapshots;
+- no runtime file changed;
+- v4.6.71 is correctly recorded as the canonical source;
+- the candidate does not claim implementation;
+- RRS reports no blocking findings.
+
+After owner Canonicalisation, implementation planning may begin as a separate engineering activity.
+
+## Intervening release-line disposition
+
+v4.6.72–v4.6.77 were temporary non-canonical runtime-validation increments. Their exact fingerprints and findings are preserved in `EXPERIMENTAL_LINEAGE_V4.6.72-V4.6.77.md`. The v4.6.77 audit concluded that the branch was not architecture-compliant and must not be used as the executable baseline for v4.6.78.

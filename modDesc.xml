@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <modDesc descVersion="92">
     <author>bisdat</author>
-    <version value="4.6.71">4.6.71</version>
+    <version value="4.6.78">4.6.78</version>
     <title>
         <en>Outta My Way</en>
         <de>Aus dem Weg</de>
@@ -10,11 +10,11 @@
         <it>Fuori dai piedi</it>
     </title>
     <description>
-        <en>Architecture consolidation and experimental reset candidate. Runtime behaviour remains v4.6.56; v4.6.57-v4.6.70 evidence is retained as knowledge but not activated.</en>
-        <de>Kandidat zur Architekturkonsolidierung und zum experimentellen Neustart. Das Laufzeitverhalten bleibt v4.6.56; Erkenntnisse aus v4.6.57-v4.6.70 bleiben dokumentiert, werden aber nicht aktiviert.</de>
-        <fr>Candidat de consolidation architecturale et de réinitialisation expérimentale. Le comportement d’exécution reste celui de v4.6.56 ; les preuves v4.6.57-v4.6.70 sont conservées comme connaissances sans être activées.</fr>
-        <es>Candidato de consolidación arquitectónica y reinicio experimental. El comportamiento en ejecución permanece en v4.6.56; la evidencia de v4.6.57-v4.6.70 se conserva como conocimiento sin activarse.</es>
-        <it>Candidato di consolidamento architetturale e ripristino sperimentale. Il comportamento runtime resta quello di v4.6.56; le evidenze v4.6.57-v4.6.70 sono conservate come conoscenza ma non attivate.</it>
+        <en>Helps native GIANTS AI field workers cooperate inside a field through bounded, temporary interventions while preserving GIANTS job ownership.</en>
+        <de>Hilft nativen GIANTS-KI-Feldarbeitern, innerhalb eines Feldes durch begrenzte, vorübergehende Eingriffe zusammenzuarbeiten, während GIANTS die Auftragssteuerung behält.</de>
+        <fr>Aide les ouvriers agricoles de l’IA native de GIANTS à coopérer dans un champ grâce à des interventions temporaires et limitées, tout en laissant à GIANTS la responsabilité du travail.</fr>
+        <es>Ayuda a los trabajadores de campo de la IA nativa de GIANTS a cooperar dentro de un campo mediante intervenciones temporales y limitadas, manteniendo GIANTS la responsabilidad del trabajo.</es>
+        <it>Aiuta gli operatori agricoli dell’IA nativa GIANTS a cooperare all’interno di un campo tramite interventi temporanei e limitati, mantenendo a GIANTS la responsabilità del lavoro.</it>
     </description>
     <iconFilename>icon.dds</iconFilename>
     <multiplayer supported="true" />

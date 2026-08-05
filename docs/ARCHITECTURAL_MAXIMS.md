@@ -1,53 +1,59 @@
 # Architectural Maxims
 
-## Continuation and release
+## Reality and evidence
 
-- **Current clearance is not continuation clearance.** Separating motion or constant-velocity exclusion cannot prove safety through the next material manoeuvre.
-- **Relationship labels are Knowledge, not lifecycle.** One Situation may remain relevant through crossing, parallel, separating, manoeuvring and opposed classifications.
-- **Capability effectiveness is not operational sufficiency.** Decision must judge whether realised Control preserves or achieves the Commitment purpose.
-- **Capability completion is not Commitment completion.** Persistent intent ends only at a Safe Release Point, cancellation or explicit failure.
-- **Observation must preserve an option.** `CONTINUE_OBSERVATION` is valid only with a bounded evidence, exhaustion and reassessment contract.
-- **Failure remains part of Reality.** Blockage or exhausted Action Space cannot be renamed normal operation.
-
-- Facts before decisions.
-- The handbook is the chart.
-- The chart is more valuable than the boats.
 - Reality is the final architect.
-- Complete Knowledge is unnecessary; Knowledge must be sufficient for the particular conclusion or action.
-- Continued unchanged operation and passive observation are Decisions whose consequences must be assessed.
-- Preserve options with the earliest sufficient, minimum effective augmentation.
-- Frequent reassessment does not automatically justify frequent intervention.
-- Applicable architectural constraints are mandatory gates, not optional controller checks.
-- Experimental capability may be retained without promoting its temporary ownership structure.
-- Decisions should consume understanding, not raw observations.
-- Optimise for understanding before behaviour.
-- Situation Assessment is the sole interpreter of observations.
-- All new information returns through the Operational Picture before further decisions are made.
-- Ask who naturally owns a responsibility, not where it is easiest to implement.
-- Preserve autonomous continuity through the least disruptive justified intervention.
-- A successful autonomous worker is one the player stops thinking about.
-- Architecture speaks about workers; implementation must not silently narrow the whiteboard.
+- Observation is evidence; Knowledge is interpretation.
+- Missing evidence is not positive evidence.
+- A failed test is an architectural discovery opportunity.
+- Numerical confidence must never disguise representational uncertainty.
+- No Silent Under-Approximation.
 
-- Least intervention is preferable to rare intervention.
-- Grace emerges from continuous evaluation and proportionate commitment.
-- Complexity belongs beneath the waterline; simplicity belongs in the player experience.
-- Coverage before uniform precision.
-- Uncertainty prevents clearance; it does not manufacture collision.
-- Sweep follows observed kinematics, not visual symmetry.
-- Resolve identity rigorously; represent uncertainty honestly.
-- Route is for navigation; Resolution Path is for evidence.
-- Class is context, not structural authority.
-- Admissibility before optimisation.
-- The best representation is sufficient, defensible and timely—not merely detailed.
-- Situation Assessment judges fitness; representations expose evidence and limits.
-- Refresh the smallest invalidated scope.
-- Job completion ends cooperation, not physical relevance.
+## Responsibility
 
-## Scope and control
+- Situation Assessment produces Knowledge only.
+- Decision selects and owns continuing intent through Commitment.
+- Control executes bounded authority; it does not invent policy.
+- Loss of progress authority does not mean loss of responsibility.
+- Every open Obligation has exactly one owning Commitment.
+- Intent may be superseded; obligations may not be orphaned.
 
-- Observe broadly; control narrowly.
-- Catalogue membership is evidence, not a support promise.
-- Job admission is not job-configuration viability.
-- Control ineligibility does not imply test ineligibility.
-- Presence is not participation; occupancy is not obstacle relevance.
-- Repeated local resolution is not proof of Operational Resolution.
+## Commitment lifecycle
+
+- Capability completion is not Commitment completion.
+- Strategy stages are not lifecycle states.
+- Multi-stage resolution remains one Commitment while its Governing Basis remains applicable.
+- `WAITING_FOR_EVIDENCE` retains responsibility without speculative progress.
+- `SETTLING` means the objective has ended but the Commitment has not earned the right to disappear.
+- Terminal entry requires Terminal Settlement.
+- The first authoritative invalidation of Governing Basis determines terminal cause.
+
+## Authority
+
+- One assembly has one objective-progress actuation owner at a time.
+- Capability reservations do not create independent progress owners.
+- Validate the complete Effective Actuation Composition, not isolated commands.
+- Immediate safety authority is a bounded veto, not a second progress plan.
+- Never hold all participants simultaneously.
+- Intent authority may transfer immediately; actuation authority transfers safely.
+
+## Continuation and space
+
+- Continuing Intent Priority governs ordinary resolution.
+- Blockage is not Job Episode termination.
+- Job completion ends ordinary cooperation, not necessarily physical relevance.
+- No intra-field space is permanently released while workers remain active.
+- Distinguish Committed Demand, Potential Demand and Temporary Slack.
+- Passage Corridor is not Continuation Corridor.
+- Current clearance is not Safe Release.
+- A refuge is provisional until terminal settlement.
+
+## Scope and implementation
+
+- Respect native GIANTS AI.
+- OuttaMyWay augments; it does not replace route ownership.
+- General route substitution is outside the replacement core.
+- Viability before preference.
+- Preference exhaustion is not candidate exhaustion.
+- Implementation convenience cannot dictate architecture.
+- Architecture, implementation and testing remain separate activities.

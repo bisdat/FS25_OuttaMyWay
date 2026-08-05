@@ -1,3 +1,92 @@
+## v4.6.78 replacement-core vocabulary
+
+**Governing Basis**  
+The admitted intent or intent set and Operation context that make a Commitment objective applicable.
+
+**Obligation**  
+An owned requirement that remains in force while its basis remains valid and until it is satisfied, closes through evidenced basis cessation or transfers atomically to an eligible accepting Commitment.
+
+**Commitment Obligation Set**  
+The explicit collection of Obligations currently owned by a Commitment.
+
+**Obligation Continuity**  
+The invariant that an Obligation may settle or change owner but may never become ownerless.
+
+**Origin-Bound Obligation**  
+An Obligation that cannot transfer because it concerns effects, authority or provenance created by its originating Commitment.
+
+**Continuity Obligation**  
+An Obligation protecting a condition that remains relevant across intent changes and may transfer to an eligible Commitment.
+
+**Intent-Relative Obligation**  
+An Obligation whose basis depends on a particular governing intent and may cease when authoritative evidence proves that requirement no longer applies.
+
+**`ACTIVE`**  
+Commitment state in which the objective remains applicable and authorised progress may occur.
+
+**`WAITING_FOR_EVIDENCE`**  
+Commitment state in which responsibility remains but evidence is insufficient for further progress Control.
+
+**`SETTLING`**  
+Commitment state in which ordinary objective-progress authority has ended while terminal Obligations remain unresolved.
+
+**Terminal Settlement Point**  
+The point at which every Obligation is satisfied, closes through evidenced basis cessation or transfers atomically to an eligible accepting Commitment.
+
+**Safe Release Point**  
+A Terminal Settlement Point with no continuing responsibility transferred to a successor.
+
+**Safe Handover Point**  
+A Terminal Settlement Point at which continuing responsibility transfers correctly or external physical agency changes while remaining internal responsibility stays owned.
+
+**Intent Supersession**  
+Replacement of the intent governing a live Commitment by a newly admitted authoritative intent.
+
+**Supersession Handover Interval**  
+The bounded interval in which a Governing Successor owns the new intent while a Settling Predecessor reconciles effects and Obligations from the displaced intent.
+
+**Governing Successor**  
+The Commitment owning progress under a newly admitted authoritative intent.
+
+**Settling Predecessor**  
+A superseded Commitment retaining only settlement, observation and bounded safety authority.
+
+**Effective Actuation Composition**  
+The complete combined effect of proposed actions, existing commands, capability reservations, residual predecessor effects and concurrent actions on relevant assemblies.
+
+**Progress-Actuation Owner**  
+The sole Commitment authorised to pursue objective progress through physical Control of an assembly.
+
+**Committed Demand**  
+Space required by a current admitted continuation.
+
+**Potential Demand**  
+Space plausibly required by a bounded future continuation.
+
+**Temporary Slack**  
+Space not currently demanded but not permanently released while workers remain active.
+
+**Terminal Occupancy**  
+Completed-worker occupancy that materially affects the Committed or Potential Demand of active workers.
+
+**First Authoritative Invalidation**  
+The first authoritative event that invalidates a Commitment's Governing Basis and therefore selects its intended terminal cause.
+
+**Job Episode**  
+One independently admitted GIANTS AI job instance. Restart or replacement creates a new Job Episode even when assembly and task appear unchanged.
+
+**Genuine Job Episode Termination**  
+Confirmed end of one admitted GIANTS AI job instance through player stop, player takeover, GIANTS abort/fault or authoritative replacement. Use this precise term instead of the ambiguous phrase “job ended”. Blockage and an OuttaMyWay Hold are not genuine termination.
+
+**`SUPERSEDED_BY_NEW_INTENT`**  
+Terminal disposition recording that a newly admitted authoritative intent displaced a live Commitment after terminal settlement.
+
+**`CANCELLED_BY_SOURCE_INTENT_TERMINATION`**  
+Terminal disposition recording that the governing source Job Episode ended without replacement.
+
+**`CANCELLED_BY_OPERATION_TERMINATION`**  
+Terminal disposition recording that the Operation context forming the Governing Basis ended.
+
 ## v4.6.71 consolidation vocabulary
 
 **Experimental Reset**  
