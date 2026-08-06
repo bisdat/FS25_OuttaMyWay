@@ -1,5 +1,13 @@
 # Replacement-Core Conformance Tests
 
+v4.7.12 adds deterministic geometry metrics, near-equivalent and split-polygon comparison checks, bounded evidence retention and a guard proving diagnostic equivalence does not merge Operations.
+
+v4.7.11 adds polygon canonicalisation invariance, split-polygon distinction, immutable Job Episode binding, three-Operation concurrent grouping and global Operation trace coverage.
+
+v4.7.10 adds source-field polygon authority, farmland-context negative tests, source-label disagreement handling, positive `lastJob` termination, stale `fieldJob` tolerance and a simulated GIANTS derived Field World containing source fields 68, 69 and 70.
+
+The suite also retains all earlier replay, immutable traversal, admission, Operation, Candidate, constraint, Decision and terminal-settlement checks.
+
 Run from the repository root:
 
 ```text
@@ -7,6 +15,4 @@ texlua tests/replacement_core/run.lua .
 pytest -q
 ```
 
-v4.7.4 adds the offline replay-conformance gate. The corpus contains documented historical reconstructions for v4.6.49, v4.6.57, v4.6.64, v4.6.70, v4.6.77, TS016, player takeover, Operation termination and no-activity controls.
-
-The fixtures use only facts preserved in canonical documentation. They do not execute archived code, simulate GIANTS physics or grant physical Control authority.
+The listener never applies the Decision-to-Commitment boundary, never imports archived code and has no physical Control capability.

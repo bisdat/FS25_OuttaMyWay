@@ -58,7 +58,7 @@ end
 
 function Registry:tokensForCommitment(commitmentId)
     local result = {}
-    for _, token in pairs(self.byAssembly) do
+    for _, token in OuttaMyWay.ValueRecord.pairs(self.byAssembly) do
         if token.commitmentId == commitmentId then result[#result+1] = token end
     end
     table.sort(result,function(a,b) return a.identity < b.identity end)
@@ -72,7 +72,7 @@ end
 function Registry:releaseForCommitment(commitmentId)
     local tokens = self:tokensForCommitment(commitmentId)
     local released = {}
-    for _, token in ipairs(tokens) do
+    for _, token in OuttaMyWay.ValueRecord.ipairs(tokens) do
         self:release(token)
         released[#released+1] = token.identity
     end

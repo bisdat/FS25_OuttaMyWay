@@ -23,7 +23,7 @@ local function rejectSelection(value, path, seen)
     seen = seen or {}
     if seen[value] then return end
     seen[value] = true
-    for key,item in pairs(value) do
+    for key,item in OuttaMyWay.ValueRecord.pairs(value) do
         if forbiddenSelectionFields[key] then
             error("CandidateAction contains forbidden selection field " .. path .. tostring(key),3)
         end

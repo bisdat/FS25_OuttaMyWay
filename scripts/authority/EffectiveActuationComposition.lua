@@ -11,7 +11,7 @@ local Record = OuttaMyWay.ValueRecord.register(
 )
 
 local function contains(list, value)
-    for _, item in ipairs(list) do if item == value then return true end end
+    for _, item in OuttaMyWay.ValueRecord.ipairs(list) do if item == value then return true end end
     return false
 end
 
@@ -19,7 +19,7 @@ function Composition.create(values)
     values = values or {}
     local progressOwners = {}
     local held = {}
-    for _, entry in ipairs(values.entries or {}) do
+    for _, entry in OuttaMyWay.ValueRecord.ipairs(values.entries or {}) do
         if type(entry.assemblyId) ~= "string" or type(entry.commitmentId) ~= "string" or type(entry.capability) ~= "string" then
             error("composition entry requires assemblyId, commitmentId and capability", 2)
         end
@@ -36,7 +36,7 @@ function Composition.create(values)
     local relevant = values.relevantAssemblyIds or {}
     if #relevant > 0 then
         local allHeld = true
-        for _, assemblyId in ipairs(relevant) do
+        for _, assemblyId in OuttaMyWay.ValueRecord.ipairs(relevant) do
             if not held[assemblyId] then allHeld = false break end
         end
         if allHeld then error("Effective Actuation Composition violates never hold all", 2) end

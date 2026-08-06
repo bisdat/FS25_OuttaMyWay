@@ -1,5 +1,85 @@
 # Changelog
 
+## v4.7.12 — Field World Equivalence Evidence Candidate
+
+- Continues from exact v4.7.11 packaged bytes.
+- Records full canonical root vertices and bounded spatial-comparison evidence: area, perimeter, centroid, bounds, island topology, symmetric boundary distance, bidirectional vertex containment and deterministic sampled overlap.
+- Names the live discovery **Seed-Dependent Boundary Representation**: fields 68 and 69 shared one exact fingerprint, while two seeds in old field 70 produced two additional fingerprints despite identical point count and outer bounds.
+- Treats exact fingerprints as diagnostic evidence and retains their current Operation grouping only as an explicitly provisional implementation limitation. Spatial comparisons do not merge Operations and do not mutate Field World identity authority.
+- Bounds comparison work to recent snapshots and a fixed 31×31 sample grid.
+- Retains immutable Job Episode capture, source-intent termination and `control=false`.
+
+## v4.7.11 — Job-Seeded Field World Identity Candidate
+
+- Continues from exact v4.7.10 candidate bytes while canonical authority remains owner-declared v4.7.4.
+- Promotes the GIANTS-generated contiguous agronomic polygon from diagnostic evidence to the authoritative **Field World Snapshot** for each Job Episode.
+- Canonicalises polygon start index and winding, quantises only the identity representation, and computes a stable dual-hash geometry fingerprint. Raw captured geometry remains available for spatial reasoning.
+- Groups Operations by geometry fingerprint: merged labels 68, 69 and 70 can share one Operation; disconnected parts retaining label 77 form separate Operations.
+- Retains field labels separately as player-facing locators, including contextual farmland-label correlation where a historical source-field polygon no longer resolves.
+- Binds the Field World Snapshot once to the Job Episode and rejects identity drift. External field mutation during active work is outside the supported-world contract.
+- Adds global active Operation count to passive traces for the five-worker/three-Field-World validation.
+- Retains source-intent termination, immutable traversal, zero live Commitment mutation and `control=false`.
+
+## v4.7.10 — Source-Field Authority, Derived Field World Discovery and Source-Intent Termination Candidate
+
+- Continues from exact v4.7.9 candidate bytes while canonical authority remains owner-declared v4.7.4.
+- Makes exact source-field polygon containment the sole authority for GIANTS source field labels; farmland identity is retained only as contextual containment.
+- Names and separates **Source Field Identity** from **Derived Field World Identity**.
+- Adds a passive GIANTS `FieldCourseField.generateAtPosition` probe to discover the experienced contiguous Field World and report which retained source field labels it contains, including merged-field cases such as 68–69–70.
+- Adds positive **Source Intent Termination Evidence** when a previously active job token is retained as `spec_aiJobVehicle.lastJob`, absent from active jobs and accompanied by an empty active job slot and inactive GIANTS AI state.
+- Ends the corresponding Job Episode and field-scoped Operation without guessing whether the source termination was a player stop, GIANTS abort or GIANTS fault.
+- Retains explicit immutable traversal, passive Decision tracing, zero live Commitment mutation and `control=false`.
+
+
+## v4.7.9 — GIANTS-Compatible Value Traversal and Polygon Field Identity Candidate
+
+- Continues from exact v4.7.8 candidate bytes while canonical authority remains owner-declared v4.7.4.
+- Adds explicit immutable collection accessors (`ValueRecord.pairs`, `ValueRecord.ipairs`, and `ValueRecord.length`) for GIANTS Lua-runtime compatibility.
+- Migrates the active replacement-core pipeline away from implicit proxy traversal without weakening record immutability.
+- Adds read-only field-polygon containment as a field-identity fallback when farmland services are unavailable.
+- Treats no polygon match or multiple polygon matches as unresolved evidence rather than selecting or guessing a field.
+- Preserves stable GIANTS Job Episode identity through blockage and prevents unresolved field identity from collapsing to false candidate-space exhaustion.
+- Retains passive tracing, zero live Commitment mutation, and `control=false`.
+
+## v4.7.8 — Targeted Job Episode Admission and Field Identity Probe Candidate
+
+- Continues from exact v4.7.7 diagnostic candidate bytes while canonical authority remains owner-declared v4.7.4.
+- Replaces broad mission-object reflection with targeted observation of `AISystem.activeJobVehicles` and their current GIANTS job objects.
+- Uses stable GIANTS job IDs as Job Episode source tokens; a changed job token explicitly replaces the previous episode.
+- Preserves one Job Episode through blockage and separates cab occupancy from loss of native AI ownership.
+- Resolves candidate field identity through current/job positions, farmland identity and `FieldManager.farmlandIdFieldMapping`; disagreement remains unresolved rather than guessed.
+- Adds a targeted field/job probe that records only active job vehicles and relevant job parameters.
+- Retains passive Candidate/Decision tracing, zero live Commitment mutation and `control=false`.
+
+## v4.7.7 — Live AI State Discovery Probe Candidate
+
+- Continues the passive validation lineage from exact v4.7.6 candidate bytes while canonical authority remains owner-declared v4.7.4.
+- Records the disproven v4.7.6 implementation assumption as **Native AI Activity Visibility Gap**: the replacement adapter enumerated relevant assemblies but its candidate activity methods and fields all remained false or unavailable during native GIANTS work.
+- Adds a diagnostic-only probe for AI-related method results, AI specialisation fields, mission AI-system state and field lookup services.
+- Logs only material state changes plus bounded heartbeats.
+- Does not use probe evidence for Job Episode admission, Operation membership, Candidate generation, Decision, Commitment or Control.
+- Preserves the v4.7.6 passive pipeline unchanged for comparison and retains `control=false`.
+
+## v4.7.6 — Passive Live Admission Correction Candidate
+
+- Begins from owner-declared canonical v4.7.4 (`37092b1d...e6602`, Git `783db03d4112a02031c7f49874270cefb4b8ac85`) and incorporates the disproven v4.7.5 passive-live hypothesis as evidence, not authority.
+- Names and corrects the **Live Job Episode Admission Gap**: positive native AI activity onset now supplies a stable observational Job Episode source identity when GIANTS exposes no current job object.
+- Names and corrects **Unresolved Evidence Loss**: active or retained assemblies and unavailable termination evidence force bounded `CONTINUE_OBSERVATION`; they cannot collapse to complete-space exhaustion.
+- Admits Operation membership from recognised native AI activity even when `spec_aiFieldWorker.isActive` is not the flag GIANTS exposes live.
+- Retains previously active assemblies after AI activity ceases; player takeover is terminal evidence, while undistinguished stop/abort/fault evidence remains explicitly unresolved.
+- Adds field, episode-transition, candidate-verdict and evidence-gap diagnostics to passive traces.
+- Preserves zero Commitment mutation and zero physical Control authority.
+
+## v4.7.5 — Passive Live Validation Candidate
+
+- Begins from owner-declared canonical v4.7.4 (`37092b1d...e6602`, Git `783db03d4112a02031c7f49874270cefb4b8ac85`).
+- Adds a read-only live Observation source for active native GIANTS AI field workers, grouped by observed field identity.
+- Publishes immutable live snapshots, Operational Pictures, complete non-actuating Candidate inventories, mandatory verdicts and deterministic Decision traces.
+- Preserves missing job, field and representation evidence explicitly instead of inferring terminal or clearance facts.
+- Adds bounded current-motion interaction support for passive conflict evidence only.
+- Registers one server-side passive validation listener with change-driven and heartbeat diagnostics.
+- Does not apply Decision-to-Commitment mutation and grants no physical Control authority.
+
 ## v4.7.4 — Replay Conformance Candidate
 
 - Begins from owner-declared canonical v4.7.3 (`f1a8219f...14d90`, Git `90fab767c9550e45e8f6ff97f78ce07f15956045`).

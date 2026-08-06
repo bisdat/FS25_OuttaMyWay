@@ -19,9 +19,13 @@ load("scripts/contracts/ReplayFixture.lua")
 load("scripts/contracts/ReplayRunResult.lua")
 load("scripts/contracts/GoverningBasisVerdict.lua")
 load("scripts/contracts/CommitmentApplicationRecord.lua")
+load("scripts/contracts/PassiveLiveTraceRecord.lua")
 load("scripts/identity/EpochSequence.lua")
 load("scripts/identity/IdentityRegistry.lua")
+load("scripts/identity/FieldWorldSnapshotRegistry.lua")
 load("scripts/observation/RuntimeObservationAdapter.lua")
+load("scripts/observation/LiveAIJobEvidence.lua")
+load("scripts/observation/LiveObservationSource.lua")
 load("scripts/identity/JobEpisodeAdmission.lua")
 load("scripts/identity/OperationAdmission.lua")
 load("scripts/assessment/RepresentationFitness.lua")
@@ -36,6 +40,7 @@ load("scripts/commitment/GoverningBasisEvaluator.lua")
 load("scripts/commitment/TerminalSettlementEvaluator.lua")
 load("scripts/commitment/DecisionCommitmentBoundary.lua")
 load("scripts/candidates/CandidateSpace.lua")
+load("scripts/candidates/PassiveLiveCandidateSupport.lua")
 load("scripts/constraints/ConstraintEvidence.lua")
 load("scripts/constraints/evaluators/FieldWorldContainment.lua")
 load("scripts/constraints/evaluators/TransitionClearance.lua")
@@ -53,6 +58,8 @@ load("scripts/decision/DecisionSelector.lua")
 load("scripts/diagnostics/ArchitectureTrace.lua")
 load("scripts/replay/ConformanceAssertions.lua")
 load("scripts/replay/ReplayRunner.lua")
+load("scripts/diagnostics/TargetedFieldIdentityProbe.lua")
+load("scripts/diagnostics/PassiveLiveValidator.lua")
 load("scripts/runtime/Runtime.lua")
 
 local passed, failed = 0, 0
@@ -188,9 +195,9 @@ test("terminal disposition must match the intended disposition", function()
     expectError(function() OuttaMyWay.CommitmentStateMachine.transition(settling,"SUCCEEDED",{terminalSettlementEvidence={ok=true}},ledger) end)
 end)
 
-test("runtime is explicitly inert", function()
+test("runtime is passive and inactive before the live listener runs", function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); local status=runtime:getStatus()
-    equal(status.runtimeMode,"REPLAY_CONFORMANCE_OFFLINE"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0)
+    equal(status.runtimeMode,"FIELD_WORLD_EQUIVALENCE_EVIDENCE"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
 end)
 
 
@@ -201,7 +208,7 @@ local function rawObservation(epoch, evidence, assemblyKey)
         provenance = { source="fixture", sequence=epoch },
         assemblies = {{ referenceKey=assemblyKey, componentReferenceKeys={assemblyKey.."/vehicle", assemblyKey.."/implement"}, source="fixture" }},
         fieldWorld = {}, geometry = {}, motion = {}, aiStates = {}, playerControl = {},
-        jobEpisodeEvidence = evidence and {{ assemblyReferenceKey=assemblyKey, sourceJobToken=evidence.sourceJobToken or "job-1", jobPresent=evidence.jobPresent, aiControlled=evidence.aiControlled, aiActive=evidence.aiActive, blocked=evidence.blocked, outtaMyWayHold=evidence.outtaMyWayHold, temporarilyInactive=evidence.temporarilyInactive, playerStopObserved=evidence.playerStopObserved, playerTakeoverObserved=evidence.playerTakeoverObserved, playerControlled=evidence.playerControlled, giantsAbortObserved=evidence.giantsAbortObserved, giantsFaultObserved=evidence.giantsFaultObserved, restartObserved=evidence.restartObserved, replacementObserved=evidence.replacementObserved, provenance={source="fixture"} }} or {},
+        jobEpisodeEvidence = evidence and {{ assemblyReferenceKey=assemblyKey, sourceJobToken=evidence.sourceJobToken or "job-1", jobPresent=evidence.jobPresent, aiControlled=evidence.aiControlled, aiActive=evidence.aiActive, blocked=evidence.blocked, outtaMyWayHold=evidence.outtaMyWayHold, temporarilyInactive=evidence.temporarilyInactive, playerStopObserved=evidence.playerStopObserved, playerTakeoverObserved=evidence.playerTakeoverObserved, playerControlled=evidence.playerControlled, giantsAbortObserved=evidence.giantsAbortObserved, giantsFaultObserved=evidence.giantsFaultObserved, restartObserved=evidence.restartObserved, replacementObserved=evidence.replacementObserved, fieldWorldReferenceKey=evidence.fieldWorldReferenceKey, fieldPolygonReferenceKey=evidence.fieldPolygonReferenceKey, fieldWorldFingerprint=evidence.fieldWorldFingerprint, playerFacingFieldId=evidence.playerFacingFieldId, playerFacingLocatorSource=evidence.playerFacingLocatorSource, provenance={source="fixture"} }} or {},
         operationMembershipEvidence = {}, physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {}
     }
 end
@@ -242,6 +249,26 @@ test("initial authoritative job evidence admits one episode", function()
     local snapshot=adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true}))
     local result=admission:observe(snapshot)
     equal(#result.admittedEpisodeIds,1); equal(#result.activeEpisodeIds,1); equal(#result.endedEpisodeIds,0)
+end)
+
+test("Field World Snapshot binds once and rejects drift inside one Job Episode",function()
+    local _,_,adapter,admission=newObservationKernel()
+    local first=adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true,fieldWorldReferenceKey="field-world:A",fieldPolygonReferenceKey="field-polygon:A",fieldWorldFingerprint="A"}))
+    local admitted=admission:observe(first); local episode=admission:get(admitted.activeEpisodeIds[1])
+    equal(episode.fieldWorldReferenceKey,"field-world:A")
+    local changed=adapter:publish(rawObservation(2,{jobPresent=true,aiControlled=true,aiActive=true,fieldWorldReferenceKey="field-world:B",fieldPolygonReferenceKey="field-polygon:B",fieldWorldFingerprint="B"}))
+    expectError(function() admission:observe(changed) end)
+end)
+
+test("replacement Job Episode may capture a different Field World Snapshot",function()
+    local _,_,adapter,admission=newObservationKernel()
+    local first=adapter:publish(rawObservation(1,{sourceJobToken="job-1",jobPresent=true,aiControlled=true,aiActive=true,fieldWorldReferenceKey="field-world:A",fieldPolygonReferenceKey="field-polygon:A",fieldWorldFingerprint="A"}))
+    local admitted=admission:observe(first); local oldId=admitted.activeEpisodeIds[1]
+    local replacement=adapter:publish(rawObservation(2,{sourceJobToken="job-2",jobPresent=true,aiControlled=true,aiActive=true,replacementObserved=true,fieldWorldReferenceKey="field-world:B",fieldPolygonReferenceKey="field-polygon:B",fieldWorldFingerprint="B"}))
+    local result=admission:observe(replacement)
+    equal(#result.endedEpisodeIds,1); equal(#result.admittedEpisodeIds,1)
+    equal(admission:get(oldId).terminalCause,"REPLACED")
+    equal(admission:get(result.activeEpisodeIds[1]).fieldWorldReferenceKey,"field-world:B")
 end)
 
 test("blockage hold and temporary inactivity do not end an episode", function()
@@ -744,6 +771,441 @@ test("SETTLE directive cannot contradict canonical Governing Basis event",functi
     equal(result.decision.commitmentAction,"SETTLE")
     expectError(function() runtime.decisionCommitmentBoundary:apply(picture,result) end)
     equal(runtime.commitments:get(admitted.commitment.identity).state,"ACTIVE")
+end)
+
+
+
+test("PassiveLiveTraceRecord rejects enabled Control",function()
+    expectError(function() OuttaMyWay.PassiveLiveTraceRecord.new({identity="LT-X",epoch=1,timestamp=1,status="TRACE",activeAssemblyCount=0,activeJobEpisodeCount=0,activeOperationCount=0,situationCount=0,encounterCount=0,controlAuthorityEnabled=true,provenance={}}) end)
+end)
+
+
+local function withFakeLiveGlobals(fn)
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local oldFieldManager,oldFarmlandManager=g_fieldManager,g_farmlandManager
+    local oldFieldCourseSettings,oldFieldCourseField=FieldCourseSettings,FieldCourseField
+    local positions={[101]={0,0,0},[201]={0,0,20}}
+    getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
+    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
+    local field={id=77,getId=function(self) return self.id end,getPolygonPoints=function() return {{x=-10,z=-10},{x=10,z=-10},{x=10,z=30},{x=-10,z=30}} end}
+    local farmland={id=77}
+    local farmlandManager={getFarmlandAtWorldPosition=function(self,x,z) return farmland end}
+    local fieldManager={farmlandIdFieldMapping={[77]=field},fields={field}}
+    g_fieldManager,g_farmlandManager=fieldManager,farmlandManager
+    FieldCourseSettings={generate=function(vehicle) return {} end}
+    FieldCourseField={generateAtPosition=function(x,z,settings,callback)
+        return {update=function(self,dt,budget) callback({fieldRootBoundary={boundaryLine={{x=-10,z=-10},{x=10,z=-10},{x=10,z=30},{x=-10,z=30}}},islands={}},true); return false end}
+    end}
+    local function job(id,x,z)
+        local parameter={getPosition=function() return x,z end}
+        return {jobId=id,currentTaskIndex=2,helperIndex=id,positionAngleParameter=parameter}
+    end
+    local jobA,jobB=job(1001,0,0),job(1002,0,20)
+    local a={rootNode=101,sizeWidth=3,sizeLength=7,lastSpeedReal=0.003,spec_aiFieldWorker={isActive=true,isBlocked=false,fieldJob=jobA},spec_aiJobVehicle={job=jobA,lastJob=jobA},getIsAIActive=function(self) return self.spec_aiFieldWorker.isActive end,getIsFieldWorkActive=function(self) return self.spec_aiFieldWorker.isActive end,getAISteeringNode=function(self) return self.rootNode end,getRootVehicle=function(self) return self end,getName=function() return "A" end}
+    local b={rootNode=201,sizeWidth=3,sizeLength=7,lastSpeedReal=0.002,spec_aiFieldWorker={isActive=true,isBlocked=false,fieldJob=jobB},spec_aiJobVehicle={job=jobB,lastJob=jobB},getIsAIActive=function(self) return self.spec_aiFieldWorker.isActive end,getIsFieldWorkActive=function(self) return self.spec_aiFieldWorker.isActive end,getAISteeringNode=function(self) return self.rootNode end,getRootVehicle=function(self) return self end,getName=function() return "B" end}
+    local mission={vehicles={a,b},controlledVehicle=nil,fieldManager=fieldManager,farmlandManager=farmlandManager,aiSystem={activeJobVehicles={a,b},activeJobs={jobA,jobB}}}
+    local ok,result=pcall(fn,mission,a,b,positions,jobA,jobB,field,farmland)
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+    g_fieldManager,g_farmlandManager=oldFieldManager,oldFarmlandManager
+    FieldCourseSettings,FieldCourseField=oldFieldCourseSettings,oldFieldCourseField
+    if not ok then error(result,0) end
+    return result
+end
+
+local function setActiveVehicles(mission,...)
+    mission.aiSystem.activeJobVehicles={...}
+end
+
+test("live source admits GIANTS Job identities from activeJobVehicles",function()
+    withFakeLiveGlobals(function(mission,a,b)
+        local registry=OuttaMyWay.FieldWorldSnapshotRegistry.new(); local source=OuttaMyWay.LiveObservationSource.new(registry); local observations=source:capture(mission,10)
+        equal(#observations,1); equal(#observations[1].assemblies,2); equal(#observations[1].jobEpisodeEvidence,2)
+        if not string.find(observations[1].fieldWorld.referenceKey,"field-world:geometry:FWG1:",1,true) then error("geometry Field World identity missing") end
+        equal(observations[1].fieldWorld.operationMembershipEvidenceComplete,true)
+        local tokens={}
+        for _,evidence in ipairs(observations[1].jobEpisodeEvidence) do
+            tokens[evidence.sourceJobToken]=true
+            equal(evidence.jobPresent,true); equal(evidence.aiControlled,true)
+            equal(evidence.provenance.activeJobVehicleMembership,true)
+        end
+        equal(tokens["giants-ai-job-id:1001"],true); equal(tokens["giants-ai-job-id:1002"],true)
+        equal(#observations[1].unavailableSources,0)
+    end)
+end)
+
+test("player presence in an AI-active vehicle does not imply player Control",function()
+    withFakeLiveGlobals(function(mission,a,b)
+        mission.vehicles={a}; setActiveVehicles(mission,a); mission.controlledVehicle=a
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local raw=runtime.liveObservationSource:capture(mission,10)[1]
+        equal(raw.playerControl["vehicle-root:101"].playerPresent,true)
+        equal(raw.playerControl["vehicle-root:101"].playerControlled,false)
+        local processed=runtime:processSealedObservation(raw)
+        equal(#processed.jobEpisodes.activeEpisodeIds,1)
+    end)
+end)
+
+test("activeJobVehicles membership is authoritative over false corroborating methods",function()
+    withFakeLiveGlobals(function(mission,a,b)
+        a.spec_aiFieldWorker.isActive=false; b.spec_aiFieldWorker.isActive=false
+        a.getIsAIActive=function() return false end; b.getIsAIActive=function() return false end
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local raw=runtime.liveObservationSource:capture(mission,10)[1]
+        local processed=runtime:processSealedObservation(raw)
+        equal(#processed.jobEpisodes.activeEpisodeIds,2); equal(#processed.operation.activeOperationIds,1); equal(#processed.picture.situations,1)
+    end)
+end)
+
+test("active Job Episodes with unresolved field identity wait rather than exhaust supportable space",function()
+    withFakeLiveGlobals(function(mission,a,b)
+        FieldCourseSettings=nil; FieldCourseField=nil
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local raws=runtime.liveObservationSource:capture(mission,10)
+        equal(#raws,2)
+        local processed=nil
+        for _,raw in ipairs(raws) do
+            if not string.find(raw.fieldWorld.referenceKey,"field-world:waiting:",1,true) then error("unresolved Field World did not wait by Job Episode") end
+            equal(raw.fieldWorld.operationMembershipEvidenceComplete,false)
+            processed=runtime:processSealedObservation(raw)
+            equal(OuttaMyWay.ValueRecord.length(processed.operation.activeOperationIds),0)
+        end
+        equal(OuttaMyWay.ValueRecord.length(processed.jobEpisodes.activeEpisodeIds),2)
+        local supported=runtime.passiveCandidateSupport:attach(processed.picture,processed.snapshot)
+        local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+        equal(evaluated.decision.commitmentAction,"WAIT")
+        equal(evaluated.decision.nonIntervention.classification,"CONTINUE_OBSERVATION")
+        if evaluated.decision.nonIntervention.classification=="COMPLETE_SUPPORTABLE_SPACE_EXHAUSTED" then
+            error("unresolved field identity falsely exhausted supportable space")
+        end
+        equal(runtime:getStatus().controlAuthorityEnabled,false)
+    end)
+end)
+
+test("inactive assembly without terminal cause preserves episode and unresolved Operation",function()
+    withFakeLiveGlobals(function(mission,a,b)
+        mission.vehicles={a}; setActiveVehicles(mission,a)
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local first=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,10)[1])
+        equal(#first.jobEpisodes.activeEpisodeIds,1); equal(#first.operation.activeOperationIds,1)
+        setActiveVehicles(mission); a.spec_aiFieldWorker.isActive=false; a.spec_aiJobVehicle.job=nil; a.spec_aiFieldWorker.fieldJob=nil
+        local secondRaw=runtime.liveObservationSource:capture(mission,11)[1]
+        equal(secondRaw.fieldWorld.operationMembershipEvidenceComplete,false)
+        local gap=false; for _,item in ipairs(secondRaw.unavailableSources) do if item.source=="JOB_EPISODE_TERMINATION_CAUSE" then gap=true end end
+        if not gap then error("termination-cause gap was not published") end
+        local second=runtime:processSealedObservation(secondRaw)
+        equal(#second.jobEpisodes.activeEpisodeIds,1); equal(#second.operation.activeOperationIds,1)
+        local supported=runtime.passiveCandidateSupport:attach(second.picture,second.snapshot)
+        local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+        equal(evaluated.decision.commitmentAction,"WAIT"); equal(evaluated.decision.nonIntervention.classification,"CONTINUE_OBSERVATION")
+    end)
+end)
+
+test("lastJob transition provides source-intent termination without guessing manual stop versus GIANTS termination",function()
+    withFakeLiveGlobals(function(mission,a,b,positions,jobA)
+        mission.vehicles={a}; setActiveVehicles(mission,a); mission.aiSystem.activeJobs={jobA}
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local first=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,10)[1])
+        equal(#first.jobEpisodes.activeEpisodeIds,1); equal(#first.operation.activeOperationIds,1)
+        setActiveVehicles(mission); mission.aiSystem.activeJobs={}
+        a.spec_aiFieldWorker.isActive=false; a.spec_aiJobVehicle.job=nil; a.spec_aiFieldWorker.fieldJob=jobA; a.spec_aiJobVehicle.lastJob=jobA
+        local second=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,11)[1])
+        equal(#second.jobEpisodes.activeEpisodeIds,0); equal(#second.jobEpisodes.endedEpisodeIds,1)
+        equal(runtime.jobEpisodes:get(first.jobEpisodes.activeEpisodeIds[1]).terminalCause,"SOURCE_INTENT_TERMINATION")
+        equal(#second.operation.activeOperationIds,0); equal(#second.operation.endedOperationIds,1)
+    end)
+end)
+
+test("restarted same source token captures a fresh immutable Field World Snapshot",function()
+    withFakeLiveGlobals(function(mission,a,b,positions,jobA)
+        mission.vehicles={a}; setActiveVehicles(mission,a); mission.aiSystem.activeJobs={jobA}
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local first=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,10)[1])
+        local firstEpisode=first.jobEpisodes.activeEpisodeIds[1]
+        setActiveVehicles(mission); mission.aiSystem.activeJobs={}
+        a.spec_aiFieldWorker.isActive=false; a.spec_aiJobVehicle.job=nil; a.spec_aiFieldWorker.fieldJob=jobA; a.spec_aiJobVehicle.lastJob=jobA
+        runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,11)[1])
+        a.spec_aiFieldWorker.isActive=true; a.spec_aiJobVehicle.job=jobA; a.spec_aiFieldWorker.fieldJob=jobA
+        setActiveVehicles(mission,a); mission.aiSystem.activeJobs={jobA}
+        local restarted=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,12)[1])
+        local secondEpisode=restarted.jobEpisodes.activeEpisodeIds[1]
+        if secondEpisode==firstEpisode then error("restart reused Job Episode identity") end
+        equal(runtime.fieldWorldSnapshots:getRecordCount(),2)
+        equal(runtime.jobEpisodes:get(firstEpisode).fieldWorldReferenceKey,runtime.jobEpisodes:get(secondEpisode).fieldWorldReferenceKey)
+    end)
+end)
+
+test("player takeover supplies genuine Job Episode termination evidence",function()
+    withFakeLiveGlobals(function(mission,a,b)
+        mission.vehicles={a}; setActiveVehicles(mission,a)
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local first=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,10)[1])
+        equal(#first.jobEpisodes.activeEpisodeIds,1)
+        setActiveVehicles(mission); a.spec_aiFieldWorker.isActive=false; a.spec_aiJobVehicle.job=nil; a.spec_aiFieldWorker.fieldJob=nil; mission.controlledVehicle=a
+        local second=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,11)[1])
+        equal(#second.jobEpisodes.activeEpisodeIds,0); equal(#second.jobEpisodes.endedEpisodeIds,1)
+        equal(runtime.jobEpisodes:get(first.jobEpisodes.activeEpisodeIds[1]).terminalCause,"PLAYER_TAKEOVER")
+        equal(#second.operation.activeOperationIds,0)
+    end)
+end)
+
+test("native job replacement receives a new Job Episode identity",function()
+    withFakeLiveGlobals(function(mission,a,b,positions,jobA)
+        mission.vehicles={a}; setActiveVehicles(mission,a); mission.aiSystem.activeJobs={jobA}
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local first=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,10)[1])
+        local firstId=first.jobEpisodes.activeEpisodeIds[1]
+        local nextJob={jobId=2001,currentTaskIndex=2,positionAngleParameter={getPosition=function() return 0,0 end}}
+        a.spec_aiJobVehicle.job=nextJob; a.spec_aiFieldWorker.fieldJob=nextJob; mission.aiSystem.activeJobs={nextJob}
+        local second=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,11)[1])
+        equal(#second.jobEpisodes.endedEpisodeIds,1); equal(#second.jobEpisodes.admittedEpisodeIds,1)
+        if second.jobEpisodes.activeEpisodeIds[1]==firstId then error("replacement reused Job Episode identity") end
+        equal(runtime.jobEpisodes:get(firstId).terminalCause,"REPLACED")
+    end)
+end)
+
+test("blocked active worker preserves the same Job Episode",function()
+    withFakeLiveGlobals(function(mission,a,b)
+        mission.vehicles={a}; setActiveVehicles(mission,a)
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local first=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,10)[1])
+        local firstId=first.jobEpisodes.activeEpisodeIds[1]
+        a.spec_aiFieldWorker.isBlocked=true; a.lastSpeedReal=0
+        local second=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,11)[1])
+        equal(#second.jobEpisodes.activeEpisodeIds,1); equal(second.jobEpisodes.activeEpisodeIds[1],firstId)
+        equal(second.snapshot.jobEpisodeEvidence[1].blocked,true)
+    end)
+end)
+
+test("field resolver uses exact source-field polygons while retaining farmland as context",function()
+    withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland)
+        local result=OuttaMyWay.LiveAIJobEvidence.resolveField(mission,{x=0,z=0},jobA)
+        equal(result.resolved,true); equal(result.sourceFieldId,77)
+        equal(result.current.source,"fieldManager.fields+field.getPolygonPoints")
+        equal(result.current.farmlandId,77); equal(result.current.contextualMappedFieldId,77)
+        equal(result.source,"CURRENT_POSITION_SOURCE_FIELD_POLYGON")
+    end)
+end)
+
+test("farmland mapping cannot establish field identity outside a source-field polygon",function()
+    withFakeLiveGlobals(function(mission,a,b,positions,jobA)
+        local result=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition(mission,1000,1000)
+        equal(result.resolved,false); equal(result.fieldId,0)
+        equal(result.contextualMappedFieldId,77)
+        equal(result.reason,"NO_FIELD_POLYGON_MATCH")
+    end)
+end)
+
+test("different source field labels require derived Field World evidence",function()
+    withFakeLiveGlobals(function(mission,a,b,positions,jobA)
+        local otherField={id=68,getId=function(self) return self.id end,getPolygonPoints=function() return {{x=-10,z=80},{x=10,z=80},{x=10,z=120},{x=-10,z=120}} end}
+        mission.fieldManager.fields={mission.fieldManager.fields[1],otherField}
+        jobA.positionAngleParameter.getPosition=function() return 0,100 end
+        local result=OuttaMyWay.LiveAIJobEvidence.resolveField(mission,{x=0,z=0},jobA)
+        equal(result.resolved,false); equal(result.conflict,true); equal(result.derivedFieldWorldRequired,true)
+        equal(result.reason,"SOURCE_FIELD_LABELS_DIFFER_DERIVED_FIELD_WORLD_REQUIRED")
+    end)
+end)
+
+test("passive support publishes only one non-actuating complete candidate",function()
+    local runtime=newPictureRuntime(); local processed=runtime:processSealedObservation(pictureFixture(1))
+    local supported=runtime.passiveCandidateSupport:attach(processed.picture,processed.snapshot)
+    equal(supported.candidateSupportEvidence.complete,true)
+    equal(#supported.candidateSupportEvidence.candidateSpecifications,1)
+    local capability=supported.candidateSupportEvidence.candidateSpecifications[1].capability
+    if capability~="CONTINUE_OBSERVATION" and capability~="CONTINUE_UNCHANGED" then error("passive support emitted actuation") end
+    equal(supported.candidateSupportEvidence.supportBoundary.controlAuthority,false)
+end)
+
+test("passive validator publishes admitted episodes Operation and candidate diagnostics",function()
+    withFakeLiveGlobals(function(mission)
+        local oldMission,oldServer,oldClient,oldTime=g_currentMission,g_server,g_client,g_time
+        g_currentMission,g_server,g_client,g_time=mission,{},nil,1000
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); runtime.passiveLiveValidator:loadMap(); runtime.passiveLiveValidator:update(1000)
+        local record=runtime.passiveLiveValidator:getRecords()[1]
+        equal(record.controlAuthorityEnabled,false); equal(record.activeAssemblyCount,2); equal(record.activeJobEpisodeCount,2); equal(record.activeOperationCount,1); equal(record.globalActiveOperationCount,1)
+        equal(record.candidateCount,1); equal(record.allPassCandidateCount,1); equal(record.unresolvedCandidateCount,0); equal(record.failedCandidateCount,0)
+        equal(record.selectedCapability,"CONTINUE_OBSERVATION"); equal(record.nonIntervention.classification,"CONTINUE_OBSERVATION")
+        equal(#runtime.commitments:list(),0); equal(runtime.decisionCommitmentBoundary:getPublishedCount(),0)
+        g_currentMission,g_server,g_client,g_time=oldMission,oldServer,oldClient,oldTime
+    end)
+end)
+
+test("passive live source and reasoning are deterministic from fresh state",function()
+    withFakeLiveGlobals(function(mission)
+        local function run()
+            local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+            local raw=runtime.liveObservationSource:capture(mission,10)[1]
+            local processed=runtime:processSealedObservation(raw)
+            local supported=runtime.passiveCandidateSupport:attach(processed.picture,processed.snapshot)
+            local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+            return OuttaMyWay.ValueRecord.canonical(evaluated.decision)
+        end
+        equal(run(),run())
+    end)
+end)
+
+test("Field World fingerprint is invariant to ring start winding and sub-quantum jitter",function()
+    local a={{x=0,z=0},{x=40,z=0},{x=40,z=20},{x=0,z=20}}
+    local b={{x=40.02,z=20.01},{x=40.01,z=0.02},{x=0.01,z=-0.01},{x=-0.02,z=20.01}}
+    local fa=OuttaMyWay.FieldWorldSnapshotRegistry.fingerprintGeometry(a,{},0.1)
+    local fb=OuttaMyWay.FieldWorldSnapshotRegistry.fingerprintGeometry(b,{},0.1)
+    equal(fa,fb)
+end)
+
+test("different split polygons receive different Field World fingerprints",function()
+    local upper={{x=-15.2,z=-408.2},{x=229.2,z=-408.2},{x=229.2,z=-206.8},{x=-15.2,z=-206.8}}
+    local lower={{x=-40.8,z=-701.2},{x=191.8,z=-701.2},{x=191.8,z=-407.8},{x=-40.8,z=-407.8}}
+    local a=OuttaMyWay.FieldWorldSnapshotRegistry.fingerprintGeometry(upper,{},0.1)
+    local b=OuttaMyWay.FieldWorldSnapshotRegistry.fingerprintGeometry(lower,{},0.1)
+    if a==b then error("split Field Worlds shared a fingerprint") end
+end)
+
+test("merged and split concurrent workers form three geometry Operations",function()
+    withFakeLiveGlobals(function(mission,a,b,positions)
+        local oldGenerator=FieldCourseField
+        local function makeVehicle(root,id,x,z,name)
+            positions[root]={x,0,z}
+            local job={jobId=id,currentTaskIndex=2,positionAngleParameter={getPosition=function() return x,z end}}
+            local vehicle={rootNode=root,sizeWidth=3,sizeLength=7,lastSpeedReal=0.003,spec_aiFieldWorker={isActive=true,isBlocked=false,fieldJob=job},spec_aiJobVehicle={job=job,lastJob=job},getIsAIActive=function(self) return self.spec_aiFieldWorker.isActive end,getIsFieldWorkActive=function(self) return self.spec_aiFieldWorker.isActive end,getAISteeringNode=function(self) return self.rootNode end,getRootVehicle=function(self) return self end,getName=function() return name end}
+            return vehicle,job
+        end
+        local v68,j68=makeVehicle(301,2001,-100,-600,"68")
+        local v69,j69=makeVehicle(302,2002,-100,-450,"69")
+        local v70,j70=makeVehicle(303,2003,-100,-250,"70")
+        local vu,ju=makeVehicle(304,2004,60,-348,"77 upper")
+        local vl,jl=makeVehicle(305,2005,128,-448,"77 lower")
+        local merged={{x=-228.2,z=-677.8},{x=-6.2,z=-677.8},{x=-6.2,z=-177.8},{x=-228.2,z=-177.8}}
+        local upper={{x=-15.2,z=-408.2},{x=229.2,z=-408.2},{x=229.2,z=-206.8},{x=-15.2,z=-206.8}}
+        local lower={{x=-40.8,z=-701.2},{x=191.8,z=-701.2},{x=191.8,z=-407.8},{x=-40.8,z=-407.8}}
+        FieldCourseField={generateAtPosition=function(x,z,settings,callback)
+            local boundary=(x<0 and merged) or (z>-408 and upper) or lower
+            return {update=function(self,dt,budget) callback({fieldRootBoundary={boundaryLine=boundary},islands={}},true); return false end}
+        end}
+        mission.vehicles={v68,v69,v70,vu,vl}; mission.aiSystem.activeJobVehicles={v68,v69,v70,vu,vl}; mission.aiSystem.activeJobs={j68,j69,j70,ju,jl}
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local observations=runtime.liveObservationSource:capture(mission,10)
+        equal(#observations,3)
+        local sizes,keys={},{}
+        for _,raw in ipairs(observations) do sizes[#sizes+1]=#raw.assemblies; keys[raw.fieldWorld.referenceKey]=true end
+        table.sort(sizes); equal(table.concat(sizes,","),"1,1,3")
+        local keyCount=0; for _ in pairs(keys) do keyCount=keyCount+1 end; equal(keyCount,3)
+        for _,raw in ipairs(observations) do runtime:processSealedObservation(raw) end
+        equal(#runtime.jobEpisodes:list(),5)
+        equal(#runtime.operations:listActive(),3)
+        FieldCourseField=oldGenerator
+    end)
+end)
+
+
+
+test("Field World geometry measurements are deterministic",function()
+    local rectangle={{x=0,z=0},{x=40,z=0},{x=40,z=20},{x=0,z=20}}
+    local metrics=OuttaMyWay.FieldWorldSnapshotRegistry.measureGeometry(rectangle,{})
+    if math.abs(metrics.areaSquareMetres-800)>0.0001 then error("area mismatch") end
+    if math.abs(metrics.perimeterMetres-120)>0.0001 then error("perimeter mismatch") end
+    if math.abs(metrics.centroidX-20)>0.0001 then error("centroid x mismatch") end
+    if math.abs(metrics.centroidZ-10)>0.0001 then error("centroid z mismatch") end
+    equal(metrics.boundaryPointCount,4)
+end)
+
+test("Field World comparison exposes strong overlap without changing identity authority",function()
+    local a={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}}
+    local b={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0.2,z=99.8}}
+    local fa=OuttaMyWay.FieldWorldSnapshotRegistry.fingerprintGeometry(a,{},0.1)
+    local fb=OuttaMyWay.FieldWorldSnapshotRegistry.fingerprintGeometry(b,{},0.1)
+    if fa==fb then error("test requires non-exact fingerprints") end
+    local comparison=OuttaMyWay.FieldWorldSnapshotRegistry.compareGeometry({boundary=a,islands={}},{boundary=b,islands={}},31)
+    if comparison.sampledJaccard<0.99 then error("near-identical polygons lacked strong sampled overlap") end
+    if comparison.symmetricBoundaryMaxDistanceMetres>0.3 then error("boundary difference unexpectedly large") end
+    equal(comparison.diagnosticOnly,true)
+    equal(comparison.identityAuthorityChanged,false)
+end)
+
+test("split Field World comparison exposes low overlap",function()
+    local upper={{x=-15.2,z=-408.2},{x=229.2,z=-408.2},{x=229.2,z=-206.8},{x=-15.2,z=-206.8}}
+    local lower={{x=-40.8,z=-701.2},{x=191.8,z=-701.2},{x=191.8,z=-407.8},{x=-40.8,z=-407.8}}
+    local comparison=OuttaMyWay.FieldWorldSnapshotRegistry.compareGeometry({boundary=upper,islands={}},{boundary=lower,islands={}},31)
+    if comparison.sampledJaccard>0.02 then error("disconnected split polygons reported material overlap") end
+    if comparison.centroidDistanceMetres<200 then error("split polygon centroids were not separated") end
+end)
+
+test("equivalence evidence does not merge non-exact Operation identities",function()
+    withFakeLiveGlobals(function(mission,a,b,positions)
+        local oldGenerator=FieldCourseField
+        positions[a.rootNode]={0,0,0}; positions[b.rootNode]={0,0,0}
+        local polygonA={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}}
+        local polygonB={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0.2,z=99.8}}
+        local call=0
+        FieldCourseField={generateAtPosition=function(x,z,settings,callback)
+            call=call+1; local boundary=call==1 and polygonA or polygonB
+            return {update=function(self,dt,budget) callback({fieldRootBoundary={boundaryLine=boundary},islands={}},true); return false end}
+        end}
+        mission.vehicles={a,b}; mission.aiSystem.activeJobVehicles={a,b}; mission.aiSystem.activeJobs={a.spec_aiJobVehicle.job,b.spec_aiJobVehicle.job}
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        runtime.liveObservationSource:capture(mission,10)
+        local observations=runtime.liveObservationSource:capture(mission,11)
+        equal(#observations,2)
+        for _,raw in ipairs(observations) do runtime:processSealedObservation(raw) end
+        equal(#runtime.operations:listActive(),2)
+        equal(runtime.fieldWorldSnapshots:getComparisonRecordCount(),1)
+        local comparison=runtime.fieldWorldSnapshots:getComparisonRecords()[1]
+        equal(comparison.exactFingerprint,false)
+        equal(comparison.identityAuthorityChanged,false)
+        FieldCourseField=oldGenerator
+    end)
+end)
+
+test("targeted field identity probe records only active job vehicles",function()
+    withFakeLiveGlobals(function(mission,a,b)
+        a.configFileName="data/vehicles/testA.xml"
+        local pallet={rootNode=301,getRootVehicle=function(self) return self end}
+        mission.vehicles={a,b,pallet}
+        local probe=OuttaMyWay.TargetedFieldIdentityProbe.new()
+        local captured=probe:capture(mission,10)
+        equal(#captured.records,2)
+        equal(captured.records[1].field.resolved,true); equal(captured.records[1].field.fieldId,77)
+        if captured.records[1].jobProbe.token==nil then error("targeted probe omitted job token") end
+        equal(probe:getSampleCount(),0)
+    end)
+end)
+
+test("targeted field identity probe is diagnostic-only and does not affect admission",function()
+    withFakeLiveGlobals(function(mission,a,b)
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        runtime.targetedFieldIdentityProbe:capture(mission,10)
+        equal(#runtime.jobEpisodes:list(),0)
+        equal(#runtime.operations:list(),0)
+        equal(#runtime.commitments:list(),0)
+        equal(runtime.controlAuthorityEnabled,false)
+    end)
+end)
+
+
+test("GIANTS raw traversal cannot see sealed collections but ValueRecord accessors can", function()
+    local snapshot=OuttaMyWay.ObservationSnapshot.new({identity="OS-GIANTS",epoch=1,timestamp=1,provenance={},fieldWorld={referenceKey="field-world:1",fieldPolygonReferenceKey="field-polygon:1",operationMembershipEvidenceComplete=false},assemblies={{assemblyId="AS-1",referenceKey="vehicle-root:1",componentIds={"CP-1"},componentReferenceKeys={"component-root:1"}}},geometry={currentSpaceEvidence={},futureSpaceEvidence={},demandEvidence={},interactionEvidence={}},motion={closureEvidence={}},aiStates={ ["AS-1"]={observedActive=true}},playerControl={},jobEpisodeEvidence={{assemblyId="AS-1",sourceJobToken="giants-ai-job-id:7",jobPresent=true,aiControlled=true}},operationMembershipEvidence={},physicalRepresentationEvidence={},controlOutcomes={},unavailableSources={{source="FIELD_WORLD"}}})
+    local rawCount=0
+    for _ in next,snapshot.jobEpisodeEvidence,nil do rawCount=rawCount+1 end
+    equal(rawCount,0)
+    local explicitCount=0
+    for _,evidence in OuttaMyWay.ValueRecord.ipairs(snapshot.jobEpisodeEvidence) do explicitCount=explicitCount+1; equal(evidence.sourceJobToken,"giants-ai-job-id:7") end
+    equal(explicitCount,1)
+    local mapCount=0
+    for _,state in OuttaMyWay.ValueRecord.pairs(snapshot.aiStates) do mapCount=mapCount+1; equal(state.observedActive,true) end
+    equal(mapCount,1)
+    equal(OuttaMyWay.ValueRecord.length(snapshot.assemblies),1)
+end)
+
+test("polygon field identity resolves without farmland service", function()
+    local oldWorld=getWorldTranslation
+    local points={ [11]={0,0}, [12]={100,0}, [13]={100,100}, [14]={0,100} }
+    getWorldTranslation=function(node) local q=points[node]; return q[1],0,q[2] end
+    local field={getId=function() return 77 end,getPolygonPoints=function() return {11,12,13,14} end}
+    local mission={fieldManager={fields={field},farmlandIdFieldMapping={}}}
+    local result=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition(mission,50,50)
+    equal(result.resolved,true); equal(result.fieldId,77); equal(result.source,"fieldManager.fields+field.getPolygonPoints")
+    local outside=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition(mission,150,150)
+    equal(outside.resolved,false); equal(outside.reason,"NO_FIELD_POLYGON_MATCH")
+    getWorldTranslation=oldWorld
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

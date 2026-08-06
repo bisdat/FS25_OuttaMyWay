@@ -7,7 +7,7 @@ local JobEpisodeRecord = OuttaMyWay.ValueRecord.register(
     OuttaMyWay.ValueRecord.define(
         "JobEpisodeRecord",
         {"identity", "assemblyId", "sourceJobToken", "admittedEpoch", "admittedEvidence", "status", "revision"},
-        {"endedEpoch", "terminalCause", "terminalEvidence"},
+        {"endedEpoch", "terminalCause", "terminalEvidence", "fieldWorldReferenceKey", "fieldPolygonReferenceKey", "fieldWorldFingerprint", "playerFacingFieldId", "playerFacingLocatorSource"},
         function(values)
             if values.status ~= "ACTIVE" and values.status ~= "ENDED" then
                 error("JobEpisodeRecord status must be ACTIVE or ENDED", 3)
@@ -27,6 +27,7 @@ local AdmissionResult = OuttaMyWay.ValueRecord.register(
 
 local authoritativeCauseFields = {
     {field="playerStopObserved", cause="PLAYER_STOP", startsReplacement=false},
+    {field="sourceIntentTerminationObserved", cause="SOURCE_INTENT_TERMINATION", startsReplacement=false},
     {field="playerTakeoverObserved", cause="PLAYER_TAKEOVER", startsReplacement=false},
     {field="playerControlled", cause="PLAYER_TAKEOVER", startsReplacement=false},
     {field="giantsAbortObserved", cause="GIANTS_ABORT", startsReplacement=false},
@@ -47,19 +48,19 @@ end
 local function explicitCause(evidence, current)
     local causes = {}
     local replacement = false
-    for _, item in ipairs(authoritativeCauseFields) do
+    for _, item in OuttaMyWay.ValueRecord.ipairs(authoritativeCauseFields) do
         if evidence[item.field] == true then
             causes[item.cause] = true
             replacement = replacement or item.startsReplacement
         end
     end
     if current ~= nil and evidence.jobPresent == true and evidence.sourceJobToken ~= nil
-        and evidence.sourceJobToken ~= current.sourceJobToken then
+        and evidence.sourceJobToken ~= current.sourceJobToken and not replacement then
         causes.REPLACED = true
         replacement = true
     end
     local list = {}
-    for cause, _ in pairs(causes) do list[#list + 1] = cause end
+    for cause, _ in OuttaMyWay.ValueRecord.pairs(causes) do list[#list + 1] = cause end
     table.sort(list)
     if #list > 1 then
         error("conflicting authoritative Job Episode termination evidence: " .. table.concat(list, ","), 3)
@@ -88,11 +89,37 @@ function Admission:_admit(evidence, snapshot)
             provenance = evidence.provenance
         },
         status = "ACTIVE",
-        revision = 1
+        revision = 1,
+        fieldWorldReferenceKey = evidence.fieldWorldReferenceKey,
+        fieldPolygonReferenceKey = evidence.fieldPolygonReferenceKey,
+        fieldWorldFingerprint = evidence.fieldWorldFingerprint,
+        playerFacingFieldId = evidence.playerFacingFieldId,
+        playerFacingLocatorSource = evidence.playerFacingLocatorSource
     })
     self.records[identity] = record
     self.activeByAssembly[evidence.assemblyId] = identity
     return record
+end
+
+
+function Admission:_bindFieldWorld(record, evidence, snapshot)
+    if evidence.fieldWorldReferenceKey == nil then return record, false end
+    if record.fieldWorldReferenceKey ~= nil then
+        if record.fieldWorldReferenceKey ~= evidence.fieldWorldReferenceKey or record.fieldPolygonReferenceKey ~= evidence.fieldPolygonReferenceKey then
+            error("Job Episode Field World Snapshot cannot change after capture", 3)
+        end
+        return record, false
+    end
+    local updated = OuttaMyWay.ValueRecord.update(record, {
+        fieldWorldReferenceKey=evidence.fieldWorldReferenceKey,
+        fieldPolygonReferenceKey=evidence.fieldPolygonReferenceKey,
+        fieldWorldFingerprint=evidence.fieldWorldFingerprint,
+        playerFacingFieldId=evidence.playerFacingFieldId,
+        playerFacingLocatorSource=evidence.playerFacingLocatorSource,
+        revision=record.revision+1
+    })
+    self.records[record.identity]=updated
+    return updated, true
 end
 
 function Admission:_end(record, cause, evidence, snapshot)
@@ -116,10 +143,15 @@ function Admission:observe(snapshot)
     OuttaMyWay.ValueRecord.assertType(snapshot, "ObservationSnapshot")
     local admitted, ended, transitions = {}, {}, {}
 
-    for _, evidence in ipairs(snapshot.jobEpisodeEvidence) do
+    for _, evidence in OuttaMyWay.ValueRecord.ipairs(snapshot.jobEpisodeEvidence) do
         local currentId = self.activeByAssembly[evidence.assemblyId]
         local current = currentId and self.records[currentId] or nil
         local cause, startsReplacement = explicitCause(evidence, current)
+        if current ~= nil and cause == nil then
+            local bound, changed = self:_bindFieldWorld(current,evidence,snapshot)
+            current=bound
+            if changed then transitions[#transitions+1]={assemblyId=evidence.assemblyId,episodeId=current.identity,event="FIELD_WORLD_BOUND",fieldWorldReferenceKey=current.fieldWorldReferenceKey} end
+        end
 
         if current ~= nil and cause ~= nil then
             local endedRecord = self:_end(current, cause, evidence, snapshot)
@@ -148,7 +180,7 @@ function Admission:observe(snapshot)
     end
 
     local active = {}
-    for _, identity in pairs(self.activeByAssembly) do active[#active + 1] = identity end
+    for _, identity in OuttaMyWay.ValueRecord.pairs(self.activeByAssembly) do active[#active + 1] = identity end
     table.sort(admitted)
     table.sort(ended)
     table.sort(active)
@@ -180,9 +212,9 @@ end
 
 function Admission:list()
     local ids = {}
-    for identity, _ in pairs(self.records) do ids[#ids + 1] = identity end
+    for identity, _ in OuttaMyWay.ValueRecord.pairs(self.records) do ids[#ids + 1] = identity end
     table.sort(ids)
     local result = {}
-    for _, identity in ipairs(ids) do result[#result + 1] = self.records[identity] end
+    for _, identity in OuttaMyWay.ValueRecord.ipairs(ids) do result[#result + 1] = self.records[identity] end
     return result
 end

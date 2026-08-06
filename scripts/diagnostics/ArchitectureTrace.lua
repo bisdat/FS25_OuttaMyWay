@@ -18,7 +18,7 @@ end
 function Trace:count() return #self.events end
 function Trace:lines()
     local result = {}
-    for index, event in ipairs(self.events) do
+    for index, event in OuttaMyWay.ValueRecord.ipairs(self.events) do
         result[index] = string.format("%s|%s|%s", tostring(event.epoch), event.kind, tostring(event.evidence))
     end
     return result

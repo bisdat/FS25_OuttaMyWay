@@ -66,6 +66,39 @@ local function freezeValue(value)
     return proxy
 end
 
+local function readableTable(value, operation)
+    if type(value) ~= "table" then
+        fail((operation or "table access") .. " requires a table")
+    end
+    return privateData[value] or value
+end
+
+-- GIANTS uses a Lua runtime where proxy-table traversal does not reliably
+-- honour __pairs/__ipairs. All architecture layers must therefore traverse
+-- immutable collections through these explicit accessors. They also accept
+-- ordinary plain tables, preserving offline/replay behaviour.
+function ValueRecord.pairs(value)
+    return next, readableTable(value, "pairs"), nil
+end
+
+function ValueRecord.ipairs(value)
+    local data = readableTable(value, "ipairs")
+    local function iterator(state, index)
+        index = index + 1
+        local item = state[index]
+        if item ~= nil then return index, item end
+    end
+    return iterator, data, 0
+end
+
+function ValueRecord.length(value)
+    return #readableTable(value, "length")
+end
+
+function ValueRecord.isSealed(value)
+    return privateData[value] ~= nil
+end
+
 local function canonical(value)
     local kind = type(value)
     if kind == "nil" then return "null" end

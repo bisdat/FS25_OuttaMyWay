@@ -1,6 +1,6 @@
 local function unique(values,label)
     local seen={}
-    for _,value in ipairs(values or {}) do
+    for _,value in OuttaMyWay.ValueRecord.ipairs(values or {}) do
         if seen[value] then error("ConstraintVerdictSet contains duplicate " .. label .. " " .. tostring(value),3) end
         seen[value]=true
     end

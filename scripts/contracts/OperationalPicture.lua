@@ -24,7 +24,7 @@ local function rejectDecisionFields(value, path, seen)
     seen = seen or {}
     if seen[value] then return end
     seen[value] = true
-    for key, item in pairs(value) do
+    for key, item in OuttaMyWay.ValueRecord.pairs(value) do
         if forbiddenDecisionFields[key] then
             error("OperationalPicture contains forbidden Decision/Control field " .. path .. tostring(key), 3)
         end
@@ -36,17 +36,17 @@ local function validate(values)
     rejectDecisionFields(values, "")
     local demand = values.demand
     if type(demand) ~= "table" then error("OperationalPicture demand must be a table", 3) end
-    for _, required in ipairs({"committedDemand", "potentialDemand", "temporarySlack"}) do
+    for _, required in OuttaMyWay.ValueRecord.ipairs({"committedDemand", "potentialDemand", "temporarySlack"}) do
         if type(demand[required]) ~= "table" then
             error("OperationalPicture demand missing " .. required, 3)
         end
     end
-    for key, _ in pairs(demand) do
+    for key, _ in OuttaMyWay.ValueRecord.pairs(demand) do
         if key ~= "committedDemand" and key ~= "potentialDemand" and key ~= "temporarySlack" then
             error("OperationalPicture contains unsupported demand class " .. tostring(key), 3)
         end
     end
-    for _, item in ipairs(values.representationFitness) do
+    for _, item in OuttaMyWay.ValueRecord.ipairs(values.representationFitness) do
         if not allowedFitnessStates[item.state] then
             error("OperationalPicture contains unsupported Representation Fitness state " .. tostring(item.state), 3)
         end

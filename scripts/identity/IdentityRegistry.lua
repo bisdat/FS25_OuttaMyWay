@@ -24,7 +24,8 @@ local defaultPrefixes = {
     VERDICT_SET = "VS",
     GOVERNING_BASIS_VERDICT = "BV",
     COMMITMENT_APPLICATION = "AP",
-    REPLAY_RUN = "RR"
+    REPLAY_RUN = "RR",
+    PASSIVE_LIVE_TRACE = "LT"
 }
 
 function IdentityRegistry.new(prefixes)

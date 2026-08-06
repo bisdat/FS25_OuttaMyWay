@@ -1,51 +1,82 @@
 # Engineering Handover
 
-> **Candidate:** v4.7.4 Replay Conformance  
-> **Implementation baseline:** canonical v4.7.3  
-> **Architecture authority:** canonical v4.6.78
+> **Candidate:** v4.7.12 Field World Equivalence Evidence
 
-## Repository boundary
+## Immediate continuation
 
-Active `scripts/` is the replacement core. The exact former tree remains under `scripts/archive/v4_6_78/` and cannot execute.
+Validate one bounded live run, then canonicalise even if spatial equivalence remains imperfect. The repository now preserves full canonical vertices and comparison metrics needed for the next conversation. Do not silently promote sampled overlap or any tolerance into Field World identity authority.
+
+> **Candidate:** v4.7.12 Field World Equivalence Evidence
+
+## Required live evidence
+
+Stagger starts for workers in 68, 69, 70, upper split-77 and lower split-77. Confirm the first three report one fingerprint and one Operation; the split workers report distinct fingerprints and distinct Operations despite both locators being 77. At steady state passive traces must reach five Job Episodes and `globalOperations=3`. Stop in reverse order and confirm correct lifecycle. Control must remain false.
+
+> **Canonical baseline:** v4.7.4  
+> **Candidate:** v4.7.12 Field World Equivalence Evidence  
+> **Architecture authority:** canonical v4.6.78  
+> **Control authority:** disabled
+
+## Why this candidate exists
+
+v4.7.9 closed the complete passive live pipeline but exposed two residual defects: farmland mapping was treated as field authority, and a manually stopped Job Episode remained unresolved. The user then supplied direct evidence that source fields 68, 69 and 70 can retain individual labels while forming one contiguous worked area.
+
+## Identity model under test
+
+```text
+Source Field Identity
+    exact retained map/GIANTS source-field polygon label
+
+Farmland Identity
+    larger contextual ownership/margin area; never field authority
+
+Derived Field World Identity
+    experienced contiguous agronomic workspace; may contain several source labels
+```
+
+v4.7.10 keeps provisional Operation grouping by source field while passively discovering the GIANTS-derived boundary. The derived boundary is diagnostic only and cannot yet govern Operation identity or Control.
+
+## Job Episode termination rule under test
+
+A previously active Job Episode ends only when all of the following are observed:
+
+- the same source token is retained as `spec_aiJobVehicle.lastJob`;
+- `spec_aiJobVehicle.job` and any exposed current-job slot are empty;
+- the previous job is absent from `mission.aiSystem.activeJobs`;
+- GIANTS AI and field-work state are inactive.
+
+A stale `spec_aiFieldWorker.fieldJob` reference does not block termination. The terminal cause is recorded generically as `SOURCE_INTENT_TERMINATION`; the adapter does not guess player stop versus GIANTS abort/fault.
+
+## Expected load line
+
+```text
+FS25_OuttaMyWay v4.7.10 source-field authority, derived Field World discovery and source-intent termination loaded; Control authority disabled
+```
+
+## Useful probe lines
+
+```text
+[FS25_OuttaMyWay][FIELD-PROBE] ... sourceFieldId=68 ... source=CURRENT_POSITION_SOURCE_FIELD_POLYGON ... control=false
+[FS25_OuttaMyWay][FIELD-WORLD-PROBE] STARTED ... control=false
+[FS25_OuttaMyWay][FIELD-WORLD-PROBE] DISCOVERED ... sourceFields=68,69,70 ... control=false
+```
+
+The field-77 passive trace should resemble:
+
+```text
+field=field-world:provisional-source-field:77 active=2 episodes=2 operations=1 selected=CONTINUE_OBSERVATION decision=CONTINUE_OBSERVATION control=false
+```
+
+After the Valtra stop, its trace should show `ended=1`, `episodes=0`, `operations=0` for its provisional field-68 observation.
+
+## Mandatory prohibitions
 
 Do not:
 
-- import archived modules;
-- infer replay facts from legacy branches;
-- connect v4.7.4 to a live GIANTS update loop;
-- treat documented reconstruction as physics simulation;
-- add Control dispatch to the replay runner;
-- waive open obligations or existing progress ownership during settlement.
-
-## Current foundation
-
-v4.7.4 executes the canonical offline composition:
-
-```text
-sealed Observation / Operational Picture
-    → complete Candidate and mandatory Verdicts
-    → deterministic Decision
-    → enforcing Commitment reaction
-    → Obligation and authority history
-    → replay conformance or earliest divergence
-```
-
-Expected optional game-load log:
-
-```text
-FS25_OuttaMyWay v4.7.4 replay-conformance foundation loaded; Control authority disabled
-```
-
-## Validation before canonicalisation
-
-- all documented replay fixtures pass twice from fresh Runtime state with byte-identical records;
-- v4.6.77 illegal completion and duplicate responsibility are rejected;
-- v4.6.57 and v4.6.70 evidence wait rather than manufacture success;
-- v4.6.64 completes only after all obligations settle;
-- TS016 enforces Follower Owns Closure;
-- player takeover and Operation termination preserve internal responsibility;
-- no GIANTS listener or physical Control path exists.
-
-## Next increment after canonicalisation
-
-Implement passive live validation with zero replacement Control authority. Live observations are compared against canonical trace contracts, not against the archived Decision core.
+- infer field identity from farmland ID;
+- treat a source field label as the final derived Field World identity;
+- terminate from inactivity alone;
+- terminate on blockage or OuttaMyWay Hold;
+- apply live Decisions to Commitments;
+- dispatch physical Control;
+- import archived runtime modules.

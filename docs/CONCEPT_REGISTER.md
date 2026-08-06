@@ -1,3 +1,47 @@
+# v4.7.10 live evidence concepts
+
+## Sampled Boundary Identity Drift
+
+Exact polygon fingerprints may drift across seed positions even when point count, bounds and experienced agronomic workspace remain the same. Exact representation identity and spatial Field World equivalence are therefore separate concepts.
+
+## Field World Equivalence Evidence
+
+A diagnostic comparison record between immutable Field World Snapshots. It measures spatial relationship but has no identity or Operation-merging authority in v4.7.12.
+
+## Job-Seeded Field World
+
+The contiguous agronomic polygon containing the worker when confirmed field work begins. It handles both merged fields and split fields without relying on historical labels.
+
+## Label-Preserving Field World Split
+
+One player-facing field label may refer to multiple disconnected Field Worlds after terrain editing. Geometry identity separates them while preserving the shared locator.
+
+## Seed-Invariant Field World
+
+Different seed labels inside one merged agronomic area produce the same canonical polygon fingerprint and therefore one Field World identity.
+
+## Source Field Identity
+
+The retained GIANTS/map field label established by exact containment in one source field polygon. It is not farmland identity and may not equal the experienced Field World after fields are merged.
+
+## Derived Field World Identity
+
+The contiguous agronomic workspace experienced by GIANTS field work. It may contain multiple retained source field labels, such as 68, 69 and 70. In v4.7.10 it is discovered passively through GIANTS field-course boundary generation and is not yet authoritative for Operation grouping.
+
+## Source Intent Termination Evidence
+
+Positive evidence that a previously active GIANTS job is no longer active while the same job token remains available as `lastJob`. It ends the Job Episode without inferring a specific player/GIANTS termination subtype.
+
+- **GIANTS Sealed Value Traversal Compatibility** — immutable proxy collections require explicit traversal accessors because ordinary proxy traversal metamethods are not portable to the GIANTS Lua runtime.
+- **Polygon Field Identity** — read-only field identity obtained from exact containment within the authoritative field polygon collection. Zero or multiple matches are unresolved evidence, not a selection opportunity.
+
+# v4.7.8 live evidence concepts
+
+- **Native AI Activity Evidence Set** — active-job-vehicle membership, stable current job identity and corroborating field-worker state jointly describe native AI ownership.
+- **Blockage–Episode Continuity** — blockage changes progress condition, not Job Episode identity or source intent.
+- **Cab Occupancy–AI Ownership Separation** — player presence in a cab does not by itself transfer objective-progress ownership from GIANTS AI.
+- **Probe-Induced Sampling Stall** — broad reflection and serialization on the game thread can create regular micro-freezes; diagnostic breadth is not free.
+
 # v4.6.78 closure and validation concepts
 
 - **Architectural Constraint Enforcement Gap** — accepted diagnosis: invariants are ineffective when no natural owner rejects violations.

@@ -18,7 +18,7 @@ local evaluatorNames={
 
 function Engine.new(identityRegistry,epochSequence)
     local evaluators={}
-    for _,name in ipairs(evaluatorNames) do
+    for _,name in OuttaMyWay.ValueRecord.ipairs(evaluatorNames) do
         local evaluator=OuttaMyWay[name]
         if evaluator==nil then error("missing constraint evaluator " .. name,2) end
         evaluators[#evaluators+1]=evaluator
@@ -35,10 +35,10 @@ function Engine:evaluate(operationalPicture,candidateResult)
     local verdicts={}
     local verdictIds={}
     local constraintIds={}
-    for _,evaluator in ipairs(self.evaluators) do constraintIds[#constraintIds+1]=evaluator.id end
-    for _,candidate in ipairs(candidateResult.candidates) do
+    for _,evaluator in OuttaMyWay.ValueRecord.ipairs(self.evaluators) do constraintIds[#constraintIds+1]=evaluator.id end
+    for _,candidate in OuttaMyWay.ValueRecord.ipairs(candidateResult.candidates) do
         OuttaMyWay.ValueRecord.assertType(candidate,"CandidateAction")
-        for _,evaluator in ipairs(self.evaluators) do
+        for _,evaluator in OuttaMyWay.ValueRecord.ipairs(self.evaluators) do
             local outcome=evaluator.evaluate(candidate,operationalPicture)
             local verdict=OuttaMyWay.ConstraintVerdict.new({
                 identity=self.identities:issue("VERDICT"),

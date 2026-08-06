@@ -2,8 +2,8 @@ local M={}
 local mandatory={"FIELD_WORLD_CONTAINMENT","TRANSITION_CLEARANCE","REPRESENTATION_FITNESS","CONTROL_CAPABILITY_AVAILABILITY","CONTINUING_INTENT_PRIORITY","PROGRESS_PRESERVATION","RESPONSIBILITY_COMPATIBILITY","OBLIGATION_COMPATIBILITY","COMMITMENT_PRECONDITIONS","EFFECTIVE_ACTUATION_COMPOSITION","SAFE_RELEASE_HANDOVER"}
 local function evidence(overrides)
     local result={}
-    for _,id in ipairs(mandatory) do result[id]={result="PASS",evidence={documented=true},provenance={source="canonical-documentation"},reason="documented reconstruction supports constraint",revalidationTrigger={kind="FIXTURE_CHANGE"}} end
-    for id,value in pairs(overrides or {}) do result[id]=value end
+    for _,id in OuttaMyWay.ValueRecord.ipairs(mandatory) do result[id]={result="PASS",evidence={documented=true},provenance={source="canonical-documentation"},reason="documented reconstruction supports constraint",revalidationTrigger={kind="FIXTURE_CHANGE"}} end
+    for id,value in OuttaMyWay.ValueRecord.pairs(overrides or {}) do result[id]=value end
     return result
 end
 local function candidate(referenceKey,capability,cost,options)

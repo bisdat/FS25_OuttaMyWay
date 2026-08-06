@@ -23,7 +23,7 @@ local function rejectSemanticFields(value, path, seen)
     seen = seen or {}
     if seen[value] then return end
     seen[value] = true
-    for key, item in pairs(value) do
+    for key, item in OuttaMyWay.ValueRecord.pairs(value) do
         if forbiddenSemanticFields[key] then
             error("ObservationSnapshot contains forbidden semantic field " .. path .. tostring(key), 3)
         end

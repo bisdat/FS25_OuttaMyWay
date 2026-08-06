@@ -1,3 +1,22 @@
+## Seed-Dependent Boundary Representation
+
+The observed GIANTS behaviour in which different Job Episode seed positions inside the same experienced Field World produce different exact polygon vertex samples or exact fingerprints.
+
+## Field World Equivalence Evidence
+
+Bounded measurements comparing two captured Field World polygons without asserting that they are identical: area, perimeter, centroid, bounds, topology, boundary distance, containment and sampled overlap.
+
+## Field World Snapshot
+
+The immutable GIANTS-generated contiguous agronomic polygon captured at Job Episode creation. Its canonical geometry fingerprint governs Field World and Operation identity for that episode.
+
+## Player-Facing Field Locator
+
+A historical/source field number used to direct the player to the relevant map area. It is presentation evidence, not Field World identity.
+
+## Supported-World Contract
+
+Field geometry is assumed stable during an active Job Episode. External mid-episode merging or splitting is not detected or reconciled.
 ## v4.6.78 replacement-core vocabulary
 
 **Governing Basis**  

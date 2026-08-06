@@ -49,7 +49,7 @@ end
 function Ledger:get(identity) return self.records[identity] end
 
 function Ledger:hasOpenObligations(ownerCommitmentId)
-    for _, record in pairs(self.records) do
+    for _, record in OuttaMyWay.ValueRecord.pairs(self.records) do
         if record.ownerCommitmentId == ownerCommitmentId and record.status == "OPEN" and record.terminalDependency then
             return true
         end
@@ -59,7 +59,7 @@ end
 
 function Ledger:openForOwner(ownerCommitmentId)
     local result = {}
-    for _, record in pairs(self.records) do
+    for _, record in OuttaMyWay.ValueRecord.pairs(self.records) do
         if record.ownerCommitmentId == ownerCommitmentId and record.status == "OPEN" then result[#result + 1] = record end
     end
     table.sort(result, function(a,b) return a.identity < b.identity end)
@@ -93,7 +93,7 @@ function Ledger:transfer(identity, successorCommitmentId, evidence)
     if successorCommitmentId == record.ownerCommitmentId then error("successor must differ from current owner", 2) end
     if policy.eligibleCommitmentIds ~= nil then
         local eligible = false
-        for _, identity in ipairs(policy.eligibleCommitmentIds) do
+        for _, identity in OuttaMyWay.ValueRecord.ipairs(policy.eligibleCommitmentIds) do
             if identity == successorCommitmentId then eligible = true break end
         end
         if not eligible then error("successor is not eligible under the transfer policy", 2) end

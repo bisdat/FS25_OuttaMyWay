@@ -2,7 +2,7 @@ OuttaMyWay.RepresentationFitness = {}
 local Fitness = OuttaMyWay.RepresentationFitness
 
 local function copyArray(values)
-    local result = {}; for _, value in ipairs(values or {}) do result[#result + 1] = value end; return result
+    local result = {}; for _, value in OuttaMyWay.ValueRecord.ipairs(values or {}) do result[#result + 1] = value end; return result
 end
 
 function Fitness.evaluate(evidence, snapshot)

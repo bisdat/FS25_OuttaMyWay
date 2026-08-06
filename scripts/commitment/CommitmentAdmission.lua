@@ -8,7 +8,7 @@ end
 
 local function validateObligationSpecification(specification)
     if type(specification) ~= "table" then error("Obligation specification must be a table",3) end
-    for _, field in ipairs({"origin","basis","requiredOutcome","evidenceContract","ownershipClass"}) do
+    for _, field in OuttaMyWay.ValueRecord.ipairs({"origin","basis","requiredOutcome","evidenceContract","ownershipClass"}) do
         if specification[field] == nil then error("Obligation specification missing " .. field,3) end
     end
 end
@@ -22,7 +22,7 @@ end
 
 function Admission:findLiveByResponsibilityKey(responsibilityKey)
     local result = {}
-    for _, record in ipairs(self.commitments:list()) do
+    for _, record in OuttaMyWay.ValueRecord.ipairs(self.commitments:list()) do
         if live(record) and record.governingBasis.responsibilityKey == responsibilityKey then
             result[#result+1] = record
         end
@@ -38,7 +38,7 @@ function Admission:admit(values)
         error("Commitment admission requires Governing Basis responsibilityKey",2)
     end
     local existing = self:findLiveByResponsibilityKey(responsibilityKey)
-    for _, record in ipairs(existing) do
+    for _, record in OuttaMyWay.ValueRecord.ipairs(existing) do
         local permittedSuccessor = values.supersedesCommitmentId == record.identity
             and record.state == "SETTLING"
             and record.intendedTerminalDisposition == "SUPERSEDED_BY_NEW_INTENT"
@@ -46,8 +46,8 @@ function Admission:admit(values)
             error("unresolved responsibility already owned by Commitment " .. record.identity,2)
         end
     end
-    for _, specification in ipairs(values.obligationSpecifications or {}) do validateObligationSpecification(specification) end
-    for _, assemblyId in ipairs(values.progressAssemblyIds or {}) do
+    for _, specification in OuttaMyWay.ValueRecord.ipairs(values.obligationSpecifications or {}) do validateObligationSpecification(specification) end
+    for _, assemblyId in OuttaMyWay.ValueRecord.ipairs(values.progressAssemblyIds or {}) do
         local owner = self.authorities:ownerOf(assemblyId)
         if owner ~= nil then error("progress authority already owned for assembly " .. assemblyId,2) end
     end
@@ -61,7 +61,7 @@ function Admission:admit(values)
         effectiveActuationCompositionId=values.effectiveActuationCompositionId
     })
     local obligationIds = {}
-    for _, specification in ipairs(values.obligationSpecifications or {}) do
+    for _, specification in OuttaMyWay.ValueRecord.ipairs(values.obligationSpecifications or {}) do
         local obligation = self.obligations:create({
             origin=specification.origin,
             basis=specification.basis,
@@ -78,7 +78,7 @@ function Admission:admit(values)
     end
     local authorityTokens = {}
     local ownership = {}
-    for _, assemblyId in ipairs(values.progressAssemblyIds or {}) do
+    for _, assemblyId in OuttaMyWay.ValueRecord.ipairs(values.progressAssemblyIds or {}) do
         local token = self.authorities:acquireProgress(assemblyId,record.identity)
         authorityTokens[#authorityTokens+1] = token
         ownership[#ownership+1] = {assemblyId=assemblyId,authorityTokenId=token.identity}

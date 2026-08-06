@@ -4,13 +4,13 @@ Assessment.__index = Assessment
 
 local function sortedUnique(values)
     local seen, result = {}, {}
-    for _, value in ipairs(values or {}) do if not seen[value] then seen[value]=true; result[#result+1]=value end end
+    for _, value in OuttaMyWay.ValueRecord.ipairs(values or {}) do if not seen[value] then seen[value]=true; result[#result+1]=value end end
     table.sort(result); return result
 end
 
 local function assemblyMap(snapshot)
     local map = {}
-    for _, assembly in ipairs(snapshot.assemblies) do
+    for _, assembly in OuttaMyWay.ValueRecord.ipairs(snapshot.assemblies) do
         map[type(assembly.referenceKey) .. ":" .. tostring(assembly.referenceKey)] = assembly.assemblyId
         map[assembly.assemblyId] = assembly.assemblyId
     end
@@ -27,7 +27,7 @@ end
 
 local function normalizeSpaces(values, map, kind)
     local result = {}
-    for _, item in ipairs(values or {}) do
+    for _, item in OuttaMyWay.ValueRecord.ipairs(values or {}) do
         result[#result + 1] = {
             identity = item.identity,
             assemblyId = resolveAssembly(map, item),
@@ -55,7 +55,7 @@ local demandMap = {
 
 local function normalizeDemand(values, map)
     local result = { committedDemand={}, potentialDemand={}, temporarySlack={} }
-    for _, item in ipairs(values or {}) do
+    for _, item in OuttaMyWay.ValueRecord.ipairs(values or {}) do
         local bucket = demandMap[item.class]
         if bucket == nil then error("unsupported demand class " .. tostring(item.class), 3) end
         local entry = {
@@ -70,7 +70,7 @@ local function normalizeDemand(values, map)
         }
         result[bucket][#result[bucket]+1] = entry
     end
-    for _, bucket in pairs(result) do table.sort(bucket,function(a,b) return tostring(a.identity or a.assemblyId or "") < tostring(b.identity or b.assemblyId or "") end) end
+    for _, bucket in OuttaMyWay.ValueRecord.pairs(result) do table.sort(bucket,function(a,b) return tostring(a.identity or a.assemblyId or "") < tostring(b.identity or b.assemblyId or "") end) end
     return result
 end
 
@@ -90,20 +90,20 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     OuttaMyWay.ValueRecord.assertType(episodeResult, "JobEpisodeAdmissionResult")
     OuttaMyWay.ValueRecord.assertType(operationResult, "OperationAdmissionResult")
     local map = assemblyMap(snapshot)
-    local activeOperationIds = {}; for _, id in ipairs(operationResult.activeOperationIds) do activeOperationIds[#activeOperationIds+1]=id end
+    local activeOperationIds = {}; for _, id in OuttaMyWay.ValueRecord.ipairs(operationResult.activeOperationIds) do activeOperationIds[#activeOperationIds+1]=id end
     local currentSpace = normalizeSpaces(snapshot.geometry.currentSpaceEvidence or {}, map, "CURRENT_SPACE")
     local futureSpace = normalizeSpaces(snapshot.geometry.futureSpaceEvidence or {}, map, "FUTURE_SPACE")
     local demand = normalizeDemand(snapshot.geometry.demandEvidence or {}, map)
 
     local relevant = {}
-    for _, item in ipairs(currentSpace) do relevant[#relevant+1]=item.assemblyId end
-    for _, item in ipairs(futureSpace) do relevant[#relevant+1]=item.assemblyId end
-    for _, bucket in pairs(demand) do for _, item in ipairs(bucket) do if item.assemblyId then relevant[#relevant+1]=item.assemblyId end end end
+    for _, item in OuttaMyWay.ValueRecord.ipairs(currentSpace) do relevant[#relevant+1]=item.assemblyId end
+    for _, item in OuttaMyWay.ValueRecord.ipairs(futureSpace) do relevant[#relevant+1]=item.assemblyId end
+    for _, bucket in OuttaMyWay.ValueRecord.pairs(demand) do for _, item in OuttaMyWay.ValueRecord.ipairs(bucket) do if item.assemblyId then relevant[#relevant+1]=item.assemblyId end end end
 
     local situations = {}
-    for _, operationId in ipairs(activeOperationIds) do
+    for _, operationId in OuttaMyWay.ValueRecord.ipairs(activeOperationIds) do
         local operation = self.operations:get(operationId)
-        for _, id in ipairs(operation.memberAssemblyIds) do relevant[#relevant+1]=id end
+        for _, id in OuttaMyWay.ValueRecord.ipairs(operation.memberAssemblyIds) do relevant[#relevant+1]=id end
         situations[#situations+1] = {
             identity = self.identities:resolve("SITUATION", operationId),
             operationId = operationId,
@@ -114,7 +114,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     end
 
     local encounters = {}
-    for _, item in ipairs(snapshot.geometry.interactionEvidence or {}) do
+    for _, item in OuttaMyWay.ValueRecord.ipairs(snapshot.geometry.interactionEvidence or {}) do
         local subject = resolveAssembly(map,item,"subjectAssemblyReferenceKey")
         local other = resolveAssembly(map,item,"otherAssemblyReferenceKey")
         relevant[#relevant+1]=subject; relevant[#relevant+1]=other
@@ -140,7 +140,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     table.sort(encounters,function(a,b) return a.identity < b.identity end)
 
     local responsibilityRelations = {}
-    for _, item in ipairs(snapshot.motion.closureEvidence or {}) do
+    for _, item in OuttaMyWay.ValueRecord.ipairs(snapshot.motion.closureEvidence or {}) do
         if item.closingObserved == true then
             responsibilityRelations[#responsibilityRelations+1] = {
                 relation = "FOLLOWER_OWNS_CLOSURE",
@@ -155,7 +155,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     table.sort(responsibilityRelations,function(a,b) return a.followerAssemblyId < b.followerAssemblyId end)
 
     local representationFitness, uncertainty = {}, {}
-    for _, evidence in ipairs(snapshot.physicalRepresentationEvidence) do
+    for _, evidence in OuttaMyWay.ValueRecord.ipairs(snapshot.physicalRepresentationEvidence) do
         local fitness = OuttaMyWay.RepresentationFitness.evaluate(evidence,snapshot)
         representationFitness[#representationFitness+1] = fitness
         relevant[#relevant+1] = fitness.assemblyId
@@ -164,7 +164,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         end
     end
     table.sort(representationFitness,function(a,b) return tostring(a.representationId) < tostring(b.representationId) end)
-    for _, source in ipairs(snapshot.unavailableSources) do
+    for _, source in OuttaMyWay.ValueRecord.ipairs(snapshot.unavailableSources) do
         uncertainty[#uncertainty+1] = { class="UNAVAILABLE_SOURCE", source=source, provenance={observationSnapshotId=snapshot.identity} }
     end
     if operationResult.membershipEvidenceComplete ~= true then
@@ -172,17 +172,17 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     end
 
     relevant = sortedUnique(relevant)
-    for _, situation in ipairs(situations) do situation.relevantAssemblyIds = relevant end
+    for _, situation in OuttaMyWay.ValueRecord.ipairs(situations) do situation.relevantAssemblyIds = relevant end
 
     local componentIds = {}
     local assemblyIds = {}
-    for _, assembly in ipairs(snapshot.assemblies) do
+    for _, assembly in OuttaMyWay.ValueRecord.ipairs(snapshot.assemblies) do
         assemblyIds[#assemblyIds+1]=assembly.assemblyId
-        for _, id in ipairs(assembly.componentIds) do componentIds[#componentIds+1]=id end
+        for _, id in OuttaMyWay.ValueRecord.ipairs(assembly.componentIds) do componentIds[#componentIds+1]=id end
     end
 
     local commitmentContext = {}
-    for _, commitment in ipairs(self.commitments:list()) do
+    for _, commitment in OuttaMyWay.ValueRecord.ipairs(self.commitments:list()) do
         commitmentContext[#commitmentContext+1] = {
             identity=commitment.identity,
             lifecycleState=commitment.lifecycleState,

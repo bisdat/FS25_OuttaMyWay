@@ -9,7 +9,7 @@ local requiredSpecificationFields={
 
 local function requireSpecification(specification)
     if type(specification)~="table" then error("Candidate specification must be a table",3) end
-    for _,field in ipairs(requiredSpecificationFields) do
+    for _,field in OuttaMyWay.ValueRecord.ipairs(requiredSpecificationFields) do
         if specification[field]==nil then error("Candidate specification missing " .. field,3) end
     end
     if type(specification.referenceKey)~="string" or specification.referenceKey=="" then
@@ -32,7 +32,7 @@ function CandidateSpace:generate(operationalPicture)
     end
     local specifications={}
     local seen={}
-    for _,specification in ipairs(support.candidateSpecifications or {}) do
+    for _,specification in OuttaMyWay.ValueRecord.ipairs(support.candidateSpecifications or {}) do
         requireSpecification(specification)
         if seen[specification.referenceKey] then error("duplicate candidate referenceKey " .. specification.referenceKey,2) end
         seen[specification.referenceKey]=true
@@ -42,7 +42,7 @@ function CandidateSpace:generate(operationalPicture)
 
     local candidates={}
     local candidateIds={}
-    for _,specification in ipairs(specifications) do
+    for _,specification in OuttaMyWay.ValueRecord.ipairs(specifications) do
         local candidate=OuttaMyWay.CandidateAction.new({
             identity=self.identities:issue("CANDIDATE"),
             epoch=self.epochs:next(),

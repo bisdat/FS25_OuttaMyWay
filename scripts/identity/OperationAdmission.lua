@@ -27,7 +27,7 @@ local OperationAdmissionResult = OuttaMyWay.ValueRecord.register(
 
 local function sortedUnique(values)
     local seen, result = {}, {}
-    for _, value in ipairs(values or {}) do
+    for _, value in OuttaMyWay.ValueRecord.ipairs(values or {}) do
         if not seen[value] then seen[value] = true; result[#result + 1] = value end
     end
     table.sort(result)
@@ -105,7 +105,7 @@ function Admission:observe(snapshot, episodeResult)
     local fieldWorldKey, polygonKey, complete = fieldContext(snapshot)
     local memberAssemblyIds, memberEpisodeIds = {}, {}
 
-    for _, evidence in ipairs(snapshot.operationMembershipEvidence) do
+    for _, evidence in OuttaMyWay.ValueRecord.ipairs(snapshot.operationMembershipEvidence) do
         if evidence.fieldWorldReferenceKey ~= nil and evidence.fieldWorldReferenceKey ~= fieldWorldKey then
             error("Operation membership evidence belongs to a different Field World", 2)
         end
@@ -154,12 +154,18 @@ function Admission:observe(snapshot, episodeResult)
 end
 
 function Admission:get(identity) return self.records[identity] end
+function Admission:listActive()
+    local result={}
+    for _,record in OuttaMyWay.ValueRecord.pairs(self.records) do if record.status=="ACTIVE" then result[#result+1]=record end end
+    table.sort(result,function(a,b) return a.identity<b.identity end)
+    return result
+end
 function Admission:getActiveForFieldWorld(fieldWorldReferenceKey)
     local identity = self.activeByFieldWorld[fieldWorldReferenceKey]
     return identity and self.records[identity] or nil
 end
 function Admission:list()
-    local ids = {}; for identity, _ in pairs(self.records) do ids[#ids + 1] = identity end; table.sort(ids)
-    local result = {}; for _, identity in ipairs(ids) do result[#result + 1] = self.records[identity] end
+    local ids = {}; for identity, _ in OuttaMyWay.ValueRecord.pairs(self.records) do ids[#ids + 1] = identity end; table.sort(ids)
+    local result = {}; for _, identity in OuttaMyWay.ValueRecord.ipairs(ids) do result[#result + 1] = self.records[identity] end
     return result
 end

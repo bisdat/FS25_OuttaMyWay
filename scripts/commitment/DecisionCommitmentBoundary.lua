@@ -6,7 +6,7 @@ local physical = {REGULATE_SPEED=true,HOLD=true,REPOSITION=true,RESTORE_CONFIGUR
 
 local function selectedCandidate(decision,candidates)
     if decision.selectedCandidateId == nil then return nil end
-    for _, candidate in ipairs(candidates or {}) do
+    for _, candidate in OuttaMyWay.ValueRecord.ipairs(candidates or {}) do
         if candidate.identity == decision.selectedCandidateId then return candidate end
     end
     error("Decision selected a candidate absent from the supplied Candidate inventory",3)
@@ -22,8 +22,8 @@ end
 
 local function situationDependencies(picture)
     local result = {}
-    for _, situation in ipairs(picture.situations or {}) do result[#result+1] = situation.identity end
-    for _, encounter in ipairs(picture.encounters or {}) do result[#result+1] = encounter.identity end
+    for _, situation in OuttaMyWay.ValueRecord.ipairs(picture.situations or {}) do result[#result+1] = situation.identity end
+    for _, encounter in OuttaMyWay.ValueRecord.ipairs(picture.encounters or {}) do result[#result+1] = encounter.identity end
     table.sort(result)
     return result
 end
@@ -45,7 +45,7 @@ function Boundary:_admitFromCandidate(picture,decision,candidate)
         if type(ownership) ~= "table" or type(ownership.assemblyIds) ~= "table" or #ownership.assemblyIds == 0 then
             error("physical selected Candidate requires explicit progress-actuation ownership",3)
         end
-        for _, assemblyId in ipairs(ownership.assemblyIds) do progressAssemblyIds[#progressAssemblyIds+1] = assemblyId end
+        for _, assemblyId in OuttaMyWay.ValueRecord.ipairs(ownership.assemblyIds) do progressAssemblyIds[#progressAssemblyIds+1] = assemblyId end
     end
     local compositionId
     local compositionValues = candidate.evidenceBasis.effectiveActuationComposition
@@ -83,7 +83,7 @@ function Boundary:apply(picture,decisionResult)
         local admitted = self:_admitFromCandidate(picture,decision,candidate)
         commitmentId=admitted.commitment.identity; resultingState=admitted.commitment.state
         createdObligationIds=admitted.obligationIds
-        for _, token in ipairs(admitted.authorityTokens) do authorityTokenIds[#authorityTokenIds+1]=token.identity end
+        for _, token in OuttaMyWay.ValueRecord.ipairs(admitted.authorityTokens) do authorityTokenIds[#authorityTokenIds+1]=token.identity end
         compositionId=admitted.commitment.effectiveActuationCompositionId
         explanation="Admitted one new Commitment from an all-PASS selected Candidate"
     elseif action == "MAINTAIN" or action == "REVISE" then
@@ -114,7 +114,7 @@ function Boundary:apply(picture,decisionResult)
             waiting=self.commitments:save(waiting)
             commitmentId=waiting.identity; resultingState=waiting.state
             createdObligationIds=admitted.obligationIds
-            for _, token in ipairs(admitted.authorityTokens) do authorityTokenIds[#authorityTokenIds+1]=token.identity end
+            for _, token in OuttaMyWay.ValueRecord.ipairs(admitted.authorityTokens) do authorityTokenIds[#authorityTokenIds+1]=token.identity end
             if #authorityTokenIds>0 then error("WAITING_FOR_EVIDENCE cannot retain newly acquired progress authority",2) end
             explanation="Admitted an evidence-bound Commitment and entered WAITING_FOR_EVIDENCE"
         elseif context == nil then
@@ -150,7 +150,7 @@ function Boundary:apply(picture,decisionResult)
             end
             local result=self.terminalSettlement:enterSettling(record.identity,verdict)
             resultingState=result.commitment.state
-            for _, id in ipairs(result.releasedAuthorityTokenIds) do authorityTokenIds[#authorityTokenIds+1]=id end
+            for _, id in OuttaMyWay.ValueRecord.ipairs(result.releasedAuthorityTokenIds) do authorityTokenIds[#authorityTokenIds+1]=id end
             explanation="Ended objective-progress authority and entered SETTLING"
         end
     else error("unsupported Decision Commitment action " .. tostring(action),2) end

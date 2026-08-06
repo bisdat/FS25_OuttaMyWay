@@ -4,7 +4,7 @@ local function validate(values)
     if type(values.sourceEvidence) ~= "table" or #values.sourceEvidence == 0 then error("ReplayFixture source evidence required",3) end
     if type(values.steps) ~= "table" then error("ReplayFixture steps must be a table",3) end
     local aliases = {}
-    for index, step in ipairs(values.steps) do
+    for index, step in OuttaMyWay.ValueRecord.ipairs(values.steps) do
         if type(step) ~= "table" or type(step.kind) ~= "string" or step.kind == "" then
             error("ReplayFixture step " .. tostring(index) .. " requires kind",3)
         end

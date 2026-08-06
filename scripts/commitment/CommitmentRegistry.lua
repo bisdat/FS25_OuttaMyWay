@@ -51,9 +51,9 @@ end
 
 function Registry:list()
     local ids = {}
-    for identity, _ in pairs(self.records) do ids[#ids + 1] = identity end
+    for identity, _ in OuttaMyWay.ValueRecord.pairs(self.records) do ids[#ids + 1] = identity end
     table.sort(ids)
     local result = {}
-    for _, identity in ipairs(ids) do result[#result + 1] = self.records[identity] end
+    for _, identity in OuttaMyWay.ValueRecord.ipairs(ids) do result[#result + 1] = self.records[identity] end
     return result
 end

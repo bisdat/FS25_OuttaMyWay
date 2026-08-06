@@ -15,18 +15,18 @@ end
 local function resolve(value,context)
     if type(value)=="string" and string.sub(value,1,1)=="$" then return resolvePath(context,string.sub(value,2)) end
     if type(value)~="table" then return value end
-    local result={}; for key,item in pairs(value) do result[key]=resolve(item,context) end; return result
+    local result={}; for key,item in OuttaMyWay.ValueRecord.pairs(value) do result[key]=resolve(item,context) end; return result
 end
 
 local function selectedCapability(result)
     if result.decision.selectedCandidateId==nil then return nil end
-    for _,candidate in ipairs(result.candidates) do if candidate.identity==result.decision.selectedCandidateId then return candidate.capability end end
+    for _,candidate in OuttaMyWay.ValueRecord.ipairs(result.candidates) do if candidate.identity==result.decision.selectedCandidateId then return candidate.capability end end
 end
 
 local function verdictSummary(result)
-    local candidatePurpose={}; for _,candidate in ipairs(result.candidates) do candidatePurpose[candidate.identity]=candidate.purpose.referenceKey or candidate.capability end
+    local candidatePurpose={}; for _,candidate in OuttaMyWay.ValueRecord.ipairs(result.candidates) do candidatePurpose[candidate.identity]=candidate.purpose.referenceKey or candidate.capability end
     local summary={}
-    for _,verdict in ipairs(result.verdicts) do
+    for _,verdict in OuttaMyWay.ValueRecord.ipairs(result.verdicts) do
         local key=candidatePurpose[verdict.candidateId] .. ":" .. verdict.constraintId
         summary[key]=verdict.result
     end
@@ -76,7 +76,7 @@ end
 function Runner:run(fixture)
     OuttaMyWay.ValueRecord.assertType(fixture,"ReplayFixture")
     local context={}; local stepResults={}; local divergence
-    for index,stepValue in ipairs(fixture.steps) do
+    for index,stepValue in OuttaMyWay.ValueRecord.ipairs(fixture.steps) do
         local step=OuttaMyWay.ConformanceAssertions.plain(stepValue)
         local ok,result,summary=pcall(function()
             local a,b=self:_execute(step,context); return a,b

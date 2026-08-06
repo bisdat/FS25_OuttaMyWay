@@ -1,3 +1,62 @@
+## D-0032 — Separate Exact Boundary Representation from Spatial Field World Equivalence
+
+**Status:** Accepted for v4.7.12 evidence-preserving closure
+
+**Decision:** Preserve exact geometry fingerprints, but no longer treat exact equality as a proven complete model of Field World identity. Record bounded spatial-equivalence evidence without granting it Operation identity authority.
+
+**Evidence:** merged areas 68 and 69 produced fingerprint `1976144548-1796621558`; a first seed in old 70 produced `1881312117-1088295105`; a deliberate geometric-centre seed in old 70 produced `1638971498-1186204168`. All reported 15 points and identical outer bounds.
+
+**Known limitation:** Operations remain grouped by exact fingerprint in this closure candidate. Spatial equivalence is diagnostic only.
+
+## D-0030 — Geometry Fingerprint Governs Field World and Operation Identity
+
+**Status:** Accepted for v4.7.11 passive live validation
+
+**Decision:** Capture the GIANTS-generated contiguous agronomic polygon once at Job Episode creation. Canonicalise its representation and use its stable geometry fingerprint as Field World identity. Group Operations by that identity. Preserve source/farmland-derived field numbers only as player-facing locators.
+
+**Evidence:** starts in merged areas 68, 69 and 70 generated the same polygon; starts in two disconnected parts of field 77 generated different polygons despite retaining label 77.
+
+## D-0031 — Do Not Reconcile Mid-Episode Field Mutation
+
+**Status:** Accepted supported-world boundary
+
+**Decision:** The captured Field World Snapshot remains fixed for the Job Episode. External actors changing field polygons during active work are outside the reasonable-player contract. A restarted or replacement Job Episode captures fresh geometry.
+## D-0028 — Separate Source Field, Farmland and Derived Field World Identity
+
+**Status:** Accepted for passive live validation
+
+**Decision:** Exact source-field polygon containment establishes only the retained source field label. Farmland is contextual containment and cannot establish field identity. The experienced contiguous Field World is a separate derived identity and may contain multiple source labels. GIANTS field-course boundary generation is the current passive evidence source for that derived identity.
+
+**Consequence:** v4.7.10 uses provisional source-field Operation grouping only for passive validation. Derived Field World evidence must be validated before it governs Operation identity or Control.
+
+## D-0029 — End Job Episodes on Positive Source Intent Termination Evidence
+
+**Status:** Accepted implementation correction
+
+**Decision:** A previously active job may end when the same source token is retained as `lastJob`, is absent from the authoritative active job slot and mission active jobs, and GIANTS AI state is inactive. This proves source intent termination without guessing whether the subtype was player stop, abort or fault. Generic inactivity remains non-terminal.
+
+# D-0103 — Preserve immutability through explicit GIANTS-compatible ValueRecord traversal
+
+**Date:** 2026-08-06  
+**Status:** Accepted implementation correction for v4.7.9 live validation
+
+**Decision:** Keep architecture value records sealed and immutable. Consumers traverse sealed collections only through `ValueRecord.pairs`, `ValueRecord.ipairs`, and `ValueRecord.length`. Field identity may use exact containment against `FieldManager.fields` polygons when farmland mapping is unavailable; zero or multiple matches remain unresolved.
+
+**Reason:** v4.7.8 published valid active-job evidence, but the GIANTS runtime did not expose proxy collection entries through the implicit traversal used by downstream layers. Weakening immutability would remove an architectural safeguard to accommodate an implementation-runtime mismatch. The same run also disproved the assumed farmland-service lookup path.
+
+**Consequence:** v4.7.9 can admit live Job Episodes without changing record ownership or mutability. Field uncertainty cannot become a guessed Operation identity or false candidate-space exhaustion. Live Commitment mutation and Control remain prohibited.
+
+# D-0102 — Admit live Job Episodes from GIANTS active-job identity
+
+**Date:** 2026-08-06  
+**Status:** Accepted implementation hypothesis for v4.7.8 live validation
+
+**Decision:** Use membership in `AISystem.activeJobVehicles` as positive native AI ownership evidence and the current GIANTS job ID as the live Job Episode source token. Preserve the same episode through blockage. Resolve candidate field identity through current/job positions and farmland-to-field mapping only when evidence agrees.
+
+**Reason:** v4.7.7 directly observed these values changing across idle, active and stopped phases while remaining stable through blockage. Earlier guessed activity properties failed because the passive source did not bind itself to the AI system's active-job collection.
+
+**Consequence:** v4.7.8 may admit Job Episodes and Operations passively, but inactivity without a distinguished terminal cause remains unresolved. No live Commitment mutation or Control is authorised.
+
 # D-0101 — Split deterministic reasoning at the Knowledge boundary
 
 **Date:** 2026-08-06  

@@ -1,5 +1,17 @@
 # Architecture
 
+## Field World Spatial Equivalence Evidence
+
+Exact sampled-boundary equality is not sufficient to describe experienced Field World identity. GIANTS can return different exact vertex samples for seeds inside the same merged agronomic area. v4.7.12 therefore preserves the exact fingerprint but measures spatial equivalence separately. Evidence includes area, perimeter, centroid, bounds, topology, symmetric boundary distance, containment and sampled overlap. This evidence is diagnostic only; it does not yet alter Operation identity authority.
+
+**Supported-world rule:** the polygon remains an immutable Job Episode snapshot. Mid-episode field mutation remains unsupported.
+
+## Job-Seeded Field World Snapshot
+
+At the first positively observed moment of active field work, OuttaMyWay asks GIANTS for the contiguous agronomic polygon containing the worker. The polygon is canonicalised and fingerprinted, then captured as an immutable Field World Snapshot for that Job Episode. The Snapshot, not farmland identity or a historical field label, governs Operation identity. A replacement or restarted Job Episode captures the then-current polygon afresh. Mid-episode external field mutation is unsupported and does not cause identity drift.
+
+Field labels remain a separate human-facing locator. Different labels may refer into one merged Field World; one label may refer to multiple split Field Worlds.
+
 > **Authority:** Normative replacement-core architecture
 >
 > **Currency:** canonical v4.6.78 Replacement-Core Architecture

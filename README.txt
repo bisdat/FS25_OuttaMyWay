@@ -1,9 +1,7 @@
-FS25_OuttaMyWay v4.7.4 Replay Conformance Candidate
+FS25_OuttaMyWay v4.7.12 — Field World Equivalence Evidence Candidate
 
-This candidate implements the offline replay-conformance gate from canonical v4.7.3.
-It contains no live GIANTS Observation hook and no physical Control authority.
+Canonical architecture authority: v4.6.78. Canonical implementation authority remains owner-declared v4.7.4 pending live validation and explicit declaration.
 
-The historical corpus is reconstructed only from facts preserved in canonical documentation.
-Archived v4.6.78 scripts remain non-executable evidence and donor material.
+This passive closure candidate preserves the immutable Job-Seeded Field World Snapshot and exact geometry fingerprint, while recording bounded spatial-equivalence evidence for every recent polygon pair: area, perimeter, centroid, bounds, full canonical root vertices, topology, symmetric boundary distance, vertex containment and deterministic sampled overlap. The evidence is diagnostic only. Exact-fingerprint Operation grouping remains unchanged and explicitly provisional. Control authority remains disabled.
 
-Start with docs/README.md and docs/PROJECT_STATUS.md.
+Run line: FS25_OuttaMyWay v4.7.12 Field World equivalence evidence loaded; exact-fingerprint Operation grouping remains provisional; Control authority disabled

@@ -157,8 +157,158 @@ def test_replay_has_no_physical_control_dispatch():
         assert token not in active
 
 
-def test_v474_runtime_mode_and_version():
+def test_v475_passive_live_modules_are_active_and_zero_control():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    for rel in ("scripts/observation/LiveObservationSource.lua","scripts/candidates/PassiveLiveCandidateSupport.lua","scripts/diagnostics/PassiveLiveValidator.lua","scripts/contracts/PassiveLiveTraceRecord.lua"):
+        assert rel in main
+    assert "addModEventListener(OuttaMyWay.runtime.passiveLiveValidator)" in main
+    validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+    assert "decisionCommitmentBoundary:apply" not in validator
+    assert "Control authority disabled" in (ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+
+
+def test_v475_live_source_does_not_import_archive_or_control():
+    active="\n".join(p.read_text(encoding="utf-8") for p in (ROOT/"scripts").rglob("*.lua") if "archive" not in p.parts)
+    assert "scripts/archive/" not in active
+    for token in ("driveToPoint(","setCruiseControlState(","stopCurrentAIJob(","setMotorTurnedOn("):
+        assert token not in active
+
+
+def test_v475_candidate_support_is_non_actuating_only():
+    text=(ROOT/"scripts"/"candidates"/"PassiveLiveCandidateSupport.lua").read_text(encoding="utf-8")
+    assert '"CONTINUE_OBSERVATION"' in text
+    assert '"CONTINUE_UNCHANGED"' in text
+    for capability in ('"HOLD"','"REGULATE_SPEED"','"REPOSITION"','"HANDOVER_TO_GIANTS"'):
+        assert capability not in text
+
+
+def test_v476_admission_correction_remains_present_under_later_probe_builds():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.4"' in config
-    assert 'RUNTIME_MODE = "REPLAY_CONFORMANCE_OFFLINE"' in config
+    source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
+    assert "OBSERVED_NATIVE_AI_ACTIVITY_EPISODE" in source
+    assert "JOB_EPISODE_TERMINATION_CAUSE" in source
+
+
+def test_v476_activity_onset_tokens_and_unresolved_termination_are_explicit():
+    text=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
+    assert "OBSERVED_NATIVE_AI_ACTIVITY_EPISODE" in text
+    assert "JOB_EPISODE_TERMINATION_CAUSE" in text
+    assert "observed-ai-episode:" in text
+    assert "playerTakeoverObserved" in text
+
+
+def test_v476_trace_reports_candidate_verdict_diagnostics():
+    text=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+    for token in ("candidateCount","allPassCandidateCount","unresolvedCandidateCount","failedCandidateCount","unavailableSourceCount"):
+        assert token in text
+    assert "decisionCommitmentBoundary:apply" not in text
+
+
+
+def test_v478_targeted_job_episode_and_field_identity_path_is_active():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    assert "scripts/observation/LiveAIJobEvidence.lua" in main
+    assert "scripts/diagnostics/TargetedFieldIdentityProbe.lua" in main
+    assert "scripts/diagnostics/LiveAIStateProbe.lua" not in main
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    assert 'VERSION = "4.7.12"' in config
+    assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_EVIDENCE"' in config
+    evidence=(ROOT/"scripts"/"observation"/"LiveAIJobEvidence.lua").read_text(encoding="utf-8")
+    source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
+    probe=(ROOT/"scripts"/"diagnostics"/"TargetedFieldIdentityProbe.lua").read_text(encoding="utf-8")
+    for token in ("activeJobVehicles","spec_aiJobVehicle.job","spec_aiFieldWorker.fieldJob","farmlandIdFieldMapping","jobId"):
+        assert token in evidence
+    assert "GIANTS_ACTIVE_JOB_IDENTITY" in source
+    assert "activeJobVehicleMembership" in source
+    assert "FIELD-PROBE" in probe
+    for text in (evidence, source, probe):
+        for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
+            assert forbidden not in text
+    validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+    assert "self.probe:update" in validator
+    assert "decisionCommitmentBoundary:apply" not in validator
+
+
+def test_v478_broad_reflection_probe_is_removed_from_active_tree():
+    assert not (ROOT/"scripts"/"diagnostics"/"LiveAIStateProbe.lua").exists()
+    active="\n".join(p.read_text(encoding="utf-8") for p in (ROOT/"scripts").rglob("*.lua") if "archive" not in p.parts)
+    assert "collectSystemSummary" not in active
+    assert "objectAIFields" not in active
+
+
+def test_v479_giants_compatible_value_traversal_is_explicit():
+    value=(ROOT/"scripts"/"contracts"/"ValueRecord.lua").read_text(encoding="utf-8")
+    for token in ("function ValueRecord.pairs", "function ValueRecord.ipairs", "function ValueRecord.length", "GIANTS uses a Lua runtime"):
+        assert token in value
+    for path in (
+        ROOT/"scripts"/"identity"/"JobEpisodeAdmission.lua",
+        ROOT/"scripts"/"identity"/"OperationAdmission.lua",
+        ROOT/"scripts"/"assessment"/"SituationAssessment.lua",
+        ROOT/"scripts"/"candidates"/"CandidateSpace.lua",
+        ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua",
+    ):
+        text=path.read_text(encoding="utf-8")
+        assert "OuttaMyWay.ValueRecord.ipairs(" in text or "OuttaMyWay.ValueRecord.pairs(" in text
+
+
+def test_v479_polygon_field_identity_fallback_is_read_only():
+    text=(ROOT/"scripts"/"observation"/"LiveAIJobEvidence.lua").read_text(encoding="utf-8")
+    for token in ("fieldManager.fields", "field.getPolygonPoints", "NO_FIELD_POLYGON_MATCH", "MULTIPLE_FIELD_POLYGONS_MATCH"):
+        assert token in text
+    for forbidden in ("driveToPoint(","stopCurrentAIJob(","setCruiseControlState("):
+        assert forbidden not in text
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    assert 'VERSION = "4.7.12"' in config
+    assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_EVIDENCE"' in config
+
+
+def test_v4711_promotes_job_seeded_polygon_fingerprint_to_operation_identity():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    assert "scripts/identity/FieldWorldSnapshotRegistry.lua" in main
+    assert "scripts/diagnostics/DerivedFieldWorldProbe.lua" not in main
+    registry=(ROOT/"scripts"/"identity"/"FieldWorldSnapshotRegistry.lua").read_text(encoding="utf-8")
+    for token in ("canonicalizeBoundary","geometryFingerprint","immutableForJobEpisode","FIELD_WORLD_FINGERPRINT_COLLISION","FieldCourseField.generateAtPosition","function Registry:ensure"):
+        assert token in registry
+    source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
+    for token in ("JOB_SEEDED_FIELD_WORLD_SNAPSHOT","fieldWorldSnapshot","playerFacingFieldId","FARMLAND_LABEL_CORRELATION"):
+        assert token in source
+    assert "field-world:provisional-source-field:" not in source
+
+
+def test_v4711_field_world_snapshot_is_bound_once_to_job_episode():
+    admission=(ROOT/"scripts"/"identity"/"JobEpisodeAdmission.lua").read_text(encoding="utf-8")
+    assert "_bindFieldWorld" in admission
+    assert "cannot change after capture" in admission
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    assert 'VERSION = "4.7.12"' in config
+    assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_EVIDENCE"' in config
+
+
+def test_v4711_parallel_validation_reports_global_operation_count():
+    trace=(ROOT/"scripts"/"contracts"/"PassiveLiveTraceRecord.lua").read_text(encoding="utf-8")
+    validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+    assert "globalActiveOperationCount" in trace
+    assert "globalOperations=%d" in validator
+    assert "decisionCommitmentBoundary:apply" not in validator
+
+
+def test_v4710_source_intent_termination_is_positive_evidence_not_inactivity_guess():
+    evidence=(ROOT/"scripts"/"observation"/"LiveAIJobEvidence.lua").read_text(encoding="utf-8")
+    for token in ("spec_aiJobVehicle.lastJob","jobActiveInMission","PREVIOUS_JOB_RETAINED_AS_LAST_JOB_AND_NO_LONGER_ACTIVE"):
+        assert token in evidence
+    source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
+    assert "sourceIntentTerminationObserved" in source
+    admission=(ROOT/"scripts"/"identity"/"JobEpisodeAdmission.lua").read_text(encoding="utf-8")
+    assert 'cause="SOURCE_INTENT_TERMINATION"' in admission
+
+
+def test_v4712_records_bounded_spatial_equivalence_without_changing_authority():
+    registry=(ROOT/"scripts"/"identity"/"FieldWorldSnapshotRegistry.lua").read_text(encoding="utf-8")
+    for token in ("measureGeometry","compareGeometry","sampledJaccard","symmetricBoundaryMaxDistanceMetres","canonicalRootRing","FIELD-WORLD-EQUIVALENCE","identityAuthorityChanged=false"):
+        assert token in registry
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    for token in ("FIELD_WORLD_EQUIVALENCE_SAMPLE_SIDE","FIELD_WORLD_EQUIVALENCE_MAX_REFERENCE_SNAPSHOTS","FIELD_WORLD_EQUIVALENCE_MAX_COMPARISONS"):
+        assert token in config
+    assert "exact-fingerprint Operation grouping remains provisional" in (ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+    assert "decisionCommitmentBoundary:apply" not in (ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")

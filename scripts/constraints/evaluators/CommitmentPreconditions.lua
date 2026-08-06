@@ -10,7 +10,7 @@ function Evaluator.evaluate(candidate,operationalPicture)
         if type(contract)~="table" then
             return OuttaMyWay.ConstraintEvidence.fail("CONTINUE_OBSERVATION lacks a Bounded Observation Contract",{}, {operationalPictureId=operationalPicture.identity},{kind="DECISION_REASSESSMENT"})
         end
-        for _,field in ipairs(boundedFields) do
+        for _,field in OuttaMyWay.ValueRecord.ipairs(boundedFields) do
             if contract[field]==nil then
                 return OuttaMyWay.ConstraintEvidence.fail("Bounded Observation Contract missing " .. field,{contract=contract},{operationalPictureId=operationalPicture.identity},{kind="DECISION_REASSESSMENT"})
             end

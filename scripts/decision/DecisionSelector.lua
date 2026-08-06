@@ -4,10 +4,10 @@ Selector.__index=Selector
 local nonActuating={CONTINUE_UNCHANGED=true,CONTINUE_OBSERVATION=true,ESCALATE=true}
 
 local function sortedCopy(values)
-    local result={}; for _,value in ipairs(values or {}) do result[#result+1]=value end; table.sort(result); return result
+    local result={}; for _,value in OuttaMyWay.ValueRecord.ipairs(values or {}) do result[#result+1]=value end; table.sort(result); return result
 end
 local function hasUnresolved(verdicts)
-    for _,verdict in ipairs(verdicts) do if verdict.result=="UNRESOLVED" then return true end end
+    for _,verdict in OuttaMyWay.ValueRecord.ipairs(verdicts) do if verdict.result=="UNRESOLVED" then return true end end
     return false
 end
 
@@ -24,8 +24,8 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
     end
 
     local byCandidate={}
-    for _,candidate in ipairs(candidateResult.candidates) do byCandidate[candidate.identity]={candidate=candidate,verdicts={}} end
-    for _,verdict in ipairs(verdictResult.verdicts) do
+    for _,candidate in OuttaMyWay.ValueRecord.ipairs(candidateResult.candidates) do byCandidate[candidate.identity]={candidate=candidate,verdicts={}} end
+    for _,verdict in OuttaMyWay.ValueRecord.ipairs(verdictResult.verdicts) do
         local entry=byCandidate[verdict.candidateId]
         if entry==nil then error("Constraint verdict references unknown candidate",2) end
         entry.verdicts[#entry.verdicts+1]=verdict
@@ -33,10 +33,10 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
 
     local viable={}
     local unresolvedCandidates={}
-    for candidateId,entry in pairs(byCandidate) do
-        if #entry.verdicts~=#verdictResult.set.mandatoryConstraintIds then error("candidate lacks a complete mandatory verdict set",2) end
+    for candidateId,entry in OuttaMyWay.ValueRecord.pairs(byCandidate) do
+        if #entry.verdicts~=OuttaMyWay.ValueRecord.length(verdictResult.set.mandatoryConstraintIds) then error("candidate lacks a complete mandatory verdict set",2) end
         local pass=true
-        for _,verdict in ipairs(entry.verdicts) do if verdict.result~="PASS" then pass=false end end
+        for _,verdict in OuttaMyWay.ValueRecord.ipairs(entry.verdicts) do if verdict.result~="PASS" then pass=false end end
         if pass then viable[#viable+1]=entry.candidate
         elseif hasUnresolved(entry.verdicts) then unresolvedCandidates[#unresolvedCandidates+1]=candidateId end
     end
@@ -47,7 +47,7 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
     end)
     table.sort(unresolvedCandidates)
 
-    local viableIds={}; for _,candidate in ipairs(viable) do viableIds[#viableIds+1]=candidate.identity end
+    local viableIds={}; for _,candidate in OuttaMyWay.ValueRecord.ipairs(viable) do viableIds[#viableIds+1]=candidate.identity end
     local selected=viable[1]
     local commitmentAction
     local nonIntervention
@@ -56,7 +56,7 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
         if selected.capability=="CONTINUE_OBSERVATION" then commitmentAction="WAIT"
         elseif selected.capability=="CONTINUE_UNCHANGED" then commitmentAction="MAINTAIN"
         elseif selected.capability=="ESCALATE" then commitmentAction="SETTLE"
-        elseif #operationalPicture.commitmentContext==0 then commitmentAction="CREATE"
+        elseif OuttaMyWay.ValueRecord.length(operationalPicture.commitmentContext)==0 then commitmentAction="CREATE"
         elseif selected.evidenceBasis.maintainsExistingCommitment==true then commitmentAction="MAINTAIN"
         else commitmentAction="REVISE" end
         nonIntervention={explicit=nonActuating[selected.capability]==true,classification=selected.capability}
@@ -72,7 +72,7 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
     end
 
     local ranked={}
-    for _,candidate in ipairs(viable) do ranked[#ranked+1]={candidateId=candidate.identity,comparisonCost=candidate.comparisonCost,capability=candidate.capability} end
+    for _,candidate in OuttaMyWay.ValueRecord.ipairs(viable) do ranked[#ranked+1]={candidateId=candidate.identity,comparisonCost=candidate.comparisonCost,capability=candidate.capability} end
     local record=OuttaMyWay.DecisionRecord.new({
         identity=self.identities:issue("DECISION"),
         epoch=self.epochs:next(),

@@ -6,7 +6,7 @@ Evaluator.owner="ResponsibilityCompatibilityConstraint"
 function Evaluator.evaluate(candidate,operationalPicture)
     local assemblyId=candidate.subject.assemblyId
     if candidate.capability=="REPOSITION" and assemblyId~=nil then
-        for _,relation in ipairs(operationalPicture.responsibilityRelations) do
+        for _,relation in OuttaMyWay.ValueRecord.ipairs(operationalPicture.responsibilityRelations) do
             if relation.relation=="FOLLOWER_OWNS_CLOSURE" and relation.leaderAssemblyId==assemblyId then
                 local exception=candidate.evidenceBasis.responsibilityException
                 if exception==nil then

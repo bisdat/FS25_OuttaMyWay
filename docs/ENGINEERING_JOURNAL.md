@@ -1,3 +1,72 @@
+## 2026-08-06 — Seed-Dependent Boundary Representation
+
+**Observation:** Exact fingerprint equality succeeded for seeds in merged areas 68 and 69, but failed for two separate seeds in old area 70. The second 70 seed was deliberately placed at the old field's geometric centre. Both 70 captures and the 68/69 captures reported 15 points and identical bounds.
+
+**Disproved hypothesis:** the first 70 mismatch was caused by starting too close to a former internal boundary.
+
+**Discovery:** the same experienced Field World can have seed-dependent exact boundary representation.
+
+**Implementation response:** v4.7.12 records bounded spatial comparison evidence while preserving passive behaviour and explicitly refusing to promote uncertain equivalence into authority.
+
+## 2026-08-06 — Merged/Split Field World Closure and v4.7.11
+
+**Observation:** Three starts in merged areas 68, 69 and 70 produced identical 15-point geometry and bounds. Two starts in a split field 77 produced distinct 6-point and 11-point polygons while both retained locator 77.
+
+**Discovery — Job-Seeded Field World:** the polygon containing the worker at confirmed field-work onset is the stable experienced workspace. Field labels are useful UI locators but cannot govern Operation identity.
+
+**Implementation:** v4.7.11 captures and fingerprints the polygon once per Job Episode, binds it immutably, groups Operations by fingerprint and reports global Operation count for the agreed parallel validation.
+## 2026-08-06 — v4.7.10 Source-Field Authority, Derived Field World Discovery and Source-Intent Termination
+
+**Observation:** v4.7.9 achieved Live Replacement-Pipeline Closure. The numeric field results were correct, but farmland mapping was still treated as authority and a manually stopped Valtra episode remained open. The user also supplied direct evidence that source fields 68, 69 and 70 form one contiguous agronomic area while retaining individual map labels.
+
+**Discovery — Source Field / Derived Field World Separation:** GIANTS source field labels and the experienced contiguous Field World are different identities. Farmland is a third, larger contextual area.
+
+**Implementation:** source labels now require exact source-field polygon containment. Farmland is contextual only. GIANTS field-course generation passively discovers the derived boundary. A matching inactive `lastJob` transition provides positive source-intent termination evidence.
+
+## 2026-08-06 — v4.7.9 GIANTS-Compatible Value Traversal and Polygon Field Identity
+
+**Observation:** v4.7.8 logged valid active GIANTS jobs and stable source tokens, but the sealed snapshot reached downstream layers as zero active AI states and zero Job Episode evidence. The broad diagnostic stutter was gone.
+
+**Discovery — GIANTS Sealed Value Traversal Compatibility:** immutable proxy collections remained directly readable, but ordinary proxy `pairs`/`ipairs` traversal was not portable to the GIANTS Lua runtime.
+
+**Decision:** retain sealed immutable records and provide explicit ValueRecord traversal and length accessors. Migrate active architecture layers to those accessors rather than weakening immutability.
+
+**Discovery — Polygon Field Identity:** the reliable fallback is the authoritative `FieldManager.fields` polygon collection. Field identity is accepted only for exactly one containing polygon; no match or multiple matches remain unresolved.
+
+**Validation:** offline fixtures admit two active Job Episodes and one field-77 Operation when polygon evidence is unique. A complementary unresolved-field fixture preserves both Job Episodes, admits no Operation, selects bounded `CONTINUE_OBSERVATION`, and keeps Control disabled.
+
+## 2026-08-06 — v4.7.8 Targeted Job Episode Admission and Field Identity
+
+**Observation:** v4.7.7 found positive native AI ownership in `AISystem.activeJobVehicles`, stable job identity in `spec_aiJobVehicle.job` / `spec_aiFieldWorker.fieldJob`, and unchanged job identity through blockage. It also showed that cab occupancy can coexist with native AI ownership and that broad reflection causes regular sampling stalls.
+
+**SDK corroboration:** the current GIANTS AI system maintains explicit active-job and active-job-vehicle collections. Field-work jobs retain a position parameter. FieldManager maintains a farmland-to-field mapping.
+
+**Hypothesis:** target only active job vehicles, admit the Job Episode from stable GIANTS job identity, and resolve field identity from agreed current/job-position farmland mapping.
+
+**Implementation:** v4.7.8 removes the broad reflection probe, adds `LiveAIJobEvidence`, uses active-job membership as the positive activity fact, preserves blockage, detects job replacement by token change, and adds a targeted field/job probe.
+
+**Protection:** field disagreement is unresolved, inactivity without a distinguished cause remains unresolved, and live Commitment mutation and Control remain disabled.
+
+## 2026-08-06 — v4.7.7 Live AI State Discovery Probe
+
+**Observation:** v4.7.6 enumerated relevant assemblies but all configured AI activity signals remained false during native GIANTS work. Field attribution and Job Episode admission therefore never began.
+
+**Interpretation:** the activity-onset architectural concept remains viable, but its implementation input is unknown. Another guessed property would only repeat the failed cycle.
+
+**Decision:** add a diagnostic-only probe that records method results, AI-specialisation fields, mission AI-system state and field lookup results across idle, active and stopped phases.
+
+**Protection:** probe evidence cannot enter admission, Decision, Commitment or Control. The build remains fully passive.
+
+## 2026-08-06 — v4.7.5 Passive Live Validation
+
+**Decision:** open the canonical passive-live gate without introducing Commitment mutation or Control.
+
+**Implementation:** added a read-only field-grouped live source, explicit unavailable-source evidence, a complete non-actuating Candidate support boundary and change-driven canonical trace diagnostics.
+
+**Protection:** metadata geometry is marked incomplete, archived code remains non-executable, and every live trace asserts `control=false`.
+
+**Next evidence:** owner live test using no-worker/one-worker control and a two-worker same-field fixture.
+
 ## 2026-08-06 — v4.7.4 Replay Conformance
 
 Implemented the canonical replay gate from owner-declared v4.7.3. The corpus uses only documented historical facts and explicitly labels each fixture as reconstruction rather than raw physics simulation.
@@ -140,6 +209,16 @@ The first isolated hypothesis is the Condor-specific permission overwrite, becau
 **Decision:** preserve ADR-0009; commit lifecycle state before diagnostics, make affected diagnostics non-blocking, and add a branch-executing packaged-byte smoke test.
 
 # Engineering Journal
+
+## 2026-08-06 — Live Job Episode Admission Gap and Unresolved Evidence Loss
+
+**Observation:** v4.7.5 safely enumerated one and two native AI assemblies and never intervened, but every live trace reported zero Job Episodes and zero Operations.
+
+**Evidence:** GIANTS exposed active AI state without a usable current-job object. The missing admission evidence then collapsed to `COMPLETE_SUPPORTABLE_SPACE_EXHAUSTED` rather than bounded observation.
+
+**Disproved hypotheses:** a current-job pointer would be available; unavailable admission evidence would automatically survive to Decision.
+
+**Implementation response:** use positive native AI activity onset as an observational episode source identity, preserve undistinguished termination as unavailable evidence, and expose Candidate/verdict diagnostics. Architecture is unchanged.
 
 ## 2026-08-04 — Exact Rejoin Overreach removed
 

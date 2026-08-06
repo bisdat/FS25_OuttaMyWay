@@ -1,6 +1,6 @@
 local allowedActions={CREATE=true,MAINTAIN=true,REVISE=true,WAIT=true,SETTLE=true}
 local function contains(values,target)
-    for _,value in ipairs(values or {}) do if value==target then return true end end
+    for _,value in OuttaMyWay.ValueRecord.ipairs(values or {}) do if value==target then return true end end
     return false
 end
 
