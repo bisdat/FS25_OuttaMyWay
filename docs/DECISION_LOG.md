@@ -1,12 +1,22 @@
+## D-0035 — Add Bounded Interaction Diagnostics Without Changing Behaviour
+
+**Status:** Accepted diagnostic implementation decision; implemented by v4.7.15 candidate
+
+**Decision:** Instrument the complete existing path from active-job acquisition to Encounter construction. Record pose acquisition, physical-representation inputs, position-derived motion, every unique unordered relationship, pair-prediction outcomes, interaction-evidence handoff, Encounter lifecycle and contradiction warnings. Diagnostic log-line limits are independent from operational pair evaluation.
+
+**Reason:** canonical v4.7.14 correctly retained one Field World and one Operation during TS015, but no Encounter was created before or after physical contact. The current evidence proves only that qualifying interaction evidence did not reach Encounter construction; it does not yet identify the rejecting branch.
+
+**Boundary:** this is not an architectural addition. The labels are diagnostic descriptions of existing implementation branches. No predicate, threshold, admission rule, Decision, Commitment or Control path changes. `control=false` remains enforced.
+
 ## D-0034 — Implement Field World Equivalence as Pure Evaluation plus Class-Wide Authority
 
-**Status:** Accepted implementation decision; implemented by v4.7.14 candidate
+**Status:** Accepted implementation decision; implemented by canonical v4.7.14
 
 **Decision:** Separate immutable Snapshot capture, pairwise spatial evaluation and authoritative Field World assignment. `FieldWorldEquivalenceEvaluator` produces `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD` or `UNRESOLVED` from compound evidence. `FieldWorldEquivalenceAuthority` compares each candidate with every Snapshot in each currently relevant class, joins exactly one coherent class, establishes a new class only when positively different from all classes, and otherwise leaves the Snapshot unresolved. Operation admission consumes only resolved Field World identity.
 
 **Calibration:** non-exact SAME requires compatible topology plus all accepted area, perimeter, centroid, bounds, boundary-distance and sampled-overlap limits. Failure of that envelope does not imply DIFFERENT. The initial DIFFERENT path requires positive occupied-region separation. These values are implementation calibration, not architecture.
 
-**Consequence:** Snapshot references, exact polygon references and resolved Field World references are distinct. Operations retain all member Snapshot and polygon provenance. Classes retire when no associated Job Episode remains relevant. Pairwise tolerance chaining is structurally prohibited. Control remains disabled pending passive live validation.
+**Consequence:** Snapshot references, exact polygon references and resolved Field World references are distinct. Operations retain all member Snapshot and polygon provenance. Classes retire when no associated Job Episode remains relevant. Pairwise tolerance chaining is structurally prohibited. Control remains disabled. The Field World live gate subsequently passed in canonical v4.7.14.
 
 ## D-0033 — Field World Equivalence Authority Governs Field World and Operation Identity
 
@@ -16,7 +26,7 @@
 
 **Evidence:** Four captures in the merged 68–69–70 workspace had different exact fingerprints but identical bounds and topology, no islands and near-identical spatial measures. The two disconnected portions retaining locator 77 had materially different areas and bounds, large separation and zero sampled overlap.
 
-**Consequence:** D-0030's exact-fingerprint authority is superseded. At v4.7.13 the runtime grouping remained a documented provisional implementation limitation; v4.7.14 implements the separately agreed authority pending passive live validation.
+**Consequence:** D-0030's exact-fingerprint authority is superseded. At v4.7.13 the runtime grouping remained a documented provisional implementation limitation; canonical v4.7.14 implements and live-validates the separately agreed authority.
 
 ## D-0032 — Separate Exact Boundary Representation from Spatial Field World Equivalence
 

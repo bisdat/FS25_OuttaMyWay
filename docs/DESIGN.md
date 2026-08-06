@@ -2,9 +2,9 @@
 
 > **Authority:** Replacement-core design boundary
 >
-> **Currency:** v4.7.14 Field World Equivalence Authority Implementation Candidate; v4.6.78 remains the replacement-core foundation
+> **Currency:** v4.7.15 Bounded Interaction Diagnostics Candidate; canonical v4.7.14 implements and live-validates Field World Equivalence Authority
 >
-> **Implementation status:** v4.7.14 implements ADR-0021 passively and is offline-conformant; passive live validation is pending; Control disabled
+> **Implementation status:** canonical v4.7.14 passes merged, split and contiguous Field World live gates; v4.7.15 adds diagnostics only; Control disabled
 
 ## Purpose
 

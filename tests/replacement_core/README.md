@@ -1,17 +1,17 @@
 # Replacement-Core Conformance Tests
 
-v4.7.14 adds executable Field World Equivalence Authority conformance. The suite now proves:
+v4.7.15 adds bounded interaction-diagnostic conformance while preserving all earlier tests. The suite proves:
 
-- distinct immutable Snapshots with exact canonical geometry resolve to one Field World;
-- four non-exact merged-workspace representations form one coherent class;
-- positively separated representations form different Field Worlds;
-- partial overlap remains unresolved and receives no Operation authority;
-- pairwise tolerance chaining cannot enlarge a class;
-- inactive classes retire and later captures receive new identity;
-- one Operation may retain multiple Snapshot and exact-polygon references;
+- pair identity is unordered and multi-worker capable;
+- three workers produce all three unique relationships;
+- pair-prediction rejection has one exhaustive principal outcome;
+- missing physical radius is explicit and cannot emit interaction evidence;
+- qualifying live interaction evidence reaches Situation Assessment and creates an Encounter;
+- active-job pose failure remains non-admitted and diagnostic;
+- blocked-without-Encounter is visible as a contradiction warning;
+- position-derived motion distinguishes forward, reverse, turning and stationary evidence;
+- Field World Equivalence Authority, immutable records, admission, Operation, Candidate, Decision, replay and terminal-settlement checks remain active;
 - Control remains disabled.
-
-All earlier immutable traversal, admission, Operation, Knowledge, Candidate, constraint, Decision, replay and terminal-settlement checks remain active.
 
 Run from the repository root:
 

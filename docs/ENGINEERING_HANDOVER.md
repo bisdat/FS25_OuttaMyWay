@@ -1,28 +1,34 @@
 # Engineering Handover
 
-> **Canonical baseline:** v4.7.13  
-> **Candidate:** v4.7.14 Field World Equivalence Authority Implementation  
+> **Canonical baseline:** v4.7.14  
+> **Candidate:** v4.7.15 Bounded Interaction Diagnostics  
 > **Control authority:** disabled
 
-## Governing architecture
+## Closed Field World gate
 
-ADR-0021 and D-0033 govern Field World identity. Exact fingerprints remain immutable representation provenance. Authority outcomes are `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD` and `UNRESOLVED`. Unresolved evidence receives no Operation or Control authority, and pairwise tolerance chaining is prohibited.
+Canonical v4.7.14 passed merged 68–70, split-77 and contiguous-77 live validation. Field World authority and Operation grouping are not the current defect boundary.
 
-## Implementation boundary
+## Current evidence boundary
 
-v4.7.14 introduces two isolated responsibilities:
+During TS015, Condor and Patriot remained two active Job Episodes in one Field World and one Operation. Physical contact and mutual blockage occurred while the Operational Picture contained zero Encounters.
 
-- `FieldWorldEquivalenceEvaluator` is pure and classifies one immutable Snapshot pair from compound spatial evidence;
-- `FieldWorldEquivalenceAuthority` owns currently relevant Field World classes, enforces all-member coherence, assigns resolved Field World identities and retires classes after relevance ends.
+Code inspection shows that Situation Assessment will create an Encounter from positive `currentSpaceIntersects` or `futureSpaceConverges` evidence. The missing fact is therefore earlier: acquisition, representation, motion prediction, pair evaluation or handoff.
 
-`FieldWorldSnapshotRegistry` continues to own capture, canonical geometry, exact fingerprints and comparison measurements. `LiveObservationSource` resolves identity before grouping. `OperationAdmission` consumes resolved Field World identity and preserves all member Snapshot and exact-polygon references; it performs no geometry reasoning.
+## v4.7.15 implementation
 
-The SAME envelope is conservative implementation calibration. A failed SAME condition does not imply DIFFERENT. The first DIFFERENT path requires positive occupied-region separation. Every other ambiguous case is `UNRESOLVED`.
+`LiveInteractionDiagnostics` owns pure diagnostic calculations and exhaustive outcome labels. `LiveObservationSource` records active acquisition, representation inputs, motion evidence and every unique unordered relationship. `SituationAssessment` records source-to-Encounter handoff without changing admission. `PassiveLiveValidator` reports bounded pair records, contradiction warnings and Encounter lifecycle.
 
-## Offline conformance
-
-The suite proves exact equality, merged-workspace equivalence, disconnected separation, partial-overlap uncertainty, tolerance-chain rejection, lifecycle retirement, unresolved Operation exclusion and multi-representation Operation provenance. Existing replacement-core tests remain green. Control remains disabled.
+A pair is an unordered assessment relationship, not an Operation or scope limit. Three workers produce three relationships; four produce six. The 64-line diagnostic cap limits log output only and reports truncation explicitly.
 
 ## Next objective
 
-Run one passive live test with concurrent workers seeded in merged areas 68–69–70. Confirm one resolved Field World and one active Operation while retaining distinct immutable Snapshot and polygon evidence. Preserve full logs. Do not modify thresholds from one run; contradictory evidence must be recorded before any implementation adjustment.
+Run one short TS015 test. Determine:
+
+1. whether both workers have resolved poses;
+2. whether both metadata radii exist;
+3. the principal pair outcome before contact;
+4. whether interaction evidence is emitted and received;
+5. whether an Encounter is created, retained or lost;
+6. whether a contradiction warning identifies a deeper gap.
+
+Do not adjust geometry or thresholds until that evidence is inspected. Control remains disabled.

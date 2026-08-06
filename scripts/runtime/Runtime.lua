@@ -31,8 +31,8 @@ function Runtime.new()
 end
 function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
-    self.trace:append("FIELD_WORLD_EQUIVALENCE_AUTHORITY_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION)
-    print(string.format("FS25_OuttaMyWay v%s Field World Equivalence Authority loaded; unresolved identity grants no Operation admission; Control authority disabled",OuttaMyWay.VERSION))
+    self.trace:append("INTERACTION_DIAGNOSTICS_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";predicatesChanged=false")
+    print(string.format("FS25_OuttaMyWay v%s bounded interaction diagnostics loaded; predicates unchanged; unresolved identity grants no Operation admission; Control authority disabled",OuttaMyWay.VERSION))
 end
 function Runtime:publishObservation(raw) return self.observationAdapter:publish(raw) end
 function Runtime:admitJobEpisodes(snapshot) return self.jobEpisodes:observe(snapshot) end

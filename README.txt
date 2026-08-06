@@ -1,11 +1,13 @@
-FS25_OuttaMyWay v4.7.14 — Field World Equivalence Authority Implementation Candidate
+FS25_OuttaMyWay v4.7.15 — Bounded Interaction Diagnostics Candidate
 
-Canonical baseline: owner-declared v4.7.13, ZIP SHA-256 29b50173f00b5fb48355cadf848eadbaed5f24a13b2bfced558672ee0f21363e, Git commit d813f5be6f948bd5143b8945c3ab883af397db2d.
+Canonical baseline: owner-declared v4.7.14, ZIP SHA-256 55ffc688afd42a02eaaa38e4517f27549316dbb72ed36c2b6982a0d8a54e26d9, Git commit d909088a1e61e47d66df2ded222ff5ba0a046c31, 247 files.
 
-This passive candidate implements ADR-0021. Immutable Job-Seeded Field World Snapshots retain distinct capture and exact-polygon provenance. A pure evaluator produces SAME_FIELD_WORLD, DIFFERENT_FIELD_WORLD or UNRESOLVED from compound spatial evidence. A stateful authority assigns Field World identity only after class-wide coherence against all currently relevant Snapshot evidence. Pairwise tolerance chaining is prohibited.
+Canonical v4.7.14 passed the Field World authority live gates: merged 68–69–70 resolved to one Field World and one Operation; split field 77 resolved to two Field Worlds and two Operations; contiguous field 77 resolved to one Field World and one Operation.
 
-Live Observation groups workers by resolved Field World identity. An unresolved Snapshot remains observable but receives no Operation admission or Control authority. Operation records retain all member Snapshot and exact-polygon references instead of one supposedly authoritative polygon.
+A focused TS015 run then retained one Field World and one Operation but produced no Encounter before or after physical head-on contact. v4.7.15 adds bounded diagnostics to determine where the existing live observation-to-Encounter path rejects or loses the relationship.
 
-Offline conformance includes exact, merged-workspace, disconnected, partial-overlap, tolerance-chain, retirement and multi-representation Operation fixtures. Passive live validation in the merged 68–69–70 workspace remains the next evidence gate. Control authority remains disabled.
+The build records active-job acquisition, pose source and failure reason, metadata envelope inputs, position-derived motion, every unique unordered pair, complete pair-prediction evidence, source/assessment handoff counters, Encounter lifecycle and contradiction warnings. Pairwise diagnostics do not impose a two-worker scope limit: an Operation with n relevant workers can produce n(n-1)/2 relationships.
 
-Run line: FS25_OuttaMyWay v4.7.14 Field World Equivalence Authority loaded; unresolved identity grants no Operation admission; Control authority disabled
+No predictor threshold, Field World rule, Operation rule, Encounter predicate, Decision, Commitment or Control behaviour is changed. Control authority remains disabled.
+
+Run line: FS25_OuttaMyWay v4.7.15 bounded interaction diagnostics loaded; predicates unchanged; unresolved identity grants no Operation admission; Control authority disabled

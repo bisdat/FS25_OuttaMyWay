@@ -1,3 +1,16 @@
+## v4.7.15 — Bounded Interaction Diagnostics Candidate
+
+- begins from owner-declared canonical v4.7.14 (`55ffc688...26d9`, Git `d909088a1e61e47d66df2ded222ff5ba0a046c31`);
+- records the successful merged 68–70, split-77 and contiguous-77 Field World live gates;
+- records the TS015 observation that one Field World and one Operation persisted while no Encounter was created before or after collision;
+- adds diagnostic-only active-worker acquisition, pose, physical-representation and motion evidence;
+- enumerates every unique unordered relationship for multi-worker Operations;
+- publishes exhaustive pair-prediction outcomes and source-to-assessment handoff counters;
+- publishes Encounter lifecycle and bounded contradiction warnings;
+- caps diagnostic log lines independently from operational pair evaluation;
+- changes no predictor, admission, Decision, Commitment or Control behaviour;
+- keeps replacement Control authority disabled.
+
 ## v4.7.14 — Field World Equivalence Authority Implementation Candidate
 
 - implement pure three-outcome Field World Snapshot evaluation;

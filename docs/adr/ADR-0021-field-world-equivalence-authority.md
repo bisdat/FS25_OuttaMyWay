@@ -1,8 +1,8 @@
 # ADR-0021 — Field World Equivalence Authority
 
-**Status:** Accepted architecture; implemented passively by v4.7.14 candidate  
+**Status:** Accepted architecture; implemented and live-validated by canonical v4.7.14  
 **Canonical implementation baseline:** owner-declared v4.7.13  
-**Implementation status:** offline-conformant; passive live validation pending
+**Implementation status:** live-validated for merged, disconnected and contiguous Field World cases; Control remains disabled
 
 ## Context
 

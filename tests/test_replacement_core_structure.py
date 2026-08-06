@@ -212,8 +212,8 @@ def test_v478_targeted_job_episode_and_field_identity_path_is_active():
     assert "scripts/diagnostics/TargetedFieldIdentityProbe.lua" in main
     assert "scripts/diagnostics/LiveAIStateProbe.lua" not in main
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.14"' in config
-    assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_AUTHORITY_PASSIVE"' in config
+    assert 'VERSION = "4.7.15"' in config
+    assert 'RUNTIME_MODE = "INTERACTION_DIAGNOSTICS_PASSIVE"' in config
     evidence=(ROOT/"scripts"/"observation"/"LiveAIJobEvidence.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"TargetedFieldIdentityProbe.lua").read_text(encoding="utf-8")
@@ -259,8 +259,8 @@ def test_v479_polygon_field_identity_fallback_is_read_only():
     for forbidden in ("driveToPoint(","stopCurrentAIJob(","setCruiseControlState("):
         assert forbidden not in text
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.14"' in config
-    assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_AUTHORITY_PASSIVE"' in config
+    assert 'VERSION = "4.7.15"' in config
+    assert 'RUNTIME_MODE = "INTERACTION_DIAGNOSTICS_PASSIVE"' in config
 
 
 def test_v4711_job_seeded_snapshot_capture_remains_active_under_equivalence_authority():
@@ -281,8 +281,8 @@ def test_v4711_field_world_snapshot_is_bound_once_to_job_episode():
     assert "_bindFieldWorld" in admission
     assert "cannot change after capture" in admission
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.14"' in config
-    assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_AUTHORITY_PASSIVE"' in config
+    assert 'VERSION = "4.7.15"' in config
+    assert 'RUNTIME_MODE = "INTERACTION_DIAGNOSTICS_PASSIVE"' in config
 
 
 def test_v4711_parallel_validation_reports_global_operation_count():
@@ -323,6 +323,31 @@ def test_v4714_field_world_equivalence_authority_is_active_and_conservative():
     for token in ("FIELD_WORLD_EQUIVALENCE_SAMPLE_SIDE","FIELD_WORLD_EQUIVALENCE_SAME_MAX_AREA_RELATIVE_DELTA","FIELD_WORLD_EQUIVALENCE_SAME_MIN_SAMPLED_JACCARD","FIELD_WORLD_EQUIVALENCE_DIFFERENT_MIN_BOUNDARY_SEPARATION_METRES"):
         assert token in config
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert "Field World Equivalence Authority loaded" in runtime
+    assert "bounded interaction diagnostics loaded" in runtime
     assert "unresolved identity grants no Operation admission" in runtime
     assert "decisionCommitmentBoundary:apply" not in (ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+
+
+def test_v4715_bounded_interaction_diagnostics_are_multi_worker_and_passive():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    assert "scripts/diagnostics/LiveInteractionDiagnostics.lua" in main
+    diagnostics=(ROOT/"scripts"/"diagnostics"/"LiveInteractionDiagnostics.lua").read_text(encoding="utf-8")
+    source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
+    assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
+    validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    for token in ("MISSING_SUBJECT_RADIUS","MISSING_OTHER_RADIUS","RELATIVE_MOTION_BELOW_EPSILON","TCPA_BEYOND_HORIZON","CPA_EXCEEDS_REPRESENTED_ENVELOPE","CURRENT_INTERACTION_QUALIFIED","FUTURE_INTERACTION_QUALIFIED"):
+        assert token in diagnostics
+    for token in ("mathematicallyPossiblePairCount","relevantPairCount","eligiblePairCount","evaluatedPairCount","qualifyingPairCount","pairDiagnostics"):
+        assert token in source
+    for token in ("interactionEvidenceReceivedCount","encounterCreatedCount","SAME_OPERATION_ACTIVE_PAIR_NOT_EVALUATED","BOTH_WORKERS_BLOCKED_WITHOUT_ENCOUNTER"):
+        assert token in assessment
+    for token in ("PAIR pair=","ENCOUNTER lifecycle=CREATED","ENCOUNTER lifecycle=RETAINED","ENCOUNTER lifecycle=LOST","PAIR_OPERATION_CHANGED_DURING_JOB_EPISODE","PAIR_DISAPPEARED_WHILE_BOTH_WORKERS_ACTIVE"):
+        assert token in validator
+    assert 'VERSION = "4.7.15"' in config
+    assert 'RUNTIME_MODE = "INTERACTION_DIAGNOSTICS_PASSIVE"' in config
+    assert "PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE" in config
+    for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
+        assert forbidden not in diagnostics
+        assert forbidden not in source
+        assert forbidden not in validator

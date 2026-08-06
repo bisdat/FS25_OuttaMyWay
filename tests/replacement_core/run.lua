@@ -21,6 +21,7 @@ load("scripts/contracts/GoverningBasisVerdict.lua")
 load("scripts/contracts/CommitmentApplicationRecord.lua")
 load("scripts/contracts/PassiveLiveTraceRecord.lua")
 load("scripts/identity/EpochSequence.lua")
+load("scripts/diagnostics/LiveInteractionDiagnostics.lua")
 load("scripts/identity/IdentityRegistry.lua")
 load("scripts/identity/FieldWorldSnapshotRegistry.lua")
 load("scripts/identity/FieldWorldEquivalenceEvaluator.lua")
@@ -199,7 +200,7 @@ end)
 
 test("runtime is passive and inactive before the live listener runs", function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); local status=runtime:getStatus()
-    equal(status.runtimeMode,"FIELD_WORLD_EQUIVALENCE_AUTHORITY_PASSIVE"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
+    equal(status.runtimeMode,"INTERACTION_DIAGNOSTICS_PASSIVE"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
 end)
 
 
@@ -787,8 +788,9 @@ local function withFakeLiveGlobals(fn)
     local oldFieldManager,oldFarmlandManager=g_fieldManager,g_farmlandManager
     local oldFieldCourseSettings,oldFieldCourseField=FieldCourseSettings,FieldCourseField
     local positions={[101]={0,0,0},[201]={0,0,20}}
+    local directions={[101]={0,1},[201]={0,1}}
     getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
-    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
+    localDirectionToWorld=function(node,x,y,z) local d=directions[node] or {0,1}; return d[1],0,d[2] end
     local field={id=77,getId=function(self) return self.id end,getPolygonPoints=function() return {{x=-10,z=-10},{x=10,z=-10},{x=10,z=30},{x=-10,z=30}} end}
     local farmland={id=77}
     local farmlandManager={getFarmlandAtWorldPosition=function(self,x,z) return farmland end}
@@ -806,7 +808,7 @@ local function withFakeLiveGlobals(fn)
     local a={rootNode=101,sizeWidth=3,sizeLength=7,lastSpeedReal=0.003,spec_aiFieldWorker={isActive=true,isBlocked=false,fieldJob=jobA},spec_aiJobVehicle={job=jobA,lastJob=jobA},getIsAIActive=function(self) return self.spec_aiFieldWorker.isActive end,getIsFieldWorkActive=function(self) return self.spec_aiFieldWorker.isActive end,getAISteeringNode=function(self) return self.rootNode end,getRootVehicle=function(self) return self end,getName=function() return "A" end}
     local b={rootNode=201,sizeWidth=3,sizeLength=7,lastSpeedReal=0.002,spec_aiFieldWorker={isActive=true,isBlocked=false,fieldJob=jobB},spec_aiJobVehicle={job=jobB,lastJob=jobB},getIsAIActive=function(self) return self.spec_aiFieldWorker.isActive end,getIsFieldWorkActive=function(self) return self.spec_aiFieldWorker.isActive end,getAISteeringNode=function(self) return self.rootNode end,getRootVehicle=function(self) return self end,getName=function() return "B" end}
     local mission={vehicles={a,b},controlledVehicle=nil,fieldManager=fieldManager,farmlandManager=farmlandManager,aiSystem={activeJobVehicles={a,b},activeJobs={jobA,jobB}}}
-    local ok,result=pcall(fn,mission,a,b,positions,jobA,jobB,field,farmland)
+    local ok,result=pcall(fn,mission,a,b,positions,jobA,jobB,field,farmland,directions)
     getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
     g_fieldManager,g_farmlandManager=oldFieldManager,oldFarmlandManager
     FieldCourseSettings,FieldCourseField=oldFieldCourseSettings,oldFieldCourseField
@@ -832,6 +834,117 @@ test("live source admits GIANTS Job identities from activeJobVehicles",function(
         end
         equal(tokens["giants-ai-job-id:1001"],true); equal(tokens["giants-ai-job-id:1002"],true)
         equal(#observations[1].unavailableSources,0)
+    end)
+end)
+
+
+test("interaction diagnostics publish exhaustive pair outcomes without changing predicates",function()
+    local diagnostics=OuttaMyWay.LiveInteractionDiagnostics
+    local a={pose={x=0,z=0,dx=0,dz=1},speedMps=3,radius=nil}
+    local b={pose={x=0,z=20,dx=0,dz=-1},speedMps=3,radius=4}
+    local missing=diagnostics.predictPair(a,b,10)
+    equal(missing.principalOutcome,"MISSING_SUBJECT_RADIUS"); equal(missing.interactionEvidenceEmitted,false)
+    a.radius=4; b.pose.dz=1; b.speedMps=3
+    local parallel=diagnostics.predictPair(a,b,10)
+    equal(parallel.principalOutcome,"RELATIVE_MOTION_BELOW_EPSILON"); equal(parallel.interactionEvidenceEmitted,false)
+    b.pose.dz=-1
+    local converging=diagnostics.predictPair(a,b,10)
+    equal(converging.principalOutcome,"FUTURE_INTERACTION_QUALIFIED"); equal(converging.converges,true); equal(converging.interactionEvidenceEmitted,true)
+    b.pose.z=4
+    local current=diagnostics.predictPair(a,b,10)
+    equal(current.principalOutcome,"CURRENT_INTERACTION_QUALIFIED"); equal(current.current,true)
+end)
+
+test("position-derived motion diagnostics separate forward reverse turning and stationary evidence",function()
+    local diagnostics=OuttaMyWay.LiveInteractionDiagnostics
+    local previous={x=0,z=0,dx=0,dz=1}
+    local forward=diagnostics.deriveMotion(previous,{x=0,z=2,dx=0,dz=1},0,1,2)
+    equal(forward.classification,"STABLE_FORWARD")
+    local reverse=diagnostics.deriveMotion(previous,{x=0,z=-2,dx=0,dz=1},0,1,2)
+    equal(reverse.classification,"REVERSING_OR_OPPOSED_TRAVEL")
+    local turning=diagnostics.deriveMotion(previous,{x=2,z=0,dx=1,dz=0},0,1,2)
+    equal(turning.classification,"TURNING")
+    local stationary=diagnostics.deriveMotion(previous,{x=0,z=0,dx=0,dz=1},0,1,0)
+    equal(stationary.classification,"STATIONARY")
+end)
+
+test("live source enumerates every unique unordered pair for three workers",function()
+    withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions)
+        positions[301]={10,0,10}; directions[301]={1,0}
+        local parameter={getPosition=function() return 10,10 end}
+        local jobC={jobId=1003,currentTaskIndex=2,helperIndex=1003,positionAngleParameter=parameter}
+        local c={rootNode=301,sizeWidth=4,sizeLength=8,lastSpeedReal=0.001,spec_aiFieldWorker={isActive=true,isBlocked=false,fieldJob=jobC},spec_aiJobVehicle={job=jobC,lastJob=jobC},getIsAIActive=function(self) return true end,getIsFieldWorkActive=function(self) return true end,getAISteeringNode=function(self) return self.rootNode end,getRootVehicle=function(self) return self end,getName=function() return "C" end}
+        mission.vehicles={a,b,c}; mission.aiSystem.activeJobVehicles={a,b,c}; mission.aiSystem.activeJobs={jobA,jobB,jobC}
+        local registry=OuttaMyWay.FieldWorldSnapshotRegistry.new(); local ids=OuttaMyWay.IdentityRegistry.new(); local evaluator=OuttaMyWay.FieldWorldEquivalenceEvaluator.new(); local authority=OuttaMyWay.FieldWorldEquivalenceAuthority.new(ids,evaluator); local source=OuttaMyWay.LiveObservationSource.new(registry,authority)
+        local raw=source:capture(mission,10)[1]
+        equal(raw.diagnostics.sourceCounters.mathematicallyPossiblePairCount,3)
+        equal(raw.diagnostics.sourceCounters.relevantPairCount,3)
+        equal(#raw.diagnostics.pairDiagnostics,3)
+        local seen={}
+        for _,pair in ipairs(raw.diagnostics.pairDiagnostics) do
+            if seen[pair.pairReferenceKey] then error("duplicate unordered pair diagnostic") end
+            seen[pair.pairReferenceKey]=true
+        end
+    end)
+end)
+
+test("missing radius suppression survives the source-to-assessment diagnostic handoff",function()
+    withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions)
+        directions[201]={0,-1}; b.sizeWidth=nil
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local raw=runtime.liveObservationSource:capture(mission,10)[1]
+        equal(#raw.diagnostics.pairDiagnostics,1)
+        equal(raw.diagnostics.pairDiagnostics[1].principalOutcome,"MISSING_OTHER_RADIUS")
+        equal(raw.diagnostics.pairDiagnostics[1].interactionEvidenceEmitted,false)
+        local processed=runtime:processSealedObservation(raw)
+        equal(#processed.picture.encounters,0)
+        equal(processed.picture.diagnostics.counters.interactionEvidenceEmittedCount,0)
+        equal(processed.picture.diagnostics.counters.interactionEvidenceReceivedCount,0)
+        equal(processed.picture.diagnostics.pairPipeline[1].sameOperation,true)
+    end)
+end)
+
+test("qualifying live pair reaches Encounter with complete diagnostic handoff",function()
+    withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions)
+        directions[201]={0,-1}; a.lastSpeedReal=0.003; b.lastSpeedReal=0.003
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local raw=runtime.liveObservationSource:capture(mission,10)[1]
+        equal(raw.diagnostics.pairDiagnostics[1].principalOutcome,"FUTURE_INTERACTION_QUALIFIED")
+        equal(raw.diagnostics.pairDiagnostics[1].interactionEvidenceEmitted,true)
+        local processed=runtime:processSealedObservation(raw)
+        equal(#processed.picture.encounters,1)
+        equal(processed.picture.diagnostics.counters.interactionEvidenceEmittedCount,1)
+        equal(processed.picture.diagnostics.counters.interactionEvidenceReceivedCount,1)
+        equal(processed.picture.diagnostics.counters.encounterCreatedCount,1)
+        equal(processed.picture.diagnostics.pairPipeline[1].encounterCreated,true)
+    end)
+end)
+
+test("active Job vehicle pose failure is explicit without changing admission",function()
+    withFakeLiveGlobals(function(mission,a,b,positions)
+        mission.vehicles={a}; setActiveVehicles(mission,a); positions[101]=nil
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local raw=runtime.liveObservationSource:capture(mission,10)[1]
+        local diagnostics=runtime.liveObservationSource:getLastDiagnostics()
+        equal(#diagnostics.contradictions,1)
+        equal(diagnostics.contradictions[1].code,"ACTIVE_JOB_VEHICLE_WITHOUT_POSE")
+        local processed=runtime:processSealedObservation(raw)
+        equal(#processed.jobEpisodes.activeEpisodeIds,0)
+        equal(#processed.operation.activeOperationIds,0)
+    end)
+end)
+
+test("mutually blocked same-Operation pair without Encounter is an explicit diagnostic contradiction",function()
+    withFakeLiveGlobals(function(mission,a,b)
+        a.spec_aiFieldWorker.isBlocked=true; b.spec_aiFieldWorker.isBlocked=true
+        a.lastSpeedReal=0; b.lastSpeedReal=0
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local raw=runtime.liveObservationSource:capture(mission,10)[1]
+        local processed=runtime:processSealedObservation(raw)
+        equal(#processed.picture.encounters,0)
+        local found=false
+        for _,item in OuttaMyWay.ValueRecord.ipairs(processed.picture.diagnostics.contradictions) do if item.code=="BOTH_WORKERS_BLOCKED_WITHOUT_ENCOUNTER" then found=true end end
+        equal(found,true)
     end)
 end)
 

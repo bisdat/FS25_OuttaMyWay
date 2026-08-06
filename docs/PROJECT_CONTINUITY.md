@@ -1,6 +1,16 @@
+## v4.7.15 diagnostic candidate boundary
+
+v4.7.15 derives from owner-declared canonical v4.7.14:
+
+- ZIP SHA-256: `55ffc688afd42a02eaaa38e4517f27549316dbb72ed36c2b6982a0d8a54e26d9`
+- Git commit: `d909088a1e61e47d66df2ded222ff5ba0a046c31`
+- Repository files: 247
+
+The candidate adds bounded passive diagnostics only. It preserves v4.7.14 Field World and Operation behaviour, the existing interaction predicate and zero Control authority. Its live gate is one short TS015 run sufficient to identify the principal pair outcome and verify the source-to-Encounter handoff.
+
 # Project Continuity
 
-## v4.7.14 implementation candidate boundary
+## v4.7.14 canonical implementation boundary
 
 v4.7.14 derives from owner-declared canonical v4.7.13:
 
@@ -8,9 +18,9 @@ v4.7.14 derives from owner-declared canonical v4.7.13:
 - Git commit: `d813f5be6f948bd5143b8945c3ab883af397db2d`
 - Repository files: 245
 
-The candidate implements ADR-0021 without changing its architecture. It separates immutable Snapshot identity, exact polygon representation and resolved Field World identity; adds pure pairwise evaluation and class-wide authority; groups Operations only by resolved Field World identity; and denies Operation authority to unresolved evidence. Control remains disabled.
+Canonical v4.7.14 implements ADR-0021 without changing its architecture. It separates immutable Snapshot identity, exact polygon representation and resolved Field World identity; adds pure pairwise evaluation and class-wide authority; groups Operations only by resolved Field World identity; and denies Operation authority to unresolved evidence. Control remains disabled.
 
-The implementation is offline-conformant. Its next gate is passive concurrent validation in the merged 68–69–70 workspace. No live equivalence success is claimed by this candidate.
+The implementation passed live validation for merged 68–69–70, disconnected split field 77 and contiguous field 77. Field World authority is closed; Control remains disabled.
 
 ## v4.7.13 architecture boundary
 

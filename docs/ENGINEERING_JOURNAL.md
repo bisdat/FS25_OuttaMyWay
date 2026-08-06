@@ -1,3 +1,13 @@
+## 2026-08-06 — TS015 Encounter Admission Diagnostic Boundary and v4.7.15
+
+**Facts:** v4.7.14 passed merged 68–70, split-77 and contiguous-77 Field World live validation. In the subsequent TS015 head-on run, both sprayers remained in one Field World and one Operation. The physical assemblies collided and became blocked, while the passive trace remained at zero Encounters.
+
+**Observation:** Situation Assessment creates an Encounter when supplied interaction evidence asserts current-space intersection or future-space convergence. The live source emitted no such evidence in the run. The existing predictor depends on active pose, `sizeWidth`/`sizeLength`, a derived circular radius and constant-velocity closest approach.
+
+**Implementation response:** v4.7.15 adds bounded diagnostics across active-worker acquisition, pose, representation inputs, observed motion, every unordered pair, prediction outcome, handoff, Encounter lifecycle and contradictions. It does not alter the predictor or architecture.
+
+**Validation:** offline fixtures prove exhaustive outcome labels, position-derived motion classifications, all three unique relationships for three workers, missing-radius handoff, successful qualifying-pair Encounter construction, explicit pose failure and blocked-without-Encounter reporting. Control remains disabled.
+
 ## 2026-08-06 — Field World Equivalence Authority Implemented Passively in v4.7.14
 
 **Objective:** realise ADR-0021 without allowing geometry thresholds, Operation admission or runtime convenience to redefine Field World identity.

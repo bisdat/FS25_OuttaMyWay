@@ -23,20 +23,29 @@ end
 
 local function nodeFor(object)
     local ok, node = safeCall(object, "getAISteeringNode")
-    if ok and node ~= nil and node ~= 0 then return node end
-    return object and object.rootNode or nil
+    if ok and node ~= nil and node ~= 0 then return node, "AI_STEERING_NODE" end
+    local rootNode = object and object.rootNode or nil
+    if rootNode ~= nil and rootNode ~= 0 then return rootNode, "ROOT_NODE_FALLBACK" end
+    return nil, "NO_REFERENCE_NODE"
 end
 
 local function positionAndHeading(object)
-    local node = nodeFor(object)
-    if node == nil or node == 0 or type(getWorldTranslation) ~= "function" or type(localDirectionToWorld) ~= "function" then return nil end
+    local node, nodeSource = nodeFor(object)
+    local diagnostic = {node = node, nodeSource = nodeSource, success = false}
+    if node == nil or node == 0 then diagnostic.reason = "NO_REFERENCE_NODE"; return nil, diagnostic end
+    if type(getWorldTranslation) ~= "function" then diagnostic.reason = "WORLD_TRANSLATION_API_UNAVAILABLE"; return nil, diagnostic end
+    if type(localDirectionToWorld) ~= "function" then diagnostic.reason = "WORLD_DIRECTION_API_UNAVAILABLE"; return nil, diagnostic end
     local ok, x, y, z = pcall(getWorldTranslation, node)
-    if not ok then return nil end
+    if not ok then diagnostic.reason = "WORLD_TRANSLATION_FAILED"; return nil, diagnostic end
     local okDir, dx, _, dz = pcall(localDirectionToWorld, node, 0, 0, 1)
-    if not okDir then return nil end
+    if not okDir then diagnostic.reason = "WORLD_DIRECTION_FAILED"; return nil, diagnostic end
     local length = math.sqrt(dx * dx + dz * dz)
-    if length <= 0.0001 then return nil end
-    return {node = node, x = x, y = y, z = z, dx = dx / length, dz = dz / length}
+    if length <= 0.0001 then diagnostic.reason = "HEADING_VECTOR_DEGENERATE"; return nil, diagnostic end
+    diagnostic.success = true
+    diagnostic.reason = "POSE_RESOLVED"
+    diagnostic.x, diagnostic.y, diagnostic.z = x, y, z
+    diagnostic.headingX, diagnostic.headingZ = dx / length, dz / length
+    return {node = node, nodeSource = nodeSource, x = x, y = y, z = z, dx = dx / length, dz = dz / length}, diagnostic
 end
 
 local function activityCorroboration(object)
@@ -104,27 +113,18 @@ local function radiusFor(object)
 end
 
 local function pairPrediction(a, b, horizon)
-    local rx, rz = b.pose.x - a.pose.x, b.pose.z - a.pose.z
-    local distance = math.sqrt(rx * rx + rz * rz)
-    local vaX, vaZ = a.pose.dx * a.speedMps, a.pose.dz * a.speedMps
-    local vbX, vbZ = b.pose.dx * b.speedMps, b.pose.dz * b.speedMps
-    local rvx, rvz = vbX - vaX, vbZ - vaZ
-    local rv2 = rvx * rvx + rvz * rvz
-    local required = (a.radius or 0) + (b.radius or 0)
-    local current = a.radius ~= nil and b.radius ~= nil and distance <= required
-    local tcpa, cpa, converges = nil, nil, false
-    if a.radius ~= nil and b.radius ~= nil and rv2 > 0.0001 then
-        tcpa = -(rx * rvx + rz * rvz) / rv2
-        if tcpa >= 0 and tcpa <= horizon then
-            local cx, cz = rx + rvx * tcpa, rz + rvz * tcpa
-            cpa = math.sqrt(cx * cx + cz * cz)
-            converges = cpa <= required
-        end
-    end
-    return {
-        distance = distance, required = required, current = current, tcpa = tcpa, cpa = cpa, converges = converges,
-        closingRate = distance > 0.001 and -((rx * rvx + rz * rvz) / distance) or 0
-    }
+    return OuttaMyWay.LiveInteractionDiagnostics.predictPair(a, b, horizon)
+end
+
+local function copyPose(pose)
+    if pose == nil then return nil end
+    return {x=pose.x,y=pose.y,z=pose.z,dx=pose.dx,dz=pose.dz,node=pose.node,nodeSource=pose.nodeSource}
+end
+
+local function appendDiagnosticContradiction(target, code, details)
+    local item = {code=code}
+    for key,value in pairs(details or {}) do item[key]=value end
+    target[#target+1]=item
 end
 
 local function activeVehicleSet(mission)
@@ -148,12 +148,16 @@ local function relevantVehicles(activeList, tracks)
 end
 
 function Source.new(fieldWorldSnapshots, fieldWorldEquivalenceAuthority)
-    return setmetatable({knownWorlds = {}, tracks = {}, nextObservedEpisode = 0, nextFieldWorldCapture = 0, fieldWorldSnapshots = fieldWorldSnapshots, fieldWorldEquivalenceAuthority = fieldWorldEquivalenceAuthority}, Source)
+    return setmetatable({knownWorlds = {}, tracks = {}, nextObservedEpisode = 0, nextFieldWorldCapture = 0, fieldWorldSnapshots = fieldWorldSnapshots, fieldWorldEquivalenceAuthority = fieldWorldEquivalenceAuthority, lastCycleDiagnostics={}}, Source)
 end
 
 function Source:reset()
-    self.knownWorlds = {}; self.tracks = {}; self.nextObservedEpisode = 0; self.nextFieldWorldCapture = 0
+    self.knownWorlds = {}; self.tracks = {}; self.nextObservedEpisode = 0; self.nextFieldWorldCapture = 0; self.lastCycleDiagnostics={}
     if self.fieldWorldEquivalenceAuthority ~= nil then self.fieldWorldEquivalenceAuthority:reset() end
+end
+
+function Source:getLastDiagnostics()
+    return self.lastCycleDiagnostics or {}
 end
 
 function Source:_mintEpisodeToken(reference)
@@ -200,14 +204,45 @@ function Source:capture(mission, nowSeconds)
     local horizon = OuttaMyWay.PASSIVE_FUTURE_HORIZON_SECONDS or 10
     local groups, present, removeAfterCapture = {}, {}, {}
     local activeList, activeSet = activeVehicleSet(mission)
+    local relevantList = relevantVehicles(activeList, self.tracks)
+    local cycleDiagnostics = {
+        timestamp=nowSeconds,
+        activeJobVehicleCount=#activeList,
+        relevantVehicleCount=#relevantList,
+        assemblyAcquisition={},
+        contradictions={}
+    }
+    self.lastCycleDiagnostics=cycleDiagnostics
     if self.fieldWorldEquivalenceAuthority ~= nil then self.fieldWorldEquivalenceAuthority:beginObservationCycle() end
     if self.fieldWorldSnapshots ~= nil then self.fieldWorldSnapshots:update(0, mission) end
 
-    for _, object in OuttaMyWay.ValueRecord.ipairs(relevantVehicles(activeList, self.tracks)) do
+    for _, object in OuttaMyWay.ValueRecord.ipairs(relevantList) do
         local ref = referenceKey(object)
         present[ref] = true
         local activeObserved = activeSet[object] == true
-        local pose = positionAndHeading(object)
+        local pose, poseDiagnostic = positionAndHeading(object)
+        cycleDiagnostics.assemblyAcquisition[#cycleDiagnostics.assemblyAcquisition+1]={
+            assemblyReferenceKey=ref,
+            name=objectName(object),
+            activeJobVehicleMembership=activeObserved,
+            poseResolved=pose~=nil,
+            node=poseDiagnostic.node,
+            nodeSource=poseDiagnostic.nodeSource,
+            poseReason=poseDiagnostic.reason,
+            x=poseDiagnostic.x,
+            y=poseDiagnostic.y,
+            z=poseDiagnostic.z,
+            headingX=poseDiagnostic.headingX,
+            headingZ=poseDiagnostic.headingZ
+        }
+        if activeObserved and pose == nil then
+            appendDiagnosticContradiction(cycleDiagnostics.contradictions,"ACTIVE_JOB_VEHICLE_WITHOUT_POSE",{
+                assemblyReferenceKey=ref,
+                name=objectName(object),
+                reason=poseDiagnostic.reason,
+                nodeSource=poseDiagnostic.nodeSource
+            })
+        end
         local fieldActive, aiActive, hasFieldWorker = activityCorroboration(object)
         local track = self.tracks[ref]
         local job, jobSource = OuttaMyWay.LiveAIJobEvidence.currentJob(object)
@@ -246,17 +281,22 @@ function Source:capture(mission, nowSeconds)
             end
             track.fieldWorldError = worldError
             local radius, width, length = radiusFor(object)
+            local speedMps = math.abs(tonumber(object.lastSpeedReal) or 0) * 1000
+            local motionDiagnostic = OuttaMyWay.LiveInteractionDiagnostics.deriveMotion(track.diagnosticPose,pose,track.diagnosticTimestamp,nowSeconds,speedMps)
+            local components = componentKeys(object)
             track.everActive = true; track.active = true; track.object = object; track.pose = pose
+            track.diagnosticPose=copyPose(pose); track.diagnosticTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic; track.motionDiagnostic=motionDiagnostic
             track.fieldId = field.fieldId or 0; track.fieldResolved = field.resolved == true; track.fieldEvidence = field
-            track.name = objectName(object); track.components = componentKeys(object); track.radius = radius; track.width = width; track.length = length
+            track.name = objectName(object); track.components = components; track.radius = radius; track.width = width; track.length = length
             track.fieldActive = fieldActive; track.aiActive = aiActive; track.hasFieldWorker = hasFieldWorker
             track.nativeJob = job; track.nativeJobSource = jobSource; track.nativeJobToken = nativeToken; track.sourceJobToken = sourceToken
             addToGroup(groups, {
-                object = object, referenceKey = ref, name = track.name, pose = pose, fieldId = track.fieldId, fieldResolved = track.fieldResolved, fieldEvidence = field,
+                object = object, referenceKey = ref, name = track.name, pose = pose, poseDiagnostic=poseDiagnostic, motionDiagnostic=motionDiagnostic,
+                fieldId = track.fieldId, fieldResolved = track.fieldResolved, fieldEvidence = field,
                 fieldActive = fieldActive, aiActive = aiActive, hasFieldWorker = hasFieldWorker, activeObserved = true,
                 restartObserved = reactivated and not replacementObserved, replacementObserved = replacementObserved,
                 playerPresent = mission.controlledVehicle == object, playerControlled = false, blocked = blockedState(object),
-                speedMps = math.abs(tonumber(object.lastSpeedReal) or 0) * 1000, radius = radius, width = width, length = length,
+                speedMps = speedMps, radius = radius, width = width, length = length,
                 sourceJobToken = sourceToken, nativeJobToken = nativeToken, nativeJobTokenSource = jobSource, components = track.components,
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
@@ -265,14 +305,19 @@ function Source:capture(mission, nowSeconds)
             local playerControlled = mission.controlledVehicle == object
             local termination = OuttaMyWay.LiveAIJobEvidence.sourceIntentTermination(mission, object, track.sourceJobToken)
             local sourceIntentTerminationObserved = termination.observed == true
-            if pose ~= nil then track.pose = pose end
+            if pose ~= nil then
+                track.motionDiagnostic=OuttaMyWay.LiveInteractionDiagnostics.deriveMotion(track.diagnosticPose,pose,track.diagnosticTimestamp,nowSeconds,math.abs(tonumber(object.lastSpeedReal) or 0) * 1000)
+                track.pose = pose; track.diagnosticPose=copyPose(pose); track.diagnosticTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic
+            elseif poseDiagnostic~=nil then
+                track.poseDiagnostic=poseDiagnostic
+            end
             if field.resolved then track.fieldId = field.fieldId; track.fieldResolved = true; track.fieldEvidence = field end
             track.active = false; track.object = object; track.fieldActive = fieldActive; track.aiActive = aiActive
             if track.fieldWorldSnapshot ~= nil and self.fieldWorldEquivalenceAuthority ~= nil then
                 track.fieldWorldResolution = self.fieldWorldEquivalenceAuthority:resolve(track.fieldWorldSnapshot)
             end
             addToGroup(groups, {
-                object = object, referenceKey = ref, name = track.name or objectName(object), pose = track.pose,
+                object = object, referenceKey = ref, name = track.name or objectName(object), pose = track.pose, poseDiagnostic=track.poseDiagnostic, motionDiagnostic=track.motionDiagnostic,
                 fieldId = track.fieldId or 0, fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence,
                 fieldActive = fieldActive, aiActive = aiActive, hasFieldWorker = hasFieldWorker, activeObserved = false,
                 playerControlled = playerControlled, playerTakeoverObserved = playerControlled,
@@ -295,7 +340,7 @@ function Source:capture(mission, nowSeconds)
                 track.fieldWorldResolution = self.fieldWorldEquivalenceAuthority:resolve(track.fieldWorldSnapshot)
             end
             addToGroup(groups, {
-                object = nil, referenceKey = ref, name = track.name or "AI vehicle", pose = track.pose, fieldId = track.fieldId or 0,
+                object = nil, referenceKey = ref, name = track.name or "AI vehicle", pose = track.pose, poseDiagnostic=track.poseDiagnostic, motionDiagnostic=track.motionDiagnostic, fieldId = track.fieldId or 0,
                 fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence, fieldActive = false, aiActive = false,
                 hasFieldWorker = true, activeObserved = false, playerControlled = false, unresolvedTermination = true, objectUnavailable = true,
                 blocked = false, speedMps = 0, radius = track.radius, width = track.width, length = track.length,
@@ -361,9 +406,27 @@ function Source:capture(mission, nowSeconds)
             },
             assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, demandEvidence = {}, interactionEvidence = {}},
             motion = {closureEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
-            physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {}
+            physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {},
+            diagnostics = {
+                sourceCounters={
+                    cycleActiveJobVehicleCount=cycleDiagnostics.activeJobVehicleCount,
+                    cycleRelevantVehicleCount=cycleDiagnostics.relevantVehicleCount,
+                    groupWorkerCount=#group.workers,
+                    activeGroupWorkerCount=0,
+                    poseResolvedWorkerCount=0,
+                    mathematicallyPossiblePairCount=(#group.workers * (#group.workers - 1)) / 2,
+                    relevantPairCount=0,
+                    eligiblePairCount=0,
+                    evaluatedPairCount=0,
+                    excludedPairCount=0,
+                    qualifyingPairCount=0,
+                    interactionEvidenceEmittedCount=0
+                },
+                assemblyDiagnostics={},
+                pairDiagnostics={},
+                contradictions={}
+            }
         }
-        local activeWorkers = {}
         for _, worker in OuttaMyWay.ValueRecord.ipairs(group.workers) do
             raw.assemblies[#raw.assemblies + 1] = {
                 referenceKey = worker.referenceKey, componentReferenceKeys = worker.components,
@@ -415,6 +478,38 @@ function Source:capture(mission, nowSeconds)
             local snapshotResolved=worker.fieldWorldSnapshot~=nil
             local worldResolved=worker.fieldWorldResolution~=nil and worker.fieldWorldResolution.fieldWorldReferenceKey~=nil
             local recognised=worker.activeObserved and worldResolved and worker.hasFieldWorker
+            raw.diagnostics.sourceCounters.activeGroupWorkerCount=raw.diagnostics.sourceCounters.activeGroupWorkerCount+(worker.activeObserved and 1 or 0)
+            raw.diagnostics.sourceCounters.poseResolvedWorkerCount=raw.diagnostics.sourceCounters.poseResolvedWorkerCount+(worker.pose~=nil and 1 or 0)
+            raw.diagnostics.assemblyDiagnostics[#raw.diagnostics.assemblyDiagnostics+1]={
+                assemblyReferenceKey=worker.referenceKey,
+                name=worker.name,
+                sourceJobToken=worker.sourceJobToken,
+                activeJobVehicleMembership=worker.activeObserved==true,
+                fieldWorkerSpecializationPresent=worker.hasFieldWorker==true,
+                fieldActive=worker.fieldActive==true,
+                aiActive=worker.aiActive==true,
+                blocked=worker.blocked==true,
+                poseResolved=worker.pose~=nil,
+                node=worker.poseDiagnostic and worker.poseDiagnostic.node or (worker.pose and worker.pose.node or nil),
+                nodeSource=worker.poseDiagnostic and worker.poseDiagnostic.nodeSource or (worker.pose and worker.pose.nodeSource or nil),
+                poseReason=worker.poseDiagnostic and worker.poseDiagnostic.reason or (worker.pose and "RETAINED_LAST_POSE" or "POSE_UNAVAILABLE"),
+                x=worker.pose and worker.pose.x or nil,
+                y=worker.pose and worker.pose.y or nil,
+                z=worker.pose and worker.pose.z or nil,
+                headingX=worker.pose and worker.pose.dx or nil,
+                headingZ=worker.pose and worker.pose.dz or nil,
+                width=worker.width,
+                length=worker.length,
+                radius=worker.radius,
+                componentCount=#(worker.components or {}),
+                structurallyValid=worker.radius~=nil,
+                coverageComplete=false,
+                conservative=false,
+                underApproximationRisk=true,
+                motion=worker.motionDiagnostic or {classification=worker.activeObserved and "MOTION_EVIDENCE_UNRESOLVED" or "INACTIVE_OR_RETAINED",reason=worker.activeObserved and "NO_DIAGNOSTIC_MOTION_SAMPLE" or "NOT_ACTIVE_FOR_MOTION_PREDICTION"},
+                fieldWorldReferenceKey=worldResolved and worker.fieldWorldResolution.fieldWorldReferenceKey or nil,
+                fieldWorldSnapshotReferenceKey=snapshotResolved and worker.fieldWorldSnapshot.referenceKey or nil
+            }
             raw.operationMembershipEvidence[#raw.operationMembershipEvidence + 1] = {
                 assemblyReferenceKey=worker.referenceKey,
                 fieldWorldReferenceKey=worldResolved and worker.fieldWorldResolution.fieldWorldReferenceKey or nil,
@@ -474,32 +569,102 @@ function Source:capture(mission, nowSeconds)
                     provenance = {source = "LiveObservationSource"}
                 }
             end
-            if worker.activeObserved and worker.pose ~= nil then activeWorkers[#activeWorkers + 1] = worker end
         end
 
-        for i = 1, #activeWorkers - 1 do
-            for j = i + 1, #activeWorkers do
-                local a, b = activeWorkers[i], activeWorkers[j]
-                local prediction = pairPrediction(a, b, horizon)
-                if prediction.current or prediction.converges then
-                    raw.geometry.interactionEvidence[#raw.geometry.interactionEvidence + 1] = {
-                        interactionReferenceKey = "live-pair:" .. a.referenceKey .. ":" .. b.referenceKey,
-                        subjectAssemblyReferenceKey = a.referenceKey, otherAssemblyReferenceKey = b.referenceKey,
-                        currentSpaceIntersects = prediction.current, futureSpaceConverges = prediction.converges, horizon = horizon,
-                        provenance = {source = "bounded-current-motion", distance = prediction.distance, required = prediction.required, tcpa = prediction.tcpa, cpa = prediction.cpa}
-                    }
+        for i = 1, #group.workers - 1 do
+            for j = i + 1, #group.workers do
+                local a, b = group.workers[i], group.workers[j]
+                local pairReferenceKey = OuttaMyWay.LiveInteractionDiagnostics.pairReferenceKey(a.referenceKey,b.referenceKey)
+                local eligible = a.activeObserved==true and b.activeObserved==true and a.pose~=nil and b.pose~=nil
+                local exclusionReason = nil
+                if not eligible then
+                    if a.activeObserved~=true then exclusionReason="SUBJECT_NOT_ACTIVE_JOB_MEMBER"
+                    elseif b.activeObserved~=true then exclusionReason="OTHER_NOT_ACTIVE_JOB_MEMBER"
+                    elseif a.pose==nil then exclusionReason="SUBJECT_POSE_UNAVAILABLE"
+                    elseif b.pose==nil then exclusionReason="OTHER_POSE_UNAVAILABLE"
+                    else exclusionReason="PAIR_ELIGIBILITY_UNRESOLVED" end
                 end
-                local headingDot = a.pose.dx * b.pose.dx + a.pose.dz * b.pose.dz
-                if headingDot > 0.5 and prediction.closingRate > 0.05 then
-                    local aToB = (b.pose.x - a.pose.x) * a.pose.dx + (b.pose.z - a.pose.z) * a.pose.dz
-                    local follower, leader = a, b
-                    if aToB < 0 then follower, leader = b, a end
-                    raw.motion.closureEvidence[#raw.motion.closureEvidence + 1] = {
-                        followerAssemblyReferenceKey = follower.referenceKey, leaderAssemblyReferenceKey = leader.referenceKey,
-                        closingObserved = true, closingRate = prediction.closingRate, horizon = horizon,
-                        provenance = {source = "relative-live-motion"}
-                    }
+                local pairDiagnostic={
+                    pairReferenceKey=pairReferenceKey,
+                    subjectAssemblyReferenceKey=a.referenceKey,
+                    otherAssemblyReferenceKey=b.referenceKey,
+                    subjectSourceJobToken=a.sourceJobToken,
+                    otherSourceJobToken=b.sourceJobToken,
+                    fieldWorldReferenceKey=resolved and group.fieldWorldReferenceKey or nil,
+                    sameFieldWorld=resolved,
+                    subjectActive=a.activeObserved==true,
+                    otherActive=b.activeObserved==true,
+                    subjectPoseAvailable=a.pose~=nil,
+                    otherPoseAvailable=b.pose~=nil,
+                    subjectBlocked=a.blocked==true,
+                    otherBlocked=b.blocked==true,
+                    eligible=eligible,
+                    evaluated=false,
+                    excluded=not eligible,
+                    exclusionReason=exclusionReason,
+                    qualifying=false,
+                    interactionEvidenceEmitted=false,
+                    subjectRepresentation={radius=a.radius,width=a.width,length=a.length,coverageComplete=false,conservative=false,underApproximationRisk=true},
+                    otherRepresentation={radius=b.radius,width=b.width,length=b.length,coverageComplete=false,conservative=false,underApproximationRisk=true}
+                }
+                raw.diagnostics.sourceCounters.relevantPairCount=raw.diagnostics.sourceCounters.relevantPairCount+1
+                if eligible then
+                    raw.diagnostics.sourceCounters.eligiblePairCount=raw.diagnostics.sourceCounters.eligiblePairCount+1
+                    raw.diagnostics.sourceCounters.evaluatedPairCount=raw.diagnostics.sourceCounters.evaluatedPairCount+1
+                    local prediction = pairPrediction(a, b, horizon)
+                    pairDiagnostic.evaluated=true
+                    pairDiagnostic.distance=prediction.distance
+                    pairDiagnostic.required=prediction.required
+                    pairDiagnostic.currentSpaceIntersects=prediction.current
+                    pairDiagnostic.futureSpaceConverges=prediction.converges
+                    pairDiagnostic.tcpa=prediction.tcpa
+                    pairDiagnostic.cpa=prediction.cpa
+                    pairDiagnostic.closingRate=prediction.closingRate
+                    pairDiagnostic.headingDot=prediction.headingDot
+                    pairDiagnostic.relativeVelocityX=prediction.relativeVelocityX
+                    pairDiagnostic.relativeVelocityZ=prediction.relativeVelocityZ
+                    pairDiagnostic.relativeSpeedMps=prediction.relativeSpeedMps
+                    pairDiagnostic.subjectVelocityX=prediction.subjectVelocityX
+                    pairDiagnostic.subjectVelocityZ=prediction.subjectVelocityZ
+                    pairDiagnostic.otherVelocityX=prediction.otherVelocityX
+                    pairDiagnostic.otherVelocityZ=prediction.otherVelocityZ
+                    pairDiagnostic.principalOutcome=prediction.principalOutcome
+                    pairDiagnostic.currentSuppressionReason=prediction.currentSuppressionReason
+                    pairDiagnostic.qualifying=prediction.current or prediction.converges
+                    pairDiagnostic.interactionEvidenceEmitted=prediction.interactionEvidenceEmitted
+                    pairDiagnostic.representationFitForNegativeConclusion=false
+                    if prediction.current or prediction.converges then
+                        raw.diagnostics.sourceCounters.qualifyingPairCount=raw.diagnostics.sourceCounters.qualifyingPairCount+1
+                        raw.diagnostics.sourceCounters.interactionEvidenceEmittedCount=raw.diagnostics.sourceCounters.interactionEvidenceEmittedCount+1
+                        raw.geometry.interactionEvidence[#raw.geometry.interactionEvidence + 1] = {
+                            interactionReferenceKey = pairReferenceKey,
+                            subjectAssemblyReferenceKey = a.referenceKey, otherAssemblyReferenceKey = b.referenceKey,
+                            currentSpaceIntersects = prediction.current, futureSpaceConverges = prediction.converges, horizon = horizon,
+                            provenance = {source = "bounded-current-motion", distance = prediction.distance, required = prediction.required, tcpa = prediction.tcpa, cpa = prediction.cpa, principalOutcome=prediction.principalOutcome}
+                        }
+                    elseif prediction.closingRate > 0.05 then
+                        appendDiagnosticContradiction(raw.diagnostics.contradictions,"REPRESENTATION_UNFIT_BUT_NEGATIVE_RESULT_USED",{
+                            pairReferenceKey=pairReferenceKey,
+                            principalOutcome=prediction.principalOutcome,
+                            closingRate=prediction.closingRate,
+                            subjectUnderApproximationRisk=true,
+                            otherUnderApproximationRisk=true
+                        })
+                    end
+                    if prediction.headingDot > 0.5 and prediction.closingRate > 0.05 then
+                        local aToB = (b.pose.x - a.pose.x) * a.pose.dx + (b.pose.z - a.pose.z) * a.pose.dz
+                        local follower, leader = a, b
+                        if aToB < 0 then follower, leader = b, a end
+                        raw.motion.closureEvidence[#raw.motion.closureEvidence + 1] = {
+                            followerAssemblyReferenceKey = follower.referenceKey, leaderAssemblyReferenceKey = leader.referenceKey,
+                            closingObserved = true, closingRate = prediction.closingRate, horizon = horizon,
+                            provenance = {source = "relative-live-motion"}
+                        }
+                    end
+                else
+                    raw.diagnostics.sourceCounters.excludedPairCount=raw.diagnostics.sourceCounters.excludedPairCount+1
                 end
+                raw.diagnostics.pairDiagnostics[#raw.diagnostics.pairDiagnostics+1]=pairDiagnostic
             end
         end
 
@@ -526,7 +691,8 @@ function Source:capture(mission, nowSeconds)
             fieldWorld = {referenceKey = "field-world:none", fieldPolygonReferenceKey = nil, fieldPolygonReferenceKeys = {}, fieldWorldSnapshotReferenceKeys = {}, operationMembershipEvidenceComplete = true, identityStatus="NO_ACTIVITY"},
             assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, demandEvidence = {}, interactionEvidence = {}},
             motion = {closureEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
-            physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {}
+            physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {},
+            diagnostics={sourceCounters={cycleActiveJobVehicleCount=cycleDiagnostics.activeJobVehicleCount,cycleRelevantVehicleCount=cycleDiagnostics.relevantVehicleCount,groupWorkerCount=0,activeGroupWorkerCount=0,poseResolvedWorkerCount=0,mathematicallyPossiblePairCount=0,relevantPairCount=0,eligiblePairCount=0,evaluatedPairCount=0,excludedPairCount=0,qualifyingPairCount=0,interactionEvidenceEmittedCount=0},assemblyDiagnostics={},pairDiagnostics={},contradictions={}}
         }
     end
     return observations

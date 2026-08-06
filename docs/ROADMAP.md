@@ -1,49 +1,48 @@
 # FS25_OuttaMyWay Roadmap
 
-## Current gate — passive live validation of Field World Equivalence Authority
+## Current gate — diagnose TS015 Encounter absence
 
-ADR-0021 and D-0033 are implemented passively by the v4.7.14 candidate. Offline conformance is complete; the remaining question is whether live GIANTS captures from concurrent workers in the merged 68–69–70 workspace resolve coherently into one Field World and one Operation.
+Canonical v4.7.14 passed the complete Field World authority live gate. The next Reality question is narrower: why the existing live source did not provide qualifying interaction evidence during an obvious TS015 head-on collision.
 
-The live gate must demonstrate:
+v4.7.15 instruments the complete passive chain without changing it:
 
-1. each Job Episode retains its own immutable Snapshot and exact polygon provenance;
-2. non-exact but materially equivalent captures receive one resolved Field World identity;
-3. the workers join one active Operation;
-4. no pairwise-only tolerance chain is used;
-5. unresolved evidence receives no Operation authority;
-6. Control remains disabled.
+1. active-worker acquisition;
+2. pose and physical representation;
+3. observed motion;
+4. every unique unordered pair;
+5. current-space and closest-approach prediction;
+6. interaction evidence emission;
+7. Situation Assessment receipt;
+8. Encounter lifecycle.
 
-> **Current canonical baseline:** v4.7.13  
-> **Current implementation candidate:** v4.7.14 Field World Equivalence Authority  
+> **Current canonical baseline:** v4.7.14  
+> **Current diagnostic candidate:** v4.7.15  
 > **Control authority:** disabled
 
 ## v4.7.x implementation sequence
 
-1. **Bootstrap kernel** — v4.7.0 canonical.
-2. **Observation and identity** — v4.7.1 canonical.
-3. **Knowledge boundary** — v4.7.2 canonical.
-4. **Deterministic Decision boundary** — v4.7.3 canonical.
-5. **Replay conformance** — v4.7.4 canonical.
-6. **Passive live validation attempts** — v4.7.5 and v4.7.6 evidence builds.
-7. **Live AI state discovery** — v4.7.7 diagnostic evidence build.
-8. **Targeted active-job and field evidence** — v4.7.8 evidence build.
-9. **GIANTS-compatible immutable traversal and passive pipeline closure** — v4.7.9 evidence build.
-10. **Source-field authority, derived Field World discovery and source-intent termination** — v4.7.10 candidate.
-11. **Field World Equivalence Authority architecture** — v4.7.13 canonical.
-12. **Field World Equivalence Authority implementation** — v4.7.14 candidate; offline gate passed, passive live gate pending.
-13. **First exclusive vertical slice** — one bounded Hold/release lifecycle owned entirely by the replacement core, only after the passive gates pass.
-14. **Controlled expansion** — one canonical capability or lifecycle boundary per evidence-backed increment.
+1. Bootstrap kernel — v4.7.0 canonical.
+2. Observation and identity — v4.7.1 canonical.
+3. Knowledge boundary — v4.7.2 canonical.
+4. Deterministic Decision boundary — v4.7.3 canonical.
+5. Replay conformance — v4.7.4 canonical.
+6. Passive live evidence and targeted GIANTS discovery — v4.7.5–v4.7.10.
+7. Job-Seeded Field World evidence and authority — v4.7.11–v4.7.14 canonical.
+8. Bounded interaction diagnostics — v4.7.15 candidate.
+9. Correct the evidenced observation or handoff defect, with the smallest isolated change.
+10. Validate Encounter admission passively before any Decision or Control work.
+11. First exclusive vertical Control slice only after passive Encounter evidence is trustworthy.
 
 ## Build-economy rule
 
-Offline tests remain mandatory before packaging. Live cycles are reserved for GIANTS Reality questions that offline fixtures cannot answer.
+One diagnostic build should expose all reasonable silent gates. Offline tests remain mandatory. Live cycles answer only questions that GIANTS Reality must resolve.
 
 ## Standing prohibitions
 
-- no architecture inferred from archived code;
-- no broad reflection retained as production observation;
-- no active imports from `scripts/archive/`;
-- no farmland-to-field identity substitution;
-- no guessed Field World identity when evidence is unresolved;
-- no tolerance-chain identity class;
+- no architectural addition inferred from a diagnostic label;
+- no two-worker scope limit inferred from pairwise assessment;
+- no broad reflection;
+- no guessed physical clearance from incomplete metadata;
+- no threshold adjustment from one unexplained run;
+- no Decision-to-Commitment application;
 - no Control authority during passive validation.

@@ -1,15 +1,16 @@
--- FS25_OuttaMyWay v4.7.14 Field World Equivalence Authority implementation candidate; Control remains disabled.
+-- FS25_OuttaMyWay v4.7.15 bounded interaction diagnostics candidate; Control remains disabled.
 -- Canonical architecture authority: v4.6.78.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.14"
+OuttaMyWay.VERSION = "4.7.15"
 OuttaMyWay.ARCHITECTURE_VERSION = "4.6.78"
-OuttaMyWay.RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_AUTHORITY_PASSIVE"
+OuttaMyWay.RUNTIME_MODE = "INTERACTION_DIAGNOSTICS_PASSIVE"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000
 OuttaMyWay.PASSIVE_HEARTBEAT_INTERVAL_MS = 10000
 OuttaMyWay.PASSIVE_FUTURE_HORIZON_SECONDS = 10
+OuttaMyWay.PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE = 64
 
 OuttaMyWay.FIELD_IDENTITY_PROBE_HEARTBEAT_INTERVAL_MS = 10000
 

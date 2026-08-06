@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** v4.7.14 Field World Equivalence Authority Implementation Candidate; canonical implementation baseline v4.7.13
+> **Currency:** v4.7.15 Bounded Interaction Diagnostics Candidate; canonical implementation baseline v4.7.14
 
 This repository is a self-sustaining engineering knowledge system. It must preserve project continuity independently of any chat, engineer, AI system or platform.
 
@@ -26,6 +26,7 @@ Read these in order:
 14. [`ROADMAP.md`](ROADMAP.md) — next implementation-preparation sequence.
 15. [`PROJECT_CONTINUITY.md`](PROJECT_CONTINUITY.md) — correct inheritance and Canonicalisation procedure.
 16. [`REPOSITORY_RELEASE_SYSTEM.md`](REPOSITORY_RELEASE_SYSTEM.md) — candidate-production and authority governance.
+17. [`diagnostics/INTERACTION_DIAGNOSTICS.md`](diagnostics/INTERACTION_DIAGNOSTICS.md) — bounded passive observation-to-Encounter diagnostics.
 
 ## Current authority
 

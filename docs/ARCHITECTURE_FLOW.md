@@ -2,9 +2,9 @@
 
 > **Authority:** Normative replacement-core responsibility and lifecycle map
 >
-> **Currency:** v4.7.14 Field World Equivalence Authority Implementation Candidate; v4.6.78 remains the replacement-core foundation
+> **Currency:** v4.7.15 Bounded Interaction Diagnostics Candidate; canonical v4.7.14 remains the implementation baseline
 >
-> **Implementation status:** v4.7.14 resolves Field World identity before Operation grouping and reaches deterministic Decision passively; live Commitment mutation and Control remain unimplemented
+> **Implementation status:** canonical v4.7.14 resolves Field World identity before Operation grouping; v4.7.15 observes the existing interaction-to-Encounter path without changing it; live Commitment mutation and Control remain unimplemented
 
 ## 1. Closed-loop responsibility flow
 

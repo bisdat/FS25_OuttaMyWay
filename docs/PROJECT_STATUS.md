@@ -1,44 +1,45 @@
 # FS25_OuttaMyWay Project Status
 
-> **Canonical baseline:** v4.7.13 Field World Equivalence Authority Architecture  
-> **Canonical ZIP SHA-256:** `29b50173f00b5fb48355cadf848eadbaed5f24a13b2bfced558672ee0f21363e`  
-> **Canonical Git commit:** `d813f5be6f948bd5143b8945c3ab883af397db2d`  
-> **Current candidate:** v4.7.14 Field World Equivalence Authority Implementation  
+> **Canonical baseline:** v4.7.14 Field World Equivalence Authority Implementation  
+> **Canonical ZIP SHA-256:** `55ffc688afd42a02eaaa38e4517f27549316dbb72ed36c2b6982a0d8a54e26d9`  
+> **Canonical Git commit:** `d909088a1e61e47d66df2ded222ff5ba0a046c31`  
+> **Canonical files:** 247  
+> **Current candidate:** v4.7.15 Bounded Interaction Diagnostics  
 > **Control authority:** disabled
 
-## Accepted authority
+## Validated authority
 
-ADR-0021 and D-0033 remain unchanged. Field World identity is governed by coherent positive spatial equivalence between immutable Job-Seeded Field World Snapshots. Exact fingerprints preserve exact-representation provenance but do not independently govern Field World or Operation identity.
+Field World Equivalence Authority is now live-validated in all required directions:
 
-Resolution produces `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD` or `UNRESOLVED`. Unresolved evidence grants no Operation admission or Control authority. Pairwise tolerance chaining is prohibited.
+- merged former fields 68–69–70: one Field World and one Operation;
+- disconnected split field 77: two Field Worlds and two Operations despite one locator;
+- contiguous field 77: one Field World and one Operation across distant seeds.
 
-## Candidate implementation
+ADR-0021 and D-0033 remain unchanged. Exact fingerprints remain representation provenance; unresolved equivalence grants no Operation or Control authority.
 
-v4.7.14 adds:
+## Current observation
 
-- a pure `FieldWorldEquivalenceEvaluator` using the accepted compound evidence model;
-- a stateful `FieldWorldEquivalenceAuthority` that compares a candidate against every accepted Snapshot in each currently relevant Field World class;
-- distinct Snapshot, exact-polygon and resolved Field World references;
-- Operation grouping by resolved Field World identity;
-- unresolved isolation without Operation membership;
-- class retirement when no associated Job Episode remains relevant;
-- Operation provenance containing all member Snapshot and polygon references.
+A canonical v4.7.14 TS015 head-on run retained two active Job Episodes in one Field World and one Operation. The sprayers collided and became blocked, but no Encounter was created. Situation Assessment already creates Encounters when positive interaction evidence is supplied, so the current question is which live observation or handoff branch withheld that evidence.
 
-The numerical limits are implementation calibration, not architectural definitions. Failure of a SAME condition normally remains `UNRESOLVED`; the first DIFFERENT path requires positive occupied-region separation.
+This observation is not an architectural addition.
 
-## Offline evidence
+## v4.7.15 candidate
 
-The replacement-core suite covers:
+The candidate adds diagnostic-only evidence for:
 
-- exact canonical equality with distinct Snapshot identities;
-- four non-exact representations joining one merged-workspace Field World;
-- disconnected representations establishing separate Field Worlds;
-- partial overlap remaining unresolved;
-- tolerance chaining being rejected by class-wide coherence;
-- Field World class retirement and later identity renewal;
-- unresolved live evidence receiving no Operation authority;
-- one Operation retaining multiple Snapshot and exact-polygon references.
+- active-job acquisition and pose failure;
+- steering-node/root-node source;
+- metadata dimensions, derived radius, component count and Representation Fitness limits;
+- reported and position-derived motion;
+- every unique unordered pair in a multi-worker Operation;
+- distance, heading relation, relative motion, closing rate, tCPA and dCPA;
+- exhaustive pair outcome;
+- interaction evidence emitted and received;
+- Encounter creation, retention and loss;
+- bounded contradiction warnings.
+
+No predicate, threshold, admission rule, Decision, Commitment or Control behaviour changes.
 
 ## Next evidence gate
 
-Run one passive live validation with concurrent workers seeded in the merged 68–69–70 workspace. Required evidence: distinct immutable captures, one resolved Field World, one active Operation, no unresolved authority and `control=false` throughout. No active Control work follows unless that gate passes.
+Run one short TS015 test with v4.7.15. Stop after the principal pair outcome, handoff state and physical result are clear. Preserve `log.txt`; video is optional unless behaviour differs from the canonical baseline.

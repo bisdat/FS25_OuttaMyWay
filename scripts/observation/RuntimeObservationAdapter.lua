@@ -69,7 +69,7 @@ function Adapter:publish(raw)
         identity=self.identities:issue("OBSERVATION"),epoch=self.epochs:next(),timestamp=raw.timestamp,provenance=raw.provenance,
         fieldWorld=shallowCopy(raw.fieldWorld),assemblies=assemblies,geometry=shallowCopy(raw.geometry),motion=shallowCopy(raw.motion),aiStates=shallowCopy(raw.aiStates),playerControl=shallowCopy(raw.playerControl),
         jobEpisodeEvidence=jobEpisodeEvidence,operationMembershipEvidence=operationMembershipEvidence,physicalRepresentationEvidence=physicalRepresentationEvidence,
-        controlOutcomes=shallowCopy(raw.controlOutcomes),unavailableSources=shallowCopy(raw.unavailableSources)
+        controlOutcomes=shallowCopy(raw.controlOutcomes),unavailableSources=shallowCopy(raw.unavailableSources),diagnostics=shallowCopy(raw.diagnostics)
     })
     self.publishedCount=self.publishedCount+1; return snapshot
 end

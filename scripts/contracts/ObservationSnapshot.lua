@@ -36,7 +36,7 @@ OuttaMyWay.ObservationSnapshot = OuttaMyWay.ValueRecord.register(
     OuttaMyWay.ValueRecord.define(
         "ObservationSnapshot",
         {"identity", "epoch", "timestamp", "provenance", "fieldWorld", "assemblies", "geometry", "motion", "aiStates", "playerControl", "jobEpisodeEvidence", "operationMembershipEvidence", "physicalRepresentationEvidence", "controlOutcomes", "unavailableSources"},
-        {},
+        {"diagnostics"},
         function(values)
             rejectSemanticFields(values, "")
         end
