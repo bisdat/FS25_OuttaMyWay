@@ -13,7 +13,10 @@ local defaultPrefixes = {
     VERDICT = "CV",
     DECISION = "DE",
     CONTROL_REQUEST = "CR",
-    CONTROL_OUTCOME = "CO"
+    CONTROL_OUTCOME = "CO",
+    ASSEMBLY = "AS",
+    COMPONENT = "CP",
+    JOB_EPISODE = "JE"
 }
 
 function IdentityRegistry.new(prefixes)
@@ -21,6 +24,7 @@ function IdentityRegistry.new(prefixes)
     self.prefixes = prefixes or defaultPrefixes
     self.counters = {}
     self.issued = {}
+    self.references = {}
     return self
 end
 
@@ -37,6 +41,29 @@ function IdentityRegistry:issue(kind)
     local nextValue = (self.counters[kind] or 0) + 1
     self.counters[kind] = nextValue
     return self:register(string.format("%s-%05d", prefix, nextValue))
+end
+
+local function referenceIndex(kind, referenceKey)
+    local keyType = type(referenceKey)
+    if (keyType ~= "string" and keyType ~= "number") or tostring(referenceKey) == "" then
+        error("reference key must be a non-empty string or number", 3)
+    end
+    return kind .. "\0" .. keyType .. "\0" .. tostring(referenceKey)
+end
+
+function IdentityRegistry:resolve(kind, referenceKey)
+    if self.prefixes[kind] == nil then error("unknown identity kind " .. tostring(kind), 2) end
+    local index = referenceIndex(kind, referenceKey)
+    local identity = self.references[index]
+    if identity == nil then
+        identity = self:issue(kind)
+        self.references[index] = identity
+    end
+    return identity
+end
+
+function IdentityRegistry:lookup(kind, referenceKey)
+    return self.references[referenceIndex(kind, referenceKey)]
 end
 
 function IdentityRegistry:isIssued(identity)

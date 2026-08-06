@@ -11,6 +11,8 @@ function Runtime.new()
     local self = setmetatable({
         identities = identities,
         epochs = epochs,
+        observationAdapter = OuttaMyWay.RuntimeObservationAdapter.new(identities, epochs),
+        jobEpisodes = OuttaMyWay.JobEpisodeAdmission.new(identities, epochs),
         commitments = commitments,
         obligations = obligations,
         authorities = authorities,
@@ -25,8 +27,16 @@ end
 function Runtime:initialize()
     if self.initialized then return end
     self.initialized = true
-    self.trace:append("INERT_CORE_INITIALIZED", self.epochs:next(), "architecture=" .. OuttaMyWay.ARCHITECTURE_VERSION)
-    print(string.format("FS25_OuttaMyWay v%s inert replacement core loaded; Control authority disabled", OuttaMyWay.VERSION))
+    self.trace:append("OBSERVATION_IDENTITY_FOUNDATION_INITIALIZED", self.epochs:next(), "architecture=" .. OuttaMyWay.ARCHITECTURE_VERSION)
+    print(string.format("FS25_OuttaMyWay v%s observation/identity foundation loaded; Control authority disabled", OuttaMyWay.VERSION))
+end
+
+function Runtime:publishObservation(raw)
+    return self.observationAdapter:publish(raw)
+end
+
+function Runtime:admitJobEpisodes(snapshot)
+    return self.jobEpisodes:observe(snapshot)
 end
 
 function Runtime:getStatus()
@@ -34,6 +44,8 @@ function Runtime:getStatus()
         initialized = self.initialized,
         runtimeMode = self.runtimeMode,
         controlAuthorityEnabled = self.controlAuthorityEnabled,
+        observationCount = self.observationAdapter:getPublishedCount(),
+        jobEpisodeCount = #self.jobEpisodes:list(),
         commitmentCount = #self.commitments:list(),
         traceCount = self.trace:count()
     }

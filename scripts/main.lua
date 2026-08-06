@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.0 replacement-core bootstrap entry point.
+-- FS25_OuttaMyWay v4.7.1 Observation and Job Episode Identity entry point.
 -- modDesc.xml loads only this file. Historical archived modules are never sourced.
 
 local modDirectory = g_currentModDirectory or ""
@@ -17,6 +17,8 @@ local modules = {
     "scripts/contracts/ControlOutcome.lua",
     "scripts/identity/EpochSequence.lua",
     "scripts/identity/IdentityRegistry.lua",
+    "scripts/observation/RuntimeObservationAdapter.lua",
+    "scripts/identity/JobEpisodeAdmission.lua",
     "scripts/commitment/CommitmentStateMachine.lua",
     "scripts/commitment/CommitmentRegistry.lua",
     "scripts/commitment/ObligationLedger.lua",

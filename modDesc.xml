@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <modDesc descVersion="92">
     <author>bisdat</author>
-    <version value="4.7.0">4.7.0</version>
+    <version value="4.7.1">4.7.1</version>
     <title>
         <en>Outta My Way</en>
         <de>Aus dem Weg</de>
@@ -10,11 +10,11 @@
         <it>Fuori dai piedi</it>
     </title>
     <description>
-        <en>Replacement-core bootstrap. Loads an inert architecture kernel; AI coordination and intervention are not yet enabled.</en>
-        <de>Bootstrap des Ersatzkerns. Lädt einen inaktiven Architekturkern; KI-Koordination und Eingriffe sind noch nicht aktiviert.</de>
-        <fr>Amorçage du noyau de remplacement. Charge un noyau architectural inerte ; la coordination et les interventions de l’IA ne sont pas encore activées.</fr>
-        <es>Arranque del núcleo de reemplazo. Carga un núcleo de arquitectura inerte; la coordinación y las intervenciones de la IA aún no están activadas.</es>
-        <it>Avvio del nucleo sostitutivo. Carica un nucleo architetturale inerte; il coordinamento e gli interventi dell’IA non sono ancora attivi.</it>
+        <en>Helps native GIANTS AI field workers cooperate inside a field through bounded, temporary interventions while preserving GIANTS job ownership.</en>
+        <de>Hilft nativen GIANTS-KI-Feldarbeitern, innerhalb eines Feldes durch begrenzte, vorübergehende Eingriffe zusammenzuarbeiten, während GIANTS die Auftragssteuerung behält.</de>
+        <fr>Aide les ouvriers agricoles de l’IA native de GIANTS à coopérer dans un champ grâce à des interventions temporaires et limitées, tout en laissant à GIANTS la responsabilité du travail.</fr>
+        <es>Ayuda a los trabajadores de campo de la IA nativa de GIANTS a cooperar dentro de un campo mediante intervenciones temporales y limitadas, manteniendo GIANTS la responsabilidad del trabajo.</es>
+        <it>Aiuta gli operatori agricoli dell’IA nativa GIANTS a cooperare all’interno di un campo tramite interventi temporanei e limitati, mantenendo a GIANTS la responsabilità del lavoro.</it>
     </description>
     <iconFilename>icon.dds</iconFilename>
     <multiplayer supported="true" />

@@ -1074,3 +1074,14 @@ The project transitions from architecture-only seminars to architecture–protot
 **Decision:** A replacement refuge leg shall carry exact current-pose start evidence through Decision and Commitment. Control shall verify that evidence remains fresh and atomically install a leg-local anchor with the replacement target and side. The original encounter stop anchor shall not be reused as the fence origin for later legs.
 
 **Reason:** v4.6.68 selected one valid second leg after settlement, but the rotated replacement side was applied to the first encounter's stop anchor. The stationary Condor immediately appeared 1.32 m across the fence and failed before movement.
+
+
+## D-0021 — v4.7.1 Observation and Job Episode Identity Gate
+
+**Status:** Accepted implementation sequencing under canonical v4.6.78 architecture.
+
+**Decision:** v4.7.1 implements only stable assembly/component identity, immutable raw Observation publication and canonical Job Episode admission/termination evidence. It does not combine the subsequent Knowledge/Decision stage for implementation convenience.
+
+**Reason:** the accepted v4.7.x sequence protects the Observation → Knowledge abstraction boundary and allows all episode rules to be disproved offline before Situation Assessment exists.
+
+**Consequence:** no live GIANTS hook, Operational Picture, Candidate Action, Decision or Control path is introduced in v4.7.1.

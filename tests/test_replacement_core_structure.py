@@ -40,3 +40,21 @@ def test_runtime_has_no_giants_observation_or_control_hook():
     forbidden = ("addModEventListener", "driveToPoint", "getCanAIFieldWorkerContinueWork", "AIFieldWorker", "g_currentMission")
     for token in forbidden:
         assert token not in text
+
+
+def test_observation_identity_modules_are_active_but_not_live_wired():
+    main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
+    assert "scripts/observation/RuntimeObservationAdapter.lua" in main
+    assert "scripts/identity/JobEpisodeAdmission.lua" in main
+    runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
+    assert "publishObservation" in runtime
+    assert "admitJobEpisodes" in runtime
+    for token in ("addModEventListener", "updateTick", "g_currentMission", "AIFieldWorker"):
+        assert token not in runtime
+
+def test_no_decision_or_control_implementation_added():
+    assert not (ROOT / "scripts" / "decision").exists()
+    assert not (ROOT / "scripts" / "control").exists()
+    active_text = "\n".join(p.read_text(encoding="utf-8") for p in (ROOT / "scripts").rglob("*.lua") if "archive" not in p.parts)
+    assert "DecisionSelector" not in active_text
+    assert "ControlAdmission" not in active_text

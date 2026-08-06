@@ -15,6 +15,8 @@ load("scripts/contracts/ControlRequest.lua")
 load("scripts/contracts/ControlOutcome.lua")
 load("scripts/identity/EpochSequence.lua")
 load("scripts/identity/IdentityRegistry.lua")
+load("scripts/observation/RuntimeObservationAdapter.lua")
+load("scripts/identity/JobEpisodeAdmission.lua")
 load("scripts/commitment/CommitmentStateMachine.lua")
 load("scripts/commitment/CommitmentRegistry.lua")
 load("scripts/commitment/ObligationLedger.lua")
@@ -158,7 +160,131 @@ end)
 
 test("runtime is explicitly inert", function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); local status=runtime:getStatus()
-    equal(status.runtimeMode,"INERT_CORE"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0)
+    equal(status.runtimeMode,"OBSERVATION_IDENTITY_OFFLINE"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0)
+end)
+
+
+local function rawObservation(epoch, evidence, assemblyKey)
+    assemblyKey = assemblyKey or "assembly-A"
+    return {
+        timestamp = epoch,
+        provenance = { source="fixture", sequence=epoch },
+        assemblies = {{ referenceKey=assemblyKey, componentReferenceKeys={assemblyKey.."/vehicle", assemblyKey.."/implement"}, source="fixture" }},
+        fieldWorld = {}, geometry = {}, motion = {}, aiStates = {}, playerControl = {},
+        jobEpisodeEvidence = evidence and {{ assemblyReferenceKey=assemblyKey, sourceJobToken=evidence.sourceJobToken or "job-1", jobPresent=evidence.jobPresent, aiControlled=evidence.aiControlled, aiActive=evidence.aiActive, blocked=evidence.blocked, outtaMyWayHold=evidence.outtaMyWayHold, temporarilyInactive=evidence.temporarilyInactive, playerStopObserved=evidence.playerStopObserved, playerTakeoverObserved=evidence.playerTakeoverObserved, playerControlled=evidence.playerControlled, giantsAbortObserved=evidence.giantsAbortObserved, giantsFaultObserved=evidence.giantsFaultObserved, restartObserved=evidence.restartObserved, replacementObserved=evidence.replacementObserved, provenance={source="fixture"} }} or {},
+        operationMembershipEvidence = {}, physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {}
+    }
+end
+
+local function newObservationKernel()
+    local ids=OuttaMyWay.IdentityRegistry.new(); local epochs=OuttaMyWay.EpochSequence.new()
+    return ids,epochs,OuttaMyWay.RuntimeObservationAdapter.new(ids,epochs),OuttaMyWay.JobEpisodeAdmission.new(ids,epochs)
+end
+
+test("Observation rejects Decision semantics at any depth", function()
+    expectError(function()
+        OuttaMyWay.ObservationSnapshot.new({identity="OS-X",epoch=1,timestamp=1,provenance={},fieldWorld={},assemblies={{candidatePreference="LEFT"}},geometry={},motion={},aiStates={},playerControl={},jobEpisodeEvidence={},operationMembershipEvidence={},physicalRepresentationEvidence={},controlOutcomes={},unavailableSources={}})
+    end)
+end)
+
+test("assembly identity persists across snapshots", function()
+    local _,_,adapter=newObservationKernel()
+    local a=adapter:publish(rawObservation(1,nil)); local b=adapter:publish(rawObservation(2,nil))
+    equal(a.assemblies[1].assemblyId,b.assemblies[1].assemblyId)
+    equal(#a.assemblies[1].componentIds,2)
+end)
+
+
+test("Observation rejects duplicate assembly and episode evidence", function()
+    local _,_,adapter=newObservationKernel()
+    local raw=rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true})
+    raw.assemblies[2]=raw.assemblies[1]
+    expectError(function() adapter:publish(raw) end)
+
+    local _,_,adapter2=newObservationKernel()
+    local raw2=rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true})
+    raw2.jobEpisodeEvidence[2]=raw2.jobEpisodeEvidence[1]
+    expectError(function() adapter2:publish(raw2) end)
+end)
+
+test("initial authoritative job evidence admits one episode", function()
+    local _,_,adapter,admission=newObservationKernel()
+    local snapshot=adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true}))
+    local result=admission:observe(snapshot)
+    equal(#result.admittedEpisodeIds,1); equal(#result.activeEpisodeIds,1); equal(#result.endedEpisodeIds,0)
+end)
+
+test("blockage hold and temporary inactivity do not end an episode", function()
+    local _,_,adapter,admission=newObservationKernel()
+    local first=adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true})); local admitted=admission:observe(first)
+    local episodeId=admitted.activeEpisodeIds[1]
+    local blocked=adapter:publish(rawObservation(2,{jobPresent=true,aiControlled=true,aiActive=false,blocked=true})); admission:observe(blocked)
+    local held=adapter:publish(rawObservation(3,{jobPresent=true,aiControlled=true,aiActive=false,outtaMyWayHold=true})); admission:observe(held)
+    local inactive=adapter:publish(rawObservation(4,{jobPresent=true,aiControlled=true,aiActive=false,temporarilyInactive=true})); local result=admission:observe(inactive)
+    equal(result.activeEpisodeIds[1],episodeId); equal(admission:get(episodeId).status,"ACTIVE")
+end)
+
+test("player stop ends the episode without replacement", function()
+    local _,_,adapter,admission=newObservationKernel()
+    local first=admission:observe(adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true})))
+    local ended=admission:observe(adapter:publish(rawObservation(2,{jobPresent=false,aiControlled=false,playerStopObserved=true})))
+    equal(#ended.endedEpisodeIds,1); equal(#ended.activeEpisodeIds,0); equal(admission:get(first.activeEpisodeIds[1]).terminalCause,"PLAYER_STOP")
+end)
+
+test("player takeover ends the episode", function()
+    local _,_,adapter,admission=newObservationKernel()
+    local first=admission:observe(adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true})))
+    admission:observe(adapter:publish(rawObservation(2,{jobPresent=false,aiControlled=false,playerControlled=true})))
+    equal(admission:get(first.activeEpisodeIds[1]).terminalCause,"PLAYER_TAKEOVER")
+end)
+
+test("GIANTS abort and fault end episodes", function()
+    for field,cause in pairs({giantsAbortObserved="GIANTS_ABORT",giantsFaultObserved="GIANTS_FAULT"}) do
+        local _,_,adapter,admission=newObservationKernel()
+        local first=admission:observe(adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true})))
+        local evidence={jobPresent=false,aiControlled=false}; evidence[field]=true
+        admission:observe(adapter:publish(rawObservation(2,evidence)))
+        equal(admission:get(first.activeEpisodeIds[1]).terminalCause,cause)
+    end
+end)
+
+test("restart creates a new episode even with the same source token", function()
+    local _,_,adapter,admission=newObservationKernel()
+    local first=admission:observe(adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true,sourceJobToken="job-1"})))
+    local second=admission:observe(adapter:publish(rawObservation(2,{jobPresent=true,aiControlled=true,aiActive=true,restartObserved=true,sourceJobToken="job-1"})))
+    if first.activeEpisodeIds[1] == second.activeEpisodeIds[1] then error("restart reused Job Episode identity") end
+    equal(admission:get(first.activeEpisodeIds[1]).terminalCause,"RESTARTED")
+end)
+
+test("changed source token replaces a live episode", function()
+    local _,_,adapter,admission=newObservationKernel()
+    local first=admission:observe(adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true,sourceJobToken="job-1"})))
+    local second=admission:observe(adapter:publish(rawObservation(2,{jobPresent=true,aiControlled=true,aiActive=true,sourceJobToken="job-2"})))
+    equal(admission:get(first.activeEpisodeIds[1]).terminalCause,"REPLACED")
+    if first.activeEpisodeIds[1] == second.activeEpisodeIds[1] then error("replacement reused Job Episode identity") end
+end)
+
+test("missing episode evidence does not imply termination", function()
+    local _,_,adapter,admission=newObservationKernel()
+    local first=admission:observe(adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true})))
+    local missing=adapter:publish(rawObservation(2,nil)); local result=admission:observe(missing)
+    equal(result.activeEpisodeIds[1],first.activeEpisodeIds[1]); equal(#result.endedEpisodeIds,0)
+end)
+
+test("conflicting authoritative termination evidence is rejected", function()
+    local _,_,adapter,admission=newObservationKernel()
+    admission:observe(adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true})))
+    expectError(function() admission:observe(adapter:publish(rawObservation(2,{jobPresent=false,aiControlled=false,playerStopObserved=true,giantsFaultObserved=true}))) end)
+end)
+
+test("Observation and admission are deterministic from fresh state", function()
+    local function run()
+        local _,_,adapter,admission=newObservationKernel()
+        local snapshot=adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true}))
+        local result=admission:observe(snapshot)
+        return OuttaMyWay.ValueRecord.canonical(snapshot),OuttaMyWay.ValueRecord.canonical(result)
+    end
+    local a,b=run(); local c,d=run(); equal(a,c); equal(b,d)
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

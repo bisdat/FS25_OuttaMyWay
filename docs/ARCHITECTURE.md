@@ -4,7 +4,7 @@
 >
 > **Currency:** canonical v4.6.78 Replacement-Core Architecture
 >
-> **Implementation status:** Documentation only; active runtime remains v4.6.56
+> **Implementation status:** v4.7.1 offline Observation and Job Episode identity foundation; Situation Assessment, Decision and Control remain unimplemented
 >
 > **Governing ADR:** [ADR-0019](adr/ADR-0019-replacement-core-commitment-lifecycle.md)
 
@@ -578,7 +578,7 @@ Strategy revision must preserve:
 
 ## 20. Implementation boundary
 
-v4.7.0 implements the inert structural foundation only: immutable contracts, Commitment lifecycle, Obligation ownership, authority ownership and Effective Actuation Composition validation. Observation, Decision and Control remain unimplemented. The archived v4.6.78 runtime is evidence and donor material only.
+v4.7.0 established the inert structural foundation. v4.7.1 adds offline raw Observation publication and canonical assembly/Job Episode identity and admission rules. Situation Assessment, Decision and Control remain unimplemented. The archived v4.6.78 runtime is evidence and donor material only.
 
 Implementation must proceed separately from architecture and should begin with:
 

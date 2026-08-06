@@ -1,16 +1,17 @@
 # Roadmap
 
-> **Current implementation candidate:** v4.7.0 Replacement-Core Bootstrap  
+> **Current implementation candidate:** v4.7.1 Observation and Job Episode Identity  
+> **Implementation baseline:** canonical v4.7.0  
 > **Architecture authority:** canonical v4.6.78
 
 ## Immediate objective
 
-Review, load-test and owner-canonicalise the exact v4.7.0 inert bootstrap.
+Review and owner-canonicalise the exact v4.7.1 offline Observation and Job Episode identity foundation.
 
 ## v4.7.x implementation sequence
 
-1. **Bootstrap kernel** — immutable contracts, lifecycle, obligations, authority and composition; no GIANTS authority. **v4.7.0**
-2. **Observation and identity** — clean Observation Snapshot, assembly identity and Job Episode evidence; no Decision or Control.
+1. **Bootstrap kernel** — immutable contracts, lifecycle, obligations, authority and composition; no GIANTS authority. **v4.7.0 canonical**
+2. **Observation and identity** — clean Observation Snapshot, stable assembly identity and Job Episode evidence/admission; no Decision or Control. **v4.7.1 candidate**
 3. **Knowledge and deterministic reasoning** — Operational Picture, complete Candidate Action Space, mandatory verdicts and Decision.
 4. **Replay conformance** — historical positive and negative fixtures; no physical authority.
 5. **Passive live validation** — replacement traces only, selected legacy authority disabled, zero Control.

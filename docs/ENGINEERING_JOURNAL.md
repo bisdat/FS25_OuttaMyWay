@@ -1075,3 +1075,14 @@ A failed unprotected run is not wasted. It will quantify the boundary at which E
 **Decision:** Preserve the stable encounter anchor and add one leg-local Control anchor per movement. Candidate start coordinates are published as scalar evidence, Control rejects stale evidence, and target/side/anchor are committed together.
 
 **Disproved hypothesis:** A settled movement boundary plus atomic target/side mutation was sufficient. The replacement frame's origin is also a Commitment Precondition.
+
+
+## 2026-08-06 — v4.7.1 Observation and Job Episode Identity
+
+**Decision applied:** preserve the canonical implementation sequence after v4.7.0 rather than combining Observation and Decision for convenience.
+
+**Implementation:** added stable reference identity resolution, raw immutable Observation publication and canonical Job Episode admission/termination evidence handling.
+
+**Validation:** offline fixtures prove that blockage, OuttaMyWay Hold, temporary inactivity and missing evidence preserve the admitted episode; player stop/takeover, GIANTS abort/fault, restart and replacement end it. Conflicting authoritative terminal evidence is rejected rather than resolved through an invented precedence rule.
+
+**Behaviour:** no GIANTS listener and no Control authority.

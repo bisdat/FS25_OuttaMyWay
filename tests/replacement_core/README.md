@@ -1,9 +1,10 @@
-# Replacement-core conformance tests
+# Replacement-Core Offline Tests
 
-Run from the repository root with a Lua 5.1-compatible interpreter:
+Run from the repository root:
 
-```text
+```bash
 lua tests/replacement_core/run.lua .
+python -m pytest -q
 ```
 
-The suite exercises only the inert v4.7.0 kernel. It does not connect to GIANTS, simulate physics or validate vehicle behaviour.
+v4.7.1 validates the canonical inert kernel plus the offline Observation and Job Episode identity/admission foundation. It does not connect to GIANTS, construct Knowledge, generate candidates, select Decisions or issue Control.

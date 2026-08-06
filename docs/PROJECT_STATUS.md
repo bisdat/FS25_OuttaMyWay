@@ -1,45 +1,44 @@
 # Project Status
 
-> **Current candidate:** v4.7.0 Replacement-Core Bootstrap  
-> **Architecture authority:** owner-declared canonical v4.6.78  
-> **Canonical v4.6.78 SHA-256:** `bf7ec80f5cfc7c2690cf0f599fd3acf82fd3df6b197acb1dd7a5950f7b6da9e5`  
-> **Canonical v4.6.78 Git:** `a99834bba898a876fcb8315aeb5741833b099d85`
+> **Current candidate:** v4.7.1 Observation and Job Episode Identity  
+> **Implementation baseline:** owner-declared canonical v4.7.0  
+> **Canonical v4.7.0 SHA-256:** `08577eb096b6c7555ebda9616fc09160f9ab8266717c6db2e7ad37b5ba38d2d5`  
+> **Canonical v4.7.0 Git:** `49c01602b10546c3e61d180703f982e2f0d4d9ef`  
+> **Architecture authority:** canonical v4.6.78
 
 ## Current implementation state
 
-v4.7.0 is the first implementation of the closed canonical replacement-core architecture.
+v4.7.1 preserves the v4.7.0 inert kernel and adds an offline-only Observation and Job Episode identity/admission foundation.
 
 Implemented:
 
-- clean active `scripts/` topology;
-- byte-exact non-executable v4.6.78 script archive;
-- immutable record definitions for all nine canonical inter-layer contracts;
+- clean active `scripts/` topology and byte-exact non-executable v4.6.78 archive;
+- immutable canonical record contracts;
 - deterministic identity and epoch primitives;
-- `ACTIVE`, `WAITING_FOR_EVIDENCE` and `SETTLING` lifecycle enforcement;
-- five terminal dispositions;
-- Commitment Registry;
-- Obligation Ledger with exactly-one-owner, origin-bound and accepted-transfer enforcement;
-- one progress-actuation owner per assembly;
-- structural Effective Actuation Composition checks, including `never hold all`;
-- inert Runtime with zero Control authority;
-- offline Lua and repository structural conformance tests.
+- Commitment, Obligation and authority structural kernel;
+- stable assembly and component reference identity resolution;
+- raw Observation Snapshot publication with semantic-field exclusion;
+- Job Episode admission and identity persistence;
+- canonical Job Episode continuation through blockage, OuttaMyWay Hold and temporary inactivity;
+- canonical Job Episode termination through player stop/takeover, GIANTS abort/fault, restart and replacement;
+- deterministic offline conformance tests.
 
 Not implemented:
 
-- GIANTS Observation;
-- Job Episode admission;
+- a GIANTS live Observation listener or polling loop;
+- Operation identity/admission;
 - Situation Assessment and Operational Picture construction;
 - candidate generation or mandatory constraints;
 - Decision selection;
 - Control admission or physical capabilities;
 - replay fixtures;
-- live passive shadow;
+- live passive validation;
 - gameplay coordination.
 
 ## Architectural boundary
 
-Canonical v4.6.78 is closed. Legacy code supplies evidence and physical donor mechanisms only. Apparent architectural contradiction is a stop condition; it is never resolved by silent special-case implementation.
+Canonical v4.6.78 remains closed. Observation publishes sourced facts only. Job Episode admission applies only the canonical accepted episode rules; absence of evidence never implies termination.
 
 ## Candidate status
 
-v4.7.0 remains non-canonical pending owner review, local canonical generation and a basic in-game load confirmation.
+v4.7.1 remains non-canonical pending owner review and local canonical generation. No live behavioural test is required because the new modules have no GIANTS hook or Control path.

@@ -1,40 +1,50 @@
 # Engineering Handover
 
-> **Candidate:** v4.7.0 Replacement-Core Bootstrap  
+> **Candidate:** v4.7.1 Observation and Job Episode Identity  
+> **Implementation baseline:** canonical v4.7.0  
 > **Architecture authority:** canonical v4.6.78
 
 ## Repository boundary
 
-Active `scripts/` is the new replacement core. The exact former tree is preserved under `scripts/archive/v4_6_78/` and cannot execute.
+Active `scripts/` is the replacement core. The exact former tree remains under `scripts/archive/v4_6_78/` and cannot execute.
 
 Do not:
 
-- restore the archived loader;
 - import archived modules;
-- infer architectural meaning from old code;
-- add GIANTS Observation or Control to v4.7.0;
-- add a fourth non-terminal Commitment state, another terminal disposition or another obligation settlement mode.
+- infer Job Episode meaning from old observer code;
+- connect v4.7.1 to a live GIANTS update loop;
+- add Situation Assessment, Decision or Control to this increment;
+- treat absence, blockage, Hold or temporary inactivity as Job Episode termination.
 
-## Current kernel
+## Current foundation
 
-The active Runtime instantiates identity, epoch, Commitment, Obligation, authority and trace services only. It registers no game listener and issues no physical command.
+The Runtime now instantiates:
 
-Expected game log:
+- stable assembly/component identity resolution;
+- raw Observation Snapshot publication;
+- Job Episode admission and lifecycle evidence classification;
+- the canonical v4.7.0 Commitment, Obligation and authority structural kernel.
+
+It registers no game listener and issues no physical command.
+
+Expected optional game-load log:
 
 ```text
-FS25_OuttaMyWay v4.7.0 inert replacement core loaded; Control authority disabled
+FS25_OuttaMyWay v4.7.1 observation/identity foundation loaded; Control authority disabled
 ```
 
 ## Validation before canonicalisation
 
 - deterministic RRS candidate production;
-- archive byte verification;
 - active-tree dependency audit;
-- Lua syntax/load and conformance tests;
+- Lua integrated-load and conformance tests;
 - Python structural tests;
-- RRS test suite;
-- one basic FS25 mod-load confirmation.
+- archive byte verification;
+- Observation semantic-exclusion tests;
+- all canonical Job Episode continuation and termination fixtures.
+
+A live FS25 cycle is not required because no runtime sampling hook or gameplay behaviour has changed.
 
 ## Next increment after canonicalisation
 
-Implement clean runtime Observation records and Job Episode identity/admission evidence without Decision or Control authority. No old observer module is imported wholesale.
+Implement Situation Assessment, Operational Picture publication, complete Candidate Action Space, mandatory Constraint Verdicts and deterministic Decision selection using only sealed fixture inputs. Control remains disabled.

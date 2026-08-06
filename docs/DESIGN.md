@@ -4,7 +4,7 @@
 >
 > **Currency:** canonical v4.6.78 Replacement-Core Architecture
 >
-> **Implementation status:** Documentation only
+> **Implementation status:** v4.7.1 implements the offline Observation and Job Episode identity foundation only
 
 ## Purpose
 

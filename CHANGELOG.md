@@ -1,5 +1,15 @@
 # Changelog
 
+## v4.7.1 — Observation and Job Episode Identity Candidate
+
+- Begins from owner-declared canonical v4.7.0 (`08577eb...2d5`, Git `49c01602b10546c3e61d180703f982e2f0d4d9ef`).
+- Adds stable assembly and component reference identity resolution without importing archived observation code.
+- Adds an offline Runtime Observation Adapter that publishes immutable raw Observation Snapshots and rejects Decision/lifecycle semantics.
+- Adds independently admitted Job Episode identities and the canonical continuation/termination rules.
+- Proves that blockage, OuttaMyWay Hold, temporary inactivity and missing evidence do not end a Job Episode.
+- Proves player stop/takeover, GIANTS abort/fault, restart and replacement terminate the prior episode; restart/replacement creates a new identity.
+- Adds no GIANTS listener, Situation Assessment, Decision or Control authority.
+
 ## v4.7.0 — Replacement-Core Bootstrap Candidate
 
 - Begins the v4.7.x implementation line from owner-declared canonical v4.6.78 (`bf7ec80...a9e5`, Git `a99834bba898a876fcb8315aeb5741833b099d85`).
