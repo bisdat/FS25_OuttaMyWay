@@ -4,7 +4,7 @@
 >
 > **Currency:** canonical v4.6.78 Replacement-Core Architecture
 >
-> **Implementation status:** v4.7.2 offline Operational Picture foundation; Candidate, Decision and Control remain unimplemented
+> **Implementation status:** v4.7.3 offline Candidate, mandatory Constraint Verdict and deterministic Decision foundation; replay, Commitment mutation and Control remain unimplemented
 
 ## 1. Closed-loop responsibility flow
 

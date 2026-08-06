@@ -19,7 +19,9 @@ local defaultPrefixes = {
     JOB_EPISODE = "JE",
     OPERATION = "OR",
     SITUATION = "SI",
-    ENCOUNTER = "EN"
+    ENCOUNTER = "EN",
+    CANDIDATE_INVENTORY = "CI",
+    VERDICT_SET = "VS"
 }
 
 function IdentityRegistry.new(prefixes)

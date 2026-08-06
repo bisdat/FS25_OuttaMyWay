@@ -8,9 +8,9 @@
 |---|---|---|---|---|
 | Single authority path | One active Observation → Assessment → Picture → Decision → Commitment → Control route | Not replacement-core implementation | Structurally aligned | dependency and dispatch audit |
 | Situation Assessment | Produces Knowledge and fitness, not selected action authority | v4.7.2 candidate | Partial; candidate preference leaked into Assessment | snapshot-to-Knowledge tests |
-| Candidate Action Space | Publishes all supportable candidates as explicit records | Not implemented | Absent; procedural ladder | complete candidate inventory per decision epoch |
-| Mandatory constraints | Every candidate receives explicit `PASS`, `FAIL` or `UNRESOLVED` verdicts | Not implemented | Local/advisory | negative tests proving failed or unresolved candidates cannot receive authority |
-| Decision | Selects only among admissible survivors or explicit non-intervention | Not implemented | Partial/fallthrough | deterministic selection replay |
+| Candidate Action Space | Publishes all supportable candidates as explicit records | v4.7.3 publishes complete sealed-fixture inventories | Absent; procedural ladder | complete candidate inventory per decision epoch |
+| Mandatory constraints | Every candidate receives explicit `PASS`, `FAIL` or `UNRESOLVED` verdicts | v4.7.3 evaluates all eleven canonical families offline | Local/advisory | negative tests proving failed or unresolved candidates cannot receive authority |
+| Decision | Selects only among admissible survivors or explicit non-intervention | v4.7.3 produces deterministic sealed-fixture Decision Records | Partial/fallthrough | deterministic selection replay |
 | Commitment | Enforcing lifecycle owner with Governing Basis and Obligation Set | Not implemented | Ledger recorded rather than governed | transition-table tests and illegal-transition rejection |
 | Safe Release | Required for ordinary success | Documented concept | Violated | no `SUCCEEDED` without Terminal Settlement evidence |
 | Intent change | Reassesses Governing Basis; cannot erase obligations | Not implemented | Violated | supersession and source-termination replay cases |

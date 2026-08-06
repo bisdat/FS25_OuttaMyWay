@@ -1,13 +1,13 @@
 # Project Continuity
 
-## v4.7.2 implementation boundary
+## v4.7.3 implementation boundary
 
-v4.7.2 derives from owner-declared canonical v4.7.1:
+v4.7.3 derives from owner-declared canonical v4.7.2:
 
-- ZIP SHA-256: `e51099a548913d349f01b97d349b34293f8e81895cbc771700696aab406403c7`
-- Git commit: `b4d90dc458c1044090be35bf38e14197e0131aa7`
-- Repository files: 206
+- ZIP SHA-256: `f11597c3b46f1ad5da94cc8c8135400e3b613475701d10559fae65fe8e4bb22f`
+- Git commit: `7f89d405ae64afed5b7c29bec40e0b8220e215ad`
+- Repository files: 209
 
-The canonical v4.6.78 architecture remains authoritative and unchanged. v4.7.2 adds only admitted Operation identity and the offline Situation Assessment → Operational Picture Knowledge boundary.
+The canonical v4.6.78 architecture remains authoritative and unchanged. v4.7.3 adds only the offline Candidate Action, mandatory Constraint Verdict and deterministic Decision boundary.
 
-No GIANTS listener, Candidate generator, Constraint Engine, Decision selector or Control path is introduced. Missing membership and representation evidence remain explicit uncertainty; no meaning is inferred from the archived implementation.
+No GIANTS listener, replay corpus, Commitment mutation, Control admission or physical capability is introduced. Candidate support is supplied only by explicit sealed Operational Picture fixtures; no behaviour or meaning is inferred from the archived implementation.

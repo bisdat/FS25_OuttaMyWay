@@ -1,47 +1,42 @@
 # Project Status
 
-> **Current candidate:** v4.7.2 Operational Picture  
-> **Implementation baseline:** owner-declared canonical v4.7.1  
-> **Canonical v4.7.1 SHA-256:** `e51099a548913d349f01b97d349b34293f8e81895cbc771700696aab406403c7`  
-> **Canonical v4.7.1 Git:** `b4d90dc458c1044090be35bf38e14197e0131aa7`  
+> **Current candidate:** v4.7.3 Deterministic Decision Boundary  
+> **Implementation baseline:** owner-declared canonical v4.7.2  
+> **Canonical v4.7.2 SHA-256:** `f11597c3b46f1ad5da94cc8c8135400e3b613475701d10559fae65fe8e4bb22f`  
+> **Canonical v4.7.2 Git:** `7f89d405ae64afed5b7c29bec40e0b8220e215ad`  
 > **Architecture authority:** canonical v4.6.78
 
 ## Current implementation state
 
-v4.7.2 preserves the v4.7.1 offline Observation and Job Episode foundation and implements the next canonical Knowledge boundary.
+v4.7.3 preserves the canonical v4.7.2 Observation, identity and Operational Picture foundation and implements the sealed-fixture deterministic Decision boundary.
 
 Implemented:
 
-- clean active `scripts/` topology and byte-exact non-executable v4.6.78 archive;
-- immutable canonical record contracts;
-- deterministic identity, lifecycle, obligation and authority structural kernel;
-- raw Observation Snapshot publication with semantic-field exclusion;
-- assembly, component and Job Episode identity/admission;
-- independently admitted Operation identity and dynamic membership evidence;
-- deterministic Situation Assessment;
-- immutable Operational Picture publication;
-- Current Space, bounded Future Space and the three canonical demand classes;
-- Situation and Encounter relationship records;
-- Follower Owns Closure responsibility Knowledge;
-- uncertainty and unavailable-source preservation;
-- the five canonical Representation Fitness states and explicit under-approximation risk;
+- immutable canonical records and deterministic identity/lifecycle kernel;
+- raw Observation, Job Episode and Operation admission;
+- Situation Assessment and immutable Operational Picture;
+- complete supportable Candidate Action inventories with explicit completeness evidence;
+- all eleven canonical mandatory Constraint Verdict families;
+- purpose-specific Representation Fitness authority gating;
+- Follower Owns Closure and Bounded Observation Contract enforcement;
+- structural Effective Actuation Composition validation;
+- deterministic Decision selection among all-`PASS` survivors only;
+- explicit `WAIT` or `SETTLE` non-intervention when no candidate is admissible;
 - deterministic offline conformance tests.
 
 Not implemented:
 
-- a GIANTS live Observation listener or polling loop;
-- Candidate Action generation;
-- mandatory Constraint Verdict evaluation;
-- Decision selection;
+- live GIANTS Observation;
+- historical replay corpus;
+- Decision-driven Commitment create/revise/settle execution;
 - Control admission or physical capabilities;
-- replay fixtures;
-- live passive validation;
+- passive live validation;
 - gameplay coordination.
 
 ## Architectural boundary
 
-Situation Assessment produces Knowledge only. It cannot choose roles, candidates, strategies, terminal dispositions or Control actions. Partial representation restricts claims without removing the represented assembly.
+Candidate generators publish all currently supportable alternatives and cannot select. Constraint evaluators cannot optimise. Decision cannot override `FAIL` or `UNRESOLVED`, mutate Commitment state or issue Control.
 
 ## Candidate status
 
-v4.7.2 remains non-canonical pending owner review and local canonical generation. No live behavioural test is required because the new modules have no GIANTS hook or Control path.
+v4.7.3 remains non-canonical pending owner review and local canonical generation. No live behavioural test is required because all new paths remain sealed-fixture-only and Control authority is disabled.

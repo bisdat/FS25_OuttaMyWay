@@ -1096,3 +1096,14 @@ The project transitions from architecture-only seminars to architecture–protot
 **Reason:** the accepted v4.7.x sequence protects the Observation → Knowledge abstraction boundary and allows all episode rules to be disproved offline before Situation Assessment exists.
 
 **Consequence:** no live GIANTS hook, Operational Picture, Candidate Action, Decision or Control path is introduced in v4.7.1.
+
+
+## D-0022 — v4.7.3 Deterministic Decision Boundary Gate
+
+**Status:** Accepted implementation sequencing under canonical v4.6.78 architecture.
+
+**Decision:** v4.7.3 implements only the complete supportable Candidate Action inventory, explicit mandatory Constraint Verdict Sets and deterministic Decision Records from sealed Operational Pictures. Decision may describe but shall not execute Commitment action.
+
+**Reason:** this preserves Candidate generation, constraint enforcement, Decision, Commitment and Control as separate responsibilities and allows mandatory-gate failures to be disproved offline before replay or live integration.
+
+**Consequence:** no live GIANTS hook, replay authority, Commitment mutation, Control admission or physical capability is introduced in v4.7.3.

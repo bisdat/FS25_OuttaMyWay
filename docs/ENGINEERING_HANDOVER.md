@@ -1,7 +1,7 @@
 # Engineering Handover
 
-> **Candidate:** v4.7.2 Operational Picture  
-> **Implementation baseline:** canonical v4.7.1  
+> **Candidate:** v4.7.3 Deterministic Decision Boundary  
+> **Implementation baseline:** canonical v4.7.2  
 > **Architecture authority:** canonical v4.6.78
 
 ## Repository boundary
@@ -11,30 +11,29 @@ Active `scripts/` is the replacement core. The exact former tree remains under `
 Do not:
 
 - import archived modules;
-- infer Knowledge or fitness from old observer/controller code;
-- connect v4.7.2 to a live GIANTS update loop;
-- add Candidate, Decision or Control responsibilities to Situation Assessment;
-- treat missing Operation membership evidence as membership zero;
-- represent unknown or partial geometry as smaller or exact.
+- infer candidates or constraints from legacy branches;
+- connect v4.7.3 to a live GIANTS update loop;
+- allow Candidate generation to select;
+- allow Decision to waive `FAIL` or `UNRESOLVED`;
+- mutate Commitment state or issue Control from the v4.7.3 Decision path.
 
 ## Current foundation
 
-The Runtime accepts sealed fixture input and performs:
+The Runtime accepts a sealed Operational Picture whose candidate-support evidence explicitly declares the complete support boundary and performs:
 
 ```text
-Observation Snapshot
-    → Job Episode admission
-    → Operation admission
-    → Situation Assessment
-    → immutable Operational Picture
+Operational Picture
+    → complete Candidate Action inventory
+    → complete mandatory Constraint Verdict Set
+    → deterministic Decision Record
 ```
 
-The Operational Picture publishes identities, relationships, spaces, demand classes, responsibility Knowledge, uncertainty, Representation Fitness, outcome evidence and read-only Commitment context. It registers no game listener and issues no physical command.
+The Decision Record selects only an all-`PASS` candidate or publishes explicit non-intervention. Control authority remains disabled.
 
 Expected optional game-load log:
 
 ```text
-FS25_OuttaMyWay v4.7.2 Operational Picture foundation loaded; Control authority disabled
+FS25_OuttaMyWay v4.7.3 deterministic Decision foundation loaded; Control authority disabled
 ```
 
 ## Validation before canonicalisation
@@ -44,14 +43,15 @@ FS25_OuttaMyWay v4.7.2 Operational Picture foundation loaded; Control authority 
 - Lua integrated-load and conformance tests;
 - Python structural tests;
 - archive byte verification;
-- Operation identity and membership fixtures;
-- snapshot-to-picture deterministic tests;
-- all five canonical Representation Fitness states;
-- No Silent Under-Approximation assertions;
-- no Candidate, Decision or Control implementation.
+- complete Candidate inventory assertions;
+- all eleven mandatory verdict families for every candidate;
+- failed and unresolved candidate exclusion;
+- Follower Owns Closure, Representation Fitness, Bounded Observation and `never hold all` negative tests;
+- deterministic Decision selection;
+- no Commitment mutation or Control implementation.
 
 A live FS25 cycle is not required because no runtime sampling hook or gameplay behaviour has changed.
 
 ## Next increment after canonicalisation
 
-Implement the complete supportable Candidate Action Space, explicit mandatory Constraint Verdicts and deterministic Decision Records using only sealed Operational Picture fixtures. Control remains disabled.
+Implement the replay-conformance gate using historical positive and negative evidence. The replay runner verifies architecture composition only and receives no physical authority.

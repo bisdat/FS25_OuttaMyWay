@@ -1092,3 +1092,14 @@ A failed unprotected run is not wasted. It will quantify the boundary at which E
 **Validation:** offline fixtures prove that blockage, OuttaMyWay Hold, temporary inactivity and missing evidence preserve the admitted episode; player stop/takeover, GIANTS abort/fault, restart and replacement end it. Conflicting authoritative terminal evidence is rejected rather than resolved through an invented precedence rule.
 
 **Behaviour:** no GIANTS listener and no Control authority.
+
+
+## 2026-08-06 — v4.7.3 Deterministic Decision Boundary
+
+**Implementation:** added complete sealed-fixture Candidate Action inventories, eleven mandatory Constraint Verdict families and deterministic Decision Records.
+
+**Boundary protected:** Candidate generation cannot select; constraints cannot optimise; Decision cannot waive failed or unresolved verdicts, mutate Commitment lifecycle or issue Control.
+
+**Validation:** negative fixtures reject incomplete Action Space evidence, Follower Owns Closure violations, inadequate Representation Fitness, incomplete Bounded Observation Contracts and invalid Effective Actuation Composition. Comparison cost is applied only after mandatory admissibility.
+
+**Behaviour:** no GIANTS listener and no Control authority.

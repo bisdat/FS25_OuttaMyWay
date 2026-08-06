@@ -1,22 +1,22 @@
 # Known Issues
 
-> **Currency:** v4.7.2 Operational Picture Candidate
+> **Currency:** v4.7.3 Deterministic Decision Boundary Candidate
 
 ## Expected absence of gameplay behaviour
 
-v4.7.2 constructs Operational Pictures only when supplied explicit sealed fixture input. It registers no GIANTS listener, performs no worker coordination, produces no HUD output and issues no physical intervention. This is the expected implementation stage, not a regression.
+v4.7.3 evaluates Candidate, Constraint and Decision records only when supplied explicit sealed Operational Picture fixtures. It registers no GIANTS listener, performs no worker coordination, produces no HUD output and issues no physical intervention. This is the expected implementation stage, not a regression.
 
 ## Live Observation remains deliberately absent
 
-The current Runtime Observation Adapter proves clean contracts and identity paths with plain fixture facts. The GIANTS-specific sampling mechanism is deliberately deferred to the passive-live gate and must not be inferred from archived observer code.
+The GIANTS-specific sampling mechanism remains deferred to the passive-live gate and must not be inferred from archived observer code.
 
-## Spatial calculations are evidence carriers, not live geometry algorithms
+## Candidate support remains fixture-declared
 
-v4.7.2 accepts sealed Current Space, Future Space, demand and relationship evidence and publishes canonical Knowledge. It does not yet construct live physical envelopes, sweeps or predictions. This avoids inventing geometry while implementing the canonical ownership boundary.
+The current Candidate Space proves completeness, ownership and mandatory-gate behaviour against sealed support evidence. It does not yet discover live physical candidates or capability availability.
 
-## Candidate, Decision and Control are absent
+## Replay, Commitment mutation and Control remain absent
 
-No Candidate Action Space, mandatory Constraint Engine, Decision selector or Control capability is active. Representation Fitness states limit Knowledge claims but cannot yet grant or deny physical authority.
+Historical replay fixtures are the next gate. v4.7.3 Decision Records describe `CREATE`, `MAINTAIN`, `REVISE`, `WAIT` or `SETTLE`, but do not mutate the Commitment Registry. No Control capability exists.
 
 ## Multiplayer remains unverified
 

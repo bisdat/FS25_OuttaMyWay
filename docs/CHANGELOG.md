@@ -1,3 +1,12 @@
+## v4.7.3 — Deterministic Decision Boundary Candidate
+
+- Begins from owner-declared canonical v4.7.2 (`f11597c3...bb22f`, Git `7f89d405ae64afed5b7c29bec40e0b8220e215ad`).
+- Adds complete sealed-fixture Candidate Action inventories with explicit support-boundary completeness evidence and no selection authority in Candidate generation.
+- Adds all eleven canonical mandatory constraint families, each producing `PASS`, `FAIL` or `UNRESOLVED` for every candidate.
+- Enforces purpose-specific Representation Fitness, Follower Owns Closure, Bounded Observation Contract requirements and structural Effective Actuation Composition including `never hold all`.
+- Adds deterministic Decision Records that select only among all-`PASS` candidates, apply comparison cost only after mandatory admissibility and otherwise record explicit `WAIT` or `SETTLE` non-intervention.
+- Adds no live GIANTS listener, Commitment mutation, Control admission or physical capability.
+
 ## v4.7.2 — Operational Picture Candidate
 
 - Begins from owner-declared canonical v4.7.1 (`e51099a5...403c7`, Git `b4d90dc458c1044090be35bf38e14197e0131aa7`).

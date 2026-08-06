@@ -13,13 +13,14 @@ function Runtime.new()
         identities=identities,epochs=epochs,observationAdapter=OuttaMyWay.RuntimeObservationAdapter.new(identities,epochs),jobEpisodes=jobEpisodes,operations=operations,
         commitments=commitments,obligations=obligations,authorities=authorities,
         situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,commitments),
+        candidateSpace=OuttaMyWay.CandidateSpace.new(identities,epochs),constraintEngine=OuttaMyWay.ConstraintEngine.new(identities,epochs),decisionSelector=OuttaMyWay.DecisionSelector.new(identities,epochs),
         trace=OuttaMyWay.ArchitectureTrace.new(),initialized=false,runtimeMode=OuttaMyWay.RUNTIME_MODE,controlAuthorityEnabled=false
     },Runtime)
 end
 function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
-    self.trace:append("OPERATIONAL_PICTURE_FOUNDATION_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION)
-    print(string.format("FS25_OuttaMyWay v%s Operational Picture foundation loaded; Control authority disabled",OuttaMyWay.VERSION))
+    self.trace:append("DETERMINISTIC_DECISION_FOUNDATION_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION)
+    print(string.format("FS25_OuttaMyWay v%s deterministic Decision foundation loaded; Control authority disabled",OuttaMyWay.VERSION))
 end
 function Runtime:publishObservation(raw) return self.observationAdapter:publish(raw) end
 function Runtime:admitJobEpisodes(snapshot) return self.jobEpisodes:observe(snapshot) end
@@ -32,7 +33,14 @@ function Runtime:processSealedObservation(raw)
     local picture=self:assessOperationalPicture(snapshot,episodes,operation)
     return {snapshot=snapshot,jobEpisodes=episodes,operation=operation,picture=picture}
 end
+function Runtime:evaluateSealedOperationalPicture(picture)
+    OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
+    local candidates=self.candidateSpace:generate(picture)
+    local verdicts=self.constraintEngine:evaluate(picture,candidates)
+    local decision=self.decisionSelector:select(picture,candidates,verdicts)
+    return {picture=picture,candidateInventory=candidates.inventory,candidates=candidates.candidates,verdictSet=verdicts.set,verdicts=verdicts.verdicts,decision=decision}
+end
 function Runtime:getStatus()
     return {initialized=self.initialized,runtimeMode=self.runtimeMode,controlAuthorityEnabled=self.controlAuthorityEnabled,
-        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),commitmentCount=#self.commitments:list(),traceCount=self.trace:count()}
+        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentCount=#self.commitments:list(),traceCount=self.trace:count()}
 end

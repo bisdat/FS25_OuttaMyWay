@@ -1,7 +1,7 @@
 # Replacement-Core Implementation Plan
 
 > **Architecture authority:** canonical v4.6.78  
-> **Current gate:** v4.7.2 Knowledge boundary
+> **Current gate:** v4.7.3 deterministic Decision boundary
 
 ## Gate 0 — clean implementation boundary
 
@@ -9,31 +9,21 @@ Completed by owner-canonicalised v4.7.0.
 
 ## Gate 1 — Observation and identity
 
-Completed by owner-canonicalised v4.7.1:
-
-- immutable raw Observation Snapshots;
-- stable assembly/component identity;
-- independently admitted Job Episodes;
-- genuine termination distinguished from blockage, Hold and temporary inactivity.
+Completed by owner-canonicalised v4.7.1.
 
 ## Gate 2A — Knowledge boundary
 
-v4.7.2 candidate:
-
-- admitted Operation identity and dynamic membership evidence;
-- Situation Assessment;
-- immutable Operational Picture;
-- Current/Future Space and three demand classes;
-- Situation/Encounter and responsibility relationships;
-- uncertainty and Representation Fitness;
-- no Candidate, Decision or Control authority.
+Completed by owner-canonicalised v4.7.2.
 
 ## Gate 2B — deterministic Decision boundary
 
-- complete supportable Candidate Action Space;
-- explicit mandatory Constraint Verdicts;
-- deterministic Decision Records;
-- no physical authority.
+v4.7.3 candidate:
+
+- complete supportable Candidate Action inventories;
+- all applicable mandatory constraints expressed as explicit verdicts;
+- deterministic selection only among all-`PASS` survivors;
+- explicit non-intervention when evidence is unresolved or the complete space is exhausted;
+- no Commitment mutation or physical authority.
 
 ## Gate 2C — replay conformance
 
