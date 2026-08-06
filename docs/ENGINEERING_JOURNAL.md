@@ -1,3 +1,11 @@
+## 2026-08-06 — Field World Equivalence Authority Closed and v4.7.13
+
+**Observation:** exact polygon representation and experienced Field World identity are not the same relation. The merged 68–69–70 closure produced four distinct fingerprints with near-identical spatial evidence; disconnected split 77 remained decisively separate.
+
+**Decision:** Field World identity is governed by coherent, positive spatial equivalence between immutable Job-Seeded Field World Snapshots. Resolution is `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD` or `UNRESOLVED`. Exact fingerprints remain provenance. Unresolved evidence grants no Operation or Control authority, and pairwise tolerance chaining is prohibited.
+
+**Repository response:** ADR-0021 and D-0033 record the closed contract. v4.7.13 changes documentation and version metadata only; runtime exact-fingerprint Operation grouping remains the explicit implementation gap.
+
 ## 2026-08-06 — Seed-Dependent Boundary Representation
 
 **Observation:** Exact fingerprint equality succeeded for seeds in merged areas 68 and 69, but failed for two separate seeds in old area 70. The second 70 seed was deliberately placed at the old field's geometric centre. Both 70 captures and the 68/69 captures reported 15 points and identical bounds.

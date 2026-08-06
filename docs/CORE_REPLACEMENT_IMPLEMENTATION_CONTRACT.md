@@ -1,15 +1,15 @@
 # FS25_OuttaMyWay Core Replacement Implementation Contract
 
-> **Authority source:** owner-declared canonical v4.6.78  
+> **Authority source:** owner-declared canonical v4.6.78, as explicitly extended by accepted ADR-0021  
 > **Canonical ZIP SHA-256:** `bf7ec80f5cfc7c2690cf0f599fd3acf82fd3df6b197acb1dd7a5950f7b6da9e5`  
 > **Canonical Git commit:** `a99834bba898a876fcb8315aeb5741833b099d85`  
 > **Repository files:** 174  
 > **Contract status:** accepted implementation contract; v4.7.0 bootstrap implementation  
-> **Architecture authority:** canonical v4.6.78 documents, principally `docs/ARCHITECTURE.md`, ADR-0019 and their normative companion contracts
+> **Architecture authority:** current `docs/ARCHITECTURE.md`, ADR-0019, ADR-0021 and their normative companion contracts
 
 ## 1. Purpose
 
-This contract defines how canonical v4.6.78 will be implemented without allowing the legacy runtime to redefine, weaken or supplement the architecture.
+This contract defines how the accepted replacement-core architecture will be implemented without allowing the legacy runtime to redefine, weaken or supplement it. Canonical v4.6.78 remains the foundation; ADR-0021 is a bounded evidence-driven amendment to Field World identity authority.
 
 The replacement programme is governed by:
 
@@ -27,7 +27,7 @@ The existing procedural core is not:
 
 ## 2. Closed architecture rule
 
-Canonical v4.6.78 is a closed architectural specification for this implementation programme.
+The accepted replacement-core architecture is closed for implementation. Canonical v4.6.78 remains its foundation, with only explicit owner-accepted ADR amendments permitted; as of v4.7.13, ADR-0021 is the sole such amendment.
 
 Implementation must not introduce:
 
@@ -45,7 +45,7 @@ Implementation may discover only how to realise already-canonical responsibiliti
 
 ### Stop condition
 
-When implementation evidence appears incompatible with canonical v4.6.78:
+When implementation evidence appears incompatible with the current accepted architecture:
 
 1. do not add a special case;
 2. do not infer a new rule from old code;

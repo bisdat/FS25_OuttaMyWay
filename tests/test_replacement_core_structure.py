@@ -212,7 +212,7 @@ def test_v478_targeted_job_episode_and_field_identity_path_is_active():
     assert "scripts/diagnostics/TargetedFieldIdentityProbe.lua" in main
     assert "scripts/diagnostics/LiveAIStateProbe.lua" not in main
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.12"' in config
+    assert 'VERSION = "4.7.13"' in config
     assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_EVIDENCE"' in config
     evidence=(ROOT/"scripts"/"observation"/"LiveAIJobEvidence.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
@@ -259,7 +259,7 @@ def test_v479_polygon_field_identity_fallback_is_read_only():
     for forbidden in ("driveToPoint(","stopCurrentAIJob(","setCruiseControlState("):
         assert forbidden not in text
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.12"' in config
+    assert 'VERSION = "4.7.13"' in config
     assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_EVIDENCE"' in config
 
 
@@ -281,7 +281,7 @@ def test_v4711_field_world_snapshot_is_bound_once_to_job_episode():
     assert "_bindFieldWorld" in admission
     assert "cannot change after capture" in admission
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.12"' in config
+    assert 'VERSION = "4.7.13"' in config
     assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_EVIDENCE"' in config
 
 

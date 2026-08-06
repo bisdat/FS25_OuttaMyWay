@@ -1,39 +1,48 @@
-# v4.7.10 live evidence concepts
+# v4.7.13 Field World identity concepts
 
-## Sampled Boundary Identity Drift
+## Field World Equivalence Authority
 
-Exact polygon fingerprints may drift across seed positions even when point count, bounds and experienced agronomic workspace remain the same. Exact representation identity and spatial Field World equivalence are therefore separate concepts.
+**Classification:** accepted architectural authority.  
+Resolves immutable Job-Seeded Field World Snapshots as the same Field World, different Field Worlds or unresolved. Positive spatial evidence and class-wide coherence are required; unresolved evidence grants no Operation or Control authority.
+
+## Exact Representation Provenance
+
+**Classification:** accepted evidence responsibility.  
+The canonical polygon and exact fingerprint identify one captured representation and remain immutable provenance. They are not independently Field World identity authority.
+
+## Coherent Field World Evidence Set
+
+**Classification:** accepted authority constraint.  
+A Snapshot may join a Field World only when it is compatible with the accepted evidence for that Field World as a whole. Pairwise tolerance chaining is not authoritative.
 
 ## Field World Equivalence Evidence
 
-A diagnostic comparison record between immutable Field World Snapshots. It measures spatial relationship but has no identity or Operation-merging authority in v4.7.12.
+**Classification:** accepted evidence family; implementation thresholds unsettled.  
+Area, perimeter, centroid, bounds, topology, boundary distance, containment and sampled overlap contribute evidence. No single metric governs identity.
+
+## Sampled Boundary Identity Drift
+
+**Classification:** validated runtime observation.  
+Exact polygon fingerprints may differ across seed positions inside one experienced Field World. The completed merged 68–69–70 closure produced four distinct exact fingerprints with near-identical spatial evidence.
 
 ## Job-Seeded Field World
 
-The contiguous agronomic polygon containing the worker when confirmed field work begins. It handles both merged fields and split fields without relying on historical labels.
+The contiguous agronomic polygon containing the worker when confirmed field work begins. It handles both merged and split fields without relying on historical labels.
 
 ## Label-Preserving Field World Split
 
-One player-facing field label may refer to multiple disconnected Field Worlds after terrain editing. Geometry identity separates them while preserving the shared locator.
-
-## Seed-Invariant Field World
-
-Different seed labels inside one merged agronomic area produce the same canonical polygon fingerprint and therefore one Field World identity.
+One player-facing field label may refer to multiple disconnected Field Worlds after terrain editing. Positive separation evidence distinguishes them while preserving the shared locator.
 
 ## Source Field Identity
 
 The retained GIANTS/map field label established by exact containment in one source field polygon. It is not farmland identity and may not equal the experienced Field World after fields are merged.
-
-## Derived Field World Identity
-
-The contiguous agronomic workspace experienced by GIANTS field work. It may contain multiple retained source field labels, such as 68, 69 and 70. In v4.7.10 it is discovered passively through GIANTS field-course boundary generation and is not yet authoritative for Operation grouping.
 
 ## Source Intent Termination Evidence
 
 Positive evidence that a previously active GIANTS job is no longer active while the same job token remains available as `lastJob`. It ends the Job Episode without inferring a specific player/GIANTS termination subtype.
 
 - **GIANTS Sealed Value Traversal Compatibility** — immutable proxy collections require explicit traversal accessors because ordinary proxy traversal metamethods are not portable to the GIANTS Lua runtime.
-- **Polygon Field Identity** — read-only field identity obtained from exact containment within the authoritative field polygon collection. Zero or multiple matches are unresolved evidence, not a selection opportunity.
+- **Polygon Field Identity** — read-only source-field identity obtained from exact containment within the authoritative field polygon collection. Zero or multiple matches are unresolved evidence, not a selection opportunity.
 
 # v4.7.8 live evidence concepts
 

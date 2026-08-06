@@ -2,7 +2,7 @@
 
 ## v4.6.78 driving-system authority boundary
 
-Engineering governance in this document remains authoritative. Normative driving-system architecture now resides in `ARCHITECTURE.md`, `ARCHITECTURE_FLOW.md`, `DESIGN.md` and ADR-0019.
+Engineering governance in this document remains authoritative. Normative driving-system architecture now resides in `ARCHITECTURE.md`, `ARCHITECTURE_FLOW.md`, `DESIGN.md`, ADR-0019 and ADR-0021.
 
 Implementation must treat architecture, implementation and testing as separate activities. The first replacement-core implementation is passive lifecycle, Obligation and authority tracing; physical Control follows only after deterministic contract tests.
 

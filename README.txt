@@ -1,7 +1,9 @@
-FS25_OuttaMyWay v4.7.12 — Field World Equivalence Evidence Candidate
+FS25_OuttaMyWay v4.7.13 — Field World Equivalence Authority Architecture Candidate
 
-Canonical architecture authority: v4.6.78. Canonical implementation authority remains owner-declared v4.7.4 pending live validation and explicit declaration.
+Canonical baseline: owner-declared v4.7.12, ZIP SHA-256 126eec58ccdcb879cdb30eb4927f7f2ec7b84bf44858bf0d6e9a5a643025e0fb, Git commit 5883ccc995e65fff80c52b2802ef3090185c3fca.
 
-This passive closure candidate preserves the immutable Job-Seeded Field World Snapshot and exact geometry fingerprint, while recording bounded spatial-equivalence evidence for every recent polygon pair: area, perimeter, centroid, bounds, full canonical root vertices, topology, symmetric boundary distance, vertex containment and deterministic sampled overlap. The evidence is diagnostic only. Exact-fingerprint Operation grouping remains unchanged and explicitly provisional. Control authority remains disabled.
+This documentation-only candidate records the closed Field World Equivalence Authority contract. Field World identity is governed by coherent, positive spatial equivalence between immutable Job-Seeded Field World Snapshots. Exact fingerprints remain representation provenance and exact-representation evidence; they do not independently govern Field World or Operation identity. Comparison outcomes are SAME FIELD WORLD, DIFFERENT FIELD WORLD or UNRESOLVED. UNRESOLVED grants no Operation or Control authority.
 
-Run line: FS25_OuttaMyWay v4.7.12 Field World equivalence evidence loaded; exact-fingerprint Operation grouping remains provisional; Control authority disabled
+The active runtime is unchanged apart from the package version and entry-point comments. Exact-fingerprint Operation grouping remains the known provisional implementation limitation, and Control authority remains disabled.
+
+Run line: FS25_OuttaMyWay v4.7.13 Field World equivalence evidence loaded; exact-fingerprint Operation grouping remains provisional; Control authority disabled

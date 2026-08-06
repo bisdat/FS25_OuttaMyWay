@@ -2,9 +2,9 @@
 
 > **Authority:** Replacement-core design boundary
 >
-> **Currency:** canonical v4.6.78 Replacement-Core Architecture
+> **Currency:** v4.7.13 Field World Equivalence Authority Architecture Candidate; v4.6.78 remains the replacement-core foundation
 >
-> **Implementation status:** v4.7.2 implements the offline Observation, identity and Operational Picture foundation only
+> **Implementation status:** v4.7.12 passive runtime preserves immutable Field World evidence; ADR-0021 authority is not implemented; Control disabled
 
 ## Purpose
 

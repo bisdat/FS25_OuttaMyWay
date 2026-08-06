@@ -1,14 +1,22 @@
+## Field World Equivalence Authority
+
+The authoritative relation that resolves an immutable Job-Seeded Field World Snapshot as `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD` or `UNRESOLVED` against accepted Field World evidence. It requires positive spatial evidence and Field-World-wide coherence. Unresolved evidence grants no Operation or Control authority.
+
+## Exact Representation Fingerprint
+
+A compact reference to one canonical polygon representation. It preserves provenance, supports exact-representation comparison and exposes fingerprint collisions. It does not independently govern Field World or Operation identity.
+
 ## Seed-Dependent Boundary Representation
 
 The observed GIANTS behaviour in which different Job Episode seed positions inside the same experienced Field World produce different exact polygon vertex samples or exact fingerprints.
 
 ## Field World Equivalence Evidence
 
-Bounded measurements comparing two captured Field World polygons without asserting that they are identical: area, perimeter, centroid, bounds, topology, boundary distance, containment and sampled overlap.
+Bounded measurements comparing immutable Field World Snapshots: area, perimeter, centroid, bounds, topology, boundary distance, containment and sampled overlap. These measurements supply evidence to the authority relation; no individual measurement is identity authority.
 
 ## Field World Snapshot
 
-The immutable GIANTS-generated contiguous agronomic polygon captured at Job Episode creation. Its canonical geometry fingerprint governs Field World and Operation identity for that episode.
+The immutable GIANTS-generated contiguous agronomic polygon captured at Job Episode creation, together with its canonical representation, exact fingerprint, capture provenance and locators. The Snapshot is representation evidence; resolved Field World equivalence governs Operation identity.
 
 ## Player-Facing Field Locator
 
@@ -17,6 +25,7 @@ A historical/source field number used to direct the player to the relevant map a
 ## Supported-World Contract
 
 Field geometry is assumed stable during an active Job Episode. External mid-episode merging or splitting is not detected or reconciled.
+
 ## v4.6.78 replacement-core vocabulary
 
 **Governing Basis**  

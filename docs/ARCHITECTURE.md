@@ -1,24 +1,37 @@
 # Architecture
 
-## Field World Spatial Equivalence Evidence
+## Field World Equivalence Authority
 
-Exact sampled-boundary equality is not sufficient to describe experienced Field World identity. GIANTS can return different exact vertex samples for seeds inside the same merged agronomic area. v4.7.12 therefore preserves the exact fingerprint but measures spatial equivalence separately. Evidence includes area, perimeter, centroid, bounds, topology, symmetric boundary distance, containment and sampled overlap. This evidence is diagnostic only; it does not yet alter Operation identity authority.
+A Field World is the experienced contiguous agronomic workspace represented by one or more immutable Job-Seeded Field World Snapshots. Exact sampled-boundary equality is not required: GIANTS may return seed-dependent polygon representations for the same workspace. Player-facing field labels, farmland identity, seed position and exact fingerprints remain evidence or locators; none independently governs Field World or Operation identity.
 
-**Supported-world rule:** the polygon remains an immutable Job Episode snapshot. Mid-episode field mutation remains unsupported.
+Field World Equivalence Authority produces exactly one outcome when a Snapshot is resolved against established Field World evidence:
 
-## Job-Seeded Field World Snapshot
+- `SAME_FIELD_WORLD` — positive, coherent evidence establishes materially the same contiguous workspace;
+- `DIFFERENT_FIELD_WORLD` — positive separation evidence establishes materially different workspaces;
+- `UNRESOLVED` — evidence is insufficient, contradictory or only partially compatible.
 
-At the first positively observed moment of active field work, OuttaMyWay asks GIANTS for the contiguous agronomic polygon containing the worker. The polygon is canonicalised and fingerprinted, then captured as an immutable Field World Snapshot for that Job Episode. The Snapshot, not farmland identity or a historical field label, governs Operation identity. A replacement or restarted Job Episode captures the then-current polygon afresh. Mid-episode external field mutation is unsupported and does not cause identity drift.
+`SAME_FIELD_WORLD` requires compatible connected topology, reciprocal workspace coverage, bounded representation variation and no materially exclusive region. `DIFFERENT_FIELD_WORLD` requires positive evidence such as disconnected occupied regions, substantial mutually exclusive area, incompatible topology or material spatial separation. No individual metric may establish either result alone.
 
-Field labels remain a separate human-facing locator. Different labels may refer into one merged Field World; one label may refer to multiple split Field Worlds.
+Equivalence must remain coherent across the accepted evidence for the Field World as a whole. A pairwise match with one retained Snapshot is insufficient, and tolerance chaining must not construct an incoherent identity class.
 
-> **Authority:** Normative replacement-core architecture
->
-> **Currency:** canonical v4.6.78 Replacement-Core Architecture
->
-> **Implementation status:** v4.7.2 offline Operational Picture foundation; Candidate, Decision and Control remain unimplemented
->
-> **Governing ADR:** [ADR-0019](adr/ADR-0019-replacement-core-commitment-lifecycle.md)
+`UNRESOLVED` preserves the Snapshot and observation evidence but grants no authority to join or establish an Operation and cannot extend Control authority.
+
+## Representation provenance
+
+Every Job Episode retains its immutable GIANTS-generated polygon, canonical representation, exact fingerprint, capture provenance and player-facing locators. Recognising Field World equivalence does not merge, rewrite or discard those records. Exact canonical geometry equality is sufficient for `SAME_FIELD_WORLD`; an exact fingerprint remains a compact provenance reference and collision detector, and fingerprint equality alone is not independent Field World identity authority.
+
+## Operation consumption
+
+Operation admission consumes resolved Field World identity. An Operation remains ephemeral: successive Operations in the same Field World are not one persistent Operation. The active v4.7.12-derived implementation still groups by exact fingerprint and is therefore explicitly provisional and non-conforming with this authority contract.
+
+## Supported-world rule
+
+The polygon remains an immutable Job Episode Snapshot. Mid-episode external field merging or splitting is not reconciled. A restarted or replacement Job Episode captures current Reality.
+
+> **Authority:** Normative replacement-core architecture, extended by ADR-0021  
+> **Canonical implementation baseline:** owner-declared v4.7.12  
+> **Implementation status:** Field World Equivalence Authority not implemented; exact-fingerprint Operation grouping provisional; Control disabled  
+> **Governing ADRs:** [ADR-0019](adr/ADR-0019-replacement-core-commitment-lifecycle.md), [ADR-0021](adr/ADR-0021-field-world-equivalence-authority.md)
 
 ## 1. Purpose
 

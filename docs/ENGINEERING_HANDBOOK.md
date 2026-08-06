@@ -1,6 +1,6 @@
 ## v4.7.0 replacement-core implementation authority
 
-Canonical v4.6.78 is closed architecture. Active v4.7.x code implements it directly. Archived v4.6.78 scripts have empirical and historical value only and may not be sourced by the active runtime. Implementation difficulty is classified as implementation defect, adapter gap, evidence gap, unsupported capability or apparent architecture contradiction; only the last category stops for explicit owner review.
+Canonical v4.6.78 remains the closed replacement-core foundation. Later architecture may change only through an explicit evidence-backed owner decision and ADR; ADR-0021 is the sole bounded extension currently accepted. Active v4.7.x code implements the resulting architecture directly. Archived v4.6.78 scripts have empirical and historical value only and may not be sourced by the active runtime. Implementation difficulty is classified as implementation defect, adapter gap, evidence gap, unsupported capability or apparent architecture contradiction; only the last category stops for explicit owner review.
 
 # Engineering Handbook
 
@@ -11,7 +11,8 @@ The Handbook preserves accumulated engineering history and explanatory material.
 - `ARCHITECTURE.md`;
 - `ARCHITECTURE_FLOW.md`;
 - `DESIGN.md`;
-- ADR-0019.
+- ADR-0019;
+- ADR-0021 for Field World Equivalence Authority.
 
 Where older chapters describe Negotiation Manager, Permission Gate or controller-specific lifecycle ownership, treat those sections as historical explanation rather than the current replacement-core contract.
 

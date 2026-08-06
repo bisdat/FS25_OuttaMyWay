@@ -22,3 +22,4 @@ Architectural Decision Records preserve why significant choices were made. Statu
 - [ADR-0019 — Replacement-Core Commitment Lifecycle and Obligation Continuity](ADR-0019-replacement-core-commitment-lifecycle.md) — Accepted; owner-declared canonical in v4.6.78
 
 - [ADR-0020 — Replacement-Core Implementation Series](ADR-0020-replacement-core-implementation-series.md) — Accepted; implemented by v4.7.0 bootstrap
+- [ADR-0021 — Field World Equivalence Authority](ADR-0021-field-world-equivalence-authority.md) — Accepted architecture; implementation pending

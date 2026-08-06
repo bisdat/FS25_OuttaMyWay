@@ -1,61 +1,37 @@
 # FS25_OuttaMyWay Project Status
 
-> **Canonical baseline:** v4.7.4 Replay Conformance  
-> **Current candidate:** v4.7.12 Field World Equivalence Evidence  
+> **Canonical baseline:** v4.7.12 Field World Equivalence Evidence  
+> **Canonical ZIP SHA-256:** `126eec58ccdcb879cdb30eb4927f7f2ec7b84bf44858bf0d6e9a5a643025e0fb`  
+> **Canonical Git commit:** `5883ccc995e65fff80c52b2802ef3090185c3fca`  
+> **Current candidate:** v4.7.13 Field World Equivalence Authority Architecture  
 > **Control authority:** disabled
 
-## Closure gate
+## Closed architectural decision
 
-Run short serial starts in merged areas 68, 69 and 70, plus both disconnected parts of split 77. Confirm `GEOMETRY` and `COMPARE` evidence is emitted, exact 70 mismatches are measurable rather than lost, split 77 remains clearly spatially distinct, no Operation merging occurs from diagnostic equivalence, and all Job Episodes terminate cleanly. After this bounded gate, canonicalise v4.7.12 with the exact-fingerprint limitation explicitly retained.
+Field World identity is governed by coherent, positive spatial equivalence between immutable Job-Seeded Field World Snapshots. Exact fingerprints remain representation provenance but do not independently govern Field World or Operation identity.
 
-> **Canonical baseline:** v4.7.4 Replay Conformance  
-> **Current candidate:** v4.7.12 Field World Equivalence Evidence  
-> **Control authority:** disabled
+The authority result is one of:
 
-## v4.7.11 canonicalisation gate
+- `SAME_FIELD_WORLD`;
+- `DIFFERENT_FIELD_WORLD`;
+- `UNRESOLVED`.
 
-Run five concurrent workers with staggered starts: three seeded in merged areas 68, 69 and 70, plus one in each disconnected part of split field 77. Expected steady state: five active Job Episodes, three geometry Field Worlds and three active Operations. Stop workers individually and confirm independent split-77 settlement plus persistence of the merged Operation until its final member ends.
+Unresolved evidence grants no authority to establish or join an Operation and cannot extend Control authority. Equivalence must be coherent across the accepted Field World evidence as a whole; pairwise tolerance chaining is prohibited.
 
-> **Canonical baseline:** v4.7.4 Replay Conformance  
-> **Current candidate:** v4.7.12 Field World Equivalence Evidence  
-> **Candidate lineage:** exact v4.7.9 candidate bytes  
-> **Architecture authority:** canonical v4.6.78  
-> **Control authority:** disabled
+## Preserved closure evidence
 
-## Current understanding
+The merged 68–69–70 workspace produced four different exact fingerprints from serial seed positions while retaining identical bounds and topology and near-identical spatial comparison measures. The two disconnected portions retaining locator 77 remained materially separate and produced zero sampled overlap.
 
-v4.7.9 achieved **Live Replacement-Pipeline Closure**: real GIANTS active-job evidence crossed immutable Observation, Job Episode admission, field grouping, Operation admission and deterministic passive Decision with `control=false`.
+This evidence validates the required positive and negative classifications without establishing a universal numeric threshold.
 
-Two implementation boundaries remained:
+## Candidate scope
 
-1. farmland-to-field mapping produced numerically correct labels but gave farmland contextual evidence too much authority;
-2. a manually stopped Valtra Job Episode remained open because generic inactivity correctly did not prove termination.
+v4.7.13 records ADR-0021, D-0033, vocabulary, conformance and continuity updates. It makes no runtime identity or Operation-grouping implementation change.
 
-The user additionally confirmed that source fields 68, 69 and 70 retain individual map labels while forming one contiguous agronomic area.
+## Known implementation gap
 
-## v4.7.10 test boundary
+The active runtime still keys Operations by exact fingerprint. This is now a known non-conforming provisional mechanism rather than architectural authority. Control remains disabled.
 
-v4.7.10 therefore:
+## Next activity
 
-- establishes **Source Field Identity** only through exact source-field polygon containment;
-- records farmland identity as contextual containment only;
-- labels source-field Operation grouping as provisional;
-- passively invokes GIANTS `FieldCourseField.generateAtPosition` to discover the separate **Derived Field World Identity**;
-- reports the retained source field labels contained by that derived boundary;
-- ends a Job Episode only when its previous token matches `lastJob`, the authoritative active job slot is empty, the job is absent from mission active jobs and GIANTS AI state is inactive;
-- preserves unresolved inactivity and blockage as non-terminal;
-- performs no live Commitment mutation and no Control.
-
-## Required live evidence
-
-Repeat the Valtra field-68 stop followed by Condor and Patriot on field 77. The target result is:
-
-- source field 68 and 77 established from polygon evidence;
-- Valtra Job Episode and field-68 provisional Operation end after positive source-intent termination evidence;
-- Condor and Patriot retain stable Job Episodes through blockage;
-- one provisional source-field-77 Operation remains active;
-- GIANTS derived Field World probe completes without intervention;
-- merged 68–69–70 may be reported as one derived Field World containing three source labels;
-- all traces remain `control=false`.
-
-v4.7.10 remains non-canonical pending owner live evidence and explicit declaration.
+Implementation design must determine how the existing immutable evidence can satisfy ADR-0021's positive classification, uncertainty and class-wide coherence obligations. Architecture is closed; implementation mechanisms and thresholds are not yet accepted.

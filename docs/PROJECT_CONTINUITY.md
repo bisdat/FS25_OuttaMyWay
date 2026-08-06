@@ -1,5 +1,14 @@
 # Project Continuity
 
+## v4.7.13 architecture candidate boundary
+
+v4.7.13 derives from owner-declared canonical v4.7.12:
+
+- ZIP SHA-256: `126eec58ccdcb879cdb30eb4927f7f2ec7b84bf44858bf0d6e9a5a643025e0fb`
+- Git commit: `5883ccc995e65fff80c52b2802ef3090185c3fca`
+
+The candidate records Field World Equivalence Authority through ADR-0021 and D-0033. Runtime identity and Operation grouping are unchanged; exact-fingerprint grouping remains provisional and Control remains disabled.
+
 ## v4.7.3 implementation boundary
 
 v4.7.3 derives from owner-declared canonical v4.7.2:

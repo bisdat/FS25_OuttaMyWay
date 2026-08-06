@@ -1,3 +1,15 @@
+## v4.7.13 — Field World Equivalence Authority Architecture Candidate
+
+- Begins from owner-declared canonical v4.7.12 (`126eec58...e0fb`, Git `5883ccc995e65fff80c52b2802ef3090185c3fca`).
+- Records the closed **Field World Equivalence Authority** contract in ADR-0021 and D-0033.
+- Defines Field World identity as the experienced contiguous agronomic workspace represented by one or more immutable Job-Seeded Field World Snapshots.
+- Separates exact representation provenance from Field World identity authority: exact fingerprints remain preserved evidence but do not independently govern Field World or Operation identity.
+- Requires one of three authoritative comparison outcomes: `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD` or `UNRESOLVED`.
+- Requires positive spatial evidence and Field-World-wide coherence; no individual metric and no pairwise tolerance chain may establish identity alone.
+- Withholds Operation admission and Control authority when equivalence is unresolved.
+- Retains the supported-world boundary that mid-episode field mutation is not reconciled.
+- Makes no runtime identity, Operation-grouping, Decision, Commitment or Control implementation change. Exact-fingerprint Operation grouping remains the explicit provisional implementation limitation; `control=false` remains enforced.
+
 ## v4.7.12 — Field World Equivalence Evidence Candidate
 
 - Continues from exact v4.7.11 packaged bytes.

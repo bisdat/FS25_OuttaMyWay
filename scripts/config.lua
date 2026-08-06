@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.7.12 Field World equivalence evidence.
+-- FS25_OuttaMyWay v4.7.13 Field World Equivalence Authority architecture candidate; runtime implementation unchanged.
 -- Canonical architecture authority: v4.6.78.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.12"
+OuttaMyWay.VERSION = "4.7.13"
 OuttaMyWay.ARCHITECTURE_VERSION = "4.6.78"
 OuttaMyWay.RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_EVIDENCE"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false

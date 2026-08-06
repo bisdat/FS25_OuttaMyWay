@@ -1,25 +1,23 @@
 # FS25_OuttaMyWay Roadmap
 
-## Current gate — evidence-preserving canonical closure
+## Current gate — Field World Equivalence Authority implementation design
 
-Validate v4.7.12 passive equivalence logging, clean lifecycle and zero Control. Canonicalise with the known exact-fingerprint grouping limitation. The next architectural increment will decide the spatial-equivalence identity contract using the preserved evidence.
+Architecture is closed by ADR-0021 and D-0033. The next activity is implementation design, not further identity-semantics discussion.
 
-## Current gate — Geometry Field World identity
+The design must:
 
-Validate v4.7.11 under the agreed five-worker parallel scenario. If merged equivalence, split separation, lifecycle, performance and passivity all hold, v4.7.11 is suitable for owner canonicalisation consideration.
+1. preserve every immutable Job-Seeded Field World Snapshot and exact fingerprint;
+2. produce `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD` or `UNRESOLVED`;
+3. use positive spatial evidence rather than one authoritative threshold;
+4. prevent pairwise tolerance chaining through Field-World-wide coherence;
+5. withhold Operation admission and Control authority when unresolved;
+6. preserve the ephemeral Operation lifecycle and the unsupported mid-episode mutation boundary.
 
-> **Current implementation candidate:** v4.7.12 Field World Equivalence Evidence
+The merged 68–69–70 and disconnected split-77 evidence are mandatory positive and negative fixtures. An explicit ambiguous fixture is required before implementation authority can be considered complete.
 
-## Immediate gate
-
-Validate three identities and one lifecycle boundary independently:
-
-1. source field labels from exact polygons;
-2. farmland as context only;
-3. GIANTS-derived contiguous Field World boundaries, including merged source fields;
-4. positive source-intent termination through `lastJob` and active-job cessation.
-
-The gate remains closed to Commitment mutation and Control.
+> **Current canonical baseline:** v4.7.12  
+> **Current implementation candidate:** v4.7.13 Field World Equivalence Authority Architecture  
+> **Control authority:** disabled
 
 ## v4.7.x implementation sequence
 
@@ -33,7 +31,7 @@ The gate remains closed to Commitment mutation and Control.
 8. **Targeted active-job and field evidence** — v4.7.8 evidence build.
 9. **GIANTS-compatible immutable traversal and passive pipeline closure** — v4.7.9 evidence build.
 10. **Source-field authority, derived Field World discovery and source-intent termination** — v4.7.10 candidate.
-11. **Derived Field World Operation identity** — only after live boundary evidence establishes how merged and unmerged fields are represented.
+11. **Field World Equivalence Authority implementation** — satisfy ADR-0021 using preserved positive, negative and unresolved fixtures before Operation identity or Control authority advances.
 12. **First exclusive vertical slice** — one bounded Hold/release lifecycle owned entirely by the replacement core, only after the passive gates pass.
 13. **Controlled expansion** — one canonical capability or lifecycle boundary per evidence-backed increment.
 

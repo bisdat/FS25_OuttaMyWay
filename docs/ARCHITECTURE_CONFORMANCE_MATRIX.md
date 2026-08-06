@@ -1,28 +1,24 @@
 # Architecture Conformance Matrix
 
-| Concern | Canonical requirement | v4.7.12 state | Status |
+| Concern | ADR-0021 requirement | v4.7.13 candidate state | Status |
 |---|---|---|---|
-| Field World snapshot | capture once at Job Episode creation | retained immutable | conforming |
-| Exact representation | preserve evidence | full canonical root ring and fingerprint | conforming |
-| Spatial equivalence | describe experienced workspace | bounded diagnostic metrics only | evidence available; authority deferred |
-| Operation grouping | same Field World only | still exact-fingerprint keyed | known provisional limitation |
-| Control | disabled | enforced | conforming |
+| Snapshot evidence | immutable per Job Episode | retained unchanged | conforming |
+| Exact representation | provenance, not independent identity authority | canonical polygon and fingerprint retained | conforming |
+| Field World authority | coherent positive spatial equivalence | architecture recorded; runtime not implemented | implementation gap |
+| Authority outcomes | same, different or unresolved | architecture recorded; diagnostics currently non-authoritative | implementation gap |
+| Coherence | evaluate accepted Field World evidence as a whole | no authoritative class-wide resolver | implementation gap |
+| Operation grouping | consume resolved Field World identity | still exact-fingerprint keyed | known provisional non-conformance |
+| Unresolved evidence | no Operation or Control authority | Control disabled; Operation admission path requires redesign | partially conforming |
+| Mid-episode mutation | unsupported; Snapshot fixed | retained immutable | conforming |
+| Control | disabled until identity authority is validated | enforced | conforming |
 
-| Concern | Canonical requirement | v4.7.11 state | Validation |
-|---|---|---|---|
-| Field World identity | Experienced contiguous agronomic polygon | Job-seeded immutable geometry fingerprint | merged/split parallel live run |
-| Player locator | Useful map-area communication, not identity | source field or contextual farmland label retained separately | locators 68,69,70,77,77 |
-| Operation grouping | Same Field World only | keyed by geometry fingerprint | expected global Operations = 3 |
-| Mid-episode mutation | No identity drift | unsupported external mutation; snapshot fixed | structural/offline gate |
-| Control | disabled during passive validation | enforced | live `control=false` |
+## Preserved validation fixtures
 
-| Concern | Canonical requirement | v4.7.10 state | Status | Next evidence |
-|---|---|---|---|---|
-| Source field identity | Retained field label requires exact source-field polygon evidence | Polygon-only authority; farmland contextual | Implemented offline | live 68 and 77 |
-| Derived Field World | Experienced contiguous workspace may differ from retained source labels | GIANTS field-course boundary probe, diagnostic only | Implemented offline | merged 68–69–70 discovery |
-| Job Episode termination | Missing evidence never implies termination | Matching inactive `lastJob` and active-job cessation required | Implemented offline | manual Valtra stop |
-| Blockage continuity | Blockage does not end the Job Episode | Stable source token preserved | Enforced | TS015 final blockage |
-| Control boundary | No physical authority before passive gates pass | No live Commitment mutation; Control disabled | Enforced | live non-intervention |
+| Fixture | Required result | Preserved evidence |
+|---|---|---|
+| merged 68–69–70 | `SAME_FIELD_WORLD` | four distinct exact fingerprints; identical bounds/topology; near-identical spatial measures |
+| disconnected split 77 | `DIFFERENT_FIELD_WORLD` | materially different geometry and separation; zero sampled overlap |
+| ambiguous or contradictory geometry | `UNRESOLVED` | no authority; dedicated implementation fixture still required |
 
 > **Currency:** canonical v4.6.78 Replacement-Core Architecture
 >

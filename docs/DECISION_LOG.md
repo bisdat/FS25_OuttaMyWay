@@ -1,16 +1,26 @@
+## D-0033 — Field World Equivalence Authority Governs Field World and Operation Identity
+
+**Status:** Accepted architecture; recorded by v4.7.13 candidate
+
+**Decision:** Field World identity is governed by coherent, positive spatial equivalence between immutable Job-Seeded Field World Snapshots. Exact fingerprints identify and preserve exact representations but do not independently govern Field World or Operation identity. Resolution produces `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD` or `UNRESOLVED`. Unresolved evidence grants no Operation admission or Control authority. Equivalence must remain coherent across the complete accepted Field World evidence; pairwise tolerance chaining is prohibited.
+
+**Evidence:** Four captures in the merged 68–69–70 workspace had different exact fingerprints but identical bounds and topology, no islands and near-identical spatial measures. The two disconnected portions retaining locator 77 had materially different areas and bounds, large separation and zero sampled overlap.
+
+**Consequence:** D-0030's exact-fingerprint authority is superseded. The current runtime grouping remains a documented provisional implementation limitation until a separately agreed and validated implementation satisfies ADR-0021.
+
 ## D-0032 — Separate Exact Boundary Representation from Spatial Field World Equivalence
 
-**Status:** Accepted for v4.7.12 evidence-preserving closure
+**Status:** Accepted evidence boundary; authority resolved by D-0033
 
 **Decision:** Preserve exact geometry fingerprints, but no longer treat exact equality as a proven complete model of Field World identity. Record bounded spatial-equivalence evidence without granting it Operation identity authority.
 
-**Evidence:** merged areas 68 and 69 produced fingerprint `1976144548-1796621558`; a first seed in old 70 produced `1881312117-1088295105`; a deliberate geometric-centre seed in old 70 produced `1638971498-1186204168`. All reported 15 points and identical outer bounds.
+**Evidence:** the completed v4.7.12 closure produced four different exact fingerprints across serial seeds in merged areas 68, 69 and 70. All four retained the same 14 unique boundary points after closed-ring normalisation, identical bounds, identical topology and near-identical spatial comparison measures.
 
 **Known limitation:** Operations remain grouped by exact fingerprint in this closure candidate. Spatial equivalence is diagnostic only.
 
 ## D-0030 — Geometry Fingerprint Governs Field World and Operation Identity
 
-**Status:** Accepted for v4.7.11 passive live validation
+**Status:** Superseded by D-0033; retained as the provisional v4.7.11 implementation decision
 
 **Decision:** Capture the GIANTS-generated contiguous agronomic polygon once at Job Episode creation. Canonicalise its representation and use its stable geometry fingerprint as Field World identity. Group Operations by that identity. Preserve source/farmland-derived field numbers only as player-facing locators.
 

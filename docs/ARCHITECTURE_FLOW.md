@@ -2,9 +2,9 @@
 
 > **Authority:** Normative replacement-core responsibility and lifecycle map
 >
-> **Currency:** canonical v4.6.78 Replacement-Core Architecture
+> **Currency:** v4.7.13 Field World Equivalence Authority Architecture Candidate; v4.6.78 remains the replacement-core foundation
 >
-> **Implementation status:** v4.7.3 offline Candidate, mandatory Constraint Verdict and deterministic Decision foundation; replay, Commitment mutation and Control remain unimplemented
+> **Implementation status:** v4.7.12 passive runtime reaches deterministic Decision with immutable Field World evidence; ADR-0021 identity authority, live Commitment mutation and Control remain unimplemented
 
 ## 1. Closed-loop responsibility flow
 

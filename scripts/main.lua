@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.11 job-seeded Field World identity entry point.
+-- FS25_OuttaMyWay v4.7.13 Field World Equivalence Authority architecture candidate entry point; runtime implementation unchanged.
 -- modDesc.xml loads only this file. Historical archived modules are never sourced.
 local modDirectory=g_currentModDirectory or ""
 local modules={

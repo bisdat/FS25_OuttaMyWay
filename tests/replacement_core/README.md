@@ -1,5 +1,7 @@
 # Replacement-Core Conformance Tests
 
+v4.7.13 is an architecture-recording increment. It adds no runtime identity behaviour; the existing v4.7.12 tests continue to prove deterministic geometry evidence, split/near-equivalent comparison and the guard that diagnostic equivalence does not merge Operations.
+
 v4.7.12 adds deterministic geometry metrics, near-equivalent and split-polygon comparison checks, bounded evidence retention and a guard proving diagnostic equivalence does not merge Operations.
 
 v4.7.11 adds polygon canonicalisation invariance, split-polygon distinction, immutable Job Episode binding, three-Operation concurrent grouping and global Operation trace coverage.

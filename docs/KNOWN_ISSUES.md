@@ -1,20 +1,20 @@
 # Known Issues
 
-## Exact fingerprint is not a complete Field World identity relation
+## Field World Equivalence Authority is not implemented
 
-Live evidence shows multiple exact fingerprints for seeds inside the same merged agronomic workspace. v4.7.12 retains exact-fingerprint Operation grouping only as a documented provisional limitation. Spatial equivalence measurements are diagnostic and do not merge Operations.
+ADR-0021 supersedes exact-fingerprint identity authority, but the active runtime still keys Operations by exact fingerprint. This can fragment one experienced Field World when GIANTS supplies seed-dependent polygon representations. The mechanism remains passive and provisional; Control is disabled.
+
+## Authoritative classification mechanism remains undesigned
+
+The repository preserves useful metrics—area, perimeter, centroid, bounds, topology, boundary distance, containment and sampled overlap—but no individual metric or fixed tolerance has architectural authority. Implementation must establish coherent positive same-world or different-world evidence and preserve `UNRESOLVED` when evidence is insufficient or contradictory.
 
 ## Field geometry mutation during active work
 
-OuttaMyWay deliberately does not detect or reconcile field merging/splitting after a Job Episode has begun. The Field World Snapshot is immutable until episode termination.
+OuttaMyWay deliberately does not detect or reconcile field merging or splitting after a Job Episode has begun. The Field World Snapshot is immutable until episode termination.
 
-## Fingerprint tolerance
+## Fingerprint collision and provenance
 
-Identity canonicalisation quantises coordinates to 0.1 m to remove insignificant generation/order variation. Raw polygon coordinates are retained separately. A runtime fingerprint collision is treated as unresolved evidence rather than grouping distinct worlds.
-
-## Derived Field World identity
-
-Source field polygon identity is implemented. The GIANTS field-course boundary is diagnostic-only in v4.7.10 and does not yet replace provisional source-field grouping. Merged-field identity must be validated live before it governs Operation identity.
+Identity canonicalisation quantises coordinates to 0.1 m and retains raw polygon coordinates separately. An exact fingerprint is representation provenance, not Field World identity authority. A fingerprint collision remains unresolved evidence rather than permission to group distinct worlds.
 
 ## Source termination cause classification
 
