@@ -1,0 +1,37 @@
+Path,Disposition,Evidence/Value,Reuse Boundary
+scripts/main.lua,ADAPT_ENTRY_INFRASTRUCTURE,Loader ordering only,Replace active module list/gating deliberately; no legacy authority
+scripts/config.lua,ADAPT_ENTRY_INFRASTRUCTURE,Retain empirical values as evidence,Split replacement configuration from legacy flags; no architectural defaults inferred
+scripts/diagnostics/Logger.lua,RETAIN_INFRASTRUCTURE,Structured logging,Wrap/extend for canonical record identities and epochs
+scripts/settings/Settings.lua,RETAIN_INFRASTRUCTURE,Settings persistence/UI infrastructure,Must not control architectural legality
+scripts/settings/ConsoleCommands.lua,RETAIN_INFRASTRUCTURE,Development command registration,No command may bypass Commitment/Control admission
+scripts/events/OuttaMyWayStateEvent.lua,RETAIN_INFRASTRUCTURE,Network/UI state transport,Payload must come from replacement records later
+scripts/observer/EventBus.lua,RETAIN_INFRASTRUCTURE,Generic event dispatch,No semantic ownership
+scripts/observer/NativeAI.lua,RETAIN_MECHANISM_DONOR,Raw GIANTS AI observations,Emit provenance-rich facts only
+scripts/observer/WorkerState.lua,REIMPLEMENT_CONCEPT,Useful fact extraction mixed with interpretation,"Produce Observation records, not lifecycle meaning"
+scripts/observer/Observer.lua,REIMPLEMENT_CONCEPT,Vehicle enumeration and sampling donor,New immutable ObservationSnapshot publisher
+scripts/observer/InteractionContexts.lua,REIMPLEMENT_CONCEPT,Situation grouping evidence,Must not define authoritative Encounter/Decision
+scripts/observer/ConflictPredictor.lua,REIMPLEMENT_CONCEPT,Prediction calculations/evidence,Publish Knowledge with uncertainty and fitness
+scripts/prediction/VectorPrediction.lua,REIMPLEMENT_CONCEPT,Mathematical donor,No action selection; expose provenance/fitness
+scripts/prediction/CourseLookahead.lua,REIMPLEMENT_CONCEPT,GIANTS course observation donor,No predictive Hold recommendation authority
+scripts/geometry/FieldBoundary.lua,RETAIN_MECHANISM_DONOR,Field boundary and ray calculations,Must support full-envelope containment contract
+scripts/geometry/PhysicalEnvelopeEvidence.lua,RETAIN_MECHANISM_DONOR,Physical representation evidence,Action-specific fitness required before authority
+scripts/geometry/FacingExtentProvider.lua,RETAIN_MECHANISM_DONOR,Extent calculations,Expose provenance and conservative limits
+scripts/geometry/ShadowClearanceCalculator.lua,REIMPLEMENT_CONCEPT,Clearance calculation donor,No selected refuge or policy authority
+scripts/geometry/catalogues/CondorEndurance2CollisionCatalogue.lua,EVIDENCE_ONLY,Fixture-specific empirical geometry,Not general authority; usable through explicit provenance
+scripts/decision/ShadowRefugeCandidateComparison.lua,REIMPLEMENT_CONCEPT,Candidate evidence donor,Publish all supportable candidates; no preselection
+scripts/decision/AutomaticEncounterAdmission.lua,REIMPLEMENT_CONCEPT,Admission observations and failure evidence,New Job Episode/Governing Basis contracts replace encounter latch semantics
+scripts/decision/DecisionEngine.lua,DISCARD_GOVERNING_CORE,Procedural score/fallback/commit logic,No import or adaptation into replacement Decision
+scripts/control/TrafficDecisionEngineV2.lua,DISCARD_GOVERNING_CORE,Legacy recommendation engine,Replaced by Candidate Space + constraints + Decision
+scripts/control/TrafficManagerV2.lua,DISCARD_GOVERNING_CORE,Legacy orchestration,Replaced by runtime/Runtime.lua
+scripts/control/TrafficExecutorV2.lua,DISCARD_GOVERNING_CORE,Legacy executor/lifecycle coupling,Physical primitives only through new capability adapters
+scripts/control/EncounterController.lua,DISCARD_GOVERNING_CORE,Legacy encounter authority,Replaced by Commitment/Authority contracts
+scripts/control/TrafficPermissionGate.lua,RETAIN_MECHANISM_DONOR,Proven Hold permission mechanism,Wrap as narrow Hold capability; no role/release Decision
+scripts/control/SingleWorkerDelayController.lua,EVIDENCE_ONLY,Hold experiment and logs,Do not reuse role selection or controller lifecycle
+scripts/control/UnilateralSidestepController.lua,RETAIN_MECHANISM_DONOR,Movement/configuration physical discoveries,Extract narrow primitives; discard phase/role/completion core
+scripts/control/RecoveryHandoff.lua,REIMPLEMENT_CONCEPT,GIANTS handback evidence,New capability outcome; Commitment owns sufficiency
+scripts/reservation/ReservationEngine.lua,REIMPLEMENT_CONCEPT,Reservation evidence,AuthorityRegistry/ActuationComposition own canonical semantics
+scripts/core/Runtime.lua,DISCARD_GOVERNING_CORE,"Legacy orchestration, Decision, recovery and direct Control",Mine named physical functions only; never call as replacement core
+scripts/ui/Hud.lua,RETAIN_INFRASTRUCTURE,HUD rendering,Later consume replacement status; preserve colour-blind boundary
+scripts/diagnostics/AIFieldCourseExplorer.lua,EVIDENCE_ONLY,GIANTS course discovery,No runtime authority
+scripts/prototypes/*,EVIDENCE_ONLY,"Empirical observations, fixtures and calculations",Function-level donors require explicit reclassification
+scripts/events/*,RETAIN_INFRASTRUCTURE,Generic event plumbing,No architectural semantics
