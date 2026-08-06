@@ -6,9 +6,16 @@ local forbiddenSemanticFields = {
     commitmentState = true,
     commitmentAction = true,
     terminalCause = true,
+    terminalDisposition = true,
     admissibility = true,
     strategy = true,
-    jobEpisodeEnded = true
+    jobEpisodeEnded = true,
+    operationParticipation = true,
+    situationRelevance = true,
+    obstacleRelevance = true,
+    representationFitness = true,
+    responsibilityRelation = true,
+    selectedRepresentation = true
 }
 
 local function rejectSemanticFields(value, path, seen)

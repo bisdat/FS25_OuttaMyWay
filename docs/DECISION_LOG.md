@@ -1,3 +1,14 @@
+# D-0101 — Split deterministic reasoning at the Knowledge boundary
+
+**Date:** 2026-08-06  
+**Status:** Accepted implementation sequencing; implemented by v4.7.2 candidate
+
+**Decision:** Implement admitted Operation identity and Situation Assessment → Operational Picture as an offline gate before Candidate Action generation, mandatory Constraint Verdicts or Decision selection.
+
+**Reason:** The canonical architecture assigns Knowledge construction to Situation Assessment and prohibits action choice there. Separating this boundary gives direct executable evidence that uncertainty, Representation Fitness and responsibility relations remain Knowledge rather than hidden Decision authority.
+
+**Consequence:** v4.7.2 has no Candidate, Decision or Control implementation. The next increment may consume only sealed Operational Pictures. This changes implementation order only and introduces no architectural concept.
+
 # D-0100 — Begin the v4.7.x replacement-core implementation series
 
 **Date:** 2026-08-06  

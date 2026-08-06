@@ -1,32 +1,45 @@
 # Replacement-Core Implementation Plan
 
 > **Architecture authority:** canonical v4.6.78  
-> **Current gate:** v4.7.0 bootstrap
+> **Current gate:** v4.7.2 Knowledge boundary
 
 ## Gate 0 — clean implementation boundary
 
-- archive the exact v4.6.78 active script tree;
-- make the archive non-executable;
-- establish active `scripts/` as the replacement core;
-- implement inert contracts, lifecycle, obligations and authority;
-- pass offline conformance and one basic FS25 load test.
-
-Exit: owner-canonicalised v4.7.0.
+Completed by owner-canonicalised v4.7.0.
 
 ## Gate 1 — Observation and identity
 
-- emit immutable raw Observation Snapshots;
-- establish assembly, Job Episode and Operation identity evidence;
-- distinguish blockage/Hold/inactivity from genuine Job Episode termination;
+Completed by owner-canonicalised v4.7.1:
+
+- immutable raw Observation Snapshots;
+- stable assembly/component identity;
+- independently admitted Job Episodes;
+- genuine termination distinguished from blockage, Hold and temporary inactivity.
+
+## Gate 2A — Knowledge boundary
+
+v4.7.2 candidate:
+
+- admitted Operation identity and dynamic membership evidence;
+- Situation Assessment;
+- immutable Operational Picture;
+- Current/Future Space and three demand classes;
+- Situation/Encounter and responsibility relationships;
+- uncertainty and Representation Fitness;
 - no Candidate, Decision or Control authority.
 
-## Gate 2 — deterministic architecture kernel
+## Gate 2B — deterministic Decision boundary
 
-- Situation Assessment and Operational Picture;
 - complete supportable Candidate Action Space;
 - explicit mandatory Constraint Verdicts;
 - deterministic Decision Records;
-- replay conformance.
+- no physical authority.
+
+## Gate 2C — replay conformance
+
+- historical positive and negative fixtures;
+- identical sealed inputs produce identical records;
+- mandatory architecture suite clean before live validation.
 
 ## Gate 3 — passive live validation
 
@@ -38,7 +51,6 @@ Exit: owner-canonicalised v4.7.0.
 ## Gate 4 — first exclusive vertical slice
 
 - one replacement-owned Hold/release lifecycle;
-- legacy authority disabled for that exact scope;
 - Terminal Settlement evidenced;
 - no mixed ownership.
 

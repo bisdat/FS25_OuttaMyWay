@@ -1,15 +1,23 @@
 # Known Issues
 
-> **Currency:** v4.7.1 Observation and Job Episode Identity Candidate
+> **Currency:** v4.7.2 Operational Picture Candidate
 
-## No live gameplay functionality
+## Expected absence of gameplay behaviour
 
-v4.7.1 publishes Observation records only when supplied explicit offline fixture input. It registers no GIANTS listener, performs no worker coordination, produces no HUD output and issues no physical intervention. This is the expected implementation stage, not a regression.
+v4.7.2 constructs Operational Pictures only when supplied explicit sealed fixture input. It registers no GIANTS listener, performs no worker coordination, produces no HUD output and issues no physical intervention. This is the expected implementation stage, not a regression.
 
-## Raw live evidence adapters remain unimplemented
+## Live Observation remains deliberately absent
 
-The v4.7.1 Runtime Observation Adapter proves the clean contract and identity path with plain fixture facts. The GIANTS-specific sampling mechanism is deliberately deferred to the passive-live gate and must not be inferred from archived observer code.
+The current Runtime Observation Adapter proves clean contracts and identity paths with plain fixture facts. The GIANTS-specific sampling mechanism is deliberately deferred to the passive-live gate and must not be inferred from archived observer code.
 
-## Deferred implementation
+## Spatial calculations are evidence carriers, not live geometry algorithms
 
-Operation identity/admission, Situation Assessment, Candidate Action generation, mandatory constraints, Decision, replay and all physical capabilities remain absent. Their absence must not be filled by importing archived legacy modules.
+v4.7.2 accepts sealed Current Space, Future Space, demand and relationship evidence and publishes canonical Knowledge. It does not yet construct live physical envelopes, sweeps or predictions. This avoids inventing geometry while implementing the canonical ownership boundary.
+
+## Candidate, Decision and Control are absent
+
+No Candidate Action Space, mandatory Constraint Engine, Decision selector or Control capability is active. Representation Fitness states limit Knowledge claims but cannot yet grant or deny physical authority.
+
+## Multiplayer remains unverified
+
+No replacement-core multiplayer validation has been performed. There is no active Control behaviour to synchronise at this stage.

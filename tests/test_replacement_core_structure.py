@@ -58,3 +58,31 @@ def test_no_decision_or_control_implementation_added():
     active_text = "\n".join(p.read_text(encoding="utf-8") for p in (ROOT / "scripts").rglob("*.lua") if "archive" not in p.parts)
     assert "DecisionSelector" not in active_text
     assert "ControlAdmission" not in active_text
+
+
+def test_operational_picture_modules_are_offline_and_active():
+    main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
+    for rel in ("scripts/identity/OperationAdmission.lua", "scripts/assessment/RepresentationFitness.lua", "scripts/assessment/SituationAssessment.lua"):
+        assert rel in main
+    runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
+    assert "processSealedObservation" in runtime
+    for token in ("addModEventListener", "updateTick", "g_currentMission", "AIFieldWorker", "driveToPoint"):
+        assert token not in runtime
+
+
+def test_no_candidate_decision_or_control_implementation_in_v472():
+    assert not (ROOT / "scripts" / "candidates").exists()
+    assert not (ROOT / "scripts" / "constraints").exists()
+    assert not (ROOT / "scripts" / "decision").exists()
+    assert not (ROOT / "scripts" / "control").exists()
+    active_text = "\n".join(p.read_text(encoding="utf-8") for p in (ROOT / "scripts").rglob("*.lua") if "archive" not in p.parts)
+    assert "DecisionSelector" not in active_text
+    assert "ConstraintEngine" not in active_text
+    assert "ControlAdmission" not in active_text
+
+
+def test_situation_assessment_does_not_source_archive():
+    text = (ROOT / "scripts" / "assessment" / "SituationAssessment.lua").read_text(encoding="utf-8")
+    assert "scripts/archive" not in text
+    for token in ("TrafficDecisionEngineV2", "EncounterController", "ShadowRefugeCandidateComparison"):
+        assert token not in text

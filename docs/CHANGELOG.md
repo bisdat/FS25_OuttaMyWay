@@ -1,3 +1,13 @@
+## v4.7.2 — Operational Picture Candidate
+
+- Begins from owner-declared canonical v4.7.1 (`e51099a5...403c7`, Git `b4d90dc458c1044090be35bf38e14197e0131aa7`).
+- Adds independently admitted Operation identity and dynamic membership evidence without treating missing membership evidence as termination.
+- Adds deterministic Situation Assessment that transforms one immutable Observation Snapshot plus canonical identity context into one immutable Operational Picture.
+- Publishes Situation and Encounter relationships, Current Space, bounded Future Space, Committed Demand, Potential Demand, Temporary Slack, responsibility relations, uncertainty and current Commitment context.
+- Implements the five canonical Representation Fitness knowledge states and preserves No Silent Under-Approximation risk explicitly.
+- Proves Follower Owns Closure as Knowledge only; no Yield/Progress role, Candidate Action, Decision or Control authority is selected.
+- Adds no GIANTS listener, Candidate generator, constraint engine, Decision selector or Control path.
+
 ## v4.7.1 — Observation and Job Episode Identity Candidate
 
 - Begins from owner-declared canonical v4.7.0 (`08577eb...2d5`, Git `49c01602b10546c3e61d180703f982e2f0d4d9ef`).

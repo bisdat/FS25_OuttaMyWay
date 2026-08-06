@@ -4,7 +4,7 @@
 >
 > **Currency:** canonical v4.6.78 Replacement-Core Architecture
 >
-> **Implementation status:** v4.7.1 offline Observation and Job Episode identity foundation; Situation Assessment, Decision and Control remain unimplemented
+> **Implementation status:** v4.7.2 offline Operational Picture foundation; Candidate, Decision and Control remain unimplemented
 
 ## 1. Closed-loop responsibility flow
 

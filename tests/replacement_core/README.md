@@ -1,10 +1,12 @@
-# Replacement-Core Offline Tests
+# Replacement-Core Conformance Tests
 
 Run from the repository root:
 
-```bash
-lua tests/replacement_core/run.lua .
-python -m pytest -q
+```text
+lua tests/replacement_core/run.lua
+pytest -q
 ```
 
-v4.7.1 validates the canonical inert kernel plus the offline Observation and Job Episode identity/admission foundation. It does not connect to GIANTS, construct Knowledge, generate candidates, select Decisions or issue Control.
+v4.7.2 validates the canonical inert kernel, raw Observation and Job Episode identity/admission foundation, admitted Operation identity and deterministic Situation Assessment publication of an immutable Operational Picture.
+
+It does not connect to GIANTS, generate Candidate Actions, evaluate mandatory Constraint Verdicts, select Decisions or issue Control.

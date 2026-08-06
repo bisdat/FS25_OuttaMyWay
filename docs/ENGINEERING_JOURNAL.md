@@ -1,3 +1,9 @@
+## 2026-08-06 — v4.7.2 Operational Picture
+
+Implemented the next offline canonical boundary from owner-declared canonical v4.7.1. Added admitted Operation identity, Situation Assessment, Operational Picture publication, the three canonical demand classes, relationship Knowledge, uncertainty and all five Representation Fitness states. No GIANTS hook, Candidate, Decision or Control path was added.
+
+The tests celebrate two negative results as useful enforcement: incomplete Operation membership evidence does not end an Operation, and partial non-conservative representation cannot become all-clear Knowledge.
+
 # v4.7.0 — Replacement-Core Bootstrap
 
 Canonical v4.6.78 closed the architecture. v4.7.0 begins implementation from an inert active tree rather than another overlay. The former 48-file Lua tree is preserved byte-exactly as non-executable donor and failure evidence. The active kernel now enforces immutable records, the three-state Commitment lifecycle, explicit Obligation ownership, exclusive progress authority and structural Effective Actuation Composition.

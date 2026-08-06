@@ -1,7 +1,7 @@
 # Engineering Handover
 
-> **Candidate:** v4.7.1 Observation and Job Episode Identity  
-> **Implementation baseline:** canonical v4.7.0  
+> **Candidate:** v4.7.2 Operational Picture  
+> **Implementation baseline:** canonical v4.7.1  
 > **Architecture authority:** canonical v4.6.78
 
 ## Repository boundary
@@ -11,26 +11,30 @@ Active `scripts/` is the replacement core. The exact former tree remains under `
 Do not:
 
 - import archived modules;
-- infer Job Episode meaning from old observer code;
-- connect v4.7.1 to a live GIANTS update loop;
-- add Situation Assessment, Decision or Control to this increment;
-- treat absence, blockage, Hold or temporary inactivity as Job Episode termination.
+- infer Knowledge or fitness from old observer/controller code;
+- connect v4.7.2 to a live GIANTS update loop;
+- add Candidate, Decision or Control responsibilities to Situation Assessment;
+- treat missing Operation membership evidence as membership zero;
+- represent unknown or partial geometry as smaller or exact.
 
 ## Current foundation
 
-The Runtime now instantiates:
+The Runtime accepts sealed fixture input and performs:
 
-- stable assembly/component identity resolution;
-- raw Observation Snapshot publication;
-- Job Episode admission and lifecycle evidence classification;
-- the canonical v4.7.0 Commitment, Obligation and authority structural kernel.
+```text
+Observation Snapshot
+    → Job Episode admission
+    → Operation admission
+    → Situation Assessment
+    → immutable Operational Picture
+```
 
-It registers no game listener and issues no physical command.
+The Operational Picture publishes identities, relationships, spaces, demand classes, responsibility Knowledge, uncertainty, Representation Fitness, outcome evidence and read-only Commitment context. It registers no game listener and issues no physical command.
 
 Expected optional game-load log:
 
 ```text
-FS25_OuttaMyWay v4.7.1 observation/identity foundation loaded; Control authority disabled
+FS25_OuttaMyWay v4.7.2 Operational Picture foundation loaded; Control authority disabled
 ```
 
 ## Validation before canonicalisation
@@ -40,11 +44,14 @@ FS25_OuttaMyWay v4.7.1 observation/identity foundation loaded; Control authority
 - Lua integrated-load and conformance tests;
 - Python structural tests;
 - archive byte verification;
-- Observation semantic-exclusion tests;
-- all canonical Job Episode continuation and termination fixtures.
+- Operation identity and membership fixtures;
+- snapshot-to-picture deterministic tests;
+- all five canonical Representation Fitness states;
+- No Silent Under-Approximation assertions;
+- no Candidate, Decision or Control implementation.
 
 A live FS25 cycle is not required because no runtime sampling hook or gameplay behaviour has changed.
 
 ## Next increment after canonicalisation
 
-Implement Situation Assessment, Operational Picture publication, complete Candidate Action Space, mandatory Constraint Verdicts and deterministic Decision selection using only sealed fixture inputs. Control remains disabled.
+Implement the complete supportable Candidate Action Space, explicit mandatory Constraint Verdicts and deterministic Decision Records using only sealed Operational Picture fixtures. Control remains disabled.

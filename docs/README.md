@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** v4.7.1 Observation and Job Episode Identity Candidate; architecture authority remains canonical v4.6.78
+> **Currency:** v4.7.2 Operational Picture Candidate; architecture authority remains canonical v4.6.78
 
 This repository is a self-sustaining engineering knowledge system. It must preserve project continuity independently of any chat, engineer, AI system or platform.
 

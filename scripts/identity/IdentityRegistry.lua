@@ -16,7 +16,10 @@ local defaultPrefixes = {
     CONTROL_OUTCOME = "CO",
     ASSEMBLY = "AS",
     COMPONENT = "CP",
-    JOB_EPISODE = "JE"
+    JOB_EPISODE = "JE",
+    OPERATION = "OR",
+    SITUATION = "SI",
+    ENCOUNTER = "EN"
 }
 
 function IdentityRegistry.new(prefixes)

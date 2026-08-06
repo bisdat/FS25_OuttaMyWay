@@ -7,7 +7,7 @@
 | Architectural responsibility | Normative requirement | v4.6.71 runtime | v4.6.77 experiment | Required implementation evidence |
 |---|---|---|---|---|
 | Single authority path | One active Observation → Assessment → Picture → Decision → Commitment → Control route | Not replacement-core implementation | Structurally aligned | dependency and dispatch audit |
-| Situation Assessment | Produces Knowledge and fitness, not selected action authority | Not implemented | Partial; candidate preference leaked into Assessment | snapshot-to-Knowledge tests |
+| Situation Assessment | Produces Knowledge and fitness, not selected action authority | v4.7.2 candidate | Partial; candidate preference leaked into Assessment | snapshot-to-Knowledge tests |
 | Candidate Action Space | Publishes all supportable candidates as explicit records | Not implemented | Absent; procedural ladder | complete candidate inventory per decision epoch |
 | Mandatory constraints | Every candidate receives explicit `PASS`, `FAIL` or `UNRESOLVED` verdicts | Not implemented | Local/advisory | negative tests proving failed or unresolved candidates cannot receive authority |
 | Decision | Selects only among admissible survivors or explicit non-intervention | Not implemented | Partial/fallthrough | deterministic selection replay |
@@ -17,7 +17,7 @@
 | Obligation Continuity | Every open obligation has exactly one owning Commitment | Not implemented | Violated by renewed Commitment | ownership ledger assertions across every transition |
 | Effective Actuation Composition | Validate current and proposed combined effects before actuation | Not implemented | Absent | multi-command and cross-assembly composition tests |
 | Progress authority | Exactly one objective-progress actuation owner per assembly | Not implemented | Partial | lease conflict rejection |
-| Representation Fitness | Fitness limits which actions may receive authority | Partial historical support | Inconsistent | action-specific fitness verdict tests |
+| Representation Fitness | Fitness limits which actions may receive authority | v4.7.2 publishes canonical Knowledge states; authority gate not yet implemented | Inconsistent | action-specific fitness verdict tests |
 | Control | Executes only authorised capability and returns physical evidence | Legacy controller | Improved but broad | narrow capability contracts and outcome schemas |
 | Replay validation | Historical traces prove architecture composition offline | Absent | Absent | named replay suite passing before live shadow |
 
