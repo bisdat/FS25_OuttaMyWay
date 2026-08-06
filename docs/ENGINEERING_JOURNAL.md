@@ -1,3 +1,13 @@
+## 2026-08-06 — v4.7.4 Replay Conformance
+
+Implemented the canonical replay gate from owner-declared v4.7.3. The corpus uses only documented historical facts and explicitly labels each fixture as reconstruction rather than raw physics simulation.
+
+The strongest negative case is v4.6.77: a completion request with `safeRelease=false` enters or remains `SETTLING`, cannot reach `SUCCEEDED` while the Safe Release obligation is open, and cannot admit a second Commitment for the same unresolved responsibility.
+
+Other fixtures preserve the accepted evidence outcomes: v4.6.57 and v4.6.70 wait for missing evidence, v4.6.64 completes only after three settlement obligations close, TS016 enforces Follower Owns Closure, player takeover releases progress authority without transferring internal obligations, and Operation termination retains origin-bound responsibility.
+
+No live listener or physical Control path was added.
+
 ## 2026-08-06 — v4.7.2 Operational Picture
 
 Implemented the next offline canonical boundary from owner-declared canonical v4.7.1. Added admitted Operation identity, Situation Assessment, Operational Picture publication, the three canonical demand classes, relationship Knowledge, uncertainty and all five Representation Fitness states. No GIANTS hook, Candidate, Decision or Control path was added.

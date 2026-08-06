@@ -1,28 +1,9 @@
-FS25_OuttaMyWay v4.7.3 — Deterministic Decision Boundary Candidate
+FS25_OuttaMyWay v4.7.4 Replay Conformance Candidate
 
-This candidate begins from owner-declared canonical v4.7.2.
+This candidate implements the offline replay-conformance gate from canonical v4.7.3.
+It contains no live GIANTS Observation hook and no physical Control authority.
 
-Canonical implementation baseline:
-- Version: v4.7.2
-- ZIP SHA-256: f11597c3b46f1ad5da94cc8c8135400e3b613475701d10559fae65fe8e4bb22f
-- Git commit: 7f89d405ae64afed5b7c29bec40e0b8220e215ad
+The historical corpus is reconstructed only from facts preserved in canonical documentation.
+Archived v4.6.78 scripts remain non-executable evidence and donor material.
 
-v4.7.3 adds the offline-only deterministic Decision boundary:
-- complete supportable Candidate Action inventories;
-- explicit mandatory Constraint Verdict Sets;
-- purpose-specific Representation Fitness enforcement;
-- Follower Owns Closure and Bounded Observation Contract enforcement;
-- structural Effective Actuation Composition validation;
-- deterministic Decision Records and explicit non-intervention.
-
-There is still:
-- no GIANTS live observation hook;
-- no replay corpus;
-- no Decision-driven Commitment mutation;
-- no Control admission;
-- no physical Control.
-
-Expected optional in-game load evidence:
-FS25_OuttaMyWay v4.7.3 deterministic Decision foundation loaded; Control authority disabled
-
-This candidate is not canonical until explicitly declared by the repository owner.
+Start with docs/README.md and docs/PROJECT_STATUS.md.

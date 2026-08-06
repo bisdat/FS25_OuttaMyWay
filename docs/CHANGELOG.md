@@ -1,3 +1,12 @@
+## v4.7.4 — Replay Conformance Candidate
+
+- Begins from owner-declared canonical v4.7.3 (`f1a8219f...14d90`, Git `90fab767c9550e45e8f6ff97f78ce07f15956045`).
+- Adds immutable replay fixtures/results, deterministic replay execution and earliest-divergence reporting.
+- Adds enforcing Commitment admission, Decision-to-Commitment application, Governing Basis evaluation and Terminal Settlement evaluation for offline replay only.
+- Adds documented historical reconstructions for v4.6.49, v4.6.57, v4.6.64, v4.6.70, v4.6.77, TS016, player takeover, Operation termination and no-activity controls.
+- Proves illegal safe-release completion remains live, duplicate unresolved responsibility is rejected, Intent Expiry does not terminate intent, player takeover releases progress authority without transferring internal obligations, and zero Operation membership preserves origin-bound obligations.
+- Adds no live GIANTS listener, Control admission or physical capability.
+
 ## v4.7.3 — Deterministic Decision Boundary Candidate
 
 - Begins from owner-declared canonical v4.7.2 (`f11597c3...bb22f`, Git `7f89d405ae64afed5b7c29bec40e0b8220e215ad`).

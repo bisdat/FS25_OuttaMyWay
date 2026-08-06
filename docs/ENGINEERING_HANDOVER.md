@@ -1,7 +1,7 @@
 # Engineering Handover
 
-> **Candidate:** v4.7.3 Deterministic Decision Boundary  
-> **Implementation baseline:** canonical v4.7.2  
+> **Candidate:** v4.7.4 Replay Conformance  
+> **Implementation baseline:** canonical v4.7.3  
 > **Architecture authority:** canonical v4.6.78
 
 ## Repository boundary
@@ -11,47 +11,41 @@ Active `scripts/` is the replacement core. The exact former tree remains under `
 Do not:
 
 - import archived modules;
-- infer candidates or constraints from legacy branches;
-- connect v4.7.3 to a live GIANTS update loop;
-- allow Candidate generation to select;
-- allow Decision to waive `FAIL` or `UNRESOLVED`;
-- mutate Commitment state or issue Control from the v4.7.3 Decision path.
+- infer replay facts from legacy branches;
+- connect v4.7.4 to a live GIANTS update loop;
+- treat documented reconstruction as physics simulation;
+- add Control dispatch to the replay runner;
+- waive open obligations or existing progress ownership during settlement.
 
 ## Current foundation
 
-The Runtime accepts a sealed Operational Picture whose candidate-support evidence explicitly declares the complete support boundary and performs:
+v4.7.4 executes the canonical offline composition:
 
 ```text
-Operational Picture
-    → complete Candidate Action inventory
-    → complete mandatory Constraint Verdict Set
-    → deterministic Decision Record
+sealed Observation / Operational Picture
+    → complete Candidate and mandatory Verdicts
+    → deterministic Decision
+    → enforcing Commitment reaction
+    → Obligation and authority history
+    → replay conformance or earliest divergence
 ```
-
-The Decision Record selects only an all-`PASS` candidate or publishes explicit non-intervention. Control authority remains disabled.
 
 Expected optional game-load log:
 
 ```text
-FS25_OuttaMyWay v4.7.3 deterministic Decision foundation loaded; Control authority disabled
+FS25_OuttaMyWay v4.7.4 replay-conformance foundation loaded; Control authority disabled
 ```
 
 ## Validation before canonicalisation
 
-- deterministic RRS candidate production;
-- active-tree dependency audit;
-- Lua integrated-load and conformance tests;
-- Python structural tests;
-- archive byte verification;
-- complete Candidate inventory assertions;
-- all eleven mandatory verdict families for every candidate;
-- failed and unresolved candidate exclusion;
-- Follower Owns Closure, Representation Fitness, Bounded Observation and `never hold all` negative tests;
-- deterministic Decision selection;
-- no Commitment mutation or Control implementation.
-
-A live FS25 cycle is not required because no runtime sampling hook or gameplay behaviour has changed.
+- all documented replay fixtures pass twice from fresh Runtime state with byte-identical records;
+- v4.6.77 illegal completion and duplicate responsibility are rejected;
+- v4.6.57 and v4.6.70 evidence wait rather than manufacture success;
+- v4.6.64 completes only after all obligations settle;
+- TS016 enforces Follower Owns Closure;
+- player takeover and Operation termination preserve internal responsibility;
+- no GIANTS listener or physical Control path exists.
 
 ## Next increment after canonicalisation
 
-Implement the replay-conformance gate using historical positive and negative evidence. The replay runner verifies architecture composition only and receives no physical authority.
+Implement passive live validation with zero replacement Control authority. Live observations are compared against canonical trace contracts, not against the archived Decision core.

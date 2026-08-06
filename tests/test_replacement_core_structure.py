@@ -129,3 +129,36 @@ def test_constraint_engine_declares_all_canonical_mandatory_families():
 
 def test_v473_has_no_control_capability_directory():
     assert not (ROOT/"scripts"/"control").exists()
+
+
+def test_v474_replay_modules_are_active_and_offline_only():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    for rel in (
+        "scripts/replay/ReplayRunner.lua","scripts/replay/ConformanceAssertions.lua",
+        "scripts/commitment/CommitmentAdmission.lua","scripts/commitment/GoverningBasisEvaluator.lua",
+        "scripts/commitment/TerminalSettlementEvaluator.lua","scripts/commitment/DecisionCommitmentBoundary.lua",
+    ):
+        assert rel in main
+    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+    assert "runReplay" in runtime
+    for token in ("addModEventListener","updateTick","g_currentMission","driveToPoint"):
+        assert token not in runtime
+
+
+def test_replay_corpus_names_all_required_historical_families():
+    text=(ROOT/"scenarios"/"replay"/"HistoricalFixtures.lua").read_text(encoding="utf-8")
+    for token in ("V4649","V4657","V4664","V4670","V4677","TS016","NO-MOD","LOADED-NO-ENCOUNTER"):
+        assert token in text
+
+
+def test_replay_has_no_physical_control_dispatch():
+    active="\n".join(p.read_text(encoding="utf-8") for p in (ROOT/"scripts").rglob("*.lua") if "archive" not in p.parts)
+    for token in ("driveToPoint(","setCruiseControlState(","AIFieldWorker:stopCurrentAIJob", "ControlAdmission"):
+        assert token not in active
+
+
+def test_v474_runtime_mode_and_version():
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    assert 'VERSION = "4.7.4"' in config
+    assert 'RUNTIME_MODE = "REPLAY_CONFORMANCE_OFFLINE"' in config
+    assert 'CONTROL_AUTHORITY_ENABLED = false' in config

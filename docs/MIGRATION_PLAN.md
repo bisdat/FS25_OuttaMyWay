@@ -1,35 +1,25 @@
 # Replacement-Core Implementation Plan
 
 > **Architecture authority:** canonical v4.6.78  
-> **Current gate:** v4.7.3 deterministic Decision boundary
+> **Current gate:** v4.7.4 replay conformance
 
-## Gate 0 — clean implementation boundary
+## Completed gates
 
-Completed by owner-canonicalised v4.7.0.
-
-## Gate 1 — Observation and identity
-
-Completed by owner-canonicalised v4.7.1.
-
-## Gate 2A — Knowledge boundary
-
-Completed by owner-canonicalised v4.7.2.
-
-## Gate 2B — deterministic Decision boundary
-
-v4.7.3 candidate:
-
-- complete supportable Candidate Action inventories;
-- all applicable mandatory constraints expressed as explicit verdicts;
-- deterministic selection only among all-`PASS` survivors;
-- explicit non-intervention when evidence is unresolved or the complete space is exhausted;
-- no Commitment mutation or physical authority.
+- Gate 0 — clean implementation boundary: v4.7.0.
+- Gate 1 — Observation and identity: v4.7.1.
+- Gate 2A — Knowledge boundary: v4.7.2.
+- Gate 2B — deterministic Decision boundary: v4.7.3.
 
 ## Gate 2C — replay conformance
 
-- historical positive and negative fixtures;
+v4.7.4 candidate:
+
+- documented historical positive and negative fixtures;
 - identical sealed inputs produce identical records;
-- mandatory architecture suite clean before live validation.
+- deterministic Decision-to-Commitment reactions;
+- obligation ownership and authority history;
+- earliest divergence on any violated assertion;
+- no physical authority.
 
 ## Gate 3 — passive live validation
 

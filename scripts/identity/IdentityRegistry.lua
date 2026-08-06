@@ -21,7 +21,10 @@ local defaultPrefixes = {
     SITUATION = "SI",
     ENCOUNTER = "EN",
     CANDIDATE_INVENTORY = "CI",
-    VERDICT_SET = "VS"
+    VERDICT_SET = "VS",
+    GOVERNING_BASIS_VERDICT = "BV",
+    COMMITMENT_APPLICATION = "AP",
+    REPLAY_RUN = "RR"
 }
 
 function IdentityRegistry.new(prefixes)

@@ -54,3 +54,27 @@ function Registry:release(token)
     self.byAssembly[token.assemblyId] = nil
     return true
 end
+
+
+function Registry:tokensForCommitment(commitmentId)
+    local result = {}
+    for _, token in pairs(self.byAssembly) do
+        if token.commitmentId == commitmentId then result[#result+1] = token end
+    end
+    table.sort(result,function(a,b) return a.identity < b.identity end)
+    return result
+end
+
+function Registry:hasProgressAuthority(commitmentId)
+    return #self:tokensForCommitment(commitmentId) > 0
+end
+
+function Registry:releaseForCommitment(commitmentId)
+    local tokens = self:tokensForCommitment(commitmentId)
+    local released = {}
+    for _, token in ipairs(tokens) do
+        self:release(token)
+        released[#released+1] = token.identity
+    end
+    return released
+end
