@@ -1,3 +1,15 @@
+## v4.7.14 — Field World Equivalence Authority Implementation Candidate
+
+- implement pure three-outcome Field World Snapshot evaluation;
+- implement stateful all-member Field World equivalence classes;
+- separate Snapshot, exact polygon and resolved Field World references;
+- group Operations by resolved Field World identity rather than exact fingerprint;
+- withhold Operation authority from unresolved evidence;
+- retain all member Snapshot and polygon provenance in Operation records;
+- add positive separation, partial-overlap, tolerance-chain and lifecycle-retirement conformance fixtures;
+- keep replacement Control authority disabled;
+- leave passive concurrent merged-workspace validation as the next evidence gate.
+
 ## v4.7.13 — Field World Equivalence Authority Architecture Candidate
 
 - Begins from owner-declared canonical v4.7.12 (`126eec58...e0fb`, Git `5883ccc995e65fff80c52b2802ef3090185c3fca`).

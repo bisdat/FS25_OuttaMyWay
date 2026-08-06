@@ -1,37 +1,44 @@
 # FS25_OuttaMyWay Project Status
 
-> **Canonical baseline:** v4.7.12 Field World Equivalence Evidence  
-> **Canonical ZIP SHA-256:** `126eec58ccdcb879cdb30eb4927f7f2ec7b84bf44858bf0d6e9a5a643025e0fb`  
-> **Canonical Git commit:** `5883ccc995e65fff80c52b2802ef3090185c3fca`  
-> **Current candidate:** v4.7.13 Field World Equivalence Authority Architecture  
+> **Canonical baseline:** v4.7.13 Field World Equivalence Authority Architecture  
+> **Canonical ZIP SHA-256:** `29b50173f00b5fb48355cadf848eadbaed5f24a13b2bfced558672ee0f21363e`  
+> **Canonical Git commit:** `d813f5be6f948bd5143b8945c3ab883af397db2d`  
+> **Current candidate:** v4.7.14 Field World Equivalence Authority Implementation  
 > **Control authority:** disabled
 
-## Closed architectural decision
+## Accepted authority
 
-Field World identity is governed by coherent, positive spatial equivalence between immutable Job-Seeded Field World Snapshots. Exact fingerprints remain representation provenance but do not independently govern Field World or Operation identity.
+ADR-0021 and D-0033 remain unchanged. Field World identity is governed by coherent positive spatial equivalence between immutable Job-Seeded Field World Snapshots. Exact fingerprints preserve exact-representation provenance but do not independently govern Field World or Operation identity.
 
-The authority result is one of:
+Resolution produces `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD` or `UNRESOLVED`. Unresolved evidence grants no Operation admission or Control authority. Pairwise tolerance chaining is prohibited.
 
-- `SAME_FIELD_WORLD`;
-- `DIFFERENT_FIELD_WORLD`;
-- `UNRESOLVED`.
+## Candidate implementation
 
-Unresolved evidence grants no authority to establish or join an Operation and cannot extend Control authority. Equivalence must be coherent across the accepted Field World evidence as a whole; pairwise tolerance chaining is prohibited.
+v4.7.14 adds:
 
-## Preserved closure evidence
+- a pure `FieldWorldEquivalenceEvaluator` using the accepted compound evidence model;
+- a stateful `FieldWorldEquivalenceAuthority` that compares a candidate against every accepted Snapshot in each currently relevant Field World class;
+- distinct Snapshot, exact-polygon and resolved Field World references;
+- Operation grouping by resolved Field World identity;
+- unresolved isolation without Operation membership;
+- class retirement when no associated Job Episode remains relevant;
+- Operation provenance containing all member Snapshot and polygon references.
 
-The merged 68–69–70 workspace produced four different exact fingerprints from serial seed positions while retaining identical bounds and topology and near-identical spatial comparison measures. The two disconnected portions retaining locator 77 remained materially separate and produced zero sampled overlap.
+The numerical limits are implementation calibration, not architectural definitions. Failure of a SAME condition normally remains `UNRESOLVED`; the first DIFFERENT path requires positive occupied-region separation.
 
-This evidence validates the required positive and negative classifications without establishing a universal numeric threshold.
+## Offline evidence
 
-## Candidate scope
+The replacement-core suite covers:
 
-v4.7.13 records ADR-0021, D-0033, vocabulary, conformance and continuity updates. It makes no runtime identity or Operation-grouping implementation change.
+- exact canonical equality with distinct Snapshot identities;
+- four non-exact representations joining one merged-workspace Field World;
+- disconnected representations establishing separate Field Worlds;
+- partial overlap remaining unresolved;
+- tolerance chaining being rejected by class-wide coherence;
+- Field World class retirement and later identity renewal;
+- unresolved live evidence receiving no Operation authority;
+- one Operation retaining multiple Snapshot and exact-polygon references.
 
-## Known implementation gap
+## Next evidence gate
 
-The active runtime still keys Operations by exact fingerprint. This is now a known non-conforming provisional mechanism rather than architectural authority. Control remains disabled.
-
-## Next activity
-
-Implementation design must determine how the existing immutable evidence can satisfy ADR-0021's positive classification, uncertainty and class-wide coherence obligations. Architecture is closed; implementation mechanisms and thresholds are not yet accepted.
+Run one passive live validation with concurrent workers seeded in the merged 68–69–70 workspace. Required evidence: distinct immutable captures, one resolved Field World, one active Operation, no unresolved authority and `control=false` throughout. No active Control work follows unless that gate passes.

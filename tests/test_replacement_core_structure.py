@@ -212,8 +212,8 @@ def test_v478_targeted_job_episode_and_field_identity_path_is_active():
     assert "scripts/diagnostics/TargetedFieldIdentityProbe.lua" in main
     assert "scripts/diagnostics/LiveAIStateProbe.lua" not in main
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.13"' in config
-    assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_EVIDENCE"' in config
+    assert 'VERSION = "4.7.14"' in config
+    assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_AUTHORITY_PASSIVE"' in config
     evidence=(ROOT/"scripts"/"observation"/"LiveAIJobEvidence.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"TargetedFieldIdentityProbe.lua").read_text(encoding="utf-8")
@@ -259,11 +259,11 @@ def test_v479_polygon_field_identity_fallback_is_read_only():
     for forbidden in ("driveToPoint(","stopCurrentAIJob(","setCruiseControlState("):
         assert forbidden not in text
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.13"' in config
-    assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_EVIDENCE"' in config
+    assert 'VERSION = "4.7.14"' in config
+    assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_AUTHORITY_PASSIVE"' in config
 
 
-def test_v4711_promotes_job_seeded_polygon_fingerprint_to_operation_identity():
+def test_v4711_job_seeded_snapshot_capture_remains_active_under_equivalence_authority():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     assert "scripts/identity/FieldWorldSnapshotRegistry.lua" in main
     assert "scripts/diagnostics/DerivedFieldWorldProbe.lua" not in main
@@ -271,7 +271,7 @@ def test_v4711_promotes_job_seeded_polygon_fingerprint_to_operation_identity():
     for token in ("canonicalizeBoundary","geometryFingerprint","immutableForJobEpisode","FIELD_WORLD_FINGERPRINT_COLLISION","FieldCourseField.generateAtPosition","function Registry:ensure"):
         assert token in registry
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
-    for token in ("JOB_SEEDED_FIELD_WORLD_SNAPSHOT","fieldWorldSnapshot","playerFacingFieldId","FARMLAND_LABEL_CORRELATION"):
+    for token in ("JOB_SEEDED_FIELD_WORLD_EQUIVALENCE_AUTHORITY","fieldWorldSnapshot","fieldWorldResolution","playerFacingFieldId","FARMLAND_LABEL_CORRELATION"):
         assert token in source
     assert "field-world:provisional-source-field:" not in source
 
@@ -281,8 +281,8 @@ def test_v4711_field_world_snapshot_is_bound_once_to_job_episode():
     assert "_bindFieldWorld" in admission
     assert "cannot change after capture" in admission
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.13"' in config
-    assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_EVIDENCE"' in config
+    assert 'VERSION = "4.7.14"' in config
+    assert 'RUNTIME_MODE = "FIELD_WORLD_EQUIVALENCE_AUTHORITY_PASSIVE"' in config
 
 
 def test_v4711_parallel_validation_reports_global_operation_count():
@@ -303,12 +303,26 @@ def test_v4710_source_intent_termination_is_positive_evidence_not_inactivity_gue
     assert 'cause="SOURCE_INTENT_TERMINATION"' in admission
 
 
-def test_v4712_records_bounded_spatial_equivalence_without_changing_authority():
+def test_v4714_field_world_equivalence_authority_is_active_and_conservative():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    for rel in ("scripts/identity/FieldWorldSnapshotRegistry.lua","scripts/identity/FieldWorldEquivalenceEvaluator.lua","scripts/identity/FieldWorldEquivalenceAuthority.lua"):
+        assert rel in main
     registry=(ROOT/"scripts"/"identity"/"FieldWorldSnapshotRegistry.lua").read_text(encoding="utf-8")
-    for token in ("measureGeometry","compareGeometry","sampledJaccard","symmetricBoundaryMaxDistanceMetres","canonicalRootRing","FIELD-WORLD-EQUIVALENCE","identityAuthorityChanged=false"):
+    for token in ("measureGeometry","compareGeometry","sampledJaccard","symmetricBoundaryMaxDistanceMetres","minimumBoundaryDistanceMetres","occupiedRegionsDisjoint","canonicalRootRing"):
         assert token in registry
+    evaluator=(ROOT/"scripts"/"identity"/"FieldWorldEquivalenceEvaluator.lua").read_text(encoding="utf-8")
+    for token in ("SAME_FIELD_WORLD","DIFFERENT_FIELD_WORLD","UNRESOLVED","COMPOUND_POSITIVE_SPATIAL_EQUIVALENCE","COMPOUND_POSITIVE_SPATIAL_SEPARATION"):
+        assert token in evaluator
+    authority=(ROOT/"scripts"/"identity"/"FieldWorldEquivalenceAuthority.lua").read_text(encoding="utf-8")
+    for token in ("CLASS_WIDE_POSITIVE_SPATIAL_EQUIVALENCE","NO_SINGLE_COHERENT_FIELD_WORLD_ASSIGNMENT","beginObservationCycle","endObservationCycle","NO_RELEVANT_JOB_EPISODE_EVIDENCE"):
+        assert token in authority
+    operation=(ROOT/"scripts"/"identity"/"OperationAdmission.lua").read_text(encoding="utf-8")
+    for token in ("memberFieldWorldSnapshotReferenceKeys","memberFieldPolygonReferenceKeys","resolved Field World identity"):
+        assert token in operation
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    for token in ("FIELD_WORLD_EQUIVALENCE_SAMPLE_SIDE","FIELD_WORLD_EQUIVALENCE_MAX_REFERENCE_SNAPSHOTS","FIELD_WORLD_EQUIVALENCE_MAX_COMPARISONS"):
+    for token in ("FIELD_WORLD_EQUIVALENCE_SAMPLE_SIDE","FIELD_WORLD_EQUIVALENCE_SAME_MAX_AREA_RELATIVE_DELTA","FIELD_WORLD_EQUIVALENCE_SAME_MIN_SAMPLED_JACCARD","FIELD_WORLD_EQUIVALENCE_DIFFERENT_MIN_BOUNDARY_SEPARATION_METRES"):
         assert token in config
-    assert "exact-fingerprint Operation grouping remains provisional" in (ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+    assert "Field World Equivalence Authority loaded" in runtime
+    assert "unresolved identity grants no Operation admission" in runtime
     assert "decisionCommitmentBoundary:apply" not in (ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")

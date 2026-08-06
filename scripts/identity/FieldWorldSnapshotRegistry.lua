@@ -201,6 +201,40 @@ local function pointSegmentDistance(point,a,b)
     return math.sqrt(px*px+pz*pz)
 end
 
+local function orientation(a,b,c)
+    return (b.x-a.x)*(c.z-a.z)-(b.z-a.z)*(c.x-a.x)
+end
+
+local function pointOnSegment(point,a,b,epsilon)
+    epsilon=epsilon or 0.000001
+    if math.abs(orientation(a,b,point))>epsilon then return false end
+    return point.x>=math.min(a.x,b.x)-epsilon and point.x<=math.max(a.x,b.x)+epsilon
+        and point.z>=math.min(a.z,b.z)-epsilon and point.z<=math.max(a.z,b.z)+epsilon
+end
+
+local function segmentsIntersect(a,b,c,d)
+    local epsilon=0.000001
+    local o1,o2=orientation(a,b,c),orientation(a,b,d)
+    local o3,o4=orientation(c,d,a),orientation(c,d,b)
+    if ((o1>epsilon and o2<-epsilon) or (o1<-epsilon and o2>epsilon))
+        and ((o3>epsilon and o4<-epsilon) or (o3<-epsilon and o4>epsilon)) then return true end
+    return pointOnSegment(c,a,b,epsilon) or pointOnSegment(d,a,b,epsilon)
+        or pointOnSegment(a,c,d,epsilon) or pointOnSegment(b,c,d,epsilon)
+end
+
+local function ringsIntersect(pointsA,pointsB)
+    local a,b=rawRing(pointsA),rawRing(pointsB)
+    if #a<2 or #b<2 then return false end
+    for ai=1,#a do
+        local an=(ai % #a)+1
+        for bi=1,#b do
+            local bn=(bi % #b)+1
+            if segmentsIntersect(a[ai],a[an],b[bi],b[bn]) then return true end
+        end
+    end
+    return false
+end
+
 local function pointInRing(point,points)
     local ring=rawRing(points)
     if #ring<3 then return false end
@@ -339,6 +373,12 @@ function Registry.compareGeometry(a,b,sampleSide)
         math.abs(metricsA.minZ-metricsB.minZ),math.abs(metricsA.maxZ-metricsB.maxZ)
     )
     local jaccard,inA,inB,intersection,union=sampledOverlap(metricsA,metricsB,sampleSide)
+    local minimumDistance=math.huge
+    for _,point in OuttaMyWay.ValueRecord.ipairs(verticesA) do minimumDistance=math.min(minimumDistance,nearestBoundaryDistance(point,geometryB)) end
+    for _,point in OuttaMyWay.ValueRecord.ipairs(verticesB) do minimumDistance=math.min(minimumDistance,nearestBoundaryDistance(point,geometryA)) end
+    if minimumDistance==math.huge then minimumDistance=0 end
+    local outerIntersects=ringsIntersect(metricsA.boundary,metricsB.boundary)
+    local occupiedDisjoint=not outerIntersects and insideAInB==0 and insideBInA==0
     return {
         sameIslandTopology=metricsA.islandCount==metricsB.islandCount,
         sameBoundaryPointCount=metricsA.boundaryPointCount==metricsB.boundaryPointCount,
@@ -352,9 +392,10 @@ function Registry.compareGeometry(a,b,sampleSide)
         verticesBInsideAFraction=#verticesB>0 and insideBInA/#verticesB or 0,
         sampledJaccard=jaccard,
         sampledInsideA=inA,sampledInsideB=inB,sampledIntersection=intersection,sampledUnion=union,
-        sampleSide=math.max(5,math.floor(tonumber(sampleSide) or 31)),
-        diagnosticOnly=true,
-        identityAuthorityChanged=false
+        outerBoundariesIntersect=outerIntersects,
+        occupiedRegionsDisjoint=occupiedDisjoint,
+        minimumBoundaryDistanceMetres=minimumDistance,
+        sampleSide=math.max(5,math.floor(tonumber(sampleSide) or 31))
     }
 end
 
@@ -408,46 +449,11 @@ local function evidenceSummary(metrics)
 end
 
 function Registry.new()
-    return setmetatable({states={},records={},canonicalByWorldKey={},resolvedSnapshots={},comparisonRecords={},apiUnavailableLogged=false},Registry)
+    return setmetatable({states={},records={},canonicalByPolygonKey={},apiUnavailableLogged=false},Registry)
 end
 
 function Registry:reset()
-    self.states={}; self.records={}; self.canonicalByWorldKey={}; self.resolvedSnapshots={}; self.comparisonRecords={}; self.apiUnavailableLogged=false
-end
-
-function Registry:_appendComparison(record)
-    self.comparisonRecords[#self.comparisonRecords+1]=record
-    local maximum=OuttaMyWay.FIELD_WORLD_EQUIVALENCE_MAX_COMPARISONS or 128
-    while #self.comparisonRecords>maximum do table.remove(self.comparisonRecords,1) end
-end
-
-function Registry:_compareWithRecent(state,snapshot)
-    local maximumReferences=OuttaMyWay.FIELD_WORLD_EQUIVALENCE_MAX_REFERENCE_SNAPSHOTS or 16
-    local first=math.max(1,#self.resolvedSnapshots-maximumReferences+1)
-    for index=first,#self.resolvedSnapshots do
-        local previous=self.resolvedSnapshots[index]
-        local comparison=Registry.compareGeometry(snapshot.geometryMetrics,previous.geometryMetrics,OuttaMyWay.FIELD_WORLD_EQUIVALENCE_SAMPLE_SIDE or 31)
-        comparison.currentVehicleReferenceKey=state.vehicleReferenceKey
-        comparison.currentJobToken=state.jobToken
-        comparison.currentFingerprint=snapshot.geometryFingerprint
-        comparison.referenceVehicleReferenceKey=previous.vehicleReferenceKey
-        comparison.referenceJobToken=previous.sourceJobToken
-        comparison.referenceFingerprint=previous.geometryFingerprint
-        comparison.exactFingerprint=snapshot.geometryFingerprint==previous.geometryFingerprint
-        comparison.relation=comparison.exactFingerprint and "EXACT_FINGERPRINT" or "MEASURED_NON_EXACT"
-        comparison.controlAuthorityEnabled=false
-        self:_appendComparison(comparison)
-        logEquivalence(string.format("COMPARE current=%s/%s/%s reference=%s/%s/%s relation=%s sameIslands=%s samePoints=%s areaRelDelta=%.6f perimeterRelDelta=%.6f centroidDistance=%.3f boundsMaxDelta=%.3f boundaryMean=%.3f boundaryMax=%.3f verticesAInB=%.4f verticesBInA=%.4f sampledJaccard=%.6f samples=%d diagnosticOnly=true identityAuthorityChanged=false control=false",
-            tostring(state.vehicleReferenceKey),tostring(state.jobToken),tostring(snapshot.geometryFingerprint),
-            tostring(previous.vehicleReferenceKey),tostring(previous.sourceJobToken),tostring(previous.geometryFingerprint),comparison.relation,
-            tostring(comparison.sameIslandTopology),tostring(comparison.sameBoundaryPointCount),comparison.areaRelativeDelta,comparison.perimeterRelativeDelta,
-            comparison.centroidDistanceMetres,comparison.boundsMaxDeltaMetres,comparison.symmetricBoundaryMeanDistanceMetres,
-            comparison.symmetricBoundaryMaxDistanceMetres,comparison.verticesAInsideBFraction,comparison.verticesBInsideAFraction,
-            comparison.sampledJaccard,comparison.sampleSide*comparison.sampleSide))
-    end
-    self.resolvedSnapshots[#self.resolvedSnapshots+1]=snapshot
-    local maximumStored=OuttaMyWay.FIELD_WORLD_EQUIVALENCE_MAX_STORED_SNAPSHOTS or 32
-    while #self.resolvedSnapshots>maximumStored do table.remove(self.resolvedSnapshots,1) end
+    self.states={}; self.records={}; self.canonicalByPolygonKey={}; self.apiUnavailableLogged=false
 end
 
 function Registry:_complete(state, result, success)
@@ -468,19 +474,22 @@ function Registry:_complete(state, result, success)
         return
     end
     local version=canonical.canonicalizationVersion
-    local worldKey=string.format("field-world:geometry:%s:%d:%d:%s",version,canonical.boundaryPointCount,canonical.islandCount,canonical.fingerprint)
-    local existing=self.canonicalByWorldKey[worldKey]
+    local polygonKey="field-world-polygon:"..version..":"..canonical.fingerprint
+    local existing=self.canonicalByPolygonKey[polygonKey]
     if existing~=nil and existing~=canonical.canonicalGeometry then
         state.error="FIELD_WORLD_FINGERPRINT_COLLISION"
         logInfo(string.format("FAILED ref=%s jobToken=%s reason=%s control=false",state.vehicleReferenceKey,tostring(state.jobToken),state.error))
         return
     end
-    self.canonicalByWorldKey[worldKey]=canonical.canonicalGeometry
+    self.canonicalByPolygonKey[polygonKey]=canonical.canonicalGeometry
     local metrics=Registry.measureGeometry(canonical.boundary,canonical.islands)
+    local snapshotKey=string.format("field-world-snapshot:%s:%s",tostring(state.vehicleReferenceKey),tostring(state.captureToken))
     state.snapshot={
-        referenceKey=worldKey,
-        fieldPolygonReferenceKey="field-world-polygon:"..version..":"..canonical.fingerprint,
+        referenceKey=snapshotKey,
+        fieldWorldSnapshotReferenceKey=snapshotKey,
+        fieldPolygonReferenceKey=polygonKey,
         geometryFingerprint=canonical.fingerprint,
+        canonicalGeometry=canonical.canonicalGeometry,
         canonicalizationVersion=version,
         quantizationMetres=canonical.quantizationMetres,
         canonicalRootRing=canonical.canonicalRootRing,
@@ -496,25 +505,24 @@ function Registry:_complete(state, result, success)
         vehicleReferenceKey=state.vehicleReferenceKey,
         capturedAt=state.startedAt,
         immutableForJobEpisode=true,
-        equivalenceEvidenceDiagnosticOnly=true,
-        exactFingerprintOperationAuthorityRetained=true
+        fieldWorldIdentityAuthorityAssigned=false,
+        controlAuthorityEnabled=false
     }
     local record={
         vehicleReferenceKey=state.vehicleReferenceKey,jobToken=state.jobToken,captureToken=state.captureToken,
-        worldKey=worldKey,fieldPolygonReferenceKey=state.snapshot.fieldPolygonReferenceKey,
+        snapshotReferenceKey=snapshotKey,fieldPolygonReferenceKey=polygonKey,
         geometryFingerprint=canonical.fingerprint,boundaryPointCount=canonical.boundaryPointCount,
         islandCount=canonical.islandCount,seedPosition=state.snapshot.seedPosition,
         canonicalizationVersion=version,geometryMetrics=metrics,canonicalRootRing=canonical.canonicalRootRing,
-        equivalenceEvidenceDiagnosticOnly=true,controlAuthorityEnabled=false
+        fieldWorldIdentityAuthorityAssigned=false,controlAuthorityEnabled=false
     }
     self.records[#self.records+1]=record
-    logInfo(string.format("CAPTURED ref=%s jobToken=%s world=%s fingerprint=%s seed=(%.1f,%.1f) %s islands=%d immutable=true control=false",
-        state.vehicleReferenceKey,tostring(state.jobToken),worldKey,canonical.fingerprint,
+    logInfo(string.format("CAPTURED ref=%s jobToken=%s snapshot=%s polygon=%s fingerprint=%s seed=(%.1f,%.1f) %s islands=%d immutable=true authority=pending control=false",
+        state.vehicleReferenceKey,tostring(state.jobToken),snapshotKey,polygonKey,canonical.fingerprint,
         state.seedPosition.x,state.seedPosition.z,boundarySummary(canonical.boundary),canonical.islandCount))
     local canonicalIslands=#canonical.canonicalIslandRings>0 and table.concat(canonical.canonicalIslandRings,"|") or "none"
-    logEquivalence(string.format("GEOMETRY ref=%s jobToken=%s fingerprint=%s quantum=%.3f %s islands=%d canonicalRoot=%s canonicalIslands=%s diagnosticOnly=true identityAuthorityChanged=false control=false",
-        state.vehicleReferenceKey,tostring(state.jobToken),canonical.fingerprint,canonical.quantizationMetres,evidenceSummary(metrics),canonical.islandCount,canonical.canonicalRootRing,canonicalIslands))
-    self:_compareWithRecent(state,state.snapshot)
+    logEquivalence(string.format("GEOMETRY snapshot=%s ref=%s jobToken=%s fingerprint=%s quantum=%.3f %s islands=%d canonicalRoot=%s canonicalIslands=%s immutable=true authority=pending control=false",
+        snapshotKey,state.vehicleReferenceKey,tostring(state.jobToken),canonical.fingerprint,canonical.quantizationMetres,evidenceSummary(metrics),canonical.islandCount,canonical.canonicalRootRing,canonicalIslands))
 end
 
 function Registry:_start(vehicle, pose, jobToken, captureToken)
@@ -587,11 +595,7 @@ end
 function Registry:getRecords()
     local result={}; for index,value in OuttaMyWay.ValueRecord.ipairs(self.records) do result[index]=value end; return result
 end
-function Registry:getComparisonRecords()
-    local result={}; for index,value in OuttaMyWay.ValueRecord.ipairs(self.comparisonRecords) do result[index]=value end; return result
-end
 function Registry:getRecordCount() return #self.records end
-function Registry:getComparisonRecordCount() return #self.comparisonRecords end
 function Registry:getResolvedCount()
     local count=0; for _,state in OuttaMyWay.ValueRecord.pairs(self.states) do if state.snapshot~=nil then count=count+1 end end; return count
 end

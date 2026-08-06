@@ -147,12 +147,13 @@ local function relevantVehicles(activeList, tracks)
     return result
 end
 
-function Source.new(fieldWorldSnapshots)
-    return setmetatable({knownWorlds = {}, tracks = {}, nextObservedEpisode = 0, nextFieldWorldCapture = 0, fieldWorldSnapshots = fieldWorldSnapshots}, Source)
+function Source.new(fieldWorldSnapshots, fieldWorldEquivalenceAuthority)
+    return setmetatable({knownWorlds = {}, tracks = {}, nextObservedEpisode = 0, nextFieldWorldCapture = 0, fieldWorldSnapshots = fieldWorldSnapshots, fieldWorldEquivalenceAuthority = fieldWorldEquivalenceAuthority}, Source)
 end
 
 function Source:reset()
     self.knownWorlds = {}; self.tracks = {}; self.nextObservedEpisode = 0; self.nextFieldWorldCapture = 0
+    if self.fieldWorldEquivalenceAuthority ~= nil then self.fieldWorldEquivalenceAuthority:reset() end
 end
 
 function Source:_mintEpisodeToken(reference)
@@ -179,15 +180,18 @@ local function playerFacingLocator(fieldEvidence)
 end
 
 local function addToGroup(groups, worker)
-    local snapshot = worker.fieldWorldSnapshot
-    local resolved = snapshot ~= nil
-    local groupKey = resolved and snapshot.referenceKey or ("field-world:waiting:" .. worker.referenceKey .. ":" .. tostring(worker.sourceJobToken))
-    groups[groupKey] = groups[groupKey] or {
-        groupKey=groupKey, worldSnapshot=snapshot, workers={}, locators={}, membershipEvidenceComplete=resolved
+    local snapshot=worker.fieldWorldSnapshot
+    local resolution=worker.fieldWorldResolution
+    local fieldWorldReferenceKey=resolution and resolution.fieldWorldReferenceKey or nil
+    local resolved=fieldWorldReferenceKey~=nil
+    local groupKey=resolved and fieldWorldReferenceKey or ("field-world:unresolved:"..worker.referenceKey..":"..tostring(worker.sourceJobToken))
+    groups[groupKey]=groups[groupKey] or {
+        groupKey=groupKey,fieldWorldReferenceKey=fieldWorldReferenceKey,workers={},locators={},snapshots={},membershipEvidenceComplete=resolved
     }
     local group=groups[groupKey]
-    group.workers[#group.workers + 1] = worker
-    if worker.playerFacingFieldId ~= nil then group.locators[worker.playerFacingFieldId]=true end
+    group.workers[#group.workers+1]=worker
+    if snapshot~=nil then group.snapshots[snapshot.referenceKey]=snapshot end
+    if worker.playerFacingFieldId~=nil then group.locators[worker.playerFacingFieldId]=true end
     if worker.unresolvedTermination or not resolved then group.membershipEvidenceComplete=false end
 end
 
@@ -196,6 +200,7 @@ function Source:capture(mission, nowSeconds)
     local horizon = OuttaMyWay.PASSIVE_FUTURE_HORIZON_SECONDS or 10
     local groups, present, removeAfterCapture = {}, {}, {}
     local activeList, activeSet = activeVehicleSet(mission)
+    if self.fieldWorldEquivalenceAuthority ~= nil then self.fieldWorldEquivalenceAuthority:beginObservationCycle() end
     if self.fieldWorldSnapshots ~= nil then self.fieldWorldSnapshots:update(0, mission) end
 
     for _, object in OuttaMyWay.ValueRecord.ipairs(relevantVehicles(activeList, self.tracks)) do
@@ -232,6 +237,9 @@ function Source:capture(mission, nowSeconds)
                 capturedWorld, worldError = self.fieldWorldSnapshots:get(ref,captureToken)
             end
             if track.fieldWorldSnapshot == nil and capturedWorld ~= nil then track.fieldWorldSnapshot = capturedWorld end
+            if track.fieldWorldSnapshot ~= nil and self.fieldWorldEquivalenceAuthority ~= nil then
+                track.fieldWorldResolution = self.fieldWorldEquivalenceAuthority:resolve(track.fieldWorldSnapshot)
+            end
             local locatorId, locatorSource = playerFacingLocator(field)
             if track.playerFacingFieldId == nil and locatorId ~= nil then
                 track.playerFacingFieldId = locatorId; track.playerFacingLocatorSource = locatorSource
@@ -250,7 +258,7 @@ function Source:capture(mission, nowSeconds)
                 playerPresent = mission.controlledVehicle == object, playerControlled = false, blocked = blockedState(object),
                 speedMps = math.abs(tonumber(object.lastSpeedReal) or 0) * 1000, radius = radius, width = width, length = length,
                 sourceJobToken = sourceToken, nativeJobToken = nativeToken, nativeJobTokenSource = jobSource, components = track.components,
-                fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
+                fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
         elseif track ~= nil and track.everActive == true then
@@ -260,6 +268,9 @@ function Source:capture(mission, nowSeconds)
             if pose ~= nil then track.pose = pose end
             if field.resolved then track.fieldId = field.fieldId; track.fieldResolved = true; track.fieldEvidence = field end
             track.active = false; track.object = object; track.fieldActive = fieldActive; track.aiActive = aiActive
+            if track.fieldWorldSnapshot ~= nil and self.fieldWorldEquivalenceAuthority ~= nil then
+                track.fieldWorldResolution = self.fieldWorldEquivalenceAuthority:resolve(track.fieldWorldSnapshot)
+            end
             addToGroup(groups, {
                 object = object, referenceKey = ref, name = track.name or objectName(object), pose = track.pose,
                 fieldId = track.fieldId or 0, fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence,
@@ -270,7 +281,7 @@ function Source:capture(mission, nowSeconds)
                 blocked = blockedState(object), speedMps = math.abs(tonumber(object.lastSpeedReal) or 0) * 1000,
                 radius = track.radius, width = track.width, length = track.length, sourceJobToken = track.sourceJobToken,
                 nativeJobToken = nil, nativeJobTokenSource = nil, components = track.components or componentKeys(object),
-                fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
+                fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
             if playerControlled or sourceIntentTerminationObserved then removeAfterCapture[ref] = true end
@@ -280,13 +291,16 @@ function Source:capture(mission, nowSeconds)
     for ref, track in OuttaMyWay.ValueRecord.pairs(self.tracks) do
         if not present[ref] and track.everActive == true then
             track.active = false
+            if track.fieldWorldSnapshot ~= nil and self.fieldWorldEquivalenceAuthority ~= nil then
+                track.fieldWorldResolution = self.fieldWorldEquivalenceAuthority:resolve(track.fieldWorldSnapshot)
+            end
             addToGroup(groups, {
                 object = nil, referenceKey = ref, name = track.name or "AI vehicle", pose = track.pose, fieldId = track.fieldId or 0,
                 fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence, fieldActive = false, aiActive = false,
                 hasFieldWorker = true, activeObserved = false, playerControlled = false, unresolvedTermination = true, objectUnavailable = true,
                 blocked = false, speedMps = 0, radius = track.radius, width = track.width, length = track.length,
                 sourceJobToken = track.sourceJobToken, components = track.components or {},
-                fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
+                fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
         end
@@ -294,7 +308,7 @@ function Source:capture(mission, nowSeconds)
 
     for key, known in OuttaMyWay.ValueRecord.pairs(self.knownWorlds) do
         if groups[key] == nil then
-            groups[key] = {groupKey=key,worldSnapshot=known.worldSnapshot,workers={},locators={},membershipEvidenceComplete=true,stale=true}
+            groups[key] = {groupKey=key,fieldWorldReferenceKey=key,workers={},locators={},snapshots=known.snapshots or {},membershipEvidenceComplete=true,stale=true}
         end
     end
 
@@ -306,26 +320,44 @@ function Source:capture(mission, nowSeconds)
     for _, key in OuttaMyWay.ValueRecord.ipairs(keys) do
         local group = groups[key]
         table.sort(group.workers, function(a, b) return a.referenceKey < b.referenceKey end)
-        local world=group.worldSnapshot
-        local resolved=world~=nil
-        local fieldReference=resolved and world.referenceKey or key
-        local polygonReference=resolved and world.fieldPolygonReferenceKey or ("field-world-polygon:waiting:"..key)
+        local resolved=group.fieldWorldReferenceKey~=nil
+        local fieldReference=resolved and group.fieldWorldReferenceKey or key
+        local snapshotKeys,polygonKeys,fingerprints,snapshotList={},{},{},{}
+        local polygonSeen,fingerprintSeen={},{}
+        for snapshotReferenceKey,snapshot in OuttaMyWay.ValueRecord.pairs(group.snapshots or {}) do
+            snapshotKeys[#snapshotKeys+1]=snapshotReferenceKey
+            snapshotList[#snapshotList+1]=snapshot
+            if snapshot.fieldPolygonReferenceKey~=nil and not polygonSeen[snapshot.fieldPolygonReferenceKey] then
+                polygonSeen[snapshot.fieldPolygonReferenceKey]=true; polygonKeys[#polygonKeys+1]=snapshot.fieldPolygonReferenceKey
+            end
+            if snapshot.geometryFingerprint~=nil and not fingerprintSeen[snapshot.geometryFingerprint] then
+                fingerprintSeen[snapshot.geometryFingerprint]=true; fingerprints[#fingerprints+1]=snapshot.geometryFingerprint
+            end
+        end
+        table.sort(snapshotKeys); table.sort(polygonKeys); table.sort(fingerprints)
+        table.sort(snapshotList,function(a,b) return tostring(a.referenceKey)<tostring(b.referenceKey) end)
+        local representative=snapshotList[1]
+        local polygonReference=#polygonKeys==1 and polygonKeys[1] or nil
         local locatorIds={}
         for id in OuttaMyWay.ValueRecord.pairs(group.locators or {}) do locatorIds[#locatorIds+1]=id end
         table.sort(locatorIds)
         local raw = {
             timestamp = nowSeconds,
-            provenance = {source = "LiveObservationSource", mode = "JOB_SEEDED_FIELD_WORLD_IDENTITY", geometryFingerprint = resolved and world.geometryFingerprint or nil},
+            provenance = {source = "LiveObservationSource", mode = "JOB_SEEDED_FIELD_WORLD_EQUIVALENCE_AUTHORITY", geometryFingerprints = fingerprints},
             fieldWorld = {
                 referenceKey=fieldReference,fieldPolygonReferenceKey=polygonReference,
+                fieldPolygonReferenceKeys=polygonKeys,fieldWorldSnapshotReferenceKeys=snapshotKeys,
                 operationMembershipEvidenceComplete=group.membershipEvidenceComplete==true,
-                identityStatus=resolved and "JOB_SEEDED_FIELD_WORLD_SNAPSHOT" or "WAITING_FOR_FIELD_WORLD_SNAPSHOT",
-                geometryFingerprint=resolved and world.geometryFingerprint or nil,
-                canonicalizationVersion=resolved and world.canonicalizationVersion or nil,
-                quantizationMetres=resolved and world.quantizationMetres or nil,
-                boundary=resolved and world.boundary or {},islands=resolved and world.islands or {},
-                boundaryPointCount=resolved and world.boundaryPointCount or 0,islandCount=resolved and world.islandCount or 0,
-                playerFacingFieldLocators=locatorIds,immutableForJobEpisode=resolved and true or false
+                identityStatus=resolved and "FIELD_WORLD_EQUIVALENCE_RESOLVED" or "UNRESOLVED",
+                equivalenceOutcome=resolved and "SAME_OR_DIFFERENT_FIELD_WORLD_RESOLVED" or "UNRESOLVED",
+                geometryFingerprint=#fingerprints==1 and fingerprints[1] or nil,geometryFingerprints=fingerprints,
+                canonicalizationVersion=representative and representative.canonicalizationVersion or nil,
+                quantizationMetres=representative and representative.quantizationMetres or nil,
+                boundary=representative and representative.boundary or {},islands=representative and representative.islands or {},
+                boundaryPointCount=representative and representative.boundaryPointCount or 0,islandCount=representative and representative.islandCount or 0,
+                representativeSnapshotReferenceKey=representative and representative.referenceKey or nil,
+                representativeGeometryOnly=representative~=nil,
+                playerFacingFieldLocators=locatorIds,immutableSnapshots=#snapshotKeys>0
             },
             assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, demandEvidence = {}, interactionEvidence = {}},
             motion = {closureEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
@@ -354,9 +386,11 @@ function Source:capture(mission, nowSeconds)
                     nativeJobToken = worker.nativeJobToken, nativeJobTokenSource = worker.nativeJobTokenSource,
                     activeJobVehicleMembership = worker.activeObserved == true, activeObserved = worker.activeObserved, terminationEvidence = worker.terminationEvidence
                 },
-                fieldWorldReferenceKey = worker.fieldWorldSnapshot and worker.fieldWorldSnapshot.referenceKey or nil,
+                fieldWorldReferenceKey = worker.fieldWorldResolution and worker.fieldWorldResolution.fieldWorldReferenceKey or nil,
+                fieldWorldSnapshotReferenceKey = worker.fieldWorldSnapshot and worker.fieldWorldSnapshot.referenceKey or nil,
                 fieldPolygonReferenceKey = worker.fieldWorldSnapshot and worker.fieldWorldSnapshot.fieldPolygonReferenceKey or nil,
                 fieldWorldFingerprint = worker.fieldWorldSnapshot and worker.fieldWorldSnapshot.geometryFingerprint or nil,
+                fieldWorldEquivalenceStatus = worker.fieldWorldResolution and worker.fieldWorldResolution.outcome or (worker.fieldWorldSnapshot and "UNRESOLVED" or nil),
                 playerFacingFieldId = worker.playerFacingFieldId,
                 playerFacingLocatorSource = worker.playerFacingLocatorSource
             }
@@ -378,23 +412,34 @@ function Source:capture(mission, nowSeconds)
                     reason = "previously active assembly runtime object is unavailable"
                 }
             end
-            local worldResolved=worker.fieldWorldSnapshot~=nil
+            local snapshotResolved=worker.fieldWorldSnapshot~=nil
+            local worldResolved=worker.fieldWorldResolution~=nil and worker.fieldWorldResolution.fieldWorldReferenceKey~=nil
             local recognised=worker.activeObserved and worldResolved and worker.hasFieldWorker
             raw.operationMembershipEvidence[#raw.operationMembershipEvidence + 1] = {
-                assemblyReferenceKey=worker.referenceKey,fieldWorldReferenceKey=fieldReference,fieldPolygonReferenceKey=polygonReference,
+                assemblyReferenceKey=worker.referenceKey,
+                fieldWorldReferenceKey=worldResolved and worker.fieldWorldResolution.fieldWorldReferenceKey or nil,
+                fieldWorldSnapshotReferenceKey=snapshotResolved and worker.fieldWorldSnapshot.referenceKey or nil,
+                fieldPolygonReferenceKey=snapshotResolved and worker.fieldWorldSnapshot.fieldPolygonReferenceKey or nil,
                 performingRecognisedFieldWork=recognised,
                 evidence={
-                    geometryFingerprint=worldResolved and worker.fieldWorldSnapshot.geometryFingerprint or nil,
-                    fieldWorldSnapshotCaptured=worldResolved,fieldActive=worker.fieldActive,aiActive=worker.aiActive,
+                    geometryFingerprint=snapshotResolved and worker.fieldWorldSnapshot.geometryFingerprint or nil,
+                    fieldWorldSnapshotCaptured=snapshotResolved,fieldWorldIdentityResolved=worldResolved,
+                    fieldWorldEquivalenceStatus=worker.fieldWorldResolution and worker.fieldWorldResolution.outcome or (snapshotResolved and "UNRESOLVED" or nil),
+                    fieldActive=worker.fieldActive,aiActive=worker.aiActive,
                     activeJobVehicleMembership=worker.activeObserved,blocked=worker.blocked==true,
                     playerFacingFieldId=worker.playerFacingFieldId,playerFacingLocatorSource=worker.playerFacingLocatorSource
                 },
-                provenance={source="AISystem.activeJobVehicles+JobSeededFieldWorldSnapshot",fieldWorldIdentityStatus=worldResolved and "AUTHORITATIVE_GEOMETRY_FINGERPRINT" or "WAITING_FOR_EVIDENCE"}
+                provenance={source="AISystem.activeJobVehicles+JobSeededFieldWorldSnapshot+FieldWorldEquivalenceAuthority",fieldWorldIdentityStatus=worldResolved and "AUTHORITATIVE_SPATIAL_EQUIVALENCE" or "UNRESOLVED"}
             }
-            if not worldResolved then
+            if not snapshotResolved then
                 raw.unavailableSources[#raw.unavailableSources + 1] = {
                     source="FIELD_WORLD_SNAPSHOT",assemblyReferenceKey=worker.referenceKey,
                     reason=worker.fieldWorldError or "GIANTS-generated Job-seeded Field World polygon is not yet available"
+                }
+            elseif not worldResolved then
+                raw.unavailableSources[#raw.unavailableSources + 1] = {
+                    source="FIELD_WORLD_EQUIVALENCE_AUTHORITY",assemblyReferenceKey=worker.referenceKey,
+                    reason=worker.fieldWorldResolution and worker.fieldWorldResolution.reason or "Field World equivalence remains unresolved"
                 }
             end
             if worker.pose ~= nil then
@@ -464,20 +509,21 @@ function Source:capture(mission, nowSeconds)
             hasRetained = hasRetained or worker.unresolvedTermination == true
             hasActive = hasActive or worker.activeObserved == true
         end
-        if group.worldSnapshot~=nil and (hasActive or hasRetained) then
-            self.knownWorlds[key]={worldSnapshot=group.worldSnapshot}
+        if resolved and (hasActive or hasRetained) then
+            self.knownWorlds[key]={snapshots=group.snapshots}
         else
             self.knownWorlds[key]=nil
         end
     end
 
     for ref in OuttaMyWay.ValueRecord.pairs(removeAfterCapture) do self.tracks[ref] = nil end
+    if self.fieldWorldEquivalenceAuthority ~= nil then self.fieldWorldEquivalenceAuthority:endObservationCycle() end
 
     if #observations == 0 then
         observations[1] = {
             timestamp = nowSeconds,
-            provenance = {source = "LiveObservationSource", mode = "JOB_SEEDED_FIELD_WORLD_IDENTITY", noActivity = true},
-            fieldWorld = {referenceKey = "field-world:none", fieldPolygonReferenceKey = "field-polygon:none", operationMembershipEvidenceComplete = true},
+            provenance = {source = "LiveObservationSource", mode = "JOB_SEEDED_FIELD_WORLD_EQUIVALENCE_AUTHORITY", noActivity = true},
+            fieldWorld = {referenceKey = "field-world:none", fieldPolygonReferenceKey = nil, fieldPolygonReferenceKeys = {}, fieldWorldSnapshotReferenceKeys = {}, operationMembershipEvidenceComplete = true, identityStatus="NO_ACTIVITY"},
             assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, demandEvidence = {}, interactionEvidence = {}},
             motion = {closureEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
             physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {}

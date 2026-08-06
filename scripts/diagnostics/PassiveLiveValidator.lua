@@ -39,7 +39,7 @@ function Validator.new(runtime,source,support,probe,fieldWorldSnapshots)
 end
 function Validator:loadMap()
     self.elapsed=0; self.lastSignature=nil; self.lastLogAt=-math.huge; self.records={}; self.errorCount=0; self.source:reset(); if self.probe~=nil then self.probe:reset() end; if self.fieldWorldSnapshots~=nil then self.fieldWorldSnapshots:reset() end
-    logInfo("Field World equivalence evidence listener active; exact fingerprints remain provisional Operation authority; source-intent termination enabled; replacement Control authority disabled")
+    logInfo("Field World Equivalence Authority active; unresolved identity grants no Operation admission; source-intent termination enabled; replacement Control authority disabled")
 end
 function Validator:deleteMap() self.source:reset(); if self.probe~=nil then self.probe:reset() end; if self.fieldWorldSnapshots~=nil then self.fieldWorldSnapshots:reset() end; self.elapsed=0; self.lastSignature=nil end
 function Validator:keyEvent() end

@@ -1,22 +1,20 @@
 # FS25_OuttaMyWay Roadmap
 
-## Current gate — Field World Equivalence Authority implementation design
+## Current gate — passive live validation of Field World Equivalence Authority
 
-Architecture is closed by ADR-0021 and D-0033. The next activity is implementation design, not further identity-semantics discussion.
+ADR-0021 and D-0033 are implemented passively by the v4.7.14 candidate. Offline conformance is complete; the remaining question is whether live GIANTS captures from concurrent workers in the merged 68–69–70 workspace resolve coherently into one Field World and one Operation.
 
-The design must:
+The live gate must demonstrate:
 
-1. preserve every immutable Job-Seeded Field World Snapshot and exact fingerprint;
-2. produce `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD` or `UNRESOLVED`;
-3. use positive spatial evidence rather than one authoritative threshold;
-4. prevent pairwise tolerance chaining through Field-World-wide coherence;
-5. withhold Operation admission and Control authority when unresolved;
-6. preserve the ephemeral Operation lifecycle and the unsupported mid-episode mutation boundary.
+1. each Job Episode retains its own immutable Snapshot and exact polygon provenance;
+2. non-exact but materially equivalent captures receive one resolved Field World identity;
+3. the workers join one active Operation;
+4. no pairwise-only tolerance chain is used;
+5. unresolved evidence receives no Operation authority;
+6. Control remains disabled.
 
-The merged 68–69–70 and disconnected split-77 evidence are mandatory positive and negative fixtures. An explicit ambiguous fixture is required before implementation authority can be considered complete.
-
-> **Current canonical baseline:** v4.7.12  
-> **Current implementation candidate:** v4.7.13 Field World Equivalence Authority Architecture  
+> **Current canonical baseline:** v4.7.13  
+> **Current implementation candidate:** v4.7.14 Field World Equivalence Authority  
 > **Control authority:** disabled
 
 ## v4.7.x implementation sequence
@@ -31,9 +29,10 @@ The merged 68–69–70 and disconnected split-77 evidence are mandatory positiv
 8. **Targeted active-job and field evidence** — v4.7.8 evidence build.
 9. **GIANTS-compatible immutable traversal and passive pipeline closure** — v4.7.9 evidence build.
 10. **Source-field authority, derived Field World discovery and source-intent termination** — v4.7.10 candidate.
-11. **Field World Equivalence Authority implementation** — satisfy ADR-0021 using preserved positive, negative and unresolved fixtures before Operation identity or Control authority advances.
-12. **First exclusive vertical slice** — one bounded Hold/release lifecycle owned entirely by the replacement core, only after the passive gates pass.
-13. **Controlled expansion** — one canonical capability or lifecycle boundary per evidence-backed increment.
+11. **Field World Equivalence Authority architecture** — v4.7.13 canonical.
+12. **Field World Equivalence Authority implementation** — v4.7.14 candidate; offline gate passed, passive live gate pending.
+13. **First exclusive vertical slice** — one bounded Hold/release lifecycle owned entirely by the replacement core, only after the passive gates pass.
+14. **Controlled expansion** — one canonical capability or lifecycle boundary per evidence-backed increment.
 
 ## Build-economy rule
 
@@ -45,5 +44,6 @@ Offline tests remain mandatory before packaging. Live cycles are reserved for GI
 - no broad reflection retained as production observation;
 - no active imports from `scripts/archive/`;
 - no farmland-to-field identity substitution;
-- no derived Field World guess when boundary evidence is absent or ambiguous;
+- no guessed Field World identity when evidence is unresolved;
+- no tolerance-chain identity class;
 - no Control authority during passive validation.

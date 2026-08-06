@@ -7,6 +7,9 @@ function Runtime.new()
     local commitments=OuttaMyWay.CommitmentRegistry.new(identities,epochs)
     local obligations=OuttaMyWay.ObligationLedger.new(identities,epochs,commitments)
     local authorities=OuttaMyWay.AuthorityRegistry.new(identities,epochs,commitments)
+    local fieldWorldSnapshots=OuttaMyWay.FieldWorldSnapshotRegistry.new()
+    local fieldWorldEquivalenceEvaluator=OuttaMyWay.FieldWorldEquivalenceEvaluator.new()
+    local fieldWorldEquivalenceAuthority=OuttaMyWay.FieldWorldEquivalenceAuthority.new(identities,fieldWorldEquivalenceEvaluator)
     local jobEpisodes=OuttaMyWay.JobEpisodeAdmission.new(identities,epochs)
     local operations=OuttaMyWay.OperationAdmission.new(identities,epochs,jobEpisodes)
     local admission=OuttaMyWay.CommitmentAdmission.new(identities,epochs,commitments,obligations,authorities)
@@ -17,10 +20,10 @@ function Runtime.new()
         commitments=commitments,obligations=obligations,authorities=authorities,commitmentAdmission=admission,governingBasisEvaluator=governingBasis,terminalSettlementEvaluator=terminalSettlement,
         situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,commitments),
         candidateSpace=OuttaMyWay.CandidateSpace.new(identities,epochs),constraintEngine=OuttaMyWay.ConstraintEngine.new(identities,epochs),decisionSelector=OuttaMyWay.DecisionSelector.new(identities,epochs),
-        targetedFieldIdentityProbe=OuttaMyWay.TargetedFieldIdentityProbe.new(),fieldWorldSnapshots=OuttaMyWay.FieldWorldSnapshotRegistry.new(),passiveCandidateSupport=OuttaMyWay.PassiveLiveCandidateSupport.new(identities,epochs),
+        targetedFieldIdentityProbe=OuttaMyWay.TargetedFieldIdentityProbe.new(),fieldWorldSnapshots=fieldWorldSnapshots,fieldWorldEquivalenceEvaluator=fieldWorldEquivalenceEvaluator,fieldWorldEquivalenceAuthority=fieldWorldEquivalenceAuthority,passiveCandidateSupport=OuttaMyWay.PassiveLiveCandidateSupport.new(identities,epochs),
         trace=OuttaMyWay.ArchitectureTrace.new(),initialized=false,runtimeMode=OuttaMyWay.RUNTIME_MODE,controlAuthorityEnabled=false
     },Runtime)
-    runtime.liveObservationSource=OuttaMyWay.LiveObservationSource.new(runtime.fieldWorldSnapshots)
+    runtime.liveObservationSource=OuttaMyWay.LiveObservationSource.new(runtime.fieldWorldSnapshots,runtime.fieldWorldEquivalenceAuthority)
     runtime.decisionCommitmentBoundary=OuttaMyWay.DecisionCommitmentBoundary.new(identities,epochs,admission,commitments,obligations,authorities,governingBasis,terminalSettlement)
     runtime.replayRunner=OuttaMyWay.ReplayRunner.new(runtime)
     runtime.passiveLiveValidator=OuttaMyWay.PassiveLiveValidator.new(runtime,runtime.liveObservationSource,runtime.passiveCandidateSupport,runtime.targetedFieldIdentityProbe,runtime.fieldWorldSnapshots)
@@ -28,8 +31,8 @@ function Runtime.new()
 end
 function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
-    self.trace:append("FIELD_WORLD_EQUIVALENCE_EVIDENCE_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION)
-    print(string.format("FS25_OuttaMyWay v%s Field World equivalence evidence loaded; exact-fingerprint Operation grouping remains provisional; Control authority disabled",OuttaMyWay.VERSION))
+    self.trace:append("FIELD_WORLD_EQUIVALENCE_AUTHORITY_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION)
+    print(string.format("FS25_OuttaMyWay v%s Field World Equivalence Authority loaded; unresolved identity grants no Operation admission; Control authority disabled",OuttaMyWay.VERSION))
 end
 function Runtime:publishObservation(raw) return self.observationAdapter:publish(raw) end
 function Runtime:admitJobEpisodes(snapshot) return self.jobEpisodes:observe(snapshot) end
@@ -52,5 +55,5 @@ end
 function Runtime:runReplay(fixture) return self.replayRunner:run(fixture) end
 function Runtime:getStatus()
     return {initialized=self.initialized,runtimeMode=self.runtimeMode,controlAuthorityEnabled=self.controlAuthorityEnabled,
-        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),replayRunCount=self.replayRunner:getRunCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),passiveTraceCount=#self.passiveLiveValidator:getRecords(),passiveErrorCount=self.passiveLiveValidator:getErrorCount(),fieldIdentityProbeSampleCount=self.targetedFieldIdentityProbe:getSampleCount(),fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldSnapshots:getComparisonRecordCount(),activeOperationCount=#self.operations:listActive(),commitmentCount=#self.commitments:list(),traceCount=self.trace:count()}
+        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),replayRunCount=self.replayRunner:getRunCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),passiveTraceCount=#self.passiveLiveValidator:getRecords(),passiveErrorCount=self.passiveLiveValidator:getErrorCount(),fieldIdentityProbeSampleCount=self.targetedFieldIdentityProbe:getSampleCount(),fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),activeOperationCount=#self.operations:listActive(),commitmentCount=#self.commitments:list(),traceCount=self.trace:count()}
 end

@@ -1,14 +1,17 @@
 # Replacement-Core Conformance Tests
 
-v4.7.13 is an architecture-recording increment. It adds no runtime identity behaviour; the existing v4.7.12 tests continue to prove deterministic geometry evidence, split/near-equivalent comparison and the guard that diagnostic equivalence does not merge Operations.
+v4.7.14 adds executable Field World Equivalence Authority conformance. The suite now proves:
 
-v4.7.12 adds deterministic geometry metrics, near-equivalent and split-polygon comparison checks, bounded evidence retention and a guard proving diagnostic equivalence does not merge Operations.
+- distinct immutable Snapshots with exact canonical geometry resolve to one Field World;
+- four non-exact merged-workspace representations form one coherent class;
+- positively separated representations form different Field Worlds;
+- partial overlap remains unresolved and receives no Operation authority;
+- pairwise tolerance chaining cannot enlarge a class;
+- inactive classes retire and later captures receive new identity;
+- one Operation may retain multiple Snapshot and exact-polygon references;
+- Control remains disabled.
 
-v4.7.11 adds polygon canonicalisation invariance, split-polygon distinction, immutable Job Episode binding, three-Operation concurrent grouping and global Operation trace coverage.
-
-v4.7.10 adds source-field polygon authority, farmland-context negative tests, source-label disagreement handling, positive `lastJob` termination, stale `fieldJob` tolerance and a simulated GIANTS derived Field World containing source fields 68, 69 and 70.
-
-The suite also retains all earlier replay, immutable traversal, admission, Operation, Candidate, constraint, Decision and terminal-settlement checks.
+All earlier immutable traversal, admission, Operation, Knowledge, Candidate, constraint, Decision, replay and terminal-settlement checks remain active.
 
 Run from the repository root:
 

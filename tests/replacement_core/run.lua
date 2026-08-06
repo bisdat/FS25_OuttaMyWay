@@ -23,6 +23,8 @@ load("scripts/contracts/PassiveLiveTraceRecord.lua")
 load("scripts/identity/EpochSequence.lua")
 load("scripts/identity/IdentityRegistry.lua")
 load("scripts/identity/FieldWorldSnapshotRegistry.lua")
+load("scripts/identity/FieldWorldEquivalenceEvaluator.lua")
+load("scripts/identity/FieldWorldEquivalenceAuthority.lua")
 load("scripts/observation/RuntimeObservationAdapter.lua")
 load("scripts/observation/LiveAIJobEvidence.lua")
 load("scripts/observation/LiveObservationSource.lua")
@@ -197,7 +199,7 @@ end)
 
 test("runtime is passive and inactive before the live listener runs", function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); local status=runtime:getStatus()
-    equal(status.runtimeMode,"FIELD_WORLD_EQUIVALENCE_EVIDENCE"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
+    equal(status.runtimeMode,"FIELD_WORLD_EQUIVALENCE_AUTHORITY_PASSIVE"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
 end)
 
 
@@ -208,7 +210,7 @@ local function rawObservation(epoch, evidence, assemblyKey)
         provenance = { source="fixture", sequence=epoch },
         assemblies = {{ referenceKey=assemblyKey, componentReferenceKeys={assemblyKey.."/vehicle", assemblyKey.."/implement"}, source="fixture" }},
         fieldWorld = {}, geometry = {}, motion = {}, aiStates = {}, playerControl = {},
-        jobEpisodeEvidence = evidence and {{ assemblyReferenceKey=assemblyKey, sourceJobToken=evidence.sourceJobToken or "job-1", jobPresent=evidence.jobPresent, aiControlled=evidence.aiControlled, aiActive=evidence.aiActive, blocked=evidence.blocked, outtaMyWayHold=evidence.outtaMyWayHold, temporarilyInactive=evidence.temporarilyInactive, playerStopObserved=evidence.playerStopObserved, playerTakeoverObserved=evidence.playerTakeoverObserved, playerControlled=evidence.playerControlled, giantsAbortObserved=evidence.giantsAbortObserved, giantsFaultObserved=evidence.giantsFaultObserved, restartObserved=evidence.restartObserved, replacementObserved=evidence.replacementObserved, fieldWorldReferenceKey=evidence.fieldWorldReferenceKey, fieldPolygonReferenceKey=evidence.fieldPolygonReferenceKey, fieldWorldFingerprint=evidence.fieldWorldFingerprint, playerFacingFieldId=evidence.playerFacingFieldId, playerFacingLocatorSource=evidence.playerFacingLocatorSource, provenance={source="fixture"} }} or {},
+        jobEpisodeEvidence = evidence and {{ assemblyReferenceKey=assemblyKey, sourceJobToken=evidence.sourceJobToken or "job-1", jobPresent=evidence.jobPresent, aiControlled=evidence.aiControlled, aiActive=evidence.aiActive, blocked=evidence.blocked, outtaMyWayHold=evidence.outtaMyWayHold, temporarilyInactive=evidence.temporarilyInactive, playerStopObserved=evidence.playerStopObserved, playerTakeoverObserved=evidence.playerTakeoverObserved, playerControlled=evidence.playerControlled, giantsAbortObserved=evidence.giantsAbortObserved, giantsFaultObserved=evidence.giantsFaultObserved, restartObserved=evidence.restartObserved, replacementObserved=evidence.replacementObserved, fieldWorldReferenceKey=evidence.fieldWorldReferenceKey, fieldWorldSnapshotReferenceKey=evidence.fieldWorldSnapshotReferenceKey, fieldPolygonReferenceKey=evidence.fieldPolygonReferenceKey, fieldWorldFingerprint=evidence.fieldWorldFingerprint, fieldWorldEquivalenceStatus=evidence.fieldWorldEquivalenceStatus, playerFacingFieldId=evidence.playerFacingFieldId, playerFacingLocatorSource=evidence.playerFacingLocatorSource, provenance={source="fixture"} }} or {},
         operationMembershipEvidence = {}, physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {}
     }
 end
@@ -253,18 +255,18 @@ end)
 
 test("Field World Snapshot binds once and rejects drift inside one Job Episode",function()
     local _,_,adapter,admission=newObservationKernel()
-    local first=adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true,fieldWorldReferenceKey="field-world:A",fieldPolygonReferenceKey="field-polygon:A",fieldWorldFingerprint="A"}))
+    local first=adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true,fieldWorldReferenceKey="field-world:A",fieldWorldSnapshotReferenceKey="field-world-snapshot:A",fieldPolygonReferenceKey="field-polygon:A",fieldWorldFingerprint="A",fieldWorldEquivalenceStatus="SAME_FIELD_WORLD"}))
     local admitted=admission:observe(first); local episode=admission:get(admitted.activeEpisodeIds[1])
     equal(episode.fieldWorldReferenceKey,"field-world:A")
-    local changed=adapter:publish(rawObservation(2,{jobPresent=true,aiControlled=true,aiActive=true,fieldWorldReferenceKey="field-world:B",fieldPolygonReferenceKey="field-polygon:B",fieldWorldFingerprint="B"}))
+    local changed=adapter:publish(rawObservation(2,{jobPresent=true,aiControlled=true,aiActive=true,fieldWorldReferenceKey="field-world:B",fieldWorldSnapshotReferenceKey="field-world-snapshot:B",fieldPolygonReferenceKey="field-polygon:B",fieldWorldFingerprint="B",fieldWorldEquivalenceStatus="DIFFERENT_FIELD_WORLD"}))
     expectError(function() admission:observe(changed) end)
 end)
 
 test("replacement Job Episode may capture a different Field World Snapshot",function()
     local _,_,adapter,admission=newObservationKernel()
-    local first=adapter:publish(rawObservation(1,{sourceJobToken="job-1",jobPresent=true,aiControlled=true,aiActive=true,fieldWorldReferenceKey="field-world:A",fieldPolygonReferenceKey="field-polygon:A",fieldWorldFingerprint="A"}))
+    local first=adapter:publish(rawObservation(1,{sourceJobToken="job-1",jobPresent=true,aiControlled=true,aiActive=true,fieldWorldReferenceKey="field-world:A",fieldWorldSnapshotReferenceKey="field-world-snapshot:A",fieldPolygonReferenceKey="field-polygon:A",fieldWorldFingerprint="A",fieldWorldEquivalenceStatus="SAME_FIELD_WORLD"}))
     local admitted=admission:observe(first); local oldId=admitted.activeEpisodeIds[1]
-    local replacement=adapter:publish(rawObservation(2,{sourceJobToken="job-2",jobPresent=true,aiControlled=true,aiActive=true,replacementObserved=true,fieldWorldReferenceKey="field-world:B",fieldPolygonReferenceKey="field-polygon:B",fieldWorldFingerprint="B"}))
+    local replacement=adapter:publish(rawObservation(2,{sourceJobToken="job-2",jobPresent=true,aiControlled=true,aiActive=true,replacementObserved=true,fieldWorldReferenceKey="field-world:B",fieldWorldSnapshotReferenceKey="field-world-snapshot:B",fieldPolygonReferenceKey="field-polygon:B",fieldWorldFingerprint="B",fieldWorldEquivalenceStatus="DIFFERENT_FIELD_WORLD"}))
     local result=admission:observe(replacement)
     equal(#result.endedEpisodeIds,1); equal(#result.admittedEpisodeIds,1)
     equal(admission:get(oldId).terminalCause,"REPLACED")
@@ -353,7 +355,7 @@ local function pictureFixture(epoch, options)
     local evidenceB=options.evidenceB or {jobPresent=true,aiControlled=true,aiActive=true,sourceJobToken="job-B"}
     return {
         timestamp=epoch,provenance={source="picture-fixture",sequence=epoch},
-        fieldWorld={referenceKey="field-world-77",fieldPolygonReferenceKey="field-77",operationMembershipEvidenceComplete=options.membershipComplete~=false},
+        fieldWorld={referenceKey="field-world-77",fieldPolygonReferenceKey="field-77",fieldPolygonReferenceKeys={"field-77"},fieldWorldSnapshotReferenceKeys={"snapshot-A","snapshot-B"},operationMembershipEvidenceComplete=options.membershipComplete~=false},
         assemblies={{referenceKey=follower,componentReferenceKeys={follower.."/vehicle"},source="fixture"},{referenceKey=leader,componentReferenceKeys={leader.."/vehicle"},source="fixture"}},
         geometry={
             currentSpaceEvidence={{identity="CS-A",assemblyReferenceKey=follower,occupancy={x=0,z=0},provenance={source="fixture"}},{identity="CS-B",assemblyReferenceKey=leader,occupancy={x=10,z=0},provenance={source="fixture"}}},
@@ -363,8 +365,8 @@ local function pictureFixture(epoch, options)
         },
         motion={closureEvidence={{followerAssemblyReferenceKey=follower,leaderAssemblyReferenceKey=leader,closingObserved=true,closingRate=2,horizon=5,provenance={source="fixture"}}}},
         aiStates={},playerControl={},
-        jobEpisodeEvidence={{assemblyReferenceKey=follower,sourceJobToken=evidenceA.sourceJobToken,jobPresent=evidenceA.jobPresent,aiControlled=evidenceA.aiControlled,aiActive=evidenceA.aiActive,blocked=evidenceA.blocked,playerStopObserved=evidenceA.playerStopObserved,provenance={source="fixture"}},{assemblyReferenceKey=leader,sourceJobToken=evidenceB.sourceJobToken,jobPresent=evidenceB.jobPresent,aiControlled=evidenceB.aiControlled,aiActive=evidenceB.aiActive,blocked=evidenceB.blocked,playerStopObserved=evidenceB.playerStopObserved,provenance={source="fixture"}}},
-        operationMembershipEvidence=options.membership or {{assemblyReferenceKey=follower,fieldWorldReferenceKey="field-world-77",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}},{assemblyReferenceKey=leader,fieldWorldReferenceKey="field-world-77",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}},
+        jobEpisodeEvidence={{assemblyReferenceKey=follower,sourceJobToken=evidenceA.sourceJobToken,jobPresent=evidenceA.jobPresent,aiControlled=evidenceA.aiControlled,aiActive=evidenceA.aiActive,blocked=evidenceA.blocked,playerStopObserved=evidenceA.playerStopObserved,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",fieldWorldFingerprint="fixture-A",fieldWorldEquivalenceStatus="SAME_FIELD_WORLD",provenance={source="fixture"}},{assemblyReferenceKey=leader,sourceJobToken=evidenceB.sourceJobToken,jobPresent=evidenceB.jobPresent,aiControlled=evidenceB.aiControlled,aiActive=evidenceB.aiActive,blocked=evidenceB.blocked,playerStopObserved=evidenceB.playerStopObserved,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-B",fieldPolygonReferenceKey="field-77",fieldWorldFingerprint="fixture-B",fieldWorldEquivalenceStatus="SAME_FIELD_WORLD",provenance={source="fixture"}}},
+        operationMembershipEvidence=options.membership or {{assemblyReferenceKey=follower,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}},{assemblyReferenceKey=leader,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-B",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}},
         physicalRepresentationEvidence=options.representations or {{assemblyReferenceKey=follower,representationId="REP-A",question="CURRENT_OCCUPANCY",assessmentHorizon=5,structurallyValid=true,refreshRequired=false,currentForQuestion=true,coversAssessmentHorizon=true,coverageComplete=true,conservative=true,permittedConclusions={"CONFLICT_SUPPORT","CONFLICT_EXCLUSION"},provenance={source="fixture"}},{assemblyReferenceKey=leader,representationId="REP-B",question="CURRENT_OCCUPANCY",assessmentHorizon=5,structurallyValid=true,refreshRequired=false,currentForQuestion=true,coversAssessmentHorizon=true,coverageComplete=true,conservative=true,permittedConclusions={"CONFLICT_SUPPORT"},provenance={source="fixture"}}},
         controlOutcomes={},unavailableSources=options.unavailableSources or {}
     }
@@ -390,7 +392,7 @@ end)
 
 test("Operation identity persists while membership changes",function()
     local runtime=newPictureRuntime(); local first=runtime:processSealedObservation(pictureFixture(1))
-    local second=runtime:processSealedObservation(pictureFixture(2,{membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}}))
+    local second=runtime:processSealedObservation(pictureFixture(2,{membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}}))
     equal(first.operation.activeOperationIds[1],second.operation.activeOperationIds[1])
     equal(#runtime.operations:get(second.operation.activeOperationIds[1]).memberAssemblyIds,1)
 end)
@@ -818,9 +820,9 @@ end
 
 test("live source admits GIANTS Job identities from activeJobVehicles",function()
     withFakeLiveGlobals(function(mission,a,b)
-        local registry=OuttaMyWay.FieldWorldSnapshotRegistry.new(); local source=OuttaMyWay.LiveObservationSource.new(registry); local observations=source:capture(mission,10)
+        local registry=OuttaMyWay.FieldWorldSnapshotRegistry.new(); local ids=OuttaMyWay.IdentityRegistry.new(); local evaluator=OuttaMyWay.FieldWorldEquivalenceEvaluator.new(); local authority=OuttaMyWay.FieldWorldEquivalenceAuthority.new(ids,evaluator); local source=OuttaMyWay.LiveObservationSource.new(registry,authority); local observations=source:capture(mission,10)
         equal(#observations,1); equal(#observations[1].assemblies,2); equal(#observations[1].jobEpisodeEvidence,2)
-        if not string.find(observations[1].fieldWorld.referenceKey,"field-world:geometry:FWG1:",1,true) then error("geometry Field World identity missing") end
+        if not string.find(observations[1].fieldWorld.referenceKey,"field-world:equivalence:FWE1:",1,true) then error("equivalence Field World identity missing") end
         equal(observations[1].fieldWorld.operationMembershipEvidenceComplete,true)
         local tokens={}
         for _,evidence in ipairs(observations[1].jobEpisodeEvidence) do
@@ -864,7 +866,7 @@ test("active Job Episodes with unresolved field identity wait rather than exhaus
         equal(#raws,2)
         local processed=nil
         for _,raw in ipairs(raws) do
-            if not string.find(raw.fieldWorld.referenceKey,"field-world:waiting:",1,true) then error("unresolved Field World did not wait by Job Episode") end
+            if not string.find(raw.fieldWorld.referenceKey,"field-world:unresolved:",1,true) then error("unresolved Field World did not remain isolated by Job Episode") end
             equal(raw.fieldWorld.operationMembershipEvidenceComplete,false)
             processed=runtime:processSealedObservation(raw)
             equal(OuttaMyWay.ValueRecord.length(processed.operation.activeOperationIds),0)
@@ -1075,8 +1077,8 @@ test("merged and split concurrent workers form three geometry Operations",functi
         local vu,ju=makeVehicle(304,2004,60,-348,"77 upper")
         local vl,jl=makeVehicle(305,2005,128,-448,"77 lower")
         local merged={{x=-228.2,z=-677.8},{x=-6.2,z=-677.8},{x=-6.2,z=-177.8},{x=-228.2,z=-177.8}}
-        local upper={{x=-15.2,z=-408.2},{x=229.2,z=-408.2},{x=229.2,z=-206.8},{x=-15.2,z=-206.8}}
-        local lower={{x=-40.8,z=-701.2},{x=191.8,z=-701.2},{x=191.8,z=-407.8},{x=-40.8,z=-407.8}}
+        local upper={{x=300,z=-400},{x=540,z=-400},{x=540,z=-200},{x=300,z=-200}}
+        local lower={{x=300,z=-700},{x=540,z=-700},{x=540,z=-410},{x=300,z=-410}}
         FieldCourseField={generateAtPosition=function(x,z,settings,callback)
             local boundary=(x<0 and merged) or (z>-408 and upper) or lower
             return {update=function(self,dt,budget) callback({fieldRootBoundary={boundaryLine=boundary},islands={}},true); return false end}
@@ -1108,17 +1110,19 @@ test("Field World geometry measurements are deterministic",function()
     equal(metrics.boundaryPointCount,4)
 end)
 
-test("Field World comparison exposes strong overlap without changing identity authority",function()
+test("Field World evaluator resolves strong compound overlap as SAME",function()
     local a={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}}
     local b={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0.2,z=99.8}}
     local fa=OuttaMyWay.FieldWorldSnapshotRegistry.fingerprintGeometry(a,{},0.1)
     local fb=OuttaMyWay.FieldWorldSnapshotRegistry.fingerprintGeometry(b,{},0.1)
     if fa==fb then error("test requires non-exact fingerprints") end
-    local comparison=OuttaMyWay.FieldWorldSnapshotRegistry.compareGeometry({boundary=a,islands={}},{boundary=b,islands={}},31)
-    if comparison.sampledJaccard<0.99 then error("near-identical polygons lacked strong sampled overlap") end
-    if comparison.symmetricBoundaryMaxDistanceMetres>0.3 then error("boundary difference unexpectedly large") end
-    equal(comparison.diagnosticOnly,true)
-    equal(comparison.identityAuthorityChanged,false)
+    local ca=OuttaMyWay.FieldWorldSnapshotRegistry.canonicalizeBoundary(a,{},0.1)
+    local cb=OuttaMyWay.FieldWorldSnapshotRegistry.canonicalizeBoundary(b,{},0.1)
+    local evaluator=OuttaMyWay.FieldWorldEquivalenceEvaluator.new()
+    local result=evaluator:evaluate({referenceKey="snapshot-A",canonicalGeometry=ca.canonicalGeometry,geometryFingerprint=ca.fingerprint,geometryMetrics=OuttaMyWay.FieldWorldSnapshotRegistry.measureGeometry(a,{})},{referenceKey="snapshot-B",canonicalGeometry=cb.canonicalGeometry,geometryFingerprint=cb.fingerprint,geometryMetrics=OuttaMyWay.FieldWorldSnapshotRegistry.measureGeometry(b,{})})
+    equal(result.outcome,"SAME_FIELD_WORLD")
+    if result.comparison.sampledJaccard<0.99 then error("near-identical polygons lacked strong sampled overlap") end
+    if result.comparison.symmetricBoundaryMaxDistanceMetres>0.3 then error("boundary difference unexpectedly large") end
 end)
 
 test("split Field World comparison exposes low overlap",function()
@@ -1129,7 +1133,7 @@ test("split Field World comparison exposes low overlap",function()
     if comparison.centroidDistanceMetres<200 then error("split polygon centroids were not separated") end
 end)
 
-test("equivalence evidence does not merge non-exact Operation identities",function()
+test("equivalence authority merges non-exact representations into one Operation",function()
     withFakeLiveGlobals(function(mission,a,b,positions)
         local oldGenerator=FieldCourseField
         positions[a.rootNode]={0,0,0}; positions[b.rootNode]={0,0,0}
@@ -1144,13 +1148,16 @@ test("equivalence evidence does not merge non-exact Operation identities",functi
         local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
         runtime.liveObservationSource:capture(mission,10)
         local observations=runtime.liveObservationSource:capture(mission,11)
-        equal(#observations,2)
+        equal(#observations,1)
         for _,raw in ipairs(observations) do runtime:processSealedObservation(raw) end
-        equal(#runtime.operations:listActive(),2)
-        equal(runtime.fieldWorldSnapshots:getComparisonRecordCount(),1)
-        local comparison=runtime.fieldWorldSnapshots:getComparisonRecords()[1]
+        equal(#runtime.operations:listActive(),1)
+        equal(runtime.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),1)
+        local comparison=runtime.fieldWorldEquivalenceAuthority:getComparisonRecords()[1]
         equal(comparison.exactFingerprint,false)
-        equal(comparison.identityAuthorityChanged,false)
+        equal(comparison.outcome,"SAME_FIELD_WORLD")
+        local operation=runtime.operations:listActive()[1]
+        equal(#operation.memberFieldWorldSnapshotReferenceKeys,2)
+        equal(#operation.memberFieldPolygonReferenceKeys,2)
         FieldCourseField=oldGenerator
     end)
 end)
@@ -1206,6 +1213,155 @@ test("polygon field identity resolves without farmland service", function()
     local outside=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition(mission,150,150)
     equal(outside.resolved,false); equal(outside.reason,"NO_FIELD_POLYGON_MATCH")
     getWorldTranslation=oldWorld
+end)
+
+
+local function fieldWorldSnapshotFixture(referenceKey,boundary,islands)
+    islands=islands or {}
+    local canonical,reason=OuttaMyWay.FieldWorldSnapshotRegistry.canonicalizeBoundary(boundary,islands,0.1)
+    if canonical==nil then error(reason) end
+    return {
+        referenceKey=referenceKey,
+        fieldWorldSnapshotReferenceKey=referenceKey,
+        fieldPolygonReferenceKey="field-world-polygon:"..canonical.canonicalizationVersion..":"..canonical.fingerprint,
+        geometryFingerprint=canonical.fingerprint,
+        canonicalGeometry=canonical.canonicalGeometry,
+        geometryMetrics=OuttaMyWay.FieldWorldSnapshotRegistry.measureGeometry(boundary,islands),
+        boundary=boundary,islands=islands,immutableForJobEpisode=true
+    }
+end
+
+local function newFieldWorldAuthority()
+    local ids=OuttaMyWay.IdentityRegistry.new()
+    local evaluator=OuttaMyWay.FieldWorldEquivalenceEvaluator.new()
+    return evaluator,OuttaMyWay.FieldWorldEquivalenceAuthority.new(ids,evaluator)
+end
+
+test("exact canonical geometry shares Field World while retaining distinct Snapshot identity",function()
+    local boundary={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}}
+    local a=fieldWorldSnapshotFixture("snapshot-exact-A",boundary)
+    local b=fieldWorldSnapshotFixture("snapshot-exact-B",boundary)
+    local evaluator,authority=newFieldWorldAuthority()
+    local evaluation=evaluator:evaluate(a,b)
+    equal(evaluation.outcome,"SAME_FIELD_WORLD"); equal(evaluation.exactCanonicalGeometry,true)
+    authority:beginObservationCycle()
+    local ra=authority:resolve(a); local rb=authority:resolve(b)
+    equal(ra.fieldWorldReferenceKey,rb.fieldWorldReferenceKey)
+    if a.referenceKey==b.referenceKey then error("Snapshot identity collapsed") end
+    equal(#authority:listActiveClasses()[1].snapshots,2)
+    authority:endObservationCycle()
+end)
+
+test("four non-exact merged representations form one coherent Field World",function()
+    local boundaries={
+        {{x=0,z=0},{x=222,z=0},{x=222,z=500},{x=0,z=500}},
+        {{x=0,z=0},{x=222,z=0},{x=222,z=500},{x=0.2,z=499.8}},
+        {{x=0,z=0},{x=222,z=0.1},{x=221.9,z=500},{x=0,z=500}},
+        {{x=0.1,z=0},{x=222,z=0},{x=222,z=499.9},{x=0,z=500}}
+    }
+    local _,authority=newFieldWorldAuthority(); authority:beginObservationCycle()
+    local worldKey=nil; local fingerprints={}
+    for index,boundary in ipairs(boundaries) do
+        local snapshot=fieldWorldSnapshotFixture("snapshot-merged-"..index,boundary)
+        if fingerprints[snapshot.geometryFingerprint] then error("fixture fingerprints were not distinct") end
+        fingerprints[snapshot.geometryFingerprint]=true
+        local result=authority:resolve(snapshot)
+        if result.fieldWorldReferenceKey==nil then error("merged representation remained unresolved") end
+        worldKey=worldKey or result.fieldWorldReferenceKey
+        equal(result.fieldWorldReferenceKey,worldKey)
+    end
+    equal(authority:getActiveClassCount(),1)
+    equal(#authority:listActiveClasses()[1].snapshots,4)
+    authority:endObservationCycle()
+end)
+
+test("positive separation establishes two Field Worlds",function()
+    local upper=fieldWorldSnapshotFixture("snapshot-split-upper",{{x=0,z=110},{x=100,z=110},{x=100,z=210},{x=0,z=210}})
+    local lower=fieldWorldSnapshotFixture("snapshot-split-lower",{{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}})
+    local evaluator,authority=newFieldWorldAuthority()
+    local evaluation=evaluator:evaluate(upper,lower)
+    equal(evaluation.outcome,"DIFFERENT_FIELD_WORLD")
+    equal(evaluation.comparison.occupiedRegionsDisjoint,true)
+    if evaluation.comparison.minimumBoundaryDistanceMetres<9.9 then error("separation evidence too small") end
+    authority:beginObservationCycle()
+    local a=authority:resolve(upper); local b=authority:resolve(lower)
+    if a.fieldWorldReferenceKey==b.fieldWorldReferenceKey then error("separate Field Worlds were merged") end
+    equal(authority:getActiveClassCount(),2)
+    authority:endObservationCycle()
+end)
+
+test("partial overlap remains UNRESOLVED and does not join established Field World",function()
+    local established=fieldWorldSnapshotFixture("snapshot-established",{{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}})
+    local overlap=fieldWorldSnapshotFixture("snapshot-overlap",{{x=50,z=0},{x=150,z=0},{x=150,z=100},{x=50,z=100}})
+    local evaluator,authority=newFieldWorldAuthority()
+    equal(evaluator:evaluate(overlap,established).outcome,"UNRESOLVED")
+    authority:beginObservationCycle()
+    local first=authority:resolve(established); local second=authority:resolve(overlap)
+    if first.fieldWorldReferenceKey==nil then error("established Field World was not assigned") end
+    equal(second.outcome,"UNRESOLVED"); equal(second.fieldWorldReferenceKey,nil)
+    equal(authority:getActiveClassCount(),1)
+    equal(#authority:listActiveClasses()[1].snapshots,1)
+    authority:endObservationCycle()
+end)
+
+test("class-wide coherence prevents tolerance chaining",function()
+    local function shifted(referenceKey,offset)
+        return fieldWorldSnapshotFixture(referenceKey,{{x=offset,z=0},{x=200+offset,z=0},{x=200+offset,z=200},{x=offset,z=200}})
+    end
+    local a,b,c=shifted("snapshot-chain-A",0),shifted("snapshot-chain-B",0.4),shifted("snapshot-chain-C",0.8)
+    local evaluator,authority=newFieldWorldAuthority()
+    equal(evaluator:evaluate(a,b).outcome,"SAME_FIELD_WORLD")
+    equal(evaluator:evaluate(b,c).outcome,"SAME_FIELD_WORLD")
+    equal(evaluator:evaluate(a,c).outcome,"UNRESOLVED")
+    authority:beginObservationCycle()
+    local ra=authority:resolve(a); local rb=authority:resolve(b); local rc=authority:resolve(c)
+    equal(ra.fieldWorldReferenceKey,rb.fieldWorldReferenceKey)
+    equal(rc.outcome,"UNRESOLVED"); equal(rc.fieldWorldReferenceKey,nil)
+    equal(#authority:listActiveClasses()[1].snapshots,2)
+    authority:endObservationCycle()
+end)
+
+test("Field World class retires after relevance ends and later Reality receives new identity",function()
+    local boundary={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}}
+    local first=fieldWorldSnapshotFixture("snapshot-lifecycle-A",boundary)
+    local later=fieldWorldSnapshotFixture("snapshot-lifecycle-B",boundary)
+    local _,authority=newFieldWorldAuthority()
+    authority:beginObservationCycle(); local initial=authority:resolve(first); authority:endObservationCycle()
+    equal(authority:getActiveClassCount(),1)
+    authority:beginObservationCycle(); authority:endObservationCycle()
+    equal(authority:getActiveClassCount(),0); equal(authority:getRetiredClassCount(),1)
+    authority:beginObservationCycle(); local replacement=authority:resolve(later); authority:endObservationCycle()
+    if initial.fieldWorldReferenceKey==replacement.fieldWorldReferenceKey then error("retired Field World identity was reused") end
+end)
+
+test("ambiguous live Snapshot receives no Operation authority",function()
+    withFakeLiveGlobals(function(mission,a,b,positions)
+        local oldGenerator=FieldCourseField
+        positions[a.rootNode]={0,0,0}; positions[b.rootNode]={0,0,0}
+        local polygonA={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}}
+        local polygonB={{x=50,z=0},{x=150,z=0},{x=150,z=100},{x=50,z=100}}
+        local call=0
+        FieldCourseField={generateAtPosition=function(x,z,settings,callback)
+            call=call+1; local boundary=call==1 and polygonA or polygonB
+            return {update=function(self,dt,budget) callback({fieldRootBoundary={boundaryLine=boundary},islands={}},true); return false end}
+        end}
+        mission.vehicles={a,b}; mission.aiSystem.activeJobVehicles={a,b}; mission.aiSystem.activeJobs={a.spec_aiJobVehicle.job,b.spec_aiJobVehicle.job}
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local observations=runtime.liveObservationSource:capture(mission,10)
+        equal(#observations,2)
+        local unresolvedCount=0
+        for _,raw in ipairs(observations) do
+            if raw.fieldWorld.identityStatus=="UNRESOLVED" then
+                unresolvedCount=unresolvedCount+1
+                equal(raw.fieldWorld.operationMembershipEvidenceComplete,false)
+                equal(raw.operationMembershipEvidence[1].performingRecognisedFieldWork,false)
+            end
+            runtime:processSealedObservation(raw)
+        end
+        equal(unresolvedCount,1)
+        equal(#runtime.operations:listActive(),1)
+        FieldCourseField=oldGenerator
+    end)
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

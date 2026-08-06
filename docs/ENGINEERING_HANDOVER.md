@@ -1,34 +1,28 @@
 # Engineering Handover
 
-> **Canonical baseline:** v4.7.12  
-> **Candidate:** v4.7.13 Field World Equivalence Authority Architecture  
+> **Canonical baseline:** v4.7.13  
+> **Candidate:** v4.7.14 Field World Equivalence Authority Implementation  
 > **Control authority:** disabled
 
-## Accepted architecture
+## Governing architecture
 
-ADR-0021 and D-0033 govern Field World identity:
-
-- immutable Job-Seeded Field World Snapshots remain the evidence source;
-- exact canonical geometry and fingerprints remain representation provenance;
-- Field World identity requires coherent positive spatial equivalence;
-- authoritative outcomes are `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD` and `UNRESOLVED`;
-- unresolved evidence grants no Operation admission or Control authority;
-- pairwise tolerance chaining is prohibited;
-- Operations remain ephemeral even when they occur in the same Field World;
-- mid-episode field mutation remains outside the supported-world contract.
-
-## Evidence retained
-
-Merged 68–69–70 is the positive same-world fixture: four different exact fingerprints, identical bounds/topology and near-identical spatial evidence.
-
-Split 77 is the negative fixture: two disconnected workspaces retaining the same locator, materially different geometry and zero sampled overlap.
+ADR-0021 and D-0033 govern Field World identity. Exact fingerprints remain immutable representation provenance. Authority outcomes are `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD` and `UNRESOLVED`. Unresolved evidence receives no Operation or Control authority, and pairwise tolerance chaining is prohibited.
 
 ## Implementation boundary
 
-v4.7.13 is documentation-only except for version metadata and comments. The runtime still groups Operations by exact fingerprint. Do not present that mechanism as architecture and do not enable Control.
+v4.7.14 introduces two isolated responsibilities:
+
+- `FieldWorldEquivalenceEvaluator` is pure and classifies one immutable Snapshot pair from compound spatial evidence;
+- `FieldWorldEquivalenceAuthority` owns currently relevant Field World classes, enforces all-member coherence, assigns resolved Field World identities and retires classes after relevance ends.
+
+`FieldWorldSnapshotRegistry` continues to own capture, canonical geometry, exact fingerprints and comparison measurements. `LiveObservationSource` resolves identity before grouping. `OperationAdmission` consumes resolved Field World identity and preserves all member Snapshot and exact-polygon references; it performs no geometry reasoning.
+
+The SAME envelope is conservative implementation calibration. A failed SAME condition does not imply DIFFERENT. The first DIFFERENT path requires positive occupied-region separation. Every other ambiguous case is `UNRESOLVED`.
+
+## Offline conformance
+
+The suite proves exact equality, merged-workspace equivalence, disconnected separation, partial-overlap uncertainty, tolerance-chain rejection, lifecycle retirement, unresolved Operation exclusion and multi-representation Operation provenance. Existing replacement-core tests remain green. Control remains disabled.
 
 ## Next objective
 
-Design the implementation of Field World Equivalence Authority against the existing immutable snapshots and comparison evidence. The design must satisfy positive same-world evidence, positive separation evidence, explicit unresolved state and Field-World-wide coherence before code changes are accepted.
-
-Do not reopen the architectural semantics unless implementation evidence demonstrates a genuine contradiction.
+Run one passive live test with concurrent workers seeded in merged areas 68–69–70. Confirm one resolved Field World and one active Operation while retaining distinct immutable Snapshot and polygon evidence. Preserve full logs. Do not modify thresholds from one run; contradictory evidence must be recorded before any implementation adjustment.

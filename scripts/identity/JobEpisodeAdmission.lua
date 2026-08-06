@@ -7,7 +7,7 @@ local JobEpisodeRecord = OuttaMyWay.ValueRecord.register(
     OuttaMyWay.ValueRecord.define(
         "JobEpisodeRecord",
         {"identity", "assemblyId", "sourceJobToken", "admittedEpoch", "admittedEvidence", "status", "revision"},
-        {"endedEpoch", "terminalCause", "terminalEvidence", "fieldWorldReferenceKey", "fieldPolygonReferenceKey", "fieldWorldFingerprint", "playerFacingFieldId", "playerFacingLocatorSource"},
+        {"endedEpoch", "terminalCause", "terminalEvidence", "fieldWorldReferenceKey", "fieldWorldSnapshotReferenceKey", "fieldPolygonReferenceKey", "fieldWorldFingerprint", "fieldWorldEquivalenceStatus", "playerFacingFieldId", "playerFacingLocatorSource"},
         function(values)
             if values.status ~= "ACTIVE" and values.status ~= "ENDED" then
                 error("JobEpisodeRecord status must be ACTIVE or ENDED", 3)
@@ -91,8 +91,10 @@ function Admission:_admit(evidence, snapshot)
         status = "ACTIVE",
         revision = 1,
         fieldWorldReferenceKey = evidence.fieldWorldReferenceKey,
+        fieldWorldSnapshotReferenceKey = evidence.fieldWorldSnapshotReferenceKey,
         fieldPolygonReferenceKey = evidence.fieldPolygonReferenceKey,
         fieldWorldFingerprint = evidence.fieldWorldFingerprint,
+        fieldWorldEquivalenceStatus = evidence.fieldWorldEquivalenceStatus,
         playerFacingFieldId = evidence.playerFacingFieldId,
         playerFacingLocatorSource = evidence.playerFacingLocatorSource
     })
@@ -103,23 +105,40 @@ end
 
 
 function Admission:_bindFieldWorld(record, evidence, snapshot)
-    if evidence.fieldWorldReferenceKey == nil then return record, false end
-    if record.fieldWorldReferenceKey ~= nil then
-        if record.fieldWorldReferenceKey ~= evidence.fieldWorldReferenceKey or record.fieldPolygonReferenceKey ~= evidence.fieldPolygonReferenceKey then
-            error("Job Episode Field World Snapshot cannot change after capture", 3)
+    if evidence.fieldWorldSnapshotReferenceKey == nil then return record, false end
+    local updates={}
+    local changed=false
+    if record.fieldWorldSnapshotReferenceKey~=nil then
+        if record.fieldWorldSnapshotReferenceKey~=evidence.fieldWorldSnapshotReferenceKey
+            or record.fieldPolygonReferenceKey~=evidence.fieldPolygonReferenceKey
+            or record.fieldWorldFingerprint~=evidence.fieldWorldFingerprint then
+            error("Job Episode Field World Snapshot cannot change after capture",3)
         end
-        return record, false
+    else
+        updates.fieldWorldSnapshotReferenceKey=evidence.fieldWorldSnapshotReferenceKey
+        updates.fieldPolygonReferenceKey=evidence.fieldPolygonReferenceKey
+        updates.fieldWorldFingerprint=evidence.fieldWorldFingerprint
+        changed=true
     end
-    local updated = OuttaMyWay.ValueRecord.update(record, {
-        fieldWorldReferenceKey=evidence.fieldWorldReferenceKey,
-        fieldPolygonReferenceKey=evidence.fieldPolygonReferenceKey,
-        fieldWorldFingerprint=evidence.fieldWorldFingerprint,
-        playerFacingFieldId=evidence.playerFacingFieldId,
-        playerFacingLocatorSource=evidence.playerFacingLocatorSource,
-        revision=record.revision+1
-    })
+    if evidence.fieldWorldReferenceKey~=nil then
+        if record.fieldWorldReferenceKey~=nil and record.fieldWorldReferenceKey~=evidence.fieldWorldReferenceKey then
+            error("Job Episode resolved Field World identity cannot change",3)
+        elseif record.fieldWorldReferenceKey==nil then
+            updates.fieldWorldReferenceKey=evidence.fieldWorldReferenceKey
+            changed=true
+        end
+    end
+    if evidence.fieldWorldEquivalenceStatus~=nil and record.fieldWorldEquivalenceStatus~=evidence.fieldWorldEquivalenceStatus then
+        updates.fieldWorldEquivalenceStatus=evidence.fieldWorldEquivalenceStatus
+        changed=true
+    end
+    if evidence.playerFacingFieldId~=nil and record.playerFacingFieldId==nil then updates.playerFacingFieldId=evidence.playerFacingFieldId; changed=true end
+    if evidence.playerFacingLocatorSource~=nil and record.playerFacingLocatorSource==nil then updates.playerFacingLocatorSource=evidence.playerFacingLocatorSource; changed=true end
+    if not changed then return record,false end
+    updates.revision=record.revision+1
+    local updated=OuttaMyWay.ValueRecord.update(record,updates)
     self.records[record.identity]=updated
-    return updated, true
+    return updated,true
 end
 
 function Admission:_end(record, cause, evidence, snapshot)

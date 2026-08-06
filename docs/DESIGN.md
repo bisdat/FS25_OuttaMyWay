@@ -2,9 +2,9 @@
 
 > **Authority:** Replacement-core design boundary
 >
-> **Currency:** v4.7.13 Field World Equivalence Authority Architecture Candidate; v4.6.78 remains the replacement-core foundation
+> **Currency:** v4.7.14 Field World Equivalence Authority Implementation Candidate; v4.6.78 remains the replacement-core foundation
 >
-> **Implementation status:** v4.7.12 passive runtime preserves immutable Field World evidence; ADR-0021 authority is not implemented; Control disabled
+> **Implementation status:** v4.7.14 implements ADR-0021 passively and is offline-conformant; passive live validation is pending; Control disabled
 
 ## Purpose
 

@@ -1,8 +1,8 @@
 # ADR-0021 — Field World Equivalence Authority
 
-**Status:** Accepted architecture; recorded by v4.7.13 candidate  
-**Canonical baseline:** owner-declared v4.7.12  
-**Implementation status:** not implemented; exact-fingerprint Operation grouping remains provisional
+**Status:** Accepted architecture; implemented passively by v4.7.14 candidate  
+**Canonical implementation baseline:** owner-declared v4.7.13  
+**Implementation status:** offline-conformant; passive live validation pending
 
 ## Context
 
@@ -60,5 +60,6 @@ The active Job Episode Snapshot remains immutable. Field merging or splitting du
 - D-0030's exact-fingerprint Field World and Operation identity authority is superseded.
 - Exact fingerprints remain necessary representation provenance and diagnostic evidence.
 - The v4.7.12 spatial metrics remain evidence sources, not an architectural threshold formula.
-- Implementation design must provide coherent positive and negative classification without inventing identity from one threshold.
-- Until that implementation is validated, exact-fingerprint Operation grouping remains a known non-conforming provisional mechanism and Control remains disabled.
+- v4.7.14 implements pairwise evaluation and class-wide authority using conservative compound calibration rather than one architectural threshold.
+- Operation grouping consumes resolved Field World identity; unresolved evidence receives no Operation authority.
+- Offline fixtures conform. Passive live validation remains required, and Control remains disabled.

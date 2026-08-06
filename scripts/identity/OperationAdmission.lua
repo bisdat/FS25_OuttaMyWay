@@ -6,7 +6,7 @@ local OperationRecord = OuttaMyWay.ValueRecord.register(
     "OperationRecord",
     OuttaMyWay.ValueRecord.define(
         "OperationRecord",
-        {"identity", "fieldWorldReferenceKey", "fieldPolygonReferenceKey", "admittedEpoch", "status", "memberAssemblyIds", "memberJobEpisodeIds", "evidence", "revision"},
+        {"identity", "fieldWorldReferenceKey", "admittedEpoch", "status", "memberAssemblyIds", "memberJobEpisodeIds", "memberFieldWorldSnapshotReferenceKeys", "memberFieldPolygonReferenceKeys", "evidence", "revision"},
         {"endedEpoch", "terminalEvidence"},
         function(values)
             if values.status ~= "ACTIVE" and values.status ~= "ENDED" then
@@ -28,7 +28,7 @@ local OperationAdmissionResult = OuttaMyWay.ValueRecord.register(
 local function sortedUnique(values)
     local seen, result = {}, {}
     for _, value in OuttaMyWay.ValueRecord.ipairs(values or {}) do
-        if not seen[value] then seen[value] = true; result[#result + 1] = value end
+        if value~=nil and not seen[value] then seen[value] = true; result[#result + 1] = value end
     end
     table.sort(result)
     return result
@@ -49,23 +49,20 @@ local function fieldContext(snapshot)
     if type(fieldWorld.referenceKey) ~= "string" or fieldWorld.referenceKey == "" then
         error("Operation admission requires fieldWorld.referenceKey", 3)
     end
-    if type(fieldWorld.fieldPolygonReferenceKey) ~= "string" or fieldWorld.fieldPolygonReferenceKey == "" then
-        error("Operation admission requires fieldWorld.fieldPolygonReferenceKey", 3)
-    end
-    return fieldWorld.referenceKey, fieldWorld.fieldPolygonReferenceKey,
-        fieldWorld.operationMembershipEvidenceComplete == true
+    return fieldWorld.referenceKey, fieldWorld.operationMembershipEvidenceComplete == true
 end
 
-function Admission:_admit(fieldWorldKey, polygonKey, memberAssemblyIds, memberEpisodeIds, snapshot)
+function Admission:_admit(fieldWorldKey, memberAssemblyIds, memberEpisodeIds, snapshotReferences, polygonReferences, snapshot)
     local identity = self.identities:issue("OPERATION")
     local record = OperationRecord.new({
         identity = identity,
         fieldWorldReferenceKey = fieldWorldKey,
-        fieldPolygonReferenceKey = polygonKey,
         admittedEpoch = snapshot.epoch,
         status = "ACTIVE",
         memberAssemblyIds = sortedUnique(memberAssemblyIds),
         memberJobEpisodeIds = sortedUnique(memberEpisodeIds),
+        memberFieldWorldSnapshotReferenceKeys=sortedUnique(snapshotReferences),
+        memberFieldPolygonReferenceKeys=sortedUnique(polygonReferences),
         evidence = { observationSnapshotId=snapshot.identity, provenance=snapshot.provenance },
         revision = 1
     })
@@ -74,10 +71,12 @@ function Admission:_admit(fieldWorldKey, polygonKey, memberAssemblyIds, memberEp
     return record
 end
 
-function Admission:_update(record, memberAssemblyIds, memberEpisodeIds, snapshot)
+function Admission:_update(record, memberAssemblyIds, memberEpisodeIds, snapshotReferences, polygonReferences, snapshot)
     local updated = OuttaMyWay.ValueRecord.update(record, {
         memberAssemblyIds = sortedUnique(memberAssemblyIds),
         memberJobEpisodeIds = sortedUnique(memberEpisodeIds),
+        memberFieldWorldSnapshotReferenceKeys=sortedUnique(snapshotReferences),
+        memberFieldPolygonReferenceKeys=sortedUnique(polygonReferences),
         evidence = { observationSnapshotId=snapshot.identity, provenance=snapshot.provenance },
         revision = record.revision + 1
     })
@@ -90,6 +89,8 @@ function Admission:_end(record, snapshot)
         status = "ENDED",
         memberAssemblyIds = {},
         memberJobEpisodeIds = {},
+        memberFieldWorldSnapshotReferenceKeys={},
+        memberFieldPolygonReferenceKeys={},
         endedEpoch = snapshot.epoch,
         terminalEvidence = { observationSnapshotId=snapshot.identity, reason="MEMBERSHIP_ZERO", provenance=snapshot.provenance },
         revision = record.revision + 1
@@ -102,18 +103,21 @@ end
 function Admission:observe(snapshot, episodeResult)
     OuttaMyWay.ValueRecord.assertType(snapshot, "ObservationSnapshot")
     OuttaMyWay.ValueRecord.assertType(episodeResult, "JobEpisodeAdmissionResult")
-    local fieldWorldKey, polygonKey, complete = fieldContext(snapshot)
-    local memberAssemblyIds, memberEpisodeIds = {}, {}
+    local fieldWorldKey, complete = fieldContext(snapshot)
+    local memberAssemblyIds, memberEpisodeIds, snapshotReferences, polygonReferences = {}, {}, {}, {}
 
     for _, evidence in OuttaMyWay.ValueRecord.ipairs(snapshot.operationMembershipEvidence) do
         if evidence.fieldWorldReferenceKey ~= nil and evidence.fieldWorldReferenceKey ~= fieldWorldKey then
             error("Operation membership evidence belongs to a different Field World", 2)
         end
-        if evidence.fieldPolygonReferenceKey ~= nil and evidence.fieldPolygonReferenceKey ~= polygonKey then
-            error("Operation membership evidence belongs to a different field polygon", 2)
-        end
         if evidence.performingRecognisedFieldWork == true then
+            if evidence.fieldWorldReferenceKey==nil then error("recognised Operation membership requires resolved Field World identity",2) end
+            if evidence.fieldWorldSnapshotReferenceKey==nil or evidence.fieldPolygonReferenceKey==nil then
+                error("recognised Operation membership requires immutable Snapshot and polygon provenance",2)
+            end
             memberAssemblyIds[#memberAssemblyIds + 1] = evidence.assemblyId
+            snapshotReferences[#snapshotReferences+1]=evidence.fieldWorldSnapshotReferenceKey
+            polygonReferences[#polygonReferences+1]=evidence.fieldPolygonReferenceKey
             local activeEpisode = self.jobEpisodes:getActiveForAssembly(evidence.assemblyId)
             if activeEpisode ~= nil then memberEpisodeIds[#memberEpisodeIds + 1] = activeEpisode.identity end
         end
@@ -121,16 +125,18 @@ function Admission:observe(snapshot, episodeResult)
 
     memberAssemblyIds = sortedUnique(memberAssemblyIds)
     memberEpisodeIds = sortedUnique(memberEpisodeIds)
+    snapshotReferences=sortedUnique(snapshotReferences)
+    polygonReferences=sortedUnique(polygonReferences)
     local activeId = self.activeByFieldWorld[fieldWorldKey]
     local active = activeId and self.records[activeId] or nil
     local endedIds, transitions = {}, {}
 
     if #memberAssemblyIds > 0 then
         if active == nil then
-            active = self:_admit(fieldWorldKey, polygonKey, memberAssemblyIds, memberEpisodeIds, snapshot)
+            active = self:_admit(fieldWorldKey, memberAssemblyIds, memberEpisodeIds, snapshotReferences, polygonReferences, snapshot)
             transitions[#transitions + 1] = { event="ADMITTED", operationId=active.identity, memberAssemblyIds=memberAssemblyIds }
         else
-            active = self:_update(active, memberAssemblyIds, memberEpisodeIds, snapshot)
+            active = self:_update(active, memberAssemblyIds, memberEpisodeIds, snapshotReferences, polygonReferences, snapshot)
             transitions[#transitions + 1] = { event="MEMBERSHIP_UPDATED", operationId=active.identity, memberAssemblyIds=memberAssemblyIds }
         end
     elseif active ~= nil and complete then
@@ -149,7 +155,7 @@ function Admission:observe(snapshot, episodeResult)
         endedOperationIds = endedIds,
         transitions = transitions,
         membershipEvidenceComplete = complete,
-        provenance = { source="OperationAdmission", observationEpoch=snapshot.epoch, episodeAdmissionEpoch=episodeResult.epoch }
+        provenance = { source="OperationAdmission", observationEpoch=snapshot.epoch, episodeAdmissionEpoch=episodeResult.epoch, fieldWorldAuthority="FieldWorldEquivalenceAuthority" }
     })
 end
 

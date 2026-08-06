@@ -18,6 +18,7 @@ local defaultPrefixes = {
     COMPONENT = "CP",
     JOB_EPISODE = "JE",
     OPERATION = "OR",
+    FIELD_WORLD = "FW",
     SITUATION = "SI",
     ENCOUNTER = "EN",
     CANDIDATE_INVENTORY = "CI",

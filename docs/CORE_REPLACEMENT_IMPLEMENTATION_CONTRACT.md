@@ -27,7 +27,7 @@ The existing procedural core is not:
 
 ## 2. Closed architecture rule
 
-The accepted replacement-core architecture is closed for implementation. Canonical v4.6.78 remains its foundation, with only explicit owner-accepted ADR amendments permitted; as of v4.7.13, ADR-0021 is the sole such amendment.
+The accepted replacement-core architecture is closed for implementation. Canonical v4.6.78 remains its foundation, with only explicit owner-accepted ADR amendments permitted; as of v4.7.14, ADR-0021 is the sole such amendment and is implemented passively pending live validation.
 
 Implementation must not introduce:
 

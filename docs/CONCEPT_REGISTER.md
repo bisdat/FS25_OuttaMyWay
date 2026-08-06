@@ -1,3 +1,12 @@
+# v4.7.14 Field World equivalence implementation concepts
+
+- **Snapshot Reference** — unique immutable capture identity bound to one Job Episode.
+- **Exact Polygon Reference** — canonical representation identity preserving exact geometry provenance.
+- **Resolved Field World Reference** — authoritative identity assigned only by coherent equivalence resolution.
+- **Class-Wide Coherence** — a candidate must be SAME to every accepted Snapshot in one class; pairwise-only equivalence is insufficient.
+- **Unresolved Isolation** — observable evidence without authority to establish or join an Operation.
+- **Field World Class Retirement** — removal of active equivalence authority after no associated Job Episode remains relevant; historical Snapshot evidence remains preserved.
+
 # v4.7.13 Field World identity concepts
 
 ## Field World Equivalence Authority

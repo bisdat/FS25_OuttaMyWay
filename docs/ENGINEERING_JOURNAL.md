@@ -1,3 +1,13 @@
+## 2026-08-06 — Field World Equivalence Authority Implemented Passively in v4.7.14
+
+**Objective:** realise ADR-0021 without allowing geometry thresholds, Operation admission or runtime convenience to redefine Field World identity.
+
+**Implementation:** separated immutable Snapshot capture, exact polygon provenance, pure pairwise evaluation and stateful class-wide authority. Live grouping now consumes resolved Field World identity. Unresolved Snapshots remain observable but cannot establish or join an Operation. Operation records retain every member Snapshot and exact-polygon reference.
+
+**Validation:** offline fixtures cover exact equality, four non-exact merged-workspace representations, positive disconnection, partial overlap, tolerance-chain rejection, class retirement, unresolved Operation exclusion and multi-representation Operation provenance. Existing replacement-core conformance remains green.
+
+**Remaining Reality question:** whether concurrent live GIANTS captures in merged 68–69–70 resolve into one Field World and one Operation. Control remains disabled.
+
 ## 2026-08-06 — Field World Equivalence Authority Closed and v4.7.13
 
 **Observation:** exact polygon representation and experienced Field World identity are not the same relation. The merged 68–69–70 closure produced four distinct fingerprints with near-identical spatial evidence; disconnected split 77 remained decisively separate.
