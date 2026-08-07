@@ -52,6 +52,9 @@
 
 47. TS018 admitted the exact Condor/Patriot encounter automatically after 3.09 seconds of sustained evidence, without any OuttaMyWay console command, while preserving the fixed role, side and actuator.
 48. The Prototype 18 Encounter Episode Latch remained `LATCHED` through later known Split-Start Pass Recovery and prevented a second activation; this supports bounded suppression but does not define general recurring Encounter identity.
+49. The v4.7.26 single-worker probe kept Condor in one `giants-ai-job-id:0` through Hold, full compact, bounded GIANTS-native movement, re-Hold, OuttaMyWay-owned configuration restoration and independent native continuation.
+50. While compact, GIANTS progressed Condor at approximately 1.01–1.06 km/h under an experimental 1 km/h ceiling and native active-segment progress advanced continuously; bounded non-zero movement can therefore expose useful native continuation evidence for this fixture without route reconstruction.
+51. Raw `getActiveSegmentData()` slot preservation showed `r2=nil` and the fractional progress value in `r3`; the v4.7.25 compacting tuple collector had shifted values across nil slots and did not discover an authoritative segment-table index.
 
 
 ## Mapping and hierarchy evidence relevant to Prototype 13A

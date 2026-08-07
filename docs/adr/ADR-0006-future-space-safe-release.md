@@ -145,9 +145,11 @@ The next active candidate must demonstrate that:
 7. the same implementation contract is exercised by TS015, TS015b, TS016 and TS016b without fixture-specific Decision branches.
 
 
-## Subsequent amendment
+## Subsequent amendments
 
 ADR-0007 clarifies that the restoration obligation belongs to the Commitment while configuration actuation may be delegated to GIANTS under a separately retained movement constraint. This preserves ADR-0006 Safe Release and capability-separation rules.
+
+ADR-0022 adds Bounded Native Intent Revelation. Where a held participant's actual post-intervention Local Intent cannot be known without GIANTS movement, a retained Commitment may acquire that evidence through independently admissible bounded native progression rather than reconstructing the GIANTS route. The resulting intent evidence triggers reassessment; it does not itself satisfy the Safe Release Point.
 
 ## v4.6.71 implementation boundary
 

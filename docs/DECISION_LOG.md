@@ -1,3 +1,21 @@
+## D-0108 — Accept Bounded Native Intent Revelation as an Architectural Evidence-Acquisition Pattern
+
+**Status:** Accepted architecture; live-supported by non-canonical v4.7.26 Single-Worker Transit Intent evidence; consolidated by v4.7.27 candidate
+
+**Context:** Same-Job-Episode Safe Release exposed a circular evidence problem. A held worker cannot demonstrate its actual post-Hold native continuation while fully inhibited, the GIANTS traversal route has no demonstrated authoritative Lua cursor, and Hold-induced physical calm cannot establish post-Hold safety. The v4.7.25 route-index probe also failed to establish a native traversal binding. Historical v4.6.63/v4.6.64 evidence separately showed compact native movement and later work restoration/native handover.
+
+**Decision:** accept **Bounded Native Intent Revelation**. While a Commitment remains responsible, Decision may authorise a bounded evidence-acquisition composition that preserves the GIANTS Job Episode, uses a proven controllable transit/configuration state where required, grants GIANTS only the bounded motion authority needed to reveal actual native continuation, observes the resulting Local Intent, and retains the ability to re-Hold/reassess before unrestricted continuation. OuttaMyWay must restore only its own configuration mutations before ordinary work handover when restoration is required.
+
+**Live evidence:** v4.7.26 Candidate SHA-256 `43e0fc93fcd7810d8460d11e683ad05adef50ada545c8190a3394f015b260ec0` on FS25 1.21.1.0, field 77, Condor Endurance II. Job identity remained `giants-ai-job-id:0`; full compact configuration was confirmed; GIANTS progressed under a 1 km/h experimental ceiling while `SETTLED_CONTINUATION` progress advanced; the probe re-Held after an experimental 2 m movement, restored and verified configuration with zero mismatches, returned the unmodified drive path, and observed same-Job independent continuation. The experimental speed and distance are not architecture.
+
+**Relationship to Safe Release:** Bounded Native Intent Revelation is not the Safe Release Point and does not complete the governing Commitment. It supplies Reality-generated evidence for reassessment. Capability release, native intent revelation and Commitment completion remain separate events.
+
+**Counterfactual Hold Release amendment:** the durable rule from ADR-0017 remains that the calm state created by Hold is not release evidence. Synthetic route or speed projection is not mandatory. Where admissible, actual GIANTS continuation may be revealed under bounded authority instead.
+
+**Boundary:** the pattern is capability- and assembly-dependent. It does not assume arbitrary assemblies can move safely in transit state, does not establish Coverage Closure, does not grant clearance during an unresolved manoeuvre sweep, and does not authorise a fixed proving speed or distance. Production Control remains disabled.
+
+**Wider implications:** post-intervention route reacquisition and static-obstacle recovery are plausible future applications because the same pattern may reveal GIANTS continuation after OuttaMyWay creates an admissible movement opportunity. These are hypotheses only. GIANTS is still not assumed to route around a stationary obstacle.
+
 ## D-0107 — Retire Superseded Fixed-Horizon Future Predictor After Admission Validation
 
 **Status:** Accepted implementation cleanup; implemented by v4.7.24 candidate

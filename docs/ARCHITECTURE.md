@@ -408,6 +408,26 @@ Decision validates the composition before authorisation. Control validates that 
 
 A mechanically valid action is inadmissible when its combined effect is unsafe.
 
+### Bounded Native Intent Revelation
+
+When a Commitment requires post-intervention GIANTS intent that cannot be observed while an assembly is fully Held, OuttaMyWay may use **Bounded Native Intent Revelation** as an evidence-acquisition composition rather than reconstructing the GIANTS route.
+
+The pattern retains the governing Commitment and, only when the composition is independently admissible, may:
+
+1. preserve the current Job Episode and GIANTS job/route ownership;
+2. maintain or establish a proven controllable transit/configuration state where the Physical Assembly requires it;
+3. relax Hold into bounded native GIANTS motion while preserving GIANTS steering, forward/reverse choice and route ownership;
+4. observe the resulting Local Intent and Control outcome;
+5. re-Hold or otherwise bound authority if evidence is insufficient or conditions deteriorate;
+6. restore only OuttaMyWay-owned configuration mutations before unrestricted native work handover when restoration is required;
+7. reassess the complete Operational Picture before any further authority transition.
+
+Bounded Native Intent Revelation is not the Safe Release Point. Capability relaxation, intent revelation and Commitment completion remain separate events. The pattern does not provide negative-clearance authority, does not cure incomplete Coverage Closure, and does not make an unresolved manoeuvre sweep safe. Speed, travel and observation bounds are implementation evidence contracts, never architectural literals.
+
+Capability is assembly-specific. A transit configuration is usable only when OuttaMyWay can control it, GIANTS can make the required bounded progression while it is retained, and restoration/re-Hold remain supportable. Failure to reveal useful intent leaves the proposition unresolved and requires revision or fail-safe handling rather than inference.
+
+The pattern may later support post-intervention route reacquisition or static-obstacle recovery, but those applications require their own evidence and admissibility. GIANTS is not assumed to route around a stationary obstacle.
+
 ### Safety authority
 
 Bounded safety inhibition may prevent unsafe progress while ordinary capability ownership is unavailable or ambiguous. Safety authority is a veto/protective constraint, not a second progress owner.

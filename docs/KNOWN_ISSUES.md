@@ -1,3 +1,14 @@
+# Current v4.7.27 architecture boundary
+
+- **Bounded Native Intent Revelation is accepted architecture but not production Control.** v4.7.26 live-supports the complete capability chain for Condor only; v4.7.27 carries no probe actuator forward.
+- **Same-Job-Episode Safe Release remains unimplemented.** Hold relaxation / native intent revelation supplies new evidence but does not itself terminate an Encounter or Commitment.
+- **Assembly capability is not universal.** Other Physical Assemblies may lack a safe transit configuration, may not progress usefully while compact, or may expose different restoration/configuration behaviour.
+- **Coverage Closure remains unresolved.** Low-speed movement cannot turn incomplete geometry into negative-clearance authority.
+- **The manoeuvre sweep remains unrepresented.** Native `TURNING` remains Future-Space unresolved rather than guessed.
+- **The v4.7.26 1 km/h and 2 m values are experimental only.** Production evidence contracts must be derived from admissibility and useful evidence, not copied from the fixture.
+- **Static-obstacle recovery is only a possible wider application.** Bounded Native Intent Revelation may help reveal GIANTS continuation after OuttaMyWay creates a safe movement opportunity; GIANTS is still not assumed to avoid a stationary obstacle itself.
+- Long deliberate Holds may require future player-facing communication so correct evidence gathering is distinguishable from a stuck worker; UI mechanism is deferred.
+
 # Current v4.7.24 validation boundary
 
 - The superseded fixed-horizon future predictor is removed from the active replacement core; historical archived implementations remain intentionally as evidence records.

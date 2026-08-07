@@ -29,3 +29,10 @@ Packaged tests reproduce safe negative acquisition displacement, arm the fence a
 ## v4.6.70 runtime disposition
 
 The bounded orientation part is supported by runtime evidence. The Hold remained coherent and no longer oscillated. The release implementation is rejected: it used the 60 km/h cruise-control ceiling as native continuation speed and required non-closing motion universally, retaining Patriot until map-clear. Future implementation must use evidence-supported native behaviour and bounded conflict exclusion; closing is evidence, not an automatic veto.
+
+## ADR-0022 amendment — Bounded Native Intent Revelation
+
+The durable Counterfactual Hold Release invariant is retained: physical calm caused by Hold is not evidence that post-Hold continuation is safe. The specific v4.6.70 implementation assumption that Situation Assessment must synthesize a native-continuation projection from a retained speed is superseded.
+
+ADR-0022 permits the post-Hold knowledge gap to be resolved, when independently admissible, by retaining the governing Commitment and granting GIANTS bounded native motion authority sufficient to reveal actual Local Intent. Synthetic route reconstruction and a Native Continuation Speed Estimate are therefore not mandatory architecture. The bounded-orientation decision in this ADR remains unchanged.
+

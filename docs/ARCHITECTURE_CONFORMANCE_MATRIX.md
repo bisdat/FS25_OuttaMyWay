@@ -1,3 +1,16 @@
+# v4.7.27 Bounded Native Intent Revelation Architecture Consolidation
+
+| Concern | Architectural requirement | Evidence / consolidation | Status |
+|---|---|---|---|
+| Post-Hold evidence | Hold-induced calm cannot prove post-Hold continuation | ADR-0022 retains Counterfactual Hold Release invariant | ACCEPTED |
+| Route ownership | OuttaMyWay must not reconstruct/replace GIANTS route | bounded revelation preserves GIANTS steering/forward-reverse ownership | ACCEPTED / live-supported fixture |
+| Job continuity | evidence acquisition should not replace the Job Episode | v4.7.26 kept `giants-ai-job-id:0` through complete chain | PASS live |
+| Configuration composition | transit configuration and restoration remain explicit responsibilities | compact motion + re-Hold + restoration verification | PASS live for Condor |
+| Capability vs Safe Release | intent revelation cannot complete Commitment by itself | ADR-0022 / D-0108 explicit separation | ACCEPTED |
+| Literal authority | probe speed/travel values must not become policy | 1 km/h and 2 m classified experimental only | ACCEPTED |
+| Generalisation | assembly/static-obstacle use must not be inferred from one fixture | wider implications recorded as hypotheses | OPEN |
+| Production Control | architecture consolidation must not activate gameplay authority | v4.7.27 retains v4.7.24 passive runtime | PASS |
+
 # v4.7.24 Legacy Predictor Cleanup Conformance
 
 | Concern | Requirement | v4.7.24 evidence | Status |
@@ -135,6 +148,6 @@
 - mutually blocked same-Operation pair without Encounter creates a diagnostic warning;
 - all previous Field World, admission, Decision and lifecycle tests remain green.
 
-> **Architecture currency:** canonical v4.6.78 Replacement-Core Architecture as extended by ADR-0021.  
+> **Architecture currency:** canonical v4.6.78 Replacement-Core Architecture as extended by ADR-0021 and ADR-0022.  
 > **Implementation baseline:** owner-declared canonical v4.7.15; the retained lower table records the v4.7.15 diagnostic comparison against canonical v4.7.14.  
 > **Control authority:** disabled.

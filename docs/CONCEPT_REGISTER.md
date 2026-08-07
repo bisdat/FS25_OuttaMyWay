@@ -1,3 +1,24 @@
+# v4.7.27 Bounded Native Intent Revelation architecture consolidation
+
+## Bounded Native Intent Revelation
+
+**Classification:** accepted architectural concept; live-supported for the Condor fixture by non-canonical v4.7.26.
+
+A bounded evidence-acquisition pattern in which OuttaMyWay retains the governing Commitment while granting GIANTS limited native motion authority sufficient to reveal actual post-intervention Local Intent. Where assembly geometry requires it and capability is proven, OuttaMyWay may first place the Physical Assembly in a controlled transit configuration, allow bounded GIANTS progression, re-Hold, restore only OuttaMyWay-owned configuration mutations, and later return unrestricted authority.
+
+The concept protects four separations:
+
+- **GIANTS intent ownership:** OuttaMyWay does not synthesize the route, steering direction or forward/reverse decision.
+- **Capability release–Commitment completion:** removing or relaxing Hold is not the Safe Release Point.
+- **Evidence acquisition–clearance authority:** revealed intent is new Knowledge for reassessment, not automatic clearance.
+- **Architecture–probe literals:** v4.7.26's 1 km/h ceiling and 2 m proving movement are experimental parameters, not architectural constants.
+
+**Counterfactual Hold Release refinement:** Hold-induced calm remains invalid release evidence. The post-Hold continuation requirement may be discharged by bounded observation of actual GIANTS behaviour rather than synthetic route/speed projection when the evidence-acquisition composition itself is admissible.
+
+**Wider implications:** cooperative Hold release is the first intended application. Post-intervention route reacquisition and static-obstacle recovery are plausible future applications, but remain hypotheses. The concept does not grant GIANTS obstacle-avoidance capability and does not authorise movement through unresolved occupancy.
+
+**Evidence:** v4.7.26 Candidate SHA-256 `43e0fc93fcd7810d8460d11e683ad05adef50ada545c8190a3394f015b260ec0`; FS25 1.21.1.0; field 77; Condor Endurance II; same `giants-ai-job-id:0` through Hold, compact, bounded native creep, re-Hold, restoration and independent native handover.
+
 # v4.7.23 Future-Space Encounter-admission classification
 
 **No new architectural concept is introduced by v4.7.23.** Repository validation already defines Encounter identity as a convergence of Future Spaces and canonical v4.7.21 live-validates field-bounded Future Space production. v4.7.23 removes a replacement-core implementation non-conformance by making that positive relationship the Encounter-admission authority while demoting the historical ten-second future predictor to temporary shadow diagnostics.

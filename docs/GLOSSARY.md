@@ -145,10 +145,10 @@ Terminal disposition recording that the Operation context forming the Governing 
 A governance action that preserves durable architecture, decisions and evidence while removing unvalidated experimental implementation from active authority.
 
 **Native Continuation Speed Estimate**  
-An unresolved Knowledge object intended to bound likely GIANTS post-release motion using evidence from recent unmodified native operation. It is not the cruise-control ceiling.
+A historical unresolved Knowledge object intended to bound likely GIANTS post-release motion using evidence from recent unmodified native operation. It is not the cruise-control ceiling. ADR-0022 does not require this estimate when admissible Bounded Native Intent Revelation can supply actual native-continuation evidence.
 
 **Counterfactual Safe Release**  
-A Safe Release conclusion based on the predicted native continuation after temporary Control is removed, not on the calm physical state created by that Control.
+A Safe Release conclusion that accounts for the native continuation that exists after temporary Control is relaxed or removed, rather than the calm physical state created by that Control. The evidence may be supplied by Bounded Native Intent Revelation or another independently validated authoritative mechanism; synthetic route prediction is not inherently required.
 
 ### Manoeuvre-Leg Orientation Envelope
 A bounded steering-acquisition interval at the start of a manoeuvre leg during which the fixed target remains authoritative but limited non-monotonic displacement is permitted before the directional fence arms.
@@ -157,7 +157,10 @@ A bounded steering-acquisition interval at the start of a manoeuvre leg during w
 A state that appears safe only because an active intervention suppresses the motion that would recreate the conflict.
 
 ### Counterfactual Hold Release
-The requirement to evaluate predicted native continuation after a Hold is removed rather than treating the current held state as release evidence.
+The requirement to account for native continuation after a Hold is relaxed or removed rather than treating the current held state as release evidence. ADR-0022 permits this knowledge gap to be resolved through admissible Bounded Native Intent Revelation while the governing Commitment remains responsible.
+
+### Bounded Native Intent Revelation
+An accepted evidence-acquisition pattern in which OuttaMyWay retains the governing Commitment while permitting tightly bounded GIANTS-native motion sufficient to reveal actual post-intervention Local Intent. A proven transit configuration may be used where needed; the assembly may be re-Held and OuttaMyWay-owned configuration mutations restored before unrestricted native handover. The pattern is not Safe Release, does not reconstruct the GIANTS route and carries no fixed speed or distance literal.
 
 **Atomic refuge transition** — A candidate-bound replacement movement whose endpoint, path, temporal budget and Progress preservation are validated before Control changes the active target or side frame. Rejection leaves the current refuge unchanged.
 
@@ -792,7 +795,7 @@ A provisional observed interval in which waiting by one participant might preser
 The participant allowed to continue so Reality can generate the evidence required for reassessment.
 
 ## Intent Revelation Point
-The provisional point at which an Entity's resulting trajectory becomes settled enough to provide useful knowledge to other participants.
+The provisional point at which an Entity's resulting native trajectory becomes settled enough to provide useful Knowledge for reassessment. Within Bounded Native Intent Revelation it may be observed under retained, bounded authority. Reaching it is not by itself Safe Release.
 
 ## Response Margin
 The remaining time and manoeuvre freedom after intent revelation. No single stopping estimate is accepted as its complete representation.

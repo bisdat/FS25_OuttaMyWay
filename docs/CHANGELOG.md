@@ -1,3 +1,15 @@
+## v4.7.27 — Bounded Native Intent Revelation Architecture Consolidation Candidate
+
+- begins from owner-declared canonical v4.7.24 (`ded22bb56893c86c20e0b5654e66a1469b29b31e1be4733c1d212c0be19b0e56`, Git `9c2b680f145dd1f7118ab2777e30911367bfe472`; 258 files); v4.7.25 and v4.7.26 remain non-canonical evidence only;
+- records the v4.7.26 Single-Worker Transit Intent live result as PASS under FS25 1.21.1.0: one Condor Job Episode remained unchanged through `HOLD → COMPACT → bounded GIANTS creep → HOLD → RESTORE → GIANTS handoff` and subsequent independent native continuation;
+- accepts **Bounded Native Intent Revelation** as architecture through ADR-0022: a retained Commitment may permit tightly bounded GIANTS-native motion, optionally in a proven transit configuration, to reveal actual Local Intent without reconstructing the GIANTS route;
+- preserves capability-release versus Commitment-completion separation: revealing native intent or releasing a Hold does not itself establish the Safe Release Point;
+- amends ADR-0017 so the durable Counterfactual Hold Release requirement is that Hold-induced calm cannot prove release; synthetic native-route/speed projection is no longer the required mechanism when bounded native observation can supply the evidence;
+- records the v4.7.26 `1 km/h` speed ceiling and `2 m` proving movement as experimental parameters only, with no production authority;
+- records possible wider applications such as post-intervention route reacquisition and static-obstacle recovery as hypotheses only; GIANTS still has no assumed obstacle-avoidance responsibility;
+- adds Prototype 20 evidence and architecture/concept/glossary/decision/status consolidation; no v4.7.26 probe actuator is retained in active runtime;
+- keeps canonical v4.7.24 gameplay behaviour otherwise unchanged: Decision passive, no live Commitment, production Control disabled and no negative-clearance authority.
+
 ## v4.7.24 — Legacy Fixed-Horizon Predictor Cleanup Candidate
 
 - begins from owner-declared canonical v4.7.23 (`5fdad04222084814cf17b9712cdb06df67f42d8bfae12f5a9cab788cd057e4b9`, Git `44cd4df5766b9cb7a1d7ac68bcd08119ffc8a297`; 258 files);

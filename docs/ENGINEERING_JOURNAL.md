@@ -1,3 +1,21 @@
+## 2026-08-07 — Bounded Native Intent Revelation accepted after v4.7.26 live PASS
+
+**Problem:** Same-Job-Episode release required positive knowledge of what a held worker would do after Hold, but the complete GIANTS route/cursor is not exposed and the held state itself suppresses the evidence. Predicting the route would reintroduce a rejected architecture dependency.
+
+**Discussion:** separate release of a Control capability from the Safe Release Point. Let the other worker complete its native manoeuvre and settle. Then, for the held worker, retain the Commitment but grant GIANTS tightly bounded motion authority so Reality can reveal actual post-Hold intent. For large extended implements, use a proven OuttaMyWay-controlled transit configuration where the assembly can move under GIANTS before restoring operational configuration for unrestricted handover.
+
+**Historical reconciliation:** v4.6.63 had already shown Condor moving under GIANTS while compact; v4.6.64 separately showed OuttaMyWay-owned configuration restoration followed by native continuation. Those runs did not isolate the complete chain in one Job Episode.
+
+**Live validation:** non-canonical v4.7.26 (`43e0fc93fcd7810d8460d11e683ad05adef50ada545c8190a3394f015b260ec0`) isolated the chain with one Condor on field 77 under FS25 1.21.1.0. Job identity stayed `giants-ai-job-id:0`. The probe Held, compacted, allowed GIANTS-native progression under an experimental 1 km/h ceiling, observed native `SETTLED_CONTINUATION` progress, re-Held at approximately 2.04 m actual travel, restored and verified the deployment/work mutation with zero mismatches, returned the original drive path and observed independent native continuation. The run ended `success=true reason=same-job-native-continuation-observed`.
+
+**Discovery — Bounded Native Intent Revelation:** a retained Commitment can acquire authoritative post-intervention Local Intent by allowing controlled GIANTS-native movement rather than reconstructing GIANTS' route. The bounded movement may be performed in a proven transit configuration and followed by re-Hold, configuration restoration and full native handover.
+
+**Architecture decision:** user explicitly accepted Bounded Native Intent Revelation as architecture. It is not Safe Release, not a new route model and not authority for the probe's 1 km/h or 2 m literals. ADR-0022 records the contract and amends ADR-0017's synthetic Counterfactual Hold Release implementation assumption.
+
+**Potential implications:** cooperative Hold release is the immediate application. Static-obstacle recovery and post-intervention route reacquisition may also benefit, but those uses remain unvalidated hypotheses and must not imply GIANTS obstacle avoidance.
+
+**Repository response:** v4.7.27 consolidates the discovery into architecture, ADR, glossary, concept, decision, prototype and status records while retaining v4.7.24 production behaviour and disabled Control.
+
 ## 2026-08-07 — v4.7.24 legacy fixed-horizon predictor cleanup
 
 **Observation:** v4.7.23 live validation fulfilled the only remaining purpose of the ten-second predictor: direct comparison proved Future Space admitted `EN-00001` while the old predictor was still negative.
