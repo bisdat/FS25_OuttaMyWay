@@ -1,3 +1,15 @@
+## 2026-08-07 — v4.7.24 legacy fixed-horizon predictor cleanup
+
+**Observation:** v4.7.23 live validation fulfilled the only remaining purpose of the ten-second predictor: direct comparison proved Future Space admitted `EN-00001` while the old predictor was still negative.
+
+**Classification:** planned implementation cleanup under D-0106, not new architecture.
+
+**Implementation:** removed the fixed future-horizon constant, TCPA/DCPA scalar future calculation, component-disc future projection, legacy comparison provenance and pair-log fields from the active replacement core. Retained independent present-state distance, relative motion/closing rate, scalar current overlap and configuration-filtered current footprint overlap. Replaced future-capable footprint evaluation with current-only `evaluateCurrentOverlap`.
+
+**Boundary:** archived prototypes/history remain intact as evidence. Field-bounded Future Space remains future Encounter-admission authority; non-overlap remains unresolved. Decision, Commitment application and Control remain passive.
+
+**Offline validation:** 132 Lua and 40 Python structure tests pass.
+
 ## 2026-08-07 — v4.7.23 Future-Space Encounter admission conformance
 
 **Observation:** the v4.7.22 live run showed field-bounded Future Space positive at 08:44:10 while the first Encounter/HUD prompt did not appear until 08:44:24, when the historical ten-second future probe became positive. The HUD transition shared the Encounter creation sample, so display latency was disproved.

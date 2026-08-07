@@ -1,3 +1,9 @@
+## v4.7.24 Legacy fixed-horizon predictor cleanup candidate boundary
+
+Owner-declared canonical v4.7.23 is `5fdad04222084814cf17b9712cdb06df67f42d8bfae12f5a9cab788cd057e4b9` at Git `44cd4df5766b9cb7a1d7ac68bcd08119ffc8a297` with 258 files. Its live gate proved Future-Space-driven Encounter admission before the historical ten-second predictor became positive, while Job Episode termination precedence, restart and fresh Encounter identity remained correct.
+
+v4.7.24 fulfills the already-recorded cleanup obligation: the fixed-horizon future predictor, TCPA/DCPA/component-future comparison plumbing and legacy comparison messages/provenance are removed from the active replacement core. Present-state relative motion and current overlap remain independent evidence. Field-bounded Future Space remains the future Encounter-admission authority. Historical archive material is retained as evidence, not runtime authority. Decision, Commitment application and Control remain passive.
+
 ## v4.7.23 Future-Space Encounter-admission conformance candidate boundary
 
 v4.7.23 derives from owner-declared canonical v4.7.21 (`dc7e1220d12b9d77039d164343a8a530787ccebdd79bdf838a200c3713b27482`, Git `e926f4be238e10e93f204870ed1703b64a53b3ac`; 257 files) and carries forward the separately live-passed v4.7.22 incomplete-membership correction.

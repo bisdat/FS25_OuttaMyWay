@@ -1,3 +1,15 @@
+## D-0107 — Retire Superseded Fixed-Horizon Future Predictor After Admission Validation
+
+**Status:** Accepted implementation cleanup; implemented by v4.7.24 candidate
+
+**Context:** D-0106 intentionally retained the historical ten-second predictor only long enough to compare it against Future-Space-driven Encounter admission. The v4.7.23 live gate proved `FIELD_BOUNDED_FUTURE_SPACE_POSITIVE` created the first Encounter while that predictor was still negative, so its validation purpose is complete.
+
+**Decision:** remove the fixed-horizon future predictor and its active comparison plumbing/messages rather than retaining obsolete shadow code. Preserve only independent present-state observations: distance, relative motion/closing rate, scalar current overlap and configuration-filtered current footprint overlap. Historical archived implementations remain evidence records.
+
+**Reason:** validated superseded code should not become permanent runtime/diagnostic debt, and future interaction authority is already established as field-bounded Future Space.
+
+**Boundary:** this is not Safe Release or negative-clearance authority. It does not change Encounter lifecycle semantics, Decision policy, Commitment or Control.
+
 ## D-0106 — Field-Bounded Future Space Governs Positive Encounter Admission
 
 **Status:** Accepted implementation-conformance step; implemented by v4.7.23 candidate

@@ -2,9 +2,9 @@
 
 > **Authority:** Replacement-core design boundary
 >
-> **Currency:** v4.7.23 Future-Space Encounter Admission Conformance Candidate; canonical v4.7.21 validates Future Space conformance
+> **Currency:** v4.7.24 Legacy Fixed-Horizon Predictor Cleanup Candidate; canonical v4.7.23 validates Future-Space Encounter admission
 >
-> **Implementation status:** canonical v4.7.21 live-validates ADR-0006/ADR-0012 Local Intent/Future Space production; v4.7.23 carries the live-passed membership correction and promotes positive field-bounded Future Space into Encounter admission; legacy ten-second future prediction is shadow-only; Control disabled
+> **Implementation status:** canonical v4.7.23 live-validates ADR-0006/ADR-0012 Local Intent/Future Space through Encounter admission and lifecycle restart; v4.7.24 removes the superseded fixed-horizon predictor while preserving current-space evidence; Control disabled
 
 ## Purpose
 

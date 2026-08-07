@@ -75,7 +75,7 @@ function Diagnostics.deriveMotion(previousPose, currentPose, previousTimestamp, 
     return result
 end
 
-function Diagnostics.predictPair(subject, other, horizon)
+function Diagnostics.observePairState(subject, other)
     local rx = other.pose.x - subject.pose.x
     local rz = other.pose.z - subject.pose.z
     local distance = math.sqrt(rx * rx + rz * rz)
@@ -90,44 +90,22 @@ function Diagnostics.predictPair(subject, other, horizon)
     local required = (subject.radius or 0) + (other.radius or 0)
     local bothRadiiAvailable = subject.radius ~= nil and other.radius ~= nil
     local current = bothRadiiAvailable and distance <= required
-    local tcpa, cpa, converges = nil, nil, false
 
-    if bothRadiiAvailable and relativeSpeedSquared > 0.0001 then
-        tcpa = -(rx * relativeVelocityX + rz * relativeVelocityZ) / relativeSpeedSquared
-        if tcpa >= 0 and tcpa <= horizon then
-            local closestX = rx + relativeVelocityX * tcpa
-            local closestZ = rz + relativeVelocityZ * tcpa
-            cpa = math.sqrt(closestX * closestX + closestZ * closestZ)
-            converges = cpa <= required
-        end
-    end
-
-    local principalOutcome
+    local outcome
     if current then
-        principalOutcome = "CURRENT_INTERACTION_QUALIFIED"
+        outcome = "CURRENT_INTERACTION_QUALIFIED"
     elseif subject.radius == nil then
-        principalOutcome = "MISSING_SUBJECT_RADIUS"
+        outcome = "MISSING_SUBJECT_RADIUS"
     elseif other.radius == nil then
-        principalOutcome = "MISSING_OTHER_RADIUS"
-    elseif relativeSpeedSquared <= 0.0001 then
-        principalOutcome = "RELATIVE_MOTION_BELOW_EPSILON"
-    elseif tcpa < 0 then
-        principalOutcome = "TCPA_BEHIND_CURRENT_TIME"
-    elseif tcpa > horizon then
-        principalOutcome = "TCPA_BEYOND_HORIZON"
-    elseif converges then
-        principalOutcome = "FUTURE_INTERACTION_QUALIFIED"
+        outcome = "MISSING_OTHER_RADIUS"
     else
-        principalOutcome = "CPA_EXCEEDS_REPRESENTED_ENVELOPE"
+        outcome = "CURRENT_INTERACTION_UNRESOLVED"
     end
 
     return {
         distance = distance,
         required = required,
         current = current,
-        tcpa = tcpa,
-        cpa = cpa,
-        converges = converges,
         closingRate = distance > 0.001 and -((rx * relativeVelocityX + rz * relativeVelocityZ) / distance) or 0,
         headingDot = subject.pose.dx * other.pose.dx + subject.pose.dz * other.pose.dz,
         subjectVelocityX = subjectVelocityX,
@@ -137,8 +115,8 @@ function Diagnostics.predictPair(subject, other, horizon)
         relativeVelocityX = relativeVelocityX,
         relativeVelocityZ = relativeVelocityZ,
         relativeSpeedMps = relativeSpeed,
-        principalOutcome = principalOutcome,
-        currentSuppressionReason = current and nil or (bothRadiiAvailable and "CURRENT_DISTANCE_EXCEEDS_REPRESENTED_ENVELOPE" or principalOutcome),
-        interactionEvidenceEmitted = current or converges
+        principalOutcome = outcome,
+        currentSuppressionReason = current and nil or (bothRadiiAvailable and "CURRENT_DISTANCE_EXCEEDS_REPRESENTED_ENVELOPE" or outcome),
+        interactionEvidenceEmitted = current
     }
 end

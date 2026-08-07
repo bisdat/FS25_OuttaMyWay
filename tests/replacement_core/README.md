@@ -2,7 +2,7 @@
 
 v4.7.23 carries forward canonical v4.7.21 Future Space and the live-passed v4.7.22 termination-precedence correction. The suite now proves:
 
-- positive field-bounded Future Space may emit interaction evidence and admit an Encounter;
+- positive field-bounded Future Space may emit interaction evidence and admit an Encounter without any fixed-horizon future predictor;
 - that admission can occur while the historical ten-second future probe remains negative;
 - legacy future convergence alone is shadow evidence and cannot admit an Encounter;
 - positive Current Space interaction still admits an Encounter immediately;

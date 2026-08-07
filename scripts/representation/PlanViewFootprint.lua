@@ -77,51 +77,15 @@ function Footprint.summarise(primitives)
     }
 end
 
-local function discPair(a,b,velocityA,velocityB,horizon)
+local function currentDiscPair(a,b)
     local dx=b.x-a.x; local dz=b.z-a.z
     local required=(a.radius or 0)+(b.radius or 0)
     local distance=math.sqrt(dx*dx+dz*dz)
-    local current=distance<=required
-    local rvx=(velocityB.x or 0)-(velocityA.x or 0)
-    local rvz=(velocityB.z or 0)-(velocityA.z or 0)
-    local rv2=rvx*rvx+rvz*rvz
-    local tcpa=nil
-    local cpa=distance
-    if rv2>0.000001 then
-        tcpa=-(dx*rvx+dz*rvz)/rv2
-        local bounded=math.max(0,math.min(horizon,tcpa))
-        local cx=dx+rvx*bounded; local cz=dz+rvz*bounded
-        cpa=math.sqrt(cx*cx+cz*cz)
-    end
-    local future=not current and tcpa~=nil and tcpa>=0 and tcpa<=horizon and cpa<=required
-    return {current=current,future=future,distance=distance,required=required,tcpa=tcpa,cpa=cpa}
+    return {current=distance<=required,distance=distance,required=required}
 end
 
-function Footprint.composePositiveEvidence(scalar,footprint)
-    scalar=scalar or {}
-    footprint=footprint or {}
-    local scalarPositive=scalar.current==true or scalar.future==true or scalar.converges==true
-    local footprintPositive=footprint.current==true or footprint.future==true
-    local current=scalar.current==true or footprint.current==true
-    local future=(not current) and (scalar.future==true or scalar.converges==true or footprint.future==true) or false
-    local source=nil
-    if scalarPositive and footprintPositive then source="SCALAR_AND_FILTERED_PLAN_VIEW_POSITIVE"
-    elseif footprintPositive then source="FILTERED_PLAN_VIEW_POSITIVE"
-    elseif scalarPositive then source="SCALAR_PREDICATE_POSITIVE" end
-    return {
-        positive=current or future,
-        current=current,
-        future=future,
-        scalarPositive=scalarPositive,
-        filteredFootprintPositive=footprintPositive,
-        source=source,
-        authority=(current or future) and "POSITIVE_INTERACTION_ONLY" or nil,
-        negativeClearanceAuthority=false
-    }
-end
-
-function Footprint.evaluateShadowPair(subject,other,horizon,subjectVelocity,otherVelocity)
-    local best=nil
+function Footprint.evaluateCurrentOverlap(subject,other)
+    local closest=nil
     local physicalSubject,physicalOther={},{}
     for _,primitive in OuttaMyWay.ValueRecord.ipairs(subject and subject.worldPrimitives or {}) do
         if primitive.kind=="DISC" and primitive.positiveConflictSupport==true then physicalSubject[#physicalSubject+1]=primitive end
@@ -131,26 +95,21 @@ function Footprint.evaluateShadowPair(subject,other,horizon,subjectVelocity,othe
     end
     for _,a in ipairs(physicalSubject) do
         for _,b in ipairs(physicalOther) do
-            local result=discPair(a,b,subjectVelocity or {},otherVelocity or {},horizon or 0)
+            local result=currentDiscPair(a,b)
             result.subjectPrimitiveId=a.identity; result.otherPrimitiveId=b.identity
-            if best==nil or result.cpa<best.cpa then best=result end
+            if closest==nil or result.distance<closest.distance then closest=result end
             if result.current then
-                result.outcome="SHADOW_CURRENT_INTERACTION_POSITIVE"
+                result.outcome="CURRENT_FOOTPRINT_INTERACTION_POSITIVE"
                 result.authority="POSITIVE_CONFLICT_SUPPORT_ONLY"
                 result.subjectPhysicalPrimitiveCount=#physicalSubject; result.otherPhysicalPrimitiveCount=#physicalOther
                 return result
             end
         end
     end
-    if best~=nil and best.future then
-        best.outcome="SHADOW_FUTURE_CONVERGENCE_POSITIVE"
-        best.authority="POSITIVE_CONFLICT_SUPPORT_ONLY"
-    else
-        best=best or {distance=nil,required=nil,tcpa=nil,cpa=nil}
-        best.current=false; best.future=false
-        best.outcome="SHADOW_CLEARANCE_UNRESOLVED"
-        best.authority="NO_NEGATIVE_CLEARANCE_AUTHORITY"
-    end
-    best.subjectPhysicalPrimitiveCount=#physicalSubject; best.otherPhysicalPrimitiveCount=#physicalOther
-    return best
+    closest=closest or {distance=nil,required=nil}
+    closest.current=false
+    closest.outcome="CURRENT_FOOTPRINT_INTERACTION_UNRESOLVED"
+    closest.authority="NO_NEGATIVE_CLEARANCE_AUTHORITY"
+    closest.subjectPhysicalPrimitiveCount=#physicalSubject; closest.otherPhysicalPrimitiveCount=#physicalOther
+    return closest
 end

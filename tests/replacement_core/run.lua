@@ -210,7 +210,7 @@ end)
 
 test("runtime is passive and inactive before the live listener runs", function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); local status=runtime:getStatus()
-    equal(status.runtimeMode,"FUTURE_SPACE_ENCOUNTER_ADMISSION_CONFORMANCE"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
+    equal(status.runtimeMode,"LEGACY_SHADOW_CLEANUP_CONFORMANCE"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
 end)
 
 
@@ -953,21 +953,19 @@ test("live source admits GIANTS Job identities from activeJobVehicles",function(
 end)
 
 
-test("interaction diagnostics publish exhaustive pair outcomes without changing predicates",function()
+test("interaction diagnostics publish current pair state without future prediction",function()
     local diagnostics=OuttaMyWay.LiveInteractionDiagnostics
     local a={pose={x=0,z=0,dx=0,dz=1},speedMps=3,radius=nil}
     local b={pose={x=0,z=20,dx=0,dz=-1},speedMps=3,radius=4}
-    local missing=diagnostics.predictPair(a,b,10)
+    local missing=diagnostics.observePairState(a,b)
     equal(missing.principalOutcome,"MISSING_SUBJECT_RADIUS"); equal(missing.interactionEvidenceEmitted,false)
-    a.radius=4; b.pose.dz=1; b.speedMps=3
-    local parallel=diagnostics.predictPair(a,b,10)
-    equal(parallel.principalOutcome,"RELATIVE_MOTION_BELOW_EPSILON"); equal(parallel.interactionEvidenceEmitted,false)
-    b.pose.dz=-1
-    local converging=diagnostics.predictPair(a,b,10)
-    equal(converging.principalOutcome,"FUTURE_INTERACTION_QUALIFIED"); equal(converging.converges,true); equal(converging.interactionEvidenceEmitted,true)
+    a.radius=4
+    local separated=diagnostics.observePairState(a,b)
+    equal(separated.principalOutcome,"CURRENT_INTERACTION_UNRESOLVED"); equal(separated.current,false); equal(separated.interactionEvidenceEmitted,false)
+    if separated.closingRate<=0 then error("present-state closing rate was not preserved") end
     b.pose.z=4
-    local current=diagnostics.predictPair(a,b,10)
-    equal(current.principalOutcome,"CURRENT_INTERACTION_QUALIFIED"); equal(current.current,true)
+    local current=diagnostics.observePairState(a,b)
+    equal(current.principalOutcome,"CURRENT_INTERACTION_QUALIFIED"); equal(current.current,true); equal(current.interactionEvidenceEmitted,true)
 end)
 
 test("position-derived motion diagnostics separate forward reverse turning and stationary evidence",function()
@@ -1019,14 +1017,14 @@ test("missing radius suppression survives the source-to-assessment diagnostic ha
     end)
 end)
 
-test("legacy future prediction remains shadow-only and cannot admit Encounter",function()
+test("closing motion alone cannot admit Encounter without supported Future Space",function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions)
         directions[201]={0,-1}; a.lastSpeedReal=0.003; b.lastSpeedReal=0.003
         local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
         local raw=runtime.liveObservationSource:capture(mission,10)[1]
         local pair=raw.diagnostics.pairDiagnostics[1]
-        equal(pair.principalOutcome,"FUTURE_INTERACTION_QUALIFIED")
-        equal(pair.legacyShadowPositive,true)
+        equal(pair.principalOutcome,"CURRENT_INTERACTION_UNRESOLVED")
+        if pair.closingRate<=0 then error("closing motion evidence was not preserved") end
         equal(pair.fieldBoundedFutureSpacePositive,false)
         equal(pair.interactionEvidenceEmitted,false)
         local processed=runtime:processSealedObservation(raw)
@@ -1607,15 +1605,18 @@ test("plan-view footprint preserves non-rectangular component composition",funct
     if summary.hullPointCount<4 then error("plan-view hull was not produced") end
 end)
 
-test("shadow footprint supports positive conflict but never negative clearance",function()
+test("current footprint supports present conflict but never negative clearance",function()
     local a={worldPrimitives={{identity="a-boom",kind="DISC",x=0,z=0,radius=2,positiveConflictSupport=true}}}
     local b={worldPrimitives={{identity="b-boom",kind="DISC",x=20,z=0,radius=2,positiveConflictSupport=true}}}
-    local future=OuttaMyWay.PlanViewFootprint.evaluateShadowPair(a,b,10,{x=1,z=0},{x=-1,z=0})
-    equal(future.outcome,"SHADOW_FUTURE_CONVERGENCE_POSITIVE")
-    equal(future.authority,"POSITIVE_CONFLICT_SUPPORT_ONLY")
-    local separated=OuttaMyWay.PlanViewFootprint.evaluateShadowPair(a,b,2,{x=0,z=0},{x=0,z=0})
-    equal(separated.outcome,"SHADOW_CLEARANCE_UNRESOLVED")
+    local separated=OuttaMyWay.PlanViewFootprint.evaluateCurrentOverlap(a,b)
+    equal(separated.current,false)
+    equal(separated.outcome,"CURRENT_FOOTPRINT_INTERACTION_UNRESOLVED")
     equal(separated.authority,"NO_NEGATIVE_CLEARANCE_AUTHORITY")
+    b.worldPrimitives[1].x=3
+    local overlap=OuttaMyWay.PlanViewFootprint.evaluateCurrentOverlap(a,b)
+    equal(overlap.current,true)
+    equal(overlap.outcome,"CURRENT_FOOTPRINT_INTERACTION_POSITIVE")
+    equal(overlap.authority,"POSITIVE_CONFLICT_SUPPORT_ONLY")
 end)
 
 test("Job Episode representation cache discovers compound members once and reuses local geometry",function()
@@ -1722,13 +1723,14 @@ test("runtime compound-child evidence can select a different purchased geometry 
 end)
 
 
-test("positive evidence composition is one-way",function()
-    local footprintOnly=OuttaMyWay.PlanViewFootprint.composePositiveEvidence({current=false,converges=false},{current=false,future=true})
-    equal(footprintOnly.positive,true); equal(footprintOnly.future,true); equal(footprintOnly.source,"FILTERED_PLAN_VIEW_POSITIVE"); equal(footprintOnly.negativeClearanceAuthority,false)
-    local scalarOnly=OuttaMyWay.PlanViewFootprint.composePositiveEvidence({current=true,converges=false},{current=false,future=false})
-    equal(scalarOnly.positive,true); equal(scalarOnly.current,true); equal(scalarOnly.source,"SCALAR_PREDICATE_POSITIVE")
-    local unresolved=OuttaMyWay.PlanViewFootprint.composePositiveEvidence({current=false,converges=false},{current=false,future=false})
-    equal(unresolved.positive,false); equal(unresolved.source,nil); equal(unresolved.negativeClearanceAuthority,false)
+test("current footprint overlap remains positive-only evidence",function()
+    local a={worldPrimitives={{identity="a",kind="DISC",x=0,z=0,radius=2,positiveConflictSupport=true}}}
+    local b={worldPrimitives={{identity="b",kind="DISC",x=10,z=0,radius=2,positiveConflictSupport=true}}}
+    local unresolved=OuttaMyWay.PlanViewFootprint.evaluateCurrentOverlap(a,b)
+    equal(unresolved.current,false); equal(unresolved.authority,"NO_NEGATIVE_CLEARANCE_AUTHORITY")
+    b.worldPrimitives[1].x=2
+    local positive=OuttaMyWay.PlanViewFootprint.evaluateCurrentOverlap(a,b)
+    equal(positive.current,true); equal(positive.authority,"POSITIVE_CONFLICT_SUPPORT_ONLY")
 end)
 
 test("filtered current-space footprint positive reaches Encounter when scalar radius is missing",function()
@@ -1751,7 +1753,7 @@ test("filtered current-space footprint positive reaches Encounter when scalar ra
         local raw=runtime.liveObservationSource:capture(mission,10)[1]
         local pair=raw.diagnostics.pairDiagnostics[1]
         equal(pair.principalOutcome,"MISSING_OTHER_RADIUS")
-        equal(pair.shadowCurrentSpaceIntersects,true)
+        equal(pair.currentFootprintIntersects,true)
         equal(pair.interactionEvidenceSource,"CURRENT_SPACE_POSITIVE")
         equal(pair.interactionEvidenceEmitted,true)
         local processed=runtime:processSealedObservation(raw)
@@ -1813,7 +1815,7 @@ test("field-bounded component continuations support positive intersection and tu
     equal(unresolved.positive,false); equal(unresolved.unresolved,true); equal(unresolved.outcome,"FUTURE_SPACE_INTERACTION_UNRESOLVED")
 end)
 
-test("field-bounded Future Space admits Encounter before legacy shadow horizon", function()
+test("field-bounded Future Space admits Encounter after legacy predictor removal", function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions)
         local saved={
             getNumOfChildren=getNumOfChildren,getChildAt=getChildAt,getName=getName,localToWorld=localToWorld,
@@ -1840,11 +1842,10 @@ test("field-bounded Future Space admits Encounter before legacy shadow horizon",
         local pair=raw.diagnostics.pairDiagnostics[1]
         equal(pair.futureSpaceOutcome,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION_POSITIVE")
         equal(pair.fieldBoundedFutureSpacePositive,true)
-        equal(pair.legacyShadowPositive,false)
         equal(pair.interactionEvidenceEmitted,true)
         equal(pair.interactionEvidenceSource,"FIELD_BOUNDED_FUTURE_SPACE_POSITIVE")
         equal(raw.geometry.interactionEvidence[1].relationship,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION")
-        equal(raw.geometry.interactionEvidence[1].provenance.legacyShadow.positive,false)
+        equal(raw.geometry.interactionEvidence[1].provenance.legacyShadow,nil)
         local processed=runtime:processSealedObservation(raw)
         equal(#processed.picture.encounters,1)
         equal(processed.picture.encounters[1].relationship,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION")

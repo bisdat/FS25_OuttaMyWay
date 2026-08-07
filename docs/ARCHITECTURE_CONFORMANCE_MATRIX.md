@@ -1,3 +1,14 @@
+# v4.7.24 Legacy Predictor Cleanup Conformance
+
+| Concern | Requirement | v4.7.24 evidence | Status |
+|---|---|---|---|
+| Future interaction authority | field-bounded Future Space governs future Encounter entry | fixed-horizon scalar/component future predictor removed; `FIELD_BOUNDED_FUTURE_SPACE_POSITIVE` retained | PASS offline |
+| Present-state evidence | cleanup must not remove legitimate current observations | distance, closing rate, scalar current overlap and configuration-filtered current footprint overlap retained | PASS offline |
+| Negative clearance | non-overlap must not become clearance | current-footprint non-overlap returns `NO_NEGATIVE_CLEARANCE_AUTHORITY` | PASS offline |
+| Lifecycle preservation | v4.7.22/v4.7.23 lifecycle behavior must remain | termination-precedence and fresh-Episode/Encounter fixtures retained | PASS offline |
+| Legacy removal | obsolete validation predictor/messages must not remain active | no legacy horizon, TCPA/DCPA future projection, component future projection or legacy comparison provenance/log fields in active runtime | PASS offline |
+| Control boundary | cleanup must be behaviorally passive | Decision passive; no live Commitment; Control disabled | PASS offline |
+
 # v4.7.23 Future-Space Encounter-Admission Conformance
 
 | Concern | Requirement | v4.7.23 evidence | Status |
@@ -9,6 +20,8 @@
 | Lifecycle carry-forward | v4.7.22 precedence correction must remain intact | incomplete membership retention + authoritative `JOB_EPISODE_ENDED` fixtures | PASS offline / PASS prior live |
 | Negative authority | non-positive evidence cannot establish clearance | no negative-clearance authority; misleading negative-result warning removed | PASS offline |
 | Decision/Control | admission gate must not choose or actuate | Decision passive; no live Commitment; `control=false` | PASS |
+**Live result:** PASS and owner-canonicalised as v4.7.23. The first Encounter was admitted from `FIELD_BOUNDED_FUTURE_SPACE_POSITIVE` at approximately 329 m while the historical ten-second predictor remained negative; termination precedence, restart and fresh Encounter identity also passed.
+
 
 # v4.7.22 Encounter Termination-Precedence Implementation Conformance
 

@@ -1,34 +1,35 @@
 # Project Status
 
-> **Current canonical:** v4.7.21 Future Space Conformance  
-> **Current candidate:** v4.7.23 Future-Space Encounter Admission Conformance  
+> **Current canonical:** v4.7.23 Future-Space Encounter Admission Conformance  
+> **Current candidate:** v4.7.24 Legacy Fixed-Horizon Predictor Cleanup  
 > **Control authority:** disabled
 
 ## Established Reality
 
-Canonical v4.7.21 live-validates field-bounded Local Intent/Future Space. The non-canonical v4.7.22 live gate subsequently validated the separate membership-evidence precedence correction: unresolved membership loss no longer pre-empts authoritative Job Episode termination, and restart produces a fresh Job Episode and fresh Encounter identity.
+Canonical v4.7.23 live-validates the replacement-core chain from settled Local Intent through field-bounded Future Space to early Encounter admission. The first live Encounter was created from `FIELD_BOUNDED_FUTURE_SPACE_POSITIVE` at approximately 329 m while the superseded ten-second predictor was still negative. The same run preserved authoritative `JOB_EPISODE_ENDED` termination, restart as a fresh Job Episode and fresh Encounter identity.
 
-The remaining active non-conformance is Encounter entry authority. Live evidence showed canonical Future Space became positive about fourteen seconds before the old ten-second future probe admitted the Encounter. The HUD changed in the same sample as Encounter creation, so the delay was admission, not display.
+## v4.7.24 candidate
 
-## v4.7.23 candidate
+v4.7.24 removes the now-fulfilled fixed-horizon comparison implementation from the active replacement core:
 
-v4.7.23 composes the already validated evidence paths:
+- no fixed ten-second future-prediction constant;
+- no scalar TCPA/DCPA future projection;
+- no component-disc future projection;
+- no legacy comparison fields/provenance/messages in active pair diagnostics;
+- present-state distance, closing rate and current-overlap evidence retained;
+- field-bounded Future Space remains the future Encounter-admission authority;
+- positive Current Space remains immediate Encounter authority;
+- non-overlap remains unresolved with no negative-clearance authority.
 
-- supported field-bounded Future Space intersection may emit positive interaction evidence and admit an Encounter;
-- positive Current Space interaction retains immediate admission authority;
-- the historical ten-second scalar/component future projection is shadow comparison only and cannot admit or suppress an Encounter;
-- pair diagnostics expose Future-Space versus legacy-shadow positives for direct live comparison;
-- the v4.7.22 incomplete-membership correction is carried forward unchanged;
-- the lifecycle HUD guides first Future-Space Encounter → stop → `JOB_EPISODE_ENDED` → restart → fresh Future-Space Encounter;
-- no negative-clearance authority, Decision action, live Commitment or Control is introduced.
+Historical archive material remains available as evidence and mechanism history. Decision remains passive, no live Commitment is applied and Control remains disabled.
 
-## Next live gate
+## Live confirmation
 
-Use the familiar headland-cross/head-on or TS015 setup. The decisive first-entry evidence is `FUTURE_SPACE_INTERSECTION` / `FIELD_BOUNDED_FUTURE_SPACE_POSITIVE` creating `EN-00001` while `legacyShadowPositive=false` where geometry permits. Then stop either worker and confirm `JOB_EPISODE_ENDED`, restart it, and confirm a fresh Future-Space-driven Encounter identity.
+One familiar TS015/headland-cross run is sufficient to verify cleanup caused no behavioural change: the HUD should enter `FUTURE SPACE ENCOUNTER` as soon as supported Future Spaces intersect, stop/restart should still terminate by `JOB_EPISODE_ENDED`, and the restarted worker should create a fresh Job Episode and fresh Encounter. The log should contain no active fixed-horizon/TCPA/DCPA comparison fields.
 
-After this gate passes, remove the superseded legacy shadow predictor/messages in a dedicated cleanup increment before moving into same-Job-Episode Safe Release.
+After this cleanup gate, the next substantive implementation question is same-Job-Episode Encounter resolution / Safe Release under the already-defined Continuation Safety Horizon contract.
 
-## v4.7.21 canonical Future Space validation
+## Historical v4.7.21 canonical Future Space validation
 
 v4.7.21 recovers the existing architecture passively:
 
@@ -42,6 +43,6 @@ v4.7.21 recovers the existing architecture passively:
 - the old ten-second constant-velocity predictor remains isolated only as the legacy positive Encounter-admission probe;
 - Decision, Commitment application and Control remain passive.
 
-## Next live gate
+## Historical v4.7.21 live gate
 
 Run the familiar headland-cross/head-on development sequence and observe the HUD/log through `STRAIGHT → TURNING → STRAIGHT` changes. The gate is whether the replacement core publishes the expected Local Intent epochs and identifies the field-bounded Future-Space relationship materially earlier than the legacy ten-second Encounter admission, without using a time/distance literal to create that Knowledge. Stop before contact once sufficient evidence is captured.

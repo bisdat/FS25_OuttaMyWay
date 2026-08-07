@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** v4.7.23 Future-Space Encounter Admission Conformance Candidate; canonical implementation baseline v4.7.21
+> **Currency:** v4.7.24 Legacy Fixed-Horizon Predictor Cleanup Candidate; canonical implementation baseline v4.7.23
 
 This repository is a self-sustaining engineering knowledge system. It must preserve project continuity independently of any chat, engineer, AI system or platform.
 

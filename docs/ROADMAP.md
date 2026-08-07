@@ -1,10 +1,18 @@
-# Roadmap
+# Current implementation sequence — v4.7.24
 
-> **Canonical:** v4.7.21 Future Space Conformance (`dc7e1220d12b9d77039d164343a8a530787ccebdd79bdf838a200c3713b27482`)  
-> **Current candidate:** v4.7.23 Future-Space Encounter Admission Conformance  
+1. Live-confirm that removal of the superseded fixed-horizon predictor causes no behavioural change to Future-Space Encounter admission, Job Episode termination precedence, restart or fresh Encounter identity.
+2. Canonicalise the cleanup only after that confirmation.
+3. Then implement/validate same-Job-Episode Encounter resolution from existing Safe Release / Continuation Safety Horizon architecture.
+4. Only after reliable Encounter entry → persistence → resolution should ordinary Decision/Continuing Intent Priority consume that lifecycle.
+5. Commitment and Control remain later gates.
+
+# Historical roadmap snapshot — v4.7.23 candidate
+
+> **Canonical at that point:** v4.7.21 Future Space Conformance (`dc7e1220d12b9d77039d164343a8a530787ccebdd79bdf838a200c3713b27482`)  
+> **Candidate at that point:** v4.7.23 Future-Space Encounter Admission Conformance  
 > **Control authority:** disabled
 
-## Immediate sequence
+## Historical immediate sequence
 
 1. Live-validate v4.7.23: supported field-bounded Future Space must admit the Encounter before the legacy ten-second shadow where the evidence diverges, while positive Current Space admission remains intact.
 2. In the same run, re-confirm the live-passed v4.7.22 stop/restart precedence and fresh Encounter identity.
@@ -17,7 +25,7 @@
 
 Architecture is largely defined, E&OE. Before naming an apparent discovery, search canonical architecture/decisions/glossary/concept register and relevant archived evidence. Classify the finding before adding architecture.
 
-## v4.7.23 live gate
+## Historical v4.7.23 live gate
 
 The HUD now waits for a Future-Space-driven Encounter. Follow first Encounter → manual stop → `JOB_EPISODE_ENDED` → restart → fresh Future-Space Encounter. The log must expose Future-Space and legacy-shadow positive state independently.
 

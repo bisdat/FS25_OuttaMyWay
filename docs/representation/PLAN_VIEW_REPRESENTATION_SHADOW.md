@@ -1,29 +1,28 @@
 # Plan-View Representation and Positive Encounter Admission
 
-> **Implementation:** v4.7.23 candidate (representation authority unchanged; canonical v4.7.21 Future Space now supplies positive Encounter-admission evidence; legacy future projection shadow-only)  
-> **Canonical baseline:** v4.7.21  
-> **Authority:** positive interaction support only
+> **Implementation:** v4.7.24 candidate (current-overlap support only; future interaction supplied by field-bounded Future Space)  
+> **Canonical baseline:** v4.7.23  
+> **Authority:** positive current interaction support only
 
 ## Current permission
 
-The configuration-filtered footprint may now support exactly two conclusions:
+The configuration-filtered physical footprint may support `CURRENT_SPACE_INTERACTION` when represented physical primitives overlap now. Its non-overlap result is `CURRENT_FOOTPRINT_INTERACTION_UNRESOLVED` with `NO_NEGATIVE_CLEARANCE_AUTHORITY`.
 
-- `CURRENT_SPACE_INTERACTION`;
-- `FUTURE_SPACE_CONVERGENCE` within the bounded horizon.
-
-It may not support negative clearance. `SHADOW_CLEARANCE_UNRESOLVED` remains an explicit unresolved result.
-
-## One-way evidence composition
+Future interaction is no longer projected by this module. `FieldBoundedFutureSpace` owns positive future-intersection evidence from settled Local Intent plus the current Field World.
 
 ```text
-scalar positive OR filtered-footprint positive
+current scalar overlap OR current filtered-footprint overlap
         ↓
-positive interaction evidence
+positive Current Space interaction evidence
+
+settled Local Intent + Field World
         ↓
-Encounter Knowledge
+field-bounded Future Space intersection
+        ↓
+positive future interaction evidence
 ```
 
-An unresolved footprint cannot erase scalar evidence. It also cannot terminate an active Encounter because it does not prove clearance. When both sources are positive, one packet records both bases. No result from this module selects a Yield worker, strategy, Commitment or Control action.
+No result from this representation module selects responsibility, strategy, Commitment or Control.
 
 # Historical v4.7.17 Plan-View Representation Shadow
 

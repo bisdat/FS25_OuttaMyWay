@@ -2,9 +2,9 @@
 
 > **Authority:** Normative replacement-core responsibility and lifecycle map
 >
-> **Currency:** v4.7.23 Future-Space Encounter Admission Conformance Candidate; canonical v4.7.21 is the implementation baseline
+> **Currency:** v4.7.24 Legacy Fixed-Horizon Predictor Cleanup Candidate; canonical v4.7.23 is the implementation baseline
 >
-> **Implementation status:** canonical v4.7.21 live-validates Local Intent/Future Space; v4.7.23 carries the live-passed membership-precedence correction and makes positive field-bounded Future Space an Encounter-admission authority while the historical ten-second future predictor is shadow-only; live Commitment mutation and Control remain unimplemented
+> **Implementation status:** canonical v4.7.23 live-validates Future-Space-driven Encounter admission plus termination precedence and fresh identity; v4.7.24 removes the superseded fixed-horizon future predictor from active runtime while preserving present-state evidence; live Commitment mutation and Control remain unimplemented
 
 ## 1. Closed-loop responsibility flow
 

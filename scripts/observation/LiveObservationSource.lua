@@ -112,8 +112,8 @@ local function radiusFor(object)
     return 0.5 * math.sqrt(width * width + length * length), width, length
 end
 
-local function pairPrediction(a, b, horizon)
-    return OuttaMyWay.LiveInteractionDiagnostics.predictPair(a, b, horizon)
+local function observePairState(a, b)
+    return OuttaMyWay.LiveInteractionDiagnostics.observePairState(a, b)
 end
 
 local function copyPose(pose)
@@ -202,7 +202,6 @@ end
 
 function Source:capture(mission, nowSeconds)
     if mission == nil then return {} end
-    local legacyShadowHorizon = OuttaMyWay.LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS or 10
     local groups, present, removeAfterCapture = {}, {}, {}
     local activeList, activeSet = activeVehicleSet(mission)
     local relevantList = relevantVehicles(activeList, self.tracks)
@@ -630,7 +629,7 @@ function Source:capture(mission, nowSeconds)
                 end
                 raw.physicalRepresentationEvidence[#raw.physicalRepresentationEvidence + 1] = {
                     assemblyReferenceKey = worker.referenceKey, representationId = "live-representation:" .. worker.referenceKey,
-                    question = "PASSIVE_CONFLICT_SUPPORT", assessmentHorizon = legacyShadowHorizon, structurallyValid = worker.radius ~= nil,
+                    question = "CURRENT_CONFLICT_SUPPORT", assessmentHorizon = 0, structurallyValid = worker.radius ~= nil,
                     refreshRequired = not worker.activeObserved, currentForQuestion = true, coversAssessmentHorizon = false,
                     coverageComplete = false, conservative = false, permittedConclusions = {"CONFLICT_SUPPORT"},
                     uncertainty = {{kind = worker.activeObserved and "METADATA_ENVELOPE_INCOMPLETE" or "RETAINED_POSE_REQUIRES_REFRESH"}},
@@ -682,40 +681,33 @@ function Source:capture(mission, nowSeconds)
                 if eligible then
                     raw.diagnostics.sourceCounters.eligiblePairCount=raw.diagnostics.sourceCounters.eligiblePairCount+1
                     raw.diagnostics.sourceCounters.evaluatedPairCount=raw.diagnostics.sourceCounters.evaluatedPairCount+1
-                    local prediction = pairPrediction(a, b, legacyShadowHorizon)
+                    local observed = observePairState(a, b)
                     pairDiagnostic.evaluated=true
-                    pairDiagnostic.distance=prediction.distance
-                    pairDiagnostic.required=prediction.required
-                    pairDiagnostic.currentSpaceIntersects=prediction.current
-                    pairDiagnostic.futureSpaceConverges=prediction.converges
-                    pairDiagnostic.tcpa=prediction.tcpa
-                    pairDiagnostic.cpa=prediction.cpa
-                    pairDiagnostic.closingRate=prediction.closingRate
-                    pairDiagnostic.headingDot=prediction.headingDot
-                    pairDiagnostic.relativeVelocityX=prediction.relativeVelocityX
-                    pairDiagnostic.relativeVelocityZ=prediction.relativeVelocityZ
-                    pairDiagnostic.relativeSpeedMps=prediction.relativeSpeedMps
-                    pairDiagnostic.subjectVelocityX=prediction.subjectVelocityX
-                    pairDiagnostic.subjectVelocityZ=prediction.subjectVelocityZ
-                    pairDiagnostic.otherVelocityX=prediction.otherVelocityX
-                    pairDiagnostic.otherVelocityZ=prediction.otherVelocityZ
-                    pairDiagnostic.principalOutcome=prediction.principalOutcome
-                    pairDiagnostic.currentSuppressionReason=prediction.currentSuppressionReason
+                    pairDiagnostic.distance=observed.distance
+                    pairDiagnostic.required=observed.required
+                    pairDiagnostic.currentSpaceIntersects=observed.current
+                    pairDiagnostic.closingRate=observed.closingRate
+                    pairDiagnostic.headingDot=observed.headingDot
+                    pairDiagnostic.relativeVelocityX=observed.relativeVelocityX
+                    pairDiagnostic.relativeVelocityZ=observed.relativeVelocityZ
+                    pairDiagnostic.relativeSpeedMps=observed.relativeSpeedMps
+                    pairDiagnostic.subjectVelocityX=observed.subjectVelocityX
+                    pairDiagnostic.subjectVelocityZ=observed.subjectVelocityZ
+                    pairDiagnostic.otherVelocityX=observed.otherVelocityX
+                    pairDiagnostic.otherVelocityZ=observed.otherVelocityZ
+                    pairDiagnostic.principalOutcome=observed.principalOutcome
+                    pairDiagnostic.currentSuppressionReason=observed.currentSuppressionReason
                     pairDiagnostic.representationFitForNegativeConclusion=false
-                    local subjectVelocity={x=prediction.subjectVelocityX or 0,z=prediction.subjectVelocityZ or 0}
-                    local otherVelocity={x=prediction.otherVelocityX or 0,z=prediction.otherVelocityZ or 0}
-                    local shadow=OuttaMyWay.PlanViewFootprint.evaluateShadowPair(a.shadowRepresentation,b.shadowRepresentation,legacyShadowHorizon,subjectVelocity,otherVelocity)
-                    pairDiagnostic.shadowOutcome=shadow.outcome
-                    pairDiagnostic.shadowCurrentSpaceIntersects=shadow.current
-                    pairDiagnostic.shadowFutureSpaceConverges=shadow.future
-                    pairDiagnostic.shadowTCPA=shadow.tcpa
-                    pairDiagnostic.shadowDCPA=shadow.cpa
-                    pairDiagnostic.shadowRequired=shadow.required
-                    pairDiagnostic.shadowSubjectPrimitiveId=shadow.subjectPrimitiveId
-                    pairDiagnostic.shadowOtherPrimitiveId=shadow.otherPrimitiveId
-                    pairDiagnostic.shadowSubjectPhysicalPrimitiveCount=shadow.subjectPhysicalPrimitiveCount
-                    pairDiagnostic.shadowOtherPhysicalPrimitiveCount=shadow.otherPhysicalPrimitiveCount
-                    pairDiagnostic.shadowAuthority=shadow.authority
+                    local currentFootprint=OuttaMyWay.PlanViewFootprint.evaluateCurrentOverlap(a.shadowRepresentation,b.shadowRepresentation)
+                    pairDiagnostic.currentFootprintOutcome=currentFootprint.outcome
+                    pairDiagnostic.currentFootprintIntersects=currentFootprint.current
+                    pairDiagnostic.currentFootprintDistance=currentFootprint.distance
+                    pairDiagnostic.currentFootprintRequired=currentFootprint.required
+                    pairDiagnostic.currentFootprintSubjectPrimitiveId=currentFootprint.subjectPrimitiveId
+                    pairDiagnostic.currentFootprintOtherPrimitiveId=currentFootprint.otherPrimitiveId
+                    pairDiagnostic.currentFootprintSubjectPhysicalPrimitiveCount=currentFootprint.subjectPhysicalPrimitiveCount
+                    pairDiagnostic.currentFootprintOtherPhysicalPrimitiveCount=currentFootprint.otherPhysicalPrimitiveCount
+                    pairDiagnostic.currentFootprintAuthority=currentFootprint.authority
 
                     local fieldFuture=OuttaMyWay.FieldBoundedFutureSpace.evaluatePair(a,b,a.futureSpace,b.futureSpace)
                     pairDiagnostic.futureSpaceOutcome=fieldFuture.outcome
@@ -743,12 +735,10 @@ function Source:capture(mission, nowSeconds)
                         provenance={source="FIELD_WORLD_BOUNDED_LOCAL_CONTINUATION_INTERSECTION",subjectPrimitiveId=fieldFuture.subjectPrimitiveId,otherPrimitiveId=fieldFuture.otherPrimitiveId}
                     }
 
-                    -- v4.7.23 Encounter admission authority is positive Current Space or the
-                    -- canonical field-bounded Future Space relationship. The historical 10-second
-                    -- scalar/component future prediction is retained only as shadow comparison
-                    -- evidence for this live gate; it cannot admit or suppress an Encounter.
-                    local legacy=OuttaMyWay.PlanViewFootprint.composePositiveEvidence({current=prediction.current,converges=prediction.converges},shadow)
-                    local currentPositive=prediction.current==true or shadow.current==true
+                    -- Encounter admission authority is positive Current Space or the canonical
+                    -- field-bounded Future Space relationship. Superseded fixed-horizon future
+                    -- prediction has been removed from active runtime and diagnostics.
+                    local currentPositive=observed.current==true or currentFootprint.current==true
                     local futureSpacePositive=fieldFuture.positive==true
                     local admissionPositive=currentPositive or futureSpacePositive
                     local admissionRelationship=nil
@@ -760,10 +750,8 @@ function Source:capture(mission, nowSeconds)
                         admissionRelationship="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION"
                         admissionSource="FIELD_BOUNDED_FUTURE_SPACE_POSITIVE"
                     end
-                    pairDiagnostic.scalarPositive=legacy.scalarPositive
-                    pairDiagnostic.filteredFootprintPositive=legacy.filteredFootprintPositive
-                    pairDiagnostic.legacyShadowPositive=legacy.positive
-                    pairDiagnostic.legacyShadowFuturePositive=legacy.future==true
+                    pairDiagnostic.scalarCurrentPositive=observed.current==true
+                    pairDiagnostic.filteredCurrentFootprintPositive=currentFootprint.current==true
                     pairDiagnostic.fieldBoundedFutureSpacePositive=futureSpacePositive
                     pairDiagnostic.qualifying=admissionPositive
                     pairDiagnostic.interactionEvidenceEmitted=admissionPositive
@@ -793,22 +781,17 @@ function Source:capture(mission, nowSeconds)
                                     distance=fieldFuture.distance,required=fieldFuture.required,
                                     subjectPrimitiveId=fieldFuture.subjectPrimitiveId,otherPrimitiveId=fieldFuture.otherPrimitiveId
                                 },
-                                currentSpace = {scalar=prediction.current==true,filteredPlanView=shadow.current==true},
-                                legacyShadow = {
-                                    horizonSeconds=legacyShadowHorizon,positive=legacy.positive,futurePositive=legacy.future==true,
-                                    source=legacy.source,configurationFiltered=true,scalarFuture=prediction.converges==true,filteredPlanViewFuture=shadow.future==true,
-                                    scalarTCPA=prediction.tcpa,scalarDCPA=prediction.cpa,filteredTCPA=shadow.tcpa,filteredDCPA=shadow.cpa
-                                }
+                                currentSpace = {scalar=observed.current==true,filteredPlanView=currentFootprint.current==true}
                             }
                         }
                     end
-                    if prediction.headingDot > 0.5 and prediction.closingRate > 0.05 then
+                    if observed.headingDot > 0.5 and observed.closingRate > 0.05 then
                         local aToB = (b.pose.x - a.pose.x) * a.pose.dx + (b.pose.z - a.pose.z) * a.pose.dz
                         local follower, leader = a, b
                         if aToB < 0 then follower, leader = b, a end
                         raw.motion.closureEvidence[#raw.motion.closureEvidence + 1] = {
                             followerAssemblyReferenceKey = follower.referenceKey, leaderAssemblyReferenceKey = leader.referenceKey,
-                            closingObserved = true, closingRate = prediction.closingRate, horizon = legacyShadowHorizon,
+                            closingObserved = true, closingRate = observed.closingRate,
                             provenance = {source = "relative-live-motion"}
                         }
                     end

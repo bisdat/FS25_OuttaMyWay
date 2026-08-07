@@ -212,7 +212,7 @@ def test_v478_targeted_job_episode_and_field_identity_path_is_active():
     assert "scripts/diagnostics/TargetedFieldIdentityProbe.lua" in main
     assert "scripts/diagnostics/LiveAIStateProbe.lua" not in main
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'RUNTIME_MODE = "FUTURE_SPACE_ENCOUNTER_ADMISSION_CONFORMANCE"' in config
+    assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     evidence=(ROOT/"scripts"/"observation"/"LiveAIJobEvidence.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"TargetedFieldIdentityProbe.lua").read_text(encoding="utf-8")
@@ -258,7 +258,7 @@ def test_v479_polygon_field_identity_fallback_is_read_only():
     for forbidden in ("driveToPoint(","stopCurrentAIJob(","setCruiseControlState("):
         assert forbidden not in text
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'RUNTIME_MODE = "FUTURE_SPACE_ENCOUNTER_ADMISSION_CONFORMANCE"' in config
+    assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
 
 
 def test_v4711_job_seeded_snapshot_capture_remains_active_under_equivalence_authority():
@@ -279,7 +279,7 @@ def test_v4711_field_world_snapshot_is_bound_once_to_job_episode():
     assert "_bindFieldWorld" in admission
     assert "cannot change after capture" in admission
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'RUNTIME_MODE = "FUTURE_SPACE_ENCOUNTER_ADMISSION_CONFORMANCE"' in config
+    assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
 
 
 def test_v4711_parallel_validation_reports_global_operation_count():
@@ -320,7 +320,7 @@ def test_v4714_field_world_equivalence_authority_is_active_and_conservative():
     for token in ("FIELD_WORLD_EQUIVALENCE_SAMPLE_SIDE","FIELD_WORLD_EQUIVALENCE_SAME_MAX_AREA_RELATIVE_DELTA","FIELD_WORLD_EQUIVALENCE_SAME_MIN_SAMPLED_JACCARD","FIELD_WORLD_EQUIVALENCE_DIFFERENT_MIN_BOUNDARY_SEPARATION_METRES"):
         assert token in config
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert "Future-Space Encounter admission conformance loaded" in runtime
+    assert "legacy-shadow cleanup conformance loaded" in runtime
     assert "Control authority disabled" in runtime
     assert "decisionCommitmentBoundary:apply" not in (ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
 
@@ -333,15 +333,17 @@ def test_v4715_bounded_interaction_diagnostics_are_multi_worker_and_passive():
     assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    for token in ("MISSING_SUBJECT_RADIUS","MISSING_OTHER_RADIUS","RELATIVE_MOTION_BELOW_EPSILON","TCPA_BEYOND_HORIZON","CPA_EXCEEDS_REPRESENTED_ENVELOPE","CURRENT_INTERACTION_QUALIFIED","FUTURE_INTERACTION_QUALIFIED"):
+    for token in ("MISSING_SUBJECT_RADIUS","MISSING_OTHER_RADIUS","CURRENT_INTERACTION_UNRESOLVED","CURRENT_INTERACTION_QUALIFIED","closingRate","relativeSpeedMps"):
         assert token in diagnostics
+    for forbidden in ("TCPA_BEYOND_HORIZON","CPA_EXCEEDS_REPRESENTED_ENVELOPE","FUTURE_INTERACTION_QUALIFIED","predictPair("):
+        assert forbidden not in diagnostics
     for token in ("mathematicallyPossiblePairCount","relevantPairCount","eligiblePairCount","evaluatedPairCount","qualifyingPairCount","pairDiagnostics"):
         assert token in source
     for token in ("interactionEvidenceReceivedCount","encounterCreatedCount","SAME_OPERATION_ACTIVE_PAIR_NOT_EVALUATED","BOTH_WORKERS_BLOCKED_WITHOUT_ENCOUNTER"):
         assert token in assessment
     for token in ("PAIR pair=","ENCOUNTER lifecycle=CREATED","ENCOUNTER lifecycle=RETAINED","ENCOUNTER lifecycle=TERMINATED","PAIR_OPERATION_CHANGED_DURING_JOB_EPISODE","PAIR_DISAPPEARED_WHILE_BOTH_WORKERS_ACTIVE"):
         assert token in validator
-    assert 'RUNTIME_MODE = "FUTURE_SPACE_ENCOUNTER_ADMISSION_CONFORMANCE"' in config
+    assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     assert "PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE" in config
     for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
         assert forbidden not in diagnostics
@@ -365,16 +367,17 @@ def test_v4717_plan_view_representation_foundation_remains_active():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     for token in ("discoverAssembly","assemblyFingerprint","configurationProfileCacheHit","getShapeGeometryBoundingSphere","getShapeWorldBoundingSphere","rootAlias"):
         assert token in cache
-    for token in ("convexHull","SHADOW_CURRENT_INTERACTION_POSITIVE","SHADOW_FUTURE_CONVERGENCE_POSITIVE","SHADOW_CLEARANCE_UNRESOLVED","NO_NEGATIVE_CLEARANCE_AUTHORITY"):
+    for token in ("convexHull","CURRENT_FOOTPRINT_INTERACTION_POSITIVE","CURRENT_FOOTPRINT_INTERACTION_UNRESOLVED","NO_NEGATIVE_CLEARANCE_AUTHORITY","evaluateCurrentOverlap"):
         assert token in footprint
+    for forbidden in ("SHADOW_FUTURE_CONVERGENCE_POSITIVE","evaluateShadowPair(","composePositiveEvidence("):
+        assert forbidden not in footprint
     for token in ("boom01ArmLeftCol01","boom01ArmRightCol04","PERMANENT_PHYSICAL_CONTROL","PROTOTYPES_08_09_10_11_13"):
         assert token in donor
-    for token in ("shadowPlanViewEvidence","shadowOutcome","POSITIVE_INTERACTION_ONLY"):
+    for token in ("shadowPlanViewEvidence","currentFootprintOutcome","POSITIVE_INTERACTION_ONLY"):
         assert token in source
-    assert "FILTERED_PLAN_VIEW_POSITIVE" in footprint
-    for token in ("shadowInventoryPrimitives","shadowParticipatingPrimitives","shadowInactivePrimitives","shadowProfileCacheHit","shadowOutcome"):
+    for token in ("shadowInventoryPrimitives","shadowParticipatingPrimitives","shadowInactivePrimitives","shadowProfileCacheHit","currentFootprintOutcome"):
         assert token in validator
-    assert 'RUNTIME_MODE = "FUTURE_SPACE_ENCOUNTER_ADMISSION_CONFORMANCE"' in config
+    assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     assert "POTENTIAL_INTERACTION_FROM_REPRESENTED_COMPONENTS" in cache
     assert "negativeClearanceAuthority=false" in cache
     for text in (cache,footprint,source,validator):
@@ -387,10 +390,12 @@ def test_v4718_positive_filtered_footprint_admission_is_monotonic_and_passive():
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
-    for token in ("composePositiveEvidence","FILTERED_PLAN_VIEW_POSITIVE","SCALAR_AND_FILTERED_PLAN_VIEW_POSITIVE","negativeClearanceAuthority=false"):
-        assert token in footprint or token in source
-    for token in ("interactionEvidenceSource","interactionEvidenceAuthority","POSITIVE_INTERACTION_ONLY","configurationFiltered=true"):
+    for token in ("evaluateCurrentOverlap","CURRENT_FOOTPRINT_INTERACTION_POSITIVE","NO_NEGATIVE_CLEARANCE_AUTHORITY"):
+        assert token in footprint
+    for token in ("interactionEvidenceSource","interactionEvidenceAuthority","POSITIVE_INTERACTION_ONLY","currentFootprintIntersects","negativeClearanceAuthority = false"):
         assert token in source
+    for forbidden in ("composePositiveEvidence(","FILTERED_PLAN_VIEW_POSITIVE","SCALAR_AND_FILTERED_PLAN_VIEW_POSITIVE","evaluateShadowPair("):
+        assert forbidden not in footprint + source
     assert "interaction evidence requires interactionReferenceKey" in assessment
     assert "evidenceSource=%s" in validator
     assert "decisionCommitmentBoundary:apply" not in validator
@@ -436,9 +441,9 @@ def test_v4721_future_space_conformance_recovers_existing_local_intent_architect
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     for rel in ("scripts/observation/LocalIntentObservation.lua","scripts/observation/FieldBoundedFutureSpace.lua","scripts/diagnostics/FutureSpaceHud.lua"):
         assert rel in main
-    assert 'RUNTIME_MODE = "FUTURE_SPACE_ENCOUNTER_ADMISSION_CONFORMANCE"' in config
+    assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     assert "PASSIVE_FUTURE_HORIZON_SECONDS" not in config
-    assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" in config
+    assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" not in config
     for token in ("FIELD_WORLD_BOUNDED_LOCAL_CONTINUATION","futureSpaceRelationshipEvidence","NEXT_MATERIAL_MANOEUVRE"):
         assert token in source
     for token in ("getActiveSegmentData","TURNING","SETTLED_CONTINUATION","INTENT_EXPIRED_BY_MANOEUVRE","LOCAL_INTENT_REVEALED_AFTER_MANOEUVRE"):
@@ -450,7 +455,7 @@ def test_v4721_future_space_conformance_recovers_existing_local_intent_architect
     for token in ("OTM FUTURE SPACE","FUTURE SPACES INTERSECT","UNRESOLVED WHILE MANOEUVRING","FUTURE-SPACE HUD"):
         assert token in hud
     assert "FUTURE_SPACE pair=%s classification=%s" in validator
-    assert "Future-Space Encounter admission conformance loaded" in runtime
+    assert "legacy-shadow cleanup conformance loaded" in runtime
     for text in (source,intent,future,assessment,hud,validator,runtime):
         for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
             assert forbidden not in text
@@ -461,8 +466,8 @@ def test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidenc
     operation=(ROOT/"scripts"/"identity"/"OperationAdmission.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.23"' in config
-    assert 'RUNTIME_MODE = "FUTURE_SPACE_ENCOUNTER_ADMISSION_CONFORMANCE"' in config
+    assert 'VERSION = "4.7.24"' in config
+    assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     assert "MEMBERSHIP_UPDATED_INCOMPLETE" in operation
     assert "removalDeferred=true" in operation
     assert "mergedUnique(active.memberAssemblyIds, memberAssemblyIds)" in operation
@@ -475,31 +480,30 @@ def test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidenc
         for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
             assert forbidden not in text
 
-def test_v4723_future_space_is_encounter_admission_authority_and_legacy_future_is_shadow_only():
+def test_v4724_removes_legacy_future_predictor_without_changing_future_space_admission_authority():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
+    diagnostics=(ROOT/"scripts"/"diagnostics"/"LiveInteractionDiagnostics.lua").read_text(encoding="utf-8")
+    footprint=(ROOT/"scripts"/"representation"/"PlanViewFootprint.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.23"' in config
-    assert 'RUNTIME_MODE = "FUTURE_SPACE_ENCOUNTER_ADMISSION_CONFORMANCE"' in config
-    assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" in config
-    for token in (
-        "FIELD_BOUNDED_FUTURE_SPACE_POSITIVE",
-        "FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION",
-        "legacyShadowPositive",
-        "fieldBoundedFutureSpacePositive",
-        "legacy 10-second future probe shadow-only",
-    ):
-        assert token in source or token in runtime
+    assert 'VERSION = "4.7.24"' in config
+    assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
+    assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" not in config
+    for forbidden in ("predictPair(", "evaluateShadowPair(", "composePositiveEvidence(", "legacyShadowPositive", "legacyTCPA", "legacyDCPA"):
+        assert forbidden not in source + diagnostics + footprint + validator
+    assert "observePairState" in diagnostics
+    assert "evaluateCurrentOverlap" in footprint
+    for token in ("FIELD_BOUNDED_FUTURE_SPACE_POSITIVE", "FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION", "fieldBoundedFutureSpacePositive"):
+        assert token in source
     assert "relationship=item.relationship or" in assessment
     assert "OTM TEST — FUTURE SPACE ENCOUNTER" in hud
     assert "OTM TEST — NEW FUTURE SPACE ENCOUNTER" in hud
     assert "futureSpacePositive=%s" in validator
-    assert "REPRESENTATION_UNFIT_BUT_NEGATIVE_RESULT_USED" not in source
-    assert "legacyFutureProbeShadowOnly=true" in runtime
+    assert "legacyFutureProbeRemoved=true" in runtime
+    assert "fixed-horizon future predictor removed from active runtime" in runtime
     for text in (source,assessment,hud,validator,runtime):
         for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
             assert forbidden not in text
-

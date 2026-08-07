@@ -1,18 +1,18 @@
 # Engineering Handover
 
-> **Canonical baseline:** v4.7.21 (`dc7e1220d12b9d77039d164343a8a530787ccebdd79bdf838a200c3713b27482`, Git `e926f4be238e10e93f204870ed1703b64a53b3ac`)  
-> **Candidate:** v4.7.23 Future-Space Encounter Admission Conformance  
+> **Canonical baseline:** v4.7.23 (`5fdad04222084814cf17b9712cdb06df67f42d8bfae12f5a9cab788cd057e4b9`, Git `44cd4df5766b9cb7a1d7ac68bcd08119ffc8a297`)  
+> **Candidate:** v4.7.24 Legacy Fixed-Horizon Predictor Cleanup  
 > **Control authority:** disabled
 
-## v4.7.23 current continuation point
+## v4.7.24 current continuation point
 
-The v4.7.22 live gate passed its narrow objective: incomplete Operation-membership evidence no longer removes an active member, the first Encounter terminated as `JOB_EPISODE_ENDED` with authoritative cause, restart admitted a fresh Job Episode and renewed interaction created a fresh Encounter. The same run independently confirmed that the lifecycle HUD was not late: canonical Future Space became positive materially before the legacy ten-second predictor admitted the Encounter.
+The v4.7.23 live gate passed: Future Space admitted the first Encounter at approximately 329 m while the historical ten-second predictor was still negative; authoritative Job Episode termination, restart and fresh Encounter identity also passed.
 
-v4.7.23 therefore makes the already validated field-bounded Future Space positive relationship an Encounter-admission authority. Positive Current Space interaction remains valid immediate evidence. The historical ten-second future prediction is retained only as shadow comparison and cannot admit or suppress an Encounter.
+v4.7.24 therefore performs the already-planned cleanup only. The active replacement core no longer contains the fixed future horizon, TCPA/DCPA scalar future prediction, component-disc future prediction or legacy comparison fields/provenance/messages. Present-state closing rate and current overlap remain. Future interaction authority remains field-bounded Future Space.
 
-**Live objective:** prove the first Encounter is created from `FIELD_BOUNDED_FUTURE_SPACE_POSITIVE` before the legacy shadow becomes positive, then complete the same stop → `JOB_EPISODE_ENDED` → restart → fresh Encounter sequence. Decision must remain passive, no live Commitment may be applied and `control=false` throughout.
+**Live objective:** confirm this removal causes no behavioural change to early Future-Space Encounter admission or the stop → `JOB_EPISODE_ENDED` → restart → fresh Encounter chain, and confirm no legacy future-comparison fields appear in active logs.
 
-**Cleanup after PASS:** remove the superseded legacy shadow future predictor and its comparison messages in an appropriate subsequent build; do not allow temporary validation instrumentation to become permanent code debt.
+**Next substantive step after PASS:** same-Job-Episode Encounter resolution / Safe Release, using the existing Continuation Safety Horizon architecture rather than a new timeout or fixed distance.
 
 ## Standing architectural-governance rule
 
@@ -25,6 +25,7 @@ Architecture is treated as largely defined, errors and omissions excepted. If a 
 - Configuration-filtered approximately 36 m physical representation: canonical v4.7.17.
 - Positive footprint evidence handoff and Encounter creation: canonical v4.7.18.
 - Field-bounded Local Intent/Future Space implementation conformance: canonical v4.7.21.
+- Future-Space-driven Encounter admission plus authoritative termination/restart identity: canonical v4.7.23.
 
 ## v4.7.20 corrections
 

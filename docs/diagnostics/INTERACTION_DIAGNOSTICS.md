@@ -1,3 +1,9 @@
+## v4.7.24 active interaction diagnostics
+
+The active replacement core no longer computes or logs the superseded fixed-horizon TCPA/DCPA future predictor. Pair diagnostics retain present-state distance, heading relation, relative speed, closing rate, scalar current overlap, configuration-filtered current footprint overlap and field-bounded Future Space state. Future Encounter admission comes from supported field-bounded Future Space or legitimate positive Current Space evidence.
+
+Current-footprint non-overlap remains unresolved and grants no negative-clearance authority. Historical diagnostic sections below describe earlier increments and remain as engineering history, not current runtime behavior.
+
 ## v4.7.23 Future-Space Encounter-admission diagnostics
 
 The lifecycle HUD now prompts on `FUTURE SPACE ENCOUNTER`, then guides stop, termination, restart and fresh Future-Space Encounter. Throttled pair diagnostics expose `futureSpacePositive` and `legacyShadowPositive` separately. The legacy ten-second predictor is diagnostic comparison only and has no Encounter-admission authority.
