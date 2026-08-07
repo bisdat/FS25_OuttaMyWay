@@ -1,18 +1,22 @@
--- FS25_OuttaMyWay v4.7.21 Future Space conformance candidate; Control remains disabled.
+-- FS25_OuttaMyWay v4.7.23 Future-Space Encounter admission conformance candidate; Control remains disabled.
 -- Canonical architecture authority: v4.6.78.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.21"
+OuttaMyWay.VERSION = "4.7.23"
 OuttaMyWay.ARCHITECTURE_VERSION = "4.6.78"
-OuttaMyWay.RUNTIME_MODE = "FUTURE_SPACE_CONFORMANCE"
+OuttaMyWay.RUNTIME_MODE = "FUTURE_SPACE_ENCOUNTER_ADMISSION_CONFORMANCE"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000
 OuttaMyWay.PASSIVE_HEARTBEAT_INTERVAL_MS = 10000
-OuttaMyWay.LEGACY_POSITIVE_INTERACTION_PROBE_HORIZON_SECONDS = 10
+OuttaMyWay.LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS = 10
 OuttaMyWay.PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE = 8
 
--- Temporary Future-Space conformance HUD. This is diagnostic instrumentation only.
+-- Temporary live-gate HUDs. Diagnostic instrumentation only.
+-- v4.7.23 uses the lifecycle gate to prove Future-Space-driven Encounter admission,
+-- termination precedence and fresh-Episode/non-resurrection in one live run.
+OuttaMyWay.LIFECYCLE_TEST_HUD_ENABLED = true
+OuttaMyWay.FUTURE_SPACE_HUD_ENABLED = false
 OuttaMyWay.TRANSITION_HUD_ENABLED = true
 OuttaMyWay.TRANSITION_HUD_X = 0.985
 OuttaMyWay.TRANSITION_HUD_Y = 0.720

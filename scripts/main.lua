@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.21 Future Space conformance candidate entry point; Control remains disabled.
+-- FS25_OuttaMyWay v4.7.23 Future-Space Encounter admission conformance candidate entry point; Control remains disabled.
 -- modDesc.xml loads only this file. Historical archived modules are never sourced.
 local modDirectory=g_currentModDirectory or ""
 local modules={
@@ -11,7 +11,7 @@ local modules={
     "scripts/commitment/CommitmentStateMachine.lua","scripts/commitment/CommitmentRegistry.lua","scripts/commitment/ObligationLedger.lua","scripts/authority/AuthorityRegistry.lua","scripts/authority/EffectiveActuationComposition.lua","scripts/commitment/CommitmentAdmission.lua","scripts/commitment/GoverningBasisEvaluator.lua","scripts/commitment/TerminalSettlementEvaluator.lua","scripts/commitment/DecisionCommitmentBoundary.lua",
     "scripts/candidates/CandidateSpace.lua","scripts/candidates/PassiveLiveCandidateSupport.lua","scripts/constraints/ConstraintEvidence.lua",
     "scripts/constraints/evaluators/FieldWorldContainment.lua","scripts/constraints/evaluators/TransitionClearance.lua","scripts/constraints/evaluators/RepresentationFitness.lua","scripts/constraints/evaluators/CapabilityAvailability.lua","scripts/constraints/evaluators/ContinuingIntentPriority.lua","scripts/constraints/evaluators/ProgressPreservation.lua","scripts/constraints/evaluators/ResponsibilityCompatibility.lua","scripts/constraints/evaluators/ObligationCompatibility.lua","scripts/constraints/evaluators/CommitmentPreconditions.lua","scripts/constraints/evaluators/EffectiveActuationComposition.lua","scripts/constraints/evaluators/ReleaseSafety.lua",
-    "scripts/constraints/ConstraintEngine.lua","scripts/decision/DecisionSelector.lua","scripts/diagnostics/ArchitectureTrace.lua","scripts/replay/ConformanceAssertions.lua","scripts/replay/ReplayRunner.lua","scripts/diagnostics/TargetedFieldIdentityProbe.lua","scripts/diagnostics/FutureSpaceHud.lua","scripts/diagnostics/PassiveLiveValidator.lua","scripts/runtime/Runtime.lua"
+    "scripts/constraints/ConstraintEngine.lua","scripts/decision/DecisionSelector.lua","scripts/diagnostics/ArchitectureTrace.lua","scripts/replay/ConformanceAssertions.lua","scripts/replay/ReplayRunner.lua","scripts/diagnostics/TargetedFieldIdentityProbe.lua","scripts/diagnostics/FutureSpaceHud.lua","scripts/diagnostics/TransitionHud.lua","scripts/diagnostics/PassiveLiveValidator.lua","scripts/runtime/Runtime.lua"
 }
 for _,relativePath in ipairs(modules) do source(modDirectory..relativePath) end
 OuttaMyWay.modDirectory=modDirectory; OuttaMyWay.runtime=OuttaMyWay.Runtime.new(); OuttaMyWay.runtime:initialize()

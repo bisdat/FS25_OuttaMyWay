@@ -2,9 +2,9 @@
 
 > **Authority:** Replacement-core design boundary
 >
-> **Currency:** v4.7.21 Future Space Conformance Candidate; canonical v4.7.18 validates positive Encounter admission
+> **Currency:** v4.7.23 Future-Space Encounter Admission Conformance Candidate; canonical v4.7.21 validates Future Space conformance
 >
-> **Implementation status:** canonical v4.7.18 validates positive footprint Encounter entry; v4.7.21 passively recovers ADR-0006/ADR-0012 Local Intent/Future Space production using native GIANTS turn state and Job-Seeded Field World bounds; Control disabled
+> **Implementation status:** canonical v4.7.21 live-validates ADR-0006/ADR-0012 Local Intent/Future Space production; v4.7.23 carries the live-passed membership correction and promotes positive field-bounded Future Space into Encounter admission; legacy ten-second future prediction is shadow-only; Control disabled
 
 ## Purpose
 

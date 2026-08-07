@@ -82,7 +82,7 @@ local function renderLine(x,y,size,text)
 end
 
 function Hud:draw()
-    if OuttaMyWay.TRANSITION_HUD_ENABLED~=true or g_currentMission==nil or renderText==nil then return end
+    if OuttaMyWay.FUTURE_SPACE_HUD_ENABLED~=true or g_currentMission==nil or renderText==nil then return end
     local x=OuttaMyWay.TRANSITION_HUD_X or 0.985
     local y=OuttaMyWay.TRANSITION_HUD_Y or 0.720
     local lineHeight=OuttaMyWay.TRANSITION_HUD_LINE_HEIGHT or 0.022

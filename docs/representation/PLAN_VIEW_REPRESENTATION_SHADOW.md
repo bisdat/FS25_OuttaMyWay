@@ -1,7 +1,7 @@
 # Plan-View Representation and Positive Encounter Admission
 
-> **Implementation:** v4.7.21 candidate (representation authority unchanged from canonical v4.7.18; v4.7.21 adds separate Future Space conformance evidence)  
-> **Canonical baseline:** v4.7.18  
+> **Implementation:** v4.7.23 candidate (representation authority unchanged; canonical v4.7.21 Future Space now supplies positive Encounter-admission evidence; legacy future projection shadow-only)  
+> **Canonical baseline:** v4.7.21  
 > **Authority:** positive interaction support only
 
 ## Current permission

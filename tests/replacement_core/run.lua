@@ -71,6 +71,7 @@ load("scripts/replay/ConformanceAssertions.lua")
 load("scripts/replay/ReplayRunner.lua")
 load("scripts/diagnostics/TargetedFieldIdentityProbe.lua")
 load("scripts/diagnostics/FutureSpaceHud.lua")
+load("scripts/diagnostics/TransitionHud.lua")
 load("scripts/diagnostics/PassiveLiveValidator.lua")
 load("scripts/runtime/Runtime.lua")
 
@@ -209,7 +210,7 @@ end)
 
 test("runtime is passive and inactive before the live listener runs", function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); local status=runtime:getStatus()
-    equal(status.runtimeMode,"FUTURE_SPACE_CONFORMANCE"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
+    equal(status.runtimeMode,"FUTURE_SPACE_ENCOUNTER_ADMISSION_CONFORMANCE"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
 end)
 
 
@@ -477,6 +478,47 @@ test("incomplete membership evidence does not end an Operation",function()
     equal(second.operation.activeOperationIds[1],first.operation.activeOperationIds[1]); equal(#second.operation.endedOperationIds,0)
     local found=false; for _,u in ipairs(second.picture.uncertainty) do if u.class=="OPERATION_MEMBERSHIP_INCOMPLETE" then found=true end end
     if not found then error("incomplete membership was not preserved as uncertainty") end
+end)
+
+test("incomplete membership cannot pre-empt authoritative Job Episode termination",function()
+    local runtime=newPictureRuntime()
+    local first=runtime:processSealedObservation(pictureFixture(1))
+    local encounterId=first.picture.encounters[1].identity
+    local operationId=first.operation.activeOperationIds[1]
+
+    local unresolvedStop=runtime:processSealedObservation(pictureFixture(2,{
+        interactions={},membershipComplete=false,
+        evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false},
+        membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}
+    }))
+    equal(unresolvedStop.operation.activeOperationIds[1],operationId)
+    equal(#runtime.operations:get(operationId).memberAssemblyIds,2)
+    equal(#unresolvedStop.picture.encounters,1)
+    equal(unresolvedStop.picture.encounters[1].identity,encounterId)
+    equal(runtime.encounters:get(encounterId).status,"ACTIVE")
+    local retained=false
+    for _,transition in ipairs(unresolvedStop.picture.diagnostics.encounterLifecycleTransitions) do
+        if transition.encounterIdentity==encounterId and transition.lifecycle=="RETAINED" then retained=true end
+    end
+    if not retained then error("Encounter was not retained while membership evidence was incomplete") end
+
+    local authoritativeStop=runtime:processSealedObservation(pictureFixture(3,{
+        interactions={},
+        evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false,playerStopObserved=true},
+        membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}
+    }))
+    equal(#authoritativeStop.picture.encounters,0)
+    equal(runtime.encounters:get(encounterId).status,"TERMINATED")
+    equal(runtime.encounters:get(encounterId).terminalReason,"JOB_EPISODE_ENDED")
+    local ended=false
+    for _,transition in ipairs(authoritativeStop.picture.diagnostics.encounterLifecycleTransitions) do
+        if transition.encounterIdentity==encounterId and transition.lifecycle=="TERMINATED" and transition.terminalReason=="JOB_EPISODE_ENDED" then
+            local evidence=transition.terminalEvidence.details.endedJobEpisodes
+            equal(#evidence,1); equal(evidence[1].terminalCause,"PLAYER_STOP")
+            ended=true
+        end
+    end
+    if not ended then error("authoritative Job Episode termination did not win after incomplete membership evidence") end
 end)
 
 test("explicit zero membership ends an Operation and later work creates a new identity",function()
@@ -977,19 +1019,21 @@ test("missing radius suppression survives the source-to-assessment diagnostic ha
     end)
 end)
 
-test("qualifying live pair reaches Encounter with complete diagnostic handoff",function()
+test("legacy future prediction remains shadow-only and cannot admit Encounter",function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions)
         directions[201]={0,-1}; a.lastSpeedReal=0.003; b.lastSpeedReal=0.003
         local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
         local raw=runtime.liveObservationSource:capture(mission,10)[1]
-        equal(raw.diagnostics.pairDiagnostics[1].principalOutcome,"FUTURE_INTERACTION_QUALIFIED")
-        equal(raw.diagnostics.pairDiagnostics[1].interactionEvidenceEmitted,true)
+        local pair=raw.diagnostics.pairDiagnostics[1]
+        equal(pair.principalOutcome,"FUTURE_INTERACTION_QUALIFIED")
+        equal(pair.legacyShadowPositive,true)
+        equal(pair.fieldBoundedFutureSpacePositive,false)
+        equal(pair.interactionEvidenceEmitted,false)
         local processed=runtime:processSealedObservation(raw)
-        equal(#processed.picture.encounters,1)
-        equal(processed.picture.diagnostics.counters.interactionEvidenceEmittedCount,1)
-        equal(processed.picture.diagnostics.counters.interactionEvidenceReceivedCount,1)
-        equal(processed.picture.diagnostics.counters.encounterCreatedCount,1)
-        equal(processed.picture.diagnostics.pairPipeline[1].encounterCreated,true)
+        equal(#processed.picture.encounters,0)
+        equal(processed.picture.diagnostics.counters.interactionEvidenceEmittedCount,0)
+        equal(processed.picture.diagnostics.counters.interactionEvidenceReceivedCount,0)
+        equal(processed.picture.diagnostics.pairPipeline[1].encounterCreated,false)
     end)
 end)
 
@@ -1687,7 +1731,7 @@ test("positive evidence composition is one-way",function()
     equal(unresolved.positive,false); equal(unresolved.source,nil); equal(unresolved.negativeClearanceAuthority,false)
 end)
 
-test("filtered footprint positive reaches Encounter when scalar radius is missing",function()
+test("filtered current-space footprint positive reaches Encounter when scalar radius is missing",function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions)
         local saved={
             getNumOfChildren=getNumOfChildren,getChildAt=getChildAt,getName=getName,localToWorld=localToWorld,
@@ -1702,17 +1746,17 @@ test("filtered footprint positive reaches Encounter when scalar radius is missin
         getShapeBoundingSphere=function(node) return 0,0,0,2.5,true end
         getShapeWorldBoundingSphere=function(node) local p=positions[node]; return p[1],p[2],p[3],2.5 end
         getIsCompoundChild=function() return false end
-        directions[201]={0,-1}; b.sizeWidth=nil
+        directions[201]={0,-1}; positions[201]={0,0,4}; b.sizeWidth=nil
         local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
         local raw=runtime.liveObservationSource:capture(mission,10)[1]
         local pair=raw.diagnostics.pairDiagnostics[1]
         equal(pair.principalOutcome,"MISSING_OTHER_RADIUS")
-        equal(pair.filteredFootprintPositive,true)
-        equal(pair.interactionEvidenceSource,"FILTERED_PLAN_VIEW_POSITIVE")
+        equal(pair.shadowCurrentSpaceIntersects,true)
+        equal(pair.interactionEvidenceSource,"CURRENT_SPACE_POSITIVE")
         equal(pair.interactionEvidenceEmitted,true)
         local processed=runtime:processSealedObservation(raw)
         equal(#processed.picture.encounters,1)
-        equal(processed.picture.encounters[1].relationship,"FUTURE_SPACE_CONVERGENCE")
+        equal(processed.picture.encounters[1].relationship,"CURRENT_SPACE_INTERACTION")
         equal(processed.picture.encounters[1].evidence.provenance.authority,"POSITIVE_INTERACTION_ONLY")
         equal(processed.picture.encounters[1].evidence.provenance.negativeClearanceAuthority,false)
         getNumOfChildren=saved.getNumOfChildren; getChildAt=saved.getChildAt; getName=saved.getName; localToWorld=saved.localToWorld
@@ -1769,6 +1813,49 @@ test("field-bounded component continuations support positive intersection and tu
     equal(unresolved.positive,false); equal(unresolved.unresolved,true); equal(unresolved.outcome,"FUTURE_SPACE_INTERACTION_UNRESOLVED")
 end)
 
+test("field-bounded Future Space admits Encounter before legacy shadow horizon", function()
+    withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions)
+        local saved={
+            getNumOfChildren=getNumOfChildren,getChildAt=getChildAt,getName=getName,localToWorld=localToWorld,
+            getShapeGeometryBoundingSphere=getShapeGeometryBoundingSphere,getShapeBoundingSphere=getShapeBoundingSphere,
+            getShapeWorldBoundingSphere=getShapeWorldBoundingSphere,getIsCompoundChild=getIsCompoundChild
+        }
+        getNumOfChildren=function() return 0 end
+        getChildAt=function() return nil end
+        getName=function(node) return "root"..tostring(node) end
+        localToWorld=function(node,x,y,z) local p=positions[node]; return p[1]+x,p[2]+y,p[3]+z end
+        getShapeGeometryBoundingSphere=function(node) return 0,0,0,2.5,true end
+        getShapeBoundingSphere=function(node) return 0,0,0,2.5,true end
+        getShapeWorldBoundingSphere=function(node) local p=positions[node]; return p[1],p[2],p[3],2.5 end
+        getIsCompoundChild=function() return false end
+        local function settledStrategy()
+            return {className="AIDriveStrategyFieldCourse",aiFieldCourse={getActiveSegmentData=function() return false,4,0.25,100,nil,75 end}}
+        end
+        a.spec_aiVehicle={driveStrategies={settledStrategy()}}
+        b.spec_aiVehicle={driveStrategies={settledStrategy()}}
+        directions[101]={0,1}; directions[201]={0,-1}
+        a.lastSpeedReal=0.0005; b.lastSpeedReal=0.0005
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local raw=runtime.liveObservationSource:capture(mission,10)[1]
+        local pair=raw.diagnostics.pairDiagnostics[1]
+        equal(pair.futureSpaceOutcome,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION_POSITIVE")
+        equal(pair.fieldBoundedFutureSpacePositive,true)
+        equal(pair.legacyShadowPositive,false)
+        equal(pair.interactionEvidenceEmitted,true)
+        equal(pair.interactionEvidenceSource,"FIELD_BOUNDED_FUTURE_SPACE_POSITIVE")
+        equal(raw.geometry.interactionEvidence[1].relationship,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION")
+        equal(raw.geometry.interactionEvidence[1].provenance.legacyShadow.positive,false)
+        local processed=runtime:processSealedObservation(raw)
+        equal(#processed.picture.encounters,1)
+        equal(processed.picture.encounters[1].relationship,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION")
+        equal(processed.picture.encounters[1].evidence.provenance.source,"FIELD_BOUNDED_FUTURE_SPACE_POSITIVE")
+        equal(processed.picture.encounters[1].evidence.provenance.negativeClearanceAuthority,false)
+        getNumOfChildren=saved.getNumOfChildren; getChildAt=saved.getChildAt; getName=saved.getName; localToWorld=saved.localToWorld
+        getShapeGeometryBoundingSphere=saved.getShapeGeometryBoundingSphere; getShapeBoundingSphere=saved.getShapeBoundingSphere
+        getShapeWorldBoundingSphere=saved.getShapeWorldBoundingSphere; getIsCompoundChild=saved.getIsCompoundChild
+    end)
+end)
+
 test("Situation Assessment publishes field-bounded Future Space relationship as Knowledge only", function()
     local runtime=newPictureRuntime()
     local relationship={{interactionReferenceKey="future-rel-1",subjectAssemblyReferenceKey="assembly-A",otherAssemblyReferenceKey="assembly-B",positiveIntersection=true,unresolved=false,outcome="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION_POSITIVE",subjectIntentClassification="SETTLED_CONTINUATION",otherIntentClassification="SETTLED_CONTINUATION",subjectIntentEpoch=1,otherIntentEpoch=2,subjectBoundaryDistance=80,otherBoundaryDistance=70,distance=0,required=4,authority="POSITIVE_FUTURE_SPACE_SUPPORT_ONLY",negativeClearanceAuthority=false,provenance={source="fixture"}}}
@@ -1777,6 +1864,19 @@ test("Situation Assessment publishes field-bounded Future Space relationship as 
     equal(#result.picture.situations[1].futureSpaceRelationships,1)
     equal(result.picture.situations[1].futureSpaceRelationships[1].classification,"FUTURE_SPACE_INTERSECTION")
     equal(result.picture.situations[1].futureSpaceRelationships[1].negativeClearanceAuthority,false)
+end)
+
+test("Lifecycle test HUD preserves Encounter stop restart gate", function()
+    local hud=OuttaMyWay.TransitionHud.new()
+    equal(hud:getState().phase,"WAITING_FOR_ENCOUNTER")
+    hud:observeEncounterTransition({lifecycle="CREATED",encounterIdentity="EN-1",relationship="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION"})
+    equal(hud:getState().phase,"ENCOUNTER_ACTIVE"); equal(hud:getState().title,"OTM TEST — FUTURE SPACE ENCOUNTER")
+    hud:observeEncounterTransition({lifecycle="TERMINATED",encounterIdentity="EN-1",terminalReason="JOB_EPISODE_ENDED"})
+    equal(hud:getState().phase,"ENCOUNTER_TERMINATED")
+    hud:observeAdmittedEpisodes({"JE-NEW"})
+    equal(hud:getState().phase,"NEW_JOB_EPISODE")
+    hud:observeEncounterTransition({lifecycle="CREATED",encounterIdentity="EN-2",relationship="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION"})
+    equal(hud:getState().phase,"TEST_COMPLETE"); equal(hud:getState().title,"OTM TEST — NEW FUTURE SPACE ENCOUNTER")
 end)
 
 test("Future Space HUD reports settled, manoeuvring and intersecting Knowledge", function()

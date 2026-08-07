@@ -1,3 +1,31 @@
+## 2026-08-07 — v4.7.23 Future-Space Encounter admission conformance
+
+**Observation:** the v4.7.22 live run showed field-bounded Future Space positive at 08:44:10 while the first Encounter/HUD prompt did not appear until 08:44:24, when the historical ten-second future probe became positive. The HUD transition shared the Encounter creation sample, so display latency was disproved.
+
+**Repository validation:** ADR-0006/ADR-0012 and D-0041 already define/validate field-bounded Future Space; D-0104 already defines the membership-evidence correction. This is implementation conformance, not new architecture.
+
+**Implementation:** positive Current Space interaction or positive field-bounded Future Space may emit interaction evidence and admit an Encounter. Legacy ten-second scalar/component future convergence is renamed and retained as shadow comparison only. Pair diagnostics expose both authorities. The misleading representation-negative warning is removed because no negative result is used. The v4.7.22 precedence correction is carried forward unchanged.
+
+**Lifecycle instrumentation:** the HUD now prompts on `FUTURE SPACE ENCOUNTER`, then guides stop, termination, restart and fresh Future-Space Encounter in one live cycle.
+
+**Debt control:** once Future-Space Encounter admission is live-validated, the superseded legacy shadow predictor/messages should be removed rather than retained indefinitely.
+
+**Offline validation:** 132 Lua and 40 Python structure tests pass. A dedicated fixture proves Future-Space admission while the legacy shadow remains negative; another proves legacy future convergence alone cannot admit an Encounter. Decision, Commitment application and Control remain passive.
+
+## 2026-08-07 — v4.7.22 Encounter termination-precedence conformance
+
+**Observation:** the v4.7.20 lifecycle run terminated the active Encounter as `MEMBERSHIP_INVALIDATED` one assessment before authoritative Job Episode-end evidence arrived.
+
+**Repository/code validation:** this is not new lifecycle architecture. The Encounter Exit Contract already gives Job Episode end, Operation end, membership invalidation and intent supersession explicit terminal authority. `LiveObservationSource` correctly marks unresolved stop membership as incomplete, but `OperationAdmission` previously allowed individual member removal even when `membershipEvidenceComplete=false`.
+
+**Classification:** implementation non-conformance in Operation-membership evidence authority.
+
+**Implementation:** incomplete membership updates retain all prior members and add only positive new observations. Complete evidence retains normal update/removal authority. The lifecycle Transition HUD is restored for the live gate; Future Space evidence remains active and logged. No timer or behavioural distance/time literal is added.
+
+**Offline validation:** 131 Lua and 64 Python tests pass. A dedicated fixture reproduces unresolved stop → incomplete membership → later authoritative stop and proves the Encounter remains active first, then terminates `JOB_EPISODE_ENDED` with terminal cause. Decision, Commitment application and Control remain passive.
+
+**Governance:** record the standing rule that apparent new architecture must first be checked against the repository and archived evidence.
+
 ## 2026-08-07 — v4.7.21 Future Space conformance recovery
 
 **Observation:** v4.7.20's HUD showed Encounter admission only about ten seconds before predicted closest approach. The user correctly challenged the resulting proposal to enlarge a time horizon and recalled that Future Space and Option Preservation had already been explored extensively.

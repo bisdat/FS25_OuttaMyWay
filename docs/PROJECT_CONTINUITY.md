@@ -1,6 +1,23 @@
-## v4.7.21 Future Space conformance candidate boundary
+## v4.7.23 Future-Space Encounter-admission conformance candidate boundary
 
-v4.7.21 ultimately derives from owner-declared canonical v4.7.18 (`f4568ca194a6f83fab93a523608248f8b1c1bce6890f7ce99557c4673a21d3de`, Git `118190b8025021dc4164de24802b9df35a012f2c`). It carries forward non-canonical v4.7.19/v4.7.20 mechanisms while correcting one replacement-core conformance gap.
+v4.7.23 derives from owner-declared canonical v4.7.21 (`dc7e1220d12b9d77039d164343a8a530787ccebdd79bdf838a200c3713b27482`, Git `e926f4be238e10e93f204870ed1703b64a53b3ac`; 257 files) and carries forward the separately live-passed v4.7.22 incomplete-membership correction.
+
+The v4.7.22 live run proved two facts: Encounter exit precedence is corrected, and the late first-stop prompt was not HUD latency. Field-bounded Future Space became positive materially before the historical ten-second future predictor admitted the Encounter. v4.7.23 therefore gives positive field-bounded Future Space Encounter-admission authority while preserving positive Current Space interaction. The ten-second future predictor is shadow-only comparison evidence and must be removed after this gate passes. Decision, Commitment application and Control remain passive.
+
+## v4.7.22 Encounter termination-precedence conformance candidate boundary
+
+v4.7.22 derives from owner-declared canonical v4.7.21:
+
+- canonical ZIP SHA-256 `dc7e1220d12b9d77039d164343a8a530787ccebdd79bdf838a200c3713b27482`;
+- canonical Git commit `e926f4be238e10e93f204870ed1703b64a53b3ac`;
+- 257 files;
+- clean repository and direct release-byte materialisation.
+
+Canonical v4.7.21 live-validates the recovered Future Space producer. v4.7.22 makes one lifecycle evidence correction: incomplete Operation-membership evidence cannot remove previously admitted members. This prevents unresolved membership loss from pre-empting authoritative Job Episode terminal evidence. No timer or behavioural distance/time literal is introduced. The lifecycle test HUD is enabled for the live gate; Future Space evidence remains active and logged. Decision, Commitment application and Control remain passive.
+
+## v4.7.21 canonical Future Space conformance boundary
+
+Owner-declared canonical v4.7.21 is `dc7e1220d12b9d77039d164343a8a530787ccebdd79bdf838a200c3713b27482` at Git `e926f4be238e10e93f204870ed1703b64a53b3ac` with 257 files. It carries forward the v4.7.19/v4.7.20 lifecycle/diagnostic mechanisms and live-validates the Future Space implementation-conformance recovery.
 
 Repository validation established that Future Space, Local Intent Horizon, Intent Expiry and Option Preservation are already canonical architectural concepts. v4.7.21 does not add a new Future Space concept. It recovers a passive live producer using native GIANTS active-segment turn state plus the current Job-Seeded Field World boundary. Turning invalidates settled straight intent; unrepresented manoeuvre sweep remains unresolved. Positive field-bounded intersections enter Situation Assessment as Knowledge only. The legacy ten-second predictor remains isolated for previous Encounter-admission continuity. Decision, Commitment application and Control remain passive.
 

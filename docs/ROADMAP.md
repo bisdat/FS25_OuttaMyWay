@@ -1,36 +1,29 @@
-# FS25_OuttaMyWay Roadmap
+# Roadmap
 
-## Current gate — Future Space implementation conformance
-
-Canonical v4.7.18 remains the baseline. Repository archaeology confirmed that ADR-0006/ADR-0012 already specify the relevant Future Space, Local Intent and Option Preservation architecture. v4.7.21 tests whether the replacement-core producer conforms to it:
-
-1. observe native GIANTS FieldCourse `isTurn` without behavioural thresholds;
-2. publish settled straight Local Intent to the forward Job-Seeded Field World boundary;
-3. expire that straight intent while GIANTS reports a turn;
-4. leave the manoeuvre sweep unresolved rather than guessing it;
-5. advance the Local Intent epoch when GIANTS settles onto the next segment;
-6. publish positive field-bounded continuation intersections as Situation Knowledge only;
-7. retain no negative-clearance authority from non-intersection;
-8. keep Decision, Commitment application and Control passive.
-
-> **Current canonical baseline:** v4.7.18  
-> **Current candidate:** v4.7.21  
+> **Canonical:** v4.7.21 Future Space Conformance (`dc7e1220d12b9d77039d164343a8a530787ccebdd79bdf838a200c3713b27482`)  
+> **Current candidate:** v4.7.23 Future-Space Encounter Admission Conformance  
 > **Control authority:** disabled
 
 ## Immediate sequence
 
-1. Live-observe a straight/turn/settled headland sequence using the Future Space HUD and log.
-2. Verify that field-bounded Future Space appears materially before the legacy ten-second Encounter probe where the local intent supports it.
-3. Validate Local Intent epoch expiry/revelation against native GIANTS turn state.
-4. Record any unrepresented manoeuvre sweep as unresolved; do not fill it with a literal or guessed route.
-5. Only after Situation Assessment conformance is proven should Decision's already-defined Option Preservation behavior be activated or tested.
-6. Resolve the separate Encounter termination-precedence defect independently.
+1. Live-validate v4.7.23: supported field-bounded Future Space must admit the Encounter before the legacy ten-second shadow where the evidence diverges, while positive Current Space admission remains intact.
+2. In the same run, re-confirm the live-passed v4.7.22 stop/restart precedence and fresh Encounter identity.
+3. After PASS, remove the superseded legacy shadow future predictor/messages; validation instrumentation must not become permanent code debt.
+4. Recover/validate the already-defined same-Job-Episode Safe Release / continuation-safety evidence contract.
+5. Only then proceed into ordinary Decision conformance, including Continuing Intent Priority and Option Preservation.
+6. Commitment application remains later; Control remains last.
 
-## Build-economy rule
+## Architecture novelty standing order
 
-One passive run should capture the complete `settled → turning → settled` evidence sequence. No collision is required.
+Architecture is largely defined, E&OE. Before naming an apparent discovery, search canonical architecture/decisions/glossary/concept register and relevant archived evidence. Classify the finding before adding architecture.
 
-# FS25_OuttaMyWay Roadmap
+## v4.7.23 live gate
+
+The HUD now waits for a Future-Space-driven Encounter. Follow first Encounter → manual stop → `JOB_EPISODE_ENDED` → restart → fresh Future-Space Encounter. The log must expose Future-Space and legacy-shadow positive state independently.
+
+## v4.7.22 live result
+
+PASS: incomplete membership evidence did not pre-empt authoritative Job Episode termination; restart admitted a fresh Job Episode and renewed interaction created a fresh Encounter. The same run showed the first Encounter remained delayed until the old ten-second future probe, motivating v4.7.23.
 
 ## Historical gate — configuration-specific footprint participation
 

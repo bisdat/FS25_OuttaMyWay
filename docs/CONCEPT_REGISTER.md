@@ -1,3 +1,15 @@
+# v4.7.23 Future-Space Encounter-admission classification
+
+**No new architectural concept is introduced by v4.7.23.** Repository validation already defines Encounter identity as a convergence of Future Spaces and canonical v4.7.21 live-validates field-bounded Future Space production. v4.7.23 removes a replacement-core implementation non-conformance by making that positive relationship the Encounter-admission authority while demoting the historical ten-second future predictor to temporary shadow diagnostics.
+
+The legacy shadow mechanism is explicitly transitional evidence instrumentation, not a retained architectural concept, and should be removed after live validation.
+
+# v4.7.22 termination-precedence classification
+
+**No new architectural concept is introduced by v4.7.22.** Repository/code validation found an implementation conformance defect: incomplete Operation-membership evidence was incorrectly permitted to remove previously admitted members. The correction restores the existing uncertainty/evidence boundary so explicit Job Episode terminal evidence can govern Encounter exit.
+
+**Standing governance:** apparent new discoveries must be checked against canonical architecture and relevant archived evidence before new concepts are named.
+
 # v4.7.21 Future Space conformance classification
 
 **No new architectural concept is introduced by v4.7.21.** Repository validation found the governing concepts already present in ADR-0006, ADR-0012 and this register: Future Space, Local Intent Horizon, Intent Expiry, Option Preservation, Earliest Sufficient Action and Spatial Commitment Precedes Collision Urgency. v4.7.21 is an implementation-conformance recovery using proven GIANTS/field-boundary mechanisms.

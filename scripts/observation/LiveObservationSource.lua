@@ -202,7 +202,7 @@ end
 
 function Source:capture(mission, nowSeconds)
     if mission == nil then return {} end
-    local legacyInteractionHorizon = OuttaMyWay.LEGACY_POSITIVE_INTERACTION_PROBE_HORIZON_SECONDS or 10
+    local legacyShadowHorizon = OuttaMyWay.LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS or 10
     local groups, present, removeAfterCapture = {}, {}, {}
     local activeList, activeSet = activeVehicleSet(mission)
     local relevantList = relevantVehicles(activeList, self.tracks)
@@ -630,7 +630,7 @@ function Source:capture(mission, nowSeconds)
                 end
                 raw.physicalRepresentationEvidence[#raw.physicalRepresentationEvidence + 1] = {
                     assemblyReferenceKey = worker.referenceKey, representationId = "live-representation:" .. worker.referenceKey,
-                    question = "PASSIVE_CONFLICT_SUPPORT", assessmentHorizon = legacyInteractionHorizon, structurallyValid = worker.radius ~= nil,
+                    question = "PASSIVE_CONFLICT_SUPPORT", assessmentHorizon = legacyShadowHorizon, structurallyValid = worker.radius ~= nil,
                     refreshRequired = not worker.activeObserved, currentForQuestion = true, coversAssessmentHorizon = false,
                     coverageComplete = false, conservative = false, permittedConclusions = {"CONFLICT_SUPPORT"},
                     uncertainty = {{kind = worker.activeObserved and "METADATA_ENVELOPE_INCOMPLETE" or "RETAINED_POSE_REQUIRES_REFRESH"}},
@@ -682,7 +682,7 @@ function Source:capture(mission, nowSeconds)
                 if eligible then
                     raw.diagnostics.sourceCounters.eligiblePairCount=raw.diagnostics.sourceCounters.eligiblePairCount+1
                     raw.diagnostics.sourceCounters.evaluatedPairCount=raw.diagnostics.sourceCounters.evaluatedPairCount+1
-                    local prediction = pairPrediction(a, b, legacyInteractionHorizon)
+                    local prediction = pairPrediction(a, b, legacyShadowHorizon)
                     pairDiagnostic.evaluated=true
                     pairDiagnostic.distance=prediction.distance
                     pairDiagnostic.required=prediction.required
@@ -704,7 +704,7 @@ function Source:capture(mission, nowSeconds)
                     pairDiagnostic.representationFitForNegativeConclusion=false
                     local subjectVelocity={x=prediction.subjectVelocityX or 0,z=prediction.subjectVelocityZ or 0}
                     local otherVelocity={x=prediction.otherVelocityX or 0,z=prediction.otherVelocityZ or 0}
-                    local shadow=OuttaMyWay.PlanViewFootprint.evaluateShadowPair(a.shadowRepresentation,b.shadowRepresentation,legacyInteractionHorizon,subjectVelocity,otherVelocity)
+                    local shadow=OuttaMyWay.PlanViewFootprint.evaluateShadowPair(a.shadowRepresentation,b.shadowRepresentation,legacyShadowHorizon,subjectVelocity,otherVelocity)
                     pairDiagnostic.shadowOutcome=shadow.outcome
                     pairDiagnostic.shadowCurrentSpaceIntersects=shadow.current
                     pairDiagnostic.shadowFutureSpaceConverges=shadow.future
@@ -743,41 +743,64 @@ function Source:capture(mission, nowSeconds)
                         provenance={source="FIELD_WORLD_BOUNDED_LOCAL_CONTINUATION_INTERSECTION",subjectPrimitiveId=fieldFuture.subjectPrimitiveId,otherPrimitiveId=fieldFuture.otherPrimitiveId}
                     }
 
-                    -- Positive evidence composition is intentionally one-way. The legacy scalar
-                    -- predicate remains unchanged. A filtered component footprint may add positive
-                    -- current/future interaction evidence, but its unresolved result can never
-                    -- erase scalar evidence or establish negative clearance.
-                    local composed=OuttaMyWay.PlanViewFootprint.composePositiveEvidence({current=prediction.current,converges=prediction.converges},shadow)
-                    pairDiagnostic.scalarPositive=composed.scalarPositive
-                    pairDiagnostic.filteredFootprintPositive=composed.filteredFootprintPositive
-                    pairDiagnostic.qualifying=composed.positive
-                    pairDiagnostic.interactionEvidenceEmitted=composed.positive
-                    pairDiagnostic.interactionEvidenceSource=composed.source
-                    pairDiagnostic.interactionEvidenceAuthority=composed.authority
+                    -- v4.7.23 Encounter admission authority is positive Current Space or the
+                    -- canonical field-bounded Future Space relationship. The historical 10-second
+                    -- scalar/component future prediction is retained only as shadow comparison
+                    -- evidence for this live gate; it cannot admit or suppress an Encounter.
+                    local legacy=OuttaMyWay.PlanViewFootprint.composePositiveEvidence({current=prediction.current,converges=prediction.converges},shadow)
+                    local currentPositive=prediction.current==true or shadow.current==true
+                    local futureSpacePositive=fieldFuture.positive==true
+                    local admissionPositive=currentPositive or futureSpacePositive
+                    local admissionRelationship=nil
+                    local admissionSource=nil
+                    if currentPositive then
+                        admissionRelationship="CURRENT_SPACE_INTERACTION"
+                        admissionSource=futureSpacePositive and "CURRENT_SPACE_AND_FIELD_BOUNDED_FUTURE_SPACE_POSITIVE" or "CURRENT_SPACE_POSITIVE"
+                    elseif futureSpacePositive then
+                        admissionRelationship="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION"
+                        admissionSource="FIELD_BOUNDED_FUTURE_SPACE_POSITIVE"
+                    end
+                    pairDiagnostic.scalarPositive=legacy.scalarPositive
+                    pairDiagnostic.filteredFootprintPositive=legacy.filteredFootprintPositive
+                    pairDiagnostic.legacyShadowPositive=legacy.positive
+                    pairDiagnostic.legacyShadowFuturePositive=legacy.future==true
+                    pairDiagnostic.fieldBoundedFutureSpacePositive=futureSpacePositive
+                    pairDiagnostic.qualifying=admissionPositive
+                    pairDiagnostic.interactionEvidenceEmitted=admissionPositive
+                    pairDiagnostic.interactionEvidenceSource=admissionSource
+                    pairDiagnostic.interactionEvidenceAuthority=admissionPositive and "POSITIVE_INTERACTION_ONLY" or nil
+                    pairDiagnostic.encounterAdmissionRelationship=admissionRelationship
 
-                    if composed.positive then
+                    if admissionPositive then
                         raw.diagnostics.sourceCounters.qualifyingPairCount=raw.diagnostics.sourceCounters.qualifyingPairCount+1
                         raw.diagnostics.sourceCounters.interactionEvidenceEmittedCount=raw.diagnostics.sourceCounters.interactionEvidenceEmittedCount+1
                         raw.geometry.interactionEvidence[#raw.geometry.interactionEvidence + 1] = {
                             interactionReferenceKey = pairReferenceKey,
                             subjectAssemblyReferenceKey = a.referenceKey, otherAssemblyReferenceKey = b.referenceKey,
-                            currentSpaceIntersects = composed.current, futureSpaceConverges = composed.future, horizon = legacyInteractionHorizon,
+                            relationship = admissionRelationship,
+                            currentSpaceIntersects = currentPositive,
+                            futureSpaceConverges = futureSpacePositive,
+                            horizon = futureSpacePositive and nil or {kind="CURRENT_SPACE",spatialLimit="OBSERVED_OCCUPANCY"},
                             provenance = {
-                                source = composed.source,
+                                source = admissionSource,
                                 authority = "POSITIVE_INTERACTION_ONLY",
                                 negativeClearanceAuthority = false,
-                                scalar = {current=prediction.current, future=prediction.converges, distance=prediction.distance, required=prediction.required, tcpa=prediction.tcpa, cpa=prediction.cpa, principalOutcome=prediction.principalOutcome},
-                                filteredPlanView = {current=shadow.current, future=shadow.future, tcpa=shadow.tcpa, cpa=shadow.cpa, required=shadow.required, outcome=shadow.outcome, subjectPrimitiveId=shadow.subjectPrimitiveId, otherPrimitiveId=shadow.otherPrimitiveId, subjectPhysicalPrimitiveCount=shadow.subjectPhysicalPrimitiveCount, otherPhysicalPrimitiveCount=shadow.otherPhysicalPrimitiveCount, configurationFiltered=true}
+                                fieldBoundedFutureSpace = {
+                                    positive=futureSpacePositive,outcome=fieldFuture.outcome,
+                                    subjectIntentEpoch=pairDiagnostic.subjectIntentEpoch,otherIntentEpoch=pairDiagnostic.otherIntentEpoch,
+                                    subjectBoundaryDistance=pairDiagnostic.subjectFutureSpaceBoundaryDistance,
+                                    otherBoundaryDistance=pairDiagnostic.otherFutureSpaceBoundaryDistance,
+                                    distance=fieldFuture.distance,required=fieldFuture.required,
+                                    subjectPrimitiveId=fieldFuture.subjectPrimitiveId,otherPrimitiveId=fieldFuture.otherPrimitiveId
+                                },
+                                currentSpace = {scalar=prediction.current==true,filteredPlanView=shadow.current==true},
+                                legacyShadow = {
+                                    horizonSeconds=legacyShadowHorizon,positive=legacy.positive,futurePositive=legacy.future==true,
+                                    source=legacy.source,configurationFiltered=true,scalarFuture=prediction.converges==true,filteredPlanViewFuture=shadow.future==true,
+                                    scalarTCPA=prediction.tcpa,scalarDCPA=prediction.cpa,filteredTCPA=shadow.tcpa,filteredDCPA=shadow.cpa
+                                }
                             }
                         }
-                    elseif prediction.closingRate > 0.05 then
-                        appendDiagnosticContradiction(raw.diagnostics.contradictions,"REPRESENTATION_UNFIT_BUT_NEGATIVE_RESULT_USED",{
-                            pairReferenceKey=pairReferenceKey,
-                            principalOutcome=prediction.principalOutcome,
-                            closingRate=prediction.closingRate,
-                            subjectUnderApproximationRisk=true,
-                            otherUnderApproximationRisk=true
-                        })
                     end
                     if prediction.headingDot > 0.5 and prediction.closingRate > 0.05 then
                         local aToB = (b.pose.x - a.pose.x) * a.pose.dx + (b.pose.z - a.pose.z) * a.pose.dz
@@ -785,7 +808,7 @@ function Source:capture(mission, nowSeconds)
                         if aToB < 0 then follower, leader = b, a end
                         raw.motion.closureEvidence[#raw.motion.closureEvidence + 1] = {
                             followerAssemblyReferenceKey = follower.referenceKey, leaderAssemblyReferenceKey = leader.referenceKey,
-                            closingObserved = true, closingRate = prediction.closingRate, horizon = legacyInteractionHorizon,
+                            closingObserved = true, closingRate = prediction.closingRate, horizon = legacyShadowHorizon,
                             provenance = {source = "relative-live-motion"}
                         }
                     end

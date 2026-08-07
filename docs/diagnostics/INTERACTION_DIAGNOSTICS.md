@@ -1,3 +1,17 @@
+## v4.7.23 Future-Space Encounter-admission diagnostics
+
+The lifecycle HUD now prompts on `FUTURE SPACE ENCOUNTER`, then guides stop, termination, restart and fresh Future-Space Encounter. Throttled pair diagnostics expose `futureSpacePositive` and `legacyShadowPositive` separately. The legacy ten-second predictor is diagnostic comparison only and has no Encounter-admission authority.
+
+The prior `REPRESENTATION_UNFIT_BUT_NEGATIVE_RESULT_USED` contradiction is removed: the active implementation does not consume non-positive representation output as negative clearance. Non-positive Future-Space/representation evidence remains unresolved.
+
+After this live gate passes, remove the superseded legacy future-prediction code/messages rather than maintaining shadow instrumentation indefinitely.
+
+## v4.7.22 lifecycle-precedence diagnostics
+
+The temporary lifecycle Transition HUD is active again for the stop/restart gate. Each lifecycle transition emits one `[OTM TEST GATE]` line. v4.7.21 Future Space evidence and `[PASSIVE] FUTURE_SPACE` logging remain active, but the Future Space HUD is hidden during this gate to keep the required operator action unambiguous.
+
+An incomplete Operation-membership observation may now report `MEMBERSHIP_UPDATED_INCOMPLETE` with removal deferred. This is diagnostic evidence of withheld removal authority, not a timer or a new lifecycle state. Encounter reconciliation should therefore retain the existing Encounter until complete lifecycle evidence supports an exit.
+
 ## v4.7.21 Future Space conformance diagnostics
 
 The temporary HUD now reports Local Intent/Future Space rather than operator lifecycle instructions. Settled native GIANTS FieldCourse segments display `STRAIGHT` with the measured forward Job-Seeded Field World boundary extent; native turns display `TURNING`; the pair line reports positive field-bounded Future-Space intersection, manoeuvring unresolved, or no positive intersection observed. Transition-only `[FUTURE-SPACE HUD]` log lines and `[PASSIVE] FUTURE_SPACE` relationship lines preserve the evidence without making the HUD authoritative. Measured distances are diagnostic values, not behavioural thresholds.
@@ -61,7 +75,6 @@ The build can report, without altering behaviour:
 - `INTERACTION_EVIDENCE_WITHOUT_ENCOUNTER`
 - `ENCOUNTER_WITHOUT_INTERACTION_EVIDENCE`
 - `BOTH_WORKERS_BLOCKED_WITHOUT_ENCOUNTER`
-- `REPRESENTATION_UNFIT_BUT_NEGATIVE_RESULT_USED`
 - `PAIR_OPERATION_CHANGED_DURING_JOB_EPISODE`
 - `PAIR_DISAPPEARED_WHILE_BOTH_WORKERS_ACTIVE`
 

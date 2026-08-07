@@ -1,3 +1,28 @@
+# v4.7.23 Future-Space Encounter-Admission Conformance
+
+| Concern | Requirement | v4.7.23 evidence | Status |
+|---|---|---|---|
+| Admission authority | supported canonical Future Space may create Encounter Knowledge | field-bounded positive emits interaction evidence with `FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION` relationship | PASS offline |
+| Current interaction | immediate positive Current Space evidence must remain admissible | current scalar/component positive retained independently of Local Intent availability | PASS offline |
+| Legacy isolation | fixed ten-second future prediction must not govern Encounter entry | `LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS`; legacy future positive recorded but excluded from admission | PASS offline |
+| Comparative evidence | live gate must prove authority separation | pair diagnostics expose `futureSpacePositive` and `legacyShadowPositive` | PASS offline |
+| Lifecycle carry-forward | v4.7.22 precedence correction must remain intact | incomplete membership retention + authoritative `JOB_EPISODE_ENDED` fixtures | PASS offline / PASS prior live |
+| Negative authority | non-positive evidence cannot establish clearance | no negative-clearance authority; misleading negative-result warning removed | PASS offline |
+| Decision/Control | admission gate must not choose or actuate | Decision passive; no live Commitment; `control=false` | PASS |
+
+# v4.7.22 Encounter Termination-Precedence Implementation Conformance
+
+| Concern | Existing requirement | v4.7.22 evidence | Status |
+|---|---|---|---|
+| Incomplete membership evidence | uncertainty cannot establish removal | incomplete Operation membership unions positive observations with prior admitted membership | PASS offline |
+| Encounter persistence | lifecycle basis remains until explicit invalidation | unresolved stop sample retains original Encounter | PASS offline |
+| Job Episode terminal authority | authoritative Episode end should close bound Encounter | next complete terminal sample produces `JOB_EPISODE_ENDED` with terminal cause | PASS offline |
+| No timing literal | lifecycle evidence, not delay, governs precedence | no timer/sample-count/time/distance gate added | PASS offline |
+| Non-resurrection | restart creates fresh Episode/Encounter identity | existing lifecycle fixtures retained | PASS offline |
+| Control boundary | lifecycle correction must remain passive | no Decision-to-Commitment application; Control disabled | PASS offline |
+
+**Live result:** PASS. The first Encounter terminated as `JOB_EPISODE_ENDED` with authoritative terminal cause, restart admitted a fresh Job Episode and renewed interaction created a fresh Encounter identity. v4.7.22 was not canonicalised separately; its correction is carried into v4.7.23.
+
 # v4.7.21 Future Space Implementation Conformance
 
 | Concern | Existing requirement | v4.7.21 evidence | Status |
@@ -9,7 +34,7 @@
 | Positive relationship | supported Future Spaces may establish positive intersection Knowledge | component-disc swept continuation intersection | PASS offline |
 | Negative authority | non-intersection without coverage closure cannot establish clearance | `NO_NEGATIVE_CLEARANCE_AUTHORITY` | PASS offline |
 | Situation handoff | Future Space result belongs to Situation Assessment, not Decision | `futureSpaceRelationships`; Knowledge-only fixture | PASS offline |
-| Legacy isolation | historical 10-second predictor must not define new Future Space | renamed `LEGACY_POSITIVE_INTERACTION_PROBE_HORIZON_SECONDS`; retained only for prior Encounter probe | PASS offline |
+| Legacy isolation | historical 10-second predictor must not define new Future Space | historical predictor isolated from Future Space; v4.7.23 further demotes its future result to shadow-only Encounter comparison | PASS offline |
 | Decision/Control | conformance test must not choose or actuate resolution | no Decision boundary apply; `control=false` | PASS |
 
 # v4.7.20 Encounter Exit Live-Gate Instrumentation Conformance

@@ -1,3 +1,28 @@
+## v4.7.23 — Future-Space Encounter Admission Conformance Candidate
+
+- begins from owner-declared canonical v4.7.21 (`dc7e1220d12b9d77039d164343a8a530787ccebdd79bdf838a200c3713b27482`, Git `e926f4be238e10e93f204870ed1703b64a53b3ac`; 257 files) and carries forward the separately live-passed v4.7.22 membership-evidence precedence correction;
+- records the v4.7.22 live gate as PASS: the first Encounter terminated as `JOB_EPISODE_ENDED` with authoritative `SOURCE_INTENT_TERMINATION`, restart admitted a fresh Job Episode, and renewed interaction created a fresh Encounter identity;
+- promotes the already live-validated field-bounded Future Space positive relationship into the positive interaction-evidence path used for Encounter admission;
+- preserves positive Current Space interaction as immediate Encounter authority;
+- removes the historical ten-second scalar/component future-convergence probe from Encounter-admission authority and renames its configuration to `LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS`; it remains diagnostic shadow comparison only for this gate and cannot admit or suppress an Encounter;
+- records Future-Space-positive versus legacy-shadow-positive state in throttled pair diagnostics so live evidence can prove that Encounter creation occurs before the legacy probe becomes positive;
+- removes the misleading `REPRESENTATION_UNFIT_BUT_NEGATIVE_RESULT_USED` contradiction because no negative result is operationally used; non-positive representation/Future-Space evidence still carries no negative-clearance authority;
+- updates the lifecycle HUD to prompt on the Future-Space-driven Encounter, then validates termination precedence, restart/non-resurrection and fresh Future-Space Encounter creation in the same live run;
+- records legacy shadow probe/message removal as follow-up cleanup after this admission path is live-validated rather than retaining obsolete diagnostic code indefinitely;
+- offline validation: 132 Lua tests and 40 Python structure tests pass; Decision remains passive, no live Commitment is applied and Control authority remains disabled.
+
+## v4.7.22 — Encounter Termination-Precedence Conformance Candidate
+
+- begins from owner-declared canonical v4.7.21 (`dc7e1220d12b9d77039d164343a8a530787ccebdd79bdf838a200c3713b27482`, Git `e926f4be238e10e93f204870ed1703b64a53b3ac`; 257 files);
+- records the v4.7.21 Future Space live gate as PASS: native turn state expired settled straight intent, post-turn settlement advanced intent epoch, and field-bounded Future-Space intersection Knowledge appeared materially before the isolated legacy ten-second interaction probe;
+- classifies the v4.7.20 `MEMBERSHIP_INVALIDATED` race as an Operation-membership evidence conformance defect rather than new Encounter architecture;
+- prevents incomplete Operation-membership evidence from removing previously admitted members; incomplete evidence may add positive members but cannot establish removal;
+- preserves the Encounter while Job Episode termination remains unresolved, allowing later authoritative Job Episode-end evidence to terminate it as `JOB_EPISODE_ENDED`;
+- adds no grace timer, sample-count threshold, time literal or distance literal to lifecycle behavior;
+- restores the temporary transition HUD for the stop/restart live gate while retaining v4.7.21 Future Space evidence and logging;
+- records the standing governance rule that any apparently new architectural discovery must first be validated against the repository and archived evidence before new terminology or architecture is introduced;
+- leaves Decision passive, applies no live Commitment and keeps Control disabled.
+
 ## v4.7.21 — Future Space Conformance Candidate
 
 - begins from owner-declared canonical v4.7.18 (`f4568ca...d3de`, Git `118190b8025021dc4164de24802b9df35a012f2c`) while carrying forward the non-canonical v4.7.19/v4.7.20 Encounter lifecycle, Shape-Type Gate and diagnostic throttling work;

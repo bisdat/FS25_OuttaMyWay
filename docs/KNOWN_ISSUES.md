@@ -1,3 +1,13 @@
+# Current v4.7.23 validation boundary
+
+- Canonical v4.7.21 live-validates field-bounded Local Intent/Future Space conformance.
+- The v4.7.22 termination-precedence correction is live-passed and carried forward: incomplete membership evidence cannot remove Operation members, and authoritative Job Episode termination wins Encounter exit.
+- v4.7.23 makes positive field-bounded Future Space the future Encounter-admission authority while preserving positive Current Space admission.
+- The historical ten-second scalar/component future predictor remains temporarily in code/log diagnostics only as `LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS`; it cannot admit or suppress an Encounter. Remove it after the v4.7.23 live gate rather than carrying obsolete shadow code indefinitely.
+- Same-Job-Episode physical resolution / Safe Release remains deliberately unimplemented and must not be inferred from non-positive Future Space or legacy shadow results.
+- The manoeuvre sweep itself is still unrepresented; native `TURNING` therefore remains Future-Space unresolved rather than guessed.
+- Decision is passive; no live Commitment or Control authority exists.
+
 # Current v4.7.21 validation boundary
 
 - Field-bounded straight Local Intent is offline-validated but requires live GIANTS validation through a native `straight → turning → straight` sequence.

@@ -33,8 +33,8 @@ function Runtime.new()
 end
 function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
-    self.trace:append("FUTURE_SPACE_CONFORMANCE_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";futureSpaceConformance=true;nativeLocalIntent=true;fieldWorldBoundedContinuation=true;futureSpaceHud=true;encounterExitContract=true;shapeTypeGate=true;diagnosticThrottling=true;control=false")
-    print(string.format("FS25_OuttaMyWay v%s Future Space conformance loaded; field-bounded Local Intent evidence active; Future Space HUD active; Shape-Type Gate active; Decision passive; Control authority disabled",OuttaMyWay.VERSION))
+    self.trace:append("FUTURE_SPACE_ENCOUNTER_ADMISSION_CONFORMANCE_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";futureSpaceConformance=true;nativeLocalIntent=true;fieldWorldBoundedContinuation=true;futureSpaceEncounterAdmission=true;legacyFutureProbeShadowOnly=true;encounterExitContract=true;membershipRemovalRequiresCompleteEvidence=true;lifecycleTestHud=true;shapeTypeGate=true;diagnosticThrottling=true;control=false")
+    print(string.format("FS25_OuttaMyWay v%s Future-Space Encounter admission conformance loaded; Future Space drives positive Encounter admission; legacy 10-second future probe shadow-only; termination precedence retained; lifecycle test HUD active; Decision passive; Control authority disabled",OuttaMyWay.VERSION))
 end
 function Runtime:publishObservation(raw) return self.observationAdapter:publish(raw) end
 function Runtime:admitJobEpisodes(snapshot) return self.jobEpisodes:observe(snapshot) end

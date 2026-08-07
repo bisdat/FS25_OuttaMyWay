@@ -1,15 +1,15 @@
 # Replacement-Core Conformance Tests
 
-v4.7.21 preserves the previous lifecycle, Shape-Type Gate and diagnostic-throttling coverage and adds Future Space implementation-conformance tests. The suite now proves:
+v4.7.23 carries forward canonical v4.7.21 Future Space and the live-passed v4.7.22 termination-precedence correction. The suite now proves:
 
-- native GIANTS active-segment turn state drives `SETTLED_CONTINUATION` versus `TURNING` without a behavioural threshold;
-- settled Local Intent advances to the forward Job-Seeded Field World boundary;
-- native turning expires the straight intent and post-turn settlement creates a new local-intent epoch;
-- crossing field-bounded component continuations can positively support Future-Space intersection;
-- a turning/unrepresented manoeuvre remains unresolved and cannot establish clearance;
-- Situation Assessment publishes field-bounded Future-Space relationship Knowledge without creating an Encounter from that diagnostic evidence;
-- the Future Space HUD reports settled, turning and intersecting states;
-- previous Encounter lifecycle and Shape-Type Gate contracts remain covered;
+- positive field-bounded Future Space may emit interaction evidence and admit an Encounter;
+- that admission can occur while the historical ten-second future probe remains negative;
+- legacy future convergence alone is shadow evidence and cannot admit an Encounter;
+- positive Current Space interaction still admits an Encounter immediately;
+- incomplete Operation-membership evidence cannot remove previously admitted members;
+- later authoritative Job Episode terminal evidence closes the Encounter as `JOB_EPISODE_ENDED`;
+- restart/non-resurrection and the Future-Space lifecycle HUD remain covered;
+- no negative-clearance authority is introduced;
 - Decision, Commitment application and Control remain passive.
 
 Run from the repository root:

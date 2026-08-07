@@ -2,9 +2,9 @@
 
 > **Authority:** Normative replacement-core responsibility and lifecycle map
 >
-> **Currency:** v4.7.21 Future Space Conformance Candidate; canonical v4.7.18 is the implementation baseline
+> **Currency:** v4.7.23 Future-Space Encounter Admission Conformance Candidate; canonical v4.7.21 is the implementation baseline
 >
-> **Implementation status:** canonical v4.7.18 validates positive footprint Encounter entry; v4.7.21 passively recovers existing Local Intent/Future Space production from native GIANTS turn state and Job-Seeded Field World bounds while live Commitment mutation and Control remain unimplemented
+> **Implementation status:** canonical v4.7.21 live-validates Local Intent/Future Space; v4.7.23 carries the live-passed membership-precedence correction and makes positive field-bounded Future Space an Encounter-admission authority while the historical ten-second future predictor is shadow-only; live Commitment mutation and Control remain unimplemented
 
 ## 1. Closed-loop responsibility flow
 

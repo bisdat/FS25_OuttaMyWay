@@ -1,6 +1,40 @@
+## D-0106 — Field-Bounded Future Space Governs Positive Encounter Admission
+
+**Status:** Accepted implementation-conformance step; implemented by v4.7.23 candidate
+
+**Context:** canonical v4.7.21 live-validates field-bounded Future Space. The v4.7.22 live run showed this Knowledge becoming positive materially before the historical ten-second scalar/component future predictor admitted the Encounter; the HUD changed in the same sample as Encounter creation, disproving a display-latency explanation.
+
+**Decision:** admit an Encounter from positive Current Space interaction or a supported field-bounded Future Space intersection. The historical ten-second future-convergence predictor loses Encounter-admission authority and remains temporarily as shadow comparison evidence only. Its non-positive or positive future result cannot suppress or create an Encounter.
+
+**Reason:** Encounter identity belongs to a convergence of Future Spaces. Keeping the fixed-horizon predictor as admission authority would continue an implementation non-conformance already exposed by live evidence.
+
+**Boundary:** no negative-clearance authority, same-Episode Safe Release, responsibility selection, Decision policy, live Commitment mutation or Control is introduced. Positive Current Space evidence remains legitimate immediate admission evidence. The legacy shadow code/messages are temporary validation instrumentation and should be removed after this path is live-validated.
+
+## D-0105 — Validate Apparent Architectural Novelty Against the Repository
+
+**Status:** Accepted standing governance rule
+
+**Decision:** Treat the architecture as largely defined, errors and omissions excepted. Before naming a live observation as a new architectural discovery, search the canonical architecture, ADRs, decision log, glossary, concept register and relevant archived evidence. Classify the result as existing architecture confirmed, implementation non-conformance, architectural refinement or genuinely new discovery before introducing new terminology or architecture.
+
+**Reason:** repeated implementation and live-test observations can rediscover concepts already established during earlier seminars/prototypes. Repository validation prevents duplicated terminology and implementation convenience from silently redefining architecture.
+
+**Boundary:** archived code may provide empirical facts, proven GIANTS integration mechanisms and failure evidence; it is not architectural authority. Reality may still disprove or refine canonical architecture.
+
+## D-0104 — Incomplete Operation-Membership Evidence Has No Removal Authority
+
+**Status:** Accepted implementation-conformance correction; implemented by v4.7.22 candidate
+
+**Context:** the v4.7.20 stop/restart live gate showed `MEMBERSHIP_INVALIDATED` terminating an Encounter one sample before authoritative Job Episode-end evidence. Code review found that `operationMembershipEvidenceComplete=false` prevented only whole-Operation zero-member termination; individual previously admitted members were still removed during partial updates.
+
+**Decision:** when Operation-membership evidence is incomplete, preserve all previously admitted members and union any positively observed members into the active Operation record. Only complete membership evidence may remove an existing member. This is an evidence-authority rule, not a grace period.
+
+**Reason:** incomplete evidence cannot prove non-participation. Preserving membership through the unresolved stop sample allows the already-defined Job Episode terminal evidence to determine Encounter exit when it becomes authoritative.
+
+**Boundary:** no timer, sample-count threshold, Decision policy, Commitment mutation, Safe Release authority or Control is introduced. Explicit membership invalidation remains a valid Encounter exit when supported by complete evidence.
+
 ## D-0041 — Recover Existing Future Space Architecture in the Passive Live Producer
 
-**Status:** Accepted implementation-conformance correction; implemented by v4.7.21 candidate
+**Status:** Accepted implementation-conformance correction; live-validated and canonical in v4.7.21
 
 **Context:** the v4.7.20 live HUD demonstrated that the replacement-core positive Encounter probe becomes actionable only when its ten-second constant-velocity horizon is reached. Repository review showed that this is not an architectural discovery: ADR-0006 already defines bounded Local Intent/Future Space, and ADR-0012 already defines Intent Expiry and Option Preservation. Archived FieldBoundary and FieldCourse probes contain proven mechanisms but not architectural authority.
 

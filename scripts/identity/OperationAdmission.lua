@@ -34,6 +34,13 @@ local function sortedUnique(values)
     return result
 end
 
+local function mergedUnique(first, second)
+    local values = {}
+    for _, value in OuttaMyWay.ValueRecord.ipairs(first or {}) do values[#values + 1] = value end
+    for _, value in OuttaMyWay.ValueRecord.ipairs(second or {}) do values[#values + 1] = value end
+    return sortedUnique(values)
+end
+
 function Admission.new(identityRegistry, epochSequence, jobEpisodes)
     local self = setmetatable({}, Admission)
     self.identities = identityRegistry
@@ -135,9 +142,31 @@ function Admission:observe(snapshot, episodeResult)
         if active == nil then
             active = self:_admit(fieldWorldKey, memberAssemblyIds, memberEpisodeIds, snapshotReferences, polygonReferences, snapshot)
             transitions[#transitions + 1] = { event="ADMITTED", operationId=active.identity, memberAssemblyIds=memberAssemblyIds }
-        else
+        elseif complete then
             active = self:_update(active, memberAssemblyIds, memberEpisodeIds, snapshotReferences, polygonReferences, snapshot)
-            transitions[#transitions + 1] = { event="MEMBERSHIP_UPDATED", operationId=active.identity, memberAssemblyIds=memberAssemblyIds }
+            transitions[#transitions + 1] = { event="MEMBERSHIP_UPDATED", operationId=active.identity, memberAssemblyIds=memberAssemblyIds, membershipEvidenceComplete=true }
+        else
+            -- Incomplete membership evidence may add positively observed members, but it cannot
+            -- prove removal of previously admitted members. Preserve the prior membership set
+            -- until complete evidence arrives; this prevents an unresolved Job Episode stop
+            -- sample from masquerading as explicit Encounter membership invalidation.
+            local retainedEpisodeIds = {}
+            for _, assemblyId in OuttaMyWay.ValueRecord.ipairs(active.memberAssemblyIds or {}) do
+                local activeEpisode = self.jobEpisodes:getActiveForAssembly(assemblyId)
+                if activeEpisode ~= nil then retainedEpisodeIds[#retainedEpisodeIds + 1] = activeEpisode.identity end
+            end
+            active = self:_update(
+                active,
+                mergedUnique(active.memberAssemblyIds, memberAssemblyIds),
+                mergedUnique(retainedEpisodeIds, memberEpisodeIds),
+                mergedUnique(active.memberFieldWorldSnapshotReferenceKeys, snapshotReferences),
+                mergedUnique(active.memberFieldPolygonReferenceKeys, polygonReferences),
+                snapshot
+            )
+            transitions[#transitions + 1] = {
+                event="MEMBERSHIP_UPDATED_INCOMPLETE", operationId=active.identity,
+                memberAssemblyIds=active.memberAssemblyIds, membershipEvidenceComplete=false, removalDeferred=true
+            }
         end
     elseif active ~= nil and complete then
         active = self:_end(active, snapshot)

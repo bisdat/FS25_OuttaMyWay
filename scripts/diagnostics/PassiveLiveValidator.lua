@@ -70,22 +70,22 @@ function Validator.new(runtime,source,support,probe,fieldWorldSnapshots)
         runtime=runtime,source=source,support=support,probe=probe,fieldWorldSnapshots=fieldWorldSnapshots,
         elapsed=0,lastLogAt=-math.huge,lastSignature=nil,records={},errorCount=0,
         acquisitionSignatures={},assemblyDiagnosticSignatures={},profileDiagnosticSignatures={},pairDiagnosticSignatures={},warningLastAt={},
-        previousEncounters={},previousPairs={},lastEncounterHeartbeatAt=-math.huge,futureSpaceHud=OuttaMyWay.FutureSpaceHud.new(),futureSpaceLogSignatures={}
+        previousEncounters={},previousPairs={},lastEncounterHeartbeatAt=-math.huge,futureSpaceHud=OuttaMyWay.FutureSpaceHud.new(),transitionHud=OuttaMyWay.TransitionHud.new(),futureSpaceLogSignatures={}
     },Validator)
 end
 function Validator:loadMap()
     self.elapsed=0; self.lastSignature=nil; self.lastLogAt=-math.huge; self.records={}; self.errorCount=0
-    self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.pairDiagnosticSignatures={}; self.warningLastAt={}; self.previousEncounters={}; self.previousPairs={}; self.lastEncounterHeartbeatAt=-math.huge; self.futureSpaceLogSignatures={}; self.futureSpaceHud:reset()
+    self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.pairDiagnosticSignatures={}; self.warningLastAt={}; self.previousEncounters={}; self.previousPairs={}; self.lastEncounterHeartbeatAt=-math.huge; self.futureSpaceLogSignatures={}; self.futureSpaceHud:reset(); self.transitionHud:reset()
     self.source:reset(); if self.probe~=nil then self.probe:reset() end; if self.fieldWorldSnapshots~=nil then self.fieldWorldSnapshots:reset() end
-    logInfo("Future Space conformance active; GIANTS local intent plus Job-Seeded Field World bounds settled continuation; Decision passive; Control authority disabled")
+    logInfo("Encounter termination-precedence conformance active; incomplete Operation-membership evidence cannot remove members; lifecycle HUD active; Future Space evidence retained; Decision passive; Control authority disabled")
 end
 function Validator:deleteMap()
     self.source:reset(); if self.probe~=nil then self.probe:reset() end; if self.fieldWorldSnapshots~=nil then self.fieldWorldSnapshots:reset() end
-    self.elapsed=0; self.lastSignature=nil; self.previousEncounters={}; self.previousPairs={}; self.futureSpaceLogSignatures={}; self.futureSpaceHud:reset()
+    self.elapsed=0; self.lastSignature=nil; self.previousEncounters={}; self.previousPairs={}; self.futureSpaceLogSignatures={}; self.futureSpaceHud:reset(); self.transitionHud:reset()
 end
 function Validator:keyEvent() end
 function Validator:mouseEvent() end
-function Validator:draw() self.futureSpaceHud:draw() end
+function Validator:draw() self.futureSpaceHud:draw(); self.transitionHud:draw() end
 
 function Validator:_warn(code,details,nowMilliseconds)
     local pair=details and (details.pairReferenceKey or details.assemblyReferenceKey or details.encounterIdentity) or nil
@@ -187,7 +187,7 @@ function Validator:_logRecordDiagnostics(record,due,nowMilliseconds)
             eligibleToLog=eligibleToLog+1
             if logged<maximum then
                 logged=logged+1
-                logInfo(string.format("PAIR pair=%s operation=%s sameOperation=%s subject=%s other=%s eligible=%s evaluated=%s excluded=%s exclusion=%s distance=%s required=%s headingDot=%s relativeSpeed=%s closingRate=%s tCPA=%s dCPA=%s scalarCurrent=%s scalarFuture=%s emitted=%s evidenceSource=%s evidenceAuthority=%s received=%s encounter=%s outcome=%s footprintOutcome=%s footprintCurrent=%s footprintFuture=%s footprintTCPA=%s footprintDCPA=%s footprintRequired=%s footprintPrimitives=%d+%d footprintAuthority=%s subjectBlocked=%s otherBlocked=%s",tostring(pair.pairReferenceKey),tostring(pair.operationId or "n/a"),booleanText(pair.sameOperation),tostring(pair.subjectAssemblyReferenceKey),tostring(pair.otherAssemblyReferenceKey),booleanText(pair.eligible),booleanText(pair.evaluated),booleanText(pair.excluded),tostring(pair.exclusionReason or "n/a"),numberText(pair.distance),numberText(pair.required),numberText(pair.headingDot),numberText(pair.relativeSpeedMps),numberText(pair.closingRate),numberText(pair.tcpa),numberText(pair.cpa),booleanText(pair.currentSpaceIntersects),booleanText(pair.futureSpaceConverges),booleanText(pair.interactionEvidenceEmitted),tostring(pair.interactionEvidenceSource or "n/a"),tostring(pair.interactionEvidenceAuthority or "n/a"),booleanText(pair.interactionEvidenceReceived),booleanText(pair.encounterCreated),tostring(pair.principalOutcome or pair.exclusionReason or "n/a"),tostring(pair.shadowOutcome or "n/a"),booleanText(pair.shadowCurrentSpaceIntersects),booleanText(pair.shadowFutureSpaceConverges),numberText(pair.shadowTCPA),numberText(pair.shadowDCPA),numberText(pair.shadowRequired),tonumber(pair.shadowSubjectPhysicalPrimitiveCount) or 0,tonumber(pair.shadowOtherPhysicalPrimitiveCount) or 0,tostring(pair.shadowAuthority or "n/a"),booleanText(pair.subjectBlocked),booleanText(pair.otherBlocked)))
+                logInfo(string.format("PAIR pair=%s operation=%s sameOperation=%s subject=%s other=%s eligible=%s evaluated=%s excluded=%s exclusion=%s distance=%s required=%s headingDot=%s relativeSpeed=%s closingRate=%s legacyTCPA=%s legacyDCPA=%s currentScalar=%s legacyScalarFuture=%s futureSpacePositive=%s legacyShadowPositive=%s emitted=%s evidenceSource=%s evidenceAuthority=%s received=%s encounter=%s outcome=%s footprintOutcome=%s footprintCurrent=%s legacyFootprintFuture=%s footprintTCPA=%s footprintDCPA=%s footprintRequired=%s footprintPrimitives=%d+%d footprintAuthority=%s subjectBlocked=%s otherBlocked=%s",tostring(pair.pairReferenceKey),tostring(pair.operationId or "n/a"),booleanText(pair.sameOperation),tostring(pair.subjectAssemblyReferenceKey),tostring(pair.otherAssemblyReferenceKey),booleanText(pair.eligible),booleanText(pair.evaluated),booleanText(pair.excluded),tostring(pair.exclusionReason or "n/a"),numberText(pair.distance),numberText(pair.required),numberText(pair.headingDot),numberText(pair.relativeSpeedMps),numberText(pair.closingRate),numberText(pair.tcpa),numberText(pair.cpa),booleanText(pair.currentSpaceIntersects),booleanText(pair.futureSpaceConverges),booleanText(pair.fieldBoundedFutureSpacePositive),booleanText(pair.legacyShadowPositive),booleanText(pair.interactionEvidenceEmitted),tostring(pair.interactionEvidenceSource or "n/a"),tostring(pair.interactionEvidenceAuthority or "n/a"),booleanText(pair.interactionEvidenceReceived),booleanText(pair.encounterCreated),tostring(pair.principalOutcome or pair.exclusionReason or "n/a"),tostring(pair.shadowOutcome or "n/a"),booleanText(pair.shadowCurrentSpaceIntersects),booleanText(pair.shadowFutureSpaceConverges),numberText(pair.shadowTCPA),numberText(pair.shadowDCPA),numberText(pair.shadowRequired),tonumber(pair.shadowSubjectPhysicalPrimitiveCount) or 0,tonumber(pair.shadowOtherPhysicalPrimitiveCount) or 0,tostring(pair.shadowAuthority or "n/a"),booleanText(pair.subjectBlocked),booleanText(pair.otherBlocked)))
             end
         end
     end
@@ -232,6 +232,7 @@ function Validator:_logLifecycle(records,nowMilliseconds)
     if retainedDue then self.lastEncounterHeartbeatAt=nowMilliseconds end
 
     for _,transition in ipairs(transitions) do
+        self.transitionHud:observeEncounterTransition(transition)
         if transition.lifecycle=="CREATED" then
             logInfo(string.format("ENCOUNTER lifecycle=CREATED encounter=%s pair=%s operation=%s relationship=%s episodeSignature=%s",tostring(transition.encounterIdentity),tostring(transition.interactionReferenceKey),tostring(transition.operationId),tostring(transition.relationship),tostring(transition.episodeSignature)))
         elseif transition.lifecycle=="RETAINED" and retainedDue then
@@ -302,7 +303,10 @@ function Validator:update(dt)
         end
     end
     self:_logLifecycle(sampleRecords,nowMilliseconds)
-    for _,record in ipairs(sampleRecords) do self.futureSpaceHud:observeRecord(record) end
+    for _,record in ipairs(sampleRecords) do
+        self.transitionHud:observeAdmittedEpisodes(record.admittedEpisodeIds or {})
+        self.futureSpaceHud:observeRecord(record)
+    end
 end
 function Validator:getRecords() local result={}; for i,v in OuttaMyWay.ValueRecord.ipairs(self.records) do result[i]=v end; return result end
 function Validator:getErrorCount() return self.errorCount end

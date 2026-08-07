@@ -1,3 +1,32 @@
+## v4.7.23 Future-Space Encounter-admission live gate
+
+1. Start from canonical v4.7.21 and carry forward the live-passed v4.7.22 incomplete-membership correction.
+2. Establish the familiar cross/head-on relation and wait for the HUD `FUTURE SPACE ENCOUNTER`.
+3. Confirm the log shows Future-Space-positive Encounter admission and, where geometry permits, `legacyShadowPositive=false` at first creation.
+4. Stop either AI worker; confirm the Encounter exits as `JOB_EPISODE_ENDED`, not `MEMBERSHIP_INVALIDATED`.
+5. Restart the worker and re-establish the interaction; confirm a fresh Job Episode and fresh Future-Space Encounter.
+6. Keep Decision passive, no live Commitment, `control=false`.
+7. After PASS, remove the superseded legacy shadow future predictor/messages in a cleanup increment before same-Episode Safe Release work.
+
+> **Canonical baseline:** v4.7.21 (`dc7e1220d12b9d77039d164343a8a530787ccebdd79bdf838a200c3713b27482`)  
+> **Current candidate:** v4.7.23  
+> **Control authority:** disabled
+
+## v4.7.22 Encounter termination-precedence live gate
+
+- Use the familiar TS015 head-on fixture.
+- Follow the transition HUD; do not time the stop from console chatter.
+- Wait for `ENCOUNTER ACTIVE`, then manually stop either AI worker.
+- The unresolved stop sample may have incomplete Operation-membership evidence; it must retain the existing Encounter rather than terminate as `MEMBERSHIP_INVALIDATED`.
+- Confirm the subsequent authoritative Job Episode end closes the Encounter as `JOB_EPISODE_ENDED` with terminal cause evidence.
+- Restart the stopped worker when instructed.
+- Re-establish the approach and confirm a fresh Encounter identity is created; the terminal Encounter must not resurrect.
+- Confirm Decision remains passive, no live Commitment is applied and `control=false`.
+
+> **Canonical baseline:** v4.7.21 (`dc7e1220d12b9d77039d164343a8a530787ccebdd79bdf838a200c3713b27482`)  
+> **Historical candidate:** v4.7.22 — live gate PASS, not canonicalised separately  
+> **Architecture authority:** existing Encounter Exit Contract and Operation-membership evidence contracts; no new lifecycle architecture
+
 ## v4.7.21 Future Space conformance gate
 
 - Use the familiar headland-cross/head-on development sequence without intentional intervention.
@@ -8,8 +37,8 @@
 - Stop before contact once the sequence is captured.
 - Confirm Decision remains passive and `control=false`.
 
-> **Canonical baseline:** v4.7.18  
-> **Current candidate:** v4.7.21  
+> **Historical baseline:** v4.7.18  
+> **Canonicalised result:** v4.7.21  
 > **Architecture authority:** canonical repository architecture, especially ADR-0006/ADR-0012; implementation correction D-0041
 
 ## v4.7.20 HUD-guided Encounter Exit gate

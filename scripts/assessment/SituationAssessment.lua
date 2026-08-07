@@ -189,7 +189,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             positiveEncounterItems[#positiveEncounterItems+1]={
                 operationId=operationId,interactionReferenceKey=item.interactionReferenceKey,
                 subjectAssemblyId=subject,otherAssemblyId=other,
-                relationship=item.currentSpaceIntersects == true and "CURRENT_SPACE_INTERACTION" or "FUTURE_SPACE_CONVERGENCE",
+                relationship=item.relationship or (item.currentSpaceIntersects == true and "CURRENT_SPACE_INTERACTION" or "FUTURE_SPACE_CONVERGENCE"),
                 evidence={
                     interactionReferenceKey=item.interactionReferenceKey,
                     currentSpaceIntersects=item.currentSpaceIntersects == true,

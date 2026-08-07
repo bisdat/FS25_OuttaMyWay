@@ -1,16 +1,22 @@
 # Engineering Handover
 
-> **Canonical baseline:** v4.7.18  
-> **Candidate:** v4.7.21 Future Space Conformance  
+> **Canonical baseline:** v4.7.21 (`dc7e1220d12b9d77039d164343a8a530787ccebdd79bdf838a200c3713b27482`, Git `e926f4be238e10e93f204870ed1703b64a53b3ac`)  
+> **Candidate:** v4.7.23 Future-Space Encounter Admission Conformance  
 > **Control authority:** disabled
 
-## v4.7.21 current continuation point
+## v4.7.23 current continuation point
 
-Repository archaeology confirmed that ADR-0006/ADR-0012 already define Future Space, Local Intent Horizon, Intent Expiry and Option Preservation. The replacement-core defect is implementation non-conformance: the live producer had reduced Future Space to a ten-second constant-velocity corridor.
+The v4.7.22 live gate passed its narrow objective: incomplete Operation-membership evidence no longer removes an active member, the first Encounter terminated as `JOB_EPISODE_ENDED` with authoritative cause, restart admitted a fresh Job Episode and renewed interaction created a fresh Encounter. The same run independently confirmed that the lifecycle HUD was not late: canonical Future Space became positive materially before the legacy ten-second predictor admitted the Encounter.
 
-v4.7.21 passively recovers settled/turning Local Intent from native GIANTS FieldCourse `isTurn`, bounds settled straight continuation by the current Job-Seeded Field World, leaves the unrepresented manoeuvre sweep unresolved, advances intent epoch after post-turn settlement, and publishes positive field-bounded pair intersection into Situation Assessment as Knowledge only. The historical ten-second predictor remains isolated solely for the previously validated Encounter-admission path.
+v4.7.23 therefore makes the already validated field-bounded Future Space positive relationship an Encounter-admission authority. Positive Current Space interaction remains valid immediate evidence. The historical ten-second future prediction is retained only as shadow comparison and cannot admit or suppress an Encounter.
 
-**Live objective:** capture a native `straight → turning → straight` sequence and verify the Future Space HUD/log changes correspondingly, with a positive field-bounded relationship appearing whenever supported by settled Local Intent. No collision is required. Do not activate Decision/Control. The separate lifecycle termination-precedence defect remains open.
+**Live objective:** prove the first Encounter is created from `FIELD_BOUNDED_FUTURE_SPACE_POSITIVE` before the legacy shadow becomes positive, then complete the same stop → `JOB_EPISODE_ENDED` → restart → fresh Encounter sequence. Decision must remain passive, no live Commitment may be applied and `control=false` throughout.
+
+**Cleanup after PASS:** remove the superseded legacy shadow future predictor and its comparison messages in an appropriate subsequent build; do not allow temporary validation instrumentation to become permanent code debt.
+
+## Standing architectural-governance rule
+
+Architecture is treated as largely defined, errors and omissions excepted. If a live observation appears to imply a new architectural discovery, search the canonical repository and relevant archived evidence first. Classify the result as existing architecture confirmed, implementation non-conformance, architectural refinement or genuinely new discovery before introducing new terminology. Archived code may contribute proven mechanisms and failure evidence but is not architectural authority.
 
 ## Closed gates
 
@@ -18,10 +24,7 @@ v4.7.21 passively recovers settled/turning Local Intent from native GIANTS Field
 - Exact TS015 non-admission diagnosis: canonical v4.7.15.
 - Configuration-filtered approximately 36 m physical representation: canonical v4.7.17.
 - Positive footprint evidence handoff and Encounter creation: canonical v4.7.18.
-
-## Carried lifecycle implementation
-
-The v4.7.19 `EncounterRegistry` remains unchanged in purpose: active Encounter identity is bound to Operation, interaction reference and participating Job Episodes; temporary evidence absence retains it; explicit lifecycle evidence terminates it; a restarted job receives a fresh Episode identity; renewed positive evidence creates a fresh Encounter.
+- Field-bounded Local Intent/Future Space implementation conformance: canonical v4.7.21.
 
 ## v4.7.20 corrections
 
