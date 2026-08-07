@@ -261,6 +261,28 @@ Traffic Policeman
 
 `PROGRESS` is preservation priority rather than exclusive movement permission. After a positively available refuge-return corridor is established, Yield may receive a bounded ingress/restoration Action Space; once admitted, its current recovery requirement is Committed Demand. Progress may continue normally, or may receive a purpose-bound supporting `REGULATE_SPEED` lease when unrestricted motion would consume that admitted recovery opportunity. The lease ends as soon as its named protection is no longer required.
 
+### Encounter maturation under compressed Action Space
+
+```text
+ambiguous interaction admitted
+        ↓
+Traffic Policeman assesses available supported options
+        ↓
+Action Space sufficiently preserved?
+   ├── YES: bounded native maturation
+   │       ├── CONTINUE_OBSERVATION
+   │       └── REGULATE_SPEED only for a named maturation-margin purpose
+   │               ↓
+   │       Reality dissolves or simplifies interaction
+   │               ↓
+   │       reassess from fresh authoritative evidence
+   └── NO: Action-Space Compression / Preference-Band Exhaustion
+           ↓
+       stronger supported intervention
+```
+
+Action-Space Compression is a derived physical phenomenon, not a new root Space. A crossing at the headland can be highly constrained while similar geometry mid-field can retain abundant alternatives. Maturation therefore aims to preserve/expand supportable options, not to force every interaction toward a head-on.
+
 ```text
 Yield refuge egress
     ↓

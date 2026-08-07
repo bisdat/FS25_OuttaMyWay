@@ -592,6 +592,28 @@ No Silent Under-Approximation remains mandatory: unknown or partial geometry mus
 
 Preference bands are exhausted sequentially. Only exhaustion of the complete supportable Candidate Action Space may justify autonomous-resolution failure.
 
+### Encounter Maturation and Action-Space Compression
+
+Traffic Policeman should not infer encounter complexity from geometric labels such as crossing, turning or head-on. Difficulty depends materially on the currently available Action Space. At a field edge/headland, Field World boundaries, Physical Assembly geometry and competing demand may compress admissible options into a sliding-puzzle-like problem; equivalent trajectories mid-field may retain substantially more Temporary Slack.
+
+**Encounter Maturation** permits bounded native progression while an ambiguous interaction is expected to simplify under GIANTS ownership. The desired outcome is not specifically a head-on: Reality may dissolve the interaction, reveal a simpler authoritative state, or show that remaining options are being exhausted. Early Encounter admission therefore does not require early aggressive Control. `CONTINUE_OBSERVATION` or purpose-bound `REGULATE_SPEED` may preserve enough margin for GIANTS to reveal the manoeuvre.
+
+**Action-Space Compression** names the physical loss of supportable resolution options. It is not a new spatial primitive or numeric score. It complements Preference-Band Exhaustion: compression is what is happening in Reality; exhaustion is Decision discovering that preferred supportable candidates have disappeared.
+
+```text
+Encounter admitted
+    ↓
+Action Space currently expanding / stable / compressing?
+    ↓
+Can bounded native progression preserve or expand supported options?
+    ├── YES → mature under bounded observation / supporting speed if justified
+    │           ├── interaction dissolves → settle/release when positively justified
+    │           └── simpler authoritative state emerges → reassess/resolution
+    └── NO  → preference band is being exhausted → stronger intervention
+```
+
+OuttaMyWay must not deliberately wait for a well-supported mid-field interaction to become a familiar head-on merely because current implementation knowledge is stronger for head-ons. Architecture follows available Reality, not implementation convenience.
+
 ## 18. Multi-stage strategy continuity
 
 A Commitment remains one Commitment across:

@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted architectural concept and refinements; canonical since v4.7.28 and further refined documentation-only in v4.7.29 candidate. Production Decision/Commitment/Control implementation remains absent.
+Accepted architectural concept and refinements; canonical through v4.7.29 and further refined documentation-only in v4.7.30 candidate. Production Decision/Commitment/Control implementation remains absent.
 
 ## Context
 
@@ -107,6 +107,31 @@ remaining restoration / handover / Safe Release obligations
 ```
 
 The Yield participant is not required to travel to an unrelated future field boundary and demonstrate every later manoeuvre before the current Encounter may settle.
+
+### Encounter Maturation
+
+Accept **Encounter Maturation** as a Traffic-Policeman Decision pattern for ambiguous interactions whose native evolution can safely produce better evidence or a simpler resolution state. Instead of inventing a complex manoeuvre before GIANTS reveals its own continuation, Decision may preserve bounded native progression while Reality is expected to do one of three things:
+
+1. dissolve the material interaction naturally;
+2. reveal a simpler authoritative interaction state that existing resolution policy can handle; or
+3. demonstrate that continued maturation is exhausting useful Action Space and stronger intervention is now required.
+
+Encounter Maturation is not a rule that complex encounters must become head-on. A head-on is only one currently well-understood mature state. Where current Action Space already supports a simpler resolution, especially in less constrained mid-field situations, Decision must not delay solely to reach a familiar implementation case.
+
+Maturation is governed by the existing Bounded Observation Contract. Decision must identify the Knowledge gap, expected Reality evolution, useful option preserved while waiting, exhaustion condition, reassessment boundary and Progress participant capable of generating the evidence. `CONTINUE_OBSERVATION` or purpose-bound `REGULATE_SPEED` may preserve maturation margin; passive delay is inadmissible.
+
+### Action-Space Compression
+
+Name **Action-Space Compression** as the physical reduction of currently supportable resolution options caused by Field World constraints, Physical Assembly geometry, participant Committed/Potential Demand and evolving native manoeuvres. It is a derived phenomenon, not a new root space, encounter taxonomy, actuator or numeric score.
+
+Encounter shape alone therefore does not define complexity. The TS016 headland-cross case is difficult because field-edge geometry and interacting demands constrain the available rearrangement space; an equivalent crossing in open mid-field may retain substantially more Temporary Slack and more admissible alternatives.
+
+Action-Space Compression relates to, but is distinct from, **Preference-Band Exhaustion**:
+
+- Action-Space Compression describes the physical evolution of available options;
+- Preference-Band Exhaustion describes Decision progressively losing preferred supportable candidates and moving to lower-preference survivors.
+
+Traffic Policeman should prefer actions that preserve or expand supported Action Space. Bounded native progression is attractive when it is expected to relieve compression; it becomes inadmissible when waiting is instead consuming the remaining options needed for safe resolution.
 
 ## Static-object boundary
 

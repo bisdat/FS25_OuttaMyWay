@@ -1,3 +1,23 @@
+# v4.7.30 Encounter Maturation / Action-Space Compression Consolidation
+
+## Encounter Maturation
+
+A Traffic-Policeman Decision pattern in which OuttaMyWay deliberately preserves bounded GIANTS-native progression while an ambiguous interaction is expected to dissolve naturally or reveal a simpler authoritative state. Maturation is evidence acquisition through ordinary native evolution, not route prediction and not passive delay. It requires the existing Bounded Observation Contract and remains admissible only while useful resolution options are preserved.
+
+A familiar head-on is one possible mature state, not the objective. Mid-field or otherwise well-supported interactions must not be forced to mature into head-on solely because current implementation knowledge is stronger there.
+
+## Action-Space Compression
+
+The derived physical phenomenon in which Field World constraints, Physical Assembly geometry, participant Committed/Potential Demand and evolving native manoeuvres reduce the set of currently supportable resolution actions. It explains why a headland/field-edge crossing may behave like a sliding puzzle while an equivalent mid-field crossing has more options. It is not a new root space, encounter class, actuator or numeric score.
+
+## Relationship to Preference-Band Exhaustion
+
+Action-Space Compression describes loss of physical resolution options in Reality. Preference-Band Exhaustion describes the Decision consequence as preferred supportable candidates disappear and lower-preference candidates become the remaining admissible choices. Traffic Policeman should prefer bounded progression that preserves or expands supported Action Space and stop maturation when continued waiting consumes the remaining useful options.
+
+## Early admission without early aggression
+
+An Encounter may be admitted early while Decision still chooses `CONTINUE_OBSERVATION` or a purpose-bound `REGULATE_SPEED`. The purpose is to preserve maturation margin while GIANTS reveals the manoeuvre, not to postpone responsibility. The Bounded Observation Contract must name the Knowledge gap, expected evidence, preserved option, exhaustion condition, reassessment boundary and evidence-generating Progress participant.
+
 # v4.7.29 Staged Refuge Recovery / Purpose-Bound Traffic Protection Consolidation
 
 ## Traffic priority and bounded simultaneous movement — Refinement

@@ -1,3 +1,12 @@
+## v4.7.30 architecture reconciliation — encounter maturation and action-space compression
+
+- TS016 archaeology confirms the earlier working-but-flawed controller let the manoeuvring Condor retain Progress while the straight-working Patriot yielded; the useful physical policy evidence survives even though fixture-specific admission/role logic remains rejected implementation architecture.
+- A crossing or turning interaction is not inherently complex. Difficulty rises when Field World boundaries, participant demand and Physical Assembly geometry compress the set of supportable actions; the field-edge/headland placement of TS016 is therefore materially relevant.
+- In compressed situations, bounded GIANTS-native progression may simplify Reality by dissolving the interaction or maturing it into a better-supported state. OuttaMyWay need not predict the complete native turn when GIANTS can reveal it while adequate resolution options remain.
+- Encounter Maturation is not passive delay. It remains admissible only under the existing Bounded Observation Contract and only while useful Action Space is preserved. A purpose-bound speed constraint may buy maturation margin without choosing a complex alternative route.
+- Mid-field slack changes the problem: where abundant Action Space already supports simpler intervention or natural separation, OuttaMyWay must not wait for a head-on merely because that case is familiar.
+- Action-Space Compression is the physical explanation for shrinking resolution choice; Preference-Band Exhaustion is the Decision consequence when preferred supportable candidates disappear.
+
 ## v4.7.29 architecture reconciliation — staged recovery and traffic protection
 
 - The pure Condor–Patriot head-on is now a reference architecture case: successful refuge resolution must produce a positively available return/ingress corridor, not merely let Progress pass the original conflict point.

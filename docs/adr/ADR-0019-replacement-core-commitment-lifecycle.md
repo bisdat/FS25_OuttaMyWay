@@ -109,6 +109,8 @@ A live admitted intent governs ordinary resolution until it genuinely ends or a 
 
 Blockage, temporary Hold, inactivity, evidence insufficiency and strategy failure do not themselves end intent.
 
+Continuing Intent Priority is a preference to preserve useful authoritative native intent, not a requirement to freeze Reality into its current geometry. Where Field World constraints compress Action Space, Traffic Policeman may preserve bounded native progression so an ambiguous interaction can mature toward natural dissolution or a better-supported state. This remains subject to the Bounded Observation Contract and Preference-Band Exhaustion: waiting is invalid once it consumes the options needed for resolution.
+
 ## Paper validation
 
 The model was traced through twelve representative situations:

@@ -1,3 +1,15 @@
+## v4.7.30 — Encounter Maturation / Action-Space Compression Consolidation Candidate
+
+- begins from owner-declared canonical v4.7.29 (`4b0fb07945ed6a1bf2911fd91c4101e788e5ccd7973cb0f577ffd064f95882b0`, Git `693075b9d9b9fcfa596170f2c38ca440ae139ab9`; 261 files);
+- accepts **Encounter Maturation** as a Traffic-Policeman Decision pattern: when an admitted interaction is still ambiguous, bounded native progression may be deliberately preserved so Reality can either dissolve the interaction or reveal a simpler authoritative state before OuttaMyWay commits to a more invasive manoeuvre;
+- names **Action-Space Compression** as the physical reduction of admissible resolution options caused by Field World constraints, participant demand, Physical Assembly geometry and evolving manoeuvres; encounter difficulty is therefore not inferred from encounter shape alone;
+- relates Action-Space Compression to existing **Preference-Band Exhaustion**: compression describes the physical loss of supported options, while exhaustion is the Decision consequence when preferred candidates disappear and progressively stronger surviving candidates remain; no numeric compression score is introduced;
+- records the TS016 architectural interpretation: the headland-cross interaction is difficult because field-edge constraints compress Action Space, not because crossing/turning is inherently a special encounter type; preserving the manoeuvring worker's GIANTS progression can be preferable when it is expected to expand future options;
+- constrains maturation through the existing **Bounded Observation Contract**: waiting must name the unresolved Knowledge, expected Reality evolution, preserved useful option, exhaustion condition, reassessment boundary and evidence-generating Progress participant; passive delay is inadmissible;
+- records that early Encounter admission need not imply early aggressive Control: `CONTINUE_OBSERVATION` or a purpose-bound `REGULATE_SPEED` may preserve maturation margin while GIANTS reveals the manoeuvre; stronger intervention becomes appropriate when continued maturation consumes rather than preserves supported Action Space;
+- explicitly rejects implementation-driven maturation: OuttaMyWay must not wait for a mid-field or otherwise well-supported interaction to become a familiar head-on merely because head-on resolution is currently better understood;
+- documentation-only architecture consolidation: production Decision remains passive, no live Commitment/Traffic Policeman/Encounter-Maturation Control path is introduced, and active runtime behaviour remains the canonical v4.7.29 passive baseline apart from version metadata.
+
 ## v4.7.29 — Staged Refuge Recovery / Purpose-Bound Traffic Protection Consolidation Candidate
 
 - refines **Traffic Policeman** so `PROGRESS` is preservation priority rather than exclusive movement authority: a `YIELD` participant may receive bounded admitted recovery movement while remaining subordinate to Progress demand;

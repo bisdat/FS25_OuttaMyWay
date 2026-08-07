@@ -64,6 +64,8 @@ The rule applies to speed restoration, hold release, refuge entry, refuge exit, 
 
 If waiting consumes the preserved option or no participant can generate the required evidence, observation is inadmissible.
 
+**Encounter Maturation** is one valid use of this contract. Decision may deliberately preserve bounded GIANTS-native progression while an ambiguous interaction is expected to dissolve or become simpler, but only while supported resolution options remain available. Action-Space Compression therefore supplies relevant evidence for the exhaustion condition: maturation must stop being preferred when continued native progression is consuming rather than preserving the Action Space needed for resolution. A familiar head-on is not a required maturation target.
+
 ### 6. Capability effectiveness is separate from operational sufficiency
 
 Control reports whether the requested physical command was realised. Situation Assessment interprets the resulting Reality. Decision judges whether that realised change is sufficient for the Commitment purpose.

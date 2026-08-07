@@ -1,3 +1,12 @@
+# Current v4.7.30 architecture boundary
+
+- **Encounter Maturation is accepted architecture but not production Decision logic.** No live detector currently decides when native progression is preserving/expanding options versus consuming them.
+- **Action-Space Compression has no numeric authority.** No scalar score, fixed threshold or encounter-shape classifier is accepted; implementation must discover evidence that supported resolution options are actually disappearing.
+- **Bounded Observation remains mandatory.** Maturation cannot become passive delay; exact live evidence for the exhaustion/reassessment boundary remains implementation work.
+- **Head-on is not a mandatory target.** Mid-field or otherwise well-supported interactions must use the simplest supported resolution rather than being deliberately evolved into a familiar fixture.
+- **TS016 physical policy evidence is not its old controller architecture.** Earlier straight-Yield/manoeuvring-Progress success is evidence; historical tCPA/dCPA thresholds and fixture role assignment are not production authority.
+- **Production Control remains absent.** No Traffic Policeman, maturation speed lease, Hold/reposition authority or live Commitment is enabled.
+
 # Current v4.7.29 architecture boundary
 
 - **Staged refuge recovery is accepted architecture but not production Control.** The documented head-on chain does not yet actuate egress, ingress, restoration, BNIR, Native Handover or purpose-bound Progress speed regulation.

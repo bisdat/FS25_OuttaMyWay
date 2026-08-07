@@ -1,3 +1,16 @@
+# v4.7.30 Encounter Maturation / Action-Space Compression Consolidation
+
+| Concern | Architectural requirement | v4.7.30 consolidation | Status |
+|---|---|---|---|
+| Encounter complexity | encounter shape must not become fixture taxonomy | difficulty tied to available supportable Action Space; crossing/turning not inherently complex | ACCEPTED |
+| Encounter Maturation | ambiguous native evolution may simplify Reality without route prediction | bounded GIANTS progression may dissolve interaction or reveal simpler authoritative state | ACCEPTED |
+| Action-Space Compression | physical loss of options needs a name without inventing a new root Space | derived phenomenon tied to Field World/assembly/demand constraints; no scalar score | ACCEPTED |
+| Preference-band relation | physical compression and Decision exhaustion must remain distinct | compression explains option loss; Preference-Band Exhaustion governs surviving candidate preference | ACCEPTED |
+| Bounded observation | maturation must not become passive delay | existing observation contract governs Knowledge gap, evidence source, preserved option, exhaustion/reassessment | ACCEPTED |
+| Early admission | early Knowledge need not force early aggressive Control | observation/supporting speed may preserve maturation margin | ACCEPTED |
+| Implementation convenience | architecture must not force encounters toward familiar fixtures | head-on is possible mature state, not mandatory target; mid-field slack remains usable | ACCEPTED |
+| Runtime authority | documentation consolidation must remain passive | no live Traffic Policeman/maturation/Control implementation | PRESERVED |
+
 # v4.7.29 Staged Refuge Recovery / Purpose-Bound Traffic Protection Consolidation
 
 | Concern | Architectural requirement | v4.7.29 consolidation | Status |

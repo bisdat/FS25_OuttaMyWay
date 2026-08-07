@@ -1,3 +1,19 @@
+## D-0111 — Accept Encounter Maturation and Action-Space Compression
+
+**Status:** Accepted architecture; documentation-only consolidation in v4.7.30 candidate
+
+**Context:** Repository archaeology of the earlier TS016 working-but-flawed controller confirmed a useful physical policy: the manoeuvring Condor retained Progress while the straight-working Patriot yielded, allowing GIANTS to clear the developing crossing. Current discussion clarified that the crossing/turning shape is not itself the source of complexity. TS016 occurs at the headland/field edge, where boundaries, assembly geometry and competing demand compress the available resolution space; equivalent mid-field interactions may retain many more options.
+
+**Decision:** accept **Encounter Maturation** as a Traffic-Policeman Decision pattern. When an ambiguous interaction remains supportable, Decision may deliberately preserve bounded GIANTS-native progression so Reality can dissolve the interaction or reveal a simpler authoritative state before OuttaMyWay commits to a more invasive manoeuvre. A head-on is one possible mature state, not a required target.
+
+**Action-Space Compression:** name the derived physical reduction of supportable resolution options caused by Field World constraints, Physical Assembly geometry, participant demand and evolving manoeuvres. It is not a new root space, encounter taxonomy, actuator or numeric score. Action-Space Compression explains the physical side of existing Preference-Band Exhaustion; exhaustion is the Decision consequence when preferred supportable candidates disappear.
+
+**Observation contract:** maturation is valid only under the existing Bounded Observation Contract. Early Encounter admission may legitimately choose `CONTINUE_OBSERVATION` or purpose-bound `REGULATE_SPEED` to preserve maturation margin, but must identify the Knowledge gap, expected Reality evolution, preserved option, exhaustion condition, reassessment boundary and Progress participant capable of generating evidence. Passive waiting is inadmissible.
+
+**Implementation-convenience boundary:** where sufficient Action Space already exists, especially mid-field, OuttaMyWay must not wait for an encounter to become a familiar head-on solely because head-on resolution is currently better understood. Stronger intervention becomes appropriate when continued maturation is consuming rather than preserving supported options.
+
+**Implementation boundary:** v4.7.30 introduces no production Traffic Policeman, maturation detector, live Commitment, speed lease or physical Control path.
+
 ## D-0110 — Accept Staged Refuge Recovery and Purpose-Bound Traffic Protection
 
 **Status:** Accepted architecture; documentation-only consolidation in v4.7.29 candidate

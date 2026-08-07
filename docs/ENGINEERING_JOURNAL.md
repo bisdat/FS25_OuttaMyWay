@@ -1,3 +1,17 @@
+## 2026-08-07 — Encounter Maturation and Action-Space Compression accepted
+
+**Repository archaeology:** the earlier TS016 controller selected the straight-working Patriot as Yield and allowed manoeuvring Condor to remain under GIANTS as Progress. The first crossing phase could succeed, but the fixture-specific thresholds/controller-owned lifecycle were later rejected as implementation architecture. The physical policy evidence remains useful.
+
+**User qualification:** “complex” in TS016 is substantially created by limited space: Patriot crosses along a headland at the field edge, making resolution akin to a sliding puzzle. Similar crossing geometry mid-field has more available options.
+
+**Discovery — Action-Space Compression:** difficulty rises as Field World constraints, participant demand and Physical Assembly geometry remove supportable resolution actions. The concept is derived from existing Action Space/Committed Demand/Potential Demand/Temporary Slack rather than a new root space.
+
+**Decision — Encounter Maturation:** when an ambiguous interaction can safely continue, Traffic Policeman may preserve bounded native GIANTS progression so Reality either dissolves the interaction or reveals a simpler authoritative state. Early admission can therefore lead to bounded observation or supporting speed regulation instead of immediate Hold/reposition.
+
+**Constraint:** maturation is not “wait for head-on.” Where current Action Space already supports simpler resolution, particularly mid-field, implementation familiarity must not dictate architecture. The Bounded Observation Contract and Preference-Band Exhaustion govern when waiting remains legitimate; maturation stops being preferred when it consumes the options needed for resolution.
+
+**Repository response:** v4.7.30 reconciles ADR-0023, ADR-0006 and ADR-0019 plus architecture/concept/glossary/decision/status records. Runtime remains passive and production Control disabled.
+
 ## 2026-08-07 — v4.7.29 staged refuge recovery / purpose-bound traffic protection consolidation
 
 **Observation:** In the pure Condor–Patriot head-on, letting Progress pass the original conflict does not by itself ensure Yield can complete refuge ingress/restoration before Progress catches the recovering assembly again. Condor boom restoration is currently observed to take about 15 seconds.

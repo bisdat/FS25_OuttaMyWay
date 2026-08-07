@@ -1,3 +1,14 @@
+## v4.7.30 vocabulary refinements
+
+**Encounter Maturation**  
+A Traffic-Policeman Decision pattern that preserves bounded GIANTS-native progression while an ambiguous interaction is expected to dissolve naturally or reveal a simpler authoritative state. It is governed by the Bounded Observation Contract and is not permission for passive delay or a requirement to mature into a head-on.
+
+**Action-Space Compression**  
+A derived phenomenon in which Field World constraints, Physical Assembly geometry, participant demand and evolving manoeuvres reduce the set of currently supportable resolution actions. It is not a new root Space, encounter type or numeric score.
+
+**Maturation margin**  
+The currently preserved spatial/temporal opportunity that allows native progression to continue generating useful evidence without exhausting the actions needed for safe resolution. A purpose-bound speed lease may protect this margin; the term grants no fixed distance/time authority.
+
 ## v4.7.29 vocabulary refinements
 
 **Traffic Policeman — refined**  
