@@ -1,4 +1,14 @@
-# Current v4.7.27 architecture boundary
+# Current v4.7.28 architecture boundary
+
+- **Traffic Policeman is accepted architecture but not production Decision logic.** Temporary movement priority/right-of-way remains documentation-only; no live Commitment or Control path applies it.
+- **`SETTLED_CONTINUATION` is not clearance.** It may provide a stable native intent reference only when supported corridor compatibility with the other participant's occupancy/Action Space is positively established.
+- **BNIR participants remain obstacles.** Low speed grants no priority; production BNIR must re-Hold/reassess before its bounded Action Space consumes Progress demand.
+- **Demonstrated Traversability is bounded evidence, not universal Coverage Closure.** Material changes in configuration, Field World, dynamic occupancy, corridor or kinematics invalidate reuse outside the demonstrated domain.
+- **Revelation Oscillation is prohibited non-progress.** Role transfer that merely alternates which participant is held/unknown without reducing unresolved obligations is not a valid resolution strategy.
+- **Continuation Safety Horizon is Encounter-relative but Safe Release remains positive.** The refinement prevents an infinite rolling horizon; it does not permit current non-intersection or elapsed time to prove Safe Release.
+- **Static-object recovery/avoidance is parked.** Future dedicated analysis may require additional architecture or conclude that player intervention is necessary; BNIR/Traffic Policeman must not be treated as obstacle-avoidance automation.
+
+## Retained v4.7.27 BNIR boundary
 
 - **Bounded Native Intent Revelation is accepted architecture but not production Control.** v4.7.26 live-supports the complete capability chain for Condor only; v4.7.27 carries no probe actuator forward.
 - **Same-Job-Episode Safe Release remains unimplemented.** Hold relaxation / native intent revelation supplies new evidence but does not itself terminate an Encounter or Commitment.
@@ -6,7 +16,7 @@
 - **Coverage Closure remains unresolved.** Low-speed movement cannot turn incomplete geometry into negative-clearance authority.
 - **The manoeuvre sweep remains unrepresented.** Native `TURNING` remains Future-Space unresolved rather than guessed.
 - **The v4.7.26 1 km/h and 2 m values are experimental only.** Production evidence contracts must be derived from admissibility and useful evidence, not copied from the fixture.
-- **Static-obstacle recovery is only a possible wider application.** Bounded Native Intent Revelation may help reveal GIANTS continuation after OuttaMyWay creates a safe movement opportunity; GIANTS is still not assumed to avoid a stationary obstacle itself.
+- **Historical v4.7.27 static-obstacle hypothesis is superseded by the v4.7.28 parked boundary.** Static-object recovery/avoidance now requires separate future architecture analysis; GIANTS is still not assumed to avoid a stationary obstacle itself.
 - Long deliberate Holds may require future player-facing communication so correct evidence gathering is distinguishable from a stuck worker; UI mechanism is deferred.
 
 # Current v4.7.24 validation boundary

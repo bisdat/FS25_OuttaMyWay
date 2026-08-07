@@ -1,3 +1,10 @@
+## v4.7.28 architecture reconciliation — traffic priority and empirical local admissibility
+
+- `SETTLED_CONTINUATION` is retained as authoritative native lifecycle/Local Intent evidence, not redefined as pairwise clearance.
+- v4.7.26 proves bounded GIANTS-native progression can reveal intent while a Condor remains compact; v4.7.28 records that such a revelation participant remains a physical obstacle and receives no priority from low speed alone.
+- Recent actual traversal by the real assembly may serve as bounded positive local spatial-admissibility evidence (**Demonstrated Traversability**) when configuration, local Field World, dynamic occupancy, corridor and relevant kinematics remain materially applicable.
+- Static-object recovery/avoidance remains deliberately unresolved and is not inferred from these observations.
+
 # AI discoveries
 
 1. `getNextSegmentData()` does not expose a useful future traversal cursor in TS001.

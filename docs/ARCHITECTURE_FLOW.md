@@ -242,6 +242,23 @@ SUCCEEDED
 
 Capability completion is not Commitment completion.
 
+### Traffic Policeman within Decision
+
+```text
+current Operational Picture
+    ↓
+Traffic Policeman
+    ├── PROGRESS movement priority
+    └── YIELD preservation obligation
+            ↓
+    bounded capability / BNIR only while
+    Progress demand remains protected
+            ↓
+    evidence change → reassess roles
+```
+
+`SETTLED_CONTINUATION` supplies a stable native intent reference; positive corridor compatibility remains separately required. A BNIR participant remains a physical obstacle and may be re-Held if its Action Space would consume Progress demand. Role transfer is legitimate only when it reduces/settles unresolved obligations or materially improves admissible resolution; uncertainty ping-pong is Revelation Oscillation, not progress.
+
 ## 8. Multi-stage strategy
 
 ```text

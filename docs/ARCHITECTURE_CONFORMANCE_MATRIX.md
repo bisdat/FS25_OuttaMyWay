@@ -1,3 +1,16 @@
+# v4.7.28 Traffic Policeman / Encounter-Relative Movement-Priority Consolidation
+
+| Concern | Architectural requirement | v4.7.28 consolidation | Status |
+|---|---|---|---|
+| Decision responsibility | movement priority must have an architectural owner without becoming route planning | ADR-0023 Traffic Policeman assigns temporary `PROGRESS` / `YIELD`; GIANTS keeps route/steering | ACCEPTED |
+| Settled semantics | stable native intent must not be conflated with spatial safety | `SETTLED_CONTINUATION` is lifecycle/evidence gate; corridor compatibility separate | ACCEPTED |
+| BNIR obstruction | bounded-speed revelation must not consume Progress demand | revelation participant remains Physical Assembly obstacle; re-Hold on incompatible Action Space/evidence change | ACCEPTED |
+| Role transfer | multi-stage Commitment may change traffic roles only when resolution progresses | progress criterion recorded; Revelation Oscillation named non-progress | ACCEPTED |
+| Physical admissibility | incomplete synthetic coverage must not be mistaken for clearance | Demonstrated Traversability accepted only as bounded positive empirical evidence; Known-Coverage Trap preserved elsewhere | ACCEPTED |
+| Horizon scope | Safe Release horizon must not roll indefinitely | Continuation Safety Horizon made Encounter-relative; later convergence after Safe Release may be fresh Encounter | ACCEPTED |
+| Static obstacles | BNIR must not silently become obstacle avoidance | static-object recovery explicitly parked for dedicated future analysis | DEFERRED |
+| Production behaviour | documentation consolidation must not activate traffic control | no live Decision/Commitment/BNIR/Control implementation | PASS review |
+
 # v4.7.27 Bounded Native Intent Revelation Architecture Consolidation
 
 | Concern | Architectural requirement | Evidence / consolidation | Status |

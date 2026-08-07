@@ -1,3 +1,15 @@
+## v4.7.28 — Traffic Policeman / Encounter-Relative Movement-Priority Consolidation Candidate
+
+- begins from owner-declared canonical v4.7.27 (`b7eb7cb2eb268651cbd0287ed4df4762b2892e792a7266f17c8b620e2ef032e2`, Git `6f21b6b74f6ff3816728c47550842a3dc3fd5d87`; 260 files);
+- accepts **Traffic Policeman** through ADR-0023 as the Decision-level responsibility for temporary `PROGRESS` / `YIELD` movement priority inside one Encounter while GIANTS retains route and steering ownership;
+- preserves `SETTLED_CONTINUATION` as a lifecycle/evidence state rather than redefining it as spatial clearance; supported corridor compatibility remains a separate positive requirement;
+- refines BNIR so the revelation participant remains a real Physical Assembly obstacle, low speed grants no priority, and evidence-driven authority expires/re-Holds before consuming Progress demand;
+- accepts **Demonstrated Traversability** as bounded positive local spatial-admissibility evidence from actual successful traversal by the real assembly, without creating universal Coverage Closure or weakening the Known-Coverage Trap outside the demonstrated domain;
+- names **Revelation Oscillation** as non-progressive role swapping that alternates which participant is held/unknown without reducing unresolved Encounter obligations; legitimate role transfer must reduce/settle obligations or materially improve admissible resolution capability;
+- refines Continuation Safety Horizon as **Encounter-relative** rather than indefinitely rolling through unrelated later manoeuvres; later materially new convergence after true Safe Release may form a fresh Encounter;
+- explicitly parks static-object recovery/avoidance for dedicated future architecture analysis, including the possibility that safe full automation may be unavailable and player intervention required;
+- documentation-only architecture consolidation: no production Traffic Policeman, BNIR actuator, live Commitment or Control authority is introduced; active runtime behaviour remains the canonical v4.7.27 passive baseline apart from version metadata.
+
 ## v4.7.27 — Bounded Native Intent Revelation Architecture Consolidation Candidate
 
 - begins from owner-declared canonical v4.7.24 (`ded22bb56893c86c20e0b5654e66a1469b29b31e1be4733c1d212c0be19b0e56`, Git `9c2b680f145dd1f7118ab2777e30911367bfe472`; 258 files); v4.7.25 and v4.7.26 remain non-canonical evidence only;

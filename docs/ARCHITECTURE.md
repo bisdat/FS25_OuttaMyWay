@@ -80,6 +80,8 @@ OuttaMyWay does not replace GIANTS route generation, agronomic job ownership or 
 - behavioural control of the player;
 - treating Temporary Slack as permanently released space.
 
+Static-object recovery/avoidance remains a separately parked architectural problem. No current BNIR or Traffic Policeman rule implies that GIANTS can avoid stationary obstacles or that OuttaMyWay can always automate a bypass.
+
 Reverse is architecturally available as a possible movement capability. Reverse Actuation Discovery remains an implementation and validation activity.
 
 ## 3. Foundational distinctions
@@ -197,6 +199,22 @@ The absence of a preferred candidate does not authorise an unsafe special case.
 Architectural constraints are admissibility gates, not advisory annotations. A candidate receives authority only after every applicable constraint has been evaluated sufficiently for that action.
 
 Control may reject stale or compositionally changed authority. It may not waive or reinterpret Decision constraints.
+
+### Traffic Policeman — temporary movement priority
+
+Within an Encounter, Decision owns a **Traffic Policeman** responsibility. It assigns and revises temporary `PROGRESS` and `YIELD` movement-priority roles from the current Operational Picture so that bounded capabilities preserve the participant whose supported demand currently has priority.
+
+Traffic Policeman does not plan routes, steer vehicles or replace GIANTS work order. A `PROGRESS` role is temporary right-of-way for the current supported continuation, not ownership of field space. A `YIELD` participant may receive bounded authority such as BNIR only while its current occupancy and proposed Action Space remain compatible with Progress demand.
+
+`SETTLED_CONTINUATION` is a lifecycle/evidence gate: it identifies a stable native Local Intent that can act as a traffic reference. It is not spatial clearance by itself. Supported corridor separation remains a separate positive requirement. If that reference participant begins `TURNING` or its supported demand materially changes, authority derived from the old traffic picture expires and Decision reassesses.
+
+Temporary roles may transfer inside one Commitment when evidence shows real reduction/settlement of unresolved obligations or materially improved admissible capability. Repeatedly transferring Hold/unknown intent without reducing the Encounter's unresolved obligations is **Revelation Oscillation** and is not architectural progress.
+
+### Demonstrated Traversability as bounded admissibility evidence
+
+Actual successful occupation or traversal by the real Physical Assembly can provide positive evidence that the local space accommodated that assembly under the configuration and movement conditions actually experienced. This **Demonstrated Traversability** evidence remains applicable only within a materially unchanged bounded domain and does not prove arbitrary reverse kinematics, configuration sweeps, permanent release of space or current availability against another worker.
+
+Synthetic Coverage Closure remains required wherever this positive empirical evidence does not cover the proposed Action Space. The Known-Coverage Trap still prohibits treating only-known geometry as complete physical clearance.
 
 ## 6. Continuing Intent Priority
 

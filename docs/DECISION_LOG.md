@@ -1,6 +1,24 @@
+## D-0109 — Accept Traffic Policeman and Encounter-Relative Movement-Priority Refinements
+
+**Status:** Accepted architecture; documentation-only consolidation in v4.7.28 candidate
+
+**Context:** canonical v4.7.27 accepts BNIR but does not yet define which participant may consume contested space while evidence is acquired. Discussion of two-worker Hold release showed that `SETTLED_CONTINUATION` alone is not clearance, a slow BNIR participant can still obstruct the Progress participant, and unconstrained role swapping can merely transfer uncertainty. The same discussion identified recent actual traversal by the real assembly as positive local spatial-admissibility evidence and exposed an over-broad reading of Continuation Safety Horizon as an indefinitely rolling requirement.
+
+**Decision:** accept **Traffic Policeman** as the Decision-level responsibility that assigns/revises temporary `PROGRESS` and `YIELD` movement priority within one Encounter. It does not route or steer. A settled Progress participant can be a stable reference only when its supported continuation corridor is positively compatible with the Yield participant's occupancy and proposed bounded Action Space. BNIR remains physically relevant and loses authority before it consumes Progress demand.
+
+**Role transfer:** temporary movement priority may transfer within one Commitment when the transfer reduces/settles unresolved obligations or materially improves admissible resolution capability. Define **Revelation Oscillation** as repeated intent-invalidating role transfer that merely alternates which participant is unknown without reducing Encounter obligations; it is not progress.
+
+**Demonstrated Traversability:** actual successful occupation/traversal by the real Physical Assembly may supply positive local admissibility evidence within a materially unchanged demonstrated domain. This evidence does not create universal Coverage Closure or prove arbitrary kinematics, configuration sweeps, permanent release or dynamic availability.
+
+**Continuation Safety Horizon refinement:** scope the Horizon to unresolved continuation consequences materially belonging to the current Encounter and its interventions. It does not advance indefinitely through unrelated later manoeuvres. New intent remains part of the current Encounter while materially coupled to unresolved obligations; later materially new convergence after Safe Release may form a fresh Encounter.
+
+**Static-object boundary:** park static-object recovery/avoidance for separate future analysis. Do not infer from BNIR or Traffic Policeman that GIANTS can avoid stationary obstacles or that OuttaMyWay can always automate a bypass.
+
+**Implementation boundary:** no production Decision, live Commitment, BNIR actuator or Control authority is added by v4.7.28.
+
 ## D-0108 — Accept Bounded Native Intent Revelation as an Architectural Evidence-Acquisition Pattern
 
-**Status:** Accepted architecture; live-supported by non-canonical v4.7.26 Single-Worker Transit Intent evidence; consolidated by v4.7.27 candidate
+**Status:** Accepted architecture; live-supported by non-canonical v4.7.26 Single-Worker Transit Intent evidence; canonicalised by owner-declared v4.7.27
 
 **Context:** Same-Job-Episode Safe Release exposed a circular evidence problem. A held worker cannot demonstrate its actual post-Hold native continuation while fully inhibited, the GIANTS traversal route has no demonstrated authoritative Lua cursor, and Hold-induced physical calm cannot establish post-Hold safety. The v4.7.25 route-index probe also failed to establish a native traversal binding. Historical v4.6.63/v4.6.64 evidence separately showed compact native movement and later work restoration/native handover.
 
@@ -14,7 +32,7 @@
 
 **Boundary:** the pattern is capability- and assembly-dependent. It does not assume arbitrary assemblies can move safely in transit state, does not establish Coverage Closure, does not grant clearance during an unresolved manoeuvre sweep, and does not authorise a fixed proving speed or distance. Production Control remains disabled.
 
-**Wider implications:** post-intervention route reacquisition and static-obstacle recovery are plausible future applications because the same pattern may reveal GIANTS continuation after OuttaMyWay creates an admissible movement opportunity. These are hypotheses only. GIANTS is still not assumed to route around a stationary obstacle.
+**Wider implications:** post-intervention route reacquisition remains a possible future application. Static-object recovery/avoidance is now explicitly parked by D-0109 / ADR-0023 for separate architectural analysis and must not be inferred from BNIR. GIANTS is still not assumed to route around a stationary obstacle.
 
 ## D-0107 — Retire Superseded Fixed-Horizon Future Predictor After Admission Validation
 

@@ -24,3 +24,4 @@ Architectural Decision Records preserve why significant choices were made. Statu
 - [ADR-0020 — Replacement-Core Implementation Series](ADR-0020-replacement-core-implementation-series.md) — Accepted; implemented by v4.7.0 bootstrap
 - [ADR-0021 — Field World Equivalence Authority](ADR-0021-field-world-equivalence-authority.md) — Accepted architecture; implementation pending
 - [ADR-0022 — Bounded Native Intent Revelation](ADR-0022-bounded-native-intent-revelation.md) — Accepted architecture; live-supported for Condor by v4.7.26 evidence; production implementation pending
+- [ADR-0023 — Traffic Policeman and Encounter-Relative Movement Priority](ADR-0023-traffic-policeman-movement-priority.md) — Accepted architectural concept/refinement; documentation-only; production implementation absent

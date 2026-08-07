@@ -1,3 +1,21 @@
+## 2026-08-07 — Traffic Policeman discovered during two-worker BNIR/Safe Release reconciliation
+
+**Observation:** after B completes its native manoeuvre and returns to authoritative settled continuation, A may still require BNIR to reveal post-Hold native intent. `SETTLED_CONTINUATION` alone does not establish spatial safety, and an A creeping under BNIR can itself become a slow physical obstacle to B.
+
+**Discussion:** the missing responsibility is not another route predictor or actuator. Decision needs a traffic-level responsibility that decides which participant currently has permission to consume contested space while GIANTS retains route and steering ownership. Temporary Yield/Progress roles may need to change as Reality changes, but arbitrary swaps can simply transfer uncertainty.
+
+**Discovery — Traffic Policeman:** accepted by the user as architecture. Traffic Policeman assigns/revises temporary movement priority inside one Encounter, protects the Progress participant's supported corridor, governs whether BNIR or another bounded Yield action remains admissible, and may transfer roles only when the transfer produces genuine resolution progress.
+
+**Discovery — Revelation Oscillation:** repeated Control transfer that invalidates one participant's authoritative intent merely to reveal the other, then reverses again without reducing unresolved obligations, is not progress.
+
+**Refinement — Demonstrated Traversability:** the real assembly's own recent successful occupation/traversal can provide positive local spatial-admissibility evidence in a materially unchanged bounded domain. This can support ordinary straight-continuation interruption or return through a recently traversed refuge corridor without pretending incomplete synthetic geometry is complete. It does not prove arbitrary reverse kinematics, configuration sweeps or current availability against dynamic workers.
+
+**Refinement — Encounter-relative Continuation Safety Horizon:** the Horizon settles continuation consequences materially belonging to the current Encounter/interventions; it is not an indefinitely advancing requirement to witness every later manoeuvre of every active worker.
+
+**Deferred problem:** static-object recovery/avoidance is intentionally parked for dedicated future analysis and may ultimately require player intervention if safe automation cannot be established.
+
+**Repository response:** v4.7.28 records ADR-0023 and reconciles ADR-0006, ADR-0012 and ADR-0022 plus glossary/concept/decision/status/conformance records. Runtime behaviour remains passive; no production BNIR/Traffic Policeman Control implementation is introduced.
+
 ## 2026-08-07 — Bounded Native Intent Revelation accepted after v4.7.26 live PASS
 
 **Problem:** Same-Job-Episode release required positive knowledge of what a held worker would do after Hold, but the complete GIANTS route/cursor is not exposed and the held state itself suppresses the evidence. Predicting the route would reintroduce a rejected architecture dependency.

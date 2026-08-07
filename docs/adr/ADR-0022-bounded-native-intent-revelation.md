@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted architectural concept; live-supported for Condor Endurance II by non-canonical v4.7.26; production implementation absent from canonical v4.7.24 and v4.7.27 candidate.
+Accepted architectural concept; live-supported for Condor Endurance II by non-canonical v4.7.26 and canonicalised architecturally in v4.7.27; production implementation remains absent.
 
 ## Context
 
@@ -56,13 +56,13 @@ Bounded Native Intent Revelation is available only when the relevant Physical As
 - restoration of OuttaMyWay-owned dynamic configuration mutations;
 - adequate representation and Effective Actuation Composition for the attempted movement.
 
-A low numerical speed does not independently make unsafe geometry safe. Incomplete Inventory/Coverage Closure, articulation, rotational sweep or configuration transition uncertainty can still make the candidate inadmissible.
+A low numerical speed does not independently make unsafe geometry safe. Incomplete Inventory/Coverage Closure, articulation, rotational sweep or configuration transition uncertainty can still make the candidate inadmissible. ADR-0023 additionally permits bounded positive spatial-admissibility evidence from recent Demonstrated Traversability when the real Physical Assembly, configuration, local domain and relevant kinematics remain materially applicable; this does not create universal Coverage Closure.
 
 ### Evidence contract
 
 The bounded interval must identify the unresolved proposition, expected native evidence, permitted authority, exhaustion/fail-safe condition and reassessment trigger. Elapsed time, distance or a fixed speed may be experimental bounds but do not become architecture merely because one fixture passed.
 
-If GIANTS does not reveal useful intent, becomes blocked, changes configuration unexpectedly, the Job Episode ends, or the evidence contract exhausts, the result is unresolved/revision rather than inferred clearance.
+If GIANTS does not reveal useful intent, becomes blocked, changes configuration unexpectedly, the Job Episode ends, the Progress participant materially changes its supported demand, or the evidence contract exhausts, the result is unresolved/revision rather than inferred clearance. BNIR completes on useful authoritative evidence, not on a production-fixed time or travel distance.
 
 ## Live evidence
 
@@ -79,12 +79,13 @@ The 1 km/h and 2 m values are evidence-fixture parameters only.
 - **ADR-0009/ADR-0011:** preserved. Configuration restoration and native handover remain separate obligations.
 - **ADR-0012:** preserved. Later materially new convergence may form a fresh Encounter after a prior Commitment truly reaches Safe Release.
 - **ADR-0017:** amended. Hold-induced calm is still invalid release evidence; synthetic route/speed projection is not the required way to satisfy the counterfactual knowledge need.
+- **ADR-0023:** Traffic Policeman governs temporary movement priority for BNIR. The revelation participant remains a physical obstacle, must preserve the Progress participant's supported corridor, and may be re-Held when that evidence changes.
 
 ## Wider implications
 
-Cooperative Hold release is the first intended application. The concept may also prove useful for post-intervention route reacquisition or static-obstacle recovery: OuttaMyWay could create an admissible movement opportunity and then permit GIANTS to reveal how it resumes its own job. This does not imply that GIANTS can route around a stationary obstacle and grants no obstacle-avoidance authority by itself.
+Cooperative Hold release is the first intended application. Other uses remain architectural hypotheses until independently discussed and validated.
 
-Other applications are architectural hypotheses until independently discussed and validated.
+Static-object recovery/avoidance is specifically parked by ADR-0023 for separate future analysis. BNIR must not be treated as obstacle-avoidance authority or as evidence that GIANTS can route around a stationary obstacle.
 
 ## Consequences
 

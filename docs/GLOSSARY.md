@@ -160,7 +160,16 @@ A state that appears safe only because an active intervention suppresses the mot
 The requirement to account for native continuation after a Hold is relaxed or removed rather than treating the current held state as release evidence. ADR-0022 permits this knowledge gap to be resolved through admissible Bounded Native Intent Revelation while the governing Commitment remains responsible.
 
 ### Bounded Native Intent Revelation
-An accepted evidence-acquisition pattern in which OuttaMyWay retains the governing Commitment while permitting tightly bounded GIANTS-native motion sufficient to reveal actual post-intervention Local Intent. A proven transit configuration may be used where needed; the assembly may be re-Held and OuttaMyWay-owned configuration mutations restored before unrestricted native handover. The pattern is not Safe Release, does not reconstruct the GIANTS route and carries no fixed speed or distance literal.
+An accepted evidence-acquisition pattern in which OuttaMyWay retains the governing Commitment while permitting tightly bounded GIANTS-native motion sufficient to reveal actual post-intervention Local Intent. A proven transit configuration may be used where needed; the assembly may be re-Held and OuttaMyWay-owned configuration mutations restored before unrestricted native handover. The pattern is not Safe Release, does not reconstruct the GIANTS route and carries no fixed speed or distance literal. The revelation participant remains a Physical Assembly obstacle and holds no movement priority merely because its speed is bounded.
+
+### Traffic Policeman
+The Decision-level responsibility inside an Encounter that assigns and revises temporary movement priority between cooperating participants. It may classify participants as temporary `PROGRESS` and `YIELD` roles and decide whether bounded capabilities preserve current right-of-way. It does not route, steer or replace GIANTS.
+
+### Demonstrated Traversability
+Positive local spatial-admissibility evidence supplied by actual successful occupation or traversal of the real Physical Assembly under materially applicable configuration and movement conditions. It is bounded to the demonstrated local domain and does not prove arbitrary future manoeuvres, reverse kinematics, permanent release or current availability against dynamic participants.
+
+### Revelation Oscillation
+A non-progress failure mode in which successive Control transfers repeatedly invalidate the authoritative intent used to reveal the other participant, causing unresolved intent to alternate between participants without reducing the governing Encounter's unresolved obligations.
 
 **Atomic refuge transition** — A candidate-bound replacement movement whose endpoint, path, temporal budget and Progress preservation are validated before Control changes the active target or side frame. Rejection leaves the current refuge unchanged.
 
@@ -828,7 +837,7 @@ A sequence of linked conflicts in which changing one encounter's timing or form 
 The accepted boundary at which every applicable release obligation is positively satisfied: intended operational effect, observed Control outcome, no blocked participant, Future-Space clearance through the Continuation Safety Horizon, resolved material uncertainty, restoration safety and observed independent GIANTS continuation.
 
 ## Continuation Safety Horizon
-The accepted event-bounded future continuation that must remain clear before release can be considered safe. Its minimum extent is each relevant participant's next material local manoeuvre, manoeuvre sweep and subsequent trajectory settlement.
+The accepted Encounter-relative event-bounded future continuation that must remain clear before release can be considered safe. It covers unresolved continuation consequences materially belonging to the governing Encounter and its interventions, including the relevant next material local manoeuvre, manoeuvre sweep and subsequent trajectory settlement while those consequences remain coupled. It does not roll indefinitely through unrelated later manoeuvres of still-active participants.
 
 ## Commitment
 A persistent intention with explicit creation, maintenance, completion and cancellation lifecycle semantics.

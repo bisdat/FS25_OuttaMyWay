@@ -45,7 +45,7 @@ The public Control outcome must preserve every postcondition needed by Commitmen
 
 ### Repeated role assessment
 
-Yield and Progress roles are recalculated from current Reality for every Encounter. Later refuge selection remains clearance-first, considers both sides, requires field containment and uses the existing work-restoration/native-handover lifecycle.
+Yield and Progress roles are recalculated from current Reality for every Encounter. ADR-0023 assigns that temporary movement-priority responsibility to Traffic Policeman at Decision level. Roles may transfer within one Commitment only when current evidence shows that transfer reduces or settles unresolved obligations or materially improves admissible resolution capability; repeatedly swapping which participant is held/unknown without such progress is Revelation Oscillation and is not a valid strategy. Later refuge selection remains clearance-first, considers both sides, requires field containment and uses the existing work-restoration/native-handover lifecycle.
 
 ## Consequences
 

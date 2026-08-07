@@ -1,3 +1,33 @@
+# v4.7.28 Traffic Policeman / Encounter-Relative Movement-Priority Consolidation
+
+## Traffic Policeman
+
+**Classification:** accepted architectural concept; Decision responsibility; no production implementation.
+
+**Purpose:** assign and revise temporary movement priority (`PROGRESS` / `YIELD`) inside one Encounter so bounded capabilities preserve the current priority participant's supported demand without replacing GIANTS route/steering ownership.
+
+**Key boundaries:**
+- `SETTLED_CONTINUATION` is a lifecycle/evidence gate, not spatial clearance; supported corridor compatibility is separately required.
+- A BNIR participant remains a real moving obstacle; low speed does not grant priority.
+- Role transfer is allowed only when it reduces/settles unresolved obligations or materially improves admissible resolution capability.
+- **Revelation Oscillation** — repeatedly swapping which participant is held/unknown without reducing unresolved Encounter obligations — is not progress.
+
+## Demonstrated Traversability
+
+**Classification:** accepted architectural refinement / positive evidence source.
+
+Actual successful occupation/traversal by the real Physical Assembly can positively establish local spatial accommodation within a materially unchanged demonstrated domain, even when synthetic Inventory/Coverage Closure is incomplete. Authority is bounded by configuration, Field World, dynamic occupancy, corridor and kinematic equivalence. It does not prove arbitrary reverse feasibility, configuration sweep, future manoeuvres, permanent release or current availability against another participant.
+
+## Encounter-relative Continuation Safety Horizon
+
+**Classification:** accepted architectural refinement of ADR-0006.
+
+The Horizon covers unresolved continuation consequences materially belonging to the governing Encounter and OuttaMyWay interventions. It does not advance indefinitely through every later manoeuvre of every active participant. A new Local Intent epoch remains in the same Encounter while materially coupled to unresolved obligations; after true Safe Release, later materially new convergence may create a fresh Encounter under ADR-0012.
+
+## Static-object boundary
+
+Static-object recovery/avoidance is deliberately parked for future dedicated architecture analysis. Current BNIR / Traffic Policeman architecture must not imply GIANTS obstacle avoidance or guaranteed OuttaMyWay automation. Player intervention remains a legitimate possible future conclusion.
+
 # v4.7.27 Bounded Native Intent Revelation architecture consolidation
 
 ## Bounded Native Intent Revelation
@@ -15,7 +45,7 @@ The concept protects four separations:
 
 **Counterfactual Hold Release refinement:** Hold-induced calm remains invalid release evidence. The post-Hold continuation requirement may be discharged by bounded observation of actual GIANTS behaviour rather than synthetic route/speed projection when the evidence-acquisition composition itself is admissible.
 
-**Wider implications:** cooperative Hold release is the first intended application. Post-intervention route reacquisition and static-obstacle recovery are plausible future applications, but remain hypotheses. The concept does not grant GIANTS obstacle-avoidance capability and does not authorise movement through unresolved occupancy.
+**Wider implications:** cooperative Hold release is the first intended application. Post-intervention route reacquisition remains a possible future hypothesis. Static-object recovery/avoidance is explicitly parked by v4.7.28 / ADR-0023 for separate analysis; BNIR does not grant GIANTS obstacle-avoidance capability and does not authorise movement through unresolved occupancy.
 
 **Evidence:** v4.7.26 Candidate SHA-256 `43e0fc93fcd7810d8460d11e683ad05adef50ada545c8190a3394f015b260ec0`; FS25 1.21.1.0; field 77; Condor Endurance II; same `giants-ai-job-id:0` through Hold, compact, bounded native creep, re-Hold, restoration and independent native handover.
 

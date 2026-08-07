@@ -151,6 +151,8 @@ ADR-0007 clarifies that the restoration obligation belongs to the Commitment whi
 
 ADR-0022 adds Bounded Native Intent Revelation. Where a held participant's actual post-intervention Local Intent cannot be known without GIANTS movement, a retained Commitment may acquire that evidence through independently admissible bounded native progression rather than reconstructing the GIANTS route. The resulting intent evidence triggers reassessment; it does not itself satisfy the Safe Release Point.
 
+ADR-0023 refines the Continuation Safety Horizon as Encounter-relative. It must cover unresolved continuation consequences materially belonging to the current Encounter and its interventions, but it does not roll indefinitely through every later manoeuvre of every still-active participant. `SETTLED_CONTINUATION` is a lifecycle/evidence condition, not clearance; positive spatial compatibility with the other participant's occupancy/Action Space remains separately required. Later materially new convergence after true Safe Release is handled through a fresh Encounter under ADR-0012.
+
 ## v4.6.71 implementation boundary
 
 This ADR remains canonical architecture. v4.6.71 does not claim that the v4.6.57–v4.6.70 implementations satisfy it; they remain evidence used to refine its preconditions and Safe Release semantics.

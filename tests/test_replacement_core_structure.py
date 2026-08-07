@@ -466,7 +466,7 @@ def test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidenc
     operation=(ROOT/"scripts"/"identity"/"OperationAdmission.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.27"' in config
+    assert 'VERSION = "4.7.28"' in config
     assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     assert "MEMBERSHIP_UPDATED_INCOMPLETE" in operation
     assert "removalDeferred=true" in operation
@@ -489,7 +489,7 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.27"' in config
+    assert 'VERSION = "4.7.28"' in config
     assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" not in config
     for forbidden in ("predictPair(", "evaluateShadowPair(", "composePositiveEvidence(", "legacyShadowPositive", "legacyTCPA", "legacyDCPA"):
@@ -507,3 +507,22 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     for text in (source,assessment,hud,validator,runtime):
         for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
             assert forbidden not in text
+
+
+def test_v4728_traffic_policeman_architecture_is_documented_without_production_control():
+    architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
+    adr=(ROOT/"docs"/"adr"/"ADR-0023-traffic-policeman-movement-priority.md").read_text(encoding="utf-8")
+    glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
+    concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+    assert 'VERSION = "4.7.28"' in config
+    for token in ("Traffic Policeman","Demonstrated Traversability","Revelation Oscillation"):
+        assert token in adr
+        assert token in glossary
+        assert token in concepts
+    assert "Encounter-relative" in adr
+    assert "Static-object recovery/avoidance is deliberately parked" in adr
+    assert "Traffic Policeman" in architecture
+    assert "Control authority disabled" in runtime
+    assert "decisionCommitmentBoundary:apply" not in runtime
