@@ -1,3 +1,27 @@
+# Current v4.7.21 validation boundary
+
+- Field-bounded straight Local Intent is offline-validated but requires live GIANTS validation through a native `straight → turning → straight` sequence.
+- The manoeuvre sweep itself is not yet represented in the replacement core; while `isTurn=true`, Future Space remains explicitly unresolved rather than guessed.
+- The historical ten-second scalar/filtered positive interaction probe remains active solely for Encounter-admission continuity. It is not authoritative Future Space and must not migrate into Decision behavior.
+- Absence of a positive field-bounded continuation intersection cannot establish negative clearance or Safe Release.
+- The v4.7.20 live run exposed a separate lifecycle precedence defect: `MEMBERSHIP_INVALIDATED` can terminate an Encounter one assessment cycle before later Job Episode-end evidence is published. This is not addressed in v4.7.21.
+- Decision remains passive, no live Commitment is applied and Control is disabled.
+
+# Current v4.7.20 validation boundary
+
+- The Encounter Exit Contract has offline coverage and a partial live pass, but active Encounter termination followed by fresh Encounter creation still requires one HUD-guided live run.
+- The temporary Transition HUD is test instrumentation and is not the production OuttaMyWay HUD design.
+- Same-Episode physical clearance remains unresolved; absence of positive evidence cannot terminate an Encounter.
+- Shape-class-unresolved nodes are excluded from shape-bound measurement rather than guessed.
+- Decision remains passive, no live Commitment is applied and Control is disabled.
+
+## v4.7.19 live-validation boundary
+
+- The Encounter Exit Contract is offline-validated but requires one live TS015 stop/restart lifecycle run.
+- Same-Job-Episode physical separation does not terminate an Encounter; negative clearance and Safe Release remain unresolved.
+- The legacy scalar warning `REPRESENTATION_UNFIT_BUT_NEGATIVE_RESULT_USED` remains diagnostically stale when the combined result is unresolved; this wording is non-authoritative and should be corrected separately.
+- Decision remains passive, no live Commitment is applied and Control is disabled.
+
 ## v4.7.18 live-validation boundary
 
 - Positive filtered-footprint evidence admission is offline-validated but not yet live-validated.

@@ -2,9 +2,9 @@
 
 > **Authority:** Replacement-core design boundary
 >
-> **Currency:** v4.7.18 Positive Filtered-Footprint Encounter Admission Candidate; canonical v4.7.17 validates configuration-filtered component representation
+> **Currency:** v4.7.21 Future Space Conformance Candidate; canonical v4.7.18 validates positive Encounter admission
 >
-> **Implementation status:** canonical v4.7.17 validates configuration-filtered cached layered footprints; v4.7.18 admits positive footprint evidence to Encounter Knowledge; Control disabled
+> **Implementation status:** canonical v4.7.18 validates positive footprint Encounter entry; v4.7.21 passively recovers ADR-0006/ADR-0012 Local Intent/Future Space production using native GIANTS turn state and Job-Seeded Field World bounds; Control disabled
 
 ## Purpose
 
@@ -46,6 +46,16 @@ Observation does not interpret operational meaning.
 - publish constraints, uncertainty and evidence gaps.
 
 Situation Assessment produces Knowledge only.
+
+### Encounter Registry
+
+- owns active and terminal Encounter identity;
+- binds each Encounter to one Operation, interaction reference and Job Episode signature;
+- retains active identity when positive evidence is temporarily absent;
+- terminates only from explicit lifecycle evidence;
+- preserves terminal history and prevents restart from reopening it.
+
+The Encounter Registry does not prove same-Episode clearance, select a strategy or actuate vehicles.
 
 ### Decision
 

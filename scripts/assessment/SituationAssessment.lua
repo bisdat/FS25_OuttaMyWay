@@ -91,12 +91,13 @@ local function normalizeDemand(values, map)
     return result
 end
 
-function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, commitments)
+function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, encounters, commitments)
     local self = setmetatable({}, Assessment)
     self.identities = identityRegistry
     self.epochs = epochSequence
     self.jobEpisodes = jobEpisodes
     self.operations = operations
+    self.encounters = encounters
     self.commitments = commitments
     self.publishedCount = 0
     return self
@@ -119,21 +120,63 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     for _, bucket in OuttaMyWay.ValueRecord.pairs(demand) do for _, item in OuttaMyWay.ValueRecord.ipairs(bucket) do if item.assemblyId then relevant[#relevant+1]=item.assemblyId end end end
 
     local situations = {}
+    local situationByOperation={}
+    local operationMembership={}
     for _, operationId in OuttaMyWay.ValueRecord.ipairs(activeOperationIds) do
         local operation = self.operations:get(operationId)
-        for _, id in OuttaMyWay.ValueRecord.ipairs(operation.memberAssemblyIds) do relevant[#relevant+1]=id end
-        situations[#situations+1] = {
+        local memberSet={}
+        for _, id in OuttaMyWay.ValueRecord.ipairs(operation.memberAssemblyIds) do relevant[#relevant+1]=id; memberSet[id]=true end
+        operationMembership[operationId]=memberSet
+        local situation={
             identity = self.identities:resolve("SITUATION", operationId),
             operationId = operationId,
             memberAssemblyIds = operation.memberAssemblyIds,
             relevantAssemblyIds = {},
+            futureSpaceRelationships = {},
             provenance = { observationSnapshotId=snapshot.identity, operationRevision=operation.revision }
         }
+        situations[#situations+1]=situation
+        situationByOperation[operationId]=situation
     end
 
-    local encounters = {}
+    for _, item in OuttaMyWay.ValueRecord.ipairs(snapshot.geometry.futureSpaceRelationshipEvidence or {}) do
+        local subject=resolveAssembly(map,item,"subjectAssemblyReferenceKey")
+        local other=resolveAssembly(map,item,"otherAssemblyReferenceKey")
+        relevant[#relevant+1]=subject; relevant[#relevant+1]=other
+        local operationId=nil
+        for _,candidateOperationId in OuttaMyWay.ValueRecord.ipairs(activeOperationIds) do
+            local members=operationMembership[candidateOperationId] or {}
+            if members[subject] and members[other] then operationId=candidateOperationId; break end
+        end
+        if operationId~=nil then
+            local classification="UNRESOLVED"
+            if item.positiveIntersection==true then classification="FUTURE_SPACE_INTERSECTION"
+            elseif item.subjectLocalIntentClassification=="TURNING" or item.otherLocalIntentClassification=="TURNING" then classification="MANOEUVRING" end
+            local relationship={
+                interactionReferenceKey=item.interactionReferenceKey,
+                subjectAssemblyId=subject,otherAssemblyId=other,
+                classification=classification,
+                positiveIntersection=item.positiveIntersection==true,
+                unresolved=item.unresolved==true,
+                outcome=item.outcome,
+                subjectLocalIntentClassification=item.subjectLocalIntentClassification,
+                otherLocalIntentClassification=item.otherLocalIntentClassification,
+                subjectIntentEpoch=item.subjectIntentEpoch,otherIntentEpoch=item.otherIntentEpoch,
+                subjectBoundaryDistance=item.subjectBoundaryDistance,otherBoundaryDistance=item.otherBoundaryDistance,
+                distance=item.distance,required=item.required,authority=item.authority,
+                negativeClearanceAuthority=false,
+                provenance=item.provenance
+            }
+            local situation=situationByOperation[operationId]
+            situation.futureSpaceRelationships[#situation.futureSpaceRelationships+1]=relationship
+        end
+    end
+    for _,situation in OuttaMyWay.ValueRecord.ipairs(situations) do
+        table.sort(situation.futureSpaceRelationships,function(a,b) return tostring(a.interactionReferenceKey)<tostring(b.interactionReferenceKey) end)
+    end
+
+    local positiveEncounterItems = {}
     local interactionEvidenceByKey = {}
-    local encounterByInteractionKey = {}
     for _, item in OuttaMyWay.ValueRecord.ipairs(snapshot.geometry.interactionEvidence or {}) do
         if item.interactionReferenceKey~=nil then interactionEvidenceByKey[item.interactionReferenceKey]=item end
         local subject = resolveAssembly(map,item,"subjectAssemblyReferenceKey")
@@ -143,23 +186,45 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             if item.interactionReferenceKey == nil then error("interaction evidence requires interactionReferenceKey",2) end
             local operationId = activeOperationIds[1]
             if operationId == nil then error("encounter evidence requires an active Operation",2) end
-            local encounter = {
-                identity = self.identities:resolve("ENCOUNTER", operationId .. "|" .. tostring(item.interactionReferenceKey)),
-                operationId = operationId,
-                subjectAssemblyId = subject,
-                otherAssemblyId = other,
-                relationship = item.currentSpaceIntersects == true and "CURRENT_SPACE_INTERACTION" or "FUTURE_SPACE_CONVERGENCE",
-                evidence = {
+            positiveEncounterItems[#positiveEncounterItems+1]={
+                operationId=operationId,interactionReferenceKey=item.interactionReferenceKey,
+                subjectAssemblyId=subject,otherAssemblyId=other,
+                relationship=item.currentSpaceIntersects == true and "CURRENT_SPACE_INTERACTION" or "FUTURE_SPACE_CONVERGENCE",
+                evidence={
                     interactionReferenceKey=item.interactionReferenceKey,
                     currentSpaceIntersects=item.currentSpaceIntersects == true,
                     futureSpaceConverges=item.futureSpaceConverges == true,
-                    horizon=item.horizon,
-                    provenance=item.provenance
+                    horizon=item.horizon,provenance=item.provenance
                 }
             }
-            encounters[#encounters+1] = encounter
-            encounterByInteractionKey[item.interactionReferenceKey]=encounter
         end
+    end
+
+    local encounterReconciliation=self.encounters:reconcile(snapshot,episodeResult,operationResult,positiveEncounterItems)
+    local positiveObservedByIdentity={}
+    for _,transition in OuttaMyWay.ValueRecord.ipairs(encounterReconciliation.transitions) do
+        if transition.positiveObservedThisAssessment==true then positiveObservedByIdentity[transition.encounterIdentity]=true end
+    end
+    local encounters = {}
+    local encounterByInteractionKey = {}
+    for _,record in OuttaMyWay.ValueRecord.ipairs(encounterReconciliation.activeRecords) do
+        local last=record.lastPositiveEvidence
+        local encounter={
+            identity=record.identity,operationId=record.operationId,
+            subjectAssemblyId=record.subjectAssemblyId,otherAssemblyId=record.otherAssemblyId,
+            subjectJobEpisodeId=record.subjectJobEpisodeId,otherJobEpisodeId=record.otherJobEpisodeId,
+            episodeSignature=record.episodeSignature,relationship=record.relationship,lifecycleState=record.status,
+            evidence={
+                interactionReferenceKey=record.interactionReferenceKey,
+                currentSpaceIntersects=last.currentSpaceIntersects==true,
+                futureSpaceConverges=last.futureSpaceConverges==true,
+                horizon=last.horizon,provenance=last.provenance,
+                positiveObservedThisAssessment=positiveObservedByIdentity[record.identity]==true,
+                lastPositiveObservationSnapshotId=last.provenance and last.provenance.observationSnapshotId or nil
+            }
+        }
+        encounters[#encounters+1]=encounter
+        encounterByInteractionKey[record.interactionReferenceKey]=encounter
     end
     table.sort(encounters,function(a,b) return a.identity < b.identity end)
 
@@ -231,6 +296,8 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         pipeline.operationId=sameOperation and subjectOperation or nil
         pipeline.interactionEvidenceReceived=received
         pipeline.encounterCreated=encounter~=nil
+        pipeline.encounterActive=encounter~=nil
+        pipeline.encounterPositiveObservedThisAssessment=encounter and encounter.evidence.positiveObservedThisAssessment==true or false
         pipeline.encounterIdentity=encounter and encounter.identity or nil
         pipeline.encounterRelationship=encounter and encounter.relationship or nil
         pipeline.subjectRepresentationFitnessState=subjectFitness and subjectFitness.state or nil
@@ -261,13 +328,18 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             pairReferenceKey=interactionReferenceKey,
             operationId=encounter.operationId,
             relationship=encounter.relationship,
+            lifecycleState=encounter.lifecycleState,
             subjectAssemblyId=encounter.subjectAssemblyId,
             otherAssemblyId=encounter.otherAssemblyId,
+            subjectJobEpisodeId=encounter.subjectJobEpisodeId,
+            otherJobEpisodeId=encounter.otherJobEpisodeId,
+            episodeSignature=encounter.episodeSignature,
             currentSpaceIntersects=encounter.evidence.currentSpaceIntersects,
-            futureSpaceConverges=encounter.evidence.futureSpaceConverges
+            futureSpaceConverges=encounter.evidence.futureSpaceConverges,
+            positiveObservedThisAssessment=encounter.evidence.positiveObservedThisAssessment
         }
-        if interactionEvidenceByKey[interactionReferenceKey]==nil then
-            appendContradiction(diagnosticContradictions,"ENCOUNTER_WITHOUT_INTERACTION_EVIDENCE",{pairReferenceKey=interactionReferenceKey,encounterIdentity=encounter.identity,operationId=encounter.operationId})
+        if encounter.evidence.positiveObservedThisAssessment==true and interactionEvidenceByKey[interactionReferenceKey]==nil then
+            appendContradiction(diagnosticContradictions,"POSITIVE_ENCOUNTER_WITHOUT_CURRENT_INTERACTION_EVIDENCE",{pairReferenceKey=interactionReferenceKey,encounterIdentity=encounter.identity,operationId=encounter.operationId})
         end
     end
     table.sort(encounterDiagnostics,function(a,b) return tostring(a.encounterIdentity)<tostring(b.encounterIdentity) end)
@@ -303,11 +375,14 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             interactionEvidenceEmittedCount=sourceCounters.interactionEvidenceEmittedCount or 0,
             interactionEvidenceReceivedCount=OuttaMyWay.ValueRecord.length(snapshot.geometry.interactionEvidence or {}),
             operationSituationCount=#situations,
-            encounterCreatedCount=#encounters
+            encounterCreatedCount=#encounters,
+            activeEncounterCount=#encounters,
+            encounterLifecycleTransitionCount=#encounterReconciliation.transitions
         },
         assemblyDiagnostics=assemblyDiagnostics,
         pairPipeline=pairPipeline,
         encounterDiagnostics=encounterDiagnostics,
+        encounterLifecycleTransitions=encounterReconciliation.transitions,
         contradictions=diagnosticContradictions,
         provenance={source="SituationAssessment diagnostic handoff",observationSnapshotId=snapshot.identity}
     }

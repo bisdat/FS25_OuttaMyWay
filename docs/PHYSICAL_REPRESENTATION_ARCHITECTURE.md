@@ -1,3 +1,7 @@
+## v4.7.19 implementation note — representation absence does not terminate Encounter Knowledge
+
+v4.7.19 changes no physical representation or positive predicate. It records the consequence of the existing permission model: when a current footprint sample is non-positive or unavailable, the result remains `CLEARANCE_UNRESOLVED`. Therefore, current evidence absence cannot terminate an already supported Encounter. Explicit lifecycle evidence governs exit until a separate same-Episode clearance contract is established.
+
 ## v4.7.18 implementation note — positive evidence may cross the assessment boundary
 
 Canonical v4.7.17 established configuration-filtered participating component footprints in GIANTS Reality. v4.7.18 permits those footprints to support positive current interaction or positive bounded future convergence. The bridge is monotonic: unresolved footprint evidence cannot remove an existing scalar positive and cannot establish negative clearance. This is implementation of the existing Representation Passport permission, not a new representation concept.
@@ -7,6 +11,12 @@ Canonical v4.7.17 established configuration-filtered participating component foo
 The v4.7.16 live test demonstrated that a complete instantiated asset inventory may contain mutually exclusive shop configurations. A Configuration Profile must therefore select current physical participants rather than transform every cached primitive. v4.7.17 implements this existing architectural distinction through runtime compound-child evidence and explicit inactive/unresolved inventories. This note records implementation conformance; it does not add a new representation authority.
 
 # Physical Representation Architecture
+
+## v4.7.20 Shape-Type Gate implementation note
+
+Shape-bound APIs require positive runtime Shape-class evidence. `getHasClassId(entity, ClassIds.SHAPE)` is evaluated before any geometry, local-bound or world-bound call. Non-shape transform groups are retained as rejected inventory evidence and do not trigger invalid GIANTS API calls. An unavailable class query remains unresolved; it is not permission to guess or call speculatively.
+
+This gate changes implementation safety only. It does not establish Inventory Closure, Coverage Closure, negative clearance or Control authority.
 
 ## Purpose
 

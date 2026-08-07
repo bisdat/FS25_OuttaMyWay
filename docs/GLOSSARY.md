@@ -1,3 +1,27 @@
+## Diagnostic Signal Saturation
+
+A testability failure in which the evidence channel contains the required transition but surrounding output makes timely human recognition impractical.
+
+## Transition HUD
+
+Temporary diagnostic-only screen text driven by lifecycle transitions. It instructs the player when to stop, restart and re-establish the test encounter. It carries no Decision or Control authority.
+
+## Shape-Type Gate
+
+The requirement that a runtime Entity positively reports `ClassIds.SHAPE` before OuttaMyWay invokes GIANTS shape-bound APIs on it. A transform group or unresolved class is rejected without making the invalid call.
+
+## Encounter Exit Contract
+
+The lifecycle rule that an active Encounter remains valid while its Operation, interaction relationship and participating Job Episodes remain valid. Temporary absence of positive interaction evidence does not terminate it because absence is not proof of clearance. Termination requires explicit lifecycle evidence.
+
+## Encounter Episode Signature
+
+The unordered identity pair of the participating Job Episodes recorded by an Encounter. A restarted or replacement job changes the signature and cannot inherit or reopen the terminal Encounter associated with the previous Episodes.
+
+## Encounter Termination Evidence
+
+The explicit evidence closing an Encounter, including the terminal reason and relevant Job Episode, Operation or membership facts. Supported v4.7.19 reasons are `JOB_EPISODE_ENDED`, `OPERATION_ENDED`, `MEMBERSHIP_INVALIDATED` and `INTENT_SUPERSEDED`.
+
 ## Field World Equivalence Authority
 
 The authoritative relation that resolves an immutable Job-Seeded Field World Snapshot as `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD` or `UNRESOLVED` against accepted Field World evidence. It requires positive spatial evidence and Field-World-wide coherence. Unresolved evidence grants no Operation or Control authority.

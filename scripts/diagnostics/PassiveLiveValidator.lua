@@ -55,27 +55,37 @@ local function contains(values,target)
     return false
 end
 
+local function futureSpaceRelationships(picture)
+    local result={}
+    for _,situation in OuttaMyWay.ValueRecord.ipairs(picture and picture.situations or {}) do
+        for _,relationship in OuttaMyWay.ValueRecord.ipairs(situation.futureSpaceRelationships or {}) do
+            result[#result+1]=relationship
+        end
+    end
+    table.sort(result,function(a,b) return tostring(a.interactionReferenceKey)<tostring(b.interactionReferenceKey) end)
+    return result
+end
 function Validator.new(runtime,source,support,probe,fieldWorldSnapshots)
     return setmetatable({
         runtime=runtime,source=source,support=support,probe=probe,fieldWorldSnapshots=fieldWorldSnapshots,
         elapsed=0,lastLogAt=-math.huge,lastSignature=nil,records={},errorCount=0,
-        acquisitionSignatures={},assemblyDiagnosticSignatures={},profileDiagnosticSignatures={},warningLastAt={},
-        previousEncounters={},previousPairs={},lastEncounterHeartbeatAt=-math.huge
+        acquisitionSignatures={},assemblyDiagnosticSignatures={},profileDiagnosticSignatures={},pairDiagnosticSignatures={},warningLastAt={},
+        previousEncounters={},previousPairs={},lastEncounterHeartbeatAt=-math.huge,futureSpaceHud=OuttaMyWay.FutureSpaceHud.new(),futureSpaceLogSignatures={}
     },Validator)
 end
 function Validator:loadMap()
     self.elapsed=0; self.lastSignature=nil; self.lastLogAt=-math.huge; self.records={}; self.errorCount=0
-    self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.warningLastAt={}; self.previousEncounters={}; self.previousPairs={}; self.lastEncounterHeartbeatAt=-math.huge
+    self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.pairDiagnosticSignatures={}; self.warningLastAt={}; self.previousEncounters={}; self.previousPairs={}; self.lastEncounterHeartbeatAt=-math.huge; self.futureSpaceLogSignatures={}; self.futureSpaceHud:reset()
     self.source:reset(); if self.probe~=nil then self.probe:reset() end; if self.fieldWorldSnapshots~=nil then self.fieldWorldSnapshots:reset() end
-    logInfo("Field World Equivalence Authority, bounded interaction diagnostics and passive plan-view representation shadow active; Job Episode geometry cached; predicates unchanged; replacement Control authority disabled")
+    logInfo("Future Space conformance active; GIANTS local intent plus Job-Seeded Field World bounds settled continuation; Decision passive; Control authority disabled")
 end
 function Validator:deleteMap()
     self.source:reset(); if self.probe~=nil then self.probe:reset() end; if self.fieldWorldSnapshots~=nil then self.fieldWorldSnapshots:reset() end
-    self.elapsed=0; self.lastSignature=nil; self.previousEncounters={}; self.previousPairs={}
+    self.elapsed=0; self.lastSignature=nil; self.previousEncounters={}; self.previousPairs={}; self.futureSpaceLogSignatures={}; self.futureSpaceHud:reset()
 end
 function Validator:keyEvent() end
 function Validator:mouseEvent() end
-function Validator:draw() end
+function Validator:draw() self.futureSpaceHud:draw() end
 
 function Validator:_warn(code,details,nowMilliseconds)
     local pair=details and (details.pairReferenceKey or details.assemblyReferenceKey or details.encounterIdentity) or nil
@@ -97,6 +107,7 @@ function Validator:_record(raw)
     local passCandidates,unresolvedCandidates,failedCandidates=candidateVerdictSummary(evaluated)
     local diagnostics=supported.diagnostics or {}
     local counters=diagnostics.counters or {}
+    local assessedFutureSpaceRelationships=futureSpaceRelationships(supported)
     local record=OuttaMyWay.PassiveLiveTraceRecord.new({
         identity=self.runtime.identities:issue("PASSIVE_LIVE_TRACE"),epoch=self.runtime.epochs:next(),timestamp=raw.timestamp,status="TRACE",
         observationSnapshotId=processed.snapshot.identity,operationalPictureId=supported.identity,candidateInventoryId=evaluated.candidateInventory.identity,verdictSetId=evaluated.verdictSet.identity,decisionId=evaluated.decision.identity,
@@ -120,10 +131,16 @@ function Validator:_record(raw)
         interactionEvidenceEmittedCount=counters.interactionEvidenceEmittedCount or 0,
         interactionEvidenceReceivedCount=counters.interactionEvidenceReceivedCount or 0,
         encounterCreatedCount=counters.encounterCreatedCount or 0,
+        activeEncounterCount=counters.activeEncounterCount or 0,
+        encounterLifecycleTransitionCount=counters.encounterLifecycleTransitionCount or 0,
+        admittedEpisodeIds=processed.jobEpisodes.admittedEpisodeIds,endedEpisodeIds=processed.jobEpisodes.endedEpisodeIds,
         assemblyDiagnostics=diagnostics.assemblyDiagnostics or {},
         pairDiagnostics=diagnostics.pairPipeline or {},
         diagnosticContradictions=diagnostics.contradictions or {},
         encounterDiagnostics=diagnostics.encounterDiagnostics or {},
+        encounterLifecycleTransitions=diagnostics.encounterLifecycleTransitions or {},
+        futureSpaceRelationshipCount=#assessedFutureSpaceRelationships,
+        futureSpaceRelationships=assessedFutureSpaceRelationships,
         activeAssemblyReferenceKeys=activeAssemblyReferenceKeys(processed.snapshot),
         provenance={source="PassiveLiveValidator",fieldWorld=supported.provenance,decisionCommitmentBoundaryApplied=false,interactionPredicatesChanged=false}
     })
@@ -151,7 +168,7 @@ function Validator:_logRecordDiagnostics(record,due,nowMilliseconds)
         if self.assemblyDiagnosticSignatures[item.assemblyReferenceKey]~=signature or due then
             self.assemblyDiagnosticSignatures[item.assemblyReferenceKey]=signature
             local bounds=shadow.planViewSummary and shadow.planViewSummary.bounds or nil
-            local stats=shadow.geometryStats or {}            logInfo(string.format("ASSEMBLY assembly=%s name=%s operation=%s activeJobMember=%s pose=%s nodeSource=%s poseReason=%s width=%s length=%s radius=%s assemblyMembers=%d legacyComponentKeys=%d scalarRepresentation=%s footprintRepresentation=%s coverageComplete=%s conservative=%s underApproximationRisk=%s shadowCacheHit=%s shadowMembers=%d shadowEdges=%d shadowInventoryPrimitives=%d shadowParticipatingPrimitives=%d shadowInactivePrimitives=%d shadowUnresolvedPrimitives=%d shadowWorldPrimitives=%d shadowPhysicalPrimitives=%d shadowProfile=%s shadowProfileCacheHit=%s shadowProfiles=%d shadowSelector=%s shadowRuntimeConfirmed=%d shadowDonorFallback=%d shadowBounds=(%s,%s)-(%s,%s) shadowHullPoints=%d geometryAPIMeasurements=%d runtimeActivityChecks=%d hierarchyNodesScanned=%d geometryResolved=%d rootAliasesRejected=%d membershipChanged=%s negativeClearanceAuthority=%s motion=%s reportedSpeed=%s derivedSpeed=%s headingTravelDot=%s yawRateDegPerSec=%s blocked=%s",tostring(item.assemblyReferenceKey),tostring(item.name),tostring(item.operationId or "n/a"),booleanText(item.activeJobVehicleMembership),booleanText(item.poseResolved),tostring(item.nodeSource or "n/a"),tostring(item.poseReason or "n/a"),numberText(item.width),numberText(item.length),numberText(item.radius),tonumber(shadow.memberCount) or 0,tonumber(item.componentCount) or 0,tostring(item.representationFitnessState or "n/a"),shadow.structurallyValid and "PARTIAL_POSITIVE_AUTHORITY" or "UNRESOLVED",booleanText(item.coverageComplete),booleanText(item.conservative),booleanText(item.underApproximationRisk),booleanText(shadow.cacheHit),tonumber(shadow.memberCount) or 0,tonumber(shadow.edgeCount) or 0,tonumber(shadow.inventoryPrimitiveCount or shadow.localPrimitiveCount) or 0,tonumber(shadow.participatingPrimitiveCount) or 0,tonumber(shadow.inactivePrimitiveCount) or 0,tonumber(shadow.unresolvedPrimitiveCount) or 0,tonumber(shadow.worldPrimitiveCount) or 0,tonumber(shadow.physicalPrimitiveCount) or 0,tostring(shadow.configurationProfileId or "n/a"),booleanText(shadow.configurationProfileCacheHit),tonumber(shadow.configurationProfileCount) or 0,tostring(shadow.configurationSelectorSummary or "n/a"),tonumber(shadow.runtimeConfirmedPrimitiveCount) or 0,tonumber(shadow.donorFallbackPrimitiveCount) or 0,numberText(bounds and bounds.minX),numberText(bounds and bounds.minZ),numberText(bounds and bounds.maxX),numberText(bounds and bounds.maxZ),tonumber(shadow.planViewSummary and shadow.planViewSummary.hullPointCount) or 0,tonumber(stats.apiMeasurements) or 0,tonumber(stats.runtimeActivityChecks) or 0,tonumber(stats.hierarchyNodesScanned) or 0,tonumber(stats.resolved) or 0,tonumber(stats.rejectedAliases) or 0,booleanText(shadow.membershipChanged),booleanText(shadow.negativeClearanceAuthority),tostring(motion.classification or "n/a"),numberText(motion.reportedSpeedMps),numberText(motion.positionDerivedSpeedMps),numberText(motion.headingToTravelDot),numberText(motion.yawRateDegreesPerSecond),booleanText(item.blocked)))
+            local stats=shadow.geometryStats or {}            logInfo(string.format("ASSEMBLY assembly=%s name=%s operation=%s activeJobMember=%s pose=%s nodeSource=%s poseReason=%s width=%s length=%s radius=%s assemblyMembers=%d legacyComponentKeys=%d scalarRepresentation=%s footprintRepresentation=%s coverageComplete=%s conservative=%s underApproximationRisk=%s shadowCacheHit=%s shadowMembers=%d shadowEdges=%d shadowInventoryPrimitives=%d shadowParticipatingPrimitives=%d shadowInactivePrimitives=%d shadowUnresolvedPrimitives=%d shadowWorldPrimitives=%d shadowPhysicalPrimitives=%d shadowProfile=%s shadowProfileCacheHit=%s shadowProfiles=%d shadowSelector=%s shadowRuntimeConfirmed=%d shadowDonorFallback=%d shadowBounds=(%s,%s)-(%s,%s) shadowHullPoints=%d geometryAPIMeasurements=%d shapeClassChecks=%d runtimeActivityChecks=%d hierarchyNodesScanned=%d geometryResolved=%d rootAliasesRejected=%d nonShapesRejected=%d shapeClassUnresolved=%d membershipChanged=%s negativeClearanceAuthority=%s motion=%s reportedSpeed=%s derivedSpeed=%s headingTravelDot=%s yawRateDegPerSec=%s blocked=%s",tostring(item.assemblyReferenceKey),tostring(item.name),tostring(item.operationId or "n/a"),booleanText(item.activeJobVehicleMembership),booleanText(item.poseResolved),tostring(item.nodeSource or "n/a"),tostring(item.poseReason or "n/a"),numberText(item.width),numberText(item.length),numberText(item.radius),tonumber(shadow.memberCount) or 0,tonumber(item.componentCount) or 0,tostring(item.representationFitnessState or "n/a"),shadow.structurallyValid and "PARTIAL_POSITIVE_AUTHORITY" or "UNRESOLVED",booleanText(item.coverageComplete),booleanText(item.conservative),booleanText(item.underApproximationRisk),booleanText(shadow.cacheHit),tonumber(shadow.memberCount) or 0,tonumber(shadow.edgeCount) or 0,tonumber(shadow.inventoryPrimitiveCount or shadow.localPrimitiveCount) or 0,tonumber(shadow.participatingPrimitiveCount) or 0,tonumber(shadow.inactivePrimitiveCount) or 0,tonumber(shadow.unresolvedPrimitiveCount) or 0,tonumber(shadow.worldPrimitiveCount) or 0,tonumber(shadow.physicalPrimitiveCount) or 0,tostring(shadow.configurationProfileId or "n/a"),booleanText(shadow.configurationProfileCacheHit),tonumber(shadow.configurationProfileCount) or 0,tostring(shadow.configurationSelectorSummary or "n/a"),tonumber(shadow.runtimeConfirmedPrimitiveCount) or 0,tonumber(shadow.donorFallbackPrimitiveCount) or 0,numberText(bounds and bounds.minX),numberText(bounds and bounds.minZ),numberText(bounds and bounds.maxX),numberText(bounds and bounds.maxZ),tonumber(shadow.planViewSummary and shadow.planViewSummary.hullPointCount) or 0,tonumber(stats.apiMeasurements) or 0,tonumber(stats.shapeClassChecks) or 0,tonumber(stats.runtimeActivityChecks) or 0,tonumber(stats.hierarchyNodesScanned) or 0,tonumber(stats.resolved) or 0,tonumber(stats.rejectedAliases) or 0,tonumber(stats.nonShapeRejected) or 0,tonumber(stats.shapeClassUnresolved) or 0,booleanText(shadow.membershipChanged),booleanText(shadow.negativeClearanceAuthority),tostring(motion.classification or "n/a"),numberText(motion.reportedSpeedMps),numberText(motion.positionDerivedSpeedMps),numberText(motion.headingToTravelDot),numberText(motion.yawRateDegreesPerSecond),booleanText(item.blocked)))
         end
         local profileSignature=table.concat({tostring(shadow.configurationProfileId),tostring(shadow.participatingPrimitiveCount),tostring(shadow.inactivePrimitiveCount),tostring(shadow.unresolvedPrimitiveCount),tostring(shadow.configurationSelectorSummary)},"|")
         if shadow.configurationProfileId~=nil and self.profileDiagnosticSignatures[item.assemblyReferenceKey]~=profileSignature then
@@ -160,49 +177,73 @@ function Validator:_logRecordDiagnostics(record,due,nowMilliseconds)
         end
     end
 
-    local maximum=OuttaMyWay.PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE or 64
-    local logged=0
+    local maximum=OuttaMyWay.PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE or 8
+    local logged,eligibleToLog=0,0
     for _,pair in OuttaMyWay.ValueRecord.ipairs(record.pairDiagnostics or {}) do
-        if logged<maximum then
-            logged=logged+1
-            logInfo(string.format("PAIR pair=%s operation=%s sameOperation=%s subject=%s other=%s eligible=%s evaluated=%s excluded=%s exclusion=%s distance=%s required=%s headingDot=%s relativeSpeed=%s closingRate=%s tCPA=%s dCPA=%s scalarCurrent=%s scalarFuture=%s emitted=%s evidenceSource=%s evidenceAuthority=%s received=%s encounter=%s outcome=%s footprintOutcome=%s footprintCurrent=%s footprintFuture=%s footprintTCPA=%s footprintDCPA=%s footprintRequired=%s footprintPrimitives=%d+%d footprintAuthority=%s subjectBlocked=%s otherBlocked=%s",tostring(pair.pairReferenceKey),tostring(pair.operationId or "n/a"),booleanText(pair.sameOperation),tostring(pair.subjectAssemblyReferenceKey),tostring(pair.otherAssemblyReferenceKey),booleanText(pair.eligible),booleanText(pair.evaluated),booleanText(pair.excluded),tostring(pair.exclusionReason or "n/a"),numberText(pair.distance),numberText(pair.required),numberText(pair.headingDot),numberText(pair.relativeSpeedMps),numberText(pair.closingRate),numberText(pair.tcpa),numberText(pair.cpa),booleanText(pair.currentSpaceIntersects),booleanText(pair.futureSpaceConverges),booleanText(pair.interactionEvidenceEmitted),tostring(pair.interactionEvidenceSource or "n/a"),tostring(pair.interactionEvidenceAuthority or "n/a"),booleanText(pair.interactionEvidenceReceived),booleanText(pair.encounterCreated),tostring(pair.principalOutcome or pair.exclusionReason or "n/a"),tostring(pair.shadowOutcome or "n/a"),booleanText(pair.shadowCurrentSpaceIntersects),booleanText(pair.shadowFutureSpaceConverges),numberText(pair.shadowTCPA),numberText(pair.shadowDCPA),numberText(pair.shadowRequired),tonumber(pair.shadowSubjectPhysicalPrimitiveCount) or 0,tonumber(pair.shadowOtherPhysicalPrimitiveCount) or 0,tostring(pair.shadowAuthority or "n/a"),booleanText(pair.subjectBlocked),booleanText(pair.otherBlocked)))
+        local signature=table.concat({tostring(pair.operationId),tostring(pair.episodeSignature),tostring(pair.eligible),tostring(pair.evaluated),tostring(pair.exclusionReason),tostring(pair.principalOutcome),tostring(pair.shadowOutcome),tostring(pair.interactionEvidenceEmitted),tostring(pair.interactionEvidenceReceived),tostring(pair.encounterCreated),tostring(pair.subjectBlocked),tostring(pair.otherBlocked)},"|")
+        local changed=self.pairDiagnosticSignatures[pair.pairReferenceKey]~=signature
+        if changed then self.pairDiagnosticSignatures[pair.pairReferenceKey]=signature end
+        if changed or due then
+            eligibleToLog=eligibleToLog+1
+            if logged<maximum then
+                logged=logged+1
+                logInfo(string.format("PAIR pair=%s operation=%s sameOperation=%s subject=%s other=%s eligible=%s evaluated=%s excluded=%s exclusion=%s distance=%s required=%s headingDot=%s relativeSpeed=%s closingRate=%s tCPA=%s dCPA=%s scalarCurrent=%s scalarFuture=%s emitted=%s evidenceSource=%s evidenceAuthority=%s received=%s encounter=%s outcome=%s footprintOutcome=%s footprintCurrent=%s footprintFuture=%s footprintTCPA=%s footprintDCPA=%s footprintRequired=%s footprintPrimitives=%d+%d footprintAuthority=%s subjectBlocked=%s otherBlocked=%s",tostring(pair.pairReferenceKey),tostring(pair.operationId or "n/a"),booleanText(pair.sameOperation),tostring(pair.subjectAssemblyReferenceKey),tostring(pair.otherAssemblyReferenceKey),booleanText(pair.eligible),booleanText(pair.evaluated),booleanText(pair.excluded),tostring(pair.exclusionReason or "n/a"),numberText(pair.distance),numberText(pair.required),numberText(pair.headingDot),numberText(pair.relativeSpeedMps),numberText(pair.closingRate),numberText(pair.tcpa),numberText(pair.cpa),booleanText(pair.currentSpaceIntersects),booleanText(pair.futureSpaceConverges),booleanText(pair.interactionEvidenceEmitted),tostring(pair.interactionEvidenceSource or "n/a"),tostring(pair.interactionEvidenceAuthority or "n/a"),booleanText(pair.interactionEvidenceReceived),booleanText(pair.encounterCreated),tostring(pair.principalOutcome or pair.exclusionReason or "n/a"),tostring(pair.shadowOutcome or "n/a"),booleanText(pair.shadowCurrentSpaceIntersects),booleanText(pair.shadowFutureSpaceConverges),numberText(pair.shadowTCPA),numberText(pair.shadowDCPA),numberText(pair.shadowRequired),tonumber(pair.shadowSubjectPhysicalPrimitiveCount) or 0,tonumber(pair.shadowOtherPhysicalPrimitiveCount) or 0,tostring(pair.shadowAuthority or "n/a"),booleanText(pair.subjectBlocked),booleanText(pair.otherBlocked)))
+            end
         end
     end
-    local pairCount=OuttaMyWay.ValueRecord.length(record.pairDiagnostics or {})
-    if pairCount>maximum then logWarning(string.format("code=PAIR_DIAGNOSTIC_LOG_TRUNCATED recorded=%d logged=%d operationalPairEvaluationUnchanged=true",pairCount,maximum)) end
+    if eligibleToLog>maximum then logWarning(string.format("code=PAIR_DIAGNOSTIC_LOG_TRUNCATED eligible=%d logged=%d operationalPairEvaluationUnchanged=true",eligibleToLog,maximum)) end
     for _,item in OuttaMyWay.ValueRecord.ipairs(record.diagnosticContradictions or {}) do self:_warn(item.code,item,nowMilliseconds) end
 end
 
+function Validator:_logFutureSpaceRelationships(record)
+    for _,relationship in OuttaMyWay.ValueRecord.ipairs(record.futureSpaceRelationships or {}) do
+        local key=tostring(relationship.interactionReferenceKey or "pair")
+        local signature=table.concat({
+            tostring(relationship.classification),tostring(relationship.outcome),
+            tostring(relationship.subjectIntentEpoch),tostring(relationship.otherIntentEpoch),
+            tostring(relationship.subjectLocalIntentClassification),tostring(relationship.otherLocalIntentClassification),
+            numberText(relationship.subjectBoundaryDistance),numberText(relationship.otherBoundaryDistance)
+        },"|")
+        if self.futureSpaceLogSignatures[key]~=signature then
+            self.futureSpaceLogSignatures[key]=signature
+            logInfo(string.format("FUTURE_SPACE pair=%s classification=%s outcome=%s subjectIntent=%s/%s otherIntent=%s/%s subjectBoundary=%s otherBoundary=%s positive=%s unresolved=%s authority=%s control=false",
+                key,tostring(relationship.classification),tostring(relationship.outcome),
+                tostring(relationship.subjectLocalIntentClassification),tostring(relationship.subjectIntentEpoch),
+                tostring(relationship.otherLocalIntentClassification),tostring(relationship.otherIntentEpoch),
+                numberText(relationship.subjectBoundaryDistance),numberText(relationship.otherBoundaryDistance),
+                booleanText(relationship.positiveIntersection),booleanText(relationship.unresolved),tostring(relationship.authority or "n/a")))
+        end
+    end
+end
+
 function Validator:_logLifecycle(records,nowMilliseconds)
-    local currentEncounters,currentPairs,activeReferences={}, {}, {}
-    local globalOperations=0
+    local currentPairs,activeReferences,transitions={}, {}, {}
     for _,record in ipairs(records) do
-        globalOperations=math.max(globalOperations,tonumber(record.globalActiveOperationCount) or 0)
         for _,referenceKey in OuttaMyWay.ValueRecord.ipairs(record.activeAssemblyReferenceKeys or {}) do activeReferences[referenceKey]=true end
         for _,pair in OuttaMyWay.ValueRecord.ipairs(record.pairDiagnostics or {}) do currentPairs[pair.pairReferenceKey]=pair end
-        for _,encounter in OuttaMyWay.ValueRecord.ipairs(record.encounterDiagnostics or {}) do currentEncounters[encounter.encounterIdentity]=encounter end
+        for _,transition in OuttaMyWay.ValueRecord.ipairs(record.encounterLifecycleTransitions or {}) do transitions[#transitions+1]=transition end
     end
+    table.sort(transitions,function(a,b)
+        if tostring(a.encounterIdentity)~=tostring(b.encounterIdentity) then return tostring(a.encounterIdentity)<tostring(b.encounterIdentity) end
+        return tostring(a.lifecycle)<tostring(b.lifecycle)
+    end)
     local heartbeat=OuttaMyWay.PASSIVE_HEARTBEAT_INTERVAL_MS or 10000
     local retainedDue=nowMilliseconds-self.lastEncounterHeartbeatAt>=heartbeat
     if retainedDue then self.lastEncounterHeartbeatAt=nowMilliseconds end
 
-    for identity,encounter in pairs(currentEncounters) do
-        if self.previousEncounters[identity]==nil then
-            logInfo(string.format("ENCOUNTER lifecycle=CREATED encounter=%s pair=%s operation=%s relationship=%s",tostring(identity),tostring(encounter.pairReferenceKey),tostring(encounter.operationId),tostring(encounter.relationship)))
-        elseif retainedDue then
-            logInfo(string.format("ENCOUNTER lifecycle=RETAINED encounter=%s pair=%s operation=%s relationship=%s",tostring(identity),tostring(encounter.pairReferenceKey),tostring(encounter.operationId),tostring(encounter.relationship)))
-        end
-    end
-    for identity,previous in pairs(self.previousEncounters) do
-        if currentEncounters[identity]==nil then
-            local pair=currentPairs[previous.pairReferenceKey]
-            local reason
-            if globalOperations==0 then reason="OPERATION_ENDED"
-            elseif pair~=nil and (pair.sameOperation~=true or pair.eligible~=true) then reason="PAIR_NO_LONGER_ELIGIBLE"
-            elseif pair~=nil and pair.qualifying~=true then reason="INTERACTION_PREDICATE_CLEARED"
-            elseif pair==nil and (not activeReferences[previous.subjectAssemblyReferenceKey] or not activeReferences[previous.otherAssemblyReferenceKey]) then reason="JOB_EPISODE_ENDED"
-            else reason="EVIDENCE_UNAVAILABLE" end
-            logInfo(string.format("ENCOUNTER lifecycle=LOST encounter=%s pair=%s operation=%s reason=%s",tostring(identity),tostring(previous.pairReferenceKey),tostring(previous.operationId),reason))
+    for _,transition in ipairs(transitions) do
+        if transition.lifecycle=="CREATED" then
+            logInfo(string.format("ENCOUNTER lifecycle=CREATED encounter=%s pair=%s operation=%s relationship=%s episodeSignature=%s",tostring(transition.encounterIdentity),tostring(transition.interactionReferenceKey),tostring(transition.operationId),tostring(transition.relationship),tostring(transition.episodeSignature)))
+        elseif transition.lifecycle=="RETAINED" and retainedDue then
+            logInfo(string.format("ENCOUNTER lifecycle=RETAINED encounter=%s pair=%s operation=%s relationship=%s episodeSignature=%s positiveObserved=%s",tostring(transition.encounterIdentity),tostring(transition.interactionReferenceKey),tostring(transition.operationId),tostring(transition.relationship),tostring(transition.episodeSignature),booleanText(transition.positiveObservedThisAssessment)))
+        elseif transition.lifecycle=="TERMINATED" then
+            local endedEpisode,terminalCause="n/a","n/a"
+            local details=transition.terminalEvidence and transition.terminalEvidence.details or nil
+            local ended=details and details.endedJobEpisodes or nil
+            if ended~=nil then
+                for _,item in OuttaMyWay.ValueRecord.ipairs(ended) do endedEpisode=tostring(item.jobEpisodeId); terminalCause=tostring(item.terminalCause); break end
+            end
+            logInfo(string.format("ENCOUNTER lifecycle=TERMINATED encounter=%s pair=%s operation=%s reason=%s endedEpisode=%s terminalCause=%s episodeSignature=%s",tostring(transition.encounterIdentity),tostring(transition.interactionReferenceKey),tostring(transition.operationId),tostring(transition.terminalReason),endedEpisode,terminalCause,tostring(transition.episodeSignature)))
         end
     end
 
@@ -218,14 +259,6 @@ function Validator:_logLifecycle(records,nowMilliseconds)
         end
     end
 
-    self.previousEncounters={}
-    for identity,encounter in pairs(currentEncounters) do
-        self.previousEncounters[identity]={
-            encounterIdentity=identity,pairReferenceKey=encounter.pairReferenceKey,operationId=encounter.operationId,relationship=encounter.relationship,
-            subjectAssemblyReferenceKey=currentPairs[encounter.pairReferenceKey] and currentPairs[encounter.pairReferenceKey].subjectAssemblyReferenceKey or nil,
-            otherAssemblyReferenceKey=currentPairs[encounter.pairReferenceKey] and currentPairs[encounter.pairReferenceKey].otherAssemblyReferenceKey or nil
-        }
-    end
     self.previousPairs={}
     for pairReferenceKey,pair in pairs(currentPairs) do
         self.previousPairs[pairReferenceKey]={
@@ -263,11 +296,13 @@ function Validator:update(dt)
                 logInfo(string.format("trace=%s field=%s fingerprint=%s locators=%s observed=%d active=%d activeJobVehicles=%d poseResolved=%d episodes=%d admitted=%d ended=%d operations=%d globalOperations=%d operationMembers=%d operationSituations=%d pairCandidates=%d eligiblePairs=%d evaluatedPairs=%d excludedPairs=%d qualifyingPairs=%d interactionEmitted=%d interactionReceived=%d encounters=%d decisionCandidates=%d pass=%d unresolved=%d failed=%d gaps=%d selected=%s decision=%s control=false",result.identity,tostring(result.fieldWorldReferenceKey),tostring(result.fieldWorldFingerprint or "waiting"),#locators>0 and table.concat(locators,",") or "unresolved",result.observedAssemblyCount or 0,result.activeAssemblyCount,result.cycleActiveJobVehicleCount or 0,result.poseResolvedWorkerCount or 0,result.activeJobEpisodeCount,result.admittedEpisodeCount or 0,result.endedEpisodeCount or 0,result.activeOperationCount,result.globalActiveOperationCount or 0,result.activeOperationMemberCount or 0,result.situationCount,result.relevantPairCount or 0,result.eligiblePairCount or 0,result.evaluatedPairCount or 0,result.excludedPairCount or 0,result.qualifyingPairCount or 0,result.interactionEvidenceEmittedCount or 0,result.interactionEvidenceReceivedCount or 0,result.encounterCount,result.candidateCount or 0,result.allPassCandidateCount or 0,result.unresolvedCandidateCount or 0,result.failedCandidateCount or 0,result.unavailableSourceCount or 0,tostring(result.selectedCapability),tostring(result.nonIntervention and result.nonIntervention.classification)))
             end
             self:_logRecordDiagnostics(result,due,nowMilliseconds)
+            self:_logFutureSpaceRelationships(result)
         else
             self.errorCount=self.errorCount+1; logError(tostring(result))
         end
     end
     self:_logLifecycle(sampleRecords,nowMilliseconds)
+    for _,record in ipairs(sampleRecords) do self.futureSpaceHud:observeRecord(record) end
 end
 function Validator:getRecords() local result={}; for i,v in OuttaMyWay.ValueRecord.ipairs(self.records) do result[i]=v end; return result end
 function Validator:getErrorCount() return self.errorCount end

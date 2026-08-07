@@ -1,3 +1,40 @@
+# v4.7.21 Future Space Implementation Conformance
+
+| Concern | Existing requirement | v4.7.21 evidence | Status |
+|---|---|---|---|
+| Architectural provenance | do not invent Future Space architecture already defined by ADR-0006/ADR-0012 | repository archaeology recorded; no new architectural concept introduced | PASS review |
+| Local Intent | material native manoeuvre must invalidate prior settled continuation | GIANTS active-segment `isTurn`; explicit intent-epoch transitions | PASS offline |
+| Spatial horizon | bounded local continuation must not depend on arbitrary time/distance literal | forward intersection with current Job-Seeded Field World boundary | PASS offline |
+| Manoeuvre uncertainty | unrepresented turn sweep must not be guessed | `MANOEUVRE_SWEEP_NOT_YET_REPRESENTED` | PASS offline |
+| Positive relationship | supported Future Spaces may establish positive intersection Knowledge | component-disc swept continuation intersection | PASS offline |
+| Negative authority | non-intersection without coverage closure cannot establish clearance | `NO_NEGATIVE_CLEARANCE_AUTHORITY` | PASS offline |
+| Situation handoff | Future Space result belongs to Situation Assessment, not Decision | `futureSpaceRelationships`; Knowledge-only fixture | PASS offline |
+| Legacy isolation | historical 10-second predictor must not define new Future Space | renamed `LEGACY_POSITIVE_INTERACTION_PROBE_HORIZON_SECONDS`; retained only for prior Encounter probe | PASS offline |
+| Decision/Control | conformance test must not choose or actuate resolution | no Decision boundary apply; `control=false` | PASS |
+
+# v4.7.20 Encounter Exit Live-Gate Instrumentation Conformance
+
+| Concern | Requirement | v4.7.20 evidence | Status |
+|---|---|---|---|
+| Human action boundary | required lifecycle transition must be visible without console scanning | transition-only HUD state machine | PASS offline |
+| Evidence trace | HUD convenience must not replace authoritative evidence | one `[OTM TEST GATE]` line plus sealed trace retention | PASS offline |
+| Diagnostic volume | console throttling must not alter evaluation | pair logging keyed by state change/heartbeat only | PASS offline |
+| Shape API safety | transform groups must not reach shape-bound APIs | `getHasClassId(..., ClassIds.SHAPE)` gate | PASS offline |
+| Lifecycle architecture | v4.7.19 Encounter Exit behavior remains unchanged | registry and assessment fixtures retained | PASS offline |
+| Decision/Control | diagnostics must carry no action authority | no boundary apply; `control=false` | PASS |
+
+# v4.7.19 Encounter Exit Contract Conformance
+
+| Concern | Requirement | v4.7.19 evidence | Status |
+|---|---|---|---|
+| Persistence | temporary absence of positive evidence cannot imply clearance | same Encounter retained with `positiveObservedThisAssessment=false` | PASS offline |
+| Explicit termination | Job Episode end closes the Encounter | terminal record with `JOB_EPISODE_ENDED` and authoritative cause | PASS offline |
+| Non-resurrection | restart cannot reopen terminal identity | old record remains terminal; no active Encounter before renewed evidence | PASS offline |
+| Fresh identity | renewed convergence for new Episode set creates new Encounter | new Episode signature and Encounter identity fixture | PASS offline |
+| Other lifecycle exits | Operation end, membership invalidation and intent supersession are explicit | registry terminal reason contract | PASS offline |
+| Decision boundary | lifecycle Knowledge does not choose action | passive candidate/Decision path unchanged | PASS |
+| Control | no actuation authority | `control=false`; no boundary apply | PASS |
+
 # v4.7.18 Positive Encounter-Admission Conformance
 
 | Concern | Requirement | v4.7.18 evidence | Status |

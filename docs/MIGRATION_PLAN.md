@@ -1,15 +1,44 @@
-## v4.7.18 positive-evidence admission gate
+## v4.7.21 Future Space conformance gate
 
-- Repeat TS015 from the canonical fixture.
-- Confirm the scalar path still reports missing radius.
-- Confirm the filtered footprint reports future convergence and `interactionEvidenceSource=FILTERED_PLAN_VIEW_POSITIVE`.
-- Confirm emitted and received counters both become one and one Encounter is created before contact.
-- Confirm Encounter retention while positive evidence persists and bounded loss when it clears or the Job Episode ends.
-- Confirm Decision remains passive, no Commitment is applied and `control=false`.
+- Use the familiar headland-cross/head-on development sequence without intentional intervention.
+- Observe `OTM FUTURE SPACE` while workers are on settled passes, during the native headland turn, and after the turning worker settles.
+- Confirm `STRAIGHT → measured Field World boundary`, `TURNING`, then a fresh settled Local Intent epoch.
+- Confirm a pair Future-Space intersection is published when the settled continuations geometrically intersect.
+- Treat measured metres as evidence only; no time/distance literal governs admission.
+- Stop before contact once the sequence is captured.
+- Confirm Decision remains passive and `control=false`.
 
-> **Canonical baseline:** v4.7.17  
-> **Current candidate:** v4.7.18  
-> **Architecture authority:** canonical repository architecture plus D-0038
+> **Canonical baseline:** v4.7.18  
+> **Current candidate:** v4.7.21  
+> **Architecture authority:** canonical repository architecture, especially ADR-0006/ADR-0012; implementation correction D-0041
+
+## v4.7.20 HUD-guided Encounter Exit gate
+
+- Follow the transition HUD rather than scanning continuous console diagnostics.
+- Wait for `ENCOUNTER ACTIVE`, then manually stop either AI worker.
+- Wait for `ENCOUNTER TERMINATED`, then restart the stopped worker.
+- After `NEW JOB EPISODE`, re-establish head-on convergence.
+- Stop when `NEW ENCOUNTER CREATED / Test complete` appears.
+- Verify the first Encounter is terminal, the second has a different identity, no stale Episode evidence transfers, and `control=false` throughout.
+- Confirm no GIANTS shape-bound errors are emitted for transform groups.
+
+> **Canonical baseline:** v4.7.18  
+> **Historical candidate:** v4.7.20  
+> **Architecture authority:** canonical repository architecture plus D-0039 and diagnostic correction D-0040
+
+## v4.7.19 Encounter Exit Contract gate
+
+- Establish the standard TS015 positive convergence and confirm `EN-00001 CREATED` then `RETAINED`.
+- Before contact, manually stop one AI worker.
+- Confirm the old Job Episode ends and `EN-00001` reports `TERMINATED reason=JOB_EPISODE_ENDED` with the authoritative terminal cause.
+- Restart the stopped worker and confirm a fresh Job Episode identity.
+- Confirm no Encounter is inherited before renewed positive evidence.
+- Re-establish convergence and confirm a fresh `EN-00002 CREATED`.
+- Confirm the old Encounter remains terminal, Decision stays passive, no Commitment is applied and `control=false`.
+
+> **Canonical baseline:** v4.7.18  
+> **Current candidate:** v4.7.19  
+> **Architecture authority:** canonical repository architecture plus D-0039
 
 ## Historical v4.7.17 configuration-participation gate
 

@@ -1,29 +1,34 @@
 # FS25_OuttaMyWay Roadmap
 
-## Current gate — validate positive footprint Encounter admission
+## Current gate — Future Space implementation conformance
 
-Canonical v4.7.17 closed the configuration-specific footprint gate. The next smallest vertical slice is Knowledge-only admission:
+Canonical v4.7.18 remains the baseline. Repository archaeology confirmed that ADR-0006/ADR-0012 already specify the relevant Future Space, Local Intent and Option Preservation architecture. v4.7.21 tests whether the replacement-core producer conforms to it:
 
-1. preserve the unchanged scalar predictor;
-2. admit a filtered component-footprint positive as interaction evidence;
-3. create and retain one Encounter through the existing Situation Assessment path;
-4. preserve unresolved negative clearance;
-5. preserve passive Decision and zero Control authority.
+1. observe native GIANTS FieldCourse `isTurn` without behavioural thresholds;
+2. publish settled straight Local Intent to the forward Job-Seeded Field World boundary;
+3. expire that straight intent while GIANTS reports a turn;
+4. leave the manoeuvre sweep unresolved rather than guessing it;
+5. advance the Local Intent epoch when GIANTS settles onto the next segment;
+6. publish positive field-bounded continuation intersections as Situation Knowledge only;
+7. retain no negative-clearance authority from non-intersection;
+8. keep Decision, Commitment application and Control passive.
 
-> **Current canonical baseline:** v4.7.17  
-> **Current candidate:** v4.7.18  
+> **Current canonical baseline:** v4.7.18  
+> **Current candidate:** v4.7.21  
 > **Control authority:** disabled
 
 ## Immediate sequence
 
-1. Live-validate v4.7.18 Encounter creation before TS015 contact.
-2. Record Encounter persistence/loss semantics from positive evidence.
-3. Only after Encounter Knowledge is trustworthy, discuss ordinary resolution and priority evidence.
-4. Do not implement physical Control merely because Encounter admission succeeds.
+1. Live-observe a straight/turn/settled headland sequence using the Future Space HUD and log.
+2. Verify that field-bounded Future Space appears materially before the legacy ten-second Encounter probe where the local intent supports it.
+3. Validate Local Intent epoch expiry/revelation against native GIANTS turn state.
+4. Record any unrepresented manoeuvre sweep as unresolved; do not fill it with a literal or guessed route.
+5. Only after Situation Assessment conformance is proven should Decision's already-defined Option Preservation behavior be activated or tested.
+6. Resolve the separate Encounter termination-precedence defect independently.
 
 ## Build-economy rule
 
-One live run should answer the complete evidence-handoff question. Stop before collision once creation and retention are clear.
+One passive run should capture the complete `settled → turning → settled` evidence sequence. No collision is required.
 
 # FS25_OuttaMyWay Roadmap
 

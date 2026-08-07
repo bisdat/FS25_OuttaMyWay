@@ -1,3 +1,44 @@
+## v4.7.21 — Future Space Conformance Candidate
+
+- begins from owner-declared canonical v4.7.18 (`f4568ca...d3de`, Git `118190b8025021dc4164de24802b9df35a012f2c`) while carrying forward the non-canonical v4.7.19/v4.7.20 Encounter lifecycle, Shape-Type Gate and diagnostic throttling work;
+- records repository archaeology confirming that ADR-0006, ADR-0012 and the Concept Register already define Future Space, Local Intent Horizon, Intent Expiry, Option Preservation and spatial commitment; this increment is an implementation-conformance correction, not new architecture;
+- adds targeted GIANTS local-intent observation from the native FieldCourse active-segment `isTurn` flag: settled segments publish `SETTLED_CONTINUATION`, native turn segments publish `TURNING`, and a newly settled post-turn segment advances the local intent epoch;
+- adds `FieldBoundedFutureSpace`, using the current Job-Seeded Field World polygon to bound a settled straight continuation to the nearest forward outer/island boundary without any behavioural time or distance threshold;
+- invalidates straight Local Intent while GIANTS reports a turn; manoeuvre sweep remains explicitly `MANOEUVRE_SWEEP_NOT_YET_REPRESENTED` rather than guessed;
+- evaluates positive intersections between field-bounded component continuations and publishes them as `futureSpaceRelationshipEvidence`; a non-intersection retains `NO_NEGATIVE_CLEARANCE_AUTHORITY`;
+- Situation Assessment publishes `FUTURE_SPACE_INTERSECTION`, `MANOEUVRING` or `UNRESOLVED` relationship Knowledge without creating an Encounter from this new diagnostic evidence and without selecting an action;
+- replaces the v4.7.20 lifecycle-action HUD with a temporary `OTM FUTURE SPACE` diagnostic HUD showing each observed worker's settled/turning state, measured forward boundary extent and pair-intersection state;
+- isolates the historical 10-second current-velocity predictor under `LEGACY_POSITIVE_INTERACTION_PROBE_HORIZON_SECONDS`; it remains solely for continuity of the previously live-validated positive Encounter probe and does not define v4.7.21 Future Space;
+- leaves the v4.7.20 live termination-precedence defect (`MEMBERSHIP_INVALIDATED` preceding later Job Episode-end evidence) open and separate;
+- keeps Decision passive, applies no live Commitment and leaves Control authority disabled;
+- validates the candidate offline with 129 Lua replacement-core tests and 63 Python structural/RRS tests before packaging.
+
+## v4.7.20 — Encounter Exit Live-Gate Instrumentation Candidate
+
+- begins from owner-declared canonical v4.7.18 (`f4568ca...d3de`, Git `118190b8025021dc4164de24802b9df35a012f2c`), carrying forward the v4.7.19 Encounter Exit Contract implementation;
+- records the partial v4.7.19 live run: manual Job Episode end and restart were observed, and a later Encounter was created and retained through positive-evidence absence, but the stop occurred before that Encounter existed so terminal Encounter exit and fresh Encounter creation were not yet tested;
+- names **Diagnostic Signal Saturation**: the required operator transition was buried in continuous console diagnostics, making the live action point impractical to identify;
+- adds a temporary, transition-only HUD below the ordinary game status with explicit instructions for Encounter creation, Job Episode stop, restart, renewed convergence and test completion;
+- emits one matching `[OTM TEST GATE]` console line per HUD transition while preserving detailed evidence in sealed trace records;
+- throttles routine pair console output to state change or heartbeat without changing pair evaluation;
+- adds a **Shape-Type Gate** using `getHasClassId(..., ClassIds.SHAPE)` before any shape-bound API call, rejecting transform groups without invoking invalid GIANTS shape functions;
+- preserves the v4.7.19 Encounter Registry, terminal history and fresh-Episode/fresh-Encounter contract;
+- does not define same-Episode clearance, select responsibility, apply a live Commitment or enable Control.
+
+## v4.7.19 — Encounter Exit Contract Candidate
+
+- begins from owner-declared canonical v4.7.18 (`f4568ca...d3de`, Git `118190b8025021dc4164de24802b9df35a012f2c`);
+- records the v4.7.18 live gate: filtered footprint evidence was emitted and received, `EN-00001` was created and retained, Decision remained passive and Control remained disabled;
+- introduces a first-class `EncounterRegistry` rather than inferring lifecycle solely from diagnostic sample presence;
+- binds an active Encounter to its Operation, interaction reference and participating Job Episode identities;
+- retains the same Encounter when positive evidence is temporarily absent because absence does not establish clearance;
+- terminates an Encounter only from explicit lifecycle evidence: `JOB_EPISODE_ENDED`, `OPERATION_ENDED`, `MEMBERSHIP_INVALIDATED` or `INTENT_SUPERSEDED`;
+- records the ended Job Episode and its authoritative terminal cause in Encounter terminal evidence;
+- prevents a terminal Encounter from reopening after restart or replacement;
+- requires renewed positive evidence to create a fresh Encounter for the new Job Episode set;
+- replaces inferred `ENCOUNTER lifecycle=LOST` diagnostics with explicit `TERMINATED` lifecycle records;
+- does not implement same-Episode safe-separation resolution, responsibility selection, live Commitment application or Control.
+
 ## v4.7.18 — Positive Filtered-Footprint Encounter Admission Candidate
 
 - begins from owner-declared canonical v4.7.17 (`36777de7...d384`, Git `e44cfe1d8195d81dcb5a6bcb65380438a9e0960a`);

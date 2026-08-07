@@ -1,3 +1,20 @@
+# v4.7.21 Future Space conformance classification
+
+**No new architectural concept is introduced by v4.7.21.** Repository validation found the governing concepts already present in ADR-0006, ADR-0012 and this register: Future Space, Local Intent Horizon, Intent Expiry, Option Preservation, Earliest Sufficient Action and Spatial Commitment Precedes Collision Urgency. v4.7.21 is an implementation-conformance recovery using proven GIANTS/field-boundary mechanisms.
+
+# v4.7.20 live-gate observability concepts
+
+- **Diagnostic Signal Saturation** — a condition in which technically complete diagnostic output obscures the transition a human tester must act upon.
+- **Transition HUD** — temporary, transition-driven test instrumentation that displays only the current required operator action.
+- **Shape-Type Gate** — positive Shape-class evidence required before calling a GIANTS shape-bound API.
+
+# v4.7.19 Encounter lifecycle concepts
+
+- **Encounter Exit Contract** — an Encounter persists through temporary absence of positive evidence and terminates only from explicit lifecycle evidence.
+- **Encounter Episode Signature** — the unordered Job Episode identity pair anchoring one Encounter lifecycle.
+- **Terminal Encounter Non-Resurrection** — restart or replacement cannot reopen a terminal Encounter; renewed positive evidence creates a fresh identity.
+- **Evidence Absence Is Not Clearance** — a non-positive or unavailable footprint assessment remains unresolved and cannot terminate an Encounter by itself.
+
 # v4.7.14 Field World equivalence implementation concepts
 
 - **Snapshot Reference** — unique immutable capture identity bound to one Job Episode.

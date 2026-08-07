@@ -1,3 +1,17 @@
+## v4.7.21 Future Space conformance diagnostics
+
+The temporary HUD now reports Local Intent/Future Space rather than operator lifecycle instructions. Settled native GIANTS FieldCourse segments display `STRAIGHT` with the measured forward Job-Seeded Field World boundary extent; native turns display `TURNING`; the pair line reports positive field-bounded Future-Space intersection, manoeuvring unresolved, or no positive intersection observed. Transition-only `[FUTURE-SPACE HUD]` log lines and `[PASSIVE] FUTURE_SPACE` relationship lines preserve the evidence without making the HUD authoritative. Measured distances are diagnostic values, not behavioural thresholds.
+
+## v4.7.20 live-gate observability
+
+The complete evidence record remains in sealed passive traces, but routine pair console output is emitted only on material diagnostic-state change or heartbeat. A temporary Transition HUD presents the current operator instruction. Each HUD transition emits one `[OTM TEST GATE]` line, allowing the final log to be searched without requiring the player to read the console in real time.
+
+A Shape-Type Gate now prevents `getShapeGeometryBoundingSphere`, `getShapeBoundingSphere` and `getShapeWorldBoundingSphere` from being invoked unless the runtime Entity positively reports `ClassIds.SHAPE`.
+
+## v4.7.19 lifecycle diagnostics
+
+Encounter lifecycle is no longer inferred from current-sample presence. The passive validator reports registry transitions: `CREATED`, heartbeat-bounded `RETAINED`, and explicit `TERMINATED` with reason, Job Episode identity and authoritative terminal cause. `LOST` is retired because evidence disappearance is not a lifecycle fact.
+
 # Bounded Live Interaction Diagnostics
 
 ## Purpose

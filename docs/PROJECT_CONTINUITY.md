@@ -1,3 +1,31 @@
+## v4.7.21 Future Space conformance candidate boundary
+
+v4.7.21 ultimately derives from owner-declared canonical v4.7.18 (`f4568ca194a6f83fab93a523608248f8b1c1bce6890f7ce99557c4673a21d3de`, Git `118190b8025021dc4164de24802b9df35a012f2c`). It carries forward non-canonical v4.7.19/v4.7.20 mechanisms while correcting one replacement-core conformance gap.
+
+Repository validation established that Future Space, Local Intent Horizon, Intent Expiry and Option Preservation are already canonical architectural concepts. v4.7.21 does not add a new Future Space concept. It recovers a passive live producer using native GIANTS active-segment turn state plus the current Job-Seeded Field World boundary. Turning invalidates settled straight intent; unrepresented manoeuvre sweep remains unresolved. Positive field-bounded intersections enter Situation Assessment as Knowledge only. The legacy ten-second predictor remains isolated for previous Encounter-admission continuity. Decision, Commitment application and Control remain passive.
+
+## v4.7.20 Encounter Exit live-gate candidate boundary
+
+v4.7.20 derives from owner-declared canonical v4.7.18:
+
+- canonical ZIP SHA-256 `f4568ca194a6f83fab93a523608248f8b1c1bce6890f7ce99557c4673a21d3de`;
+- canonical Git commit `118190b8025021dc4164de24802b9df35a012f2c`;
+- 253 files;
+- clean repository and direct release-byte materialisation.
+
+It carries forward the non-canonical v4.7.19 Encounter Exit Contract, adds disposable HUD guidance and console throttling for the live gate, and prevents shape-bound APIs from being called on non-shape entities. It adds no Decision, Commitment or Control authority.
+
+## v4.7.19 Encounter Exit Contract candidate boundary
+
+v4.7.19 derives from owner-declared canonical v4.7.18:
+
+- canonical ZIP SHA-256 `f4568ca194a6f83fab93a523608248f8b1c1bce6890f7ce99557c4673a21d3de`;
+- canonical Git commit `118190b8025021dc4164de24802b9df35a012f2c`;
+- 253 files;
+- clean repository and direct release-byte materialisation.
+
+Canonical v4.7.18 live-validated positive footprint evidence admission and one retained Encounter. v4.7.19 adds lifecycle persistence and explicit termination only. It does not add same-Episode clearance authority, Decision policy, live Commitment mutation or Control.
+
 ## v4.7.18 positive Encounter-admission candidate boundary
 
 v4.7.18 derives from owner-declared canonical v4.7.17:

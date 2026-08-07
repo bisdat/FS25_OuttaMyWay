@@ -202,7 +202,7 @@ end
 
 function Source:capture(mission, nowSeconds)
     if mission == nil then return {} end
-    local horizon = OuttaMyWay.PASSIVE_FUTURE_HORIZON_SECONDS or 10
+    local legacyInteractionHorizon = OuttaMyWay.LEGACY_POSITIVE_INTERACTION_PROBE_HORIZON_SECONDS or 10
     local groups, present, removeAfterCapture = {}, {}, {}
     local activeList, activeSet = activeVehicleSet(mission)
     local relevantList = relevantVehicles(activeList, self.tracks)
@@ -287,7 +287,10 @@ function Source:capture(mission, nowSeconds)
             local motionDiagnostic = OuttaMyWay.LiveInteractionDiagnostics.deriveMotion(track.diagnosticPose,pose,track.diagnosticTimestamp,nowSeconds,speedMps)
             local components = componentKeys(object)
             local shadowRepresentation = self.assemblyRepresentationCache and self.assemblyRepresentationCache:observe(object,ref,sourceToken,nowSeconds) or nil
+            local localIntentObserved=OuttaMyWay.LocalIntentObservation.observe(object)
+            local localIntent=OuttaMyWay.LocalIntentObservation.updateTrack(track,localIntentObserved)
             track.shadowRepresentation=shadowRepresentation
+            track.localIntent=localIntent
             track.everActive = true; track.active = true; track.object = object; track.pose = pose
             track.diagnosticPose=copyPose(pose); track.diagnosticTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic; track.motionDiagnostic=motionDiagnostic
             track.fieldId = field.fieldId or 0; track.fieldResolved = field.resolved == true; track.fieldEvidence = field
@@ -301,7 +304,7 @@ function Source:capture(mission, nowSeconds)
                 restartObserved = reactivated and not replacementObserved, replacementObserved = replacementObserved,
                 playerPresent = mission.controlledVehicle == object, playerControlled = false, blocked = blockedState(object),
                 speedMps = speedMps, radius = radius, width = width, length = length,
-                sourceJobToken = sourceToken, nativeJobToken = nativeToken, nativeJobTokenSource = jobSource, components = track.components, shadowRepresentation=track.shadowRepresentation,
+                sourceJobToken = sourceToken, nativeJobToken = nativeToken, nativeJobTokenSource = jobSource, components = track.components, shadowRepresentation=track.shadowRepresentation, localIntent=track.localIntent,
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
@@ -332,7 +335,7 @@ function Source:capture(mission, nowSeconds)
                 unresolvedTermination = not playerControlled and not sourceIntentTerminationObserved,
                 blocked = blockedState(object), speedMps = math.abs(tonumber(object.lastSpeedReal) or 0) * 1000,
                 radius = track.radius, width = track.width, length = track.length, sourceJobToken = track.sourceJobToken,
-                nativeJobToken = nil, nativeJobTokenSource = nil, components = track.components or componentKeys(object), shadowRepresentation=track.shadowRepresentation,
+                nativeJobToken = nil, nativeJobTokenSource = nil, components = track.components or componentKeys(object), shadowRepresentation=track.shadowRepresentation, localIntent={classification="UNRESOLVED",intentEpoch=track.localIntentEpoch or 0,intentValid=false,reason="JOB_EPISODE_NOT_ACTIVE",source="RETAINED_TRACK"},
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
@@ -351,7 +354,7 @@ function Source:capture(mission, nowSeconds)
                 fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence, fieldActive = false, aiActive = false,
                 hasFieldWorker = true, activeObserved = false, playerControlled = false, unresolvedTermination = true, objectUnavailable = true,
                 blocked = false, speedMps = 0, radius = track.radius, width = track.width, length = track.length,
-                sourceJobToken = track.sourceJobToken, components = track.components or {}, shadowRepresentation=track.shadowRepresentation,
+                sourceJobToken = track.sourceJobToken, components = track.components or {}, shadowRepresentation=track.shadowRepresentation, localIntent={classification="UNRESOLVED",intentEpoch=track.localIntentEpoch or 0,intentValid=false,reason="RUNTIME_OBJECT_UNAVAILABLE",source="RETAINED_TRACK"},
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
@@ -411,7 +414,7 @@ function Source:capture(mission, nowSeconds)
                 representativeGeometryOnly=representative~=nil,
                 playerFacingFieldLocators=locatorIds,immutableSnapshots=#snapshotKeys>0
             },
-            assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, demandEvidence = {}, interactionEvidence = {}, shadowPlanViewEvidence = {}},
+            assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, futureSpaceRelationshipEvidence = {}, demandEvidence = {}, interactionEvidence = {}, shadowPlanViewEvidence = {}},
             motion = {closureEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
             physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {},
             diagnostics = {
@@ -485,6 +488,7 @@ function Source:capture(mission, nowSeconds)
             local snapshotResolved=worker.fieldWorldSnapshot~=nil
             local worldResolved=worker.fieldWorldResolution~=nil and worker.fieldWorldResolution.fieldWorldReferenceKey~=nil
             local recognised=worker.activeObserved and worldResolved and worker.hasFieldWorker
+            worker.futureSpace=OuttaMyWay.FieldBoundedFutureSpace.build(worker)
             raw.diagnostics.sourceCounters.activeGroupWorkerCount=raw.diagnostics.sourceCounters.activeGroupWorkerCount+(worker.activeObserved and 1 or 0)
             raw.diagnostics.sourceCounters.poseResolvedWorkerCount=raw.diagnostics.sourceCounters.poseResolvedWorkerCount+(worker.pose~=nil and 1 or 0)
             raw.diagnostics.assemblyDiagnostics[#raw.diagnostics.assemblyDiagnostics+1]={
@@ -514,6 +518,8 @@ function Source:capture(mission, nowSeconds)
                 conservative=false,
                 underApproximationRisk=true,
                 motion=worker.motionDiagnostic or {classification=worker.activeObserved and "MOTION_EVIDENCE_UNRESOLVED" or "INACTIVE_OR_RETAINED",reason=worker.activeObserved and "NO_DIAGNOSTIC_MOTION_SAMPLE" or "NOT_ACTIVE_FOR_MOTION_PREDICTION"},
+                localIntent=worker.localIntent or {classification="UNRESOLVED",intentEpoch=0,intentValid=false,reason="LOCAL_INTENT_UNAVAILABLE"},
+                futureSpace=worker.futureSpace,
                 fieldWorldReferenceKey=worldResolved and worker.fieldWorldResolution.fieldWorldReferenceKey or nil,
                 fieldWorldSnapshotReferenceKey=snapshotResolved and worker.fieldWorldSnapshot.referenceKey or nil,
                 shadowRepresentation=worker.shadowRepresentation and {
@@ -597,25 +603,34 @@ function Source:capture(mission, nowSeconds)
                     occupancy = {x = worker.pose.x, z = worker.pose.z, headingX = worker.pose.dx, headingZ = worker.pose.dz, width = worker.width, length = worker.length},
                     provenance = {source = worker.activeObserved and "steering-node+size-metadata" or "retained-last-observed-pose"}
                 }
+                local future=worker.futureSpace or {bounded=false,outcome="FUTURE_SPACE_UNRESOLVED",reason="FUTURE_SPACE_NOT_EVALUATED"}
+                local alternatives={}
+                if future.bounded==true then
+                    alternatives[1]={
+                        kind="FIELD_WORLD_BOUNDED_LOCAL_CONTINUATION",
+                        startX=future.startX,startZ=future.startZ,endX=future.endX,endZ=future.endZ,
+                        headingX=future.headingX,headingZ=future.headingZ,boundaryDistance=future.boundaryDistance,
+                        boundarySource=future.boundarySource,intentEpoch=future.intentEpoch,physicalPrimitiveCount=future.physicalPrimitiveCount
+                    }
+                end
                 raw.geometry.futureSpaceEvidence[#raw.geometry.futureSpaceEvidence + 1] = {
                     identity = "live-future:" .. worker.referenceKey, assemblyReferenceKey = worker.referenceKey,
-                    alternatives = worker.activeObserved and {{
-                        kind = "CONSTANT_VELOCITY_CORRIDOR", startX = worker.pose.x, startZ = worker.pose.z,
-                        endX = worker.pose.x + worker.pose.dx * worker.speedMps * horizon,
-                        endZ = worker.pose.z + worker.pose.dz * worker.speedMps * horizon, width = worker.width
-                    }} or {}, horizon = horizon,
-                    provenance = {source = worker.activeObserved and "bounded-live-motion-extrapolation" or "inactive-no-future-motion-assertion"}
+                    alternatives = alternatives,
+                    horizon = {kind="LOCAL_INTENT_HORIZON",expiresOn="NEXT_MATERIAL_MANOEUVRE",spatialLimit=future.bounded==true and "FIELD_WORLD_BOUNDARY" or "UNRESOLVED"},
+                    validityDependencies={"GIANTS active segment state","current pose","Field World snapshot","configuration-filtered physical footprint"},
+                    uncertainty=future.bounded==true and {} or {{kind=future.reason or "FUTURE_SPACE_UNRESOLVED"}},
+                    provenance = {source = "GIANTS_LOCAL_INTENT_PLUS_JOB_SEEDED_FIELD_WORLD",authority=future.authority,negativeClearanceAuthority=false,intentEpoch=future.intentEpoch,intentClassification=future.intentClassification}
                 }
                 if worker.activeObserved then
                     raw.geometry.demandEvidence[#raw.geometry.demandEvidence + 1] = {
                         identity = "live-demand:" .. worker.referenceKey, class = "COMMITTED_DEMAND", assemblyReferenceKey = worker.referenceKey,
-                        space = {kind = "BOUNDED_CONTINUATION", horizon = horizon},
+                        space = {kind = "LOCAL_INTENT_CONTINUATION", futureSpaceIdentity="live-future:" .. worker.referenceKey},
                         basis = {jobEpisodeObserved = true, fieldWorkActive = recognised}, provenance = {source = "GIANTS-active-job-membership"}
                     }
                 end
                 raw.physicalRepresentationEvidence[#raw.physicalRepresentationEvidence + 1] = {
                     assemblyReferenceKey = worker.referenceKey, representationId = "live-representation:" .. worker.referenceKey,
-                    question = "PASSIVE_CONFLICT_SUPPORT", assessmentHorizon = horizon, structurallyValid = worker.radius ~= nil,
+                    question = "PASSIVE_CONFLICT_SUPPORT", assessmentHorizon = legacyInteractionHorizon, structurallyValid = worker.radius ~= nil,
                     refreshRequired = not worker.activeObserved, currentForQuestion = true, coversAssessmentHorizon = false,
                     coverageComplete = false, conservative = false, permittedConclusions = {"CONFLICT_SUPPORT"},
                     uncertainty = {{kind = worker.activeObserved and "METADATA_ENVELOPE_INCOMPLETE" or "RETAINED_POSE_REQUIRES_REFRESH"}},
@@ -667,7 +682,7 @@ function Source:capture(mission, nowSeconds)
                 if eligible then
                     raw.diagnostics.sourceCounters.eligiblePairCount=raw.diagnostics.sourceCounters.eligiblePairCount+1
                     raw.diagnostics.sourceCounters.evaluatedPairCount=raw.diagnostics.sourceCounters.evaluatedPairCount+1
-                    local prediction = pairPrediction(a, b, horizon)
+                    local prediction = pairPrediction(a, b, legacyInteractionHorizon)
                     pairDiagnostic.evaluated=true
                     pairDiagnostic.distance=prediction.distance
                     pairDiagnostic.required=prediction.required
@@ -689,7 +704,7 @@ function Source:capture(mission, nowSeconds)
                     pairDiagnostic.representationFitForNegativeConclusion=false
                     local subjectVelocity={x=prediction.subjectVelocityX or 0,z=prediction.subjectVelocityZ or 0}
                     local otherVelocity={x=prediction.otherVelocityX or 0,z=prediction.otherVelocityZ or 0}
-                    local shadow=OuttaMyWay.PlanViewFootprint.evaluateShadowPair(a.shadowRepresentation,b.shadowRepresentation,horizon,subjectVelocity,otherVelocity)
+                    local shadow=OuttaMyWay.PlanViewFootprint.evaluateShadowPair(a.shadowRepresentation,b.shadowRepresentation,legacyInteractionHorizon,subjectVelocity,otherVelocity)
                     pairDiagnostic.shadowOutcome=shadow.outcome
                     pairDiagnostic.shadowCurrentSpaceIntersects=shadow.current
                     pairDiagnostic.shadowFutureSpaceConverges=shadow.future
@@ -701,6 +716,32 @@ function Source:capture(mission, nowSeconds)
                     pairDiagnostic.shadowSubjectPhysicalPrimitiveCount=shadow.subjectPhysicalPrimitiveCount
                     pairDiagnostic.shadowOtherPhysicalPrimitiveCount=shadow.otherPhysicalPrimitiveCount
                     pairDiagnostic.shadowAuthority=shadow.authority
+
+                    local fieldFuture=OuttaMyWay.FieldBoundedFutureSpace.evaluatePair(a,b,a.futureSpace,b.futureSpace)
+                    pairDiagnostic.futureSpaceOutcome=fieldFuture.outcome
+                    pairDiagnostic.futureSpacePositive=fieldFuture.positive==true
+                    pairDiagnostic.futureSpaceUnresolved=fieldFuture.unresolved==true
+                    pairDiagnostic.futureSpaceAuthority=fieldFuture.authority
+                    pairDiagnostic.futureSpaceDistance=fieldFuture.distance
+                    pairDiagnostic.futureSpaceRequired=fieldFuture.required
+                    pairDiagnostic.futureSpaceSubjectPrimitiveId=fieldFuture.subjectPrimitiveId
+                    pairDiagnostic.futureSpaceOtherPrimitiveId=fieldFuture.otherPrimitiveId
+                    pairDiagnostic.subjectLocalIntentClassification=a.localIntent and a.localIntent.classification or "UNRESOLVED"
+                    pairDiagnostic.otherLocalIntentClassification=b.localIntent and b.localIntent.classification or "UNRESOLVED"
+                    pairDiagnostic.subjectIntentEpoch=a.localIntent and a.localIntent.intentEpoch or 0
+                    pairDiagnostic.otherIntentEpoch=b.localIntent and b.localIntent.intentEpoch or 0
+                    pairDiagnostic.subjectFutureSpaceBoundaryDistance=a.futureSpace and a.futureSpace.boundaryDistance or nil
+                    pairDiagnostic.otherFutureSpaceBoundaryDistance=b.futureSpace and b.futureSpace.boundaryDistance or nil
+                    raw.geometry.futureSpaceRelationshipEvidence[#raw.geometry.futureSpaceRelationshipEvidence+1]={
+                        interactionReferenceKey=pairReferenceKey,
+                        subjectAssemblyReferenceKey=a.referenceKey,otherAssemblyReferenceKey=b.referenceKey,
+                        positiveIntersection=fieldFuture.positive==true,unresolved=fieldFuture.unresolved==true,outcome=fieldFuture.outcome,
+                        subjectLocalIntentClassification=pairDiagnostic.subjectLocalIntentClassification,otherLocalIntentClassification=pairDiagnostic.otherLocalIntentClassification,
+                        subjectIntentEpoch=pairDiagnostic.subjectIntentEpoch,otherIntentEpoch=pairDiagnostic.otherIntentEpoch,
+                        subjectBoundaryDistance=pairDiagnostic.subjectFutureSpaceBoundaryDistance,otherBoundaryDistance=pairDiagnostic.otherFutureSpaceBoundaryDistance,
+                        distance=fieldFuture.distance,required=fieldFuture.required,authority=fieldFuture.authority,negativeClearanceAuthority=false,
+                        provenance={source="FIELD_WORLD_BOUNDED_LOCAL_CONTINUATION_INTERSECTION",subjectPrimitiveId=fieldFuture.subjectPrimitiveId,otherPrimitiveId=fieldFuture.otherPrimitiveId}
+                    }
 
                     -- Positive evidence composition is intentionally one-way. The legacy scalar
                     -- predicate remains unchanged. A filtered component footprint may add positive
@@ -720,7 +761,7 @@ function Source:capture(mission, nowSeconds)
                         raw.geometry.interactionEvidence[#raw.geometry.interactionEvidence + 1] = {
                             interactionReferenceKey = pairReferenceKey,
                             subjectAssemblyReferenceKey = a.referenceKey, otherAssemblyReferenceKey = b.referenceKey,
-                            currentSpaceIntersects = composed.current, futureSpaceConverges = composed.future, horizon = horizon,
+                            currentSpaceIntersects = composed.current, futureSpaceConverges = composed.future, horizon = legacyInteractionHorizon,
                             provenance = {
                                 source = composed.source,
                                 authority = "POSITIVE_INTERACTION_ONLY",
@@ -744,7 +785,7 @@ function Source:capture(mission, nowSeconds)
                         if aToB < 0 then follower, leader = b, a end
                         raw.motion.closureEvidence[#raw.motion.closureEvidence + 1] = {
                             followerAssemblyReferenceKey = follower.referenceKey, leaderAssemblyReferenceKey = leader.referenceKey,
-                            closingObserved = true, closingRate = prediction.closingRate, horizon = horizon,
+                            closingObserved = true, closingRate = prediction.closingRate, horizon = legacyInteractionHorizon,
                             provenance = {source = "relative-live-motion"}
                         }
                     end
@@ -777,7 +818,7 @@ function Source:capture(mission, nowSeconds)
             timestamp = nowSeconds,
             provenance = {source = "LiveObservationSource", mode = "JOB_SEEDED_FIELD_WORLD_EQUIVALENCE_AUTHORITY", noActivity = true},
             fieldWorld = {referenceKey = "field-world:none", fieldPolygonReferenceKey = nil, fieldPolygonReferenceKeys = {}, fieldWorldSnapshotReferenceKeys = {}, operationMembershipEvidenceComplete = true, identityStatus="NO_ACTIVITY"},
-            assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, demandEvidence = {}, interactionEvidence = {}, shadowPlanViewEvidence = {}},
+            assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, futureSpaceRelationshipEvidence = {}, demandEvidence = {}, interactionEvidence = {}, shadowPlanViewEvidence = {}},
             motion = {closureEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
             physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {},
             diagnostics={sourceCounters={cycleActiveJobVehicleCount=cycleDiagnostics.activeJobVehicleCount,cycleRelevantVehicleCount=cycleDiagnostics.relevantVehicleCount,groupWorkerCount=0,activeGroupWorkerCount=0,poseResolvedWorkerCount=0,mathematicallyPossiblePairCount=0,relevantPairCount=0,eligiblePairCount=0,evaluatedPairCount=0,excludedPairCount=0,qualifyingPairCount=0,interactionEvidenceEmittedCount=0},assemblyDiagnostics={},pairDiagnostics={},contradictions={}}

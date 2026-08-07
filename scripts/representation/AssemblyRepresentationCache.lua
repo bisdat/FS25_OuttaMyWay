@@ -174,11 +174,25 @@ function Cache:endObservationCycle()
 end
 
 function Cache:_api(name) return functionOrGlobal(self.options.api,name) end
-function Cache:_callSphere(name,node)
-    local fn=self:_api(name); if fn==nil then return {available=false,valid=false,error="API_UNAVAILABLE"} end
+function Cache:_shapeClassEvidence(node)
+    local fn=self:_api("getHasClassId")
+    local classIds=(type(self.options.api)=="table" and self.options.api.ClassIds) or (type(_G)=="table" and _G.ClassIds) or nil
+    local shapeClass=type(classIds)=="table" and classIds.SHAPE or nil
+    if fn==nil or shapeClass==nil then return nil,"SHAPE_CLASS_API_UNAVAILABLE" end
+    local ok,value=pcall(fn,node,shapeClass)
+    if not ok then return nil,"SHAPE_CLASS_QUERY_FAILED:"..tostring(value) end
+    if type(value)~="boolean" then return nil,"SHAPE_CLASS_QUERY_INVALID_RETURN" end
+    return value,value and nil or "NOT_SHAPE"
+end
+function Cache:_callSphere(name,node,shapeVerified)
+    if shapeVerified~=true then
+        local isShape,shapeReason=self:_shapeClassEvidence(node)
+        if isShape~=true then return {available=false,valid=false,error=shapeReason or "SHAPE_CLASS_UNRESOLVED",shapeClassVerified=isShape==false} end
+    end
+    local fn=self:_api(name); if fn==nil then return {available=false,valid=false,error="API_UNAVAILABLE",shapeClassVerified=true} end
     local ok,x,y,z,r,usesGeometry=pcall(fn,node,0)
-    if not ok then return {available=true,valid=false,error=tostring(x)} end
-    return {available=true,valid=validSphere(x,y,z,r),x=x,y=y,z=z,radius=r,usesGeometry=type(usesGeometry)=="boolean" and usesGeometry or nil,error=validSphere(x,y,z,r) and nil or "INVALID_RETURN"}
+    if not ok then return {available=true,valid=false,error=tostring(x),shapeClassVerified=true} end
+    return {available=true,valid=validSphere(x,y,z,r),x=x,y=y,z=z,radius=r,usesGeometry=type(usesGeometry)=="boolean" and usesGeometry or nil,error=validSphere(x,y,z,r) and nil or "INVALID_RETURN",shapeClassVerified=true}
 end
 function Cache:_worldFromLocal(node,sphere)
     local fn=self:_api("localToWorld"); if fn==nil or sphere==nil or sphere.valid~=true then return nil end
@@ -205,9 +219,13 @@ function Cache:_scanHierarchy(rootNode,budget,wanted,allowGeneric)
     return found,scanned,head<=#queue
 end
 function Cache:_measurePrimitive(member,node,name,source,class,rootWorld,donorEntry)
-    local geometry=self:_callSphere("getShapeGeometryBoundingSphere",node)
-    local shape=self:_callSphere("getShapeBoundingSphere",node)
-    local world=self:_callSphere("getShapeWorldBoundingSphere",node)
+    local isShape,shapeReason=self:_shapeClassEvidence(node)
+    if isShape~=true then
+        return nil,{name=name,node=node,source=source,coherent=false,rootAlias=false,shapeReason=shapeReason or "SHAPE_CLASS_UNRESOLVED"},0
+    end
+    local geometry=self:_callSphere("getShapeGeometryBoundingSphere",node,true)
+    local shape=self:_callSphere("getShapeBoundingSphere",node,true)
+    local world=self:_callSphere("getShapeWorldBoundingSphere",node,true)
     local localSphere=geometry.valid and geometry or (shape.valid and shape or nil)
     local predicted=self:_worldFromLocal(node,localSphere)
     local centreError,radiusError=sphereDifference(predicted,world)
@@ -216,19 +234,22 @@ function Cache:_measurePrimitive(member,node,name,source,class,rootWorld,donorEn
     local aliasCentre,aliasRadius=sphereDifference(world,rootWorld)
     local aliasTolerance=OuttaMyWay.REPRESENTATION_ROOT_ALIAS_TOLERANCE_METRES or 0.0001
     local rootAlias=node~=member.object.rootNode and aliasCentre~=nil and aliasRadius~=nil and aliasCentre<=aliasTolerance and aliasRadius<=aliasTolerance
-    if not coherent or rootAlias then return nil,{name=name,node=node,source=source,coherent=coherent,rootAlias=rootAlias,centreError=centreError,radiusError=radiusError} end
+    if not coherent or rootAlias then
+        return nil,{name=name,node=node,source=source,coherent=coherent,rootAlias=rootAlias,centreError=centreError,radiusError=radiusError,geometryError=geometry.error,shapeError=shape.error,worldError=world.error},3
+    end
     return {
         identity=member.referenceKey..":sphere:"..tostring(node),kind="DISC",memberReferenceKey=member.referenceKey,node=node,nodeName=name,
         localCentre={x=localSphere.x,y=localSphere.y,z=localSphere.z},radius=localSphere.radius,
         source=source,class=class or "DISCOVERED_COLLISION_COMPONENT",positiveConflictSupport=false,negativeClearanceSupport=false,
         donorCurrentPhysical=donorEntry and donorEntry.donorCurrentPhysical or nil,
-        provenance={geometryAPI=geometry.valid and "getShapeGeometryBoundingSphere" or "getShapeBoundingSphere",worldCoherence=true,rootAliasRejected=true}
-    },nil
+        provenance={geometryAPI=geometry.valid and "getShapeGeometryBoundingSphere" or "getShapeBoundingSphere",worldCoherence=true,rootAliasRejected=true,shapeClassVerified=true}
+    },nil,3
 end
 function Cache:_discoverMemberGeometry(member)
-    local stats={apiMeasurements=1,hierarchyNodesScanned=0,scanTruncated=false,candidates=0,resolved=0,rejected=0,rejectedAliases=0,donorCandidates=0,genericCandidates=0}
+    local stats={apiMeasurements=0,shapeClassChecks=1,hierarchyNodesScanned=0,scanTruncated=false,candidates=0,resolved=0,rejected=0,rejectedAliases=0,nonShapeRejected=0,shapeClassUnresolved=0,donorCandidates=0,genericCandidates=0}
     local primitives,rejections={},{}
     local rootWorld=self:_callSphere("getShapeWorldBoundingSphere",member.object.rootNode)
+    if rootWorld.available==true then stats.apiMeasurements=stats.apiMeasurements+1 end
     local candidates,byNode={},{}
     local donor=donorFor(member.object)
     local wanted={}
@@ -260,10 +281,11 @@ function Cache:_discoverMemberGeometry(member)
     table.sort(candidates,function(a,b) return tostring(a.node)<tostring(b.node) end)
     stats.candidates=#candidates
     for _,candidate in ipairs(candidates) do
-        stats.apiMeasurements=stats.apiMeasurements+3
-        local primitive,rejection=self:_measurePrimitive(member,candidate.node,candidate.name,candidate.source,candidate.class,rootWorld,candidate.entry)
+        stats.shapeClassChecks=stats.shapeClassChecks+1
+        local primitive,rejection,apiMeasurements=self:_measurePrimitive(member,candidate.node,candidate.name,candidate.source,candidate.class,rootWorld,candidate.entry)
+        stats.apiMeasurements=stats.apiMeasurements+(apiMeasurements or 0)
         if primitive~=nil then primitives[#primitives+1]=primitive; stats.resolved=stats.resolved+1
-        else rejections[#rejections+1]=rejection; stats.rejected=stats.rejected+1; if rejection.rootAlias then stats.rejectedAliases=stats.rejectedAliases+1 end end
+        else rejections[#rejections+1]=rejection; stats.rejected=stats.rejected+1; if rejection.rootAlias then stats.rejectedAliases=stats.rejectedAliases+1 end; if rejection.shapeReason=="NOT_SHAPE" then stats.nonShapeRejected=stats.nonShapeRejected+1 elseif rejection.shapeReason~=nil then stats.shapeClassUnresolved=stats.shapeClassUnresolved+1 end end
     end
     local width=tonumber(member.object.sizeWidth); local length=tonumber(member.object.sizeLength)
     if width~=nil and width>0 and length~=nil and length>0 then
@@ -276,7 +298,7 @@ function Cache:_build(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
     local record={
         episodeKey=assemblyReferenceKey.."|"..tostring(sourceJobToken),assemblyReferenceKey=assemblyReferenceKey,sourceJobToken=sourceJobToken,
         createdAt=nowSeconds,members=members,edges=edges,assemblyFingerprint=fingerprint,assemblyDiscoveryTruncated=truncated,
-        localPrimitives={},primitiveById={},memberByReference={},rejections={},profiles={},geometryStats={apiMeasurements=0,hierarchyNodesScanned=0,candidates=0,resolved=0,rejected=0,rejectedAliases=0,donorMembers=0,genericMembers=0,runtimeActivityChecks=0},
+        localPrimitives={},primitiveById={},memberByReference={},rejections={},profiles={},geometryStats={apiMeasurements=0,shapeClassChecks=0,hierarchyNodesScanned=0,candidates=0,resolved=0,rejected=0,rejectedAliases=0,nonShapeRejected=0,shapeClassUnresolved=0,donorMembers=0,genericMembers=0,runtimeActivityChecks=0},
         structurallyValid=true,coverageComplete=false,conservativeForRepresentedComponents=true,negativeClearanceAuthority=false
     }
     for _,member in ipairs(members) do

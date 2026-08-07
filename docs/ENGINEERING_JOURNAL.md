@@ -1,3 +1,35 @@
+## 2026-08-07 — v4.7.21 Future Space conformance recovery
+
+**Observation:** v4.7.20's HUD showed Encounter admission only about ten seconds before predicted closest approach. The user correctly challenged the resulting proposal to enlarge a time horizon and recalled that Future Space and Option Preservation had already been explored extensively.
+
+**Repository validation:** ADR-0006 already defines bounded local Future Space through current motion, next material manoeuvre, manoeuvre sweep and subsequent settlement. ADR-0012 already composes Local Intent, Intent Expiry and Option Preservation. Archived refuge-era code contains useful FieldBoundary and FieldCourse active-segment mechanisms, but also fixture-era time/distance/TCPA literals that are not architectural authority.
+
+**Classification:** implementation non-conformance, not new architecture. The replacement-core live producer had reduced canonical Future Space to a ten-second constant-velocity corridor.
+
+**Implementation hypothesis:** use native GIANTS FieldCourse active-segment `isTurn` as the material manoeuvre observation; while settled, bound the current heading through the current Job-Seeded Field World polygon; while turning, expire straight intent and leave the manoeuvre sweep unresolved; on post-turn settlement, advance the intent epoch. Publish only positive pair intersection support into Situation Assessment and retain no negative-clearance authority.
+
+**Offline validation:** 129 Lua and 63 Python tests pass. Decision remains passive and Control disabled. Live validation remains required.
+
+## 2026-08-07 — Diagnostic Signal Saturation and Shape-Type Gate
+
+**Observation:** the first v4.7.19 live run recognised a manual stop and restart, then later created and retained an Encounter. The stop occurred before Encounter creation, so the intended termination sequence was not exercised. The required console transition was buried in continuous diagnostics. GIANTS also printed shape-bound API errors for collision-named transform groups.
+
+**Discovery — Diagnostic Signal Saturation:** complete diagnostic evidence can still be operationally unusable when the player must react to one transition among many lines.
+
+**Implementation:** v4.7.20 adds a temporary transition-only HUD and one matching `[OTM TEST GATE]` line per state change. Pair console detail is throttled to material state changes or heartbeat; sealed traces remain complete. A Shape-Type Gate uses `getHasClassId(..., ClassIds.SHAPE)` before every shape-bound call.
+
+**Validation:** 125 replacement-core Lua tests and 62 Python tests pass before release packaging. Dedicated fixtures prove non-shape rejection occurs before any shape API invocation and the HUD follows the complete lifecycle test sequence. Decision, Commitment application and Control remain passive.
+
+## 2026-08-07 — Encounter Exit Contract implementation
+
+**Observation:** canonical v4.7.18 proved Encounter entry, but current-sample disappearance still had only diagnostic `LOST` inference. Non-positive footprint evidence remained unresolved and therefore could not justify termination.
+
+**Discovery — Evidence Absence Is Not Clearance:** an Encounter must survive temporary loss of positive evidence while its Operation and Job Episodes remain valid.
+
+**Decision:** introduce a first-class Encounter Registry and bind active identity to Operation, interaction reference and participating Job Episode identities. End it only through explicit lifecycle evidence. Preserve terminal records and require renewed positive evidence after restart to create a fresh Encounter.
+
+**Validation:** 123 replacement-core Lua tests pass, including temporary evidence-loss retention and manual-stop/restart non-resurrection fixtures. Python structural/RRS tests include the active registry and explicit `TERMINATED` lifecycle boundary. Decision, Commitment application and Control remain passive.
+
 ## 2026-08-07 — Positive Footprint Evidence Admission
 
 **Observation:** canonical v4.7.17 produced a correct approximately 36 m Condor footprint and stable future-positive TS015 evidence while the scalar predictor remained unable to calculate CPA.

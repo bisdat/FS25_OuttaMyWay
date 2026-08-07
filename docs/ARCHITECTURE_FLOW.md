@@ -2,9 +2,9 @@
 
 > **Authority:** Normative replacement-core responsibility and lifecycle map
 >
-> **Currency:** v4.7.18 Positive Filtered-Footprint Encounter Admission Candidate; canonical v4.7.17 is the implementation baseline
+> **Currency:** v4.7.21 Future Space Conformance Candidate; canonical v4.7.18 is the implementation baseline
 >
-> **Implementation status:** canonical v4.7.17 validates filtered component footprints; v4.7.18 admits positive footprint evidence into Encounter Knowledge while live Commitment mutation and Control remain unimplemented
+> **Implementation status:** canonical v4.7.18 validates positive footprint Encounter entry; v4.7.21 passively recovers existing Local Intent/Future Space production from native GIANTS turn state and Job-Seeded Field World bounds while live Commitment mutation and Control remain unimplemented
 
 ## 1. Closed-loop responsibility flow
 
@@ -59,7 +59,32 @@
                                └───────────────────────────────↺
 ```
 
-## 2. Decision admission flow
+## 2. Encounter lifecycle flow
+
+```text
+positive interaction evidence
+    ↓
+Encounter CREATED for Operation + interaction + Job Episode signature
+    ↓
+positive evidence temporarily absent
+    └── RETAINED because absence is not clearance
+    ↓
+explicit lifecycle evidence
+    ├── Job Episode ended
+    ├── Operation ended
+    ├── membership invalidated
+    └── intent superseded
+          ↓
+Encounter TERMINATED with evidence
+          ↓
+restart/replacement creates new Job Episode
+          ↓
+renewed positive evidence creates a fresh Encounter
+```
+
+This flow is Knowledge-only. Same-Episode physical clearance is not yet an exit authority.
+
+## 3. Decision admission flow
 
 ```text
 Operational Picture

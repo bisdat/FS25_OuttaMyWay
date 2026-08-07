@@ -1,7 +1,7 @@
 # Plan-View Representation and Positive Encounter Admission
 
-> **Implementation:** v4.7.18 candidate  
-> **Canonical baseline:** v4.7.17  
+> **Implementation:** v4.7.21 candidate (representation authority unchanged from canonical v4.7.18; v4.7.21 adds separate Future Space conformance evidence)  
+> **Canonical baseline:** v4.7.18  
 > **Authority:** positive interaction support only
 
 ## Current permission
@@ -23,7 +23,7 @@ positive interaction evidence
 Encounter Knowledge
 ```
 
-An unresolved footprint cannot erase scalar evidence. When both sources are positive, one packet records both bases. No result from this module selects a Yield worker, strategy, Commitment or Control action.
+An unresolved footprint cannot erase scalar evidence. It also cannot terminate an active Encounter because it does not prove clearance. When both sources are positive, one packet records both bases. No result from this module selects a Yield worker, strategy, Commitment or Control action.
 
 # Historical v4.7.17 Plan-View Representation Shadow
 

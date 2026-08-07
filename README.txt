@@ -1,11 +1,11 @@
-FS25_OuttaMyWay v4.7.18 — Positive Filtered-Footprint Encounter Admission Candidate
+FS25_OuttaMyWay v4.7.21 — Future Space Conformance Candidate
 
-Canonical baseline: owner-declared v4.7.17, ZIP SHA-256 36777de789157125c5787c369e3ce86207d7b9837a58626c80527834fe50d384, Git commit e44cfe1d8195d81dcb5a6bcb65380438a9e0960a, 253 files.
+Canonical baseline remains owner-declared v4.7.18. Repository review confirmed that Future Space, Local Intent Horizon, Intent Expiry and Option Preservation are already defined by ADR-0006/ADR-0012; v4.7.21 therefore corrects replacement-core implementation conformance rather than inventing new architecture.
 
-Canonical v4.7.17 live-validated Job Episode-scoped geometry caching, purchased-configuration participation, exclusion of 16 inactive Condor alternatives, an approximately 36.36 m deployed Condor footprint, and early positive future convergence in TS015. The legacy scalar predictor still rejected the pair because both workers lacked scalar radius evidence.
+For settled native GIANTS FieldCourse segments, the live source now publishes a Job-Seeded Field-World-bounded Local Intent continuation. Native `isTurn=true` invalidates the straight continuation and leaves the manoeuvre sweep unresolved rather than extrapolating it. When the native course settles again, a new local-intent epoch is published. Pair intersections are positive Future-Space Knowledge only; non-intersection never establishes negative clearance.
 
-v4.7.18 introduces a one-way positive evidence bridge. Existing scalar positives remain unchanged. A configuration-filtered component-footprint result may additionally emit CURRENT_SPACE_INTERACTION or FUTURE_SPACE_CONVERGENCE evidence. A non-positive or incomplete footprint result remains CLEARANCE_UNRESOLVED: it cannot establish separation, suppress scalar evidence, or grant negative-clearance authority.
+The temporary HUD now displays `OTM FUTURE SPACE`, worker `STRAIGHT`/`TURNING` state, measured forward boundary extent and pair intersection state. These distances are measurements, not behavioural thresholds. The historical ten-second constant-velocity path remains isolated solely as the legacy positive Encounter probe for continuity.
 
-Situation Assessment continues to convert positive interaction evidence into Encounter Knowledge. Decision remains passive, no live Commitment is created, and Control authority remains disabled.
+Decision remains passive. No live Commitment is applied. Control authority is disabled.
 
-Run line: FS25_OuttaMyWay v4.7.18 positive filtered-footprint Encounter admission loaded; negative clearance unresolved; Decision passive; Control authority disabled
+Run line: FS25_OuttaMyWay v4.7.21 Future Space conformance loaded; field-bounded Local Intent evidence active; Future Space HUD active; Shape-Type Gate active; Decision passive; Control authority disabled

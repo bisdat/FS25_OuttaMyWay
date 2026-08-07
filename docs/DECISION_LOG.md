@@ -1,3 +1,39 @@
+## D-0041 — Recover Existing Future Space Architecture in the Passive Live Producer
+
+**Status:** Accepted implementation-conformance correction; implemented by v4.7.21 candidate
+
+**Context:** the v4.7.20 live HUD demonstrated that the replacement-core positive Encounter probe becomes actionable only when its ten-second constant-velocity horizon is reached. Repository review showed that this is not an architectural discovery: ADR-0006 already defines bounded Local Intent/Future Space, and ADR-0012 already defines Intent Expiry and Option Preservation. Archived FieldBoundary and FieldCourse probes contain proven mechanisms but not architectural authority.
+
+**Decision:** do not increase or replace the ten-second literal with another behavioural time/distance literal. Add a separate passive Future Space producer that observes native GIANTS active-segment `isTurn`, bounds settled straight Local Intent by the current Job-Seeded Field World boundary, expires that straight intent during native turning, leaves the unrepresented manoeuvre sweep unresolved, and advances the local-intent epoch when the native course settles again. Publish positive field-bounded intersections to Situation Assessment as Knowledge only. Retain the historical ten-second predictor solely as the isolated legacy positive Encounter probe until separately superseded.
+
+**Reason:** this restores implementation conformance to existing architecture while preserving the already live-validated Encounter-entry path and preventing implementation convenience from redefining architectural Future Space.
+
+**Authority boundary:** no Decision selection, live Commitment mutation, negative-clearance authority or Control is added.
+
+## D-0040 — Add Transition HUD and Shape-Type Gate for the Encounter Exit Live Gate
+
+**Status:** Accepted diagnostic implementation correction; implemented by v4.7.20 candidate
+
+**Context:** the first v4.7.19 live attempt stopped and restarted a worker before the first Encounter had been created. Continuous console output made the required action transition impractical to identify. The same run showed GIANTS error stacks because shape-bound APIs were invoked on named collision transform groups that were not Shape entities.
+
+**Decision:** preserve the Encounter Exit Contract unchanged, but add temporary transition-driven HUD instructions and one concise `[OTM TEST GATE]` console line per state change. Throttle routine pair console output to material state changes and heartbeat while retaining complete sealed trace evidence. Require `getHasClassId(entity, ClassIds.SHAPE)` to return true before any shape-bound API call.
+
+**Reason:** live validation needs an observable human action boundary, and invalid API calls must be prevented by type evidence rather than caught after GIANTS has already emitted an error.
+
+**Boundary:** the HUD is disposable test instrumentation. The Shape-Type Gate changes call eligibility, not physical representation authority. No Decision policy, live Commitment application, same-Episode clearance or Control is added.
+
+## D-0039 — Encounter Exit Contract
+
+**Status:** Accepted implementation step; implemented by v4.7.19 candidate
+
+**Context:** canonical v4.7.18 proved positive Encounter entry, but a later sample without positive evidence could not distinguish temporary evidence absence from legitimate Encounter termination. Because non-positive footprint evidence remains `CLEARANCE_UNRESOLVED`, disappearance of a current positive is not proof of separation.
+
+**Decision:** maintain Encounter identity in a first-class registry. Bind each active Encounter to its Operation, interaction reference and participating Job Episode identities. Retain it while those lifecycle bases remain valid, even when the current assessment has no positive interaction evidence. Terminate it only from explicit lifecycle evidence: Job Episode end, Operation end, membership invalidation or intent supersession. A restarted or replacement job creates a new Job Episode; renewed positive evidence must create a new Encounter identity.
+
+**Reason:** Encounter Knowledge must not disappear because evidence becomes temporarily unavailable, and terminal history must not be resurrected by reused vehicle objects or pair references.
+
+**Boundary:** this decision does not define same-Job-Episode physical clearance, Safe Release, responsibility selection, Decision policy, live Commitment application or Control authority.
+
 ## D-0038 — Admit Configuration-Filtered Footprint Positives as Encounter Evidence
 
 **Status:** Accepted implementation step; implemented by v4.7.18 candidate

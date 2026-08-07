@@ -1,16 +1,24 @@
--- FS25_OuttaMyWay v4.7.18 positive footprint Encounter admission candidate; Control remains disabled.
+-- FS25_OuttaMyWay v4.7.21 Future Space conformance candidate; Control remains disabled.
 -- Canonical architecture authority: v4.6.78.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.18"
+OuttaMyWay.VERSION = "4.7.21"
 OuttaMyWay.ARCHITECTURE_VERSION = "4.6.78"
-OuttaMyWay.RUNTIME_MODE = "POSITIVE_FOOTPRINT_ENCOUNTER_ADMISSION"
+OuttaMyWay.RUNTIME_MODE = "FUTURE_SPACE_CONFORMANCE"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000
 OuttaMyWay.PASSIVE_HEARTBEAT_INTERVAL_MS = 10000
-OuttaMyWay.PASSIVE_FUTURE_HORIZON_SECONDS = 10
-OuttaMyWay.PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE = 64
+OuttaMyWay.LEGACY_POSITIVE_INTERACTION_PROBE_HORIZON_SECONDS = 10
+OuttaMyWay.PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE = 8
+
+-- Temporary Future-Space conformance HUD. This is diagnostic instrumentation only.
+OuttaMyWay.TRANSITION_HUD_ENABLED = true
+OuttaMyWay.TRANSITION_HUD_X = 0.985
+OuttaMyWay.TRANSITION_HUD_Y = 0.720
+OuttaMyWay.TRANSITION_HUD_TITLE_SIZE = 0.016
+OuttaMyWay.TRANSITION_HUD_TEXT_SIZE = 0.014
+OuttaMyWay.TRANSITION_HUD_LINE_HEIGHT = 0.022
 
 -- Passive representation-foundation limits. Geometry discovery is Job Episode
 -- scoped; only current transforms and configuration selection repeat per sample.

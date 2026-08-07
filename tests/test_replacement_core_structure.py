@@ -212,8 +212,8 @@ def test_v478_targeted_job_episode_and_field_identity_path_is_active():
     assert "scripts/diagnostics/TargetedFieldIdentityProbe.lua" in main
     assert "scripts/diagnostics/LiveAIStateProbe.lua" not in main
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.18"' in config
-    assert 'RUNTIME_MODE = "POSITIVE_FOOTPRINT_ENCOUNTER_ADMISSION"' in config
+    assert 'VERSION = "4.7.21"' in config
+    assert 'RUNTIME_MODE = "FUTURE_SPACE_CONFORMANCE"' in config
     evidence=(ROOT/"scripts"/"observation"/"LiveAIJobEvidence.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"TargetedFieldIdentityProbe.lua").read_text(encoding="utf-8")
@@ -259,8 +259,8 @@ def test_v479_polygon_field_identity_fallback_is_read_only():
     for forbidden in ("driveToPoint(","stopCurrentAIJob(","setCruiseControlState("):
         assert forbidden not in text
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.18"' in config
-    assert 'RUNTIME_MODE = "POSITIVE_FOOTPRINT_ENCOUNTER_ADMISSION"' in config
+    assert 'VERSION = "4.7.21"' in config
+    assert 'RUNTIME_MODE = "FUTURE_SPACE_CONFORMANCE"' in config
 
 
 def test_v4711_job_seeded_snapshot_capture_remains_active_under_equivalence_authority():
@@ -281,8 +281,8 @@ def test_v4711_field_world_snapshot_is_bound_once_to_job_episode():
     assert "_bindFieldWorld" in admission
     assert "cannot change after capture" in admission
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.18"' in config
-    assert 'RUNTIME_MODE = "POSITIVE_FOOTPRINT_ENCOUNTER_ADMISSION"' in config
+    assert 'VERSION = "4.7.21"' in config
+    assert 'RUNTIME_MODE = "FUTURE_SPACE_CONFORMANCE"' in config
 
 
 def test_v4711_parallel_validation_reports_global_operation_count():
@@ -323,7 +323,7 @@ def test_v4714_field_world_equivalence_authority_is_active_and_conservative():
     for token in ("FIELD_WORLD_EQUIVALENCE_SAMPLE_SIDE","FIELD_WORLD_EQUIVALENCE_SAME_MAX_AREA_RELATIVE_DELTA","FIELD_WORLD_EQUIVALENCE_SAME_MIN_SAMPLED_JACCARD","FIELD_WORLD_EQUIVALENCE_DIFFERENT_MIN_BOUNDARY_SEPARATION_METRES"):
         assert token in config
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert "positive filtered-footprint Encounter admission loaded" in runtime
+    assert "Future Space conformance loaded" in runtime
     assert "Control authority disabled" in runtime
     assert "decisionCommitmentBoundary:apply" not in (ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
 
@@ -342,10 +342,10 @@ def test_v4715_bounded_interaction_diagnostics_are_multi_worker_and_passive():
         assert token in source
     for token in ("interactionEvidenceReceivedCount","encounterCreatedCount","SAME_OPERATION_ACTIVE_PAIR_NOT_EVALUATED","BOTH_WORKERS_BLOCKED_WITHOUT_ENCOUNTER"):
         assert token in assessment
-    for token in ("PAIR pair=","ENCOUNTER lifecycle=CREATED","ENCOUNTER lifecycle=RETAINED","ENCOUNTER lifecycle=LOST","PAIR_OPERATION_CHANGED_DURING_JOB_EPISODE","PAIR_DISAPPEARED_WHILE_BOTH_WORKERS_ACTIVE"):
+    for token in ("PAIR pair=","ENCOUNTER lifecycle=CREATED","ENCOUNTER lifecycle=RETAINED","ENCOUNTER lifecycle=TERMINATED","PAIR_OPERATION_CHANGED_DURING_JOB_EPISODE","PAIR_DISAPPEARED_WHILE_BOTH_WORKERS_ACTIVE"):
         assert token in validator
-    assert 'VERSION = "4.7.18"' in config
-    assert 'RUNTIME_MODE = "POSITIVE_FOOTPRINT_ENCOUNTER_ADMISSION"' in config
+    assert 'VERSION = "4.7.21"' in config
+    assert 'RUNTIME_MODE = "FUTURE_SPACE_CONFORMANCE"' in config
     assert "PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE" in config
     for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
         assert forbidden not in diagnostics
@@ -378,8 +378,8 @@ def test_v4717_plan_view_representation_foundation_remains_active():
     assert "FILTERED_PLAN_VIEW_POSITIVE" in footprint
     for token in ("shadowInventoryPrimitives","shadowParticipatingPrimitives","shadowInactivePrimitives","shadowProfileCacheHit","shadowOutcome"):
         assert token in validator
-    assert 'VERSION = "4.7.18"' in config
-    assert 'RUNTIME_MODE = "POSITIVE_FOOTPRINT_ENCOUNTER_ADMISSION"' in config
+    assert 'VERSION = "4.7.21"' in config
+    assert 'RUNTIME_MODE = "FUTURE_SPACE_CONFORMANCE"' in config
     assert "POTENTIAL_INTERACTION_FROM_REPRESENTED_COMPONENTS" in cache
     assert "negativeClearanceAuthority=false" in cache
     for text in (cache,footprint,source,validator):
@@ -401,3 +401,62 @@ def test_v4718_positive_filtered_footprint_admission_is_monotonic_and_passive():
     assert "decisionCommitmentBoundary:apply" not in validator
     for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState("):
         assert forbidden not in source
+
+
+def test_v4719_encounter_exit_contract_is_first_class_and_passive():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    assert "scripts/assessment/EncounterRegistry.lua" in main
+    registry=(ROOT/"scripts"/"assessment"/"EncounterRegistry.lua").read_text(encoding="utf-8")
+    assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
+    validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+    for token in ("JOB_EPISODE_ENDED","OPERATION_ENDED","MEMBERSHIP_INVALIDATED","INTENT_SUPERSEDED","positiveObservedThisAssessment","EncounterRecord"):
+        assert token in registry
+    assert "encounterLifecycleTransitions" in assessment
+    assert "ENCOUNTER lifecycle=TERMINATED" in validator
+    assert "Control authority disabled" in runtime
+    assert "controlAuthorityEnabled=false" in runtime
+
+
+def test_v4720_shape_gate_and_diagnostic_throttling_remain_passive():
+    validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+    cache=(ROOT/"scripts"/"representation"/"AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
+    for token in ("getHasClassId","classIds.SHAPE","NOT_SHAPE","SHAPE_CLASS_API_UNAVAILABLE"):
+        assert token in cache
+    assert "pairDiagnosticSignatures" in validator
+    for text in (validator,cache):
+        for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
+            assert forbidden not in text
+
+
+def test_v4721_future_space_conformance_recovers_existing_local_intent_architecture_passively():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
+    intent=(ROOT/"scripts"/"observation"/"LocalIntentObservation.lua").read_text(encoding="utf-8")
+    future=(ROOT/"scripts"/"observation"/"FieldBoundedFutureSpace.lua").read_text(encoding="utf-8")
+    assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
+    hud=(ROOT/"scripts"/"diagnostics"/"FutureSpaceHud.lua").read_text(encoding="utf-8")
+    validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+    for rel in ("scripts/observation/LocalIntentObservation.lua","scripts/observation/FieldBoundedFutureSpace.lua","scripts/diagnostics/FutureSpaceHud.lua"):
+        assert rel in main
+    assert 'VERSION = "4.7.21"' in config
+    assert 'RUNTIME_MODE = "FUTURE_SPACE_CONFORMANCE"' in config
+    assert "PASSIVE_FUTURE_HORIZON_SECONDS" not in config
+    assert "LEGACY_POSITIVE_INTERACTION_PROBE_HORIZON_SECONDS" in config
+    for token in ("FIELD_WORLD_BOUNDED_LOCAL_CONTINUATION","futureSpaceRelationshipEvidence","NEXT_MATERIAL_MANOEUVRE"):
+        assert token in source
+    for token in ("getActiveSegmentData","TURNING","SETTLED_CONTINUATION","INTENT_EXPIRED_BY_MANOEUVRE","LOCAL_INTENT_REVEALED_AFTER_MANOEUVRE"):
+        assert token in intent
+    for token in ("forwardBoundaryDistance","FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION_POSITIVE","NO_NEGATIVE_CLEARANCE_AUTHORITY","MANOEUVRE_SWEEP_NOT_YET_REPRESENTED"):
+        assert token in future
+    for token in ("futureSpaceRelationships","FUTURE_SPACE_INTERSECTION","MANOEUVRING"):
+        assert token in assessment
+    for token in ("OTM FUTURE SPACE","FUTURE SPACES INTERSECT","UNRESOLVED WHILE MANOEUVRING","FUTURE-SPACE HUD"):
+        assert token in hud
+    assert "FUTURE_SPACE pair=%s classification=%s" in validator
+    assert "Future Space conformance loaded" in runtime
+    for text in (source,intent,future,assessment,hud,validator,runtime):
+        for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
+            assert forbidden not in text
