@@ -156,3 +156,11 @@ ADR-0023 refines the Continuation Safety Horizon as Encounter-relative. It must 
 ## v4.6.71 implementation boundary
 
 This ADR remains canonical architecture. v4.6.71 does not claim that the v4.6.57–v4.6.70 implementations satisfy it; they remain evidence used to refine its preconditions and Safe Release semantics.
+
+## v4.7.29 amendment — staged recovery and terminal release evidence
+
+A successful refuge passage does not itself satisfy Safe Release. Decision may admit bounded Yield ingress/restoration while the governing Commitment remains active. Each admitted recovery stage establishes current Committed Demand that must remain compatible with the Progress participant's supported demand until that stage completes, is superseded or is revoked.
+
+Safe Release for the ordinary two-worker recovery requires fresh current evidence after material Control/configuration changes. Pre-restoration BNIR intent is not presumed authoritative through re-Hold/restoration. Native Handover must reacquire operational Local Intent and demonstrate independent GIANTS continuation; only then can Decision positively establish that supported Encounter-relative demand is decoupled and all applicable obligations are settled.
+
+A supporting speed restriction is not itself a release obligation and must not outlive its named current purpose.

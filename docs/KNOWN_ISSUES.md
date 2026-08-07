@@ -1,3 +1,12 @@
+# Current v4.7.29 architecture boundary
+
+- **Staged refuge recovery is accepted architecture but not production Control.** The documented head-on chain does not yet actuate egress, ingress, restoration, BNIR, Native Handover or purpose-bound Progress speed regulation.
+- **Clear ingress authority still requires positive evidence.** Passage of the original conflict point or apparent separation alone cannot authorise return from refuge.
+- **Purpose-bound speed regulation has no production trigger yet.** Architecture permits Progress regulation while preserving an admitted recovery demand, but exact evidence for acquisition/adjustment/release remains an implementation discovery.
+- **Condor's ~15 s boom unfolding time is evidence, not a timer.** Other assemblies/configurations may differ materially; no fixed restoration duration is authorised.
+- **Pre-restoration BNIR intent is not terminal authority.** Re-Hold/configuration restoration can expire it; fresh operational Local Intent must be observed after restoration.
+- **Static-object recovery remains parked.** Nothing in this refinement expands BNIR/Traffic Policeman into general obstacle avoidance.
+
 # Current v4.7.28 architecture boundary
 
 - **Traffic Policeman is accepted architecture but not production Decision logic.** Temporary movement priority/right-of-way remains documentation-only; no live Commitment or Control path applies it.

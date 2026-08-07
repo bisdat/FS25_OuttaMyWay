@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted architectural concept and refinements; documentation-only consolidation in v4.7.28 candidate. Production Decision/Commitment/Control implementation remains absent.
+Accepted architectural concept and refinements; canonical since v4.7.28 and further refined documentation-only in v4.7.29 candidate. Production Decision/Commitment/Control implementation remains absent.
 
 ## Context
 
@@ -129,3 +129,31 @@ Static-object recovery/avoidance is deliberately parked for separate architectur
 - Recent real traversal can provide stronger local physical-admissibility evidence than incomplete synthetic geometry, within a tightly bounded unchanged domain.
 - Safe Release remains distinct from capability release, BNIR completion and native handover.
 - No production Decision, Commitment or Control implementation is authorised by this ADR.
+
+## v4.7.29 amendment — staged refuge recovery and purpose-bound protection
+
+### Progress priority is not exclusive movement authority
+
+`PROGRESS` preserves the participant whose useful authoritative native demand currently provides the stable traffic reference. It does not mean that only Progress may move and it does not entitle Progress to unrestricted speed. A `YIELD` participant may receive bounded admitted movement, including refuge ingress/restoration or BNIR, while remaining subordinate to Progress demand.
+
+### Pure head-on requires a positively available recovery corridor
+
+For the classic two-worker pure head-on, successful egress must lead to a genuinely available return/ingress opportunity. Passage of the original conflict point is insufficient by itself because the Progress participant's next material manoeuvre may still consume the recovery corridor. Yield remains protected until current Progress occupancy and supported settled demand positively permit the proposed ingress Action Space.
+
+### Admitted recovery creates demand that must be preserved
+
+Once Decision admits a bounded recovery Action Space, the space required by the current ingress/restoration stage is Committed Demand. Traffic Policeman must preserve compatibility between that admitted recovery demand and Progress demand until the stage completes, is superseded or is revoked as no longer admissible. This does not grant Yield equal or permanent traffic priority.
+
+### Progress may be speed-regulated without becoming Yield
+
+If unrestricted Progress motion would consume an already admitted Yield recovery opportunity, Decision may use `REGULATE_SPEED` as a purpose-bound supporting capability while Progress retains right-of-way. The authority is tied to a named current purpose, not a fixed post-passage distance, speed or duration. It ends as soon as unrestricted Progress continuation is compatible with the remaining admitted recovery demand unless another independently justified current obligation requires regulation.
+
+Ingress completion may retire ingress demand while restoration/unfolding demand remains active. Condor's observed full boom unfolding time of approximately 15 seconds is evidence only; it must never become an architectural timeout or default lease duration. **Protect the recovery obligation, not the clock.**
+
+### BNIR and Native Handover are separate evidence stages
+
+BNIR intent acquired while compact/transit may guide the next stage but is not presumed authoritative through re-Hold or material configuration restoration. Native Handover must reacquire fresh operational Local Intent and independent GIANTS continuation after restoration. Only after current obligations are settled and the supported A/B operational demands are positively decoupled may the governing Commitment reach Safe Release.
+
+### Obligation retirement defines progress
+
+The reference head-on sequence demonstrates architectural progress by retiring named obligations in order: shared-corridor obstruction, passage uncertainty, Progress manoeuvre consequence, ingress availability, Yield recovery, counterfactual intent, work restoration, independent continuation and final traffic coupling. No numeric progress score is required. Capability churn or role swapping that does not reduce this obligation set remains Revelation Oscillation/non-progress.

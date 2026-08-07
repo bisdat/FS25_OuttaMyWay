@@ -1,3 +1,19 @@
+## D-0110 — Accept Staged Refuge Recovery and Purpose-Bound Traffic Protection
+
+**Status:** Accepted architecture; documentation-only consolidation in v4.7.29 candidate
+
+**Context:** Pressure-testing ADR-0023 against a successful Condor–Patriot pure head-on exposed two gaps in the recorded contract. First, Progress right-of-way could be misread as exclusive movement authority or unrestricted speed. Second, a completed refuge ingress does not necessarily retire all recovery demand: Condor may require approximately 15 seconds to unfold, and unrestricted Progress motion can consume the separation needed for restoration before work-capable native handover.
+
+**Decision:** `PROGRESS` is preservation priority, not exclusive permission to move. A `YIELD` participant may receive bounded admitted recovery authority while remaining subordinate to Progress demand. Once Decision admits a recovery Action Space, its active ingress/restoration requirement is Committed Demand that Traffic Policeman must keep compatible with Progress demand until that stage completes, is superseded or is revoked.
+
+**Supporting speed:** Progress may remain `PROGRESS` while a purpose-bound `REGULATE_SPEED` lease protects the admitted Yield recovery. The lease carries a named current purpose and expires as soon as unrestricted Progress continuation is compatible with the remaining admitted recovery demand. No fixed post-passage speed, distance or duration is architectural. The observed Condor ~15 s unfolding duration remains evidence only: protect the recovery obligation, not the clock.
+
+**BNIR / handover:** intent revealed during compact/transit BNIR is stage evidence. Re-Hold or material configuration restoration may expire it; after restoration, fresh operational Local Intent and independent GIANTS continuation must be acquired through the Native Handover Envelope before Safe Release.
+
+**Progress / release:** Commitment progress is demonstrated by reduction or retirement of named unresolved obligations, not a numeric distance/time score. Safe Release requires all applicable intervention/restoration obligations settled, independent GIANTS authority observed, fresh authoritative operational Local Intent, positive current/Encounter-relative Future-Space decoupling, and no unresolved obligation belonging to the governing Encounter. A later materially new convergence after Safe Release forms a fresh Encounter.
+
+**Implementation boundary:** no production Traffic Policeman, live Commitment, BNIR actuator, speed lease or physical Control authority is introduced by v4.7.29.
+
 ## D-0109 — Accept Traffic Policeman and Encounter-Relative Movement-Priority Refinements
 
 **Status:** Accepted architecture; documentation-only consolidation in v4.7.28 candidate

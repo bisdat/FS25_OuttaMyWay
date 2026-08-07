@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.7.28 architecture-consolidation candidate; canonical v4.7.27 runtime behaviour retained; Control remains disabled.
+-- FS25_OuttaMyWay v4.7.29 documentation-only architecture consolidation candidate; canonical v4.7.28 runtime behaviour retained; Control remains disabled.
 -- Canonical architecture authority: v4.6.78.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.28"
+OuttaMyWay.VERSION = "4.7.29"
 OuttaMyWay.ARCHITECTURE_VERSION = "4.6.78"
 OuttaMyWay.RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false

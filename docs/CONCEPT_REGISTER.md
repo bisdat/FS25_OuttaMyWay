@@ -1,3 +1,25 @@
+# v4.7.29 Staged Refuge Recovery / Purpose-Bound Traffic Protection Consolidation
+
+## Traffic priority and bounded simultaneous movement — Refinement
+
+`PROGRESS` means preservation priority for the participant whose useful authoritative native demand currently provides the traffic reference. It is not exclusive movement authority and does not imply unrestricted speed. A `YIELD` participant may receive bounded recovery/BNIR authority only while its current occupancy and admitted Action Space remain subordinate to and compatible with Progress demand.
+
+When Decision admits a bounded recovery Action Space, the space currently required by that ingress/restoration stage is **Committed Demand**. Traffic Policeman must preserve compatibility between the admitted Yield recovery demand and Progress demand until that stage completes, is superseded or is explicitly revoked as no longer admissible.
+
+## Purpose-bound supporting speed — Architecture refinement
+
+A Progress participant may retain `PROGRESS` while `REGULATE_SPEED` is applied for the named purpose of preserving an admitted Yield recovery opportunity. The lease is justified by the current recovery obligation, not by elapsed time or a fixture-specific post-passage slowdown. It expires immediately when unrestricted Progress continuation becomes compatible with the remaining admitted recovery demand, unless a separately justified current obligation independently requires speed regulation.
+
+The observed Condor boom restoration time of approximately 15 seconds is physical evidence only. **Protect the recovery obligation, not the clock.** Ingress demand may retire while restoration/unfolding demand remains active; supporting regulation may therefore end immediately at ingress completion or continue into restoration solely as long as current spatial compatibility requires it.
+
+## BNIR evidence lifetime and staged native handover — Refinement
+
+BNIR intent revealed while an assembly is compact/transit is stage evidence for deciding whether the next recovery/restoration step remains sensible. A later re-Hold, material configuration change or restoration can trigger Intent Expiry; that earlier revelation is not presumed to remain current operational authority. After restoration, the Native Handover Envelope acquires fresh operational Local Intent and independent GIANTS continuation while the governing Commitment remains responsible.
+
+## Head-on reference obligation chain — Architecture instance
+
+The classic Condor–Patriot pure head-on is the reference instance for staged retirement of Encounter obligations: shared-corridor conflict → Yield egress; unsafe passage uncertainty → Progress passage; Progress manoeuvre consequence → subsequent settlement; ingress availability → positively clear recovery corridor; Yield recovery → admitted ingress/restoration; counterfactual Yield intent → BNIR; work restoration → verified configuration; independent continuation → Native Handover; current traffic coupling → positive decoupling; then Safe Release. This is an instance of existing architecture, not fixture-specific production policy.
+
 # v4.7.28 Traffic Policeman / Encounter-Relative Movement-Priority Consolidation
 
 ## Traffic Policeman

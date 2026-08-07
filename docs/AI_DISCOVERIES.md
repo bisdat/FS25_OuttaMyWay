@@ -1,3 +1,12 @@
+## v4.7.29 architecture reconciliation — staged recovery and traffic protection
+
+- The pure Condor–Patriot head-on is now a reference architecture case: successful refuge resolution must produce a positively available return/ingress corridor, not merely let Progress pass the original conflict point.
+- `PROGRESS` is movement-priority preservation, not exclusive permission to move and not entitlement to unrestricted speed. A `YIELD` participant may execute bounded admitted recovery while remaining subordinate to Progress demand.
+- Once Decision admits a recovery Action Space, its current ingress/restoration requirement becomes Committed Demand. Traffic Policeman must preserve compatibility with that admitted demand until the stage completes, is superseded or is revoked.
+- A purpose-bound supporting speed lease on Progress may preserve the Yield recovery opportunity without transferring Progress/Yield roles. The restriction must disappear as soon as its named purpose ceases to exist; the observed ~15 s Condor unfolding duration is evidence, not an architectural timer.
+- BNIR intent acquired in compact/transit configuration is stage evidence. Re-Hold or material configuration restoration can expire its current authority, so fresh operational Local Intent must be reacquired through Native Handover before Safe Release.
+- Genuine Commitment progress is evidenced by reduction/retirement of named unresolved obligations. Repeated Control transfers that merely move the same uncertainty between participants remain Revelation Oscillation.
+
 ## v4.7.28 architecture reconciliation — traffic priority and empirical local admissibility
 
 - `SETTLED_CONTINUATION` is retained as authoritative native lifecycle/Local Intent evidence, not redefined as pairwise clearance.

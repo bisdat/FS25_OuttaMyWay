@@ -1,3 +1,13 @@
+## 2026-08-07 — v4.7.29 staged refuge recovery / purpose-bound traffic protection consolidation
+
+**Observation:** In the pure Condor–Patriot head-on, letting Progress pass the original conflict does not by itself ensure Yield can complete refuge ingress/restoration before Progress catches the recovering assembly again. Condor boom restoration is currently observed to take about 15 seconds.
+
+**Discussion:** Treating `PROGRESS` as unrestricted motion would make an otherwise valid ingress opportunity self-defeating. Treating the ~15 s unfold as a fixed delay would make one implement timing into architecture.
+
+**Decision:** preserve the admitted recovery obligation rather than a clock. Yield may hold bounded recovery Committed Demand while Progress retains priority; a purpose-bound speed lease may regulate Progress only while needed to preserve compatibility. BNIR revelation before configuration restoration is stage evidence and fresh operational intent is reacquired during Native Handover.
+
+**Validation status:** paper pressure-test only. No runtime behavior changed. The next architecture pressure-test should use a less symmetrical encounter such as headland-cross → head-on before production implementation is designed.
+
 ## 2026-08-07 — Traffic Policeman discovered during two-worker BNIR/Safe Release reconciliation
 
 **Observation:** after B completes its native manoeuvre and returns to authoritative settled continuation, A may still require BNIR to reveal post-Hold native intent. `SETTLED_CONTINUATION` alone does not establish spatial safety, and an A creeping under BNIR can itself become a slow physical obstacle to B.

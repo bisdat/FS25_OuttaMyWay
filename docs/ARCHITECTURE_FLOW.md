@@ -259,6 +259,28 @@ Traffic Policeman
 
 `SETTLED_CONTINUATION` supplies a stable native intent reference; positive corridor compatibility remains separately required. A BNIR participant remains a physical obstacle and may be re-Held if its Action Space would consume Progress demand. Role transfer is legitimate only when it reduces/settles unresolved obligations or materially improves admissible resolution; uncertainty ping-pong is Revelation Oscillation, not progress.
 
+`PROGRESS` is preservation priority rather than exclusive movement permission. After a positively available refuge-return corridor is established, Yield may receive a bounded ingress/restoration Action Space; once admitted, its current recovery requirement is Committed Demand. Progress may continue normally, or may receive a purpose-bound supporting `REGULATE_SPEED` lease when unrestricted motion would consume that admitted recovery opportunity. The lease ends as soon as its named protection is no longer required.
+
+```text
+Yield refuge egress
+    ↓
+Progress passage → relevant manoeuvre → settlement
+    ↓
+positive ingress availability
+    ↓
+Yield ingress / restoration (admitted Committed Demand)
+    ↓
+BNIR stage evidence
+    ↓
+re-Hold / configuration restoration may expire that intent
+    ↓
+Native Handover acquires fresh operational Local Intent
+    ↓
+positive joint decoupling + obligations settled
+    ↓
+Safe Release
+```
+
 ## 8. Multi-stage strategy
 
 ```text

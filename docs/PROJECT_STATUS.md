@@ -1,13 +1,23 @@
+# v4.7.29 Candidate — Staged Refuge Recovery / Purpose-Bound Traffic Protection
+
+Current architectural understanding now closes the successful pure Condor–Patriot head-on sequence on paper. Traffic Policeman treats `PROGRESS` as preservation priority rather than exclusive movement authority; Yield may execute a bounded admitted recovery while remaining subordinate to Progress demand. A positively available ingress corridor is required before refuge return.
+
+An admitted ingress/restoration Action Space establishes bounded Committed Demand. Traffic Policeman preserves compatibility with Progress demand and may retain a purpose-bound supporting speed lease on Progress while that recovery protection is genuinely required. The lease expires when its named purpose ends; Condor's observed ~15 s boom unfolding time is not architecture.
+
+BNIR intent obtained in compact/transit configuration is stage evidence. Re-Hold or material restoration can expire its current authority; after restoration the Native Handover Envelope must reacquire fresh operational Local Intent and independent GIANTS continuation before Safe Release. Safe Release remains Encounter-relative and positive: applicable mutations/obligations settled, both workers independently under GIANTS, current authoritative operational intent available, supported demand decoupled, and no unresolved governing-Encounter obligation.
+
+v4.7.29 remains documentation-only apart from release/version metadata and conformance tests. Production Decision remains passive, no live Commitment is applied, production Control remains disabled, and no Traffic Policeman/BNIR/speed-lease actuator is introduced.
+
 # Project Status
 
-> **Current canonical:** v4.7.27 Bounded Native Intent Revelation Architecture Consolidation  
-> **Canonical baseline:** v4.7.27 Bounded Native Intent Revelation Architecture Consolidation (`b7eb7cb2eb268651cbd0287ed4df4762b2892e792a7266f17c8b620e2ef032e2`, Git `6f21b6b74f6ff3816728c47550842a3dc3fd5d87`; 260 files)  
-> **Current candidate:** v4.7.28 Traffic Policeman / Encounter-Relative Movement-Priority Consolidation  
+> **Current canonical:** v4.7.28 Traffic Policeman / Encounter-Relative Movement-Priority Consolidation  
+> **Canonical baseline:** v4.7.28 (`9a1ecb14d46103f1bc21d30a4570e3c68db4db75254bba45134ab98099d0cc26`, Git `239d88802fa6a183f9d6b0c8e34f6c65fa8e2aa8`; 261 files)  
+> **Current candidate:** v4.7.29 Staged Refuge Recovery / Purpose-Bound Traffic Protection Consolidation  
 > **Control authority:** production Control disabled
 
 ## Established Reality
 
-Owner-declared canonical v4.7.27 retains the live-validated v4.7.24 passive runtime foundation: native Local Intent → field-bounded Future Space → positive Encounter admission, current physical interaction as positive Encounter evidence, incomplete-membership evidence precedence, authoritative Job Episode termination/restart identity, passive Decision, no live Commitment and disabled production Control. It additionally canonicalises Bounded Native Intent Revelation architecture and the v4.7.26 evidence record; the superseded fixed-horizon TCPA/DCPA future predictor remains absent from active runtime and diagnostics.
+Owner-declared canonical v4.7.28 retains the live-validated v4.7.24 passive runtime foundation: native Local Intent → field-bounded Future Space → positive Encounter admission, current physical interaction as positive Encounter evidence, incomplete-membership evidence precedence, authoritative Job Episode termination/restart identity, passive Decision, no live Commitment and disabled production Control. It additionally canonicalises Bounded Native Intent Revelation, Traffic Policeman, Demonstrated Traversability, Revelation Oscillation and Encounter-relative Continuation Safety Horizon architecture while retaining the v4.7.26 evidence record; the superseded fixed-horizon TCPA/DCPA future predictor remains absent from active runtime and diagnostics.
 
 The non-canonical v4.7.25 prerequisite probe remains evidence only. It confirmed that represented primitive completeness does not prove Coverage Closure and its attempted `getActiveSegmentData()`/`fieldCourse.segments` index association was invalid; raw tuple slots must preserve nil positions.
 
@@ -61,10 +71,10 @@ bounded native intent revelation
 
 The v4.7.26 speed and distance are proving literals only. Capability support must be established per Physical Assembly; Coverage Closure and manoeuvre-sweep representation remain unresolved.
 
-## Wider implications under discussion
+## Parked boundary
 
-The same architectural pattern may later support post-intervention route reacquisition or static-obstacle recovery: OuttaMyWay could create an admissible movement opportunity and then let GIANTS reveal its native continuation under bounded authority. This is not yet a supported use and does not alter the established fact that GIANTS does not proactively route around a stationary obstacle.
+Static-object recovery/avoidance remains deliberately parked for separate future architectural analysis. BNIR/Traffic Policeman must not be used as evidence that GIANTS can route around a stationary obstacle or that OuttaMyWay can always automate a bypass.
 
 ## Implementation boundary
 
-v4.7.27 carries no v4.7.26 test actuator into the active replacement core. Runtime behaviour remains the v4.7.24 passive implementation. The next substantive design activity is to compose Bounded Native Intent Revelation into the two-worker same-Job-Episode Hold-release problem while preserving Safe Release, Coverage Closure, Effective Actuation Composition and no-all-held invariants.
+v4.7.29 carries no live Traffic Policeman, BNIR actuator, purpose-bound recovery speed lease or other physical Control path into the active replacement core. Runtime behaviour remains the passive canonical lineage apart from version metadata. The next design activity is further paper pressure-testing of the staged resolution contract before any production Control implementation is designed.

@@ -1,3 +1,17 @@
+## v4.7.29 vocabulary refinements
+
+**Traffic Policeman — refined**  
+Decision responsibility for temporary movement-priority preservation within an Encounter. `PROGRESS` is priority, not exclusive movement authority or entitlement to unrestricted speed. `YIELD` may receive bounded admitted movement only while subordinate to Progress demand.
+
+**Purpose-bound supporting speed — refined**  
+A reversible `REGULATE_SPEED` authority on a Progress participant retained solely for a named current protection purpose, such as preserving an admitted Yield recovery demand. It expires as soon as unrestricted Progress continuation is compatible with the remaining protected demand unless a separate current obligation independently justifies regulation. Fixture timing is not its lifetime.
+
+**BNIR evidence lifetime — refined**  
+Native Local Intent revealed during compact/transit BNIR is stage evidence. Re-Hold, material configuration change or restoration may expire its current authority; fresh operational Local Intent must then be reacquired after restoration through native handover.
+
+**Commitment progress — refined**  
+Reduction or retirement of named unresolved obligations belonging to the governing Encounter. Elapsed time, distance travelled or swapping which participant is unknown is not progress by itself.
+
 ## Diagnostic Signal Saturation
 
 A testability failure in which the evidence channel contains the required transition but surrounding output makes timely human recognition impractical.

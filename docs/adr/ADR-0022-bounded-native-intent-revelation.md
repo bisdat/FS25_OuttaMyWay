@@ -95,3 +95,9 @@ Static-object recovery/avoidance is specifically parked by ADR-0023 for separate
 - Capability release, intent revelation, work restoration, native handover and Safe Release remain distinct lifecycle events.
 - Production use requires two-worker composition, assembly-capability evidence and complete constraint evaluation; none is authorised by this ADR alone.
 - Long evidence-gathering Holds may require explicit future player communication, but UI design is intentionally deferred.
+
+## v4.7.29 amendment — stage evidence versus operational authority
+
+Intent revealed while the Physical Assembly is compact/transit is stage evidence. It can resolve the Counterfactual Hold uncertainty sufficiently to decide whether restoration/handover remains admissible, but a subsequent re-Hold or material configuration restoration may expire that Local Intent. The earlier evidence becomes historical rather than current authority.
+
+After restoration, the Native Handover Envelope must acquire fresh operational Local Intent and independent GIANTS continuation while the governing Commitment remains active. Traffic Policeman continues to preserve the Progress participant's supported demand during this transition and may revoke Yield movement authority if the joint Operational Picture materially changes.

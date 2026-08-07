@@ -56,3 +56,7 @@ Yield and Progress roles are recalculated from current Reality for every Encount
 - The implementation is generic A/B assembly logic; Condor, Patriot, TS015 and TS016 identities are prohibited from Decision and Control policy.
 - Runtime validation must exercise at least three successive Encounters inside one Situation: initial refuge, the Progress participant's return, and the former Yield participant's later return.
 - Multiple combines, combine unloading, cross-field coordination and general route planning remain excluded.
+
+## v4.7.29 amendment — current recovery versus later encounter
+
+While a refuge ingress/restoration, BNIR, Native Handover or other obligation created by the current resolution remains unsettled, material changes in either participant are reassessed inside the same governing Encounter. After true Safe Release, a later materially new convergence is a fresh Encounter and receives newly calculated Traffic Policeman roles. OuttaMyWay resolves encounters; it does not permanently deconflict the workers' complete remaining jobs.

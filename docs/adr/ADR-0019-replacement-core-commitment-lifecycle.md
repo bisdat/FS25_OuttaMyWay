@@ -160,3 +160,7 @@ Those may refine implementation but cannot silently weaken the ownership, lifecy
 ## Experimental-line reconciliation
 
 The actual v4.6.72–v4.6.77 runtime-validation line is not the implementation of this ADR. Its v4.6.77 lifecycle failure is negative evidence supporting the enforcing state-machine, Obligation Continuity and Effective Actuation Composition requirements.
+
+## v4.7.29 amendment — obligation-based progress
+
+Commitment progress is evidenced by reduction or retirement of named unresolved obligations, not by elapsed time, travelled distance or capability churn. A multi-stage refuge recovery may therefore retire shared-corridor obstruction, passage uncertainty, ingress availability, recovery, restoration, native-handover and final decoupling obligations in sequence while remaining one Commitment. Traffic role or capability changes are legitimate only when they advance that obligation set or materially improve an admissible path to doing so.

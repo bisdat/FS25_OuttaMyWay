@@ -1,3 +1,18 @@
+# v4.7.29 Staged Refuge Recovery / Purpose-Bound Traffic Protection Consolidation
+
+| Concern | Architectural requirement | v4.7.29 consolidation | Status |
+|---|---|---|---|
+| Movement priority | `PROGRESS` must preserve useful native demand without becoming exclusive motion ownership | Yield may receive bounded admitted recovery; Progress remains priority | ACCEPTED |
+| Clear return corridor | refuge resolution must create positive ingress availability, not infer it from passage alone | ingress admitted only after current Progress occupancy/supported demand is compatible with recovery Action Space | ACCEPTED |
+| Recovery protection | an admitted recovery demand must remain supportable through its active stage | Traffic Policeman preserves compatibility; may apply purpose-bound `REGULATE_SPEED` to Progress | ACCEPTED |
+| Speed authority | Progress priority must not imply unrestricted speed | supporting speed lease preserves named recovery purpose without role transfer | ACCEPTED |
+| Lease lifetime | supporting restriction must not persist after its justification disappears | release as soon as unrestricted Progress motion is compatible with remaining admitted recovery demand | ACCEPTED |
+| Restoration duration | observed implement timing must not become architecture | ~15 s Condor boom unfold retained only as evidence; protect obligation, not clock | ACCEPTED |
+| BNIR evidence lifetime | pre-restoration revelation must not silently survive material Control/configuration change | compact/transit BNIR is stage evidence; fresh operational Local Intent reacquired through Native Handover | ACCEPTED |
+| Commitment progress | resolution must reduce real obligations rather than accumulate motion | progress judged by named obligation reduction/retirement; Revelation Oscillation remains invalid | ACCEPTED |
+| Safe Release | one capability completion cannot end the Encounter | requires settled mutations, independent GIANTS continuation, fresh operational intent, positive decoupling and no unresolved Encounter obligation | ACCEPTED |
+| Runtime authority | documentation consolidation must not activate physical Control | production Decision passive; no live Commitment/Traffic Policeman/BNIR Control path | PRESERVED |
+
 # v4.7.28 Traffic Policeman / Encounter-Relative Movement-Priority Consolidation
 
 | Concern | Architectural requirement | v4.7.28 consolidation | Status |

@@ -1,3 +1,15 @@
+## v4.7.29 — Staged Refuge Recovery / Purpose-Bound Traffic Protection Consolidation Candidate
+
+- refines **Traffic Policeman** so `PROGRESS` is preservation priority rather than exclusive movement authority: a `YIELD` participant may receive bounded admitted recovery movement while remaining subordinate to Progress demand;
+- records the classic Condor–Patriot head-on reference sequence as `egress → Progress passage/manoeuvre/settlement → positively available ingress → recovery → BNIR → restoration → Native Handover → Safe Release`, with a genuinely available return corridor required before ingress authority;
+- records that an admitted ingress/restoration Action Space becomes bounded **Committed Demand** whose compatibility must be preserved until that stage completes, is superseded or is revoked as no longer admissible;
+- refines **purpose-bound supporting speed**: the Progress participant may retain right-of-way while `REGULATE_SPEED` temporarily preserves an admitted Yield recovery opportunity; Progress priority does not imply unrestricted speed;
+- records **protect the recovery obligation, not the clock**: the observed Condor boom unfold time (~15 s) is evidence only, never a timeout or fixed lease duration; supporting restriction expires as soon as unrestricted Progress motion is compatible with the remaining admitted recovery demand;
+- refines **BNIR evidence lifetime**: intent revealed while compact/transit is stage evidence and is not presumed authoritative through a later re-Hold or material configuration restoration; fresh operational Local Intent must be reacquired through the Native Handover Envelope;
+- records Commitment progress as retirement/reduction of named unresolved obligations rather than a numeric distance/time score, strengthening the prohibition on Revelation Oscillation;
+- refines Safe Release for the ordinary two-worker case: current Control mutations settled, independent GIANTS authority observed, fresh authoritative operational Local Intent available, supported current/Future-Space demand positively decoupled, and no unresolved Encounter obligation remains;
+- documentation-only architecture consolidation: production Decision remains passive, no live Commitment or Traffic Policeman/BNIR/Control authority is introduced, and active runtime behaviour remains the canonical v4.7.28 passive baseline apart from version metadata.
+
 ## v4.7.28 — Traffic Policeman / Encounter-Relative Movement-Priority Consolidation Candidate
 
 - begins from owner-declared canonical v4.7.27 (`b7eb7cb2eb268651cbd0287ed4df4762b2892e792a7266f17c8b620e2ef032e2`, Git `6f21b6b74f6ff3816728c47550842a3dc3fd5d87`; 260 files);

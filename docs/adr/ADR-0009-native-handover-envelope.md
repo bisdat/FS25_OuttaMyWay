@@ -111,3 +111,7 @@ The v4.6.62 runtime test must establish whether:
 Authority relinquishment requires more than removing active commands and hold records. Any vehicle-specific interception acquired by Control must be released symmetrically so the receiving GIANTS worker again owns its pre-intervention execution path. The permission interception therefore retains the exact original method and restores that exact identity at handover, cancellation, external job termination and controller/runtime clear. Restoration is identity-safe and must not overwrite a later replacement.
 
 This clarification does not change the Native Handover Envelope or assign exact route/configuration recovery to OuttaMyWay. It makes interception teardown a Commitment precondition for claiming temporary authority relinquished.
+
+## v4.7.29 amendment — BNIR evidence lifetime across restoration
+
+BNIR may supply useful stage evidence before operational configuration is restored, but that Local Intent is not presumed to survive a later re-Hold or material configuration mutation. Intent Expiry applies. After restoration is verified, the Native Handover Envelope is the point at which GIANTS demonstrates fresh operational Local Intent and independent continuation in the configuration that will actually continue work. The governing Commitment and Traffic Policeman remain responsible until Safe Release; Native Handover is not itself Encounter termination.
