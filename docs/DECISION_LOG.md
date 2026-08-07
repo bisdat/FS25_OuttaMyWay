@@ -1,3 +1,13 @@
+## D-0038 — Admit Configuration-Filtered Footprint Positives as Encounter Evidence
+
+**Status:** Accepted implementation step; implemented by v4.7.18 candidate
+
+**Decision:** Compose the unchanged scalar interaction predicate with the configuration-filtered component-footprint evaluator at the interaction-evidence boundary. Either source may establish only positive current interaction or positive bounded future convergence. A non-positive footprint result remains unresolved and cannot erase scalar evidence or establish negative clearance.
+
+**Reason:** canonical v4.7.17 live-validated the purchased 36 m Condor representation and showed stable positive future convergence approximately 9.7 seconds before predicted contact while the scalar path still terminated at missing radius. The positive component evidence is now sufficiently grounded to enter Situation Assessment.
+
+**Boundary:** evidence admission creates Encounter Knowledge only. It does not select responsibility, generate a physical strategy, create or revise a live Commitment, or enable Control. Coverage Closure remains absent and all negative-clearance claims remain prohibited.
+
 ## D-0037 — Separate Geometry Inventory from Configuration Participation
 
 **Status:** Accepted implementation correction; implemented by v4.7.17 candidate

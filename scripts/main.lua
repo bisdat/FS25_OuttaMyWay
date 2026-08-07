@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.17 configuration-filtered plan-view representation shadow candidate entry point; Control remains disabled.
+-- FS25_OuttaMyWay v4.7.18 positive footprint Encounter admission candidate entry point; Control remains disabled.
 -- modDesc.xml loads only this file. Historical archived modules are never sourced.
 local modDirectory=g_currentModDirectory or ""
 local modules={

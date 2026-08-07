@@ -1,3 +1,14 @@
+## v4.7.18 positive Encounter-admission candidate boundary
+
+v4.7.18 derives from owner-declared canonical v4.7.17:
+
+- canonical ZIP SHA-256 `36777de789157125c5787c369e3ce86207d7b9837a58626c80527834fe50d384`;
+- canonical Git commit `e44cfe1d8195d81dcb5a6bcb65380438a9e0960a`;
+- 253 files;
+- clean repository and direct release-byte materialisation.
+
+Canonical v4.7.17 live-validated configuration-specific component participation and the approximately 36 m Condor footprint. v4.7.18 admits only positive filtered-footprint evidence into the existing interaction-evidence/Encounter path. Negative clearance, Decision authority, live Commitment mutation and Control remain unavailable.
+
 ## v4.7.17 configuration-filtered representation candidate boundary
 
 v4.7.17 derives from owner-declared canonical v4.7.15:

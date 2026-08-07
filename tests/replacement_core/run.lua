@@ -203,7 +203,7 @@ end)
 
 test("runtime is passive and inactive before the live listener runs", function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); local status=runtime:getStatus()
-    equal(status.runtimeMode,"PLAN_VIEW_REPRESENTATION_SHADOW"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
+    equal(status.runtimeMode,"POSITIVE_FOOTPRINT_ENCOUNTER_ADMISSION"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
 end)
 
 
@@ -1605,6 +1605,50 @@ test("runtime compound-child evidence can select a different purchased geometry 
     equal(result.runtimeConfirmedPrimitiveCount,2)
     if result.planViewSummary.bounds.width<55 then error("runtime-active alternative geometry was not selected") end
     if string.find(result.configurationSelectorSummary,"MISMATCH",1,true)==nil then error("donor selector mismatch was not exposed") end
+end)
+
+
+test("positive evidence composition is one-way",function()
+    local footprintOnly=OuttaMyWay.PlanViewFootprint.composePositiveEvidence({current=false,converges=false},{current=false,future=true})
+    equal(footprintOnly.positive,true); equal(footprintOnly.future,true); equal(footprintOnly.source,"FILTERED_PLAN_VIEW_POSITIVE"); equal(footprintOnly.negativeClearanceAuthority,false)
+    local scalarOnly=OuttaMyWay.PlanViewFootprint.composePositiveEvidence({current=true,converges=false},{current=false,future=false})
+    equal(scalarOnly.positive,true); equal(scalarOnly.current,true); equal(scalarOnly.source,"SCALAR_PREDICATE_POSITIVE")
+    local unresolved=OuttaMyWay.PlanViewFootprint.composePositiveEvidence({current=false,converges=false},{current=false,future=false})
+    equal(unresolved.positive,false); equal(unresolved.source,nil); equal(unresolved.negativeClearanceAuthority,false)
+end)
+
+test("filtered footprint positive reaches Encounter when scalar radius is missing",function()
+    withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions)
+        local saved={
+            getNumOfChildren=getNumOfChildren,getChildAt=getChildAt,getName=getName,localToWorld=localToWorld,
+            getShapeGeometryBoundingSphere=getShapeGeometryBoundingSphere,getShapeBoundingSphere=getShapeBoundingSphere,
+            getShapeWorldBoundingSphere=getShapeWorldBoundingSphere,getIsCompoundChild=getIsCompoundChild
+        }
+        getNumOfChildren=function() return 0 end
+        getChildAt=function() return nil end
+        getName=function(node) return "root"..tostring(node) end
+        localToWorld=function(node,x,y,z) local p=positions[node]; return p[1]+x,p[2]+y,p[3]+z end
+        getShapeGeometryBoundingSphere=function(node) return 0,0,0,2.5,true end
+        getShapeBoundingSphere=function(node) return 0,0,0,2.5,true end
+        getShapeWorldBoundingSphere=function(node) local p=positions[node]; return p[1],p[2],p[3],2.5 end
+        getIsCompoundChild=function() return false end
+        directions[201]={0,-1}; b.sizeWidth=nil
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local raw=runtime.liveObservationSource:capture(mission,10)[1]
+        local pair=raw.diagnostics.pairDiagnostics[1]
+        equal(pair.principalOutcome,"MISSING_OTHER_RADIUS")
+        equal(pair.filteredFootprintPositive,true)
+        equal(pair.interactionEvidenceSource,"FILTERED_PLAN_VIEW_POSITIVE")
+        equal(pair.interactionEvidenceEmitted,true)
+        local processed=runtime:processSealedObservation(raw)
+        equal(#processed.picture.encounters,1)
+        equal(processed.picture.encounters[1].relationship,"FUTURE_SPACE_CONVERGENCE")
+        equal(processed.picture.encounters[1].evidence.provenance.authority,"POSITIVE_INTERACTION_ONLY")
+        equal(processed.picture.encounters[1].evidence.provenance.negativeClearanceAuthority,false)
+        getNumOfChildren=saved.getNumOfChildren; getChildAt=saved.getChildAt; getName=saved.getName; localToWorld=saved.localToWorld
+        getShapeGeometryBoundingSphere=saved.getShapeGeometryBoundingSphere; getShapeBoundingSphere=saved.getShapeBoundingSphere
+        getShapeWorldBoundingSphere=saved.getShapeWorldBoundingSphere; getIsCompoundChild=saved.getIsCompoundChild
+    end)
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

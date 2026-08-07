@@ -1,3 +1,15 @@
+# v4.7.18 Positive Encounter-Admission Conformance
+
+| Concern | Requirement | v4.7.18 evidence | Status |
+|---|---|---|---|
+| Monotonic evidence | footprint uncertainty cannot suppress scalar positives | pure one-way composition fixture | PASS offline |
+| Positive permission | filtered represented components may support current/future interaction | footprint-only source-to-Encounter fixture | PASS offline |
+| Negative prohibition | non-positive footprint cannot prove clearance | zero negative authority retained | PASS offline |
+| Handoff | emitted evidence must be received and create Encounter | integration fixture with missing scalar radius | PASS offline |
+| Provenance | source and represented component basis remain visible | evidence packet and pair diagnostics | PASS offline |
+| Decision boundary | Encounter does not imply physical strategy | passive candidate support unchanged | PASS |
+| Control | no actuation authority | `control=false`; no boundary apply | PASS |
+
 # v4.7.17 Configuration-Participation Conformance
 
 | Concern | Requirement | v4.7.17 evidence | Status |

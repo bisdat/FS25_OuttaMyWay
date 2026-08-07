@@ -32,8 +32,8 @@ function Runtime.new()
 end
 function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
-    self.trace:append("CONFIGURATION_FILTERED_PLAN_VIEW_REPRESENTATION_SHADOW_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";predicatesChanged=false;control=false")
-    print(string.format("FS25_OuttaMyWay v%s configuration-filtered plan-view representation shadow loaded; inactive shop geometry excluded; predicates unchanged; Control authority disabled",OuttaMyWay.VERSION))
+    self.trace:append("POSITIVE_FOOTPRINT_ENCOUNTER_ADMISSION_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";positiveEvidenceAdmission=true;negativeClearanceAuthority=false;control=false")
+    print(string.format("FS25_OuttaMyWay v%s positive filtered-footprint Encounter admission loaded; negative clearance unresolved; Decision passive; Control authority disabled",OuttaMyWay.VERSION))
 end
 function Runtime:publishObservation(raw) return self.observationAdapter:publish(raw) end
 function Runtime:admitJobEpisodes(snapshot) return self.jobEpisodes:observe(snapshot) end

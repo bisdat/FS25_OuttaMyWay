@@ -1,3 +1,11 @@
+## v4.7.18 live-validation boundary
+
+- Positive filtered-footprint evidence admission is offline-validated but not yet live-validated.
+- Coverage Closure remains absent; non-positive footprint results cannot establish clearance.
+- Future footprint evaluation translates current component discs with observed velocity and does not yet model rotational, articulated or deployment sweeps.
+- Encounter creation is Knowledge only; ordinary resolution priority and physical strategy remain outside this increment.
+- Scalar representation diagnostics remain structurally invalid for the TS015 sprayers and are retained deliberately for comparison.
+
 ## v4.7.17 live-validation boundary
 
 - Configuration-specific primitive participation is implemented offline but not yet live-validated.

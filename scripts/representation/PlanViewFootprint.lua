@@ -97,6 +97,29 @@ local function discPair(a,b,velocityA,velocityB,horizon)
     return {current=current,future=future,distance=distance,required=required,tcpa=tcpa,cpa=cpa}
 end
 
+function Footprint.composePositiveEvidence(scalar,footprint)
+    scalar=scalar or {}
+    footprint=footprint or {}
+    local scalarPositive=scalar.current==true or scalar.future==true or scalar.converges==true
+    local footprintPositive=footprint.current==true or footprint.future==true
+    local current=scalar.current==true or footprint.current==true
+    local future=(not current) and (scalar.future==true or scalar.converges==true or footprint.future==true) or false
+    local source=nil
+    if scalarPositive and footprintPositive then source="SCALAR_AND_FILTERED_PLAN_VIEW_POSITIVE"
+    elseif footprintPositive then source="FILTERED_PLAN_VIEW_POSITIVE"
+    elseif scalarPositive then source="SCALAR_PREDICATE_POSITIVE" end
+    return {
+        positive=current or future,
+        current=current,
+        future=future,
+        scalarPositive=scalarPositive,
+        filteredFootprintPositive=footprintPositive,
+        source=source,
+        authority=(current or future) and "POSITIVE_INTERACTION_ONLY" or nil,
+        negativeClearanceAuthority=false
+    }
+end
+
 function Footprint.evaluateShadowPair(subject,other,horizon,subjectVelocity,otherVelocity)
     local best=nil
     local physicalSubject,physicalOther={},{}

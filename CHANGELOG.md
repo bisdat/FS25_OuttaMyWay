@@ -1,3 +1,16 @@
+## v4.7.18 — Positive Filtered-Footprint Encounter Admission Candidate
+
+- begins from owner-declared canonical v4.7.17 (`36777de7...d384`, Git `e44cfe1d8195d81dcb5a6bcb65380438a9e0960a`);
+- records the v4.7.17 live gate: 30 Condor inventory primitives, 14 participating primitives, 16 inactive alternatives, approximately 36.36 m deployed span, stable profile/cache reuse and early positive TS015 convergence;
+- retains the legacy scalar predictor unchanged;
+- composes scalar and configuration-filtered footprint positives at the interaction-evidence boundary;
+- permits filtered footprints to add only `CURRENT_SPACE_INTERACTION` or `FUTURE_SPACE_CONVERGENCE` evidence;
+- preserves scalar positive evidence when the footprint is unresolved;
+- preserves `CLEARANCE_UNRESOLVED` and zero negative-clearance authority for every non-positive footprint result;
+- records evidence source, positive-only authority and represented component provenance in the interaction packet;
+- allows Situation Assessment to construct Encounter Knowledge from the admitted positive footprint evidence;
+- leaves Decision passive, creates no live Commitment and keeps Control disabled.
+
 ## v4.7.17 — Configuration-Filtered Plan-View Representation Shadow Candidate
 
 - begins from owner-declared canonical v4.7.15 (`0edd7c2a...581b`, Git `d5049189a7b7d9d688d3dd609e0ecc4f6c71a67f`);

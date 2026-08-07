@@ -1,3 +1,13 @@
+## 2026-08-07 — Positive Footprint Evidence Admission
+
+**Observation:** canonical v4.7.17 produced a correct approximately 36 m Condor footprint and stable future-positive TS015 evidence while the scalar predictor remained unable to calculate CPA.
+
+**Hypothesis:** the existing Situation Assessment path can consume the filtered component evidence without granting any negative-clearance or Control authority.
+
+**Implementation:** v4.7.18 adds a pure one-way positive evidence composition and sends the resulting packet through the existing interaction-evidence handoff. Diagnostics distinguish scalar outcome, footprint outcome and admitted evidence source.
+
+**Validation target:** one short live TS015 run proving emitted → received → Encounter before contact, with passive Decision and Control.
+
 ## 2026-08-06 — Configuration Participation Correction and v4.7.17
 
 **Observation:** the v4.7.16 live run showed a stable approximately 54 m Condor footprint, while the tested purchased machine is the 36 m configuration. The footprint therefore represented available asset geometry rather than current physical occupancy.

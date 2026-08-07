@@ -1,13 +1,11 @@
-FS25_OuttaMyWay v4.7.17 — Configuration-Filtered Plan-View Representation Shadow Candidate
+FS25_OuttaMyWay v4.7.18 — Positive Filtered-Footprint Encounter Admission Candidate
 
-Canonical baseline: owner-declared v4.7.15, ZIP SHA-256 0edd7c2a93a3238a86ba21964d5a8b404520537df146b6f23bca58327a93581b, Git commit d5049189a7b7d9d688d3dd609e0ecc4f6c71a67f, 249 files.
+Canonical baseline: owner-declared v4.7.17, ZIP SHA-256 36777de789157125c5787c369e3ce86207d7b9837a58626c80527834fe50d384, Git commit e44cfe1d8195d81dcb5a6bcb65380438a9e0960a, 253 files.
 
-The v4.7.16 diagnostic candidate proved Job Episode-scoped geometry caching and live plan-view transformation, but also exposed a configuration-selection defect: the tested 36 m Condor footprint included inactive alternative shop geometry and expanded to approximately 54 m.
+Canonical v4.7.17 live-validated Job Episode-scoped geometry caching, purchased-configuration participation, exclusion of 16 inactive Condor alternatives, an approximately 36.36 m deployed Condor footprint, and early positive future convergence in TS015. The legacy scalar predictor still rejected the pair because both workers lacked scalar radius evidence.
 
-v4.7.17 carries forward the validated cache and compound-footprint foundation while separating the complete cached geometry inventory from the primitives participating in each material configuration profile. Runtime `getIsCompoundChild` evidence is the principal participation authority. A matching purchased configuration plus donor declaration is used only as a bounded fallback when the runtime query is unavailable.
+v4.7.18 introduces a one-way positive evidence bridge. Existing scalar positives remain unchanged. A configuration-filtered component-footprint result may additionally emit CURRENT_SPACE_INTERACTION or FUTURE_SPACE_CONVERGENCE evidence. A non-positive or incomplete footprint result remains CLEARANCE_UNRESOLVED: it cannot establish separation, suppress scalar evidence, or grant negative-clearance authority.
 
-The Condor donor now retains all 29 known physical compound-child identities: 13 belonging to the 36 m family and permanent controls, plus 16 inactive alternatives. Inactive alternatives remain cached and logged but do not enter the positioned footprint. Generic machines such as Patriot are filtered independently by their current runtime compound-child state.
+Situation Assessment continues to convert positive interaction evidence into Encounter Knowledge. Decision remains passive, no live Commitment is created, and Control authority remains disabled.
 
-The shadow predictor remains passive. Incomplete coverage grants no negative-clearance authority, and no shadow result enters live interaction evidence, Encounter admission, Decision, Commitment or Control.
-
-Run line: FS25_OuttaMyWay v4.7.17 configuration-filtered plan-view representation shadow loaded; inactive shop geometry excluded; predicates unchanged; Control authority disabled
+Run line: FS25_OuttaMyWay v4.7.18 positive filtered-footprint Encounter admission loaded; negative clearance unresolved; Decision passive; Control authority disabled

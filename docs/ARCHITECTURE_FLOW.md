@@ -2,9 +2,9 @@
 
 > **Authority:** Normative replacement-core responsibility and lifecycle map
 >
-> **Currency:** v4.7.17 Configuration-Filtered Plan-View Representation Shadow Candidate; canonical v4.7.15 remains the implementation baseline
+> **Currency:** v4.7.18 Positive Filtered-Footprint Encounter Admission Candidate; canonical v4.7.17 is the implementation baseline
 >
-> **Implementation status:** canonical v4.7.15 isolates the TS015 failure to physical representation; v4.7.17 filters cached layered footprints by current configuration participation without changing Encounter admission; live Commitment mutation and Control remain unimplemented
+> **Implementation status:** canonical v4.7.17 validates filtered component footprints; v4.7.18 admits positive footprint evidence into Encounter Knowledge while live Commitment mutation and Control remain unimplemented
 
 ## 1. Closed-loop responsibility flow
 

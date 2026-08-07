@@ -212,8 +212,8 @@ def test_v478_targeted_job_episode_and_field_identity_path_is_active():
     assert "scripts/diagnostics/TargetedFieldIdentityProbe.lua" in main
     assert "scripts/diagnostics/LiveAIStateProbe.lua" not in main
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.17"' in config
-    assert 'RUNTIME_MODE = "PLAN_VIEW_REPRESENTATION_SHADOW"' in config
+    assert 'VERSION = "4.7.18"' in config
+    assert 'RUNTIME_MODE = "POSITIVE_FOOTPRINT_ENCOUNTER_ADMISSION"' in config
     evidence=(ROOT/"scripts"/"observation"/"LiveAIJobEvidence.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"TargetedFieldIdentityProbe.lua").read_text(encoding="utf-8")
@@ -259,8 +259,8 @@ def test_v479_polygon_field_identity_fallback_is_read_only():
     for forbidden in ("driveToPoint(","stopCurrentAIJob(","setCruiseControlState("):
         assert forbidden not in text
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.17"' in config
-    assert 'RUNTIME_MODE = "PLAN_VIEW_REPRESENTATION_SHADOW"' in config
+    assert 'VERSION = "4.7.18"' in config
+    assert 'RUNTIME_MODE = "POSITIVE_FOOTPRINT_ENCOUNTER_ADMISSION"' in config
 
 
 def test_v4711_job_seeded_snapshot_capture_remains_active_under_equivalence_authority():
@@ -281,8 +281,8 @@ def test_v4711_field_world_snapshot_is_bound_once_to_job_episode():
     assert "_bindFieldWorld" in admission
     assert "cannot change after capture" in admission
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.17"' in config
-    assert 'RUNTIME_MODE = "PLAN_VIEW_REPRESENTATION_SHADOW"' in config
+    assert 'VERSION = "4.7.18"' in config
+    assert 'RUNTIME_MODE = "POSITIVE_FOOTPRINT_ENCOUNTER_ADMISSION"' in config
 
 
 def test_v4711_parallel_validation_reports_global_operation_count():
@@ -323,7 +323,7 @@ def test_v4714_field_world_equivalence_authority_is_active_and_conservative():
     for token in ("FIELD_WORLD_EQUIVALENCE_SAMPLE_SIDE","FIELD_WORLD_EQUIVALENCE_SAME_MAX_AREA_RELATIVE_DELTA","FIELD_WORLD_EQUIVALENCE_SAME_MIN_SAMPLED_JACCARD","FIELD_WORLD_EQUIVALENCE_DIFFERENT_MIN_BOUNDARY_SEPARATION_METRES"):
         assert token in config
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert "plan-view representation shadow loaded" in runtime
+    assert "positive filtered-footprint Encounter admission loaded" in runtime
     assert "Control authority disabled" in runtime
     assert "decisionCommitmentBoundary:apply" not in (ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
 
@@ -344,8 +344,8 @@ def test_v4715_bounded_interaction_diagnostics_are_multi_worker_and_passive():
         assert token in assessment
     for token in ("PAIR pair=","ENCOUNTER lifecycle=CREATED","ENCOUNTER lifecycle=RETAINED","ENCOUNTER lifecycle=LOST","PAIR_OPERATION_CHANGED_DURING_JOB_EPISODE","PAIR_DISAPPEARED_WHILE_BOTH_WORKERS_ACTIVE"):
         assert token in validator
-    assert 'VERSION = "4.7.17"' in config
-    assert 'RUNTIME_MODE = "PLAN_VIEW_REPRESENTATION_SHADOW"' in config
+    assert 'VERSION = "4.7.18"' in config
+    assert 'RUNTIME_MODE = "POSITIVE_FOOTPRINT_ENCOUNTER_ADMISSION"' in config
     assert "PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE" in config
     for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
         assert forbidden not in diagnostics
@@ -353,7 +353,7 @@ def test_v4715_bounded_interaction_diagnostics_are_multi_worker_and_passive():
         assert forbidden not in validator
 
 
-def test_v4717_plan_view_representation_shadow_recovers_donors_without_authority_change():
+def test_v4717_plan_view_representation_foundation_remains_active():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     for rel in (
         "scripts/representation/catalogues/CondorEndurance2Donor.lua",
@@ -373,14 +373,31 @@ def test_v4717_plan_view_representation_shadow_recovers_donors_without_authority
         assert token in footprint
     for token in ("boom01ArmLeftCol01","boom01ArmRightCol04","PERMANENT_PHYSICAL_CONTROL","PROTOTYPES_08_09_10_11_13"):
         assert token in donor
-    for token in ("shadowPlanViewEvidence","shadowOutcome","SHADOW_REPRESENTATION_POSITIVE_WITHOUT_LIVE_INTERACTION"):
+    for token in ("shadowPlanViewEvidence","shadowOutcome","POSITIVE_INTERACTION_ONLY"):
         assert token in source
+    assert "FILTERED_PLAN_VIEW_POSITIVE" in footprint
     for token in ("shadowInventoryPrimitives","shadowParticipatingPrimitives","shadowInactivePrimitives","shadowProfileCacheHit","shadowOutcome"):
         assert token in validator
-    assert 'VERSION = "4.7.17"' in config
-    assert 'RUNTIME_MODE = "PLAN_VIEW_REPRESENTATION_SHADOW"' in config
+    assert 'VERSION = "4.7.18"' in config
+    assert 'RUNTIME_MODE = "POSITIVE_FOOTPRINT_ENCOUNTER_ADMISSION"' in config
     assert "POTENTIAL_INTERACTION_FROM_REPRESENTED_COMPONENTS" in cache
     assert "negativeClearanceAuthority=false" in cache
     for text in (cache,footprint,source,validator):
         for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
             assert forbidden not in text
+
+
+def test_v4718_positive_filtered_footprint_admission_is_monotonic_and_passive():
+    footprint=(ROOT/"scripts"/"representation"/"PlanViewFootprint.lua").read_text(encoding="utf-8")
+    source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
+    assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
+    validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+    for token in ("composePositiveEvidence","FILTERED_PLAN_VIEW_POSITIVE","SCALAR_AND_FILTERED_PLAN_VIEW_POSITIVE","negativeClearanceAuthority=false"):
+        assert token in footprint or token in source
+    for token in ("interactionEvidenceSource","interactionEvidenceAuthority","POSITIVE_INTERACTION_ONLY","configurationFiltered=true"):
+        assert token in source
+    assert "interaction evidence requires interactionReferenceKey" in assessment
+    assert "evidenceSource=%s" in validator
+    assert "decisionCommitmentBoundary:apply" not in validator
+    for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState("):
+        assert forbidden not in source

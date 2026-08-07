@@ -1,6 +1,33 @@
 # FS25_OuttaMyWay Roadmap
 
-## Current gate — validate configuration-specific footprint participation
+## Current gate — validate positive footprint Encounter admission
+
+Canonical v4.7.17 closed the configuration-specific footprint gate. The next smallest vertical slice is Knowledge-only admission:
+
+1. preserve the unchanged scalar predictor;
+2. admit a filtered component-footprint positive as interaction evidence;
+3. create and retain one Encounter through the existing Situation Assessment path;
+4. preserve unresolved negative clearance;
+5. preserve passive Decision and zero Control authority.
+
+> **Current canonical baseline:** v4.7.17  
+> **Current candidate:** v4.7.18  
+> **Control authority:** disabled
+
+## Immediate sequence
+
+1. Live-validate v4.7.18 Encounter creation before TS015 contact.
+2. Record Encounter persistence/loss semantics from positive evidence.
+3. Only after Encounter Knowledge is trustworthy, discuss ordinary resolution and priority evidence.
+4. Do not implement physical Control merely because Encounter admission succeeds.
+
+## Build-economy rule
+
+One live run should answer the complete evidence-handoff question. Stop before collision once creation and retention are clear.
+
+# FS25_OuttaMyWay Roadmap
+
+## Historical gate — configuration-specific footprint participation
 
 Canonical v4.7.15 closed the Encounter-diagnostic question: the active pair path failed at physical representation because both TS015 sprayers lacked scalar dimensions and radii.
 
@@ -17,8 +44,8 @@ v4.7.17 corrects that implementation in passive shadow:
 7. preserve positive-conflict-only shadow authority and unresolved negative clearance;
 8. preserve existing Encounter predicates and zero Control authority.
 
-> **Current canonical baseline:** v4.7.15  
-> **Current representation candidate:** v4.7.17  
+> **Historical canonical baseline:** v4.7.15  
+> **Historical representation candidate:** v4.7.17  
 > **Control authority:** disabled
 
 ## v4.7.x implementation sequence
@@ -32,7 +59,7 @@ v4.7.17 corrects that implementation in passive shadow:
 7. Job-Seeded Field World evidence and authority — v4.7.11–v4.7.14 canonical.
 8. Bounded interaction diagnostics — v4.7.15 canonical.
 9. Passive plan-view representation foundation — v4.7.16 diagnostic candidate; cache path proved, configuration selection disproved.
-10. Configuration-filtered plan-view representation — v4.7.17 candidate.
+10. Configuration-filtered plan-view representation — v4.7.17 canonical.
 11. Promote positive representation evidence into live Situation Assessment only after the configuration gate passes.
 12. Validate Encounter admission passively before any Decision or Control work.
 13. First exclusive vertical Control slice only after passive Encounter evidence is trustworthy.

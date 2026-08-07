@@ -1,4 +1,17 @@
-## v4.7.17 configuration-participation gate
+## v4.7.18 positive-evidence admission gate
+
+- Repeat TS015 from the canonical fixture.
+- Confirm the scalar path still reports missing radius.
+- Confirm the filtered footprint reports future convergence and `interactionEvidenceSource=FILTERED_PLAN_VIEW_POSITIVE`.
+- Confirm emitted and received counters both become one and one Encounter is created before contact.
+- Confirm Encounter retention while positive evidence persists and bounded loss when it clears or the Job Episode ends.
+- Confirm Decision remains passive, no Commitment is applied and `control=false`.
+
+> **Canonical baseline:** v4.7.17  
+> **Current candidate:** v4.7.18  
+> **Architecture authority:** canonical repository architecture plus D-0038
+
+## Historical v4.7.17 configuration-participation gate
 
 - Repeat TS015 with the purchased 36 m Condor and 36 m Patriot.
 - Confirm the Condor retains its complete cached inventory while excluding inactive alternative shop geometry from the current profile.
@@ -7,8 +20,8 @@
 - Confirm geometry API measurement counts remain stable after Job Episode cache construction; new profile activity checks occur only when a profile is first encountered.
 - Preserve passive shadow authority, unchanged Encounter predicates and `control=false`.
 
-> **Canonical baseline:** v4.7.15  
-> **Current candidate:** v4.7.17  
+> **Historical canonical baseline:** v4.7.15  
+> **Accepted candidate:** v4.7.17  
 > **Architecture authority:** canonical repository architecture plus accepted D-0037 implementation correction
 
 ## Historical migration gates

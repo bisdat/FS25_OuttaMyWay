@@ -2,7 +2,7 @@
 
 > **Authority:** Canonical navigation
 >
-> **Currency:** v4.7.17 Configuration-Filtered Plan-View Representation Shadow Candidate; canonical implementation baseline v4.7.15
+> **Currency:** v4.7.18 Positive Filtered-Footprint Encounter Admission Candidate; canonical implementation baseline v4.7.17
 
 This repository is a self-sustaining engineering knowledge system. It must preserve project continuity independently of any chat, engineer, AI system or platform.
 

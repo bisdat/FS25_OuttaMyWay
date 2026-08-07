@@ -1,11 +1,11 @@
--- FS25_OuttaMyWay v4.7.17 configuration-filtered plan-view representation shadow candidate; Control remains disabled.
+-- FS25_OuttaMyWay v4.7.18 positive footprint Encounter admission candidate; Control remains disabled.
 -- Canonical architecture authority: v4.6.78.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.17"
+OuttaMyWay.VERSION = "4.7.18"
 OuttaMyWay.ARCHITECTURE_VERSION = "4.6.78"
-OuttaMyWay.RUNTIME_MODE = "PLAN_VIEW_REPRESENTATION_SHADOW"
+OuttaMyWay.RUNTIME_MODE = "POSITIVE_FOOTPRINT_ENCOUNTER_ADMISSION"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000
 OuttaMyWay.PASSIVE_HEARTBEAT_INTERVAL_MS = 10000

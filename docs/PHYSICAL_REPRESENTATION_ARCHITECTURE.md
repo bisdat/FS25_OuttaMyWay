@@ -1,3 +1,7 @@
+## v4.7.18 implementation note — positive evidence may cross the assessment boundary
+
+Canonical v4.7.17 established configuration-filtered participating component footprints in GIANTS Reality. v4.7.18 permits those footprints to support positive current interaction or positive bounded future convergence. The bridge is monotonic: unresolved footprint evidence cannot remove an existing scalar positive and cannot establish negative clearance. This is implementation of the existing Representation Passport permission, not a new representation concept.
+
 ## v4.7.17 implementation note — inventory is not participation
 
 The v4.7.16 live test demonstrated that a complete instantiated asset inventory may contain mutually exclusive shop configurations. A Configuration Profile must therefore select current physical participants rather than transform every cached primitive. v4.7.17 implements this existing architectural distinction through runtime compound-child evidence and explicit inactive/unresolved inventories. This note records implementation conformance; it does not add a new representation authority.

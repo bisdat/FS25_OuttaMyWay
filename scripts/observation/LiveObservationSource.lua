@@ -686,8 +686,6 @@ function Source:capture(mission, nowSeconds)
                     pairDiagnostic.otherVelocityZ=prediction.otherVelocityZ
                     pairDiagnostic.principalOutcome=prediction.principalOutcome
                     pairDiagnostic.currentSuppressionReason=prediction.currentSuppressionReason
-                    pairDiagnostic.qualifying=prediction.current or prediction.converges
-                    pairDiagnostic.interactionEvidenceEmitted=prediction.interactionEvidenceEmitted
                     pairDiagnostic.representationFitForNegativeConclusion=false
                     local subjectVelocity={x=prediction.subjectVelocityX or 0,z=prediction.subjectVelocityZ or 0}
                     local otherVelocity={x=prediction.otherVelocityX or 0,z=prediction.otherVelocityZ or 0}
@@ -703,19 +701,33 @@ function Source:capture(mission, nowSeconds)
                     pairDiagnostic.shadowSubjectPhysicalPrimitiveCount=shadow.subjectPhysicalPrimitiveCount
                     pairDiagnostic.shadowOtherPhysicalPrimitiveCount=shadow.otherPhysicalPrimitiveCount
                     pairDiagnostic.shadowAuthority=shadow.authority
-                    if (shadow.current or shadow.future) and not (prediction.current or prediction.converges) then
-                        appendDiagnosticContradiction(raw.diagnostics.contradictions,"SHADOW_REPRESENTATION_POSITIVE_WITHOUT_LIVE_INTERACTION",{
-                            pairReferenceKey=pairReferenceKey,principalOutcome=prediction.principalOutcome,shadowOutcome=shadow.outcome,shadowTCPA=shadow.tcpa,shadowDCPA=shadow.cpa
-                        })
-                    end
-                    if prediction.current or prediction.converges then
+
+                    -- Positive evidence composition is intentionally one-way. The legacy scalar
+                    -- predicate remains unchanged. A filtered component footprint may add positive
+                    -- current/future interaction evidence, but its unresolved result can never
+                    -- erase scalar evidence or establish negative clearance.
+                    local composed=OuttaMyWay.PlanViewFootprint.composePositiveEvidence({current=prediction.current,converges=prediction.converges},shadow)
+                    pairDiagnostic.scalarPositive=composed.scalarPositive
+                    pairDiagnostic.filteredFootprintPositive=composed.filteredFootprintPositive
+                    pairDiagnostic.qualifying=composed.positive
+                    pairDiagnostic.interactionEvidenceEmitted=composed.positive
+                    pairDiagnostic.interactionEvidenceSource=composed.source
+                    pairDiagnostic.interactionEvidenceAuthority=composed.authority
+
+                    if composed.positive then
                         raw.diagnostics.sourceCounters.qualifyingPairCount=raw.diagnostics.sourceCounters.qualifyingPairCount+1
                         raw.diagnostics.sourceCounters.interactionEvidenceEmittedCount=raw.diagnostics.sourceCounters.interactionEvidenceEmittedCount+1
                         raw.geometry.interactionEvidence[#raw.geometry.interactionEvidence + 1] = {
                             interactionReferenceKey = pairReferenceKey,
                             subjectAssemblyReferenceKey = a.referenceKey, otherAssemblyReferenceKey = b.referenceKey,
-                            currentSpaceIntersects = prediction.current, futureSpaceConverges = prediction.converges, horizon = horizon,
-                            provenance = {source = "bounded-current-motion", distance = prediction.distance, required = prediction.required, tcpa = prediction.tcpa, cpa = prediction.cpa, principalOutcome=prediction.principalOutcome}
+                            currentSpaceIntersects = composed.current, futureSpaceConverges = composed.future, horizon = horizon,
+                            provenance = {
+                                source = composed.source,
+                                authority = "POSITIVE_INTERACTION_ONLY",
+                                negativeClearanceAuthority = false,
+                                scalar = {current=prediction.current, future=prediction.converges, distance=prediction.distance, required=prediction.required, tcpa=prediction.tcpa, cpa=prediction.cpa, principalOutcome=prediction.principalOutcome},
+                                filteredPlanView = {current=shadow.current, future=shadow.future, tcpa=shadow.tcpa, cpa=shadow.cpa, required=shadow.required, outcome=shadow.outcome, subjectPrimitiveId=shadow.subjectPrimitiveId, otherPrimitiveId=shadow.otherPrimitiveId, subjectPhysicalPrimitiveCount=shadow.subjectPhysicalPrimitiveCount, otherPhysicalPrimitiveCount=shadow.otherPhysicalPrimitiveCount, configurationFiltered=true}
+                            }
                         }
                     elseif prediction.closingRate > 0.05 then
                         appendDiagnosticContradiction(raw.diagnostics.contradictions,"REPRESENTATION_UNFIT_BUT_NEGATIVE_RESULT_USED",{

@@ -1,8 +1,35 @@
-# Plan-View Representation Shadow
+# Plan-View Representation and Positive Encounter Admission
 
-> **Implementation:** v4.7.17 candidate  
-> **Canonical baseline:** v4.7.15  
-> **Authority:** passive shadow only
+> **Implementation:** v4.7.18 candidate  
+> **Canonical baseline:** v4.7.17  
+> **Authority:** positive interaction support only
+
+## Current permission
+
+The configuration-filtered footprint may now support exactly two conclusions:
+
+- `CURRENT_SPACE_INTERACTION`;
+- `FUTURE_SPACE_CONVERGENCE` within the bounded horizon.
+
+It may not support negative clearance. `SHADOW_CLEARANCE_UNRESOLVED` remains an explicit unresolved result.
+
+## One-way evidence composition
+
+```text
+scalar positive OR filtered-footprint positive
+        ↓
+positive interaction evidence
+        ↓
+Encounter Knowledge
+```
+
+An unresolved footprint cannot erase scalar evidence. When both sources are positive, one packet records both bases. No result from this module selects a Yield worker, strategy, Commitment or Control action.
+
+# Historical v4.7.17 Plan-View Representation Shadow
+
+> **Implementation:** v4.7.17 canonical  
+> **Historical baseline:** v4.7.15  
+> **Authority at that increment:** passive shadow only
 
 ## Purpose
 
