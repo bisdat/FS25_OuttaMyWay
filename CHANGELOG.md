@@ -1,3 +1,34 @@
+## v4.7.17 — Configuration-Filtered Plan-View Representation Shadow Candidate
+
+- begins from owner-declared canonical v4.7.15 (`0edd7c2a...581b`, Git `d5049189a7b7d9d688d3dd609e0ecc4f6c71a67f`);
+- carries forward the passive assembly, geometry-cache and layered-footprint foundation first exercised by the non-canonical v4.7.16 diagnostic candidate;
+- records the live finding that v4.7.16 represented the tested 36 m Condor with an approximately 54 m span because inactive alternative shop geometry entered every profile;
+- separates complete cached geometry inventory from configuration-profile participation;
+- expands the Condor donor to all 29 known physical collision identities, explicitly classifying 13 current 36 m/permanent identities and 16 inactive alternatives;
+- uses current runtime compound-child state as the principal primitive-participation authority;
+- permits a matched purchased-configuration donor fallback only when runtime compound-child evidence is unavailable;
+- caches profile participation so expensive geometry APIs remain Job Episode-scoped while cheap activity checks occur only when a new material profile is first encountered;
+- logs inventory, participating, inactive and unresolved primitive counts plus selected configuration and node identities;
+- distinguishes the invalid legacy scalar representation from the partial-positive footprint representation in diagnostics;
+- changes no live interaction predicate, Encounter admission, Decision, Commitment or Control behaviour;
+- keeps replacement Control authority disabled.
+
+## v4.7.16 — Passive Plan-View Representation Shadow Candidate
+
+- begins from owner-declared canonical v4.7.15 (`0edd7c2a...581b`, Git `d5049189a7b7d9d688d3dd609e0ecc4f6c71a67f`);
+- records the v4.7.15 live diagnosis that both Condor and Patriot lacked usable scalar radius evidence;
+- recovers recursive compound Physical Assembly discovery from the archived prototype donors;
+- caches assembly membership, resolved runtime Entities and component-local geometry per Job Episode;
+- caches encountered fold/lowered configuration profiles and reuses them;
+- transforms cached local geometry through current authoritative runtime poses each sample;
+- composes layered plan-view member/component footprints, diagnostic bounds and a convex hull;
+- preserves T-shaped, offset and articulated geometry rather than flattening the assembly to one root-centred box;
+- adds Condor source-identity donor hints while resolving all runtime identities and bounds afresh;
+- performs component-aware current/future interaction evaluation in passive shadow only;
+- permits positive potential-conflict support from represented components but never negative clearance from incomplete coverage;
+- changes no live predictor, interaction-evidence, Encounter, Decision, Commitment or Control behaviour;
+- keeps replacement Control authority disabled.
+
 ## v4.7.15 — Bounded Interaction Diagnostics Candidate
 
 - begins from owner-declared canonical v4.7.14 (`55ffc688...26d9`, Git `d909088a1e61e47d66df2ded222ff5ba0a046c31`);

@@ -1,17 +1,18 @@
 # Replacement-Core Conformance Tests
 
-v4.7.15 adds bounded interaction-diagnostic conformance while preserving all earlier tests. The suite proves:
+v4.7.17 preserves all earlier conformance tests and adds configuration-participation evidence. The suite proves:
 
-- pair identity is unordered and multi-worker capable;
-- three workers produce all three unique relationships;
-- pair-prediction rejection has one exhaustive principal outcome;
-- missing physical radius is explicit and cannot emit interaction evidence;
-- qualifying live interaction evidence reaches Situation Assessment and creates an Encounter;
-- active-job pose failure remains non-admitted and diagnostic;
-- blocked-without-Encounter is visible as a contradiction warning;
-- position-derived motion distinguishes forward, reverse, turning and stationary evidence;
-- Field World Equivalence Authority, immutable records, admission, Operation, Candidate, Decision, replay and terminal-settlement checks remain active;
-- Control remains disabled.
+- layered plan-view composition preserves non-rectangular extents;
+- complete geometry inventory is distinct from profile participation;
+- inactive 54 m alternative Condor geometry cannot contaminate a selected 36 m profile;
+- runtime compound-child evidence can select a different purchased geometry family without hard-coded truncation;
+- shadow component convergence supports only positive potential conflict;
+- incomplete coverage never grants negative clearance;
+- compound offset and articulated members retain their own live poses;
+- expensive local geometry APIs are not repeated on cache hits;
+- assembly membership drift invalidates the Job Episode representation;
+- pair identity remains unordered and multi-worker capable;
+- live predictor, Encounter admission and Control remain unchanged.
 
 Run from the repository root:
 
@@ -19,5 +20,3 @@ Run from the repository root:
 texlua tests/replacement_core/run.lua .
 pytest -q
 ```
-
-The listener never applies the Decision-to-Commitment boundary, never imports archived code and has no physical Control capability.

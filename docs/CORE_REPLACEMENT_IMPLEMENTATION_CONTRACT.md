@@ -1,3 +1,15 @@
+## Passive representation-shadow implementation boundary
+
+The active replacement core may discover and cache Job Episode assembly structure and component-local geometry, realise current plan-view footprints, and publish shadow diagnostics. Until a later explicit authority decision, this evidence must not:
+
+- populate live `interactionEvidence`;
+- create or retain an Encounter;
+- establish negative clearance from incomplete coverage;
+- apply a Decision or Commitment;
+- enable Control.
+
+Archive donor mechanisms must be extracted into focused active modules; archived modules remain unsourced.
+
 # FS25_OuttaMyWay Core Replacement Implementation Contract
 
 > **Authority source:** owner-declared canonical v4.6.78, as explicitly extended by accepted ADR-0021  

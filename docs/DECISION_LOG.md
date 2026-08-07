@@ -1,6 +1,26 @@
+## D-0037 — Separate Geometry Inventory from Configuration Participation
+
+**Status:** Accepted implementation correction; implemented by v4.7.17 candidate
+
+**Decision:** Retain the complete physical geometry inventory for each Job Episode, but construct each material configuration profile from only the primitives currently participating in physics. Use runtime compound-child state as principal evidence. Use source-donor membership only as a bounded fallback when the selected purchased configuration matches and runtime participation evidence is unavailable.
+
+**Reason:** the v4.7.16 live run proved the cache and transformation mechanism but represented a purchased 36 m Condor with an approximately 54 m span. Code review showed that generic collision-name discovery admitted inactive alternative shop geometry and every cached primitive was transformed into every profile.
+
+**Boundary:** this is an implementation-conformance correction, not a new architectural feature. Inactive and unresolved primitives remain visible in diagnostic inventory. Partial participating geometry may support only positive shadow conflict. It grants no negative-clearance, Encounter, Decision, Commitment or Control authority.
+
+## D-0036 — Recover Job-Scoped Plan-View Representation in Passive Shadow
+
+**Status:** Accepted implementation decision; implemented by v4.7.16 candidate
+
+**Decision:** Recover the proven assembly-discovery, runtime-Entity, component-bound and compound plan-view composition mechanisms as clean replacement-core services. Cache assembly membership and component-local geometry for the lifetime of one Job Episode. Cache materially encountered configuration profiles. Recompute only current world poses and derived plan-view composition per passive sample. Evaluate the new component-aware representation in shadow without changing the live interaction predicate.
+
+**Reason:** canonical v4.7.15 proved that the existing scalar predictor short-circuited because both TS015 sprayers had no width, length or radius evidence. Earlier prototypes had already established plan-view composition, attached-member offsets, authoritative live component transforms and conservative component-local spheres. Repeating that discovery every sample would waste evidence and runtime cost.
+
+**Boundary:** the primary representation is a layered member/component footprint set. Derived hulls and rectangles are question-specific views. Partial represented geometry may support only potential positive conflict; it grants no negative-clearance authority. Unexpected assembly-membership drift invalidates the Job Episode representation. No Encounter, Decision, Commitment or Control authority is added.
+
 ## D-0035 — Add Bounded Interaction Diagnostics Without Changing Behaviour
 
-**Status:** Accepted diagnostic implementation decision; implemented by v4.7.15 candidate
+**Status:** Accepted diagnostic implementation decision; implemented and live-validated by canonical v4.7.15
 
 **Decision:** Instrument the complete existing path from active-job acquisition to Encounter construction. Record pose acquisition, physical-representation inputs, position-derived motion, every unique unordered relationship, pair-prediction outcomes, interaction-evidence handoff, Encounter lifecycle and contradiction warnings. Diagnostic log-line limits are independent from operational pair evaluation.
 

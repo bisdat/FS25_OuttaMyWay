@@ -2,9 +2,9 @@
 
 > **Authority:** Replacement-core design boundary
 >
-> **Currency:** v4.7.15 Bounded Interaction Diagnostics Candidate; canonical v4.7.14 implements and live-validates Field World Equivalence Authority
+> **Currency:** v4.7.17 Configuration-Filtered Plan-View Representation Shadow Candidate; canonical v4.7.15 isolates TS015 failure to missing physical representation
 >
-> **Implementation status:** canonical v4.7.14 passes merged, split and contiguous Field World live gates; v4.7.15 adds diagnostics only; Control disabled
+> **Implementation status:** canonical v4.7.15 proves the scalar representation failure; v4.7.17 adds configuration-filtered cached layered footprints in passive shadow; Control disabled
 
 ## Purpose
 

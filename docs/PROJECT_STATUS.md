@@ -1,45 +1,29 @@
-# FS25_OuttaMyWay Project Status
+# Project Status
 
-> **Canonical baseline:** v4.7.14 Field World Equivalence Authority Implementation  
-> **Canonical ZIP SHA-256:** `55ffc688afd42a02eaaa38e4517f27549316dbb72ed36c2b6982a0d8a54e26d9`  
-> **Canonical Git commit:** `d909088a1e61e47d66df2ded222ff5ba0a046c31`  
-> **Canonical files:** 247  
-> **Current candidate:** v4.7.15 Bounded Interaction Diagnostics  
+> **Current canonical:** v4.7.15 Bounded Interaction Diagnostics  
+> **Current candidate:** v4.7.17 Configuration-Filtered Plan-View Representation Shadow  
 > **Control authority:** disabled
 
-## Validated authority
+## Established Reality
 
-Field World Equivalence Authority is now live-validated in all required directions:
+Canonical v4.7.15 proved that TS015 reached one Field World, one Operation and one evaluated unordered pair, but both scalar physical representations lacked width, length and radius evidence.
 
-- merged former fields 68–69–70: one Field World and one Operation;
-- disconnected split field 77: two Field Worlds and two Operations despite one locator;
-- contiguous field 77: one Field World and one Operation across distant seeds.
+The non-canonical v4.7.16 diagnostic candidate proved that assembly discovery, component-local geometry caching, configuration-profile reuse and current plan-view transformation work. Its live run also disproved the initial profile-selection implementation: the tested 36 m Condor retained inactive alternative shop collision geometry and produced an approximately 54 m lateral span.
 
-ADR-0021 and D-0033 remain unchanged. Exact fingerprints remain representation provenance; unresolved equivalence grants no Operation or Control authority.
+## v4.7.17 candidate
 
-## Current observation
+The candidate preserves the validated representation foundation and corrects configuration participation:
 
-A canonical v4.7.14 TS015 head-on run retained two active Job Episodes in one Field World and one Operation. The sprayers collided and became blocked, but no Encounter was created. Situation Assessment already creates Encounters when positive interaction evidence is supplied, so the current question is which live observation or handoff branch withheld that evidence.
+- one complete geometry inventory per Job Episode;
+- explicit separation of inventory and current profile participation;
+- runtime compound-child state as principal participation evidence;
+- matched purchased-configuration donor fallback only when runtime evidence is unavailable;
+- inactive alternative geometry retained for diagnostics but excluded from positioned footprints;
+- all 29 known Condor physical identities classified as 13 current 36 m/permanent and 16 alternatives;
+- independent runtime filtering for Patriot and other generic assemblies;
+- profile-level logs listing participating, inactive and unresolved node identities;
+- shadow-only current/future interaction with no negative-clearance authority.
 
-This observation is not an architectural addition.
+## Next live gate
 
-## v4.7.15 candidate
-
-The candidate adds diagnostic-only evidence for:
-
-- active-job acquisition and pose failure;
-- steering-node/root-node source;
-- metadata dimensions, derived radius, component count and Representation Fitness limits;
-- reported and position-derived motion;
-- every unique unordered pair in a multi-worker Operation;
-- distance, heading relation, relative motion, closing rate, tCPA and dCPA;
-- exhaustive pair outcome;
-- interaction evidence emitted and received;
-- Encounter creation, retention and loss;
-- bounded contradiction warnings.
-
-No predicate, threshold, admission rule, Decision, Commitment or Control behaviour changes.
-
-## Next evidence gate
-
-Run one short TS015 test with v4.7.15. Stop after the principal pair outcome, handoff state and physical result are clear. Preserve `log.txt`; video is optional unless behaviour differs from the canonical baseline.
+Repeat TS015 with v4.7.17. Confirm that the Condor reports the purchased folding configuration, retains the full inventory, excludes the 16 inactive alternatives, and produces a deployed span broadly consistent with the actual 36 m machine rather than 54 m. Confirm Patriot remains independently resolved, geometry API counts remain stable on cache hits, and Control remains disabled.

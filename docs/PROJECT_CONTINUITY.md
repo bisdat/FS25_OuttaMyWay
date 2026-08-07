@@ -1,3 +1,25 @@
+## v4.7.17 configuration-filtered representation candidate boundary
+
+v4.7.17 derives from owner-declared canonical v4.7.15:
+
+- canonical ZIP SHA-256 `0edd7c2a93a3238a86ba21964d5a8b404520537df146b6f23bca58327a93581b`;
+- canonical Git commit `d5049189a7b7d9d688d3dd609e0ecc4f6c71a67f`;
+- 249 files;
+- clean repository and direct release-byte materialisation.
+
+It carries forward the non-canonical v4.7.16 passive representation foundation but separates complete cached geometry inventory from configuration-specific physical participation. It does not alter live interaction predicates, Encounter admission, Decision, Commitment or Control.
+
+## v4.7.16 representation-shadow candidate boundary
+
+v4.7.16 derives from owner-declared canonical v4.7.15:
+
+- canonical ZIP SHA-256 `0edd7c2a93a3238a86ba21964d5a8b404520537df146b6f23bca58327a93581b`;
+- canonical Git commit `d5049189a7b7d9d688d3dd609e0ecc4f6c71a67f`;
+- 249 files;
+- clean repository and direct release-byte materialisation.
+
+The candidate adds passive representation services only. It does not make the archived tree active and does not alter live pair or Encounter authority.
+
 ## v4.7.15 diagnostic candidate boundary
 
 v4.7.15 derives from owner-declared canonical v4.7.14:

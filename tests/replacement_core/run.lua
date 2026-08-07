@@ -21,6 +21,9 @@ load("scripts/contracts/GoverningBasisVerdict.lua")
 load("scripts/contracts/CommitmentApplicationRecord.lua")
 load("scripts/contracts/PassiveLiveTraceRecord.lua")
 load("scripts/identity/EpochSequence.lua")
+load("scripts/representation/catalogues/CondorEndurance2Donor.lua")
+load("scripts/representation/PlanViewFootprint.lua")
+load("scripts/representation/AssemblyRepresentationCache.lua")
 load("scripts/diagnostics/LiveInteractionDiagnostics.lua")
 load("scripts/identity/IdentityRegistry.lua")
 load("scripts/identity/FieldWorldSnapshotRegistry.lua")
@@ -200,7 +203,7 @@ end)
 
 test("runtime is passive and inactive before the live listener runs", function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); local status=runtime:getStatus()
-    equal(status.runtimeMode,"INTERACTION_DIAGNOSTICS_PASSIVE"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
+    equal(status.runtimeMode,"PLAN_VIEW_REPRESENTATION_SHADOW"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
 end)
 
 
@@ -1475,6 +1478,133 @@ test("ambiguous live Snapshot receives no Operation authority",function()
         equal(#runtime.operations:listActive(),1)
         FieldCourseField=oldGenerator
     end)
+end)
+
+
+test("plan-view footprint preserves non-rectangular component composition",function()
+    local primitives={
+        {identity="body",kind="DISC",x=0,z=0,radius=2,positiveConflictSupport=true},
+        {identity="left",kind="DISC",x=-8,z=-2,radius=1,positiveConflictSupport=true},
+        {identity="right",kind="DISC",x=8,z=-2,radius=1,positiveConflictSupport=true}
+    }
+    local summary=OuttaMyWay.PlanViewFootprint.summarise(primitives)
+    equal(summary.physicalPrimitiveCount,3)
+    if summary.bounds.width<17.9 or summary.bounds.length<4.9 then error("T-shaped component extent was flattened or lost") end
+    if summary.hullPointCount<4 then error("plan-view hull was not produced") end
+end)
+
+test("shadow footprint supports positive conflict but never negative clearance",function()
+    local a={worldPrimitives={{identity="a-boom",kind="DISC",x=0,z=0,radius=2,positiveConflictSupport=true}}}
+    local b={worldPrimitives={{identity="b-boom",kind="DISC",x=20,z=0,radius=2,positiveConflictSupport=true}}}
+    local future=OuttaMyWay.PlanViewFootprint.evaluateShadowPair(a,b,10,{x=1,z=0},{x=-1,z=0})
+    equal(future.outcome,"SHADOW_FUTURE_CONVERGENCE_POSITIVE")
+    equal(future.authority,"POSITIVE_CONFLICT_SUPPORT_ONLY")
+    local separated=OuttaMyWay.PlanViewFootprint.evaluateShadowPair(a,b,2,{x=0,z=0},{x=0,z=0})
+    equal(separated.outcome,"SHADOW_CLEARANCE_UNRESOLVED")
+    equal(separated.authority,"NO_NEGATIVE_CLEARANCE_AUTHORITY")
+end)
+
+test("Job Episode representation cache discovers compound members once and reuses local geometry",function()
+    local sphereCalls=0
+    local positions={[1]={0,0,0},[2]={-6,0,-2},[10]={0,0,-5},[11]={2,0,-5}}
+    local children={[1]={2},[2]={},[10]={11},[11]={}}
+    local names={[1]="tractorRoot",[2]="body_colPart",[10]="ploughRoot",[11]="offsetPlough_colPart"}
+    local localSpheres={[1]={0,0,0,2},[2]={0,0,0,1},[10]={0,0,0,1.5},[11]={0,0,0,1}}
+    local function localToWorldMock(node,x,y,z) local p=positions[node]; return p[1]+x,p[2]+y,p[3]+z end
+    local function localSphere(node) sphereCalls=sphereCalls+1; local s=localSpheres[node]; return s[1],s[2],s[3],s[4],true end
+    local function worldSphere(node) sphereCalls=sphereCalls+1; local s=localSpheres[node]; local p=positions[node]; return p[1]+s[1],p[2]+s[2],p[3]+s[3],s[4] end
+    local attached={}
+    local implement={rootNode=10,configFileName="data/implements/test/offsetPlough.xml",components={{node=10}},getName=function() return "Offset Plough" end,getAttachedImplements=function() return {} end}
+    local worker={rootNode=1,configFileName="data/vehicles/test/tractor.xml",components={{node=1}},getName=function() return "Tractor" end,getAttachedImplements=function() return attached end}
+    attached={{object=implement}}
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={
+        getNumOfChildren=function(node) return #(children[node] or {}) end,
+        getChildAt=function(node,index) return children[node][index+1] end,
+        getName=function(node) return names[node] end,
+        localToWorld=localToWorldMock,
+        getShapeGeometryBoundingSphere=localSphere,
+        getShapeBoundingSphere=localSphere,
+        getShapeWorldBoundingSphere=worldSphere,
+        getIsCompoundChild=function(node) return node==2 or node==11 end
+    }})
+    cache:beginObservationCycle()
+    local first=cache:observe(worker,"vehicle-root:1","episode-1",0)
+    cache:endObservationCycle()
+    equal(first.memberCount,2); equal(first.edgeCount,1)
+    if first.physicalPrimitiveCount<4 then error("compound member/component geometry was not composed") end
+    local afterFirst=sphereCalls
+    cache:beginObservationCycle()
+    positions[11]={4,0,-6}
+    local second=cache:observe(worker,"vehicle-root:1","episode-1",1)
+    cache:endObservationCycle()
+    equal(second.cacheHit,true); equal(second.configurationProfileCacheHit,true)
+    equal(sphereCalls,afterFirst,"geometry APIs were called again on cache hit")
+    local found=false
+    for _,primitive in ipairs(second.worldPrimitives) do if primitive.nodeName=="offsetPlough_colPart" and math.abs(primitive.x-4)<0.001 then found=true end end
+    if not found then error("cached local geometry did not follow current articulated member pose") end
+end)
+
+test("assembly membership change invalidates the same Job Episode representation",function()
+    local children={[1]={},[10]={}}
+    local positions={[1]={0,0,0},[10]={0,0,-5}}
+    local attached={}
+    local implement={rootNode=10,configFileName="implement.xml",components={{node=10}},getAttachedImplements=function() return {} end}
+    local worker={rootNode=1,configFileName="tractor.xml",components={{node=1}},getAttachedImplements=function() return attached end}
+    attached={{object=implement}}
+    local function localSphere(node) return 0,0,0,1,true end
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={
+        getNumOfChildren=function(node) return 0 end,getChildAt=function() return nil end,getName=function(node) return "root" end,
+        localToWorld=function(node,x,y,z) local p=positions[node]; return p[1]+x,p[2]+y,p[3]+z end,
+        getShapeGeometryBoundingSphere=localSphere,getShapeBoundingSphere=localSphere,
+        getShapeWorldBoundingSphere=function(node) local p=positions[node]; return p[1],p[2],p[3],1 end,
+        getIsCompoundChild=function() return false end
+    }})
+    cache:beginObservationCycle(); cache:observe(worker,"vehicle-root:1","episode-1",0); cache:endObservationCycle()
+    attached={}
+    cache:beginObservationCycle(); local changed=cache:observe(worker,"vehicle-root:1","episode-1",6); cache:endObservationCycle()
+    equal(changed.membershipChanged,true); equal(changed.structurallyValid,false); equal(changed.worldPrimitiveCount,0)
+end)
+
+
+test("configuration profile excludes inactive alternative shop geometry",function()
+    local positions={[1]={0,0,0},[2]={-15,0,-4},[3]={15,0,-4},[4]={-27,0,-4},[5]={27,0,-4}}
+    local children={[1]={2,3,4,5},[2]={},[3]={},[4]={},[5]={}}
+    local names={[1]="condorRoot",[2]="boom01ArmLeftCol03",[3]="boom01ArmRightCol03",[4]="boom03ArmLeftCol03",[5]="boom03ArmRightCol03"}
+    local worker={rootNode=1,configFileName="data/vehicles/agrifac/condorEndurance2/condorEndurance2.xml",configurations={folding=1},components={{node=1}},getName=function() return "Condor" end,getAttachedImplements=function() return {} end}
+    local function localSphere(node) return 0,0,0,node==1 and 2 or 1,true end
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={
+        getNumOfChildren=function(node) return #(children[node] or {}) end,getChildAt=function(node,index) return children[node][index+1] end,getName=function(node) return names[node] end,
+        localToWorld=function(node,x,y,z) local p=positions[node]; return p[1]+x,p[2]+y,p[3]+z end,
+        getShapeGeometryBoundingSphere=localSphere,getShapeBoundingSphere=localSphere,getShapeWorldBoundingSphere=function(node) local p=positions[node]; local r=node==1 and 2 or 1; return p[1],p[2],p[3],r end,
+        getIsCompoundChild=function(node) return node==2 or node==3 end
+    }})
+    cache:beginObservationCycle(); local result=cache:observe(worker,"vehicle-root:1","episode-config",0); cache:endObservationCycle()
+    equal(result.inventoryPrimitiveCount,5)
+    equal(result.participatingPrimitiveCount,3)
+    equal(result.inactivePrimitiveCount,2)
+    equal(result.unresolvedPrimitiveCount,0)
+    equal(result.runtimeConfirmedPrimitiveCount,2)
+    if result.planViewSummary.bounds.width>40 then error("inactive 54 m alternative geometry contaminated 36 m profile") end
+    if result.planViewSummary.bounds.width<31 then error("active 36 m component span was lost") end
+end)
+
+test("runtime compound-child evidence can select a different purchased geometry family",function()
+    local positions={[1]={0,0,0},[2]={-15,0,-4},[3]={15,0,-4},[4]={-27,0,-4},[5]={27,0,-4}}
+    local children={[1]={2,3,4,5},[2]={},[3]={},[4]={},[5]={}}
+    local names={[1]="condorRoot",[2]="boom01ArmLeftCol03",[3]="boom01ArmRightCol03",[4]="boom03ArmLeftCol03",[5]="boom03ArmRightCol03"}
+    local worker={rootNode=1,configFileName="data/vehicles/agrifac/condorEndurance2/condorEndurance2.xml",configurations={folding=3},components={{node=1}},getName=function() return "Condor" end,getAttachedImplements=function() return {} end}
+    local function localSphere(node) return 0,0,0,node==1 and 2 or 1,true end
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={
+        getNumOfChildren=function(node) return #(children[node] or {}) end,getChildAt=function(node,index) return children[node][index+1] end,getName=function(node) return names[node] end,
+        localToWorld=function(node,x,y,z) local p=positions[node]; return p[1]+x,p[2]+y,p[3]+z end,
+        getShapeGeometryBoundingSphere=localSphere,getShapeBoundingSphere=localSphere,getShapeWorldBoundingSphere=function(node) local p=positions[node]; local r=node==1 and 2 or 1; return p[1],p[2],p[3],r end,
+        getIsCompoundChild=function(node) return node==4 or node==5 end
+    }})
+    cache:beginObservationCycle(); local result=cache:observe(worker,"vehicle-root:1","episode-config-3",0); cache:endObservationCycle()
+    equal(result.participatingPrimitiveCount,3)
+    equal(result.runtimeConfirmedPrimitiveCount,2)
+    if result.planViewSummary.bounds.width<55 then error("runtime-active alternative geometry was not selected") end
+    if string.find(result.configurationSelectorSummary,"MISMATCH",1,true)==nil then error("donor selector mismatch was not exposed") end
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

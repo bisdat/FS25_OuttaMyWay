@@ -1,3 +1,23 @@
+## 2026-08-06 — Configuration Participation Correction and v4.7.17
+
+**Observation:** the v4.7.16 live run showed a stable approximately 54 m Condor footprint, while the tested purchased machine is the 36 m configuration. The footprint therefore represented available asset geometry rather than current physical occupancy.
+
+**Code finding:** the donor listed 13 intended 36 m/permanent identities, but generic hierarchy discovery also accepted alternative collision nodes. Configuration profiles identified fold/lowered state but transformed every cached primitive without selecting current participants.
+
+**Implementation response:** v4.7.17 retains a complete cached inventory and separately builds each profile's participation set. Runtime compound-child state is principal evidence; a matched donor configuration is fallback-only. The Condor donor records all 29 identities so 16 alternatives can be explicitly observed as inactive rather than silently omitted or admitted.
+
+**Validation target:** TS015 must show the 36 m selector, inactive alternative exclusion, a corrected deployed span, independent Patriot participation and unchanged passive authority.
+
+## 2026-08-06 — Representation Donor Recovery and v4.7.16
+
+**Observation:** v4.7.15 isolated TS015 failure to missing physical representation. Both active sprayers reached pair evaluation with coherent motion evidence, but both width, length and radius were absent.
+
+**Discussion:** earlier prototype work had already established overhead plan-view composition, compound vehicle-plus-implement membership, offset attached implements, runtime collision-Entity resolution, conservative local spheres and authoritative live transforms. The archive retained these as donor mechanisms rather than an active service.
+
+**Decision:** implement a passive Job Episode–scoped representation foundation. Expensive assembly and local-geometry discovery occurs once. Configuration profiles are reused. Current poses are realised each sample. Layered footprints preserve T-shapes, offsets and articulation. A component-aware predictor runs only in shadow; incomplete coverage cannot establish negative clearance.
+
+**Validation target:** one short TS015 run must show cache reuse, component discovery for Condor and Patriot, configuration-profile behaviour, coherent plan-view output and either shadow convergence or explicit unresolved evidence. Control remains disabled.
+
 ## 2026-08-06 — TS015 Encounter Admission Diagnostic Boundary and v4.7.15
 
 **Facts:** v4.7.14 passed merged 68–70, split-77 and contiguous-77 Field World live validation. In the subsequent TS015 head-on run, both sprayers remained in one Field World and one Operation. The physical assemblies collided and became blocked, while the passive trace remained at zero Encounters.

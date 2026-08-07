@@ -1,3 +1,7 @@
+## v4.7.17 implementation note — inventory is not participation
+
+The v4.7.16 live test demonstrated that a complete instantiated asset inventory may contain mutually exclusive shop configurations. A Configuration Profile must therefore select current physical participants rather than transform every cached primitive. v4.7.17 implements this existing architectural distinction through runtime compound-child evidence and explicit inactive/unresolved inventories. This note records implementation conformance; it does not add a new representation authority.
+
 # Physical Representation Architecture
 
 ## Purpose
@@ -5,6 +9,21 @@
 This document defines how OuttaMyWay represents the collision-relevant plan-view occupancy of one job-scoped Physical Assembly. It separates exact physical identity from usable occupancy, preserves uncertainty, and prevents implementation convenience from becoming false architectural truth.
 
 The architecture remains observational. No Physical Occupancy Envelope, containment, sweep prediction, Decision, Commitment or Control behaviour is implemented by this release.
+
+## v4.7.16 passive implementation bridge
+
+v4.7.16 implements the first non-authoritative bridge into this architecture:
+
+- Job Episode–scoped Physical Assembly cache;
+- per-member runtime Entity and local-geometry discovery;
+- cached component-local disc primitives;
+- current-pose realisation;
+- layered member/component composition;
+- diagnostic bounds and convex hull;
+- configuration-profile identity and reuse;
+- positive-only component-aware pair assessment in shadow.
+
+The bridge deliberately does not claim Inventory Closure, Coverage Closure, complete conservatism or negative clearance. It also does not select a Representation Portfolio for live Situation Assessment. Those authorities remain gated by evidence.
 
 ## Planar Collision Semantics
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-v4.7.15 instruments the existing passive path from GIANTS active-job observation to Encounter construction. It is evidence gathering only. It does not change Field World identity, Operation admission, pair predicates, Encounter admission semantics, Decision, Commitment or Control.
+Canonical v4.7.15 instruments the existing passive path from GIANTS active-job observation to Encounter construction. It is evidence gathering only. It does not change Field World identity, Operation admission, pair predicates, Encounter admission semantics, Decision, Commitment or Control.
 
 ## Diagnostic relationship
 
@@ -62,3 +62,7 @@ A diagnostic contradiction identifies evidence requiring inspection. It is not a
 - complete counters remain available when log lines are truncated;
 - no collision-node enumeration or broad reflection;
 - `control=false` remains mandatory.
+
+## Closed diagnostic result
+
+The live TS015 gate established that both sprayers reached pair evaluation but exposed no scalar width, length or radius. Every sample terminated with `MISSING_SUBJECT_RADIUS`; no handoff defect existed. The next representation work is documented in [`../representation/PLAN_VIEW_REPRESENTATION_SHADOW.md`](../representation/PLAN_VIEW_REPRESENTATION_SHADOW.md).

@@ -1,3 +1,27 @@
+# v4.7.17 Configuration-Participation Conformance
+
+| Concern | Requirement | v4.7.17 evidence | Status |
+|---|---|---|---|
+| Inventory separation | available asset geometry must not equal current occupancy by default | inventory and profile participation sets are separate | PASS offline |
+| Current participation | active primitives require runtime or matched donor evidence | `getIsCompoundChild`; matched donor fallback | PASS offline |
+| Alternative configuration | inactive shop geometry must remain excluded | explicit 36 m versus 54 m fixture | PASS offline |
+| Cache cost | geometry calls remain Job Episode-scoped | geometry cache reuse retained; activity checks profile-scoped | PASS offline |
+| Uncertainty | unresolved activity cannot grant positive or negative authority | unresolved inventory retained outside positioned physical set | PASS offline |
+| Behaviour isolation | no live predicate or Control change | shadow path only | PASS |
+
+# v4.7.16 Representation-Shadow Conformance
+
+| Concern | Requirement | v4.7.16 evidence | Status |
+|---|---|---|---|
+| Archive isolation | Donors may be extracted but archived modules must remain inactive | active loader sources only new replacement-core representation modules | PASS |
+| Job-scoped structure | Assembly membership and local geometry are discovered once per Job Episode | `AssemblyRepresentationCache` with episode key and cache-hit tests | PASS |
+| Compound shape | Attached and offset members retain their own poses | recursive assembly graph and articulated mock fixture | PASS |
+| Non-rectangular occupancy | T-shaped/component composition must not flatten to one box | layered primitives plus hull fixture | PASS |
+| Runtime identity | Geometry must be selected by resolved runtime Entity and root aliases rejected | direct mapping/path/name routes plus coherence and alias checks | PASS |
+| Configuration reuse | encountered material states receive reusable profiles | configuration-profile cache | PASS |
+| Uncertainty | incomplete coverage cannot establish negative clearance | `SHADOW_CLEARANCE_UNRESOLVED`; no negative authority | PASS |
+| Behaviour isolation | shadow evidence must not emit live interaction evidence or Control | source records shadow fields only; predictor and Control unchanged | PASS |
+
 # Architecture Conformance Matrix
 
 | Concern | Requirement | Canonical v4.7.14 state | v4.7.15 diagnostic effect | Status |
@@ -25,5 +49,5 @@
 - all previous Field World, admission, Decision and lifecycle tests remain green.
 
 > **Architecture currency:** canonical v4.6.78 Replacement-Core Architecture as extended by ADR-0021.  
-> **Implementation baseline:** owner-declared canonical v4.7.14.  
+> **Implementation baseline:** owner-declared canonical v4.7.15; the retained lower table records the v4.7.15 diagnostic comparison against canonical v4.7.14.  
 > **Control authority:** disabled.

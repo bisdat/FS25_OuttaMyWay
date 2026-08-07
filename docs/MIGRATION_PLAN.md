@@ -1,3 +1,18 @@
+## v4.7.17 configuration-participation gate
+
+- Repeat TS015 with the purchased 36 m Condor and 36 m Patriot.
+- Confirm the Condor retains its complete cached inventory while excluding inactive alternative shop geometry from the current profile.
+- Confirm the deployed Condor lateral span is broadly consistent with 36 m rather than approximately 54 m.
+- Confirm Patriot remains independently resolved and configuration-filtered.
+- Confirm geometry API measurement counts remain stable after Job Episode cache construction; new profile activity checks occur only when a profile is first encountered.
+- Preserve passive shadow authority, unchanged Encounter predicates and `control=false`.
+
+> **Canonical baseline:** v4.7.15  
+> **Current candidate:** v4.7.17  
+> **Architecture authority:** canonical repository architecture plus accepted D-0037 implementation correction
+
+## Historical migration gates
+
 # Migration Plan
 
 ## v4.7.12 closure validation
@@ -16,7 +31,7 @@
 - Prove reverse-order termination settles each Operation correctly.
 - Preserve no-stutter performance and `control=false`.
 
-> **Current gate:** v4.7.10 field identity and lifecycle evidence
+> **Historical gate:** v4.7.10 field identity and lifecycle evidence
 
 - Validate exact source-field polygon labels for 68 and 77.
 - Validate the derived GIANTS field boundary and retained labels for the merged 68–69–70 area.
@@ -25,7 +40,7 @@
 - Keep Commitment mutation and Control disabled.
 
 > **Architecture authority:** canonical v4.6.78  
-> **Current gate:** v4.7.9 GIANTS-compatible immutable traversal and polygon field identity
+> **Historical gate:** v4.7.9 GIANTS-compatible immutable traversal and polygon field identity
 
 ## Completed gates
 

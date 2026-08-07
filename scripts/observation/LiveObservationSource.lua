@@ -147,13 +147,14 @@ local function relevantVehicles(activeList, tracks)
     return result
 end
 
-function Source.new(fieldWorldSnapshots, fieldWorldEquivalenceAuthority)
-    return setmetatable({knownWorlds = {}, tracks = {}, nextObservedEpisode = 0, nextFieldWorldCapture = 0, fieldWorldSnapshots = fieldWorldSnapshots, fieldWorldEquivalenceAuthority = fieldWorldEquivalenceAuthority, lastCycleDiagnostics={}}, Source)
+function Source.new(fieldWorldSnapshots, fieldWorldEquivalenceAuthority, assemblyRepresentationCache)
+    return setmetatable({knownWorlds = {}, tracks = {}, nextObservedEpisode = 0, nextFieldWorldCapture = 0, fieldWorldSnapshots = fieldWorldSnapshots, fieldWorldEquivalenceAuthority = fieldWorldEquivalenceAuthority, assemblyRepresentationCache=assemblyRepresentationCache, lastCycleDiagnostics={}}, Source)
 end
 
 function Source:reset()
     self.knownWorlds = {}; self.tracks = {}; self.nextObservedEpisode = 0; self.nextFieldWorldCapture = 0; self.lastCycleDiagnostics={}
     if self.fieldWorldEquivalenceAuthority ~= nil then self.fieldWorldEquivalenceAuthority:reset() end
+    if self.assemblyRepresentationCache ~= nil then self.assemblyRepresentationCache:reset() end
 end
 
 function Source:getLastDiagnostics()
@@ -214,6 +215,7 @@ function Source:capture(mission, nowSeconds)
     }
     self.lastCycleDiagnostics=cycleDiagnostics
     if self.fieldWorldEquivalenceAuthority ~= nil then self.fieldWorldEquivalenceAuthority:beginObservationCycle() end
+    if self.assemblyRepresentationCache ~= nil then self.assemblyRepresentationCache:beginObservationCycle() end
     if self.fieldWorldSnapshots ~= nil then self.fieldWorldSnapshots:update(0, mission) end
 
     for _, object in OuttaMyWay.ValueRecord.ipairs(relevantList) do
@@ -284,6 +286,8 @@ function Source:capture(mission, nowSeconds)
             local speedMps = math.abs(tonumber(object.lastSpeedReal) or 0) * 1000
             local motionDiagnostic = OuttaMyWay.LiveInteractionDiagnostics.deriveMotion(track.diagnosticPose,pose,track.diagnosticTimestamp,nowSeconds,speedMps)
             local components = componentKeys(object)
+            local shadowRepresentation = self.assemblyRepresentationCache and self.assemblyRepresentationCache:observe(object,ref,sourceToken,nowSeconds) or nil
+            track.shadowRepresentation=shadowRepresentation
             track.everActive = true; track.active = true; track.object = object; track.pose = pose
             track.diagnosticPose=copyPose(pose); track.diagnosticTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic; track.motionDiagnostic=motionDiagnostic
             track.fieldId = field.fieldId or 0; track.fieldResolved = field.resolved == true; track.fieldEvidence = field
@@ -297,7 +301,7 @@ function Source:capture(mission, nowSeconds)
                 restartObserved = reactivated and not replacementObserved, replacementObserved = replacementObserved,
                 playerPresent = mission.controlledVehicle == object, playerControlled = false, blocked = blockedState(object),
                 speedMps = speedMps, radius = radius, width = width, length = length,
-                sourceJobToken = sourceToken, nativeJobToken = nativeToken, nativeJobTokenSource = jobSource, components = track.components,
+                sourceJobToken = sourceToken, nativeJobToken = nativeToken, nativeJobTokenSource = jobSource, components = track.components, shadowRepresentation=track.shadowRepresentation,
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
@@ -316,6 +320,9 @@ function Source:capture(mission, nowSeconds)
             if track.fieldWorldSnapshot ~= nil and self.fieldWorldEquivalenceAuthority ~= nil then
                 track.fieldWorldResolution = self.fieldWorldEquivalenceAuthority:resolve(track.fieldWorldSnapshot)
             end
+            if self.assemblyRepresentationCache~=nil and not isDeleted(object) and track.sourceJobToken~=nil then
+                track.shadowRepresentation=self.assemblyRepresentationCache:observe(object,ref,track.sourceJobToken,nowSeconds)
+            end
             addToGroup(groups, {
                 object = object, referenceKey = ref, name = track.name or objectName(object), pose = track.pose, poseDiagnostic=track.poseDiagnostic, motionDiagnostic=track.motionDiagnostic,
                 fieldId = track.fieldId or 0, fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence,
@@ -325,7 +332,7 @@ function Source:capture(mission, nowSeconds)
                 unresolvedTermination = not playerControlled and not sourceIntentTerminationObserved,
                 blocked = blockedState(object), speedMps = math.abs(tonumber(object.lastSpeedReal) or 0) * 1000,
                 radius = track.radius, width = track.width, length = track.length, sourceJobToken = track.sourceJobToken,
-                nativeJobToken = nil, nativeJobTokenSource = nil, components = track.components or componentKeys(object),
+                nativeJobToken = nil, nativeJobTokenSource = nil, components = track.components or componentKeys(object), shadowRepresentation=track.shadowRepresentation,
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
@@ -344,7 +351,7 @@ function Source:capture(mission, nowSeconds)
                 fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence, fieldActive = false, aiActive = false,
                 hasFieldWorker = true, activeObserved = false, playerControlled = false, unresolvedTermination = true, objectUnavailable = true,
                 blocked = false, speedMps = 0, radius = track.radius, width = track.width, length = track.length,
-                sourceJobToken = track.sourceJobToken, components = track.components or {},
+                sourceJobToken = track.sourceJobToken, components = track.components or {}, shadowRepresentation=track.shadowRepresentation,
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
@@ -404,7 +411,7 @@ function Source:capture(mission, nowSeconds)
                 representativeGeometryOnly=representative~=nil,
                 playerFacingFieldLocators=locatorIds,immutableSnapshots=#snapshotKeys>0
             },
-            assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, demandEvidence = {}, interactionEvidence = {}},
+            assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, demandEvidence = {}, interactionEvidence = {}, shadowPlanViewEvidence = {}},
             motion = {closureEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
             physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {},
             diagnostics = {
@@ -508,8 +515,55 @@ function Source:capture(mission, nowSeconds)
                 underApproximationRisk=true,
                 motion=worker.motionDiagnostic or {classification=worker.activeObserved and "MOTION_EVIDENCE_UNRESOLVED" or "INACTIVE_OR_RETAINED",reason=worker.activeObserved and "NO_DIAGNOSTIC_MOTION_SAMPLE" or "NOT_ACTIVE_FOR_MOTION_PREDICTION"},
                 fieldWorldReferenceKey=worldResolved and worker.fieldWorldResolution.fieldWorldReferenceKey or nil,
-                fieldWorldSnapshotReferenceKey=snapshotResolved and worker.fieldWorldSnapshot.referenceKey or nil
+                fieldWorldSnapshotReferenceKey=snapshotResolved and worker.fieldWorldSnapshot.referenceKey or nil,
+                shadowRepresentation=worker.shadowRepresentation and {
+                    episodeKey=worker.shadowRepresentation.episodeKey,
+                    cacheHit=worker.shadowRepresentation.cacheHit,
+                    memberCount=worker.shadowRepresentation.memberCount,
+                    edgeCount=worker.shadowRepresentation.edgeCount,
+                    localPrimitiveCount=worker.shadowRepresentation.localPrimitiveCount,
+                    inventoryPrimitiveCount=worker.shadowRepresentation.inventoryPrimitiveCount,
+                    participatingPrimitiveCount=worker.shadowRepresentation.participatingPrimitiveCount,
+                    inactivePrimitiveCount=worker.shadowRepresentation.inactivePrimitiveCount,
+                    unresolvedPrimitiveCount=worker.shadowRepresentation.unresolvedPrimitiveCount,
+                    runtimeConfirmedPrimitiveCount=worker.shadowRepresentation.runtimeConfirmedPrimitiveCount,
+                    donorFallbackPrimitiveCount=worker.shadowRepresentation.donorFallbackPrimitiveCount,
+                    configurationSelectorSummary=worker.shadowRepresentation.configurationSelectorSummary,
+                    participatingPrimitiveNames=worker.shadowRepresentation.participatingPrimitiveNames,
+                    inactivePrimitiveNames=worker.shadowRepresentation.inactivePrimitiveNames,
+                    unresolvedPrimitiveNames=worker.shadowRepresentation.unresolvedPrimitiveNames,
+                    worldPrimitiveCount=worker.shadowRepresentation.worldPrimitiveCount,
+                    physicalPrimitiveCount=worker.shadowRepresentation.physicalPrimitiveCount,
+                    diagnosticPrimitiveCount=worker.shadowRepresentation.diagnosticPrimitiveCount,
+                    configurationKey=worker.shadowRepresentation.configurationKey,
+                    configurationProfileId=worker.shadowRepresentation.configurationProfileId,
+                    configurationProfileCacheHit=worker.shadowRepresentation.configurationProfileCacheHit,
+                    configurationProfileCount=worker.shadowRepresentation.configurationProfileCount,
+                    membershipChanged=worker.shadowRepresentation.membershipChanged,
+                    structurallyValid=worker.shadowRepresentation.structurallyValid,
+                    coverageComplete=worker.shadowRepresentation.coverageComplete,
+                    negativeClearanceAuthority=worker.shadowRepresentation.negativeClearanceAuthority,
+                    planViewSummary=worker.shadowRepresentation.planViewSummary,
+                    geometryStats=worker.shadowRepresentation.geometryStats,
+                    rejectionCount=worker.shadowRepresentation.rejectionCount,
+                    transformFailureCount=worker.shadowRepresentation.transformFailureCount
+                } or nil
             }
+            if worker.shadowRepresentation~=nil then
+                raw.geometry.shadowPlanViewEvidence[#raw.geometry.shadowPlanViewEvidence+1]={
+                    assemblyReferenceKey=worker.referenceKey,
+                    episodeKey=worker.shadowRepresentation.episodeKey,
+                    configurationProfileId=worker.shadowRepresentation.configurationProfileId,
+                    primitives=worker.shadowRepresentation.worldPrimitives,
+                    summary=worker.shadowRepresentation.planViewSummary,
+                    coverageComplete=worker.shadowRepresentation.coverageComplete,
+                    negativeClearanceAuthority=worker.shadowRepresentation.negativeClearanceAuthority,
+                    provenance=worker.shadowRepresentation.provenance
+                }
+                if worker.shadowRepresentation.membershipChanged==true then
+                    appendDiagnosticContradiction(raw.diagnostics.contradictions,"ASSEMBLY_MEMBERSHIP_CHANGED_DURING_JOB_EPISODE",{assemblyReferenceKey=worker.referenceKey,reason="CACHED_ASSEMBLY_FINGERPRINT_CHANGED"})
+                end
+            end
             raw.operationMembershipEvidence[#raw.operationMembershipEvidence + 1] = {
                 assemblyReferenceKey=worker.referenceKey,
                 fieldWorldReferenceKey=worldResolved and worker.fieldWorldResolution.fieldWorldReferenceKey or nil,
@@ -605,7 +659,9 @@ function Source:capture(mission, nowSeconds)
                     qualifying=false,
                     interactionEvidenceEmitted=false,
                     subjectRepresentation={radius=a.radius,width=a.width,length=a.length,coverageComplete=false,conservative=false,underApproximationRisk=true},
-                    otherRepresentation={radius=b.radius,width=b.width,length=b.length,coverageComplete=false,conservative=false,underApproximationRisk=true}
+                    otherRepresentation={radius=b.radius,width=b.width,length=b.length,coverageComplete=false,conservative=false,underApproximationRisk=true},
+                    subjectShadowRepresentationAvailable=a.shadowRepresentation~=nil,
+                    otherShadowRepresentationAvailable=b.shadowRepresentation~=nil
                 }
                 raw.diagnostics.sourceCounters.relevantPairCount=raw.diagnostics.sourceCounters.relevantPairCount+1
                 if eligible then
@@ -633,6 +689,25 @@ function Source:capture(mission, nowSeconds)
                     pairDiagnostic.qualifying=prediction.current or prediction.converges
                     pairDiagnostic.interactionEvidenceEmitted=prediction.interactionEvidenceEmitted
                     pairDiagnostic.representationFitForNegativeConclusion=false
+                    local subjectVelocity={x=prediction.subjectVelocityX or 0,z=prediction.subjectVelocityZ or 0}
+                    local otherVelocity={x=prediction.otherVelocityX or 0,z=prediction.otherVelocityZ or 0}
+                    local shadow=OuttaMyWay.PlanViewFootprint.evaluateShadowPair(a.shadowRepresentation,b.shadowRepresentation,horizon,subjectVelocity,otherVelocity)
+                    pairDiagnostic.shadowOutcome=shadow.outcome
+                    pairDiagnostic.shadowCurrentSpaceIntersects=shadow.current
+                    pairDiagnostic.shadowFutureSpaceConverges=shadow.future
+                    pairDiagnostic.shadowTCPA=shadow.tcpa
+                    pairDiagnostic.shadowDCPA=shadow.cpa
+                    pairDiagnostic.shadowRequired=shadow.required
+                    pairDiagnostic.shadowSubjectPrimitiveId=shadow.subjectPrimitiveId
+                    pairDiagnostic.shadowOtherPrimitiveId=shadow.otherPrimitiveId
+                    pairDiagnostic.shadowSubjectPhysicalPrimitiveCount=shadow.subjectPhysicalPrimitiveCount
+                    pairDiagnostic.shadowOtherPhysicalPrimitiveCount=shadow.otherPhysicalPrimitiveCount
+                    pairDiagnostic.shadowAuthority=shadow.authority
+                    if (shadow.current or shadow.future) and not (prediction.current or prediction.converges) then
+                        appendDiagnosticContradiction(raw.diagnostics.contradictions,"SHADOW_REPRESENTATION_POSITIVE_WITHOUT_LIVE_INTERACTION",{
+                            pairReferenceKey=pairReferenceKey,principalOutcome=prediction.principalOutcome,shadowOutcome=shadow.outcome,shadowTCPA=shadow.tcpa,shadowDCPA=shadow.cpa
+                        })
+                    end
                     if prediction.current or prediction.converges then
                         raw.diagnostics.sourceCounters.qualifyingPairCount=raw.diagnostics.sourceCounters.qualifyingPairCount+1
                         raw.diagnostics.sourceCounters.interactionEvidenceEmittedCount=raw.diagnostics.sourceCounters.interactionEvidenceEmittedCount+1
@@ -683,13 +758,14 @@ function Source:capture(mission, nowSeconds)
 
     for ref in OuttaMyWay.ValueRecord.pairs(removeAfterCapture) do self.tracks[ref] = nil end
     if self.fieldWorldEquivalenceAuthority ~= nil then self.fieldWorldEquivalenceAuthority:endObservationCycle() end
+    if self.assemblyRepresentationCache ~= nil then self.assemblyRepresentationCache:endObservationCycle() end
 
     if #observations == 0 then
         observations[1] = {
             timestamp = nowSeconds,
             provenance = {source = "LiveObservationSource", mode = "JOB_SEEDED_FIELD_WORLD_EQUIVALENCE_AUTHORITY", noActivity = true},
             fieldWorld = {referenceKey = "field-world:none", fieldPolygonReferenceKey = nil, fieldPolygonReferenceKeys = {}, fieldWorldSnapshotReferenceKeys = {}, operationMembershipEvidenceComplete = true, identityStatus="NO_ACTIVITY"},
-            assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, demandEvidence = {}, interactionEvidence = {}},
+            assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, demandEvidence = {}, interactionEvidence = {}, shadowPlanViewEvidence = {}},
             motion = {closureEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
             physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {},
             diagnostics={sourceCounters={cycleActiveJobVehicleCount=cycleDiagnostics.activeJobVehicleCount,cycleRelevantVehicleCount=cycleDiagnostics.relevantVehicleCount,groupWorkerCount=0,activeGroupWorkerCount=0,poseResolvedWorkerCount=0,mathematicallyPossiblePairCount=0,relevantPairCount=0,eligiblePairCount=0,evaluatedPairCount=0,excludedPairCount=0,qualifyingPairCount=0,interactionEvidenceEmittedCount=0},assemblyDiagnostics={},pairDiagnostics={},contradictions={}}
