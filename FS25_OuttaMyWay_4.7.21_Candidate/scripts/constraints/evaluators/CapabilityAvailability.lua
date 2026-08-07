@@ -1,0 +1,6 @@
+OuttaMyWay.CapabilityAvailabilityConstraint={}
+OuttaMyWay.CapabilityAvailabilityConstraint.id="CONTROL_CAPABILITY_AVAILABILITY"
+OuttaMyWay.CapabilityAvailabilityConstraint.owner="CapabilityAvailabilityConstraint"
+function OuttaMyWay.CapabilityAvailabilityConstraint.evaluate(candidate,operationalPicture)
+    return OuttaMyWay.ConstraintEvidence.fromCandidate(candidate,OuttaMyWay.CapabilityAvailabilityConstraint.id)
+end

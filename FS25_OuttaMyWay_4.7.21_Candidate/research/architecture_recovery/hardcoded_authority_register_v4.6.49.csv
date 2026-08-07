@@ -1,0 +1,80 @@
+Scope,Symbol_or_literal,Value,Current_role,Authority_class,Audit_risk,Recommended_disposition
+TS015,TS015_INTERVAL_MS,100 ms,Controller update cadence,Diagnostic/cadence,Low,Retain configurable
+TS015,TS015_LOG_INTERVAL_MS,500 ms,Runtime sample cadence,Diagnostic/cadence,Low,Retain configurable
+TS015,TS015_HEARTBEAT_MS,15000 ms,Heartbeat cadence,Diagnostic/cadence,Low,Retain configurable
+TS015,TS015_STABLE_WORKING_MS,3000 ms,Admission stability evidence,Evidence-calibrated policy,Medium,Move to named admission evidence policy
+TS015,TS015_MIN_WORKING_SPEED_KMH,2.0 km/h,Working-motion eligibility,Evidence-calibrated policy,Medium,Derive/validate by job and motion state
+TS015,TS015_MIN_PROGRESS_SPEED_KMH,2.0 km/h,Progress-motion eligibility,Evidence-calibrated policy,Medium,Derive/validate by job and motion state
+TS015,TS015_HEAD_ON_MIN_DEG,150 deg,Head-on admission gate,Evidence-calibrated policy,High,Replace with Future Space relationship classification
+TS015,TS015_ARM_TIMEOUT_MS,90000 ms,Admission watchdog,Safety watchdog,Low,Retain with named failure semantics
+TS015,TS015_STOP_SPEED_KMH,0.75 km/h,Confirmed-stop threshold,Evidence-calibrated policy,Medium,Relate to assembly motion confidence
+TS015,TS015_STOP_CONFIRM_MS,1000 ms,Stop persistence,Evidence-calibrated policy,Medium,Relate to observation confidence
+TS015,TS015_HOLD_EFFECT_TIMEOUT_MS,10000 ms,Hold actuator watchdog,Safety watchdog,Low,Retain capability-owned
+TS015,TS015_EGRESS_READY_TIMEOUT_MS,12000 ms,Egress preparation watchdog,Safety watchdog,Low,Retain capability-owned
+TS015,TS015_FOLD_TIMEOUT_MS,22000 ms,Fold watchdog,Safety watchdog,Low,Prefer native animation capability evidence
+TS015,TS015_DRIVE_TIMEOUT_MS,45000 ms,Reposition watchdog,Safety watchdog,Low,Retain capability-owned
+TS015,TS015_EGRESS_SPEED_KMH,15.0 km/h,Egress command speed,Fixed actuator policy,High,Derive from Native Motion Envelope
+TS015,TS015_INGRESS_SPEED_KMH,15.0 km/h,Rejoin command speed,Fixed actuator policy,High,Derive from Native Motion Envelope
+TS015,TS015_PRECISION_SPEED_KMH,6.0 km/h,Precision approach speed,Fixed actuator policy,High,Derive from native precision-motion capability
+TS015,TS015_REJOIN_ORIENTATION_SPEED_KMH,5.0 km/h,Orientation recovery speed,Fixed actuator policy,High,Replace with Native Repositioning Motion intent
+TS015,TS015_EGRESS_PRECISION_RADIUS_M,6.0 m,Switch to precision egress,Actuator tuning,Medium,Capability/assembly-derived
+TS015,TS015_REJOIN_PRECISION_RADIUS_M,8.0 m,Switch to precision rejoin,Actuator tuning,Medium,Capability/assembly-derived
+TS015,TS015_REJOIN_FORWARD_M,6.0 m,Rejoin target forward offset,Fixture-calibrated geometry,High,Derive from assembly/corridor geometry
+TS015,TS015_REJOIN_ORIENTATION_FORWARD_DOT,0.25,Forward-hemisphere gate,Actuator tuning,Medium,Capability-owned with evidence basis
+TS015,TS015_REJOIN_ORIENTATION_TIMEOUT_MS,12000 ms,Orientation watchdog,Safety watchdog,Low,Retain capability-owned
+TS015,TS015_REJOIN_ORIENTATION_MAX_TRAVEL_M,20.0 m,Orientation travel bound,Safety policy,Medium,Derive from admissible manoeuvre region
+TS015,TS015_REJOIN_PROGRESS_EPSILON_M,0.25 m,Motion progress evidence,Evidence-calibrated policy,Medium,Relate to measurement resolution
+TS015,TS015_REJOIN_DIVERGENCE_LIMIT_M,6.0 m,Rejoin failure gate,Safety policy,Medium,Derive from commitment/corridor validity
+TS015,TS015_EGRESS_READY_FOLD_ANIM_TIME,0.15,Fold/egress overlap trigger,Diagnostic promoted to control,Critical,Remove control authority until transition sweep is CLEAR
+TS015,TS015_FULL_COMPACT_FOLD_ANIM_TIME,0.98,Compact-state proxy,Fixture/native-state proxy,High,Replace with configuration/envelope evidence
+TS015,TS015_TARGET_RADIUS_M,1.0 m,Drive target completion,Actuator tuning,Medium,Assembly/accuracy-derived
+TS015,TS015_FENCE_TOLERANCE_M,0.75 m,Centreline fence tolerance,Policy margin,Medium,Replace with complete envelope/corridor constraint
+TS015,TS015_PASS_BEHIND_STOP_M,20.0 m,Passage progression proxy,Semantic proxy,Critical,Replace with complete assembly passage knowledge
+TS015,TS015_PASS_CLEAR_DISTANCE_M,35.0 m,Passage/rearm clear proxy,Semantic proxy,Critical,Replace with Mutual Continuation Clearance
+TS015,TS015_PASS_MIN_DIVERGENCE_MPS,0.20 m/s,Separating-motion evidence,Evidence-calibrated policy,Medium,Retain as one evidence item not conclusion
+TS015,TS015_PASS_CONFIRM_MS,1500 ms,Passage persistence,Evidence-calibrated policy,Medium,Retain as one evidence item not conclusion
+TS015,TS015_POST_PASS_DWELL_MS,1000 ms,Post-passage wait,Evidence-calibrated policy,Medium,Replace with persistent relevance/clearance evidence
+TS015,TS015_POST_PASS_GUARD_MIN_CAP_KMH,7.5 km/h,Minimum speed cap,Fixed actuator policy,High,Derive from assembly controllability and risk
+TS015,TS015_POST_PASS_GUARD_FOLD_FALLBACK_S,15.0 s,Deployment estimate fallback,Model fallback,High,Prefer live configuration transition evidence
+TS015,TS015_POST_PASS_GUARD_MAX_FOLD_ESTIMATE_S,30.0 s,Deployment estimate clamp,Model fallback,Medium,Capability/model-derived
+TS015,TS015_POST_PASS_GUARD_MAX_OBSERVE_MS,45000 ms,Continuation guard watchdog,Safety watchdog,Low,Retain with unresolved outcome
+TS015,TS015_PASSAGE_TIMEOUT_MS,90000 ms,Passage watchdog,Safety watchdog,Low,Retain with unresolved outcome
+TS015,TS015_HANDOFF_OBSERVE_MS,20000 ms,GIANTS handback observation,Safety/evidence window,Medium,Derive from positive continuation evidence where possible
+TS018,TS018_ADMISSION_CONFIRM_MS,3000 ms,Straight encounter persistence,Evidence-calibrated policy,Medium,Move to Situation Assessment confidence
+TS018,TS018_MIN_CLOSING_RATE_MPS,0.10 m/s,Closing relevance,Evidence-calibrated policy,Medium,Relate to measurement uncertainty
+TS018,TS018_MAX_TCPA_S,30.0 s,Prediction horizon,Evidence-calibrated policy,High,Derive from intervention capability/horizon fitness
+TS018,TS018_MAX_DCPA_M,14.0 m,Conflict admission distance,Evidence-calibrated fixture policy,High,Replace with assembly Future Space clearance
+TS018,TS018_MIN_COMMIT_TCPA_S,6.0 s,Minimum action time,Evidence-calibrated policy,High,Derive from selected action capability duration
+TS018,TS018_REARM_MIN_SEPARATION_M,35.0 m,Encounter rearm distance,Semantic proxy,High,Replace with encounter relevance conclusion
+TS018,TS018_REARM_CLEAR_CONFIRM_MS,3000 ms,Rearm persistence,Evidence-calibrated policy,Medium,Retain as confidence input
+TS016,TS016_ADMISSION_CONFIRM_MS,0 ms,Turn-exit admission persistence,Scenario-specific policy,High,Replace with Situation Assessment confidence
+TS016,TS016_MIN_MANOEUVRE_SPEED_KMH,1.0 km/h,Manoeuvre eligibility,Evidence-calibrated policy,Medium,Derive from observed motion confidence
+TS016,TS016_MAX_TCPA_S,12.0 s,Prediction horizon,Evidence-calibrated fixture policy,High,Derive from capability/action horizon
+TS016,TS016_MAX_DCPA_M,14.0 m,Conflict admission distance,Evidence-calibrated fixture policy,High,Replace with assembly Future Space clearance
+TS016,TS016_MIN_COMMIT_TCPA_S,6.0 s,Minimum action time,Evidence-calibrated policy,High,Derive from action capability duration
+TS020,TS020_EXACT_TWO_WORKERS,true,Participant scope,Fixture-specific scope,Critical for generalisation,Remove only after Operation/encounter membership model exists
+TS020,TS020_CANDIDATE_CONFIRM_MS,1000 ms,Relationship confirmation,Evidence-calibrated policy,Medium,Move to Situation Assessment confidence
+TS020,TS020_PARALLEL_MAX_HEADING_DEG,12.0 deg,Parallel classification,Evidence-calibrated policy,High,Replace with relationship/Future Space classification
+TS020,TS020_MIN_LONGITUDINAL_M,5.0 m,Leader/follower relationship gate,Evidence-calibrated policy,Medium,Derive from uncertainty and assembly geometry
+TS020,TS020_MIN_PARALLEL_LATERAL_M,5.0 m,Parallel relationship gate,Evidence-calibrated policy,Medium,Derive from assembly geometry
+TS020,TS020_PARALLEL_LATERAL_MARGIN_M,8.0 m,Parallel relationship margin,Policy margin,High,Derive from assembly envelopes and uncertainty
+TS020,TS020_ACTIVATION_DEFICIT_S,0.5 s,Speed intervention threshold,Provisional control policy,Medium,Retain separate from observation; validate risk policy
+TS020,TS020_RESPONSE_MARGIN_S,2.5 s,Required response reserve,Provisional control policy,High,Derive from actuator response evidence
+TS020,TS020_CLEARANCE_MARGIN_M,4.0 m,Spatial reserve margin,Policy margin,High,Central risk/uncertainty policy
+TS020,TS020_MIN_MANOEUVRE_SPEED_KMH,5.0 km/h,Reserve model clamp,Prediction operand,High,Derive from Native Motion Envelope
+TS020,TS020_ASSUMED_MAX_MANOEUVRE_SPEED_KMH,15.0 km/h,Reserve model clamp,Prediction operand,High,Derive from Native Motion Envelope
+TS020,TS020_MIN_RESERVE_S,6.0 s,Required reserve lower bound,Provisional policy,High,Derive from action duration and uncertainty
+TS020,TS020_MAX_RESERVE_S,12.0 s,Required reserve upper bound,Provisional policy,High,Derive from action duration and uncertainty
+TS020,TS020_TARGET_MARGIN_S,0.5 s,Regulation hysteresis,Control tuning,Medium,Retain capability-owned with evidence
+TS020,TS020_MIN_CAP_KMH,7.5 km/h,Minimum regulated speed,Fixed actuator policy,High,Derive from assembly controllability
+TS020,TS020_AUTHORITY_RESPONSE_TIMEOUT_MS,2500 ms,Actuator-response watchdog,Safety/evidence window,Low,Retain capability-owned
+TS020,TS020_HOLD_DEFICIT_S,0.5 s,Hold escalation threshold,Provisional control policy,High,Decision/risk policy must own
+TS020,TS020_DIVERGENCE_CONFIRM_MS,1500 ms,Clear-motion persistence,Evidence-calibrated policy,Medium,Retain as evidence item
+TS017,TS017_PROGRESS_WORKING_WIDTH_FALLBACK_M,36.0 m,Shadow clearance fallback,Diagnostic fixture fallback,Medium,Keep diagnostic only; prohibit control authority
+TS017,TS017_CONDOR_ORIGIN_ALLOWANCE_M,2.50 m,Condor extent allowance,Fixture-specific model,High,Replace with defensible geometry representation
+FacingExtentProvider,FOLDED_ORIGIN_TEMPLATE,-1.42..1.42 x / -5.21..-1.61 z,Predicted compact Condor extent,Fixture-specific model,Critical for generalisation,Keep as labelled test evidence only
+RefugeViabilityEvaluator,PATH_SAMPLE_LIMIT,128 samples,Obstacle scan resolution cap,Safety/implementation limit,Medium,Expose in config and return UNKNOWN as currently done
+RefugeViabilityEvaluator,HEIGHT_FALLBACK,4.0 m,Overlap volume height,Conservative model fallback,Medium,Move to assembly representation
+RefugeViabilityEvaluator,MIN_SAMPLE_SPACING,0.25 m,Direct path scan spacing,Implementation tuning,Medium,Derive from geometry/obstacle resolution
+ShadowRefugeComparison,METADATA_RANGE,0.25..150 m,Metadata validity filter,Implementation sanity limit,Low,Document centrally
+ShadowRefugeComparison,ALIGNMENT_DOT,0.70,Live longitudinal-envelope eligibility,Representation policy,High,Situation Assessment fitness policy should own
