@@ -466,7 +466,7 @@ def test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidenc
     operation=(ROOT/"scripts"/"identity"/"OperationAdmission.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.32"' in config
+    assert 'VERSION = "4.7.33"' in config
     assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     assert "MEMBERSHIP_UPDATED_INCOMPLETE" in operation
     assert "removalDeferred=true" in operation
@@ -489,7 +489,7 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.32"' in config
+    assert 'VERSION = "4.7.33"' in config
     assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" not in config
     for forbidden in ("predictPair(", "evaluateShadowPair(", "composePositiveEvidence(", "legacyShadowPositive", "legacyTCPA", "legacyDCPA"):
@@ -516,7 +516,7 @@ def test_v4728_traffic_policeman_architecture_is_documented_without_production_c
     concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.32"' in config
+    assert 'VERSION = "4.7.33"' in config
     for token in ("Traffic Policeman","Demonstrated Traversability","Revelation Oscillation"):
         assert token in adr
         assert token in glossary
@@ -536,7 +536,7 @@ def test_v4729_staged_recovery_architecture_is_documented_without_production_con
     glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.32"' in config
+    assert 'VERSION = "4.7.33"' in config
     for token in (
         "Progress priority is not exclusive movement authority",
         "positively available recovery corridor",
@@ -561,7 +561,7 @@ def test_v4730_encounter_maturation_architecture_is_documented_without_productio
     concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.32"' in config
+    assert 'VERSION = "4.7.33"' in config
     for token in ("Encounter Maturation","Action-Space Compression"):
         assert token in adr23
         assert token in architecture
@@ -582,7 +582,7 @@ def test_v4731_productive_continuation_probe_is_passive_and_speed_non_authoritat
     probe=(ROOT/"scripts"/"diagnostics"/"ProductiveContinuationProbe.lua").read_text(encoding="utf-8")
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.32"' in config
+    assert 'VERSION = "4.7.33"' in config
     assert "scripts/diagnostics/ProductiveContinuationProbe.lua" in main
     assert "productiveContinuationProbe" in main
     for token in (
@@ -638,7 +638,7 @@ def test_v4732_productive_continuation_preference_is_documented_without_producti
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.32"' in config
+    assert 'VERSION = "4.7.33"' in config
     for token in (
         "Productive Continuation Preference",
         "Productive-Line Cross-Assembly Replication",
@@ -655,5 +655,38 @@ def test_v4732_productive_continuation_preference_is_documented_without_producti
     assert "LIVE EVIDENCE GATE PASSED" in protocol
     assert "10 km/h" in protocol and "18 km/h" in protocol and "25 km/h" in protocol
     assert "Productive Continuation Preference" in architecture
+    assert "Control authority disabled" in runtime
+    assert "decisionCommitmentBoundary:apply" not in runtime
+
+
+def test_v4733_speed_ordering_evidence_asymmetry_and_configuration_footprint_authority():
+    concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
+    glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
+    decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
+    architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
+    physical=(ROOT/"docs"/"PHYSICAL_REPRESENTATION_ARCHITECTURE.md").read_text(encoding="utf-8")
+    adr23=(ROOT/"docs"/"adr"/"ADR-0023-traffic-policeman-movement-priority.md").read_text(encoding="utf-8")
+    protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+    assert 'VERSION = "4.7.33"' in config
+    for token in (
+        "Native Speed-Ordering Variability",
+        "Productive-State Evidence Asymmetry",
+        "Alternating Working-Side Configuration",
+        "Configuration Footprint Authority",
+    ):
+        assert token in concepts
+        assert token in glossary
+    assert "D-0114" in decision
+    assert "line=INACTIVE" in decision or "line `INACTIVE`" in decision
+    assert "~12.2 km/h" in decision and "~15 km/h" in decision
+    assert "provenance only" in physical
+    assert "realised component footprint" in physical
+    assert "materially equivalent footprint domain" in physical
+    assert "inactive line state alone" in adr23
+    assert "supportable interruption state" in adr23
+    assert "P21-F" in protocol
+    assert "12.2 km/h" in protocol and "15 km/h" in protocol
     assert "Control authority disabled" in runtime
     assert "decisionCommitmentBoundary:apply" not in runtime

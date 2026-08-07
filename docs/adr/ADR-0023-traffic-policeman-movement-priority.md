@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted architectural concept and refinements; canonical through v4.7.30 and further refined by the v4.7.32 Productive Continuation evidence consolidation candidate. Production Decision/Commitment/Control implementation remains absent.
+Accepted architectural concept and refinements; canonical through v4.7.30 and further refined by the v4.7.32 Productive Continuation consolidation and v4.7.33 native work-line/configuration-footprint evidence candidate. Production Decision/Commitment/Control implementation remains absent.
 
 ## Context
 
@@ -131,6 +131,14 @@ When both participants are Productive, both are Transitional, or the relevant pr
 Prototype 21 supplies the current empirical seam rather than architectural API coupling: Condor productive work remained line `ACTIVE` under both normal and deliberately low cruise limits, and Valtra S 416 + lime-spreader productive passes reproduced line `ACTIVE` across a different native working envelope. Both assemblies exposed line `INACTIVE` during GIANTS transition segments. `turn=true` also covered diagonal and reversing reposition behaviour, so it must not be equated with a literal geometric/headland turn. Situation Assessment should use coherent positive GIANTS-native evidence and publish `UNRESOLVED` when that evidence is not fit.
 
 A Transitional participant retains full Physical Assembly and Future Space relevance. GIANTS may increase separation and later reverse into recently vacated space while the same Job Episode continues (**Apparent Departure Reversal**). Therefore Yield preference is not reduced spatial authority, and apparent departure cannot establish Safe Release.
+
+### Productive-state evidence is asymmetric and speed ordering is non-authoritative
+
+Prototype 21 now spans Condor, Valtra/lime spreader, John Deere 8RX/cultivator and Valtra/reversible plough. Coherent active GIANTS work-line state is demonstrated positive evidence for Productive Continuation across these fixtures. However, short non-turn inactive-line boundary states occur before a new productive line establishes, so inactive line state alone is not positive Transitional authority. Decision consumes Situation Knowledge only after Situation Assessment has corroborated the continuing native transition or returned `UNRESOLVED`.
+
+**Native Speed-Ordering Variability** further prohibits speed-based priority. The reversible plough worked at ~12.2 km/h while its transition reached ~15 km/h. Neither “slower yields”, “faster progresses” nor any comparison of productive/transitional speed envelopes is an authorised role rule.
+
+A footprint-changing Transitional participant may be the first Yield candidate under Productive Continuation Preference, but Traffic Policeman must still confirm that the current transition contains a supportable interruption state. **Alternating Working-Side Configuration** means line inactivity can coincide with a material configuration sweep whose Action Space must be preserved.
 
 ### Action-Space Compression
 

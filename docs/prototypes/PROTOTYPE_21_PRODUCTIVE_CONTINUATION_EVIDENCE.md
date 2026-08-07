@@ -2,7 +2,7 @@
 
 ## Status
 
-**LIVE EVIDENCE GATE PASSED — v4.7.32 consolidation; passive probe retained**
+**LIVE EVIDENCE GATE PASSED AND EXPANDED — v4.7.33 consolidation; passive probe retained**
 
 Passive diagnostic only. It does not classify Traffic Policeman priority, does not create a Commitment and does not exercise Control.
 
@@ -109,6 +109,16 @@ A long reverse also demonstrated **Apparent Departure Reversal**: the worker can
 Across multiple up/down passes and several forward/reverse repositions, productive passes consistently exposed `turn=false`, line `ACTIVE`, implement lowered and an ~18 km/h work limit. Transition segments exposed `turn=true`, line `INACTIVE`, implement raised while direction could change between forward and reverse.
 
 **Result:** **Productive-Line Cross-Assembly Replication**. The useful work-line distinction survived a materially different tractor/implement assembly and native productive speed envelope.
+
+### P21-F — John Deere 8RX 410 + cultivator and Valtra S 416 + reversible plough
+
+A TS004 run placed the John Deere/cultivator and Valtra/reversible-plough assemblies on separate Field Worlds. The 8RX productive passes exposed `turn=false`, line `ACTIVE`, implement lowered and a 15 km/h work limit; native transition segments exposed line `INACTIVE`, implement raised and both forward/reverse motion.
+
+The reversible plough productive passes exposed `turn=false`, line `ACTIVE`, implement lowered and an approximately 12.2 km/h work limit. Its native transitions reached approximately 15 km/h while line `INACTIVE` / raised. **Result: Native Speed-Ordering Variability** — transition can be faster than productive work.
+
+Both fixtures also exposed short `turn=false`, line `INACTIVE`, raised boundary samples before the next productive line became active. **Result: Productive-State Evidence Asymmetry** — inactive line alone is not positive Transitional authority.
+
+The reversible plough visibly switched working side after each pass while the same Job Episode continued. Passive representation generated changing configuration/profile tokens and materially changing footprint bounds. The ordinal tokens are retained only as provenance; the spatially meaningful evidence is the realised footprint and configuration-transition sweep.
 
 ### Promotion conclusion
 

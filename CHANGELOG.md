@@ -1,3 +1,15 @@
+## v4.7.33 — Native Work-Line / Configuration-Footprint Evidence Consolidation Candidate
+
+- begins from owner-declared canonical v4.7.30 (`54acc18349028de281845db2d209c3257cf2f27b203c43b1cae603461282a93a`, Git `747238389c80d032eb3b540bf2b5a0d0cf4d5930`; 261 files) and carries forward the passive Prototype 21 probe plus v4.7.32 architecture consolidation;
+- extends **Productive-Line Cross-Assembly Replication** to John Deere 8RX 410 + cultivator (15 km/h productive limit) and Valtra S 416 + reversible plough (~12.2 km/h productive limit), with productive line `ACTIVE` / lowered and native transitions line `INACTIVE` / raised across forward/reverse motion;
+- records **Native Speed-Ordering Variability**: the reversible plough's productive work ran at ~12.2 km/h while transitional motion reached ~15 km/h, proving transitional motion can be faster than productive work and that neither absolute nor relative speed ordering has productive-state or priority authority;
+- records **Productive-State Evidence Asymmetry**: coherent active GIANTS work-line evidence can positively support Productive Continuation, while line `INACTIVE` alone cannot positively prove Transitional Continuation because short non-turn inactive boundary samples occur before the next productive line establishes; absent corroborating continuing-transition evidence, publish `UNRESOLVED`;
+- records **Alternating Working-Side Configuration** from the reversible plough: one continuing Job Episode may alternate materially different productive geometries after each pass, with the native transition between sides forming part of unresolved spatial demand;
+- records **Configuration Footprint Authority**: runtime configuration/profile numbers are diagnostic provenance and must not become semantic identity authority; spatial reasoning depends on the current realised Physical Assembly footprint and applicable configuration-transition sweep;
+- constrains Demonstrated Traversability and other footprint evidence to materially equivalent realised configuration/footprint domains; successful passage with one working-side footprint does not automatically prove the mirrored/opposite side or the transition sweep;
+- keeps Productive Continuation Preference and headland/Encounter-Maturation ordering unchanged; a Transitional/Yield candidate still requires a supportable interruption state and retains full Future-Space authority;
+- documentation/knowledge consolidation only beyond retained Prototype 21 diagnostics: production Decision remains passive, no live Commitment is applied and Control authority remains disabled.
+
 ## v4.7.32 — Productive Continuation Preference / Native Work-Line Evidence Consolidation Candidate
 
 - begins from owner-declared canonical v4.7.30 (`54acc18349028de281845db2d209c3257cf2f27b203c43b1cae603461282a93a`, Git `747238389c80d032eb3b540bf2b5a0d0cf4d5930`; 261 files) and carries forward the passive Prototype 21 probe introduced by non-canonical v4.7.31;

@@ -1,3 +1,19 @@
+## D-0114 — Ground Productive/Transitional Knowledge Asymmetrically and Treat Configuration by Footprint
+
+**Status:** Accepted architecture; documentation/knowledge consolidation in v4.7.33 candidate; no production Decision implementation
+
+**Evidence:** Prototype 21 TS004 evidence extended the productive-line pattern to John Deere 8RX 410 + cultivator and Valtra S 416 + reversible plough. The 8RX worked at a 15 km/h productive limit; the reversible plough worked at ~12.2 km/h while transition reached ~15 km/h. Both exposed productive line `ACTIVE` / lowered and transitional line `INACTIVE` / raised. Short `turn=false`, line `INACTIVE` boundary samples also occurred before productive-line establishment. The reversible plough visibly changed working side after each pass while the same Job Episode continued, with passive representation producing changing configuration/profile tokens and materially changing footprint bounds.
+
+**Decision — speed:** accept **Native Speed-Ordering Variability**. Neither absolute speed nor the relative faster/slower ordering between participants may classify productive state or manufacture Traffic-Policeman priority.
+
+**Decision — evidence:** accept **Productive-State Evidence Asymmetry**. Coherent active work-line evidence may positively support Productive Continuation. Inactive line state alone is not positive Transitional authority; positive Transitional Continuation requires corroborating Job-Episode continuity and native-transition evidence. Otherwise Situation Assessment publishes `UNRESOLVED`.
+
+**Decision — configuration:** accept **Configuration Footprint Authority** and **Alternating Working-Side Configuration**. Runtime configuration/profile numbers are diagnostic provenance only and must not become semantic state identity. Spatial reasoning uses current realised footprint plus the relevant configuration-transition sweep. Demonstrated Traversability, clearance and similar positive evidence are bounded to materially equivalent footprint/configuration domains and do not automatically transfer across a working-side reversal.
+
+**Traffic-Policeman consequence:** Productive Continuation Preference remains an initial otherwise-roomy non-headland preference only. A Transitional/Yield participant must still have a supportable interruption state; a footprint-changing transition may make yielding it inadmissible even though productive-line state is inactive. Headland/Encounter-Maturation treatment is unchanged.
+
+**Implementation boundary:** no classifier, role assignment, configuration-label mapping or Control behaviour is activated by v4.7.33. Prototype 21 remains passive; production Decision remains passive and Control disabled.
+
 ## D-0113 — Accept Productive Continuation Preference with Positive Native Evidence
 
 **Status:** Accepted architecture; documentation/knowledge consolidation in v4.7.32 candidate; no production Decision implementation

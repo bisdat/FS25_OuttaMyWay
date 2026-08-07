@@ -1,3 +1,17 @@
+## v4.7.33 vocabulary refinements
+
+**Native Speed-Ordering Variability**  
+Observed GIANTS behaviour showing that the relative speeds of productive and transitional motion are assembly-specific; transition may be slower than, equal to or faster than productive work. Faster/slower ordering has no semantic priority authority.
+
+**Productive-State Evidence Asymmetry**  
+Situation-evidence rule that coherent active GIANTS work-line state may positively support Productive Continuation, whereas inactive line state alone does not positively prove Transitional Continuation. Transitional state requires corroborating continuing-transition evidence or remains `UNRESOLVED`.
+
+**Alternating Working-Side Configuration**  
+A continuing Job Episode behaviour in which an implement changes between materially different productive working-side footprints between passes. The transition sweep remains part of unresolved Physical Assembly demand.
+
+**Configuration Footprint Authority**  
+Rule that implementation-specific configuration/profile identifiers are provenance tokens rather than semantic state authority. Spatial reasoning uses the realised Physical Assembly footprint and relevant configuration-transition sweep; evidence from one footprint domain cannot be transferred automatically to another.
+
 ## v4.7.32 vocabulary refinements
 
 **Productive Continuation**  

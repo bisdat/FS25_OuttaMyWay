@@ -1,16 +1,18 @@
-# v4.7.32 Candidate — Productive Continuation Preference / Native Work-Line Evidence Consolidation
+# v4.7.33 Candidate — Native Work-Line / Configuration-Footprint Evidence Consolidation
 
-Prototype 21 has completed the current evidence question. Condor low-cruise falsification proved absolute speed is not productive-state authority; Condor diagonal/reverse transitions and a Valtra S 416 + lime-spreader cross-assembly run established a repeated native work-line distinction between productive and transitional continuation.
+Prototype 21 evidence now spans four materially different working systems, including John Deere 8RX 410 + cultivator and Valtra S 416 + reversible plough. The work-line distinction continues to support Productive Continuation independently of native speed, and the reversible plough proves transitional motion may be faster than productive work.
 
-**Productive Continuation Preference** is now accepted for otherwise-roomy non-headland encounters: a positively supported productive participant is the preferred `PROGRESS` candidate and a positively supported transitional participant the first `YIELD` candidate only while that role assignment preserves supported Action Space and current obligations. Headland/Action-Space-Compression treatment remains unchanged. Equal or unresolved productive state supplies no role decision.
+The evidence contract is now explicitly asymmetric: coherent line `ACTIVE` may positively support Productive Continuation, while line `INACTIVE` alone cannot prove Transitional Continuation because transient non-turn inactive boundaries occur before a productive line establishes. Transitional knowledge requires corroborating continuing native-transition evidence or remains `UNRESOLVED`.
 
-Prototype 21 remains passive for diagnostic traceability. Production Decision remains passive, no live Commitment is applied and Control authority remains disabled.
+The reversible plough also establishes **Alternating Working-Side Configuration** and **Configuration Footprint Authority**. Runtime configuration/profile numbers are provenance tokens only; the spatial authority is the realised Physical Assembly footprint plus any configuration-transition sweep. Traversability and clearance evidence remain bounded to materially equivalent footprint domains.
+
+Productive Continuation Preference itself is unchanged. Prototype 21 remains passive; production Decision remains passive, no live Commitment is applied and Control authority remains disabled.
 
 # Project Status
 
 > **Current canonical:** v4.7.30 Encounter Maturation / Action-Space Compression Consolidation  
 > **Canonical baseline:** v4.7.30 (`54acc18349028de281845db2d209c3257cf2f27b203c43b1cae603461282a93a`, Git `747238389c80d032eb3b540bf2b5a0d0cf4d5930`; 261 files)  
-> **Current candidate:** v4.7.32 Productive Continuation Preference / Native Work-Line Evidence Consolidation  
+> **Current candidate:** v4.7.33 Native Work-Line / Configuration-Footprint Evidence Consolidation  
 > **Control authority:** production Control disabled
 
 ## Established Reality
@@ -37,6 +39,16 @@ same Job Episode
 ```
 
 The Job Episode remained `giants-ai-job-id:0`. Full compact configuration was confirmed before movement. GIANTS progressed at approximately 1.01–1.06 km/h under the experimental 1 km/h ceiling while native course progress advanced. The probe re-Held after an experimental 2 m proving movement (approximately 2.04 m actual), restored deployment/work state with zero verification mismatches, then observed independent same-Job native continuation. Candidate SHA-256: `43e0fc93fcd7810d8460d11e683ad05adef50ada545c8190a3394f015b260ec0`.
+
+## v4.7.33 TS004 evidence expansion
+
+The v4.7.31 passive probe was run concurrently on John Deere 8RX 410 + cultivator and, on a separate Field World, Valtra S 416 + reversible plough. 8RX productive passes exposed line `ACTIVE` / lowered at a 15 km/h work limit; transition segments were line `INACTIVE` / raised and changed between forward/reverse. The reversible plough productive passes exposed line `ACTIVE` / lowered at ~12.2 km/h while transition reached ~15 km/h, establishing Native Speed-Ordering Variability.
+
+Both assemblies also produced short non-turn line-inactive boundary states before productive-line establishment. v4.7.33 therefore records Productive-State Evidence Asymmetry rather than treating inactive line as a binary Transitional classifier.
+
+The reversible plough visibly alternated working side after each pass. Passive Physical Representation observed multiple changing configuration/profile tokens and changing footprint bounds within the same Job Episode. The token numbers are explicitly non-authoritative. **Configuration Footprint Authority** requires spatial reasoning to follow the realised footprint and applicable transition sweep instead.
+
+No production Control/Decision path changes in v4.7.33.
 
 ## v4.7.32 live evidence and architecture consolidation
 

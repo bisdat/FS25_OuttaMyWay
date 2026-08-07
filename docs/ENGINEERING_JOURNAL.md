@@ -1,3 +1,11 @@
+## 2026-08-07 — Prototype 21 TS004 expansion: speed ordering and reversible footprint
+
+**Observe:** John Deere 8RX/cultivator and Valtra/reversible-plough were run on separate fields with Prototype 21 passive diagnostics. Productive line evidence replicated. Reversible-plough productive speed (~12.2 km/h) was lower than native transition speed (~15 km/h). Short non-turn line-inactive boundaries appeared before productive-line establishment. The plough visibly switched working side after each pass; passive representation emitted changing profile/configuration tokens and footprint bounds.
+
+**Discuss / hypothesis outcome:** speed ordering is disproved as semantic authority; inactive line is insufficient positive Transitional evidence; profile ordinals are implementation tokens rather than stable working-side identity.
+
+**Record:** D-0114 accepts Native Speed-Ordering Variability, Productive-State Evidence Asymmetry, Alternating Working-Side Configuration and Configuration Footprint Authority. Spatial authority follows realised footprint and transition sweep. No production implementation change.
+
 ## 2026-08-07 — Prototype 21 promotes Productive Continuation Preference
 
 **Observe — Condor speed falsification:** ordinary productive continuation at the Condor's ~25 km/h work limit and the same productive continuation under an intentionally retained 10 km/h manual cruise cap both remained `turn=false`, GIANTS work-line `ACTIVE`, implement lowered. The work limit remained 25 km/h while actual speed followed the 10 km/h cap. Absolute speed is therefore not productive-state authority.

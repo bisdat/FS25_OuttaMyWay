@@ -1,3 +1,15 @@
+## v4.7.33 Native Work-Line / Configuration-Footprint evidence gates
+
+| Contract | Required architecture | v4.7.33 evidence / record | Status |
+|---|---|---|---|
+| Cross-assembly productive evidence | positive Productive state must not depend on one fixture or one speed | 8RX/cultivator and Valtra/reversible-plough replicate line `ACTIVE` / lowered productive state | LIVE PASS |
+| Speed-ordering non-authority | faster/slower ordering must not classify Productive/Transitional or priority | reversible plough productive ~12.2 km/h; transition ~15 km/h | LIVE PASS |
+| Inactive-line boundary | line `INACTIVE` alone must not positively classify Transitional | non-turn inactive boundary samples observed before productive-line establishment | LIVE PASS / ASYMMETRIC CONTRACT |
+| Working-side geometry | one Job Episode may change productive footprint | reversible plough visibly alternated working side each pass | LIVE PASS |
+| Configuration token authority | numeric/profile identifier must not become semantic state identity | architecture uses realised footprint + transition sweep; token retained as provenance only | ACCEPTED |
+| Traversability domain | prior passage evidence must remain footprint/configuration equivalent | opposite working-side footprint and reversal sweep require their own applicability evidence | ACCEPTED |
+| Runtime authority | evidence consolidation must not activate Decision/Control | Prototype 21 passive; production Decision passive; Control disabled | PRESERVED |
+
 # v4.7.32 Productive Continuation Preference / Native Evidence Conformance
 
 | Concern | Requirement | v4.7.32 evidence | Status |

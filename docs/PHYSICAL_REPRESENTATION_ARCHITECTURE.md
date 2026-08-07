@@ -139,6 +139,21 @@ current physical state and plan-view poses
 current realised occupancy
 ```
 
+### Configuration Footprint Authority and alternating working sides
+
+Live v4.7.33 evidence from a Valtra S 416 with reversible plough adds an important exception to any assumption that job-time configuration is structurally static. Within one continuing GIANTS Job Episode the plough visibly changed from one working side to the other after each pass. Passive Physical Representation emitted changing configuration/profile tokens and materially different realised footprint bounds during the same sequence.
+
+The numeric/string configuration token is **diagnostic provenance only**. Its value may be implementation-specific, asset-specific or unstable across versions/runs and must not be assigned semantic labels such as `LEFT_WORKING` or `RIGHT_WORKING` without independent evidence. The authority needed by Situation Assessment is instead:
+
+- the current realised component footprint;
+- the evidence quality/fitness of that footprint;
+- the configuration-transition sweep when the assembly is moving between footprints; and
+- the materially equivalent footprint domain to which prior traversability/clearance evidence applies.
+
+This is **Configuration Footprint Authority**. A successful traversal with one working-side footprint does not automatically prove admissibility for the opposite/mirrored footprint, nor for the sweep between them. **Alternating Working-Side Configuration** is the observed behaviour; the semantic left/right mapping of any runtime profile ordinal is deliberately not architecture.
+
+The transition itself remains Physical Assembly demand. A raised/inactive implement that is rotating or reversing between working sides is not spatially irrelevant merely because productive work is inactive.
+
 ## Component Families
 
 Homologous components within a segmented implement normally share one representation strategy while retaining individual dimensions, identity, placement and pose. This is **Family Strategy–Member Parameter Separation**.

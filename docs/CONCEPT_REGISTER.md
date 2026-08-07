@@ -1,3 +1,29 @@
+# v4.7.33 Native Work-Line / Configuration-Footprint Evidence Consolidation
+
+## Native Speed-Ordering Variability
+
+**Classification:** live-supported empirical discovery.
+
+The relationship between GIANTS productive and transitional speeds is assembly-specific. In the reversible-plough run, productive work was limited to ~12.2 km/h while native transition reached ~15 km/h. Absolute speed and relative faster/slower ordering therefore have no semantic authority for Productive/Transitional state or Traffic-Policeman priority.
+
+## Productive-State Evidence Asymmetry
+
+**Classification:** accepted Situation-evidence rule.
+
+Coherent active GIANTS work-line state can positively support Productive Continuation. Inactive line state alone cannot positively prove Transitional Continuation because short non-turn inactive boundary states occur while GIANTS is establishing the next productive line. Positive Transitional Knowledge requires corroborating continuing-Job-Episode and native-transition evidence; otherwise publish `UNRESOLVED`.
+
+## Alternating Working-Side Configuration
+
+**Classification:** live-supported Physical Assembly discovery.
+
+A continuing GIANTS Job Episode may alternate between materially different productive working-side geometries. A reversible plough visibly changed side at the end of each pass, and the transition between working sides is part of the assembly's unresolved spatial demand.
+
+## Configuration Footprint Authority
+
+**Classification:** accepted Physical Representation authority rule.
+
+Runtime configuration/profile numbers are diagnostic provenance only. Their ordinal/string values must not be treated as semantic left/right/state identifiers. Spatial authority comes from the current realised Physical Assembly footprint and the applicable configuration-transition sweep, together with their evidence quality and fitness. Traversability/clearance evidence is bounded to materially equivalent footprint/configuration domains.
+
 # v4.7.32 Productive Continuation Preference / Native Work-Line Evidence Consolidation
 
 ## Productive Continuation Preference

@@ -66,6 +66,12 @@ If waiting consumes the preserved option or no participant can generate the requ
 
 **Encounter Maturation** is one valid use of this contract. Decision may deliberately preserve bounded GIANTS-native progression while an ambiguous interaction is expected to dissolve or become simpler, but only while supported resolution options remain available. Action-Space Compression therefore supplies relevant evidence for the exhaustion condition: maturation must stop being preferred when continued native progression is consuming rather than preserving the Action Space needed for resolution. A familiar head-on is not a required maturation target.
 
+### 5a. Configuration labels do not carry clearance authority
+
+Live reversible-plough evidence demonstrates that one Job Episode may alternate materially different working-side footprints. Runtime configuration/profile identifiers are provenance only; a numeric/ordinal token is not positive evidence that two spatial states are equivalent. Future Space, release and traversability reasoning must use the current realised footprint and any applicable configuration-transition sweep.
+
+A previously demonstrated corridor remains positive evidence only for a materially equivalent footprint domain. Changing working side, articulation or configuration sweep may expire that applicability even when the Job Episode identity is unchanged.
+
 ### 6. Capability effectiveness is separate from operational sufficiency
 
 Control reports whether the requested physical command was realised. Situation Assessment interprets the resulting Reality. Decision judges whether that realised change is sufficient for the Commitment purpose.

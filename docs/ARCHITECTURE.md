@@ -216,6 +216,8 @@ Temporary roles may transfer inside one Commitment when evidence shows real redu
 
 Actual successful occupation or traversal by the real Physical Assembly can provide positive evidence that the local space accommodated that assembly under the configuration and movement conditions actually experienced. This **Demonstrated Traversability** evidence remains applicable only within a materially unchanged bounded domain and does not prove arbitrary reverse kinematics, configuration sweeps, permanent release of space or current availability against another worker.
 
+For configuration-changing assemblies, “materially equivalent configuration” is a **footprint-domain** requirement, not equality of an implementation configuration number. A reversible implement that changes working side may create a materially different realised footprint even within the same Job Episode. Traversability demonstrated on one side does not automatically transfer to the opposite side or the configuration-transition sweep.
+
 Synthetic Coverage Closure remains required wherever this positive empirical evidence does not cover the proposed Action Space. The Known-Coverage Trap still prohibits treating only-known geometry as complete physical clearance.
 
 ## 6. Continuing Intent Priority
@@ -632,6 +634,12 @@ If both participants are Productive, both are Transitional, or either productive
 The architecture is not bound to a single GIANTS API flag. Prototype 21 demonstrated active GIANTS implement-line evidence as a useful native source across Condor and Valtra/lime-spreader assemblies, including a low-cruise falsification, but Situation Assessment must publish coherent positive Knowledge or `UNRESOLVED`. `line=ACTIVE` is evidence, not a universal one-bit contract.
 
 Transitional Continuation does **not** reduce Physical Assembly, Current Space or Future Space authority. GIANTS transition segments may include reversals back into recently vacated space. The **Apparent Departure Reversal** observation therefore reinforces the existing Safe Release contract: increasing separation, negative closing rate or visual departure cannot independently retire Encounter obligations.
+
+Situation evidence is deliberately asymmetric. Coherent `line=ACTIVE` with compatible work-state evidence may positively support Productive Continuation. `line=INACTIVE` by itself does **not** prove Transitional Continuation: live TS004 evidence includes short `turn=false`, inactive-line boundary states while GIANTS is establishing the next productive line. Transitional Continuation therefore requires corroborating continuing-Job-Episode/native-transition evidence; otherwise the state is `UNRESOLVED`.
+
+Absolute and relative speed ordering remain non-authoritative. **Native Speed-Ordering Variability** demonstrated a reversible plough working at ~12.2 km/h while its native transition reached ~15 km/h. A slower productive participant may therefore remain Productive while a faster participant is Transitional.
+
+A Transitional participant may also be changing configuration. **Alternating Working-Side Configuration** demonstrates that one Job Episode can alternate materially different productive footprints. Traffic Policeman may prefer such a participant as Yield only if an interruption point is supportable in the current configuration transition; inactive productive-line state is not permission to ignore its transition sweep.
 
 ## 18. Multi-stage strategy continuity
 
