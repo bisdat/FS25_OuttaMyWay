@@ -1,3 +1,27 @@
+# v4.7.32 Productive Continuation Preference / Native Evidence Conformance
+
+| Concern | Requirement | v4.7.32 evidence | Status |
+|---|---|---|---|
+| Speed non-authority | productive/transitional state must not derive from absolute speed | Condor productive line remained ACTIVE at ~10 km/h under manual cruise cap while work limit remained 25 km/h | LIVE PASS |
+| Cross-assembly fitness | proposed native evidence must survive a materially different assembly | Valtra S 416 + lime spreader reproduced ACTIVE/lowered productive and INACTIVE/raised transitional pattern at ~18 km/h work limit | LIVE PASS |
+| Turn semantics | GIANTS `turn=true` must not be equated with literal geometric/headland turn | diagonal and forward/reverse reposition segments remained `turn=true` | LIVE PASS |
+| Non-headland preference | Productive Continuation may guide initial Progress/Yield only in otherwise-roomy encounters | ADR-0023 / D-0113 define preference and override | ACCEPTED |
+| Action-Space override | transitional Yield must not be forced when it worsens resolution | Encounter Maturation / Action-Space Compression remains superior constraint | ACCEPTED |
+| Tie/unresolved | no unsupported speed/vehicle/arrival heuristic may manufacture priority | equal/unresolved productive state explicitly supplies no decision | ACCEPTED |
+| Spatial relevance | Transitional/Yield status must not imply departure or clearance | Apparent Departure Reversal recorded; ADR-0006 release contract preserved | ACCEPTED |
+| Runtime authority | evidence consolidation must not activate Traffic Policeman/Control | Prototype 21 passive; production Decision passive; Control disabled | PRESERVED |
+
+# v4.7.31 Productive Continuation Evidence-Probe Conformance
+
+| Concern | Requirement | v4.7.31 evidence | Status |
+|---|---|---|---|
+| Evidence before policy | Productive Continuation Preference must not be implemented before GIANTS-native evidence is validated | Prototype 21 emits observational labels only | PASS offline |
+| Speed semantics | no fixed speed may classify productive/repositioning motion | no 25/15/10 km/h classifier; low-cruise falsification documented | PASS offline |
+| Native evidence | preserve raw GIANTS segment and implement-line observations | active-segment tuple plus `implementData.isLowered` logged | PASS offline |
+| Headland boundary | non-headland priority hypothesis must not replace Encounter Maturation | Prototype 21 test contract explicitly preserves headland treatment | PASS offline |
+| Passive boundary | probe must not call/wrap drive or mutate vehicle state | no drive/control setters/wrappers in probe | PASS offline |
+| Decision/Control | no priority selection, Commitment application or Control | Decision passive; Control disabled | PASS |
+
 # v4.7.30 Encounter Maturation / Action-Space Compression Consolidation
 
 | Concern | Architectural requirement | v4.7.30 consolidation | Status |

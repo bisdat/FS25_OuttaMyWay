@@ -1,3 +1,31 @@
+# v4.7.32 Productive Continuation Preference / Native Work-Line Evidence Consolidation
+
+## Productive Continuation Preference
+
+**Classification:** accepted Traffic-Policeman preference; no production implementation.
+
+For otherwise-roomy non-headland encounters, positive Productive Continuation is the preferred `PROGRESS` candidate and a positively supported Transitional Continuation is the first `YIELD` candidate when that assignment remains admissible. The preference is subordinate to Action-Space viability, current Commitment obligations and Encounter Maturation. It does not override the established headland/TS016 treatment.
+
+If productive state is equal or unresolved, the preference supplies no priority decision. Absolute speed, vehicle class, implement width and arrival order are not authorised tie-breakers.
+
+## Productive-Line Cross-Assembly Replication
+
+**Classification:** live-supported empirical discovery; current evidence source, not universal API contract.
+
+Condor productive passes (including a 10 km/h cruise-capped falsification against a 25 km/h work limit) and Valtra S 416 + lime-spreader productive passes (~18 km/h work limit) exposed active GIANTS implement-line state with working configuration. Native transition segments on both assemblies exposed inactive line state. This supports Productive/Transitional Situation Knowledge independent of absolute speed.
+
+## GIANTS Turn-Segment Breadth
+
+**Classification:** live-supported empirical discovery.
+
+GIANTS `isTurn=true` encompassed long diagonal repositioning and forward/reverse transition motion. It is therefore course-structure evidence rather than authority that a participant is performing a literal geometric/headland turn.
+
+## Apparent Departure Reversal
+
+**Classification:** live-supported Safe-Release evidence.
+
+A Transitional participant can increase separation and then reverse into recently vacated space while the Job Episode remains active. Transitional/Yield status does not reduce Physical Assembly/Future Space relevance; departure/separation alone cannot retire Encounter obligations.
+
 # v4.7.30 Encounter Maturation / Action-Space Compression Consolidation
 
 ## Encounter Maturation

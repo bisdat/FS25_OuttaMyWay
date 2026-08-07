@@ -1,3 +1,23 @@
+## v4.7.32 vocabulary refinements
+
+**Productive Continuation**  
+Situation Knowledge positively supporting that a continuing GIANTS Job Episode participant is currently executing productive field work. Architecture is not bound to one API flag; current Prototype 21 evidence includes coherent active GIANTS implement-line state.
+
+**Transitional Continuation**  
+A continuing GIANTS Job Episode state between productive continuations. It may include repositioning, diagonal transit, geometric turning and forward/reverse manoeuvring. Transitional does not mean irrelevant, departing permanently or spatially harmless.
+
+**Productive Continuation Preference**  
+For an otherwise-roomy non-headland Encounter, the Traffic-Policeman preference to preserve positively supported Productive Continuation as the initial `PROGRESS` candidate and treat a positively supported Transitional Continuation as the first `YIELD` candidate, only while that assignment preserves supported Action Space and current obligations. Equal/unresolved productive state is a tie; no absolute-speed or vehicle heuristic is implied.
+
+**Productive-Line Cross-Assembly Replication**  
+Prototype 21 discovery that active GIANTS implement-line state tracked productive passes across both Condor and Valtra S 416 + lime-spreader assemblies despite different native working speed envelopes, while native transition segments exposed inactive line state. This is empirical evidence, not universal API authority.
+
+**GIANTS Turn-Segment Breadth**  
+Prototype 21 discovery that GIANTS `isTurn=true` can encompass long diagonal repositioning and forward/reverse transition motion, so the flag must not be equated with the everyday geometric meaning of “turn”.
+
+**Apparent Departure Reversal**  
+Observed native behaviour in which a worker increases separation during Transitional Continuation and later reverses into recently vacated space to satisfy remaining work. It is evidence against treating departure/separation as Safe Release authority.
+
 ## v4.7.30 vocabulary refinements
 
 **Encounter Maturation**  

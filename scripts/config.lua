@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.7.30 documentation-only architecture consolidation candidate; canonical v4.7.29 runtime behaviour retained; Control remains disabled.
+-- FS25_OuttaMyWay v4.7.32 Productive Continuation Preference / native work-line evidence consolidation candidate; canonical v4.7.30 baseline retained; Prototype 21 remains passive; Control remains disabled.
 -- Canonical architecture authority: v4.6.78.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.30"
+OuttaMyWay.VERSION = "4.7.32"
 OuttaMyWay.ARCHITECTURE_VERSION = "4.6.78"
 OuttaMyWay.RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -32,6 +32,13 @@ OuttaMyWay.REPRESENTATION_GEOMETRY_COHERENCE_TOLERANCE_METRES = 0.05
 OuttaMyWay.REPRESENTATION_ROOT_ALIAS_TOLERANCE_METRES = 0.0001
 
 OuttaMyWay.FIELD_IDENTITY_PROBE_HEARTBEAT_INTERVAL_MS = 10000
+
+-- Prototype 21: passive Productive Continuation evidence discovery. These are
+-- diagnostic sampling/logging intervals only; speed values are observations and
+-- carry no Productive/Transitional classification authority.
+OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_ENABLED = true
+OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_INTERVAL_MS = 250
+OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_HEARTBEAT_MS = 2000
 
 OuttaMyWay.FIELD_WORLD_SNAPSHOT_GENERATION_BUDGET = 0.00025
 OuttaMyWay.FIELD_WORLD_FINGERPRINT_QUANTIZATION_METRES = 0.1

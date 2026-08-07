@@ -1,3 +1,33 @@
+## 2026-08-07 — Prototype 21 promotes Productive Continuation Preference
+
+**Observe — Condor speed falsification:** ordinary productive continuation at the Condor's ~25 km/h work limit and the same productive continuation under an intentionally retained 10 km/h manual cruise cap both remained `turn=false`, GIANTS work-line `ACTIVE`, implement lowered. The work limit remained 25 km/h while actual speed followed the 10 km/h cap. Absolute speed is therefore not productive-state authority.
+
+**Observe — Condor native transitions:** after completing missed work, Condor performed a long diagonal reposition and several reverse transitions. GIANTS represented these as `turn=true`, work-line `INACTIVE`, implement raised. One long reverse existed because the working axis was slightly misaligned with the field edge and GIANTS returned to cover omitted material.
+
+**Discovery — Apparent Departure Reversal:** a following worker could see Condor apparently moving away and then be surprised when GIANTS reverses it into recently vacated space. Apparent departure/separation cannot retire Future-Space relevance.
+
+**Observe — Valtra cross-assembly run:** Valtra S 416 + lime spreader in field 68 completed multiple productive up/down passes and several forward/reverse repositions. Productive passes replicated `turn=false`, line `ACTIVE`, implement lowered at an ~18 km/h work limit. Transitions replicated `turn=true`, line `INACTIVE`, implement raised across direction changes.
+
+**Discovery — Productive-Line Cross-Assembly Replication:** the useful work-line distinction survived materially different assembly geometry and native productive speeds.
+
+**Discovery — GIANTS Turn-Segment Breadth:** `isTurn=true` cannot mean literal headland/geometric turn; GIANTS uses the state for long diagonal and reversing course transitions.
+
+**Discuss / decide:** the original question “can we detect repositioning?” is unnecessarily narrow. Traffic Policeman needs positive Productive Continuation versus Transitional Continuation Knowledge. For roomy non-headland encounters, Productive Continuation becomes the preferred Progress candidate and a supported Transitional participant the first Yield candidate, unless that assignment worsens Action-Space Compression or current obligations. Headland Encounter Maturation remains unchanged.
+
+**Repository response:** v4.7.32 records D-0113 and reconciles architecture, ADRs, glossary, concept register, discoveries, project status, flow and Prototype 21 evidence. Runtime behaviour remains passive; Prototype 21 remains diagnostic only; no Traffic Policeman role assignment, Commitment application or Control authority is introduced.
+
+## 2026-08-07 — Productive Continuation Preference becomes an evidence question
+
+**User observation:** in roomy non-headland encounters, equal-speed productive crossings are uncommon. GIANTS often moves between work continuations at a distinct native repositioning pace, including rare diagonal relocation, while each vehicle/implement has its own productive speed envelope. A player's previous cruise-control setting can also cap an otherwise ordinary AI worker far below that normal productive speed.
+
+**Architectural hypothesis:** where Action Space is abundant, preserving Productive Continuation and treating a transitional/repositioning participant as the first Yield candidate may be a useful Traffic Policeman preference. This does not alter the established headland/Encounter-Maturation treatment and is subordinate to Action-Space viability.
+
+**Evidence problem:** absolute speed is not semantic authority. The preferred implementation would consume a GIANTS-native productive/transitional signal if one exists. Repository/API review identifies active segment state and GIANTS implement-line state as promising seams, but their fitness is unproven.
+
+**Decision:** build Prototype 21 as a passive probe before documenting or implementing Productive Continuation Preference as Decision policy. Include an intentionally low-cruise productive pass as a falsification case. A failed classifier hypothesis counts as useful evidence.
+
+**Repository response:** v4.7.31 adds only passive diagnostic observation plus its test/evidence contract. No Traffic Policeman role assignment, Commitment or Control path is introduced.
+
 ## 2026-08-07 — Encounter Maturation and Action-Space Compression accepted
 
 **Repository archaeology:** the earlier TS016 controller selected the straight-working Patriot as Yield and allowed manoeuvring Condor to remain under GIANTS as Progress. The first crossing phase could succeed, but the fixture-specific thresholds/controller-owned lifecycle were later rejected as implementation architecture. The physical policy evidence remains useful.

@@ -166,3 +166,9 @@ A successful refuge passage does not itself satisfy Safe Release. Decision may a
 Safe Release for the ordinary two-worker recovery requires fresh current evidence after material Control/configuration changes. Pre-restoration BNIR intent is not presumed authoritative through re-Hold/restoration. Native Handover must reacquire operational Local Intent and demonstrate independent GIANTS continuation; only then can Decision positively establish that supported Encounter-relative demand is decoupled and all applicable obligations are settled.
 
 A supporting speed restriction is not itself a release obligation and must not outlive its named current purpose.
+
+## v4.7.32 amendment — Apparent Departure Reversal
+
+Prototype 21 live evidence adds a concrete native counterexample to release-by-separation. During Transitional Continuation, GIANTS may increase separation and then reverse the same worker back into recently vacated space to satisfy remaining productive demand. Condor and Valtra transition segments both demonstrated forward/reverse course behaviour while the Job Episode remained active.
+
+This **Apparent Departure Reversal** evidence does not create a new release rule; it strengthens ADR-0006. Increasing separation, negative closing rate, visual departure or a currently non-productive transition cannot independently retire Future-Space relevance or satisfy Safe Release. Positive obligation retirement and current applicable continuation evidence remain required.

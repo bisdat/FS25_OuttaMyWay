@@ -1,3 +1,25 @@
+## v4.7.32 — Productive Continuation Preference / Native Work-Line Evidence Consolidation Candidate
+
+- begins from owner-declared canonical v4.7.30 (`54acc18349028de281845db2d209c3257cf2f27b203c43b1cae603461282a93a`, Git `747238389c80d032eb3b540bf2b5a0d0cf4d5930`; 261 files) and carries forward the passive Prototype 21 probe introduced by non-canonical v4.7.31;
+- records the **speed non-authority falsification**: Condor productive continuation remained `turn=false`, work-line `ACTIVE`, implement lowered and `speedLimitTrueKmh=25` while a manual cruise cap reduced actual speed to approximately 10 km/h;
+- records **Productive-Line Cross-Assembly Replication**: Condor productive passes (~25 km/h native work limit) and Valtra S 416 + lime-spreader productive passes (~18 km/h) both exposed work-line `ACTIVE` / implement lowered, while their native transitions exposed work-line `INACTIVE` / implement raised;
+- records **GIANTS Turn-Segment Breadth**: `turn=true` covered long diagonal repositioning and forward/reverse transition segments, so the GIANTS flag is course-structure evidence rather than authority for the everyday geometric meaning of “turn”;
+- records **Apparent Departure Reversal**: a transitional worker may increase separation and then reverse into recently vacated space to satisfy remaining work, reinforcing that separation/negative closing/apparent departure cannot establish Safe Release;
+- accepts **Productive Continuation Preference** for otherwise-roomy non-headland encounters: positive Productive Continuation is the preferred `PROGRESS` candidate and a positively supported Transitional Continuation the first `YIELD` candidate only while that assignment preserves supported Action Space and current Commitment obligations;
+- preserves headland/Action-Space-Compression treatment: if delaying the transitional participant would strand it, consume useful Action Space or worsen resolution, the preference is overridden and Encounter Maturation / ordinary Traffic Policeman reasoning governs;
+- defines ties/unresolved evidence explicitly: when both participants share the same productive status or productive status is unresolved, Productive Continuation Preference supplies no role decision and no speed/vehicle/arrival heuristic is authorised;
+- keeps `line=ACTIVE` as demonstrated evidence rather than a universal one-bit classifier; Situation Assessment must publish positive coherent Productive/Transitional Knowledge or `UNRESOLVED`;
+- documentation/knowledge consolidation only beyond retained Prototype 21 diagnostics: production Decision remains passive, no live Commitment is applied and Control authority remains disabled.
+
+## v4.7.31 — Productive Continuation Evidence Probe Candidate
+
+- begins from owner-declared canonical v4.7.30 (`54acc18349028de281845db2d209c3257cf2f27b203c43b1cae603461282a93a`, Git `747238389c80d032eb3b540bf2b5a0d0cf4d5930`; 261 files);
+- adds **Prototype 21 — Productive Continuation Evidence Probe**, a passive diagnostic experiment asking whether GIANTS-native observations can distinguish Productive Continuation from non-headland Transitional/Repositioning Continuation without using absolute speed as semantic authority;
+- observes raw `AIFieldCourse:getActiveSegmentData()` turn/initial/progress tuple slots, `AIDriveStrategyFieldCourse.implementData[*].isLowered` line state, strategy continuation/direction state, cruise-control state/selected/max values, `getSpeedLimit(true/false)` where available and actual speed;
+- deliberately emits observational evidence classes (`NON_TURN_LINE_ACTIVE`, `NON_TURN_LINE_INACTIVE`, `TURN_SEGMENT`, etc.) rather than a Productive/Transitional classifier; no Traffic Policeman priority rule is implemented;
+- includes a low-cruise productive-work falsification case so an intentionally low manual cruise setting cannot be mistaken for repositioning, plus ordinary productive, headland/turn contrast, naturally occurring non-headland repositioning and contrasting-assembly observations;
+- does not call or wrap GIANTS drive/control functions and does not mutate cruise control, steering, implement state, Job Episode state or worker permission; Decision remains passive, no live Commitment is applied and production Control remains disabled.
+
 ## v4.7.30 — Encounter Maturation / Action-Space Compression Consolidation Candidate
 
 - begins from owner-declared canonical v4.7.29 (`4b0fb07945ed6a1bf2911fd91c4101e788e5ccd7973cb0f577ffd064f95882b0`, Git `693075b9d9b9fcfa596170f2c38ca440ae139ab9`; 261 files);

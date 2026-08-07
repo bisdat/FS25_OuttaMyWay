@@ -1,3 +1,12 @@
+## v4.7.32 live evidence reconciliation — productive continuation and transitional course behaviour
+
+- **Speed is not productive-state authority.** Condor remained on a productive GIANTS work line (`turn=false`, line `ACTIVE`, implement lowered, work limit 25 km/h) when a manual cruise cap reduced actual speed to approximately 10 km/h. The same cruise cap also constrained turn/transition speed, so absolute speed cannot distinguish productive from transitional motion.
+- **Productive-Line Cross-Assembly Replication:** productive Condor passes and productive Valtra S 416 + lime-spreader passes both exposed line `ACTIVE` with the working implement lowered despite materially different native working limits (~25 vs ~18 km/h). Native transitions on both assemblies exposed line `INACTIVE` with the implement raised.
+- **GIANTS Turn-Segment Breadth:** `getActiveSegmentData().isTurn=true` is broader than a literal geometric/headland turn. Condor used it for a long diagonal reposition and substantial reverse motion; Valtra transition segments retained it across forward/reverse changes.
+- `lastContinueWorkState=true` remained present during transition samples and therefore does not by itself mean “currently productively working”.
+- **Apparent Departure Reversal:** a worker may increase separation during Transitional Continuation and then reverse back into recently vacated space to recover missed work. Apparent departure, separation growth or negative closing rate is therefore not release authority.
+- The evidence supports a Situation-level distinction between positively supported **Productive Continuation** and **Transitional Continuation** without requiring OuttaMyWay to classify every native reposition/turn subtype. The demonstrated work-line signal is evidence for that distinction, not a universal one-bit API contract.
+
 ## v4.7.30 architecture reconciliation — encounter maturation and action-space compression
 
 - TS016 archaeology confirms the earlier working-but-flawed controller let the manoeuvring Condor retain Progress while the straight-working Patriot yielded; the useful physical policy evidence survives even though fixture-specific admission/role logic remains rejected implementation architecture.

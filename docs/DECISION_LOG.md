@@ -1,3 +1,29 @@
+## D-0113 — Accept Productive Continuation Preference with Positive Native Evidence
+
+**Status:** Accepted architecture; documentation/knowledge consolidation in v4.7.32 candidate; no production Decision implementation
+
+**Evidence:** Prototype 21 falsified absolute speed as productive-state authority. Condor remained `turn=false`, work-line `ACTIVE`, implement lowered and work-limit 25 km/h while manual cruise restricted actual productive speed to ~10 km/h. Later Condor diagonal/reverse transitions exposed `turn=true`, work-line `INACTIVE`, implement raised. Valtra S 416 + lime-spreader replicated productive line `ACTIVE` / lowered at an ~18 km/h work limit and transition line `INACTIVE` / raised across multiple forward/reverse repositions.
+
+**Decision:** accept **Productive Continuation Preference** for otherwise-roomy non-headland encounters. Where current Situation Knowledge positively supports one participant as Productive Continuation and another as Transitional Continuation, Traffic Policeman should first prefer Productive for `PROGRESS` and Transitional as the `YIELD` candidate. The preference exists to preserve useful productive native intent while resolving a cheaper transitional conflict.
+
+**Override:** the preference is subordinate to Action-Space viability, current Commitment obligations and Encounter Maturation. If yielding the transitional participant would strand it, materially compress supported options, invalidate necessary native progression or otherwise worsen resolution, the preference does not govern; the transitional participant may legitimately receive `PROGRESS`. Existing headland/TS016 reasoning is unchanged.
+
+**Tie/unresolved rule:** Productive/Productive, Transitional/Transitional or materially unresolved productive state is a tie for this preference. No absolute speed, vehicle class, implement width, first-arrival or similar heuristic is authorised to manufacture a winner. Situation Assessment must publish positive coherent evidence or `UNRESOLVED`.
+
+**Evidence boundary:** current GIANTS implement-line state is demonstrated evidence across two materially different assemblies, not a universal one-bit API contract. `isTurn=true` is broader than a literal turn and `lastContinueWorkState=true` is not sufficient productive authority.
+
+**Safe-release consequence:** Transitional/Yield status does not diminish Future-Space authority. Apparent Departure Reversal demonstrates that increasing separation can be followed by native reverse return; separation/negative closing/apparent departure remains insufficient release authority.
+
+## D-0112 — Probe Productive Continuation from GIANTS-Native Evidence Before Using It for Traffic Priority
+
+**Status:** Accepted evidence-discovery step; implemented by v4.7.31 candidate
+
+**Context:** For roomy non-headland encounters, a Productive Continuation Preference may offer a more GIANTS-native priority input than vehicle speed: preserve a worker that is actively performing productive field work and treat a transitional/repositioning worker as the first Yield candidate where Action Space makes that cheap. Absolute speed cannot establish that state because implement working limits, GIANTS motion demand, player cruise-control settings and other constraints can all cap the same productive worker.
+
+**Decision:** before adding any Productive/Transitional classification or Traffic Policeman rule, run Prototype 21 as passive evidence discovery. Observe GIANTS active-segment state, implement-line state, strategy continuation/direction state, cruise/speed limits and actual speed. Include a deliberately low-cruise productive-work falsification case. Observed speed has corroborating value only; no 25/15/10 km/h literal receives semantic authority.
+
+**Boundary:** this decision does not alter the established headland/Encounter-Maturation treatment, does not define Productive Continuation yet, does not assign `PROGRESS`/`YIELD`, and grants no Control authority. A disproved hypothesis is a successful result if it prevents an unsafe Decision assumption.
+
 ## D-0111 — Accept Encounter Maturation and Action-Space Compression
 
 **Status:** Accepted architecture; documentation-only consolidation in v4.7.30 candidate

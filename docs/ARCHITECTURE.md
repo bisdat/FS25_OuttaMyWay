@@ -614,6 +614,25 @@ Can bounded native progression preserve or expand supported options?
 
 OuttaMyWay must not deliberately wait for a well-supported mid-field interaction to become a familiar head-on merely because current implementation knowledge is stronger for head-ons. Architecture follows available Reality, not implementation convenience.
 
+### Productive Continuation Preference
+
+For an otherwise-roomy **non-headland** Encounter, Traffic Policeman may use positively supported GIANTS productive state as a movement-priority preference. **Productive Continuation** means that current Knowledge positively supports the participant as actively executing productive field work. **Transitional Continuation** means the Job Episode remains active while the participant is between productive continuations; it may include repositioning, diagonal transit, geometric turning or forward/reverse manoeuvring.
+
+Where one participant has Productive Continuation and the other has positively supported Transitional Continuation, the initial preference is:
+
+```text
+Productive Continuation  → preferred PROGRESS candidate
+Transitional Continuation → first YIELD candidate
+```
+
+This is a preference, not an absolute role rule. It is admissible only while yielding the transitional participant preserves supported Action Space and current Commitment obligations. If delaying that participant would strand it, consume the remaining useful option, invalidate a necessary native manoeuvre or otherwise worsen resolution, the preference yields to Action-Space Compression / Encounter Maturation reasoning and the transitional participant may legitimately receive `PROGRESS`. The established headland treatment is unchanged.
+
+If both participants are Productive, both are Transitional, or either productive state is materially unresolved, this preference is tied/inapplicable. Traffic Policeman falls back to the existing Operational Picture and may not invent priority from absolute speed, vehicle class, implement width, first arrival or another unsupported heuristic.
+
+The architecture is not bound to a single GIANTS API flag. Prototype 21 demonstrated active GIANTS implement-line evidence as a useful native source across Condor and Valtra/lime-spreader assemblies, including a low-cruise falsification, but Situation Assessment must publish coherent positive Knowledge or `UNRESOLVED`. `line=ACTIVE` is evidence, not a universal one-bit contract.
+
+Transitional Continuation does **not** reduce Physical Assembly, Current Space or Future Space authority. GIANTS transition segments may include reversals back into recently vacated space. The **Apparent Departure Reversal** observation therefore reinforces the existing Safe Release contract: increasing separation, negative closing rate or visual departure cannot independently retire Encounter obligations.
+
 ## 18. Multi-stage strategy continuity
 
 A Commitment remains one Commitment across:

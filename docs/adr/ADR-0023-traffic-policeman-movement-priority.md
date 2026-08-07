@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted architectural concept and refinements; canonical through v4.7.29 and further refined documentation-only in v4.7.30 candidate. Production Decision/Commitment/Control implementation remains absent.
+Accepted architectural concept and refinements; canonical through v4.7.30 and further refined by the v4.7.32 Productive Continuation evidence consolidation candidate. Production Decision/Commitment/Control implementation remains absent.
 
 ## Context
 
@@ -119,6 +119,18 @@ Accept **Encounter Maturation** as a Traffic-Policeman Decision pattern for ambi
 Encounter Maturation is not a rule that complex encounters must become head-on. A head-on is only one currently well-understood mature state. Where current Action Space already supports a simpler resolution, especially in less constrained mid-field situations, Decision must not delay solely to reach a familiar implementation case.
 
 Maturation is governed by the existing Bounded Observation Contract. Decision must identify the Knowledge gap, expected Reality evolution, useful option preserved while waiting, exhaustion condition, reassessment boundary and Progress participant capable of generating the evidence. `CONTINUE_OBSERVATION` or purpose-bound `REGULATE_SPEED` may preserve maturation margin; passive delay is inadmissible.
+
+### Productive Continuation Preference
+
+Accept **Productive Continuation Preference** as a Traffic-Policeman preference for otherwise-roomy non-headland encounters. When current Knowledge positively supports one participant as executing Productive Continuation and another as executing Transitional Continuation, Traffic Policeman should first prefer the productive participant for `PROGRESS` and the transitional participant as the `YIELD` candidate. The purpose is to preserve useful GIANTS productive work while resolving a cheaper transitional conflict; the preference does not reassign native work order or route ownership.
+
+The preference is subordinate to current Action-Space viability and Commitment obligations. It does not govern when yielding the transitional participant would strand it, materially compress Action Space, invalidate a necessary native manoeuvre or otherwise make resolution harder. In those circumstances ordinary Encounter Maturation / Preference-Band Exhaustion reasoning may preserve the transitional participant as `PROGRESS`, including the established TS016 headland pattern.
+
+When both participants are Productive, both are Transitional, or the relevant productive state is unresolved, this preference supplies no role decision. Absolute speed, vehicle class, implement width, arrival order and similar fixture heuristics are not authorised tie-breakers.
+
+Prototype 21 supplies the current empirical seam rather than architectural API coupling: Condor productive work remained line `ACTIVE` under both normal and deliberately low cruise limits, and Valtra S 416 + lime-spreader productive passes reproduced line `ACTIVE` across a different native working envelope. Both assemblies exposed line `INACTIVE` during GIANTS transition segments. `turn=true` also covered diagonal and reversing reposition behaviour, so it must not be equated with a literal geometric/headland turn. Situation Assessment should use coherent positive GIANTS-native evidence and publish `UNRESOLVED` when that evidence is not fit.
+
+A Transitional participant retains full Physical Assembly and Future Space relevance. GIANTS may increase separation and later reverse into recently vacated space while the same Job Episode continues (**Apparent Departure Reversal**). Therefore Yield preference is not reduced spatial authority, and apparent departure cannot establish Safe Release.
 
 ### Action-Space Compression
 

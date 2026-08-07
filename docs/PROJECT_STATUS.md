@@ -1,23 +1,21 @@
-# v4.7.30 Candidate — Encounter Maturation / Action-Space Compression
+# v4.7.32 Candidate — Productive Continuation Preference / Native Work-Line Evidence Consolidation
 
-Current architecture now distinguishes geometric encounter shape from resolution difficulty. **Action-Space Compression** names the derived physical loss of supportable resolution options when Field World boundaries, Physical Assembly geometry, participant demand and evolving manoeuvres constrain the available rearrangement space. TS016 is therefore difficult because its headland/field-edge setting compresses options, not because crossing or turning is inherently a special encounter type.
+Prototype 21 has completed the current evidence question. Condor low-cruise falsification proved absolute speed is not productive-state authority; Condor diagonal/reverse transitions and a Valtra S 416 + lime-spreader cross-assembly run established a repeated native work-line distinction between productive and transitional continuation.
 
-**Encounter Maturation** is accepted as a Traffic-Policeman Decision pattern. When an admitted ambiguous interaction remains supportable, bounded GIANTS-native progression may be preserved so Reality can dissolve the interaction or reveal a simpler authoritative state. Maturation is controlled by the existing Bounded Observation Contract and must cease to be preferred when waiting consumes the Action Space needed for resolution. Early admission may therefore produce `CONTINUE_OBSERVATION` or purpose-bound `REGULATE_SPEED` rather than immediate Hold/reposition.
+**Productive Continuation Preference** is now accepted for otherwise-roomy non-headland encounters: a positively supported productive participant is the preferred `PROGRESS` candidate and a positively supported transitional participant the first `YIELD` candidate only while that role assignment preserves supported Action Space and current obligations. Headland/Action-Space-Compression treatment remains unchanged. Equal or unresolved productive state supplies no role decision.
 
-Action-Space Compression is related to existing Preference-Band Exhaustion but does not replace it: compression is the physical loss of options; exhaustion is Decision discovering that preferred supportable candidates have disappeared. No numeric compression score or encounter-shape decision table is authorised. A head-on is one useful mature state, not the objective; mid-field interactions with adequate slack must not be forced to mature into head-on for implementation convenience.
-
-v4.7.30 remains documentation-only apart from release/version metadata and conformance tests. Production Decision remains passive, no live Commitment is applied, production Control remains disabled, and no Traffic Policeman/Encounter-Maturation actuator is introduced.
+Prototype 21 remains passive for diagnostic traceability. Production Decision remains passive, no live Commitment is applied and Control authority remains disabled.
 
 # Project Status
 
-> **Current canonical:** v4.7.29 Staged Refuge Recovery / Purpose-Bound Traffic Protection Consolidation  
-> **Canonical baseline:** v4.7.29 (`4b0fb07945ed6a1bf2911fd91c4101e788e5ccd7973cb0f577ffd064f95882b0`, Git `693075b9d9b9fcfa596170f2c38ca440ae139ab9`; 261 files)  
-> **Current candidate:** v4.7.30 Encounter Maturation / Action-Space Compression Consolidation  
+> **Current canonical:** v4.7.30 Encounter Maturation / Action-Space Compression Consolidation  
+> **Canonical baseline:** v4.7.30 (`54acc18349028de281845db2d209c3257cf2f27b203c43b1cae603461282a93a`, Git `747238389c80d032eb3b540bf2b5a0d0cf4d5930`; 261 files)  
+> **Current candidate:** v4.7.32 Productive Continuation Preference / Native Work-Line Evidence Consolidation  
 > **Control authority:** production Control disabled
 
 ## Established Reality
 
-Owner-declared canonical v4.7.29 retains the live-validated v4.7.24 passive runtime foundation: native Local Intent → field-bounded Future Space → positive Encounter admission, current physical interaction as positive Encounter evidence, incomplete-membership evidence precedence, authoritative Job Episode termination/restart identity, passive Decision, no live Commitment and disabled production Control. It additionally canonicalises Bounded Native Intent Revelation, Traffic Policeman, Demonstrated Traversability, Revelation Oscillation and Encounter-relative Continuation Safety Horizon architecture while retaining the v4.7.26 evidence record; the superseded fixed-horizon TCPA/DCPA future predictor remains absent from active runtime and diagnostics.
+Owner-declared canonical v4.7.30 retains the live-validated v4.7.24 passive runtime foundation: native Local Intent → field-bounded Future Space → positive Encounter admission, current physical interaction as positive Encounter evidence, incomplete-membership evidence precedence, authoritative Job Episode termination/restart identity, passive Decision, no live Commitment and disabled production Control. It additionally canonicalises Bounded Native Intent Revelation, Traffic Policeman, Demonstrated Traversability, Revelation Oscillation and Encounter-relative Continuation Safety Horizon architecture while retaining the v4.7.26 evidence record; the superseded fixed-horizon TCPA/DCPA future predictor remains absent from active runtime and diagnostics.
 
 The non-canonical v4.7.25 prerequisite probe remains evidence only. It confirmed that represented primitive completeness does not prove Coverage Closure and its attempted `getActiveSegmentData()`/`fieldCourse.segments` index association was invalid; raw tuple slots must preserve nil positions.
 
@@ -39,6 +37,16 @@ same Job Episode
 ```
 
 The Job Episode remained `giants-ai-job-id:0`. Full compact configuration was confirmed before movement. GIANTS progressed at approximately 1.01–1.06 km/h under the experimental 1 km/h ceiling while native course progress advanced. The probe re-Held after an experimental 2 m proving movement (approximately 2.04 m actual), restored deployment/work state with zero verification mismatches, then observed independent same-Job native continuation. Candidate SHA-256: `43e0fc93fcd7810d8460d11e683ad05adef50ada545c8190a3394f015b260ec0`.
+
+## v4.7.32 live evidence and architecture consolidation
+
+Prototype 21 live validation now supports the Productive/Transitional distinction independently of absolute speed. Condor remained line `ACTIVE` / lowered during productive work even when manual cruise capped actual speed at ~10 km/h against its 25 km/h work limit. Condor diagonal and reverse repositions were line `INACTIVE` / raised and `turn=true`. Valtra S 416 + lime-spreader work in field 68 reproduced line `ACTIVE` / lowered productive passes at an ~18 km/h work limit and line `INACTIVE` / raised transitions across multiple forward/reverse repositions.
+
+The resulting **Productive Continuation Preference** applies only as an initial Traffic-Policeman preference in otherwise-roomy non-headland encounters. It is overridden when yielding the transitional participant would strand it, consume supported Action Space or conflict with current Commitment obligations. Productive/Productive, Transitional/Transitional and unresolved cases are ties for this preference.
+
+**GIANTS Turn-Segment Breadth** records that `turn=true` includes more than literal turns. **Apparent Departure Reversal** records that a transitional worker may appear to leave and later reverse into recently vacated space; transitional/Yield status therefore never means reduced Future-Space relevance or Safe Release.
+
+v4.7.32 adds no production Traffic Policeman implementation. Prototype 21 remains passive, Decision remains passive, no live Commitment is applied and Control remains disabled.
 
 ## v4.7.30 architecture consolidation
 

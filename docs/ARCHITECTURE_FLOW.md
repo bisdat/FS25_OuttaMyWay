@@ -261,6 +261,28 @@ Traffic Policeman
 
 `PROGRESS` is preservation priority rather than exclusive movement permission. After a positively available refuge-return corridor is established, Yield may receive a bounded ingress/restoration Action Space; once admitted, its current recovery requirement is Committed Demand. Progress may continue normally, or may receive a purpose-bound supporting `REGULATE_SPEED` lease when unrestricted motion would consume that admitted recovery opportunity. The lease ends as soon as its named protection is no longer required.
 
+### Productive Continuation Preference — roomy non-headland encounters
+
+```text
+current Operational Picture
+        ↓
+positive Productive/Transitional Knowledge fit?
+   ├── one PRODUCTIVE + one TRANSITIONAL
+   │       ↓
+   │   initial preference:
+   │   PRODUCTIVE → PROGRESS
+   │   TRANSITIONAL → YIELD candidate
+   │       ↓
+   │   does yielding Transitional preserve Action Space / obligations?
+   │       ├── YES → use least disruptive supported capability
+   │       └── NO  → preference overridden; ordinary Traffic Policeman / maturation reasoning
+   └── tie or UNRESOLVED
+           ↓
+       no productive-status priority; use existing Decision evidence
+```
+
+Absolute speed, vehicle class, implement width and arrival order do not break the tie. Transitional Continuation remains fully relevant to Current/Future Space and may reverse; Yield preference is priority semantics, not reduced spatial authority.
+
 ### Encounter maturation under compressed Action Space
 
 ```text

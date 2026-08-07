@@ -466,7 +466,7 @@ def test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidenc
     operation=(ROOT/"scripts"/"identity"/"OperationAdmission.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.30"' in config
+    assert 'VERSION = "4.7.32"' in config
     assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     assert "MEMBERSHIP_UPDATED_INCOMPLETE" in operation
     assert "removalDeferred=true" in operation
@@ -489,7 +489,7 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.30"' in config
+    assert 'VERSION = "4.7.32"' in config
     assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" not in config
     for forbidden in ("predictPair(", "evaluateShadowPair(", "composePositiveEvidence(", "legacyShadowPositive", "legacyTCPA", "legacyDCPA"):
@@ -516,7 +516,7 @@ def test_v4728_traffic_policeman_architecture_is_documented_without_production_c
     concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.30"' in config
+    assert 'VERSION = "4.7.32"' in config
     for token in ("Traffic Policeman","Demonstrated Traversability","Revelation Oscillation"):
         assert token in adr
         assert token in glossary
@@ -536,7 +536,7 @@ def test_v4729_staged_recovery_architecture_is_documented_without_production_con
     glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.30"' in config
+    assert 'VERSION = "4.7.32"' in config
     for token in (
         "Progress priority is not exclusive movement authority",
         "positively available recovery corridor",
@@ -561,7 +561,7 @@ def test_v4730_encounter_maturation_architecture_is_documented_without_productio
     concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.30"' in config
+    assert 'VERSION = "4.7.32"' in config
     for token in ("Encounter Maturation","Action-Space Compression"):
         assert token in adr23
         assert token in architecture
@@ -572,5 +572,88 @@ def test_v4730_encounter_maturation_architecture_is_documented_without_productio
     assert "Preference-Band Exhaustion" in adr23
     assert "must not deliberately wait" in architecture
     assert "Continuing Intent Priority" in adr19
+    assert "Control authority disabled" in runtime
+    assert "decisionCommitmentBoundary:apply" not in runtime
+
+
+def test_v4731_productive_continuation_probe_is_passive_and_speed_non_authoritative():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    probe=(ROOT/"scripts"/"diagnostics"/"ProductiveContinuationProbe.lua").read_text(encoding="utf-8")
+    protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
+    decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
+    assert 'VERSION = "4.7.32"' in config
+    assert "scripts/diagnostics/ProductiveContinuationProbe.lua" in main
+    assert "productiveContinuationProbe" in main
+    for token in (
+        "PRODUCTIVE_CONTINUATION_PROBE_ENABLED",
+        "PRODUCTIVE_CONTINUATION_PROBE_INTERVAL_MS",
+        "PRODUCTIVE_CONTINUATION_PROBE_HEARTBEAT_MS",
+    ):
+        assert token in config
+    for token in (
+        "getActiveSegmentData",
+        "isInitial",
+        "implementData",
+        "isLowered",
+        "lastContinueWorkState",
+        "lastMovingDirection",
+        "getCruiseControlState",
+        "getCruiseControlSpeed",
+        "getCruiseControlMaxSpeed",
+        "getSpeedLimit",
+        "NON_TURN_LINE_ACTIVE",
+        "NON_TURN_LINE_INACTIVE",
+        "TURN_SEGMENT",
+    ):
+        assert token in probe
+    for forbidden in (
+        "stopCurrentAIJob(",
+        "driveToPoint(",
+        "setCruiseControlState(",
+        "setCruiseControlMaxSpeed(",
+        "setSpeedLimit(",
+        "Utils.overwrittenFunction",
+        "decisionCommitmentBoundary:apply",
+    ):
+        assert forbidden not in probe
+    for token in (
+        "low-cruise falsification",
+        "absolute speed",
+        "does not classify Traffic Policeman priority",
+        "naturally occurring non-headland repositioning",
+        "contrasting assembly",
+    ):
+        assert token in protocol
+    assert "no 25/15/10 km/h literal receives semantic authority" in decision
+
+
+def test_v4732_productive_continuation_preference_is_documented_without_production_control():
+    architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
+    adr23=(ROOT/"docs"/"adr"/"ADR-0023-traffic-policeman-movement-priority.md").read_text(encoding="utf-8")
+    adr6=(ROOT/"docs"/"adr"/"ADR-0006-future-space-safe-release.md").read_text(encoding="utf-8")
+    glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
+    concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
+    decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
+    protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+    assert 'VERSION = "4.7.32"' in config
+    for token in (
+        "Productive Continuation Preference",
+        "Productive-Line Cross-Assembly Replication",
+        "GIANTS Turn-Segment Breadth",
+        "Apparent Departure Reversal",
+    ):
+        assert token in glossary
+        assert token in concepts
+    assert "otherwise-roomy" in adr23
+    assert "Absolute speed" in adr23
+    assert "tie" in adr23.lower()
+    assert "Apparent Departure Reversal" in adr6
+    assert "D-0113" in decision
+    assert "LIVE EVIDENCE GATE PASSED" in protocol
+    assert "10 km/h" in protocol and "18 km/h" in protocol and "25 km/h" in protocol
+    assert "Productive Continuation Preference" in architecture
     assert "Control authority disabled" in runtime
     assert "decisionCommitmentBoundary:apply" not in runtime
