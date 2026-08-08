@@ -11,7 +11,7 @@ Each record must identify:
 | Field | Required meaning |
 |---|---|
 | Identity | stable identity for one decision epoch |
-| Purpose | operational result the candidate seeks |
+| Purpose | operational result the candidate seeks; must be traceable to current governing Decision/Commitment context and has no independent objective-setting authority |
 | Subject | assembly or assemblies affected |
 | Capability | requested bounded Control capability |
 | Expected effect | predicted physical and operational consequence |
@@ -38,7 +38,18 @@ The Action Space may include, where supported:
 - `HANDOVER_TO_GIANTS`;
 - `ESCALATE`.
 
-The list is not a procedural priority ladder. Generators publish candidates; Decision selects among candidates that survive all mandatory constraints.
+The list is not a procedural Control ladder. Generators publish candidates; Decision selects among candidates that survive all mandatory constraints. Candidate generators populate/represent `Purpose` from supplied governing context; they do not invent the governing objective or own preference policy.
+
+Within an active Traffic Policeman primary-resolution Decision, the surviving classes are then evaluated through the strict preference sequence:
+
+```text
+CONTINUE_OBSERVATION
+→ REGULATE_SPEED
+→ HOLD_AT_SAFE_POINT
+→ NATIVE_REPOSITION
+```
+
+A later primary band may be selected only after every earlier band is explicitly exhausted against the same current governing traffic requirement in the same Decision epoch. Exhaustion may be proved without physical trial. A material Reality/Control change creates a fresh epoch and reevaluation from the least-disruptive end. This Decision ordering does not prohibit an independently justified supporting lower-band capability from coexisting with a stronger primary Commitment.
 
 ## Constraint Verdict Set
 

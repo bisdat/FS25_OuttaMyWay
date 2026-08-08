@@ -2,9 +2,9 @@
 
 > **Authority:** Replacement-core design boundary
 >
-> **Currency:** v4.7.24 Legacy Fixed-Horizon Predictor Cleanup Candidate; canonical v4.7.23 validates Future-Space Encounter admission
+> **Currency:** v4.7.34 Traffic Policeman Decision Ordering Consolidation Candidate; canonical v4.7.33 is the baseline
 >
-> **Implementation status:** canonical v4.7.23 live-validates ADR-0006/ADR-0012 Local Intent/Future Space through Encounter admission and lifecycle restart; v4.7.24 removes the superseded fixed-horizon predictor while preserving current-space evidence; Control disabled
+> **Implementation status:** canonical v4.7.33 retains passive Situation/Encounter/Productive-Continuation evidence with Decision passive; v4.7.34 consolidates Traffic Policeman preference semantics only; Control disabled
 
 ## Purpose
 
@@ -136,19 +136,17 @@ Representation is action-specific. Missing evidence may prohibit one action with
 
 ## Candidate policy
 
-Decision evaluates viability before preference.
+Decision evaluates mandatory viability before preference. A lower-preference candidate remains visible when it is the only clear supportable option; the opposite lateral side, alternate Yield participant or reverse direction is not excluded merely because another candidate is normally cheaper.
 
-A lower-preference candidate remains valid when it is the only clear supportable option. The opposite lateral side is not excluded merely because another side is normally cheaper.
+For the Traffic Policeman primary-resolution responsibility, Decision applies this strict sequential preference after mandatory gates:
 
-Preference bands:
+1. `CONTINUE_OBSERVATION` — bounded maturation while useful evidence is emerging and enough Action Space remains to wait;
+2. `REGULATE_SPEED` — bounded GIANTS-owned progression while some positive native movement can preserve/improve the governing traffic requirement;
+3. `HOLD_AT_SAFE_POINT` — stationary waiting only when the current realised occupancy itself is a sufficient safe waiting state;
+4. `NATIVE_REPOSITION` — bounded spatial displacement when the current occupancy cannot provide a sufficient Hold;
+5. explicit escalation when the complete currently supportable autonomous Candidate Action Space is exhausted.
 
-1. least disruptive temporal shaping;
-2. safe waiting outside another worker's required space;
-3. bounded spatial displacement;
-4. more disruptive but still supportable movement/configuration;
-5. explicit failure/escalation when no supportable autonomous candidate remains.
-
-The architecture does not require this exact numerical ordering in code; it requires preference exhaustion not to masquerade as candidate exhaustion.
+The ordering is mandatory **Decision preference**, not a procedural actuator sequence. A later primary band requires explicit exhaustion of every earlier band in the same Decision epoch, but rejected candidates need not be physically attempted. Material Reality/Control change creates a fresh epoch and reevaluation from the least-disruptive end. Supporting capabilities from an earlier band may coexist with a stronger primary Commitment when independently justified by a current obligation.
 
 ## Movement capability boundary
 

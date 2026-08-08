@@ -2,9 +2,9 @@
 
 > **Authority:** Normative replacement-core responsibility and lifecycle map
 >
-> **Currency:** v4.7.24 Legacy Fixed-Horizon Predictor Cleanup Candidate; canonical v4.7.23 is the implementation baseline
+> **Currency:** v4.7.34 Traffic Policeman Decision Ordering Consolidation Candidate; canonical v4.7.33 is the baseline
 >
-> **Implementation status:** canonical v4.7.23 live-validates Future-Space-driven Encounter admission plus termination precedence and fresh identity; v4.7.24 removes the superseded fixed-horizon future predictor from active runtime while preserving present-state evidence; live Commitment mutation and Control remain unimplemented
+> **Implementation status:** canonical v4.7.33 retains the passive live-validated Future-Space/Encounter/Prototype-21 foundation; v4.7.34 consolidates Decision ordering in documentation only; live Traffic Policeman Commitment mutation and Control remain unimplemented
 
 ## 1. Closed-loop responsibility flow
 
@@ -245,21 +245,52 @@ Capability completion is not Commitment completion.
 ### Traffic Policeman within Decision
 
 ```text
-current Operational Picture
-    ↓
-Traffic Policeman
-    ├── PROGRESS movement priority
-    └── YIELD preservation obligation
-            ↓
-    bounded capability / BNIR only while
-    Progress demand remains protected
-            ↓
-    evidence change → reassess roles
+NORMAL TRAFFIC
+Traffic Policeman dormant
+        │
+        │ current Reality requires decisive temporary movement ordering
+        ▼
+TRAFFIC POLICEMAN ACTIVE
+        │
+        ├── PROGRESS movement priority
+        └── YIELD subordinate movement / preservation role
+        │
+        ▼
+1. CONTINUE_OBSERVATION
+   useful evidence still emerging
+   AND enough Action Space remains to wait?
+        │ exhausted
+        ▼
+2. REGULATE_SPEED
+   "proceed / creep" under GIANTS route + steering + direction
+   any positive native progression still useful/supportable?
+        │ exhausted
+        ▼
+3. HOLD_AT_SAFE_POINT
+   current realised occupancy itself a sufficient waiting place?
+        │ no
+        ▼
+4. NATIVE_REPOSITION
+   create a supportable waiting occupancy
+   ├── preferred Yield: forward / reverse / composed candidates
+   └── alternate admissible Yield: forward / reverse / composed candidates
+        │ all supportable spatial candidates exhausted
+        ▼
+EXPLICIT ESCALATION / PLAYER INTERVENTION
+
+At any stage:
+unrestricted cooperative movement independently supportable
+        ↓
+release purpose-bound traffic restrictions
+        ↓
+Traffic Policeman dormant
 ```
+
+The sequence is strict Decision preference, not procedural Control fall-through. Every later primary band requires explicit exhaustion of earlier bands against the same governing traffic requirement in the same Decision epoch; current Knowledge may prove exhaustion without physical trial. A material Reality or Control Outcome starts a fresh epoch from the least-disruptive end. A lower-band supporting capability may coexist with a stronger primary Commitment when independently justified.
 
 `SETTLED_CONTINUATION` supplies a stable native intent reference; positive corridor compatibility remains separately required. A BNIR participant remains a physical obstacle and may be re-Held if its Action Space would consume Progress demand. Role transfer is legitimate only when it reduces/settles unresolved obligations or materially improves admissible resolution; uncertainty ping-pong is Revelation Oscillation, not progress.
 
-`PROGRESS` is preservation priority rather than exclusive movement permission. After a positively available refuge-return corridor is established, Yield may receive a bounded ingress/restoration Action Space; once admitted, its current recovery requirement is Committed Demand. Progress may continue normally, or may receive a purpose-bound supporting `REGULATE_SPEED` lease when unrestricted motion would consume that admitted recovery opportunity. The lease ends as soon as its named protection is no longer required.
+`PROGRESS` is preservation priority rather than exclusive movement permission. `YIELD` does not mean immediate Hold: bounded native movement may remain admissible while subordinate to Progress demand. After a positively available refuge-return corridor is established, Yield may receive a bounded ingress/restoration Action Space; once admitted, its current recovery requirement is Committed Demand. Progress may continue normally, or may receive a purpose-bound supporting `REGULATE_SPEED` lease when unrestricted motion would consume that admitted recovery opportunity. The lease ends as soon as its named protection is no longer required.
 
 ### Productive Continuation Preference — roomy non-headland encounters
 

@@ -1,3 +1,18 @@
+## v4.7.34 — Traffic Policeman Decision Ordering Consolidation Candidate
+
+- begins from owner-declared canonical v4.7.33 (`2b22eba1b13742da17aa7c8868448138618b21aac8a76375f719b9ae6ce77714`, Git `d31da596f8c5a93434ded325c50e7d2b54b079aa`; 263 files);
+- consolidates Traffic Policeman as an omnipresent but normally dormant Decision responsibility: it activates only while temporary decisive movement ordering is required and becomes dormant as soon as unrestricted cooperative movement is again supportable, independently of later restoration/handover/settlement obligations;
+- makes `CONTINUE_OBSERVATION → REGULATE_SPEED → HOLD_AT_SAFE_POINT → NATIVE_REPOSITION` a strict sequential **Decision preference** after mandatory admissibility, while retaining the prohibition on procedural try/fail/fall-through Control; a later band requires explicit exhaustion of every earlier band in the same Decision epoch and physical trial is not required;
+- refines Observe exhaustion: continue only while useful evidence is emerging and enough Action Space remains to wait; intervene when evidence is sufficient for direction **or** remaining uncertainty has become unaffordable because waiting would consume necessary resolution options;
+- refines `REGULATE_SPEED` as bounded GIANTS-owned progression — proceed/creep under GIANTS route, steering and forward/reverse authority — and exhausts the band when no positively supportable non-zero native progression can preserve or improve the governing traffic requirement;
+- clarifies `HOLD_AT_SAFE_POINT` as **stop here**: the current realised Physical Assembly occupancy itself must be a supportable waiting state. Movement required to create a waiting state belongs to Reposition; an in-path Hold remains Static Obstacle Conversion rather than resolution;
+- clarifies `NATIVE_REPOSITION` as direction-agnostic: forward, reverse and composed bounded movement may all be candidates where Representation Fitness and assembly capability support them. Reposition normally creates a new settled occupancy that can then become Hold;
+- makes Reposition exhaustion participant-complete: failure of the initially preferred Yield worker does not exhaust the band; Decision must consider supportable spatial candidates under both admissible `PROGRESS`/`YIELD` assignments before explicit autonomous-resolution/player escalation;
+- clarifies Candidate `Purpose` provenance: Purpose is the operational result sought by the candidate, but has no independent objective-setting authority; it must be traceable to current admitted intent/Operational Picture and, when present, the governing Commitment Objective and unresolved Obligations;
+- records that supporting lower-band capabilities may coexist with a stronger primary resolution Commitment when independently justified (for example purpose-bound Progress regulation protecting admitted Yield recovery demand);
+- introduces no new root spatial primitive, traffic state, compression score or route planner; reverse actuation remains an implementation/evidence activity;
+- documentation-only consolidation: all runtime script bytes remain unchanged from canonical v4.7.33; production Decision remains passive, no live Commitment is applied and Control authority remains disabled.
+
 ## v4.7.33 — Native Work-Line / Configuration-Footprint Evidence Consolidation Candidate
 
 - begins from owner-declared canonical v4.7.30 (`54acc18349028de281845db2d209c3257cf2f27b203c43b1cae603461282a93a`, Git `747238389c80d032eb3b540bf2b5a0d0cf4d5930`; 261 files) and carries forward the passive Prototype 21 probe plus v4.7.32 architecture consolidation;

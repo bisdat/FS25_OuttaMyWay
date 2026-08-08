@@ -1,18 +1,16 @@
 # Engineering Handover
 
-> **Canonical baseline:** v4.7.23 (`5fdad04222084814cf17b9712cdb06df67f42d8bfae12f5a9cab788cd057e4b9`, Git `44cd4df5766b9cb7a1d7ac68bcd08119ffc8a297`)  
-> **Candidate:** v4.7.24 Legacy Fixed-Horizon Predictor Cleanup  
+> **Canonical baseline:** v4.7.33 (`2b22eba1b13742da17aa7c8868448138618b21aac8a76375f719b9ae6ce77714`, Git `d31da596f8c5a93434ded325c50e7d2b54b079aa`; 263 files)  
+> **Candidate:** v4.7.34 Traffic Policeman Decision Ordering Consolidation  
 > **Control authority:** disabled
 
-## v4.7.24 current continuation point
+## v4.7.34 current continuation point
 
-The v4.7.23 live gate passed: Future Space admitted the first Encounter at approximately 329 m while the historical ten-second predictor was still negative; authoritative Job Episode termination, restart and fresh Encounter identity also passed.
+Traffic Policeman Decision ordering has been pressure-tested and consolidated without runtime change. The responsibility is omnipresent but normally dormant; activation is limited to periods where current Reality requires decisive temporary movement ordering. Its primary Decision preference is strictly `CONTINUE_OBSERVATION → REGULATE_SPEED → HOLD_AT_SAFE_POINT → NATIVE_REPOSITION` after mandatory candidate gates. Later bands require explicit earlier-band exhaustion in the same Decision epoch but not physical trial; material Reality/Control change restarts evaluation from the least-disruptive end.
 
-v4.7.24 therefore performs the already-planned cleanup only. The active replacement core no longer contains the fixed future horizon, TCPA/DCPA scalar future prediction, component-disc future prediction or legacy comparison fields/provenance/messages. Present-state closing rate and current overlap remain. Future interaction authority remains field-bounded Future Space.
+Observe remains viable while useful evidence is emerging and enough Action Space remains to wait. Regulation means bounded GIANTS-owned progression (proceed/creep while GIANTS retains route, steering and forward/reverse choice). Hold means the current realised occupancy itself is the waiting place. Reposition creates a waiting place and is direction-agnostic; exhaustion requires participant-complete evaluation across admissible role assignments. Candidate Purpose is provenance-bound rather than self-authorising.
 
-**Live objective:** confirm this removal causes no behavioural change to early Future-Space Encounter admission or the stop → `JOB_EPISODE_ENDED` → restart → fresh Encounter chain, and confirm no legacy future-comparison fields appear in active logs.
-
-**Next substantive step after PASS:** same-Job-Episode Encounter resolution / Safe Release, using the existing Continuation Safety Horizon architecture rather than a new timeout or fixed distance.
+**Next substantive step after candidate review/canonicalisation:** define the minimum live GIANTS evidence gate for implementation — bounded two-worker Regulation apply/release, proven Hold/release states, and participant-complete forward Reposition. Reverse remains architecturally valid but must remain `UNRESOLVED` for active OuttaMyWay-directed authority until Reverse Actuation Discovery proves the required assembly-specific capability/sweep.
 
 ## Standing architectural-governance rule
 

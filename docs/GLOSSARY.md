@@ -1,3 +1,20 @@
+## v4.7.34 vocabulary refinements
+
+**Traffic Policeman — sequential Decision ordering**  
+An omnipresent but normally dormant Decision responsibility. It activates only while current Reality requires decisive temporary movement ordering and becomes dormant as soon as unrestricted cooperative movement is again supportable. Its primary preference is strictly `CONTINUE_OBSERVATION → REGULATE_SPEED → HOLD_AT_SAFE_POINT → NATIVE_REPOSITION` after mandatory candidate gates; later bands require explicit earlier-band exhaustion in the same Decision epoch but no physical trial.
+
+**Candidate Purpose — provenance refinement**  
+The operational result a Candidate Action seeks. Purpose has no independent objective-setting authority: before Commitment creation it must be traceable to current admitted intent/Operational Picture and accepted Decision policy; under an existing Commitment it must remain compatible with the governing Objective and unresolved Obligations unless explicitly revised/superseded. Candidate generators represent Purpose rather than invent policy.
+
+**Regulate — Traffic Policeman meaning**  
+Bounded GIANTS-owned progression. Traffic Policeman may permit a participant to proceed or creep while GIANTS retains route, steering and forward/reverse choice. Regulation remains preferred while some positively supportable non-zero native movement can preserve/improve the current traffic purpose.
+
+**Hold at Safe Point — current-occupancy refinement**  
+Stationary waiting authority only when the Physical Assembly's current realised occupancy itself is a sufficient supportable waiting state. Movement needed to create a waiting state belongs to Reposition; an in-path stop that blocks another worker is Static Obstacle Conversion, not resolution.
+
+**Reposition — direction/participant completeness refinement**  
+Bounded spatial displacement used when the current occupancy cannot supply a sufficient Hold. Forward, reverse and composed movement are architecturally valid candidate properties where evidence supports them. Reposition is exhausted only after supportable spatial candidates under both admissible Yield assignments are exhausted; an unsupported reverse candidate remains `UNRESOLVED`, not forbidden.
+
 ## v4.7.33 vocabulary refinements
 
 **Native Speed-Ordering Variability**  
@@ -222,7 +239,7 @@ The requirement to account for native continuation after a Hold is relaxed or re
 An accepted evidence-acquisition pattern in which OuttaMyWay retains the governing Commitment while permitting tightly bounded GIANTS-native motion sufficient to reveal actual post-intervention Local Intent. A proven transit configuration may be used where needed; the assembly may be re-Held and OuttaMyWay-owned configuration mutations restored before unrestricted native handover. The pattern is not Safe Release, does not reconstruct the GIANTS route and carries no fixed speed or distance literal. The revelation participant remains a Physical Assembly obstacle and holds no movement priority merely because its speed is bounded.
 
 ### Traffic Policeman
-The Decision-level responsibility inside an Encounter that assigns and revises temporary movement priority between cooperating participants. It may classify participants as temporary `PROGRESS` and `YIELD` roles and decide whether bounded capabilities preserve current right-of-way. It does not route, steer or replace GIANTS.
+The Decision-level responsibility inside an Encounter that assigns and revises temporary movement priority between cooperating participants. It is omnipresent but normally dormant: compatible native traffic leaves it inactive; decisive temporary ordering activates it; independent compatibility makes it dormant again even if other Commitment obligations remain. While active it applies the strict primary preference `CONTINUE_OBSERVATION → REGULATE_SPEED → HOLD_AT_SAFE_POINT → NATIVE_REPOSITION` after mandatory candidate gates. It may classify participants as temporary `PROGRESS` and `YIELD` roles and decide whether bounded capabilities preserve current right-of-way. It does not route, steer or replace GIANTS.
 
 ### Demonstrated Traversability
 Positive local spatial-admissibility evidence supplied by actual successful occupation or traversal of the real Physical Assembly under materially applicable configuration and movement conditions. It is bounded to the demonstrated local domain and does not prove arbitrary future manoeuvres, reverse kinematics, permanent release or current availability against dynamic participants.

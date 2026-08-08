@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted architectural concept and refinements; canonical through v4.7.30 and further refined by the v4.7.32 Productive Continuation consolidation and v4.7.33 native work-line/configuration-footprint evidence candidate. Production Decision/Commitment/Control implementation remains absent.
+Accepted architectural concept and refinements; canonical through v4.7.33 and further consolidated by the v4.7.34 Traffic Policeman Decision Ordering candidate. Production Decision/Commitment/Control implementation remains absent.
 
 ## Context
 
@@ -162,7 +162,7 @@ Static-object recovery/avoidance is deliberately parked for separate architectur
 - **ADR-0001:** preserved. GIANTS retains route and steering ownership.
 - **ADR-0006:** refined. Safe Release remains positive; Continuation Safety Horizon is Encounter-relative rather than indefinitely rolling.
 - **ADR-0012:** refined. Yield/Progress roles remain dynamic and later convergence after true Safe Release receives fresh Encounter identity.
-- **ADR-0019:** preserved. Traffic Policeman is a Decision responsibility inside one governing Commitment; multi-stage capability changes do not create new Commitments by convenience.
+- **ADR-0019:** preserved. Traffic Policeman is a Decision responsibility that may participate in the selection which creates a Commitment; once a Commitment governs, traffic purposes/capabilities remain subordinate to its Objective and Obligations. Multi-stage capability changes do not create new Commitments by convenience.
 - **ADR-0022:** refined. BNIR is authorised by Decision under traffic priority, remains a physical obstacle, completes on evidence rather than a fixed travel literal, and may rely on Demonstrated Traversability when its bounded applicability is positively supported.
 
 ## Consequences
@@ -202,3 +202,55 @@ BNIR intent acquired while compact/transit may guide the next stage but is not p
 ### Obligation retirement defines progress
 
 The reference head-on sequence demonstrates architectural progress by retiring named obligations in order: shared-corridor obstruction, passage uncertainty, Progress manoeuvre consequence, ingress availability, Yield recovery, counterfactual intent, work restoration, independent continuation and final traffic coupling. No numeric progress score is required. Capability churn or role swapping that does not reduce this obligation set remains Revelation Oscillation/non-progress.
+
+
+## v4.7.34 amendment — bounded lifetime, Purpose provenance and sequential authority
+
+### Normally dormant traffic authority
+
+Traffic Policeman is an omnipresent Decision responsibility but is normally dormant. Ordinary compatible GIANTS traffic does not require temporary `PROGRESS`/`YIELD` direction. The responsibility becomes active only while current Reality requires decisive temporary movement ordering to protect supported demand or remaining Action Space, and becomes dormant as soon as unrestricted cooperative continuation is again supportable. This lifetime is narrower than Encounter or Commitment lifetime: restoration, Native Handover, evidence and terminal-settlement obligations may continue after the whistle is figuratively put away.
+
+### Candidate Purpose derives authority; it does not create it
+
+Candidate `Purpose` is the action-level operational result sought by the candidate. It is not Situation Knowledge and does not independently create a governing objective. Before a Commitment exists it must be traceable to current admitted native intent, the Operational Picture and accepted Decision policy. Once a Commitment governs, candidate Purpose must remain compatible with its Objective and unresolved Obligations unless an explicit lifecycle decision changes that basis. Candidate generators publish the field; they do not own objective policy.
+
+### Strict primary preference sequence
+
+After mandatory candidate admissibility, Traffic Policeman applies the following primary preference strictly:
+
+```text
+CONTINUE_OBSERVATION
+→ REGULATE_SPEED
+→ HOLD_AT_SAFE_POINT
+→ NATIVE_REPOSITION
+```
+
+This is sequential **Decision preference**, not procedural try/fail Control. A later band may receive primary resolution authority only after every preceding band is explicitly exhausted against the same current governing traffic requirement in the same Decision epoch. Current Knowledge may prove exhaustion without actuating the rejected candidate. A material Reality or Control Outcome invalidates the previous epoch's exhaustion proof and causes fresh evaluation from the least-disruptive end. An earlier-band capability may still support a stronger primary Commitment when a separate current obligation justifies it, such as purpose-bound Progress regulation protecting admitted Yield recovery demand.
+
+### Observe — learn while room to wait remains
+
+Traffic Policeman Observe consumes Situation Assessment Knowledge about whether the interaction is improving, dissolving or becoming more authoritative, and whether supported Action Space is stable/expanding or compressing. Observe remains admissible only while useful evidence is expected to emerge and sufficient Action Space remains to wait for it. Observe exhausts when either Reality is sufficiently coherent for decisive direction **or** uncertainty remains but waiting longer would consume a necessary option. No universal conflict-probability threshold or compression scalar is introduced.
+
+### Regulate — bounded GIANTS-owned progression
+
+`REGULATE_SPEED` is not merely generic slowing. It is bounded native progression: Traffic Policeman may permit a participant to proceed or creep while GIANTS retains native route, steering and forward/reverse choice. Regulation may preserve Action Space, expose native intent, let a transition clear or protect Committed Demand. BNIR is a specialised evidence-acquisition composition that proves the broader capability principle without becoming synonymous with ordinary Regulation.
+
+Regulation remains preferred while some positively supportable non-zero GIANTS-native movement can satisfy or preserve the current traffic purpose. It exhausts when useful movement itself must cease, when slowing would prolong harmful occupancy, or when the incompatibility is inherently spatial and creep provides no useful evidence/resolution. A pure established head-on is the reference case: reducing speed may preserve margin before spatial commitment, but cannot create passing space once the shared-corridor incompatibility is authoritative.
+
+### Hold — current occupancy is the waiting place
+
+`HOLD_AT_SAFE_POINT` means **stop here**. The participant's current realised Physical Assembly occupancy must itself be a supportable stationary waiting state outside incompatible Current/Future/Committed Demand while useful progress or evidence remains available elsewhere. Stopping capability alone is not Hold admissibility; an in-path Hold that leaves the other GIANTS worker unable to route around it is Static Obstacle Conversion.
+
+Movement required to create a new waiting occupancy is not hidden inside Hold. If bounded GIANTS progression can still reach a useful interruption condition, Regulation remains preferred. If OuttaMyWay must choose and authorise a spatial displacement to create a waiting occupancy, Hold is exhausted and Reposition is considered.
+
+### Reposition — create a supportable waiting occupancy
+
+`NATIVE_REPOSITION` is the spatial preference used when the current Reality contains no sufficient Hold for the current traffic requirement. It normally authorises one bounded Manoeuvre Leg to a Settled Movement Boundary, after which fresh Reality is reassessed and the resulting occupancy may become Hold.
+
+Reposition is direction-agnostic. Forward, reverse and composed bounded movement are architecturally valid candidate properties where the Physical Assembly, complete movement/configuration sweep, Field World containment, capability evidence and Representation Fitness support them. Direction itself does not establish preference. Reverse Actuation Discovery remains implementation/evidence work; an unsupported reverse candidate is `UNRESOLVED`, not active authority and not an architectural prohibition.
+
+Reposition exhaustion is participant-complete. Failure of the initially preferred Yield participant's spatial candidates does not establish band exhaustion. Traffic Policeman must consider supportable candidates under the alternate admissible role assignment before concluding that autonomous spatial resolution is unavailable. Role transfer remains a Decision and must satisfy the existing progress/Revelation-Oscillation rules; it is not an in-leg target change.
+
+### Explicit escalation
+
+Only after Observe, Regulate and Hold are exhausted and the complete currently supportable Reposition Candidate Action Space is exhausted across admissible role assignments may Traffic Policeman conclude that autonomous traffic resolution is unavailable. Explicit escalation/player intervention is then preferable to inventing unsupported movement authority. Player takeover remains external physical agency; internal Commitment obligations do not silently transfer to the player.

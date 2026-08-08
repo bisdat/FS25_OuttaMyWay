@@ -1,3 +1,15 @@
+## 2026-08-08 — Traffic Policeman Decision Ordering consolidated
+
+**Observe / discuss:** pressure-tested the canonical Traffic Policeman against roomy crossings, early and late TS016, classic TS015, reversing/footprint-changing Transitional workers and single-track-road / UK Give Way analogies. Repository validation confirmed that the underlying concepts were already canonical; the work therefore remained composition/refinement rather than rediscovery.
+
+**Decision:** treat Traffic Policeman as an omnipresent but normally dormant Decision responsibility. Once decisive temporary movement ordering is required, apply the strict primary preference `CONTINUE_OBSERVATION → REGULATE_SPEED → HOLD_AT_SAFE_POINT → NATIVE_REPOSITION` after mandatory candidate gates. Later bands require explicit earlier-band exhaustion in the same Decision epoch, but rejected candidates need not be physically attempted. Material Reality/Control change restarts evaluation from the least-disruptive end.
+
+**Refinement:** Observe ends when Reality is sufficiently clear to direct or uncertainty is becoming unaffordable because Action Space is shrinking. Regulation means bounded GIANTS-owned proceed/creep motion; Hold means the current occupancy itself is the waiting place; Reposition creates a waiting place and may use forward/reverse/composed movement where positively supported. Reposition exhaustion is participant-complete across admissible role assignments.
+
+**Purpose boundary:** Candidate Purpose is action-level and provenance-bound to admitted intent/Operational Picture and, when present, Commitment Objective/Obligations. Candidate generators represent rather than invent the governing purpose.
+
+**Implementation boundary:** v4.7.34 is documentation/version metadata only. Reverse remains architecturally valid but OuttaMyWay-directed reverse actuation remains an evidence activity. Production Decision remains passive and Control disabled.
+
 ## 2026-08-07 — Prototype 21 TS004 expansion: speed ordering and reversible footprint
 
 **Observe:** John Deere 8RX/cultivator and Valtra/reversible-plough were run on separate fields with Prototype 21 passive diagnostics. Productive line evidence replicated. Reversible-plough productive speed (~12.2 km/h) was lower than native transition speed (~15 km/h). Short non-turn line-inactive boundaries appeared before productive-line establishment. The plough visibly switched working side after each pass; passive representation emitted changing profile/configuration tokens and footprint bounds.

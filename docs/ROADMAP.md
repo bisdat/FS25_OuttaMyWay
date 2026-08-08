@@ -1,10 +1,10 @@
-# Current implementation sequence — v4.7.24
+# Current implementation sequence — v4.7.34 candidate
 
-1. Live-confirm that removal of the superseded fixed-horizon predictor causes no behavioural change to Future-Space Encounter admission, Job Episode termination precedence, restart or fresh Encounter identity.
-2. Canonicalise the cleanup only after that confirmation.
-3. Then implement/validate same-Job-Episode Encounter resolution from existing Safe Release / Continuation Safety Horizon architecture.
-4. Only after reliable Encounter entry → persistence → resolution should ordinary Decision/Continuing Intent Priority consume that lifecycle.
-5. Commitment and Control remain later gates.
+1. Review/canonicalise the documentation-only Traffic Policeman Decision Ordering consolidation; confirm no runtime script bytes changed from canonical v4.7.33.
+2. Define the minimum live GIANTS capability evidence contract for the first Traffic Policeman implementation slice: bounded two-worker Regulation apply/release, positively supportable Hold/release states and participant-complete forward Reposition.
+3. Keep reverse Reposition architecturally present but `UNRESOLVED` for active authority until Reverse Actuation Discovery proves the required assembly-specific reverse capability and complete movement/configuration sweep.
+4. Implement only the smallest vertical Traffic Policeman slice that consumes existing Situation Knowledge and preserves the strict `Observe → Regulate → Hold → Reposition` Decision preference; do not infer new architecture from legacy controllers.
+5. Validate each capability closed-loop against current Reality before widening representation/capability support. If evidence contradicts the canonical ordering or responsibility boundary, stop and update architecture rather than adding a special case.
 
 # Historical roadmap snapshot — v4.7.23 candidate
 

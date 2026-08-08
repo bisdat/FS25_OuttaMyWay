@@ -1,15 +1,15 @@
 # Responsibility Map
 
-> **Currency:** canonical v4.6.78 Replacement-Core Architecture
+> **Currency:** v4.7.34 Traffic Policeman Decision Ordering Consolidation Candidate; canonical baseline v4.7.33
 
 | Responsibility | Owns | Must not own |
 |---|---|---|
 | Observation | raw time-bound facts and source provenance | interpretation, candidate selection, Control |
 | Situation Assessment | Knowledge, relationships, Future Space, uncertainty, Representation Fitness and candidate-support evidence | authoritative candidate preference, lifecycle transition, actuation |
-| Candidate generators | complete supportable Candidate Action records | selection or waiver of constraints |
+| Candidate generators | complete supportable Candidate Action records, including Purpose represented from supplied governing context | objective-setting policy, preference selection or waiver of constraints |
 | Constraint evaluators | explicit verdicts for their architectural invariants | optimisation or Control execution |
 | Operational Picture | immutable publication of current Knowledge, candidates and verdicts | mutation after publication |
-| Decision | selection among admissible candidates or explicit non-intervention | bypassing failed/unresolved mandatory constraints |
+| Decision | selection among admissible candidates or explicit non-intervention; Traffic Policeman temporary priority and sequential preference when traffic ordering is required | bypassing failed/unresolved mandatory constraints or allowing an action to invent its own governing purpose |
 | Commitment | Governing Basis, lifecycle, Obligation Set, authority leases, legal transition enforcement and Terminal Settlement | physical interpretation outside supplied evidence |
 | Control admission | freshness and Effective Actuation Composition revalidation immediately before dispatch | new strategy or Encounter interpretation |
 | Control capability | bounded physical execution and Control Outcome facts | selecting another action or declaring operational success |

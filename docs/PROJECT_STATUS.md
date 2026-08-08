@@ -1,23 +1,27 @@
-# v4.7.33 Candidate — Native Work-Line / Configuration-Footprint Evidence Consolidation
+# v4.7.34 Candidate — Traffic Policeman Decision Ordering Consolidation
 
-Prototype 21 evidence now spans four materially different working systems, including John Deere 8RX 410 + cultivator and Valtra S 416 + reversible plough. The work-line distinction continues to support Productive Continuation independently of native speed, and the reversible plough proves transitional motion may be faster than productive work.
+v4.7.34 begins from owner-declared canonical v4.7.33 and changes documentation/version metadata only. It composes the already-accepted Traffic Policeman, Productive Continuation Preference, Encounter Maturation, Action-Space Compression, Preference-Band Exhaustion, Hold/Reposition and Representation Fitness architecture into an explicit sequential Decision contract.
 
-The evidence contract is now explicitly asymmetric: coherent line `ACTIVE` may positively support Productive Continuation, while line `INACTIVE` alone cannot prove Transitional Continuation because transient non-turn inactive boundaries occur before a productive line establishes. Transitional knowledge requires corroborating continuing native-transition evidence or remains `UNRESOLVED`.
+Traffic Policeman is now recorded as omnipresent but normally dormant: ordinary compatible GIANTS traffic leaves it invisible; decisive temporary movement ordering activates it; independent compatibility makes it dormant again even if restoration, Native Handover or terminal-settlement obligations continue.
 
-The reversible plough also establishes **Alternating Working-Side Configuration** and **Configuration Footprint Authority**. Runtime configuration/profile numbers are provenance tokens only; the spatial authority is the realised Physical Assembly footprint plus any configuration-transition sweep. Traversability and clearance evidence remain bounded to materially equivalent footprint domains.
+The primary traffic preference is strict in Decision: `CONTINUE_OBSERVATION → REGULATE_SPEED → HOLD_AT_SAFE_POINT → NATIVE_REPOSITION`. Later bands require explicit earlier-band exhaustion in the same Decision epoch but rejected candidates need not be physically tried. Observe ends when Reality is clear enough to direct or uncertainty is becoming unaffordable under shrinking Action Space. Regulation means bounded GIANTS-owned progression; Hold means the current occupancy itself is the waiting place; Reposition creates a waiting place and is direction-agnostic, including reverse where evidence supports it.
 
-Productive Continuation Preference itself is unchanged. Prototype 21 remains passive; production Decision remains passive, no live Commitment is applied and Control authority remains disabled.
+Reposition exhaustion is participant-complete. Failure of the initially preferred Yield worker does not justify escalation until supportable spatial candidates under the alternate admissible role assignment are also exhausted. Reverse remains architecturally valid while OuttaMyWay-directed reverse actuation remains an implementation/evidence question.
+
+Candidate Purpose is explicitly provenance-bound to current admitted intent/Operational Picture and, where present, the governing Commitment Objective/Obligations; Candidate generators represent rather than invent that authority.
+
+Production Decision remains passive, no live Commitment is applied and Control authority remains disabled.
 
 # Project Status
 
-> **Current canonical:** v4.7.30 Encounter Maturation / Action-Space Compression Consolidation  
-> **Canonical baseline:** v4.7.30 (`54acc18349028de281845db2d209c3257cf2f27b203c43b1cae603461282a93a`, Git `747238389c80d032eb3b540bf2b5a0d0cf4d5930`; 261 files)  
-> **Current candidate:** v4.7.33 Native Work-Line / Configuration-Footprint Evidence Consolidation  
+> **Current canonical:** v4.7.33 Native Work-Line / Configuration-Footprint Evidence Consolidation  
+> **Canonical baseline:** v4.7.33 (`2b22eba1b13742da17aa7c8868448138618b21aac8a76375f719b9ae6ce77714`, Git `d31da596f8c5a93434ded325c50e7d2b54b079aa`; 263 files)  
+> **Current candidate:** v4.7.34 Traffic Policeman Decision Ordering Consolidation  
 > **Control authority:** production Control disabled
 
 ## Established Reality
 
-Owner-declared canonical v4.7.30 retains the live-validated v4.7.24 passive runtime foundation: native Local Intent → field-bounded Future Space → positive Encounter admission, current physical interaction as positive Encounter evidence, incomplete-membership evidence precedence, authoritative Job Episode termination/restart identity, passive Decision, no live Commitment and disabled production Control. It additionally canonicalises Bounded Native Intent Revelation, Traffic Policeman, Demonstrated Traversability, Revelation Oscillation and Encounter-relative Continuation Safety Horizon architecture while retaining the v4.7.26 evidence record; the superseded fixed-horizon TCPA/DCPA future predictor remains absent from active runtime and diagnostics.
+Owner-declared canonical v4.7.33 retains the live-validated passive replacement-core foundation: native Local Intent → field-bounded Future Space → positive Encounter admission, current physical interaction as positive Encounter evidence, incomplete-membership evidence precedence, authoritative Job Episode termination/restart identity, passive Decision, no live Commitment and disabled production Control. It carries forward Bounded Native Intent Revelation, Traffic Policeman, Demonstrated Traversability, Revelation Oscillation, Encounter-relative Continuation Safety Horizon, Encounter Maturation, Action-Space Compression, Productive Continuation Preference and Prototype 21's native work-line/configuration-footprint evidence; the superseded fixed-horizon TCPA/DCPA future predictor remains absent from active runtime and diagnostics.
 
 The non-canonical v4.7.25 prerequisite probe remains evidence only. It confirmed that represented primitive completeness does not prove Coverage Closure and its attempted `getActiveSegmentData()`/`fieldCourse.segments` index association was invalid; raw tuple slots must preserve nil positions.
 
@@ -107,4 +111,4 @@ Static-object recovery/avoidance remains deliberately parked for separate future
 
 ## Implementation boundary
 
-v4.7.30 carries no live Traffic Policeman, Encounter-Maturation detector, BNIR actuator, purpose-bound speed lease or other physical Control path into the active replacement core. Runtime behaviour remains the passive canonical lineage apart from version metadata. The next architecture activity is to pressure-test Traffic Policeman Decision ordering across contrasting abundant-slack, compressed-TS016 and too-late/exhausted cases before implementation evidence is sought.
+v4.7.34 carries no live Traffic Policeman, Encounter-Maturation detector, BNIR actuator, purpose-bound speed lease or other physical Control path into the active replacement core. Runtime script bytes remain unchanged from canonical v4.7.33 apart from version metadata outside `scripts/`. Traffic Policeman Decision ordering is now consolidated. The next activity is implementation preparation: define the minimum live GIANTS capability evidence for bounded two-worker Regulation, proven Hold/release states and participant-complete forward Reposition while retaining reverse Reposition as architecturally valid but `UNRESOLVED` until Reverse Actuation Discovery provides authority.

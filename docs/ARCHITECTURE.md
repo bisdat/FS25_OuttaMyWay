@@ -202,11 +202,31 @@ Control may reject stale or compositionally changed authority. It may not waive 
 
 ### Traffic Policeman — temporary movement priority
 
-Within an Encounter, Decision owns a **Traffic Policeman** responsibility. It assigns and revises temporary `PROGRESS` and `YIELD` movement-priority roles from the current Operational Picture so that bounded capabilities preserve the participant whose supported demand currently has priority.
+Within an Encounter, Decision owns an omnipresent but normally dormant **Traffic Policeman** responsibility. It activates only while current Reality requires decisive temporary movement ordering; ordinary compatible GIANTS traffic leaves it invisible. While active it assigns and revises temporary `PROGRESS` and `YIELD` movement-priority roles from the current Operational Picture so that bounded capabilities preserve the participant whose supported demand currently has priority. As soon as unrestricted cooperative movement is again supportable, its temporary traffic authority/restrictions expire even if the wider Encounter or Commitment still has restoration, Native Handover, evidence or terminal-settlement work to complete.
 
-Traffic Policeman does not plan routes, steer vehicles or replace GIANTS work order. A `PROGRESS` role is temporary right-of-way for the current supported continuation, not ownership of field space, exclusive movement authority or entitlement to unrestricted speed. A `YIELD` participant may receive bounded authority such as refuge recovery or BNIR only while its current occupancy and proposed Action Space remain subordinate to and compatible with Progress demand.
+Traffic Policeman does not plan routes, steer vehicles or replace GIANTS work order. A `PROGRESS` role is temporary right-of-way for the current supported continuation, not ownership of field space, exclusive movement authority or entitlement to unrestricted speed. A `YIELD` participant may receive bounded movement and need not stop immediately; its current occupancy and proposed Action Space remain subordinate to and compatible with Progress demand.
+
+Candidate `Purpose` is the operational result sought by an action, not independent objective-setting authority. Before a Commitment exists it must be traceable to current admitted intent, the Operational Picture and accepted Decision policy. Under an existing Commitment it must remain compatible with the governing Objective and unresolved Obligations unless an explicit lifecycle decision changes that basis. Candidate generators represent Purpose; they do not invent policy.
 
 Once Decision admits a bounded Yield recovery Action Space, its active ingress/restoration requirement becomes Committed Demand. Traffic Policeman must preserve compatibility between that admitted demand and Progress demand until the stage completes, is superseded or is explicitly revoked. `REGULATE_SPEED` may support this without transferring the traffic roles. Every supporting restriction requires a current named purpose and expires as soon as that purpose is satisfied; observed fixture timings such as Condor's approximately 15-second boom unfolding are evidence, not lease durations.
+
+Traffic Policeman's primary Decision preference is strictly sequential after mandatory candidate admissibility:
+
+```text
+CONTINUE_OBSERVATION
+→ REGULATE_SPEED
+→ HOLD_AT_SAFE_POINT
+→ NATIVE_REPOSITION
+```
+
+A later primary band may be selected only after every earlier band is explicitly exhausted against the same current governing traffic requirement in the same Decision epoch. Exhaustion may be established from Knowledge without physical trial. A material Reality or Control Outcome starts a fresh epoch and reevaluates the complete current Candidate Action Space from the least-disruptive end; the sequence is not a persistent four-state controller. Independently justified supporting capabilities from earlier bands may coexist with a stronger primary Commitment.
+
+- **Observe:** preserve bounded maturation only while useful evidence is emerging and enough Action Space remains to wait. Exhaust when evidence is sufficient for decisive direction or when uncertainty remains but waiting would consume a necessary option.
+- **Regulate:** permit bounded GIANTS-owned progression — proceed/creep while GIANTS keeps route, steering and forward/reverse choice. Exhaust when no positively supportable non-zero native movement can satisfy/preserve the current traffic purpose.
+- **Hold:** stop **here** only when the current realised Physical Assembly occupancy itself is a sufficient stationary waiting state. Movement to create a waiting state is not Hold.
+- **Reposition:** create a supportable waiting occupancy through one or more independently authorised bounded Manoeuvre Legs. Direction is not semantic priority; forward, reverse and composed movement may be candidates where evidence supports them. Reposition exhaustion is participant-complete across admissible role assignments.
+
+Only exhaustion of the complete currently supportable autonomous Traffic Policeman Candidate Action Space justifies explicit escalation/player intervention; unsupported movement authority must not be invented to avoid escalation.
 
 `SETTLED_CONTINUATION` is a lifecycle/evidence gate: it identifies a stable native Local Intent that can act as a traffic reference. It is not spatial clearance by itself. Supported corridor separation remains a separate positive requirement. If that reference participant begins `TURNING` or its supported demand materially changes, authority derived from the old traffic picture expires and Decision reassesses.
 
@@ -592,7 +612,7 @@ Partial representation does not necessarily prevent every action. It removes onl
 
 No Silent Under-Approximation remains mandatory: unknown or partial geometry must not be represented as smaller than the available evidence supports.
 
-Preference bands are exhausted sequentially. Only exhaustion of the complete supportable Candidate Action Space may justify autonomous-resolution failure.
+Preference bands are exhausted sequentially. For Traffic Policeman primary resolution, Observe → Regulate → Hold → Reposition is strict Decision preference after mandatory gates: a later band requires explicit earlier-band exhaustion in the same evidence epoch, without requiring physical trial. Only exhaustion of the complete currently supportable Candidate Action Space — including alternate admissible Yield assignment and direction where represented — may justify autonomous-resolution escalation/failure.
 
 ### Encounter Maturation and Action-Space Compression
 

@@ -1,3 +1,25 @@
+# v4.7.34 Traffic Policeman Decision Ordering Consolidation
+
+## Refined / composed — no new root concepts
+
+- **Traffic Policeman bounded lifetime** — existing Decision responsibility is omnipresent but normally dormant; activates only for decisive temporary movement ordering and becomes dormant when independent compatibility returns.
+- **Traffic Policeman strict preference** — existing `CONTINUE_OBSERVATION → REGULATE_SPEED → HOLD_AT_SAFE_POINT → NATIVE_REPOSITION` order is clarified as mandatory sequential Decision preference after candidate admissibility, not procedural Control fall-through.
+- **Candidate Purpose provenance** — existing Purpose field remains action-level and must derive from current governing intent/Operational Picture and, where present, Commitment Objective/Obligations; generators represent rather than create policy.
+- **Observe exhaustion under uncertainty** — existing Bounded Observation Contract and Action-Space Compression combine: observation ends either when Reality is sufficiently clear for direction or when waiting for more certainty would consume a necessary option.
+- **Regulate as bounded native progression** — existing speed authority is clarified as GIANTS-owned proceed/creep motion; GIANTS retains route, steering and direction. BNIR remains a specialised evidence-acquisition composition rather than a synonym.
+- **Hold as current-occupancy waiting** — existing Hold means the current realised occupancy itself is safe/sufficient; displacement to create a waiting place belongs to Reposition.
+- **Direction-agnostic Reposition** — existing reverse availability is composed into Reposition candidate generation; forward/reverse/composed direction is candidate evidence, not semantic preference.
+- **Participant-complete Reposition exhaustion** — existing dynamic Traffic Policeman roles and both-role refuge comparison mean failure of the preferred Yield participant cannot establish autonomous exhaustion until alternate-role supported candidates are also evaluated.
+
+## Explicitly not introduced
+
+- no Traffic-Policeman persistent lifecycle state;
+- no Action-Space Compression scalar;
+- no new traffic-requirement root object;
+- no forward-only Reposition architecture;
+- no automatic reverse authority;
+- no implementation-specific encounter taxonomy.
+
 # v4.7.33 Native Work-Line / Configuration-Footprint Evidence Consolidation
 
 ## Native Speed-Ordering Variability

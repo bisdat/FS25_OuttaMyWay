@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted architectural composition; supported in part by v4.6.65 runtime evidence; implementation inactive in v4.6.71.
+Accepted architectural composition; refined through v4.7.34 Traffic Policeman Decision Ordering; production Traffic Policeman/Control implementation remains absent.
 
 ## Context
 
@@ -60,3 +60,20 @@ Yield and Progress roles are recalculated from current Reality for every Encount
 ## v4.7.29 amendment — current recovery versus later encounter
 
 While a refuge ingress/restoration, BNIR, Native Handover or other obligation created by the current resolution remains unsettled, material changes in either participant are reassessed inside the same governing Encounter. After true Safe Release, a later materially new convergence is a fresh Encounter and receives newly calculated Traffic Policeman roles. OuttaMyWay resolves encounters; it does not permanently deconflict the workers' complete remaining jobs.
+
+## v4.7.34 amendment — strict Traffic Policeman preference ordering
+
+The established action order is a strict **Decision preference sequence**, not a procedural Control fallback ladder:
+
+```text
+CONTINUE_OBSERVATION
+→ REGULATE_SPEED
+→ HOLD_AT_SAFE_POINT
+→ NATIVE_REPOSITION
+```
+
+A later primary band is considered only after every earlier band is explicitly exhausted against the same current governing traffic requirement in the same Decision epoch. Exhaustion may be established from current Knowledge; candidates need not be physically attempted. A material Reality or Control Outcome starts a fresh Decision epoch and reevaluates the current Candidate Action Space from the least-disruptive end.
+
+`HOLD_AT_SAFE_POINT` means the participant's **current realised occupancy** is itself a supportable stationary waiting occupancy. If GIANTS-owned bounded progression can still reach a useful stopping condition, Regulation remains preferred. If a newly selected spatial displacement is required to create a waiting occupancy, that action is Reposition. Reposition is direction-agnostic and may use forward, reverse or composed bounded movement where capability and Representation Fitness support it.
+
+Reposition exhaustion is participant-complete. Failure of the currently preferred Yield participant's candidates does not establish autonomous-resolution exhaustion; Decision must evaluate supportable spatial candidates under the alternate admissible role assignment before escalation.

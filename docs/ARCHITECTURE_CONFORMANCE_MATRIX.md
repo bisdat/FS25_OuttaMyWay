@@ -1,3 +1,18 @@
+# v4.7.34 Traffic Policeman Decision Ordering Consolidation
+
+| Concern | Architectural requirement | v4.7.34 consolidation | Status |
+|---|---|---|---|
+| Traffic Policeman lifetime | traffic direction must not become Encounter-long ownership | omnipresent/dormant by default; active only while decisive temporary ordering is required; dormant again when traffic independently compatible | ACCEPTED |
+| Purpose provenance | Candidate Purpose must not invent the objective that justifies itself | Purpose traceable to admitted intent/Operational Picture and governing Commitment Objective/Obligations; generators represent, do not set policy | ACCEPTED |
+| Preference ordering | least intervention must be sequential without recreating procedural fallback | strict Observe → Regulate → Hold → Reposition Decision preference after mandatory gates; no physical trial required | ACCEPTED |
+| Fresh evidence epoch | failed/realised Control must not auto-fall-through to the next band | material Reality/Control change rebuilds Candidate Action Space and reevaluates from least-disruptive band | ACCEPTED |
+| Observe exhaustion | uncertainty must not force certainty-seeking until options disappear | observe while useful evidence emerges and room to wait remains; act when evidence sufficient or uncertainty becomes unaffordable under compression | ACCEPTED |
+| Regulation meaning | speed control must preserve GIANTS route ownership and useful native progression | proceed/creep under GIANTS route/steering/direction; exhaust when no non-zero native movement remains useful/supportable | ACCEPTED |
+| Hold meaning | Hold must not hide displacement or recreate Static Obstacle Conversion | current realised occupancy itself must be sufficient waiting state; movement to create one belongs to Reposition | ACCEPTED |
+| Reposition direction | implementation convenience must not make forward the architecture | forward/reverse/composed candidates allowed where supported; reverse actuation remains evidence-gated | ACCEPTED |
+| Reposition exhaustion | failure of preferred Yield must not masquerade as total Action-Space exhaustion | evaluate supportable spatial candidates under both admissible role assignments before escalation | ACCEPTED |
+| Runtime authority | architecture consolidation must remain passive | script bytes unchanged; production Decision passive; no live Commitment/Control authority | PRESERVED |
+
 ## v4.7.33 Native Work-Line / Configuration-Footprint evidence gates
 
 | Contract | Required architecture | v4.7.33 evidence / record | Status |
