@@ -1,0 +1,109 @@
+{
+  "documents": {
+    "architectural_maxims": {
+      "path": "docs/ARCHITECTURAL_MAXIMS.md",
+      "role": "knowledge"
+    },
+    "architecture": {
+      "path": "docs/ARCHITECTURE.md",
+      "role": "knowledge"
+    },
+    "concept_register": {
+      "path": "docs/CONCEPT_REGISTER.md",
+      "role": "knowledge"
+    },
+    "decision_log": {
+      "path": "docs/DECISION_LOG.md",
+      "role": "knowledge"
+    },
+    "docs_changelog": {
+      "path": "docs/CHANGELOG.md",
+      "role": "history"
+    },
+    "documentation_map": {
+      "path": "docs/README.md",
+      "role": "knowledge"
+    },
+    "engineering_architecture": {
+      "path": "docs/ENGINEERING_ARCHITECTURE.md",
+      "role": "knowledge"
+    },
+    "engineering_handbook": {
+      "path": "docs/ENGINEERING_HANDBOOK.md",
+      "role": "knowledge"
+    },
+    "engineering_handover": {
+      "path": "docs/ENGINEERING_HANDOVER.md",
+      "role": "knowledge"
+    },
+    "engineering_journal": {
+      "path": "docs/ENGINEERING_JOURNAL.md",
+      "role": "knowledge"
+    },
+    "glossary": {
+      "path": "docs/GLOSSARY.md",
+      "role": "knowledge"
+    },
+    "mod_description": {
+      "path": "modDesc.xml",
+      "role": "configuration"
+    },
+    "physical_representation_architecture": {
+      "path": "docs/PHYSICAL_REPRESENTATION_ARCHITECTURE.md",
+      "role": "knowledge"
+    },
+    "project_continuity": {
+      "path": "docs/PROJECT_CONTINUITY.md",
+      "role": "knowledge"
+    },
+    "project_status": {
+      "path": "docs/PROJECT_STATUS.md",
+      "role": "knowledge"
+    },
+    "project_vision": {
+      "path": "docs/PROJECT_VISION.md",
+      "role": "knowledge"
+    },
+    "release_manifest": {
+      "path": "docs/RELEASE_MANIFEST_SHA256.txt",
+      "role": "generated"
+    },
+    "repository_release_system": {
+      "path": "docs/REPOSITORY_RELEASE_SYSTEM.md",
+      "role": "knowledge"
+    },
+    "roadmap": {
+      "path": "docs/ROADMAP.md",
+      "role": "knowledge"
+    },
+    "root_changelog": {
+      "path": "CHANGELOG.md",
+      "role": "history"
+    },
+    "rrs_operational_readme": {
+      "path": "rrs/README.md",
+      "role": "knowledge"
+    },
+    "scope_overlay_architecture": {
+      "path": "docs/SCOPE_OVERLAY_ARCHITECTURE.md",
+      "role": "knowledge"
+    },
+    "vehicle_definition_corpus": {
+      "path": "docs/50_Research/VEHICLE_DEFINITION_CORPUS.md",
+      "role": "knowledge"
+    },
+    "vehicle_semantics_readme": {
+      "path": "research/vehicle_semantics/README.md",
+      "role": "knowledge"
+    },
+    "scope_overlay_test_calibration": {
+      "path": "docs/SCOPE_OVERLAY_TEST_CALIBRATION.md",
+      "role": "knowledge"
+    },
+    "architecture_flow": {
+      "path": "docs/ARCHITECTURE_FLOW.md",
+      "role": "knowledge"
+    }
+  },
+  "schema_version": 1
+}

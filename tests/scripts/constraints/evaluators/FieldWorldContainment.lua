@@ -1,0 +1,6 @@
+OuttaMyWay.FieldWorldContainmentConstraint={}
+OuttaMyWay.FieldWorldContainmentConstraint.id="FIELD_WORLD_CONTAINMENT"
+OuttaMyWay.FieldWorldContainmentConstraint.owner="FieldWorldContainmentConstraint"
+function OuttaMyWay.FieldWorldContainmentConstraint.evaluate(candidate,operationalPicture)
+    return OuttaMyWay.ConstraintEvidence.fromCandidate(candidate,OuttaMyWay.FieldWorldContainmentConstraint.id)
+end
