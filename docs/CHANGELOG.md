@@ -1,3 +1,17 @@
+## v4.7.41candidate — Guarded Recovery Observe-Exhaustion Contract
+
+- begins from owner-declared canonical v4.7.40 (`32980f980f80ff8a9f30aa8b11a1097196e6fddf1264f26b810835bc547648cd`; 269 files) and carries forward the temporary P22/TS015 evidence harness without behavioural change;
+- closes D-0122's open Guarded-Recovery Situation Assessment contract by accepting temporary **Vulnerable Space** for the recovering participant while OuttaMyWay still owns recovery responsibility;
+- accepts **Convergent Projection** as coarse directional evidence of the other Encounter participant's presently revealed native continuation. It is not exact route reconstruction, a fixed-distance horizon, TCPA/DCPA replacement or literal ray-cast policy;
+- makes Convergent-Projection intersection with Vulnerable Space positive evidence that unrestricted continuation is consuming protected recovery Action Space and therefore exhausts `CONTINUE_OBSERVATION`;
+- preserves Traffic Policeman ordering after Observe exhaustion: prefer bounded `REGULATE_SPEED` while positively supportable non-zero native progression can preserve the recovery; use `HOLD_AT_SAFE_POINT` only when it cannot and the present occupancy is itself a supportable waiting state;
+- makes the heightened vulnerability temporary: it expires when positive existing Native Handover/restoration evidence establishes that GIANTS has fully reacquired native authority over the recovering worker. Mechanical reacquisition does not end the Encounter/Commitment; ordinary Traffic Policeman assessment and Protected Progress Alternation continue until existing settlement rules are met;
+- records that ordinary close cooperative movement, including wide workers passing in adjacent lanes, must not inherit the temporary recovery tolerance. No permanent separation envelope is introduced;
+- leaves literal dome/circle/cone geometry, projection width and numerical construction deliberately unimplemented. Encounter/refuge context already supplies locality; no additional arbitrary range gate is architectural authority;
+- corrects active release/header provenance to owner-declared canonical v4.7.40 where v4.7.40 still described itself as the current candidate or retained v4.7.34 as the active baseline;
+- advances structural release-identity assertions to v4.7.41 and adds focused D-0123 conformance coverage; no production behaviour is changed;
+- changes runtime code only for coherent version identity; production Decision remains passive and `CONTROL_AUTHORITY_ENABLED=false`.
+
 ## v4.7.40candidate — Guarded Recovery Architecture Consolidation
 
 - begins from owner-declared canonical v4.7.34 (`4b8be7f93fe92e1236c2a50d46622ab3bc688e60fbc4ff3fa56b44b7f36bb5c7`, Git `40b70d2adb6811dd1fdf455ae5bb0f6e76cdf372`; 263 files) and carries forward the temporary P22/TS015 evidence harness unchanged in behaviour from v4.7.39;

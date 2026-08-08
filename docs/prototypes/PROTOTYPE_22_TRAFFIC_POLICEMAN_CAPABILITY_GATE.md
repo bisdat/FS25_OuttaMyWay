@@ -2,10 +2,17 @@
 
 ## Status
 
-**Current implementation candidate:** v4.7.40candidate  
-**Baseline:** owner-declared canonical v4.7.34 (`4b8be7f93fe92e1236c2a50d46622ab3bc688e60fbc4ff3fa56b44b7f36bb5c7`, Git `40b70d2adb6811dd1fdf455ae5bb0f6e76cdf372`; 263 files)  
-**Architecture authority:** canonical v4.7.34 Traffic Policeman Decision Ordering  
+**Current implementation candidate:** v4.7.41candidate  
+**Baseline:** owner-declared canonical v4.7.40 (`32980f980f80ff8a9f30aa8b11a1097196e6fddf1264f26b810835bc547648cd`; 269 files)  
+**Architecture authority:** canonical v4.7.40 plus owner-agreed v4.7.41candidate D-0123 pending certification  
 **Purpose:** live GIANTS capability/native-recovery characterisation only; no automatic production Traffic Policeman Decision implementation.
+
+## v4.7.41 consolidation — Guarded Recovery evidence contract agreed; harness unchanged
+
+D-0123 now defines the Situation Assessment boundary that the v4.7.40 harness deliberately lacked. While a displaced worker remains under Guarded Recovery responsibility it has temporary Vulnerable Space; the other Encounter participant's coarse Convergent Projection exhausts Observe when it intersects that space. Decision would then retain the existing Regulation-before-Hold ordering, and the heightened vulnerability ends when existing positive Native Handover/restoration evidence shows full GIANTS native-authority reacquisition.
+
+The current P22/TS015 harness does **not** implement Vulnerable Space, Convergent Projection, automatic Observe exhaustion, production Regulation/Hold, Durable Separation or maximum-supportable-speed policy. The dome/headlight-cone analogy is not literal geometry. Further use of `otmP22 relocate` remains regression/evidence work until a separate passive Situation Assessment representation probe is designed and validated.
+
 
 
 ## v4.7.40 consolidation — restoration evidence retained, production timing unresolved

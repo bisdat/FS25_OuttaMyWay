@@ -1,9 +1,9 @@
--- FS25_OuttaMyWay v4.7.40 temporary TS015 native-continuation restoration comparison candidate; canonical v4.7.34 baseline retained; production Decision/Control remains disabled.
+-- FS25_OuttaMyWay v4.7.41 Guarded Recovery Observe-exhaustion contract candidate; canonical v4.7.40 baseline; production Decision/Control remains disabled.
 -- Canonical architecture authority: v4.6.78.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.40"
+OuttaMyWay.VERSION = "4.7.41"
 OuttaMyWay.ARCHITECTURE_VERSION = "4.6.78"
 OuttaMyWay.RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false

@@ -1,3 +1,15 @@
+# v4.7.41candidate — Guarded Recovery Observe-Exhaustion Contract
+
+v4.7.41candidate begins from owner-declared canonical v4.7.40 (`32980f980f80ff8a9f30aa8b11a1097196e6fddf1264f26b810835bc547648cd`; 269 files). Runtime behaviour is unchanged apart from coherent version identity: the temporary P22/TS015 evidence harness remains explicit-command only, production Decision remains passive and `CONTROL_AUTHORITY_ENABLED=false`.
+
+**Accepted architecture:** D-0123 closes the Guarded-Recovery Situation Assessment contract left open by D-0122. While OuttaMyWay still owns recovery responsibility, the recovering participant has temporary Vulnerable Space. The other Encounter participant's presently revealed native continuation is represented coarsely as Convergent Projection. Intersection positively establishes that unrestricted continuation is consuming protected recovery Action Space and therefore exhausts Observe. Decision still prefers Regulation while supportable non-zero native progression can preserve recovery, then Hold only when that band is exhausted and current occupancy is a valid waiting state.
+
+**Vulnerability boundary:** heightened recovery sensitivity expires when positive existing Native Handover/restoration evidence establishes that GIANTS has fully reacquired native authority over the recovering worker. This does not settle the Encounter/Commitment. Ordinary cooperative tolerances resume, including normal adjacent-lane passage, and Protected Progress Alternation may subsequently reverse temporary roles as Reality evolves.
+
+**Implementation boundary:** Vulnerable Space and Convergent Projection are semantic evidence representations, not literal dome/circle/cone geometry. Their conservative construction from existing Reality evidence remains open. No fixed range/horizon, TCPA/DCPA, route reconstruction, speed threshold or production traffic-control trigger is implemented in v4.7.41.
+
+**Next objective:** discover and passively validate a representation/evidence method for Vulnerable Space and Convergent Projection before connecting the agreed Observe-exhaustion contract to production Decision/Control.
+
 # v4.7.40candidate — Guarded Recovery Architecture Consolidation
 
 v4.7.40candidate begins from owner-declared canonical v4.7.34 and carries forward the temporary P22/TS015 runtime harness unchanged from v4.7.39. Its purpose is to record the architectural knowledge discovered from the v4.7.38 direct-refuge and v4.7.39 restoration-first evidence before starting the next implementation discussion. Production Decision remains passive and `CONTROL_AUTHORITY_ENABLED=false`.
@@ -68,14 +80,14 @@ Production Decision remains passive, no live Commitment is applied and Control a
 
 # Project Status
 
-> **Current canonical:** v4.7.34 Traffic Policeman Decision Ordering Consolidation  
-> **Canonical baseline:** v4.7.34 (`4b8be7f93fe92e1236c2a50d46622ab3bc688e60fbc4ff3fa56b44b7f36bb5c7`, Git `40b70d2adb6811dd1fdf455ae5bb0f6e76cdf372`; 263 files)  
-> **Current candidate:** v4.7.40 Guarded Recovery Architecture Consolidation  
+> **Current canonical:** v4.7.40 Guarded Recovery Architecture Consolidation  
+> **Canonical baseline:** v4.7.40 (`32980f980f80ff8a9f30aa8b11a1097196e6fddf1264f26b810835bc547648cd`; 269 files)  
+> **Current candidate:** v4.7.41 Guarded Recovery Observe-Exhaustion Contract  
 > **Control authority:** production Control disabled
 
 ## Established Reality
 
-Owner-declared canonical v4.7.34 retains the live-validated passive replacement-core foundation and the consolidated Traffic Policeman Decision Ordering: native Local Intent → field-bounded Future Space → positive Encounter admission, current physical interaction as positive Encounter evidence, incomplete-membership evidence precedence, authoritative Job Episode termination/restart identity, passive Decision, no live Commitment and disabled production Control. It carries forward Bounded Native Intent Revelation, Traffic Policeman, Demonstrated Traversability, Revelation Oscillation, Encounter-relative Continuation Safety Horizon, Encounter Maturation, Action-Space Compression, Productive Continuation Preference and Prototype 21's native work-line/configuration-footprint evidence; the superseded fixed-horizon TCPA/DCPA future predictor remains absent from active runtime and diagnostics.
+Owner-declared canonical v4.7.40 retains the live-validated passive replacement-core foundation and the consolidated Traffic Policeman Decision Ordering: native Local Intent → field-bounded Future Space → positive Encounter admission, current physical interaction as positive Encounter evidence, incomplete-membership evidence precedence, authoritative Job Episode termination/restart identity, passive Decision, no live Commitment and disabled production Control. It additionally records Native Continuation Restoration, Rejoin Anchor, Guarded Recovery, Protected Progress Alternation and Expedient Manoeuvre Execution from the v4.7.38–v4.7.40 evidence cycle. The superseded fixed-horizon TCPA/DCPA future predictor remains absent from active runtime and diagnostics.
 
 The non-canonical v4.7.25 prerequisite probe remains evidence only. It confirmed that represented primitive completeness does not prove Coverage Closure and its attempted `getActiveSegmentData()`/`fieldCourse.segments` index association was invalid; raw tuple slots must preserve nil positions.
 

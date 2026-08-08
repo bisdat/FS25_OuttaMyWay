@@ -1,3 +1,20 @@
+# v4.7.41 Guarded Recovery Observe-Exhaustion Contract Conformance
+
+| Concern | Required boundary | v4.7.41 candidate | Status |
+|---|---|---|---|
+| Canonical baseline | candidate must derive exclusively from owner-declared v4.7.40 | exact canonical package SHA-256 recorded in RRS handoff; no earlier baseline treated as current | PRESERVED |
+| Recovery vulnerability | heightened tolerance must be temporary rather than permanent separation policy | Vulnerable Space exists only while OuttaMyWay retains Guarded Recovery responsibility | ACCEPTED |
+| Convergence evidence | early concern must not recreate exact route prediction | Convergent Projection is coarse directional evidence; no TCPA/DCPA/fixed horizon/ray-cast authority | ACCEPTED |
+| Observe exhaustion | waiting must stop before protective Action Space is unnecessarily consumed | Convergent Projection intersection with Vulnerable Space positively exhausts Observe | ACCEPTED |
+| Decision ordering | evidence must not bypass least-disruptive Traffic Policeman preference | Regulation remains before Hold; Hold still requires a supportable current waiting occupancy | PRESERVED |
+| Vulnerability expiry | temporary conservatism must not block normal adjacent work indefinitely | heightened sensitivity ends on positive existing evidence of full GIANTS native-authority reacquisition | ACCEPTED |
+| Commitment continuity | mechanical handback must not masquerade as traffic settlement | ordinary Traffic Policeman assessment continues; Protected Progress Alternation remains available | PRESERVED |
+| Geometry authority | explanatory metaphor must not dictate implementation | no literal dome/circle/cone, numerical buffer, range gate or projection width is architectural policy | PRESERVED |
+| Runtime behaviour | architecture consolidation must not silently implement production traffic control | P22/TS015 harness unchanged except version metadata; Decision passive; `CONTROL_AUTHORITY_ENABLED=false` | PRESERVED |
+| Next gate | representation evidence before production actuation | derive and passively validate Vulnerable Space/Convergent Projection from existing Reality | OPEN |
+
+---
+
 # v4.7.40 Guarded Recovery Architecture Consolidation Conformance
 
 | Concern | Required boundary | v4.7.40 candidate | Status |

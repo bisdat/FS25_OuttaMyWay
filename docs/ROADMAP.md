@@ -1,14 +1,14 @@
-# Current implementation sequence — v4.7.40candidate
+# Current implementation sequence — v4.7.41candidate
 
-1. Review v4.7.40 as an architecture/evidence consolidation from owner-declared canonical v4.7.34; the temporary v4.7.39 P22/TS015 runtime harness is carried forward unchanged and production Decision/Control remains disabled.
-2. Treat Native Continuation Restoration as supported **in principle**: approximate restoration toward a Rejoin Anchor/context is currently preferred over arbitrary refuge handback; do not add exact-pose/heading authority without contrary evidence.
-3. Preserve standard DLC-free validation. Precision Farming is supplementary observation evidence only and must not become a dependency or required regression tool.
-4. Define the Guarded Recovery evidence contract in Situation Assessment: identify current positive evidence that another participant's Current/Future/Potential Demand is beginning to threaten the recovery Action Space already committed by OuttaMyWay.
-5. Define Observe exhaustion for that contract, then the weakest sufficient Traffic Policeman response: Regulation while positive native movement can preserve the recovery, Hold when it cannot.
-6. Preserve Protected Progress Alternation without introducing scripted “A then B” choreography or one-worker-at-a-time semantics; concurrent native movement remains preferred whenever compatible.
-7. Carry Expedient Manoeuvre Execution into later Control design as maximum **supportable** speed, not a numeric fixture literal.
-8. Only after the evidence contract is agreed should a new diagnostic/vertical-slice implementation be proposed and live-tested.
-9. If Reality contradicts these conclusions, update architecture rather than defending the restoration strategy.
+1. Review v4.7.41 as a documentation/version-only consolidation from owner-declared canonical v4.7.40; the temporary P22/TS015 evidence harness is carried forward unchanged and production Decision/Control remains disabled.
+2. Treat the Guarded-Recovery Observe-exhaustion contract as settled: temporary Vulnerable Space exists only while OuttaMyWay retains recovery responsibility, and expires on positive existing evidence of full GIANTS native-authority reacquisition.
+3. Treat Convergent Projection as coarse directional evidence only. Its intersection with Vulnerable Space exhausts Observe; do not add exact route prediction, TCPA/DCPA, a fixed horizon, range gate or literal ray-cast policy.
+4. Preserve the existing Traffic Policeman response order after Observe exhaustion: Regulation while positively supportable non-zero native progression can preserve the recovery, Hold only after Regulation exhaustion and only at a supportable current occupancy.
+5. Discover how Situation Assessment can derive conservative Vulnerable Space and Convergent Projection representations from existing Reality evidence without allowing implementation convenience or the dome/headlight analogy to define architecture.
+6. Validate that representation passively against TS015-style bird's-eye/log evidence before granting any production Decision authority.
+7. Preserve ordinary cooperative proximity after vulnerability expiry, including adjacent-lane passage by wide workers, and preserve Protected Progress Alternation when later GIANTS-native movement reverses which demand requires protection.
+8. Only after passive evidence supports the representation should a production vertical slice be proposed; Control remains last.
+9. If Reality contradicts the contract, update architecture rather than defending the representation.
 
 # Historical roadmap snapshot — v4.7.23 candidate
 

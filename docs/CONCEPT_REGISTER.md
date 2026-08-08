@@ -1,3 +1,38 @@
+# v4.7.41 Guarded Recovery Observe-Exhaustion Contract
+
+## Vulnerable Space
+
+**Classification:** accepted derived Situation Assessment representation; not a new root Space primitive.
+
+Guarded Recovery temporarily lowers the tolerance for unrestricted movement around a recovering participant while OuttaMyWay still owns recovery responsibility. Vulnerable Space represents the recovery Action Space whose preservation is fragile during that interval. It must not become a permanent clearance envelope: ordinary cooperative proximity resumes after positive existing Native Handover/restoration evidence establishes full GIANTS reacquisition.
+
+## Convergent Projection
+
+**Classification:** accepted coarse directional evidence representation.
+
+Convergent Projection represents another Encounter participant's presently revealed native continuation strongly enough to determine whether it is developing toward Vulnerable Space. It deliberately avoids exact route reconstruction, fixed-distance prediction horizons, TCPA/DCPA authority and literal ray-cast semantics. The local Encounter/refuge context supplies relevance; architecture does not add a map-wide range gate.
+
+## Guarded-Recovery Observe exhaustion
+
+**Classification:** accepted composition of Bounded Observation, Action-Space Compression and Traffic Policeman ordering.
+
+When Convergent Projection intersects Vulnerable Space, continued unrestricted native progression is positively consuming Action Space reserved for protecting the recovery. `CONTINUE_OBSERVATION` is exhausted. Decision then evaluates `REGULATE_SPEED` before `HOLD_AT_SAFE_POINT`; the intersection is evidence authority, not a direct actuator command.
+
+## Vulnerability expiry / role continuity
+
+**Classification:** accepted lifecycle refinement using existing Native Handover evidence.
+
+The heightened Guarded-Recovery vulnerability expires when GIANTS has fully reacquired native authority over the recovering worker. Encounter/Commitment responsibility does not thereby end. Ordinary Traffic Policeman assessment resumes, and Protected Progress Alternation may later reverse temporary roles as Reality evolves.
+
+## Explicitly not introduced
+
+- no permanent safety bubble around wide workers;
+- no literal dome, circle, headlight cone or ray-casting requirement;
+- no fixed projection distance, time horizon, speed threshold, TCPA or DCPA;
+- no exact GIANTS route prediction;
+- no one-worker-at-a-time traffic policy;
+- no production Decision/Control implementation.
+
 # v4.7.34 Traffic Policeman Decision Ordering Consolidation
 
 ## Refined / composed — no new root concepts

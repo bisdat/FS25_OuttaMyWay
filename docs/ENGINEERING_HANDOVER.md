@@ -1,7 +1,18 @@
 # Engineering Handover
 
-> **Canonical baseline:** v4.7.34 (`4b8be7f93fe92e1236c2a50d46622ab3bc688e60fbc4ff3fa56b44b7f36bb5c7`, Git `40b70d2adb6811dd1fdf455ae5bb0f6e76cdf372`; 263 files)  
-> **Candidate:** v4.7.40 Guarded Recovery Architecture Consolidation  
+## v4.7.41 continuation point
+
+D-0123 closes the Situation Assessment evidence contract left open by D-0122. During Guarded Recovery, the recovering participant has temporary Vulnerable Space while OuttaMyWay still owns recovery responsibility. The other Encounter participant's presently revealed native continuation is represented coarsely as Convergent Projection. Intersection is positive evidence that unrestricted continuation is consuming protected recovery Action Space; `CONTINUE_OBSERVATION` is exhausted and Decision proceeds to the existing Regulation-before-Hold preference.
+
+The representation is deliberately non-predictive in the old fixed-horizon sense. Do not reconstruct GIANTS' exact route, add TCPA/DCPA, invent a range gate or implement the explanatory dome/headlight cone literally. Guarded Recovery is already local to the active Encounter/Refuge Region context.
+
+The heightened vulnerability expires when positive existing Native Handover/restoration evidence establishes that GIANTS has fully reacquired native authority over the recovering worker. This does not complete the traffic Commitment. Ordinary cooperative tolerances return and Protected Progress Alternation may later reverse temporary roles if the formerly recovering worker's GIANTS-native continuation begins consuming the other participant's Action Space.
+
+**Next substantive step:** discover and passively validate how existing Reality evidence can represent Vulnerable Space and Convergent Projection. Do not connect that evidence to production Decision/Control until the representation is validated.
+
+
+> **Canonical baseline:** v4.7.40 (`32980f980f80ff8a9f30aa8b11a1097196e6fddf1264f26b810835bc547648cd`; 269 files)  
+> **Candidate:** v4.7.41 Guarded Recovery Observe-Exhaustion Contract  
 > **Control authority:** production Decision/Control disabled; temporary manual P22/TS015 evidence actuator only
 
 ## v4.7.40 continuation point

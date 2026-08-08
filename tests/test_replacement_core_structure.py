@@ -466,7 +466,7 @@ def test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidenc
     operation=(ROOT/"scripts"/"identity"/"OperationAdmission.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.40"' in config
+    assert 'VERSION = "4.7.41"' in config
     assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     assert "MEMBERSHIP_UPDATED_INCOMPLETE" in operation
     assert "removalDeferred=true" in operation
@@ -489,7 +489,7 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.40"' in config
+    assert 'VERSION = "4.7.41"' in config
     assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" not in config
     for forbidden in ("predictPair(", "evaluateShadowPair(", "composePositiveEvidence(", "legacyShadowPositive", "legacyTCPA", "legacyDCPA"):
@@ -516,7 +516,7 @@ def test_v4728_traffic_policeman_architecture_is_documented_without_production_c
     concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.40"' in config
+    assert 'VERSION = "4.7.41"' in config
     for token in ("Traffic Policeman","Demonstrated Traversability","Revelation Oscillation"):
         assert token in adr
         assert token in glossary
@@ -536,7 +536,7 @@ def test_v4729_staged_recovery_architecture_is_documented_without_production_con
     glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.40"' in config
+    assert 'VERSION = "4.7.41"' in config
     for token in (
         "Progress priority is not exclusive movement authority",
         "positively available recovery corridor",
@@ -561,7 +561,7 @@ def test_v4730_encounter_maturation_architecture_is_documented_without_productio
     concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.40"' in config
+    assert 'VERSION = "4.7.41"' in config
     for token in ("Encounter Maturation","Action-Space Compression"):
         assert token in adr23
         assert token in architecture
@@ -582,7 +582,7 @@ def test_v4731_productive_continuation_probe_is_passive_and_speed_non_authoritat
     probe=(ROOT/"scripts"/"diagnostics"/"ProductiveContinuationProbe.lua").read_text(encoding="utf-8")
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.40"' in config
+    assert 'VERSION = "4.7.41"' in config
     assert "scripts/diagnostics/ProductiveContinuationProbe.lua" in main
     assert "productiveContinuationProbe" in main
     for token in (
@@ -638,7 +638,7 @@ def test_v4732_productive_continuation_preference_is_documented_without_producti
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.40"' in config
+    assert 'VERSION = "4.7.41"' in config
     for token in (
         "Productive Continuation Preference",
         "Productive-Line Cross-Assembly Replication",
@@ -669,7 +669,7 @@ def test_v4733_speed_ordering_evidence_asymmetry_and_configuration_footprint_aut
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.40"' in config
+    assert 'VERSION = "4.7.41"' in config
     for token in (
         "Native Speed-Ordering Variability",
         "Productive-State Evidence Asymmetry",
@@ -703,7 +703,7 @@ def test_v4736_prototype22_is_manual_capability_gate_not_production_traffic_poli
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
 
-    assert 'VERSION = "4.7.40"' in config
+    assert 'VERSION = "4.7.41"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert 'PROTOTYPE_22_CAPABILITY_GATE_ENABLED = true' in config
     for rel in (
@@ -759,7 +759,7 @@ def test_v4736_p22_spatial_reposition_requires_real_compaction_and_allows_fold_m
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
 
-    assert 'VERSION = "4.7.40"' in config
+    assert 'VERSION = "4.7.41"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert 'PROTOTYPE_22_HUD_ENABLED = true' in config
     assert 'PROTOTYPE_22_SPAN_REDUCTION_MIN_M' in config
@@ -788,7 +788,7 @@ def test_v4737_ts015_autonomous_relocation_characterisation_harness_is_explicit_
     gate=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
     harness=(ROOT/"scripts"/"prototypes"/"Prototype22TS015Relocation.lua").read_text(encoding="utf-8")
 
-    assert 'VERSION = "4.7.40"' in config
+    assert 'VERSION = "4.7.41"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert 'Prototype22TS015Relocation.lua' in main
     assert main.index('Prototype22TS015Relocation.lua') < main.index('Prototype22CapabilityGate.lua')
@@ -829,7 +829,7 @@ def test_v4739_ts015_restoration_first_handoff_returns_to_rejoin_anchor_before_g
     harness=(ROOT/"scripts"/"prototypes"/"Prototype22TS015Relocation.lua").read_text(encoding="utf-8")
     drive=(ROOT/"scripts"/"prototypes"/"Prototype22DriveAuthority.lua").read_text(encoding="utf-8")
 
-    assert 'VERSION = "4.7.40"' in config
+    assert 'VERSION = "4.7.41"' in config
     assert 'PROTOTYPE_22_TS015_REJOIN_FORWARD_M = 6.0' in config
     assert 'PROTOTYPE_22_TS015_REJOIN_ORIENTATION_SPEED_KMH = 5.0' in config
     assert 'PROTOTYPE_22_TS015_REJOIN_ORIENTATION_FORWARD_DOT = 0.25' in config
@@ -859,7 +859,7 @@ def test_v4740_guarded_recovery_architecture_consolidation_preserves_non_product
     handover=(ROOT/"docs"/"ENGINEERING_HANDOVER.md").read_text(encoding="utf-8")
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
 
-    assert 'VERSION = "4.7.40"' in config
+    assert 'VERSION = "4.7.41"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     for token in (
         "Native Continuation Restoration",
@@ -877,3 +877,28 @@ def test_v4740_guarded_recovery_architecture_consolidation_preserves_non_product
     assert "standard testing remains DLC-free" in handover
     assert "does **not** implement Guarded Recovery" in protocol
     assert "Situation Assessment evidence contract" in handover
+
+
+def test_v4741_guarded_recovery_observe_exhaustion_contract_is_documented_without_production_control():
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
+    glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
+    concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
+    decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
+    roadmap=(ROOT/"docs"/"ROADMAP.md").read_text(encoding="utf-8")
+
+    assert 'VERSION = "4.7.41"' in config
+    assert 'CONTROL_AUTHORITY_ENABLED = false' in config
+    assert "D-0123" in decision
+    for token in ("Vulnerable Space", "Convergent Projection"):
+        assert token in architecture
+        assert token in glossary
+        assert token in concepts
+        assert token in decision
+    assert "CONTINUE_OBSERVATION` is exhausted" in decision
+    assert "REGULATE_SPEED" in decision and "HOLD_AT_SAFE_POINT" in decision
+    assert "fully reacquired native authority" in decision
+    assert "not traffic settlement" in decision.lower()
+    assert "no permanent exclusion zone" in decision.lower()
+    assert "fixed-distance" in decision.lower() and "TCPA/DCPA" in decision
+    assert "passively" in roadmap.lower() and "validate" in roadmap.lower()

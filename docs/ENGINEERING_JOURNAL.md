@@ -1,3 +1,17 @@
+## 2026-08-08 — Guarded Recovery Observe exhaustion: Vulnerable Space and Convergent Projection
+
+**Observe:** bird's-eye review of the Patriot recovery deadlock made the loss of Action Space visible before exact conflict. Once Condor turned generally toward recovering Patriot, it was already reasonable to expect that further unrestricted continuation could consume the recovery margin. The same Condor/Patriot pair can ordinarily pass in adjacent lanes, so a permanent enlarged exclusion region would be over-conservative.
+
+**Discuss:** Guarded Recovery already supplies locality because both participants are in one unresolved Encounter after a Refuge Region manoeuvre. The useful evidence is therefore directional rather than a new fixed-range predictor. The recovering worker is unusually vulnerable only while OuttaMyWay still owns recovery responsibility; once GIANTS fully reacquires native authority, ordinary cooperative tolerance must return even though the wider traffic Commitment may remain open.
+
+**Decision:** accept temporary Vulnerable Space and coarse Convergent Projection. When the other participant's Convergent Projection intersects Vulnerable Space, unrestricted continuation is positively consuming protected recovery Action Space and Observe is exhausted. Traffic Policeman then evaluates Regulation before Hold under the existing preference contract. The heightened vulnerability expires on positive existing Native Handover/restoration evidence of full GIANTS reacquisition; Protected Progress Alternation may later reverse the temporary roles.
+
+**Implementation:** v4.7.41 changes architecture documentation and coherent version identity only. No literal dome/circle/cone, range horizon, TCPA/DCPA, production Situation Assessment trigger, Decision or Control implementation is added. Active stale release/header provenance is corrected to canonical v4.7.40 where appropriate.
+
+**Validate:** RRS/repository/offline structural validation only. The next evidence step is passive representation discovery for Vulnerable Space and Convergent Projection.
+
+**Record:** D-0123.
+
 ## 2026-08-08 — Native Continuation Restoration, Guarded Recovery and Protected Progress Alternation
 
 **Observe:** v4.7.38 direct refuge handback preserved the same Job Episode but produced Native Recovery Variability. v4.7.39 restoration-first runs returned Condor and Patriot approximately toward their pre-egress continuation context; both visually reacquired the interrupted lane despite materially imperfect heading. A supplementary Patriot Precision Farming view showed no obvious material untreated gap attributable to the diversion/rejoin. In a later complex run, Condor entered a native diagonal transition during Patriot recovery and the pair deadlocked.

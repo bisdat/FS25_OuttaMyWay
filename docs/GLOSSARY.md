@@ -1,3 +1,11 @@
+## v4.7.41 vocabulary refinements
+
+**Vulnerable Space**  
+A temporary derived Situation Assessment representation used only while Guarded Recovery remains under OuttaMyWay recovery responsibility. It represents recovery Action Space whose preservation currently has reduced tolerance for another participant's unrestricted native development. It is not Current Space, a permanent clearance envelope or a literal dome/circle. The heightened representation expires when positive existing Native Handover/restoration evidence shows that GIANTS has fully reacquired native authority over the recovering worker.
+
+**Convergent Projection**  
+A coarse directional projection of another Encounter participant's presently revealed native continuation, used to determine whether that continuation is developing toward Vulnerable Space without reconstructing GIANTS' exact route. It has no fixed-distance/TCPA/DCPA authority and does not imply literal ray casting. Within Guarded Recovery, intersection with Vulnerable Space positively exhausts Observe; the subsequent action remains governed by Traffic Policeman's existing `Observe → Regulate → Hold → Reposition` preference.
+
 ## v4.7.40 vocabulary refinements
 
 **Native Continuation Restoration**  
