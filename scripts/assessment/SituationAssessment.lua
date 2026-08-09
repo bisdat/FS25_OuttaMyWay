@@ -399,17 +399,20 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
 
     local commitmentContext = {}
     for _, commitment in OuttaMyWay.ValueRecord.ipairs(self.commitments:list()) do
-        commitmentContext[#commitmentContext+1] = {
-            identity=commitment.identity,
-            lifecycleState=commitment.lifecycleState,
-            governingBasis=commitment.governingBasis,
-            situationDependencies=commitment.situationDependencies,
-            obligationSet=commitment.obligationSet,
-            progressActuationOwnership=commitment.progressActuationOwnership,
-            capabilityReservations=commitment.capabilityReservations,
-            validatedEffectiveActuationComposition=commitment.validatedEffectiveActuationComposition,
-            evidenceContracts=commitment.evidenceContracts
-        }
+        if not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
+            commitmentContext[#commitmentContext+1] = {
+                commitmentId=commitment.identity,
+                identity=commitment.identity,
+                lifecycleState=commitment.state,
+                governingBasis=commitment.governingBasis,
+                situationDependencies=commitment.situationDependencies,
+                obligationIds=commitment.obligationIds,
+                progressActuationOwnership=commitment.progressActuationOwnership,
+                capabilityReservations=commitment.capabilityReservations,
+                effectiveActuationCompositionId=commitment.effectiveActuationCompositionId,
+                evidenceContracts=commitment.evidenceContracts
+            }
+        end
     end
 
     local candidateSupportEvidence = {

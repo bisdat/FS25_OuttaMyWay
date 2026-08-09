@@ -48,11 +48,17 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
     table.sort(unresolvedCandidates)
 
     local viableIds={}; for _,candidate in OuttaMyWay.ValueRecord.ipairs(viable) do viableIds[#viableIds+1]=candidate.identity end
-    local selected=viable[1]
+    local trafficPolicy=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(operationalPicture,candidateResult.inventory,viable)
+    local selected=trafficPolicy and trafficPolicy.selected or viable[1]
     local commitmentAction
     local nonIntervention
     local explanation
-    if selected~=nil then
+    if trafficPolicy~=nil and trafficPolicy.waitForPreferenceEvidence==true then
+        selected=nil
+        commitmentAction="WAIT"
+        nonIntervention={explicit=true,classification="WAIT_FOR_PREFERENCE_EXHAUSTION_EVIDENCE",governingRequirementKey=trafficPolicy.governingRequirementKey,blockedCandidates=trafficPolicy.blocked}
+        explanation="Traffic Policeman later-band candidate lacks explicit same-picture exhaustion evidence for every earlier preference band"
+    elseif selected~=nil then
         if selected.capability=="CONTINUE_OBSERVATION" then commitmentAction="WAIT"
         elseif selected.capability=="CONTINUE_UNCHANGED" then commitmentAction="MAINTAIN"
         elseif selected.capability=="ESCALATE" then commitmentAction="SETTLE"
@@ -60,7 +66,7 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
         elseif selected.evidenceBasis.maintainsExistingCommitment==true then commitmentAction="MAINTAIN"
         else commitmentAction="REVISE" end
         nonIntervention={explicit=nonActuating[selected.capability]==true,classification=selected.capability}
-        explanation="Selected minimum-cost candidate after every mandatory verdict passed"
+        explanation=trafficPolicy~=nil and "Selected earliest supportable Traffic Policeman preference band after explicit earlier-band exhaustion, then minimum comparison cost within that band" or "Selected minimum-cost candidate after every mandatory verdict passed"
     elseif #unresolvedCandidates>0 then
         commitmentAction="WAIT"
         nonIntervention={explicit=true,classification="WAIT_FOR_EVIDENCE",unresolvedCandidateIds=unresolvedCandidates}
@@ -82,7 +88,7 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
         viableCandidateIds=viableIds,
         selectedCandidateId=selected and selected.identity or nil,
         nonIntervention=nonIntervention,
-        comparisonBasis={rule="MINIMUM_COMPARISON_COST_AFTER_MANDATORY_PASS",rankedCandidates=ranked},
+        comparisonBasis=trafficPolicy and {rule=trafficPolicy.rule,governingRequirementKey=trafficPolicy.governingRequirementKey,rankedCandidates=trafficPolicy.ranked,blockedCandidates=trafficPolicy.blocked or {}} or {rule="MINIMUM_COMPARISON_COST_AFTER_MANDATORY_PASS",rankedCandidates=ranked},
         commitmentAction=commitmentAction,
         explanation=explanation,
         provenance={source="DecisionSelector",operationalPictureId=operationalPicture.identity,candidateInventoryId=candidateResult.inventory.identity,verdictSetId=verdictResult.set.identity}

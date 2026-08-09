@@ -77,7 +77,8 @@ function Validator:loadMap()
     self.elapsed=0; self.lastSignature=nil; self.lastLogAt=-math.huge; self.records={}; self.errorCount=0
     self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.pairDiagnosticSignatures={}; self.warningLastAt={}; self.previousEncounters={}; self.previousPairs={}; self.lastEncounterHeartbeatAt=-math.huge; self.futureSpaceLogSignatures={}; self.futureSpaceHud:reset(); self.transitionHud:reset()
     self.source:reset(); if self.probe~=nil then self.probe:reset() end; if self.fieldWorldSnapshots~=nil then self.fieldWorldSnapshots:reset() end
-    logInfo("Legacy-shadow cleanup conformance active; Future Space remains Encounter-admission authority; lifecycle HUD active; termination precedence retained; Decision passive; Control authority disabled")
+    if self.runtime~=nil and type(self.runtime.resetAutonomousHeadOnState)=="function" then self.runtime:resetAutonomousHeadOnState() end
+    logInfo("Implementation test build active; Future Space remains Encounter-admission authority; autonomous Productive/Productive initial-head-on role comparison enabled; P22 relocation remains bounded test authority")
 end
 function Validator:deleteMap()
     self.source:reset(); if self.probe~=nil then self.probe:reset() end; if self.fieldWorldSnapshots~=nil then self.fieldWorldSnapshots:reset() end
@@ -146,6 +147,10 @@ function Validator:_record(raw)
     })
     self.records[#self.records+1]=record
     self.runtime.trace:append("PASSIVE_LIVE_TRACE",record.epoch,OuttaMyWay.ValueRecord.canonical(record))
+    local gate=OuttaMyWay.prototype22CapabilityGate
+    if gate~=nil and type(gate.observeLiveDecision)=="function" then
+        gate:observeLiveDecision(evaluated,supported)
+    end
     return record
 end
 

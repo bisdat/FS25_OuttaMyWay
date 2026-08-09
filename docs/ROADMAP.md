@@ -1,14 +1,59 @@
-# Current implementation sequence — v4.7.41candidate
+# Current certification sequence — v4.7.49 CERTIFICATION CANDIDATE
 
-1. Review v4.7.41 as a documentation/version-only consolidation from owner-declared canonical v4.7.40; the temporary P22/TS015 evidence harness is carried forward unchanged and production Decision/Control remains disabled.
-2. Treat the Guarded-Recovery Observe-exhaustion contract as settled: temporary Vulnerable Space exists only while OuttaMyWay retains recovery responsibility, and expires on positive existing evidence of full GIANTS native-authority reacquisition.
-3. Treat Convergent Projection as coarse directional evidence only. Its intersection with Vulnerable Space exhausts Observe; do not add exact route prediction, TCPA/DCPA, a fixed horizon, range gate or literal ray-cast policy.
-4. Preserve the existing Traffic Policeman response order after Observe exhaustion: Regulation while positively supportable non-zero native progression can preserve the recovery, Hold only after Regulation exhaustion and only at a supportable current occupancy.
-5. Discover how Situation Assessment can derive conservative Vulnerable Space and Convergent Projection representations from existing Reality evidence without allowing implementation convenience or the dome/headlight analogy to define architecture.
-6. Validate that representation passively against TS015-style bird's-eye/log evidence before granting any production Decision authority.
-7. Preserve ordinary cooperative proximity after vulnerability expiry, including adjacent-lane passage by wide workers, and preserve Protected Progress Alternation when later GIANTS-native movement reverses which demand requires protection.
-8. Only after passive evidence supports the representation should a production vertical slice be proposed; Control remains last.
-9. If Reality contradicts the contract, update architecture rather than defending the representation.
+1. Preserve owner-declared v4.7.41 as authority baseline until explicit canonicalisation.
+2. Package the successful v4.7.48 behaviour unchanged except coherent v4.7.49 release identity/status metadata.
+3. Run full offline and RRS certification; treat any substantive runtime change as a new behavioural test cycle.
+4. Keep 15/5/1 km/h and remaining mechanism geometry explicitly temporary/non-policy despite the live PASS.
+5. If owner canonicalises the exact candidate, use it as the next stable baseline before addressing the known-too-early Encounter Maturation/Commitment Point and later Durable-Separation/sliding-puzzle boundaries.
+
+**Live evidence already satisfied:** autonomous Commitment admission; Condor refuge; event-driven `WAIT_AT_REFUGE`; unrestricted Patriot passage; positive recovery admission; D-0123 Regulation only after recovery became Committed Demand; same-Job native reacquisition; recovery-obligation settlement with Durable Separation still outstanding.
+
+# Historical test sequence — v4.7.48 TEST BUILD
+
+1. Keep owner-declared v4.7.41 as canonical; v4.7.48 is TEST BUILD only.
+2. Reproduce the Patriot-first/Condor-second phase-shift run with no console command.
+3. Verify the autonomous initial REPOSITION creates `[LIVE-COMMITMENT] CREATE` with two obligations.
+4. At Refuge, verify positive `RECOVERY_ADMISSION_ASSESS` keeps Condor Held and does **not** apply D-0123 Regulation to Patriot before ingress. Patriot should continue under GIANTS and pass.
+5. Verify the proposed-recovery signal becomes positively clear and `RECOVERY_ADMISSION_PASS` begins Condor Guarded Recovery without any fixed dwell trigger.
+6. If Patriot later reconverges after ingress starts, verify D-0123 Regulation protects the committed recovery; otherwise no Regulation should occur.
+7. Verify positive GIANTS reacquisition settles only the recovery obligation and leaves the traffic Commitment `WAITING_FOR_EVIDENCE` with Durable Separation outstanding.
+8. If this sequence succeeds, revisit temporary 15/5/1 km/h mechanism literals and production speed selection before certification work; then return to the too-early initial intervention and later complex cross-field family.
+
+# Current test sequence — v4.7.46 TEST BUILD
+
+1. Re-run the Patriot-first TS015 phase shift that previously deadlocked; issue no console command.
+2. Verify `D0123-REGULATION-TEST APPLY` occurs while the selected D-0123 representation is positive and before Condor becomes blocked.
+3. Verify the GIANTS drive-call heartbeat shows route/direction preserved and the max-speed ceiling bounded to the 1 km/h test literal.
+4. Observe whether Condor completes ingress/restoration and whether Patriot avoids converting the recovery into mutual blockage.
+5. Verify Regulation release is justified by positive current-heading clearance or positive GIANTS reacquisition; temporary `UNRESOLVED` evidence must not release the cap.
+6. If the behaviour passes repeatedly, record the D-0123 representation/consequence evidence and then return to the larger implementation catch-up: real continuing Commitment/Committed Demand and removal of P22 fixture policy.
+7. Only after recovery protection is understood, fix the intentionally retained too-early initial Commitment timing and resume the later sliding-puzzle cross-field family.
+
+# Current probe sequence — v4.7.45 TEST/PROBE
+
+1. Keep owner-declared v4.7.41 as canonical authority; v4.7.45 is a non-canonical probe descendant of the live-validated v4.7.44 implementation test.
+2. Freeze v4.7.44 behaviour temporarily, including the known-too-early initial Reposition, because it repeatedly exposes the simpler Guarded-Recovery/headland vulnerability window.
+3. Repeat TS015 runs and correlate `D0123-SHADOW` hypothesis transitions with video. Compare representation quality; do not optimise for one run and do not grant any hypothesis Decision/Control authority.
+4. Seek a representation that becomes positive when Patriot's revealed headland continuation begins consuming Condor's recovery Action Space, remains negative for compatible/retreating development, and expires only on positive GIANTS reacquisition evidence.
+5. Once representation evidence is settled, return to implementation: real continuing Commitment/Committed Demand, Guarded Recovery, Observe exhaustion and `REGULATE_SPEED` using the already-proven GIANTS-owned speed mechanism.
+6. Then correct the initial Encounter Maturation/too-early Commitment timing and resume work on the later complex cross-field/sliding-puzzle family. Do not assume D-0123 alone solves that later family.
+
+
+
+# Historical implementation sequence — v4.7.44 TEST BUILD
+
+1. Keep owner-declared v4.7.41 as the canonical authority. v4.7.42-v4.7.44 remain implementation-test lineage only until live behaviour is satisfactory and a later RRS certification candidate is intentionally produced.
+2. Live-validate **Autonomous Initial Encounter Resolution** with no `resolveheadon` command. The initial both-Productive established head-on must generate both admissible Yield assignments, apply D-0113/D-0118 without fake semantic priority, select `REPOSITION` under D-0115 and dispatch the proven relocation harness before contact.
+3. Do not wait for complete Guarded Recovery before exercising settled architecture. Represent settled lifecycle boundaries where useful, but any genuinely unresolved predicate must remain `UNRESOLVED`; do not hard-code a positive/negative Vulnerable Space answer or invent Convergent Projection geometry.
+4. After the initial encounter operates autonomously, run the natural continuation into the next complex cross-field/post-recovery Encounter. Promote every already-settled Situation Assessment / Decision / Commitment concept that can operate there. Stop precisely where an unresolved representation genuinely blocks authority.
+5. Keep the current P22 TS015 refuge/transition fixture visibly non-production while production Refuge Region qualification is still absent from the replacement core. Replacing that fixture authority is a separate implementation-catch-up objective, not a prerequisite for testing autonomous role selection.
+6. Once the two major encounter classes are operational enough to exercise their architecture, broaden validation to additional assemblies/scenarios before returning to a probe-heavy unknowns phase.
+7. For all implementation code changes: offline conformance → owner live behavioural validation → analyse/revise as needed → only then generate an RRS certification candidate.
+8. Presentation cleanup remains separate. The misleading refuge countdown is suppressed in v4.7.44; the underlying fixture dwell remains internal and explicitly carries no Safe Release authority.
+
+## Implementation discipline
+
+The risk has shifted from insufficient observation to **Probe Debt**: gathering more passive evidence than production consumes. The standing test is now: which real Decision/Control obligation is this new evidence or code change intended to unblock? If none, do not add it.
 
 # Historical roadmap snapshot — v4.7.23 candidate
 

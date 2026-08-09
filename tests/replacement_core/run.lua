@@ -50,8 +50,10 @@ load("scripts/commitment/CommitmentAdmission.lua")
 load("scripts/commitment/GoverningBasisEvaluator.lua")
 load("scripts/commitment/TerminalSettlementEvaluator.lua")
 load("scripts/commitment/DecisionCommitmentBoundary.lua")
+load("scripts/commitment/LiveTrafficCommitmentLifecycle.lua")
 load("scripts/candidates/CandidateSpace.lua")
 load("scripts/candidates/PassiveLiveCandidateSupport.lua")
+load("scripts/candidates/LiveTrafficCandidateSupport.lua")
 load("scripts/constraints/ConstraintEvidence.lua")
 load("scripts/constraints/evaluators/FieldWorldContainment.lua")
 load("scripts/constraints/evaluators/TransitionClearance.lua")
@@ -65,6 +67,7 @@ load("scripts/constraints/evaluators/CommitmentPreconditions.lua")
 load("scripts/constraints/evaluators/EffectiveActuationComposition.lua")
 load("scripts/constraints/evaluators/ReleaseSafety.lua")
 load("scripts/constraints/ConstraintEngine.lua")
+load("scripts/decision/TrafficPolicemanDecisionPolicy.lua")
 load("scripts/decision/DecisionSelector.lua")
 load("scripts/diagnostics/ArchitectureTrace.lua")
 load("scripts/replay/ConformanceAssertions.lua")
@@ -73,6 +76,9 @@ load("scripts/diagnostics/TargetedFieldIdentityProbe.lua")
 load("scripts/diagnostics/FutureSpaceHud.lua")
 load("scripts/diagnostics/TransitionHud.lua")
 load("scripts/diagnostics/PassiveLiveValidator.lua")
+load("scripts/diagnostics/GuardedRecoveryConvergenceProbe.lua")
+load("scripts/prototypes/GuardedRecoveryRegulationTestBridge.lua")
+load("scripts/prototypes/Prototype22TS015Relocation.lua")
 load("scripts/runtime/Runtime.lua")
 
 local passed, failed = 0, 0
@@ -650,7 +656,7 @@ local function decisionPicture(specifications,options)
         representationFitness=options.representationFitness or {},
         provenance={source="sealed-decision-fixture"},
         controlOutcomeEvidence={},
-        candidateSupportEvidence={complete=true,supportBoundary={kind="SEALED_FIXTURE",capabilityBoundary=options.capabilityBoundary or {}},candidateSpecifications=specifications,provenance={source="sealed-fixture"}},
+        candidateSupportEvidence={complete=true,supportBoundary={kind="SEALED_FIXTURE",capabilityBoundary=options.capabilityBoundary or {},decisionPolicy=options.decisionPolicy},candidateSpecifications=specifications,provenance={source="sealed-fixture"}},
         commitmentContext=options.commitmentContext or {}
     })
 end
@@ -715,6 +721,238 @@ test("comparison cost is applied only after mandatory admissibility",function()
     local picture=decisionPicture({cheap,expensive},{representationFitness={{representationId="REP-A",assemblyId="AS-00001",question="SPEED",assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"SPEED"},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}}}})
     local result=newDecisionRuntime():evaluateSealedOperationalPicture(picture)
     equal(result.decision.selectedCandidateId,candidateByCapability(result,"REGULATE_SPEED").identity)
+end)
+
+local function trafficPolicy(requirementKey)
+    return {kind="TRAFFIC_POLICEMAN_SEQUENTIAL_PRIMARY",governingRequirementKey=requirementKey}
+end
+
+local function trafficPreference(candidate,requirementKey)
+    candidate.evidenceBasis.trafficPolicemanPreference={
+        primaryResolution=true,
+        governingRequirementKey=requirementKey,
+        exhaustionEvidence={}
+    }
+    return candidate.evidenceBasis.trafficPolicemanPreference
+end
+
+local function bandExhaustion(pictureId,requirementKey,capability)
+    return {result="PASS",operationalPictureId=pictureId,governingRequirementKey=requirementKey,capability=capability,provenance={source="sealed-fixture"}}
+end
+
+test("Traffic Policeman Decision selects Observe before cheaper later bands",function()
+    local requirement="traffic:EN-1"
+    local observe=candidateSpec("observe-first","CONTINUE_OBSERVATION",100)
+    observe.preconditions.boundedObservationContract={knowledgeGap="intent",expectedRealityEvolution="native motion",preservedUsefulAction="regulate",exhaustionCondition="action-space compression",reassessmentDeadline=110,progressParticipantId="AS-00002"}
+    trafficPreference(observe,requirement)
+    local escalate=candidateSpec("cheap-escalate","ESCALATE",0)
+    trafficPreference(escalate,requirement)
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(decisionPicture({escalate,observe},{decisionPolicy=trafficPolicy(requirement)}))
+    equal(result.decision.selectedCandidateId,candidateByCapability(result,"CONTINUE_OBSERVATION").identity)
+    equal(result.decision.comparisonBasis.rule,"TRAFFIC_POLICEMAN_SEQUENTIAL_PRIMARY")
+end)
+
+test("Traffic Policeman later band waits without explicit same-picture exhaustion evidence",function()
+    local requirement="traffic:EN-1"
+    local escalate=candidateSpec("escalate-without-exhaustion","ESCALATE",0)
+    trafficPreference(escalate,requirement)
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(decisionPicture({escalate},{decisionPolicy=trafficPolicy(requirement)}))
+    equal(result.decision.selectedCandidateId,nil)
+    equal(result.decision.commitmentAction,"WAIT")
+    equal(result.decision.nonIntervention.classification,"WAIT_FOR_PREFERENCE_EXHAUSTION_EVIDENCE")
+end)
+
+test("Traffic Policeman Regulation requires explicit Observe exhaustion from the same Operational Picture",function()
+    local requirement="traffic:EN-1"
+    local regulate=candidateSpec("regulated-progress","REGULATE_SPEED",5)
+    local metadata=trafficPreference(regulate,requirement)
+    metadata.exhaustionEvidence.CONTINUE_OBSERVATION=bandExhaustion("OP-DECISION",requirement,"CONTINUE_OBSERVATION")
+    regulate.representationFitness={requirements={{representationId="REP-A",acceptedStates={"CURRENTLY_FIT"}}}}
+    regulate.evidenceBasis.effectiveActuationComposition={identity="EC-TP",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00001",commitmentId="CM-TP",capability="REGULATE_SPEED",progressActuation=true}}}
+    local picture=decisionPicture({regulate},{decisionPolicy=trafficPolicy(requirement),representationFitness={{representationId="REP-A",assemblyId="AS-00001",question="SPEED",assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"SPEED"},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}}}})
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(picture)
+    equal(result.decision.selectedCandidateId,result.candidates[1].identity)
+    equal(result.decision.comparisonBasis.rankedCandidates[1].preferenceRank,2)
+end)
+
+test("Traffic Policeman exhaustion evidence cannot be reused from an older Operational Picture",function()
+    local requirement="traffic:EN-1"
+    local regulate=candidateSpec("stale-regulation","REGULATE_SPEED",5)
+    local metadata=trafficPreference(regulate,requirement)
+    metadata.exhaustionEvidence.CONTINUE_OBSERVATION=bandExhaustion("OP-OLD",requirement,"CONTINUE_OBSERVATION")
+    regulate.representationFitness={requirements={{representationId="REP-A",acceptedStates={"CURRENTLY_FIT"}}}}
+    regulate.evidenceBasis.effectiveActuationComposition={identity="EC-TP-STALE",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00001",commitmentId="CM-TP",capability="REGULATE_SPEED",progressActuation=true}}}
+    local picture=decisionPicture({regulate},{decisionPolicy=trafficPolicy(requirement),representationFitness={{representationId="REP-A",assemblyId="AS-00001",question="SPEED",assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"SPEED"},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}}}})
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(picture)
+    equal(result.decision.selectedCandidateId,nil)
+    equal(result.decision.nonIntervention.classification,"WAIT_FOR_PREFERENCE_EXHAUSTION_EVIDENCE")
+end)
+
+test("Traffic Policeman escalation requires participant-complete autonomous-space exhaustion",function()
+    local requirement="traffic:EN-1"
+    local escalate=candidateSpec("escalate-complete","ESCALATE",0)
+    local metadata=trafficPreference(escalate,requirement)
+    for _,capability in ipairs({"CONTINUE_OBSERVATION","REGULATE_SPEED","HOLD","REPOSITION"}) do
+        metadata.exhaustionEvidence[capability]=bandExhaustion("OP-DECISION",requirement,capability)
+    end
+    metadata.autonomousSpaceExhaustion={result="PASS",operationalPictureId="OP-DECISION",governingRequirementKey=requirement,completeSupportableAutonomousSpace=true,participantComplete=true,provenance={source="sealed-fixture"}}
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(decisionPicture({escalate},{decisionPolicy=trafficPolicy(requirement)}))
+    equal(result.decision.selectedCandidateId,result.candidates[1].identity)
+    equal(result.decision.commitmentAction,"SETTLE")
+end)
+
+
+local function headOnTestSnapshot()
+    return OuttaMyWay.ObservationSnapshot.new({
+        identity="OS-HEADON",epoch=201,timestamp=20,provenance={source="head-on-test"},
+        fieldWorld={referenceKey="field-world:test",geometryFingerprint="fw"},
+        assemblies={{assemblyId="AS-00001",referenceKey="vehicle-root:101",memberComponentIds={}},{assemblyId="AS-00002",referenceKey="vehicle-root:201",memberComponentIds={}}},
+        geometry={currentSpaceEvidence={},futureSpaceEvidence={},futureSpaceRelationshipEvidence={},demandEvidence={},interactionEvidence={}},
+        motion={closureEvidence={}},
+        aiStates={},playerControl={},jobEpisodeEvidence={},operationMembershipEvidence={},physicalRepresentationEvidence={},controlOutcomes={},unavailableSources={},diagnostics={}
+    })
+end
+
+local function headOnSupportPicture(options)
+    options=options or {}
+    local pair={
+        pairReferenceKey="vehicle-root:101|vehicle-root:201",
+        subjectAssemblyReferenceKey="vehicle-root:101",otherAssemblyReferenceKey="vehicle-root:201",
+        subjectSourceJobToken=options.subjectJobToken or "job-A",otherSourceJobToken=options.otherJobToken or "job-B",
+        subjectAssemblyId="AS-00001",otherAssemblyId="AS-00002",sameOperation=true,operationId="OR-1",
+        encounterActive=true,encounterIdentity="EN-HEADON",evaluated=true,
+        futureSpacePositive=true,fieldBoundedFutureSpacePositive=true,
+        subjectLocalIntentClassification="SETTLED_CONTINUATION",otherLocalIntentClassification="SETTLED_CONTINUATION",
+        currentSpaceIntersects=options.currentInteraction==true,currentFootprintIntersects=options.currentInteraction==true,
+        headingDot=options.headingDot or -0.99,
+        subjectShadowRepresentationAvailable=true,otherShadowRepresentationAvailable=true,
+        subjectRepresentationFitnessState="STRUCTURALLY_INVALID",otherRepresentationFitnessState="STRUCTURALLY_INVALID"
+    }
+    return OuttaMyWay.OperationalPicture.new({
+        identity="OP-HEADON",epoch=200,observationSnapshotId="OS-HEADON",
+        situations={{identity="SI-HEADON",operationId="OR-1",memberAssemblyIds={"AS-00001","AS-00002"},relevantAssemblyIds={"AS-00001","AS-00002"},futureSpaceRelationships={},provenance={}}},
+        encounters={{identity="EN-HEADON",operationId="OR-1",subjectAssemblyId="AS-00001",otherAssemblyId="AS-00002",relationship="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION",evidence={futureSpaceConverges=true}}},
+        identities={assemblies={"AS-00001","AS-00002"},components={},jobEpisodes={active={"JE-A","JE-B"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
+        currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},representationFitness={},
+        provenance={source="head-on-test"},controlOutcomeEvidence={},candidateSupportEvidence={complete=false,supportBoundary={},candidateSpecifications={},provenance={}},commitmentContext={},
+        diagnostics={pairPipeline={pair}}
+    })
+end
+
+local function positiveProductiveEvidenceSource(options)
+    options=options or {}
+    local evidence={
+        ["vehicle-root:101"]={referenceKey="vehicle-root:101",jobToken=options.subjectJobToken or "job-A",evidenceClass="NON_TURN_LINE_ACTIVE",productivePositive=options.subjectProductive~=false},
+        ["vehicle-root:201"]={referenceKey="vehicle-root:201",jobToken=options.otherJobToken or "job-B",evidenceClass="NON_TURN_LINE_ACTIVE",productivePositive=options.otherProductive~=false}
+    }
+    return {getEvidence=function(_,referenceKeyValue,jobToken)
+        local value=evidence[referenceKeyValue]
+        if value==nil or value.jobToken~=jobToken then return nil end
+        return value
+    end}
+end
+
+local function autonomousHeadOnRuntime(options)
+    local runtime=newDecisionRuntime()
+    runtime:setProductiveContinuationEvidenceSource(positiveProductiveEvidenceSource(options))
+    return runtime
+end
+
+test("autonomous head-on support remains passive without positive Productive Continuation evidence",function()
+    local runtime=newDecisionRuntime()
+    local supported=runtime.liveTrafficCandidateSupport:attach(headOnSupportPicture(),headOnTestSnapshot())
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"PASSIVE_LIVE_ZERO_CONTROL")
+end)
+
+test("both Productive established head-on publishes both Yield role assignments without operator command",function()
+    local runtime=autonomousHeadOnRuntime()
+    local supported=runtime.liveTrafficCandidateSupport:attach(headOnSupportPicture(),headOnTestSnapshot())
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"AUTONOMOUS_INITIAL_HEAD_ON_TEST")
+    equal(supported.candidateSupportEvidence.supportBoundary.productionRoleSelection,true)
+    equal(supported.candidateSupportEvidence.supportBoundary.productionRefugeQualification,false)
+    equal(supported.candidateSupportEvidence.supportBoundary.controlAuthority,false)
+    equal(#supported.candidateSupportEvidence.candidateSpecifications,2)
+    local a=supported.candidateSupportEvidence.candidateSpecifications[1]
+    local b=supported.candidateSupportEvidence.candidateSpecifications[2]
+    equal(a.capability,"REPOSITION"); equal(b.capability,"REPOSITION")
+    equal(a.comparisonCost,b.comparisonCost)
+    equal(a.evidenceBasis.autonomousHeadOnBridge.operatorPin,false)
+    equal(b.evidenceBasis.autonomousHeadOnBridge.operatorPin,false)
+end)
+
+test("D-0118 deterministic tie-break selects one of two materially equivalent autonomous head-on roles",function()
+    local runtime=autonomousHeadOnRuntime()
+    local supported=runtime.liveTrafficCandidateSupport:attach(headOnSupportPicture(),headOnTestSnapshot())
+    local result=runtime:evaluateSealedOperationalPicture(supported)
+    equal(#result.candidates,2)
+    equal(result.decision.comparisonBasis.rule,"TRAFFIC_POLICEMAN_SEQUENTIAL_PRIMARY")
+    if result.decision.selectedCandidateId==nil then error("expected one deterministic selected Yield role") end
+    local selected=nil
+    for _,candidate in OuttaMyWay.ValueRecord.ipairs(result.candidates) do if candidate.identity==result.decision.selectedCandidateId then selected=candidate end end
+    if selected==nil then error("selected candidate missing") end
+    equal(selected.capability,"REPOSITION")
+    equal(selected.evidenceBasis.autonomousHeadOnBridge.roleSelectionAuthority,"D0113_TIE_THEN_D0118_COMPARISON")
+end)
+
+test("v4.7.48 autonomous head-on Candidate crosses real Commitment boundary with Yield-only actuation ownership",function()
+    local runtime=autonomousHeadOnRuntime()
+    local supported=runtime.liveTrafficCandidateSupport:attach(headOnSupportPicture(),headOnTestSnapshot())
+    local result=runtime:evaluateSealedOperationalPicture(supported)
+    equal(result.decision.commitmentAction,"CREATE")
+    local selected=nil
+    for _,candidate in OuttaMyWay.ValueRecord.ipairs(result.candidates) do
+        if candidate.identity==result.decision.selectedCandidateId then selected=candidate end
+    end
+    if selected==nil then error("selected autonomous Candidate missing") end
+    local yieldAssemblyId=selected.subject.assemblyId
+    local progressAssemblyId=selected.evidenceBasis.autonomousHeadOnBridge.progressParticipantReferenceKey=="vehicle-root:101" and "AS-00001" or "AS-00002"
+    equal(#selected.evidenceBasis.progressActuationOwnership.assemblyIds,1)
+    equal(selected.evidenceBasis.progressActuationOwnership.assemblyIds[1],yieldAssemblyId)
+    equal(selected.evidenceBasis.effectiveActuationComposition.entries[1].assemblyId,yieldAssemblyId)
+    local application=runtime.decisionCommitmentBoundary:apply(supported,result)
+    equal(application.action,"CREATE")
+    local commitment=runtime.commitments:get(application.commitmentId)
+    equal(commitment.state,"ACTIVE")
+    equal(runtime.authorities:ownerOf(yieldAssemblyId),commitment.identity)
+    equal(runtime.authorities:ownerOf(progressAssemblyId),nil)
+    equal(#runtime.obligations:openForOwner(commitment.identity),2)
+end)
+
+test("autonomous head-on Decision carries same-picture Observe Regulation and Hold exhaustion",function()
+    local runtime=autonomousHeadOnRuntime()
+    local supported=runtime.liveTrafficCandidateSupport:attach(headOnSupportPicture(),headOnTestSnapshot())
+    for _,spec in ipairs(supported.candidateSupportEvidence.candidateSpecifications) do
+        local exhaustion=spec.evidenceBasis.trafficPolicemanPreference.exhaustionEvidence
+        for _,capability in ipairs({"CONTINUE_OBSERVATION","REGULATE_SPEED","HOLD"}) do
+            equal(exhaustion[capability].result,"PASS")
+            equal(exhaustion[capability].operationalPictureId,supported.identity)
+            equal(exhaustion[capability].capability,capability)
+        end
+    end
+end)
+
+test("autonomous head-on bridge refuses positive current physical interaction",function()
+    local runtime=autonomousHeadOnRuntime()
+    local supported=runtime.liveTrafficCandidateSupport:attach(headOnSupportPicture({currentInteraction=true}),headOnTestSnapshot())
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"PASSIVE_LIVE_ZERO_CONTROL")
+    equal(runtime.liveTrafficCandidateSupport:getLastStatus(),"PAIR_ALREADY_IN_CURRENT_PHYSICAL_INTERACTION")
+end)
+
+test("autonomous head-on bridge refuses non-opposed Productive encounter",function()
+    local runtime=autonomousHeadOnRuntime()
+    local supported=runtime.liveTrafficCandidateSupport:attach(headOnSupportPicture({headingDot=0.1}),headOnTestSnapshot())
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"PASSIVE_LIVE_ZERO_CONTROL")
+    equal(runtime.liveTrafficCandidateSupport:getLastStatus(),"PAIR_HEADINGS_NOT_OPPOSED")
+end)
+
+test("autonomous head-on requirement is single-dispatch per Encounter",function()
+    local runtime=autonomousHeadOnRuntime()
+    local first=runtime.liveTrafficCandidateSupport:attach(headOnSupportPicture(),headOnTestSnapshot())
+    local key=first.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.autonomousHeadOnBridge.governingRequirementKey
+    runtime:markAutonomousHeadOnDispatched(key)
+    local second=runtime.liveTrafficCandidateSupport:attach(headOnSupportPicture(),headOnTestSnapshot())
+    equal(second.candidateSupportEvidence.supportBoundary.mode,"PASSIVE_LIVE_ZERO_CONTROL")
+    equal(runtime.liveTrafficCandidateSupport:getLastStatus(),"HEAD_ON_REQUIREMENT_ALREADY_DISPATCHED")
 end)
 
 test("Follower Owns Closure rejects generic Leader reposition",function()
@@ -865,6 +1103,72 @@ test("physical CREATE requires explicit progress-actuation ownership",function()
     equal(result.decision.commitmentAction,"CREATE")
     expectError(function() runtime.decisionCommitmentBoundary:apply(picture,result) end)
     equal(#runtime.commitments:list(),0)
+end)
+
+
+test("v4.7.48 physical CREATE rejects ownership/composition disagreement",function()
+    local move=candidateSpec("physical-mismatch","REPOSITION",1)
+    move.evidenceBasis.governingBasis={responsibilityKey="physical-mismatch"}
+    move.evidenceBasis.progressActuationOwnership={assemblyIds={"AS-00001"}}
+    move.evidenceBasis.effectiveActuationComposition={identity="EC-MISMATCH",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00002",commitmentId="$NEW_COMMITMENT",capability="REPOSITION",effectClass="MOVEMENT",progressActuation=true}}}
+    local picture=decisionPicture({move})
+    local runtime=newDecisionRuntime(); local result=runtime:evaluateSealedOperationalPicture(picture)
+    expectError(function() runtime.decisionCommitmentBoundary:_admitFromCandidate(picture,result.decision,result.candidates[1]) end)
+    equal(#runtime.commitments:list(),0)
+end)
+
+test("v4.7.47 CREATE boundary rebinds proposed composition to admitted Commitment",function()
+    local move=candidateSpec("live-create","REPOSITION",1)
+    move.evidenceBasis.governingBasis={responsibilityKey="live-create"}
+    move.evidenceBasis.progressActuationOwnership={assemblyIds={"AS-00001"}}
+    move.evidenceBasis.effectiveActuationComposition={identity="EC-LIVE-CREATE",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00001",commitmentId="$NEW_COMMITMENT",capability="REPOSITION",effectClass="MOVEMENT",progressActuation=true}}}
+    move.obligationsCreated={
+        {origin={kind="OTM_DISPLACEMENT"},basis={decision="D-0122"},requiredOutcome={kind="NATIVE_CONTINUATION_RESTORED_AND_GIANTS_REACQUIRED"},evidenceContract={kind="POSITIVE_GIANTS_REACQUISITION"},ownershipClass="ORIGIN_BOUND"},
+        {origin={kind="TRAFFIC_INTERVENTION"},basis={decision="D-0119"},requiredOutcome={kind="DURABLE_SEPARATION_SUPPORTED"},evidenceContract={kind="CONTINUATION_AWARE_TRAFFIC_SETTLEMENT_NO_FIXED_DISTANCE_OR_TIME"},ownershipClass="CONTINUITY"}
+    }
+    local runtime=newDecisionRuntime(); local picture=decisionPicture({move})
+    local result=runtime:evaluateSealedOperationalPicture(picture)
+    local admitted=runtime.decisionCommitmentBoundary:_admitFromCandidate(picture,result.decision,result.candidates[1])
+    local commitment=runtime.commitments:get(admitted.commitment.identity)
+    equal(commitment.state,"ACTIVE")
+    equal(#runtime.obligations:openForOwner(commitment.identity),2)
+    equal(#runtime.authorities:tokensForCommitment(commitment.identity),1)
+    if commitment.effectiveActuationCompositionId==nil then error("composition id not rebound onto Commitment") end
+end)
+
+
+test("v4.7.47 failed actuator start releases progress authority but retains responsibility",function()
+    local runtime=newDecisionRuntime()
+    local admitted=runtime.commitmentAdmission:admit({
+        objective={kind="TRAFFIC_RESOLUTION"},governingBasis={responsibilityKey="start-failure"},progressAssemblyIds={"AS-YIELD"},
+        obligationSpecifications={{origin={kind="OTM_DISPLACEMENT"},basis={decision="D-0122"},requiredOutcome={kind="NATIVE_CONTINUATION_RESTORED_AND_GIANTS_REACQUIRED"},evidenceContract={kind="POSITIVE_GIANTS_REACQUISITION"},ownershipClass="ORIGIN_BOUND"}}
+    })
+    local result,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.markActuationStartFailed(runtime,admitted.commitment.identity,{reason="FIXTURE_REFUSED"})
+    equal(reason,nil); equal(result.commitment.state,"WAITING_FOR_EVIDENCE")
+    equal(#result.remainingObligations,1); equal(#runtime.authorities:tokensForCommitment(admitted.commitment.identity),0)
+end)
+
+test("v4.7.47 Native reacquisition settles recovery only and keeps traffic responsibility",function()
+    local runtime=newDecisionRuntime()
+    local admitted=runtime.commitmentAdmission:admit({
+        objective={kind="TRAFFIC_RESOLUTION"},governingBasis={responsibilityKey="recovery-continuity"},progressAssemblyIds={"AS-YIELD"},
+        obligationSpecifications={
+            {origin={kind="OTM_DISPLACEMENT"},basis={decision="D-0122"},requiredOutcome={kind="NATIVE_CONTINUATION_RESTORED_AND_GIANTS_REACQUIRED"},evidenceContract={kind="POSITIVE_GIANTS_REACQUISITION"},ownershipClass="ORIGIN_BOUND"},
+            {origin={kind="TRAFFIC_INTERVENTION"},basis={decision="D-0119"},requiredOutcome={kind="DURABLE_SEPARATION_SUPPORTED"},evidenceContract={kind="CONTINUATION_AWARE_TRAFFIC_SETTLEMENT_NO_FIXED_DISTANCE_OR_TIME"},ownershipClass="CONTINUITY"}
+        }
+    })
+    local result,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.markNativeReacquisition(runtime,admitted.commitment.identity,{kind="POSITIVE_GIANTS_REACQUISITION"})
+    equal(reason,nil); equal(result.commitment.state,"WAITING_FOR_EVIDENCE")
+    equal(#result.settledObligationIds,1); equal(#result.remainingObligations,1)
+    equal(result.remainingObligations[1].requiredOutcome.kind,"DURABLE_SEPARATION_SUPPORTED")
+    equal(#runtime.authorities:tokensForCommitment(admitted.commitment.identity),0)
+end)
+
+test("v4.7.47 recovery admission distinguishes refuge wait from Guarded Recovery start",function()
+    equal(OuttaMyWay.Prototype22TS015Relocation.recoveryAdmissionActionFromSignal({status="POSITIVE"}),"WAIT_AT_REFUGE")
+    equal(OuttaMyWay.Prototype22TS015Relocation.recoveryAdmissionActionFromSignal({status="NEGATIVE"}),"BEGIN_GUARDED_RECOVERY")
+    equal(OuttaMyWay.Prototype22TS015Relocation.recoveryAdmissionActionFromSignal({status="UNRESOLVED"}),"WAIT_FOR_EVIDENCE")
+    equal(OuttaMyWay.Prototype22TS015Relocation.recoveryAdmissionActionFromSignal({status="INVALIDATED"}),"FAIL_CONTEXT")
 end)
 
 test("SETTLING Commitment rejects maintain or revise strategy",function()
@@ -1886,6 +2190,114 @@ test("Future Space HUD reports settled, manoeuvring and intersecting Knowledge",
     equal(hud.lines[2],"Condor: STRAIGHT → 120m"); equal(hud.lines[3],"Patriot: TURNING"); equal(hud.lines[4],"Pair: UNRESOLVED WHILE MANOEUVRING")
     hud:observeRecord({assemblyDiagnostics={{assemblyReferenceKey="A",name="Condor",activeJobVehicleMembership=true,localIntent={classification="SETTLED_CONTINUATION"},futureSpace={boundaryDistance=100}},{assemblyReferenceKey="B",name="Patriot",activeJobVehicleMembership=true,localIntent={classification="SETTLED_CONTINUATION"},futureSpace={boundaryDistance=90}}},pairDiagnostics={{eligible=true,futureSpaceOutcome="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION_POSITIVE"}}})
     equal(hud.lines[4],"Pair: FUTURE SPACES INTERSECT")
+end)
+
+
+test("D-0123 shadow geometry distinguishes convergent from divergent revealed continuation", function()
+    local base={
+        recoveryPose={x=0,z=0,dx=1,dz=0},rejoinTargetX=10,rejoinTargetZ=0,rejoinAnchorX=4,rejoinAnchorZ=0,
+        recoveryCurrentSpanM=4,recoveryInitialSpanM=36,progressSpanM=4
+    }
+    local convergent={} for k,v in pairs(base) do convergent[k]=v end
+    convergent.progressPose={x=20,z=10,dx=0,dz=-1}
+    convergent.previousProgressPose={x=20,z=11,dx=0,dz=-1}
+    local yes=OuttaMyWay.GuardedRecoveryConvergenceProbe.evaluateGeometry(convergent)
+    equal(yes.resolved,true)
+    equal(yes.combinations.COMMITTED_RECOVERY_UNION__CURRENT_HEADING.positive,true)
+
+    local divergent={} for k,v in pairs(base) do divergent[k]=v end
+    divergent.progressPose={x=20,z=10,dx=0,dz=1}
+    divergent.previousProgressPose={x=20,z=9,dx=0,dz=1}
+    local no=OuttaMyWay.GuardedRecoveryConvergenceProbe.evaluateGeometry(divergent)
+    equal(no.resolved,true)
+    equal(no.combinations.CURRENT_TO_REJOIN__CURRENT_HEADING.positive,false)
+end)
+
+test("D-0123 shadow probe carries no actuation vocabulary", function()
+    local probe=OuttaMyWay.GuardedRecoveryConvergenceProbe.new()
+    local status=probe:getStatus()
+    equal(status.active,false)
+end)
+
+
+test("D-0123 Regulation test signal uses committed recovery plus current heading", function()
+    local base={
+        runNumber=1,geometryResolved=true,progressExpectedJobToken="JOB-P",progressEvidenceJobToken="JOB-P",
+        progressEvidenceClass="NON_TURN_LINE_ACTIVE",progressMovingDirection=1,
+        combinations={COMMITTED_RECOVERY_UNION__CURRENT_HEADING={resolved=true,positive=true,clearance=-2.5}}
+    }
+    local positive=OuttaMyWay.GuardedRecoveryRegulationTestBridge.evaluateSignal(base)
+    equal(positive.status,"POSITIVE")
+    equal(positive.reason,"REVEALED_NATIVE_CONTINUATION_INTERSECTS_VULNERABLE_SPACE")
+
+    base.progressEvidenceClass="TURN_SEGMENT"
+    equal(OuttaMyWay.GuardedRecoveryRegulationTestBridge.evaluateSignal(base).status,"POSITIVE")
+
+    base.combinations.COMMITTED_RECOVERY_UNION__CURRENT_HEADING.positive=false
+    base.combinations.COMMITTED_RECOVERY_UNION__CURRENT_HEADING.clearance=8.0
+    equal(OuttaMyWay.GuardedRecoveryRegulationTestBridge.evaluateSignal(base).status,"NEGATIVE")
+
+    base.progressEvidenceClass="NON_TURN_LINE_INACTIVE"
+    equal(OuttaMyWay.GuardedRecoveryRegulationTestBridge.evaluateSignal(base).status,"UNRESOLVED")
+
+    base.progressEvidenceClass="NON_TURN_LINE_ACTIVE"
+    base.progressMovingDirection=-1
+    equal(OuttaMyWay.GuardedRecoveryRegulationTestBridge.evaluateSignal(base).status,"UNRESOLVED")
+    base.progressMovingDirection=1
+    base.progressEvidenceJobToken="JOB-OTHER"
+    equal(OuttaMyWay.GuardedRecoveryRegulationTestBridge.evaluateSignal(base).status,"INVALIDATED")
+end)
+
+test("D-0123 Regulation test bridge maintains through uncertainty and releases only on positive clear or window end", function()
+    local vehicle={name="Patriot"}
+    local authority={states={}}
+    function authority:getState(v) return self.states[v] end
+    function authority:setRegulation(v,speed,ownerTag)
+        self.states[v]={mode="REGULATE",speedKmh=speed,ownerTag=ownerTag,driveCalls=0}
+        return true
+    end
+    function authority:clear(v) self.states[v]=nil end
+    local gate={driveAuthority=authority}
+    local probe={active=true}
+    function probe:getStatus() return {active=self.active} end
+    function probe:getLatestSample() return self.sample end
+    local function sample(positive,evidenceClass)
+        return {
+            runNumber=7,progressVehicle=vehicle,progressName="Patriot 4450",progressReferenceKey="vehicle-root:201",
+            progressExpectedJobToken="JOB-P",progressEvidenceJobToken="JOB-P",progressEvidenceClass=evidenceClass or "NON_TURN_LINE_ACTIVE",progressMovingDirection=1,
+            geometryResolved=true,combinations={COMMITTED_RECOVERY_UNION__CURRENT_HEADING={resolved=true,positive=positive,clearance=positive and -1 or 5}}
+        }
+    end
+    local bridge=OuttaMyWay.GuardedRecoveryRegulationTestBridge.new()
+    OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_ENABLED=true
+    OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_KMH=1.0
+
+    probe.sample=sample(true)
+    bridge:update(gate,probe,1000)
+    equal(bridge:getStatus().active,true)
+    equal(authority:getState(vehicle).mode,"REGULATE")
+    equal(authority:getState(vehicle).speedKmh,1.0)
+
+    -- Loss of positive continuing-intent evidence is uncertainty, not release.
+    probe.sample=sample(true,"NON_TURN_LINE_INACTIVE")
+    bridge:update(gate,probe,1100)
+    equal(bridge:getStatus().active,true)
+    equal(authority:getState(vehicle).mode,"REGULATE")
+
+    -- A positively supported clear current heading may release the cap.
+    probe.sample=sample(false,"NON_TURN_LINE_ACTIVE")
+    bridge:update(gate,probe,1200)
+    equal(bridge:getStatus().active,false)
+    equal(authority:getState(vehicle),nil)
+
+    -- Reapply on renewed convergence, then end on vulnerability-window expiry.
+    probe.sample=sample(true,"TURN_SEGMENT")
+    bridge:update(gate,probe,1300)
+    equal(bridge:getStatus().active,true)
+    probe.active=false
+    bridge:update(gate,probe,1400)
+    equal(bridge:getStatus().active,false)
+    equal(authority:getState(vehicle),nil)
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

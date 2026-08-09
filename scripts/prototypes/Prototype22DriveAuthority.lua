@@ -4,8 +4,9 @@
 --
 -- REGULATE modifies only the speed ceiling passed through GIANTS' existing
 -- driveToPoint request.  REPOSITION deliberately replaces steering/direction
--- only for the explicitly armed probe subject.  No automatic Decision path can
--- populate this module.
+-- only for the explicitly scoped probe subject. v4.7.47 additionally allows the
+-- bounded D-0123 Guarded-Recovery test bridge to populate REGULATE for the
+-- fixture Progress worker; this remains test authority, not production Control.
 
 OuttaMyWay.Prototype22DriveAuthority = {}
 local Authority = OuttaMyWay.Prototype22DriveAuthority
@@ -121,10 +122,10 @@ function Authority:install()
     return true
 end
 
-function Authority:setRegulation(vehicle, speedKmh)
+function Authority:setRegulation(vehicle, speedKmh, ownerTag)
     local ok, reason = self:install()
     if not ok then return false, reason end
-    self.states[vehicle] = {mode = "REGULATE", speedKmh = speedKmh, driveCalls = 0}
+    self.states[vehicle] = {mode = "REGULATE", speedKmh = speedKmh, driveCalls = 0, ownerTag = ownerTag}
     return true
 end
 

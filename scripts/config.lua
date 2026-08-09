@@ -1,9 +1,11 @@
--- FS25_OuttaMyWay v4.7.41 Guarded Recovery Observe-exhaustion contract candidate; canonical v4.7.40 baseline; production Decision/Control remains disabled.
+-- FS25_OuttaMyWay v4.7.49 CERTIFICATION CANDIDATE. Behaviourally identical to the live-PASS v4.7.48 runtime apart from coherent release identity/status metadata.
+-- Initial autonomous Reposition now creates a live replacement-core Commitment; refuge recovery admission is event-driven.
+-- D-0123 Regulation is reserved for convergence that develops after recovery starts. Fixture geometry/mechanism literals remain temporary test authority only.
 -- Canonical architecture authority: v4.6.78.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.41"
+OuttaMyWay.VERSION = "4.7.49"
 OuttaMyWay.ARCHITECTURE_VERSION = "4.6.78"
 OuttaMyWay.RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -40,10 +42,24 @@ OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_ENABLED = true
 OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_INTERVAL_MS = 250
 OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_HEARTBEAT_MS = 2000
 
--- Prototype 22: manual-only Traffic Policeman capability validation. These
+-- Prototype 22: capability validation plus bounded autonomous initial-head-on
+-- actuator dispatch. Manual probe commands remain diagnostic only. These
 -- literals are experimental safety/observation bounds only and carry no
 -- production Decision or policy authority. Production CONTROL_AUTHORITY remains
--- false; P22 cannot arm without an explicit console command.
+-- false; automatic head-on dispatch does not grant general production Control authority.
+
+-- D-0123 Guarded-Recovery Convergence Shadow Validation. Diagnostic cadence only.
+-- No distance, time, speed or intersection result below carries policy or Control authority.
+OuttaMyWay.GUARDED_RECOVERY_CONVERGENCE_PROBE_ENABLED = true
+OuttaMyWay.GUARDED_RECOVERY_CONVERGENCE_PROBE_INTERVAL_MS = 100
+OuttaMyWay.GUARDED_RECOVERY_CONVERGENCE_PROBE_HEARTBEAT_MS = 500
+
+-- v4.7.49 carries forward the live-PASS D-0123 active-recovery Regulation fallback unchanged. Test-fixture authority only.
+-- TEMPORARY IMPLEMENTATION VALUE: the successful v4.7.48 test validated sequencing/integration, not 1 km/h as production speed policy.
+OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_ENABLED = true
+OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_KMH = 1.0
+OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_HEARTBEAT_MS = 500
+
 OuttaMyWay.PROTOTYPE_22_CAPABILITY_GATE_ENABLED = true
 OuttaMyWay.PROTOTYPE_22_REGULATE_DEFAULT_KMH = 1.0
 OuttaMyWay.PROTOTYPE_22_REGULATE_MIN_KMH = 0.5
@@ -70,31 +86,30 @@ OuttaMyWay.PROTOTYPE_22_SPAN_REDUCTION_MIN_M = 1.0
 
 -- TS015 autonomous native-recovery characterisation fixture. These literals
 -- deliberately simulate one complete Traffic Policeman passing-place instruction
--- after an explicit operator command. They are evidence-fixture values only:
+-- after a genuine live autonomous head-on Decision. They are evidence-fixture values only:
 -- they grant no production Refuge Region, clearance, Durable Separation or
 -- Safe Release authority.
 OuttaMyWay.PROTOTYPE_22_TS015_RELOCATE_ENABLED = true
-OuttaMyWay.PROTOTYPE_22_TS015_REPOSITION_SPEED_KMH = 15.0
+OuttaMyWay.PROTOTYPE_22_TS015_REPOSITION_SPEED_KMH = 15.0 -- TEMPORARY TEST MECHANISM; not policy authority
 OuttaMyWay.PROTOTYPE_22_TS015_REPOSITION_TARGET_RADIUS_M = 1.0
 OuttaMyWay.PROTOTYPE_22_TS015_REFUGE_FORWARD_M = 10.0
 OuttaMyWay.PROTOTYPE_22_TS015_REFUGE_LATERAL_M = 30.0
 OuttaMyWay.PROTOTYPE_22_TS015_REFUGE_FIT_SAMPLE_RADIUS_M = 8.0
 OuttaMyWay.PROTOTYPE_22_TS015_REFUGE_FIT_SAMPLE_COUNT = 12
-OuttaMyWay.PROTOTYPE_22_TS015_SETTLE_TIMEOUT_MS = 15000
-OuttaMyWay.PROTOTYPE_22_TS015_MOVE_TIMEOUT_MS = 45000
-OuttaMyWay.PROTOTYPE_22_TS015_MIN_TOTAL_REFUGE_HOLD_MS = 20000
+OuttaMyWay.PROTOTYPE_22_TS015_SETTLE_TIMEOUT_MS = 15000 -- watchdog/failure detection only
+OuttaMyWay.PROTOTYPE_22_TS015_MOVE_TIMEOUT_MS = 45000 -- watchdog/failure detection only
 -- v4.7.40 restoration-first comparison: preserve the settled pre-egress pose as
 -- a Rejoin Anchor, return compact toward a short forward rejoin reference using
 -- the archived empirically successful orientation mechanism, then restore the
 -- original configuration before GIANTS handback. All values remain fixture-only.
 OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_FORWARD_M = 6.0
-OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_ORIENTATION_SPEED_KMH = 5.0
+OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_ORIENTATION_SPEED_KMH = 5.0 -- TEMPORARY TEST MECHANISM; not policy authority
 OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_ORIENTATION_STEER_LZ = 0.30
 OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_ORIENTATION_FORWARD_DOT = 0.25
-OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_ORIENTATION_TIMEOUT_MS = 12000
+OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_ORIENTATION_TIMEOUT_MS = 12000 -- watchdog/failure detection only
 OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_ORIENTATION_MAX_TRAVEL_M = 20.0
-OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_SETTLE_TIMEOUT_MS = 15000
-OuttaMyWay.PROTOTYPE_22_TS015_OBSERVE_MS = 120000
+OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_SETTLE_TIMEOUT_MS = 15000 -- watchdog/failure detection only
+OuttaMyWay.PROTOTYPE_22_TS015_OBSERVE_MS = 120000 -- forensic observation window only; no settlement authority
 OuttaMyWay.PROTOTYPE_22_TS015_OBSERVE_LOG_MS = 2000
 
 -- Transition-only operator signalling: raw forensic logs remain available but

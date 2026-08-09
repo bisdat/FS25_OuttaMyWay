@@ -466,7 +466,7 @@ def test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidenc
     operation=(ROOT/"scripts"/"identity"/"OperationAdmission.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.41"' in config
+    assert 'VERSION = "4.7.49"' in config
     assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     assert "MEMBERSHIP_UPDATED_INCOMPLETE" in operation
     assert "removalDeferred=true" in operation
@@ -489,7 +489,7 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.41"' in config
+    assert 'VERSION = "4.7.49"' in config
     assert 'RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"' in config
     assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" not in config
     for forbidden in ("predictPair(", "evaluateShadowPair(", "composePositiveEvidence(", "legacyShadowPositive", "legacyTCPA", "legacyDCPA"):
@@ -516,7 +516,7 @@ def test_v4728_traffic_policeman_architecture_is_documented_without_production_c
     concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.41"' in config
+    assert 'VERSION = "4.7.49"' in config
     for token in ("Traffic Policeman","Demonstrated Traversability","Revelation Oscillation"):
         assert token in adr
         assert token in glossary
@@ -536,7 +536,7 @@ def test_v4729_staged_recovery_architecture_is_documented_without_production_con
     glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.41"' in config
+    assert 'VERSION = "4.7.49"' in config
     for token in (
         "Progress priority is not exclusive movement authority",
         "positively available recovery corridor",
@@ -561,7 +561,7 @@ def test_v4730_encounter_maturation_architecture_is_documented_without_productio
     concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.41"' in config
+    assert 'VERSION = "4.7.49"' in config
     for token in ("Encounter Maturation","Action-Space Compression"):
         assert token in adr23
         assert token in architecture
@@ -582,7 +582,7 @@ def test_v4731_productive_continuation_probe_is_passive_and_speed_non_authoritat
     probe=(ROOT/"scripts"/"diagnostics"/"ProductiveContinuationProbe.lua").read_text(encoding="utf-8")
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.41"' in config
+    assert 'VERSION = "4.7.49"' in config
     assert "scripts/diagnostics/ProductiveContinuationProbe.lua" in main
     assert "productiveContinuationProbe" in main
     for token in (
@@ -638,7 +638,7 @@ def test_v4732_productive_continuation_preference_is_documented_without_producti
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.41"' in config
+    assert 'VERSION = "4.7.49"' in config
     for token in (
         "Productive Continuation Preference",
         "Productive-Line Cross-Assembly Replication",
@@ -669,7 +669,7 @@ def test_v4733_speed_ordering_evidence_asymmetry_and_configuration_footprint_aut
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'VERSION = "4.7.41"' in config
+    assert 'VERSION = "4.7.49"' in config
     for token in (
         "Native Speed-Ordering Variability",
         "Productive-State Evidence Asymmetry",
@@ -703,7 +703,7 @@ def test_v4736_prototype22_is_manual_capability_gate_not_production_traffic_poli
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
 
-    assert 'VERSION = "4.7.41"' in config
+    assert 'VERSION = "4.7.49"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert 'PROTOTYPE_22_CAPABILITY_GATE_ENABLED = true' in config
     for rel in (
@@ -717,7 +717,8 @@ def test_v4736_prototype22_is_manual_capability_gate_not_production_traffic_poli
     assert 'addConsoleCommand("otmP22"' in gate
     assert "#vehicles < 2" in gate
     assert "self.run ~= nil" in gate
-    assert "automaticDecision=false" in gate
+    assert "autonomousInitialHeadOnTest=true" in gate
+    assert "productionControlAuthority" in gate
     assert "decisionCommitmentBoundary:apply" not in gate
     assert "DecisionSelector" not in gate
     assert "SituationAssessment" not in gate
@@ -759,7 +760,7 @@ def test_v4736_p22_spatial_reposition_requires_real_compaction_and_allows_fold_m
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
 
-    assert 'VERSION = "4.7.41"' in config
+    assert 'VERSION = "4.7.49"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert 'PROTOTYPE_22_HUD_ENABLED = true' in config
     assert 'PROTOTYPE_22_SPAN_REDUCTION_MIN_M' in config
@@ -788,7 +789,7 @@ def test_v4737_ts015_autonomous_relocation_characterisation_harness_is_explicit_
     gate=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
     harness=(ROOT/"scripts"/"prototypes"/"Prototype22TS015Relocation.lua").read_text(encoding="utf-8")
 
-    assert 'VERSION = "4.7.41"' in config
+    assert 'VERSION = "4.7.49"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert 'Prototype22TS015Relocation.lua' in main
     assert main.index('Prototype22TS015Relocation.lua') < main.index('Prototype22CapabilityGate.lua')
@@ -801,14 +802,14 @@ def test_v4737_ts015_autonomous_relocation_characterisation_harness_is_explicit_
     assert 'PROTOTYPE_22_TS015_REPOSITION_SPEED_KMH = 15.0' in config
     assert 'PROTOTYPE_22_TS015_REFUGE_LATERAL_M = 30.0' in config
     assert 'PROTOTYPE_22_TS015_REFUGE_FORWARD_M = 10.0' in config
-    assert 'PROTOTYPE_22_TS015_MIN_TOTAL_REFUGE_HOLD_MS = 20000' in config
+    assert 'PROTOTYPE_22_TS015_MIN_TOTAL_REFUGE_HOLD_MS' not in config
     assert 'PROTOTYPE_22_TS015_OBSERVE_MS = 120000' in config
     assert 'requires exactly two active GIANTS AI field workers' in harness
     assert 'P22 TS015 requires selected Yield assembly fully deployed' in harness
     assert 'sameSourceField' in harness and 'qualifyTarget' in harness
     assert 'obstacleClearance=OPERATOR_OWNED productionAuthority=false' in harness
     assert 'targetClearanceAuthority=FIXTURE_ONLY' in harness
-    assert 'basis=PROBE_LITERAL_NOT_SAFE_RELEASE_AUTHORITY' in harness
+    assert 'recoveryAdmission=EVENT_DRIVEN_NO_DWELL_TIMER' in harness
     assert 'handsOff=true' in harness
     assert 'result=CHARACTERISED' in harness
     assert 'COMPACT_CONFIRMED_DURING_MOVE' in harness
@@ -829,7 +830,7 @@ def test_v4739_ts015_restoration_first_handoff_returns_to_rejoin_anchor_before_g
     harness=(ROOT/"scripts"/"prototypes"/"Prototype22TS015Relocation.lua").read_text(encoding="utf-8")
     drive=(ROOT/"scripts"/"prototypes"/"Prototype22DriveAuthority.lua").read_text(encoding="utf-8")
 
-    assert 'VERSION = "4.7.41"' in config
+    assert 'VERSION = "4.7.49"' in config
     assert 'PROTOTYPE_22_TS015_REJOIN_FORWARD_M = 6.0' in config
     assert 'PROTOTYPE_22_TS015_REJOIN_ORIENTATION_SPEED_KMH = 5.0' in config
     assert 'PROTOTYPE_22_TS015_REJOIN_ORIENTATION_FORWARD_DOT = 0.25' in config
@@ -859,7 +860,7 @@ def test_v4740_guarded_recovery_architecture_consolidation_preserves_non_product
     handover=(ROOT/"docs"/"ENGINEERING_HANDOVER.md").read_text(encoding="utf-8")
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
 
-    assert 'VERSION = "4.7.41"' in config
+    assert 'VERSION = "4.7.49"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     for token in (
         "Native Continuation Restoration",
@@ -887,7 +888,7 @@ def test_v4741_guarded_recovery_observe_exhaustion_contract_is_documented_withou
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     roadmap=(ROOT/"docs"/"ROADMAP.md").read_text(encoding="utf-8")
 
-    assert 'VERSION = "4.7.41"' in config
+    assert 'VERSION = "4.7.49"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert "D-0123" in decision
     for token in ("Vulnerable Space", "Convergent Projection"):
@@ -902,3 +903,165 @@ def test_v4741_guarded_recovery_observe_exhaustion_contract_is_documented_withou
     assert "no permanent exclusion zone" in decision.lower()
     assert "fixed-distance" in decision.lower() and "TCPA/DCPA" in decision
     assert "passively" in roadmap.lower() and "validate" in roadmap.lower()
+
+
+def test_v4742_traffic_policeman_decision_policy_is_implemented_without_unresolved_live_authority():
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    selector=(ROOT/"scripts"/"decision"/"DecisionSelector.lua").read_text(encoding="utf-8")
+    policy=(ROOT/"scripts"/"decision"/"TrafficPolicemanDecisionPolicy.lua").read_text(encoding="utf-8")
+    passive=(ROOT/"scripts"/"candidates"/"PassiveLiveCandidateSupport.lua").read_text(encoding="utf-8")
+    roadmap=(ROOT/"docs"/"ROADMAP.md").read_text(encoding="utf-8")
+
+    assert 'VERSION = "4.7.49"' in config
+    assert 'CONTROL_AUTHORITY_ENABLED = false' in config
+    assert 'TrafficPolicemanDecisionPolicy.lua' in main
+    assert main.index('TrafficPolicemanDecisionPolicy.lua') < main.index('DecisionSelector.lua')
+    assert 'TRAFFIC_POLICEMAN_SEQUENTIAL_PRIMARY' in policy
+    for capability in ('CONTINUE_OBSERVATION','REGULATE_SPEED','HOLD','REPOSITION','ESCALATE'):
+        assert capability in policy
+    assert 'STALE_OPERATIONAL_PICTURE' in policy
+    assert 'completeSupportableAutonomousSpace' in policy
+    assert 'participantComplete' in policy
+    assert 'WAIT_FOR_PREFERENCE_EXHAUSTION_EVIDENCE' in selector
+    assert 'TrafficPolicemanDecisionPolicy:select' in selector
+    assert 'PASSIVE_LIVE_ZERO_CONTROL' in passive
+    assert 'Vulnerable Space' in roadmap and 'Convergent Projection' in roadmap
+    assert 'unimplemented' in roadmap.lower() or 'unresolved' in roadmap.lower()
+
+
+
+def test_v4744_initial_head_on_is_autonomous_without_operator_role_command():
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    probe=(ROOT/"scripts"/"diagnostics"/"ProductiveContinuationProbe.lua").read_text(encoding="utf-8")
+    validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+    p22=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
+
+    assert 'VERSION = "4.7.49"' in config
+    assert 'CONTROL_AUTHORITY_ENABLED = false' in config
+    assert 'AUTONOMOUS_INITIAL_HEAD_ON_TEST' in support
+    assert 'productionRoleSelection=true' in support
+    assert 'productionRefugeQualification=false' in support
+    assert 'operatorCommandRequired=false' in support
+    assert 'productivePositive' in support
+    assert 'PAIR_HEADINGS_NOT_OPPOSED' in support
+    assert 'PAIR_ALREADY_IN_CURRENT_PHYSICAL_INTERACTION' in support
+    assert 'D0113_TIE_THEN_D0118_COMPARISON' in support
+    assert 'CONTINUE_OBSERVATION' in support and 'REGULATE_SPEED' in support and 'HOLD' in support
+    assert 'productivePositive=classification == "NON_TURN_LINE_ACTIVE"' in probe
+    assert 'getEvidence' in probe
+    assert 'setProductiveContinuationEvidenceSource' in main
+    assert 'observeLiveDecision' in validator
+    assert 'HEADON_AUTONOMOUS_DECISION_PASS' in p22
+    assert 'resolveheadon' not in p22
+    assert 'clearheadon' not in p22
+    assert 'productionRefugeAuthority=false' in support or 'productionRefugeQualification=false' in support
+    assert 'TCPA' not in support
+    assert 'DCPA' not in support
+
+
+
+def test_v4745_guarded_recovery_convergence_probe_is_parallel_shadow_only():
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    shadow=(ROOT/"scripts"/"diagnostics"/"GuardedRecoveryConvergenceProbe.lua").read_text(encoding="utf-8")
+    p22=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
+    support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+
+    assert 'VERSION = "4.7.49"' in config
+    assert '<version value="4.7.49">4.7.49</version>' in (ROOT/"modDesc.xml").read_text(encoding="utf-8")
+    assert 'CONTROL_AUTHORITY_ENABLED = false' in config
+    assert 'GUARDED_RECOVERY_CONVERGENCE_PROBE_ENABLED = true' in config
+    assert 'scripts/diagnostics/GuardedRecoveryConvergenceProbe.lua' in main
+    assert 'guardedRecoveryConvergenceProbe' in main
+    assert 'D0123-SHADOW' in shadow
+    assert 'VS_CURRENT_TO_REJOIN' in shadow
+    assert 'VS_CURRENT_TO_ANCHOR' in shadow
+    assert 'VS_COMMITTED_RECOVERY_UNION' in shadow
+    assert 'CP_CURRENT_HEADING' in shadow
+    assert 'CP_OBSERVED_TRAVEL' in shadow
+    assert 'CP_REVEALED_TURN_SWEEP' in shadow
+    assert 'fixedHorizon=false' in shadow
+    assert 'tcpa=false' in shadow and 'dcpa=false' in shadow
+    assert 'decisionAuthority=false' in shadow and 'controlAuthority=false' in shadow
+    assert 'setReposition(' not in shadow
+    assert 'setHold(' not in shadow
+    assert 'setRegulate(' not in shadow
+    assert 'driveAuthority' not in shadow
+    assert 'permissionGate' not in shadow
+    assert 'guardedRecoveryConvergenceProbe:update(self, nowMs)' in p22
+    # v4.7.44 autonomous head-on behaviour remains present rather than being replaced by the probe.
+    assert 'AUTONOMOUS_INITIAL_HEAD_ON_TEST' in support
+    assert 'productionRefugeQualification=false' in support
+
+
+
+def test_v4746_d0123_regulation_bridge_is_bounded_test_authority_only():
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    shadow=(ROOT/"scripts"/"diagnostics"/"GuardedRecoveryConvergenceProbe.lua").read_text(encoding="utf-8")
+    bridge=(ROOT/"scripts"/"prototypes"/"GuardedRecoveryRegulationTestBridge.lua").read_text(encoding="utf-8")
+    drive=(ROOT/"scripts"/"prototypes"/"Prototype22DriveAuthority.lua").read_text(encoding="utf-8")
+    p22=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
+
+    assert 'VERSION = "4.7.49"' in config
+    assert 'CONTROL_AUTHORITY_ENABLED = false' in config
+    assert 'GUARDED_RECOVERY_REGULATION_TEST_ENABLED = true' in config
+    assert 'GUARDED_RECOVERY_REGULATION_TEST_KMH = 1.0' in config
+    assert 'scripts/prototypes/GuardedRecoveryRegulationTestBridge.lua' in main
+    assert 'guardedRecoveryRegulationTestBridge' in main
+    assert 'getLatestSample' in shadow
+    # The diagnostic module itself remains read-only.
+    assert 'setRegulation(' not in shadow
+    assert 'driveAuthority' not in shadow
+    # The bridge consumes exactly the settled test representation pair.
+    assert 'COMMITTED_RECOVERY_UNION__CURRENT_HEADING' in bridge
+    assert 'VS_COMMITTED_RECOVERY_UNION' in bridge
+    assert 'CP_CURRENT_HEADING' in bridge
+    assert 'NON_TURN_LINE_ACTIVE' in shadow
+    assert 'TURN_SEGMENT' in shadow
+    assert 'progressMovingDirection ~= 1' in shadow
+    assert 'REVERSE_REVEALED_DIRECTION_NOT_REPRESENTED_BY_CURRENT_HEADING_TEST' in shadow
+    assert 'UNRESOLVED' in bridge and 'MAINTAIN_IF_ALREADY_ACTIVE' in bridge
+    assert 'VULNERABLE_SPACE_WINDOW_ENDED' in bridge
+    assert 'speedLiteralAuthority=TEMPORARY_IMPLEMENTATION_VALUE_NOT_POLICY' in bridge
+    assert 'productionCommitment=PARTIAL_LIVE_COMMITMENT_CATCHUP' in bridge
+    assert 'productionControlAuthority=false' in bridge
+    assert 'setRegulation(vehicle, speedKmh, OWNER_TAG)' in bridge
+    assert 'ownerTag = ownerTag' in drive
+    assert 'guardedRecoveryRegulationTestBridge:update(self, self.guardedRecoveryConvergenceProbe, nowMs)' in p22
+
+
+def test_v4747_live_commitment_and_event_driven_recovery_admission_catchup():
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    candidate=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    boundary=(ROOT/"scripts"/"commitment"/"DecisionCommitmentBoundary.lua").read_text(encoding="utf-8")
+    lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+    ts015=(ROOT/"scripts"/"prototypes"/"Prototype22TS015Relocation.lua").read_text(encoding="utf-8")
+    gate=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
+    assert 'VERSION = "4.7.49"' in config
+    assert 'CONTROL_AUTHORITY_ENABLED = false' in config
+    assert 'PROTOTYPE_22_TS015_MIN_TOTAL_REFUGE_HOLD_MS' not in config
+    assert 'recoveryAdmission=EVENT_DRIVEN_NO_DWELL_TIMER' in ts015
+    assert 'WAIT_AT_REFUGE' in ts015 and 'BEGIN_GUARDED_RECOVERY' in ts015
+    assert 'regulationBeforeIngress=false' in ts015
+    assert 'RECOVERY_ADMISSION_PASS' in ts015
+    assert 'PROTOTYPE_22_TS015_MIN_TOTAL_REFUGE_HOLD_MS' not in ts015
+    assert 'scripts/commitment/LiveTrafficCommitmentLifecycle.lua' in main
+    assert 'decisionCommitmentBoundary:apply' in lifecycle
+    assert 'markNativeReacquisition' in lifecycle
+    assert 'markActuationStartFailed' in lifecycle
+    assert 'trafficSettlementComplete=false' in lifecycle
+    assert 'NATIVE_CONTINUATION_RESTORED_AND_GIANTS_REACQUIRED' in candidate
+    assert 'DURABLE_SEPARATION_SUPPORTED' in candidate
+    assert '$NEW_COMMITMENT' in candidate and '$NEW_COMMITMENT' in boundary
+    assert 'LiveTrafficCommitmentLifecycle.applyInitialDecision' in gate
+    assert 'LiveTrafficCommitmentLifecycle.markActuationStartFailed' in gate
+    assert 'commitmentId = run.commitmentId' in gate
+    assert 'LiveTrafficCommitmentLifecycle.markNativeReacquisition' in ts015
+    assert 'TEMPORARY TEST MECHANISM' in config
+    assert 'watchdog/failure detection only' in config
+    assert 'forensic observation window only; no settlement authority' in config

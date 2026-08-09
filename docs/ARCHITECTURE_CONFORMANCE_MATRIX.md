@@ -1,6 +1,107 @@
-# v4.7.41 Guarded Recovery Observe-Exhaustion Contract Conformance
+# v4.7.49 Certification Candidate — live-PASS catch-up conformance
 
-| Concern | Required boundary | v4.7.41 candidate | Status |
+| Concern | Canonical requirement / implementation gate | v4.7.49 candidate evidence | Status |
+|---|---|---|---|
+| Candidate baseline | substantive increment must derive from exact owner-declared canonical snapshot | RRS baseline fixed to v4.7.41 SHA-256 `a15b5f3534545d4cbefd1cfc291f254d0921472dc35c09f900935e9f59cddb15` | READY |
+| Behavioural validation | behavioural code must pass owner live test before RRS candidate | v4.7.48 owner live PASS using `log(20260809-102132).txt` / `2026-08-09 11-17-41.mp4` | PASS |
+| Candidate→Commitment ownership | physical actuation ownership must match Effective Actuation Composition exactly | repaired in v4.7.48; live `LIVE-COMMITMENT CREATE` followed by actual Condor refuge relocation | PASS |
+| Refuge waiting | proposed incompatible recovery must not be forced by elapsed dwell | positive convergence produced `WAIT_AT_REFUGE`; `dwellTimerAuthority=false` | PASS |
+| Recovery admission | recovery begins only when presently supportable | positive current-heading clearance produced `RECOVERY_ADMISSION_PASS`; `elapsedAuthority=false` | PASS |
+| Guarded-Recovery convergence | convergence arising after recovery commitment exhausts Observe | later Patriot turn produced positive D-0123 intersection and Regulation | PASS — BOUNDED IMPLEMENTATION |
+| Native reacquisition | recovery obligation settles only after positive same-Job GIANTS reacquisition | `NATIVE_CONTINUATION_FIRST sameJob=true`; lifecycle settled one recovery obligation | PASS |
+| Traffic settlement continuity | mechanical handback must not equal Durable Separation | Commitment became `WAITING_FOR_EVIDENCE`, one obligation remained, `trafficSettlementComplete=false` | PASS — DURABLE SEPARATION STILL OPEN |
+| Numeric speed/time policy | fixture literals must not silently acquire architecture authority | 15/5/1 km/h explicitly temporary; no refuge dwell authority; timeouts/watchdogs diagnostic only | PASS — TEMPORARY DEBT RETAINED |
+| General Control | production Control remains disabled unless separately authorised | `CONTROL_AUTHORITY_ENABLED=false`; bounded P22 slice only | PASS |
+| Certification purity | candidate must not alter successful runtime semantics during certification preparation | v4.7.49 intended delta from v4.7.48 limited to version/status/diagnostic-authority wording and documentation | RRS / DIFF GATE |
+
+# Historical v4.7.48 Commitment / Event-Driven Recovery-Admission Conformance
+
+| Concern | Canonical requirement / implementation gate | v4.7.48 TEST BUILD | Status |
+|---|---|---|---|
+| Recovery admission | D-0122: ingress only when proposed recovery is supportable/affordable; dwell/passage/recession are not authority | positive proposed-recovery convergence keeps Yield Held at refuge; negative starts recovery; unresolved waits | PASS offline / AWAIT LIVE |
+| Progress preservation | do not Regulate Progress merely to create recovery opportunity while Yield already has safe refuge | pre-ingress positive convergence leaves Progress unrestricted under GIANTS | PASS offline / AWAIT LIVE |
+| Active recovery protection | D-0123: convergence after recovery is committed exhausts Observe and reaches Regulation before Hold | existing bounded Regulation bridge remains active only after the recovery shadow window opens | PRESERVED / AWAIT LIVE |
+| Commitment continuity | mechanical choreography must be owned by real Commitment/Obligations | autonomous initial REPOSITION applies real DecisionCommitmentBoundary with recovery + Durable Separation obligations | PASS offline / AWAIT LIVE |
+| Native reacquisition | mechanical handback settles recovery obligation, not traffic responsibility | recovery obligation settles; progress authority releases; Commitment becomes WAITING_FOR_EVIDENCE with Durable Separation open | PASS offline / AWAIT LIVE |
+| Fixed refuge dwell | elapsed time must not authorise ingress | 20 s runtime dwell removed completely | PASS offline |
+| Speed literals | no numeric fixture speed becomes policy | 15/5/1 km/h explicitly temporary test mechanism values pending next live validation | PRESERVED |
+| Time literals | watchdog/diagnostic timing must not become Decision/release policy | remaining timeouts are failure/watchdog only; 120 s observation is forensic only | PRESERVED |
+| Durable Separation | no fixed metres/seconds; continuation-aware evidence still required | obligation represented, production settlement derivation deliberately not implemented | OPEN |
+| Early initial intervention | Encounter Maturation still missing | deliberately unchanged as experimental aid | OPEN |
+| Production Refuge / complex cross-field | do not guess missing geometry/strategy | P22 10/30 m refuge fixture and later sliding-puzzle handling remain non-production | OPEN |
+| Certification | behavioural code must be live-tested before RRS | no RRS produced | OPEN — OWNER LIVE TEST |
+
+# v4.7.46 D-0123 Regulation Behaviour Test Conformance
+
+| Concern | Canonical requirement / test gate | v4.7.46 TEST BUILD | Status |
+|---|---|---|---|
+| Canonical authority | implementation experiment must remain subordinate to v4.7.41 D-0123 | canonical semantics unchanged; test bridge explicitly non-production | PRESERVED |
+| Vulnerable Space | represent protected recovery Action Space, not permanent bubble | selected `VS_COMMITTED_RECOVERY_UNION` derives from remaining P22 recovery legs and realised spans | TEST AUTHORITY |
+| Convergent Projection | presently revealed native continuation; no exact route prediction | selected `CP_CURRENT_HEADING` plus positive same-Job continuing-native-intent evidence | TEST AUTHORITY |
+| Turning | `turn=true` must not itself manufacture convergence | `TURN_SEGMENT` contributes continuing-intent evidence only; geometric heading intersection remains decisive | PRESERVED |
+| Observe exhaustion | positive intersection should advance to Regulation before Hold | selected positive D-0123 signal applies bounded `REGULATE_SPEED`; no Hold bridge added | TEST BEHAVIOUR |
+| Uncertainty after apply | missing evidence must not manufacture release | active Regulation is retained through `UNRESOLVED` samples | PASS offline |
+| Regulation mechanism | GIANTS retains route/steering/direction | existing P22 drive interceptor changes only max-speed ceiling; tagged ownership prevents cross-authority clearing | PASS offline / AWAIT LIVE |
+| Speed policy | fixture literal must not become architecture | 1 km/h explicitly `TEST_ONLY` | PRESERVED |
+| Vulnerability expiry | heightened protection ends on positive GIANTS reacquisition | bridge releases when shadow window closes on existing `NATIVE_CONTINUATION_FIRST` evidence | PASS offline / AWAIT LIVE |
+| Production boundaries | do not imply Commitment/Refuge/Safe Release completion | `CONTROL_AUTHORITY_ENABLED=false`; P22 fixture remains unpromoted | PRESERVED |
+| Validation | behavioural change requires owner live test before RRS | 148 Lua + 57 Python offline; no RRS | OPEN — OWNER LIVE TEST |
+
+# v4.7.45 Guarded-Recovery Convergence Shadow Validation Conformance
+
+| Concern | Canonical requirement / probe gate | v4.7.45 TEST/PROBE | Status |
+|---|---|---|---|
+| Canonical authority | unresolved representation must not silently rewrite D-0123 | v4.7.41 architecture unchanged; hypotheses explicitly diagnostic | PRESERVED |
+| Behaviour freeze | probe must not change the live v4.7.44 head-on/recovery behaviour under study | no Candidate/Decision/Control consumer added; P22 authority calls unchanged | PASS offline / AWAIT LIVE |
+| Vulnerable Space | derive from active recovery obligation, not permanent safety bubble | three recovery-evidence hypotheses use current pose, Rejoin Target/Anchor and realised spans | SHADOW ONLY |
+| Convergent Projection | coarse presently revealed native continuation; no exact GIANTS route reconstruction | current heading, observed travel and previous/current revealed-heading sweep compared | SHADOW ONLY |
+| No prediction horizon | no fixed-distance/time/TCPA/DCPA authority | unbounded directional geometry; explicit `fixedHorizon=false`, `tcpa=false`, `dcpa=false` diagnostics | PRESERVED |
+| Vulnerability lifetime | heightened protection ends on positive native reacquisition, not mechanical handback | probe remains active after release and closes on existing `NATIVE_CONTINUATION_FIRST` evidence | PASS offline / AWAIT LIVE |
+| Observe exhaustion | intersection is evidence authority, not direct actuator command | logs `observeExhaustionShadow`; no Decision or Regulation consumer exists | PRESERVED |
+| Production Control | probe must never regulate/hold/reposition | no drive/permission authority dependency; `CONTROL_AUTHORITY_ENABLED=false` | PASS offline |
+| Early intervention | known v4.7.44 timing defect must not be normalised | documented as temporary experimental aid; deliberately unchanged | OPEN |
+| Validation | compare repeated shadow transitions with Reality | 146 Lua + 56 Python offline; live video/log repetition required | OPEN — OWNER LIVE TEST |
+
+---
+
+# v4.7.44 Autonomous Initial Head-On Role Selection Conformance
+
+| Concern | Canonical requirement / implementation gate | v4.7.44 TEST BUILD | Status |
+|---|---|---|---|
+| Canonical baseline | implementation lineage must remain subordinate to owner-declared v4.7.41 | v4.7.41 canonical identity retained; v4.7.42-v4.7.44 are test lineage | PRESERVED |
+| Productive evidence | positive Productive Continuation needs coherent GIANTS work-line evidence; non-positive evidence must not imply Transitional | only `NON_TURN_LINE_ACTIVE` is promoted as positive Productive for the same Job Episode | PASS offline |
+| D-0113 tie | Productive/Productive supplies no semantic Progress winner | both admissible Yield assignments are generated; no speed/class/width/arrival heuristic | PASS offline |
+| D-0118 equivalence | materially equivalent alternatives may use deterministic implementation tie-breaks with no policy meaning | equal comparison cost; deterministic Candidate ordering selects one without semantic priority | PASS offline / AWAIT LIVE |
+| D-0115 sequencing | established pure head-on proceeds Observe → Regulate → Hold → Reposition with explicit same-picture exhaustion | both candidates carry same-picture exhaustion for Observe, Regulation and in-path Hold | PASS offline / AWAIT LIVE |
+| Automatic invocation | initial head-on must no longer require an operator role command | `resolveheadon`/`clearheadon` removed from P22 command surface; live Decision dispatches automatically | PASS offline / AWAIT LIVE |
+| Repeat protection | one Encounter must not repeatedly redispatch the same Reposition | governing Encounter requirement latched after successful actuator start | PASS offline |
+| Refuge / clearance | test fixture must not masquerade as production Refuge Region qualification | P22 TS015 refuge/transition authority explicitly remains fixture-only | PRESERVED |
+| Guarded Recovery | unresolved Vulnerable Space / Convergent Projection construction must not be guessed | no implementation added | PRESERVED |
+| HUD semantics | fixture dwell must not look like Safe Release authority | countdown replaced by explicit `TEST FIXTURE DWELL — no release authority` | PASS offline / AWAIT LIVE |
+| Certification | behavioural code change requires owner live test before RRS/certification | TEST BUILD only; no RRS package | OPEN — OWNER LIVE TEST |
+
+---
+
+---|---|---|
+| Canonical baseline | implementation must derive from owner-declared v4.7.41 | v4.7.41 canonical hash/Git recorded; v4.7.42 remains non-canonical experiment only | PRESERVED |
+| D-0115 sequencing | live Decision must not skip Observe → Regulate → Hold → Reposition | real `DecisionSelector` sequential policy carried forward and used by the explicit head-on Candidate inventory | PASS offline |
+| Pure head-on Regulation | creep must not be physically trialled when Knowledge already establishes inability to create passing space | same-picture exhaustion records D-0115 pure-head-on Knowledge for Regulation | PASS offline / AWAIT LIVE |
+| Hold semantics | in-path Hold must not create Static Obstacle Conversion | same-picture Hold exhaustion requires the established head-on occupancy to be an invalid waiting place | PASS offline / AWAIT LIVE |
+| Role-selection boundary | Productive/Productive tie must not be broken by unsupported production heuristic | role is supplied only by explicit `resolveheadon` operator fixture pin; `productionRoleSelection=false` | PRESERVED |
+| Job / picture freshness | fixture authority must not survive changed participants or Job Episodes | exact two participant reference keys + Job tokens + same Operation/active Encounter required; changed token fails closed | PASS offline |
+| Encounter evidence | Reposition test must not run before positive in-scope head-on evidence exists | positive field-bounded Future Space plus both `SETTLED_CONTINUATION` required | PASS offline / AWAIT LIVE |
+| Too-late boundary | current physical interaction must not be treated as negative-clearance authority | positive Current-Space/current-footprint interaction rejects the bridge | PASS offline / AWAIT LIVE |
+| Refuge / clearance authority | P22 fixture evidence must not become production Refuge Region or transition-clearance policy | existing P22 field-containment and operator-owned fixture clearance assumptions retained; `productionRefugeQualification=false` | PRESERVED |
+| Guarded-Recovery unresolved geometry | implementation catch-up must not guess Vulnerable Space / Convergent Projection | no construction, fixed radius/range, TCPA/DCPA or route predictor added | PRESERVED |
+| Actuation boundary | explicit test must still pass through genuine live Decision before proven P22 actuator runs | `resolveheadon` only arms; `HEADON_DECISION_PASS` precedes P22 TS015 dispatch | PASS offline / AWAIT LIVE |
+| Production Control | test bridge must not silently enable autonomous traffic control | `CONTROL_AUTHORITY_ENABLED=false`; explicit one-shot fixture only | PRESERVED |
+| Certification gate | code changes require owner live behavioural validation before RRS/canonicalisation | build labelled TEST BUILD; RRS deliberately not generated | OPEN — OWNER LIVE TEST |
+
+---
+
+# v4.7.41 Canonical Guarded Recovery Observe-Exhaustion Contract Conformance
+
+| Concern | Required boundary | v4.7.41 canonical record | Status |
 |---|---|---|---|
 | Canonical baseline | candidate must derive exclusively from owner-declared v4.7.40 | exact canonical package SHA-256 recorded in RRS handoff; no earlier baseline treated as current | PRESERVED |
 | Recovery vulnerability | heightened tolerance must be temporary rather than permanent separation policy | Vulnerable Space exists only while OuttaMyWay retains Guarded Recovery responsibility | ACCEPTED |

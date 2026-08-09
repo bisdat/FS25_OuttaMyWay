@@ -1,8 +1,24 @@
+## 2026-08-09 — v4.7.49 certification note: v4.7.48 live PASS, no new architectural decision
+
+**Status:** implementation validation / knowledge promotion only.
+
+The v4.7.48 owner live run validates the already-settled D-0122/D-0123 sequence: proposed recovery that is already incompatible remains uncommitted while Yield waits at refuge and Progress passes under GIANTS; once recovery becomes positively supportable it may be committed; if new convergence develops after that point, D-0123 Regulation may protect the committed recovery. Positive same-Job GIANTS reacquisition settles the recovery obligation only and does not establish Durable Separation.
+
+The successful live test does **not** decide production numeric speed policy. The active 15/5/1 km/h mechanism values remain temporary implementation/test literals. No time-based refuge-release authority is restored.
+
+No new root architectural concept is introduced by v4.7.49.
+
+## 2026-08-09 — v4.7.48 implementation conformance note
+
+No architectural decision changed. Live v4.7.47 evidence exposed a Candidate–Commitment Authority Contract Gap: physical actuation ownership declared implicitly by Effective Actuation Composition was not copied into the explicit Commitment-admission ownership field. v4.7.48 repairs the implementation and adds exact-set conformance validation. Traffic-role Progress remains GIANTS-owned while selected Yield owns OTM REPOSITION actuation.
+
 ## D-0123 — Exhaust Guarded-Recovery Observation on Vulnerable-Space Convergence
 
 **Status:** Accepted architecture for v4.7.41candidate; production Decision/Control remains disabled
 
 **Context/evidence:** the v4.7.40 carry-forward review confirmed that D-0122 deliberately left one contract open: when Situation Assessment has enough evidence that continued Observation during Guarded Recovery is consuming rather than preserving Action Space. Bird's-eye review of TS015 made the practical boundary visible before exact Future-Space conflict: once Condor turned generally toward recovering Patriot, further unrestricted continuation was no longer a useful way to buy certainty. The same wide workers can nevertheless pass normally in adjacent lanes after recovery vulnerability has ended, so a permanent enlarged clearance envelope would be incorrect.
+
+**v4.7.45 live evidence refinement:** repeated shadow runs narrowed the implementation interpretation without changing the decision above. The traffic-relevant event is not `turn=true`; it is the point at which presently revealed native continuation is directed into remaining protected recovery demand — the explanatory “headlights light the dome” condition. In the stronger phase-shifted run Patriot had already completed its headland turn and was Productive on the return pass when Guarded Recovery began; the selected shadow family was positive at long separation and the pair later progressed through Condor blocked, Patriot blocked and positive Current-Space interaction. Observed travel disappeared once the worker stopped, so instantaneous motion cannot be the sole continuation authority. Current heading combined with positive same-Job continuing-native-intent evidence therefore has increasing support as the coarse projection basis. `VS_COMMITTED_RECOVERY_UNION` has increasing support because it derives vulnerability from remaining recovery demand rather than an invented permanent buffer. These are evidence-supported implementation hypotheses, not yet a certified universal geometric construction.
 
 **Decision — Vulnerable Space:** while Guarded Recovery remains under OuttaMyWay recovery responsibility, the recovering participant has temporary **Vulnerable Space** representing the recovery Action Space whose preservation currently has reduced tolerance for another participant's unrestricted native development. It is a derived Situation Assessment representation, not a new root Space ontology, permanent clearance buffer or claim that the participant physically occupies the whole region. The dome/circle analogy is explanatory only; exact construction is an implementation/evidence question.
 

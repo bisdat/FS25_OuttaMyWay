@@ -28,6 +28,31 @@ local function situationDependencies(picture)
     return result
 end
 
+local function validatePhysicalOwnershipAgainstComposition(ownership, compositionValues)
+    if type(compositionValues) ~= "table" then return end
+    local declared, composed = {}, {}
+    for _, assemblyId in OuttaMyWay.ValueRecord.ipairs(ownership.assemblyIds or {}) do
+        if type(assemblyId) ~= "string" or assemblyId == "" then error("progress-actuation ownership requires assembly identity",3) end
+        declared[assemblyId] = true
+    end
+    for _, entry in OuttaMyWay.ValueRecord.ipairs(compositionValues.entries or {}) do
+        if entry.progressActuation == true then
+            if type(entry.assemblyId) ~= "string" or entry.assemblyId == "" then error("Effective Actuation Composition progress entry requires assembly identity",3) end
+            composed[entry.assemblyId] = true
+        end
+    end
+    for assemblyId in pairs(declared) do
+        if not composed[assemblyId] then
+            error("physical selected Candidate progress-actuation ownership disagrees with Effective Actuation Composition",3)
+        end
+    end
+    for assemblyId in pairs(composed) do
+        if not declared[assemblyId] then
+            error("physical selected Candidate progress-actuation ownership disagrees with Effective Actuation Composition",3)
+        end
+    end
+end
+
 function Boundary.new(identityRegistry,epochSequence,admission,commitmentRegistry,obligationLedger,authorityRegistry,governingBasisEvaluator,terminalSettlementEvaluator)
     return setmetatable({
         identities=identityRegistry,epochs=epochSequence,admission=admission,commitments=commitmentRegistry,
@@ -47,12 +72,11 @@ function Boundary:_admitFromCandidate(picture,decision,candidate)
         end
         for _, assemblyId in OuttaMyWay.ValueRecord.ipairs(ownership.assemblyIds) do progressAssemblyIds[#progressAssemblyIds+1] = assemblyId end
     end
-    local compositionId
     local compositionValues = candidate.evidenceBasis.effectiveActuationComposition
-    if type(compositionValues) == "table" then
-        compositionId = OuttaMyWay.EffectiveActuationComposition.create(compositionValues).identity
+    if physical[candidate.capability] then
+        validatePhysicalOwnershipAgainstComposition(ownership, compositionValues)
     end
-    return self.admission:admit({
+    local admitted = self.admission:admit({
         objective=candidate.purpose,
         governingBasis=basis,
         strategy={selectedCandidateId=candidate.identity,capability=candidate.capability,expectedEffect=candidate.expectedEffect},
@@ -60,8 +84,22 @@ function Boundary:_admitFromCandidate(picture,decision,candidate)
         evidenceContracts=candidate.preconditions.evidenceContracts or {},
         obligationSpecifications=candidate.obligationsCreated,
         progressAssemblyIds=progressAssemblyIds,
-        effectiveActuationCompositionId=compositionId
+        effectiveActuationCompositionId=nil
     })
+    if type(compositionValues) == "table" then
+        local rebound = OuttaMyWay.ValueRecord.toTable(compositionValues)
+        for _, entry in OuttaMyWay.ValueRecord.ipairs(rebound.entries or {}) do
+            if entry.commitmentId == "$NEW_COMMITMENT" then entry.commitmentId = admitted.commitment.identity end
+        end
+        local composition = OuttaMyWay.EffectiveActuationComposition.create(rebound)
+        local revised = OuttaMyWay.CommitmentStateMachine.revise(admitted.commitment,{
+            effectiveActuationCompositionId=composition.identity,
+            epoch=self.epochs:next()
+        })
+        admitted.commitment = self.commitments:save(revised)
+        admitted.effectiveActuationCompositionId = composition.identity
+    end
+    return admitted
 end
 
 function Boundary:apply(picture,decisionResult)

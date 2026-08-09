@@ -211,7 +211,7 @@ local function failHeld(probe, run, reason)
     probe:_setHud("OTM P22 — TS015 HELD", run.vehicleName .. " automation halted", "Failure safe: HOLD retained; use cancel/release manually")
 end
 
-function Harness.start(probe, selector)
+function Harness.start(probe, selector, commitmentContext)
     if OuttaMyWay.PROTOTYPE_22_TS015_RELOCATE_ENABLED ~= true then
         return "P22 TS015 autonomous relocation disabled in config"
     end
@@ -245,6 +245,10 @@ function Harness.start(probe, selector)
     run.initialConfigurationKey = initialConfigKey
     run.initialConfigurationProfileId = initialProfileId
     run.initialFoldEvidence = configEvidence
+    run.commitmentId = commitmentContext and commitmentContext.commitmentId or nil
+    run.commitmentApplicationId = commitmentContext and commitmentContext.commitmentApplicationId or nil
+    run.governingRequirementKey = commitmentContext and commitmentContext.governingRequirementKey or nil
+    run.encounterIdentity = commitmentContext and commitmentContext.encounterIdentity or nil
     run.speedKmh = OuttaMyWay.PROTOTYPE_22_TS015_REPOSITION_SPEED_KMH or 15.0
     run.targetRadiusM = OuttaMyWay.PROTOTYPE_22_TS015_REPOSITION_TARGET_RADIUS_M or 1.0
     run.phase = "TS015_SETTLING"
@@ -254,9 +258,9 @@ function Harness.start(probe, selector)
     local ok, gateReason = probe.permissionGate:setHold(vehicle, "P22-TS015-AUTONOMOUS-RELOCATE")
     if not ok then return "P22 TS015 Hold unavailable: " .. tostring(gateReason) end
     probe.run = run
-    logInfo("AUTONOMOUS_RELOCATE_START yield=%s yieldRef=%s yieldJob=%s progress=%s progressRef=%s progressJob=%s literals=true policyAuthority=false sequence=HOLD_COMPACT_EGRESS_COMPACT_REFUGE_HOLD_REJOIN_RESTORE_HANDOFF_OBSERVE initialSpan=%.2fm %s",
+    logInfo("AUTONOMOUS_RELOCATE_START yield=%s yieldRef=%s yieldJob=%s progress=%s progressRef=%s progressJob=%s commitment=%s literals=TEMPORARY_MECHANISM_ONLY policyAuthority=false sequence=HOLD_COMPACT_EGRESS_COMPACT_REFUGE_WAIT_FOR_RECOVERY_ADMISSION_REJOIN_RESTORE_HANDOFF_OBSERVE initialSpan=%.2fm %s",
         run.vehicleName, run.referenceKey, tostring(run.startJobToken), run.progressVehicleName, run.progressReferenceKey,
-        tostring(run.progressStartJobToken), run.initialSpanM, foldEvidenceText(configEvidence))
+        tostring(run.progressStartJobToken), tostring(run.commitmentId or "none"), run.initialSpanM, foldEvidenceText(configEvidence))
     probe:_setHud("OTM P22 — TS015", "Stopping " .. run.vehicleName, "Autonomous relocation armed; no further command needed")
     return string.format("P22 TS015 relocating %s (Yield) while %s remains GIANTS-owned Progress; automation will refuge/rejoin/restore/release and observe", run.vehicleName, run.progressVehicleName)
 end
@@ -306,17 +310,56 @@ local function beginMove(probe, run)
     return true
 end
 
+local function recoveryAdmissionAssessment(probe, run)
+    local recoveryPose=pose(run.vehicle)
+    local progressPose=pose(run.progressVehicle)
+    local recoverySpan=select(1,probe:_representedSpan(run.vehicle))
+    local progressSpan=select(1,probe:_representedSpan(run.progressVehicle))
+    local geometryEvaluator=OuttaMyWay.GuardedRecoveryConvergenceProbe
+    if geometryEvaluator==nil or type(geometryEvaluator.evaluateGeometry)~="function" or type(geometryEvaluator.evaluateCurrentHeadingSignal)~="function" then
+        return {status="UNRESOLVED",reason="RECOVERY_ADMISSION_EVALUATOR_UNAVAILABLE"}
+    end
+    local geometry=geometryEvaluator.evaluateGeometry({
+        recoveryPose=recoveryPose,progressPose=progressPose,previousProgressPose=nil,
+        recoveryCurrentSpanM=recoverySpan,recoveryInitialSpanM=run.initialSpanM,progressSpanM=progressSpan,
+        rejoinTargetX=run.rejoinTargetX,rejoinTargetZ=run.rejoinTargetZ,rejoinAnchorX=run.rejoinAnchorX,rejoinAnchorZ=run.rejoinAnchorZ
+    })
+    local evidenceSource=OuttaMyWay.productiveContinuationProbe
+    local progressEvidence=evidenceSource and type(evidenceSource.getEvidence)=="function" and evidenceSource:getEvidence(run.progressReferenceKey,run.progressStartJobToken) or nil
+    local sample={
+        geometryResolved=geometry.resolved==true,geometryReason=geometry.reason,combinations=geometry.combinations,
+        progressExpectedJobToken=run.progressStartJobToken,
+        progressEvidenceJobToken=progressEvidence and progressEvidence.jobToken or nil,
+        progressEvidenceClass=progressEvidence and progressEvidence.evidenceClass or nil,
+        progressMovingDirection=progressEvidence and progressEvidence.movingDirection or nil
+    }
+    local signal=geometryEvaluator.evaluateCurrentHeadingSignal(sample)
+    signal.recoverySpanM=recoverySpan
+    signal.progressSpanM=progressSpan
+    signal.progressPose=progressPose
+    return signal
+end
+
+function Harness.recoveryAdmissionActionFromSignal(signal)
+    local status=type(signal)=="table" and signal.status or "UNRESOLVED"
+    if status=="NEGATIVE" then return "BEGIN_GUARDED_RECOVERY" end
+    if status=="POSITIVE" then return "WAIT_AT_REFUGE" end
+    if status=="INVALIDATED" then return "FAIL_CONTEXT" end
+    return "WAIT_FOR_EVIDENCE"
+end
+
 local function startCompactHold(probe, run, nowMs, span, reduction, fold)
     run.spatialResult = "PASS"
     run.compactSpanM = span
     run.spanReductionM = reduction
     run.refugeReadyAt = nowMs
     run.phase = "TS015_COMPACT_REFUGE_HOLD"
-    logInfo("REFUGE_SPATIAL_PASS yield=%s job=%s initialSpan=%.2fm compactSpan=%.2fm reduction=%.2fm target=(%.2f,%.2f) compactHoldBeforeRejoinMs=%d rejoinTarget=(%.2f,%.2f) %s",
+    run.lastRecoveryAdmissionStatus=nil
+    run.lastRecoveryAdmissionReason=nil
+    logInfo("REFUGE_SPATIAL_PASS yield=%s job=%s initialSpan=%.2fm compactSpan=%.2fm reduction=%.2fm target=(%.2f,%.2f) recoveryAdmission=EVENT_DRIVEN_NO_DWELL_TIMER rejoinTarget=(%.2f,%.2f) %s",
         run.vehicleName, tostring(run.startJobToken), run.initialSpanM, span, reduction, run.targetX, run.targetZ,
-        OuttaMyWay.PROTOTYPE_22_TS015_MIN_TOTAL_REFUGE_HOLD_MS or 20000,
         run.rejoinTargetX, run.rejoinTargetZ, foldEvidenceText(fold))
-    probe:_setHud("OTM P22 — TS015 REFUGE", run.vehicleName .. " compact and Held", "Timed fixture rejoin will return toward egress anchor")
+    probe:_setHud("OTM P22 — TS015 REFUGE", run.vehicleName .. " compact and Held", "Assessing traffic before recovery — no dwell timer")
 end
 
 local function chooseRejoinTurnSign(run)
@@ -386,15 +429,35 @@ local function beginRejoin(probe, run, nowMs)
 end
 
 local function maybeBeginRejoin(probe, run, nowMs)
-    local minimum = OuttaMyWay.PROTOTYPE_22_TS015_MIN_TOTAL_REFUGE_HOLD_MS or 20000
-    local elapsed = nowMs - (run.refugeReadyAt or nowMs)
-    if elapsed < minimum then
-        local remaining = math.max(0, math.ceil((minimum - elapsed) / 1000))
-        probe:_setHud("OTM P22 — TS015 REFUGE", run.vehicleName .. " compact and Held", string.format("Fixture rejoin in %ds", remaining))
+    local signal=recoveryAdmissionAssessment(probe,run)
+    local action=Harness.recoveryAdmissionActionFromSignal(signal)
+    local changed=signal.status~=run.lastRecoveryAdmissionStatus or signal.reason~=run.lastRecoveryAdmissionReason
+    run.lastRecoveryAdmissionStatus=signal.status
+    run.lastRecoveryAdmissionReason=signal.reason
+
+    if changed then
+        local clearance=signal.combination and signal.combination.clearance or nil
+        logInfo("RECOVERY_ADMISSION_ASSESS yield=%s job=%s progress=%s progressJob=%s status=%s reason=%s action=%s clearance=%s basis=D0122_D0123_PROPOSED_RECOVERY_COMPATIBILITY dwellTimerAuthority=false regulationBeforeIngress=false",
+            run.vehicleName,tostring(run.startJobToken),run.progressVehicleName,tostring(currentJobToken(run.progressVehicle)),
+            tostring(signal.status),tostring(signal.reason),tostring(action),clearance and string.format("%.2fm",clearance) or "n/a")
+    end
+
+    if action=="FAIL_CONTEXT" then
+        failHeld(probe,run,"recovery-admission-invalidated:"..tostring(signal.reason))
         return false
     end
-    logInfo("REJOIN_READY yield=%s job=%s refugeHoldMs=%d progress=%s progressJob=%s basis=PROBE_LITERAL_NOT_SAFE_RELEASE_AUTHORITY next=NATIVE_CONTINUATION_RESTORATION",
-        run.vehicleName, tostring(run.startJobToken), elapsed, run.progressVehicleName, tostring(currentJobToken(run.progressVehicle)))
+    if action=="WAIT_AT_REFUGE" then
+        probe:_setHud("OTM P22 — REFUGE WAIT",run.vehicleName.." Held at Refuge","Progress continuation occupies recovery — let Progress pass")
+        return false
+    end
+    if action=="WAIT_FOR_EVIDENCE" then
+        probe:_setHud("OTM P22 — REFUGE WAIT",run.vehicleName.." Held at Refuge","Recovery compatibility unresolved — waiting for evidence")
+        return false
+    end
+
+    logInfo("RECOVERY_ADMISSION_PASS yield=%s job=%s progress=%s progressJob=%s status=NEGATIVE reason=%s action=BEGIN_GUARDED_RECOVERY elapsedAtRefugeMs=%d elapsedAuthority=false",
+        run.vehicleName,tostring(run.startJobToken),run.progressVehicleName,tostring(currentJobToken(run.progressVehicle)),
+        tostring(signal.reason),nowMs-(run.refugeReadyAt or nowMs))
     local ok, reason = beginRejoin(probe, run, nowMs)
     if not ok then failHeld(probe, run, "rejoin-start-failed:" .. tostring(reason)) end
     return ok
@@ -579,7 +642,19 @@ function Harness.updateReleaseMonitor(probe, monitor, nowMs, token, currentPose,
         logInfo("NATIVE_CONTINUATION_FIRST yield=%s job=%s sameJob=true delayMs=%d speed=%.2f moved=%s wake=%s authority=GIANTS handsOff=true",
             monitor.vehicleName, tostring(token), nowMs - monitor.releasedAt, speed,
             moved and string.format("%.2fm", moved) or "n/a", tostring(monitor.wakeMethod))
-        probe:_setHud("OTM P22 — TS015 GIANTS", monitor.vehicleName .. " released to GIANTS", "Hands-off recovery observation continues")
+        if monitor.commitmentId~=nil and OuttaMyWay.LiveTrafficCommitmentLifecycle~=nil then
+            local result,commitmentReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.markNativeReacquisition(probe.runtime,monitor.commitmentId,{
+                kind="POSITIVE_GIANTS_REACQUISITION",jobToken=tostring(token),delayMs=nowMs-monitor.releasedAt,
+                movedM=moved,speedKmh=speed,source="Prototype22TS015Relocation.updateReleaseMonitor"
+            })
+            if result==nil then
+                logWarning("LIVE_COMMITMENT_REACQUISITION_FAIL commitment=%s reason=%s trafficSettlementComplete=false",tostring(monitor.commitmentId),tostring(commitmentReason))
+            else
+                logInfo("LIVE_COMMITMENT_RECOVERY_OBLIGATION_SETTLED commitment=%s state=%s remainingObligations=%d trafficSettlementComplete=false next=ORDINARY_TRAFFIC_ASSESSMENT",
+                    tostring(monitor.commitmentId),tostring(result.commitment.state),#(result.remainingObligations or {}))
+            end
+        end
+        probe:_setHud("OTM P22 — TS015 GIANTS", monitor.vehicleName .. " released to GIANTS", "Recovery complete; traffic Commitment remains until Durable Separation")
     end
 
     monitor.maximumTravelM = math.max(monitor.maximumTravelM or 0, moved or 0)

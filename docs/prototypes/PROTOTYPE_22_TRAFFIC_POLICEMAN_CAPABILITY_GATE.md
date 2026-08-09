@@ -2,10 +2,36 @@
 
 ## Status
 
-**Current implementation candidate:** v4.7.41candidate  
-**Baseline:** owner-declared canonical v4.7.40 (`32980f980f80ff8a9f30aa8b11a1097196e6fddf1264f26b810835bc547648cd`; 269 files)  
-**Architecture authority:** canonical v4.7.40 plus owner-agreed v4.7.41candidate D-0123 pending certification  
-**Purpose:** live GIANTS capability/native-recovery characterisation only; no automatic production Traffic Policeman Decision implementation.
+**Current certification candidate:** v4.7.49  
+**Canonical baseline:** owner-declared v4.7.41 (`a15b5f3534545d4cbefd1cfc291f254d0921472dc35c09f900935e9f59cddb15`; Git `1eb64d6fcf328fb566b4aa27d83fe5fdb7ab2911`)  
+**Architecture authority:** canonical v4.7.41 including D-0123  
+**Purpose:** P22 remains the bounded GIANTS physical-mechanism/TS015 actuator harness. v4.7.49 carries forward the owner-live-PASS v4.7.48 Commitment/Obligation and event-driven recovery-admission behaviour unchanged apart from coherent release identity/status metadata. Production Refuge Region qualification, speed policy, Durable Separation and general Control remain incomplete.
+
+
+## v4.7.49 certification consolidation — v4.7.48 owner live PASS
+
+The owner-live v4.7.48 run validated the intended bounded sequence: real Commitment creation; Condor refuge relocation; event-driven `WAIT_AT_REFUGE` while Patriot's revealed continuation remained incompatible; unrestricted GIANTS Patriot passage; recovery admission only after positive clearance; later D-0123 Regulation when a new convergence developed after recovery was committed; and positive same-Job GIANTS reacquisition settling only the recovery obligation.
+
+The existing 10/30 m refuge fixture and 15/5/1 km/h mechanism values remain non-production. The successful run validates orchestration and GIANTS integration, not those numeric values. v4.7.49 introduces no intended behavioural change beyond release identity/status metadata.
+
+
+## v4.7.48 Commitment / recovery-admission catch-up
+
+The P22 physical mechanisms remain bounded donors, but the autonomous initial REPOSITION now has real replacement-core Commitment/Obligation ownership. The fixed refuge dwell is retired. At compact refuge occupancy, P22 consults the validated D-0123 representation as *proposed recovery compatibility*: positive convergence means stay Held and let GIANTS-owned Progress pass; negative permits Guarded Recovery; unresolved waits. The D-0123 Regulation bridge remains available only after recovery has begun. Mechanical native reacquisition settles the recovery obligation only; Durable Separation remains open.
+
+The 10/30 m fixture geometry and 15/5/1 km/h mechanism values remain temporary/non-production. Timeout values are watchdogs or diagnostics, never traffic policy.
+
+## v4.7.46 D-0123 Regulation behaviour test
+
+The v4.7.45 shadow runs support the interpretation that Guarded-Recovery convergence is about presently revealed directional demand, not `turn=true`. v4.7.46 therefore connects exactly one evidence-supported pair, `VS_COMMITTED_RECOVERY_UNION × CP_CURRENT_HEADING`, to the existing P22 Regulation mechanism while the TS015 recovery window is active. Positive same-Job `NON_TURN_LINE_ACTIVE` or active `TURN_SEGMENT` evidence is required; the latter only proves ongoing native development while heading changes and does not itself establish convergence. The behavioural bridge also requires raw GIANTS `lastMovingDirection == FORWARD`; reverse or unresolved movement direction remains fail-closed because current vehicle heading is not a valid reverse continuation projection.
+
+A positive intersection applies a 1 km/h **test literal** to the fixture Progress participant by capping GIANTS' existing `driveToPoint` max speed. GIANTS keeps its route, steering and forward/reverse choice. Once applied, temporary `UNRESOLVED` evidence maintains the cap. A positive clear projection, positive GIANTS reacquisition ending the vulnerability window, or Job/context invalidation releases it. The bridge tags its drive authority so it cannot clear unrelated/manual P22 states.
+
+This is not P22 promotion into production Control. Initial Reposition timing, Refuge Region qualification, transition clearance, production Commitment creation, production Regulation-speed selection, Hold fallback and Safe Release remain outside this test.
+
+## v4.7.44 implementation-test use
+
+The initial TS015 head-on no longer requires `resolveheadon`. Positive both-Productive evidence and D-0113/D-0118 role comparison now occur in the live Candidate/Decision path. P22 receives only the selected Yield reference after that Decision. Manual `relocate` remains available for capability regression work, not production policy. The internal refuge dwell literal remains fixture-only and its HUD wording explicitly states that it has no release authority.
 
 ## v4.7.41 consolidation — Guarded Recovery evidence contract agreed; harness unchanged
 

@@ -1,6 +1,67 @@
+# v4.7.49 CERTIFICATION CANDIDATE handover
+
+Owner-declared canonical remains **v4.7.41** until explicit canonicalisation. v4.7.49 consolidates the successfully live-tested v4.7.48 behaviour without intended substantive runtime change.
+
+**Validated sequence:** `REPOSITION` → real Commitment → Condor refuge → proposed recovery incompatible / `WAIT_AT_REFUGE` → Patriot passes under unrestricted GIANTS → positive recovery clearance → Guarded Recovery → later D-0123 convergence → bounded Regulation → Native Continuation Restoration → same-Job GIANTS reacquisition → recovery obligation settled → Commitment `WAITING_FOR_EVIDENCE` with Durable Separation outstanding.
+
+**Live evidence:** v4.7.48 TEST BUILD SHA-256 `ae9b84ed4e6066cf12fb08557e328b6c4a3db2b7202a09c88c755c7305e571a7`; log `log(20260809-102132).txt` SHA-256 `b211fd6edc930e071f0feb3d21520cf5accdf6b5496b2aaf63da08f68fef60bc`; video `2026-08-09 11-17-41.mp4` SHA-256 `988d4168c294409aed47b7e1cc1ff3c356e533d681b3d7b8359c42f7d8164eb9`.
+
+**Do not promote by implication:** 15 km/h egress/rejoin, 5 km/h orientation and 1 km/h Regulation remain temporary implementation/test values; P22 10/30 m refuge geometry remains fixture-only; Durable Separation, reverse support, production Refuge qualification, Encounter Maturation timing and later sliding-puzzle handling remain open.
+
+**Certification rule:** any substantive runtime edit discovered during candidate preparation invalidates this live PASS and requires a new test-build cycle. Only coherent release identity/status metadata and evidence/governance documentation may differ from v4.7.48.
+
+# Historical v4.7.48 TEST BUILD handover
+
+Owner-declared canonical remains **v4.7.41**. v4.7.48 is a non-canonical implementation test build. The v4.7.46 live result is treated as D-0123 success plus recovery-admission sequencing non-conformance: Patriot Regulation protected Condor's active recovery, but because recovery had been started while Patriot's revealed continuation already occupied the proposed ingress, Condor correctly resumed into the same lane.
+
+The implementation now follows existing D-0122: at the Refuge Region fixture, known positive convergence prevents recovery admission. Condor stays compact/Held while Patriot remains fully GIANTS-owned. Only positive clearance begins Guarded Recovery. If convergence later develops after recovery is committed, the existing D-0123 Regulation bridge remains available. There is no fixed refuge dwell.
+
+The autonomous initial REPOSITION Decision now creates a real replacement-core Commitment. Positive native reacquisition settles Native Continuation Restoration only; Durable Separation remains an open continuity obligation and the Commitment moves to `WAITING_FOR_EVIDENCE`. Do not interpret GIANTS handback as traffic settlement.
+
+All fixed numeric speeds retained by this test lineage are explicitly temporary mechanism values until the next successful live test. Timeout literals are failure/watchdog bounds only. Production speed selection, Refuge qualification, Durable Separation authority, early Encounter Maturation and the later sliding-puzzle encounter remain outside this build.
+
+**Next evidence:** reproduce the Patriot-first/Condor-second phase-shift run. Desired sequence is `Condor refuge → Patriot passes → recovery admission becomes clear → Condor recovery → positive GIANTS reacquisition`, with D-0123 Regulation only if a new convergence develops after ingress starts.
+
+---
+
+# v4.7.46 TEST BUILD handover
+
+Owner-declared canonical remains **v4.7.41**. v4.7.46 is a behavioural test descendant, not a certification candidate. It deliberately retains the v4.7.44/v4.7.45 early initial Reposition and P22 refuge/rejoin fixture because those conditions expose Guarded-Recovery convergence repeatably.
+
+The v4.7.45 shadow evidence refined D-0123: turning is contextual evidence, not the trigger. The operative question is whether the other participant's presently revealed native continuation is directed into the recovering participant's remaining protected recovery demand. For this test only, `VS_COMMITTED_RECOVERY_UNION × CP_CURRENT_HEADING` is connected to the already-proven P22 Regulation actuator. Positive same-Job continuing-native-intent evidence is required, and the current-heading behavioural bridge additionally requires raw GIANTS movement-direction evidence `FORWARD`; reverse/unresolved direction is deliberately not represented by this test. The cap is the existing 1 km/h fixture literal and carries no production speed-policy authority.
+
+A new `GuardedRecoveryRegulationTestBridge` owns only its tagged Regulation state. It maintains that state through temporary `UNRESOLVED` evidence and releases on positive clear projection, positive GIANTS reacquisition ending the vulnerability window, or explicit Job/context invalidation. The diagnostic shadow module remains actuation-free.
+
+Preferred live test: Patriot-first phase-shifted TS015, no console commands. Compare against the v4.7.45 run that deadlocked. Look for `[D0123-REGULATION-TEST] APPLY`, subsequent `SAMPLE` records showing GIANTS input max speed and 1 km/h capped output, absence/presence of Condor blockage, and `RELEASE` reason. Do not interpret success as production Commitment/Refuge/Safe-Release completion.
+
+# v4.7.45 TEST/PROBE handover
+
+Owner-declared canonical remains **v4.7.41**. The current non-canonical live lineage is v4.7.45, built from the owner-live-validated v4.7.44 behaviour with only a passive D-0123 diagnostic addition. Do not request RRS/canonicalisation before live evidence is reviewed.
+
+The v4.7.44 autonomous first-Encounter milestone passed, but it commits Reposition too early. Keep that behaviour for the present probe cycle because it reliably causes Patriot to reach its headland turn while Condor is still in the P22 recovery/resume interval. This exposes the simpler Guarded-Recovery vulnerability case before the later sliding-puzzle cross-field family.
+
+`GuardedRecoveryConvergenceProbe` logs under `[D0123-SHADOW]`. It opens at P22 rejoin/restore, compares 3x3 parallel shadow hypotheses, survives mechanical handback, and closes only on existing positive `NATIVE_CONTINUATION_FIRST` GIANTS-reacquisition evidence. It cannot actuate and its results must not be called production Vulnerable Space/Convergent Projection until repeated video/log evidence supports one construction.
+
+Next discussion should compare first-positive/negative transitions against the visible Patriot headland turn and Condor recovery path. Prefer disproving weak representations over tuning them. Only after the representation is settled should implementation promote continuing Commitment/Committed Demand and Regulation.
+
 # Engineering Handover
 
-## v4.7.41 continuation point
+## v4.7.44 implementation-test continuation point
+
+> **Canonical baseline:** v4.7.41 (`a15b5f3534545d4cbefd1cfc291f254d0921472dc35c09f900935e9f59cddb15`; Git `1eb64d6fcf328fb566b4aa27d83fe5fdb7ab2911`; 269 files)  
+> **Current build:** v4.7.44 TEST BUILD — Autonomous Initial Head-On Role Selection  
+> **Certification:** not requested; owner live validation first  
+> **General production Control:** disabled; selected initial-head-on Decision may dispatch the bounded P22 TS015 test actuator
+
+The owner live-validated v4.7.43 in both reciprocal roles: Patriot Yield succeeded, then Condor Yield succeeded. Repository review then confirmed that D-0113/D-0118 already settle the Productive/Productive role-selection semantics: Productive Continuation Preference is tied; refined admissible Candidate Actions are compared downstream; materially equivalent alternatives may use a deterministic non-semantic implementation tie-break.
+
+v4.7.44 therefore requires no `resolveheadon` command. The live Productive Continuation probe supplies positive Productive authority only for the already-validated `NON_TURN_LINE_ACTIVE` condition on the same Job Episode. A bounded initial-head-on gate then requires positive Future-Space interaction, an active Encounter, both `SETTLED_CONTINUATION`, both Productive, opposed headings and no positive current physical interaction. Both Yield assignments are published where admissible, with equal semantic comparison cost, and the genuine D-0115/D-0118 Decision path selects one.
+
+The selected candidate automatically invokes the existing P22 TS015 relocation harness. **Do not misread this as production Refuge authority.** Field-containment sampling, refuge location, transition clearance, fixture dwell and restoration orchestration remain test-harness mechanisms. The HUD dwell countdown has been replaced by an explicit no-release-authority message, but the internal dwell literal is unchanged.
+
+The next live test is intentionally simple: start TS015 normally and do nothing else. Pass means the initial head-on resolves before contact without a console role command. After that, allow the continuation to expose the next complex cross-field/recovery Encounter. Promote settled architecture until the first genuinely unresolved Guarded-Recovery representation boundary is reached; do not fabricate Vulnerable Space or Convergent Projection results.
+
+## v4.7.41 canonical architecture continuation point
 
 D-0123 closes the Situation Assessment evidence contract left open by D-0122. During Guarded Recovery, the recovering participant has temporary Vulnerable Space while OuttaMyWay still owns recovery responsibility. The other Encounter participant's presently revealed native continuation is represented coarsely as Convergent Projection. Intersection is positive evidence that unrestricted continuation is consuming protected recovery Action Space; `CONTINUE_OBSERVATION` is exhausted and Decision proceeds to the existing Regulation-before-Hold preference.
 
@@ -11,9 +72,7 @@ The heightened vulnerability expires when positive existing Native Handover/rest
 **Next substantive step:** discover and passively validate how existing Reality evidence can represent Vulnerable Space and Convergent Projection. Do not connect that evidence to production Decision/Control until the representation is validated.
 
 
-> **Canonical baseline:** v4.7.40 (`32980f980f80ff8a9f30aa8b11a1097196e6fddf1264f26b810835bc547648cd`; 269 files)  
-> **Candidate:** v4.7.41 Guarded Recovery Observe-Exhaustion Contract  
-> **Control authority:** production Decision/Control disabled; temporary manual P22/TS015 evidence actuator only
+**Historical v4.7.41 release-construction record:** derived from then-canonical v4.7.40 (`32980f980f80ff8a9f30aa8b11a1097196e6fddf1264f26b810835bc547648cd`; 269 files); production Decision/Control was disabled and the temporary manual P22/TS015 evidence actuator remained the only actuation surface.
 
 ## v4.7.40 continuation point
 

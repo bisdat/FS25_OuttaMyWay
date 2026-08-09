@@ -1,12 +1,48 @@
-# Current v4.7.40 architecture/validation boundary
+# v4.7.49 certification-candidate boundaries
 
-- **Native Continuation Restoration is accepted in principle, not exact-pose routing authority.** Current Condor/Patriot evidence supports approximate return toward the pre-egress continuation context; no requirement exists to reproduce exact position or heading unless later Reality demonstrates the need.
-- **Guarded Recovery trigger evidence is unresolved.** Architecture now requires Traffic Policeman protection of a committed recovery, but Situation Assessment does not yet expose the complete production evidence contract that tells Decision when Observe becomes unaffordable and Regulation/Hold is justified.
-- **The v4.7.39 fixture dwell is not recovery authority.** Physical passage, elapsed refuge time or present recession cannot independently establish safe ingress.
-- **Protected Progress Alternation is not scripted choreography.** Production logic must not encode fixed A/B sequences or one-worker-at-a-time movement; authority follows current protected demand.
-- **Maximum supportable speed has no production literal.** v4.7.37-v4.7.39 test speeds remain fixture values only.
-- **Precision Farming remains outside the standard validation environment.** It supplied supplementary agronomic-view evidence for one Patriot experiment only; normal tests exclude all DLCs.
-- **Mechanical GIANTS handback is not traffic-resolution proof.** Commitment discharge still requires continuation-aware Durable Separation.
+- **Initial intervention remains too early.** Current autonomous initial-head-on admission/Decision still collapses Encounter admission into early REPOSITION sooner than the agreed Encounter Maturation architecture requires. The successful v4.7.48 run does not close that defect.
+- **Refuge selection remains fixture-derived.** The active P22 10 m forward / 30 m lateral geometry and sampling are not production Refuge Region qualification, arbitrary obstacle clearance, or general transition-sweep authority.
+- **Speed literals remain temporary.** 15 km/h egress/rejoin, 5 km/h orientation, and 1 km/h D-0123 Regulation are implementation/test-mechanism values only. Live success does not promote them into policy.
+- **Durable Separation is incomplete.** Positive GIANTS reacquisition settles Native Continuation Restoration only; the live Commitment correctly remains `WAITING_FOR_EVIDENCE` with traffic settlement incomplete. Production Durable Separation/Return Potential evidence is not yet implemented.
+- **Reverse support remains incomplete.** Current behavioural Convergent Projection requires positive forward GIANTS direction; reverse projection and OTM reverse actuation remain unresolved.
+- **Later complex cross-field/sliding-puzzle encounters remain unresolved.** The candidate validates the initial refuge/pass/recovery sequence, not the whole complex-encounter family.
+- **General production Control remains disabled.** `CONTROL_AUTHORITY_ENABLED=false`; active authority remains bounded to the P22-derived implementation slice.
+
+# Historical v4.7.48 test-build boundaries
+
+- Initial head-on Reposition remains intentionally too early; Encounter Maturation is not yet implemented.
+- P22 refuge geometry (10 m forward / 30 m lateral) is still fixture authority, not production Refuge Region qualification or transition/obstacle clearance.
+- 15 km/h egress/rejoin, 5 km/h orientation and 1 km/h active-recovery Regulation are temporary test mechanism literals pending live validation; they are not production speed policy.
+- Remaining timeouts are watchdog/failure detection only; 120 s is a forensic observation window. No time literal authorises recovery, release or Durable Separation.
+- Event-driven recovery admission is bounded to the current forward-heading D-0123 representation; reverse projection remains unresolved.
+- Durable Separation is represented as an open Commitment obligation but production settlement evidence is not yet implemented.
+- Later complex cross-field/sliding-puzzle resolution remains open.
+- `CONTROL_AUTHORITY_ENABLED=false`; bounded P22 mechanisms remain the only actuator path.
+
+# v4.7.46 test-build boundaries
+
+- **D-0123 Regulation is test-fixture authority only.** The selected `COMMITTED_RECOVERY_UNION × CURRENT_HEADING` representation is evidence-supported but not yet certified as the final production construction.
+- **1 km/h is a P22 test literal.** It validates whether bounded GIANTS-owned progression can protect recovery; it is not maximum-supportable-speed policy.
+- **Initial Reposition remains too early.** Retained deliberately for this experiment; Encounter Maturation/Commitment timing still needs correction.
+- **P22 Refuge Region/transition clearance remains fixture-only.** Success here must not be read as production refuge promotion.
+- **No production Commitment is created.** The Regulation bridge mirrors the D-0123 consequence only inside the known TS015 recovery fixture.
+- **Later cross-field/sliding-puzzle resolution remains open.** D-0123 may solve the vulnerable recovery phase without solving the later ordinary complex Encounter.
+
+# v4.7.45 active probe limitations
+
+- **Initial intervention is too early:** v4.7.44/v4.7.45 can commit the initial head-on Reposition immediately after supported Future-Space conflict while large Action Space remains. This is not accepted production Encounter Maturation behaviour. It is temporarily retained because it exposes a repeatable Guarded-Recovery vulnerability experiment.
+- **D-0123 representation remains unsettled:** the three Vulnerable-Space and three Convergent-Projection constructions in `GuardedRecoveryConvergenceProbe` are parallel shadow hypotheses only. A positive result has no Decision/Control authority.
+- **P22 remains unpromoted:** refuge target, transition-clearance assumption, fixture dwell, rejoin literals and immediate restoration-first handoff remain test choreography, not production Refuge/Commitment/Guarded-Recovery/Safe-Release authority.
+- **Later complex cross-field/sliding-puzzle problem remains:** D-0123 may protect the recovery-phase near miss but does not yet resolve ordinary later manoeuvring Future Space, which can still become `UNRESOLVED` while turning.
+
+# Current v4.7.44 implementation-test boundary
+
+- **Initial Productive/Productive Yield selection is no longer architecturally blocked.** D-0113 supplies the preference tie; D-0118 supplies downstream comparison and deterministic non-semantic tie-breaking for materially equivalent alternatives. v4.7.44 implements that bounded initial-head-on path.
+- **Production Refuge Region qualification remains unimplemented in the replacement core.** Automatic role selection still dispatches the P22 TS015 refuge fixture; its target/clearance assumptions remain test authority only.
+- **Transition clearance is not negative-clearance authority.** P22 field sampling and the known open TS015 fixture do not generalise to arbitrary obstacles or arbitrary fields.
+- **Guarded-Recovery Vulnerable Space / Convergent Projection construction remains unresolved.** No hard-coded positive/negative response, fixed radius, range, TCPA/DCPA or route reconstruction is introduced.
+- **The internal TS015 refuge dwell literal remains a fixture.** HUD countdown semantics are suppressed; the display explicitly says it has no release authority.
+- **General production Control remains disabled.** v4.7.44 is a test build; autonomous dispatch is limited to the bounded initial-head-on Decision bridge.
 - **OuttaMyWay-directed reverse remains `UNRESOLVED`.**
 
 # Current v4.7.36 validation boundary

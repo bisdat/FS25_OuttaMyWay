@@ -1,3 +1,91 @@
+## 2026-08-09 — v4.7.49 certification consolidation after v4.7.48 live PASS
+
+**Observation:** v4.7.48 completed the intended end-to-end refuge/pass/recovery sequence. `CM-00001` was created at the autonomous REPOSITION Decision; Condor physically reached refuge; positive proposed-recovery convergence held Condor while Patriot passed unrestricted; recovery began only after positive clearance; a later Patriot turn converged after recovery was committed and D-0123 Regulation protected the remaining recovery demand; positive same-Job GIANTS reacquisition settled only the recovery obligation.
+
+**Validation:** this confirms the implementation relationship between D-0122 recovery admission and D-0123 Guarded-Recovery protection. It also validates the Candidate–Commitment Authority Contract repair from v4.7.48 in live execution.
+
+**Non-discovery:** no new major architecture is claimed. The live result implements already-settled concepts. The remaining open defects are implementation/architecture boundaries already named: early Encounter Maturation/Commitment Point, production Refuge qualification, temporary speed policy, reverse support, Durable Separation, and later sliding-puzzle encounters.
+
+**Certification decision:** prepare v4.7.49 as a behaviourally unchanged candidate. Numeric mechanism literals remain explicitly temporary; certification must not turn successful test constants into policy.
+
+## 2026-08-09 — v4.7.48 Candidate–Commitment Authority Contract repair
+
+**Observe:** v4.7.47 selected the correct autonomous REPOSITION Candidate but threw `physical selected Candidate requires explicit progress-actuation ownership` before P22 relocation began. Condor therefore never moved to refuge and the native head-on continued.
+
+**Interpretation:** architecture was not disproved. The live Candidate encoded Yield-only movement in Effective Actuation Composition but omitted the separate Commitment-admission ownership declaration required by the enforcing boundary.
+
+**Implement:** autonomous REPOSITION now declares its Yield assembly as sole physical-actuation owner. The Commitment boundary additionally cross-checks that declaration against every `progressActuation=true` assembly in Effective Actuation Composition before admission.
+
+**Validate:** real autonomous Candidate → Decision → Commitment integration now proves an ACTIVE Commitment owns only Yield actuation and leaves Progress GIANTS-owned. A disagreement fixture is rejected before Commitment creation. Existing recovery sequencing and literal authority are unchanged.
+
+**Record:** named implementation finding **Candidate–Commitment Authority Contract Gap**. This is an implementation contract defect, not a new architectural concept.
+
+## 2026-08-09 — v4.7.47 recovery-admission sequencing and Commitment catch-up
+
+**Observe:** v4.7.46 successfully slowed Patriot when D-0123 convergence threatened Condor's active recovery. Condor completed restoration, but the delay allowed it to re-enter the same opposed lane; after vulnerability expiry both workers accelerated into a renewed head-on.
+
+**Discuss:** this does not weaken D-0123. Existing D-0122 already distinguishes *authorising* recovery from *protecting an authorised recovery*. If Patriot's presently revealed continuation already consumes proposed ingress while Condor is safely at refuge, regulating Patriot to make ingress possible is unnecessarily disruptive and produces a poor successor Situation. The lower-authority sequence is refuge wait → Patriot pass → recovery admission.
+
+**Hypothesise:** using the already-validated `COMMITTED_RECOVERY_UNION × CURRENT_HEADING` representation before recovery begins should identify whether recovery is presently supportable. Positive convergence should retain Hold at refuge without regulating Progress; negative convergence should admit Guarded Recovery; unresolved evidence should wait.
+
+**Implement:** v4.7.47 removes the fixed refuge dwell, adds event-driven recovery admission, creates a real Commitment from the autonomous initial REPOSITION Decision, and separates Native Continuation Restoration from the still-open Durable Separation obligation. D-0123 Regulation remains only for convergence arising after recovery begins.
+
+**Literal audit:** egress/rejoin 15 km/h, orientation 5 km/h, and active-recovery Regulation 1 km/h remain temporary TEST MECHANISM values pending live validation. Timeouts are watchdog/failure detection only; the 120 s observation window is forensic only. No elapsed time or fixed speed grants traffic authority.
+
+**Validate:** offline 152 Lua + 58 Python before package finalisation. Live validation remains required.
+
+**Record:** implementation catch-up under existing D-0099/D-0119/D-0122/D-0123; no new root architectural concept introduced.
+
+## 2026-08-09 — D-0123 shadow evidence promoted to bounded Regulation behaviour test
+
+**Observe:** two v4.7.45 shadow runs showed that convergence is not fundamentally a headland-turn event. In the stronger phase-shifted run Patriot had already completed its headland turn and was Productive on the return pass when Condor's recovery began; `VS_COMMITTED_RECOVERY_UNION × CP_CURRENT_HEADING` was positive at long separation and the pair later developed Condor blocked → Patriot blocked → positive Current-Space interaction.
+
+**Discuss:** the useful explanatory rule is “the headlights light the dome”: Traffic Policeman cares where currently revealed native continuation is directed, not whether GIANTS reports `turn=true`. The “dome” is better understood as remaining Guarded-Recovery Committed Demand rather than an invented permanent safety bubble. Observed travel alone is insufficient because it disappears under blockage/Regulation while native intent may remain.
+
+**Hypothesise:** current heading plus positive same-Job continuing-native-intent evidence can support coarse Convergent Projection; remaining known P22 recovery legs plus realised spans can stand in for Vulnerable Space during this fixture. Once positive convergence is established, temporary evidence loss should maintain Regulation rather than create release oscillation.
+
+**Implement:** v4.7.46 adds a separate `GuardedRecoveryRegulationTestBridge` that consumes only `COMMITTED_RECOVERY_UNION__CURRENT_HEADING` and applies the proven P22 speed-ceiling interceptor to the Progress worker at the existing 1 km/h test literal. Shadow diagnostics remain read-only. Production Control stays disabled.
+
+**Validate next:** rerun the previously deadlocking Patriot-first TS015 phase shift. We need to see whether D-0123 APPLY precedes blockage, whether Patriot actually receives/obeys the capped GIANTS drive ceiling, whether Condor completes recovery, and whether release occurs from positive clearance or vulnerability expiry without oscillation.
+
+# 2026-08-09 — v4.7.45 Guarded-Recovery Convergence Shadow Validation
+
+**Observation:** v4.7.44 autonomously resolved the initial TS015 head-on, but did so very early. During the resulting long recovery interval Patriot reached a headland turn while Condor was still recovering/resuming; video showed a near miss before the later complex cross-field blockage.
+
+**Interpretation:** the early intervention is a behavioural defect for eventual production timing but currently creates a useful repeatable experiment for D-0123. The immediate unknown is not whether Traffic Policeman should prefer Regulation after vulnerability convergence—that is already settled—but how Vulnerable Space and Convergent Projection should be represented from positive Reality evidence.
+
+**Hypothesis:** Vulnerable Space may be derivable from OuttaMyWay-owned recovery geometry rather than an invented safety bubble. Three shadow representations are therefore compared: current recovery pose→rejoin target at current realised span; current pose→retained Rejoin Anchor at current span; and a union of remaining known recovery legs using current compact span plus the pre-intervention realised span for restoration near the anchor. Patriot's convergence is shadowed by current heading, observed travel direction, and the union of previous/current revealed headings during turning.
+
+**Implementation:** added `GuardedRecoveryConvergenceProbe.lua` only. It is invoked read-only from P22, begins at rejoin/restore, remains alive across mechanical handback, and terminates on existing positive `NATIVE_CONTINUATION_FIRST` evidence. No Candidate, Decision, Commitment or Control path reads its output. No P22 mechanism is promoted.
+
+**Validation intent:** repeat the same head-on/recovery run and compare `D0123-SHADOW` transition timestamps with video. A disproven shadow hypothesis is a useful result; avoid tuning geometry to force the desired answer.
+
+## 2026-08-09 — Reciprocal head-on PASS and autonomous role-selection implementation
+
+**Observe:** owner live tests of v4.7.43 successfully relocated Patriot as explicit Yield and then Condor as explicit Yield through the same genuine live `REPOSITION` Decision → P22 TS015 execution path. Both completed the tested refuge/rejoin/restoration sequence. The refuge HUD countdown was observed and correctly identified as a fixture dwell, not Safe Release authority.
+
+**Discuss:** repository review corrected an implementation assumption. D-0113 already says Productive/Productive is a preference tie rather than a Decision deadlock. D-0118 already says materially equivalent admissible alternatives may remain architecturally indifferent and use deterministic implementation tie-breaks with no policy meaning. The console role pin was therefore an implementation bridge, not evidence of missing role-arbitration architecture.
+
+**Hypothesis / implement:** v4.7.44 removes the initial-head-on operator pin from the live path. The Productive Continuation probe now exposes only one promoted semantic: `NON_TURN_LINE_ACTIVE` is positive Productive evidence for the same Job Episode; all other probe states remain non-positive and do not infer Transitional Continuation. The live head-on Candidate support requires one active same-Job Encounter, positive field-bounded Future-Space interaction, both `SETTLED_CONTINUATION`, both positively Productive, opposed headings and no already-positive current physical interaction. It publishes both admissible Yield `REPOSITION` candidates at equal comparison cost. D-0118 deterministic tie-breaking therefore carries no semantic priority.
+
+**Actuation boundary:** selection automatically dispatches the previously live-validated P22 TS015 relocation harness. This is intentional implementation staging: role selection is now architectural; Refuge Region qualification and transition clearance remain fixture authority and are not silently promoted. The same Encounter is single-dispatch latched.
+
+**Validate:** replacement-core Lua tests 144/144 PASS; Python structural/conformance tests 55/55 PASS before packaging. Owner live validation remains the authority for behaviour. No RRS/certification request is made.
+
+**Record:** suppress the refuge dwell countdown wording in the temporary HUD; display `TEST FIXTURE DWELL — no release authority` instead. Guarded-Recovery Vulnerable Space / Convergent Projection construction remains unresolved and unchanged.
+
+## 2026-08-09 — Implementation catch-up, Probe Debt and the initial head-on vertical slice
+
+**Observe:** v4.7.42 implemented canonical D-0115 sequential Traffic Policeman Decision ordering inside the real `DecisionSelector`, but owner live testing showed no observable head-on change. The result was expected once the runtime path was inspected: live Candidate support still published only `CONTINUE_OBSERVATION`, so the new policy had no Regulation/Hold/Reposition alternative to select. A separate off-field Condor run was traced to the operator using GIANTS `Start Job` rather than the usual in-cab `Start Worker`; the normal-workflow rerun removed that confounder.
+
+**Discuss:** the project has accumulated enough probes that continued passive discovery risks **Probe Debt**—validated Reality evidence that never reaches production behaviour. Architecture already settles the pure established head-on preference-band result: Regulation cannot create passing space and an in-path Hold becomes Static Obstacle Conversion, so Reposition is required. What remains unresolved is the Productive/Productive role tie and production Refuge Region qualification. Those unresolved parts must not be guessed merely to make code move.
+
+**Hypothesis / implement:** v4.7.43 introduces a test-only vertical bridge. `otmP22 resolveheadon <vehicle>` explicitly pins the TS015 fixture participant, but physical actuation still waits for the real live Situation Assessment / Candidate / Constraint / Decision chain to support the same Job Episodes, active settled head-on Future-Space Encounter and select `REPOSITION` under D-0115 same-picture exhaustion evidence. Only then is the already-proven P22 TS015 relocation actuator dispatched. Production role/refuge/Safe-Release authority and `CONTROL_AUTHORITY_ENABLED` remain unchanged.
+
+**Validate:** offline tests prove fail-closed boundaries and Decision composition only. Owner live testing is mandatory and precedes any RRS/certification request. The expected visible result is now a real behavioural difference: after explicit arming near the initial head-on, one fixture participant should execute the established TS015 egress/rejoin sequence instead of both continuing into collision.
+
+**Record:** no new architecture is claimed. This is implementation catching up with D-0115 while deliberately keeping unresolved D-0123 representation work unresolved.
+
 ## 2026-08-08 — Guarded Recovery Observe exhaustion: Vulnerable Space and Convergent Projection
 
 **Observe:** bird's-eye review of the Patriot recovery deadlock made the loss of Action Space visible before exact conflict. Once Condor turned generally toward recovering Patriot, it was already reasonable to expect that further unrestricted continuation could consume the recovery margin. The same Condor/Patriot pair can ordinarily pass in adjacent lanes, so a permanent enlarged exclusion region would be over-conservative.

@@ -157,7 +157,7 @@ local function evidenceClass(segment, line)
 end
 
 function Probe.new()
-    return setmetatable({elapsed = 0, signatures = {}, lastHeartbeatAt = {}, announced = false}, Probe)
+    return setmetatable({elapsed = 0, signatures = {}, lastHeartbeatAt = {}, announced = false, latestEvidence = {}}, Probe)
 end
 
 function Probe:reset()
@@ -165,6 +165,7 @@ function Probe:reset()
     self.signatures = {}
     self.lastHeartbeatAt = {}
     self.announced = false
+    self.latestEvidence = {}
 end
 
 function Probe:loadMap()
@@ -190,6 +191,20 @@ function Probe:_observeVehicle(vehicle, nowMilliseconds)
     local lastContinueWorkState = strategy and strategy.lastContinueWorkState or nil
     local movingDirection = strategy and tonumber(strategy.lastMovingDirection) or nil
     local classification = evidenceClass(segment, line)
+    -- Promotion boundary: coherent non-turn active work-line evidence is
+    -- positive Productive Continuation authority. No negative or Transitional
+    -- conclusion is inferred from any other probe class.
+    self.latestEvidence[ref] = {
+        referenceKey=ref,
+        jobToken=jobToken,
+        evidenceClass=classification,
+        productivePositive=classification == "NON_TURN_LINE_ACTIVE",
+        segmentAvailable=segment.available == true,
+        isTurn=segment.isTurn,
+        movingDirection=movingDirection,
+        implementLineClassification=line.classification,
+        provenance={source="ProductiveContinuationProbe",authority="POSITIVE_PRODUCTIVE_ONLY"}
+    }
     local signature = table.concat({
         tostring(jobToken), tostring(strategySource), tostring(classification), tostring(segment.isTurn), tostring(segment.isInitial),
         tostring(line.classification), tostring(line.lowered), tostring(line.raised), tostring(line.unresolved), tostring(toolAlwaysActive),
@@ -230,6 +245,20 @@ function Probe:update(dt)
         if not seen[ref] then
             self.signatures[ref] = nil
             self.lastHeartbeatAt[ref] = nil
+            self.latestEvidence[ref] = nil
         end
     end
+end
+
+function Probe:getEvidence(referenceKeyValue, jobToken)
+    local evidence = self.latestEvidence and self.latestEvidence[referenceKeyValue] or nil
+    if evidence == nil then return nil end
+    if jobToken ~= nil and evidence.jobToken ~= jobToken then return nil end
+    local copy = {}
+    for key, value in pairs(evidence) do
+        if type(value) == "table" then
+            local nested = {}; for k,v in pairs(value) do nested[k]=v end; copy[key]=nested
+        else copy[key]=value end
+    end
+    return copy
 end

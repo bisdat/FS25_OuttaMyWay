@@ -1,3 +1,75 @@
+## v4.7.49 CERTIFICATION CANDIDATE — Refuge-Gated Guarded Recovery / Live Commitment Catch-up
+
+- starts from owner-declared canonical v4.7.41 (`a15b5f3534545d4cbefd1cfc291f254d0921472dc35c09f900935e9f59cddb15`; Git `1eb64d6fcf328fb566b4aa27d83fe5fdb7ab2911`; 269 files) and consolidates the live-tested v4.7.42-v4.7.48 implementation lineage;
+- is behaviourally identical to the owner-live-PASS v4.7.48 runtime apart from coherent v4.7.49 release identity/status metadata and documentation;
+- records the v4.7.48 live PASS from `log(20260809-102132).txt` / `2026-08-09 11-17-41.mp4`: autonomous `REPOSITION` crossed the real Decision→Commitment boundary, Condor relocated to refuge, waited there while Patriot's revealed continuation remained incompatible, Patriot passed under unrestricted GIANTS control, recovery was admitted only after positive clearance, and a later convergence during already-committed recovery correctly invoked D-0123 Regulation;
+- records that positive same-Job GIANTS reacquisition settled only the Native Continuation Restoration obligation, transitioned the Commitment to `WAITING_FOR_EVIDENCE`, and left Durable Separation outstanding (`trafficSettlementComplete=false`);
+- preserves the successful event-driven recovery-admission sequence with no refuge dwell authority and no speed/time literal promoted into architecture;
+- explicitly retains 15 km/h egress/rejoin, 5 km/h orientation, and 1 km/h active-recovery Regulation as temporary implementation/test-mechanism values. The successful live test validates sequencing/integration only, not those numeric values as production policy;
+- leaves the known-too-early initial intervention, production Refuge Region qualification/obstacle-transition clearance, production speed selection, reverse projection/actuation, Durable Separation evidence, and later sliding-puzzle cross-field handling unresolved;
+- retains `CONTROL_AUTHORITY_ENABLED=false`; bounded P22 mechanisms remain the only active Control path;
+- advances release identity to v4.7.49 for RRS certification with no intended substantive runtime-behaviour change from v4.7.48.
+
+## v4.7.48 TEST BUILD — Candidate–Commitment Authority Contract Repair
+
+- remains a non-canonical TEST BUILD over owner-declared canonical v4.7.41; no RRS/certification material is produced before live behavioural validation;
+- fixes the v4.7.47 live failure where autonomous REPOSITION was selected correctly but Commitment admission rejected the Candidate before P22 refuge movement because `progressActuationOwnership` was absent;
+- autonomous REPOSITION Candidates now explicitly declare the selected Yield assembly as the sole OTM physical-actuation owner while the traffic-role Progress participant remains GIANTS-owned;
+- `DecisionCommitmentBoundary` now requires declared physical-actuation ownership to agree exactly with every `progressActuation=true` assembly in the supplied Effective Actuation Composition;
+- adds a real autonomous-head-on Candidate → Decision → Commitment integration test proving Yield-only authority acquisition and a negative mismatch test;
+- preserves v4.7.47 event-driven refuge admission, no-dwell behaviour, D-0123 Regulation scope, Durable-Separation continuity, and all speed/time literal classifications unchanged.
+
+## v4.7.47 TEST BUILD — Commitment / Event-Driven Recovery-Admission Catch-up
+
+- begins from owner-declared canonical v4.7.41 by reapplying the non-canonical live-tested v4.7.42-v4.7.46 working lineage, then adds this implementation catch-up; v4.7.47 remains TEST BUILD only and no RRS/certification artefact is produced before owner live validation;
+- records the v4.7.46 result as a sequencing correction rather than a D-0123 failure: Regulation successfully protected an active recovery, but applying it before ingress allowed Yield to recover into the same opposed lane;
+- implements existing D-0122 recovery admission semantics at the P22 refuge boundary: while Progress's positively revealed current-heading continuation intersects the proposed remaining recovery demand, Yield remains compact and Held at refuge and Progress remains unrestricted under GIANTS; recovery begins only on positive current-heading clearance; unresolved evidence waits without a timer fallback;
+- removes the 20-second P22 refuge dwell from runtime authority entirely; elapsed refuge time is diagnostic only;
+- preserves D-0123 Regulation for convergence that develops after Guarded Recovery has actually begun;
+- connects the autonomous initial `REPOSITION` Decision to the real replacement-core `DecisionCommitmentBoundary`; the admitted Commitment owns explicit Native Continuation Restoration and Durable Separation obligations;
+- on positive same-Job GIANTS reacquisition, settles only the recovery obligation, releases OuttaMyWay progress authority, and transitions the still-unresolved Commitment to `WAITING_FOR_EVIDENCE`; Durable Separation remains open and mechanical handback is explicitly not traffic settlement;
+- fixes live `SituationAssessment` Commitment-context publication to use canonical Commitment state/obligation fields;
+- audits remaining literals: 15 km/h egress/rejoin, 5 km/h orientation and 1 km/h active-recovery Regulation remain temporary test-mechanism values until subsequent live validation; timeout literals are watchdog/failure-detection only and the 120-second window is forensic observation only; no speed/time literal gains Decision, recovery-admission, release or Durable-Separation authority;
+- deliberately leaves the known-too-early initial intervention, production Refuge Region qualification/clearance, production speed selection, reverse projection, Durable Separation derivation and later sliding-puzzle handling unresolved;
+- passes 152 replacement-core Lua tests and 58 Python structural/conformance tests before final package validation; no RRS is produced.
+
+## v4.7.46 TEST BUILD — D-0123 Guarded-Recovery Regulation Behaviour Test
+
+- begins from owner-declared canonical v4.7.41 and deliberately reapplies only the already-live-tested v4.7.42-v4.7.45 experimental lineage before this new change; v4.7.46 remains non-canonical and requires owner live validation before any RRS/certification step;
+- records the v4.7.45 shadow evidence refinement: turning itself is not the D-0123 trigger; the traffic-relevant event is when another participant's presently revealed native continuation is directed into the recovering participant's remaining protected recovery demand (the explanatory “headlights light the dome” condition);
+- selects `VS_COMMITTED_RECOVERY_UNION × CP_CURRENT_HEADING` for one bounded behavioural experiment because it best matches D-0122/D-0123 semantics: remaining P22 recovery demand supplies the temporary Vulnerable-Space representation, while current heading plus positive same-Job continuing-native-intent evidence supplies Convergent Projection;
+- keeps `GuardedRecoveryConvergenceProbe` diagnostic-only and adds a separate `GuardedRecoveryRegulationTestBridge`; the shadow probe itself still has no actuation dependency;
+- when the selected D-0123 combination is positive during the existing P22 recovery window, temporarily applies the already-proven P22 `REGULATE_SPEED` mechanism to the fixture Progress worker at the existing 1 km/h test literal; GIANTS retains route, steering and forward/reverse choice;
+- once Regulation is active, an `UNRESOLVED` evidence sample does not manufacture release; the cap is retained until a positively supported clear current-heading result, vulnerability-window expiry on positive GIANTS reacquisition, or explicit Job/context invalidation;
+- tags Regulation ownership so the D-0123 bridge cannot clear or overwrite unrelated P22 drive authority;
+- deliberately leaves initial intervention timing, P22 Refuge Region geometry/clearance, production Commitment creation, production Regulation-speed selection, Safe Release and later sliding-puzzle cross-field resolution unchanged/unimplemented;
+- retains `CONTROL_AUTHORITY_ENABLED=false`; this build exercises bounded test-fixture Control only;
+- passes 148 replacement-core Lua tests and 57 Python structural/conformance tests before packaging; no RRS/certification package is produced.
+
+## v4.7.45 TEST/PROBE — Guarded-Recovery Convergence Shadow Validation
+
+- records owner live PASS of v4.7.44's intended milestone: the initial TS015 Productive/Productive head-on resolved autonomously with no console command; Condor was selected Yield, relocated through the existing P22 fixture, restored and handed back on the same Job Episode;
+- records two important live limitations without changing them in this probe build: initial Reposition occurred materially earlier than necessary, and after recovery/handoff Patriot's headland turn encroached on Condor's vulnerable recovery vicinity before the later complex cross-field/sliding-puzzle development;
+- deliberately freezes v4.7.44 behavioural implementation, including the experimentally useful early intervention and the still-unpromoted P22 relocation choreography;
+- adds `GuardedRecoveryConvergenceProbe.lua`, a diagnostic-only D-0123 parallel-shadow probe active from P22 rejoin/restore through the existing positive `NATIVE_CONTINUATION_FIRST` GIANTS-reacquisition evidence;
+- compares three evidence-derived Vulnerable-Space representation hypotheses (`VS_CURRENT_TO_REJOIN`, `VS_CURRENT_TO_ANCHOR`, `VS_COMMITTED_RECOVERY_UNION`) against three coarse presently-revealed Convergent-Projection hypotheses (`CP_CURRENT_HEADING`, `CP_OBSERVED_TRAVEL`, `CP_REVEALED_TURN_SWEEP`);
+- derives geometry only from the actual P22 recovery pose, retained Rejoin Target/Anchor, current/pre-intervention represented span, and Patriot's currently/previously revealed heading or observed displacement; no fixed prediction horizon, TCPA/DCPA, map-wide range gate or exact GIANTS route reconstruction is introduced;
+- logs hypothesis state transitions and 500 ms comparison samples as `D0123-SHADOW`; `observeExhaustionShadow=true` is explicitly diagnostic and cannot feed Candidate, Decision, Commitment or Control;
+- retains `CONTROL_AUTHORITY_ENABLED=false`; no Regulation actuation is added and no P22 mechanism is promoted in this build;
+- passes 146 replacement-core Lua tests and 56 Python structural/conformance tests before packaging; owner live video/log validation is the purpose of this build and no RRS/certification package is produced.
+
+## v4.7.44 TEST BUILD — Autonomous Initial Head-On Role Selection
+
+- records owner live PASS of v4.7.43 with both reciprocal explicit Yield assignments (Patriot and Condor);
+- corrects the implementation interpretation of the Productive/Productive tie: D-0113 and D-0118 already settle downstream role comparison, so no new arbitration concept is introduced;
+- promotes validated `NON_TURN_LINE_ACTIVE` probe evidence as positive Productive Continuation evidence only, with no negative/Transitional inference;
+- removes the initial-head-on `resolveheadon` / `clearheadon` operator-command dependency;
+- publishes both admissible Yield `REPOSITION` candidates for one bounded opposed both-Productive established Future-Space Encounter and lets the real D-0115/D-0118 Decision path select deterministically when materially equivalent;
+- automatically dispatches the selected candidate into the already-live-tested P22 TS015 relocation harness and latches that Encounter after successful dispatch;
+- retains `CONTROL_AUTHORITY_ENABLED=false` and explicitly keeps P22 refuge location, obstacle/transition clearance, fixture dwell, Safe Release and Guarded-Recovery representation outside production authority;
+- replaces the misleading refuge dwell countdown HUD text with `TEST FIXTURE DWELL — no release authority`;
+- passes 144 replacement-core Lua tests and 55 Python structural/conformance tests before packaging; owner live validation remains required before any certification candidate is created.
+
 ## v4.7.41candidate — Guarded Recovery Observe-Exhaustion Contract
 
 - begins from owner-declared canonical v4.7.40 (`32980f980f80ff8a9f30aa8b11a1097196e6fddf1264f26b810835bc547648cd`; 269 files) and carries forward the temporary P22/TS015 evidence harness without behavioural change;
