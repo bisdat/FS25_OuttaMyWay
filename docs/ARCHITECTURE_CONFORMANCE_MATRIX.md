@@ -1,3 +1,69 @@
+# v4.7.76 canonical-candidate conformance — D-0140/D-0141 integrated closure
+
+**Authority baseline:** owner-declared canonical v4.7.49 plus accepted post-canonical architecture amendments. v4.7.76 is the canonical candidate packaging the live-validated v4.7.75 behaviour; canonical promotion remains owner-controlled.
+
+**Integrated live evidence:** PASS for the repeated TS015 cooperation sequence. Three autonomous Refuge relocations were initiated. The final role-reversed head-on exercised `REVISE_HEAD_ON` with `reusedAuthorityTokens=1`; both workers ultimately completed. **Qualification:** completed Patriot was manually moved at the end so Condor could consume the final few metres; terminal/post-completion occupancy remains parked.
+
+| Concern | Alignment requirement | v4.7.76 candidate implementation | Offline status |
+|---|---|---|---|
+| Architectural chain | follower authority must traverse Knowledge → Candidate → Constraints → Decision → Commitment → Control | `FollowerBoundaryDemandAssessment` → `LiveTrafficCandidateSupport` → normal engine → `LiveTrafficCommitmentLifecycle` → `LiveControlDispatcher` → P22 | PASS |
+| Current adjacency | historical demand geometry cannot manufacture present follower topology | positive Productive/Settled + co-directional + leader/follower ordering + current productive-corridor overlap | PASS |
+| No distance patch | remote false positive must not be fixed by arbitrary maximum following distance | no max longitudinal distance gate; v4.7.69 regression rejected by current lateral corridor separation | PASS |
+| Boundary demand | active follower path needs bounded demand while production RF is unresolved | accepted Provisional Demand Seed: observed working width + 13 s test duration, RF `USABLE_WITH_UNCERTAINTY` | PASS — PROVISIONAL |
+| Historical manoeuvres | long Transitional/reposition evidence must not become active demand | D-0141 assessment does not consume `NativeManoeuvreObservationSource`; its boundary-demand RF remains `UNRESOLVED` | PASS |
+| Native follower rate | Control feedback must not self-satisfy the rate estimate | raw D-0138 `aiDriveParams.maxSpeed` observed before P22 wrapper supplies unrestricted rate only | PASS |
+| Zero command | zero target/speed sentinel must not derive zero policy cap | zero command → `UNRESOLVED` | PASS |
+| Purpose lifecycle | purpose persists through temporary uncertainty | existing follower obligation publishes `PERSIST_UNRESOLVED`; dispatcher preserves existing lease | PASS |
+| Established-purpose stability | numerical/current-corridor edge noise must not drop an admitted lease | strict new admission unchanged; existing purpose retains within 1.0 m lateral / 0.95 heading band; material separation retires | PASS |
+| Active cadence | Control must observe rapid GIANTS transition-rate changes rather than wait for passive logging | Runtime traffic/Decision/Control cycle 250 ms; passive diagnostics remain independently throttled | PASS |
+| Leader transition rate | existing purpose must not keep a stale faster Productive cap while leader slows/turns | positive pre-turn native rate bounds Productive magnitude; current native/physical turn progress updates existing lease | PASS |
+| Elastic magnitude | current cap may rise or fall while purpose remains | dispatcher reapplies current selected cap; no minimum-ever/tighten-only rule | PASS |
+| 0.90 clearance factor | factor must not manufacture authority | active D-0141 applies 0.90 only after the unscaled result is already restrictive; distant naturally safe following remains unrestricted | PASS |
+| Opposed strategy succession | heading reversal alone must not discard an admitted purpose immediately before the next head-on strategy | clean near-opposed continuation preserves the existing lease; Progress Passage remains positive retirement | PASS |
+| Head-on Candidate precedence | supporting follower-lease persistence must not suppress an independently positive matching head-on | positive matching head-on supersedes follower PRESERVE Candidate and publishes REPOSITION while the installed D-0141 lease remains untouched | PASS |
+| Same-Commitment role succession | a worker already carrying supporting Regulation for the same unresolved Commitment must still be able to become Yield/Reposition | reuse the same valid generic AuthorityToken, clear only the superseded D-0141 physical speed lease, settle follower obligation, then dispatch REPOSITION | PASS |
+| Outbound egress continuity | OuttaMyWay-controlled Yield motion must not relax the retained follower lease before Refuge is established | active P22 outbound phases preserve the last D-0141 magnitude unchanged; no separate egress controller is added | PASS |
+| Progress Passage | obsolete follower purpose must not delay required passage | current P22 refuge-hold Observation promoted in Situation to positive D-0139 retirement; only D-0141 owner lease retires | PASS |
+| Lease composition | D-0123 and D-0141 may coexist without deleting shared authority incorrectly | separate P22 owner tags; shared AuthorityToken preserved while another purpose remains | PASS |
+| Diagnostics | HUD/shadow may observe but never acquire authority | active HUD reads dispatcher status; legacy probe remains shadow-only | PASS |
+| Committed transition | D-0131/D-0133 may not bypass aligned rebuild | remains shadow/non-actuating | PASS |
+| Positive regression | v4.7.70 genuine adjacent boundary case must admit | offline scenario supports `REGULATE_SUPPORTED` with cap below native | PASS |
+| Negative regression | v4.7.69 remote case must not admit | offline real-geometry scenario returns `CURRENT_PRODUCTIVE_WORK_CORRIDORS_DO_NOT_OVERLAP` | PASS |
+| Structural suite | conformance assertions enforce authority/layer boundaries | 101/101 tests | PASS |
+| Behavioural suite | purpose/cap/retirement/composition lifecycle executable | 199/199 Lua tests | PASS |
+| Lua parse | active non-archive Lua modules parse | 98/98 modules | PASS |
+
+---
+
+# D-0140 Architecture Authority Alignment — current offline conformance
+
+**Authority baseline:** owner-declared canonical v4.7.49 plus accepted post-canonical architecture amendments. v4.7.69 is evidence/source material only and is not canonical.
+
+| Concern | Alignment requirement | Current implementation | Offline status |
+|---|---|---|---|
+| Architectural chain | Reality → Observation → Situation Knowledge → Candidate → Constraints → Decision → Commitment → Control | explicit Runtime-owned cycle and central dispatcher | PASS |
+| Diagnostics | diagnostics may observe but never acquire physical authority | no authority-acquisition vocabulary/calls in active diagnostics; validator downstream only | PASS |
+| Runtime ownership | diagnostics must not initiate Control-producing processing | `LiveRuntimeCoordinator` owns capture/process/dispatch before diagnostics | PASS |
+| Productive semantics | positive Productive Continuation is Situation Knowledge, not probe authority | raw `NativeFieldWorkObservation` → `SituationAssessment`; Candidate reads sealed picture | PASS |
+| Native manoeuvre semantics | native/turn/heading reversal alone cannot prove boundary demand | `NativeManoeuvreObservationSource` publishes boundary-demand RF `UNRESOLVED` | PASS |
+| Follower authority | D-0124–D-0130 may not retain experimental direct Regulation during alignment | follower module diagnostic-only; Regulation config disabled; no DriveAuthority dependency | PASS — AUTHORITY RESET |
+| Committed-transition authority | D-0131/D-0133 evidence cannot bypass Decision/Commitment | bridge shadow-only; config disabled | PASS — AUTHORITY RESET |
+| D-0123 Guarded Recovery | established bounded behaviour must remain, but through canonical layers | Situation threat Knowledge → Candidate → Decision(MAINTAIN) → supporting authority → dispatcher → P22 | PASS offline |
+| D-0123 uncertainty | `UNRESOLVED` cannot manufacture release | existing admitted supporting Regulation preserved | PASS offline |
+| D-0123 clearance | positive clear evidence releases only the supporting Progress restriction | Progress authority/lease released; Yield recovery authority retained | PASS offline |
+| P22 responsibility | capability executes authorised requests; does not define traffic semantics | typed request execution + raw Control-execution observation | PASS |
+| Refuge D-0134 | no unvalidated coverage/headland/centroid/command-target ranking | neutral fixture observation; shadow downstream only | PASS |
+| D-0136 | intent settlement evidence stays non-actuating | passive residual probe + explicit track→observation adapter | PASS |
+| D-0137 | falsified signal interpretation remains excluded | no active D-0137 probe | PASS |
+| D-0138 | immediate drive command remains Observation only | diagnostic-only; no Future-Space/Decision/Control authority | PASS |
+| D-0139 | purpose succession retained as architecture, not P22/follower special case | no D-0139 semantic methods in P22/follower during reset | PASS |
+| General Control | no implied production-wide authority | `CONTROL_AUTHORITY_ENABLED=false`; only bounded central P22 slice | PASS |
+| Structural suite | conformance assertions match current architecture, not historical shortcuts | 100 tests | PASS |
+| Behavioural suite | Commitment/authority lifecycle remains executable offline | 185 Lua tests | PASS |
+| Lua parse | active non-archive Lua modules parse | 97 modules | PASS |
+
+---
+
 # v4.7.49 Certification Candidate — live-PASS catch-up conformance
 
 | Concern | Canonical requirement / implementation gate | v4.7.49 candidate evidence | Status |

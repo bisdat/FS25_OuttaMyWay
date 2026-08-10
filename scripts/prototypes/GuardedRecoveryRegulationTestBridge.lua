@@ -1,13 +1,8 @@
--- FS25_OuttaMyWay v4.7.47 TEST BUILD.
---
--- Narrow D-0123 behavioural bridge for the existing P22 TS015 recovery fixture.
--- It consumes only the validated shadow representation pair
--- VS_COMMITTED_RECOVERY_UNION x CP_CURRENT_HEADING and applies the already-
--- proven P22 GIANTS-route Regulation mechanism to the fixture Progress worker.
---
--- This is NOT production Control authority. It does not create a production
--- Commitment, choose a Refuge Region, choose a production Regulation speed,
--- or alter the initial-head-on timing. The 1 km/h cap is a test literal only.
+-- Historical D-0123 direct Regulation bridge donor. D-0140 excludes this module
+-- from active runtime loading: Guarded Recovery now travels through Situation
+-- Knowledge -> Candidate -> Decision -> Commitment -> LiveControlDispatcher ->
+-- P22 typed Control. The source remains only as historical donor/regression
+-- material and must not be wired back into main as an authority shortcut.
 
 OuttaMyWay.GuardedRecoveryRegulationTestBridge = {}
 local Bridge = OuttaMyWay.GuardedRecoveryRegulationTestBridge
@@ -39,8 +34,8 @@ local function logWarning(formatText, ...)
 end
 
 function Bridge.evaluateSignal(sample)
-    if OuttaMyWay.GuardedRecoveryConvergenceProbe ~= nil and type(OuttaMyWay.GuardedRecoveryConvergenceProbe.evaluateCurrentHeadingSignal) == "function" then
-        return OuttaMyWay.GuardedRecoveryConvergenceProbe.evaluateCurrentHeadingSignal(sample)
+    if OuttaMyWay.GuardedRecoveryThreatAssessment ~= nil and type(OuttaMyWay.GuardedRecoveryThreatAssessment.evaluateCurrentHeadingSignal) == "function" then
+        return OuttaMyWay.GuardedRecoveryThreatAssessment.evaluateCurrentHeadingSignal(sample)
     end
     return {status="UNRESOLVED", reason="D0123_SIGNAL_EVALUATOR_UNAVAILABLE"}
 end
@@ -61,7 +56,9 @@ function Bridge:_clearOwned(capabilityGate, reason, nowMs)
     if active == nil then return end
     local authority = capabilityGate and capabilityGate.driveAuthority or nil
     local state = authority and authority:getState(active.vehicle) or nil
-    if state ~= nil and state.mode == "REGULATE" and state.ownerTag == OWNER_TAG then
+    if authority ~= nil and type(authority.clearRegulationLease) == "function" then
+        authority:clearRegulationLease(active.vehicle, OWNER_TAG)
+    elseif state ~= nil and state.mode == "REGULATE" and state.ownerTag == OWNER_TAG then
         authority:clear(active.vehicle)
     end
     self.releaseCount = self.releaseCount + 1
@@ -153,7 +150,9 @@ function Bridge:update(capabilityGate, convergenceProbe, nowMs)
 
     local authority = capabilityGate.driveAuthority
     local existing = authority and authority:getState(vehicle) or nil
-    if existing ~= nil and not (existing.mode == "REGULATE" and existing.ownerTag == OWNER_TAG) then
+    local leaseCapable = authority and type(authority.setRegulationLease) == "function"
+    local ownsLease = leaseCapable and type(authority.hasRegulationLease) == "function" and authority:hasRegulationLease(vehicle, OWNER_TAG)
+    if existing ~= nil and existing.mode ~= "REGULATE" then
         if changed then
             logWarning("APPLY_REFUSED run=%s progress=%s reason=PROGRESS_HAS_OTHER_DRIVE_AUTHORITY mode=%s owner=%s",
                 tostring(sample.runNumber), tostring(sample.progressName), tostring(existing.mode), tostring(existing.ownerTag))
@@ -163,7 +162,16 @@ function Bridge:update(capabilityGate, convergenceProbe, nowMs)
 
     local speedKmh = OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_KMH or OuttaMyWay.PROTOTYPE_22_REGULATE_DEFAULT_KMH or 1.0
     if self.active == nil then
-        local ok, reason = authority:setRegulation(vehicle, speedKmh, OWNER_TAG)
+        local ok, reason
+        if leaseCapable then ok, reason = authority:setRegulationLease(vehicle, speedKmh, OWNER_TAG)
+        else
+            if existing ~= nil and existing.ownerTag ~= OWNER_TAG then
+                logWarning("APPLY_REFUSED run=%s progress=%s reason=PROGRESS_HAS_OTHER_DRIVE_AUTHORITY mode=%s owner=%s",
+                    tostring(sample.runNumber), tostring(sample.progressName), tostring(existing.mode), tostring(existing.ownerTag))
+                return
+            end
+            ok, reason = authority:setRegulation(vehicle, speedKmh, OWNER_TAG)
+        end
         if not ok then
             logWarning("APPLY_REFUSED run=%s progress=%s reason=%s", tostring(sample.runNumber), tostring(sample.progressName), tostring(reason))
             return
@@ -181,10 +189,12 @@ function Bridge:update(capabilityGate, convergenceProbe, nowMs)
         logInfo("APPLY run=%s progress=%s ref=%s job=%s vulnerable=VS_COMMITTED_RECOVERY_UNION projection=CP_CURRENT_HEADING evidence=%s clearance=%s observeExhausted=true capability=REGULATE_SPEED speedLiteral=%.2fkmh speedLiteralAuthority=TEMPORARY_IMPLEMENTATION_VALUE_NOT_POLICY giantsRoute=true giantsSteering=true giantsDirection=true decisionAuthority=TEST_BRIDGE productionCommitment=PARTIAL_LIVE_COMMITMENT_CATCHUP productionControlAuthority=false",
             tostring(sample.runNumber), tostring(sample.progressName), tostring(sample.progressReferenceKey), tostring(sample.progressExpectedJobToken),
             tostring(sample.progressEvidenceClass).."/FORWARD", combination.clearance and string.format("%.2fm", combination.clearance) or "n/a", speedKmh)
-    elseif existing == nil then
+    elseif existing == nil or (leaseCapable and not ownsLease) then
         -- Unexpected loss of our interceptor state while D-0123 remains positive.
         -- Reapply only our own already-established test authority.
-        local ok, reason = authority:setRegulation(vehicle, speedKmh, OWNER_TAG)
+        local ok, reason
+        if leaseCapable then ok, reason = authority:setRegulationLease(vehicle, speedKmh, OWNER_TAG)
+        else ok, reason = authority:setRegulation(vehicle, speedKmh, OWNER_TAG) end
         if ok then
             logWarning("REAPPLY run=%s progress=%s reason=OWNED_DRIVE_STATE_LOST_WHILE_CONVERGENCE_POSITIVE speedLiteral=%.2fkmh",
                 tostring(sample.runNumber), tostring(sample.progressName), speedKmh)

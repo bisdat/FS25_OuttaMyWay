@@ -70,6 +70,151 @@ local demandMap = {
     TEMPORARY_SLACK = "temporarySlack"
 }
 
+local function normalizeMotion(values,map)
+    local result={}
+    for _,item in OuttaMyWay.ValueRecord.ipairs(values or {}) do
+        result[#result+1]={
+            assemblyId=resolveAssembly(map,item),assemblyReferenceKey=item.assemblyReferenceKey,name=item.name,sourceJobToken=item.sourceJobToken,
+            reportedSpeedMps=item.reportedSpeedMps,positionDerivedSpeedMps=item.positionDerivedSpeedMps,
+            travelDirectionX=item.travelDirectionX,travelDirectionZ=item.travelDirectionZ,headingX=item.headingX,headingZ=item.headingZ,
+            headingToTravelDot=item.headingToTravelDot,motionClassification=item.motionClassification,motionReason=item.motionReason,
+            sampleIntervalSeconds=item.sampleIntervalSeconds,blocked=item.blocked==true,localIntentClassification=item.localIntentClassification,
+            intentEpoch=item.intentEpoch,intentValid=item.intentValid==true,nativeFieldWork=copyValue(item.nativeFieldWork),provenance=item.provenance
+        }
+    end
+    table.sort(result,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
+    return result
+end
+
+
+local function productiveContinuationKnowledge(motionEvidence)
+    local result={}
+    for _,item in OuttaMyWay.ValueRecord.ipairs(motionEvidence or {}) do
+        local raw=item.nativeFieldWork or {}
+        local positive=raw.segmentAvailable==true and raw.isTurn~=true and raw.implementLineClassification=="ACTIVE"
+        local evidenceClass="UNRESOLVED"
+        if raw.segmentAvailable~=true then evidenceClass="SEGMENT_UNRESOLVED"
+        elseif raw.isTurn==true then evidenceClass="TURN_SEGMENT"
+        elseif raw.implementLineClassification=="ACTIVE" then evidenceClass="NON_TURN_LINE_ACTIVE"
+        elseif raw.implementLineClassification=="INACTIVE" then evidenceClass="NON_TURN_LINE_INACTIVE"
+        elseif raw.implementLineClassification=="MIXED" then evidenceClass="NON_TURN_LINE_MIXED"
+        else evidenceClass="NON_TURN_LINE_UNRESOLVED" end
+        result[#result+1]={
+            assemblyId=item.assemblyId,assemblyReferenceKey=item.assemblyReferenceKey,jobToken=item.sourceJobToken,
+            evidenceClass=evidenceClass,productivePositive=positive,
+            segmentAvailable=raw.segmentAvailable==true,isTurn=raw.isTurn,movingDirection=raw.movingDirection,
+            implementLineClassification=raw.implementLineClassification,
+            representationFitness=positive and "FIT_FOR_LIMITED_HORIZON" or "UNRESOLVED",
+            provenance={source="SituationAssessment.ProductiveContinuation",layer="KNOWLEDGE",authority="POSITIVE_PRODUCTIVE_ONLY",observationSource=raw.provenance and raw.provenance.source or nil}
+        }
+    end
+    table.sort(result,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
+    return result
+end
+
+
+local function assemblyIdForReference(map, referenceKey)
+    if referenceKey==nil then return nil end
+    return map[type(referenceKey)..":"..tostring(referenceKey)] or map[referenceKey]
+end
+
+local function currentSpaceByAssembly(currentSpace)
+    local result={}
+    for _,item in OuttaMyWay.ValueRecord.ipairs(currentSpace or {}) do result[item.assemblyId]=item end
+    return result
+end
+
+local function productiveByReference(productiveKnowledge)
+    local result={}
+    for _,item in OuttaMyWay.ValueRecord.ipairs(productiveKnowledge or {}) do
+        if item.assemblyReferenceKey~=nil then result[item.assemblyReferenceKey]=item end
+    end
+    return result
+end
+
+local function guardedRecoveryKnowledge(snapshot,currentSpace,productiveKnowledge,map)
+    local records,fitnessRecords={},{}
+    local current=currentSpaceByAssembly(currentSpace)
+    local productive=productiveByReference(productiveKnowledge)
+    for _,observation in OuttaMyWay.ValueRecord.ipairs(snapshot.controlOutcomes or {}) do
+        if observation.kind=="P22_TS015_CONTROL_EXECUTION_OBSERVATION" then
+            local yieldAssemblyId=assemblyIdForReference(map,observation.yieldReferenceKey)
+            local progressAssemblyId=assemblyIdForReference(map,observation.progressReferenceKey)
+            local recovery=current[yieldAssemblyId]
+            local progress=current[progressAssemblyId]
+            local recoveryOccupancy=recovery and recovery.occupancy or nil
+            local progressOccupancy=progress and progress.occupancy or nil
+            local progressEvidence=productive[observation.progressReferenceKey]
+            local representationId="d0123-guarded-recovery:"..tostring(observation.commitmentId or observation.controlRequestId or snapshot.identity)
+            local signal
+            local geometry={resolved=false,reason="GUARDED_RECOVERY_NOT_CURRENTLY_ACTIVE"}
+            if observation.nativeReacquired==true then
+                signal={status="EXPIRED",reason="POSITIVE_GIANTS_REACQUISITION_OBSERVED"}
+            elseif observation.activeRecovery~=true then
+                signal={status="UNRESOLVED",reason="GUARDED_RECOVERY_CONTROL_CONTEXT_NOT_ACTIVE"}
+            else
+                local recoveryPose=recoveryOccupancy and {x=recoveryOccupancy.x,z=recoveryOccupancy.z,dx=recoveryOccupancy.headingX,dz=recoveryOccupancy.headingZ} or nil
+                local progressPose=progressOccupancy and {x=progressOccupancy.x,z=progressOccupancy.z,dx=progressOccupancy.headingX,dz=progressOccupancy.headingZ} or nil
+                geometry=OuttaMyWay.GuardedRecoveryThreatAssessment.evaluateGeometry({
+                    recoveryPose=recoveryPose,progressPose=progressPose,previousProgressPose=nil,
+                    recoveryCurrentSpanM=observation.recoveryCurrentSpanM,recoveryInitialSpanM=observation.recoveryInitialSpanM,
+                    progressSpanM=observation.progressSpanM,
+                    rejoinTargetX=observation.rejoinTargetX,rejoinTargetZ=observation.rejoinTargetZ,
+                    rejoinAnchorX=observation.rejoinAnchorX,rejoinAnchorZ=observation.rejoinAnchorZ
+                })
+                local sample={
+                    geometryResolved=geometry.resolved==true,geometryReason=geometry.reason,combinations=geometry.combinations,
+                    progressExpectedJobToken=observation.progressJobToken,
+                    progressEvidenceJobToken=progressEvidence and progressEvidence.jobToken or nil,
+                    progressEvidenceClass=progressEvidence and progressEvidence.evidenceClass or "UNAVAILABLE",
+                    progressMovingDirection=progressEvidence and progressEvidence.movingDirection or nil
+                }
+                signal=OuttaMyWay.GuardedRecoveryThreatAssessment.evaluateCurrentHeadingSignal(sample)
+            end
+            local fit=(signal.status=="POSITIVE" or signal.status=="NEGATIVE") and "FIT_FOR_LIMITED_HORIZON" or "REFRESH_REQUIRED"
+            fitnessRecords[#fitnessRecords+1]={
+                representationId=representationId,assemblyId=progressAssemblyId,
+                question="D0123_GUARDED_RECOVERY_CURRENT_HEADING_THREAT",assessmentHorizon="CURRENT_GUARDED_RECOVERY_PICTURE_ONLY",
+                state=fit,claimPermissions=fit=="FIT_FOR_LIMITED_HORIZON" and {"D0123_CURRENT_HEADING_THREAT_CLASSIFICATION"} or {},
+                coverage={complete=false,conservative=false,underApproximationRisk=true},
+                uncertainty=fit=="FIT_FOR_LIMITED_HORIZON" and {"BOUNDED_D0123_TEST_REPRESENTATION_ONLY"} or {tostring(signal.reason or geometry.reason or "UNRESOLVED")},
+                validityDependencies={"CURRENT_CONTROL_EXECUTION_OBSERVATION","CURRENT_SPACE","SAME_PROGRESS_JOB_EPISODE","CURRENT_PRODUCTIVE_OR_TURN_EVIDENCE"},
+                provenance={source="SituationAssessment.GuardedRecovery",layer="KNOWLEDGE",authority="D0123_BOUNDED_TEST_REPRESENTATION"}
+            }
+            records[#records+1]={
+                representationId=representationId,
+                commitmentId=observation.commitmentId,controlRequestId=observation.controlRequestId,
+                governingRequirementKey=observation.governingRequirementKey,encounterIdentity=observation.encounterIdentity,
+                yieldAssemblyId=yieldAssemblyId,progressAssemblyId=progressAssemblyId,
+                yieldReferenceKey=observation.yieldReferenceKey,progressReferenceKey=observation.progressReferenceKey,
+                yieldJobToken=observation.yieldJobToken,progressJobToken=observation.progressJobToken,
+                phase=observation.phase,activeRecovery=observation.activeRecovery==true,postHandoff=observation.postHandoff==true,nativeReacquired=observation.nativeReacquired==true,
+                signalStatus=signal.status,reason=signal.reason,combination=copyValue(signal.combination),geometryResolved=geometry.resolved==true,
+                governingPurpose="PRESERVE_GUARDED_RECOVERY_COMMITTED_DEMAND",
+                representationFitness=fit,
+                provenance={source="SituationAssessment.GuardedRecovery",layer="KNOWLEDGE",observationSource=observation.provenance and observation.provenance.source or nil}
+            }
+        end
+    end
+    table.sort(records,function(a,b) return tostring(a.commitmentId or a.controlRequestId)<tostring(b.commitmentId or b.controlRequestId) end)
+    table.sort(fitnessRecords,function(a,b) return tostring(a.representationId)<tostring(b.representationId) end)
+    return records,fitnessRecords
+end
+
+local function normalizePhysicalSpace(values,map)
+    local result={}
+    for _,item in OuttaMyWay.ValueRecord.ipairs(values or {}) do
+        result[#result+1]={
+            assemblyId=resolveAssembly(map,item),assemblyReferenceKey=item.assemblyReferenceKey,episodeKey=item.episodeKey,
+            configurationProfileId=item.configurationProfileId,primitives=item.primitives or {},summary=item.summary,
+            coverageComplete=item.coverageComplete==true,negativeClearanceAuthority=item.negativeClearanceAuthority==true,
+            provenance=item.provenance
+        }
+    end
+    table.sort(result,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
+    return result
+end
+
 local function normalizeDemand(values, map)
     local result = { committedDemand={}, potentialDemand={}, temporarySlack={} }
     for _, item in OuttaMyWay.ValueRecord.ipairs(values or {}) do
@@ -91,7 +236,7 @@ local function normalizeDemand(values, map)
     return result
 end
 
-function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, encounters, commitments)
+function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, encounters, commitments, obligations)
     local self = setmetatable({}, Assessment)
     self.identities = identityRegistry
     self.epochs = epochSequence
@@ -99,7 +244,10 @@ function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations
     self.operations = operations
     self.encounters = encounters
     self.commitments = commitments
+    self.obligations = obligations
     self.publishedCount = 0
+    self.latestProductiveContinuationByReference={}
+    self.latestGuardedRecoveryKnowledge={}
     return self
 end
 
@@ -112,6 +260,13 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     local currentSpace = normalizeSpaces(snapshot.geometry.currentSpaceEvidence or {}, map, "CURRENT_SPACE")
     local futureSpace = normalizeSpaces(snapshot.geometry.futureSpaceEvidence or {}, map, "FUTURE_SPACE")
     local demand = normalizeDemand(snapshot.geometry.demandEvidence or {}, map)
+    local motionEvidence = normalizeMotion(snapshot.motion.progressionEvidence or {}, map)
+    local physicalSpaceEvidence = normalizePhysicalSpace(snapshot.geometry.shadowPlanViewEvidence or {}, map)
+    local productiveKnowledge = productiveContinuationKnowledge(motionEvidence)
+    self.latestProductiveContinuationByReference={}
+    for _,evidence in OuttaMyWay.ValueRecord.ipairs(productiveKnowledge) do
+        self.latestProductiveContinuationByReference[evidence.assemblyReferenceKey]=copyValue(evidence)
+    end
     local sourceDiagnostics = snapshot.diagnostics or {}
 
     local relevant = {}
@@ -252,7 +407,10 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             uncertainty[#uncertainty+1] = { class="REPRESENTATION_FITNESS", subjectId=fitness.representationId, state=fitness.state, provenance=fitness.provenance }
         end
     end
+    local guardedKnowledge,guardedFitness=guardedRecoveryKnowledge(snapshot,currentSpace,productiveKnowledge,map)
+    for _,fitness in OuttaMyWay.ValueRecord.ipairs(guardedFitness) do representationFitness[#representationFitness+1]=fitness end
     table.sort(representationFitness,function(a,b) return tostring(a.representationId) < tostring(b.representationId) end)
+    self.latestGuardedRecoveryKnowledge=copyValue(guardedKnowledge)
     for _, source in OuttaMyWay.ValueRecord.ipairs(snapshot.unavailableSources) do
         uncertainty[#uncertainty+1] = { class="UNAVAILABLE_SOURCE", source=source, provenance={observationSnapshotId=snapshot.identity} }
     end
@@ -400,6 +558,16 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     local commitmentContext = {}
     for _, commitment in OuttaMyWay.ValueRecord.ipairs(self.commitments:list()) do
         if not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
+            local openObligations={}
+            if self.obligations~=nil then
+                for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.obligations:openForOwner(commitment.identity)) do
+                    openObligations[#openObligations+1]={
+                        identity=obligation.identity,origin=obligation.origin,basis=obligation.basis,requiredOutcome=obligation.requiredOutcome,
+                        requiredAuthority=obligation.requiredAuthority,evidenceContract=obligation.evidenceContract,ownershipClass=obligation.ownershipClass,
+                        terminalDependency=obligation.terminalDependency,status=obligation.status,epoch=obligation.epoch,revision=obligation.revision
+                    }
+                end
+            end
             commitmentContext[#commitmentContext+1] = {
                 commitmentId=commitment.identity,
                 identity=commitment.identity,
@@ -407,6 +575,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
                 governingBasis=commitment.governingBasis,
                 situationDependencies=commitment.situationDependencies,
                 obligationIds=commitment.obligationIds,
+                openObligations=openObligations,
                 progressActuationOwnership=commitment.progressActuationOwnership,
                 capabilityReservations=commitment.capabilityReservations,
                 effectiveActuationCompositionId=commitment.effectiveActuationCompositionId,
@@ -414,6 +583,18 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             }
         end
     end
+
+    local followerBoundaryKnowledge=OuttaMyWay.FollowerBoundaryDemandAssessment.buildKnowledge({
+        currentSpace=currentSpace,futureSpace=futureSpace,motionEvidence=motionEvidence,productiveKnowledge=productiveKnowledge,
+        commitmentContext=commitmentContext,controlOutcomes=snapshot.controlOutcomes,operationByAssembly=operationByAssembly,
+        assemblyIdForReference=function(referenceKey) return assemblyIdForReference(map,referenceKey) end,
+        minHeadingDot=OuttaMyWay.FOLLOWER_BOUNDARY_CURRENT_ALIGNMENT_MIN_DOT or 0.99,
+        provisionalDurationSec=OuttaMyWay.FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC or 13.0,
+        establishedLateralRetentionM=OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_LATERAL_RETENTION_M or 1.0,
+        establishedAlignmentMinDot=OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_ALIGNMENT_MIN_DOT or 0.95,
+        establishedOpposedSuccessionMaxDot=OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_OPPOSED_SUCCESSION_MAX_DOT or -0.95,
+        clearanceFactor=OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR or 0.90
+    })
 
     local candidateSupportEvidence = {
         currentSpaceEvidenceCount=#currentSpace,
@@ -440,6 +621,11 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         futureSpace=futureSpace,
         demand=demand,
         responsibilityRelations=responsibilityRelations,
+        motionEvidence=motionEvidence,
+        physicalSpaceEvidence=physicalSpaceEvidence,
+        productiveContinuationKnowledge=productiveKnowledge,
+        guardedRecoveryKnowledge=guardedKnowledge,
+        followerBoundaryKnowledge=followerBoundaryKnowledge,
         uncertainty=uncertainty,
         representationFitness=representationFitness,
         provenance={source="SituationAssessment", observationSnapshotId=snapshot.identity, observationEpoch=snapshot.epoch},
@@ -452,4 +638,14 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     return picture
 end
 
+function Assessment:getEvidence(referenceKeyValue, jobToken)
+    local evidence=self.latestProductiveContinuationByReference and self.latestProductiveContinuationByReference[referenceKeyValue] or nil
+    if evidence==nil then return nil end
+    if jobToken~=nil and evidence.jobToken~=jobToken then return nil end
+    return copyValue(evidence)
+end
+
+function Assessment:getGuardedRecoveryKnowledge()
+    return copyValue(self.latestGuardedRecoveryKnowledge or {})
+end
 function Assessment:getPublishedCount() return self.publishedCount end

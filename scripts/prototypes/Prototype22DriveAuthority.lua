@@ -38,6 +38,29 @@ function Authority.new()
     }, Authority)
 end
 
+local function sortedLeaseOwners(leases)
+    local owners = {}
+    for ownerTag in pairs(leases or {}) do owners[#owners + 1] = tostring(ownerTag) end
+    table.sort(owners)
+    return owners
+end
+
+local function recomputeRegulationState(state)
+    local leases = state and state.regulationLeases or nil
+    if type(leases) ~= "table" then return state end
+    local owners = sortedLeaseOwners(leases)
+    local effective = nil
+    for _, ownerTag in ipairs(owners) do
+        local lease = leases[ownerTag]
+        local cap = lease and tonumber(lease.speedKmh) or nil
+        if cap ~= nil then effective = effective == nil and cap or math.min(effective, cap) end
+    end
+    state.speedKmh = effective or 0
+    state.ownerTags = owners
+    state.ownerTag = #owners == 1 and owners[1] or (#owners > 1 and "COMPOSED_REGULATION" or nil)
+    return state
+end
+
 function Authority:install()
     if self.installed then return true end
     if AIVehicleUtil == nil or type(AIVehicleUtil.driveToPoint) ~= "function" then
@@ -126,6 +149,66 @@ function Authority:setRegulation(vehicle, speedKmh, ownerTag)
     local ok, reason = self:install()
     if not ok then return false, reason end
     self.states[vehicle] = {mode = "REGULATE", speedKmh = speedKmh, driveCalls = 0, ownerTag = ownerTag}
+    return true
+end
+
+-- D-0130 implementation catch-up: independently justified Regulation purposes
+-- may coexist.  The physical actuation is the least permissive active cap;
+-- each owner may release only its own lease.  This remains Prototype-22 test
+-- authority and does not create production Commitment or speed policy.
+function Authority:setRegulationLease(vehicle, speedKmh, ownerTag)
+    if vehicle == nil or ownerTag == nil then return false, "regulation-lease-subject-or-owner-unavailable" end
+    local ok, reason = self:install()
+    if not ok then return false, reason end
+    local state = self.states[vehicle]
+    if state ~= nil and state.mode ~= "REGULATE" then return false, "vehicle-has-non-regulation-drive-authority" end
+    if state == nil then
+        state = {mode="REGULATE", regulationLeases={}, driveCalls=0}
+        self.states[vehicle] = state
+    elseif state.regulationLeases == nil then
+        -- Preserve an existing single-owner Regulation when converting the
+        -- temporary test authority into composable leases.
+        if state.ownerTag == nil then return false, "existing-regulation-owner-unavailable" end
+        state.regulationLeases = {
+            [tostring(state.ownerTag)] = {speedKmh=tonumber(state.speedKmh) or 0}
+        }
+    end
+    state.regulationLeases[tostring(ownerTag)] = {speedKmh=math.max(0, tonumber(speedKmh) or 0)}
+    recomputeRegulationState(state)
+    return true
+end
+
+function Authority:hasRegulationLease(vehicle, ownerTag)
+    local state = vehicle ~= nil and self.states[vehicle] or nil
+    if state == nil or state.mode ~= "REGULATE" then return false end
+    if type(state.regulationLeases) == "table" then return state.regulationLeases[tostring(ownerTag)] ~= nil end
+    return state.ownerTag == ownerTag
+end
+
+function Authority:getRegulationLease(vehicle, ownerTag)
+    local state = vehicle ~= nil and self.states[vehicle] or nil
+    if state == nil or state.mode ~= "REGULATE" then return nil end
+    if type(state.regulationLeases) == "table" then return state.regulationLeases[tostring(ownerTag)] end
+    if state.ownerTag == ownerTag then return {speedKmh=state.speedKmh} end
+    return nil
+end
+
+function Authority:clearRegulationLease(vehicle, ownerTag)
+    local state = vehicle ~= nil and self.states[vehicle] or nil
+    if state == nil or state.mode ~= "REGULATE" then return false end
+    if type(state.regulationLeases) ~= "table" then
+        if state.ownerTag ~= ownerTag then return false end
+        self.states[vehicle] = nil
+        return true
+    end
+    local key = tostring(ownerTag)
+    if state.regulationLeases[key] == nil then return false end
+    state.regulationLeases[key] = nil
+    if next(state.regulationLeases) == nil then
+        self.states[vehicle] = nil
+    else
+        recomputeRegulationState(state)
+    end
     return true
 end
 

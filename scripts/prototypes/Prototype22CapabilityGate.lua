@@ -1,11 +1,9 @@
--- FS25_OuttaMyWay Prototype 22 — Traffic Policeman Capability Gate.
---
--- Bounded diagnostic/test actuator. It validates GIANTS integration mechanisms
--- required by the canonical Traffic Policeman architecture. The initial TS015
--- Reposition may be dispatched by the live test Decision path, and v4.7.47 may
--- temporarily Regulate the fixture Progress worker from D-0123 evidence during
--- Guarded Recovery. No production Commitment, Refuge Region selection, Safe
--- Release or general Control authority is created here.
+-- Prototype 22 bounded capability executor. Under D-0140 this module is below
+-- the Control boundary: it executes valid typed Control requests supplied by the
+-- central LiveControlDispatcher, maintains the existing TS015 mechanical donor,
+-- and publishes raw Control-execution Observation. It does not select traffic
+-- roles, invent governing purpose, assess D-0123 threat or own Commitment
+-- lifecycle. General production Control remains disabled.
 
 OuttaMyWay.Prototype22CapabilityGate = {}
 local Probe = OuttaMyWay.Prototype22CapabilityGate
@@ -107,11 +105,10 @@ local function foldEvidenceText(evidence)
         evidence.maximum ~= nil and string.format("%.3f", evidence.maximum) or "n/a")
 end
 
-function Probe.new(runtime, guardedRecoveryConvergenceProbe, guardedRecoveryRegulationTestBridge)
+function Probe.new(runtime, committedTransitionRegulationTestBridge)
     return setmetatable({
         runtime = runtime,
-        guardedRecoveryConvergenceProbe = guardedRecoveryConvergenceProbe,
-        guardedRecoveryRegulationTestBridge = guardedRecoveryRegulationTestBridge,
+        committedTransitionRegulationTestBridge = committedTransitionRegulationTestBridge,
         permissionGate = OuttaMyWay.Prototype22PermissionGate.new(),
         driveAuthority = OuttaMyWay.Prototype22DriveAuthority.new(),
         configurationAuthority = OuttaMyWay.Prototype22ConfigurationAuthority.new(),
@@ -142,10 +139,11 @@ end
 function Probe:loadMap()
     self:_registerCommands()
     local ok, reason = self.driveAuthority:install()
-    logInfo("CAPABILITY_GATE loaded enabled=%s autonomousInitialHeadOnTest=true d0123RegulationTest=%s productionControlAuthority=%s driveHook=%s reason=%s",
+    logInfo("CAPABILITY_GATE loaded enabled=%s autonomousInitialHeadOnTest=true d0123RegulationViaCentralDispatcher=%s d0131CommittedTransitionShadow=%s productionControlAuthority=%s driveHook=%s reason=%s",
         tostring(OuttaMyWay.PROTOTYPE_22_CAPABILITY_GATE_ENABLED == true),
         tostring(OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_ENABLED == true),
-        tostring(self.runtime ~= nil and self.runtime.controlAuthorityEnabled == true),
+        tostring(OuttaMyWay.COMMITTED_TRANSITION_REGULATION_TEST_ENABLED == true),
+        tostring(self.runtime ~= nil and self.runtime.generalControlAuthorityEnabled == true),
         tostring(ok), tostring(reason or "ready"))
     self:_setHud("OTM P22 — READY", "Manual capability gate", "Traffic Policeman production authority remains OFF")
 end
@@ -158,8 +156,7 @@ function Probe:deleteMap()
     self:_unregisterCommands()
     self.run = nil
     self.releasedMonitor = nil
-    if self.guardedRecoveryRegulationTestBridge ~= nil and type(self.guardedRecoveryRegulationTestBridge.reset) == "function" then self.guardedRecoveryRegulationTestBridge:reset(self, "DELETE_MAP") end
-    if self.guardedRecoveryConvergenceProbe ~= nil and type(self.guardedRecoveryConvergenceProbe.reset) == "function" then self.guardedRecoveryConvergenceProbe:reset() end
+    if self.committedTransitionRegulationTestBridge ~= nil and type(self.committedTransitionRegulationTestBridge.reset) == "function" then self.committedTransitionRegulationTestBridge:reset(self, "DELETE_MAP") end
     if self.runtime ~= nil and type(self.runtime.clearHeadOnTestPlan) == "function" then self.runtime:clearHeadOnTestPlan() end
 end
 
@@ -456,6 +453,10 @@ function Probe:_startReleaseMonitor(run, reason)
         commitmentApplicationId = run.commitmentApplicationId,
         governingRequirementKey = run.governingRequirementKey,
         encounterIdentity = run.encounterIdentity,
+        controlRequestId = run.controlRequestId,
+        rejoinTargetX = run.rejoinTargetX, rejoinTargetZ = run.rejoinTargetZ,
+        rejoinAnchorX = run.rejoinAnchorX, rejoinAnchorZ = run.rejoinAnchorZ,
+        initialSpanM = run.initialSpanM,
         nextLogAt = 0,
         nextTs015LogAt = 0,
         maximumTravelM = 0
@@ -542,63 +543,177 @@ function Probe:_cancelToHold()
     return string.format("P22 cancelled active movement for %s; HOLD retained. Use 'otmP22 release' when safe", run.vehicleName)
 end
 
-function Probe:observeLiveDecision(evaluated, picture)
-    if self.run ~= nil or self.releasedMonitor ~= nil then return end
-    local inventory = evaluated and evaluated.candidateInventory or nil
-    local boundary = inventory and inventory.supportBoundary or nil
-    if type(boundary) ~= "table" or boundary.mode ~= "AUTONOMOUS_INITIAL_HEAD_ON_TEST" then return end
-    local decision = evaluated.decision
-    if decision == nil or decision.selectedCandidateId == nil then return end
-    local selected = nil
-    for _, candidate in OuttaMyWay.ValueRecord.ipairs(evaluated.candidates or {}) do
-        if candidate.identity == decision.selectedCandidateId then selected = candidate break end
+function Probe.autonomousHeadOnDispatchDisposition(run,releasedMonitor,independentHeadOnSupported)
+    if run~=nil then return "BLOCK_ACTIVE_REFUGE_RESOLUTION" end
+    if independentHeadOnSupported~=true then return "BLOCK_NO_INDEPENDENT_HEAD_ON_SUPPORT" end
+    if releasedMonitor==nil then return "ALLOW" end
+    if releasedMonitor.kind=="TS015_RELOCATE" and releasedMonitor.firstNativeAt~=nil then
+        return "ALLOW_SUPERSEDE_PRIOR_REFUGE_MONITOR_AFTER_INDEPENDENT_HEAD_ON_SUPPORT"
     end
-    if selected == nil or selected.capability ~= "REPOSITION" then return end
-    local bridge = selected.evidenceBasis and selected.evidenceBasis.autonomousHeadOnBridge or nil
-    if type(bridge) ~= "table" or type(bridge.yieldParticipantReferenceKey) ~= "string" then
-        logWarning("HEADON_AUTONOMOUS_DISPATCH_REFUSED reason=SELECTED_CANDIDATE_MISSING_BRIDGE_EVIDENCE")
-        return
-    end
-    self.headOnDecisionDispatchCount = self.headOnDecisionDispatchCount + 1
-    logInfo("HEADON_AUTONOMOUS_DECISION_PASS decision=%s picture=%s candidate=%s capability=%s yieldRef=%s progressRef=%s encounter=%s requirement=%s rule=%s operatorCommand=false roleAuthority=D0113_D0118 refugeAuthority=TEST_FIXTURE controlAuthority=TEST_FIXTURE",
-        tostring(decision.identity), tostring(picture and picture.identity or decision.operationalPictureId), tostring(selected.identity), tostring(selected.capability),
-        tostring(bridge.yieldParticipantReferenceKey), tostring(bridge.progressParticipantReferenceKey), tostring(bridge.encounterIdentity or "n/a"),
-        tostring(bridge.governingRequirementKey or "n/a"), tostring(decision.comparisonBasis and decision.comparisonBasis.rule or "n/a"))
+    return "BLOCK_PRIOR_REFUGE_HANDOFF_UNRESOLVED"
+end
 
-    local commitmentContext=nil
-    if OuttaMyWay.LiveTrafficCommitmentLifecycle~=nil then
-        local applied,applyReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyInitialDecision(self.runtime,picture,evaluated)
-        if applied==nil then
-            logWarning("HEADON_AUTONOMOUS_DISPATCH_REFUSED reason=COMMITMENT_APPLICATION_FAILED detail=%s",tostring(applyReason))
-            return
-        end
-        commitmentContext={
-            commitmentId=applied.commitment.identity,
-            commitmentApplicationId=applied.application.identity,
-            governingRequirementKey=bridge.governingRequirementKey,
-            encounterIdentity=bridge.encounterIdentity
+function Probe:getAutonomousHeadOnAvailability(independentHeadOnSupported)
+    return Probe.autonomousHeadOnDispatchDisposition(self.run,self.releasedMonitor,independentHeadOnSupported)
+end
+
+function Probe:supersedePriorRefugeMonitorForCurrentHeadOn()
+    if self.releasedMonitor~=nil then
+        logInfo("HEADON_RESOLUTION_SUCCESSION priorRefugeDiagnosticMonitor=SUPERSEDED nativeReacquisitionObserved=true independentHeadOnSupported=true next=CURRENT_HEAD_ON_PLAYBOOK")
+        self.releasedMonitor=nil
+    end
+end
+
+local function guardedRecoveryPhase(phase)
+    return phase == "TS015_REJOIN_ORIENTING"
+        or phase == "TS015_REJOINING"
+        or phase == "TS015_REJOIN_SETTLING"
+        or phase == "TS015_REJOIN_RESTORING"
+end
+
+function Probe:_vehicleForReferenceKey(ref)
+    if ref == nil then return nil end
+    local run=self.run
+    if run~=nil then
+        if run.referenceKey==ref then return run.vehicle end
+        if run.progressReferenceKey==ref then return run.progressVehicle end
+    end
+    local monitor=self.releasedMonitor
+    if monitor~=nil then
+        if monitor.referenceKey==ref then return monitor.vehicle end
+        if monitor.progressReferenceKey==ref then return monitor.progressVehicle end
+    end
+    for _,vehicle in OuttaMyWay.ValueRecord.ipairs(activeVehicles()) do
+        if referenceKey(vehicle)==ref then return vehicle end
+    end
+    return nil
+end
+
+-- Raw Control-execution Observation only.  The Capability reports what bounded
+-- mechanism is currently executing; it does not decide whether that state is
+-- traffic-relevant. Situation Assessment owns that semantic promotion.
+function Probe:getControlExecutionObservation()
+    local run=self.run
+    if run~=nil and run.kind=="TS015_RELOCATE" then
+        local recoverySpan=select(1,self:_representedSpan(run.vehicle))
+        local progressSpan=select(1,self:_representedSpan(run.progressVehicle))
+        return {
+            kind="P22_TS015_CONTROL_EXECUTION_OBSERVATION",
+            phase=run.phase,
+            activeRecovery=guardedRecoveryPhase(run.phase),
+            postHandoff=false,
+            nativeReacquired=false,
+            yieldReferenceKey=run.referenceKey,
+            progressReferenceKey=run.progressReferenceKey,
+            yieldJobToken=run.startJobToken,
+            progressJobToken=run.progressStartJobToken,
+            commitmentId=run.commitmentId,
+            controlRequestId=run.controlRequestId,
+            governingRequirementKey=run.governingRequirementKey,
+            encounterIdentity=run.encounterIdentity,
+            rejoinTargetX=run.rejoinTargetX,rejoinTargetZ=run.rejoinTargetZ,
+            rejoinAnchorX=run.rejoinAnchorX,rejoinAnchorZ=run.rejoinAnchorZ,
+            recoveryInitialSpanM=run.initialSpanM,
+            recoveryCurrentSpanM=recoverySpan,
+            progressSpanM=progressSpan,
+            provenance={source="Prototype22CapabilityGate",layer="CONTROL_EXECUTION_OBSERVATION",semanticAuthority=false}
         }
     end
-
-    local result = OuttaMyWay.Prototype22TS015Relocation.start(self, bridge.yieldParticipantReferenceKey, commitmentContext)
-    local started = self.run ~= nil
-    if started and self.runtime ~= nil and type(self.runtime.markAutonomousHeadOnDispatched)=="function" then
-        self.runtime:markAutonomousHeadOnDispatched(bridge.governingRequirementKey)
-    elseif not started and commitmentContext~=nil and OuttaMyWay.LiveTrafficCommitmentLifecycle~=nil then
-        local failure,failureReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.markActuationStartFailed(self.runtime,commitmentContext.commitmentId,{
-            reason=tostring(result),source="Prototype22CapabilityGate.observeLiveDecision"
-        })
-        if failure==nil then
-            logWarning("HEADON_AUTONOMOUS_COMMITMENT_FAILURE_RECORD_FAIL commitment=%s reason=%s",tostring(commitmentContext.commitmentId),tostring(failureReason))
-        end
+    local monitor=self.releasedMonitor
+    if monitor~=nil and monitor.kind=="TS015_RELOCATE" then
+        local recoverySpan=select(1,self:_representedSpan(monitor.vehicle))
+        local progressSpan=select(1,self:_representedSpan(monitor.progressVehicle))
+        return {
+            kind="P22_TS015_CONTROL_EXECUTION_OBSERVATION",
+            phase="POST_HANDOFF_PRE_REACQUISITION",
+            activeRecovery=monitor.firstNativeAt==nil,
+            postHandoff=true,
+            nativeReacquired=monitor.firstNativeAt~=nil,
+            yieldReferenceKey=monitor.referenceKey,
+            progressReferenceKey=monitor.progressReferenceKey,
+            yieldJobToken=monitor.startJobToken,
+            progressJobToken=monitor.progressStartJobToken,
+            commitmentId=monitor.commitmentId,
+            controlRequestId=monitor.controlRequestId,
+            governingRequirementKey=monitor.governingRequirementKey,
+            encounterIdentity=monitor.encounterIdentity,
+            rejoinTargetX=monitor.rejoinTargetX,rejoinTargetZ=monitor.rejoinTargetZ,
+            rejoinAnchorX=monitor.rejoinAnchorX,rejoinAnchorZ=monitor.rejoinAnchorZ,
+            recoveryInitialSpanM=monitor.initialSpanM,
+            recoveryCurrentSpanM=recoverySpan,
+            progressSpanM=progressSpan,
+            provenance={source="Prototype22CapabilityGate",layer="CONTROL_EXECUTION_OBSERVATION",semanticAuthority=false}
+        }
     end
-    logInfo("HEADON_AUTONOMOUS_DISPATCH_RESULT started=%s result=%s commitment=%s", tostring(started), tostring(result),tostring(commitmentContext and commitmentContext.commitmentId or "none"))
+    return nil
+end
+
+function Probe:getVehicleControlObservation(vehicle)
+    local state=self.driveAuthority and self.driveAuthority:getState(vehicle) or nil
+    return {
+        mode=state and state.mode or nil,ownerTag=state and state.ownerTag or nil,
+        regulationSpeedKmh=state and state.regulationSpeedKmh or nil,
+        driveCalls=state and state.driveCalls or 0,lastInputMaxSpeed=state and state.lastInputMaxSpeed or nil,
+        lastOutputMaxSpeed=state and state.lastOutputMaxSpeed or nil,lastInputForward=state and state.lastInputForward or nil,
+        provenance={source="Prototype22CapabilityGate",layer="CONTROL_CAPABILITY_OBSERVATION",semanticAuthority=false}
+    }
+end
+
+function Probe:executeControlRequest(request,candidate)
+    OuttaMyWay.ValueRecord.assertType(request,"ControlRequest")
+    if self.runtime==nil then return false,"RUNTIME_UNAVAILABLE" end
+    local commitment=self.runtime.commitments:get(request.commitmentId)
+    if commitment==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then return false,"CONTROL_REQUEST_COMMITMENT_NOT_LIVE" end
+    if commitment.effectiveActuationCompositionId~=request.effectiveActuationCompositionId then return false,"CONTROL_REQUEST_COMPOSITION_STALE" end
+    local token=nil
+    for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(request.commitmentId)) do
+        if candidateToken.identity==request.authorityToken and candidateToken.assemblyId==request.assemblyId then token=candidateToken break end
+    end
+    if token==nil or self.runtime.authorities:validate(token)~=true then return false,"CONTROL_REQUEST_AUTHORITY_TOKEN_STALE" end
+    local target=request.target or {}
+
+    if request.capability=="REPOSITION" then
+        if commitment.state~="ACTIVE" then return false,"CONTROL_REQUEST_COMMITMENT_NOT_ACTIVE" end
+        if target.kind~="P22_TS015_REFUGE_REPOSITION" or type(target.yieldParticipantReferenceKey)~="string" then return false,"CONTROL_REQUEST_TARGET_UNSUPPORTED" end
+        local commitmentContext={commitmentId=request.commitmentId,commitmentApplicationId="CONTROL_REQUEST:"..tostring(request.identity),governingRequirementKey=target.governingRequirementKey,encounterIdentity=target.encounterIdentity,controlRequestId=request.identity}
+        local result=OuttaMyWay.Prototype22TS015Relocation.start(self,target.yieldParticipantReferenceKey,commitmentContext)
+        return self.run~=nil,result
+    end
+
+    if request.capability=="REGULATE_SPEED" then
+        if target.kind~="P22_REGULATION_LEASE" or type(target.vehicleReferenceKey)~="string" or type(target.ownerTag)~="string" then return false,"CONTROL_REQUEST_TARGET_UNSUPPORTED" end
+        local vehicle=self:_vehicleForReferenceKey(target.vehicleReferenceKey)
+        if vehicle==nil then return false,"CONTROL_REQUEST_VEHICLE_UNAVAILABLE" end
+        if target.operation=="APPLY" then
+            if commitment.state~="ACTIVE" then return false,"CONTROL_REQUEST_COMMITMENT_NOT_ACTIVE" end
+            local speed=tonumber(target.maxSpeedKmh)
+            if speed==nil or speed<0 then return false,"CONTROL_REQUEST_REGULATION_SPEED_INVALID" end
+            local ok,reason=self.driveAuthority:setRegulationLease(vehicle,speed,target.ownerTag)
+            if not ok then return false,reason end
+            return true,"REGULATION_LEASE_APPLIED"
+        elseif target.operation=="RELEASE" then
+            self.driveAuthority:clearRegulationLease(vehicle,target.ownerTag)
+            return true,"REGULATION_LEASE_RELEASED"
+        end
+        return false,"CONTROL_REQUEST_REGULATION_OPERATION_UNSUPPORTED"
+    end
+
+    return false,"P22_ALIGNED_DISPATCH_CAPABILITY_UNSUPPORTED"
+end
+
+-- Fail-safe Control cleanup may remove an already-owned bounded lease when its
+-- central Authority token has expired. This cannot grant or tighten authority.
+function Probe:clearRegulationLeaseByReference(vehicleReferenceKey,ownerTag)
+    local vehicle=self:_vehicleForReferenceKey(vehicleReferenceKey)
+    if vehicle==nil then return false,"CONTROL_CLEANUP_VEHICLE_UNAVAILABLE" end
+    self.driveAuthority:clearRegulationLease(vehicle,ownerTag)
+    return true,"CONTROL_CLEANUP_RELEASED"
 end
 
 function Probe:_statusText()
     if self.run == nil and self.releasedMonitor == nil then
         local supportStatus = self.runtime and self.runtime.liveTrafficCandidateSupport and self.runtime.liveTrafficCandidateSupport:getLastStatus() or "PASSIVE"
-        local regulationStatus = self.guardedRecoveryRegulationTestBridge and self.guardedRecoveryRegulationTestBridge:getStatus() or nil
+        local regulationStatus = self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getGuardedRecoveryStatus() or nil
         return string.format("P22 idle; autonomousHeadOnSupport=%s autonomousDispatchCount=%d d0123Regulation=%s", tostring(supportStatus), self.headOnDecisionDispatchCount or 0, regulationStatus and tostring(regulationStatus.active) or "n/a")
     end
     if self.run ~= nil then
@@ -680,11 +795,8 @@ function Probe:update(dt)
     if OuttaMyWay.PROTOTYPE_22_CAPABILITY_GATE_ENABLED ~= true then return end
     local nowMs = g_time or 0
     self:_updateReleaseMonitor(nowMs)
-    if self.guardedRecoveryConvergenceProbe ~= nil and type(self.guardedRecoveryConvergenceProbe.update) == "function" then
-        self.guardedRecoveryConvergenceProbe:update(self, nowMs)
-    end
-    if self.guardedRecoveryRegulationTestBridge ~= nil and type(self.guardedRecoveryRegulationTestBridge.update) == "function" then
-        self.guardedRecoveryRegulationTestBridge:update(self, self.guardedRecoveryConvergenceProbe, nowMs)
+    if self.committedTransitionRegulationTestBridge ~= nil and type(self.committedTransitionRegulationTestBridge.update) == "function" then
+        self.committedTransitionRegulationTestBridge:update(self, nowMs)
     end
     local run = self.run
     if run == nil then return end

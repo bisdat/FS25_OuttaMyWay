@@ -59,7 +59,8 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
         nonIntervention={explicit=true,classification="WAIT_FOR_PREFERENCE_EXHAUSTION_EVIDENCE",governingRequirementKey=trafficPolicy.governingRequirementKey,blockedCandidates=trafficPolicy.blocked}
         explanation="Traffic Policeman later-band candidate lacks explicit same-picture exhaustion evidence for every earlier preference band"
     elseif selected~=nil then
-        if selected.capability=="CONTINUE_OBSERVATION" then commitmentAction="WAIT"
+        if selected.capability=="CONTINUE_OBSERVATION" then
+            if selected.evidenceBasis and selected.evidenceBasis.maintainsExistingCommitment==true and selected.evidenceBasis.existingProgressMayContinue==true then commitmentAction="MAINTAIN" else commitmentAction="WAIT" end
         elseif selected.capability=="CONTINUE_UNCHANGED" then commitmentAction="MAINTAIN"
         elseif selected.capability=="ESCALATE" then commitmentAction="SETTLE"
         elseif OuttaMyWay.ValueRecord.length(operationalPicture.commitmentContext)==0 then commitmentAction="CREATE"

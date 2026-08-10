@@ -1,6 +1,6 @@
 # Responsibility Map
 
-> **Currency:** v4.7.40 Guarded Recovery Architecture Consolidation Candidate; canonical baseline v4.7.34
+> **Currency:** v4.7.76 canonical candidate; D-0140/D-0141 aligned chain live-validated; owner-declared v4.7.49 remains canonical pending declaration
 
 | Responsibility | Owns | Must not own |
 |---|---|---|
@@ -14,6 +14,7 @@
 | Control admission | freshness and Effective Actuation Composition revalidation immediately before dispatch | new strategy or Encounter interpretation |
 | Control capability | bounded physical execution, including maximum-supportable-speed execution of an already-authorised manoeuvre, and Control Outcome facts | selecting another action, inventing a speed policy or declaring operational success |
 | Replay validation | deterministic architecture and lifecycle conformance | replacing live Reality validation |
+| Diagnostics | downstream logs, HUDs, forensic/shadow evidence and conformance visibility | semantic promotion, Candidate policy, Decision, Commitment authority or physical actuation |
 | Operation | context and dynamic membership | fallback ownership of unresolved obligations |
 | Player | external physical agency | internal Commitment Obligation ownership |
 

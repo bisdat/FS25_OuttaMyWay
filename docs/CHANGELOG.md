@@ -1,3 +1,234 @@
+# v4.7.76 CANONICAL CANDIDATE — TS015 architecture-core closure
+
+- Packages the live-tested v4.7.75 behaviour as v4.7.76 canonical candidate without changing traffic, Regulation, Refuge, Commitment or Control logic. Candidate-preparation changes are identity/documentation/provenance/version-assertion only.
+- Owner live validation on 2026-08-10 completed the full TS015 Condor/Patriot working session. Three autonomous Refuge relocations were initiated, including the final role-reversed head-on that exercised same-Commitment supporting-authority reuse and successfully dispatched `REPOSITION`.
+- Both workers ultimately completed their GIANTS work. After Patriot completion, the owner manually moved the completed Patriot assembly so Condor could consume the final few metres. This terminal/post-completion occupancy limitation is explicitly parked for later implementation work.
+- Retains the validated D-0140 authority alignment and D-0141 follower path: 250 ms live reassessment, 0.90 factor only after Regulation is otherwise required, strict new admission, remote-negative protection, elastic cap updates, outbound-egress lease preservation, Progress Passage retirement and same-Commitment Yield succession.
+- Retains existing provisional/test boundaries: Provisional Demand Seed/13 s temporal seed, bounded TS015 Refuge machinery, D-0131/D-0133 shadow, D-0134/D-0136/D-0138 passive, D-0137 falsified, and general production Control disabled.
+- Owner-declared v4.7.49 remains canonical until explicit declaration of this exact candidate.
+
+# v4.7.75 TEST BUILD — D-0141 Same-Commitment Yield Succession Repair
+
+- Owner-declared v4.7.49 remains canonical. v4.7.75 is a narrow non-canonical repair over v4.7.74 and is intended as the final live-validation build before preparing a canonical candidate summary if the run succeeds.
+- Live v4.7.74 evidence validated the first and second encounters, the 0.90 follower Regulation margin, and Condor's second Refuge. The final role-reversed head-on was also correctly detected and Decision selected `REPOSITION`, but Commitment application refused it with `YIELD_PROGRESS_AUTHORITY_ALREADY_OWNED` because the selected Yield worker already owned same-Commitment D-0141 supporting Regulation authority.
+- Same-Commitment progress authority is now treated as strategy succession rather than conflict: `applyHeadOnDecision` reuses the existing valid generic AuthorityToken for the selected Yield assembly instead of rejecting the REVISE Decision. Ownership by another Commitment still blocks.
+- After the head-on revision is accepted, central Control clears only that Yield worker's `D0141_FOLLOWER_BOUNDARY` physical speed lease and settles its follower-boundary obligation. The reused AuthorityToken remains live for the new `REPOSITION` role.
+- A D-0141 Regulation lease on the other worker is untouched and may continue to protect outbound egress exactly as in v4.7.74. The 0.90 factor, 250 ms Runtime cadence, strict admission, remote-negative protection, outbound-egress freeze, Progress Passage retirement, D-0123 composition and all passive/shadow dispositions are unchanged.
+- Added a role-reversed end-to-end Lua regression proving D-0141 Regulation -> positive head-on REVISE -> same-Commitment token reuse -> follower lease clearance -> accepted REPOSITION on the same Yield assembly.
+- Offline validation: 101/101 Python structural/conformance tests, 199/199 Lua behavioural tests, 98/98 active non-archive Lua parse checks.
+
+# v4.7.74 TEST BUILD — D-0141 Head-On Succession Repair
+
+- Owner-declared v4.7.49 remains canonical. v4.7.74 is a non-canonical repair over v4.7.73.
+- Live v4.7.73 evidence showed the active 0.90 follower Regulation improvement worked, but the second Refuge never started because `ESTABLISHED_PURPOSE_PRESERVED_THROUGH_OPPOSED_CONTINUATION` was published as the sole follower `CONTINUE_OBSERVATION` Candidate ahead of a positively established matching head-on.
+- Candidate support now treats the existing follower lease as supporting Control during clean strategy succession: positive retirement remains first priority, Guarded Recovery remains protected, but a positive matching head-on supersedes follower PRESERVE and publishes the established `REPOSITION` Candidate.
+- The D-0141 lease is not released by that succession. Existing v4.7.73 outbound-egress lease freeze and Progress Passage retirement at compact Refuge remain unchanged.
+- No new controller, speed rule or architecture is introduced. The 0.90 factor, 250 ms Runtime cadence, remote-negative protection and D-0123 composition are unchanged.
+- Added a Lua regression reproducing the v4.7.73 failure: matching positive head-on + existing follower PRESERVE must select `REPOSITION` with `commitmentAction=REVISE`.
+- Offline validation: 101/101 Python structural/conformance tests, 198/198 Lua behavioural tests, 98/98 active non-archive Lua parse checks.
+
+# v4.7.73 TEST BUILD — D-0141 Second-Encounter Passage Repair
+
+- Owner-declared v4.7.49 remains canonical. v4.7.73 is a non-canonical implementation repair over v4.7.72.
+- v4.7.72 live evidence showed the follower Regulation chain working through Condor's boundary slowdown, but the unscaled cap remained too permissive and the existing D-0141 purpose was positively retired at the exact co-directional → opposed strategy transition (`headingDot=-1`). A head-on Reposition began 251 ms later; with D-0131 still shadow and no sealed Progress horizon, Patriot accelerated under GIANTS during Condor's outbound egress and collided.
+- Restores the empirically validated `0.90` Transition-Clearance factor to the **active aligned D-0141 magnitude**, but only after the unscaled calculation already requires Regulation. It cannot manufacture Regulation for an otherwise naturally safe/distant follower.
+- Restores D-0130 strategy-succession behaviour in the aligned implementation: an already-admitted follower purpose is preserved through a clean near-opposed continuation instead of being retired by heading reversal alone. The existing speed lease therefore remains active through the subsequent bounded head-on egress.
+- During active P22 outbound phases (`TS015_SETTLING`, `TS015_COMPACTING`, `TS015_MOVING`, `TS015_TARGET_COMPACTING`), that existing D-0141 magnitude is preserved unchanged so OuttaMyWay-controlled Yield motion cannot relax the Progress cap before Refuge is established.
+- No new egress controller is added. Existing Progress Passage remains the positive retirement event once Yield is compact and Held at Refuge, so Progress is then released back to GIANTS-native passage.
+- Strict new follower admission, remote-negative protection, 250 ms Control cadence, zero-command handling, elastic cap updates, D-0123 lease composition and D-0140 authority boundaries are unchanged. D-0131/D-0133 remains shadow.
+- Offline validation: 101/101 Python structural/conformance tests, 197/197 Lua behavioural tests, 98/98 non-archive Lua parse checks.
+
+# v4.7.72 TEST BUILD — D-0141 Follower Regulation Repair
+
+- Owner-declared v4.7.49 remains canonical. v4.7.72 is a non-canonical repair descendant of the aligned v4.7.71 D-0141 implementation.
+- v4.7.71 live evidence confirmed that aligned follower Control acquired and updated a real Patriot lease, but exposed three implementation defects in the second-encounter path: the established lease could retire on millimetric productive-corridor threshold noise; the active Runtime/Control loop was still running at the old 1 s passive-sample cadence; and, once Condor entered GIANTS' slower native boundary transition, an unresolved Situation preserved the stale Productive-state cap instead of updating it from current native/physical transition rate.
+- Strict new follower admission remains unchanged. Only an already-admitted purpose gets a bounded retention band: 1.0 m lateral corridor hysteresis and heading-dot 0.95 retention versus the unchanged 0.99 new-admission test gate. Material separation still retires the purpose.
+- `LiveRuntimeCoordinator` now reassesses the sealed live traffic/Decision/Control chain every 250 ms. Passive diagnostics remain independently throttled; the faster cadence does not grant diagnostics authority.
+- While Productive, a positive GIANTS leader `aiDriveParams.maxSpeed` may lower the follower cap before physical speed has caught up. During an existing-purpose GIANTS turn, the cap follows the lower of positive native forward rate and observed leader progress rate; a positive native reverse command may request 0 km/h forward follower progression. A zero/default native command remains `UNRESOLVED` and cannot manufacture a zero cap.
+- The historical `0.90` multiplier remains legacy-shadow/forensic only and is not applied by active D-0141. The D-0141 cap remains elastic.
+- Progress Passage retirement, D-0123 independent lease composition, the v4.7.69 remote-negative regression and D-0140 authority boundaries remain unchanged. No new architectural decision is introduced.
+- Offline validation: 101/101 Python structural/conformance tests, 195/195 Lua behavioural tests, 98/98 non-archive Lua parse checks, release manifest clean, repository findings 0.
+
+# v4.7.71 TEST BUILD — D-0141 Aligned Follower Boundary-Demand Regulation
+
+- Owner-declared v4.7.49 remains canonical. v4.7.71 is a non-canonical integrated test descendant of the D-0140 Authority Alignment.
+- v4.7.70 live evidence positively supports the need for follower boundary-demand Regulation: with follower Control intentionally shadow-only, Condor led Patriot in a current co-directional line-astern relationship and both became blocked during the second boundary encounter.
+- Rebuilds follower protection through the aligned authority chain only: raw GIANTS Observation → Situation `FollowerBoundaryDemandAssessment` → Candidate → Constraints → Traffic Policeman Decision → Commitment/Obligation → `LiveControlDispatcher` → bounded P22 `REGULATE_SPEED`. Diagnostics remain downstream and non-actuating.
+- Separates **current Adjacent Following**, **Provisional Boundary Demand**, and **elastic Control magnitude**. Current following requires positive Productive/Settled continuations, co-directional headings, leader-before-follower ordering and overlap of the current productive working corridors; no maximum following-distance heuristic is added.
+- Active follower demand does not consume historical native manoeuvre sweep geometry. D-0140 `NativeManoeuvreObservationSource` remains `representationFitnessForBoundaryDemand=UNRESOLVED`, so long-form Transitional/reposition observations cannot manufacture active follower authority.
+- Uses the accepted **Provisional Demand Seed**: observed GIANTS working width is a coarse spatial seed and 13 s is an explicit bounded temporal test mechanic pending better Representation Fitness. Neither is route prediction or Assembly-footprint authority.
+- Uses validated D-0138 `aiDriveParams.maxSpeed` only as the current pre-OuttaMyWay unrestricted follower-rate Observation. A zero native command has no rate authority and produces `UNRESOLVED`; it cannot derive a 0 km/h cap.
+- Restores D-0130's architectural contract: purpose is sticky through temporary uncertainty while cap magnitude is elastic. The old minimum-ever/tighten-only ratchet and historical 0.90 test factor are not used by the aligned active path.
+- D-0139 Progress Passage is positive central retirement evidence for the follower purpose; independent Regulation leases remain composable.
+- The legacy follower implementation remains diagnostic shadow; D-0131/D-0133 committed-transition remains shadow. D-0123 Guarded Recovery remains aligned and active. D-0134/D-0136/D-0138 remain passive; D-0137 falsified.
+- HUD distinguishes active aligned Regulation from legacy shadow without red/green status encoding.
+- Offline validation: 101/101 Python structural/conformance tests, 192/192 Lua behavioural tests, 98/98 active non-archive Lua modules parse.
+
+# v4.7.70 TEST BUILD — D-0140 Architecture Authority Alignment / Authority Reset
+
+- Owner-declared v4.7.49 remains canonical. v4.7.69 is frozen as a non-canonical evidence/source snapshot; v4.7.70 is an integrated alignment test build, not canonical.
+- Records **Architectural Authority Dispersion**, **Layer Responsibility Leakage** and **Boundary-Manoeuvre Demonstration Overreach** after the v4.7.69 remote 0 km/h follower failure. The response is a global authority reset rather than another local cap/follower patch.
+- Adds `LiveRuntimeCoordinator.lua`: Runtime owns capture → assessment/decision → central dispatch before diagnostics. `PassiveLiveValidator` is downstream only.
+- Adds raw `NativeFieldWorkObservation.lua`; `SituationAssessment` alone promotes positive Productive Continuation Knowledge. `LiveTrafficCandidateSupport` consumes sealed Operational Picture Knowledge rather than a diagnostic Productive probe.
+- Replaces active semantic headland-demand probing with `NativeManoeuvreObservationSource.lua`. Native turn/reposition evidence is preserved, but boundary-demand Representation Fitness is explicitly `UNRESOLVED`; native provenance/turn/heading reversal alone cannot authorise follower demand.
+- Resets D-0124–D-0130 follower Regulation to shadow and D-0131/D-0133 committed-transition Regulation to shadow. Their evidence/discoveries remain available; their modules cannot acquire physical speed leases.
+- Adds central `LiveControlDispatcher.lua` as the only automatic bridge from selected physical Candidate / existing Commitment authority into P22. P22 consumes typed `ControlRequest`s and reports raw execution outcomes rather than defining traffic semantics.
+- Migrates bounded D-0123 Guarded Recovery through Situation threat Knowledge → Candidate → Decision(MAINTAIN) → existing Commitment/supporting Progress authority → central Control → P22. `UNRESOLVED` preserves an admitted Regulation; positive clearance releases only supporting Progress authority and leaves Yield recovery authority intact.
+- Excludes the historical direct `GuardedRecoveryRegulationTestBridge.lua` from active runtime loading.
+- Keeps D-0134 Refuge qualification, D-0136 intent-based residual settlement and D-0138 Immediate Native Drive Command passive. D-0137 remains falsified. D-0139 purpose succession is retained architecturally, but its follower/P22 special-case implementation is removed during the reset.
+- Adds `docs/ARCHITECTURE_CODE_ALIGNMENT.md`, updates the current architecture conformance matrix/responsibility map and records D-0140 in project continuity documents.
+- Offline validation before packaging: 100/100 Python structural conformance tests, 185/185 Lua behavioural tests, 97/97 active non-archive Lua modules parse.
+
+## v4.7.69 TEST BUILD — D-0139 Refuge Passage Purpose Succession
+
+- Owner-declared v4.7.49 remains canonical; v4.7.69 is non-canonical and retains the v4.7.68 D-0136 representation repair and v4.7.67 D-0138 passive drive-command probe.
+- v4.7.68 live evidence exposed **Resolution Dependency Inversion**: follower-compression Regulation remained attached to Patriot after Condor was compact and Held at Refuge, so the old clearance-preservation Control delayed the Progress passage required before Condor could recover.
+- D-0139 names the governing transition **Refuge Passage Purpose Succession**. When P22 positively establishes the matching Yield worker in `TS015_COMPACT_REFUGE_HOLD`, the old `PRESERVE_BOUNDARY_TRANSITION_CLEARANCE` follower-compression lease is retired and cannot re-admit for that Yield/Progress pair while the Refuge hold persists.
+- **Progress Passage** does not command a higher speed. Patriot remains wholly GIANTS-owned for route, steering, direction and native speed; OuttaMyWay merely removes its obsolete follower-compression cap.
+- Lease composition is preserved: only `FOLLOWER_TRANSITION_CLEARANCE_REGULATION_V4759_TEST` is cleared. Any independent Regulation lease remains active and may still govern the effective cap.
+- The existing D-0130 monotonic cap rule is retained inside a still-valid pre-Refuge follower-compression purpose. No numeric speed-policy change is made.
+- D-0136 settlement Future-Space adapter and D-0138 Immediate Native Drive Command observation remain unchanged. No Refuge-selection heuristic is added.
+- Grouped test-only housekeeping corrects the standalone Lua harness from the removed/falsified D-0137 probe to the retained D-0138 command probe; no runtime module load path changes beyond the D-0139 wiring.
+
+## v4.7.68 TEST BUILD — D-0136 Settlement Future-Space Representation Repair
+
+- v4.7.49 remains owner-declared canonical; v4.7.68 is test-only over the retained v4.7.67 D-0138 lineage.
+- v4.7.67 live evidence supports `spec_aiFieldWorker.aiDriveParams` as an immediate native drive-command surface, while also falsifying use of the immediate command target as a direct Refuge discriminator.
+- The D-0136 `track.active` peer-visibility repair was live-exercised (`compared=1`), exposing a second passive plumbing mismatch: persistent tracks were passed directly to `FieldBoundedFutureSpace.build()`, which expects observation-worker `activeObserved`.
+- Adds an explicit persistent-track → observation-worker adapter for settlement reassessment only. It copies current activity, Local Intent, Field World snapshot, pose and Physical Representation; it does not mutate the persistent track or alter Future-Space contracts.
+- A settling worker may legitimately remain unresolved because its Local Intent has entered `TURNING`; the repair is successful when `WORKER_NOT_ACTIVE` disappears and the result reflects the actual Local-Intent/representation state.
+- No new Decision or Control authority. D-0134 Refuge selection remains unchanged.
+
+## v4.7.67 TEST BUILD — D-0138 Native Field-Worker Drive Command Surface Shadow
+
+- v4.7.49 remains owner-declared canonical; v4.7.67 is test-only.
+- D-0137 is recorded as falsified by live evidence plus exact FS25 1.21.1.0 SDK source: `vehicle.aiDriveDirection` / `vehicle.aiDriveTarget` are not the native field-worker continuation command surface.
+- Adds passive `NativeFieldWorkerDriveCommandProbe` over `spec_aiFieldWorker.aiDriveParams` only; it never invokes native drive strategies and never changes `driveToPoint` inputs.
+- Samples `valid`, `moveForwards`, world target `tX/tY/tZ`, GIANTS-constrained `maxSpeed`, current pose/travel relation, Productive/Local Intent and blocked state.
+- D-0134 Refuge shadow output receives descriptive command-target delta/distance only; Candidate ordering remains unchanged.
+- D-0136 settlement snapshots the same command surface for subject and active same-Field-World peers; the `track.active` visibility repair remains retained.
+- No new Future Space, negative-clearance, Refuge selection, Regulation, Hold, Reposition or Control authority.
+
+## v4.7.66 TEST BUILD — D-0137 Native AI Drive Signal Shadow Probe
+
+- v4.7.49 remains owner-declared canonical; v4.7.66 is test-only.
+- Adds passive `NativeAIDriveSignalProbe` for GIANTS-native `vehicle.aiDriveDirection` and `vehicle.aiDriveTarget`; no Courseplay code copied.
+- Correlates the raw native signal with Productive Continuation, Local Intent, physical travel, reverse/turn/blocked state and speed.
+- Extends D-0134 Refuge shadow output with descriptive native-drive longitudinal/lateral Candidate relationships; selection remains unchanged.
+- Captures native drive signals at D-0136 intent settlement.
+- Corrects passive D-0136 peer visibility from `otherTrack.activeObserved` to persistent `track.active`, allowing the settlement reassessment to compare active same-Field-World peers.
+- No new Future Space, negative-clearance, Refuge selection, Regulation, Hold, Reposition or Control authority.
+
+## v4.7.65 TEST BUILD — D-0136 Intent-Based Residual Settlement Witness
+
+- v4.7.49 remains owner-declared canonical; v4.7.65 is test-only.
+- v4.7.64 live evidence disproved complete coarse-cell filling as the settlement criterion: Condor returned productively to its original split-start region and GIANTS changed to a turn/reposition with only 136/185 projected residual cells painted.
+- D-0136 measures native intent rather than geometric absolutes. Residual Potential Demand remains coarse; settlement requires Productive re-entry, continued consumption toward the original productive region, representation-fit origin reacquisition, then Productive→`TURN_SEGMENT`.
+- `RESIDUAL_GEOMETRICALLY_FILLED` is supporting evidence only and does not retire Potential Demand by itself.
+- Settlement reassessment remains passive and cannot regulate, hold, reposition, select Refuge or actuate Control.
+
+## v4.7.64 TEST BUILD — D-0135 Productive Coverage Residual / Residual Settlement
+
+- Adds a passive worker-specific residual derived only from the coherent first-Productive working corridor back to the Field World boundary; unpainted elsewhere remains UNKNOWN.
+- Observes later native convergence and positive productive settlement of that residual.
+- On settlement, asks existing coarse Future Space whether another active worker already forms a positive field-bounded intersection.
+- No action authority is granted. Owner-declared v4.7.49 remains canonical.
+
+## v4.7.63 TEST BUILD — D-0134 Demonstrated Productive Coverage / Refuge Qualification Shadow
+
+- Adds Job-Episode-scoped positive productive-history rasterisation from live work-marker sweeps while Productive Continuation is positive.
+- Adds passive Refuge evidence vectors for existing fixture positions and centroid-directed infield shadow positions.
+- Reports Field World fit, current Progress Future Space, demonstrated boundary-manoeuvre entry band and Demonstrated Productive Coverage without changing the selected Refuge.
+- Unpainted cells are UNKNOWN; productive history does not retire Transitional Demand or establish clearance.
+- No headland exclusion, Refuge preference, numeric policy or new Control authority. Owner-declared v4.7.49 remains canonical.
+
+## v4.7.62 TEST BUILD — D-0133 Pre-Handoff Progress Horizon Retention
+
+- retains owner-declared v4.7.49 as canonical authority and keeps D-0132/D-0131/D-0130/D-0129 semantics otherwise intact;
+- records that v4.7.61 still missed D-0131 because the live field-bounded Progress horizon disappeared at the exact Reposition-admission sample even though it had been positively available immediately beforehand;
+- retains the latest positive Progress field-bound endpoint upstream in the existing follower/maturation evidence path;
+- allows admission to seal that retained endpoint only when live evidence is transiently unavailable and the same Job Episode / tracked Local Intent epoch / Productive Continuation basis remains positive;
+- fixes the endpoint in world space so Progress movement consumes rather than refreshes the retained horizon;
+- changes no D-0131 threat rule or numeric calibration and leaves all parked issues unchanged.
+
+## v4.7.60 TEST BUILD — D-0131 Committed Transition Protection Catch-up
+
+- retains owner-declared v4.7.49 as canonical authority and keeps D-0130/D-0129 behaviour intact;
+- adds a bounded committed-egress supporting Regulation lease instead of relying solely on the retained maturation cap;
+- requires positive Productive Progress, field-bounded egress-sweep intersection, and a timing witness against the ideal max-speed egress-completion lower bound before applying the stronger lease;
+- reuses the existing 1 km/h temporary test literal and least-permissive lease composition; no new numeric policy is added;
+- does not treat egress phase alone as authority and does not infer negative clearance from absence of a positive witness;
+- leaves Refuge selection, first-Refuge timing, calibration, brute-force remediation and productive/transitional crossing resolution parked.
+
+## v4.7.59 TEST BUILD — D-0130 Purpose-Preserving Regulation Implementation Catch-up
+
+- retains owner-declared v4.7.49 as canonical authority and keeps D-0129 progression-preservation instrumentation passive;
+- prevents a live follower Regulation purpose from relaxing its cap merely because the worker has advanced and the same geometry calculation now permits a larger value; fresh values may tighten or maintain the cap;
+- keeps the supporting maturation Regulation active when the pair positively matures into opposed continuation instead of releasing solely on Resolution Strategy succession;
+- adds composable P22 Regulation leases so independent supporting purposes coexist and the effective physical speed ceiling is the least-permissive active lease;
+- changes the existing D-0123 Guarded-Recovery bridge to release only its own lease, restoring any still-live maturation cap instead of erasing/refusing it;
+- adds regression tests for tighten-only semantics and composed-lease handoff;
+- introduces no new speed/distance literals and leaves Refuge selection, early first-Refuge actuation, calibration/comfort tuning, brute-force Refuge remediation and productive/transitional crossing resolution parked.
+
+## v4.7.58 TEST BUILD — D-0129 Purpose-Bound Progression Preservation Shadow Probe
+
+Passive architectural instrumentation only. Observation now publishes realised progression evidence; Situation Assessment promotes that motion evidence, positive physical primitives, and open-obligation meaning into the immutable Operational Picture. `ProgressionPreservationProbe` records positive represented witness entry distance from a stable purpose/intent baseline and consumed headroom. It grants no negative-clearance, speed, Decision or Control authority and leaves response opportunity unresolved. v4.7.57 behaviour and all parked tuning/refuge questions remain unchanged.
+
+## v4.7.57 TEST BUILD — D-0128 Positive Head-On Re-admission Evidence
+
+- starts again from exact owner-declared canonical v4.7.49 and reapplies the bounded D-0124/D-0127/D-0126/D-0125 test lineage required for this scenario;
+- records the v4.7.56 live finding that the first Refuge reached positive GIANTS native reacquisition and only ~148 ms later an immediate second Refuge was dispatched while the pair was not a clean head-on (`headingDot` about -0.38);
+- prevents native reacquisition from acting as standalone strategy re-admission authority: a completed prior Refuge diagnostic monitor may be superseded only after the current Operational Picture independently supports a new head-on Candidate;
+- tightens the bounded head-on Candidate from any negative heading dot to a temporary clean-opposition test-fit gate of `headingDot <= -0.99`; this is test Representation Fitness, not production head-on policy;
+- retains D-0127 deferred native-sweep evidence closure and the D-0126 0.90 Transition-Clearance pacing factor unchanged;
+- deliberately leaves the newly observed Patriot speed oscillation untouched so pacing smoothness does not confound the re-admission test;
+- keeps Provisional Demand Seed inactive, later diagonal cross-field behaviour out of scope, and general production Control disabled.
+
+## v4.7.56 TEST BUILD — D-0127 Deferred Native-Sweep Evidence Closure
+
+- starts again from exact owner-declared canonical v4.7.49 and reapplies only the bounded D-0124/D-0126/D-0125 test lineage needed for this scenario;
+- records the v4.7.55 result as **hypothesis not exercised**: zero follower Regulation events occurred because Condor's physically coherent native boundary sweep was discarded when `TURNING` disappeared one probe sample before positive settled continuation became visible;
+- removes that one-sample evidence cliff without changing the manoeuvre measurement: at unresolved turn exit the completed sweep, exit pose and end time are frozen and the probe enters `WAITING_FOR_EVIDENCE`;
+- later positive `SETTLED_CONTINUATION` validates the frozen native manoeuvre, while Job Episode change, active-job disappearance, OMW Control contamination, or a new turn prevents positive demonstration authority;
+- no timeout or elapsed time creates positive evidence; waiting is fail-closed and preserves no Control authority by itself;
+- retains the D-0126 0.90 Transition-Clearance factor **unchanged** so the next live run finally exercises the pacing hypothesis rather than changing two variables;
+- retains the consolidated right-hand version/pacing HUD and retired legacy OTM/P22 on-screen remnants;
+- keeps Provisional Demand Seed inactive, production reaction-margin policy unresolved, later diagonal cross-field behaviour out of scope, and general production Control disabled.
+
+## v4.7.55 TEST BUILD — D-0126 Boundary Transition-Clearance Pacing
+
+- retains D-0124 persistent follower Regulation and D-0125 same-Commitment Resolution Strategy succession;
+- preserves the raw geometry-derived follower maximum as evidence, then applies a temporary 0.90 Transition-Clearance calibration factor to the active test cap;
+- reframes the active Regulation purpose as `PRESERVE_BOUNDARY_TRANSITION_CLEARANCE`;
+- keeps Provisional Demand Seed inactive and does not promote the 0.90 factor into policy or reaction-margin authority;
+- moves version and pacing messages to the right-hand OuttaMyWay HUD area;
+- disables obsolete lifecycle OTM and P22 on-screen diagnostic HUD remnants while preserving forensic logging;
+- leaves the later diagonal cross-field interaction out of scope;
+- remains rebuilt from exact owner-declared canonical v4.7.49 with general production Control disabled.
+
+## v4.7.54 TEST BUILD — D-0125 Resolution Strategy Succession
+
+- built from exact user-declared canonical v4.7.49 with the validated v4.7.53 follower-Regulation lifecycle reapplied as an isolated patch set;
+- removes Encounter-lifetime consumption of the autonomous head-on Refuge strategy; a previous successful head-on does not consume Traffic Policeman competence for the remainder of the Encounter;
+- bounds duplicate dispatch by current refuge execution/handoff state instead: an active refuge run or unresolved GIANTS handoff blocks redispatch, while a completed handoff's long diagnostic monitor may be superseded by a newly supported traffic resolution;
+- permits a later pure established head-on to select the existing Refuge/Reposition Resolution Strategy and **REVISE the same unresolved Commitment**;
+- creates a fresh Native Continuation Restoration obligation for the new displacement, reacquires Yield progress-actuation authority, and retains rather than duplicates the existing Durable Separation obligation;
+- distinguishes leader/follower strategy supersession by a positively opposed continuation from D-0124 positive relationship retirement;
+- retains D-0124 gentle follower Regulation, explanatory pacing HUD, inactive Provisional Demand Seed, unresolved reaction margin, and `CONTROL_AUTHORITY_ENABLED=false`;
+- explicitly stops the experiment after the second head-on/refuge passage; subsequent diagonal cross-field behaviour remains a separate Observe step.
+
+## v4.7.53 TEST BUILD — D-0124 Persistent Follower Boundary-Demand Regulation
+
+- starts from exact owner-declared canonical v4.7.49; v4.7.50-v4.7.52 remain non-canonical evidence probes and are not used as implementation baselines;
+- records the v4.7.52 live failure: Situation-derived follower speed Regulation applied repeatedly, but successful pacing repeatedly made the instantaneous observation supportable and caused purpose release; the final release occurred as the leader began its native boundary demand, after which the follower accelerated and the boundary deadlock reproduced;
+- implements D-0124's lifecycle distinction for one bounded experiment: the protection purpose is persistent while the numeric speed cap is elastic; current safe geometry can raise or remove the effective restriction without retiring responsibility;
+- removes `turn=true` / literal TURNING classification from follower Regulation lifecycle authority; unresolved/non-comparable transition evidence maintains the existing purpose/cap rather than manufacturing release;
+- permits release only on positive inverse relationship evidence (continuations no longer positively aligned, trailing order ended, or lateral demand positively decoupled) or Job Episode invalidation;
+- retains the temporary 0.99 heading-dot / three-coherent-sample Representation Fitness gate for **admission only**; these remain test mechanics, not policy;
+- adds a player/test HUD explanation while active: follower is `pacing for <leader> boundary clearance`; detailed geometry remains forensic log evidence;
+- deliberately does **not** activate the newly recorded Provisional Demand Seed. This test still uses uncontaminated demonstrated native boundary demand so bootstrap evidence cannot confound the lifecycle test;
+- reaction margin and production seed values remain unresolved; general production Control remains disabled.
+
 ## v4.7.49 CERTIFICATION CANDIDATE — Refuge-Gated Guarded Recovery / Live Commitment Catch-up
 
 - starts from owner-declared canonical v4.7.41 (`a15b5f3534545d4cbefd1cfc291f254d0921472dc35c09f900935e9f59cddb15`; Git `1eb64d6fcf328fb566b4aa27d83fe5fdb7ab2911`; 269 files) and consolidates the live-tested v4.7.42-v4.7.48 implementation lineage;

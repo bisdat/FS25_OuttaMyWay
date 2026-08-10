@@ -153,6 +153,34 @@ Action-Space Compression relates to, but is distinct from, **Preference-Band Exh
 
 Traffic Policeman should prefer actions that preserve or expand supported Action Space. Bounded native progression is attractive when it is expected to relieve compression; it becomes inadmissible when waiting is instead consuming the remaining options needed for safe resolution.
 
+## v4.7.52 amendment — follower boundary-demand maturation
+
+### Boundary demand is field-bounded, not turn-predicted
+
+For a coherent line-astern leader/follower relationship approaching the same Field World boundary, Situation Assessment may know that both workers will require some field-bounded continuation before GIANTS reveals its side or exact path. Traffic Policeman does not need semantic U-turn recognition, `turn=true`, or exact route prediction. The follower may not solve the approaching boundary by simply continuing out of the Field World; preserving sufficient local field-bounded Action Space is therefore legitimate current demand.
+
+### Demand envelopes pursue adequacy, not precision
+
+A coarse spatial/temporal demand envelope may represent how much boundary Action Space the leader could require (`x`) and how long that relevant occupancy may persist (`t`). These values are Decision evidence mechanics, not exact native-route reconstruction and not new spatial ontology. Representation Fitness governs them: an envelope that is safe and operationally unobtrusive need not be refined merely because later observation measures a smaller/faster manoeuvre. Reality should enlarge an under-protective envelope promptly; persistent materially intrusive conservatism may justify reduction.
+
+When no uncontaminated native demonstration is available, a **Provisional Demand Seed** may bootstrap the estimate. Working width may seed spatial demand only as a coarse estimate and must not be reinterpreted as Physical Assembly extent authority. Provisional temporal demand may use a conservative implementation/test literal until better fitness evidence exists. No numerical seed is architectural policy.
+
+### Regulation preserves occupancy ordering
+
+The relevant Traffic-Policeman question is whether unrestricted follower progression would cause the follower to require boundary Action Space before the leader has vacated the portion still relevant to the follower. A large natural temporal reserve requires no intervention. Once unrestricted progression would cease to preserve the ordering, Traffic Policeman should prefer the least restrictive `REGULATE_SPEED` capable of restoring it. Earliest sufficient admission minimises the speed reduction required and supports the intended near-invisible player experience.
+
+The protection **purpose** and its current **cap** are separate. Once admitted, the purpose remains live while the relevant leader demand remains positively unresolved. Current Reality may justify a higher or lower cap, including no effective reduction at all, without releasing the purpose. Successful Control that makes current geometry supportable is evidence that the Regulation is working, not evidence that the reason for Regulation disappeared.
+
+### Retirement is the positive inverse of admission
+
+Demand retirement uses the same spatial-temporal relationship as admission. Positive current evidence must establish that the leader's realised/plausible demand no longer constrains the follower's relevant field-bounded Future Space or will vacate it before the follower requires it. If the leader reveals motion away from follower-relevant demand, the protection may retire before the complete native manoeuvre ends. If the leader continues through follower-relevant demand, the same obligation persists until compatibility is positively supported.
+
+Evidence absence is not clearance. `turn=true`, elapsed `t`, manoeuvre-start recognition, a temporarily non-binding cap, or a positive instantaneous reserve do not independently retire the obligation. OMW-Control-influenced manoeuvres cannot become native demand demonstrations.
+
+### v4.7.52 failure classification
+
+The non-canonical v4.7.52 live test positively demonstrated that a Situation-derived follower cap can alter progression while GIANTS retains route, steering and direction, but its lifecycle repeatedly released the cap when Regulation itself restored momentary supportability and finally released at the leader's boundary transition. The pair then reproduced mutual blockage. This is evidence against release-on-current-supportability for follower maturation. It does not prove the derived demand geometry or reaction margin sufficient or insufficient because the intended protection obligation was not maintained.
+
 ## Static-object boundary
 
 Static-object recovery/avoidance is deliberately parked for separate architectural analysis. BNIR and Traffic Policeman must not silently generalise into an assumption that GIANTS can avoid stationary obstacles or that OuttaMyWay can always automate a safe bypass. Future analysis may conclude that some or all such cases require additional architecture or player intervention.

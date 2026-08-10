@@ -414,7 +414,7 @@ function Source:capture(mission, nowSeconds)
                 playerFacingFieldLocators=locatorIds,immutableSnapshots=#snapshotKeys>0
             },
             assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, futureSpaceRelationshipEvidence = {}, demandEvidence = {}, interactionEvidence = {}, shadowPlanViewEvidence = {}},
-            motion = {closureEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
+            motion = {closureEvidence = {}, progressionEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
             physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {},
             diagnostics = {
                 sourceCounters={
@@ -446,6 +446,23 @@ function Source:capture(mission, nowSeconds)
                 blocked = worker.blocked == true, speedMps = worker.speedMps, name = worker.name
             }
             raw.playerControl[worker.referenceKey] = {playerControlled = worker.playerControlled, playerPresent = worker.playerPresent == true}
+            local md=worker.motionDiagnostic or {}
+            local li=worker.localIntent or {}
+            local nativeFieldWork=nil
+            if worker.activeObserved==true and worker.object~=nil and OuttaMyWay.NativeFieldWorkObservation~=nil then
+                nativeFieldWork=OuttaMyWay.NativeFieldWorkObservation.observe(worker.object)
+            end
+            raw.motion.progressionEvidence[#raw.motion.progressionEvidence+1]={
+                assemblyReferenceKey=worker.referenceKey,name=worker.name,sourceJobToken=worker.sourceJobToken,
+                reportedSpeedMps=worker.speedMps,positionDerivedSpeedMps=md.positionDerivedSpeedMps,
+                travelDirectionX=md.travelDirectionX,travelDirectionZ=md.travelDirectionZ,
+                headingX=worker.pose and worker.pose.dx or nil,headingZ=worker.pose and worker.pose.dz or nil,
+                headingToTravelDot=md.headingToTravelDot,motionClassification=md.classification,motionReason=md.reason,
+                sampleIntervalSeconds=md.sampleIntervalSeconds,blocked=worker.blocked==true,
+                localIntentClassification=li.classification,intentEpoch=li.intentEpoch,intentValid=li.intentValid==true,
+                nativeFieldWork=nativeFieldWork,
+                provenance={source="LIVE_MOTION_DIAGNOSTIC_PLUS_GIANTS_LOCAL_INTENT_PLUS_RAW_FIELD_WORK",negativeClearanceAuthority=false,semanticAuthority=false}
+            }
             raw.jobEpisodeEvidence[#raw.jobEpisodeEvidence + 1] = {
                 assemblyReferenceKey = worker.referenceKey, sourceJobToken = worker.sourceJobToken,
                 jobPresent = worker.activeObserved == true, aiControlled = worker.activeObserved == true,
@@ -825,7 +842,7 @@ function Source:capture(mission, nowSeconds)
             provenance = {source = "LiveObservationSource", mode = "JOB_SEEDED_FIELD_WORLD_EQUIVALENCE_AUTHORITY", noActivity = true},
             fieldWorld = {referenceKey = "field-world:none", fieldPolygonReferenceKey = nil, fieldPolygonReferenceKeys = {}, fieldWorldSnapshotReferenceKeys = {}, operationMembershipEvidenceComplete = true, identityStatus="NO_ACTIVITY"},
             assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, futureSpaceRelationshipEvidence = {}, demandEvidence = {}, interactionEvidence = {}, shadowPlanViewEvidence = {}},
-            motion = {closureEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
+            motion = {closureEvidence = {}, progressionEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
             physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {},
             diagnostics={sourceCounters={cycleActiveJobVehicleCount=cycleDiagnostics.activeJobVehicleCount,cycleRelevantVehicleCount=cycleDiagnostics.relevantVehicleCount,groupWorkerCount=0,activeGroupWorkerCount=0,poseResolvedWorkerCount=0,mathematicallyPossiblePairCount=0,relevantPairCount=0,eligiblePairCount=0,evaluatedPairCount=0,excludedPairCount=0,qualifyingPairCount=0,interactionEvidenceEmittedCount=0},assemblyDiagnostics={},pairDiagnostics={},contradictions={}}
         }

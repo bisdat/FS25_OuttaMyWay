@@ -2,9 +2,9 @@
 
 > **Authority:** Normative replacement-core responsibility and lifecycle map
 >
-> **Currency:** v4.7.34 Traffic Policeman Decision Ordering Consolidation Candidate; canonical v4.7.33 is the baseline
+> **Currency:** D-0140 architecture/code alignment; owner-declared canonical v4.7.49 is the baseline
 >
-> **Implementation status:** canonical v4.7.33 retains the passive live-validated Future-Space/Encounter/Prototype-21 foundation; v4.7.34 consolidates Decision ordering in documentation only; live Traffic Policeman Commitment mutation and Control remain unimplemented
+> **Implementation status:** owner-declared v4.7.49 remains canonical. Non-canonical D-0140 alignment implements the bounded live chain through Runtime → Situation → Candidate → Decision → Commitment → central Control Dispatcher → P22; follower/committed-transition experimental authority is reset to shadow and general production Control remains disabled.
 
 ## 1. Closed-loop responsibility flow
 

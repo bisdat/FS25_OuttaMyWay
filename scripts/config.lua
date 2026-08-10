@@ -1,24 +1,28 @@
--- FS25_OuttaMyWay v4.7.49 CERTIFICATION CANDIDATE. Behaviourally identical to the live-PASS v4.7.48 runtime apart from coherent release identity/status metadata.
--- Initial autonomous Reposition now creates a live replacement-core Commitment; refuge recovery admission is event-driven.
--- D-0123 Regulation is reserved for convergence that develops after recovery starts. Fixture geometry/mechanism literals remain temporary test authority only.
+-- FS25_OuttaMyWay v4.7.76 CANONICAL CANDIDATE — live-validated D-0140 Architecture Authority Alignment + D-0141 Aligned Follower Boundary-Demand Regulation; owner-declared v4.7.49 remains canonical pending explicit declaration.
+-- General production Control authority remains disabled; bounded P22 Control is reachable only through the canonical Decision/Commitment/central-dispatch chain.
+-- D-0141 restores follower-boundary Regulation only through the aligned chain; legacy follower logic and D-0131/D-0133 committed-transition actuation remain shadow; D-0123 Guarded Recovery remains bounded through the aligned chain.
+-- Native manoeuvre boundary-demand Representation Fitness is UNRESOLVED; D-0134/D-0136/D-0138 remain passive and D-0137 remains falsified.
 -- Canonical architecture authority: v4.6.78.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.49"
+OuttaMyWay.VERSION = "4.7.76"
 OuttaMyWay.ARCHITECTURE_VERSION = "4.6.78"
-OuttaMyWay.RUNTIME_MODE = "LEGACY_SHADOW_CLEANUP_CONFORMANCE"
+OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000
+-- Active live traffic/control reassessment cadence. Kept separate from passive logging cadence so
+-- bounded Control can react to GIANTS native rate changes before a boundary transition matures.
+OuttaMyWay.LIVE_RUNTIME_CONTROL_INTERVAL_MS = 250
 OuttaMyWay.PASSIVE_HEARTBEAT_INTERVAL_MS = 10000
 OuttaMyWay.PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE = 8
 
 -- Temporary live-gate HUDs. Diagnostic instrumentation only.
 -- v4.7.24 retains the lifecycle gate only to verify cleanup causes no behavioural change
 -- to Future-Space admission, termination precedence or fresh-Episode identity.
-OuttaMyWay.LIFECYCLE_TEST_HUD_ENABLED = true
+OuttaMyWay.LIFECYCLE_TEST_HUD_ENABLED = false
 OuttaMyWay.FUTURE_SPACE_HUD_ENABLED = false
-OuttaMyWay.TRANSITION_HUD_ENABLED = true
+OuttaMyWay.TRANSITION_HUD_ENABLED = false
 OuttaMyWay.TRANSITION_HUD_X = 0.985
 OuttaMyWay.TRANSITION_HUD_Y = 0.720
 OuttaMyWay.TRANSITION_HUD_TITLE_SIZE = 0.016
@@ -42,8 +46,39 @@ OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_ENABLED = true
 OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_INTERVAL_MS = 250
 OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_HEARTBEAT_MS = 2000
 
--- Prototype 22: capability validation plus bounded autonomous initial-head-on
--- actuator dispatch. Manual probe commands remain diagnostic only. These
+-- D-0134 passive chessboard-style productive-history evidence. The grid is
+-- Job-Episode scoped and only paints cells swept between consecutive live AI/work-area
+-- marker segments while Productive Continuation is positively supported. These are
+-- diagnostic resolution/cadence values only; unpainted cells remain UNKNOWN and no
+-- coverage result grants Refuge, Decision or Control authority.
+OuttaMyWay.DEMONSTRATED_PRODUCTIVE_COVERAGE_PROBE_ENABLED = true
+OuttaMyWay.DEMONSTRATED_PRODUCTIVE_COVERAGE_PROBE_INTERVAL_MS = 250
+OuttaMyWay.DEMONSTRATED_PRODUCTIVE_COVERAGE_CELL_SIZE_M = 5.0
+OuttaMyWay.DEMONSTRATED_PRODUCTIVE_COVERAGE_MAX_SAMPLE_GAP_M = 12.0
+
+-- D-0138 passive GIANTS Native Field-Worker Drive Command shadow probe.
+-- Reads spec_aiFieldWorker.aiDriveParams only after GIANTS has populated it;
+-- the observer never calls getDriveData() and never changes driveToPoint input.
+OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_ENABLED = true
+OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_INTERVAL_MS = 250
+OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_HEARTBEAT_MS = 1000
+
+-- D-0136 passive intent-based Productive Coverage Residual settlement witness.
+-- D-0135 coarse residual geometry remains Potential Demand evidence, but geometric
+-- fill percentage is not settlement authority. These values are diagnostic
+-- cadence/resolution only; the witness follows native intent lifecycle evidence.
+OuttaMyWay.PRODUCTIVE_COVERAGE_RESIDUAL_PROBE_ENABLED = true
+OuttaMyWay.PRODUCTIVE_COVERAGE_RESIDUAL_PROBE_INTERVAL_MS = 250
+OuttaMyWay.PRODUCTIVE_COVERAGE_RESIDUAL_HEARTBEAT_MS = 2000
+
+-- D-0134 passive Refuge Resulting-Situation qualification shadow. Existing fixture
+-- selection is untouched. Additional infield points are evidence probes only.
+OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_PROBE_ENABLED = true
+OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_INFIELD_OFFSETS_M = {20.0, 35.0, 50.0}
+OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_COVERAGE_SAMPLE_COUNT = 12
+
+-- Prototype 22: capability validation plus bounded autonomous head-on
+-- Resolution Strategy dispatch. Manual probe commands remain diagnostic only. These
 -- literals are experimental safety/observation bounds only and carry no
 -- production Decision or policy authority. Production CONTROL_AUTHORITY remains
 -- false; automatic head-on dispatch does not grant general production Control authority.
@@ -54,11 +89,82 @@ OuttaMyWay.GUARDED_RECOVERY_CONVERGENCE_PROBE_ENABLED = true
 OuttaMyWay.GUARDED_RECOVERY_CONVERGENCE_PROBE_INTERVAL_MS = 100
 OuttaMyWay.GUARDED_RECOVERY_CONVERGENCE_PROBE_HEARTBEAT_MS = 500
 
+-- Architecture alignment: D-0127 native manoeuvre observation is retained,
+-- but TURNING/head-reversal no longer qualifies boundary-demand authority.
+-- The legacy HeadlandManoeuvreSweepProbe is disabled/removed from active runtime.
+OuttaMyWay.HEADLAND_MANOEUVRE_SWEEP_PROBE_ENABLED = false
+OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_ENABLED = true
+OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_INTERVAL_MS = 100
+OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_LOG_INTERVAL_MS = 250
+OuttaMyWay.FOLLOWER_MATURATION_COMPRESSION_PROBE_ENABLED = true
+OuttaMyWay.FOLLOWER_MATURATION_COMPRESSION_PROBE_INTERVAL_MS = 100
+OuttaMyWay.FOLLOWER_MATURATION_COMPRESSION_PROBE_HEARTBEAT_MS = 500
+
+-- D-0129 passive progression-preservation probe. This publishes/consumes motion and
+-- obligation Knowledge and records positive demand-witness geometry only. It has no
+-- Decision, speed, clearance or Control authority; response-adjusted progression is unresolved.
+OuttaMyWay.PROGRESSION_PRESERVATION_PROBE_ENABLED = true
+OuttaMyWay.PROGRESSION_PRESERVATION_PROBE_HEARTBEAT_MS = 1000
+
+-- Bounded active test authority. The cap is derived from live geometry plus
+-- uncontaminated demonstrated demand. 0.99/3 are admission Representation-
+-- Fitness test mechanics only and are not policy.
+OuttaMyWay.FOLLOWER_MATURATION_REGULATION_TEST_ENABLED = false
+OuttaMyWay.FOLLOWER_MATURATION_TEST_MIN_HEADING_DOT = 0.99
+OuttaMyWay.FOLLOWER_MATURATION_TEST_REQUIRED_COHERENT_SAMPLES = 3
+-- Historical follower-shadow calibration remains available for forensic comparison.
+OuttaMyWay.FOLLOWER_MATURATION_TRANSITION_CLEARANCE_FACTOR = 0.90
+OuttaMyWay.FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true
+-- Live D-0141 clearance margin. Applied only after the unscaled calculation has
+-- already established that Regulation is required, so it cannot manufacture a
+-- restriction for an otherwise naturally safe/distant follower.
+OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR = 0.90
+-- Representation-Fitness test threshold for "coherent line-astern", not architectural policy.
+OuttaMyWay.FOLLOWER_BOUNDARY_CURRENT_ALIGNMENT_MIN_DOT = 0.99
+-- Existing-purpose hysteresis only: a sub-metre corridor/near-threshold heading fluctuation
+-- is insufficient positive evidence to retire an already-admitted follower obligation.
+OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_LATERAL_RETENTION_M = 1.0
+OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_ALIGNMENT_MIN_DOT = 0.95
+-- Existing-purpose strategy succession retention. A clean near-opposed continuation
+-- is not positive retirement evidence; the admitted lease remains until the existing
+-- lifecycle supplies a stronger event such as Progress Passage.
+OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_OPPOSED_SUCCESSION_MAX_DOT = -0.95
+-- Provisional Demand Seed temporal component. Evidence/test mechanic only; D-0124 explicitly denies fixed-value authority.
+OuttaMyWay.FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC = 13.0
+
+-- D-0128 bounded head-on playbook evidence gate. This is a TEST REPRESENTATION-
+-- FITNESS literal, not production head-on policy: the live Refuge bridge is only
+-- offered for a clean, positively opposed continuation. The magnitude mirrors the
+-- already-bounded 0.99 coherent-heading test band without coupling the two policies.
+OuttaMyWay.AUTONOMOUS_HEAD_ON_TEST_MAX_HEADING_DOT = -0.99
+
+-- Persistent neutral build identity plus explanatory test HUD.
+OuttaMyWay.BUILD_LABEL = "CANONICAL CANDIDATE"
+OuttaMyWay.VERSION_HUD_ENABLED = true
+OuttaMyWay.VERSION_HUD_X = 0.985
+OuttaMyWay.VERSION_HUD_Y = 0.720
+OuttaMyWay.VERSION_HUD_TEXT_SIZE = 0.014
+OuttaMyWay.FOLLOWER_PACING_HUD_ENABLED = true
+OuttaMyWay.FOLLOWER_PACING_HUD_X = 0.985
+OuttaMyWay.FOLLOWER_PACING_HUD_Y = 0.697
+OuttaMyWay.FOLLOWER_PACING_HUD_TEXT_SIZE = 0.013
+OuttaMyWay.FOLLOWER_PACING_HUD_MAX_ROWS = 3
+
 -- v4.7.49 carries forward the live-PASS D-0123 active-recovery Regulation fallback unchanged. Test-fixture authority only.
 -- TEMPORARY IMPLEMENTATION VALUE: the successful v4.7.48 test validated sequencing/integration, not 1 km/h as production speed policy.
 OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_ENABLED = true
 OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_KMH = 1.0
 OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_HEARTBEAT_MS = 500
+
+-- D-0133 retains the latest positively supported Progress field-bounded continuation
+-- horizon before committed-transition admission; D-0132 may seal that retained
+-- endpoint across the immediate handoff while the same Job Episode and tracked
+-- Local Intent epoch remain positively valid. D-0131 threat semantics remain unchanged.
+-- D-0131 committed-transition Regulation TEST bridge. The bridge reuses the
+-- existing 1 km/h temporary implementation value only after a positive bounded
+-- timing witness shows Productive Progress could reach an admitted TS015 egress
+-- sweep no later than even ideal max-speed egress completion. No new speed literal.
+OuttaMyWay.COMMITTED_TRANSITION_REGULATION_TEST_ENABLED = false
 
 OuttaMyWay.PROTOTYPE_22_CAPABILITY_GATE_ENABLED = true
 OuttaMyWay.PROTOTYPE_22_REGULATE_DEFAULT_KMH = 1.0
@@ -114,7 +220,7 @@ OuttaMyWay.PROTOTYPE_22_TS015_OBSERVE_LOG_MS = 2000
 
 -- Transition-only operator signalling: raw forensic logs remain available but
 -- the tester need not follow the scrolling console during live actuation.
-OuttaMyWay.PROTOTYPE_22_HUD_ENABLED = true
+OuttaMyWay.PROTOTYPE_22_HUD_ENABLED = false
 OuttaMyWay.PROTOTYPE_22_HUD_X = 0.985
 OuttaMyWay.PROTOTYPE_22_HUD_Y = 0.590
 OuttaMyWay.PROTOTYPE_22_HUD_TITLE_SIZE = 0.016

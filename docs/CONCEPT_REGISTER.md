@@ -1,3 +1,37 @@
+# D-0141 follower alignment clarification
+
+## Current Adjacent Following
+
+**Classification:** Situation Knowledge refinement of existing Follower boundary-demand Regulation; not a new traffic-role root concept.
+
+Follower protection requires a positively supported **current** ordered relationship. Historical manoeuvre geometry cannot manufacture that relationship. The current bounded implementation asks whether both participants have positive Productive/Settled continuations, are coherently co-directional, are ordered leader then follower, and occupy overlapping current productive work corridors. A fixed maximum following distance is not part of the concept.
+
+## Provisional Boundary Demand — aligned use
+
+The existing **Provisional Demand Seed** remains the active bounded representation while production boundary-demand Representation Fitness is unresolved. GIANTS working width may seed coarse spatial demand and a temporary duration may seed temporal demand. Neither acquires exact route, exact turn, headland, Assembly-footprint or permanent policy authority. Historical native manoeuvre observations remain ineligible until separately qualified.
+
+## Follower purpose and magnitude
+
+The accepted Follower boundary-demand purpose remains **persistent while valid** and its Control magnitude remains **elastic**. Temporary evidence loss is not retirement. Positive inverse topology or purpose succession may retire it. A numeric cap can rise, fall or return to native speed without changing the purpose.
+
+# v4.7.52 follower-maturation evidence consolidation
+
+## Provisional Demand Seed
+
+**Classification:** accepted provisional evidence representation; not a new root Space, footprint authority or route predictor.
+
+When an already-coherent line-astern leader/follower Situation approaches a common Field World boundary before uncontaminated native boundary demand has been demonstrated, a conservative seed may stand in for coarse spatial/temporal demand so Traffic Policeman can preserve Action Space rather than remain blind until the first turn completes. Working width may seed spatial demand only as an estimate; temporary duration values remain implementation/test mechanics. Representation Fitness, not convergence on exact geometry, governs refinement.
+
+## Follower boundary-demand Regulation
+
+**Classification:** accepted composition of existing Encounter Maturation / Action-Space Compression / Future Space / Traffic Policeman architecture; no new route-planning authority.
+
+The follower's relevant need arises because straight productive continuation ends at the Field World boundary and GIANTS must retain some field-bounded continuation. Regulation is admitted when unrestricted follower progression would cease to preserve the ordering in which leader-relevant demand vacates before follower-relevant demand matures. The protection purpose is persistent while the current cap is elastic. Retirement is the positive inverse of admission: current evidence must establish that the leader's realised/plausible demand no longer constrains the follower-relevant Future Space or will vacate before follower need. `turn=true`, elapsed time, temporary current supportability and absence of evidence are not retirement authority.
+
+## v4.7.52 live failure classification
+
+The non-canonical v4.7.52 test proved that the Situation-derived cap can actively pace the follower while GIANTS retains route/steering/direction, but repeated apply/release cycling and final premature release reproduced mutual boundary blockage. This decreases confidence in the test lifecycle and specifically rejects release-on-momentary-supportability. It does **not** settle demand-envelope sufficiency or reaction margin because the intended protection purpose was not maintained. OMW-Control-influenced manoeuvres remain rejected as native demand evidence.
+
 # v4.7.41 Guarded Recovery Observe-Exhaustion Contract
 
 ## Vulnerable Space

@@ -1,3 +1,25 @@
+## 2026-08-10 — D-0141 GIANTS observations used by aligned follower protection
+
+D-0141 consumes only two additional raw GIANTS surfaces for its provisional follower-demand representation: observed working width and the already-validated D-0138 `spec_aiFieldWorker.aiDriveParams.maxSpeed`. Working width is used as a coarse demand seed, not Assembly footprint. `aiDriveParams.maxSpeed` is used only as the current pre-OuttaMyWay unrestricted rate; target coordinates still have no route/continuation authority. A zero command is treated as unresolved rate evidence.
+
+Historical native turn/reposition traces are deliberately not promoted. `NativeManoeuvreObservationSource` remains boundary-demand Representation Fitness `UNRESOLVED`; a GIANTS `TURN_SEGMENT`, heading reversal, duration, displacement or boundary proximity cannot by itself create active follower demand.
+
+## 2026-08-10 — Native manoeuvre semantics after D-0140 alignment
+
+Live v4.7.69 evidence reinforces the established warning that GIANTS `turn=true` / `TURN_SEGMENT` is broader than a literal compact headland turn. Native field workers can remain in Transitional/reposition behaviour for long duration and distance, including substantial lateral displacement and eventual heading reversal. Therefore native provenance, `turn=true`, boundary proximity and heading reversal are Observation evidence only; none alone qualifies the manoeuvre as reusable boundary-demand geometry.
+
+The aligned `NativeManoeuvreObservationSource` preserves these observations but publishes `representationFitnessForBoundaryDemand=UNRESOLVED`. Future promotion requires a separate Situation-level Representation-Fitness contract; no fixed distance/time/headland heuristic is authorised. D-0138 `spec_aiFieldWorker.aiDriveParams` remains an immediate native command surface only, not a route/continuation horizon.
+
+## FS25 1.21.1.0 SDK — field-worker drive-command path (D-0138)
+
+Exact supplied SDK (`sdk(3).zip`, SHA-256 `34135527b9be4ed5fc8b5b84824e1e2469bc3705818f561035d4a386286189a4`) shows:
+
+- `AIDriveStrategyFieldCourse:setAIVehicle()` initializes `vehicle.aiDriveDirection={0,1}` and `vehicle.aiDriveTarget={0,0}`. D-0137 live invariance is therefore explained; those fields must not be treated as native field-worker continuation authority.
+- `AIFieldWorker:updateAIFieldWorker()` obtains `tX,tZ,moveForwards,maxSpeed,distanceToStop` from the active drive strategies, applies distance-to-stop, vehicle speed-limit and cruise-control constraints, then writes `moveForwards,tX,tY,tZ,maxSpeed,valid` into `spec_aiFieldWorker.aiDriveParams`.
+- The `aiDriveParams` target is world-space at storage. `AIFieldWorker` converts it with `worldToLocal()` against the AI steering node when forward and the AI reverser node when reverse before invoking `AIVehicleUtil.driveToPoint()`.
+- `AIVehicleUtil.driveToPoint()` documents its `tX,tZ` arguments as a local-space position. Do not describe those parameters as a direction vector.
+- `AIDriveStrategyFieldCourse:getDriveData()` returns its initialized zero target / zero speed command while it cannot continue or is blocked. This gives D-0138 a useful live falsification state.
+
 # GIANTS AIFieldCourse Notes
 
 ## Purpose

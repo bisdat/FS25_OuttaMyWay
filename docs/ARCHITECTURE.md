@@ -29,8 +29,8 @@ Operation admission consumes resolved Field World identity. An Operation remains
 The polygon remains an immutable Job Episode Snapshot. Mid-episode external field merging or splitting is not reconciled. A restarted or replacement Job Episode captures current Reality.
 
 > **Authority:** Normative replacement-core architecture, extended by ADR-0021  
-> **Canonical implementation baseline:** owner-declared v4.7.12  
-> **Implementation status:** Field World Equivalence Authority not implemented; exact-fingerprint Operation grouping provisional; Control disabled  
+> **Canonical implementation baseline:** owner-declared v4.7.49  
+> **Implementation status:** Field World Equivalence Authority not implemented; exact-fingerprint Operation grouping provisional; general production Control disabled. Non-canonical D-0140 alignment retains only bounded P22 capability through the central Control path.  
 > **Governing ADRs:** [ADR-0019](adr/ADR-0019-replacement-core-commitment-lifecycle.md), [ADR-0021](adr/ADR-0021-field-world-equivalence-authority.md)
 
 ## 1. Purpose
@@ -96,6 +96,8 @@ Reverse is architecturally available as a possible movement capability. Reverse 
 - **Control** executes bounded authority and reports realised outcomes.
 
 No layer may silently substitute its interpretation for another layer's responsibility.
+
+**Implementation alignment invariant:** Diagnostics are observational consumers only and cannot grant, retain, revise or release physical authority. Raw GIANTS facts become semantic traffic Knowledge only through Situation Assessment. Candidate generation represents the complete supportable action space from sealed Knowledge; Decision selects; Commitment owns continuing purpose/obligations/authority; Control alone executes valid authority through bounded capabilities. A prototype or diagnostic location never grants semantic authority by proximity to evidence.
 
 ### Situation, Encounter and Commitment
 

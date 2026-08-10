@@ -1,16 +1,9 @@
--- FS25_OuttaMyWay v4.7.39 temporary TS015 native-continuation restoration evidence harness.
---
--- This is NOT production Traffic Policeman policy. The operator selects the
--- Yield participant explicitly with `otmP22 relocate <vehicle>`. The harness
--- then exercises already-demonstrated P22 authority using literal fixture
--- distances/times. v4.7.39 adds an explicit return toward the pre-egress
--- continuation state before same-Job GIANTS handback, allowing direct-refuge
--- release to be compared with restoration-first handback.
---
--- The target check below is deliberately modest: it proves only that a small
--- probe circle around the compact target remains inside the same agronomic
--- source-field polygon. Obstacle clearance and production Refuge Region
--- qualification remain operator-owned fixture assumptions.
+-- TS015 bounded relocation/recovery capability donor. D-0140 retains this
+-- owner-validated mechanical fixture beneath central Control. Its literal refuge
+-- geometry, speed/configuration values and recovery choreography remain test
+-- mechanism, not production Refuge/Decision policy. It publishes neutral fixture
+-- and execution evidence; downstream Situation/diagnostics assign any legitimate
+-- meaning.
 
 OuttaMyWay.Prototype22TS015Relocation = {}
 local Harness = OuttaMyWay.Prototype22TS015Relocation
@@ -172,6 +165,9 @@ local function selectFixtureTarget(run)
             progressDistance and string.format("%.2fm", progressDistance) or "n/a")
     end
 
+    run.refugeFixtureObservationSequence=(run.refugeFixtureObservationSequence or 0)+1
+    run.refugeFixtureObservation={sequence=run.refugeFixtureObservationSequence,candidates=candidates,sourceFieldId=source.sourceFieldId,observedAt=tonumber(g_time) or 0}
+
     table.sort(candidates, function(a, b)
         if a.fit.qualified ~= b.fit.qualified then return a.fit.qualified end
         if a.fit.matched ~= b.fit.matched then return a.fit.matched > b.fit.matched end
@@ -258,9 +254,13 @@ function Harness.start(probe, selector, commitmentContext)
     local ok, gateReason = probe.permissionGate:setHold(vehicle, "P22-TS015-AUTONOMOUS-RELOCATE")
     if not ok then return "P22 TS015 Hold unavailable: " .. tostring(gateReason) end
     probe.run = run
-    logInfo("AUTONOMOUS_RELOCATE_START yield=%s yieldRef=%s yieldJob=%s progress=%s progressRef=%s progressJob=%s commitment=%s literals=TEMPORARY_MECHANISM_ONLY policyAuthority=false sequence=HOLD_COMPACT_EGRESS_COMPACT_REFUGE_WAIT_FOR_RECOVERY_ADMISSION_REJOIN_RESTORE_HANDOFF_OBSERVE initialSpan=%.2fm %s",
+    local horizonSealed,horizonSealReason=false,"BRIDGE_UNAVAILABLE"
+    if probe.committedTransitionRegulationTestBridge~=nil and type(probe.committedTransitionRegulationTestBridge.sealProgressHorizon)=="function" then
+        horizonSealed,horizonSealReason=probe.committedTransitionRegulationTestBridge:sealProgressHorizon(probe,run,"COMMITTED_REPOSITION_ADMISSION",g_time or 0)
+    end
+    logInfo("AUTONOMOUS_RELOCATE_START yield=%s yieldRef=%s yieldJob=%s progress=%s progressRef=%s progressJob=%s commitment=%s progressHorizonSealed=%s progressHorizonSealReason=%s literals=TEMPORARY_MECHANISM_ONLY policyAuthority=false sequence=HOLD_COMPACT_EGRESS_COMPACT_REFUGE_WAIT_FOR_RECOVERY_ADMISSION_REJOIN_RESTORE_HANDOFF_OBSERVE initialSpan=%.2fm %s",
         run.vehicleName, run.referenceKey, tostring(run.startJobToken), run.progressVehicleName, run.progressReferenceKey,
-        tostring(run.progressStartJobToken), tostring(run.commitmentId or "none"), run.initialSpanM, foldEvidenceText(configEvidence))
+        tostring(run.progressStartJobToken), tostring(run.commitmentId or "none"), tostring(horizonSealed), tostring(horizonSealReason), run.initialSpanM, foldEvidenceText(configEvidence))
     probe:_setHud("OTM P22 — TS015", "Stopping " .. run.vehicleName, "Autonomous relocation armed; no further command needed")
     return string.format("P22 TS015 relocating %s (Yield) while %s remains GIANTS-owned Progress; automation will refuge/rejoin/restore/release and observe", run.vehicleName, run.progressVehicleName)
 end
@@ -315,7 +315,7 @@ local function recoveryAdmissionAssessment(probe, run)
     local progressPose=pose(run.progressVehicle)
     local recoverySpan=select(1,probe:_representedSpan(run.vehicle))
     local progressSpan=select(1,probe:_representedSpan(run.progressVehicle))
-    local geometryEvaluator=OuttaMyWay.GuardedRecoveryConvergenceProbe
+    local geometryEvaluator=OuttaMyWay.GuardedRecoveryThreatAssessment
     if geometryEvaluator==nil or type(geometryEvaluator.evaluateGeometry)~="function" or type(geometryEvaluator.evaluateCurrentHeadingSignal)~="function" then
         return {status="UNRESOLVED",reason="RECOVERY_ADMISSION_EVALUATOR_UNAVAILABLE"}
     end
@@ -324,7 +324,7 @@ local function recoveryAdmissionAssessment(probe, run)
         recoveryCurrentSpanM=recoverySpan,recoveryInitialSpanM=run.initialSpanM,progressSpanM=progressSpan,
         rejoinTargetX=run.rejoinTargetX,rejoinTargetZ=run.rejoinTargetZ,rejoinAnchorX=run.rejoinAnchorX,rejoinAnchorZ=run.rejoinAnchorZ
     })
-    local evidenceSource=OuttaMyWay.productiveContinuationProbe
+    local evidenceSource=OuttaMyWay.runtime and OuttaMyWay.runtime.situationAssessment or nil
     local progressEvidence=evidenceSource and type(evidenceSource.getEvidence)=="function" and evidenceSource:getEvidence(run.progressReferenceKey,run.progressStartJobToken) or nil
     local sample={
         geometryResolved=geometry.resolved==true,geometryReason=geometry.reason,combinations=geometry.combinations,

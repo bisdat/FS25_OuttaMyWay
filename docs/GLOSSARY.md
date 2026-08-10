@@ -1,3 +1,30 @@
+## v4.7.69 vocabulary refinements
+
+**Resolution Dependency Inversion** — a failure mode where Control retained from an earlier resolution stage delays or prevents the event required to complete a later stage.
+
+**Progress Passage** — the governing purpose while a Yield participant is established Held in Refuge and the cooperating Progress participant must proceed far enough to make recovery admissible. Progress Passage does not itself command speed; it removes obsolete competing authority and leaves GIANTS native progression plus any independent current obligations.
+
+**Refuge Passage Purpose Succession** — the explicit transition from pre-Refuge follower-compression purpose to Progress Passage when the matching Yield/Progress Refuge-hold context is positively established.
+
+## v4.7.68 vocabulary refinements
+
+**Immediate Native Drive Command Surface**  
+The GIANTS-populated `spec_aiFieldWorker.aiDriveParams` state representing the field worker's current immediate drive command after native strategy processing and GIANTS speed constraints. Live evidence supports coherent variation through Productive work, turns, reverse and blocked states. It is immediate command evidence only: it is not a route, Future Space, continuation horizon or Refuge-selection authority.
+
+**Zero Command Ambiguity**  
+A zero native target / zero native max-speed command may occur when GIANTS is blocked, but may also occur in non-blocked no-command moments. Therefore zero command is not blockage evidence without independent positive blockage support.
+
+**Immediate Command != Continuation Horizon**  
+The current native drive command does not by itself represent enough subsequent GIANTS demand to qualify a Refuge Resulting Situation. A Refuge Candidate's relation to the immediate target must not be promoted into nearest/furthest-target ranking or route prediction.
+
+## v4.7.52 vocabulary refinements
+
+**Provisional Demand Seed**  
+A deliberately coarse, conservative spatial/temporal demand estimate used only when a supportable leader/follower boundary Situation exists before uncontaminated native manoeuvre evidence is available. It bootstraps follower-maturation Regulation; it is not a physical-footprint model, route prediction or permanent clearance buffer. Working width may seed spatial demand only as an estimate, and a temporary temporal literal may seed duration, until Reality supplies better Representation Fitness evidence. Precision is not a goal: adjust the seed only when it is under-protective or materially over-conservative.
+
+**Follower boundary-demand Regulation**  
+A composition of existing Encounter Maturation, Action-Space Compression, Future Space and Traffic-Policeman `REGULATE_SPEED` in which a line-astern follower is paced so its own field-bounded boundary demand does not mature before the leader has vacated the still-relevant demand. The protection purpose persists until positive relationship evidence retires it; the current speed cap may vary independently. This is not turn prediction and grants no authority to `turn=true`, exact U-turn recognition or fixed timers.
+
 ## v4.7.41 vocabulary refinements
 
 **Vulnerable Space**  

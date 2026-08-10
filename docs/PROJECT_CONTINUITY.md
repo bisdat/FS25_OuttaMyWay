@@ -1,3 +1,11 @@
+# v4.7.76 canonical-candidate continuity boundary
+
+Owner-declared v4.7.49 remains canonical pending explicit owner declaration of v4.7.76. The v4.7.75 behaviour has now completed the full TS015 Condor/Patriot working session, including repeated follower Regulation, head-on Reposition/Refuge, Progress Passage, Guarded Recovery and the final role-reversed same-Commitment Yield succession. Three autonomous Refuge relocations occurred in the live run.
+
+Both workers ultimately completed. After Patriot completion the owner manually moved the completed Patriot assembly so Condor could consume the final few metres; terminal/post-completion physical occupancy is therefore the principal explicit closure qualification and remains parked.
+
+The next increment must begin from the owner-declared canonical artefact/provenance after canonicalisation, not from an assumed GitHub state.
+
 ## v4.7.24 Legacy fixed-horizon predictor cleanup candidate boundary
 
 Owner-declared canonical v4.7.23 is `5fdad04222084814cf17b9712cdb06df67f42d8bfae12f5a9cab788cd057e4b9` at Git `44cd4df5766b9cb7a1d7ac68bcd08119ffc8a297` with 258 files. Its live gate proved Future-Space-driven Encounter admission before the historical ten-second predictor became positive, while Job Episode termination precedence, restart and fresh Encounter identity remained correct.

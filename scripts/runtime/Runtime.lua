@@ -20,26 +20,27 @@ function Runtime.new()
     local runtime=setmetatable({
         identities=identities,epochs=epochs,observationAdapter=OuttaMyWay.RuntimeObservationAdapter.new(identities,epochs),jobEpisodes=jobEpisodes,operations=operations,
         commitments=commitments,obligations=obligations,authorities=authorities,commitmentAdmission=admission,governingBasisEvaluator=governingBasis,terminalSettlementEvaluator=terminalSettlement,
-        encounters=encounters,situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,encounters,commitments),
+        encounters=encounters,situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,encounters,commitments,obligations),
         candidateSpace=OuttaMyWay.CandidateSpace.new(identities,epochs),constraintEngine=OuttaMyWay.ConstraintEngine.new(identities,epochs),decisionSelector=OuttaMyWay.DecisionSelector.new(identities,epochs),
         targetedFieldIdentityProbe=OuttaMyWay.TargetedFieldIdentityProbe.new(),fieldWorldSnapshots=fieldWorldSnapshots,fieldWorldEquivalenceEvaluator=fieldWorldEquivalenceEvaluator,fieldWorldEquivalenceAuthority=fieldWorldEquivalenceAuthority,assemblyRepresentationCache=assemblyRepresentationCache,passiveCandidateSupport=OuttaMyWay.PassiveLiveCandidateSupport.new(identities,epochs),
-        trace=OuttaMyWay.ArchitectureTrace.new(),initialized=false,runtimeMode=OuttaMyWay.RUNTIME_MODE,controlAuthorityEnabled=false
+        trace=OuttaMyWay.ArchitectureTrace.new(),initialized=false,runtimeMode=OuttaMyWay.RUNTIME_MODE,controlAuthorityEnabled=false,generalControlAuthorityEnabled=false
     },Runtime)
     runtime.liveObservationSource=OuttaMyWay.LiveObservationSource.new(runtime.fieldWorldSnapshots,runtime.fieldWorldEquivalenceAuthority,runtime.assemblyRepresentationCache)
     runtime.liveTrafficCandidateSupport=OuttaMyWay.LiveTrafficCandidateSupport.new(identities,epochs,runtime.passiveCandidateSupport)
+    runtime.liveControlDispatcher=OuttaMyWay.LiveControlDispatcher.new(runtime)
     runtime.decisionCommitmentBoundary=OuttaMyWay.DecisionCommitmentBoundary.new(identities,epochs,admission,commitments,obligations,authorities,governingBasis,terminalSettlement)
     runtime.replayRunner=OuttaMyWay.ReplayRunner.new(runtime)
-    runtime.passiveLiveValidator=OuttaMyWay.PassiveLiveValidator.new(runtime,runtime.liveObservationSource,runtime.liveTrafficCandidateSupport,runtime.targetedFieldIdentityProbe,runtime.fieldWorldSnapshots)
+    runtime.passiveLiveValidator=OuttaMyWay.PassiveLiveValidator.new(runtime)
     return runtime
 end
 function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
-    self.trace:append("LEGACY_SHADOW_CLEANUP_CONFORMANCE_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";futureSpaceConformance=true;nativeLocalIntent=true;fieldWorldBoundedContinuation=true;futureSpaceEncounterAdmission=true;legacyFutureProbeRemoved=true;encounterExitContract=true;membershipRemovalRequiresCompleteEvidence=true;lifecycleTestHud=true;shapeTypeGate=true;diagnosticThrottling=true;control=false")
-    print(string.format("FS25_OuttaMyWay v%s legacy-shadow cleanup conformance loaded; fixed-horizon future predictor removed from active runtime; CERTIFICATION CANDIDATE; v4.7.48 live-PASS behaviour preserved; initial autonomous Reposition creates a live Commitment; refuge recovery admission is event-driven with no dwell authority; D-0123 Regulation remains bounded to threats developing after recovery starts; temporary speed/mechanism literals remain non-policy; production Refuge/Durable-Separation authority incomplete; Control authority disabled",OuttaMyWay.VERSION))
+    self.trace:append("ARCHITECTURE_AUTHORITY_ALIGNMENT_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";d0140AuthorityReset=true;d0141AlignedFollowerBoundary=true;runtimeOwnedCycle=true;situationOwnsProductiveKnowledge=true;currentAdjacentFollowingKnowledge=true;provisionalDemandSeed=true;historicalNativeManoeuvreBoundaryDemandFitness=UNRESOLVED;stickyPurposeElasticMagnitude=true;committedTransitionControlShadow=true;d0123CentralControl=true;diagnosticsAuthority=false;generalControl=false;boundedP22Control=true")
+    print(string.format("FS25_OuttaMyWay v%s CANONICAL CANDIDATE loaded; D-0140 Architecture Authority Alignment loaded and retained; D-0141 aligned follower Regulation retained; functional traffic/Commitment/Control logic retained from live-validated v4.7.75 TEST BUILD; owner-declared v4.7.49 remains canonical pending explicit declaration; live reassessment=250ms; active 0.90 clearance factor retained only after Regulation is otherwise required; positive head-on supersedes follower PRESERVE; same-Commitment supporting authority may succeed to Yield/REPOSITION; outbound-egress lease freeze and Progress Passage retirement retained; D-0123 composition retained; D-0131/D-0133 shadow; D-0134/D-0136/D-0138 passive; D-0137 falsified; diagnostics have no authority; general production Control authority disabled",OuttaMyWay.VERSION))
 end
 
-function Runtime:setProductiveContinuationEvidenceSource(source)
-    self.liveTrafficCandidateSupport:setContinuationEvidenceSource(source)
+function Runtime:setLiveControlCapability(capability)
+    self.liveControlDispatcher:setCapability(capability)
 end
 function Runtime:markAutonomousHeadOnDispatched(governingRequirementKey)
     self.liveTrafficCandidateSupport:markAutonomousHeadOnDispatched(governingRequirementKey)
@@ -65,8 +66,21 @@ function Runtime:evaluateSealedOperationalPicture(picture)
     local decision=self.decisionSelector:select(picture,candidates,verdicts)
     return {picture=picture,candidateInventory=candidates.inventory,candidates=candidates.candidates,verdictSet=verdicts.set,verdicts=verdicts.verdicts,decision=decision}
 end
+
+function Runtime:processLiveObservation(raw)
+    local processed=self:processSealedObservation(raw)
+    local supported=self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot)
+    local evaluated=self:evaluateSealedOperationalPicture(supported)
+    local dispatch=self.liveControlDispatcher:dispatch(supported,evaluated)
+    return {
+        snapshot=processed.snapshot,jobEpisodes=processed.jobEpisodes,operation=processed.operation,picture=supported,
+        candidateInventory=evaluated.candidateInventory,candidates=evaluated.candidates,verdictSet=evaluated.verdictSet,verdicts=evaluated.verdicts,decision=evaluated.decision,
+        controlDispatch=dispatch
+    }
+end
+
 function Runtime:runReplay(fixture) return self.replayRunner:run(fixture) end
 function Runtime:getStatus()
     return {initialized=self.initialized,runtimeMode=self.runtimeMode,controlAuthorityEnabled=self.controlAuthorityEnabled,
-        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),replayRunCount=self.replayRunner:getRunCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportCount=self.liveTrafficCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportStatus=self.liveTrafficCandidateSupport:getLastStatus(),passiveTraceCount=#self.passiveLiveValidator:getRecords(),passiveErrorCount=self.passiveLiveValidator:getErrorCount(),fieldIdentityProbeSampleCount=self.targetedFieldIdentityProbe:getSampleCount(),fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),representationCacheRetiredCount=self.assemblyRepresentationCache.retiredCount or 0,activeOperationCount=#self.operations:listActive(),encounterCount=#self.encounters:list(),activeEncounterCount=#self.encounters:listActive(),commitmentCount=#self.commitments:list(),traceCount=self.trace:count()}
+        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),replayRunCount=self.replayRunner:getRunCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportCount=self.liveTrafficCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportStatus=self.liveTrafficCandidateSupport:getLastStatus(),liveControlDispatchCount=self.liveControlDispatcher:getDispatchCount(),liveRuntimeCoordinatorCycleCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getCycleCount() or 0,liveRuntimeCoordinatorErrorCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getErrorCount() or 0,passiveTraceCount=#self.passiveLiveValidator:getRecords(),passiveErrorCount=self.passiveLiveValidator:getErrorCount(),fieldIdentityProbeSampleCount=self.targetedFieldIdentityProbe:getSampleCount(),fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),representationCacheRetiredCount=self.assemblyRepresentationCache.retiredCount or 0,activeOperationCount=#self.operations:listActive(),encounterCount=#self.encounters:list(),activeEncounterCount=#self.encounters:listActive(),commitmentCount=#self.commitments:list(),traceCount=self.trace:count()}
 end

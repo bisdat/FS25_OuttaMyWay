@@ -2,9 +2,9 @@
 
 > **Authority:** Replacement-core design boundary
 >
-> **Currency:** v4.7.40 Guarded Recovery Architecture Consolidation Candidate; canonical v4.7.34 is the baseline
+> **Currency:** v4.7.76 canonical candidate; owner-declared canonical v4.7.49 remains the baseline pending declaration
 >
-> **Implementation status:** canonical v4.7.34 retains passive production Decision/Control; v4.7.40 carries forward the temporary P22/TS015 evidence harness unchanged from v4.7.39 while consolidating Native Continuation Restoration, Guarded Recovery, Protected Progress Alternation and Expedient Manoeuvre Execution; production Control remains disabled
+> **Implementation status:** owner-declared v4.7.49 remains canonical. Non-canonical D-0140 aligns the bounded live implementation to the documented responsibilities: Runtime-owned orchestration, Situation-owned semantics, central Control dispatch and P22 as capability executor. D-0124–D-0133 actuation is shadow-only; bounded D-0123 remains live through the aligned chain; general production Control remains disabled.
 
 ## Purpose
 

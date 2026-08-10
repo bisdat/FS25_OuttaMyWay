@@ -1,3 +1,42 @@
+## 2026-08-10 — D-0141 aligned follower-protection findings
+
+- **Complementary follower counterexamples:** v4.7.69 proved the historical manoeuvre-envelope implementation can grant follower authority remotely; v4.7.70 proved that removing follower authority entirely allows a genuine current line-astern boundary encounter to consume the leader's Action Space and block both workers. The concept is supported; the old representation is not.
+- **Current Adjacent Following is current topology Knowledge:** historical native manoeuvre geometry cannot manufacture a present follower relationship. The aligned assessment uses positive Productive/Settled continuation, coherent heading, leader/follower ordering and current productive-corridor overlap.
+- **Provisional Boundary Demand remains provisional:** observed GIANTS working width may seed coarse spatial demand while a bounded duration literal seeds time. These support a test of demand ordering, not exact turns, routes or Assembly footprint.
+- **Immediate native command may supply rate, not route:** D-0138 `aiDriveParams.maxSpeed` can represent the current unrestricted follower rate before OuttaMyWay Regulation. Its target remains no continuation horizon. Zero command is not a zero-speed policy signal.
+- **Sticky Purpose / Elastic Magnitude restored:** the follower protection purpose and its numeric cap have independent lifecycles. Temporary uncertainty preserves admitted purpose; current evidence may raise or lower the cap.
+- **Clearance calibration remains bounded implementation evidence:** v4.7.73 restores the empirically useful 0.90 factor only after D-0141 already has a restrictive unscaled cap; it supplies no admission authority. The minimum-ever cap ratchet remains excluded.
+
+## 2026-08-10 — D-0140 authority-alignment discoveries
+
+- **Architectural Authority Dispersion:** experimental probes/bridges can accumulate correct local mechanisms while collectively bypassing the intended Knowledge → Decision → Commitment → Control ownership chain. Location in a diagnostic/prototype module grants no semantic authority.
+- **Layer Responsibility Leakage:** live validation found Diagnostics causally upstream of Runtime/Control and Productive semantic Knowledge flowing directly from a diagnostic probe into Candidate generation. These are implementation shortcuts, not architectural concepts.
+- **Boundary-Manoeuvre Demonstration Overreach:** a GIANTS-native Transitional/reposition manoeuvre can reverse heading near a boundary after tens of seconds/hundreds of metres. Native provenance and heading reversal do not establish Representation Fitness as ordinary boundary-return demand. The aligned native-manoeuvre source therefore publishes boundary-demand fitness `UNRESOLVED`.
+- **Authority Reset:** useful raw/post-canonical evidence is retained while follower/committed-transition actuation is removed until Situation-level Representation Fitness and central Decision/Commitment integration exist. This is not a source-code revert.
+- D-0130's architectural record remains **persistent purpose, elastic Control magnitude**; the tighten-only experimental implementation is not promoted.
+
+## v4.7.69 implementation discovery — Resolution Dependency Inversion
+
+- v4.7.68 demonstrated that the follower-compression cap itself was not the primary defect. A cap that is acceptable while workers genuinely occupy leader/follower roles became counterproductive after the leader had been relocated and Held at Refuge.
+- **Resolution Dependency Inversion:** Control retained from an earlier resolution stage can delay the state transition required by the later stage.
+- **Refuge Passage Purpose Succession:** P22's explicit compact-Refuge-hold state is a positive implementation surface for the change of governing purpose. It is used only to retire/suppress the old follower-compression lease for the matching pair, not to command Progress speed.
+- Lease ownership is the important isolation mechanism: clearing the follower-compression owner leaves independent Regulation leases intact.
+
+## v4.7.68 implementation discoveries — Immediate Native Drive Command Surface and Settlement Future-Space Representation Mismatch
+
+- v4.7.67 live evidence supports `spec_aiFieldWorker.aiDriveParams` as the **Immediate Native Drive Command Surface**. It varies coherently across Productive work, native turns, reverse and blocked states. This validates the observation surface, not a route model.
+- **Zero Command Ambiguity:** `(tX,tZ)=(0,0)` / `maxSpeed=0` can accompany a blocked field-course state as predicted by the SDK, but zero command also occurs without independent blockage evidence. The command alone cannot classify blockage.
+- **Immediate Command != Continuation Horizon:** at the second Refuge evaluation the successful and recurring-bad fixture targets were almost equally related to the current command target, with the bad fixture marginally closer. The current drive command therefore does not describe enough future native demand to qualify Refuge Resulting Situation.
+- **Settlement Future-Space Representation Mismatch:** the v4.7.67 D-0136 settlement reassessment found the active peer (`track.active`, `compared=1`) yet produced `WORKER_NOT_ACTIVE` because persistent `LiveObservationSource` tracks were passed to `FieldBoundedFutureSpace`, whose input contract is an observation worker carrying `activeObserved`.
+- v4.7.68 repairs that implementation seam with an explicit transient adapter. The persistence representation and observation representation remain separate; no architectural Future-Space semantics are changed.
+
+## v4.7.67 implementation discovery — Native Drive Signal Surface Gap
+
+- v4.7.66 live evidence falsified the interpretation of native `vehicle.aiDriveDirection` / `vehicle.aiDriveTarget`: both workers retained `(0,1)` / `(0,0)` through materially different Productive, Transitional, turning and blocked states.
+- Exact supplied FS25 1.21.1.0 SDK inspection explains the invariance. `AIDriveStrategyFieldCourse:setAIVehicle()` initializes those fields; they are not the dynamic field-worker drive command observed in native course execution.
+- `AIFieldWorker:updateAIFieldWorker()` instead collects native strategy `getDriveData()` output, applies stopping/speed/cruise constraints, writes the immediate command to `spec_aiFieldWorker.aiDriveParams`, transforms its world target through the steering/reverser node, then calls `AIVehicleUtil.driveToPoint()`.
+- This is an implementation discovery, not architectural promotion. D-0138 tests `aiDriveParams` passively; a successful live correlation would still require an explicit Representation Fitness argument before supporting Future Space or Decision Knowledge.
+
 ## v4.7.39 TS015 live evidence — Native Continuation Restoration and guarded-recovery failure
 
 - **Approximate restoration succeeded for both sprayers:** Condor and Patriot were returned toward the recorded pre-egress continuation context and then handed back under the same GIANTS Job Episode. Bird's-eye evidence showed both apparently reacquiring the interrupted lane despite materially imperfect heading at release. Current evidence therefore does not justify exact position/heading reconstruction.

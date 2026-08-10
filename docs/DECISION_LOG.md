@@ -1,3 +1,303 @@
+## 2026-08-10 — v4.7.76 canonical-candidate closure
+
+**Type:** implementation/governance decision; no new architecture.
+
+The owner accepted the successful v4.7.75 TS015 result as the closure point for the current implementation tranche and requested a canonical candidate. The candidate version advances to v4.7.76 while functional v4.7.75 behaviour is frozen. Remaining implementation issues are explicitly parked rather than repaired before canonicalisation.
+
+The live result includes one declared qualification: after Patriot completed its work, the owner manually moved the completed Patriot assembly so Condor could access the final few metres. This remains a terminal/post-completion occupancy limitation for future work.
+
+## D-0141 implementation repair addendum — v4.7.73 (2026-08-10)
+
+Owner live evidence from v4.7.72 showed D-0141 releasing its existing follower purpose at the clean co-directional → opposed transition, 251 ms before the next head-on Reposition began. With D-0131 shadow-only and no sealed Progress horizon, Patriot accelerated during Condor egress. The implementation is corrected without a new decision concept: the accepted 0.90 clearance factor is restored to already-restrictive D-0141 calculations, and clean opposed continuation preserves the existing purpose until the already-defined Progress Passage retirement event.
+
+## D-0141 live implementation repair addendum — v4.7.72 (2026-08-10)
+
+**Status:** implementation correction only; no new architectural decision. Owner-declared v4.7.49 remains canonical.
+
+The v4.7.71 live run exercised D-0141 Control and exposed implementation defects rather than a need to reopen the decision: (1) an already-admitted follower purpose was retired on millimetric current-corridor threshold noise; (2) Runtime/Control still reassessed at the 1 s passive cadence; (3) the existing lease remained at the last Productive cap while positive GIANTS pre-turn/turn rate evidence changed much faster.
+
+v4.7.72 keeps D-0141 semantics and repairs those mechanics: strict new admission is unchanged; established-purpose retention uses a bounded 1.0 m lateral and 0.95 heading band; active Runtime/Control runs at 250 ms; positive native/physical leader transition rate updates the elastic cap; positive native reverse may stop forward follower progression; zero/default native command remains unresolved. The historical 0.90 multiplier remains legacy-shadow only.
+
+## D-0141 — Aligned Follower Boundary-Demand Regulation (2026-08-10)
+
+**Status:** accepted for offline implementation alignment and one bounded live validation. Owner-declared v4.7.49 remains canonical; v4.7.71 is not promoted by this decision.
+
+**Triggering evidence:** D-0140/v4.7.70 intentionally withdrew follower actuation and then reproduced the genuine adjacent-following failure at the second encounter. Condor and Patriot were positively co-directional and line-astern; unrestricted Patriot progression consumed the Action Space required for Condor's boundary transition and both workers blocked. This complements the v4.7.69 negative counterexample where the old historical-sweep model manufactured follower authority between remote workers.
+
+**Decision — separate the responsibilities:** active follower protection is rebuilt as three distinct concerns: **current Adjacent Following Knowledge**, **Provisional Boundary Demand Knowledge**, and **elastic Control magnitude**. They must not be collapsed into a historical manoeuvre envelope or diagnostic controller.
+
+**Current Adjacent Following:** Situation Assessment may positively support the ordered relationship only from current positive Productive/Settled continuations, coherent co-directional headings, leader-before-follower ordering and overlap of the current productive working corridors. No maximum following-distance rule is introduced. Historical native manoeuvre geometry has no authority to manufacture current adjacency.
+
+**Provisional Boundary Demand:** until production boundary-demand Representation Fitness is discovered, use the already-accepted D-0124 Provisional Demand Seed. GIANTS working width may seed coarse spatial demand; a bounded 13 s temporal literal is implementation/test mechanics only. The seed is `USABLE_WITH_UNCERTAINTY`, not Assembly footprint, turn recognition or route prediction. Historical `NativeManoeuvreObservationSource` evidence remains boundary-demand `UNRESOLVED`.
+
+**Regulation magnitude:** D-0138 `spec_aiFieldWorker.aiDriveParams.maxSpeed` may supply the current unrestricted follower rate because live evidence established it as the immediate native field-worker command surface before OuttaMyWay's P22 wrapper. It is rate Observation only, not continuation geometry. Zero command is `UNRESOLVED`, never authority for a zero cap. The cap is recomputed from the current demand-ordering picture and is elastic; the historical 0.90 test factor and tighten-only/minimum-ever ratchet are excluded from the aligned path.
+
+**Purpose lifecycle:** once admitted, `PRESERVE_BOUNDARY_TRANSITION_ORDERING` is sticky through temporary uncertainty. Positive current inverse evidence retires it. D-0139 **Progress Passage** is explicit positive purpose-succession evidence and retires the matching follower lease when Yield is established compact and Held at Refuge. Independent Regulation purposes remain composable under lease ownership.
+
+**Authority:** follower Regulation must travel Situation → Candidate → mandatory Constraints → Traffic Policeman Decision → Commitment/Obligation → `LiveControlDispatcher` → bounded P22 capability. Diagnostics, raw Observation and Assessment cannot actuate. The legacy follower controller remains shadow-only. D-0131/D-0133 remains shadow.
+
+**Validation contract:** the implementation must simultaneously satisfy six cases: (1) v4.7.70 genuine adjacent-following positive admission; (2) v4.7.69 remote opposite-corners negative admission; (3) Refuge/Progress-Passage retirement; (4) no promotion of long-form native Transitional manoeuvres into follower demand; (5) sticky purpose with upward/downward elastic cap and no ratchet; (6) central authority path only.
+
+## D-0140 — Architecture Authority Alignment / Authority Reset (2026-08-10)
+
+**Status:** accepted for offline implementation alignment and subsequent bounded live validation. Owner-declared v4.7.49 remains canonical; no test lineage is promoted by this decision.
+
+**Triggering evidence:** v4.7.69 fixed D-0139 Refuge Passage purpose succession but exposed a latent remote follower Regulation. A long native GIANTS Transitional/reposition manoeuvre had matured into demonstrated boundary-demand geometry and manufactured a far-away follower relationship. Review showed the same authority pattern pre-dated v4.7.69 and that post-canonical probes/bridges had accumulated cross-layer responsibility.
+
+**Discoveries:** **Architectural Authority Dispersion**, **Layer Responsibility Leakage**, and **Boundary-Manoeuvre Demonstration Overreach**. Native provenance does not establish Representation Fitness for a semantic demand. A diagnostic/prototype implementation location does not grant Decision or Control authority.
+
+**Decision — Authority Reset:** retain useful post-canonical Observation/evidence mechanisms, but withdraw D-0124–D-0133 follower/committed-transition actuation until it is represented as Situation Knowledge with explicit Representation Fitness and travels through Candidate → Constraints → Decision → Commitment → Control. Diagnostics are downstream only.
+
+**Canonical live-chain alignment:** a Runtime-owned coordinator owns live capture/process/dispatch; Productive Continuation is Situation-owned Knowledge; Candidate generation consumes sealed Operational Picture Knowledge; `LiveControlDispatcher` is the only automatic live bridge into bounded P22 capability. P22 executes typed authorised requests and publishes raw execution outcomes; it does not define traffic semantics.
+
+**D-0123 preservation:** Guarded Recovery remains bounded active behaviour because the architecture already establishes Observe → Regulate when positive convergence threatens admitted recovery demand. Its old direct bridge is removed from active loading and the behaviour is rebuilt through Situation threat Knowledge → Candidate → Decision(MAINTAIN) → existing Commitment/supporting Progress authority → central Control.
+
+**Representation decision:** `NativeManoeuvreObservationSource` records native manoeuvre evidence with boundary-demand Representation Fitness `UNRESOLVED`. `turn=true`, heading reversal, duration, distance or boundary proximity alone do not authorise promotion. No fixed maximum-distance/headland heuristic is introduced.
+
+**D-0130 correction of record:** retain the architecture of persistent governing purpose with **elastic Control magnitude**. The post-canonical tighten-only follower implementation is not architectural authority and is disabled by the reset rather than locally patched.
+
+**D-0139 disposition:** retain Progress Passage / purpose-succession as architectural Knowledge. Remove reliance on P22 fixture phase as semantic authority; any future active follower implementation must express succession centrally through current purpose/obligation fitness.
+
+**Validation:** offline conformance must prove no physical-authority acquisition in Diagnostics/Observation/Assessment/Candidates and must exercise D-0123 end-to-end through the aligned chain before one integrated live build is produced.
+
+## D-0139 — Refuge Passage Purpose Succession (2026-08-10)
+
+**Status:** accepted for bounded live validation in v4.7.69; owner-declared v4.7.49 remains canonical.
+
+**Observation:** in v4.7.68, follower-compression Regulation was legitimate while Condor led Patriot toward a boundary transition, but its approximately 10.32 km/h cap persisted after Condor had been deliberately relocated, compacted and Held at Refuge. Recovery admission simultaneously required Patriot to pass before Condor could leave Refuge.
+
+**Discovery — Resolution Dependency Inversion:** the earlier `PRESERVE_BOUNDARY_TRANSITION_CLEARANCE` Control delayed the later event required to complete the resolution. This is a purpose-lifecycle fault, not evidence that approximately 10 km/h is intrinsically wrong during a genuine moving leader/follower relationship.
+
+**Decision:** establishing the matching Yield participant in `TS015_COMPACT_REFUGE_HOLD` positively supersedes that pair's old follower-compression purpose with **Progress Passage**. Retire only the follower-compression Regulation lease and suppress its re-admission for the matching pair while that Refuge hold remains active. This is **Refuge Passage Purpose Succession**.
+
+**Authority:** Progress Passage grants no positive speed command. GIANTS retains Progress route, steering, forward/reverse choice and native speed. Existing Regulation lease composition is preserved, so any independent current obligation may still constrain Progress. When Refuge hold ends, later Regulation requires fresh evidence under its own purpose; the old lease is not resurrected merely because it existed earlier.
+
+**Non-decision:** do not globally relax D-0130's cap, do not create a Refuge-specific numeric speed, do not force cruise speed, and do not weaken Guarded Recovery Regulation.
+
+**Validation:** live evidence must show old-purpose lease retirement at Refuge establishment, native Progress thereafter absent another lease, no same-pair follower-compression re-admission during the hold, and normal independent-lease composition.
+
+## D-0136 / D-0138 live addendum — Repair settlement Future-Space representation input (2026-08-10)
+
+**Status:** implementation repair accepted for passive validation in v4.7.68; owner-declared v4.7.49 remains canonical. No new architectural Decision authority is created.
+
+**Observation:** v4.7.67 live evidence supports D-0138 as an immediate GIANTS field-worker drive-command surface, including explicit reverse and SDK-predicted zero-command blocked states. It does not support treating the current command target as a continuation horizon or Refuge ranking signal.
+
+**D-0136 evidence:** the prior peer-visibility correction was exercised successfully (`compared=1`). Both subsequent Future-Space results nevertheless reported `WORKER_NOT_ACTIVE` even though the persistent tracks were active.
+
+**Cause:** D-0136 iterates persistent `LiveObservationSource` tracks, where current membership is represented by `track.active`. `FieldBoundedFutureSpace.build()` deliberately accepts the observation-worker representation, where current membership is `activeObserved`. Passing the persistent track directly crossed a representation boundary and caused a false unresolved reason.
+
+**Implementation decision:** adapt each persistent track into a transient observation-compatible Future-Space input carrying `activeObserved`, `localIntent`, `fieldWorldSnapshot`, `pose` and `shadowRepresentation`. Do not mutate the track and do not broaden `FieldBoundedFutureSpace` to persistence-layer fields.
+
+**Falsification / validation:** a natural D-0136 settlement must no longer report `WORKER_NOT_ACTIVE` for a currently active persistent track. A settling worker that has entered `TURNING` may legitimately report `MANOEUVRE_SWEEP_NOT_YET_REPRESENTED`; that would confirm the repair is exposing the real architectural limitation rather than masking it.
+
+**Authority boundary:** passive reassessment only. No settlement criterion, Encounter admission, Refuge selection, Regulation, Hold, Reposition, negative-clearance or Control authority changes.
+
+## D-0138 — Probe the GIANTS Native Field-Worker Drive Command surface (2026-08-10)
+
+**Status:** accepted for passive evidence probe in v4.7.67; owner-declared v4.7.49 remains canonical.
+
+**Observation:** D-0137 was falsified by live evidence: `vehicle.aiDriveDirection` / `vehicle.aiDriveTarget` remained invariant across Productive, turning and blocked states. Inspection of the exact supplied FS25 1.21.1.0 SDK explains why. `AIDriveStrategyFieldCourse:setAIVehicle()` initializes those fields to `{0,1}` and `{0,0}`; native field-worker continuation is instead obtained from drive strategies inside `AIFieldWorker:updateAIFieldWorker()`.
+
+**Implementation discovery:** **Native Drive Signal Surface Gap** names the gap between the vehicle-level fields previously observed and the actual dynamic native drive-command surface. The SDK identifies a stronger candidate surface: after strategy evaluation and GIANTS speed/stopping constraints, `AIFieldWorker` writes `moveForwards`, world `tX/tY/tZ`, `maxSpeed` and `valid` into `spec_aiFieldWorker.aiDriveParams`, then transforms that target to steering/reverser-node local space for `AIVehicleUtil.driveToPoint()`.
+
+**Probe decision:** read the already-populated `aiDriveParams` only. Do not call `getDriveData()` from the observer and do not introduce another actuation wrapper. Correlate it with existing Productive/Local-Intent/motion/blocked evidence and existing passive Refuge/Residual events.
+
+**Falsification:** reject this surface if it remains stale/invariant across materially different native states, especially ordinary course execution versus the SDK-predicted blocked zero-target/zero-speed command. Do not rescue it by adding interpretation heuristics.
+
+**Authority boundary:** `aiDriveParams` is provisionally an immediate native field-worker drive command, not a route, destination, Future Space, negative-clearance, Refuge-selection, Decision or Control authority.
+
+## D-0137 — Probe GIANTS Native AI Drive Signal before inventing more prospective geometry (2026-08-10)
+
+**Status:** falsified by v4.7.66 live evidence and exact FS25 1.21.1.0 SDK inspection; superseded for observation by D-0138. Owner-declared v4.7.49 remains canonical.
+
+**Result:** across materially different native states the fields remained `aiDriveDirection=(0,1)` / `aiDriveTarget=(0,0)`. Exact SDK source shows `AIDriveStrategyFieldCourse:setAIVehicle()` initializes those values and does not establish them as the live field-worker command. Derived longitudinal/lateral Candidate values were therefore world-origin artefacts and have no authority.
+
+**Observation:** D-0134 live evidence distinguished a successful Refuge from the recurring bad Refuge only in the eventual Resulting Situation; Demonstrated Productive Coverage and boundary-depth evidence alone would have preferred the wrong side, while `progressFuture` remained unresolved. External research of Courseplay FS25 found that Courseplay supplies `vehicle.aiDriveDirection` and `vehicle.aiDriveTarget` for GIANTS collision handling. That is an external implementation clue, not OuttaMyWay authority, and no Courseplay code is copied.
+
+**Hypothesis:** native GIANTS AI workers may already expose a coherent immediate drive signal that can improve Situation Knowledge without OuttaMyWay predicting or replacing the native route.
+
+**Probe:** v4.7.66 passively records the raw fields, storage form and availability; relates the direction to observed heading/travel, Productive Continuation, Local Intent, reverse/turn/blocked state; and adds descriptive longitudinal/lateral Candidate relationships at D-0134 Refuge evaluation. D-0136 intent settlement also snapshots the native drive signal for the settling worker and same-Field-World active peers.
+
+**Passive plumbing correction:** v4.7.65 `RESIDUAL_SETTLEMENT_SUMMARY compared=0` was caused by checking `otherTrack.activeObserved`; persistent `LiveObservationSource` tracks expose activity as `track.active`. v4.7.66 corrects that probe-only visibility mismatch.
+
+**Authority boundary:** the native fields are not a route, destination, Future Space, negative-clearance, Refuge-selection, Regulation, Hold, Reposition or Control authority. Candidate relation values are descriptive only.
+
+**Falsification:** the hypothesis weakens if native fields are unavailable, stale across materially different native behaviours, incoherent with observed motion, or repeatedly fail to distinguish known good/bad Resulting Situations. One successful correlation is insufficient for promotion.
+
+## D-0136 — Measure Productive Residual settlement by native intent, not geometric absolutes (2026-08-10)
+
+**Status:** accepted for passive evidence probe in v4.7.65; owner-declared v4.7.49 remains canonical.
+
+**Observation:** v4.7.64 correctly represented Condor's split-start unfinished tail as worker-specific Potential Demand and later observed real productive consumption of it. In a manually perturbed but spatially informative run, Condor productively returned to its original starting region and GIANTS then transitioned to a new turn/reposition while only 136/185 projected residual cells were painted. The remaining cells were plausibly approximately the headland-width region. This disproves `100% coarse residual cells painted` as settlement authority; the exact omitted width is not promoted to architecture.
+
+**Decision:** retain the coarse residual as Potential Demand evidence, but measure settlement from the native intent lifecycle. A residual may become *apparently satisfied* only after ordered positive evidence that the worker productively re-entered the residual, continued productive consumption while progressing toward the originating productive region, reacquired that origin at the current productive-working-footprint Representation Fitness, and then positively changed from Productive Continuation to GIANTS `TURN_SEGMENT`. Geometric fill ratio remains diagnostic/supporting evidence only.
+
+**Traffic significance:** the Productive→Transitional change after origin reacquisition identifies the point at which the previously supported return-purpose no longer explains the worker's next movement. At that point the existing coarse Future-Space machinery may shadow-check whether another active worker already creates a potentially conflicting supported relationship. Positive intersection warrants only Traffic Policeman reassessment in the probe.
+
+**Authority boundary:** no D-0136 witness directly Regulates, Holds, Repositions, selects a Refuge, predicts an exact GIANTS route or actuates Control. Absence of the witness cannot prove absence of future demand. The chessboard/grid is evidence representation, not behavioural policy.
+
+**Falsification:** D-0136 weakens if natural runs fail to show the ordered witness around visually evident split-start completion, if origin reacquisition repeatedly fires on unrelated productive work, or if the Productive→turn transition occurs without meaningfully retiring the residual-supported purpose.
+
+## D-0135 — Test Productive Coverage Residual and Residual Settlement as an earlier reassessment signal (2026-08-10)
+
+**Status:** accepted for passive evidence probe in v4.7.64; owner-declared v4.7.49 remains canonical.
+
+**Subsequent result:** the geometric `100% residual cells painted` settlement criterion was disproved by v4.7.64 live evidence and is superseded for testing by D-0136. The residual-as-Potential-Demand portion remains supported.
+
+**Observation:** D-0134 established that Demonstrated Productive Coverage is useful historical Knowledge but is not standalone Refuge authority. The user identified the complementary pattern: when a worker begins Productive work materially inside the field, coherent unpainted cells behind that first productive corridor may represent work it plausibly still needs to satisfy.
+
+**Architectural interpretation under test:** an unpainted cell is never demand by absence alone. A coherent unpainted continuation of positively demonstrated productive geometry may support existing `Potential Demand`. Later native movement toward it can increase confidence without predicting the exact GIANTS route. When positively Productive work fills that residual, **Residual Settlement** provisionally names retirement of that particular Potential-Demand basis; the worker's next native purpose remains unresolved.
+
+**Probe decision:** v4.7.64 passively opens only a first-Productive backward-corridor residual, observes convergence and settlement, then asks existing field-bounded Future Space whether another active worker in the same Field World already forms a positive coarse intersection at settlement. Positive evidence would justify Traffic Policeman reassessment only.
+
+**Authority boundary:** no D-0135 evidence may directly Regulate, Hold, Reposition, choose a Refuge or actuate Control. Existing v4.7.63 behaviour is unchanged.
+
+**Falsification:** failure to identify the known Condor residual, failure of later native motion/productive work to converge and settle it, or absence of a positive coarse intersection at settlement would show that the proposed early intervention point is not yet supported by current Knowledge.
+
+## D-0134 — Test whether positive productive history improves Refuge resulting-situation qualification (2026-08-10)
+
+**Status:** accepted for passive evidence probe in v4.7.63; owner-declared v4.7.49 remains canonical.
+
+**Observation:** the v4.7.62 Regulation/egress-protection chain behaved as intended, but Condor's chosen second Refuge became a stationary obstruction to Patriot. Both literal fixture Refuges were boundary-adjacent; earlier success of one appears contingent rather than evidence of generally good Refuge quality. The operator's human preference is to move Yield infield, especially into space the Progress worker has already productively vacated.
+
+**Hypothesis:** existing architecture may already contain enough Knowledge to explain that preference without a permanent headland no-go zone. In addition to current Future Space and demonstrated boundary manoeuvre demand, Situation can potentially use a positive history of where a Job Episode was actually witnessed performing Productive work.
+
+**Bounded evidence term:** **Demonstrated Productive Coverage** denotes Job-Episode-scoped positive history built by OuttaMyWay from observed productive Working-Footprint sweeps. It is not an authoritative agronomic application map, not negative evidence for unpainted space, and not proof that Transitional Demand has retired. The chessboard/rook metaphor is explanatory only, not canonical spatial vocabulary.
+
+**Probe decision:** v4.7.63 remains passive. It paints coarse cells only between consecutive live work-marker segments while Productive Continuation is positive, then shadow-evaluates the unchanged fixture Refuge candidates and additional infield candidates against Field World fit, Progress Future Space, demonstrated boundary-manoeuvre entry band and productive-history coverage. Existing TS015 Refuge selection is untouched.
+
+**Disproof condition:** if the evidence vector cannot distinguish the operator-preferred infield occupancy from the boundary candidates, do not encode `headland = forbidden` or `toward centroid = preferred`; identify the missing Knowledge instead.
+
+## D-0133 — Pre-Handoff Progress Horizon Retention
+
+**Status:** Accepted for bounded live test implementation in v4.7.62; owner-declared v4.7.49 remains canonical.
+
+**Evidence:** v4.7.61 improved the physical setup through D-0130: Patriot retained materially better separation and Condor's compressed Refuge was almost clean. D-0131 still did not apply. Immediately before the second Reposition admission Patriot had positive Productive Continuation, the same tracked Local Intent epoch, and roughly 142 m of valid field-bounded continuation. At admission, D-0132 queried the live horizon again and received `FIELD_BOUNDED_PROGRESS_HORIZON_UNAVAILABLE_AT_ADMISSION`; shortly afterwards D-0131 saw egress entry around 9.89 m but had no sealed fallback. The implementation therefore attempted to **discover** evidence at the handoff instead of retaining evidence already positively known before it.
+
+**Decision:** this remains evidence-continuity implementation debt, not new traffic architecture. While the existing follower/maturation observation has positive Productive Continuation, positive `SETTLED_CONTINUATION`, a stable Job Episode / tracked Local Intent epoch, and a positive field-bounded continuation, the D-0131 test bridge may retain that latest field-bound endpoint. Reposition admission still prefers live field-bounded evidence; only when that live sample is transiently unavailable may it seal the retained pre-handoff endpoint.
+
+**Validity / anti-self-satisfaction:** retained evidence is keyed by Progress reference, Job Episode and tracked Local Intent epoch. Admission requires the same still-positive Productive / settled basis. The retained field-bound endpoint is fixed in world space; remaining horizon is recomputed from the current Progress pose, so Progress movement only consumes the retained horizon. Job/intent/productive invalidation or endpoint exhaustion removes fallback support.
+
+**Authority boundary:** D-0131's egress-sweep intersection/timing rule, D-0130 maturation Regulation, and the existing temporary 1 km/h test mechanism remain unchanged. Retention creates no new negative-clearance authority, speed policy, route prediction, or intervention by itself.
+
+**Parked:** Refuge-role selection, first-Refuge timing, speed/distance calibration and comfort, brute-force actuator remediation, and Productive/Transitional crossing resolution remain unchanged.
+
+## D-0132 — Progress Horizon Handoff Evidence Continuity
+
+**Status:** Accepted for bounded live test implementation in v4.7.61; owner-declared v4.7.49 remains canonical.
+
+**Evidence:** v4.7.60 preserved the D-0130 maturation lease at about 18.3 km/h, but D-0131 never exercised. At the compressed second Refuge the bridge already had a close egress-sweep entry witness (`9.34 m`) yet returned `FIELD_BOUNDED_PROGRESS_HORIZON_UNAVAILABLE` during the strategy→egress handoff. Before that seam, Progress had a valid field-bounded continuation; after the seam became representable again, the positive egress-sweep intersection had disappeared.
+
+**Decision:** this is evidence-continuity implementation debt, not a new traffic concept. At committed Reposition admission the bounded test bridge may seal the latest positively supported Progress field-bounded continuation horizon. Live field-bounded evidence always takes precedence. The sealed horizon may bridge a temporary live-horizon gap only while the Progress Job Episode is unchanged, the replacement-core tracked Local Intent epoch is unchanged and still positively `SETTLED_CONTINUATION`, and Productive Continuation with forward GIANTS movement remains positive. Remaining sealed horizon is recomputed from the current Progress pose to the originally sealed field-bound endpoint, so the seal cannot become a moving baseline.
+
+**Invalidation / authority boundary:** Job Episode change, Local Intent epoch change/loss, loss of positive Productive Continuation, or exhaustion of the sealed horizon removes fallback support. No unavailable evidence is converted into danger, no negative-clearance authority is created, and D-0131's geometry/timing rule plus existing temporary 1 km/h test literal remain unchanged.
+
+**Parked:** Refuge-role selection, first-Refuge timing, calibration/comfort literals, brute-force actuator remediation, and Productive/Transitional crossing resolution remain unchanged.
+
+## D-0131 — Committed Transition Protection Implementation Catch-up
+
+**Status:** Accepted for bounded live test implementation in v4.7.60; owner-declared v4.7.49 remains canonical.
+
+**Evidence:** v4.7.59 validated D-0130's purpose-preserving maturation Regulation: Patriot remained at the retained 18.60 km/h cap through the second clean head-on. However, after Condor's second Refuge was admitted and egress began, no stronger supporting Regulation was created. D-0129 simultaneously showed Patriot's positively represented progression entering Condor's Committed Demand while the retained maturation lease remained unchanged.
+
+**Decision:** no new architectural concept is introduced. Implement the already-settled D-0077/D-0118/D-0115 requirement that admitted transition demand may independently justify supporting Regulation. The bounded TS015 test bridge represents the known outbound egress sweep from the current Yield pose to the admitted fixture target and compares it with the Progress worker's positively Productive, field-bounded native continuation. A stronger lease is admitted only when positive geometry and timing evidence show that Progress would enter the represented egress sweep **no later than the ideal max-speed completion lower bound** for the remaining egress. This is a positive threat witness, not a safety prediction.
+
+**Authority boundary:** the bridge reuses the existing D-0123 1 km/h temporary implementation literal; v4.7.60 introduces no new speed, distance, reaction-time, or heading policy. Absence of the positive witness carries no negative-clearance authority and cannot retire an already-active transition-protection lease. The lease retires when the committed egress completes or its governing Job/context invalidates, revealing any still-live D-0130 maturation lease underneath it.
+
+**Parked:** Refuge-role selection, far-too-early first Refuge timing, numeric calibration/comfort tuning, brute-force actuator remediation, and productive/transitional crossing resolution remain unchanged.
+
+## D-0130 — Purpose-Preserving Regulation Implementation Catch-up
+
+**Status:** Accepted for bounded live test implementation in v4.7.59; owner-declared v4.7.49 remains canonical.
+
+**Evidence:** v4.7.58 D-0129 observed a stable progression-preservation witness while the existing D-0126 follower cap was repeatedly re-derived from the worker's advanced current position. The protected witness headroom was consumed even as the cap relaxed. The same lineage also released follower Regulation on opposed strategy succession, after which D-0123 recovery protection had to reacquire a separate single-owner drive state.
+
+**Decision:** no new architectural concept is introduced. Implement the already-settled sticky-Purpose / elastic-cap rule as follows: while the same named Regulation purpose persists, a freshly derived cap may **tighten or maintain** the active cap but may not relax it solely because current geometry has advanced. Relaxation still requires positive purpose retirement or a separately justified new purpose. A clean opposed continuation may supersede the primary Resolution Strategy but does not by itself positively retire an independently justified supporting Regulation.
+
+**Effective actuation composition:** the bounded P22 drive authority now permits multiple independently justified Regulation leases on one participant. Physical speed authority is the least-permissive active lease. Each owner may release only its own lease. This allows the existing D-0123 Guarded-Recovery 1 km/h test lease to temporarily tighten an already-retained maturation Regulation and, on positive recovery-clear evidence, return control to the still-live maturation cap rather than erasing it. This is implementation catch-up for established Effective Actuation Composition, not production Control architecture.
+
+**Non-decisions / parked:** no new speed, distance, reaction-time or heading literal; no Refuge candidate/role-selection change; no early-first-Refuge timing change; no brute-force actuator repair; no productive/transitional crossing playbook; no general negative-clearance authority. D-0129 remains passive and cannot authorize a speed.
+
+## D-0129 — Purpose-Bound Progression Preservation Shadow Probe
+
+**Status:** Accepted for passive bounded implementation probe in v4.7.58; owner-declared v4.7.49 remains canonical.
+
+**Evidence basis:** v4.7.57 finally exercised Condor-leader / Patriot-follower Regulation, but the geometry-derived cap rose as Condor approached its boundary manoeuvre and the Regulation was then released when opposed continuation became authoritative. Patriot therefore consumed much of the Action Space that the earlier Regulation had created, and the succeeding Refuge transition became physically contested. Returning to canonical D-0111/D-0115/D-0123 showed that the missing implementation capability is not a surprise-head-on rule or another speed literal: Regulation already exists to preserve Maturation margin / purpose-bound Action Space while bounded GIANTS-native progression remains supportable. Observation already measures realised motion; Situation Assessment did not promote that evidence generally, and the immutable Commitment context exposed obligation IDs without sufficient open-obligation meaning for Candidate reasoning.
+
+**Decision:** v4.7.58 adds a **passive shadow probe only**. Live Observation publishes realised progression evidence (actual travel direction/rate plus Local Intent epoch/validity); Situation Assessment promotes that motion Knowledge, configuration-filtered positive Physical Assembly primitives, and immutable open-obligation meaning into the Operational Picture. The probe projects only the presently positively supported native continuation and compares known represented primitives against Current Space, field-bounded Committed/Potential Demand where representable, and a coarse uncontaminated demonstrated boundary-maturation witness. It records a stable per-purpose/per-intent witness baseline and how much known witness headroom has subsequently been consumed.
+
+**Authority boundary:** the probe has **no Decision, speed, clearance, or Control authority**. Existing Physical Assembly/Future Space representations still lack general negative-clearance authority; therefore `knownWitnessEntryM` is a positive represented-demand witness / upper bound, not a claim that all earlier progression is safe. Response opportunity / Response Margin remains unmodelled, so response-adjusted supportable progression is explicitly `UNRESOLVED`. No fixed reaction time, braking model, new speed cap, Hold threshold, route prediction, or reverse command is introduced.
+
+**Anti-self-satisfaction rule:** a witness baseline is sticky for its named evidence basis and Local Intent epoch. The baseline is not silently reset as the subject advances or as a different footprint primitive becomes nearest. Material intent/evidence change invalidates the witness and begins a new basis. This directly tests the canonical Temporal-Separation-Reserve warning against regulated-headway self-satisfaction.
+
+**Test isolation:** v4.7.57 behaviour is retained unchanged, including D-0126's 0.90 test factor, current Regulation lifecycle, D-0128 head-on gate, P22 Refuge mechanics, and all parked literals. Refuge-role selection, Condor's far-too-early first Refuge, speed/distance calibration, pacing oscillation, and Refuge brute-force remediation remain deliberately parked until the current scenario and the forthcoming sliding-puzzle evidence are exhausted.
+
+## D-0128 — Positive Head-On Re-admission Evidence
+
+**Status:** Accepted for bounded implementation test in v4.7.57; v4.7.49 remains canonical.
+
+**Evidence:** In the v4.7.56 live run, the first Refuge reached positive GIANTS native reacquisition at 18:48:34.579. About 148 ms later the bounded capability bridge logged `HEADON_RESOLUTION_SUCCESSION` and dispatched another Refuge. The current pair evidence at that moment was not a clean pure head-on: observed `headingDot` was approximately -0.38. Inspection showed two permissive implementation conditions: `firstNativeAt` allowed the prior Refuge diagnostic monitor to be superseded before current head-on support was checked, and `LiveTrafficCandidateSupport` classified every negative heading dot as opposed despite declaring its scope as `PURE_ESTABLISHED_OPPOSED_BOTH_PRODUCTIVE_HEAD_ON`.
+
+**Decision:** Positive native reacquisition settles mechanical recovery evidence only; it does not itself establish a new traffic requirement or authorise another Resolution Strategy. A prior completed Refuge diagnostic monitor may be superseded only after the current Operational Picture independently supports a fresh bounded head-on Candidate. The bounded test Candidate must represent genuinely clean opposed continuation rather than merely an obtuse/crossing relation. v4.7.57 therefore uses `headingDot <= -0.99` as a temporary test-fit gate. The literal has no production policy authority and is subject to later Representation Fitness work.
+
+**Test isolation:** D-0127 deferred native-sweep closure and the D-0126 0.90 Transition-Clearance pacing factor remain unchanged. The newly observed Patriot speed oscillation is recorded but deliberately not modified in v4.7.57. No cooldown, elapsed-time lockout, new Encounter identity, Provisional Demand Seed, cross-field strategy, or general Control authority is introduced.
+
+## D-0127 — Deferred Native-Sweep Evidence Closure
+
+**Status:** Accepted for bounded implementation test in v4.7.56; v4.7.49 remains canonical.
+
+**Evidence:** v4.7.54 accepted Condor's native heading-reversing boundary sweep. v4.7.55 observed a near-identical Condor sweep (about 12.2 s and ~177° reversal) but closed it as `TURN_EVIDENCE_ENDED_UNRESOLVED`; positive `NON_TURN_LINE_ACTIVE` / settled-continuation evidence appeared roughly one probe interval later. Because the follower test requires a demonstrated leader demand, the intended Condor-leader / Patriot-follower relation was never evaluated and D-0126 Regulation was never applied. Direct package comparison found the headland evidence code unchanged between v4.7.54 and v4.7.55.
+
+**Decision:** A completed coherent native manoeuvre must not lose potential demonstration authority solely because settled-continuation evidence is absent at the first non-TURNING sample. The measurement is frozen when turn evidence ends and enters `WAITING_FOR_EVIDENCE`. Only subsequent positive settled continuation validates it. Waiting time and post-turn travel do not extend the frozen demand measurement. Job Episode change, active-job disappearance, a new turn before settlement, or OMW Control contamination prevents positive native-demonstration authority. No timeout creates success.
+
+**Test isolation:** v4.7.56 leaves the D-0126 0.90 Transition-Clearance factor unchanged. The next live run asks first whether Condor's demonstration survives the sampling boundary and therefore admits the intended Condor-leader / Patriot-follower pacing; only then can the Transition-Clearance hypothesis be evaluated.
+
+## D-0126 — Boundary pacing preserves Transition Clearance through intent revelation (2026-08-09)
+
+**Status:** Accepted for bounded implementation test in v4.7.55; v4.7.49 remains canonical.
+
+- v4.7.54 showed that near-zero leader-first/follower-second timing can be geometrically correct yet leave insufficient Action Space for a succeeding known Resolution Strategy.
+- The leader/follower Regulation playbook therefore preserves **Transition Clearance**, not merely manoeuvre-completion ordering.
+- Regulation remains the least-restrictive supported progression control; it should be conservative enough that native boundary intent can reveal a compatible continuation or mature into another known traffic requirement while useful Action Space remains.
+- This does not create a standalone temporal reserve or require predicting turn direction. Existing Time, Future Space, Action Space and Transition Clearance remain the architectural vocabulary.
+- v4.7.55 uses a temporary 0.90 factor on the raw geometry-derived follower maximum solely to test adequacy. The factor is not policy and should not be optimised for precision.
+- HUD housekeeping is separate: obsolete OTM/P22 on-screen test remnants are retired and current build/pacing information is consolidated on the right-hand OuttaMyWay HUD surface.
+
+## D-0125 — Resolution Strategy succession remains one Traffic Policeman responsibility (2026-08-09)
+
+**Status:** Accepted for bounded implementation test in v4.7.54; v4.7.49 remains canonical.
+
+- Traffic Policeman competence is represented by the existing Candidate Action Space and multi-stage Resolution Strategy architecture, not by an Encounter-lifetime if/then latch.
+- A proven head-on Refuge resolution must not be permanently consumed merely because it was used earlier in the same Encounter.
+- Duplicate dispatch is prohibited while that refuge resolution is currently active or its GIANTS handoff remains unresolved.
+- After positive native reacquisition, later Reality may support another head-on Resolution Strategy; if the governing traffic responsibility is still live, Decision **REVISES the same Commitment** rather than creating a second Commitment.
+- A later material displacement creates a fresh Native Continuation Restoration obligation. The continuing Durable Separation obligation is not duplicated.
+- v4.7.54 tests only succession of the two already-supported strategies: boundary leader/follower Regulation may mature into a clean head-on, then the established Refuge strategy may resolve that head-on.
+- No cross-field strategy, Provisional Demand Seed, reaction margin, or production Refuge qualification is introduced.
+
+## D-0124 — Preserve follower boundary Action Space through demand sequencing
+
+
+**Status:** Accepted architecture/evidence consolidation after non-canonical v4.7.50-v4.7.52 follower-maturation probes. Owner-declared v4.7.49 remains canonical.
+
+**Evidence:** v4.7.50 and v4.7.51 established repeatable native boundary-turn demand and strongly supported follower Action-Space Compression as positive Regulation evidence. v4.7.52, rebuilt from exact canonical v4.7.49, actively applied a Situation-derived follower speed cap while GIANTS retained route/steering/direction. The live run demonstrated real speed Regulation but repeatedly alternated `REGULATION_APPLY` and `REGULATION_RELEASE` (62 of each, zero `REGULATION_MAINTAIN`) and ultimately reproduced mutual boundary blockage. The failure therefore disproves the test Regulation lifecycle, not the underlying demand geometry; reaction margin remains unresolved. OMW-Control-influenced manoeuvres remain invalid as native demand evidence.
+
+**Decision — boundary demand without turn prediction:** a line-astern leader/follower pair progressing toward the same field boundary may require Traffic-Policeman Regulation before GIANTS reveals either worker's boundary continuation. OuttaMyWay need not know whether the leader or follower will turn left or right. `turn=true`, literal U-turn recognition, route prediction and semantic turn classification have no authority for this decision. The relevant fact is that straight continuation terminates at the Field World boundary and each worker must retain sufficient field-bounded Action Space for GIANTS to continue.
+
+**Decision — coarse demand envelope:** spatial demand `x` and temporal demand `t` are evidence mechanics for estimating how long the leader may continue to require follower-relevant boundary space. They are not a precision model of the native manoeuvre and do not create a new Space ontology. Adequacy is the goal: refine the envelope only when Reality shows it is under-protective or materially over-conservative for Productive Continuation/player experience.
+
+**Decision — Provisional Demand Seed:** when no uncontaminated native boundary demonstration is yet available, Situation Assessment may use a conservative **Provisional Demand Seed** so an otherwise-supportable leader/follower Situation is not unprotectable at startup. Working width may seed `x` only as a coarse demand estimate; it is not Physical Assembly extent or footprint authority. A provisional `t` may be a deliberately conservative implementation/test value until Reality supplies better fitness evidence. No fixed seed value gains architectural authority.
+
+**Decision — temporal ordering:** follower Regulation preserves ordering of access to relevant Future Space: the follower must not require boundary Action Space before the leader has vacated the portion still relevant to the follower. A distant follower normally requires no Control because natural progression already preserves that ordering. Regulation becomes necessary at the earliest Decision epoch where unrestricted follower progression would cease to preserve it. Beginning then permits the least restrictive speed reduction and best protects the intended near-invisible player experience.
+
+**Decision — persistent purpose, elastic cap:** once admitted, the protection obligation persists while the leader's relevant demand remains positively unresolved. The numeric cap may rise, fall, or reach the worker's natural GIANTS speed as Reality changes; successful Regulation making the instantaneous geometry supportable does not retire the protection purpose. The speed calculation answers how much Control is currently required, not whether the governing purpose still exists.
+
+**Decision — symmetric positive retirement:** the same spatial-temporal relationship that admits protection retires it when positive current evidence establishes that the leader's realised/plausible demand no longer constrains the follower's relevant field-bounded Future Space or will vacate it before the follower requires it. Turning away may therefore retire the relevant demand before the leader's complete manoeuvre finishes; turning through follower-relevant space preserves the obligation until the relationship is positively compatible. Evidence absence, a temporary positive reserve, a natural-speed cap, `turn=true`, elapsed `t`, or manoeuvre-start detection alone cannot establish retirement.
+
+**Presentation consequence:** diagnostic/player-facing HUD should explain current Traffic-Policeman intervention in human terms (for example, that a follower is pacing for another worker's boundary clearance) while detailed geometry and cap derivation remain forensic log evidence. Explanation does not relax the requirement that normal intervention be minimally perceptible.
+
+**Open implementation/evidence questions:** reaction/safety margin; exact provisional seed values; the coarsest fit representation for `x/t`; noise handling without purpose oscillation; and the smallest evidence contract that positively proves demand retirement. These are implementation/test questions under this decision, not authority for new route prediction.
+
 ## 2026-08-09 — v4.7.49 certification note: v4.7.48 live PASS, no new architectural decision
 
 **Status:** implementation validation / knowledge promotion only.

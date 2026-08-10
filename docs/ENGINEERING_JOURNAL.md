@@ -1,3 +1,99 @@
+## 2026-08-10 — v4.7.76 canonical-candidate closure after complete v4.7.75 TS015 working session
+
+**Observe:** the v4.7.75 integrated run completed the repeated head-on/follower/refuge/recovery sequence and both GIANTS jobs ultimately ended after completing work. Three autonomous Refuge moves were initiated. The final role-reversed head-on exercised same-Commitment authority reuse (`reusedAuthorityTokens=1`) and no longer failed with `YIELD_PROGRESS_AUTHORITY_ALREADY_OWNED`.
+
+**Qualification:** after Patriot completed, the owner manually moved the completed Patriot assembly so Condor could consume the final few metres. This is retained as terminal/post-completion physical-occupancy debt.
+
+**Decision:** draw the implementation line. Freeze v4.7.75 behaviour, package it as v4.7.76 canonical candidate, and park remaining implementation issues rather than continuing the fix/test cycle. No new architectural concept is introduced.
+
+**Candidate preparation:** build identity/documentation/provenance only; no traffic, Regulation, Refuge, Commitment or Control behavioural change.
+
+## 2026-08-10 — v4.7.75: same-Commitment Yield authority succession repair
+
+**Observe:** v4.7.74 completed the first and second encounters, but the final role-reversed head-on repeatedly selected REPOSITION and then failed with `YIELD_PROGRESS_AUTHORITY_ALREADY_OWNED`.
+
+**Implement:** distinguish ownership by another Commitment from ownership already held by the same unresolved Commitment. Reuse the latter AuthorityToken for the selected Yield/Reposition assembly, clear only its D-0141 physical speed lease after the head-on revision, and settle the superseded follower obligation.
+
+**Validate:** an end-to-end role-reversed Lua regression now exercises Regulation -> positive head-on REVISE -> same-token reuse -> follower lease clearance -> accepted REPOSITION. Live success is intended to close this implementation tranche and trigger canonical-candidate preparation.
+
+## 2026-08-10 — v4.7.74: head-on succession Candidate-ordering repair
+
+**Observation:** v4.7.73 improved Regulation but Condor never attempted the second Refuge.
+
+**Evidence:** at the second opposed encounter Future-Space intersection and clean opposed headings were positive, while D-0141 reported `ESTABLISHED_PURPOSE_PRESERVED_THROUGH_OPPOSED_CONTINUATION`. Candidate support selected only the follower `CONTINUE_OBSERVATION` path, so head-on `REPOSITION` was never published.
+
+**Implementation:** retain the existing speed lease, but evaluate a positive matching autonomous head-on before publishing follower PRESERVE. Positive follower retirement and Guarded Recovery remain higher-priority special lifecycle states.
+
+**Validation intent:** regression test requires positive matching head-on to select REPOSITION/REVISE while lease-retention behaviour remains covered independently.
+
+## 2026-08-10 — v4.7.73: second-encounter passage repair
+
+Observed v4.7.72: D-0141 cap tracked Condor down to ~3.6 km/h, then released at `headingDot=-1`; head-on Reposition began 251 ms later and Patriot accelerated to ~24 km/h while Condor was still in outbound egress. Repair: reapply the existing 0.90 clearance margin only after Regulation is already required, and preserve the admitted lease through clean opposed strategy succession until Progress Passage.
+
+## 2026-08-10 — v4.7.72: D-0141 follower implementation repair
+
+**Observe:** v4.7.71 actively regulated Patriot, but an established lease retired when lateral measurements crossed the productive-corridor boundary by millimetres and later preserved a stale ~16.67 km/h cap while Condor's GIANTS native command dropped rapidly to 11.81 then 4 km/h before the turn. The active Runtime loop was still tied to the 1 s passive cadence.
+
+**Implement:** keep strict admission unchanged; add bounded established-purpose retention only; decouple active Runtime/Control to 250 ms; clamp Productive follower magnitude by positive leader native rate; update an existing lease through GIANTS turning from current native/physical transition progress; keep zero/default command unresolved and keep the historical 0.90 factor out of active D-0141.
+
+**Validate:** offline regression covers millimetric retention versus material separation, pre-turn 4 km/h native command, active turn progression, positive reverse, Progress Passage retirement, elastic cap updates, remote-negative admission and central authority boundaries. Next live run is the same natural second-encounter sequence.
+
+## 2026-08-10 — v4.7.69: Refuge Passage Purpose Succession
+
+**Observe:** v4.7.68 kept Patriot under the pre-Refuge follower-compression cap after Condor was compact and Held at Refuge. Recovery required Patriot to pass, so the old Control delayed the clearing event.
+
+**Discuss:** approximately 10 km/h can remain acceptable inside a genuine moving leader/follower relationship. The fault is not primarily numeric; it is the authority lifecycle after Refuge establishment.
+
+**Hypothesise:** once Yield is positively established in compact Refuge hold for a named Progress participant, the old boundary-transition clearance purpose has been superseded by Progress Passage.
+
+**Implement:** v4.7.69 exposes a bounded Progress Passage context from P22 and wires it explicitly into follower-compression. The matching old-purpose lease is retired and re-admission suppressed while the hold persists. No replacement speed is commanded.
+
+**Validate:** structural regression plus live target: purpose-succession and release logs at Refuge establishment; GIANTS-native Progress speed absent an independent lease; no same-pair re-admission until hold exit.
+
+**Grouped housekeeping:** the standalone Lua harness still referenced the removed D-0137 probe. It now loads/tests D-0138, allowing the full offline Lua harness to execute again.
+
+**Record:** name the failure **Resolution Dependency Inversion** and the correction **Refuge Passage Purpose Succession**.
+
+## 2026-08-10 — v4.7.68: D-0138 command surface validated; D-0136 representation seam repaired
+
+**Observe:** v4.7.67 showed `spec_aiFieldWorker.aiDriveParams` changing coherently through Productive, turning, reverse and blocked states. The same run exercised D-0136 peer visibility (`compared=1`) but both settlement Future-Space inputs returned `WORKER_NOT_ACTIVE`.
+
+**Interpret:** D-0138 is supported only as an **Immediate Native Drive Command Surface**. The current target did not distinguish the successful second Refuge from the recurring bad fixture, so **Immediate Command != Continuation Horizon**. The D-0136 failure was separate implementation debt: persistent tracks express current activity as `track.active`, while `FieldBoundedFutureSpace` consumes observation workers using `activeObserved`.
+
+**Implement:** v4.7.68 adds a transient adapter inside the passive D-0136 settlement reassessment. It maps current persistent-track activity and existing Local Intent / Field World / pose / Physical Representation into the existing Future-Space input contract. Neither representation is broadened or mutated.
+
+**Validate:** the next natural D-0136 settlement must stop reporting `WORKER_NOT_ACTIVE` for an active track. A `TURNING` settling worker may correctly remain unresolved because manoeuvre sweep is not yet represented. No Refuge or Control policy changes are part of this increment.
+
+## 2026-08-10 — v4.7.63: productive-history chessboard becomes a passive Refuge evidence probe
+
+**Observation:** after v4.7.62 successfully protected Condor's compressed egress, the selected second Refuge itself became the blockage. Both fixture candidates were inside boundary-adjacent/headland space. The operator proposed preferring space the Progress worker had already productively vacated and described a chessboard model: productive workers progressively paint completed squares while their current continuation scans forward.
+
+**Interpretation:** the useful architectural distinction is past positive Productive history versus current supported Future Space. A painted region can support the claim that productive demand has receded there, but does not prove the worker will not traverse it during a later transition.
+
+**Implementation:** added `DemonstratedProductiveCoverageProbe` using live AI/work-area marker segments rather than tractor-centre position. Consecutive positive-Productive samples sweep a coarse 5 m grid; any transition/unresolved interval breaks continuity. Added `RefugeQualificationShadowProbe`, which leaves live selection untouched and reports fixture plus infield candidates against Field fit, Future Space, demonstrated boundary-entry demand and productive coverage.
+
+**Validation objective:** determine whether already-established Knowledge plus this positive history explains the infield Refuge intuition. Treat failure to distinguish candidates as evidence of a missing representation, not a reason to invent a headland ban.
+
+## 2026-08-10 — D-0131 Committed Transition Protection catch-up
+
+**Observation:** v4.7.59 kept Patriot's maturation Regulation at 18.60 km/h through the second head-on, but Condor's admitted egress did not create a stronger protection lease. D-0129 showed the Progress worker already consuming represented Committed Demand during that transition.
+
+**Interpretation:** lease composition worked; the missing piece was a purpose owner for the newly admitted transition. This is implementation debt against existing Committed Demand / Transition Clearance architecture, not a new playbook.
+
+**Change:** v4.7.60 adds a bounded D-0131 transition-protection bridge. It does not trigger merely because the TS015 egress phase exists. It requires positive Productive Progress, a field-bounded intersection with the represented egress sweep, and a timing witness showing Progress would arrive no later than even ideal max-speed egress completion. The existing 1 km/h test literal is reused and composes with the retained maturation lease.
+
+**Deliberate boundary:** no new numeric policy and no reopening of parked Refuge selection, early-Refuge timing, brute-force remediation, comfort tuning, or the productive/transitional crossing.
+
+## 2026-08-09 — D-0130 Purpose-Preserving Regulation catch-up
+
+**Observation:** D-0129 showed the live follower cap relaxing while a stable purpose-bound witness was being consumed. The surprise head-on then caused the follower Regulation to release solely because the Situation matured into opposed continuation.
+
+**Interpretation:** this is implementation debt against existing sticky-Purpose / Effective Actuation Composition architecture, not evidence for a new traffic concept.
+
+**Change:** v4.7.59 makes same-purpose Regulation tighten-only, preserves the supporting lease through opposed strategy succession, and lets independently justified P22 Regulation leases compose by least-permissive cap. D-0123 can therefore add/remove its existing guarded-recovery restriction without destroying the still-live maturation purpose.
+
+**Deliberate boundary:** no new literals or parked traffic behaviours are addressed. Validate this catch-up before reopening Refuge selection, early first-Refuge timing, speed/distance calibration or the later productive/transitional crossing.
+
 ## 2026-08-09 — v4.7.49 certification consolidation after v4.7.48 live PASS
 
 **Observation:** v4.7.48 completed the intended end-to-end refuge/pass/recovery sequence. `CM-00001` was created at the autonomous REPOSITION Decision; Condor physically reached refuge; positive proposed-recovery convergence held Condor while Patriot passed unrestricted; recovery began only after positive clearance; a later Patriot turn converged after recovery was committed and D-0123 Regulation protected the remaining recovery demand; positive same-Job GIANTS reacquisition settled only the recovery obligation.
