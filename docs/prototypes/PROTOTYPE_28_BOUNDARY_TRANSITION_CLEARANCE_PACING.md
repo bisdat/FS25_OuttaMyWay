@@ -1,7 +1,7 @@
 # Prototype 28 — Boundary Transition-Clearance Pacing
 
 **Build:** v4.7.56 TEST BUILD  
-**Canonical authority:** owner-declared v4.7.49 remains canonical.
+**Historical authority at prototype creation:** owner-declared v4.7.49. Current implementation baseline is owner-declared canonical v4.7.76; this prototype remains non-authoritative.
 
 ## Question
 

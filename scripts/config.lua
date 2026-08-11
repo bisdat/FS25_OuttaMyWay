@@ -1,13 +1,13 @@
--- FS25_OuttaMyWay v4.7.76 CANONICAL CANDIDATE — live-validated D-0140 Architecture Authority Alignment + D-0141 Aligned Follower Boundary-Demand Regulation; owner-declared v4.7.49 remains canonical pending explicit declaration.
--- General production Control authority remains disabled; bounded P22 Control is reachable only through the canonical Decision/Commitment/central-dispatch chain.
--- D-0141 restores follower-boundary Regulation only through the aligned chain; legacy follower logic and D-0131/D-0133 committed-transition actuation remain shadow; D-0123 Guarded Recovery remains bounded through the aligned chain.
--- Native manoeuvre boundary-demand Representation Fitness is UNRESOLVED; D-0134/D-0136/D-0138 remain passive and D-0137 remains falsified.
--- Canonical architecture authority: v4.6.78.
+-- FS25_OuttaMyWay v4.7.77 CANONICAL CANDIDATE — D-0142 Field World / Chessboard Architecture Consolidation; owner-declared v4.7.76 is canonical.
+-- Runtime traffic/Commitment/Control behaviour remains the v4.7.76 implementation; D-0142 is documentation/architecture authority for the next implementation increment.
+-- P22/head-on/follower/Guarded-Recovery runtime machinery remains unchanged as legacy implementation evidence/donors; v4.7.77 does not promote those mechanisms into the new architecture.
+-- First implementation objective after canonicalisation: non-authoritative Operational Picture Knowledge Foundation with temporary validation logging.
+-- Canonical architecture authority: v4.7.77 D-0142.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.76"
-OuttaMyWay.ARCHITECTURE_VERSION = "4.6.78"
+OuttaMyWay.VERSION = "4.7.77"
+OuttaMyWay.ARCHITECTURE_VERSION = "4.7.77"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000

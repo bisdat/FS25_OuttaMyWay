@@ -1,3 +1,37 @@
+# v4.7.77 D-0142 architecture consolidation — implementation alignment status
+
+**Architecture candidate:** v4.7.77.  
+**Implementation baseline:** owner-declared canonical v4.7.76.
+
+This section deliberately does **not** mark the new architecture as implemented. v4.7.77 is an architecture/documentation candidate. The table records the starting alignment condition for subsequent builds.
+
+| D-0142 concern | v4.7.76 implementation status | Classification |
+|---|---|---|
+| Field World identity/equivalence | present and validated | PRESERVE |
+| configuration-specific representation | strong donor present | PRESERVE / EXTEND |
+| positive productive work evidence | present in Situation/probes | PRESERVE / PROMOTE |
+| Productive Regime/Rook | no coherent production model | MISSING |
+| Successor Rook Set | absent | MISSING |
+| bounded Transitional Demand | absent | MISSING |
+| King Reserve Availability | absent | MISSING |
+| Resolution-Space Conservation | scattered scenario evidence only | MISSING GENERIC MODEL |
+| positive cooperative relevance | old Current/Future-Space admission | RE-EXPRESS |
+| Operational Picture Knowledge-only contract | Candidate specifications are attached into picture | MISALIGNED |
+| genuine Candidate enumeration | scenario support layer preselects/assesses | MISALIGNED |
+| independent mandatory Constraints | many verdicts Candidate-authored/pass-through | MISALIGNED |
+| Traffic Policeman | strong structural donor | PRESERVE / EXTEND |
+| Conflict Serialization | absent as general Decision reasoning | MISSING |
+| Commitment/Obligations | strong core | PRESERVE / EXTEND |
+| post-Decision Committed Demand | term misused in Observation; selected relation not durable | MISALIGNED / MISSING |
+| bounded manoeuvre authority | generic ownership exists; exact phase/relation weak | PARTIAL |
+| bounded Control executor | physical donors exist; P22/dispatcher contain semantic leakage | RE-EXPRESS |
+| Guarded Recovery | live compatibility implementation exists | PROVISIONAL / DO NOT EXPAND |
+| P22 | live bounded prototype path exists | RETIRE AS ARCHITECTURE |
+
+**First conformance target:** Operational Picture Knowledge Foundation. New D-0142 Knowledge remains non-authoritative until live evidence validates it.
+
+---
+
 # v4.7.76 canonical-candidate conformance — D-0140/D-0141 integrated closure
 
 **Authority baseline:** owner-declared canonical v4.7.49 plus accepted post-canonical architecture amendments. v4.7.76 is the canonical candidate packaging the live-validated v4.7.75 behaviour; canonical promotion remains owner-controlled.

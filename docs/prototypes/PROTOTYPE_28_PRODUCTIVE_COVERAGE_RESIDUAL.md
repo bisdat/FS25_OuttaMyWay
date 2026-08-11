@@ -1,7 +1,7 @@
 # Prototype 28 — Productive Coverage Residual / Intent-Based Settlement
 
 **Build:** v4.7.65 TEST BUILD  
-**Authority:** passive evidence only; owner-declared v4.7.49 remains canonical.
+**Historical authority at prototype creation:** passive evidence only over owner-declared v4.7.49. Current implementation baseline is owner-declared canonical v4.7.76; this prototype remains non-authoritative.
 
 ## Question
 

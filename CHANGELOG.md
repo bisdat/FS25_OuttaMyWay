@@ -1,3 +1,18 @@
+# v4.7.77 CANONICAL CANDIDATE — Chessboard Architecture Consolidation
+
+- Starts from exact owner-declared canonical v4.7.76 (`7cc2db3fcd02ca7979acfafe81f7765344a70275a11de9754594bde8fed4aeaf`; Git `4758a3428f9bcba23093f60edfd0087bb87843ab`; 305 files).
+- Architecture/documentation-only candidate. No traffic, Candidate, Constraint, Decision, Commitment, Control, P22 motion, speed policy or GIANTS-integration behaviour is intentionally changed.
+- Records D-0142 **Field World / Chessboard Architecture Consolidation** as the governing implementation architecture.
+- Establishes shared Field World Knowledge with worker-relative Productive Regime/Rook structures, positive productive-history colouring, Successor Rook Set, bounded Transitional Demand, Configuration-Dependent Assembly Footprint, Native Reacquisition Anchor A, King Reserve Availability, Resolution-Space Conservation and Conflict Serialization.
+- Distinguishes Field Boundary, productive Headland working band and Turning Rank immediately infield of the headland.
+- Separates Productive Demand, Transitional Demand and post-Decision Committed Demand. Mere active-job membership is not architectural Committed Demand.
+- Defines ordinary local Refuge provisionally as `ROOK at A → compact → KING → A→R → Refuge → R→A → restore → ROOK/native reacquisition`, with phase-specific spatial fitness.
+- Makes Refuge opportunity Knowledge non-owning before Decision; only a Decision-selected A↔R relationship becomes Committed Demand.
+- Records the **Supersession Filter**: old mechanisms are classified Preserve / Re-express / Retire before architecture-to-code mapping. P22, bespoke head-on solving, exactly-two-worker assumptions, bespoke multi-worker solving and ordinary general Refuge routing are not architectural concepts to migrate.
+- Treats Guarded Recovery as a provisional compatibility concept whose proven protection requirement must survive; increasing confidence is recorded that generic protection of Committed Demand will subsume and retire the distinct mechanism.
+- Establishes **Operational Picture Knowledge Foundation** as the first implementation build: production-intent Knowledge contracts with temporary non-authoritative validation logging; no new chessboard Knowledge may influence Candidate, Decision, Commitment or Control until validated.
+- Corrects current release/provenance text to owner-declared v4.7.76 canonical and advances architecture identity to v4.7.77.
+
 # v4.7.76 CANONICAL CANDIDATE — TS015 architecture-core closure
 
 - Correct candidate versioning: v4.7.75 remains the exact live-tested implementation build; the canonical-candidate identity advances to v4.7.76.

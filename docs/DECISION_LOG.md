@@ -1,3 +1,32 @@
+## D-0142 — Field World / Chessboard Architecture Consolidation (2026-08-11)
+
+**Status:** Accepted for v4.7.77 canonical candidate; owner canonicalisation remains separate.
+
+**Context:** After v4.7.76 live closure, repeated architecture/code reconciliation kept attempting to relocate responsibilities from prototype/scenario mechanisms whose concepts had already been superseded. Field World/chessboard exploration provided a smaller architecture that explains P22, head-on, follower, multi-worker and constrained-topology evidence without preserving those mechanisms as permanent solvers.
+
+**Decision:**
+
+1. Make shared Field World + worker-relative Productive Regime/Rook structures the governing spatial/productive architecture.
+2. Separate Field Boundary, productive Headland working band and Turning Rank.
+3. Record only positively demonstrated active work as worker productive history; traversal is not colouring.
+4. Represent productive succession through Successor Rook Set and bounded Transitional Demand rather than exact GIANTS path prediction.
+5. Use Configuration-Dependent Assembly Footprint according to manoeuvre phase.
+6. Adopt Native Reacquisition Anchor A and provisionally adopt the ordinary local Refuge lifecycle `A→R→A`.
+7. Maintain King Reserve Availability as non-owning Knowledge (`SOME` / `NONE`, with implementation `UNKNOWN` permitted for incomplete evidence).
+8. Require positive cooperative spatial relevance; same-field presence/proximity is insufficient.
+9. Adopt Resolution-Space Conservation and Conflict Serialization; use upstream admission control where entry into constrained topology would destroy resolvability.
+10. Define Committed Demand as post-Decision Commitment-derived spatial demand. Active Job Episode membership does not itself create Committed Demand.
+11. Apply a Preserve / Re-express / Retire Supersession Filter before mapping old code to new ownership.
+12. Retire P22 as architecture, HEAD_ON as governing solver, exactly-two-worker assumptions and bespoke multi-worker solving. Preserve only proven physical/evidence donors.
+13. Re-express leader/follower and old Future-Space mechanisms through the new Knowledge model.
+14. Treat Guarded Recovery as provisional compatibility evidence. Preserve its proven protection requirement while validating whether generic Committed-Demand protection fully subsumes it.
+15. First implementation build is Operational Picture Knowledge Foundation: one decisive production-intent Knowledge implementation with temporary non-authoritative validation logging and no behavioural authority.
+
+**Rationale:** Complexity should be reduced by admission control and serialization upstream, not absorbed into increasingly sophisticated Control manoeuvres downstream. Existing code receives no presumption of architectural legitimacy merely because it exists. Architecture follows Reality; implementation convenience does not define concepts.
+
+**Implementation impact in v4.7.77:** Documentation/architecture only. v4.7.76 runtime behaviour is intentionally retained.
+
+
 ## 2026-08-10 — v4.7.76 canonical-candidate closure
 
 **Type:** implementation/governance decision; no new architecture.

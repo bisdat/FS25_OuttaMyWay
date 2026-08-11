@@ -1,3 +1,11 @@
+# v4.7.77 — D-0142 Field World / Chessboard Architecture Consolidation
+
+- Owner-declared canonical baseline advances to v4.7.76.
+- Consolidates chessboard architecture and explicit supersession status without runtime behavioural change.
+- Establishes Operational Picture Knowledge Foundation as next implementation build.
+- Records P22/head-on/exactly-two-worker/bespoke multi-worker mechanisms as superseded architecture and Guarded Recovery as provisional compatibility evidence.
+- Advances architecture/release identity to v4.7.77.
+
 # v4.7.76 CANONICAL CANDIDATE — TS015 architecture-core closure
 
 - Packages the live-tested v4.7.75 behaviour as v4.7.76 canonical candidate without changing traffic, Regulation, Refuge, Commitment or Control logic. Candidate-preparation changes are identity/documentation/provenance/version-assertion only.

@@ -1,27 +1,35 @@
-# Responsibility Map
+# Responsibility Map — v4.7.77 Chessboard Architecture
 
-> **Currency:** v4.7.76 canonical candidate; D-0140/D-0141 aligned chain live-validated; owner-declared v4.7.49 remains canonical pending declaration
+> **Architecture authority:** D-0142 candidate architecture.  
+> **Implementation baseline:** owner-declared canonical v4.7.76.  
+> This map describes intended ownership; it does not claim v4.7.76 implementation conformance.
 
-| Responsibility | Owns | Must not own |
+| Layer | Owns | Must not own |
 |---|---|---|
-| Observation | raw time-bound facts and source provenance | interpretation, candidate selection, Control |
-| Situation Assessment | Knowledge, relationships, Future Space, uncertainty, Representation Fitness, Return/Potential Demand and evidence that committed recovery is becoming threatened | authoritative candidate preference, lifecycle transition, actuation |
-| Candidate generators | complete supportable Candidate Action records, including Purpose represented from supplied governing context | objective-setting policy, preference selection or waiver of constraints |
-| Constraint evaluators | explicit verdicts for their architectural invariants | optimisation or Control execution |
-| Operational Picture | immutable publication of current Knowledge, candidates and verdicts | mutation after publication |
-| Decision | selection among admissible candidates or explicit non-intervention; Traffic Policeman temporary priority, Guarded Recovery protection and Protected Progress Alternation when traffic ordering is required | bypassing failed/unresolved mandatory constraints or allowing an action to invent its own governing purpose |
-| Commitment | Governing Basis, lifecycle, Obligation Set, authority leases, legal transition enforcement and Terminal Settlement | physical interpretation outside supplied evidence |
-| Control admission | freshness and Effective Actuation Composition revalidation immediately before dispatch | new strategy or Encounter interpretation |
-| Control capability | bounded physical execution, including maximum-supportable-speed execution of an already-authorised manoeuvre, and Control Outcome facts | selecting another action, inventing a speed policy or declaring operational success |
-| Replay validation | deterministic architecture and lifecycle conformance | replacing live Reality validation |
-| Diagnostics | downstream logs, HUDs, forensic/shadow evidence and conformance visibility | semantic promotion, Candidate policy, Decision, Commitment authority or physical actuation |
+| Reality / GIANTS | native job execution, physical state, authoritative runtime events | OuttaMyWay policy |
+| Observation | raw time-bound facts, source provenance, pose/configuration/native evidence | Productive/Transitional interpretation, Candidate selection, traffic priority, Commitment meaning, Control |
+| Situation Assessment | Field World Knowledge; Productive Regime/Rook; positive productive history; Successor Rook Set; Transitional Demand; phase-specific Representation Fitness; cooperative relevance; King Reserve Availability; Resolution-Space state; uncertainty | Candidate preference, role selection, Commitment transition, actuation |
+| Operational Picture Knowledge | immutable publication of currently supported Knowledge and provenance | Candidate specifications, mandatory verdicts, mutation after publication |
+| Candidate Action Space | complete supportable actions, including exact bounded A↔R opportunities where Knowledge supports them | mandatory PASS/FAIL manufacture, priority selection, hidden scenario filtering, Control |
+| Mandatory Constraints | independent admissibility verdicts for Field World containment, representation/phase fitness, transition clearance, demand compatibility, obligation compatibility, capability availability and other mandatory invariants | optimisation, traffic preference, Control execution |
+| Traffic Policeman / Decision | temporary movement ordering; selection among admissible Candidates; Conflict Serialization; upstream admission decision when cooperative entry would destroy resolvability | route/steering ownership, physical execution, waiver of unresolved/failed constraints |
+| Commitment + Obligations | Governing Basis, continuing purpose, selected durable resolution relation, Committed Demand, obligation ownership, lifecycle/settlement meaning | raw physical actuation, route invention |
+| Bounded Authority | exact permitted physical phase/manoeuvre under one Commitment | Situation interpretation, Candidate selection, overall settlement |
+| Control | bounded physical execution: Hold, native speed Regulation, compact/restore, selected bounded displacement, physical-state maintenance, relinquishment, outcome reporting | Refuge preference/selection, HEAD_ON/follower classes, Rook/King policy, Transitional Demand interpretation, traffic rationale, Commitment settlement |
+| Replay / validation | deterministic conformance and evidence comparison | replacing live Reality validation |
+| Diagnostics | structured logs/HUD/shadow evidence | semantic promotion, Candidate/Decision/Commitment/Control authority |
 | Operation | context and dynamic membership | fallback ownership of unresolved obligations |
 | Player | external physical agency | internal Commitment Obligation ownership |
 
 ## Ownership invariants
 
+- Observation reports facts; Situation Assessment assigns Knowledge meaning.
+- Operational Picture is Knowledge, not a transport for Candidate specifications.
+- Candidate enumerates; Constraints gate; Decision selects.
+- Before Decision, Refuge opportunity has no owner.
+- After Decision, the selected required relation becomes Commitment-owned Committed Demand.
 - Every open Obligation has exactly one owning Commitment.
 - Every assembly has at most one objective-progress actuation owner.
-- Several Commitments may observe one assembly, but conflicting progress Control is forbidden.
-- Safety veto authority may inhibit progress; it is not a second progress owner.
-- Control reports physical facts; Commitment determines lifecycle meaning from those facts and its Governing Basis.
+- Control reports physical facts; Commitment determines lifecycle meaning.
+- Complexity is reduced upstream through Resolution-Space Conservation, Conflict Serialization and admission control rather than downstream routing sophistication.
+- A retired prototype/scenario mechanism is not assigned a new module merely to preserve its code.

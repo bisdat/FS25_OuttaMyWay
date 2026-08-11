@@ -1,7 +1,7 @@
 # Prototype 27 — Demonstrated Productive Coverage and Refuge Qualification Shadow
 
 **Build:** v4.7.63 TEST BUILD  
-**Canonical authority:** owner-declared v4.7.49 remains canonical.  
+**Historical authority at prototype creation:** owner-declared v4.7.49. Current implementation baseline is owner-declared canonical v4.7.76; this prototype remains non-authoritative.  
 **Authority:** passive evidence only; no Refuge selection, Decision or Control authority.
 
 ## Question

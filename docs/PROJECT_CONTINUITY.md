@@ -1,6 +1,23 @@
+# v4.7.77 chessboard architecture continuity boundary
+
+Owner-declared canonical baseline is v4.7.76:
+- ZIP SHA-256 `7cc2db3fcd02ca7979acfafe81f7765344a70275a11de9754594bde8fed4aeaf`
+- Git `4758a3428f9bcba23093f60edfd0087bb87843ab`
+- 305 files
+
+v4.7.77 consolidates D-0142 only; no runtime behaviour is intentionally changed. Subsequent implementation must start from the owner-declared canonical artefact/provenance after owner review/canonicalisation, not from GitHub.
+
+The governing implementation objective is **Operational Picture Knowledge Foundation** in one decisive build. Implement Productive Regime/Rook, productive history, configuration-dependent footprint Knowledge, Successor Rook Set, bounded Transitional Demand, King Reserve Availability, positive cooperative relevance and Resolution-Space state as production-intent architecture with temporary non-authoritative logging.
+
+Do not begin by moving P22 responsibilities. Apply the Supersession Filter first. P22, HEAD_ON solver, exactly-two-worker assumptions and bespoke multi-worker solving are superseded. Preserve proven physical/evidence donors only. Guarded Recovery is expected to disappear if generic Committed-Demand protection validates equivalently, but its proven protection requirement must not be lost before that validation.
+
+The architecture/code sequence after Knowledge validation is:
+Knowledge → Candidate/Constraint/Decision alignment → selected A↔R in Commitment as Committed Demand → bounded authority → Control simplification/P22 retirement.
+
+
 # v4.7.76 canonical-candidate continuity boundary
 
-Owner-declared v4.7.49 remains canonical pending explicit owner declaration of v4.7.76. The v4.7.75 behaviour has now completed the full TS015 Condor/Patriot working session, including repeated follower Regulation, head-on Reposition/Refuge, Progress Passage, Guarded Recovery and the final role-reversed same-Commitment Yield succession. Three autonomous Refuge relocations occurred in the live run.
+Historical v4.7.76 preparation record: at that time owner-declared v4.7.49 remained canonical pending explicit declaration of v4.7.76. The v4.7.75 behaviour has now completed the full TS015 Condor/Patriot working session, including repeated follower Regulation, head-on Reposition/Refuge, Progress Passage, Guarded Recovery and the final role-reversed same-Commitment Yield succession. Three autonomous Refuge relocations occurred in the live run.
 
 Both workers ultimately completed. After Patriot completion the owner manually moved the completed Patriot assembly so Condor could consume the final few metres; terminal/post-completion physical occupancy is therefore the principal explicit closure qualification and remains parked.
 

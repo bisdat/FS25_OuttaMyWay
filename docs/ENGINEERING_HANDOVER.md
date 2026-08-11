@@ -1,6 +1,27 @@
+# v4.7.77 CANONICAL CANDIDATE handover — D-0142
+
+**Baseline:** owner-declared canonical v4.7.76, SHA-256 `7cc2db3fcd02ca7979acfafe81f7765344a70275a11de9754594bde8fed4aeaf`, Git `4758a3428f9bcba23093f60edfd0087bb87843ab`, 305 files.
+
+## Candidate scope
+
+Architecture/documentation and release/provenance identity only. No runtime traffic/Control behaviour is intentionally changed.
+
+## Governing architecture
+
+Use the v4.7.77 D-0142 consolidation in `docs/ARCHITECTURE.md` as normative precedence over conflicting historical text. Key concepts: Rook/Productive Regime, productive history, Successor Rook Set, Transitional Demand, configuration-dependent footprint, Native Reacquisition Anchor A, King Reserve Availability, Resolution-Space Conservation, Conflict Serialization, post-Decision Committed Demand and bounded Control execution.
+
+## Do not migrate superseded mechanisms
+
+P22, HEAD_ON solver, exactly-two-worker assumptions, bespoke multi-worker solving and ordinary general Refuge routing have no architectural right to survive. Use Preserve / Re-express / Retire. Guarded Recovery is provisional compatibility evidence only; do not expand it.
+
+## First implementation build
+
+Operational Picture Knowledge Foundation, one decisive build. Production-intent modules/contracts, temporary structured diagnostics, no behavioural authority. Do not alter Candidate/Decision/Commitment/Control consumers until the Knowledge model is live-validated.
+
+
 # v4.7.76 CANONICAL CANDIDATE handover
 
-Owner-declared v4.7.49 remains canonical until the owner explicitly declares this exact candidate canonical.
+Historical v4.7.76 handover record: at that time owner-declared v4.7.49 remained canonical until explicit declaration of that candidate.
 
 ## What is frozen
 

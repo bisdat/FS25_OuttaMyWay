@@ -1,3 +1,64 @@
+# v4.7.77 Architecture-to-Code Alignment Baseline — D-0142
+
+**Canonical implementation baseline:** owner-declared v4.7.76 (`7cc2db3fcd02ca7979acfafe81f7765344a70275a11de9754594bde8fed4aeaf`; Git `4758a3428f9bcba23093f60edfd0087bb87843ab`).  
+**Candidate:** v4.7.77 architecture/documentation only.
+
+This section supersedes earlier module-migration assumptions where they conflict with D-0142. The audit now maps only **surviving architectural concepts**. Old code first passes the Preserve / Re-express / Retire Supersession Filter.
+
+## Surviving-concept implementation map
+
+| Architectural concept/layer | v4.7.76 status | Alignment consequence |
+|---|---|---|
+| Field World identity/equivalence | strong existing owner/donor | preserve |
+| raw GIANTS Observation | strong donors, semantic leakage present | strip semantic promotion over time |
+| Configuration-Dependent Assembly Footprint | strong representation donor | promote phase-specific fitness semantics in Situation |
+| positive productive work evidence | strong donor | promote to production Knowledge |
+| Productive Regime / Rook | mostly absent as coherent production Knowledge | implement |
+| Successor Rook Set | absent | implement |
+| bounded Transitional Demand | absent | implement |
+| King Reserve Availability | absent | implement |
+| positive cooperative relevance | partial through old Current/Future-Space admission | re-express |
+| Resolution-Space Conservation | distributed historical evidence, no generic implementation | implement |
+| Candidate Action Space | structural skeleton exists; semantic generation sits in `LiveTrafficCandidateSupport` | replace old scenario-specific content after Knowledge validates |
+| Mandatory Constraints | structural skeleton exists; many verdicts are Candidate-authored/pass-through | make independently authoritative after Knowledge validates |
+| Traffic Policeman | strong structural donor | preserve; add Conflict Serialization/admission reasoning later |
+| Commitment/Obligations | strong core | add durable selected spatial relation/Committed Demand later |
+| Bounded Authority | ownership basis exists | strengthen to phase/manoeuvre-specific authority later |
+| Control | useful physical donors embedded in superseded P22/orchestration | preserve donors, retire semantic/orchestration leakage |
+| Guarded Recovery | live compatibility behaviour | do not expand; validate replacement by generic Committed-Demand protection |
+| P22 | superseded prototype | do not migrate as a system |
+
+## Explicit abstraction mismatches in v4.7.76
+
+- Observation creates semantic Future-Space/admission/follower meaning that belongs above Observation.
+- Observation uses `COMMITTED_DEMAND` for active-job membership; D-0142 reserves Committed Demand for post-Decision Commitment-derived spatial demand.
+- Operational Picture is rewritten with Candidate specifications; D-0142 requires immutable Knowledge-only publication.
+- `LiveTrafficCandidateSupport` performs duplicate assessment, representation-fitness promotion, mandatory-verdict manufacture and scenario preselection.
+- mandatory Constraint evaluators frequently consume Candidate-authored verdict packets rather than independently evaluating invariants.
+- Control/P22 reconstructs participants, selects/qualifies Refuge, interprets recovery safety and mutates Commitment meaning.
+- P22 return/rejoin fixture routing is experimental mechanism evidence, not a production concept to relocate.
+- HEAD_ON/follower/exactly-two-worker branches are scenario implementations, not governing architectural classes.
+- Guarded Recovery is retained only as bounded compatibility behaviour pending proof that generic Committed-Demand protection subsumes it.
+
+## First implementation build — Operational Picture Knowledge Foundation
+
+Implement the production-intent Knowledge layer in one decisive build:
+
+1. Productive Regime / Rook.
+2. Positive productive-history colouring.
+3. Configuration-dependent footprint Knowledge.
+4. Successor Rook Set.
+5. Bounded Transitional Demand.
+6. King Reserve Availability.
+7. Positive cooperative relevance.
+8. Resolution-Space state.
+
+Temporary structured logging/shadow comparison is required for validation. The new Knowledge layer is non-authoritative for behaviour during this build: no Candidate, Decision, Commitment, Bounded Authority or Control consumer changes until validation supports promotion.
+
+No P22 cleanup, Guarded-Recovery deletion, Candidate refactor or behavioural routing change belongs in this first build.
+
+---
+
 ## 11. D-0141 — aligned follower boundary-demand restoration
 
 D-0140's live Authority Reset supplied the missing positive counterexample: removing follower actuation entirely allowed a genuine current co-directional line-astern boundary encounter to consume Action Space and deadlock. D-0141 therefore restores the accepted D-0124 follower-protection concept without restoring the old cross-layer implementation.
@@ -21,7 +82,7 @@ The 2026-08-10 TS015 run completed the full working session. The final role-reve
 **Owner-declared canonical baseline:** v4.7.49  
 **Canonical SHA-256:** `a64829ed9f57a868d226ec74115f23fd02659e5adeb748e566cb8cdacf1de895`  
 **Implementation evidence snapshot:** v4.7.69 TEST BUILD, non-canonical  
-**Alignment status:** v4.7.75 behaviour live-validated and packaged as the v4.7.76 canonical candidate; owner-declared v4.7.49 remains canonical pending explicit declaration
+**Historical D-0140 alignment status at v4.7.76 preparation:** v4.7.75 behaviour was live-validated and packaged as the v4.7.76 candidate; v4.7.76 has since been explicitly owner-declared canonical and is the implementation baseline for D-0142.
 
 ## 1. Purpose
 

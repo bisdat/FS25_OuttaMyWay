@@ -1,5 +1,306 @@
 # Architecture
 
+## v4.7.77 Field World / Chessboard Architecture Consolidation — normative precedence
+
+**Status:** candidate architecture for owner canonicalisation.  
+**Implementation baseline:** owner-declared canonical v4.7.76.  
+**Decision:** D-0142.
+
+This section consolidates the architecture discovered after v4.7.76. **Where later historical text in this document conflicts with this consolidation, this section governs.** Historical mechanisms remain evidence and implementation donors only where explicitly preserved; they do not retain architectural authority merely because v4.7.76 implements them.
+
+Canonical architecture is authoritative working knowledge, not a claim of immutability. Reality may later disprove or refine it. Implementation must build from the current canonical architecture until such evidence is consolidated.
+
+### 0.1 Governing information and authority flow
+
+```text
+Reality
+  ↓
+Observation
+  ↓
+Situation Assessment
+  ↓
+Operational Picture Knowledge
+  ↓
+Candidate Action Space
+  ↓
+Mandatory Constraints
+  ↓
+Traffic Policeman / Decision
+  ↓
+Commitment + Obligations
+  ↓
+Bounded Authority
+  ↓
+Control
+  ↓
+GIANTS
+```
+
+Architecture defines what the system must achieve. Implementation discovers how. Testing validates or disproves assumptions. No lower layer may acquire semantic authority because implementation convenience makes it easy.
+
+### 0.2 Shared Field World and worker-relative productive structure
+
+The **Field World** is shared world-space Knowledge for one Operation. Worker-specific productive structures are overlaid on that shared world; there is not a separate physical world per worker.
+
+Three spatial concepts must remain distinct:
+
+- **Field Boundary** — the agronomic polygon boundary defining the bounded Field World.
+- **Productive Headland Working Band** — the productive work band adjacent to the boundary where the native job may itself perform active work.
+- **Turning Rank** — the first productive rank immediately infield of the headland working band where native transitions/turns may consume space.
+
+Ambiguous use of “headland” must not collapse these concepts.
+
+### 0.3 Productive Regime, Rook and productive history
+
+Positive coherent native work evidence may establish a worker as **Productive**. Productive state is represented through a worker-relative **Rook structure**: the supported current productive rank/file and its work-space demand.
+
+Worker colouring records **active work positively demonstrated as performed**, not traversal, vacancy, ownership, permanent release or general traversability. Uncoloured space remains unknown unless another independent representation supplies authority.
+
+When positive active-work support ceases while the Job Episode continues, the worker becomes **Transitional** or `UNRESOLVED` according to evidence. Transitional does not mean harmless, departing or released.
+
+### 0.4 Productive succession without exact native path prediction
+
+A **Successor Rook Set** represents the bounded set of supportable productive structures that may follow the current Productive Regime. It is not a prediction of which one GIANTS will choose.
+
+A **Bounded Transitional Demand** represents spatial requirement supported during native transition between productive regimes. It must remain bounded by positive evidence and must not reconstruct an exact GIANTS turn/reposition path.
+
+Therefore:
+
+- Productive Demand and Transitional Demand are separate spatial dimensions.
+- Productive safety does not imply Refuge safety.
+- Current occupancy alone is insufficient, but old straight-to-boundary Future-Space geometry is not permanent architectural authority.
+- Exact GIANTS continuation may remain unresolved while supported demand is still sufficient for cooperative reasoning.
+
+### 0.5 Configuration-Dependent Assembly Footprint
+
+Each Physical Assembly has a **Configuration-Dependent Assembly Footprint**. Spatial fitness is always evaluated using the configuration relevant to the question.
+
+For ordinary local Refuge resolution the relevant phases may differ:
+
+- deployed productive / Rook configuration;
+- compact King manoeuvre configuration;
+- stationary Refuge configuration;
+- restoration/deployed configuration at Native Reacquisition Anchor A.
+
+Evidence that one configuration fits does not transfer automatically to another configuration or to an intermediate transition sweep.
+
+### 0.6 Native Reacquisition Anchor A and ordinary local Refuge lifecycle
+
+**Native Reacquisition Anchor A** is the positively demonstrated pre-egress pose/area where native productive continuation was established and where the deployed working configuration has already been demonstrated spatially valid.
+
+The ordinary local Refuge lifecycle is **provisionally**:
+
+```text
+ROOK at A
+  → compact
+  → KING
+  → A→R
+  → Refuge at R
+  → R→A
+  → restore
+  → ROOK / native reacquisition
+```
+
+Phase-specific fitness governs the lifecycle:
+
+- R need only fit the stationary Refuge configuration.
+- A↔R must support the compact manoeuvre/swept footprint.
+- A must support restoration of the deployed productive configuration.
+
+A King manoeuvre begins only when the configuration on which its spatial fitness depends is positively established, unless a separately represented transition configuration has independently passed the required fitness.
+
+On execution failure, Control preserves the currently demonstrated-safe occupancy/configuration unless another configuration change is independently authorised as spatially fit. Mechanical ability to unfold is not authority to unfold at an arbitrary failure location.
+
+The ordinary architecture does not require a general route planner. A bounded reversible local A↔R relation is the current provisional model. General multi-leg routing must not be introduced unless Reality demonstrates that the ordinary model is insufficient.
+
+### 0.7 King Reserve Availability
+
+**King Reserve Availability** is Knowledge maintained per worker indicating whether at least one local Refuge opportunity currently remains supportable.
+
+Architectural authority is provisionally binary:
+
+```text
+SOME
+NONE
+```
+
+Implementation may use `UNKNOWN` when evidence is incomplete; `UNKNOWN` must never be silently converted to `NONE`.
+
+King Reserve Availability:
+
+- is not an exact Refuge Candidate;
+- does not select R;
+- does not assign ownership;
+- may legitimately be `NONE` for a lone worker;
+- acquires cooperative significance when another worker becomes positively relevant.
+
+### 0.8 Cooperative relevance
+
+Mere same-field membership, proximity or visual closeness does not establish cooperative relevance.
+
+Positive relevance requires a supported spatial relationship such as:
+
+- Productive/Rook demand encroachment or intersection;
+- Transitional Demand intersection;
+- interaction with existing Committed Demand;
+- gateway/admission into a **Cooperative Constraint Region** where another participant materially affects local resolvability.
+
+Encounter/lifecycle machinery may consume this Knowledge, but the relationship must be established upstream by Situation Assessment.
+
+### 0.9 Resolution-Space Conservation
+
+**Resolution-Space Conservation** is the invariant:
+
+> Once a potentially conflicting cooperative relationship is positively supported, ordinary progression must not consume the last locally admissible means of resolving it.
+
+Before Decision, possible Refuge space is only **resolution possibility**. There is no provisional ownership.
+
+A transition from King Reserve `SOME → NONE` caused by another relevant participant's ordinary progression is an early danger signal. The Traffic Policeman may need to constrain that progression before physical collision or complete blockage occurs.
+
+Resolution-Space Conservation generalises several older observations including follower boundary protection, recovery protection and constrained-topology action-space compression.
+
+### 0.10 Conflict Serialization and admission control
+
+Multi-worker traffic does not require bespoke N-worker physical solvers.
+
+**Conflict Serialization** is Traffic Policeman reasoning that reduces concurrency by Regulating/Holding a participant whose progression can safely be deferred, allowing the remaining situation to mature into a simpler known resolvable form, resolving that form, then reassessing Reality.
+
+This is the mature form of “distill complex encounters into ones we know how to resolve.”
+
+If admitting another worker through a narrow neck, gateway or other constrained topology would destroy local resolvability, **admission control belongs upstream**. Downstream Control must not compensate by growing increasingly sophisticated routing/choreography.
+
+### 0.11 Candidate, Constraint and Decision ownership
+
+**Operational Picture Knowledge** contains current supported Knowledge only. It does not contain Candidate specifications or mandatory verdicts.
+
+**Candidate Action Space** enumerates complete supportable actions. It does not select among them and does not manufacture mandatory `PASS` verdicts.
+
+For local Refuge action a Candidate may identify, where supportable:
+
+- subject;
+- Native Reacquisition Anchor A;
+- Refuge R;
+- required configuration phases;
+- bounded A→R and R→A relation;
+- restoration requirement;
+- Purpose and expected resulting situation.
+
+**Mandatory Constraints** independently determine admissibility, including phase-specific Representation Fitness, Field World containment, transition clearance, demand compatibility, obligation compatibility and capability availability.
+
+**Traffic Policeman / Decision** selects temporary movement ordering and action. Conflict Serialization belongs here. Candidate generation must not hide alternatives merely because an older scenario-specific policy preferred one.
+
+### 0.12 Commitment, Committed Demand and bounded authority
+
+Before Decision, Productive Demand, Transitional Demand and possible Refuge space are Knowledge; none is owned merely because it exists.
+
+After Decision selects a required A↔R relation, the **Commitment** makes that selected relation durable. The required relation becomes **Committed Demand** until its obligation is discharged, superseded or invalidated according to Commitment lifecycle rules.
+
+Committed Demand is therefore **post-Decision obligation-derived spatial demand**. Active GIANTS job membership alone is not Committed Demand.
+
+The selected spatial relation must survive Operational Picture replacement and Candidate expiry through Commitment/Obligation state.
+
+**Bounded Authority** grants only the current physical phase required by the Commitment. It does not transfer Situation interpretation or route-selection authority to Control.
+
+### 0.13 Control boundary
+
+Control is a bounded physical executor.
+
+It may, when authorised:
+
+- Hold;
+- Regulate native GIANTS speed without taking route/steering ownership;
+- compact/fold/raise;
+- positively observe required configuration state;
+- execute an already-selected bounded movement relation;
+- maintain a physical condition;
+- restore where independently authorised and spatially fit;
+- relinquish to GIANTS;
+- report physical state, success and failure.
+
+Control must not know or decide:
+
+- why one Refuge is preferable;
+- HEAD_ON or leader/follower scenario classes;
+- Rook structure or King Reserve policy;
+- Transitional Demand interpretation;
+- traffic priority/yield rationale;
+- overall settlement;
+- whether a physical observation settles a Commitment obligation.
+
+### 0.14 Supersession Filter
+
+Before old implementation responsibility is mapped to a new owner, classify the old mechanism:
+
+- **PRESERVE** — the same architectural requirement/concept survives.
+- **RE-EXPRESS** — the real requirement survives but the old mechanism/concept does not.
+- **RETIRE** — the mechanism was an experimental or superseded implementation artefact.
+
+RETIRE items are not moved anywhere merely to preserve code.
+
+Current classifications:
+
+- P22 as a system/prototype — **RETIRE**; bounded physical capability donors **PRESERVE**.
+- P22 Refuge selection and bespoke return/rejoin routing — **RETIRE**.
+- HEAD_ON as governing solver/class — **RETIRE**; scenario/diagnostic description **PRESERVE**.
+- exactly-two-worker assumptions — **RETIRE**.
+- bespoke multi-worker solver — **RETIRE**; cooperative requirement **RE-EXPRESS** as Conflict Serialization/admission control.
+- leader/follower solver — **RE-EXPRESS** through demand relationships, Resolution-Space Conservation and Traffic Policeman ordering.
+- old straight-to-boundary Future-Space representation — **RE-EXPRESS** through Productive/Transitional Demand; preserve only the broader requirement for prospective spatial Knowledge.
+- irregular-field solver/special class — **RETIRE**; local topology remains Field World Knowledge.
+- ordinary general multi-leg Refuge router — **RETIRE unless Reality demonstrates necessity**.
+- Guarded Recovery — **RE-EXPRESS provisionally**; its proven protection requirement survives while the distinct mechanism is expected to retire if generic Committed-Demand protection validates equivalently.
+
+### 0.15 Established, provisional and open status
+
+**Established architecture**
+
+- shared Field World with worker-relative productive structures;
+- Field Boundary / productive Headland working band / Turning Rank distinction;
+- positive productive-history colouring;
+- Productive Regime / Rook and Transitional separation;
+- Successor Rook Set rather than exact turn-path prediction;
+- Productive Demand and Transitional Demand separation;
+- Configuration-Dependent Assembly Footprint;
+- positive cooperative relevance;
+- King Reserve as resolution opportunity rather than ownership;
+- Resolution-Space Conservation;
+- Conflict Serialization;
+- upstream admission control;
+- Candidate → Constraints → Decision → Commitment → Bounded Authority → Control;
+- Control as bounded executor;
+- supersession-before-migration discipline.
+
+**Provisional architecture**
+
+- ordinary local Refuge lifecycle A→R→A;
+- one reversible local King relation is normally sufficient;
+- King Reserve production authority is fundamentally SOME/NONE;
+- A is approximately the egress-origin pose/area where productive continuation and deployed configuration were positively demonstrated.
+
+**Open hypotheses — not implementation permission**
+
+- generic Committed-Demand protection will completely subsume and retire Guarded Recovery;
+- general multi-leg Refuge routing will never be required.
+
+### 0.16 First implementation objective
+
+The first implementation build after this architecture is canonicalised is **Operational Picture Knowledge Foundation**.
+
+It introduces the coherent production-intent Knowledge layer:
+
+1. Productive Regime / Rook.
+2. Positive productive-history colouring.
+3. Configuration-dependent footprint Knowledge.
+4. Successor Rook Set.
+5. Bounded Transitional Demand.
+6. King Reserve Availability.
+7. Positive cooperative relevance.
+8. Resolution-Space state.
+
+Temporary structured logging/shadow comparison is part of the validation contract. The architecture implementation itself is not a prototype. During this first build, newly introduced chessboard Knowledge has no Candidate, Decision, Commitment, Bounded Authority or Control authority. Promotion follows validation against Reality.
+
+
+
 ## Field World Equivalence Authority
 
 A Field World is the experienced contiguous agronomic workspace represented by one or more immutable Job-Seeded Field World Snapshots. Exact sampled-boundary equality is not required: GIANTS may return seed-dependent polygon representations for the same workspace. Player-facing field labels, farmland identity, seed position and exact fingerprints remain evidence or locators; none independently governs Field World or Operation identity.
@@ -130,15 +431,18 @@ A restarted or replacement job is independently admitted even when the assembly,
 
 The field polygon defines the bounded Field World for one Operation. OuttaMyWay does not assume responsibility for arbitrary external navigation or obstacles.
 
-Full-Envelope Field Containment remains mandatory: the complete represented assembly and its relevant movement/configuration sweep must remain within the field polygon for any OuttaMyWay-authorised repositioning.
+Full-Envelope Field Containment remains mandatory: the complete represented assembly and its phase-relevant movement/configuration sweep must remain within the field polygon for any OuttaMyWay-authorised repositioning.
 
-While any worker remains active, intra-field space is not permanently released. Situation Assessment may support only:
+While any worker remains active, intra-field space is not permanently released. Situation Assessment may support:
 
-- **Committed Demand** — space required by current admitted continuation;
-- **Potential Demand** — space plausibly required by a future local continuation;
+- **Productive Demand** — spatial demand positively supported by the current Productive Regime/Rook and bounded productive succession;
+- **Transitional Demand** — bounded spatial demand positively supported while a continuing worker is between productive regimes;
+- **Potential Demand** — bounded possibility not yet strong enough to become current Productive/Transitional/Committed authority;
 - **Temporary Slack** — space not currently demanded but not permanently relinquished.
 
-Historical coverage, current vacancy or completion of one pass cannot establish permanent release.
+**Committed Demand** is different: it is created after Decision when a Commitment makes a selected required relation durable, for example a selected local Refuge A↔R relation. Active Job Episode membership alone is not Committed Demand.
+
+Historical coverage, current vacancy or completion of one pass cannot establish permanent release. Positive productive-history colouring records demonstrated work only and does not itself establish Refuge safety or general traversability.
 
 ## 5. Replacement-core information flow
 
@@ -234,23 +538,23 @@ Only exhaustion of the complete currently supportable autonomous Traffic Policem
 
 Temporary roles may transfer inside one Commitment when evidence shows real reduction/settlement of unresolved obligations or materially improved admissible capability. Repeatedly transferring Hold/unknown intent without reducing the Encounter's unresolved obligations is **Revelation Oscillation** and is not architectural progress.
 
-### Guarded recovery, native-continuation restoration and alternating protection
+### Committed resolution-space protection and native reacquisition
 
-When OuttaMyWay materially displaces a participant, the displacement creates a recovery responsibility. Where current traffic obligations permit it, **Native Continuation Restoration** returns the displaced assembly toward a supportable state derived from its positively observed pre-intervention continuation context before unrestricted GIANTS handback. The retained **Rejoin Anchor** is a recovery reference rather than an exact-pose mandate: OuttaMyWay reverses enough of its own disturbance to support native continuation but does not reconstruct GIANTS' exact route.
+When OuttaMyWay materially displaces a participant, the resulting Commitment owns the obligation to preserve and complete the selected recovery relation before unrestricted native reacquisition can settle that responsibility.
 
-Recovery need not wait for certainty about every future GIANTS manoeuvre. Under **Guarded Recovery**, Decision may authorise ingress while another participant's continuing intent remains uncertain only when the recovery Action Space is presently supportable and that uncertainty remains affordable because sufficient protective authority is retained. Once authorised, the active recovery Action Space becomes Committed Demand. Traffic Policeman continues to assess the other participant and preserves the least-disruptive compatible behaviour: Observe while its revealed demand remains compatible, Regulate when developing native movement begins to threaten the committed recovery, and Hold when no positive native progression can preserve it. Physical passage, present recession or elapsed refuge dwell does not independently authorise recovery.
+The current architecture protects the **selected Committed Demand** rather than requiring an independent recovery-specific traffic mechanism. Situation Assessment continually compares relevant Productive and Transitional Demand with that Committed Demand; Traffic Policeman may Observe, Regulate or Hold threatening participants according to the normal preference/constraint contracts. This applies to any number of cooperatively relevant workers and does not give Control authority to interpret the traffic situation.
 
-While that Guarded Recovery remains under OuttaMyWay recovery responsibility, Situation Assessment may represent the recovering participant's temporarily reduced tolerance for unrestricted surrounding movement as **Vulnerable Space**. Vulnerable Space is a derived protection representation around the active recovery obligation, not Current Space, a permanent clearance envelope or a claim of physical occupancy. Its geometry is not fixed by architecture. It exists only for the vulnerable recovery interval and must not suppress ordinary compatible proximity after that interval ends.
+The historical name **Guarded Recovery** is retained only as compatibility evidence for the proven requirement that an admitted recovery opportunity must remain protected while Reality evolves. D-0142 classifies the distinct mechanism as **RE-EXPRESS** and records the open hypothesis that ordinary Committed-Demand protection will fully subsume it. Until that equivalence is validated, implementation may retain old behaviour as bounded compatibility machinery, but architecture must not create new Guarded-Recovery-specific concepts, geometry or routing authority.
 
-Situation Assessment may represent the other Encounter participant's presently revealed native continuation as a coarse **Convergent Projection**. The projection is directional evidence of developing native continuation, not exact GIANTS route reconstruction and not a fixed-distance/TCPA/DCPA prediction horizon. Because Guarded Recovery already occurs inside an admitted local Encounter/Refuge Region context, architecture does not add an independent map-wide range gate. When Convergent Projection intersects Vulnerable Space, unrestricted continuation is positively consuming Action Space that Traffic Policeman must preserve for the recovery; `CONTINUE_OBSERVATION` is exhausted. This evidence does not directly command Hold: Decision still prefers bounded Regulation while positively supportable non-zero native progression can preserve the recovery and reaches Hold only under the existing Hold admissibility/exhaustion contract.
+Historical D-0122/D-0123 terminology remains traceable as evidence: **Native Continuation Restoration**, **Rejoin Anchor**, **Vulnerable Space**, **Convergent Projection**, **Protected Progress Alternation** and **Expedient Manoeuvre Execution** described requirements/mechanisms that informed D-0142. Their appearance here does not preserve them as independent governing architecture. The recovery-protection requirement is re-expressed through selected Committed Demand, ordinary Situation Assessment and Traffic Policeman reasoning; physical decisiveness remains a bounded Control principle.
 
-The heightened Guarded-Recovery vulnerability expires when positive evidence under the existing Native Handover/restoration contract establishes that GIANTS has fully reacquired native authority over the recovering participant. This is not Encounter or Commitment settlement. Ordinary cooperative Traffic Policeman assessment continues, and Protected Progress Alternation may later reverse the temporary roles as Reality develops.
+**Native Reacquisition Anchor A** supersedes production promotion of the old Rejoin Anchor as a routing primitive. A is the positively demonstrated pre-egress pose/area where productive continuation and deployed configuration were already valid. The old Rejoin Anchor remains historical evidence terminology.
 
-Temporary movement priority can therefore alternate within one continuing Commitment. **Protected Progress Alternation** permits a former Progress participant to be Regulated or Held while an intervention-created recovery obligation completes, and later permits priority to change again as Reality evolves. This is not a one-worker-at-a-time controller: concurrent movement remains preferred wherever Current/Future/Committed/Potential Demand is mutually compatible. Alternation that merely swaps blockage/uncertainty without reducing obligations remains Revelation Oscillation.
+Native reacquisition is settled from positive Observation/Assessment evidence after physical restoration and GIANTS handback. Control reports physical facts; Commitment determines whether those facts discharge the recovery/native-reacquisition obligation.
 
-Once a bounded OuttaMyWay Manoeuvre Leg has been authorised, **Expedient Manoeuvre Execution** requires Control to execute it at the greatest speed positively supportable by the current geometry, configuration, transition sweep and proven capability. Minimum Necessary Authority constrains the scope and duration of OuttaMyWay ownership; it does not require unnecessarily slow execution that prolongs exposure to changing traffic Reality. No numeric speed literal is architectural authority.
+Temporary movement priority may still alternate as required by Reality, but this is ordinary Traffic Policeman reassessment and Conflict Serialization, not scripted one-worker-at-a-time choreography. Concurrent compatible movement remains preferred.
 
-Mechanical GIANTS continuation after handback does not itself discharge the traffic Commitment. Observation continues until Durable Separation is positively supported relative to outstanding obligations and credible Return/Encounter Recurrence Potential.
+An already-authorised bounded manoeuvre should be executed decisively within current proven physical capability. No numeric speed literal is architectural authority.
 
 ### Demonstrated Traversability as bounded admissibility evidence
 

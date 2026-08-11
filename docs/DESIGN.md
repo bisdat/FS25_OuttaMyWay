@@ -2,9 +2,9 @@
 
 > **Authority:** Replacement-core design boundary
 >
-> **Currency:** v4.7.76 canonical candidate; owner-declared canonical v4.7.49 remains the baseline pending declaration
+> **Currency:** v4.7.77 D-0142 architecture candidate; owner-declared canonical v4.7.76 is the implementation baseline
 >
-> **Implementation status:** owner-declared v4.7.49 remains canonical. Non-canonical D-0140 aligns the bounded live implementation to the documented responsibilities: Runtime-owned orchestration, Situation-owned semantics, central Control dispatch and P22 as capability executor. D-0124–D-0133 actuation is shadow-only; bounded D-0123 remains live through the aligned chain; general production Control remains disabled.
+> **Implementation status:** v4.7.77 changes architecture/documentation only. The v4.7.76 runtime remains behaviourally unchanged and contains legacy P22/head-on/follower/Guarded-Recovery mechanisms pending D-0142 alignment.
 
 ## Purpose
 
@@ -15,15 +15,17 @@ The replacement core is designed around explicit responsibility rather than scen
 ## Architectural shape
 
 ```text
-Observation
+Reality
+→ Observation
 → Situation Assessment
-→ Operational Picture
+→ Operational Picture Knowledge
 → Candidate Action Space
-→ mandatory constraint and composition validation
-→ Decision
-→ Commitment
-→ bounded Control
-→ Outcome Observation
+→ Mandatory Constraints
+→ Traffic Policeman / Decision
+→ Commitment + Obligations
+→ Bounded Authority
+→ Control
+→ GIANTS / Outcome Observation
 ```
 
 ## Component responsibilities
@@ -33,58 +35,81 @@ Observation
 - sample Reality;
 - retain source, timestamp and provenance;
 - expose uncertainty;
-- report Control outcomes.
+- report raw physical/Control outcomes.
 
-Observation does not interpret operational meaning.
+Observation does not assign Productive/Transitional meaning or traffic policy.
 
 ### Situation Assessment
 
-- maintain identity and relevance;
-- construct Current and bounded Future Space;
-- assess Committed Demand, Potential Demand and Temporary Slack;
-- evaluate Representation Fitness;
-- publish constraints, uncertainty and evidence gaps.
+- maintain Field World identity, participation and positive cooperative relevance;
+- establish Productive Regime / Rook Knowledge;
+- maintain positive productive-history colouring;
+- derive Successor Rook Set and bounded Transitional Demand;
+- evaluate configuration/phase-specific Representation Fitness;
+- maintain King Reserve Availability and Resolution-Space state;
+- publish uncertainty and evidence gaps.
 
 Situation Assessment produces Knowledge only.
 
+### Operational Picture Knowledge
+
+- publish immutable current supported Knowledge and provenance;
+- contain no Candidate specifications or mandatory verdicts.
+
 ### Encounter Registry
 
-- owns active and terminal Encounter identity;
-- binds each Encounter to one Operation, interaction reference and Job Episode signature;
-- retains active identity when positive evidence is temporarily absent;
-- terminates only from explicit lifecycle evidence;
-- preserves terminal history and prevents restart from reopening it.
+- own active and terminal Encounter identity where Encounter lifecycle remains useful;
+- bind each Encounter to current Operation/interactions/Job Episodes;
+- terminate only from supported lifecycle evidence.
 
-The Encounter Registry does not prove same-Episode clearance, select a strategy or actuate vehicles.
+Encounter is lifecycle infrastructure, not a head-on/follower resolution class.
 
-### Decision
+### Candidate Action Space
 
-- determine whether augmentation is required;
-- construct the complete supportable Candidate Action Space;
-- apply mandatory architectural constraints;
-- validate Effective Actuation Composition;
-- create, maintain, revise or settle Commitments.
+- enumerate complete supportable actions from Operational Picture Knowledge;
+- represent exact bounded A↔R opportunities only where Knowledge supports them;
+- identify Purpose/evidence/preconditions/invalidation without selecting among alternatives;
+- never manufacture mandatory `PASS` verdicts.
 
-Decision does not actuate vehicles.
+### Mandatory Constraints
 
-### Commitment
+- independently evaluate Field World containment;
+- evaluate phase-specific representation and transition fitness;
+- evaluate Productive/Transitional/Committed Demand compatibility;
+- evaluate obligation/capability/authority composition;
+- return `PASS`, `FAIL` or `UNRESOLVED` without optimisation.
 
-- preserve continuing objective and Governing Basis;
-- own the lifecycle state;
-- own the Obligation Set;
-- own objective-progress actuation authority for the selected assembly;
-- preserve evidence contracts, capability reservations and terminal cause;
-- prevent capability completion from being mistaken for terminal completion.
+### Traffic Policeman / Decision
+
+- determine whether augmentation/admission is required;
+- select among admissible Candidate Actions;
+- own temporary movement ordering;
+- use Conflict Serialization to reduce concurrent complexity;
+- refuse/adapt admission where progression would destroy local resolvability.
+
+Decision does not plan routes or actuate vehicles.
+
+### Commitment + Obligations
+
+- preserve Governing Basis and continuing purpose;
+- own lifecycle and Obligation Set;
+- make the selected resolution relation durable;
+- publish post-Decision Committed Demand;
+- own objective-progress actuation authority;
+- determine lifecycle meaning from physical outcomes.
+
+### Bounded Authority
+
+- specify the exact currently permitted physical phase/manoeuvre;
+- expire/revalidate according to Commitment and current Reality.
 
 ### Control
 
-- accept only bounded capability requests;
-- validate current authority and composition;
-- execute the requested capability;
-- report physical outcomes;
-- reconcile and release owned temporary effects.
+- accept only bounded physical requests;
+- Hold, Regulate native GIANTS speed, compact/restore, execute selected bounded displacement and relinquish;
+- report physical outcomes.
 
-Control does not choose roles, strategies, refuge policy or terminal dispositions.
+Control does not select Refuge, infer HEAD_ON/follower classes, interpret Rook/King/Transitional Demand or settle Commitments.
 
 ## Commitment state model
 
@@ -136,7 +161,7 @@ Representation is action-specific. Missing evidence may prohibit one action with
 
 ## Candidate policy
 
-Decision evaluates mandatory viability before preference. A lower-preference candidate remains visible when it is the only clear supportable option; the opposite lateral side, alternate Yield participant or reverse direction is not excluded merely because another candidate is normally cheaper.
+Candidate generation exposes every complete supportable action from current Knowledge. Mandatory Constraints evaluate viability independently before Decision preference. A lower-preference candidate remains visible when it is the only supportable option; an alternate subject, side or direction is not excluded merely because an older scenario solver preferred another.
 
 For the Traffic Policeman primary-resolution responsibility, Decision applies this strict sequential preference after mandatory gates:
 
@@ -167,19 +192,28 @@ Reverse remains architecturally available but unproven. No fixed prototype speed
 
 ## Native handover
 
-OuttaMyWay does not own exact lane reconstruction or GIANTS route recreation. Where OuttaMyWay has materially displaced a worker, however, it owns responsible reversal of that disturbance before unrestricted handback when current traffic obligations permit it. Native Continuation Restoration uses the positively observed pre-egress continuation context as a Rejoin Anchor/reference; current evidence does not require exact position or heading replay.
+OuttaMyWay does not own exact lane reconstruction or GIANTS route recreation.
 
-It owns:
+When OuttaMyWay materially displaces a worker under the ordinary local Refuge model, the Commitment owns restoration toward **Native Reacquisition Anchor A**, the positively demonstrated pre-egress pose/area where productive continuation and the deployed configuration were already valid.
 
-- clearing the conflict;
-- preserving/protecting any authorised recovery Action Space as Committed Demand;
-- restoring a supportable native continuation context after its own material displacement;
-- leaving the assembly in a stable, representable and controllable state;
-- releasing temporary authority only when current traffic evidence supports handback;
-- observing native continuation until Durable Separation supports Commitment discharge;
-- completing terminal obligations.
+The provisional ordinary sequence is:
 
-GIANTS owns precise route reacquisition, exact lane execution and agronomic work order once unrestricted authority is returned.
+```text
+A (ROOK)
+→ compact
+→ KING
+→ A→R
+→ Hold at R
+→ R→A
+→ restore
+→ GIANTS native reacquisition
+```
+
+The selected A↔R relation is post-Decision **Committed Demand** until the corresponding obligation is discharged or invalidated.
+
+Control owns only authorised physical phases. Observation/Assessment determine whether GIANTS has positively reacquired native continuation; Commitment determines whether that evidence settles the obligation.
+
+Historical Native Continuation Restoration / Rejoin Anchor / Guarded Recovery terminology remains evidence provenance, not permission to create independent routing or recovery-policy subsystems.
 
 ## Player boundary
 

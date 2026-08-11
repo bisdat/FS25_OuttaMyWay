@@ -1,3 +1,88 @@
+# v4.7.77 Field World / Chessboard Architecture Consolidation
+
+**Decision:** D-0142  
+**Status:** canonical-candidate architecture; owner-declared v4.7.76 remains implementation baseline until owner canonicalisation of v4.7.77.
+
+## Accepted root / governing concepts
+
+### Productive Regime / Rook
+Positive Situation Knowledge that a worker is actively performing productive work, represented through a worker-relative productive rank/file structure. Rook is a spatial/productive abstraction, not a route command.
+
+### Positive Productive History
+Worker-specific history of active work positively demonstrated as performed. Traversal alone does not colour space; uncoloured space remains unknown.
+
+### Successor Rook Set
+The bounded set of supportable next productive structures. It describes productive succession without predicting the exact GIANTS transition path.
+
+### Transitional Demand
+Bounded spatial demand positively supported while a continuing Job Episode is between Productive Regimes. It is distinct from Productive Demand and may remain unresolved where evidence is insufficient.
+
+### Configuration-Dependent Assembly Footprint
+The complete assembly footprint/sweep relevant to the current manoeuvre phase. Productive, compact manoeuvre, stationary Refuge and restoration questions may require different configuration representations.
+
+### Native Reacquisition Anchor A
+The positively demonstrated pre-egress pose/area where native productive continuation and deployed working configuration were valid. It is a restoration/reacquisition reference, not a general routing waypoint.
+
+### King Reserve Availability
+Knowledge that at least one local Refuge opportunity currently remains (`SOME` / `NONE`; implementation may expose `UNKNOWN` for incomplete evidence). It grants no exact Candidate, selection or ownership authority.
+
+### Resolution-Space Conservation
+Once a potentially conflicting cooperative relationship is supported, ordinary progression must not consume the last locally admissible means of resolving it.
+
+### Conflict Serialization
+Traffic Policeman reduction of concurrent multi-worker complexity by constraining safely deferrable progression, allowing a simpler resolvable relationship to mature, resolving that form, then reassessing Reality.
+
+### Cooperative Constraint Region
+A bounded local topology/gateway context in which another worker's admission or progression can materially affect local resolvability. Same-field presence alone is insufficient.
+
+## Accepted refinements
+
+### Field Boundary / productive Headland working band / Turning Rank
+These are separate concepts and must not be collapsed by ambiguous “headland” terminology.
+
+### Productive Demand / Transitional Demand / Committed Demand separation
+Native productive and transitional demand are Situation Knowledge. Committed Demand is post-Decision demand made durable by Commitment. Active-job membership alone does not create Committed Demand.
+
+### Refuge possibility before ownership
+Before Decision, local Refuge space is resolution possibility only. Decision selects a specific bounded action; Commitment then protects the selected required relation.
+
+### Ordinary local Refuge lifecycle — provisional
+`ROOK at A → compact → KING → A→R → Refuge → R→A → restore → ROOK/native reacquisition`.
+
+R fits stationary Refuge configuration; A↔R fits compact manoeuvre/swept footprint; A supports restoration of deployed working configuration.
+
+### Configuration Phase Boundary
+A King move begins only after the configuration on which its spatial fitness depends is positively established, unless a separately represented transition configuration is independently fit.
+
+### Configuration-Safe Failure
+Failure preserves the currently demonstrated-safe occupancy/configuration unless another configuration change is independently authorised as spatially fit.
+
+### Supersession Filter
+Old mechanisms are classified `PRESERVE`, `RE-EXPRESS` or `RETIRE` before architecture-to-code ownership mapping. RETIRE items are not migrated merely because code exists.
+
+## Superseded / re-expressed mechanisms
+
+- P22 as system/prototype — **RETIRE**; physical capability donors survive.
+- P22 Refuge selection and bespoke rejoin routing — **RETIRE**.
+- HEAD_ON governing solver/class — **RETIRE**; scenario description survives.
+- exactly-two-worker assumption — **RETIRE**.
+- bespoke multi-worker solver — **RETIRE**; requirement re-expressed as Conflict Serialization/admission control.
+- leader/follower solver — **RE-EXPRESS** through demand relationships and Resolution-Space Conservation.
+- current straight-to-boundary Future-Space representation — **RE-EXPRESS** through Productive/Transitional Demand while preserving the broader need for prospective spatial Knowledge.
+- irregular-field solver/class — **RETIRE**; topology remains Field World Knowledge.
+- ordinary general multi-leg Refuge router — **RETIRE unless Reality proves required**.
+- Guarded Recovery — **RE-EXPRESS provisionally**; proven protection requirement survives while generic Committed-Demand protection is validated.
+
+## Open hypotheses
+
+- Generic Committed-Demand protection fully subsumes Guarded Recovery and permits the distinct mechanism to retire.
+- General multi-leg Refuge routing is never required for ordinary local Refuge.
+
+## Implementation consequence
+
+The first implementation build is the **Operational Picture Knowledge Foundation**. It introduces production-intent Knowledge contracts with temporary non-authoritative diagnostics. It must not alter Candidate, Decision, Commitment, Bounded Authority or Control until validated.
+
+
 # D-0141 follower alignment clarification
 
 ## Current Adjacent Following

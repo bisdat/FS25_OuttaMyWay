@@ -43,13 +43,18 @@
 - Blockage is not Job Episode termination.
 - Job completion ends ordinary cooperation, not necessarily physical relevance.
 - No intra-field space is permanently released while workers remain active.
-- Distinguish Committed Demand, Potential Demand and Temporary Slack.
-- Passage Corridor is not Continuation Corridor.
+- Distinguish Productive Demand, Transitional Demand, Potential Demand, Temporary Slack and post-Decision Committed Demand.
+- Positive productive history records work, not traversal or permanent release.
+- Productive safety is not Refuge safety.
 - Current clearance is not Safe Release.
-- A refuge is provisional until terminal settlement.
+- Before Decision, Refuge space is resolution possibility and has no owner.
+- Once a conflicting relationship is supported, ordinary progression must conserve the last local resolution opportunity.
+- Complexity is reduced by admission control and Conflict Serialization upstream, not increasingly sophisticated Control routing downstream.
 
 ## Scope and implementation
 
+- Apply Preserve / Re-express / Retire before moving old code.
+- A prototype or scenario mechanism has no right to survive merely because it is implemented.
 - Respect native GIANTS AI.
 - OuttaMyWay augments; it does not replace route ownership.
 - General route substitution is outside the replacement core.

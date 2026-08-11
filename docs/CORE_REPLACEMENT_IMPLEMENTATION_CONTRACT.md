@@ -12,12 +12,12 @@ Archive donor mechanisms must be extracted into focused active modules; archived
 
 # FS25_OuttaMyWay Core Replacement Implementation Contract
 
-> **Authority source:** owner-declared canonical v4.6.78, as explicitly extended by accepted ADR-0021  
-> **Canonical ZIP SHA-256:** `bf7ec80f5cfc7c2690cf0f599fd3acf82fd3df6b197acb1dd7a5950f7b6da9e5`  
-> **Canonical Git commit:** `a99834bba898a876fcb8315aeb5741833b099d85`  
-> **Repository files:** 174  
-> **Contract status:** accepted implementation contract; v4.7.0 bootstrap implementation  
-> **Architecture authority:** current `docs/ARCHITECTURE.md`, ADR-0019, ADR-0021 and their normative companion contracts
+> **Implementation baseline:** owner-declared canonical v4.7.76  
+> **Canonical ZIP SHA-256:** `7cc2db3fcd02ca7979acfafe81f7765344a70275a11de9754594bde8fed4aeaf`  
+> **Canonical Git commit:** `4758a3428f9bcba23093f60edfd0087bb87843ab`  
+> **Repository files:** 305  
+> **Contract status:** D-0142-aligned implementation contract for work after v4.7.77 canonicalisation  
+> **Architecture authority:** current `docs/ARCHITECTURE.md` including D-0142 and its normative companion contracts
 
 ## 1. Purpose
 
@@ -25,7 +25,7 @@ This contract defines how the accepted replacement-core architecture will be imp
 
 The replacement programme is governed by:
 
-> **Greenfield architecture kernel, brownfield empirical mechanisms.**
+> **Canonical architecture first; brownfield code is empirical/capability evidence, not conceptual authority.**
 
 The reasoning and lifecycle core will be written afresh from canonical contracts. Existing code may supply only verified observations, GIANTS integration techniques, physical-control mechanisms, diagnostic infrastructure and failure evidence.
 
@@ -37,34 +37,36 @@ The existing procedural core is not:
 - a source of lifecycle meaning;
 - a template to be incrementally surrounded by replacement logic.
 
-## 2. Closed architecture rule
+## 2. Canonical architecture implementation rule
 
-The accepted replacement-core architecture is closed for implementation. Canonical v4.6.78 remains its foundation, with only explicit owner-accepted ADR amendments permitted; as of canonical v4.7.14, ADR-0021 is the sole such amendment and is implemented and live-validated for the accepted Field World cases.
+Implementation begins from the current owner-declared canonical artefact and the current canonical architecture. D-0142 is the governing architecture for the next alignment increment.
 
-Implementation must not introduce:
+Implementation must not:
 
-- a fourth non-terminal Commitment state;
-- another terminal disposition;
-- another obligation settlement mode;
-- another internal obligation-owner class;
-- a second progress-actuation owner;
-- a new route-ownership or route-substitution responsibility;
-- a fixture-specific exception to a mandatory constraint;
-- an implicit completion, expiry or cleanup path;
-- a new architectural concept inferred from legacy behaviour.
+- create a prototype/scenario controller where a canonical concept already exists;
+- migrate RETIRE-class mechanisms merely because code exists;
+- let Observation assign Situation/Decision meaning;
+- let Operational Picture carry Candidate specifications or mandatory verdicts;
+- let Candidate manufacture mandatory `PASS` results;
+- let Control select Refuge, infer traffic classes or settle Commitment semantics;
+- invent an exact GIANTS native route where architecture requires only bounded productive/transitional demand;
+- add a bespoke N-worker solver instead of using Resolution-Space Conservation, Conflict Serialization and upstream admission control;
+- convert `UNKNOWN` into negative authority;
+- add fixture-specific exceptions to mandatory constraints.
 
-Implementation may discover only how to realise already-canonical responsibilities through data structures, GIANTS adapters, physical capabilities, thresholds and evidence collection.
+The first implementation build after D-0142 canonicalisation is **Operational Picture Knowledge Foundation**. It must implement the intended production Knowledge contracts directly, with temporary validation diagnostics only. Newly introduced D-0142 Knowledge remains non-authoritative for Candidate, Decision, Commitment, Bounded Authority and Control until live evidence supports promotion.
 
-### Stop condition
+### Supersession stop condition
 
-When implementation evidence appears incompatible with the current accepted architecture:
+Before modifying old scenario/prototype code, classify the mechanism as `PRESERVE`, `RE-EXPRESS` or `RETIRE`.
+
+When implementation evidence appears incompatible with the current architecture:
 
 1. do not add a special case;
-2. do not infer a new rule from old code;
-3. do not weaken a mandatory verdict;
-4. preserve the evidence;
-5. classify the issue as an apparent architecture contradiction;
-6. stop the affected implementation path for explicit owner review.
+2. do not promote an old mechanism automatically;
+3. preserve the evidence;
+4. classify the issue as an apparent architecture contradiction;
+5. stop the affected implementation path for explicit architecture review.
 
 ## 3. Source inspection result
 

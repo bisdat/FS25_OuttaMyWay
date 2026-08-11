@@ -16,7 +16,7 @@ Each record must identify:
 | Capability | requested bounded Control capability |
 | Expected effect | predicted physical and operational consequence |
 | Evidence basis | Knowledge supporting the candidate |
-| Representation Fitness | purpose-specific fitness and provenance |
+| Representation Fitness requirement/evidence reference | the Situation/Operational-Picture fitness evidence required by this action; Candidate does not manufacture the verdict |
 | Preconditions | facts that must remain true before dispatch |
 | Invalidation conditions | facts that revoke admissibility |
 | Reversibility | whether and how effects may be withdrawn |
@@ -38,7 +38,7 @@ The Action Space may include, where supported:
 - `HANDOVER_TO_GIANTS`;
 - `ESCALATE`.
 
-The list is not a procedural Control ladder. Generators publish candidates; Decision selects among candidates that survive all mandatory constraints. Candidate generators populate/represent `Purpose` from supplied governing context; they do not invent the governing objective or own preference policy.
+The list is not a procedural Control ladder. Generators publish candidates from sealed Operational Picture Knowledge; Mandatory Constraints independently evaluate them; Decision selects among candidates that survive those gates. Candidate generators populate/represent `Purpose` from supplied governing context; they do not invent the governing objective, promote Situation Knowledge or own preference policy.
 
 Within an active Traffic Policeman primary-resolution Decision, the surviving classes are then evaluated through the strict preference sequence:
 
@@ -78,8 +78,9 @@ At minimum, applicable candidates are evaluated against:
 - Representation Fitness;
 - Control capability availability;
 - Continuing Intent Priority;
+- Productive/Transitional/Committed Demand compatibility and Resolution-Space Conservation;
 - progress preservation and `never hold all`;
-- responsibility relations, including Follower Owns Closure;
+- current responsibility/role relations without scenario-specific ownership shortcuts;
 - current Obligation compatibility;
 - Commitment Preconditions;
 - authority conflicts and Effective Actuation Composition;

@@ -2,58 +2,78 @@
 
 > **Authority:** Normative replacement-core responsibility and lifecycle map
 >
-> **Currency:** D-0140 architecture/code alignment; owner-declared canonical v4.7.49 is the baseline
+> **Currency:** D-0142 Field World / Chessboard Architecture Consolidation; owner-declared canonical v4.7.76 is the implementation baseline
 >
-> **Implementation status:** owner-declared v4.7.49 remains canonical. Non-canonical D-0140 alignment implements the bounded live chain through Runtime → Situation → Candidate → Decision → Commitment → central Control Dispatcher → P22; follower/committed-transition experimental authority is reset to shadow and general production Control remains disabled.
+> **Implementation status:** v4.7.77 is architecture/documentation only. The v4.7.76 runtime remains the implementation baseline and is not claimed to conform yet to D-0142. P22/head-on/follower/Guarded-Recovery paths are legacy implementation evidence pending alignment.
 
 ## 1. Closed-loop responsibility flow
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │                           REALITY                           │
-│ workers, assemblies, field, motion, configuration, player, │
-│ GIANTS Job Episodes and realised Control effects           │
+│ GIANTS jobs, assemblies, Field World, motion/configuration │
+│ and realised physical effects                              │
 └──────────────────────────────┬──────────────────────────────┘
                                │ sampled
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                         OBSERVATION                         │
-│ sourced facts, timestamps, provenance and uncertainty      │
+│ raw facts │ time │ source │ provenance │ uncertainty       │
 └──────────────────────────────┬──────────────────────────────┘
                                │ interpreted
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                    SITUATION ASSESSMENT                     │
-│ identity │ participation │ relevance │ representation      │
-│ Current/Future Space │ demand │ constraints │ outcomes     │
+│ Field World │ Productive Regime/Rook │ productive history  │
+│ Successor Rook Set │ Transitional Demand │ configuration RF │
+│ relevance │ King Reserve │ Resolution-Space state          │
 └──────────────────────────────┬──────────────────────────────┘
                                │ publishes Knowledge
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    OPERATIONAL PICTURE                      │
-│ current supported interpretation; no action selection      │
+│               OPERATIONAL PICTURE KNOWLEDGE                 │
+│ immutable current supported interpretation + provenance    │
+│ no Candidate specifications or mandatory verdicts          │
 └──────────────────────────────┬──────────────────────────────┘
-                               │ evaluated
+                               │ enumerated
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                          DECISION                           │
-│ complete supportable Candidate Action Space                │
-│ mandatory constraints + Effective Actuation Composition    │
-│ maintain / revise / create / settle Commitment             │
+│                  CANDIDATE ACTION SPACE                     │
+│ complete supportable actions; no selection or PASS authoring│
 └──────────────────────────────┬──────────────────────────────┘
-                               │ grants bounded authority
+                               │ independently gated
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                        COMMITMENT                           │
-│ objective │ Governing Basis │ lifecycle │ Obligation Set   │
-│ progress owner │ reservations │ evidence contracts         │
+│                  MANDATORY CONSTRAINTS                      │
+│ phase fitness │ containment │ demand/obligation compatibility│
+│ capability │ authority composition                         │
 └──────────────────────────────┬──────────────────────────────┘
-                               │ requests capability
+                               │ admissible alternatives
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  TRAFFIC POLICEMAN / DECISION               │
+│ temporary ordering │ Conflict Serialization │ admission     │
+│ selects action; does not actuate                            │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ creates/revises
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 COMMITMENT + OBLIGATIONS                    │
+│ Governing Basis │ durable selected relation │ Committed Demand│
+│ lifecycle │ obligation ownership                           │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ grants exact phase
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    BOUNDED AUTHORITY                        │
+│ exact permitted physical phase/manoeuvre                   │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ executed
                                ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                          CONTROL                            │
-│ validates current authority and composition                │
-│ executes bounded capability; reports physical outcome      │
+│ Hold │ Regulate │ compact/restore │ bounded displacement   │
+│ relinquish │ report physical outcome                       │
 └──────────────────────────────┬──────────────────────────────┘
                                │ observed
                                └───────────────────────────────↺
