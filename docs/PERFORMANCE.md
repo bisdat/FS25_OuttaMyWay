@@ -1,3 +1,11 @@
+## v4.7.98 performance disposition — remove obsolete continuous evidence work, add nothing in its place
+
+D-0144 explicitly removes the live runtime scheduling of the former chessboard/productive-history and Refuge-qualification diagnostic pipelines. Their source files remain historical evidence. This is a simplification/performance hygiene change, not a replacement algorithm.
+
+The bounded Cooperative Passage path continues to consume bootstrap-cached `physicalSpaceEvidence` already present in Situation Assessment. v4.7.98 adds no new footprint discovery, polygon decomposition, sweep construction, clearance search or continuous geometry maintenance.
+
+Do not reintroduce continuous King/Refuge or Productive-History geometry work without a newly established architectural responsibility.
+
 # Performance Notes
 
 ## v4.7.95 performance disposition — continuous King path retired

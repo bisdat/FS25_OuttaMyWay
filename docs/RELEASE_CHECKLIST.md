@@ -1,3 +1,15 @@
+## v4.7.98 candidate-scope acceptance gate
+
+- [ ] Exact baseline is owner-declared canonical v4.7.95.
+- [ ] Successful v4.7.97 Cooperative Passage implementation is reapplied over the canonical baseline, not treated as a new canonical source.
+- [ ] Cooperative Passage admission calibration, physical geometry, Control sequence and D-0141 follower Regulation are unchanged from live-successful v4.7.97.
+- [ ] `DemonstratedProductiveCoverageProbe.lua`, `ProductiveCoverageResidualProbe.lua` and `RefugeQualificationShadowProbe.lua` remain present but are absent from live `scripts/main.lua`.
+- [ ] No new footprint, polygon, sweep or shape calculation is introduced.
+- [ ] D-0144 retires Rook/Successor-Rook governing prediction, chessboard/continuous Productive History, King Reserve, continuous Refuge search and headland-U-turn-specific solving.
+- [ ] Documentation prominently states Cooperative Passage Scope Boundary / incompleteness.
+- [ ] Productive/Transitional opposed support remains unresolved rather than silently broadened.
+- [ ] Python/Lua/XML/repository/package validation passes and release manifest is regenerated.
+
 # Release Checklist
 
 ## Version Audit

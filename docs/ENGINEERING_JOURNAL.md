@@ -1,3 +1,76 @@
+# 2026-08-12 — D-0144 Progressive Situational Sufficiency after first production Cooperative Passage success
+
+**Observation:** v4.7.96 reached the intended TS015 approach but did not trigger because the new Candidate leaked an unrelated generic scalar Representation Fitness requirement. v4.7.97 repaired that coupling by consuming purpose-specific fitness from existing bootstrap-cached `physicalSpaceEvidence`; no new shape calculation was introduced.
+
+**Live validation:** v4.7.97 then completed two automatic Cooperative Passages through the real production chain. The passages began at approximately 68.49 m and 69.93 m, all mandatory constraints passed, the same Job Episodes survived, and handoff released immediately with no cooldown. D-0141 follower Regulation was also active and later superseded by Cooperative Passage.
+
+**Discovery — Progressive Situational Sufficiency:** TS015 success did not require detailed future-route modelling. The useful pattern was Observe while uncertainty is harmless; Regulate when following threatens to consume Action Space; reassess as GIANTS reveals current behaviour; Reposition cooperatively once an opposed conflict is positively supportable.
+
+**Decision:** retain Productive/Transitional current state and optional Turning Rank awareness, but retire Rook/Successor-Rook governing prediction, chessboard colouring and continuous Productive History reasoning. King/Refuge/headland-U-turn-specific solving remain retired.
+
+**Implementation alignment:** preserve v4.7.97 physical/traffic behaviour and unsource only the historical Demonstrated Productive Coverage, Productive Coverage Residual and Refuge Qualification Shadow live diagnostic pipelines. Keep their files as evidence donors.
+
+**Unresolved, deliberately celebrated rather than hidden:** the final v4.7.97 convergence appeared physically close to the proven near-collinear geometry but one participant remained Transitional/`TURN_SEGMENT`, so Cooperative Passage was withheld. That is useful evidence for the current authority boundary. It is not a failed Cooperative Passage and is not permission to relabel Transitional as Productive.
+
+**Health warning:** current success is bounded to TS015 Condor/Patriot near-collinear Productive/Productive. General passage, asymmetry, other assemblies, generic negative clearance and wider regression coverage remain incomplete.
+
+# 2026-08-12 — v4.7.97 Generic Representation Gate Leakage repair
+
+## Observation
+
+The first v4.7.96 production TS015 run reached the expected near-collinear opposed Condor/Patriot geometry but Cooperative Passage did not dispatch. The live assembly diagnostics simultaneously showed populated configuration-filtered plan-view footprints from `AssemblyRepresentationCache` while the older scalar `live-representation:<worker>` records remained `STRUCTURALLY_INVALID`.
+
+## Interpretation
+
+The D-0143 Situation decision was being coupled to the wrong Representation Fitness question. The Candidate asked the generic scalar current-conflict representation to authorise a narrow empirically bounded Cooperative Passage action even though the replacement core already held the relevant current footprint/configuration evidence in Situation Assessment. This is implementation coupling drift, not a failure of D-0143 or of the physical Cooperative Passage capability.
+
+## Implementation correction
+
+Situation Assessment now reuses `physicalSpaceEvidence` already derived from the bootstrap/job-scoped `AssemblyRepresentationCache`. It performs no new shape calculation. For a supported TS015 encounter it publishes two purpose-specific fitness records scoped to `D0143_TS015_COOPERATIVE_PASSAGE_EMPIRICAL_ADMISSIBILITY`; the Candidate requires those records. Missing cached footprint evidence remains fail-closed. Generic scalar representation records are neither weakened nor relabelled.
+
+## Validation objective
+
+The next live run must show, in order, `COOPERATIVE_ASSESSMENT_SUPPORTED`, `COOPERATIVE_CANDIDATE_PUBLISHED`, a passing `COOPERATIVE_CONSTRAINT_VERDICT`, and then the existing `CONTROL-DISPATCH COOPERATIVE_ACCEPTED` marker. The physical manoeuvre itself is unchanged.
+
+---
+
+# 2026-08-12 — v4.7.96 first TS015 Cooperative Passage production vertical slice
+
+## Observe
+
+Canonical v4.7.95 / D-0143 established Cooperative Passage as the immediate production direction and retired King Reserve / continuous Refuge discovery. P23 had already demonstrated repeated Condor/Patriot near-collinear passage, same-Job restoration and immediate reuse, while the final asymmetric event established a scope boundary. The remaining task was production coupling, not further prototype discovery.
+
+## Decision
+
+Implement the smallest D-0143 vertical slice for TS015 only. Situation Assessment must own admissibility; Candidate/Decision/Commitment/Authority must remain real production owners; Control may reuse proven physical donors but may not select the manoeuvre. Unsupported geometry is withheld. No new architecture is introduced.
+
+## Implement
+
+- Added `CooperativePassageAssessment` and published its Knowledge through `OperationalPicture`.
+- Reworked live candidate support so supported TS015 Knowledge creates one joint multi-assembly `REPOSITION`, rather than the old unilateral head-on/P22 Refuge bridge.
+- Added same-picture preference-band exhaustion evidence for Observation, Regulation and in-path Hold.
+- Extended Commitment lifecycle and dispatcher for one joint purpose, two progress authorities, same-Commitment D-0141 strategy succession, and immediate positive settlement after restoration/handoff.
+- Added production `CooperativePassageControl`, sharing the existing P22 permission/drive/configuration donor surfaces. The proven physical sequence is retained under bounded TS015 calibration.
+- Added one-time local field-containment preflight for scripted target centres. This is not continuous clearance proving and does not create generic negative-clearance authority.
+- Disabled the old P22 TS015 unilateral relocation and Refuge qualification shadow probe for this objective. P23 is not sourced.
+- Failure remains fail-closed: clear drive, Hold both, attempt restoration, no blind release.
+
+## Validate
+
+Offline validation before packaging:
+
+- Python structural/conformance: **76/76 PASS**.
+- Lua behavioural: **196/196 PASS**.
+- active non-archive Lua syntax parse: **102/102 PASS**.
+
+Live validation is intentionally still open. The next test must show that production Situation/Decision/Commitment/Control activates automatically for the supported TS015 encounter, executes Cooperative Passage, hands both workers back to GIANTS, and remains available for a later fresh encounter without P23 arming or a cooldown.
+
+## Record
+
+No new discovery is claimed. v4.7.96 is implementation of canonical D-0143. The current numeric gates remain bounded calibration and the asymmetric case remains outside scope.
+
+---
+
 ## 2026-08-12 — P23 Cooperative Passage closure / D-0143 evidence
 
 ### Problem reset

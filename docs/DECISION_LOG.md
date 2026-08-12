@@ -1,3 +1,32 @@
+## D-0144 — Progressive Situational Sufficiency / Chessboard Simplification (2026-08-12)
+
+**Status:** Accepted for v4.7.98 canonical candidate; owner canonicalisation remains separate.  
+**Baseline:** owner-declared canonical v4.7.95 (`1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1`; Git `f1a3ec95d2cfd554c7c3f2715090b48e4576706b`; 305 files).
+
+**Triggering evidence:** v4.7.97 live production evidence completed two automatic TS015 Cooperative Passages through the normal Situation Assessment → Candidate → Constraints → Decision → Commitment → Control chain while preserving the same GIANTS Job Episodes and imposing no post-handoff cooldown. The same run also exercised D-0141 follower Regulation before a later opposed conflict; Cooperative Passage superseded the existing follower purpose instead of requiring a separate scenario solver. The final convergence looked physically close to the demonstrated near-collinear geometry but remained Productive/Transitional because one participant was still `TURN_SEGMENT`, so the Candidate was correctly withheld. None of the successful production passages depended on Rook/Successor-Rook reasoning, chessboard colouring, continuous Productive History, King Reserve, Refuge search or a headland-U-turn scenario class.
+
+**Decision:**
+
+1. Adopt **Progressive Situational Sufficiency**: Situation Assessment should acquire only enough positively supported current Knowledge to justify the next least-authority action. It need not construct a detailed model of future GIANTS behaviour when Observe or Regulation can preserve Action Space until Reality reveals more.
+2. Retain current **Productive / Transitional** classification as first-class Situation Knowledge. Transitional remains meaningful and must not be coerced into Productive merely to admit Cooperative Passage.
+3. Retain **Turning Rank** only as spatial Situation Knowledge that may support earlier observation/Regulation near a region where native transition can consume space. It is not a turn-direction, U-turn or successor-route predictor. v4.7.98 adds no new Turning Rank geometry calculation.
+4. Retire **Rook as a required governing productive-space structure** and retire **Successor Rook Set** from current production architecture. Historical Rook terminology remains evidence provenance only.
+5. Retire chessboard productive-history colouring and **continuous Productive History reasoning** as runtime/governing obligations. Current productive state is supported from current positive evidence; no continuous raster of demonstrated work is required for TS015 cooperation.
+6. Re-express transition-relevant spatial concern through current positive motion/configuration/demand evidence when needed. Do not replace Successor Rook with another speculative route model.
+7. Preserve **D-0141 follower observation/Regulation** because live evidence shows it remains operationally useful for preserving Action Space while a leader's native behaviour is unresolved. Regulation still cannot create passing space for an established opposed blockage.
+8. Preserve **D-0143 bounded Cooperative Passage** as the current production Reposition strategy for the demonstrated TS015 Condor/Patriot near-collinear Productive/Productive class.
+9. Reaffirm retirement of King Reserve, continuous Refuge discovery/qualification and headland-U-turn-specific solving.
+10. Remove live runtime sourcing/scheduling of `DemonstratedProductiveCoverageProbe.lua`, `ProductiveCoverageResidualProbe.lua` and `RefugeQualificationShadowProbe.lua`. Preserve those files as historical evidence donors rather than deleting empirical work.
+11. Introduce no replacement shape work. Cooperative Passage continues to consume bootstrap-cached physical/configuration evidence already present in Situation Assessment; no new footprint discovery, polygon decomposition, sweep generation or continuous clearance calculation is authorised.
+12. Make **Cooperative Passage Scope Boundary** explicit in current documentation: bounded production capability is demonstrated, but general Cooperative Passage is incomplete.
+
+**Known incomplete authority:** Productive/Transitional near-collinear opposed encounters; arbitrary asymmetric encounters; other assembly combinations; generic negative-clearance authority; and broader regression-scenario coverage. Current TS015 movement/admission literals remain calibration, not architecture.
+
+**Rationale:** The successful system did not need to understand GIANTS' next route in detail. It needed enough current Knowledge to preserve options while uncertainty existed, then enough mature conflict Knowledge to choose a supported resolution. Keeping predictive/chessboard machinery as normative simply because it was previously written would preserve complexity without an observed responsibility.
+
+**Implementation impact in v4.7.98:** reapply the live-successful v4.7.97 bounded production implementation over exact canonical v4.7.95; unsource only the three retired continuous coverage/refuge diagnostic pipelines; update architecture/documentation/provenance. No Cooperative Passage physical geometry, D-0141 Regulation policy, admission calibration or Control sequence is intentionally changed.
+
+
 ## D-0143 — Cooperative Passage Production Direction / King Retirement (2026-08-12)
 
 **Status:** Accepted for v4.7.95 canonical candidate; owner canonicalisation remains separate.  

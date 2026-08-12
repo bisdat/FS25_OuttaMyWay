@@ -1,85 +1,62 @@
-# v4.7.95 CANONICAL CANDIDATE — Cooperative Passage Production Direction
+# v4.7.98 CANONICAL CANDIDATE — Progressive Situational Sufficiency Consolidation
 
-**Owner-declared canonical baseline:** v4.7.77  
-**Canonical ZIP SHA-256:** `0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`  
-**Canonical Git:** `1742c197c21a1fb127932dcc15303dbd58515d6d`  
-**Canonical file count:** 305
+**Owner-declared canonical baseline:** v4.7.95  
+**Canonical ZIP SHA-256:** `1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1`  
+**Canonical Git commit:** `f1a3ec95d2cfd554c7c3f2715090b48e4576706b`  
+**Canonical repository files:** 305  
+**Candidate repository files:** 307 before packaging; the two additions are the production `CooperativePassageAssessment.lua` and `CooperativePassageControl.lua` introduced by the successful v4.7.97 lineage.
 
-**Candidate character:** architecture/documentation-only plus release/provenance/version identity. Runtime behaviour intentionally remains canonical v4.7.77. P23 v4.7.91-v4.7.94 is evidence lineage only.
+## Candidate character
 
-## Governing architecture
+v4.7.98 is a controlled canonicalisation/consolidation candidate. It starts from exact canonical v4.7.95, reapplies the live-successful v4.7.97 bounded TS015 implementation, and removes only live runtime sourcing for architectural machinery now explicitly retired by D-0144. It is not a general refactor.
 
-D-0143 is normative where it supersedes D-0142. The surviving D-0142 architecture remains authoritative for:
+The proven physical manoeuvre, current TS015 admission calibration, D-0141 follower Regulation, purpose-specific Representation Fitness, Candidate/Constraint/Decision/Commitment ownership, P22 physical donors and immediate GIANTS handoff are intentionally unchanged from v4.7.97.
 
-- Field World and Field Boundary / Productive Headland Working Band / Turning Rank separation;
-- Productive Regime / Rook and positive productive-history Knowledge;
-- Successor Rook Set and bounded Transitional Demand without exact GIANTS route prediction;
-- Configuration-Dependent Assembly Footprint and action-specific Representation Fitness;
-- positive cooperative relevance;
-- Resolution-Space Conservation, Conflict Serialization and upstream admission control;
-- Knowledge → Candidate → Constraints → Traffic Policeman/Decision → Commitment → Bounded Authority → Control separation;
-- post-Decision Committed Demand and strict authority ownership.
+## Live evidence carried forward
 
-D-0143 changes the resolution direction:
+The v4.7.97 TS015 run automatically admitted and completed two production Cooperative Passages, at approximately 68.49 m and 69.93 m separation. In both cases Situation Assessment supported the bounded class, the joint Candidate was published, all mandatory constraints passed, Control started, both workers passed, and the same Job Episodes were handed back with no cooldown.
 
-- **King Reserve Availability is retired** from governing production Knowledge.
-- continuous Refuge discovery/qualification is retired as an ordinary runtime obligation;
-- the provisional ordinary King `A→R→A` lifecycle is retired as the expected head-on resolver;
-- Refuge remains only a generic/historical spatial possibility requiring fresh justification if ever needed again;
-- **Configuration-Released Space** is accepted as the physical phenomenon demonstrated by P23;
-- **Cooperative Passage** is accepted as a joint Reposition Candidate strategy.
+The same run also exercised D-0141 follower Regulation before the second passage. Cooperative Passage superseded the existing follower purpose/lease under the same traffic responsibility instead of being blocked by it.
 
-## P23 closure evidence
+The final convergence was physically close to the demonstrated near-collinear geometry but remained Productive/Transitional in Situation Assessment because one worker was still `TURN_SEGMENT`. Cooperative Passage was therefore withheld. That is a known authority-envelope boundary, not permission to weaken the classification gate.
 
-The post-canonical P23 lineage deliberately tested only the Condor Endurance II / Patriot 4450 TS015 fixture:
+## D-0144 current Situation model
 
-- v4.7.91: Hold and compaction succeeded, but a `4 m forward + 6 m lateral` point-pursuit leg produced Forward-Only Waypoint Orbit. This was a Control failure before the Cooperative Passage hypothesis was exercised.
-- v4.7.92: shallow `12 m forward + 6 m lateral` entry/rejoin succeeded; both compact assemblies passed, restored, kept the same GIANTS Job Episodes and resumed native work.
-- v4.7.93: two passages in one uninterrupted session repeated closely; post-handoff observation was found to block a later necessary Commitment and was identified as an ownership error rather than a cooldown requirement.
-- v4.7.94: persistent arming removed human timing; repeated near-collinear passages automatically succeeded. A later asymmetric opposed encounter was attempted but lacked sufficient lateral clearance under the fixed fixture geometry.
+Situation Assessment should acquire only enough positively supported Knowledge to justify the next least-authority action. The current production direction retains:
 
-The final asymmetric event is a **scope boundary**, not a new immediate solver task.
+- Field World / Operation / Job Episode identity;
+- assembly/configuration and bootstrap-cached physical representation;
+- current Productive or Transitional state;
+- current motion/heading and Encounter/cooperative relevance;
+- current obligations / Committed Demand;
+- Turning Rank as optional spatial awareness for early observation/Regulation, not turn-route prediction;
+- D-0141 observation/Regulation and D-0143 bounded Cooperative Passage.
 
-## Performance disposition
+Retired from governing production architecture:
 
-The current continuous King-space implementation direction is considered unworkable for the immediate product path. Live evidence associated the characteristic stutter with repeated actual-footprint King placement/swept-clearance work. Successive implementation optimisations did not recover acceptable FPS while preserving authoritative geometry. No further King performance work is authorised for the TS015 objective.
+- Rook as a required governing productive-space structure;
+- Successor Rook Set / successor-productivity prediction;
+- chessboard colouring and continuous Productive History reasoning;
+- King Reserve and continuous Refuge search/qualification;
+- headland-U-turn as a dedicated scenario/solver class.
 
-## First production implementation objective
+The historical productive-coverage/refuge-shadow diagnostic files remain evidence donors, but v4.7.98 no longer sources or schedules them in the live runtime. No new shape calculations replace them.
 
-**TS015 Cooperative Passage Production Integration**
+## Cooperative Passage Scope Boundary — health warning
 
-Make the demonstrated Condor/Patriot near-collinear opposed-working capability flow through the real production architecture:
+**Current status: bounded Cooperative Passage production capability demonstrated; general Cooperative Passage incomplete.**
 
-1. Situation Assessment recognises the positively supported TS015 opposed situation.
-2. Candidate Action Space can enumerate a joint Cooperative Passage `REPOSITION` for both assemblies.
-3. Mandatory Constraints independently gate the currently represented action.
-4. Traffic Policeman / Decision selects the action only after ordinary preference-band exhaustion.
-5. Commitment owns the joint purpose and staged obligations.
-6. Bounded Authority admits only the current physical phase.
-7. Control reuses proven physical donors for Hold, configuration transition, bounded movement, restoration and GIANTS handoff.
-8. New post-handoff observation remains passive and cannot block a later Commitment.
+Known unfinished work:
 
-The first production authority envelope is intentionally narrow: Condor/Patriot TS015 near-collinear opposed geometry only. Fixed P23 numbers remain scoped implementation evidence, not architecture.
+1. Transitional/Productive opposed encounters remain unresolved. The final v4.7.97 encounter looked physically supportable but did not have the current positive semantic authority.
+2. Asymmetric encounters are not generally supported. Earlier P23 evidence remains a valid negative boundary even though later intervention timing changed the geometry of a subsequent final encounter.
+3. Other assembly combinations are unvalidated. Foldability or compact size alone does not imply Cooperative Passage capability.
+4. The 50-70 m start window, 2 m lateral gate, +/-6 m split, 12 m shallow entry/rejoin, 8 m pass margin, 8 km/h cap and target radii are TS015 implementation calibration, not architecture.
+5. General negative-clearance authority remains incomplete. The bounded TS015 path reuses purpose-specific fitness from bootstrap-cached `physicalSpaceEvidence`; it does not prove arbitrary compact assemblies can pass.
+6. Wider historical regression scenarios still need to be engineered against the simplified architecture.
 
-## Work freeze until TS015 production evidence
+No candidate or future chat should interpret "Cooperative Passage works" as "Cooperative Passage is complete."
 
-Do **not**:
+## Immediate next objective after canonicalisation
 
-- create another prototype controller;
-- resume King/King-Reserve/continuous Refuge optimisation;
-- generalise Cooperative Passage to arbitrary vehicle combinations;
-- build an asymmetric passage solver;
-- allow P23 fixture state to bypass Candidate/Decision/Commitment ownership;
-- use implementation difficulty as a reason to invent new architecture.
-
-If TS015 production integration disproves the current architecture, record that evidence and correct the architecture. Otherwise, finish the narrow path before broadening scope.
-
-## Known parked issues
-
-- terminal/post-completion physical occupancy remains unresolved;
-- broad vehicle/map compatibility remains unproven;
-- incomplete physical representation still cannot silently claim negative clearance;
-- D-0141 follower calibration remains bounded existing implementation evidence until the production path is aligned;
-- asymmetric Cooperative Passage is unsupported in the first authority envelope.
-
-Canonicalisation of v4.7.95 remains an explicit owner action after review.
+Do not broaden behaviour in this candidate. After owner review/canonicalisation, the next architectural question is narrow: whether a positively supportable **Transitional/Productive near-collinear opposed conflict** may enter Cooperative Passage without collapsing the Productive/Transitional distinction. Broader regression scenario engineering follows in due course.

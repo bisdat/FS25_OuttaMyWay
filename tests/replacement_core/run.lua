@@ -44,6 +44,7 @@ load("scripts/assessment/EncounterRegistry.lua")
 load("scripts/assessment/ProgressionGeometry.lua")
 load("scripts/assessment/GuardedRecoveryThreatAssessment.lua")
 load("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
+load("scripts/assessment/CooperativePassageAssessment.lua")
 load("scripts/assessment/SituationAssessment.lua")
 load("scripts/commitment/CommitmentStateMachine.lua")
 load("scripts/commitment/CommitmentRegistry.lua")
@@ -96,6 +97,7 @@ load("scripts/prototypes/CommittedTransitionRegulationTestBridge.lua")
 load("scripts/prototypes/Prototype22ConfigurationAuthority.lua")
 load("scripts/prototypes/Prototype22TS015Relocation.lua")
 load("scripts/prototypes/Prototype22CapabilityGate.lua")
+load("scripts/control/CooperativePassageControl.lua")
 load("scripts/control/LiveControlDispatcher.lua")
 load("scripts/runtime/LiveRuntimeCoordinator.lua")
 load("scripts/runtime/Runtime.lua")
@@ -877,99 +879,140 @@ test("autonomous head-on support remains passive without positive Productive Con
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"PASSIVE_LIVE_ZERO_CONTROL")
 end)
 
-test("both Productive established head-on publishes both Yield role assignments without operator command",function()
-    local runtime=autonomousHeadOnRuntime()
-    local supported=runtime.liveTrafficCandidateSupport:attach(autonomousHeadOnPicture(),headOnTestSnapshot())
-    equal(supported.candidateSupportEvidence.supportBoundary.mode,"AUTONOMOUS_HEAD_ON_RESOLUTION_TEST")
-    equal(supported.candidateSupportEvidence.supportBoundary.productionRoleSelection,true)
-    equal(supported.candidateSupportEvidence.supportBoundary.productionRefugeQualification,false)
-    equal(supported.candidateSupportEvidence.supportBoundary.controlAuthority,false)
-    equal(#supported.candidateSupportEvidence.candidateSpecifications,2)
-    local a=supported.candidateSupportEvidence.candidateSpecifications[1]
-    local b=supported.candidateSupportEvidence.candidateSpecifications[2]
-    equal(a.capability,"REPOSITION"); equal(b.capability,"REPOSITION")
-    equal(a.comparisonCost,b.comparisonCost)
-    equal(a.evidenceBasis.autonomousHeadOnBridge.operatorPin,false)
-    equal(b.evidenceBasis.autonomousHeadOnBridge.operatorPin,false)
+local function d0143KnowledgeRecord(options)
+    options=options or {}
+    return {
+        status="SUPPORTED",reason="D0143_TS015_NEAR_COLLINEAR_COOPERATIVE_PASSAGE_SUPPORTED",authority="D0143_P23_EMPIRICALLY_BOUNDED_TS015",
+        operationId="OR-1",pairReferenceKey="vehicle-root:101|vehicle-root:201",encounterIdentity="EN-HEADON",
+        assemblyIds={"AS-00001","AS-00002"},condorAssemblyId="AS-00001",patriotAssemblyId="AS-00002",
+        condorReferenceKey="vehicle-root:101",patriotReferenceKey="vehicle-root:201",condorJobToken="job-A",patriotJobToken="job-B",
+        separationM=options.separationM or 60.0,initialLateralOffsetM=options.lateralOffsetM or 0.5,headingDot=options.headingDot or -1.0,
+        sharedAxisX=1,sharedAxisZ=0,sharedRightX=0,sharedRightZ=-1,
+        representationFitnessIds={"d0143-ts015-cooperative-passage:EN-HEADON:AS-00001","d0143-ts015-cooperative-passage:EN-HEADON:AS-00002"},
+        footprintEvidence={source="SITUATION_ASSESSMENT_PHYSICAL_SPACE_EVIDENCE",condorConfigurationProfileId="CFG-A",patriotConfigurationProfileId="CFG-B",noAdditionalGeometryCalculation=true},
+        scope={vehiclePair="Condor Endurance II|Patriot 4450",calibrationAuthority="P23_V4_7_92_TO_V4_7_94",generalVehicleAuthority=false,asymmetricAuthority=false},
+        provenance={source="CooperativePassageAssessment",layer="SITUATION_ASSESSMENT",decisionAuthority=false,controlAuthority=false}
+    }
+end
+
+local function d0143Picture(options)
+    options=options or {}
+    local record=options.record or d0143KnowledgeRecord(options)
+    return OuttaMyWay.OperationalPicture.new({
+        identity=options.identity or "OP-D0143",epoch=options.epoch or 220,observationSnapshotId="OS-HEADON",
+        situations={},encounters={{identity="EN-HEADON",operationId="OR-1",subjectAssemblyId="AS-00001",otherAssemblyId="AS-00002",relationship="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION",lifecycleState="ACTIVE",evidence={interactionReferenceKey="vehicle-root:101|vehicle-root:201",futureSpaceConverges=true,currentSpaceIntersects=false}}},
+        identities={assemblies={"AS-00001","AS-00002"},components={},jobEpisodes={active={"JE-A","JE-B"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
+        currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},
+        representationFitness={
+            {representationId="live-representation:vehicle-root:101",assemblyId="AS-00001",question="CURRENT_CONFLICT_SUPPORT",assessmentHorizon=0,state="STRUCTURALLY_INVALID",claimPermissions={},coverage={complete=false,conservative=false},uncertainty={{kind="METADATA_ENVELOPE_INCOMPLETE"}},validityDependencies={},provenance={source="fixture"}},
+            {representationId="live-representation:vehicle-root:201",assemblyId="AS-00002",question="CURRENT_CONFLICT_SUPPORT",assessmentHorizon=0,state="STRUCTURALLY_INVALID",claimPermissions={},coverage={complete=false,conservative=false},uncertainty={{kind="METADATA_ENVELOPE_INCOMPLETE"}},validityDependencies={},provenance={source="fixture"}},
+            {representationId="d0143-ts015-cooperative-passage:EN-HEADON:AS-00001",assemblyId="AS-00001",question="D0143_TS015_COOPERATIVE_PASSAGE_EMPIRICAL_ADMISSIBILITY",assessmentHorizon="CURRENT_SUPPORTED_TS015_ENCOUNTER_ONLY",state="FIT_FOR_LIMITED_HORIZON",claimPermissions={"D0143_TS015_COOPERATIVE_PASSAGE_EMPIRICAL_ADMISSIBILITY"},coverage={complete=false,conservative=false,underApproximationRisk=true},uncertainty={"GENERAL_NEGATIVE_CLEARANCE_NOT_CLAIMED"},validityDependencies={"BOOTSTRAP_CACHED_PLAN_VIEW_FOOTPRINT"},provenance={source="fixture"}},
+            {representationId="d0143-ts015-cooperative-passage:EN-HEADON:AS-00002",assemblyId="AS-00002",question="D0143_TS015_COOPERATIVE_PASSAGE_EMPIRICAL_ADMISSIBILITY",assessmentHorizon="CURRENT_SUPPORTED_TS015_ENCOUNTER_ONLY",state="FIT_FOR_LIMITED_HORIZON",claimPermissions={"D0143_TS015_COOPERATIVE_PASSAGE_EMPIRICAL_ADMISSIBILITY"},coverage={complete=false,conservative=false,underApproximationRisk=true},uncertainty={"GENERAL_NEGATIVE_CLEARANCE_NOT_CLAIMED"},validityDependencies={"BOOTSTRAP_CACHED_PLAN_VIEW_FOOTPRINT"},provenance={source="fixture"}}
+        },
+        motionEvidence={},physicalSpaceEvidence={},productiveContinuationKnowledge={},guardedRecoveryKnowledge={},followerBoundaryKnowledge=options.followerBoundaryKnowledge or {},cooperativePassageKnowledge={record},
+        provenance={source="d0143-test"},controlOutcomeEvidence={},candidateSupportEvidence={complete=false,supportBoundary={},candidateSpecifications={},provenance={}},commitmentContext=options.commitmentContext or {},diagnostics={}
+    })
+end
+
+local function d0143AssessmentContext(options)
+    options=options or {}
+    local lateral=options.lateralOffsetM or 0.5
+    local separation=options.separationM or 60.0
+    local headingDot=options.headingDot or -1.0
+    local hz=math.sqrt(math.max(0,1-headingDot*headingDot))
+    return {
+        currentSpace={
+            {assemblyId="AS-00001",occupancy={x=0,z=0}},{assemblyId="AS-00002",occupancy={x=separation,z=lateral}}
+        },
+        motionEvidence={
+            {assemblyId="AS-00001",assemblyReferenceKey="vehicle-root:101",name="Condor Endurance II",sourceJobToken="job-A",headingX=1,headingZ=0,localIntentClassification="SETTLED_CONTINUATION"},
+            {assemblyId="AS-00002",assemblyReferenceKey="vehicle-root:201",name="Patriot 4450",sourceJobToken="job-B",headingX=headingDot,headingZ=hz,localIntentClassification="SETTLED_CONTINUATION"}
+        },
+        productiveKnowledge={
+            {assemblyId="AS-00001",jobToken="job-A",productivePositive=true},{assemblyId="AS-00002",jobToken="job-B",productivePositive=true}
+        },
+        physicalSpaceEvidence=options.noFootprint and {} or {
+            {assemblyId="AS-00001",assemblyReferenceKey="vehicle-root:101",episodeKey="vehicle-root:101|job-A",configurationProfileId="CFG-A",primitives={{kind="DISC",positiveConflictSupport=true}},summary={physicalPrimitiveCount=14,hullPointCount=17},coverageComplete=false,negativeClearanceAuthority=false,provenance={source="AssemblyRepresentationCache"}},
+            {assemblyId="AS-00002",assemblyReferenceKey="vehicle-root:201",episodeKey="vehicle-root:201|job-B",configurationProfileId="CFG-B",primitives={{kind="DISC",positiveConflictSupport=true}},summary={physicalPrimitiveCount=12,hullPointCount=17},coverageComplete=false,negativeClearanceAuthority=false,provenance={source="AssemblyRepresentationCache"}}
+        },
+        situations={{identity="SI-HEADON",operationId="OR-1",memberAssemblyIds={"AS-00001","AS-00002"},futureSpaceRelationships={{interactionReferenceKey="vehicle-root:101|vehicle-root:201",subjectAssemblyId="AS-00001",otherAssemblyId="AS-00002",positiveIntersection=true}}}},
+        encounters={{identity="EN-HEADON",operationId="OR-1",lifecycleState="ACTIVE",evidence={interactionReferenceKey="vehicle-root:101|vehicle-root:201",currentSpaceIntersects=options.currentInteraction==true}}}
+    }
+end
+
+test("D-0143 Situation Assessment supports only the narrow near-collinear Condor Patriot TS015 envelope",function()
+    local supported,fitness=OuttaMyWay.CooperativePassageAssessment.buildKnowledge(d0143AssessmentContext())
+    equal(#supported,1); equal(supported[1].status,"SUPPORTED")
+    equal(supported[1].reason,"D0143_TS015_NEAR_COLLINEAR_COOPERATIVE_PASSAGE_SUPPORTED")
+    equal(#fitness,2); equal(fitness[1].state,"FIT_FOR_LIMITED_HORIZON"); equal(fitness[2].state,"FIT_FOR_LIMITED_HORIZON")
+    equal(fitness[1].evidence.geometryCalculation,"NONE_REUSES_SITUATION_ASSESSMENT_PHYSICAL_SPACE_EVIDENCE")
+    equal(supported[1].footprintEvidence.noAdditionalGeometryCalculation,true)
+    local asymmetric=OuttaMyWay.CooperativePassageAssessment.buildKnowledge(d0143AssessmentContext({lateralOffsetM=4.0}))
+    equal(asymmetric[1].status,"UNSUPPORTED"); equal(asymmetric[1].reason,"INITIAL_LATERAL_OFFSET_OUTSIDE_PROVEN_TS015_SCOPE")
+    local tooClose=OuttaMyWay.CooperativePassageAssessment.buildKnowledge(d0143AssessmentContext({separationM=45.0}))
+    equal(tooClose[1].status,"UNSUPPORTED"); equal(tooClose[1].reason,"PAIR_TOO_CLOSE_FOR_PROVEN_TS015_ENTRY")
+    local interacting=OuttaMyWay.CooperativePassageAssessment.buildKnowledge(d0143AssessmentContext({currentInteraction=true}))
+    equal(interacting[1].status,"UNSUPPORTED"); equal(interacting[1].reason,"CURRENT_PHYSICAL_INTERACTION_ALREADY_BEGUN")
+    local noFootprint,noFitness=OuttaMyWay.CooperativePassageAssessment.buildKnowledge(d0143AssessmentContext({noFootprint=true}))
+    equal(noFootprint[1].status,"UNSUPPORTED"); equal(noFootprint[1].reason,"PURPOSE_SPECIFIC_FOOTPRINT_EVIDENCE_UNAVAILABLE"); equal(#noFitness,0)
 end)
 
-test("D-0118 deterministic tie-break selects one of two materially equivalent autonomous head-on roles",function()
+test("D-0143 publishes one joint Cooperative Passage Reposition Candidate with same-picture preference exhaustion",function()
     local runtime=autonomousHeadOnRuntime()
-    local supported=runtime.liveTrafficCandidateSupport:attach(autonomousHeadOnPicture(),headOnTestSnapshot())
-    local result=runtime:evaluateSealedOperationalPicture(supported)
-    equal(#result.candidates,2)
-    equal(result.decision.comparisonBasis.rule,"TRAFFIC_POLICEMAN_SEQUENTIAL_PRIMARY")
-    if result.decision.selectedCandidateId==nil then error("expected one deterministic selected Yield role") end
-    local selected=nil
-    for _,candidate in OuttaMyWay.ValueRecord.ipairs(result.candidates) do if candidate.identity==result.decision.selectedCandidateId then selected=candidate end end
-    if selected==nil then error("selected candidate missing") end
-    equal(selected.capability,"REPOSITION")
-    equal(selected.evidenceBasis.autonomousHeadOnBridge.roleSelectionAuthority,"D0113_TIE_THEN_D0118_COMPARISON")
-end)
-
-test("v4.7.48 autonomous head-on Candidate crosses real Commitment boundary with Yield-only actuation ownership",function()
-    local runtime=autonomousHeadOnRuntime()
-    local supported=runtime.liveTrafficCandidateSupport:attach(autonomousHeadOnPicture(),headOnTestSnapshot())
-    local result=runtime:evaluateSealedOperationalPicture(supported)
-    equal(result.decision.commitmentAction,"CREATE")
-    local selected=nil
-    for _,candidate in OuttaMyWay.ValueRecord.ipairs(result.candidates) do
-        if candidate.identity==result.decision.selectedCandidateId then selected=candidate end
+    local supported=runtime.liveTrafficCandidateSupport:attach(d0143Picture(),headOnTestSnapshot())
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST")
+    equal(#supported.candidateSupportEvidence.candidateSpecifications,1)
+    local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
+    equal(spec.capability,"REPOSITION"); equal(#spec.subject.assemblyIds,2)
+    equal(#spec.evidenceBasis.progressActuationOwnership.assemblyIds,2)
+    equal(#spec.evidenceBasis.effectiveActuationComposition.entries,2)
+    equal(spec.evidenceBasis.autonomousHeadOnBridge,nil)
+    equal(spec.representationFitness.requirements[1].representationId,"d0143-ts015-cooperative-passage:EN-HEADON:AS-00001")
+    equal(spec.representationFitness.requirements[2].representationId,"d0143-ts015-cooperative-passage:EN-HEADON:AS-00002")
+    for _,capability in ipairs({"CONTINUE_OBSERVATION","REGULATE_SPEED","HOLD"}) do
+        local exhaustion=spec.evidenceBasis.trafficPolicemanPreference.exhaustionEvidence[capability]
+        equal(exhaustion.result,"PASS"); equal(exhaustion.operationalPictureId,supported.identity); equal(exhaustion.capability,capability)
     end
-    if selected==nil then error("selected autonomous Candidate missing") end
-    local yieldAssemblyId=selected.subject.assemblyId
-    local progressAssemblyId=selected.evidenceBasis.autonomousHeadOnBridge.progressParticipantReferenceKey=="vehicle-root:101" and "AS-00001" or "AS-00002"
-    equal(#selected.evidenceBasis.progressActuationOwnership.assemblyIds,1)
-    equal(selected.evidenceBasis.progressActuationOwnership.assemblyIds[1],yieldAssemblyId)
-    equal(selected.evidenceBasis.effectiveActuationComposition.entries[1].assemblyId,yieldAssemblyId)
-    local application=runtime.decisionCommitmentBoundary:apply(supported,result)
-    equal(application.action,"CREATE")
-    local commitment=runtime.commitments:get(application.commitmentId)
-    equal(commitment.state,"ACTIVE")
-    equal(runtime.authorities:ownerOf(yieldAssemblyId),commitment.identity)
-    equal(runtime.authorities:ownerOf(progressAssemblyId),nil)
-    equal(#runtime.obligations:openForOwner(commitment.identity),2)
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    equal(#evaluated.candidates,1)
+    equal(findVerdict(evaluated,evaluated.candidates[1].identity,"REPRESENTATION_FITNESS").result,"PASS")
+    equal(evaluated.decision.selectedCandidateId,evaluated.candidates[1].identity)
+    equal(evaluated.decision.commitmentAction,"CREATE")
 end)
 
-test("autonomous head-on Decision carries same-picture Observe Regulation and Hold exhaustion",function()
+test("D-0143 joint Candidate crosses the normal Commitment boundary with both progress owners",function()
     local runtime=autonomousHeadOnRuntime()
-    local supported=runtime.liveTrafficCandidateSupport:attach(autonomousHeadOnPicture(),headOnTestSnapshot())
-    for _,spec in ipairs(supported.candidateSupportEvidence.candidateSpecifications) do
-        local exhaustion=spec.evidenceBasis.trafficPolicemanPreference.exhaustionEvidence
-        for _,capability in ipairs({"CONTINUE_OBSERVATION","REGULATE_SPEED","HOLD"}) do
-            equal(exhaustion[capability].result,"PASS")
-            equal(exhaustion[capability].operationalPictureId,supported.identity)
-            equal(exhaustion[capability].capability,capability)
-        end
-    end
+    local supported=runtime.liveTrafficCandidateSupport:attach(d0143Picture(),headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local applied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision(runtime,supported,evaluated)
+    equal(reason,nil); equal(applied.commitment.state,"ACTIVE")
+    equal(runtime.authorities:ownerOf("AS-00001"),applied.commitment.identity)
+    equal(runtime.authorities:ownerOf("AS-00002"),applied.commitment.identity)
+    equal(#runtime.authorities:tokensForCommitment(applied.commitment.identity),2)
+    local obligations=runtime.obligations:openForOwner(applied.commitment.identity)
+    equal(#obligations,1); equal(obligations[1].requiredOutcome.kind,"COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK")
 end)
 
-test("autonomous head-on bridge refuses positive current physical interaction",function()
+test("D-0143 Dispatcher emits two typed ControlRequests and positive handoff settles immediately with no cooldown",function()
     local runtime=autonomousHeadOnRuntime()
-    local supported=runtime.liveTrafficCandidateSupport:attach(autonomousHeadOnPicture({currentInteraction=true}),headOnTestSnapshot())
-    equal(supported.candidateSupportEvidence.supportBoundary.mode,"PASSIVE_LIVE_ZERO_CONTROL")
-    equal(runtime.liveTrafficCandidateSupport:getLastStatus(),"PAIR_ALREADY_IN_CURRENT_PHYSICAL_INTERACTION")
-end)
-
-test("v4.7.57 autonomous head-on bridge requires clean positive opposition",function()
-    local runtime=autonomousHeadOnRuntime()
-    for _,headingDot in ipairs({0.1,-0.38,-0.98}) do
-        local supported=runtime.liveTrafficCandidateSupport:attach(autonomousHeadOnPicture({headingDot=headingDot}),headOnTestSnapshot())
-        equal(supported.candidateSupportEvidence.supportBoundary.mode,"PASSIVE_LIVE_ZERO_CONTROL")
-        equal(runtime.liveTrafficCandidateSupport:getLastStatus(),"PAIR_HEADINGS_NOT_POSITIVELY_OPPOSED")
-    end
-    local supported=runtime.liveTrafficCandidateSupport:attach(autonomousHeadOnPicture({headingDot=-0.99}),headOnTestSnapshot())
-    equal(supported.candidateSupportEvidence.supportBoundary.mode,"AUTONOMOUS_HEAD_ON_RESOLUTION_TEST")
-end)
-
-test("v4.7.54 prior head-on dispatch does not consume later head-on competence",function()
-    local runtime=autonomousHeadOnRuntime()
-    local first=runtime.liveTrafficCandidateSupport:attach(autonomousHeadOnPicture(),headOnTestSnapshot())
-    local key=first.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.autonomousHeadOnBridge.governingRequirementKey
-    runtime:markAutonomousHeadOnDispatched(key)
-    local second=runtime.liveTrafficCandidateSupport:attach(autonomousHeadOnPicture(),headOnTestSnapshot())
-    equal(second.candidateSupportEvidence.supportBoundary.mode,"AUTONOMOUS_HEAD_ON_RESOLUTION_TEST")
-    equal(#second.candidateSupportEvidence.candidateSpecifications,2)
+    local handler=nil; local accepted=nil
+    local control={}
+    function control:setCompletionHandler(fn) handler=fn end
+    function control:isActive() return false end
+    function control:executeJointRequests(a,b,candidate) accepted={a,b,candidate}; return true,"COOPERATIVE_PASSAGE_STARTED" end
+    runtime.liveControlDispatcher:setCooperativePassageControl(control)
+    local supported=runtime.liveTrafficCandidateSupport:attach(d0143Picture(),headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local dispatched=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    equal(dispatched.status,"ACCEPTED"); equal(#accepted,3); equal(#dispatched.requests,2)
+    equal(dispatched.requests[1].commitmentId,dispatched.requests[2].commitmentId)
+    equal(dispatched.requests[1].capability,"REPOSITION"); equal(dispatched.requests[2].capability,"REPOSITION")
+    equal(dispatched.requests[1].assemblyId~=dispatched.requests[2].assemblyId,true)
+    local commitmentId=dispatched.commitment.identity
+    handler({status="SUCCEEDED",commitmentId=commitmentId,evidence={kind="D0143_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK",sameJobs=true,bothRestored=true,cooldown=false}})
+    equal(runtime.commitments:get(commitmentId).state,"SUCCEEDED")
+    equal(runtime.authorities:ownerOf("AS-00001"),nil); equal(runtime.authorities:ownerOf("AS-00002"),nil)
+    equal(#runtime.obligations:openForOwner(commitmentId),0)
 end)
 
 test("v4.7.57 refuge redispatch requires independent current head-on support",function()
@@ -981,38 +1024,22 @@ test("v4.7.57 refuge redispatch requires independent current head-on support",fu
     equal(OuttaMyWay.Prototype22CapabilityGate.autonomousHeadOnDispatchDisposition(nil,nil,true),"ALLOW")
 end)
 
-test("v4.7.54 later head-on revises same unresolved Commitment and creates fresh recovery obligation",function()
+test("D-0143 later convergence after positive handoff creates a fresh Commitment with no cooldown ownership",function()
     local runtime=autonomousHeadOnRuntime()
-    local firstPicture=runtime.liveTrafficCandidateSupport:attach(autonomousHeadOnPicture(),headOnTestSnapshot())
-    local firstDecision=runtime:evaluateSealedOperationalPicture(firstPicture)
-    equal(firstDecision.decision.commitmentAction,"CREATE")
-    local firstApplied,firstReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyHeadOnDecision(runtime,firstPicture,firstDecision)
-    equal(firstReason,nil)
-    local commitmentId=firstApplied.commitment.identity
-    equal(#runtime.obligations:openForOwner(commitmentId),2)
-    local recovered,recoveryReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.markNativeReacquisition(runtime,commitmentId,{kind="POSITIVE_GIANTS_REACQUISITION"})
-    equal(recoveryReason,nil)
-    equal(recovered.commitment.state,"WAITING_FOR_EVIDENCE")
-    equal(#recovered.remainingObligations,1)
-    equal(recovered.remainingObligations[1].requiredOutcome.kind,"DURABLE_SEPARATION_SUPPORTED")
+    local first=runtime.liveTrafficCandidateSupport:attach(d0143Picture({identity="OP-D0143-FIRST",epoch=230}),headOnTestSnapshot())
+    local firstEval=runtime:evaluateSealedOperationalPicture(first)
+    local firstApplied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision(runtime,first,firstEval)
+    equal(reason,nil)
+    local firstId=firstApplied.commitment.identity
+    local settled,settleReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.completeCooperativePassage(runtime,firstId,{kind="D0143_POSITIVE_RESTORATION_AND_HANDOFF",sameJobs=true,bothRestored=true})
+    equal(settleReason,nil); equal(settled.commitment.state,"SUCCEEDED")
+    equal(runtime.authorities:ownerOf("AS-00001"),nil); equal(runtime.authorities:ownerOf("AS-00002"),nil)
 
-    local secondBase=autonomousHeadOnPicture({commitmentContext={{commitmentId=commitmentId}}})
-    local secondPicture=runtime.liveTrafficCandidateSupport:attach(secondBase,headOnTestSnapshot())
-    local secondDecision=runtime:evaluateSealedOperationalPicture(secondPicture)
-    equal(secondDecision.decision.commitmentAction,"REVISE")
-    local secondApplied,secondReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyHeadOnDecision(runtime,secondPicture,secondDecision)
-    equal(secondReason,nil)
-    equal(secondApplied.commitment.identity,commitmentId)
-    equal(secondApplied.commitment.state,"ACTIVE")
-    equal(#secondApplied.createdObligationIds,1)
-    equal(#runtime.obligations:openForOwner(commitmentId),2)
-    local recoveryCount,durableCount=0,0
-    for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
-        if obligation.requiredOutcome.kind=="NATIVE_CONTINUATION_RESTORED_AND_GIANTS_REACQUIRED" then recoveryCount=recoveryCount+1 end
-        if obligation.requiredOutcome.kind=="DURABLE_SEPARATION_SUPPORTED" then durableCount=durableCount+1 end
-    end
-    equal(recoveryCount,1); equal(durableCount,1)
-    equal(#runtime.authorities:tokensForCommitment(commitmentId),1)
+    local second=runtime.liveTrafficCandidateSupport:attach(d0143Picture({identity="OP-D0143-SECOND",epoch=231}),headOnTestSnapshot())
+    local secondEval=runtime:evaluateSealedOperationalPicture(second)
+    equal(secondEval.decision.commitmentAction,"CREATE")
+    local secondApplied,secondReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision(runtime,second,secondEval)
+    equal(secondReason,nil); equal(secondApplied.commitment.identity~=firstId,true)
 end)
 
 test("Follower Owns Closure rejects generic Leader reposition",function()
@@ -2560,7 +2587,7 @@ local function d0141Record(cap,existingCommitmentId,existingObligationId)
     }
 end
 
-test("v4.7.74 positive matching head-on strategy succession supersedes follower PRESERVE candidate", function()
+test("D-0143 positive Cooperative Passage strategy succession supersedes a preserved D-0141 follower Candidate for the same pair", function()
     local runtime=autonomousHeadOnRuntime()
     local preserved={
         pairKey="AS-00001|AS-00002",operationId="OR-1",leaderAssemblyId="AS-00001",followerAssemblyId="AS-00002",
@@ -2570,33 +2597,23 @@ test("v4.7.74 positive matching head-on strategy succession supersedes follower 
         representationFitness="UNRESOLVED",governingPurpose="PRESERVE_BOUNDARY_TRANSITION_ORDERING",
         existingCommitmentId="CM-EXISTING",existingObligationId="OB-FOLLOWER",provenance={source="FollowerBoundaryDemandAssessment",layer="KNOWLEDGE"}
     }
-    local base=autonomousHeadOnPicture({commitmentContext={{commitmentId="CM-EXISTING"}},followerBoundaryKnowledge={preserved}})
+    local base=d0143Picture({commitmentContext={{commitmentId="CM-EXISTING"}},followerBoundaryKnowledge={preserved}})
     local supported=runtime.liveTrafficCandidateSupport:attach(base,headOnTestSnapshot())
-    equal(supported.candidateSupportEvidence.supportBoundary.mode,"AUTONOMOUS_HEAD_ON_RESOLUTION_TEST")
-    equal(supported.provenance.followerBoundaryCandidateSupersededByPositiveHeadOn,true)
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST")
+    equal(supported.provenance.followerBoundarySupportingLeaseRetained,true)
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     equal(evaluated.decision.commitmentAction,"REVISE")
     local selected=nil
     for _,candidate in OuttaMyWay.ValueRecord.ipairs(evaluated.candidates) do if candidate.identity==evaluated.decision.selectedCandidateId then selected=candidate end end
-    if selected==nil then error("expected selected head-on candidate") end
-    equal(selected.capability,"REPOSITION")
+    if selected==nil then error("expected selected Cooperative Passage candidate") end
+    equal(selected.capability,"REPOSITION"); equal(#selected.subject.assemblyIds,2)
 end)
 
-test("v4.7.75 role-reversed head-on reuses same-Commitment follower authority for Yield and clears only the D-0141 speed lease", function()
+test("D-0143 Cooperative Passage reuses the same D-0141 Commitment, clears its speed lease and acquires joint progress authority", function()
     local runtime=autonomousHeadOnRuntime()
-    local preview=runtime.liveTrafficCandidateSupport:attach(autonomousHeadOnPicture(),headOnTestSnapshot())
-    local previewEval=runtime:evaluateSealedOperationalPicture(preview)
-    local previewSelected=nil
-    for _,candidate in OuttaMyWay.ValueRecord.ipairs(previewEval.candidates) do if candidate.identity==previewEval.decision.selectedCandidateId then previewSelected=candidate end end
-    if previewSelected==nil then error("expected deterministic head-on Yield preview") end
-    local yieldAssemblyId=previewSelected.subject.assemblyId
-    local yieldRef=yieldAssemblyId=="AS-00001" and "vehicle-root:101" or "vehicle-root:201"
-    local leaderAssemblyId=yieldAssemblyId=="AS-00001" and "AS-00002" or "AS-00001"
-    local leaderRef=leaderAssemblyId=="AS-00001" and "vehicle-root:101" or "vehicle-root:201"
-
     local followerRecord={
-        pairKey="AS-00001|AS-00002",operationId="OR-1",leaderAssemblyId=leaderAssemblyId,followerAssemblyId=yieldAssemblyId,
-        leaderReferenceKey=leaderRef,followerReferenceKey=yieldRef,status="REGULATE_SUPPORTED",purposeState="ADMIT",
+        pairKey="AS-00001|AS-00002",operationId="OR-1",leaderAssemblyId="AS-00001",followerAssemblyId="AS-00002",
+        leaderReferenceKey="vehicle-root:101",followerReferenceKey="vehicle-root:201",status="REGULATE_SUPPORTED",purposeState="ADMIT",
         reason="UNRESTRICTED_NATIVE_FOLLOWER_PROGRESSION_WOULD_MATURE_BEFORE_PROVISIONAL_LEADER_DEMAND_VACATES",
         relationship={status="POSITIVE",reason="CURRENT_COHERENT_LINE_ASTERN_PRODUCTIVE_TOPOLOGY",headingDot=1,leaderToFollowerForwardM=-26,lateralOffsetM=0,corridorHalfWidthM=33,corridorOverlap=true},
         demandSeed={kind="PROVISIONAL_DEMAND_SEED",representationFitness="USABLE_WITH_UNCERTAINTY",uncertainty={"TEMPORAL_SEED_IS_TEST_MECHANIC_NOT_NATIVE_ROUTE_PREDICTION"}},
@@ -2607,17 +2624,16 @@ test("v4.7.75 role-reversed head-on reuses same-Commitment follower authority fo
     local function followerPicture(record,commitmentId)
         local contexts={} if commitmentId~=nil then contexts={{commitmentId=commitmentId}} end
         return OuttaMyWay.OperationalPicture.new({
-            identity="OP-D0141-ROLE-"..tostring(commitmentId or "NEW"),epoch=610,observationSnapshotId="OS-HEADON",situations={},encounters={},
+            identity="OP-D0141-COOP-"..tostring(commitmentId or "NEW"),epoch=610,observationSnapshotId="OS-HEADON",situations={},encounters={},
             identities={assemblies={"AS-00001","AS-00002"},components={},jobEpisodes={active={"JE-A","JE-B"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
             currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},representationFitness={},
-            motionEvidence={},physicalSpaceEvidence={},productiveContinuationKnowledge={},guardedRecoveryKnowledge={},followerBoundaryKnowledge={record},
-            provenance={source="d0141-role-test"},controlOutcomeEvidence={},candidateSupportEvidence={complete=false,supportBoundary={},candidateSpecifications={},provenance={}},commitmentContext=contexts,diagnostics={}
+            motionEvidence={},physicalSpaceEvidence={},productiveContinuationKnowledge={},guardedRecoveryKnowledge={},followerBoundaryKnowledge={record},cooperativePassageKnowledge={},
+            provenance={source="d0141-cooperative-test"},controlOutcomeEvidence={},candidateSupportEvidence={complete=false,supportBoundary={},candidateSpecifications={},provenance={}},commitmentContext=contexts,diagnostics={}
         })
     end
-    local cleared={}
-    local requests={}
+    local cleared={}; local regulationRequests={}
     local capability={}
-    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
+    function capability:executeControlRequest(request,candidate) regulationRequests[#regulationRequests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) cleared[#cleared+1]={referenceKey=referenceKey,ownerTag=ownerTag}; return true end
     function capability:getControlExecutionObservation() return nil end
     runtime:setLiveControlCapability(capability)
@@ -2629,7 +2645,7 @@ test("v4.7.75 role-reversed head-on reuses same-Commitment follower authority fo
     equal(followerDispatch.status,"ACCEPTED")
     local commitmentId=followerDispatch.commitment.identity
     local followerObligationId=followerDispatch.obligation and followerDispatch.obligation.identity or runtime.obligations:openForOwner(commitmentId)[1].identity
-    equal(runtime.authorities:ownerOf(yieldAssemblyId),commitmentId)
+    equal(runtime.authorities:ownerOf("AS-00002"),commitmentId)
     equal(runtime.liveControlDispatcher:getFollowerBoundaryStatus().active,true)
 
     local preserved={} for key,value in pairs(followerRecord) do preserved[key]=value end
@@ -2637,27 +2653,26 @@ test("v4.7.75 role-reversed head-on reuses same-Commitment follower authority fo
     preserved.relationship={status="UNRESOLVED",reason="ESTABLISHED_PURPOSE_PRESERVED_THROUGH_OPPOSED_CONTINUATION",headingDot=-1,leaderToFollowerForwardM=34,lateralOffsetM=0,corridorHalfWidthM=36,corridorOverlap=true}
     preserved.representationFitness="UNRESOLVED"; preserved.controlMagnitude=nil; preserved.existingCommitmentId=commitmentId; preserved.existingObligationId=followerObligationId
 
-    local headOnBase=autonomousHeadOnPicture({commitmentContext={{commitmentId=commitmentId}},followerBoundaryKnowledge={preserved}})
-    local headOnSupported=runtime.liveTrafficCandidateSupport:attach(headOnBase,headOnTestSnapshot())
-    local headOnEval=runtime:evaluateSealedOperationalPicture(headOnSupported)
-    equal(headOnEval.decision.commitmentAction,"REVISE")
-    local headOnSelected=nil
-    for _,candidate in OuttaMyWay.ValueRecord.ipairs(headOnEval.candidates) do if candidate.identity==headOnEval.decision.selectedCandidateId then headOnSelected=candidate end end
-    if headOnSelected==nil then error("expected role-reversed head-on candidate") end
-    equal(headOnSelected.subject.assemblyId,yieldAssemblyId)
-    equal(headOnSelected.capability,"REPOSITION")
+    local accepted=nil; local completionHandler=nil
+    local cooperativeControl={}
+    function cooperativeControl:setCompletionHandler(fn) completionHandler=fn end
+    function cooperativeControl:isActive() return false end
+    function cooperativeControl:executeJointRequests(a,b,candidate) accepted={a,b,candidate}; return true,"COOPERATIVE_PASSAGE_STARTED" end
+    runtime.liveControlDispatcher:setCooperativePassageControl(cooperativeControl)
 
-    local dispatched=runtime.liveControlDispatcher:dispatch(headOnSupported,headOnEval)
-    equal(dispatched.status,"ACCEPTED")
-    equal(dispatched.commitment.identity,commitmentId)
-    equal(runtime.authorities:ownerOf(yieldAssemblyId),commitmentId)
+    local cooperativeBase=d0143Picture({identity="OP-D0143-SUCCESSION",epoch=611,commitmentContext={{commitmentId=commitmentId}},followerBoundaryKnowledge={preserved}})
+    local cooperativeSupported=runtime.liveTrafficCandidateSupport:attach(cooperativeBase,headOnTestSnapshot())
+    local cooperativeEval=runtime:evaluateSealedOperationalPicture(cooperativeSupported)
+    equal(cooperativeEval.decision.commitmentAction,"REVISE")
+    local dispatched=runtime.liveControlDispatcher:dispatch(cooperativeSupported,cooperativeEval)
+    equal(dispatched.status,"ACCEPTED"); equal(dispatched.commitment.identity,commitmentId)
+    equal(runtime.authorities:ownerOf("AS-00001"),commitmentId); equal(runtime.authorities:ownerOf("AS-00002"),commitmentId)
+    equal(#runtime.authorities:tokensForCommitment(commitmentId),2)
     equal(runtime.liveControlDispatcher:getFollowerBoundaryStatus().active,false)
-    equal(#cleared,1)
-    equal(cleared[1].referenceKey,yieldRef)
-    equal(cleared[1].ownerTag,"D0141_FOLLOWER_BOUNDARY")
+    equal(#cleared,1); equal(cleared[1].referenceKey,"vehicle-root:201"); equal(cleared[1].ownerTag,"D0141_FOLLOWER_BOUNDARY")
     equal(runtime.obligations:get(followerObligationId).status,"SETTLED")
-    equal(requests[#requests].capability,"REPOSITION")
-    equal(requests[#requests].assemblyId,yieldAssemblyId)
+    equal(#accepted,3); equal(accepted[1].capability,"REPOSITION"); equal(accepted[2].capability,"REPOSITION")
+    equal(type(completionHandler),"function")
 end)
 
 test("D-0141 aligned follower Regulation travels Situation Candidate Decision Commitment central Control and cap magnitude is elastic", function()
@@ -3020,20 +3035,19 @@ end)
 
 test("architecture alignment routes D-0123 through Situation Candidate Decision Commitment and central Control", function()
     local runtime=autonomousHeadOnRuntime()
-    local initialPicture=runtime.liveTrafficCandidateSupport:attach(autonomousHeadOnPicture(),headOnTestSnapshot())
-    local initialDecision=runtime:evaluateSealedOperationalPicture(initialPicture)
-    local applied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyHeadOnDecision(runtime,initialPicture,initialDecision)
-    equal(reason,nil)
-    local selected=nil
-    for _,candidate in OuttaMyWay.ValueRecord.ipairs(initialDecision.candidates) do
-        if candidate.identity==initialDecision.decision.selectedCandidateId then selected=candidate end
-    end
-    if selected==nil then error("initial head-on candidate not selected") end
-    local bridge=selected.evidenceBasis.autonomousHeadOnBridge
-    local commitmentId=applied.commitment.identity
-    local yieldAssemblyId=selected.subject.assemblyId
-    local progressAssemblyId=bridge.progressParticipantReferenceKey=="vehicle-root:101" and "AS-00001" or "AS-00002"
-    local progressJobToken=bridge.progressJobToken
+    -- D-0143 retired the old unilateral TS015 head-on admission path.  D-0123
+    -- remains independently testable against any already-live recovery Commitment,
+    -- so establish the minimal existing recovery ownership directly.
+    local yieldAssemblyId="AS-00001"
+    local progressAssemblyId="AS-00002"
+    local progressJobToken="job-B"
+    local admitted=runtime.commitmentAdmission:admit({
+        objective={kind="LEGACY_GUARDED_RECOVERY_TEST"},
+        governingBasis={responsibilityKey="guarded-recovery-test:EN-HEADON"},
+        progressAssemblyIds={yieldAssemblyId}
+    })
+    local commitmentId=admitted.commitment.identity
+    local bridge={yieldParticipantReferenceKey="vehicle-root:101",progressParticipantReferenceKey="vehicle-root:201"}
     local requests={}
     local capability={}
     function capability:executeControlRequest(request,candidate)

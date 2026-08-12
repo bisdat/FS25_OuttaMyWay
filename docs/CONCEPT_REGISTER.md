@@ -1,3 +1,38 @@
+# v4.7.98 D-0144 concept disposition
+
+## Accepted / current
+
+- **Progressive Situational Sufficiency** — acquire only enough positive current Knowledge for the next least-authority action.
+- **Productive / Transitional state** — current semantic Situation distinction remains first-class.
+- **Turning Rank awareness** — retained as optional spatial context for observation/Regulation; not route prediction and not newly implemented in v4.7.98.
+- **D-0141 follower Regulation** — retained and live-evidenced.
+- **Configuration-Released Space** — retained physical concept.
+- **D-0143 Cooperative Passage** — retained as bounded TS015 Reposition strategy.
+- **Cooperative Passage Scope Boundary** — explicit incompleteness boundary.
+
+## Retired from governing production architecture
+
+- Rook as a required productive-space structure.
+- Successor Rook Set / successor productive prediction.
+- chessboard productive-history colouring.
+- continuous Productive History reasoning.
+- King Reserve and continuous Refuge discovery/qualification.
+- headland-U-turn as a dedicated scenario/solver class.
+
+## Evidence-only / preserved donors
+
+- `DemonstratedProductiveCoverageProbe.lua`, `ProductiveCoverageResidualProbe.lua`, `RefugeQualificationShadowProbe.lua` remain source evidence but are unsourced from the v4.7.98 live runtime.
+- P22 physical mechanisms remain capability donors where used by production Cooperative Passage.
+- P23 remains evidence/donor lineage only.
+
+## Explicitly unresolved
+
+- Productive/Transitional near-collinear opposed Cooperative Passage authority.
+- general asymmetric passage.
+- other assembly/configuration pairs.
+- generic negative-clearance authority.
+- wider regression coverage after simplification.
+
 # v4.7.95 Cooperative Passage Production Direction
 
 **Decision:** D-0143  

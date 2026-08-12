@@ -1,14 +1,13 @@
--- FS25_OuttaMyWay v4.7.95 CANONICAL CANDIDATE — D-0143 Cooperative Passage Production Direction; owner-declared v4.7.77 is canonical.
--- Runtime traffic/Commitment/Control behaviour remains the v4.7.77 implementation; v4.7.95 changes architecture/documentation and release identity only.
--- King/continuous Refuge production direction is retired by D-0143; existing runtime/probe machinery remains untouched as historical implementation evidence/donors.
--- P23 v4.7.91-v4.7.94 is evidence only and is not sourced into this canonical-based candidate.
--- Next implementation objective after canonicalisation: TS015 Cooperative Passage Production Integration through the normal architecture chain.
--- Canonical-candidate architecture authority: v4.7.95 D-0143 over surviving v4.7.77 D-0142.
+-- FS25_OuttaMyWay v4.7.98 CANONICAL CANDIDATE — D-0144 Progressive Situational Sufficiency consolidation.
+-- Owner-declared v4.7.95 is canonical. v4.7.97 is the successful production-evidence donor reapplied here over that exact baseline.
+-- D-0144 simplifies the governing Situation model while preserving D-0143 bounded TS015 Cooperative Passage and D-0141 follower Regulation.
+-- King Reserve, continuous Refuge discovery, chessboard colouring/continuous Productive History and Successor Rook prediction are retired from governing production architecture.
+-- General production Control authority remains disabled; only the explicit D-0143 TS015 authority envelope below may actuate Cooperative Passage.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.95"
-OuttaMyWay.ARCHITECTURE_VERSION = "4.7.95"
+OuttaMyWay.VERSION = "4.7.98"
+OuttaMyWay.ARCHITECTURE_VERSION = "4.7.98"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000
@@ -47,12 +46,11 @@ OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_ENABLED = true
 OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_INTERVAL_MS = 250
 OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_HEARTBEAT_MS = 2000
 
--- D-0134 passive chessboard-style productive-history evidence. The grid is
--- Job-Episode scoped and only paints cells swept between consecutive live AI/work-area
--- marker segments while Productive Continuation is positively supported. These are
--- diagnostic resolution/cadence values only; unpainted cells remain UNKNOWN and no
--- coverage result grants Refuge, Decision or Control authority.
-OuttaMyWay.DEMONSTRATED_PRODUCTIVE_COVERAGE_PROBE_ENABLED = true
+-- D-0144 retirement boundary: the former D-0134 chessboard/productive-history
+-- diagnostics remain in the repository as historical evidence only. They are disabled
+-- here and not sourced by scripts/main.lua; no continuous productive-history raster work
+-- is part of the current runtime. Constants below are retained only for forensic replay.
+OuttaMyWay.DEMONSTRATED_PRODUCTIVE_COVERAGE_PROBE_ENABLED = false
 OuttaMyWay.DEMONSTRATED_PRODUCTIVE_COVERAGE_PROBE_INTERVAL_MS = 250
 OuttaMyWay.DEMONSTRATED_PRODUCTIVE_COVERAGE_CELL_SIZE_M = 5.0
 OuttaMyWay.DEMONSTRATED_PRODUCTIVE_COVERAGE_MAX_SAMPLE_GAP_M = 12.0
@@ -64,17 +62,15 @@ OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_ENABLED = true
 OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_INTERVAL_MS = 250
 OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_HEARTBEAT_MS = 1000
 
--- D-0136 passive intent-based Productive Coverage Residual settlement witness.
--- D-0135 coarse residual geometry remains Potential Demand evidence, but geometric
--- fill percentage is not settlement authority. These values are diagnostic
--- cadence/resolution only; the witness follows native intent lifecycle evidence.
-OuttaMyWay.PRODUCTIVE_COVERAGE_RESIDUAL_PROBE_ENABLED = true
+-- D-0144 retirement boundary: the former Productive Coverage Residual witness is
+-- historical evidence only. It is disabled and unsourced from the live runtime.
+OuttaMyWay.PRODUCTIVE_COVERAGE_RESIDUAL_PROBE_ENABLED = false
 OuttaMyWay.PRODUCTIVE_COVERAGE_RESIDUAL_PROBE_INTERVAL_MS = 250
 OuttaMyWay.PRODUCTIVE_COVERAGE_RESIDUAL_HEARTBEAT_MS = 2000
 
--- D-0134 passive Refuge Resulting-Situation qualification shadow. Existing fixture
--- selection is untouched. Additional infield points are evidence probes only.
-OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_PROBE_ENABLED = true
+-- D-0144 retirement boundary: Refuge qualification shadow is historical evidence only.
+-- The module is unsourced from live runtime; these values remain for forensic replay.
+OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_PROBE_ENABLED = false
 OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_INFIELD_OFFSETS_M = {20.0, 35.0, 50.0}
 OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_COVERAGE_SAMPLE_COUNT = 12
 
@@ -137,10 +133,31 @@ OuttaMyWay.FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC = 13.0
 -- FITNESS literal, not production head-on policy: the live Refuge bridge is only
 -- offered for a clean, positively opposed continuation. The magnitude mirrors the
 -- already-bounded 0.99 coherent-heading test band without coupling the two policies.
-OuttaMyWay.AUTONOMOUS_HEAD_ON_TEST_MAX_HEADING_DOT = -0.99
+OuttaMyWay.AUTONOMOUS_HEAD_ON_TEST_MAX_HEADING_DOT = -0.99 -- historical donor/test literal; no active D-0143 authority
+
+-- D-0143 first production authority envelope. These are deliberately narrow
+-- implementation/calibration bounds derived from the successful P23 Condor/Patriot
+-- TS015 evidence. They are not general Cooperative Passage architecture and must
+-- not be extrapolated to other assemblies or asymmetric encounters.
+OuttaMyWay.COOPERATIVE_PASSAGE_TS015_ENABLED = true
+OuttaMyWay.COOPERATIVE_PASSAGE_TS015_MAX_HEADING_DOT = -0.99
+OuttaMyWay.COOPERATIVE_PASSAGE_TS015_MIN_START_SEPARATION_M = 50.0
+OuttaMyWay.COOPERATIVE_PASSAGE_TS015_MAX_START_SEPARATION_M = 70.0
+OuttaMyWay.COOPERATIVE_PASSAGE_TS015_MAX_INITIAL_LATERAL_OFFSET_M = 2.0
+OuttaMyWay.COOPERATIVE_PASSAGE_LATERAL_OFFSET_M = 6.0
+OuttaMyWay.COOPERATIVE_PASSAGE_SIDESTEP_FORWARD_M = 12.0
+OuttaMyWay.COOPERATIVE_PASSAGE_PASS_MARGIN_M = 8.0
+OuttaMyWay.COOPERATIVE_PASSAGE_POST_PASS_FORWARD_M = 12.0
+OuttaMyWay.COOPERATIVE_PASSAGE_MOVE_SPEED_KMH = 8.0
+OuttaMyWay.COOPERATIVE_PASSAGE_SIDESTEP_TARGET_RADIUS_M = 2.0
+OuttaMyWay.COOPERATIVE_PASSAGE_PASS_TARGET_RADIUS_M = 1.0
+OuttaMyWay.COOPERATIVE_PASSAGE_REJOIN_TARGET_RADIUS_M = 2.0
+OuttaMyWay.COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH = 0.25
+OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
+OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "CANONICAL CANDIDATE"
+OuttaMyWay.BUILD_LABEL = "4.7.98 CONSOLIDATION CANDIDATE"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720
@@ -196,7 +213,7 @@ OuttaMyWay.PROTOTYPE_22_SPAN_REDUCTION_MIN_M = 1.0
 -- after a genuine live autonomous head-on Decision. They are evidence-fixture values only:
 -- they grant no production Refuge Region, clearance, Durable Separation or
 -- Safe Release authority.
-OuttaMyWay.PROTOTYPE_22_TS015_RELOCATE_ENABLED = true
+OuttaMyWay.PROTOTYPE_22_TS015_RELOCATE_ENABLED = false
 OuttaMyWay.PROTOTYPE_22_TS015_REPOSITION_SPEED_KMH = 15.0 -- TEMPORARY TEST MECHANISM; not policy authority
 OuttaMyWay.PROTOTYPE_22_TS015_REPOSITION_TARGET_RADIUS_M = 1.0
 OuttaMyWay.PROTOTYPE_22_TS015_REFUGE_FORWARD_M = 10.0

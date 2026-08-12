@@ -1,10 +1,9 @@
 -- Architecture-alignment live Control dispatcher.
 --
 -- This module is the only automatic bridge from a sealed live Decision /
--- Commitment application into the bounded P22 capability donor. Diagnostics do
--- not call the capability gate. The dispatcher does not invent traffic meaning:
--- it accepts only a selected physical Candidate that has already passed the
--- mandatory Constraint set and is admitted/revised through Commitment.
+-- Commitment application into physical Control. D-0143 adds one bounded joint
+-- Cooperative Passage Control path while retaining the existing D-0141/D-0123
+-- Regulation donors. The dispatcher does not invent traffic meaning.
 
 OuttaMyWay.LiveControlDispatcher = {}
 local Dispatcher = OuttaMyWay.LiveControlDispatcher
@@ -27,51 +26,93 @@ local function selectedCandidate(evaluated)
     for _,candidate in OuttaMyWay.ValueRecord.ipairs(evaluated.candidates or {}) do if candidate.identity==selectedId then return candidate end end
     return nil
 end
-local function headOnBridge(candidate)
+local function cooperativePassageBridge(candidate)
     local evidence=candidate and candidate.evidenceBasis or nil
-    local bridge=evidence and evidence.autonomousHeadOnBridge or nil
-    if type(bridge)=="table" and type(bridge.yieldParticipantReferenceKey)=="string" then return bridge end
+    local bridge=evidence and evidence.cooperativePassageBridge or nil
+    if type(bridge)=="table" and type(bridge.condorReferenceKey)=="string" and type(bridge.patriotReferenceKey)=="string" then return bridge end
     return nil
 end
-local function assemblyIdForCandidate(candidate)
+
+local function ownershipAssemblyIds(candidate)
     local ownership=candidate and candidate.evidenceBasis and candidate.evidenceBasis.progressActuationOwnership or nil
-    local ids=ownership and ownership.assemblyIds or nil
-    if type(ids)=="table" and #ids==1 then return ids[1] end
-    return nil
+    local ids={}
+    for _,id in OuttaMyWay.ValueRecord.ipairs(ownership and ownership.assemblyIds or {}) do ids[#ids+1]=id end
+    table.sort(ids)
+    return ids
 end
 
 function Dispatcher.new(runtime)
     return setmetatable({
-        runtime=runtime,capability=nil,requests={},outcomes={},dispatchCount=0,
+        runtime=runtime,capability=nil,cooperativePassageControl=nil,requests={},outcomes={},dispatchCount=0,
         guardedRecoveryLease=nil,guardedRecoveryApplyCount=0,guardedRecoveryReleaseCount=0,
         followerBoundaryLease=nil,followerBoundaryApplyCount=0,followerBoundaryReleaseCount=0,followerBoundaryUpdateCount=0
     },Dispatcher)
 end
 function Dispatcher:setCapability(capability) self.capability=capability end
-function Dispatcher:getCapabilityObservation()
-    if self.capability~=nil and type(self.capability.getControlExecutionObservation)=="function" then
-        return self.capability:getControlExecutionObservation()
+function Dispatcher:setCooperativePassageControl(control)
+    self.cooperativePassageControl=control
+    if control~=nil and type(control.setCompletionHandler)=="function" then
+        control:setCompletionHandler(function(result) self:_onCooperativePassageCompletion(result) end)
     end
+end
+function Dispatcher:getCapabilityObservation()
+    if self.capability~=nil and type(self.capability.getControlExecutionObservation)=="function" then return self.capability:getControlExecutionObservation() end
     return nil
 end
 function Dispatcher:_outcome(request,status,effect,failure)
-    local values={identity=self.runtime.identities:issue("CONTROL_OUTCOME"),requestId=request.identity,status=status,observedPhysicalEffect=effect or {},progress={},provenance={source="LiveControlDispatcher",capability="Prototype22CapabilityGate"},timestamp=(tonumber(g_time) or 0)/1000}
+    local values={identity=self.runtime.identities:issue("CONTROL_OUTCOME"),requestId=request.identity,status=status,observedPhysicalEffect=effect or {},progress={},provenance={source="LiveControlDispatcher"},timestamp=(tonumber(g_time) or 0)/1000}
     if failure~=nil then values.failureEvidence=failure end
     local outcome=OuttaMyWay.ControlOutcome.new(values); self.outcomes[#self.outcomes+1]=outcome; return outcome
 end
-function Dispatcher:_controlRequest(picture,evaluated,candidate,commitment,bridge)
-    local assemblyId=assemblyIdForCandidate(candidate)
-    if assemblyId==nil then return nil,"SELECTED_PHYSICAL_CANDIDATE_REQUIRES_EXACTLY_ONE_PROGRESS_ACTUATION_ASSEMBLY" end
-    local token=nil
-    for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(commitment.identity)) do if candidateToken.assemblyId==assemblyId then token=candidateToken break end end
-    if token==nil or self.runtime.authorities:validate(token)~=true then return nil,"VALID_COMMITMENT_AUTHORITY_TOKEN_UNAVAILABLE" end
-    local request=OuttaMyWay.ControlRequest.new({
-        identity=self.runtime.identities:issue("CONTROL_REQUEST"),commitmentId=commitment.identity,assemblyId=assemblyId,capability=candidate.capability,
-        target={kind="P22_TS015_REFUGE_REPOSITION",yieldParticipantReferenceKey=bridge.yieldParticipantReferenceKey,progressParticipantReferenceKey=bridge.progressParticipantReferenceKey,pairReferenceKey=bridge.pairReferenceKey,encounterIdentity=bridge.encounterIdentity,governingRequirementKey=bridge.governingRequirementKey},
-        authorityToken=token.identity,operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=commitment.effectiveActuationCompositionId,
-        preconditions=candidate.preconditions or {},invalidationConditions=candidate.invalidationConditions or {}
-    })
-    self.requests[#self.requests+1]=request; return request,nil
+
+function Dispatcher:_jointCooperativeRequests(picture,evaluated,candidate,commitment,bridge)
+    local ids=ownershipAssemblyIds(candidate)
+    if #ids~=2 then return nil,"COOPERATIVE_PASSAGE_REQUIRES_EXACTLY_TWO_PROGRESS_ACTUATION_ASSEMBLIES" end
+    local requests={}
+    for _,assemblyId in ipairs(ids) do
+        local token=nil
+        for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(commitment.identity)) do
+            if candidateToken.assemblyId==assemblyId then token=candidateToken break end
+        end
+        if token==nil or self.runtime.authorities:validate(token)~=true then return nil,"VALID_JOINT_COMMITMENT_AUTHORITY_TOKEN_UNAVAILABLE" end
+        local request=OuttaMyWay.ControlRequest.new({
+            identity=self.runtime.identities:issue("CONTROL_REQUEST"),commitmentId=commitment.identity,assemblyId=assemblyId,capability="REPOSITION",
+            target={kind="TS015_COOPERATIVE_PASSAGE",pairReferenceKey=bridge.pairReferenceKey,encounterIdentity=bridge.encounterIdentity,governingRequirementKey=bridge.governingRequirementKey,
+                condorReferenceKey=bridge.condorReferenceKey,patriotReferenceKey=bridge.patriotReferenceKey,controlProfile=bridge.controlProfile},
+            authorityToken=token.identity,operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=commitment.effectiveActuationCompositionId,
+            preconditions=candidate.preconditions or {},invalidationConditions=candidate.invalidationConditions or {}
+        })
+        self.requests[#self.requests+1]=request; requests[#requests+1]=request
+    end
+    return requests,nil
+end
+
+function Dispatcher:_onCooperativePassageCompletion(result)
+    if type(result)~="table" or type(result.commitmentId)~="string" then return end
+    if result.status=="SUCCEEDED" then
+        local settled,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.completeCooperativePassage(self.runtime,result.commitmentId,result.evidence)
+        if settled==nil then
+            logWarning("COOPERATIVE_COMPLETION_UNRESOLVED commitment=%s reason=%s",tostring(result.commitmentId),tostring(reason))
+        else
+            logInfo("COOPERATIVE_COMPLETION commitment=%s terminal=%s authorityReleased=true cooldown=false",tostring(result.commitmentId),tostring(settled.commitment and settled.commitment.state or "n/a"))
+        end
+    elseif result.status=="FAILED" then
+        local record=self.runtime.commitments:get(result.commitmentId)
+        if record~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then
+            for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.runtime.obligations:openForOwner(result.commitmentId)) do
+                local outcome=obligation.requiredOutcome
+                if type(outcome)=="table" and outcome.kind=="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK" then
+                    self.runtime.obligations:settle(obligation.identity,"BASIS_CESSATION",result.evidence or {kind="COOPERATIVE_PASSAGE_FAILED"})
+                end
+            end
+            local verdict=self.runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_FAILED",evidence=result.evidence or {},provenance={source="LiveControlDispatcher"}})
+            local settling=self.runtime.terminalSettlementEvaluator:enterSettling(result.commitmentId,verdict)
+            if not self.runtime.obligations:hasOpenObligations(result.commitmentId) then
+                self.runtime.terminalSettlementEvaluator:attemptTerminal(result.commitmentId,result.evidence or {kind="COOPERATIVE_PASSAGE_FAILED"})
+            end
+            logWarning("COOPERATIVE_ABORT_SETTLEMENT commitment=%s releasedAuthority=%d",tostring(result.commitmentId),#(settling.releasedAuthorityTokenIds or {}))
+        end
+    end
 end
 
 local D0123_OWNER_TAG="D0123_GUARDED_RECOVERY"
@@ -214,34 +255,35 @@ function Dispatcher:getFollowerBoundaryStatus()
         updateCount=self.followerBoundaryUpdateCount,releaseCount=self.followerBoundaryReleaseCount,ownerTag=D0141_OWNER_TAG}
 end
 
--- A role-reversed head-on may select the currently regulated follower itself as
--- the new Yield/Reposition worker.  Once the head-on REVISE Decision has been
+-- Cooperative Passage may supersede a same-pair D-0141 follower strategy under
+-- the existing Commitment. Once the Cooperative Passage REVISE Decision has been
 -- applied, that D-0141 speed lease is no longer compatible with the worker's
 -- new role.  Clear only the D-0141 physical lease and settle its follower
 -- obligation; the generic same-Commitment AuthorityToken is deliberately kept
 -- live and has already been rebound by applyHeadOnDecision to REPOSITION.
-function Dispatcher:_supersedeFollowerBoundaryForHeadOn(commitment,candidate)
+function Dispatcher:_supersedeFollowerBoundaryForCooperativePassage(commitment,candidate)
     local lease=self.followerBoundaryLease
     if lease==nil or commitment==nil or candidate==nil then return nil end
-    local yieldAssemblyId=assemblyIdForCandidate(candidate)
-    if lease.commitmentId~=commitment.identity or lease.followerAssemblyId~=yieldAssemblyId then return nil end
+    local ids={}
+    for _,id in ipairs(ownershipAssemblyIds(candidate)) do ids[id]=true end
+    if lease.commitmentId~=commitment.identity or ids[lease.followerAssemblyId]~=true or ids[lease.leaderAssemblyId]~=true then return nil end
 
     if self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" then
         self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
     end
     local settled,settleReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleFollowerBoundaryPurpose(self.runtime,commitment.identity,{
-        pairKey=lease.pairKey,reason="HEAD_ON_REPOSITION_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION"
-    },{kind="D0141_HEAD_ON_ROLE_SUCCESSION",pairKey=lease.pairKey,yieldAssemblyId=yieldAssemblyId})
+        pairKey=lease.pairKey,reason="COOPERATIVE_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION"
+    },{kind="D0143_COOPERATIVE_PASSAGE_ROLE_SUCCESSION",pairKey=lease.pairKey,assemblyIds=ownershipAssemblyIds(candidate)})
     if settled==nil then
-        logWarning("D0141_HEAD_ON_SUPERSESSION follower=%s commitment=%s pair=%s physicalLeaseCleared=true obligationSettlement=%s",
-            tostring(yieldAssemblyId),tostring(commitment.identity),tostring(lease.pairKey),tostring(settleReason))
+        logWarning("D0141_COOPERATIVE_SUPERSESSION commitment=%s pair=%s physicalLeaseCleared=true obligationSettlement=%s",
+            tostring(commitment.identity),tostring(lease.pairKey),tostring(settleReason))
     else
-        logInfo("D0141_HEAD_ON_SUPERSESSION follower=%s commitment=%s pair=%s physicalLeaseCleared=true authorityTokenReusedForYield=true obligation=%s",
-            tostring(yieldAssemblyId),tostring(commitment.identity),tostring(lease.pairKey),tostring(settled.settledObligationId or "NONE"))
+        logInfo("D0141_COOPERATIVE_SUPERSESSION commitment=%s pair=%s physicalLeaseCleared=true obligation=%s",
+            tostring(commitment.identity),tostring(lease.pairKey),tostring(settled.settledObligationId or "NONE"))
     end
     self.followerBoundaryReleaseCount=self.followerBoundaryReleaseCount+1
     self.followerBoundaryLease=nil
-    return {settled=settled,reason=settleReason,yieldAssemblyId=yieldAssemblyId}
+    return {settled=settled,reason=settleReason}
 end
 
 function Dispatcher:_releaseGuardedRecoveryLease(picture,evaluated,reason)
@@ -332,44 +374,51 @@ function Dispatcher:dispatch(picture,evaluated)
     local follower=self:_dispatchFollowerBoundary(picture,evaluated,candidate)
     if follower~=nil then return follower end
     if candidate==nil or physical[candidate.capability]~=true then return {status="NO_DISPATCH",reason="NO_SELECTED_PHYSICAL_CANDIDATE"} end
-    -- D-0141 follower Regulation is aligned through Situation/Candidate/Decision/
-    -- Commitment/central Control. Committed-transition D-0131/D-0133 remains shadow.
-    local bridge=headOnBridge(candidate)
-    if candidate.capability~="REPOSITION" or bridge==nil then return {status="NO_DISPATCH",reason="PHYSICAL_CANDIDATE_NOT_YET_ALIGNED_FOR_LIVE_CONTROL",candidateId=candidate.identity} end
-    if self.capability==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",candidateId=candidate.identity} end
-    local inventory=evaluated.candidateInventory; local boundary=inventory and inventory.supportBoundary or nil
-    local independentHeadOnSupported=type(boundary)=="table" and boundary.mode=="AUTONOMOUS_HEAD_ON_RESOLUTION_TEST"
-    local disposition="ALLOW"
-    if type(self.capability.getAutonomousHeadOnAvailability)=="function" then disposition=self.capability:getAutonomousHeadOnAvailability(independentHeadOnSupported) end
-    if disposition=="BLOCK_ACTIVE_REFUGE_RESOLUTION" or disposition=="BLOCK_PRIOR_REFUGE_HANDOFF_UNRESOLVED" or disposition=="BLOCK_NO_INDEPENDENT_HEAD_ON_SUPPORT" then return {status="NO_DISPATCH",reason=disposition,candidateId=candidate.identity} end
-    if disposition=="ALLOW_SUPERSEDE_PRIOR_REFUGE_MONITOR_AFTER_INDEPENDENT_HEAD_ON_SUPPORT" and type(self.capability.supersedePriorRefugeMonitorForCurrentHeadOn)=="function" then self.capability:supersedePriorRefugeMonitorForCurrentHeadOn() end
+    local bridge=cooperativePassageBridge(candidate)
+    if candidate.capability~="REPOSITION" or bridge==nil then return {status="NO_DISPATCH",reason="PHYSICAL_CANDIDATE_NOT_ALIGNED_FOR_LIVE_CONTROL",candidateId=candidate.identity} end
+    if self.cooperativePassageControl==nil then return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_CONTROL_UNAVAILABLE",candidateId=candidate.identity} end
+    local inventory=evaluated.candidateInventory
+    local boundary=inventory and inventory.supportBoundary or nil
+    if type(boundary)~="table" or boundary.mode~="TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST" then
+        return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_SUPPORT_BOUNDARY_MISMATCH",candidateId=candidate.identity}
+    end
+    if type(self.cooperativePassageControl.isActive)=="function" and self.cooperativePassageControl:isActive() then
+        return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_CONTROL_ALREADY_ACTIVE",candidateId=candidate.identity}
+    end
 
-    local applied,applyReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyHeadOnDecision(self.runtime,picture,evaluated)
-    if applied==nil then logWarning("REFUSED decision=%s candidate=%s reason=COMMITMENT_APPLICATION_FAILED detail=%s",tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(applyReason)); return {status="NO_DISPATCH",reason="COMMITMENT_APPLICATION_FAILED",detail=applyReason,candidateId=candidate.identity} end
+    local applied,applyReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision(self.runtime,picture,evaluated)
+    if applied==nil then
+        logWarning("COOPERATIVE_REFUSED decision=%s candidate=%s reason=COMMITMENT_APPLICATION_FAILED detail=%s",tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(applyReason))
+        return {status="NO_DISPATCH",reason="COMMITMENT_APPLICATION_FAILED",detail=applyReason,candidateId=candidate.identity}
+    end
     local commitment=applied.commitment
-    -- v4.7.75: if this exact Yield assembly was the active D-0141 follower, the
-    -- positive head-on strategy has now superseded that speed-control role.
-    -- Keep the generic same-Commitment authority token, but remove the physical
-    -- D-0141 cap before starting the Yield/Reposition manoeuvre.
-    self:_supersedeFollowerBoundaryForHeadOn(commitment,candidate)
-    local request,requestReason=self:_controlRequest(picture,evaluated,candidate,commitment,bridge)
-    if request==nil then
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.markActuationStartFailed(self.runtime,commitment.identity,{reason=requestReason,source="LiveControlDispatcher"})
+    self:_supersedeFollowerBoundaryForCooperativePassage(commitment,candidate)
+
+    local requests,requestReason=self:_jointCooperativeRequests(picture,evaluated,candidate,commitment,bridge)
+    if requests==nil then
+        self:_onCooperativePassageCompletion({status="FAILED",commitmentId=commitment.identity,evidence={kind="D0143_JOINT_CONTROL_REQUEST_CREATION_FAILED",reason=requestReason}})
         return {status="NO_DISPATCH",reason=requestReason,candidateId=candidate.identity,commitmentId=commitment.identity}
     end
-    local started,result=false,"CAPABILITY_REJECTED"
-    if type(self.capability.executeControlRequest)=="function" then started,result=self.capability:executeControlRequest(request,candidate) end
+    local started,result=self.cooperativePassageControl:executeJointRequests(requests[1],requests[2],candidate)
     if started~=true then
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.markActuationStartFailed(self.runtime,commitment.identity,{reason=tostring(result),source="LiveControlDispatcher.executeControlRequest",requestId=request.identity})
-        local outcome=self:_outcome(request,"REJECTED",{kind="NO_PHYSICAL_EFFECT_OBSERVED"},{reason=tostring(result)})
-        logWarning("REJECTED request=%s commitment=%s candidate=%s detail=%s",tostring(request.identity),tostring(commitment.identity),tostring(candidate.identity),tostring(result))
-        return {status="REJECTED",reason=tostring(result),request=request,outcome=outcome,commitment=commitment,candidate=candidate}
+        self:_onCooperativePassageCompletion({status="FAILED",commitmentId=commitment.identity,evidence={kind="D0143_COOPERATIVE_CONTROL_START_REJECTED",reason=tostring(result)}})
+        local outcomes={
+            self:_outcome(requests[1],"REJECTED",{kind="NO_PHYSICAL_EFFECT_OBSERVED"},{reason=tostring(result)}),
+            self:_outcome(requests[2],"REJECTED",{kind="NO_PHYSICAL_EFFECT_OBSERVED"},{reason=tostring(result)})
+        }
+        logWarning("COOPERATIVE_REJECTED commitment=%s candidate=%s detail=%s",tostring(commitment.identity),tostring(candidate.identity),tostring(result))
+        return {status="REJECTED",reason=tostring(result),requests=requests,outcomes=outcomes,commitment=commitment,candidate=candidate}
     end
     self.dispatchCount=self.dispatchCount+1
-    if self.runtime~=nil and type(self.runtime.markAutonomousHeadOnDispatched)=="function" then self.runtime:markAutonomousHeadOnDispatched(bridge.governingRequirementKey) end
-    local outcome=self:_outcome(request,"ACCEPTED",{kind="BOUNDED_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"},nil)
-    logInfo("ACCEPTED decision=%s candidate=%s commitment=%s request=%s yieldRef=%s progressRef=%s result=%s",tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(commitment.identity),tostring(request.identity),tostring(bridge.yieldParticipantReferenceKey),tostring(bridge.progressParticipantReferenceKey),tostring(result))
-    return {status="ACCEPTED",request=request,outcome=outcome,commitment=commitment,candidate=candidate,result=result}
+    local outcomes={
+        self:_outcome(requests[1],"ACCEPTED",{kind="D0143_JOINT_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"},nil),
+        self:_outcome(requests[2],"ACCEPTED",{kind="D0143_JOINT_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"},nil)
+    }
+    logInfo("COOPERATIVE_ACCEPTED decision=%s candidate=%s commitment=%s requestA=%s requestB=%s condor=%s patriot=%s result=%s",
+        tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(commitment.identity),tostring(requests[1].identity),tostring(requests[2].identity),
+        tostring(bridge.condorReferenceKey),tostring(bridge.patriotReferenceKey),tostring(result))
+    return {status="ACCEPTED",requests=requests,outcomes=outcomes,commitment=commitment,candidate=candidate,result=result}
+
 end
 function Dispatcher:getDispatchCount() return self.dispatchCount end
 function Dispatcher:getRequests() local out={}; for _,v in OuttaMyWay.ValueRecord.ipairs(self.requests) do out[#out+1]=v end; return out end

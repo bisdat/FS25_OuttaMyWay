@@ -1,3 +1,17 @@
+# v4.7.98 continuity boundary — simpler current architecture, explicit incompleteness
+
+Owner-declared canonical is v4.7.95 (`1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1`, Git `f1a3ec95d2cfd554c7c3f2715090b48e4576706b`). v4.7.98 is a candidate reconstructed from that baseline with the live-successful v4.7.97 Cooperative Passage implementation reapplied.
+
+**Current proven path:** D-0141 follower Regulation may preserve Action Space; D-0143 Cooperative Passage automatically resolves the bounded TS015 Condor/Patriot near-collinear Productive/Productive class through the real production chain.
+
+**Current simplification:** D-0144 retains Productive/Transitional state, current motion/heading, cached physical representation, cooperative relevance/obligations and optional Turning Rank awareness. It retires Rook/Successor-Rook governing prediction, chessboard colouring, continuous Productive History, King Reserve, continuous Refuge discovery and headland-U-turn-specific solving.
+
+**Do not overclaim:** general Cooperative Passage is incomplete. Productive/Transitional opposed authority, asymmetric passage, other assemblies, generic negative clearance and wider regression coverage are unresolved.
+
+A new conversation should start from this distinction: PROVEN / RETIRED / UNRESOLVED, not from the older D-0142 chessboard implementation agenda.
+
+---
+
 # v4.7.95 Cooperative Passage production-direction continuity boundary
 
 Owner-declared canonical baseline is v4.7.77:

@@ -10,7 +10,7 @@ The active replacement core may discover and cache Job Episode assembly structur
 
 Archive donor mechanisms must be extracted into focused active modules; archived modules remain unsourced.
 
-**D-0143 boundary:** the immediate implementation objective is the narrow TS015 Cooperative Passage production path. King Reserve/continuous Refuge discovery is retired; P23 is an evidence/physical donor only and must not be sourced as a parallel controller. Unsupported asymmetric or broad vehicle generalisation remains outside this tranche.
+**D-0144 boundary:** preserve the live-successful bounded TS015 Cooperative Passage and D-0141 follower Regulation path while simplifying Situation Knowledge. Rook/Successor-Rook governing prediction, chessboard colouring/continuous Productive History, King Reserve/continuous Refuge discovery and headland-U-turn-specific solving are retired. Turning Rank may remain optional current spatial Knowledge but is not route prediction. Cooperative Passage remains explicitly incomplete outside the demonstrated TS015 Productive/Productive class.
 
 # FS25_OuttaMyWay Core Replacement Implementation Contract
 
@@ -18,8 +18,8 @@ Archive donor mechanisms must be extracted into focused active modules; archived
 > **Canonical ZIP SHA-256:** `0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`  
 > **Canonical Git commit:** `1742c197c21a1fb127932dcc15303dbd58515d6d`  
 > **Repository files:** 305  
-> **Contract status:** D-0143-aligned implementation contract for work after v4.7.95 canonicalisation  
-> **Architecture authority:** current `docs/ARCHITECTURE.md`, with D-0143 normative where it supersedes D-0142 and the companion contracts
+> **Contract status:** D-0144-aligned implementation contract for v4.7.98 candidate and subsequent work  
+> **Architecture authority:** current `docs/ARCHITECTURE.md`, with D-0144 normative over preserved D-0143/D-0141 and companion contracts
 
 ## 1. Purpose
 
@@ -41,7 +41,7 @@ The existing procedural core is not:
 
 ## 2. Canonical architecture implementation rule
 
-Implementation begins from the current owner-declared canonical artefact and the current canonical architecture. D-0143 governs where it supersedes D-0142; surviving D-0142 contracts remain authoritative.
+Implementation begins from the current owner-declared canonical artefact and current governing architecture. D-0144 governs the simplified Situation model; D-0143/D-0141 remain authoritative for bounded Cooperative Passage/follower Regulation where not superseded.
 
 Implementation must not:
 
@@ -56,7 +56,7 @@ Implementation must not:
 - convert `UNKNOWN` into negative authority;
 - add fixture-specific exceptions to mandatory constraints.
 
-The first implementation build after v4.7.95/D-0143 canonicalisation is **TS015 Cooperative Passage Production Integration**. It must add only the minimum production Knowledge/Candidate/Constraint/Decision/Commitment/Authority/Control coupling required for the demonstrated Condor/Patriot near-collinear TS015 class. P23 remains evidence/donor material; King Reserve and continuous Refuge discovery remain retired. Unsupported asymmetric or broad vehicle generalisation is outside this tranche.
+The bounded TS015 Cooperative Passage production integration is now live-demonstrated. Subsequent implementation must preserve that behaviour and address only explicitly unresolved authority. The next known question is Productive/Transitional near-collinear opposed support; it must not be solved by silently weakening the Productive/Transitional distinction. Broader vehicle/asymmetric/general-clearance work remains outside the immediate tranche.
 
 ### Supersession stop condition
 

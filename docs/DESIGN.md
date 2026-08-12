@@ -2,9 +2,9 @@
 
 > **Authority:** Replacement-core design boundary
 >
-> **Currency:** v4.7.95 D-0143 Cooperative Passage Production Direction over surviving D-0142; owner-declared canonical v4.7.77 is the implementation baseline
+> **Currency:** v4.7.98 D-0144 Progressive Situational Sufficiency over preserved D-0143 Cooperative Passage / D-0141 Regulation; owner-declared canonical v4.7.95 is the baseline
 >
-> **Implementation status:** v4.7.95 changes architecture/documentation only. The v4.7.77 runtime remains behaviourally unchanged. P23 is evidence only; King/continuous Refuge discovery is retired from the next production direction.
+> **Implementation status:** v4.7.98 candidate reapplies live-successful v4.7.97 bounded production behaviour over canonical v4.7.95 and unsources only retired continuous coverage/refuge diagnostics.
 
 ## Purpose
 
@@ -42,12 +42,13 @@ Observation does not assign Productive/Transitional meaning or traffic policy.
 ### Situation Assessment
 
 - maintain Field World identity, participation and positive cooperative relevance;
-- establish Productive Regime / Rook Knowledge;
-- maintain positive productive-history colouring;
-- derive Successor Rook Set and bounded Transitional Demand;
-- evaluate configuration/phase-specific Representation Fitness;
-- maintain Resolution-Space state and current support for Configuration-Released Space / Cooperative Passage applicability where positively evidenced;
-- publish uncertainty and evidence gaps.
+- establish current Productive or Transitional state from positive evidence;
+- retain current motion/heading and current obligation/demand context;
+- consume bootstrap-cached configuration/phase-specific physical representation and Representation Fitness;
+- retain optional Turning Rank awareness when it materially supports observation/Regulation, without route prediction;
+- maintain current support for Configuration-Released Space / Cooperative Passage applicability where positively evidenced;
+- publish uncertainty and evidence gaps;
+- do not maintain Rook/Successor-Rook prediction, chessboard colouring or continuous Productive History as governing runtime Knowledge.
 
 Situation Assessment produces Knowledge only.
 
@@ -109,7 +110,7 @@ Decision does not plan routes or actuate vehicles.
 - Hold, Regulate native GIANTS speed, compact/restore, execute selected bounded displacement and relinquish;
 - report physical outcomes.
 
-Control does not select Cooperative Passage or Refuge, infer HEAD_ON/follower classes, interpret Rook/Transitional Demand or settle Commitments.
+Control does not select Cooperative Passage, infer traffic classes, interpret Productive/Transitional/Turning-Rank semantics, search Refuge space or settle Commitments.
 
 ## Commitment state model
 

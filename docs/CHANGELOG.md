@@ -1,3 +1,28 @@
+# v4.7.98 CANONICAL CANDIDATE — D-0144 Progressive Situational Sufficiency Consolidation
+
+- Starts from exact owner-declared canonical v4.7.95 (`1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1`; Git `f1a3ec95d2cfd554c7c3f2715090b48e4576706b`; 305 files).
+- Reapplies the live-successful v4.7.97 bounded TS015 Cooperative Passage production delta over that canonical baseline.
+- Records D-0144 **Progressive Situational Sufficiency**: Situation Assessment acquires only enough positive current Knowledge for the next least-authority action rather than maintaining speculative future-route structure.
+- Retains Productive/Transitional current state, optional non-predictive Turning Rank awareness, D-0141 follower Regulation, D-0143 Configuration-Released Space/Cooperative Passage, normal Candidate/Constraint/Decision/Commitment ownership and bootstrap-cached physical representation.
+- Retires Rook as a required governing structure, Successor Rook Set prediction, chessboard colouring and continuous Productive History reasoning. King Reserve, continuous Refuge search/qualification and headland-U-turn-specific solving remain retired.
+- Unsources `DemonstratedProductiveCoverageProbe.lua`, `ProductiveCoverageResidualProbe.lua` and `RefugeQualificationShadowProbe.lua` from the live runtime while preserving their files as historical evidence donors.
+- Introduces no new footprint, polygon, sweep or shape calculations; Cooperative Passage continues to consume existing Situation `physicalSpaceEvidence`.
+- Preserves successful v4.7.97 Cooperative Passage geometry/calibration and D-0141 Regulation behaviour unchanged.
+- Adds an explicit **Cooperative Passage Scope Boundary** health warning: bounded TS015 near-collinear Productive/Productive capability is demonstrated, but Productive/Transitional, asymmetric, other-assembly, generic-clearance and broader-regression support remain incomplete.
+- Candidate only; owner canonicalisation remains an explicit separate act.
+
+# v4.7.97 TEST BUILD — D-0143 TS015 Purpose-Specific Representation Fitness Repair
+
+- Starts from owner-declared canonical v4.7.95 and reapplies the bounded v4.7.96 TS015 production slice as implementation/evidence lineage; v4.7.97 remains non-canonical.
+- Records the v4.7.96 live failure as **Generic Representation Gate Leakage**: Situation Assessment observed the supported near-collinear TS015 head-on, but the joint Cooperative Passage Candidate required the unrelated generic `live-representation:<worker>` scalar fitness records. Both sprayers reported those generic records as `STRUCTURALLY_INVALID`, so Mandatory Constraints withheld the Candidate before Control.
+- Repairs only that ownership error. Situation Assessment now publishes a D-0143 purpose-specific Representation Fitness record for each participant when the already-normalised `physicalSpaceEvidence` contains the bootstrap-cached current plan-view footprint/configuration profile and the encounter satisfies the existing narrow TS015 gate.
+- **No new shape discovery, decomposition, polygon construction, sweep evaluation or clearance calculation is introduced.** The repair consumes the existing `AssemblyRepresentationCache` → Observation → Situation Assessment footprint evidence already produced by the replacement core. It records the existing physical-primitive/hull summary and configuration-profile identity only as provenance.
+- The purpose-specific fitness grants only `D0143_TS015_COOPERATIVE_PASSAGE_EMPIRICAL_ADMISSIBILITY` for the current supported encounter. It explicitly does not grant generic negative-clearance authority, asymmetric-geometry authority or general vehicle-pair authority.
+- The Cooperative Passage Candidate now requires those two D-0143 purpose-specific fitness records and no longer depends on the structurally-invalid generic scalar conflict representations. Generic Representation Fitness remains unchanged and truthful for all other purposes.
+- Adds transition diagnostics `COOPERATIVE_ASSESSMENT_SUPPORTED`, `COOPERATIVE_CANDIDATE_PUBLISHED` and `COOPERATIVE_CONSTRAINT_VERDICT` so the next live run identifies the exact production layer reached without further inference from absence.
+- Preserves all v4.7.96/v4.7.94 bounded manoeuvre calibration unchanged: 50–70 m admission window, <=2 m initial lateral offset, ±6 m split, 12 m shallow entry/rejoin, 8 m pass margin, 8 km/h Control cap, same Hold/compact/pass/restore/handoff lifecycle and no cooldown.
+- Offline validation: 76/76 Python structural/conformance tests PASS; 196/196 Lua behavioural tests PASS.
+
 # v4.7.95 CANONICAL CANDIDATE — D-0143 Cooperative Passage Production Direction
 
 - Starts from exact owner-declared canonical v4.7.77 (`0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`; Git `1742c197c21a1fb127932dcc15303dbd58515d6d`; 305 files).

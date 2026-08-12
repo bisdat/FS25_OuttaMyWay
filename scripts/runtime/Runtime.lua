@@ -2,6 +2,11 @@ OuttaMyWay.Runtime = {}
 local Runtime = OuttaMyWay.Runtime
 Runtime.__index = Runtime
 
+local function cooperativeLog(formatText,...)
+    local message=string.format(formatText,...)
+    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][COOPERATIVE-PRODUCTION] %s",message) else print("[FS25_OuttaMyWay][COOPERATIVE-PRODUCTION] "..message) end
+end
+
 function Runtime.new()
     local identities=OuttaMyWay.IdentityRegistry.new(); local epochs=OuttaMyWay.EpochSequence.new(0)
     local commitments=OuttaMyWay.CommitmentRegistry.new(identities,epochs)
@@ -23,7 +28,7 @@ function Runtime.new()
         encounters=encounters,situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,encounters,commitments,obligations),
         candidateSpace=OuttaMyWay.CandidateSpace.new(identities,epochs),constraintEngine=OuttaMyWay.ConstraintEngine.new(identities,epochs),decisionSelector=OuttaMyWay.DecisionSelector.new(identities,epochs),
         targetedFieldIdentityProbe=OuttaMyWay.TargetedFieldIdentityProbe.new(),fieldWorldSnapshots=fieldWorldSnapshots,fieldWorldEquivalenceEvaluator=fieldWorldEquivalenceEvaluator,fieldWorldEquivalenceAuthority=fieldWorldEquivalenceAuthority,assemblyRepresentationCache=assemblyRepresentationCache,passiveCandidateSupport=OuttaMyWay.PassiveLiveCandidateSupport.new(identities,epochs),
-        trace=OuttaMyWay.ArchitectureTrace.new(),initialized=false,runtimeMode=OuttaMyWay.RUNTIME_MODE,controlAuthorityEnabled=false,generalControlAuthorityEnabled=false
+        trace=OuttaMyWay.ArchitectureTrace.new(),initialized=false,runtimeMode=OuttaMyWay.RUNTIME_MODE,controlAuthorityEnabled=false,generalControlAuthorityEnabled=false,cooperativeVerdictTraceKey=nil
     },Runtime)
     runtime.liveObservationSource=OuttaMyWay.LiveObservationSource.new(runtime.fieldWorldSnapshots,runtime.fieldWorldEquivalenceAuthority,runtime.assemblyRepresentationCache)
     runtime.liveTrafficCandidateSupport=OuttaMyWay.LiveTrafficCandidateSupport.new(identities,epochs,runtime.passiveCandidateSupport)
@@ -35,8 +40,8 @@ function Runtime.new()
 end
 function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
-    self.trace:append("ARCHITECTURE_AUTHORITY_ALIGNMENT_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";d0140AuthorityReset=true;d0141AlignedFollowerBoundary=true;runtimeOwnedCycle=true;situationOwnsProductiveKnowledge=true;currentAdjacentFollowingKnowledge=true;provisionalDemandSeed=true;historicalNativeManoeuvreBoundaryDemandFitness=UNRESOLVED;stickyPurposeElasticMagnitude=true;committedTransitionControlShadow=true;d0123CentralControl=true;diagnosticsAuthority=false;generalControl=false;boundedP22Control=true")
-    print(string.format("FS25_OuttaMyWay v%s CANONICAL CANDIDATE loaded; owner-declared v4.7.76 is canonical; D-0142 chessboard architecture is documentation authority for the next implementation increment; runtime traffic/Commitment/Control behaviour remains the v4.7.76 implementation; D-0140 Architecture Authority Alignment loaded and retained; D-0141 aligned follower Regulation retained; D-0134/D-0136/D-0138 passive; D-0137 falsified; bounded P22/head-on/follower/Guarded-Recovery paths remain legacy implementation evidence pending architecture alignment; general production Control authority disabled",OuttaMyWay.VERSION))
+    self.trace:append("PROGRESSIVE_SITUATIONAL_SUFFICIENCY_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";d0144=true;d0143CooperativePassage=true;ts015NarrowAuthority=true;d0141FollowerRegulation=true;turningRankAwarenessRetained=true;successorRookRetired=true;continuousProductiveHistoryRetired=true;kingRetired=true;continuousRefugeRetired=true;runtimeOwnedCycle=true;situationOwnsCurrentKnowledge=true;diagnosticsAuthority=false;generalControl=false")
+    print(string.format("FS25_OuttaMyWay v%s CANONICAL CANDIDATE loaded; owner-declared v4.7.95 is canonical; D-0144 Progressive Situational Sufficiency is candidate architecture; bounded D-0143 TS015 Cooperative Passage and D-0141 follower Regulation are preserved; Successor Rook/chessboard continuous Productive History, King Reserve and continuous Refuge discovery are retired; general production Control authority disabled",OuttaMyWay.VERSION))
 end
 
 function Runtime:setLiveControlCapability(capability)
@@ -71,6 +76,25 @@ function Runtime:processLiveObservation(raw)
     local processed=self:processSealedObservation(raw)
     local supported=self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot)
     local evaluated=self:evaluateSealedOperationalPicture(supported)
+    local boundary=supported.candidateSupportEvidence and supported.candidateSupportEvidence.supportBoundary or nil
+    if type(boundary)=="table" and boundary.mode=="TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST" and #(evaluated.candidates or {})>0 then
+        local candidate=evaluated.candidates[1]
+        local bridge=candidate.evidenceBasis and candidate.evidenceBasis.cooperativePassageBridge or nil
+        local traceKey=tostring(bridge and (bridge.encounterIdentity or bridge.pairReferenceKey) or candidate.identity)
+        if self.cooperativeVerdictTraceKey~=traceKey then
+            self.cooperativeVerdictTraceKey=traceKey
+            local summary={}
+            for _,verdict in OuttaMyWay.ValueRecord.ipairs(evaluated.verdicts or {}) do
+                if verdict.candidateId==candidate.identity then summary[#summary+1]=tostring(verdict.constraintId).."="..tostring(verdict.result) end
+            end
+            table.sort(summary)
+            cooperativeLog("COOPERATIVE_CONSTRAINT_VERDICT encounter=%s candidate=%s decision=%s selected=%s verdicts=%s",
+                tostring(bridge and bridge.encounterIdentity or "n/a"),tostring(candidate.identity),tostring(evaluated.decision and evaluated.decision.identity or "n/a"),
+                tostring(evaluated.decision and evaluated.decision.selectedCandidateId==candidate.identity),table.concat(summary,","))
+        end
+    else
+        self.cooperativeVerdictTraceKey=nil
+    end
     local dispatch=self.liveControlDispatcher:dispatch(supported,evaluated)
     return {
         snapshot=processed.snapshot,jobEpisodes=processed.jobEpisodes,operation=processed.operation,picture=supported,
@@ -82,5 +106,5 @@ end
 function Runtime:runReplay(fixture) return self.replayRunner:run(fixture) end
 function Runtime:getStatus()
     return {initialized=self.initialized,runtimeMode=self.runtimeMode,controlAuthorityEnabled=self.controlAuthorityEnabled,
-        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),replayRunCount=self.replayRunner:getRunCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportCount=self.liveTrafficCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportStatus=self.liveTrafficCandidateSupport:getLastStatus(),liveControlDispatchCount=self.liveControlDispatcher:getDispatchCount(),liveRuntimeCoordinatorCycleCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getCycleCount() or 0,liveRuntimeCoordinatorErrorCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getErrorCount() or 0,passiveTraceCount=#self.passiveLiveValidator:getRecords(),passiveErrorCount=self.passiveLiveValidator:getErrorCount(),fieldIdentityProbeSampleCount=self.targetedFieldIdentityProbe:getSampleCount(),fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),representationCacheRetiredCount=self.assemblyRepresentationCache.retiredCount or 0,activeOperationCount=#self.operations:listActive(),encounterCount=#self.encounters:list(),activeEncounterCount=#self.encounters:listActive(),commitmentCount=#self.commitments:list(),traceCount=self.trace:count()}
+        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),replayRunCount=self.replayRunner:getRunCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportCount=self.liveTrafficCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportStatus=self.liveTrafficCandidateSupport:getLastStatus(),liveControlDispatchCount=self.liveControlDispatcher:getDispatchCount(),cooperativePassageControlStatus=(self.liveControlDispatcher.cooperativePassageControl and self.liveControlDispatcher.cooperativePassageControl:getStatus() or nil),liveRuntimeCoordinatorCycleCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getCycleCount() or 0,liveRuntimeCoordinatorErrorCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getErrorCount() or 0,passiveTraceCount=#self.passiveLiveValidator:getRecords(),passiveErrorCount=self.passiveLiveValidator:getErrorCount(),fieldIdentityProbeSampleCount=self.targetedFieldIdentityProbe:getSampleCount(),fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),representationCacheRetiredCount=self.assemblyRepresentationCache.retiredCount or 0,activeOperationCount=#self.operations:listActive(),encounterCount=#self.encounters:list(),activeEncounterCount=#self.encounters:listActive(),commitmentCount=#self.commitments:list(),traceCount=self.trace:count()}
 end

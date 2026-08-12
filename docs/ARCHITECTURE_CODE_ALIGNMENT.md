@@ -1,9 +1,55 @@
-# v4.7.95 Architecture-to-Code Alignment Baseline — D-0143
+# v4.7.98 Architecture-to-Code Alignment — D-0144 Consolidation
 
-**Canonical implementation baseline:** owner-declared v4.7.77 (`0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`; Git `1742c197c21a1fb127932dcc15303dbd58515d6d`).  
-**Candidate:** v4.7.95 architecture/documentation only.
+**Canonical baseline:** v4.7.95 (`1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1`; Git `f1a3ec95d2cfd554c7c3f2715090b48e4576706b`; 305 files).  
+**Behaviour donor:** live-successful v4.7.97.
 
-This section supersedes the v4.7.77/D-0142 first-build plan where D-0143 conflicts. Do not migrate P23 wholesale and do not continue King implementation. The alignment target is the smallest production path that makes the demonstrated TS015 Cooperative Passage capability flow through existing owners.
+The candidate is reconstructed from canonical v4.7.95, not promoted wholesale from the test lineage. The v4.7.97 Cooperative Passage production delta is reapplied, then D-0144 removes only live sourcing/scheduling for the retired continuous productive-history/refuge diagnostic pipelines.
+
+## Alignment result
+
+| Responsibility | v4.7.98 disposition |
+|---|---|
+| Productive/Transitional current state | PRESERVE |
+| bootstrap-cached assembly/footprint evidence | PRESERVE; no new shape calculations |
+| Turning Rank | PRESERVE as optional Situation concept; no new runtime predictor |
+| D-0141 follower Regulation | PRESERVE unchanged |
+| D-0143 bounded TS015 Cooperative Passage | PRESERVE successful v4.7.97 behaviour unchanged |
+| Rook / Successor Rook Set | RETIRE as governing production requirement |
+| chessboard / continuous Productive History | RETIRE from live runtime/reasoning |
+| King Reserve / continuous Refuge | RETIRE, reaffirmed |
+| headland-U-turn scenario solver | RETIRE |
+| DemonstratedProductiveCoverageProbe | file retained; UNSOURCED live |
+| ProductiveCoverageResidualProbe | file retained; UNSOURCED live |
+| RefugeQualificationShadowProbe | file retained; UNSOURCED live |
+
+## Cooperative Passage health boundary
+
+Do not read the successful vertical slice as general completion. Productive/Transitional, asymmetric, other-assembly and generic-clearance support remain unresolved. Current TS015 numeric geometry remains calibration.
+
+## No-behaviour-change intent of the tidy-up
+
+Relative to successful v4.7.97, no Cooperative Passage gate, physical path, speed, target radius, Commitment sequence, D-0141 Regulation calibration or handoff rule is intentionally changed. The only live runtime reduction is removal of the three retired diagnostic event pipelines listed above.
+
+---
+
+# v4.7.97 Architecture-to-Code Alignment — D-0143 First Production Slice
+
+**Canonical implementation baseline:** owner-declared v4.7.95 (`1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1`; Git `f1a3ec95d2cfd554c7c3f2715090b48e4576706b`; 305 files).  
+**Implementation evidence build:** v4.7.97 TEST BUILD, non-canonical.
+
+D-0143 is already canonical architecture. v4.7.97 repairs the smallest production-coupling defect exposed by v4.7.96: the Cooperative Passage Candidate now consumes D-0143 purpose-specific Representation Fitness derived from existing Situation `physicalSpaceEvidence` instead of generic structurally-invalid scalar representations. No new shape calculation is added. It does not migrate P23 wholesale, revive King, or add a parallel head-on solver.
+
+## v4.7.97 alignment result
+
+The first vertical slice is implemented end-to-end:
+
+`Situation Assessment → Operational Picture → joint Candidate → Mandatory Constraints → Traffic Policeman/Decision → Commitment → joint Authority → Control → GIANTS handoff`
+
+Situation Assessment now owns the narrow TS015 support decision. Candidate generation consumes that published Knowledge. Commitment owns both progress participants under one purpose/composition. Control receives typed requests and performs only the selected physical sequence. Positive handoff terminally settles the Commitment immediately; there is no post-handoff cooldown.
+
+The implementation deliberately withholds unsupported asymmetric geometry and does not claim generic negative-clearance authority. Current 50-70 m / 2 m lateral / +/-6 m / 12 m / 8 m / 8 km/h values remain bounded TS015 calibration, not architecture.
+
+Live validation is the next authority check.
 
 ## Surviving-concept implementation map
 
@@ -16,15 +62,15 @@ This section supersedes the v4.7.77/D-0142 first-build plan where D-0143 conflic
 | Successor Rook Set / bounded Transitional Demand | architecture survives; implementation incomplete | retain architecture; implement only where TS015 coupling genuinely requires it |
 | King Reserve Availability | absent/experimental post-canonical implementation lineage | **RETIRE; do not implement** |
 | continuous Refuge discovery/qualification | experimental post-canonical lineage | **RETIRE; do not optimise or promote** |
-| Configuration-Released Space support | not a coherent production Knowledge contract | add the minimum Situation evidence needed for supported TS015 applicability |
-| Cooperative Passage Candidate | absent in canonical v4.7.77 | implement narrowly for supported TS015 pair/geometry |
+| Configuration-Released Space support | **implemented narrowly in v4.7.97** via `CooperativePassageAssessment` | live-validate the bounded TS015 Knowledge gate before broadening |
+| Cooperative Passage Candidate | **implemented narrowly in v4.7.97** as one joint multi-assembly `REPOSITION` | live-validate selection and ownership; do not generalise yet |
 | positive cooperative relevance | partial through existing admission/Future-Space evidence | re-express/use without creating a new head-on subsystem |
-| Candidate Action Space | structural skeleton exists; semantic generation partly scenario-specific | add joint multi-assembly `REPOSITION` without bypassing Candidate ownership |
+| Candidate Action Space | joint TS015 `REPOSITION` added through normal Candidate ownership | live-validate; preserve normal Candidate ownership |
 | Mandatory Constraints | structural skeleton exists; some verdicts remain candidate/pass-through | independently gate the new Candidate using existing contracts; no fake clearance authority |
-| Traffic Policeman / Decision | strong structural donor | select Cooperative Passage after ordinary preference-band exhaustion |
-| Commitment/Obligations | strong core | represent joint staged passage obligations and immediate reusability after handoff |
-| Bounded Authority | ownership basis exists | admit only the current passage phase |
-| Control | P22/P23 physical donors exist | extract/reuse Hold, compact/restore, bounded drive and handoff donors; no semantic selection |
+| Traffic Policeman / Decision | existing owner reused by v4.7.97 | live-validate Cooperative Passage selection after ordinary preference-band exhaustion |
+| Commitment/Obligations | joint purpose/restoration-handoff obligation implemented in v4.7.97 | live-validate same-Commitment succession and immediate reusability |
+| Bounded Authority | joint token ownership/composition implemented in v4.7.97 | live-validate two-participant authority ownership |
+| Control | production `CooperativePassageControl` added in v4.7.97 using proven physical donors | live-validate physical sequence; no semantic selection in Control |
 | post-handoff observation | diagnostic donors exist | separate from Commitment/Control; no cooldown |
 | asymmetric passage solver | unsupported by v4.7.94 boundary evidence | **DO NOT IMPLEMENT in TS015 tranche** |
 

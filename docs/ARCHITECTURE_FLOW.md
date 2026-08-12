@@ -1,99 +1,67 @@
 # Architecture Flow
 
-> **Authority:** Normative replacement-core responsibility and lifecycle map
->
-> **Currency:** D-0143 Cooperative Passage Production Direction over surviving D-0142; owner-declared canonical v4.7.77 is the implementation baseline
->
-> **Implementation status:** v4.7.95 is architecture/documentation only. The v4.7.77 runtime remains the implementation baseline. P23 is evidence only; the next production target is the narrow TS015 Cooperative Passage path.
+> **Authority:** D-0144 Progressive Situational Sufficiency over preserved D-0143/D-0141 responsibilities  
+> **Canonical baseline:** owner-declared v4.7.95  
+> **Candidate:** v4.7.98; successful v4.7.97 bounded production behaviour preserved
 
-## 1. Closed-loop responsibility flow
+## 1. Current closed-loop responsibility flow
 
 ```text
-┌─────────────────────────────────────────────────────────────┐
-│                           REALITY                           │
-│ GIANTS jobs, assemblies, Field World, motion/configuration │
-│ and realised physical effects                              │
-└──────────────────────────────┬──────────────────────────────┘
-                               │ sampled
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                         OBSERVATION                         │
-│ raw facts │ time │ source │ provenance │ uncertainty       │
-└──────────────────────────────┬──────────────────────────────┘
-                               │ interpreted
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    SITUATION ASSESSMENT                     │
-│ Field World │ Productive Regime/Rook │ productive history  │
-│ Successor Rook Set │ Transitional Demand │ configuration RF │
-│ relevance │ Config-Released-Space support │ Resolution state│
-└──────────────────────────────┬──────────────────────────────┘
-                               │ publishes Knowledge
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│               OPERATIONAL PICTURE KNOWLEDGE                 │
-│ immutable current supported interpretation + provenance    │
-│ no Candidate specifications or mandatory verdicts          │
-└──────────────────────────────┬──────────────────────────────┘
-                               │ enumerated
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                  CANDIDATE ACTION SPACE                     │
-│ complete supportable actions; no selection or PASS authoring│
-└──────────────────────────────┬──────────────────────────────┘
-                               │ independently gated
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                  MANDATORY CONSTRAINTS                      │
-│ phase fitness │ containment │ demand/obligation compatibility│
-│ capability │ authority composition                         │
-└──────────────────────────────┬──────────────────────────────┘
-                               │ admissible alternatives
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                  TRAFFIC POLICEMAN / DECISION               │
-│ temporary ordering │ Conflict Serialization │ admission     │
-│ selects action; does not actuate                            │
-└──────────────────────────────┬──────────────────────────────┘
-                               │ creates/revises
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                 COMMITMENT + OBLIGATIONS                    │
-│ Governing Basis │ durable selected relation │ Committed Demand│
-│ lifecycle │ obligation ownership                           │
-└──────────────────────────────┬──────────────────────────────┘
-                               │ grants exact phase
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    BOUNDED AUTHORITY                        │
-│ exact permitted physical phase/manoeuvre                   │
-└──────────────────────────────┬──────────────────────────────┘
-                               │ executed
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                          CONTROL                            │
-│ Hold │ Regulate │ compact/restore │ bounded displacement   │
-│ relinquish │ report physical outcome                       │
-└──────────────────────────────┬──────────────────────────────┘
-                               │ observed
-                               └───────────────────────────────↺
+REALITY / GIANTS
+    ↓
+OBSERVATION
+raw current facts + provenance
+    ↓
+SITUATION ASSESSMENT
+Field World / participants
+current Productive or Transitional state
+current motion / heading
+bootstrap-cached physical/configuration evidence
+cooperative relevance / obligations
+optional Turning Rank awareness
+    ↓
+OPERATIONAL PICTURE
+immutable supported current Knowledge
+    ↓
+CANDIDATE ACTION SPACE
+Observe / Regulate / Hold / Reposition candidates as supported
+    ↓
+MANDATORY CONSTRAINTS
+independent admissibility
+    ↓
+TRAFFIC POLICEMAN / DECISION
+least-authority temporary ordering / strategy selection
+    ↓
+COMMITMENT + OBLIGATIONS
+    ↓
+BOUNDED AUTHORITY
+    ↓
+CONTROL
+Hold / native speed Regulation / compact / bounded movement / restore / handoff
+    ↓
+GIANTS / observed Reality ↺
 ```
 
-## 1A. D-0143 TS015 Cooperative Passage path
+No current Situation layer requires Rook/Successor-Rook prediction, chessboard colouring, continuous Productive History, King Reserve, Refuge search or a headland-U-turn scenario class.
 
-For the first production integration, a supported near-collinear opposed TS015 situation may flow as:
+## 1A. Current TS015 maturation path
 
 ```text
-Situation: authoritative opposed Productive incompatibility
-  -> Candidate: joint Cooperative Passage REPOSITION
-  -> Constraints: configuration/capability/demand/sweep support
-  -> Decision: select after Observe/Regulate/Hold are exhausted for physical resolution
-  -> Commitment: stop + compact + separate + pass + rejoin + restore + handoff obligations
-  -> Authority/Control: execute only the current bounded phase
-  -> GIANTS resumes; passive observation has no cooldown authority
+uncertain or non-conflicting interaction
+    → Observe
+
+line-astern follower threatens to consume useful Action Space
+    → D-0141 Regulate follower while GIANTS retains route/steering
+
+Reality matures into supported near-collinear Productive/Productive opposed conflict
+    → D-0143 Cooperative Passage joint REPOSITION
+    → Hold both / compact / separated passage / rejoin / restore / immediate GIANTS handoff
+
+unsupported Productive/Transitional, asymmetric or unvalidated assembly case
+    → UNRESOLVED; do not infer authority
 ```
 
-King Reserve and continuous Refuge discovery do not participate in this path. Unsupported asymmetric geometry is rejected rather than routed through a broader solver during the TS015 closure increment.
+Turning Rank may be useful future/current Situation context for earlier observation/Regulation, but is not turn prediction and v4.7.98 adds no Turning Rank geometry calculation.
 
 ## 2. Encounter lifecycle flow
 

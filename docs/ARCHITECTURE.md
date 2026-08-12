@@ -1,12 +1,102 @@
 # Architecture
 
-## v4.7.95 Cooperative Passage Production Direction — normative precedence
+## v4.7.98 Progressive Situational Sufficiency — normative candidate precedence
+
+**Status:** canonical candidate architecture for owner review.  
+**Canonical baseline:** owner-declared v4.7.95 (`1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1`; Git `f1a3ec95d2cfd554c7c3f2715090b48e4576706b`; 305 files).  
+**Production evidence donor:** live-successful v4.7.97.  
+**Decision:** D-0144.
+
+D-0144 governs current Situation-model simplification. D-0143 remains authoritative for bounded Cooperative Passage where not superseded, and D-0141 remains authoritative for follower Regulation. Older Rook/chessboard/Successor-Rook, King/Refuge and scenario-specific material below is historical unless explicitly preserved here.
+
+### 0.1 Progressive Situational Sufficiency
+
+Situation Assessment should acquire **only enough positively supported current Knowledge to justify the next least-authority action**. Detailed future native route reconstruction is not a prerequisite when current uncertainty can be handled by continued Observation or bounded Regulation without consuming the necessary resolution option.
+
+Current production reasoning therefore centres on:
+
+- Field World / Operation / Job Episode identity;
+- current assembly/configuration and bootstrap-cached physical representation;
+- current Productive or Transitional state;
+- current motion, heading and native evidence;
+- current Encounter / cooperative relevance;
+- current obligations / Committed Demand;
+- optional Turning Rank awareness where it materially supports observation or early Regulation;
+- current Configuration-Released-Space / Cooperative-Passage applicability where positively supported.
+
+This is a simplification of what the system must know, not permission for Situation Assessment to select actions or bypass Candidate/Constraint/Decision ownership.
+
+### 0.2 Turning Rank awareness, not prediction
+
+**Turning Rank** remains a useful spatial concept: the first productive rank immediately infield of the Productive Headland Working Band where native transition may consume space. It may eventually help Situation Assessment recognise that a following relationship is approaching a transition-sensitive region and therefore justify closer observation or earlier Regulation.
+
+Turning Rank carries **no** authority to predict turn direction, identify a U-turn scenario, reconstruct a GIANTS route or manufacture transition clearance. v4.7.98 introduces no new Turning Rank geometry or shape calculation.
+
+### 0.3 Retired chessboard / successor machinery
+
+The following are retired from governing current production architecture:
+
+- Rook as a required productive-space structure;
+- Successor Rook Set / successor productive-structure prediction;
+- chessboard productive-history colouring;
+- continuous Productive History reasoning as a runtime obligation.
+
+Historical documents and diagnostics remain evidence provenance. Their continued existence in the repository does not create runtime or architectural authority. Transition-relevant demand must be supported from current positive evidence when it matters; no replacement speculative route model is introduced.
+
+### 0.4 Preserved leader/follower Regulation
+
+D-0141 remains live and useful. When a follower is closing while the leader's native continuation is not yet sufficiently revealed, Regulation may preserve Action Space and ordering while GIANTS retains route/steering ownership.
+
+Regulation is not a head-on resolver. If Reality matures into the supported D-0143 opposed Productive/Productive class, Cooperative Passage may supersede the follower purpose through the ordinary Candidate → Decision → Commitment lifecycle.
+
+### 0.5 Cooperative Passage Scope Boundary
+
+**Current status: bounded Cooperative Passage production capability demonstrated; general Cooperative Passage incomplete.**
+
+Live v4.7.97 evidence supports automatic production Cooperative Passage for the TS015 Condor Endurance II / Patriot 4450 **near-collinear Productive/Productive** class. It does not establish:
+
+- Productive/Transitional opposed authority;
+- general asymmetric passage;
+- arbitrary assembly/configuration capability;
+- generic negative-clearance proof;
+- universal authority for the current 50-70 m / 2 m / +/-6 m / 12 m / 8 m / 8 km/h calibration;
+- completeness across the historical regression family.
+
+Unsupported cases remain `UNRESOLVED` rather than inheriting authority from fixture success. Earlier asymmetric P23 failure remains valid boundary evidence even if changed intervention timing later produces a more symmetric final encounter.
+
+### 0.6 Physical representation / performance boundary
+
+The current bounded Cooperative Passage path consumes purpose-specific Representation Fitness derived from bootstrap-cached `physicalSpaceEvidence` already present in Situation Assessment. D-0144 introduces **no new shape discovery, polygon construction, footprint decomposition, transition sweep or continuous clearance calculation**.
+
+The historical Demonstrated Productive Coverage, Productive Coverage Residual and Refuge Qualification Shadow diagnostics are not sourced by the v4.7.98 live runtime. Their source files remain historical evidence donors.
+
+### 0.7 Current authority flow
+
+```text
+Reality / GIANTS
+  → Observation
+  → Situation Assessment: sufficient current Knowledge only
+  → Operational Picture
+  → Candidate Action Space
+  → Mandatory Constraints
+  → Traffic Policeman / Decision
+  → Commitment + Obligations
+  → Bounded Authority
+  → Control
+  → GIANTS / observed Reality
+```
+
+The immediate behavioural repertoire evidenced for TS015 is `Observe → Regulate when needed → Cooperative Passage when a supported opposed conflict requires Reposition`. Hold remains an available bounded action where independently admissible; no special headland-U-turn solver exists.
+
+---
+
+## v4.7.95 Cooperative Passage Production Direction — historical D-0143 authority preserved by D-0144
 
 **Status:** canonical candidate architecture for owner review.  
 **Implementation baseline:** owner-declared canonical v4.7.77 (`0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`; Git `1742c197c21a1fb127932dcc15303dbd58515d6d`; 305 files).  
 **Decision:** D-0143.
 
-This section supersedes D-0142 only where they conflict. D-0142 remains authoritative for Field World, Productive Regime/Rook, positive productive history, Successor Rook Set, bounded Transitional Demand, Configuration-Dependent Assembly Footprint, cooperative relevance, Resolution-Space Conservation, Conflict Serialization, post-Decision Committed Demand and the layer/authority boundaries. Its King/King-Reserve/ordinary-Refuge provisions are retired by D-0143.
+D-0143 remains authoritative for Configuration-Released Space, bounded Cooperative Passage, post-handoff ownership separation and the normal Candidate/Constraint/Decision/Commitment/Control chain. D-0144 supersedes D-0143/D-0142 where they retain Rook/Successor-Rook/chessboard/continuous Productive-History obligations. D-0143's King/King-Reserve/ordinary-Refuge retirement remains in force.
 
 Post-canonical v4.7.91-v4.7.94 P23 builds are **evidence donors only**. They do not become the implementation baseline and their fixture literals do not become architecture merely because the PoC succeeded.
 
@@ -123,7 +213,7 @@ Use the smallest production coupling required to make the already-demonstrated T
 
 ## v4.7.77 Field World / Chessboard Architecture Consolidation — historical D-0142 authority
 
-**Status:** accepted in owner-declared canonical v4.7.77; still authoritative except where superseded by D-0143 above.  
+**Status:** historical D-0142 authority; superseded by D-0143 and D-0144 where they conflict.  
 **Historical implementation baseline at decision time:** owner-declared canonical v4.7.76.  
 **Decision:** D-0142.
 

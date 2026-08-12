@@ -1,13 +1,15 @@
-# Current architecture lineage — v4.7.95 D-0143 Cooperative Passage Production Direction
+# Current architecture / implementation lineage — v4.7.98 canonical candidate
 
-Owner-declared canonical baseline is v4.7.77 (`0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`; Git `1742c197c21a1fb127932dcc15303dbd58515d6d`; 305 files).
+Owner-declared canonical baseline is v4.7.95 (`1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1`; Git `f1a3ec95d2cfd554c7c3f2715090b48e4576706b`; 305 files).
 
-v4.7.95 is an architecture/documentation-only canonical candidate. Runtime behaviour remains v4.7.77. Post-canonical P23 v4.7.91-v4.7.94 is evidence lineage only.
+v4.7.98 is a consolidation candidate governed by **D-0144 Progressive Situational Sufficiency** over the still-valid D-0143 Cooperative Passage and D-0141 follower-Regulation decisions. The candidate reapplies the live-successful v4.7.97 production implementation over exact canonical v4.7.95, then retires stale governing machinery that the successful TS015 path no longer needs.
 
-`ARCHITECTURE.md` D-0143 has normative precedence where it conflicts with D-0142. D-0143 retires King Reserve Availability, continuous Refuge discovery and the ordinary `A→R→A` King lifecycle from the governing production direction. It accepts Configuration-Released Space and Cooperative Passage, with the first production authority deliberately restricted to the demonstrated TS015 Condor Endurance II / Patriot 4450 near-collinear opposed-working class.
+**Current status: bounded Cooperative Passage production capability demonstrated; general Cooperative Passage incomplete.** Two near-collinear Condor/Patriot Productive/Productive encounters were automatically resolved through Situation Assessment → Candidate → Constraints → Decision → Commitment → Control in the v4.7.97 live run. D-0141 follower Regulation was also exercised and was cleanly superseded by Cooperative Passage.
 
-The immediate implementation objective is **TS015 Cooperative Passage Production Integration** through Situation Assessment → Candidate Action Space → Mandatory Constraints → Traffic Policeman / Decision → Commitment → Bounded Authority → Control. No new prototype branch or broader solver is authorised before that path works live.
+D-0144 retains Productive/Transitional state, current motion/heading, current bootstrap-cached physical representation, cooperative relevance, obligations, and Turning Rank as optional spatial Situation Knowledge. It retires Rook/Successor-Rook governing prediction, chessboard colouring and continuous Productive History reasoning. King Reserve, continuous Refuge discovery and headland-U-turn-specific solving remain retired.
 
-D-0142 remains authoritative for the Field World/chessboard Knowledge model, positive productive history, Productive Regime/Rook, Successor Rook Set, bounded Transitional Demand, Configuration-Dependent Assembly Footprint, cooperative relevance, Resolution-Space Conservation, Conflict Serialization, Committed Demand and layer ownership except for the retired King/continuous-Refuge provisions.
+The live runtime no longer sources `DemonstratedProductiveCoverageProbe.lua`, `ProductiveCoverageResidualProbe.lua` or `RefugeQualificationShadowProbe.lua`. They remain historical evidence files only. No replacement geometry calculations are introduced.
 
-Historical release and decision sections elsewhere in the repository are retained for provenance; current authority is this v4.7.95/D-0143 lineage.
+**Known incompleteness:** Transitional/Productive opposed Cooperative Passage authority is unresolved; asymmetric passage is not generally supported; other vehicle/implement combinations are unvalidated; current movement/gate literals remain TS015 calibration; generic negative-clearance authority and broader regression coverage remain incomplete.
+
+Start with `ARCHITECTURE.md`, `PROJECT_STATUS.md`, `DECISION_LOG.md`, `RESPONSIBILITY_MAP.md`, `ROADMAP.md` and `ENGINEERING_HANDOVER.md` for current authority and continuation.

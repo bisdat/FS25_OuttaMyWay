@@ -402,6 +402,113 @@ function Lifecycle.markNativeReacquisition(runtime, commitmentId, evidence)
     return {commitment=record,settledObligationIds=settled,remainingObligations=remaining,releasedAuthorityTokenIds=released},nil
 end
 
+
+local function isCooperativePassageObligation(obligation)
+    local outcome=obligation and obligation.requiredOutcome or nil
+    return type(outcome)=="table" and outcome.kind=="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
+end
+
+-- D-0143 joint Cooperative Passage admission/revision. CREATE uses the normal
+-- DecisionCommitmentBoundary. REVISE is needed only when an already-live traffic
+-- purpose (for example D-0141 follower protection) is succeeded by the joint
+-- TS015 Reposition; the fresh restoration/handoff obligation and both progress
+-- authority tokens are then attached to that same Commitment.
+function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated)
+    if runtime==nil or picture==nil or evaluated==nil or evaluated.decision==nil then return nil,"MISSING_CONTEXT" end
+    local candidate=selectedCandidate(evaluated)
+    if candidate==nil or candidate.capability~="REPOSITION" or type(candidate.evidenceBasis and candidate.evidenceBasis.cooperativePassageBridge)~="table" then
+        return nil,"SELECTED_COOPERATIVE_PASSAGE_UNAVAILABLE"
+    end
+    local action=evaluated.decision.commitmentAction
+    if action=="CREATE" then
+        local result,reason=Lifecycle.applyInitialDecision(runtime,picture,evaluated)
+        if result~=nil then
+            logInfo("COOPERATIVE_PASSAGE_CREATE commitment=%s owners=%d",tostring(result.commitment.identity),#(candidate.evidenceBasis.progressActuationOwnership and candidate.evidenceBasis.progressActuationOwnership.assemblyIds or {}))
+        end
+        return result,reason
+    end
+    if action~="REVISE" then return nil,"COOPERATIVE_PASSAGE_DECISION_NOT_CREATE_OR_REVISE" end
+
+    local application=runtime.decisionCommitmentBoundary:apply(picture,evaluated)
+    if application==nil or type(application.commitmentId)~="string" then return nil,"COOPERATIVE_PASSAGE_COMMITMENT_REVISION_UNRESOLVED" end
+    local commitmentId=application.commitmentId
+    local record=runtime.commitments:get(commitmentId)
+    if record==nil or record.state~="ACTIVE" then return nil,"COOPERATIVE_PASSAGE_REVISED_COMMITMENT_NOT_ACTIVE" end
+
+    local obligation=nil
+    for _,open in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
+        if isCooperativePassageObligation(open) then obligation=open break end
+    end
+    if obligation==nil then
+        local specification=(candidate.obligationsCreated or {})[1]
+        if type(specification)~="table" or type(specification.requiredOutcome)~="table" or specification.requiredOutcome.kind~="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK" then
+            return nil,"COOPERATIVE_PASSAGE_OBLIGATION_SPECIFICATION_UNAVAILABLE"
+        end
+        obligation=runtime.obligations:create({
+            origin=specification.origin,basis=specification.basis,ownerCommitmentId=commitmentId,
+            requiredOutcome=specification.requiredOutcome,requiredAuthority=specification.requiredAuthority or {},
+            evidenceContract=specification.evidenceContract,ownershipClass=specification.ownershipClass,
+            transferPolicy=specification.transferPolicy or {},terminalDependency=specification.terminalDependency~=false,
+            creationEvidence={kind="D0143_COOPERATIVE_PASSAGE_REVISE",decisionId=evaluated.decision.identity}
+        })
+    end
+
+    local ownership={}
+    for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(candidate.evidenceBasis.progressActuationOwnership and candidate.evidenceBasis.progressActuationOwnership.assemblyIds or {}) do
+        local owner=runtime.authorities:ownerOf(assemblyId)
+        local token=nil
+        if owner~=nil then
+            if owner~=commitmentId then return nil,"COOPERATIVE_PASSAGE_ASSEMBLY_OWNED_BY_OTHER_COMMITMENT" end
+            for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(runtime.authorities:tokensForCommitment(commitmentId)) do
+                if candidateToken.assemblyId==assemblyId then token=candidateToken break end
+            end
+            if token==nil or runtime.authorities:validate(token)~=true then return nil,"COOPERATIVE_PASSAGE_EXISTING_AUTHORITY_TOKEN_UNAVAILABLE" end
+        else
+            token=runtime.authorities:acquireProgress(assemblyId,commitmentId)
+        end
+        ownership[#ownership+1]={assemblyId=assemblyId,authorityTokenId=token.identity}
+    end
+    table.sort(ownership,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
+
+    local obligationIds={}
+    local seen={}
+    for _,id in OuttaMyWay.ValueRecord.ipairs(record.obligationIds or {}) do obligationIds[#obligationIds+1]=id; seen[id]=true end
+    if not seen[obligation.identity] then obligationIds[#obligationIds+1]=obligation.identity end
+    local composition=rebindComposition(candidate,commitmentId)
+    local changes={obligationIds=obligationIds,progressActuationOwnership=ownership,epoch=runtime.epochs:next()}
+    if composition~=nil then changes.effectiveActuationCompositionId=composition.identity end
+    record=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(record,changes))
+    logInfo("COOPERATIVE_PASSAGE_REVISE decision=%s commitment=%s obligation=%s owners=%d",tostring(evaluated.decision.identity),tostring(commitmentId),tostring(obligation.identity),#ownership)
+    return {application=application,commitment=record,cooperativePassageObligation=obligation},nil
+end
+
+-- Positive mechanical completion is also the bounded objective completion for
+-- this first TS015 Commitment: both assemblies have been restored with the same
+-- Job Episodes and handed back to GIANTS.  No forensic observer owns authority
+-- afterwards and there is no cooldown.  A later convergence is a fresh
+-- Encounter/Commitment.
+function Lifecycle.completeCooperativePassage(runtime,commitmentId,evidence)
+    if runtime==nil or type(commitmentId)~="string" then return nil,"MISSING_COOPERATIVE_PASSAGE_COMPLETION_CONTEXT" end
+    local record=runtime.commitments:get(commitmentId)
+    if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then return nil,"COOPERATIVE_PASSAGE_COMMITMENT_NOT_LIVE" end
+    local settled={}
+    for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
+        if isCooperativePassageObligation(obligation) then
+            runtime.obligations:settle(obligation.identity,"SATISFACTION",evidence or {kind="D0143_POSITIVE_RESTORATION_AND_HANDOFF"})
+            settled[#settled+1]=obligation.identity
+        end
+    end
+    local remaining=runtime.obligations:openForOwner(commitmentId)
+    if #remaining>0 then
+        return nil,"COOPERATIVE_PASSAGE_COMPLETION_BLOCKED_BY_OTHER_OPEN_OBLIGATIONS"
+    end
+    local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {},provenance={source="LiveTrafficCommitmentLifecycle.completeCooperativePassage",decision="D-0143"}})
+    local settling=runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
+    local terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,evidence or {kind="D0143_POSITIVE_RESTORATION_AND_HANDOFF"})
+    logInfo("COOPERATIVE_PASSAGE_SETTLED commitment=%s terminal=%s settledObligations=%d releasedAuthorityTokens=%d cooldown=false",tostring(commitmentId),tostring(terminal.state),#settled,#(settling.releasedAuthorityTokenIds or {}))
+    return {commitment=terminal,settledObligationIds=settled,releasedAuthorityTokenIds=settling.releasedAuthorityTokenIds or {}},nil
+end
+
 function Lifecycle.getStatus(runtime, commitmentId)
     if runtime==nil or commitmentId==nil then return nil end
     local record=runtime.commitments:get(commitmentId)

@@ -1,3 +1,13 @@
+# v4.7.98 D-0144 live-runtime retirement boundary
+
+The following historical diagnostics remain in the repository as empirical evidence but are deliberately **not sourced or scheduled by `scripts/main.lua`** in v4.7.98:
+
+- `scripts/diagnostics/DemonstratedProductiveCoverageProbe.lua`
+- `scripts/diagnostics/ProductiveCoverageResidualProbe.lua`
+- `scripts/diagnostics/RefugeQualificationShadowProbe.lua`
+
+Reason: D-0144 retires chessboard colouring, continuous Productive History reasoning and continuous Refuge qualification from current production responsibilities. No replacement shape/coverage calculation is introduced. Preserve the files until a later repository-history/archive pass can relocate them without obscuring provenance.
+
 # v4.7.0 active-core removal boundary
 
 The complete canonical v4.6.78 active Lua tree was removed from execution and preserved under `scripts/archive/v4_6_78/`. It is not deleted from historical evidence. Active v4.7.x code must not import the archive. Module-level dispositions are recorded in `LEGACY_MODULE_DISPOSITION.csv`.

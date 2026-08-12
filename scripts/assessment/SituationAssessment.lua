@@ -596,6 +596,15 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         clearanceFactor=OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR or 0.90
     })
 
+    local cooperativePassageKnowledge,cooperativePassageFitness=OuttaMyWay.CooperativePassageAssessment.buildKnowledge({
+        currentSpace=currentSpace,motionEvidence=motionEvidence,productiveKnowledge=productiveKnowledge,
+        physicalSpaceEvidence=physicalSpaceEvidence,situations=situations,encounters=encounters
+    })
+    for _,fitness in OuttaMyWay.ValueRecord.ipairs(cooperativePassageFitness or {}) do
+        representationFitness[#representationFitness+1]=fitness
+    end
+    table.sort(representationFitness,function(a,b) return tostring(a.representationId)<tostring(b.representationId) end)
+
     local candidateSupportEvidence = {
         currentSpaceEvidenceCount=#currentSpace,
         futureSpaceEvidenceCount=#futureSpace,
@@ -626,6 +635,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         productiveContinuationKnowledge=productiveKnowledge,
         guardedRecoveryKnowledge=guardedKnowledge,
         followerBoundaryKnowledge=followerBoundaryKnowledge,
+        cooperativePassageKnowledge=cooperativePassageKnowledge,
         uncertainty=uncertainty,
         representationFitness=representationFitness,
         provenance={source="SituationAssessment", observationSnapshotId=snapshot.identity, observationEpoch=snapshot.epoch},

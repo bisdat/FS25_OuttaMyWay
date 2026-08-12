@@ -1,3 +1,27 @@
+# v4.7.98 D-0144 current conformance matrix
+
+**Canonical baseline:** v4.7.95 (`1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1`; Git `f1a3ec95d2cfd554c7c3f2715090b48e4576706b`).  
+**Live behaviour evidence:** v4.7.97.
+
+| Current concern | Evidence / candidate status | Classification |
+|---|---|---|
+| Productive/Transitional current state | active Situation ownership; final v4.7.97 boundary depended on it | PRESERVE |
+| D-0141 follower Regulation | live-exercised before later Cooperative Passage | PRESERVE |
+| bounded TS015 Cooperative Passage | two automatic successful production passages | PRESERVE / CANDIDATE FOR CANONICALISATION |
+| bootstrap-cached physical representation | reused by purpose-specific Cooperative Passage fitness; no new shape work | PRESERVE |
+| Turning Rank | useful spatial concept for possible earlier observation/Regulation; no new implementation here | PRESERVE CONCEPT / NO NEW CODE |
+| Rook / Successor Rook Set | not required by successful TS015 path | RETIRE GOVERNING REQUIREMENT |
+| chessboard / continuous Productive History | not required; live diagnostic pipelines unsourced in v4.7.98 | RETIRE LIVE |
+| King Reserve / continuous Refuge | already retired by D-0143 | RETIRE |
+| headland-U-turn scenario solver | unnecessary; current state/reassessment sufficient | RETIRE |
+| Productive/Transitional Cooperative Passage | withheld in final live encounter | OPEN / UNRESOLVED |
+| asymmetric Cooperative Passage | earlier P23 insufficient clearance | OPEN / OUTSIDE CURRENT AUTHORITY |
+| other assembly combinations | no production evidence | OPEN |
+| generic negative clearance | incomplete representation authority | OPEN |
+| broader regression coverage | scenarios not yet re-engineered | OPEN |
+
+---
+
 # v4.7.95 D-0143 architecture consolidation — implementation alignment status
 
 **Architecture candidate:** v4.7.95.  

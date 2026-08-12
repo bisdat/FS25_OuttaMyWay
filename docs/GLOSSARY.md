@@ -1,3 +1,31 @@
+## v4.7.98 current vocabulary — D-0144 precedence
+
+This section supersedes older glossary entries where they conflict. Historical terms remain below for evidence provenance.
+
+**Progressive Situational Sufficiency** — principle that Situation Assessment should acquire only enough positively supported current Knowledge to justify the next least-authority action. It need not predict detailed future GIANTS behaviour when Observation or Regulation can preserve Action Space until Reality reveals more.
+
+**Productive State** — current positive evidence that a participant is executing productive field work. Productive is retained as Situation Knowledge without requiring a Rook/chessboard representation.
+
+**Transitional State** — continuing Job Episode state in which current evidence does not support Productive work and may support turn/reposition/native transition. Transitional is not harmless and is not automatically eligible for Productive-only Cooperative Passage.
+
+**Turning Rank Awareness** — optional spatial Situation Knowledge that a participant/following relationship is near the first productive rank immediately infield of the Productive Headland Working Band, where native transition may consume space. It is not turn-direction, U-turn or route prediction.
+
+**Rook — RETIRED governing structure under D-0144** — historical D-0142 worker-relative productive rank/file abstraction. It remains evidence vocabulary only; current production Situation Assessment does not require a Rook structure.
+
+**Successor Rook Set — RETIRED under D-0144** — historical bounded set of supportable next productive structures. Current production architecture does not maintain or predict successor Rooks.
+
+**Productive History / chessboard colouring — RETIRED live reasoning** — historical positive-work raster/colouring evidence. Source evidence remains archived/in repository, but continuous runtime painting/reasoning is not part of current production architecture.
+
+**Cooperative Passage Scope Boundary** — explicit limit of current authority: bounded TS015 Condor/Patriot near-collinear Productive/Productive production capability is demonstrated; Productive/Transitional, general asymmetric, other-assembly and generic-clearance cases remain incomplete/unresolved.
+
+**Configuration-Released Space** — local usable capacity created by a supported configuration reduction. The current TS015 use consumes existing bootstrap-cached physical evidence and does not imply generic clearance.
+
+**Cooperative Passage** — preserved D-0143 joint Reposition strategy: compact relevant assemblies, establish separated local passage paths, pass concurrently forward, return toward productive alignment, restore and hand back to GIANTS.
+
+**Follower Regulation** — preserved D-0141 bounded native speed authority used to preserve Action Space/order while GIANTS retains route, steering and direction. It may precede Cooperative Passage; it cannot itself create passing space for an established opposed blockage.
+
+**King Reserve / continuous Refuge discovery — RETIRED** — no current production layer owns continuous escape-space discovery or King/Refuge maintenance.
+
 ## v4.7.95 Cooperative Passage vocabulary
 
 **Field Boundary** — the agronomic polygon boundary defining the bounded Field World. Distinct from the Productive Headland Working Band and Turning Rank.

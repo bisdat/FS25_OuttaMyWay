@@ -1,26 +1,18 @@
--- FS25_OuttaMyWay v4.7.44 implementation TEST BUILD.
+-- FS25_OuttaMyWay v4.7.98 CANONICAL CANDIDATE — D-0143 TS015 Cooperative Passage Candidate support / purpose-specific fitness repair.
 --
--- Promotes the settled D-0113/D-0115/D-0118 initial pure-head-on role
--- comparison into the live Candidate/Constraint/Decision path without an
--- operator role pin. The bounded test scope is deliberately narrow:
---   * same active Encounter / same Job Episodes;
---   * positive field-bounded Future-Space interaction;
---   * both Local Intents SETTLED_CONTINUATION;
---   * both workers have positive Productive Continuation evidence;
---   * headings are positively established as cleanly opposed by the bounded test-fit gate;
---   * positive current physical interaction has not already begun.
---
--- Both admissible Yield assignments are published as materially equivalent
--- Reposition candidates when no stronger settled preference distinguishes
--- them. D-0118 then permits a deterministic implementation tie-break with no
--- policy meaning. The selected candidate still dispatches the established P22
--- TS015 relocation harness, so production Refuge Region qualification,
--- transition clearance, Safe Release and general Control authority remain
--- explicitly unimplemented in this test build.
+-- Situation Assessment owns recognition of the supported encounter.  This
+-- module consumes cooperativePassageKnowledge and publishes one joint
+-- REPOSITION Candidate.  It does not re-derive head-on meaning and contains no
+-- King/Refuge selection or unilateral Yield/Progress role assignment.
 
 OuttaMyWay.LiveTrafficCandidateSupport = {}
 local Support = OuttaMyWay.LiveTrafficCandidateSupport
 Support.__index = Support
+
+local function logInfo(formatText,...)
+    local message=string.format(formatText,...)
+    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][COOPERATIVE-PRODUCTION] %s",message) else print("[FS25_OuttaMyWay][COOPERATIVE-PRODUCTION] "..message) end
+end
 
 local mandatory = {
     "FIELD_WORLD_CONTAINMENT","TRANSITION_CLEARANCE","REPRESENTATION_FITNESS",
@@ -30,349 +22,162 @@ local mandatory = {
     "EFFECTIVE_ACTUATION_COMPOSITION","SAFE_RELEASE_HANDOVER"
 }
 
-local function packet(reason, evidence, applicable)
+local function packet(reason,evidence,applicable)
     return {
-        result="PASS",
-        applicable=applicable ~= false,
-        evidence=evidence or {},
-        provenance={source="LiveTrafficCandidateSupport",authority="BOUNDED_AUTONOMOUS_HEAD_ON_TEST"},
-        reason=reason,
+        result="PASS",applicable=applicable~=false,evidence=evidence or {},reason=reason,
+        provenance={source="LiveTrafficCandidateSupport",authority="D0143_TS015_COOPERATIVE_PASSAGE"},
         revalidationTrigger={kind="NEXT_LIVE_OPERATIONAL_PICTURE"}
     }
 end
 
-local function responsibilityCompatible(picture, yieldAssemblyId)
-    for _, relation in OuttaMyWay.ValueRecord.ipairs(picture.responsibilityRelations or {}) do
-        if relation.relation == "FOLLOWER_OWNS_CLOSURE" and relation.leaderAssemblyId == yieldAssemblyId then
-            return false
-        end
-    end
-    return true
+local function requirementKey(record)
+    return "cooperative-passage:"..tostring(record.encounterIdentity or record.pairReferenceKey)
 end
 
-local function requirementKey(pair)
-    return "traffic:" .. tostring(pair.encounterIdentity or pair.pairReferenceKey)
-end
-
-local function indexByAssembly(values)
-    local result={}
-    for _,item in OuttaMyWay.ValueRecord.ipairs(values or {}) do if item.assemblyId~=nil then result[item.assemblyId]=item end end
-    return result
-end
-
-local function productiveByAssembly(picture)
-    return indexByAssembly(picture.productiveContinuationKnowledge or {})
-end
-
-local function representationByAssembly(picture)
-    return indexByAssembly(picture.representationFitness or {})
-end
-
-local function shadowByAssembly(picture)
-    return indexByAssembly(picture.physicalSpaceEvidence or {})
-end
-
-local function encounterByInteraction(picture)
-    local result={}
-    for _,encounter in OuttaMyWay.ValueRecord.ipairs(picture.encounters or {}) do
-        local key=encounter.evidence and encounter.evidence.interactionReferenceKey or nil
-        if key~=nil then result[key]=encounter end
-    end
-    return result
-end
-
-local function relationshipRecords(picture)
-    local result={}
-    for _,situation in OuttaMyWay.ValueRecord.ipairs(picture.situations or {}) do
-        for _,relationship in OuttaMyWay.ValueRecord.ipairs(situation.futureSpaceRelationships or {}) do
-            result[#result+1]={situation=situation,relationship=relationship}
-        end
-    end
-    table.sort(result,function(a,b) return tostring(a.relationship.interactionReferenceKey)<tostring(b.relationship.interactionReferenceKey) end)
-    return result
-end
-
-local function participantRecords(pair)
+local function bandExhaustion(pictureId,governingRequirementKey,capability,reason)
     return {
-        {
-            yieldReferenceKey=pair.subjectAssemblyReferenceKey,
-            progressReferenceKey=pair.otherAssemblyReferenceKey,
-            yieldJobToken=pair.subjectSourceJobToken,
-            progressJobToken=pair.otherSourceJobToken,
-            yieldAssemblyId=pair.subjectAssemblyId,
-            progressAssemblyId=pair.otherAssemblyId,
-            shadowAvailable=pair.subjectShadowRepresentationAvailable == true,
-            scalarFitness=pair.subjectRepresentationFitnessState
-        },
-        {
-            yieldReferenceKey=pair.otherAssemblyReferenceKey,
-            progressReferenceKey=pair.subjectAssemblyReferenceKey,
-            yieldJobToken=pair.otherSourceJobToken,
-            progressJobToken=pair.subjectSourceJobToken,
-            yieldAssemblyId=pair.otherAssemblyId,
-            progressAssemblyId=pair.subjectAssemblyId,
-            shadowAvailable=pair.otherShadowRepresentationAvailable == true,
-            scalarFitness=pair.otherRepresentationFitnessState
-        }
+        result="PASS",operationalPictureId=pictureId,governingRequirementKey=governingRequirementKey,
+        capability=capability,reason=reason,
+        evidence={pureEstablishedHeadOn=true,configurationReleasedSpaceSupported=true,informationGainNotRequired=true},
+        provenance={source="LiveTrafficCandidateSupport",authority="D0143_TS015_PREFERENCE_EXHAUSTION"}
     }
 end
 
-local function supportedAutonomousHeadOnPair(picture)
-    local motion=indexByAssembly(picture.motionEvidence or {})
-    local productive=productiveByAssembly(picture)
-    local representations=representationByAssembly(picture)
-    local shadows=shadowByAssembly(picture)
-    local encounters=encounterByInteraction(picture)
-    local lastReason="NO_ACTIVE_AUTONOMOUS_HEAD_ON"
-    local matches={}
-
-    for _,record in ipairs(relationshipRecords(picture)) do
-        local relationship=record.relationship
-        local subject=motion[relationship.subjectAssemblyId]
-        local other=motion[relationship.otherAssemblyId]
-        local encounter=encounters[relationship.interactionReferenceKey]
-        if encounter==nil or encounter.lifecycleState~="ACTIVE" then
-            lastReason="PAIR_NOT_ACTIVE_ENCOUNTER"
-        elseif relationship.positiveIntersection~=true then
-            lastReason="PAIR_HAS_NO_POSITIVE_FUTURE_SPACE_INTERSECTION"
-        elseif subject==nil or other==nil then
-            lastReason="PAIR_MOTION_KNOWLEDGE_UNAVAILABLE"
-        elseif subject.localIntentClassification~="SETTLED_CONTINUATION" or other.localIntentClassification~="SETTLED_CONTINUATION" then
-            lastReason="PAIR_NOT_SETTLED_CONTINUATION"
-        elseif encounter.evidence and encounter.evidence.currentSpaceIntersects==true then
-            lastReason="PAIR_ALREADY_IN_CURRENT_PHYSICAL_INTERACTION"
-        else
-            local headingDot=nil
-            if tonumber(subject.headingX) and tonumber(subject.headingZ) and tonumber(other.headingX) and tonumber(other.headingZ) then
-                headingDot=subject.headingX*other.headingX+subject.headingZ*other.headingZ
-            end
-            local subjectProductive=productive[relationship.subjectAssemblyId]
-            local otherProductive=productive[relationship.otherAssemblyId]
-            if headingDot==nil or headingDot>(OuttaMyWay.AUTONOMOUS_HEAD_ON_TEST_MAX_HEADING_DOT or -0.99) then
-                lastReason="PAIR_HEADINGS_NOT_POSITIVELY_OPPOSED"
-            elseif subjectProductive==nil or subjectProductive.productivePositive~=true or subjectProductive.jobToken~=subject.sourceJobToken then
-                lastReason="SUBJECT_PRODUCTIVE_CONTINUATION_NOT_POSITIVE"
-            elseif otherProductive==nil or otherProductive.productivePositive~=true or otherProductive.jobToken~=other.sourceJobToken then
-                lastReason="OTHER_PRODUCTIVE_CONTINUATION_NOT_POSITIVE"
-            else
-                local subjectFit=representations[relationship.subjectAssemblyId]
-                local otherFit=representations[relationship.otherAssemblyId]
-                local pair={
-                    pairReferenceKey=relationship.interactionReferenceKey,
-                    encounterIdentity=encounter.identity,
-                    subjectAssemblyId=relationship.subjectAssemblyId,
-                    otherAssemblyId=relationship.otherAssemblyId,
-                    subjectAssemblyReferenceKey=subject.assemblyReferenceKey,
-                    otherAssemblyReferenceKey=other.assemblyReferenceKey,
-                    subjectSourceJobToken=subject.sourceJobToken,
-                    otherSourceJobToken=other.sourceJobToken,
-                    subjectShadowRepresentationAvailable=shadows[relationship.subjectAssemblyId]~=nil,
-                    otherShadowRepresentationAvailable=shadows[relationship.otherAssemblyId]~=nil,
-                    subjectRepresentationFitnessState=subjectFit and subjectFit.state or nil,
-                    otherRepresentationFitnessState=otherFit and otherFit.state or nil,
-                    headingDot=headingDot,
-                    subjectLocalIntentClassification=subject.localIntentClassification,
-                    otherLocalIntentClassification=other.localIntentClassification,
-                    futureSpacePositive=true,
-                    currentSpaceIntersects=false
-                }
-                matches[#matches+1]={pair=pair,subjectEvidence=subjectProductive,otherEvidence=otherProductive}
-            end
-        end
+local function supportedCooperativePassage(picture)
+    local supported={}
+    local firstReason=nil
+    for _,record in OuttaMyWay.ValueRecord.ipairs(picture.cooperativePassageKnowledge or {}) do
+        if record.status=="SUPPORTED" then supported[#supported+1]=record
+        elseif firstReason==nil then firstReason=record.reason end
     end
-    if #matches==0 then return nil,lastReason end
-    if #matches>1 then return nil,"MULTIPLE_SIMULTANEOUS_AUTONOMOUS_HEAD_ON_MATCHES" end
-    return matches[1],nil
+    if #supported==0 then return nil,firstReason or "NO_SUPPORTED_TS015_COOPERATIVE_PASSAGE" end
+    if #supported>1 then return nil,"MULTIPLE_SIMULTANEOUS_TS015_COOPERATIVE_PASSAGE_CONTEXTS" end
+    return supported[1],nil
 end
 
-local function bandExhaustion(pictureId, governingRequirementKey, capability, reason)
-    return {
-        result="PASS",
-        operationalPictureId=pictureId,
-        governingRequirementKey=governingRequirementKey,
-        capability=capability,
-        reason=reason,
-        evidence={pureEstablishedHeadOn=true,productionPriorityAuthority=true,operatorPin=false},
-        provenance={source="LiveTrafficCandidateSupport",authority="D0113_D0115_D0118_BOUNDED_HEAD_ON"}
-    }
+function Support.new(identityRegistry,epochSequence,passiveSupport)
+    return setmetatable({identities=identityRegistry,epochs=epochSequence,passiveSupport=passiveSupport,publishedCount=0,lastStatus="PASSIVE",lastCooperativeTraceKey=nil},Support)
 end
 
-function Support.new(identityRegistry, epochSequence, passiveSupport)
-    return setmetatable({
-        identities=identityRegistry,
-        epochs=epochSequence,
-        passiveSupport=passiveSupport,
-        publishedCount=0,
-        lastStatus="PASSIVE"
-    }, Support)
-end
-
-
+-- Retained API for LiveRuntimeCoordinator compatibility.  D-0143 no longer
+-- consumes a one-shot autonomous-head-on marker; current Situation evidence is
+-- authoritative on each live cycle.
 function Support:markAutonomousHeadOnDispatched(governingRequirementKey)
-    if type(governingRequirementKey) == "string" and governingRequirementKey ~= "" then
-        -- v4.7.54: this is diagnostic only. A prior head-on resolution must not
-        -- consume head-on competence for the lifetime of the Encounter. Duplicate
-        -- actuation is bounded by the currently active refuge-resolution harness.
-        self.lastStatus = "AUTONOMOUS_HEAD_ON_DISPATCHED_ACTIVE_RESOLUTION_GUARDS_REDISPATCH"
+    if type(governingRequirementKey)=="string" and governingRequirementKey~="" then
+        self.lastStatus="COOPERATIVE_PASSAGE_DISPATCHED_CURRENT_SITUATION_REASSESSMENT_CONTINUES"
     end
 end
-
-function Support:resetAutonomousState()
-    self.lastStatus = "PASSIVE"
-end
-
+function Support:resetAutonomousState() self.lastStatus="PASSIVE" end
 function Support:getLastStatus() return self.lastStatus end
 
-local function makeCandidateSpecification(pictureId, pictureEpoch, match, role, governingRequirementKey, representationId)
-    local constraints = {}
-    for _, id in ipairs(mandatory) do
-        constraints[id] = packet("bounded autonomous initial-head-on test constraint", {productionAuthority=false})
+local function makeCooperativeCandidate(pictureId,pictureValues,record,governingRequirementKey)
+    local constraints={}
+    for _,id in ipairs(mandatory) do constraints[id]=packet("D-0143 narrow TS015 Cooperative Passage candidate constraint",{boundedScope=true}) end
+    constraints.FIELD_WORLD_CONTAINMENT=packet(
+        "Both workers are current members of the same active TS015 Operation; Control revalidates each bounded passage target against the source field before movement",
+        {operationId=record.operationId,controlPreflight="ALL_BOUNDED_TARGETS_SAME_SOURCE_FIELD",generalRouteAuthority=false})
+    constraints.TRANSITION_CLEARANCE=packet(
+        "P23 repeatedly demonstrated the exact near-collinear Condor/Patriot compact-split/pass/rejoin sequence inside this bounded TS015 geometry; no generic negative-clearance claim is made",
+        {calibrationAuthority=record.scope and record.scope.calibrationAuthority or "P23",initialLateralOffsetM=record.initialLateralOffsetM,negativeClearanceAuthority=false,generalVehicleAuthority=false})
+    constraints.REPRESENTATION_FITNESS=packet(
+        "Current pose/heading geometry is fit for the narrow empirical TS015 authority envelope; incomplete general assembly geometry is not promoted to negative-clearance authority",
+        {nearCollinear=true,vehiclePair=record.scope and record.scope.vehiclePair,negativeClearanceAuthority=false})
+    constraints.CONTROL_CAPABILITY_AVAILABILITY=packet(
+        "The production CooperativePassageControl composes the already-proven Hold, configuration and forward-Reposition mechanical donors for both assemblies",
+        {controlModule="CooperativePassageControl",mechanicalDonors={"Prototype22PermissionGate","Prototype22DriveAuthority","Prototype22ConfigurationAuthority"}})
+    constraints.CONTINUING_INTENT_PRIORITY=packet(
+        "Both participants have positive settled Productive Continuation; the joint passage preserves broadly forward continuation for both rather than assigning unilateral Yield/Progress",
+        {bothProductive=true,jointResolution=true})
+    constraints.PROGRESS_PRESERVATION=packet(
+        "The temporary mutual Hold is part of a selected decisive Reposition Commitment, not an Information-Gaining Delay; both participants then progress concurrently through the passage",
+        {informationGainingDelay=false,concurrentCompatibleMovement=true})
+    constraints.RESPONSIBILITY_COMPATIBILITY=packet(
+        "One joint Candidate resolves the pair-scoped opposed incompatibility without transferring responsibility to an unrelated participant",
+        {encounterIdentity=record.encounterIdentity,assemblyIds=record.assemblyIds})
+    constraints.OBLIGATION_COMPATIBILITY=packet(
+        "The joint Commitment creates only the bounded restoration-and-handoff obligation required by this intervention; post-handoff observation owns no authority and imposes no cooldown",
+        {postHandoffCooldown=false})
+    constraints.COMMITMENT_PRECONDITIONS=packet(
+        "Actuation starts only after this same-picture joint Candidate passes mandatory Constraints and is admitted/revised through the central Commitment boundary",
+        {operatorCommandRequired=false,situationAuthority="CooperativePassageAssessment"})
+    constraints.EFFECTIVE_ACTUATION_COMPOSITION=packet(
+        "Both assemblies are explicit REPOSITION/MOVE progress-actuation owners under the same Commitment",
+        {assemblyIds=record.assemblyIds,jointCommitment=true})
+    constraints.SAFE_RELEASE_HANDOVER=packet(
+        "Control must restore both original configurations with the same Job Episodes before releasing both workers to GIANTS; authority is then released immediately",
+        {sameJobRequired=true,restoreBeforeHandoff=true,cooldown=false})
+
+    local compositionEntries={}
+    for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(record.assemblyIds or {}) do
+        compositionEntries[#compositionEntries+1]={assemblyId=assemblyId,commitmentId="$NEW_COMMITMENT",capability="REPOSITION",effectClass="MOVE",progressActuation=true}
     end
-    constraints.FIELD_WORLD_CONTAINMENT = packet(
-        "P22 TS015 refuses movement unless its fixture target passes same-source-field sampling",
-        {validation="P22_TS015_PRE_MOVEMENT_FAIL_CLOSED",productionRefugeAuthority=false})
-    constraints.TRANSITION_CLEARANCE = packet(
-        "Production transition-clearance authority is not yet promoted; the established TS015 fixture clearance boundary remains test-only",
-        {fixtureAssumption=true,productionTransitionClearanceAuthority=false})
-    constraints.CONTROL_CAPABILITY_AVAILABILITY = packet(
-        "Established P22 TS015 Hold/compact/forward-Reposition/restoration mechanisms are available to the selected bounded head-on candidate",
-        {testHarness="Prototype22TS015Relocation",productionControlAuthority=false})
-    constraints.CONTINUING_INTENT_PRIORITY = packet(
-        "Both participants are positively Productive; D-0113 therefore supplies no Productive Continuation preference and D-0118 permits downstream comparison",
-        {productiveTie=true,semanticPriorityTie=true,deterministicTieBreakPolicyMeaning=false})
-    constraints.PROGRESS_PRESERVATION = packet(
-        "The alternate participant remains GIANTS-owned Progress while the selected Yield participant is relocated",
-        {progressParticipantReferenceKey=role.progressReferenceKey,giantsAuthorityPreserved=true})
-    constraints.RESPONSIBILITY_COMPATIBILITY = packet(
-        "No Follower-Owns-Closure relation prohibits this Yield assignment in the current Operational Picture",
-        {yieldAssemblyId=role.yieldAssemblyId})
-    constraints.OBLIGATION_COMPATIBILITY = packet(
-        "The bounded live test now creates explicit Native Continuation Restoration and Durable Separation obligations inside one continuing Commitment",
-        {testOnly=true,liveCommitmentKernel=true,productionDurableSeparationAuthority=false})
-    constraints.COMMITMENT_PRECONDITIONS = packet(
-        "Physical actuation dispatches only after the real live Decision selects one of the two autonomous role candidates",
-        {operatorCommandRequired=false})
-    constraints.EFFECTIVE_ACTUATION_COMPOSITION = packet(
-        "Only the selected Yield participant receives P22 movement authority; the Progress participant remains GIANTS-owned",
-        {yieldAssemblyId=role.yieldAssemblyId,progressAssemblyId=role.progressAssemblyId,neverHoldAll=true})
-    constraints.SAFE_RELEASE_HANDOVER = packet(
-        "Production Safe Release is not claimed; the existing P22 restoration/handoff evidence harness remains test-only",
-        {productionSafeReleaseAuthority=false,p22RestorationHarness=true})
+    table.sort(compositionEntries,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
 
     return {
-        referenceKey="auto-head-on-reposition:" .. tostring(role.yieldReferenceKey),
-        purpose={kind="AUTONOMOUS_INITIAL_HEAD_ON",result="PROGRESS_BEYOND_INITIAL_HEAD_ON"},
-        subject={assemblyId=role.yieldAssemblyId,assemblyIds={role.yieldAssemblyId}},
+        referenceKey="d0143-ts015-cooperative-passage:"..tostring(record.pairReferenceKey),
+        purpose={kind="TS015_COOPERATIVE_PASSAGE",result="RESOLVE_OPPOSED_PRODUCTIVE_INCOMPATIBILITY_WITH_CONFIGURATION_RELEASED_SPACE"},
+        subject={assemblyIds=record.assemblyIds},
         capability="REPOSITION",
         expectedEffect={
-            physicalChange=true,
-            testHarness="Prototype22TS015Relocation",
-            progressParticipantGiantsAuthorityPreserved=true,
-            productionRoleSelection=true,
-            productionRefugeQualification=false,
-            multiStageCommitment=true,
-            recoveryAdmissionRequiresCurrentTrafficCompatibility=true,
-            mechanicalHandoverDoesNotSettleTrafficCommitment=true
+            physicalChange=true,jointReposition=true,configurationReleasedSpace=true,
+            bothParticipantsForwardThroughEncounter=true,king=false,refuge=false,
+            sameJobRestorationRequired=true,postHandoffCooldown=false
         },
         evidenceBasis={
             constraintEvidence=constraints,
-            governingBasis={
-                responsibilityKey=governingRequirementKey,
-                operationIds=pictureEpoch.identities.operations.active,
-                sourceIntentIds=pictureEpoch.identities.jobEpisodes.active
-            },
-            -- "progressActuationOwnership" means OTM physical-actuation ownership,
-            -- not the traffic-role Progress participant. For REPOSITION this is
-            -- exactly the selected Yield assembly; Progress remains GIANTS-owned.
-            progressActuationOwnership={assemblyIds={role.yieldAssemblyId}},
+            governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active},
+            progressActuationOwnership={assemblyIds=record.assemblyIds},
             effectiveActuationComposition={
-                identity="auto-head-on-composition:" .. tostring(role.yieldAssemblyId) .. ":" .. pictureId,
-                epoch=pictureEpoch.epoch,
-                relevantAssemblyIds={role.yieldAssemblyId,role.progressAssemblyId},
-                entries={{
-                    assemblyId=role.yieldAssemblyId,
-                    commitmentId="$NEW_COMMITMENT",
-                    capability="REPOSITION",
-                    effectClass="MOVE",
-                    progressActuation=true
-                }}
+                identity="d0143-ts015-composition:"..tostring(record.pairReferenceKey)..":"..pictureId,
+                epoch=pictureValues.epoch,relevantAssemblyIds=record.assemblyIds,entries=compositionEntries
             },
             trafficPolicemanPreference={
-                primaryResolution=true,
-                governingRequirementKey=governingRequirementKey,
+                primaryResolution=true,governingRequirementKey=governingRequirementKey,
                 exhaustionEvidence={
-                    CONTINUE_OBSERVATION=bandExhaustion(
-                        pictureId, governingRequirementKey, "CONTINUE_OBSERVATION",
-                        "Positive same-Operation same-Job opposed Productive Future-Space conflict makes further observation non-directive for the established initial head-on"),
-                    REGULATE_SPEED=bandExhaustion(
-                        pictureId, governingRequirementKey, "REGULATE_SPEED",
-                        "D-0115: bounded creep cannot resolve the pure established head-on spatial incompatibility"),
-                    HOLD=bandExhaustion(
-                        pictureId, governingRequirementKey, "HOLD",
-                        "D-0115: in-path Hold would leave the selected Yield participant as a Static Obstacle for GIANTS-owned Progress")
+                    CONTINUE_OBSERVATION=bandExhaustion(pictureId,governingRequirementKey,"CONTINUE_OBSERVATION","The supported near-collinear TS015 opposed incompatibility is already authoritative; additional observation cannot create passing space"),
+                    REGULATE_SPEED=bandExhaustion(pictureId,governingRequirementKey,"REGULATE_SPEED","Regulation can preserve Action Space before commitment but cannot resolve the established opposed spatial incompatibility"),
+                    HOLD=bandExhaustion(pictureId,governingRequirementKey,"HOLD","An in-path Hold alone converts a participant into a Static Obstacle; Configuration-Released Space requires joint Reposition")
                 }
             },
-            autonomousHeadOnBridge={
-                yieldParticipantReferenceKey=role.yieldReferenceKey,
-                progressParticipantReferenceKey=role.progressReferenceKey,
-                yieldJobToken=role.yieldJobToken,
-                progressJobToken=role.progressJobToken,
-                pairReferenceKey=match.pair.pairReferenceKey,
-                encounterIdentity=match.pair.encounterIdentity,
+            cooperativePassageBridge={
                 governingRequirementKey=governingRequirementKey,
-                roleSelectionAuthority="D0113_TIE_THEN_D0118_COMPARISON",
-                deterministicTieBreakPolicyMeaning=false,
-                operatorPin=false,
-                productionRefugeQualification=false
+                operationId=record.operationId,pairReferenceKey=record.pairReferenceKey,encounterIdentity=record.encounterIdentity,
+                assemblyIds=record.assemblyIds,
+                condorAssemblyId=record.condorAssemblyId,patriotAssemblyId=record.patriotAssemblyId,
+                condorReferenceKey=record.condorReferenceKey,patriotReferenceKey=record.patriotReferenceKey,
+                condorJobToken=record.condorJobToken,patriotJobToken=record.patriotJobToken,
+                initialSeparationM=record.separationM,initialLateralOffsetM=record.initialLateralOffsetM,
+                sharedAxisX=record.sharedAxisX,sharedAxisZ=record.sharedAxisZ,
+                sharedRightX=record.sharedRightX,sharedRightZ=record.sharedRightZ,
+                scope=record.scope,
+                controlProfile="TS015_CONDOR_PATRIOT_P23_PROVEN_GEOMETRY"
             }
         },
-        representationFitness={requirements={{representationId=representationId,acceptedStates={"USABLE_WITH_UNCERTAINTY"}}}},
+        representationFitness={requirements={
+            {representationId=record.representationFitnessIds and record.representationFitnessIds[1] or ("d0143-ts015-cooperative-passage:"..tostring(record.encounterIdentity)..":"..tostring(record.condorAssemblyId)),acceptedStates={"FIT_FOR_LIMITED_HORIZON","CURRENTLY_FIT"}},
+            {representationId=record.representationFitnessIds and record.representationFitnessIds[2] or ("d0143-ts015-cooperative-passage:"..tostring(record.encounterIdentity)..":"..tostring(record.patriotAssemblyId)),acceptedStates={"FIT_FOR_LIMITED_HORIZON","CURRENTLY_FIT"}}
+        }},
         preconditions={
-            evidenceContracts={},
-            operatorCommandRequired=false,
-            sameJobEpisodes=true,
-            settledContinuation=true,
-            bothProductiveContinuation=true,
-            opposedHeadings=true,
-            opposedHeadingDot=match.pair.headingDot,
-            opposedHeadingThreshold=OuttaMyWay.AUTONOMOUS_HEAD_ON_TEST_MAX_HEADING_DOT,
-            positiveFutureSpaceIntersection=true
+            evidenceContracts={},operatorCommandRequired=false,sameJobEpisodes=true,
+            bothProductiveContinuation=true,settledContinuation=true,nearCollinear=true,
+            initialSeparationM=record.separationM,initialLateralOffsetM=record.initialLateralOffsetM,
+            headingDot=record.headingDot,scope=record.scope
         },
-        invalidationConditions={
-            {kind="JOB_EPISODE_CHANGE"},{kind="ENCOUNTER_CHANGE"},{kind="LOCAL_INTENT_CHANGE"},{kind="CURRENT_PHYSICAL_INTERACTION"}
-        },
-        reversibility={physicalEffect=true,restorationHarness="P22_TS015"},
-        obligationsCreated={
-            {
-                origin={kind="OTM_MATERIAL_DISPLACEMENT",decision="D-0122",encounterIdentity=match.pair.encounterIdentity},
-                basis={kind="NATIVE_CONTINUATION_RESTORATION",yieldReferenceKey=role.yieldReferenceKey,progressReferenceKey=role.progressReferenceKey},
-                requiredOutcome={kind="NATIVE_CONTINUATION_RESTORED_AND_GIANTS_REACQUIRED",yieldReferenceKey=role.yieldReferenceKey,jobToken=role.yieldJobToken},
-                requiredAuthority={capabilities={"REPOSITION","RESTORE_CONFIGURATION","HANDOVER_TO_GIANTS"}},
-                evidenceContract={kind="POSITIVE_SAME_JOB_NATIVE_REACQUISITION"},
-                ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true
-            },
-            {
-                origin={kind="TRAFFIC_INTERVENTION",decision="D-0119",encounterIdentity=match.pair.encounterIdentity},
-                basis={kind="DURABLE_SEPARATION",governingRequirementKey=governingRequirementKey},
-                requiredOutcome={kind="DURABLE_SEPARATION_SUPPORTED",encounterIdentity=match.pair.encounterIdentity},
-                requiredAuthority={trafficPoliceman=true},
-                evidenceContract={kind="CONTINUATION_AWARE_TRAFFIC_SETTLEMENT_NO_FIXED_DISTANCE_OR_TIME"},
-                ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
-            }
-        },
-        releaseImplications={productionSafeReleaseAuthority=false,p22RestorationObservationOnly=true,mechanicalHandoverDoesNotSettleTrafficCommitment=true},
-        uncertainty={
-            "PRODUCTION_REFUGE_REGION_QUALIFICATION_UNIMPLEMENTED",
-            "PRODUCTION_TRANSITION_CLEARANCE_UNIMPLEMENTED",
-            "PRODUCTION_GUARDED_RECOVERY_GENERALISATION_INCOMPLETE"
-        },
-        -- D-0118 permits deterministic implementation tie-breaks only after
-        -- material equivalence. The bounded TS015 reciprocal live tests support
-        -- both role assignments mechanically; no semantic priority is encoded.
-        comparisonCost=1
+        invalidationConditions={{kind="JOB_EPISODE_CHANGE"},{kind="ENCOUNTER_CHANGE"},{kind="LOCAL_INTENT_CHANGE"},{kind="CURRENT_PHYSICAL_INTERACTION"},{kind="TS015_SCOPE_EXIT"}},
+        reversibility={physicalEffect=true,restoreBothBeforeRelease=true},
+        obligationsCreated={{
+            origin={kind="OTM_MATERIAL_DISPLACEMENT",decision="D-0143",encounterIdentity=record.encounterIdentity},
+            basis={kind="COOPERATIVE_PASSAGE_RESTORATION_AND_HANDOFF",assemblyIds=record.assemblyIds},
+            requiredOutcome={kind="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK",assemblyIds=record.assemblyIds},
+            requiredAuthority={capabilities={"REPOSITION","RESTORE_CONFIGURATION","HANDOVER_TO_GIANTS"}},
+            evidenceContract={kind="BOTH_SAME_JOB_BOTH_RESTORED_THEN_GIANTS_HANDOFF"},
+            ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true
+        }},
+        releaseImplications={releaseBothProgressAuthoritiesAfterPositiveHandoff=true,postHandoffObservationAuthority=false,cooldown=false},
+        uncertainty={"GENERAL_VEHICLE_SUPPORT_OUT_OF_SCOPE","ASYMMETRIC_OPPOSED_GEOMETRY_OUT_OF_SCOPE","GENERIC_NEGATIVE_CLEARANCE_AUTHORITY_NOT_CLAIMED"},
+        comparisonCost=0
     }
 end
-
 
 -- D-0141 aligned follower-boundary candidate support.  The Situation layer has
 -- already decided whether current topology + a Provisional Demand Seed are
@@ -669,125 +474,71 @@ local function attachGuardedRecovery(self,picture,snapshot,guard)
     return OuttaMyWay.OperationalPicture.new(values)
 end
 
-local function followerMatchesHeadOn(follower,match)
-    if type(follower)~="table" or type(match)~="table" or type(match.pair)~="table" then return false end
-    local a,b=match.pair.subjectAssemblyId,match.pair.otherAssemblyId
-    local leader,following=follower.leaderAssemblyId,follower.followerAssemblyId
-    return (leader==a and following==b) or (leader==b and following==a)
+local function followerMatchesCooperative(follower,record)
+    if type(follower)~="table" or type(record)~="table" then return false end
+    local ids={}
+    for _,id in OuttaMyWay.ValueRecord.ipairs(record.assemblyIds or {}) do ids[id]=true end
+    return ids[follower.leaderAssemblyId]==true and ids[follower.followerAssemblyId]==true
 end
 
-function Support:attach(picture, snapshot)
-    OuttaMyWay.ValueRecord.assertType(picture, "OperationalPicture")
-    OuttaMyWay.ValueRecord.assertType(snapshot, "ObservationSnapshot")
+function Support:attach(picture,snapshot)
+    OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
+    OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
 
     local follower,followerReason=followerBoundaryRecord(picture)
-    -- Positive follower retirement remains highest priority: once the protected
-    -- purpose has genuinely ended (notably Progress Passage), its speed lease
-    -- must be released before another strategy continues.
     if follower~=nil and follower.status=="RETIRE_SUPPORTED" then return attachFollowerBoundary(self,picture,snapshot,follower) end
-    if followerReason~=nil then
-        self.lastStatus=followerReason
-        return self.passiveSupport:attach(picture,snapshot)
-    end
+    if followerReason~=nil then self.lastStatus=followerReason; return self.passiveSupport:attach(picture,snapshot) end
 
     local guard,guardReason=activeGuardedRecovery(picture)
     if guard~=nil then return attachGuardedRecovery(self,picture,snapshot,guard) end
-    if guardReason~=nil then
-        self.lastStatus=guardReason
+    if guardReason~=nil then self.lastStatus=guardReason; return self.passiveSupport:attach(picture,snapshot) end
+
+    -- A positively supported Cooperative Passage is independent of a preserved
+    -- follower-boundary lease for the same pair.  The joint Reposition Candidate
+    -- is allowed to supersede that supporting speed-control purpose downstream.
+    local record,reason=supportedCooperativePassage(picture)
+    if record==nil or (follower~=nil and not followerMatchesCooperative(follower,record)) then
+        if follower~=nil then return attachFollowerBoundary(self,picture,snapshot,follower) end
+        self.lastCooperativeTraceKey=nil
+        self.lastStatus=reason or "NO_SUPPORTED_TS015_COOPERATIVE_PASSAGE"
         return self.passiveSupport:attach(picture,snapshot)
     end
 
-    -- v4.7.73 regression repair: an existing follower purpose may remain
-    -- UNRESOLVED during the clean co-directional -> opposed transition so that
-    -- its already-admitted Regulation lease is not discarded.  That preserved
-    -- lease is supporting Control only; it must not suppress a positively
-    -- established head-on REPOSITION candidate.  Evaluate the independent
-    -- head-on picture before publishing the follower PRESERVE candidate.
-    local match, reason = supportedAutonomousHeadOnPair(picture)
-    if match == nil or (follower~=nil and not followerMatchesHeadOn(follower,match)) then
-        if follower~=nil then return attachFollowerBoundary(self,picture,snapshot,follower) end
-        self.lastStatus = reason or "NO_ACTIVE_AUTONOMOUS_HEAD_ON"
-        return self.passiveSupport:attach(picture, snapshot)
-    end
-
-    local roles = participantRecords(match.pair)
-    local admissible = {}
-    for _, role in ipairs(roles) do
-        if role.yieldAssemblyId ~= nil and role.progressAssemblyId ~= nil
-            and role.shadowAvailable == true
-            and responsibilityCompatible(picture, role.yieldAssemblyId) then
-            admissible[#admissible+1] = role
-        end
-    end
-    if #admissible == 0 then
-        self.lastStatus = "NO_ADMISSIBLE_HEAD_ON_ROLE_ASSIGNMENT"
-        return self.passiveSupport:attach(picture, snapshot)
-    end
-
-    local values = OuttaMyWay.ValueRecord.toTable(picture)
-    local pictureId = self.identities:issue("PICTURE")
-    values.identity = pictureId
-    values.epoch = self.epochs:next()
-    values.provenance = {
-        source="LiveTrafficCandidateSupport",
-        parentOperationalPictureId=picture.identity,
-        observationSnapshotId=snapshot.identity,
-        authority="BOUNDED_AUTONOMOUS_D0113_D0115_D0118",
-        followerBoundarySupportingLeaseRetained=follower~=nil,
-        followerBoundaryCandidateSupersededByPositiveHeadOn=follower~=nil
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    local pictureId=self.identities:issue("PICTURE")
+    values.identity=pictureId; values.epoch=self.epochs:next()
+    values.provenance={
+        source="LiveTrafficCandidateSupport",parentOperationalPictureId=picture.identity,observationSnapshotId=snapshot.identity,
+        authority="D0143_TS015_COOPERATIVE_PASSAGE",followerBoundarySupportingLeaseRetained=follower~=nil
     }
-
-    values.representationFitness = values.representationFitness or {}
-    local representations = {}
-    for _, role in ipairs(admissible) do
-        local id = "auto-head-on-shadow:" .. tostring(role.yieldAssemblyId) .. ":" .. pictureId
-        representations[role.yieldAssemblyId] = id
-        values.representationFitness[#values.representationFitness + 1] = {
-            representationId=id,
-            assemblyId=role.yieldAssemblyId,
-            question="P22_TS015_FIXTURE_REPOSITION_INITIATION",
-            assessmentHorizon="CURRENT_TEST_DISPATCH_ONLY",
-            state="USABLE_WITH_UNCERTAINTY",
-            claimPermissions={"P22_TS015_FIXTURE_REPOSITION_INITIATION"},
-            coverage={complete=false,conservative=false,underApproximationRisk=true},
-            uncertainty={"NO_NEGATIVE_CLEARANCE_AUTHORITY","PRODUCTION_REFUGE_QUALIFICATION_UNIMPLEMENTED"},
-            validityDependencies={"CURRENT_SHADOW_PLAN_VIEW_REPRESENTATION","SAME_JOB_EPISODES","SAME_OPERATIONAL_PICTURE"},
-            provenance={source="LiveTrafficCandidateSupport",authority="TEST_FIXTURE_POSITIVE_SUPPORT_ONLY"}
-        }
+    local governingRequirementKey=requirementKey(record)
+    local traceKey=tostring(record.encounterIdentity or record.pairReferenceKey)
+    local firstTrace=self.lastCooperativeTraceKey~=traceKey
+    if firstTrace then
+        self.lastCooperativeTraceKey=traceKey
+        logInfo("COOPERATIVE_ASSESSMENT_SUPPORTED encounter=%s pair=%s separation=%.2f lateral=%.2f headingDot=%.4f fitnessA=%s fitnessB=%s footprintReuse=%s",
+            tostring(record.encounterIdentity),tostring(record.pairReferenceKey),tonumber(record.separationM) or -1,tonumber(record.initialLateralOffsetM) or -1,tonumber(record.headingDot) or 0,
+            tostring(record.representationFitnessIds and record.representationFitnessIds[1] or "n/a"),tostring(record.representationFitnessIds and record.representationFitnessIds[2] or "n/a"),
+            tostring(record.footprintEvidence and record.footprintEvidence.noAdditionalGeometryCalculation==true))
     end
-    table.sort(values.representationFitness, function(a,b) return tostring(a.representationId) < tostring(b.representationId) end)
-
-    local governingRequirementKey = requirementKey(match.pair)
-    local specifications = {}
-    for _, role in ipairs(admissible) do
-        specifications[#specifications+1] = makeCandidateSpecification(pictureId, values, match, role, governingRequirementKey, representations[role.yieldAssemblyId])
+    local specification=makeCooperativeCandidate(pictureId,values,record,governingRequirementKey)
+    if firstTrace then
+        logInfo("COOPERATIVE_CANDIDATE_PUBLISHED encounter=%s requirement=%s capability=REPOSITION subjectCount=%d",tostring(record.encounterIdentity),tostring(governingRequirementKey),#(record.assemblyIds or {}))
     end
-    table.sort(specifications, function(a,b) return a.referenceKey < b.referenceKey end)
-
-    values.candidateSupportEvidence = {
+    values.candidateSupportEvidence={
         complete=true,
         supportBoundary={
-            mode="AUTONOMOUS_HEAD_ON_RESOLUTION_TEST",
-            supportedCandidateClasses={"REPOSITION"},
-            physicalCapabilitiesImplemented=true,
-            controlAuthority=false,
-            productionRoleSelection=true,
-            productionRefugeQualification=false,
-            boundedScope="PURE_ESTABLISHED_OPPOSED_BOTH_PRODUCTIVE_HEAD_ON",
+            mode="TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST",supportedCandidateClasses={"REPOSITION"},
+            physicalCapabilitiesImplemented=true,controlAuthority="BOUNDED_TS015_ONLY",
+            boundedScope="CONDOR_PATRIOT_NEAR_COLLINEAR_OPPOSED_PRODUCTIVE",
+            king=false,refuge=false,generalVehicleAuthority=false,
             decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=governingRequirementKey}
         },
-        candidateSpecifications=specifications,
-        provenance={
-            source="LiveTrafficCandidateSupport",
-            observationSnapshotId=snapshot.identity,
-            authority="BOUNDED_AUTONOMOUS_D0113_D0115_D0118",
-            operatorCommandRequired=false,
-            productionRefugeAuthority=false
-        }
+        candidateSpecifications={specification},
+        provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,authority="D0143_TS015_COOPERATIVE_PASSAGE",operatorCommandRequired=false}
     }
-
-    self.publishedCount = self.publishedCount + 1
-    self.lastStatus = "AUTONOMOUS_HEAD_ON_CANDIDATES_PUBLISHED"
+    self.publishedCount=self.publishedCount+1
+    self.lastStatus="TS015_COOPERATIVE_PASSAGE_CANDIDATE_PUBLISHED"
     return OuttaMyWay.OperationalPicture.new(values)
 end
 

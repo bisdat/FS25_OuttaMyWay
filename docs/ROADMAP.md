@@ -1,19 +1,11 @@
-# v4.7.95 immediate roadmap — TS015 production closure
+# v4.7.98 roadmap — consolidate first, then extend evidence narrowly
 
-1. Canonicalise the D-0143 architecture/documentation candidate after owner review.
-2. From that canonical baseline, integrate **TS015 Cooperative Passage** into the existing production chain: Situation Assessment → Candidate → Constraints → Traffic Policeman / Decision → Commitment → Bounded Authority → Control.
-3. Reuse only the P23 physical capability donors required for the demonstrated Condor/Patriot near-collinear manoeuvre. Do not introduce a parallel P23 production controller.
-4. Live-test the natural TS015 sequence. Require ordinary pre-head-on Regulation/observation behaviour to remain intact and the mature supported near-collinear head-on to resolve through Cooperative Passage.
-5. Require repeated head-ons in the same Job Episodes to remain immediately resolvable; passive post-handoff observation must not create a cooldown or reservation.
-6. Treat unsupported asymmetric geometry as outside the first authority envelope rather than expanding the solver during this tranche.
-7. Only after TS015 production behaviour works, decide whether broader vehicle/configuration combinations warrant further investment.
+1. **Review/canonicalise v4.7.98 if acceptable.** Confirm that live-successful v4.7.97 Cooperative Passage and D-0141 Regulation behaviour are preserved while retired chessboard/Productive-History/Refuge diagnostics are unsourced.
+2. **Keep Cooperative Passage scope bounded.** Do not generalise numeric geometry or vehicle support merely because TS015 succeeds.
+3. **Next unresolved authority question:** determine whether the observed near-collinear Productive/Transitional final encounter can ever receive positive Cooperative Passage authority without treating `TURN_SEGMENT` as Productive by convenience.
+4. **Engineer broader regression scenarios in due course.** Revisit historical encounter families against the simplified current architecture and record which concepts are actually required.
+5. **Only then broaden capability.** Other vehicle/configuration pairs, asymmetric geometry and generic physical-clearance authority require their own evidence.
 
-## Explicit work freeze
+Retired paths are not backlog items: do not resume King Reserve, continuous Refuge search, chessboard colouring, continuous Productive History reasoning, Successor Rook prediction or headland-U-turn-specific solving unless new Reality establishes a missing responsibility that genuinely requires them.
 
-Until step 4 succeeds, do not resume King/King-Reserve/continuous Refuge discovery, King performance optimisation, arbitrary asymmetric solving, broad Cooperative Passage generalisation or another architectural prototype branch.
-
-The objective is no longer to discover a new head-on mechanism. It is to make the already-demonstrated mechanism work through production architecture for TS015.
-
-## Retained passive evidence obligations
-
-Where the canonical v4.7.77 Guarded-Recovery diagnostics still expose **Vulnerable Space** and **Convergent Projection**, continue to **passively validate** those observations during TS015 runs. Their broader production significance remains unresolved. They remain evidence only: they grant no Cooperative Passage authority, post-handoff cooldown or separate recovery-policy ownership, and they must not delay the production integration objective.
+Continue to **passively validate** the existing Guarded-Recovery diagnostics for **Vulnerable Space** and **Convergent Projection** when convenient during later regression work. They remain non-authoritative and are not prerequisites for Cooperative Passage closure.
