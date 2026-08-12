@@ -1,3 +1,13 @@
+# v4.7.99 continuity boundary — D-0146 architecture ahead of implementation
+
+Owner-declared canonical is v4.7.98 (`105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`; Git `982992b926839c854f6d4d7979fe24885e267eae`; 307 files). v4.7.99 is an architecture/documentation candidate only. It records trajectory-based Opposed Corridor Conflict and Local Cooperative Passage concepts while deliberately preserving v4.7.98 runtime behaviour.
+
+**Carry-forward rule:** a new chat must distinguish **PROVEN/LIVE**, **ACCEPTED BUT NOT IMPLEMENTED**, and **UNRESOLVED**. Do not treat D-0146 architectural acceptance as generic Cooperative Passage capability.
+
+**Next implementation order:** Step 1 first — minimally represent Established Trajectory / Current Excursion and classify Potential/Established Opposed Corridor Conflict using existing positive physical evidence. Only after that is validated should Step 2 generic Local Passage Space/Passage Guide work begin.
+
+---
+
 # v4.7.98 continuity boundary — simpler current architecture, explicit incompleteness
 
 Owner-declared canonical is v4.7.95 (`1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1`, Git `f1a3ec95d2cfd554c7c3f2715090b48e4576706b`). v4.7.98 is a candidate reconstructed from that baseline with the live-successful v4.7.97 Cooperative Passage implementation reapplied.

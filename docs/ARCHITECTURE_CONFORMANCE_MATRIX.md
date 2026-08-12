@@ -1,3 +1,21 @@
+# v4.7.99 D-0146 conformance addendum
+
+| D-0146 concept | Architecture | Runtime in this candidate |
+|---|---|---|
+| Established Trajectory / Current Excursion | CURRENT | NOT IMPLEMENTED GENERICALLY |
+| Potential/Established Opposed Corridor Conflict | CURRENT | NOT IMPLEMENTED GENERICALLY |
+| categorical Supported Corridor Overlap | CURRENT | NOT IMPLEMENTED GENERICALLY |
+| Passage Presumption / Local Passage Space | CURRENT | NOT IMPLEMENTED GENERICALLY |
+| Boundary Encroachment | CURRENT | NOT IMPLEMENTED GENERICALLY |
+| Pairwise Passage Economy / Passage Sufficiency | CURRENT | NOT IMPLEMENTED GENERICALLY |
+| Nominal Clearance / sweep / development-traversal-reacquisition | CURRENT | NOT IMPLEMENTED GENERICALLY |
+| Passage Guide | CURRENT | bounded fixed TS015 physical donor only |
+| Passage Reassessment | CURRENT | NOT IMPLEMENTED |
+| existing v4.7.98 TS015 Cooperative Passage | PRESERVED EVIDENCE | LIVE BOUNDED |
+| D-0141 follower Regulation | PRESERVED | LIVE BOUNDED |
+
+---
+
 # v4.7.98 D-0144 current conformance matrix
 
 **Canonical baseline:** v4.7.95 (`1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1`; Git `f1a3ec95d2cfd554c7c3f2715090b48e4576706b`).  

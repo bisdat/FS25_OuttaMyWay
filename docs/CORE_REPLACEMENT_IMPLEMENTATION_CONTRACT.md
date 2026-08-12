@@ -1,3 +1,17 @@
+# v4.7.99 D-0146 implementation-contract addendum
+
+D-0146 is current architecture but **not permission to skip directly to a generic passage planner**. Implementation order protects abstraction levels:
+
+1. Situation Assessment owns Step-1 trajectory/corridor Knowledge.
+2. Candidate/Constraint/Decision own selection of a supported Step-2 passage expression.
+3. Commitment/Authority own the chosen resolution responsibility.
+4. Control executes a bounded Passage Guide; it does not decide the conflict class or invent new Local Passage Space.
+5. Passage Reassessment must return to current Situation evidence when support is lost; Control may not silently broaden its own plan.
+
+Until implemented and validated, current bounded v4.7.98 TS015 behaviour remains authoritative runtime evidence.
+
+---
+
 ## Passive representation-shadow implementation boundary
 
 The active replacement core may discover and cache Job Episode assembly structure and component-local geometry, realise current plan-view footprints, and publish shadow diagnostics. Until a later explicit authority decision, this evidence must not:

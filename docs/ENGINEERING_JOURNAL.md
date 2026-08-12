@@ -1,3 +1,27 @@
+# 2026-08-12 — D-0146 trajectory/opposed-corridor and local-passage architecture
+
+**Observation:** after successful bounded Cooperative Passage, the remaining hedge-adjacent encounter showed that GIANTS `TURN_SEGMENT` can describe a local detour while the broader spatial interaction remains intelligible. Earlier Regulation opportunities also existed while Condor reversed and then resumed northbound work.
+
+**Discovery — Established Trajectory / Current Excursion:** useful motion history should persist through short-lived deviations without becoming route prediction. Sustained contradictory motion supersedes it.
+
+**Discovery — Opposed Corridor Conflict:** Step 1 should classify substantially opposed, closing, persistent trajectory-demand overlap directly. Exact centre-lines and Productive-only admission are unnecessary abstractions. Any positive supported corridor overlap is overlap.
+
+**Discovery — Passage Presumption:** Step 2 need not prove a vehicle class is passage-capable before looking. Assume local passage until terrain/spatial/kinematic constraint disproves it. Configuration reduction is optional and burden may be unilateral.
+
+**Discovery — Boundary Encroachment:** immediate margin may participate in local passage while the complete assembly remains boundary-straddling; wholly extra-field relocation is a different responsibility.
+
+**Discovery — Pairwise Passage Economy / Passage Sufficiency:** choose a sufficient locally supported arrangement with least combined necessary intervention; do not solve global optimum or impose symmetry.
+
+**Discovery — Passage Development / Sweep:** long combinations and short nose-to-nose distance make transition sweep/development room part of passage validity. Nominal inter-assembly clearance must survive the manoeuvre, not just endpoint placement.
+
+**Discovery — Passage Guide:** architecture should permit several virtual pins/gates and smooth development rather than prescribe a three-leg sidestep. Historical Forward-Only Waypoint Orbit remains a warning against arbitrary point targeting.
+
+**Decision — Passage Reassessment:** a committed passage must retain positive support. Support loss triggers reassessment from current Reality, not blind continuation or automatic player escalation.
+
+**Implementation status:** none of these generalisations are implemented in v4.7.99. Runtime remains the live-proven bounded v4.7.98 behaviour. This separation is intentional.
+
+---
+
 # 2026-08-12 — D-0144 Progressive Situational Sufficiency after first production Cooperative Passage success
 
 **Observation:** v4.7.96 reached the intended TS015 approach but did not trigger because the new Candidate leaked an unrelated generic scalar Representation Fitness requirement. v4.7.97 repaired that coupling by consuming purpose-specific fitness from existing bootstrap-cached `physicalSpaceEvidence`; no new shape calculation was introduced.

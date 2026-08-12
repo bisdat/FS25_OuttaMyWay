@@ -1,3 +1,9 @@
+# v4.7.99 D-0146 design precedence
+
+Current design separates Step 1 trajectory-based Opposed Corridor Conflict classification from Step 2 local passage construction. The runtime is intentionally not yet aligned beyond the bounded v4.7.98 TS015 implementation. Where older design text assumes Productive-only head-on admission, fixed sidestep geometry, King/Refuge or Rook/file prediction, D-0146 takes precedence.
+
+---
+
 # Design
 
 > **Authority:** Replacement-core design boundary

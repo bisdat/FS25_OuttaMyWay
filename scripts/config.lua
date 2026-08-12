@@ -1,13 +1,13 @@
--- FS25_OuttaMyWay v4.7.98 CANONICAL CANDIDATE — D-0144 Progressive Situational Sufficiency consolidation.
--- Owner-declared v4.7.95 is canonical. v4.7.97 is the successful production-evidence donor reapplied here over that exact baseline.
+-- FS25_OuttaMyWay v4.7.99 CANONICAL CANDIDATE — D-0146 trajectory-based Opposed Corridor Passage architecture; runtime behaviour preserved.
+-- Owner-declared v4.7.98 is canonical. D-0146 is architecture-only in this candidate; the live v4.7.98 behaviour is preserved.
 -- D-0144 simplifies the governing Situation model while preserving D-0143 bounded TS015 Cooperative Passage and D-0141 follower Regulation.
 -- King Reserve, continuous Refuge discovery, chessboard colouring/continuous Productive History and Successor Rook prediction are retired from governing production architecture.
 -- General production Control authority remains disabled; only the explicit D-0143 TS015 authority envelope below may actuate Cooperative Passage.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.98"
-OuttaMyWay.ARCHITECTURE_VERSION = "4.7.98"
+OuttaMyWay.VERSION = "4.7.99"
+OuttaMyWay.ARCHITECTURE_VERSION = "4.7.99"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000
@@ -157,7 +157,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
 OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "4.7.98 CONSOLIDATION CANDIDATE"
+OuttaMyWay.BUILD_LABEL = "4.7.99 D-0146 ARCHITECTURE CANDIDATE"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720

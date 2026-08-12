@@ -1,3 +1,15 @@
+# v4.7.99 D-0146 immediate roadmap addendum
+
+1. Canonicalise this architecture/documentation candidate if owner accepts it.
+2. In the next chat, start from canonical v4.7.99 and the explicit architecture/implementation gap.
+3. Implement/validate **Step 1 first**: Established Trajectory, Current Excursion/Trajectory Persistence and Potential→Established Opposed Corridor Conflict using existing physical observation/cached occupancy.
+4. Preserve D-0141 Regulation and live v4.7.98 TS015 Cooperative Passage while Step 1 is validated.
+5. Only then design minimal Step-2 Local Passage Space / sufficient Passage Arrangement evidence.
+6. Defer generic vehicle/configuration treatment, nominal-clearance calibration, dynamic Passage Guides and Reassessment mechanics until their preceding responsibilities have evidence.
+7. Engineer broader regression scenarios deliberately; do not generalise from TS015 by assumption.
+
+---
+
 # v4.7.98 roadmap — consolidate first, then extend evidence narrowly
 
 1. **Review/canonicalise v4.7.98 if acceptable.** Confirm that live-successful v4.7.97 Cooperative Passage and D-0141 Regulation behaviour are preserved while retired chessboard/Productive-History/Refuge diagnostics are unsourced.

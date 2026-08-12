@@ -1,3 +1,20 @@
+# v4.7.99 D-0146 responsibility-map addendum
+
+| Responsibility | Owner | Current implementation state |
+|---|---|---|
+| Establish persistent observed trajectory / excursions | Situation Assessment / Knowledge | NOT YET IMPLEMENTED GENERICALLY |
+| Classify Potential/Established Opposed Corridor Conflict | Situation Assessment | NOT YET IMPLEMENTED GENERICALLY |
+| Preserve Action Space while conflict matures | Traffic Policeman / D-0141 Regulation | LIVE BOUNDED |
+| Discover sufficient Local Passage Space / Arrangement | Passage assessment under Candidate responsibility | NOT YET IMPLEMENTED GENERICALLY |
+| Select among comparable arrangements | Decision / Traffic Policeman using Pairwise Passage Economy | NOT YET IMPLEMENTED GENERICALLY |
+| Execute bounded Passage Guide | Control under Commitment/Authority | LIVE ONLY FOR BOUNDED TS015 FIXTURE PATH |
+| Detect Passage Support Loss / trigger reassessment | Situation/Control feedback through existing ownership boundaries | NOT YET IMPLEMENTED |
+| Player escalation after local passage exhaustion | Decision/Commitment outcome | ARCHITECTURAL, NOT NEWLY IMPLEMENTED |
+
+No diagnostic/probe gains authority merely because D-0146 names these responsibilities.
+
+---
+
 # Responsibility Map — v4.7.98 D-0144 Progressive Situational Sufficiency
 
 > **Architecture authority:** D-0144 over preserved D-0143 Cooperative Passage and D-0141 follower Regulation; older decisions remain historical/supporting where not superseded.  

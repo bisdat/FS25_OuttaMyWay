@@ -1,3 +1,13 @@
+# v4.7.99 D-0146 current concept register addendum
+
+**CURRENT / GOVERNING ARCHITECTURE:** Established Trajectory; Current Motion; Current Excursion; Trajectory Persistence; Observed Trajectory Corridor; Potential Opposed Corridor Conflict; Established Opposed Corridor Conflict; Supported Corridor Overlap; Passage Presumption; Local Passage Space; Local Spatial Constraint; Boundary Encroachment; Passage Arrangement; Stable Passing Relationship; Passage Burden; Pairwise Passage Economy; Passage Sufficiency; Progressive Passage Search; Nominal Inter-Assembly Clearance; Passage Development Distance; Passage Traversal Distance; Reacquisition Distance; Manoeuvre Swept Occupancy; Passage Guide; Passage Support Loss; Passage Reassessment.
+
+**IMPORTANT:** these concepts are architecturally current but mostly not yet implemented. v4.7.98 bounded Cooperative Passage remains the live implementation.
+
+**RETAINED CONTEXT:** Productive/Transitional/TURN_SEGMENT and Turning Rank remain useful contextual Situation evidence but do not define Step-1 conflict admission or future route.
+
+---
+
 # v4.7.98 D-0144 concept disposition
 
 ## Accepted / current

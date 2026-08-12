@@ -1,3 +1,30 @@
+# v4.7.99 D-0146 governing flow addendum
+
+```text
+Observed physical motion
+  → Established Trajectory + Current Motion
+  → Trajectory Persistence / Current Excursion
+  → Observed Trajectory Corridors
+  → Potential Opposed Corridor Conflict
+      → Observe / Regulate if Action Space is being consumed
+  → Established Opposed Corridor Conflict
+  → Passage Presumption
+  → Progressive Passage Search over Local Passage Space
+  → sufficient Passage Arrangement (Pairwise Passage Economy)
+  → Passage Guide
+  → protect Nominal Inter-Assembly Clearance through
+       Development → Traversal → Reacquisition
+  → native continuation / settlement
+
+During execution:
+  Passage Support Loss → Passage Reassessment
+      → continue | re-express same Commitment | abandon/escalate
+```
+
+**Implementation warning:** v4.7.99 records this flow but does not implement the generic D-0146 stages.
+
+---
+
 # Architecture Flow
 
 > **Authority:** D-0144 Progressive Situational Sufficiency over preserved D-0143/D-0141 responsibilities  

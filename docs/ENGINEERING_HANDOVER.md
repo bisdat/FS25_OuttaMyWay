@@ -1,3 +1,24 @@
+# v4.7.99 CANONICAL CANDIDATE handover — D-0146
+
+**Canonical baseline:** v4.7.98 (`105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`; Git `982992b926839c854f6d4d7979fe24885e267eae`; 307 files).  
+**Candidate intent:** record the newly agreed trajectory/opposed-corridor and local-passage architecture before changing chats. Runtime behaviour is intentionally unchanged from v4.7.98 apart from version/provenance identity.
+
+## New governing architecture
+
+**Step 1 — categorise opposed:** use Established Trajectory + Current Motion with Trajectory Persistence. A Current Excursion weakens immediate alignment without instantly erasing coherent history. Potential conflict may justify Observe/Regulate; Established Opposed Corridor Conflict requires substantially opposed, closing, persistent/stable motion and positive corridor overlap. Any positive supported overlap counts; uncertainty-only overlap does not become Established. Productive/Transitional/TURN_SEGMENT is contextual evidence, not a binary gate.
+
+**Step 2 — passage:** presume passage, then discover Local Spatial Constraint. Allow asymmetric/unilateral movement, optional configuration reduction, lane departure and Boundary Encroachment while the assembly remains partly in-field. Choose a sufficient Passage Arrangement through Pairwise Passage Economy rather than symmetry/global optimisation. Protect Nominal Inter-Assembly Clearance throughout development/traversal/reacquisition and account for Manoeuvre Swept Occupancy. Use a Passage Guide of virtual targets/gates rather than a fixed three-leg sidestep. Reassess if support for the current expression is lost.
+
+## Health warning
+
+**General D-0146 Cooperative Passage is not implemented.** The only live-proven passage remains the bounded v4.7.98 TS015 Condor/Patriot implementation with its existing calibration and purpose-specific Representation Fitness. Do not infer arbitrary assembly, asymmetric, margin-search, dynamic-guide or reassessment capability from the architecture.
+
+## Next chat / next engineering objective
+
+Begin from this candidate only after owner canonical declaration. Keep architecture, implementation and testing separate. First implementation discussion should address **Step-1 Established Trajectory / Current Excursion representation and Potential→Established Opposed Corridor Conflict classification**, reusing existing observed physical motion and cached assembly occupancy. Do not jump directly to generic Step-2 motion planning.
+
+---
+
 # v4.7.98 CANONICAL CANDIDATE handover — D-0144
 
 **Canonical baseline:** v4.7.95, SHA-256 `1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1`, Git `f1a3ec95d2cfd554c7c3f2715090b48e4576706b`, 305 files.  

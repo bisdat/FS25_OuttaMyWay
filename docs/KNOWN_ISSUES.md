@@ -1,3 +1,19 @@
+# v4.7.99 explicit incompleteness — D-0146 architecture/implementation gap
+
+- D-0146 trajectory/opposed-corridor architecture is accepted but not implemented in this candidate.
+- Existing Productive/Productive TS015 admission remains the live bounded controller; the new Step-1 trajectory model does not yet replace that gate.
+- No generic Local Passage Space discovery exists.
+- No generic Boundary Encroachment planner exists.
+- No generic Manoeuvre Swept Occupancy / nominal-clearance proof exists.
+- No dynamic multi-pin/gate Passage Guide constructor exists.
+- No Passage Support Loss / Passage Reassessment implementation exists.
+- Other assembly configurations and broad asymmetric passage remain unvalidated.
+- Wider regression scenarios remain to be engineered.
+
+These are deliberate scope boundaries, not accidental omissions.
+
+---
+
 # Known Issues / Explicit Incompleteness — v4.7.98 canonical candidate
 
 These are authority boundaries, not invitations to widen the current candidate.

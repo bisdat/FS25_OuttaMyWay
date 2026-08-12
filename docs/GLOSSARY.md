@@ -1,3 +1,41 @@
+# v4.7.99 D-0146 glossary addendum
+
+**Established Trajectory** — coherent recent physical direction/corridor that persists through short-lived deviations but is superseded by sustained contradictory motion.
+
+**Current Excursion** — temporary Current Motion disagreement with Established Trajectory; increases uncertainty without automatically erasing history.
+
+**Trajectory Persistence** — temporal Situation-Knowledge rule that preserves coherent motion history against transients without predicting the future.
+
+**Observed Trajectory Corridor** — spatial band implied by Established Trajectory, current assembly occupancy and bounded observational uncertainty.
+
+**Potential Opposed Corridor Conflict** — credible persistent evidence that participants may demand the same opposed corridor, insufficient yet for decisive passage commitment.
+
+**Established Opposed Corridor Conflict** — substantially opposed, closing, sufficiently persistent/stable trajectory relationship with positively supported corridor overlap.
+
+**Supported Corridor Overlap** — positive intersection of supported trajectory-demand corridors. Any positive overlap counts; overlap magnitude is not a Step-1 admission threshold.
+
+**Passage Presumption** — after Established Opposed Corridor Conflict, presume a local passage exists until Local Spatial Constraint disproves it.
+
+**Local Passage Space** — nearby traversable space temporarily usable for resolving the encounter, independent of productive-lane ownership.
+
+**Boundary Encroachment** — local passage use of immediate margin while some of the complete assembly remains in-field; wholly extra-field relocation is excluded.
+
+**Passage Arrangement** — temporary pairwise spatial relationship supporting progression past one another with Nominal Inter-Assembly Clearance.
+
+**Pairwise Passage Economy** — minimise combined necessary intervention across the pair; no inherent trajectory privilege, with commitments/priority available as tie-breaks.
+
+**Passage Sufficiency** — stop searching after a supported safe/completable local arrangement is good enough; no global optimum obligation.
+
+**Passage Guide** — bounded ordered temporary spatial targets/gates shaping entry to, traversal of and exit from a Passage Arrangement.
+
+**Nominal Inter-Assembly Clearance** — positive controlled-passage clearance reserve between actual assembly envelopes; numerical calibration is implementation evidence, not architecture.
+
+**Passage Support Loss** — loss of positive evidence supporting the current Passage Arrangement/Guide expression.
+
+**Passage Reassessment** — reassess current Reality after support loss and continue, re-express the same passage Commitment or safely abandon/escalate.
+
+---
+
 ## v4.7.98 current vocabulary — D-0144 precedence
 
 This section supersedes older glossary entries where they conflict. Historical terms remain below for evidence provenance.

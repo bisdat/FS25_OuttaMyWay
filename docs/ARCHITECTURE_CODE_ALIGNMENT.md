@@ -1,3 +1,15 @@
+# v4.7.99 D-0146 architecture-to-code alignment addendum
+
+**Baseline:** owner-declared canonical v4.7.98 (`105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`; Git `982992b926839c854f6d4d7979fe24885e267eae`; 307 files).
+
+This candidate deliberately creates an **architecture/implementation gap** rather than speculative code. No live module is added for Established Trajectory, Opposed Corridor classification, Local Passage Space search, Passage Arrangement generation, Passage Guide construction or Passage Reassessment.
+
+The v4.7.98 Cooperative Passage control path, purpose-specific Representation Fitness, D-0141 follower Regulation and all physical calibration remain behaviourally unchanged. Only version/build/provenance identity and documentation are changed.
+
+Next implementation work must map each D-0146 responsibility onto existing layers before coding, beginning with Situation-owned Step-1 Knowledge.
+
+---
+
 # v4.7.98 Architecture-to-Code Alignment — D-0144 Consolidation
 
 **Canonical baseline:** v4.7.95 (`1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1`; Git `f1a3ec95d2cfd554c7c3f2715090b48e4576706b`; 305 files).  

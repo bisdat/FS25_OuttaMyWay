@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.98 CANONICAL CANDIDATE — D-0143 TS015 Cooperative Passage Situation Assessment / purpose-specific Representation Fitness repair.
+-- FS25_OuttaMyWay v4.7.99 CANONICAL CANDIDATE — existing bounded D-0143 TS015 Cooperative Passage assessment preserved under D-0146 architecture.
 --
 -- Situation-owned recognition for the first deliberately narrow production
 -- authority envelope.  This module does not select an action and does not

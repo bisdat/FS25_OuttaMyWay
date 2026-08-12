@@ -1,3 +1,39 @@
+# v4.7.99 candidate status — D-0146 architecture recorded, implementation intentionally unchanged
+
+**Canonical baseline:** v4.7.98 (`105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`; Git `982992b926839c854f6d4d7979fe24885e267eae`; 307 files).  
+**Candidate purpose:** canonicalise the Step-1/Step-2 Cooperative Passage architecture discovered after v4.7.98 before moving collaboration to a new chat.
+
+## PROVEN / LIVE
+
+- v4.7.98 bounded TS015 Condor/Patriot Cooperative Passage production path remains unchanged and is the only live-proven passage implementation.
+- D-0141 follower Regulation remains live and may preserve Action Space while intent/trajectory matures.
+- Candidate/Constraint/Decision/Commitment/Control ownership and immediate successful handoff settlement remain proven.
+
+## ACCEPTED ARCHITECTURE, NOT YET IMPLEMENTED
+
+- Established Trajectory + Current Motion + Current Excursion + Trajectory Persistence.
+- Potential / Established Opposed Corridor Conflict and categorical Supported Corridor Overlap.
+- Productive/Transitional/TURN_SEGMENT demoted from binary Step-1 gate to contextual evidence.
+- Passage Presumption, Local Passage Space, Boundary Encroachment, asymmetric/unilateral burden and lane departure.
+- Passage Arrangement, Pairwise Passage Economy, Passage Sufficiency / Progressive Passage Search.
+- Nominal Inter-Assembly Clearance, Passage Development/Traversal/Reacquisition Distance and Manoeuvre Swept Occupancy.
+- Passage Guide and Passage Reassessment.
+
+## UNRESOLVED / NOT AUTHORISED
+
+- numerical trajectory-persistence/filter calibration;
+- exact implementation representation of trajectory corridors and uncertainty;
+- generic local-space search and terrain/static-obstacle evidence surface;
+- general nominal-clearance calibration;
+- arbitrary assembly/configuration support;
+- dynamic Passage Guide construction and GIANTS steering interface;
+- support-loss detection/reassessment mechanics;
+- broader regression suite.
+
+**Health warning:** accepted D-0146 architecture is not evidence that these implementation capabilities exist.
+
+---
+
 # v4.7.98 CANONICAL CANDIDATE — Progressive Situational Sufficiency Consolidation
 
 **Owner-declared canonical baseline:** v4.7.95  

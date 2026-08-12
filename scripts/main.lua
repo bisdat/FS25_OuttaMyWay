@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.98 CANONICAL CANDIDATE — D-0144 simplification with successful v4.7.97 Cooperative Passage behaviour preserved.
+-- FS25_OuttaMyWay v4.7.99 CANONICAL CANDIDATE — D-0146 architecture recorded; v4.7.98 Cooperative Passage behaviour preserved.
 -- modDesc.xml loads only this file. Historical archived modules are never sourced.
 local modDirectory=g_currentModDirectory or ""
 local modules={

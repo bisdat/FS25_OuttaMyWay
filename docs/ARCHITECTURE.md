@@ -1,3 +1,108 @@
+## v4.7.99 Trajectory-Based Opposed Corridor Passage — normative candidate precedence
+
+**Status:** accepted architecture for owner canonical review; implementation intentionally remains bounded v4.7.98 behaviour.  
+**Canonical baseline:** owner-declared canonical v4.7.98 (`105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`; Git `982992b926839c854f6d4d7979fe24885e267eae`; 307 files).  
+**Decision:** D-0146.  
+**Implementation boundary:** architecture-only canonicalisation; no generic D-0146 motion/control implementation is introduced here.
+
+D-0146 refines D-0144 Progressive Situational Sufficiency by replacing solution-shaped opposed/head-on admission with direct trajectory-and-demand reasoning. D-0143 remains the live bounded Cooperative Passage implementation authority where not superseded, and D-0141 remains the live follower-Regulation authority.
+
+### 0.1 Two-step responsibility boundary
+
+**Step 1 — Categorise opposed:** determine what spatial relationship exists between participants. It must not decide how they will pass.  
+**Step 2 — Perform passage:** given an Established Opposed Corridor Conflict, determine a supported local passage. It must not redefine whether the conflict exists.
+
+This separation is normative. Vehicle configuration, released space, Passage Guides and manoeuvre construction belong to Step 2, not Step 1.
+
+### 0.2 Established Trajectory, Current Motion and Trajectory Persistence
+
+**Established Trajectory** is the coherent direction/corridor demonstrated by an assembly over meaningful recent physical movement.  
+**Current Motion** is what the assembly is doing now.  
+**Current Excursion** is a temporary disagreement between Current Motion and Established Trajectory.  
+**Trajectory Persistence** means coherent prior motion resists being erased by short-lived excursions, while sustained coherent travel on a materially different axis progressively supersedes the old Established Trajectory.
+
+This is temporal Situation Knowledge, not future-route prediction. Past motion has persistence against transients but does not overrule sustained contradictory Reality.
+
+GIANTS Productive/Transitional/TURN_SEGMENT state is contextual evidence about trajectory reliability; it is not a binary gate deciding whether an opposed spatial conflict can exist. Turning Rank remains optional spatial context for Observation/Regulation, never native-turn prediction.
+
+### 0.3 Opposed Corridor Conflict
+
+**Observed Trajectory Corridor** is the spatial band implied by an Established Trajectory, expanded by current assembly occupancy and bounded observational uncertainty.
+
+**Supported Corridor Overlap** exists when positively supported trajectory-demand corridors intersect. **Any positive overlap is overlap.** Overlap magnitude does not decide Step-1 admission and must not be converted into an architectural percentage/metre threshold.
+
+Where only uncertainty margins overlap, Step 1 must not assert positive intersection; failure to prove separation supports caution/Potential conflict, not an Established conflict.
+
+Pairwise Step-1 outcomes are:
+
+- **No Opposed Conflict** — evidence positively supports no relevant opposed corridor conflict.
+- **Potential Opposed Corridor Conflict** — persistent evidence supports a credible future/shared corridor interaction, but current motion does not yet positively establish the opposed conflict. Observe, and Regulate where Action Space is being consumed.
+- **Established Opposed Corridor Conflict** — substantially opposed, closing, sufficiently persistent/stable observed motion with positively supported corridor overlap.
+
+**Near-collinear** is relational: the opposed trajectory corridors compete for the same local space. Exact centre-lines, exact 180-degree headings and exact lateral offsets are not architectural requirements.
+
+### 0.4 Passage Presumption and Local Passage Space
+
+Once Step 1 establishes an Opposed Corridor Conflict, Step 2 adopts **Passage Presumption**: passage is presumed possible until **Local Spatial Constraint** disproves it. Incapability is discovered from Reality, not pre-classified by assembly type.
+
+**Local Passage Space** is nearby traversable Field World space that may be temporarily consumed to resolve the current encounter, including space outside either participant's productive lane. Configuration reduction may help but is optional. Cooperative Passage may impose asymmetric burden or require only one participant to move.
+
+**Boundary Encroachment** is legitimate Local Passage Space: an assembly may straddle the Field Boundary into the immediate margin while remaining partly in-field. A complete assembly becoming wholly extra-field is not Cooperative Passage; it enters extra-field relocation/navigation responsibility.
+
+Local Spatial Constraint may include terrain, static obstacles, Field Boundary/margin limits, local topology, assembly geometry or kinematics. Failure to find a supported local passage may ultimately escalate to the player.
+
+### 0.5 Passage Arrangement, economy and sufficiency
+
+A **Passage Arrangement** is a temporary pairwise spatial relationship in which participants can progress past one another while protecting Nominal Inter-Assembly Clearance. Neither Established Trajectory has inherent privilege.
+
+**Pairwise Passage Economy** selects a supported arrangement by minimising combined necessary intervention across the pair; existing commitments or established priority may break ties between otherwise comparable arrangements. Symmetry is not a requirement.
+
+**Passage Sufficiency** is satisficing, not global optimisation: once a locally supported arrangement satisfies safety/completion obligations and no already-known obviously simpler supported arrangement exists, search stops.
+
+**Progressive Passage Search** expands only as far in intervention burden as necessary to discover such a sufficient arrangement.
+
+### 0.6 Passage geometry responsibilities
+
+**Nominal Inter-Assembly Clearance** is a positive clearance reserve protected between actual assembly envelopes during controlled passage. Architecture deliberately declares no universal metre/percentage value.
+
+**Passage Development Distance** is longitudinal room needed to settle from the conflict trajectory into the passing relationship. Shorter nose-to-nose distance may demand sharper steering/sweep and can make an arrangement unsupported rather than justifying arbitrarily harder turns.  
+**Passage Traversal Distance** is the room needed for full assembly lengths to clear while the passing relationship remains supported.  
+**Reacquisition Distance** is the room needed to leave the passing arrangement and return toward native continuation.
+
+**Manoeuvre Swept Occupancy**, not endpoint fit alone, governs whether transition into/out of the arrangement can protect clearance. Architecture does not prescribe a continuous swept-polygon planner.
+
+### 0.7 Passage Guide
+
+A **Passage Guide** is a bounded ordered set of temporary spatial targets/gates shaping an assembly into the Passage Arrangement and back toward native continuation. It is not architecturally limited to `left-a-bit → straight → right-a-bit`, nor does every target need to be an exact point. Implementation may use multiple pins, acceptance regions or directed gates according to GIANTS-compatible control evidence.
+
+The historical Forward-Only Waypoint Orbit remains relevant implementation evidence: arbitrary high-lateral point targets are not assumed navigable merely because geometric pins can be placed.
+
+### 0.8 Passage Support Loss and Passage Reassessment
+
+**Passage Support Loss** occurs when evidence that justified the current Passage Arrangement or Passage Guide is no longer sufficient for continued execution.
+
+**Passage Reassessment** requires authority to pause at the safest available state and reassess from current Reality. Outcomes are: continue the existing expression; re-express the same Cooperative Passage Commitment using a newly supported arrangement/guide; or safely abandon/escalate when no supported local continuation remains.
+
+Loss of one execution expression need not destroy the higher-level Commitment to resolve the same opposed conflict by Cooperative Passage. Implementation details for detecting support loss are intentionally unresolved.
+
+### 0.9 Explicit implementation-health boundary
+
+**Current status: D-0146 architecture accepted; general D-0146 Cooperative Passage implementation incomplete.**
+
+The v4.7.98 live controller remains bounded to the demonstrated TS015 Condor/Patriot path and existing purpose-specific Representation Fitness. This candidate does **not** implement:
+
+- Established Trajectory / Current Excursion persistence logic;
+- generic Potential/Established Opposed Corridor Conflict classification;
+- generic Local Passage Space discovery;
+- arbitrary/asymmetric Passage Arrangement generation;
+- general Manoeuvre Swept Occupancy or Nominal Clearance planning;
+- dynamic Passage Guide construction;
+- Passage Support Loss detection or Passage Reassessment.
+
+No future chat should infer these capabilities from their architectural acceptance. The first implementation work after canonicalisation must begin from this explicit architecture/implementation gap and preserve proven v4.7.98 behaviour until new evidence validates change.
+
+---
+
 # Architecture
 
 ## v4.7.98 Progressive Situational Sufficiency — normative candidate precedence

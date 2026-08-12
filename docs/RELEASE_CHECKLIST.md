@@ -1,3 +1,17 @@
+## v4.7.99 candidate-scope acceptance gate
+
+- [ ] Exact baseline is owner-declared canonical v4.7.98 SHA-256 `105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`.
+- [ ] Candidate changes architecture/documentation/version/provenance only; no intentional traffic/control behavioural delta.
+- [ ] D-0146 Step-1/Step-2 architecture is recorded consistently.
+- [ ] Health warning states D-0146 generic capabilities are not implemented.
+- [ ] Any positive supported corridor overlap is recorded as categorical Step-1 overlap; no percentage/metre admission threshold.
+- [ ] Boundary Encroachment permits straddling only; wholly extra-field remains outside Cooperative Passage.
+- [ ] Passage Presumption, Pairwise Passage Economy, Passage Sufficiency and Passage Reassessment are recorded without inventing implementation algorithms.
+- [ ] Existing Python/Lua behavioural and syntax tests pass unchanged in substance.
+- [ ] RRS/manifest/re-extraction validation passes.
+
+---
+
 ## v4.7.98 candidate-scope acceptance gate
 
 - [ ] Exact baseline is owner-declared canonical v4.7.95.

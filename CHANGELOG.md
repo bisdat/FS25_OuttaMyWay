@@ -1,3 +1,16 @@
+# v4.7.99 CANONICAL CANDIDATE — D-0146 Trajectory-Based Opposed Corridor Passage Architecture
+
+- Starts from exact owner-declared canonical v4.7.98 (`105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`; Git `982992b926839c854f6d4d7979fe24885e267eae`; 307 files).
+- Architecture/documentation canonicalisation only. Runtime Cooperative Passage geometry, D-0141 Regulation, Candidate/Constraint/Decision/Commitment/Control behaviour and GIANTS handoff are intentionally unchanged from v4.7.98 apart from release/version/provenance identity.
+- Records D-0146 **Trajectory-Based Opposed Corridor Conflict / Local Cooperative Passage** and explicitly separates **Step 1: categorise the opposed spatial relationship** from **Step 2: determine a supported passage**.
+- Step 1 adopts Established Trajectory, Current Motion, Current Excursion and Trajectory Persistence; GIANTS Productive/Transitional labels become contextual confidence evidence rather than a binary opposed-conflict gate.
+- Defines Potential and Established Opposed Corridor Conflict, Observed Trajectory Corridor and Supported Corridor Overlap. Any positively supported overlap is overlap; overlap magnitude is descriptive for resolution, not an admission threshold.
+- Step 2 adopts Passage Presumption, Local Passage Space, Boundary Encroachment, Passage Arrangement, Pairwise Passage Economy, Passage Sufficiency, Passage Guide, Nominal Inter-Assembly Clearance, Manoeuvre Swept Occupancy and Passage Reassessment.
+- Cooperative Passage may be asymmetric or unilateral, may temporarily leave productive lanes, and may straddle the Field Boundary into the immediate margin; wholly extra-field relocation is outside Cooperative Passage.
+- Configuration reduction is optional assistance, not a prerequisite. Passage incapability is discovered through Local Spatial Constraint rather than pre-classified by vehicle type.
+- The current v4.7.98 TS015 Condor/Patriot implementation remains the only live-proven bounded implementation. D-0146 does **not** yet implement generic trajectory classification, Local Passage Space search, arbitrary Passage Guides, dynamic clearance planning or Passage Reassessment.
+- Preserves the explicit health warning: bounded Cooperative Passage production capability is demonstrated; general Cooperative Passage remains incomplete.
+
 # v4.7.98 CANONICAL CANDIDATE — D-0144 Progressive Situational Sufficiency Consolidation
 
 - Starts from exact owner-declared canonical v4.7.95 (`1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1`; Git `f1a3ec95d2cfd554c7c3f2715090b48e4576706b`; 305 files).

@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.98 CANONICAL CANDIDATE — D-0143 TS015 Cooperative Passage Control.
+-- FS25_OuttaMyWay v4.7.99 CANONICAL CANDIDATE — existing bounded D-0143 TS015 Cooperative Passage Control preserved under D-0146 architecture.
 --
 -- Central-Control implementation of the mechanically proven P23 sequence for
 -- the first narrow Condor/Patriot production slice.  Situation/Candidate/

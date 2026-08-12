@@ -1,3 +1,39 @@
+## D-0146 — Trajectory-Based Opposed Corridor Conflict / Local Cooperative Passage (2026-08-12)
+
+**Status:** Accepted for v4.7.99 canonical candidate; owner canonicalisation remains separate.  
+**Baseline:** owner-declared canonical v4.7.98 (`105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`; Git `982992b926839c854f6d4d7979fe24885e267eae`; 307 files).
+
+**Decision:**
+
+1. Separate Cooperative Passage into **Step 1: categorise the opposed corridor conflict** and **Step 2: determine/perform a supported passage**.
+2. Base Step 1 primarily on observed physical trajectory and spatial demand: Established Trajectory, Current Motion, Current Excursion and Trajectory Persistence.
+3. Treat Productive/Transitional/TURN_SEGMENT and Turning Rank as contextual confidence/spatial evidence, not binary opposed-conflict or route-prediction authority.
+4. Distinguish Potential from Established Opposed Corridor Conflict. Established requires substantially opposed, closing, sufficiently persistent/stable motion plus positive Supported Corridor Overlap.
+5. Supported Corridor Overlap is categorical: any positively supported overlap is overlap. Magnitude is descriptive for Step 2, not a Step-1 admission threshold. Uncertainty-only overlap cannot manufacture an Established conflict.
+6. Near-collinear is relational corridor competition, not exact centre-line coincidence, exact 180-degree heading or a universal lateral threshold.
+7. Adopt **Passage Presumption**: once conflict is Established, passage is presumed possible until Local Spatial Constraint disproves it.
+8. Permit asymmetric/unilateral burden, optional configuration reduction and temporary productive-lane departure.
+9. Permit **Boundary Encroachment** into the immediate field margin while some of the complete assembly remains in-field; wholly extra-field relocation is outside Cooperative Passage.
+10. Select Passage Arrangements by **Pairwise Passage Economy**; neither Established Trajectory has inherent privilege. Existing commitments/priority may break ties.
+11. Use **Passage Sufficiency / Progressive Passage Search** rather than global optimisation. Stop when a sufficient supported local arrangement is found.
+12. Protect **Nominal Inter-Assembly Clearance** through development, traversal and reacquisition while accounting for Manoeuvre Swept Occupancy. No universal clearance metre/percentage is architecture.
+13. Represent execution shape architecturally as a **Passage Guide** of bounded spatial targets/gates, not a fixed three-leg sidestep.
+14. Adopt **Passage Support Loss / Passage Reassessment**: when positive support for the current expression is lost, reassess current Reality; continue, re-express the same Commitment, or safely abandon/escalate.
+15. Preserve player escalation as legitimate last resort when Local Passage Space is exhausted or no supported continuation remains.
+16. Do not implement/generalise these concepts in v4.7.99. The current bounded v4.7.98 TS015 implementation remains the live behaviour and evidence donor.
+
+**Why:** the earlier Rook/file and Productive/TURN_SEGMENT distinctions captured useful persistence/transition observations but were solution-shaped by unilateral Refuge thinking. Cooperative Passage permits direct reasoning from physical trajectory and local space, reduces required prediction and better expresses asymmetric real-world passage.
+
+**Implementation consequence:** next work must explicitly close the architecture/implementation gap in small increments, starting with Step-1 trajectory knowledge/classification before general Step-2 passage construction.
+
+---
+
+### D-0145 numbering note
+
+The D-0145 label remains reserved for the previously named **Live Clearance Cost** performance discovery from the retired King lineage: repeated actual transit-footprint placement/swept-clearance work was linked to the characteristic regression. It is historical performance evidence, not current governing passage architecture, and is not repurposed here.
+
+---
+
 ## D-0144 — Progressive Situational Sufficiency / Chessboard Simplification (2026-08-12)
 
 **Status:** Accepted for v4.7.98 canonical candidate; owner canonicalisation remains separate.  
