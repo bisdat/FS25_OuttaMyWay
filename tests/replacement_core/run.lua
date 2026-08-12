@@ -45,6 +45,8 @@ load("scripts/assessment/ProgressionGeometry.lua")
 load("scripts/assessment/GuardedRecoveryThreatAssessment.lua")
 load("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
 load("scripts/assessment/CooperativePassageAssessment.lua")
+load("scripts/assessment/TrajectoryConflictAssessment.lua")
+load("scripts/assessment/PassageCapabilityAssessment.lua")
 load("scripts/assessment/SituationAssessment.lua")
 load("scripts/commitment/CommitmentStateMachine.lua")
 load("scripts/commitment/CommitmentRegistry.lua")
@@ -58,6 +60,7 @@ load("scripts/commitment/DecisionCommitmentBoundary.lua")
 load("scripts/commitment/LiveTrafficCommitmentLifecycle.lua")
 load("scripts/candidates/CandidateSpace.lua")
 load("scripts/candidates/PassiveLiveCandidateSupport.lua")
+load("scripts/candidates/LocalPassagePlanner.lua")
 load("scripts/candidates/LiveTrafficCandidateSupport.lua")
 load("scripts/constraints/ConstraintEvidence.lua")
 load("scripts/constraints/evaluators/FieldWorldContainment.lua")
@@ -896,6 +899,9 @@ local function d0143KnowledgeRecord(options)
 end
 
 local function d0143Picture(options)
+    -- Legacy D-0143 regression fixtures intentionally exercise the retained donor
+    -- path rather than the v4.7.101 D-0146 Step-2 production path.
+    OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED=false
     options=options or {}
     local record=options.record or d0143KnowledgeRecord(options)
     return OuttaMyWay.OperationalPicture.new({
@@ -3177,6 +3183,195 @@ test("D0136 settlement Future-Space adapter preserves representation boundary",f
     local future=OuttaMyWay.FieldBoundedFutureSpace.build(worker)
     equal(future.bounded,true)
     equal(future.reason,"SETTLED_GIANTS_LOCAL_INTENT_WITH_FIELD_WORLD_BOUNDARY")
+end)
+
+
+local function d0146Motion(assemblyId,jobToken,dx,dz,speed,interval)
+    return {assemblyId=assemblyId,assemblyReferenceKey="REF-"..assemblyId,sourceJobToken=jobToken,travelDirectionX=dx,travelDirectionZ=dz,positionDerivedSpeedMps=speed,sampleIntervalSeconds=interval,motionClassification="PHYSICAL_TRAVEL"}
+end
+
+local function d0146Space(assemblyId,x,z)
+    return {assemblyId=assemblyId,occupancy={x=x,z=z}}
+end
+
+local function d0146Physical(assemblyId,x,z,radius)
+    return {assemblyId=assemblyId,primitives={{kind="DISC",identity="DISC-"..assemblyId,x=x,z=z,radius=radius,positiveConflictSupport=true}}}
+end
+
+local function d0146Update(tracks,motions,spaces,snapshotId)
+    return OuttaMyWay.TrajectoryConflictAssessment.updateTrajectories(tracks,{
+        motionEvidence=motions,currentSpace=spaces,productiveKnowledge={},observationSnapshotId=snapshotId,timestamp=snapshotId,
+        minSampleDistanceM=0.10,establishDistanceM=3.0,coherenceMinDot=0.94,persistenceAlignmentMinDot=0.85,supersessionDistanceM=4.0,stableMemoryDistanceM=12.0
+    })
+end
+
+local function d0146Classify(trajectories,motions,spaces,physical)
+    return OuttaMyWay.TrajectoryConflictAssessment.classifyPairs({
+        trajectoryKnowledge=trajectories,motionEvidence=motions,currentSpace=spaces,physicalSpaceEvidence=physical,
+        situations={{operationId="OR-D0146",memberAssemblyIds={"AS-A","AS-B"}}},
+        opposedMaxDot=-0.85,currentOpposedMaxDot=-0.85,persistenceAlignmentMinDot=0.85,currentStableDistanceM=1.0,minClosingRateMps=0.05
+    })[1]
+end
+
+test("D0146 Established Trajectory persists through Current Excursion and supersedes only after sustained contradictory travel",function()
+    local tracks={}
+    local spaces={d0146Space("AS-A",0,0)}
+    local formed=d0146Update(tracks,{d0146Motion("AS-A","JE-A",0,1,3,1)},spaces,1)[1]
+    equal(formed.status,"ESTABLISHED_TRAJECTORY")
+    equal(formed.currentExcursion,false)
+    equal(formed.establishedDirectionZ,1)
+
+    local excursion=d0146Update(tracks,{d0146Motion("AS-A","JE-A",1,0,2,1)},spaces,2)[1]
+    equal(excursion.status,"ESTABLISHED_TRAJECTORY")
+    equal(excursion.currentExcursion,true)
+    equal(excursion.excursionDistanceM,2)
+    equal(excursion.establishedDirectionZ,1)
+
+    local superseded=d0146Update(tracks,{d0146Motion("AS-A","JE-A",1,0,2,1)},spaces,3)[1]
+    equal(superseded.status,"ESTABLISHED_TRAJECTORY")
+    equal(superseded.currentExcursion,false)
+    equal(superseded.lastTransition,"ESTABLISHED_TRAJECTORY_SUPERSEDED_BY_SUSTAINED_CONTRADICTORY_MOTION")
+    equal(superseded.establishedDirectionX,1)
+    equal(superseded.establishedDirectionZ,0)
+end)
+
+test("D0146 opposed corridor classification matures Potential to Established from persistent current motion",function()
+    local tracks={}
+    local spaces={d0146Space("AS-A",0,0),d0146Space("AS-B",0,20)}
+    local physical={d0146Physical("AS-A",0,0,2),d0146Physical("AS-B",0,20,2)}
+    local initialMotion={d0146Motion("AS-A","JE-A",0,1,3,1),d0146Motion("AS-B","JE-B",0,-1,3,1)}
+    local trajectories=d0146Update(tracks,initialMotion,spaces,1)
+    equal(d0146Classify(trajectories,initialMotion,spaces,physical).classification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
+
+    local excursionMotion={d0146Motion("AS-A","JE-A",1,0,1,1),d0146Motion("AS-B","JE-B",0,-1,1,1)}
+    trajectories=d0146Update(tracks,excursionMotion,spaces,2)
+    local potential=d0146Classify(trajectories,excursionMotion,spaces,physical)
+    equal(potential.classification,"POTENTIAL_OPPOSED_CORRIDOR_CONFLICT")
+    equal(potential.reason,"CURRENT_MOTION_NOT_YET_SUBSTANTIALLY_OPPOSED")
+
+    local restoredMotion={d0146Motion("AS-A","JE-A",0,1,1,1),d0146Motion("AS-B","JE-B",0,-1,1,1)}
+    trajectories=d0146Update(tracks,restoredMotion,spaces,3)
+    local established=d0146Classify(trajectories,restoredMotion,spaces,physical)
+    equal(established.classification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
+    equal(established.supportedCorridorOverlap.positive,true)
+    equal(established.currentClosingPositive,true)
+end)
+
+test("D0146 any positive supported corridor overlap is sufficient without an admission magnitude threshold",function()
+    local tracks={}
+    local spaces={d0146Space("AS-A",0,0),d0146Space("AS-B",3.9,20)}
+    local physical={d0146Physical("AS-A",0,0,2),d0146Physical("AS-B",3.9,20,2)}
+    local motions={d0146Motion("AS-A","JE-A",0,1,3,1),d0146Motion("AS-B","JE-B",0,-1,3,1)}
+    local trajectories=d0146Update(tracks,motions,spaces,1)
+    local classified=d0146Classify(trajectories,motions,spaces,physical)
+    equal(classified.supportedCorridorOverlap.positive,true)
+    equal(classified.supportedCorridorOverlap.overlapM>0,true)
+    equal(classified.supportedCorridorOverlap.overlapM<0.11,true)
+    equal(classified.classification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
+end)
+
+test("D0146 lack of positive supported corridor overlap cannot establish opposed conflict",function()
+    local tracks={}
+    local spaces={d0146Space("AS-A",0,0),d0146Space("AS-B",10,20)}
+    local physical={d0146Physical("AS-A",0,0,2),d0146Physical("AS-B",10,20,2)}
+    local motions={d0146Motion("AS-A","JE-A",0,1,3,1),d0146Motion("AS-B","JE-B",0,-1,3,1)}
+    local trajectories=d0146Update(tracks,motions,spaces,1)
+    local classified=d0146Classify(trajectories,motions,spaces,physical)
+    equal(classified.supportedCorridorOverlap.positive,false)
+    equal(classified.classification,"POTENTIAL_OPPOSED_CORRIDOR_CONFLICT")
+    equal(classified.reason,"POSITIVE_SUPPORTED_CORRIDOR_OVERLAP_NOT_YET_ESTABLISHED")
+end)
+
+test("D0146 missing trajectory corridor anchor fails closed instead of inventing an origin anchor",function()
+    local tracks={}
+    local spaces={d0146Space("AS-A",0,0),d0146Space("AS-B",0,20)}
+    local physical={d0146Physical("AS-A",0,0,2),d0146Physical("AS-B",0,20,2)}
+    local motions={d0146Motion("AS-A","JE-A",0,1,3,1),d0146Motion("AS-B","JE-B",0,-1,3,1)}
+    local trajectories=d0146Update(tracks,motions,spaces,1)
+    trajectories[1].corridorAnchorX=nil
+    local classified=d0146Classify(trajectories,motions,spaces,physical)
+    equal(classified.supportedCorridorOverlap.status,"UNRESOLVED")
+    equal(classified.supportedCorridorOverlap.reason,"ESTABLISHED_TRAJECTORY_CORRIDOR_ANCHOR_UNAVAILABLE")
+    equal(classified.classification,"POTENTIAL_OPPOSED_CORRIDOR_CONFLICT")
+end)
+
+
+local function d0146Step2Fixture(fieldMinX,fieldMaxX)
+    OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED=true
+    fieldMinX=fieldMinX or -40; fieldMaxX=fieldMaxX or 40
+    local conflict={
+        identity="OC-D0146",operationId="OR-1",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",
+        status="SUPPORTED",classification="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT",reason="PERSISTENT_CURRENT_MOTION_SUBSTANTIATES_ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT",
+        trajectoryDot=-1,mutuallyFacing=true,currentOpposed=true,currentClosingPositive=true,subjectCurrentStable=true,otherCurrentStable=true,subjectCurrentExcursion=false,otherCurrentExcursion=false,
+        currentClosing={separationM=60,currentDirectionDot=-1,closingRateMps=10},
+        supportedCorridorOverlap={status="SUPPORTED",positive=true,overlapM=4,sharedRightX=1,sharedRightZ=0,subjectPhysicalPrimitiveCount=2,otherPhysicalPrimitiveCount=2}
+    }
+    local trajectories={
+        {assemblyId="AS-A",assemblyReferenceKey="vehicle-root:101",jobToken="job-A",status="ESTABLISHED_TRAJECTORY",establishedDirectionX=0,establishedDirectionZ=1,corridorAnchorX=0,corridorAnchorZ=0,currentExcursion=false},
+        {assemblyId="AS-B",assemblyReferenceKey="vehicle-root:201",jobToken="job-B",status="ESTABLISHED_TRAJECTORY",establishedDirectionX=0,establishedDirectionZ=-1,corridorAnchorX=0,corridorAnchorZ=60,currentExcursion=false}
+    }
+    local spaces={{assemblyId="AS-A",occupancy={x=0,z=0}},{assemblyId="AS-B",occupancy={x=0,z=60}}}
+    local motion={
+        {assemblyId="AS-A",assemblyReferenceKey="vehicle-root:101",name="Condor Endurance II",sourceJobToken="job-A",headingX=0,headingZ=1,localIntentClassification="SETTLED_CONTINUATION"},
+        {assemblyId="AS-B",assemblyReferenceKey="vehicle-root:201",name="Patriot 4450",sourceJobToken="job-B",headingX=0,headingZ=-1,localIntentClassification="SETTLED_CONTINUATION"}
+    }
+    local physical={
+        {assemblyId="AS-A",assemblyReferenceKey="vehicle-root:101",configurationProfileId="CFG-A",primitives={{kind="DISC",positiveConflictSupport=true},{kind="DISC",positiveConflictSupport=true}},summary={physicalPrimitiveCount=2}},
+        {assemblyId="AS-B",assemblyReferenceKey="vehicle-root:201",configurationProfileId="CFG-B",primitives={{kind="DISC",positiveConflictSupport=true},{kind="DISC",positiveConflictSupport=true}},summary={physicalPrimitiveCount=2}}
+    }
+    local fitness=OuttaMyWay.PassageCapabilityAssessment.buildFitness({opposedCorridorKnowledge={conflict},motionEvidence=motion,physicalSpaceEvidence=physical})
+    local picture=OuttaMyWay.OperationalPicture.new({
+        identity="OP-D0146-STEP2",epoch=800,observationSnapshotId="OS-D0146-STEP2",
+        situations={},encounters={{identity="EN-D0146",operationId="OR-1",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",relationship="FUTURE_SPACE_INTERSECTION",lifecycleState="ACTIVE",evidence={interactionReferenceKey="vehicle-root:101|vehicle-root:201",currentSpaceIntersects=false,futureSpaceConverges=true}}},
+        identities={assemblies={"AS-A","AS-B"},components={},jobEpisodes={active={"JE-A","JE-B"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
+        currentSpace=spaces,futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},representationFitness=fitness,
+        motionEvidence=motion,physicalSpaceEvidence=physical,productiveContinuationKnowledge={},guardedRecoveryKnowledge={},followerBoundaryKnowledge={},trajectoryKnowledge=trajectories,opposedCorridorKnowledge={conflict},cooperativePassageKnowledge={},
+        provenance={source="d0146-step2-test"},controlOutcomeEvidence={},candidateSupportEvidence={complete=false,supportBoundary={},candidateSpecifications={},provenance={}},commitmentContext={},diagnostics={}
+    })
+    local snapshot=OuttaMyWay.ObservationSnapshot.new({
+        identity="OS-D0146-STEP2",epoch=801,timestamp=80,provenance={source="d0146-step2-test"},
+        fieldWorld={referenceKey="field-world:d0146",geometryFingerprint="fw-d0146",boundary={{x=fieldMinX,z=-30},{x=fieldMaxX,z=-30},{x=fieldMaxX,z=90},{x=fieldMinX,z=90}},islands={}},
+        assemblies={{assemblyId="AS-A",referenceKey="vehicle-root:101",memberComponentIds={}},{assemblyId="AS-B",referenceKey="vehicle-root:201",memberComponentIds={}}},
+        geometry={currentSpaceEvidence={},futureSpaceEvidence={},futureSpaceRelationshipEvidence={},demandEvidence={},interactionEvidence={}},motion={closureEvidence={}},aiStates={},playerControl={},jobEpisodeEvidence={},operationMembershipEvidence={},physicalRepresentationEvidence={},controlOutcomes={},unavailableSources={},diagnostics={}
+    })
+    return picture,snapshot
+end
+
+test("D0146 Step2 progressive local passage search selects a sufficient multi-gate arrangement",function()
+    local picture,snapshot=d0146Step2Fixture()
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
+    equal(reason,nil); equal(plan.status,"SUPPORTED"); equal(plan.controlProfile,"D0146_P23_COMPACT_GUIDED_PASSAGE_V1")
+    equal(#plan.passageGuide.gates,5); equal(plan.progressiveSearch.satisficed,true)
+    equal(plan.passageGuide.gates[1].kind,"DEVELOPMENT_ENTRY"); equal(plan.passageGuide.gates[5].kind,"NATIVE_REACQUISITION")
+    equal(plan.passageGuide.pairSweepSupport.minimumCentreSeparationM>=12,true)
+    equal(math.abs(plan.passageArrangement.subjectLateralOffsetM)+math.abs(plan.passageArrangement.otherLateralOffsetM),12)
+end)
+
+test("D0146 Step2 Pairwise Passage Economy may choose a unilateral arrangement when local field support requires it",function()
+    local picture,snapshot=d0146Step2Fixture(-2,15)
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
+    equal(reason,nil); equal(plan.status,"SUPPORTED")
+    equal(math.abs(plan.passageArrangement.subjectLateralOffsetM)<0.001 or math.abs(plan.passageArrangement.otherLateralOffsetM)<0.001,true)
+    equal(plan.passageArrangement.maximumParticipantLateralBurdenM,12)
+end)
+
+test("D0146 Step2 Established Conflict crosses Candidate Decision Commitment and central Control dispatch",function()
+    local runtime=autonomousHeadOnRuntime()
+    local picture,snapshot=d0146Step2Fixture()
+    local supported=runtime.liveTrafficCandidateSupport:attach(picture,snapshot)
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"D0146_COOPERATIVE_PASSAGE_STEP2_TEST")
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    equal(#evaluated.candidates,1); equal(evaluated.decision.selectedCandidateId,evaluated.candidates[1].identity); equal(evaluated.decision.commitmentAction,"CREATE")
+    local accepted=nil
+    local control={}
+    function control:setCompletionHandler(fn) self.handler=fn end
+    function control:isActive() return false end
+    function control:executeJointRequests(a,b,candidate) accepted={a,b,candidate}; return true,"D0146_COOPERATIVE_PASSAGE_STARTED" end
+    runtime.liveControlDispatcher:setCooperativePassageControl(control)
+    local dispatched=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    equal(dispatched.status,"ACCEPTED"); equal(#accepted,3); equal(#dispatched.requests,2)
+    equal(dispatched.requests[1].target.kind,"D0146_COOPERATIVE_PASSAGE"); equal(dispatched.requests[2].target.kind,"D0146_COOPERATIVE_PASSAGE")
+    equal(dispatched.candidate.evidenceBasis.cooperativePassageBridge.architecture,"D0146_STEP2")
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

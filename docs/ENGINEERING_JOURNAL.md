@@ -1,3 +1,35 @@
+# 2026-08-12 — v4.7.101 Step-2 implementation: Semantic Generalisation / Mechanical Boundedness
+
+**Observation:** v4.7.100 live evidence supported the complete Step-1 trajectory/conflict chain and showed that Established conflict became known materially before the old TS015 gate. It also exposed Diagnostic Churn caused by continuously changing numeric values inside transition signatures.
+
+**Decision already architectural:** proceed directly to D-0146 Step 2 as one coherent active build; do not create another passive staircase.
+
+**Implementation discovery — Semantic Generalisation / Mechanical Boundedness:** D-0146 semantic authority can move to Established Conflict -> Local Passage Search -> Passage Arrangement/Guide without pretending that the current physical Representation has generic vehicle/negative-clearance authority. The P23 Condor/Patriot mechanics therefore remain a purpose-specific actuator profile while the old TS015 solution-shaped admission is removed from the live path.
+
+**Implementation:** added Candidate-owned Progressive Passage Search with symmetric/asymmetric/unilateral burden splits and a five-gate guide; wired it through normal Decision/Commitment/Authority; Control executes only supplied gates and treats support loss as explicit Passage Reassessment. Corrected Diagnostic Churn separately inside the same build.
+
+**Validation:** 204/204 Lua behavioural tests and 104/104 structural/conformance tests pass before packaging. Live GIANTS evidence remains final authority.
+
+---
+
+# 2026-08-12 — v4.7.100 D-0146 Step-1 implementation record
+
+**Fact:** D-0146 Step-1 architecture was already concluded before this build. This tranche is implementation and test work, not architectural discovery.
+
+**Implementation:** persistent trajectory state is owned by Situation Assessment. It uses current physical travel vectors and accumulated travelled distance to form/reinforce an Established Trajectory. A materially disagreeing Current Excursion is retained separately and supersedes the trajectory only after sustained coherent contradictory travel.
+
+**Implementation:** pair classification uses established trajectory relation, current mutual-facing geometry, current closing/stability and positive Supported Corridor Overlap derived from already-cached positive plan-view DISC primitives. It does not predict a future route. Productive/Transitional/TURN_SEGMENT is published only as context.
+
+**Implementation boundary:** Step-1 Knowledge is passive. Candidate, the existing TS015 Cooperative Passage assessment, Decision, Commitment and Control do not consume it. This protects the live-proven behaviour while evidence is gathered.
+
+**Test-discovered correction:** geometry helpers initially allowed absent corridor anchors/poses to fall back to `(0,0)`. That could manufacture support. The implementation now fails closed when those facts are unavailable. Sustained supersession also explicitly makes the new trajectory current rather than leaving it marked as an excursion.
+
+**Validation:** direct tests cover trajectory formation, Current Excursion persistence, supersession, Potential/Established maturation, any-positive-overlap semantics, absence of positive overlap, and missing-anchor fail-closed behaviour. Offline result: 201 Lua PASS; 78 Python structural/conformance PASS.
+
+**Next evidence:** live `TRAJECTORY` and `OPPOSED_CORRIDOR` transition logs. Calibration values should be adjusted only in response to observed false formation, false persistence, or missed/late maturation; such adjustment is implementation calibration, not architecture revision unless Reality contradicts the concepts themselves.
+
+---
+
 # 2026-08-12 — D-0146 trajectory/opposed-corridor and local-passage architecture
 
 **Observation:** after successful bounded Cooperative Passage, the remaining hedge-adjacent encounter showed that GIANTS `TURN_SEGMENT` can describe a local detour while the broader spatial interaction remains intelligible. Earlier Regulation opportunities also existed while Condor reversed and then resumed northbound work.

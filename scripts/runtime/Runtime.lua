@@ -40,8 +40,8 @@ function Runtime.new()
 end
 function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
-    self.trace:append("PROGRESSIVE_SITUATIONAL_SUFFICIENCY_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";d0144=true;d0143CooperativePassage=true;ts015NarrowAuthority=true;d0141FollowerRegulation=true;turningRankAwarenessRetained=true;successorRookRetired=true;continuousProductiveHistoryRetired=true;kingRetired=true;continuousRefugeRetired=true;runtimeOwnedCycle=true;situationOwnsCurrentKnowledge=true;diagnosticsAuthority=false;generalControl=false")
-    print(string.format("FS25_OuttaMyWay v%s CANONICAL CANDIDATE loaded; owner-declared v4.7.98 is canonical; D-0146 trajectory-based Opposed Corridor Passage is candidate architecture but not yet generically implemented; bounded v4.7.98 D-0143 TS015 Cooperative Passage and D-0141 follower Regulation behaviour are preserved; general production Control authority disabled",OuttaMyWay.VERSION))
+    self.trace:append("PROGRESSIVE_SITUATIONAL_SUFFICIENCY_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";d0146Step1Passive=true;trajectoryPersistence=true;opposedCorridorClassification=true;d0143CooperativePassage=true;ts015NarrowAuthority=true;d0141FollowerRegulation=true;turningRankAwarenessRetained=true;successorRookRetired=true;continuousProductiveHistoryRetired=true;kingRetired=true;continuousRefugeRetired=true;runtimeOwnedCycle=true;situationOwnsCurrentKnowledge=true;diagnosticsAuthority=false;generalControl=false")
+    print(string.format("FS25_OuttaMyWay v%s TEST BUILD loaded; owner-declared v4.7.99 is canonical; D-0146 Step-1 Situation Knowledge is live-validated and Step-2 Established Conflict -> Candidate-owned Local Passage Search -> Passage Guide -> Commitment/Control is ACTIVE for the bounded P23 Condor/Patriot mechanical profile; D-0141 follower Regulation preserved; general production Control authority disabled; general vehicle authority is not claimed",OuttaMyWay.VERSION))
 end
 
 function Runtime:setLiveControlCapability(capability)
@@ -52,6 +52,9 @@ function Runtime:markAutonomousHeadOnDispatched(governingRequirementKey)
 end
 function Runtime:resetAutonomousHeadOnState()
     self.liveTrafficCandidateSupport:resetAutonomousState()
+end
+function Runtime:resetSituationKnowledge()
+    if self.situationAssessment and type(self.situationAssessment.resetSituationKnowledge)=="function" then self.situationAssessment:resetSituationKnowledge() end
 end
 function Runtime:publishObservation(raw) return self.observationAdapter:publish(raw) end
 function Runtime:admitJobEpisodes(snapshot) return self.jobEpisodes:observe(snapshot) end
@@ -77,7 +80,7 @@ function Runtime:processLiveObservation(raw)
     local supported=self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot)
     local evaluated=self:evaluateSealedOperationalPicture(supported)
     local boundary=supported.candidateSupportEvidence and supported.candidateSupportEvidence.supportBoundary or nil
-    if type(boundary)=="table" and boundary.mode=="TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST" and #(evaluated.candidates or {})>0 then
+    if type(boundary)=="table" and (boundary.mode=="TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST" or boundary.mode=="D0146_COOPERATIVE_PASSAGE_STEP2_TEST") and #(evaluated.candidates or {})>0 then
         local candidate=evaluated.candidates[1]
         local bridge=candidate.evidenceBasis and candidate.evidenceBasis.cooperativePassageBridge or nil
         local traceKey=tostring(bridge and (bridge.encounterIdentity or bridge.pairReferenceKey) or candidate.identity)

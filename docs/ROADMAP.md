@@ -1,3 +1,14 @@
+# v4.7.100 immediate roadmap — validate Step 1 before Step 2
+
+1. Live-test the passive Established Trajectory / Current Excursion state against normal GIANTS productive, turn and reposition motion.
+2. Validate Potential -> Established Opposed Corridor Conflict on naturally occurring opposed approaches using `TRAJECTORY` / `OPPOSED_CORRIDOR` transition evidence.
+3. Specifically look for false persistence across genuine trajectory change, false supersession during short excursions, late/missed establishment, and overlap classification inconsistent with visible assembly demand.
+4. Adjust only empirical filtering calibration where evidence supports it; keep architecture unchanged unless Reality disproves the contract.
+5. Keep D-0141 Regulation and bounded TS015 Cooperative Passage behaviour unchanged during Step-1 validation.
+6. Only after Step-1 evidence is satisfactory move to the already-concluded Step-2 implementation work.
+
+---
+
 # v4.7.99 D-0146 immediate roadmap addendum
 
 1. Canonicalise this architecture/documentation candidate if owner accepts it.

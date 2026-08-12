@@ -1,3 +1,39 @@
+# v4.7.101 D-0146 Step-2 responsibility-map update
+
+| Responsibility | Owner | v4.7.101 state |
+|---|---|---|
+| Established Trajectory / Current Excursion | Situation Assessment / `TrajectoryConflictAssessment` | IMPLEMENTED; live supported |
+| Potential / Established Opposed Corridor Conflict | Situation Assessment / `TrajectoryConflictAssessment` | IMPLEMENTED; live supported |
+| Purpose-specific mechanical passage fitness | Situation Assessment / `PassageCapabilityAssessment` | IMPLEMENTED; P23 Condor/Patriot bounded |
+| Local Passage Space / Progressive Passage Search | Candidate responsibility / `LocalPassagePlanner` | IMPLEMENTED ACTIVE TEST |
+| Passage Arrangement / Pairwise Passage Economy | Candidate expression, selected through normal Decision | IMPLEMENTED ACTIVE TEST; satisfices |
+| Passage Guide | Candidate responsibility | IMPLEMENTED; explicit ordered gates |
+| Commitment / movement authority | existing central lifecycle / authority registries | IMPLEMENTED; unchanged authority boundary |
+| Execute Passage Guide | `CooperativePassageControl` | IMPLEMENTED ACTIVE TEST; supplied-guide execution only |
+| Passage Support Loss / safe reassessment | Control feedback + existing Situation re-entry boundary | IMPLEMENTED safe-abandon/escalate; no silent broadening |
+| General vehicle/negative-clearance passage mechanics | Representation layer | NOT CLAIMED |
+| Generic Boundary Encroachment search | Candidate/representation | ARCHITECTURALLY VALID; NOT REQUIRED BY CURRENT P23 EXPRESSION |
+
+**Protected abstraction:** Control may reject a supplied gate when current support is lost; it may not discover alternative Local Passage Space.
+
+---
+
+# v4.7.100 D-0146 Step-1 responsibility-map update
+
+| Responsibility | Owner | v4.7.100 state |
+|---|---|---|
+| Persist Established Trajectory / Current Excursion | Situation Assessment via `TrajectoryConflictAssessment` | IMPLEMENTED PASSIVELY |
+| Classify Potential/Established Opposed Corridor Conflict | Situation Assessment via `TrajectoryConflictAssessment` | IMPLEMENTED PASSIVELY |
+| Publish trajectory/opposed Knowledge | Operational Picture | IMPLEMENTED |
+| Observe transition evidence | PassiveLiveValidator | IMPLEMENTED; diagnostic only |
+| Preserve Action Space while conflict matures | Traffic Policeman / D-0141 Regulation | EXISTING LIVE BOUNDED; unchanged |
+| Convert new Step-1 Knowledge into Candidate action | Candidate responsibility | NOT WIRED IN THIS BUILD |
+| Discover/execute generic passage | existing D-0146 Step-2 owners | NOT IMPLEMENTED GENERICALLY |
+
+No Step-1 module owns route prediction, Candidate selection, Commitment or actuation.
+
+---
+
 # v4.7.99 D-0146 responsibility-map addendum
 
 | Responsibility | Owner | Current implementation state |

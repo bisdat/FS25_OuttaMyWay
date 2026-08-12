@@ -1,3 +1,9 @@
+# v4.7.100 implementation record — no new architectural decision
+
+D-0146 remains the governing architectural decision. v4.7.100 adds a passive Situation-owned implementation of its Step-1 Established Trajectory / Current Excursion / Potential-to-Established Opposed Corridor Conflict semantics. The numeric filters are explicitly empirical implementation calibration and do not amend D-0146. Candidate/Decision/Commitment/Control behaviour is deliberately unchanged pending live evidence.
+
+---
+
 ## D-0146 — Trajectory-Based Opposed Corridor Conflict / Local Cooperative Passage (2026-08-12)
 
 **Status:** Accepted for v4.7.99 canonical candidate; owner canonicalisation remains separate.  

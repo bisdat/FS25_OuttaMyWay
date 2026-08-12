@@ -1,3 +1,29 @@
+# v4.7.101 TEST BUILD — D-0146 Step-2 active Cooperative Passage
+
+- Baseline remains owner-declared canonical v4.7.99; v4.7.100 live evidence validated the complete Step-1 trajectory/opposed-conflict chain.
+- Added `PassageCapabilityAssessment` for purpose-specific P23 Condor/Patriot mechanical Representation Fitness.
+- Added Candidate-owned `LocalPassagePlanner`: Local Passage Space, Progressive Passage Search, Pairwise Passage Economy, sufficient Passage Arrangement and explicit five-gate Passage Guide.
+- Established Opposed Corridor Conflict now becomes actionable through the normal Candidate -> Constraints -> Decision -> Commitment -> Authority -> Control chain.
+- `CooperativePassageControl` executes Candidate-supplied gates only; it revalidates target support at each gate and records Passage Reassessment rather than inventing replacement geometry.
+- Current mechanical authority remains bounded to the live-demonstrated P23 Condor/Patriot profile; no general-vehicle, generic negative-clearance or generic Boundary-Encroachment authority is claimed.
+- Progressive search can express symmetric, asymmetric or unilateral intervention and satisfices on the lowest supported combined lateral burden.
+- Corrected v4.7.100 **Diagnostic Churn**: transition signatures no longer include continuously changing direction/distance/overlap/rate values.
+- Historical D-0143 TS015 path remains as a disabled regression/mechanical donor.
+- Offline validation before packaging: 204/204 Lua behavioural tests and 104/104 Python structural/conformance tests PASS.
+
+# v4.7.100 TEST BUILD — D-0146 Step-1 passive trajectory/conflict implementation
+
+- Baseline: owner-declared canonical v4.7.99 (`c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`; 307 files).
+- Implements, rather than redesigns, the accepted D-0146 Step-1 contract.
+- Situation Assessment now persists Established Trajectory state across observation cycles, distinguishes a Current Excursion, and supersedes history only after sustained coherent contradictory physical travel.
+- Situation Assessment classifies Potential / Established Opposed Corridor Conflict from near-collinear opposed established trajectories, mutual facing relation, current closing/stable motion, and positive Supported Corridor Overlap derived from existing cached positive plan-view primitives.
+- Positive overlap is categorical (`overlapM > 0`); magnitude remains descriptive and no negative-clearance authority is inferred from absence of overlap.
+- Productive/Transitional evidence remains contextual only.
+- Missing pose/corridor-anchor evidence fails closed.
+- New Knowledge is passive: no Candidate, Decision, Commitment or Control consumer is added; bounded TS015 Cooperative Passage and D-0141 Regulation are preserved.
+- Provisional filtering values are implementation calibration for live evidence gathering, not architecture.
+- Offline validation: 201 Lua behavioural tests PASS; 78 Python structural/conformance tests PASS. Live GIANTS evidence is the next validation authority.
+
 # v4.7.99 CANONICAL CANDIDATE — D-0146 Trajectory-Based Opposed Corridor Passage Architecture
 
 - Starts from exact owner-declared canonical v4.7.98 (`105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`; Git `982992b926839c854f6d4d7979fe24885e267eae`; 307 files).

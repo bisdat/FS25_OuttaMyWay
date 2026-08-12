@@ -1,11 +1,10 @@
--- FS25_OuttaMyWay v4.7.99 CANONICAL CANDIDATE — existing bounded D-0143 TS015 Cooperative Passage Control preserved under D-0146 architecture.
+-- FS25_OuttaMyWay v4.7.101 TEST BUILD — D-0146 Step-2 Candidate-supplied Passage Guide Control; D-0143 retained as regression donor.
 --
--- Central-Control implementation of the mechanically proven P23 sequence for
--- the first narrow Condor/Patriot production slice.  Situation/Candidate/
--- Decision/Commitment have already established meaning before this module is
--- invoked.  This module only executes the bounded physical sequence and
--- reports completion.  It performs no King/Refuge search and owns no post-
--- handoff observation window.
+-- Situation/Candidate/Decision/Commitment establish meaning and choose the
+-- Passage Arrangement/Guide before this module is invoked. Control only executes
+-- that bounded Guide using the mechanically proven P23 Hold/compact/reposition/
+-- restore donors. It does not search Local Passage Space or silently broaden a
+-- Guide after Passage Support Loss.
 
 OuttaMyWay.CooperativePassageControl={}
 local Control=OuttaMyWay.CooperativePassageControl
@@ -120,8 +119,8 @@ function Control:mouseEvent() end
 
 function Control:loadMap()
     local ok,reason=self.driveAuthority:install()
-    logInfo("LOAD enabled=%s scope=TS015_CONDOR_PATRIOT_NEAR_COLLINEAR driveHook=%s reason=%s king=false refuge=false cooldown=false",
-        tostring(OuttaMyWay.COOPERATIVE_PASSAGE_TS015_ENABLED==true),tostring(ok),tostring(reason or "ready"))
+    logInfo("LOAD d0146Step2=%s mechanicalProfile=P23_CONDOR_PATRIOT legacyD0143=%s driveHook=%s reason=%s king=false refuge=false cooldown=false generalVehicleAuthority=false",
+        tostring(OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED==true),tostring(OuttaMyWay.COOPERATIVE_PASSAGE_TS015_ENABLED==true),tostring(ok),tostring(reason or "ready"))
 end
 
 function Control:deleteMap()
@@ -240,6 +239,55 @@ end
 function Control:_bothReached(run) return targetReached(self.driveAuthority,run.a.vehicle) and targetReached(self.driveAuthority,run.b.vehicle) end
 function Control:_stopLeg(run) self.driveAuthority:clear(run.a.vehicle); self.driveAuthority:clear(run.b.vehicle) end
 
+local function validGuideTarget(target,assemblyId)
+    return type(target)=="table" and target.assemblyId==assemblyId and type(target.x)=="number" and type(target.z)=="number" and type(target.radiusM)=="number"
+end
+
+function Control:_guideTargetFor(run,p,gate)
+    if p.assemblyId==run.subjectAssemblyId then return gate.subject end
+    if p.assemblyId==run.otherAssemblyId then return gate.other end
+    return nil
+end
+
+function Control:_preflightD0146Guide(run)
+    if type(run.guide)~="table" or type(run.guide.gates)~="table" or #run.guide.gates<1 then return false,"PASSAGE_GUIDE_UNAVAILABLE" end
+    for index,gate in ipairs(run.guide.gates) do
+        if tonumber(gate.index)~=index then return false,"PASSAGE_GUIDE_GATE_INDEX_INVALID:"..tostring(index) end
+        for _,p in ipairs(run.participants) do
+            local target=self:_guideTargetFor(run,p,gate)
+            if not validGuideTarget(target,p.assemblyId) then return false,"PASSAGE_GUIDE_TARGET_INVALID:"..tostring(index)..":"..tostring(p.assemblyId) end
+            local ok,field=fieldResolvedAt(target.x,target.z)
+            if not ok then return false,"PASSAGE_SUPPORT_LOSS_FIELD_TARGET:"..tostring(index)..":"..p.name..":"..tostring(field) end
+        end
+    end
+    return true,nil
+end
+
+function Control:_startGuideGate(run,index)
+    local gate=run.guide and run.guide.gates and run.guide.gates[index] or nil
+    if gate==nil then return false,"PASSAGE_GUIDE_GATE_UNAVAILABLE:"..tostring(index) end
+    -- Revalidate the Candidate-supplied support at each execution boundary.
+    -- Control may reject; it may not invent a replacement target.
+    for _,p in ipairs(run.participants) do
+        local target=self:_guideTargetFor(run,p,gate)
+        if not validGuideTarget(target,p.assemblyId) then return false,"PASSAGE_GUIDE_TARGET_INVALID:"..tostring(index)..":"..tostring(p.assemblyId) end
+        local fieldOk,fieldReason=fieldResolvedAt(target.x,target.z)
+        if not fieldOk then return false,"PASSAGE_SUPPORT_LOSS_FIELD_TARGET:"..tostring(index)..":"..p.name..":"..tostring(fieldReason) end
+        p.targetX,p.targetZ,p.targetRadiusM=target.x,target.z,target.radiusM
+        local ok,reason=self.driveAuthority:setReposition(p.vehicle,target.x,target.z,run.speedKmh,target.radiusM)
+        if not ok then
+            for _,rollback in ipairs(run.participants) do self.driveAuthority:clear(rollback.vehicle) end
+            return false,"PASSAGE_SUPPORT_LOSS_ACTUATION:"..tostring(index)..":"..p.name..":"..tostring(reason)
+        end
+    end
+    run.guideIndex=index
+    self:_setPhase(run,"GUIDE_"..tostring(gate.kind or index),g_time or 0)
+    logInfo("GUIDE_START commitment=%s guide=%s gate=%d/%d kind=%s speed=%.1fkmh A=%s target=(%.2f,%.2f) r=%.2f B=%s target=(%.2f,%.2f) r=%.2f",
+        tostring(run.commitmentId),tostring(run.guide.identity),index,#run.guide.gates,tostring(gate.kind),run.speedKmh,
+        run.a.name,run.a.targetX,run.a.targetZ,run.a.targetRadiusM,run.b.name,run.b.targetX,run.b.targetZ,run.b.targetRadiusM)
+    return true,nil
+end
+
 function Control:_beginCompact(run)
     local okA,stateA=self.configurationAuthority:prepareCompact(run.a.vehicle)
     if not okA then return false,run.a.name..":"..tostring(stateA) end
@@ -278,7 +326,8 @@ function Control:_complete(run)
         tostring(run.commitmentId),run.a.name,tostring(run.a.startJobToken),tostring(run.a.wakeMethod),run.b.name,tostring(run.b.startJobToken),tostring(run.b.wakeMethod),
         pa and pb and string.format("%.2fm",distance(pa.x,pa.z,pb.x,pb.z)) or "n/a")
     self.run=nil; self.completedCount=self.completedCount+1
-    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind="D0143_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK",sameJobs=true,bothRestored=true,cooldown=false,completedAt=g_time or 0}})
+    local evidenceKind=run.mode=="D0146_GUIDE" and "D0146_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK" or "D0143_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
+    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,sameJobs=true,bothRestored=true,cooldown=false,completedAt=g_time or 0}})
 end
 
 function Control:_failHeld(reason)
@@ -297,6 +346,9 @@ function Control:_failHeld(reason)
     end
     self:_setPhase(run,requested and "FAILED_RESTORING" or "FAILED_HELD",g_time or 0)
     self.failedCount=self.failedCount+1
+    if run.mode=="D0146_GUIDE" then
+        logWarning("PASSAGE_REASSESSMENT commitment=%s guide=%s cause=%s outcome=SAFE_ABANDON_ESCALATE controlBroadening=false bothHeld=true",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),run.failureReason)
+    end
     logWarning("HALT commitment=%s reason=%s phase=%s bothHeld=true noBlindRelease=true action=PLAYER_INTERVENTION_OR_JOB_CHANGE",tostring(run.commitmentId),run.failureReason,run.phase)
 end
 
@@ -307,7 +359,68 @@ function Control:_abandonAfterJobChange(run,changed)
     self:_notify({status="FAILED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind="COOPERATIVE_PASSAGE_JOB_EPISODE_CHANGED",participant=changed and changed.name or nil}})
 end
 
+function Control:_executeD0146JointRequests(requestA,requestB,candidate,bridge)
+    if OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED~=true then return false,"D0146_STEP2_COOPERATIVE_PASSAGE_DISABLED" end
+    if self.run~=nil then return false,"COOPERATIVE_PASSAGE_CONTROL_ALREADY_ACTIVE" end
+    if requestA==nil or requestB==nil or candidate==nil then return false,"MISSING_JOINT_CONTROL_CONTEXT" end
+    OuttaMyWay.ValueRecord.assertType(requestA,"ControlRequest"); OuttaMyWay.ValueRecord.assertType(requestB,"ControlRequest")
+    if requestA.commitmentId~=requestB.commitmentId then return false,"JOINT_REQUEST_COMMITMENT_MISMATCH" end
+    if requestA.assemblyId==requestB.assemblyId then return false,"JOINT_REQUEST_REQUIRES_TWO_ASSEMBLIES" end
+    if requestA.capability~="REPOSITION" or requestB.capability~="REPOSITION" then return false,"JOINT_REQUEST_REQUIRES_REPOSITION" end
+    if requestA.effectiveActuationCompositionId~=requestB.effectiveActuationCompositionId then return false,"JOINT_REQUEST_COMPOSITION_MISMATCH" end
+    if not self:_validAuthority(requestA) or not self:_validAuthority(requestB) then return false,"JOINT_REQUEST_AUTHORITY_INVALID" end
+    if type(bridge)~="table" or bridge.architecture~="D0146_STEP2" or bridge.controlProfile~="D0146_P23_COMPACT_GUIDED_PASSAGE_V1" then return false,"D0146_PASSAGE_BRIDGE_INVALID" end
+
+    local subjectVehicle=self:_resolveReference(bridge.subjectReferenceKey)
+    local otherVehicle=self:_resolveReference(bridge.otherReferenceKey)
+    if subjectVehicle==nil or otherVehicle==nil then return false,"SUPPORTED_D0146_PAIR_NOT_ACTIVE_AT_CONTROL" end
+    local names={[nameOf(subjectVehicle)]=true,[nameOf(otherVehicle)]=true}
+    if names["Condor Endurance II"]~=true or names["Patriot 4450"]~=true then return false,"D0146_P23_MECHANICAL_PROFILE_PAIR_MISMATCH" end
+
+    local requestByAssembly={[requestA.assemblyId]=requestA,[requestB.assemblyId]=requestB}
+    local a,reasonA=self:_participant(subjectVehicle,bridge.subjectAssemblyId,requestByAssembly[bridge.subjectAssemblyId],0)
+    if a==nil then return false,"SUBJECT_"..tostring(reasonA) end
+    local b,reasonB=self:_participant(otherVehicle,bridge.otherAssemblyId,requestByAssembly[bridge.otherAssemblyId],0)
+    if b==nil then return false,"OTHER_"..tostring(reasonB) end
+    if a.request==nil or b.request==nil then return false,"JOINT_REQUEST_ASSEMBLY_BINDING_UNAVAILABLE" end
+    if a.startJobToken~=bridge.subjectJobToken or b.startJobToken~=bridge.otherJobToken then return false,"JOB_EPISODE_CHANGED_SINCE_PASSAGE_PLANNING" end
+
+    local foldA=self.configurationAuthority:getEvidence(a.vehicle)
+    local foldB=self.configurationAuthority:getEvidence(b.vehicle)
+    if foldA.foldableCount==0 or foldB.foldableCount==0 then return false,"D0146_P23_PAIR_NOT_FOLDABLE" end
+    if foldA.allDeployed~=true or foldB.allDeployed~=true then return false,"D0146_P23_PAIR_NOT_FULLY_DEPLOYED_AT_COMMITMENT" end
+
+    local run={
+        mode="D0146_GUIDE",commitmentId=requestA.commitmentId,candidateId=candidate.identity,a=a,b=b,participants={a,b},
+        subjectAssemblyId=bridge.subjectAssemblyId,otherAssemblyId=bridge.otherAssemblyId,
+        phase="SETTLING",phaseStartedAt=g_time or 0,startedAt=g_time or 0,guide=bridge.passageGuide,guideIndex=0,
+        passageArrangement=bridge.passageArrangement,controlProfile=bridge.controlProfile,
+        initialSeparationM=distance(a.startX,a.startZ,b.startX,b.startZ),headingDot=dot(a.startForwardX,a.startForwardZ,b.startForwardX,b.startForwardZ),
+        speedKmh=OuttaMyWay.D0146_STEP2_MOVE_SPEED_KMH or 8.0
+    }
+    local guideOk,guideReason=self:_preflightD0146Guide(run)
+    if not guideOk then return false,"D0146_GUIDE_PREFLIGHT:"..tostring(guideReason) end
+
+    local holdA,holdReasonA=self.permissionGate:setHold(a.vehicle,"D0146-COOPERATIVE-PASSAGE")
+    if not holdA then return false,"SUBJECT_HOLD_UNAVAILABLE:"..tostring(holdReasonA) end
+    local holdB,holdReasonB=self.permissionGate:setHold(b.vehicle,"D0146-COOPERATIVE-PASSAGE")
+    if not holdB then self.permissionGate:release(a.vehicle); return false,"OTHER_HOLD_UNAVAILABLE:"..tostring(holdReasonB) end
+
+    self.run=run
+    local arrangement=bridge.passageArrangement or {}
+    logInfo("START architecture=D0146_STEP2 commitment=%s candidate=%s conflict=%s A=%s job=%s B=%s job=%s separation=%.2fm headingDot=%.4f arrangement=%s offsets=%+.2f/%+.2f guide=%s gates=%d sequence=HOLD_COMPACT_GUIDE_RESTORE_HANDOFF controlInventsGeometry=false generalVehicleAuthority=false",
+        tostring(run.commitmentId),tostring(run.candidateId),tostring(bridge.conflictIdentity),a.name,tostring(a.startJobToken),b.name,tostring(b.startJobToken),run.initialSeparationM,run.headingDot,
+        tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tostring(run.guide and run.guide.identity),#(run.guide and run.guide.gates or {}))
+    return true,"D0146_COOPERATIVE_PASSAGE_STARTED"
+end
+
 function Control:executeJointRequests(requestA,requestB,candidate)
+    local bridge=candidate and candidate.evidenceBasis and candidate.evidenceBasis.cooperativePassageBridge or nil
+    if type(bridge)=="table" and bridge.architecture=="D0146_STEP2" then return self:_executeD0146JointRequests(requestA,requestB,candidate,bridge) end
+    return self:_executeLegacyJointRequests(requestA,requestB,candidate)
+end
+
+function Control:_executeLegacyJointRequests(requestA,requestB,candidate)
     if OuttaMyWay.COOPERATIVE_PASSAGE_TS015_ENABLED~=true then return false,"TS015_COOPERATIVE_PASSAGE_DISABLED" end
     if self.run~=nil then return false,"COOPERATIVE_PASSAGE_CONTROL_ALREADY_ACTIVE" end
     if requestA==nil or requestB==nil or candidate==nil then return false,"MISSING_JOINT_CONTROL_CONTEXT" end
@@ -381,14 +494,15 @@ function Control:executeJointRequests(requestA,requestB,candidate)
 end
 
 function Control:update(dt)
-    if OuttaMyWay.COOPERATIVE_PASSAGE_TS015_ENABLED~=true then return end
     local run=self.run
     if run==nil then return end
+    if run.mode=="D0146_GUIDE" and OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED~=true then self:_failHeld("D0146_STEP2_DISABLED_DURING_ACTIVE_COMMITMENT"); return end
+    if run.mode~="D0146_GUIDE" and OuttaMyWay.COOPERATIVE_PASSAGE_TS015_ENABLED~=true then return end
     local nowMs=g_time or 0
     local sameJob,changed=self:_allSameJob(run)
     if not sameJob then self:_abandonAfterJobChange(run,changed); return end
 
-    local timeout=OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS or 45000
+    local timeout=(run.mode=="D0146_GUIDE" and OuttaMyWay.D0146_STEP2_PHASE_WATCHDOG_MS) or OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS or 45000
     if run.failureReason==nil and nowMs-(run.phaseStartedAt or nowMs)>=timeout then self:_failHeld("PHASE_WATCHDOG:"..tostring(run.phase)); return end
 
     if run.phase=="SETTLING" then
@@ -396,8 +510,25 @@ function Control:update(dt)
     elseif run.phase=="COMPACTING" then
         if self:_allFolded(run) then
             logInfo("COMPACT_CONFIRMED commitment=%s A=%s %s B=%s %s",tostring(run.commitmentId),run.a.name,foldText(self.configurationAuthority:getEvidence(run.a.vehicle)),run.b.name,foldText(self.configurationAuthority:getEvidence(run.b.vehicle)))
-            local ok,reason=self:_startLeg(run,"SIDESTEPPING",run.sidestepForwardM,run.lateralM,run.sidestepRadiusM)
-            if not ok then self:_failHeld("SIDESTEP_START:"..tostring(reason)) end
+            if run.mode=="D0146_GUIDE" then
+                local ok,reason=self:_startGuideGate(run,1)
+                if not ok then self:_failHeld(tostring(reason)) end
+            else
+                local ok,reason=self:_startLeg(run,"SIDESTEPPING",run.sidestepForwardM,run.lateralM,run.sidestepRadiusM)
+                if not ok then self:_failHeld("SIDESTEP_START:"..tostring(reason)) end
+            end
+        end
+    elseif string.sub(tostring(run.phase),1,6)=="GUIDE_" then
+        if self:_bothReached(run) then
+            local completedIndex=run.guideIndex or 0
+            local gate=run.guide and run.guide.gates and run.guide.gates[completedIndex] or nil
+            self:_stopLeg(run)
+            logInfo("GUIDE_REACHED commitment=%s guide=%s gate=%d/%d kind=%s",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),completedIndex,#(run.guide and run.guide.gates or {}),tostring(gate and gate.kind or "n/a"))
+            if completedIndex>=#(run.guide and run.guide.gates or {}) then
+                local ok,reason=self:_beginRestore(run); if not ok then self:_failHeld("RESTORE_START:"..tostring(reason)) end
+            else
+                local ok,reason=self:_startGuideGate(run,completedIndex+1); if not ok then self:_failHeld(tostring(reason)) end
+            end
         end
     elseif run.phase=="SIDESTEPPING" then
         if self:_bothReached(run) then

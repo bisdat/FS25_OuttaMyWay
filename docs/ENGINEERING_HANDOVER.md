@@ -1,3 +1,51 @@
+# v4.7.101 TEST BUILD handover — D-0146 Step-2 active Cooperative Passage
+
+**Baseline:** owner-declared canonical v4.7.99, SHA-256 `c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`, 307 files.  
+**Step-1 evidence:** v4.7.100 live run supported Established Trajectory, Current Excursion/Trajectory Persistence and Potential -> Established Opposed Corridor Conflict. It also exposed Diagnostic Churn in logging, now corrected.
+
+## Active implementation
+
+Established Opposed Corridor Conflict is now actionable. Candidate responsibility owns Local Passage Space and Progressive Passage Search. The search constructs sufficient Passage Arrangements under Pairwise Passage Economy and emits a five-gate Passage Guide covering development, stable passage relationship, traversal and native reacquisition. The normal Constraint/Decision/Commitment/Authority chain remains authoritative. `CooperativePassageControl` consumes the chosen Guide and executes it using the proven Hold/compact/reposition/restore donors; Control does not decide conflict meaning or invent passage geometry.
+
+## Mechanical authority boundary
+
+The D-0146 traffic semantics are active, but current mechanical Representation Fitness remains bounded to the demonstrated P23 Condor Endurance II / Patriot 4450 profile. This is **Semantic Generalisation / Mechanical Boundedness**: the architecture is not reduced to TS015 geometry, while implementation refuses to manufacture generic vehicle/negative-clearance authority that Reality has not supplied. Progressive search may choose symmetric, asymmetric or unilateral burden distribution where the current Field World positively supports it. Boundary Encroachment remains architectural capability but this bounded expression does not require or claim a generic encroachment proof.
+
+## Passage Support Loss
+
+Control revalidates each Candidate-supplied gate. Loss of support does not trigger local route invention: the controller stops movement, restores where possible, keeps the pair held and records `PASSAGE_REASSESSMENT ... outcome=SAFE_ABANDON_ESCALATE`. A later implementation may re-express the Commitment only through current Situation/Candidate authority.
+
+## Validation
+
+204/204 Lua behavioural tests PASS; 104/104 Python structural/conformance tests PASS before packaging. Live GIANTS validation remains the authority for the active guide.
+
+---
+
+# v4.7.100 TEST BUILD handover — D-0146 Step-1 passive implementation
+
+**Baseline:** owner-declared canonical v4.7.99, SHA-256 `c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`, 307 files.  
+**Intent:** implement the concluded D-0146 Step-1 Knowledge while preserving the proven bounded traffic/control path.
+
+## Implemented
+
+`TrajectoryConflictAssessment` is Situation-owned persistent Knowledge. It forms and persists Established Trajectory from observed physical displacement, treats short contradictory motion as Current Excursion, and supersedes only after sustained coherent contradictory travel. It then classifies Potential / Established Opposed Corridor Conflict using established opposed relation, mutual facing, current opposed closing/stability and categorical positive Supported Corridor Overlap from existing cached physical primitives.
+
+The new fields are published as `trajectoryKnowledge` and `opposedCorridorKnowledge`. `PassiveLiveValidator` emits transition-only `TRAJECTORY` and `OPPOSED_CORRIDOR` evidence. Missing geometry fails closed.
+
+## Deliberate authority boundary
+
+No Candidate, existing TS015 Cooperative Passage assessment, Decision, Commitment or Control consumer uses the new Knowledge. D-0141 Regulation and bounded TS015 behaviour are intentionally unchanged. Generic Step 2 is not implemented.
+
+## Offline validation
+
+201/201 Lua behavioural tests PASS; 78/78 Python structural/conformance tests PASS. Live GIANTS validation is required before promoting the implementation. Calibration values are provisional implementation mechanics, not architecture.
+
+## Next engineering activity
+
+Run natural field evidence and inspect trajectory formation/persistence/supersession plus Potential -> Established opposed-corridor transitions. Do not start generic Step-2 implementation until this passive classifier has been validated against Reality.
+
+---
+
 # v4.7.99 CANONICAL CANDIDATE handover — D-0146
 
 **Canonical baseline:** v4.7.98 (`105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`; Git `982992b926839c854f6d4d7979fe24885e267eae`; 307 files).  

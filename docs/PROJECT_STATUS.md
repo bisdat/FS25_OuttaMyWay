@@ -1,3 +1,46 @@
+# v4.7.101 D-0146 Step-2 active implementation status
+
+**Current test build:** v4.7.101 over owner-declared canonical v4.7.99.
+
+- Step 1: **IMPLEMENTED + LIVE SUPPORTED** in v4.7.100.
+- Step 2 semantic path: **IMPLEMENTED ACTIVE TEST** — Established Conflict -> Candidate-owned local passage search -> Passage Arrangement/Guide -> normal Decision/Commitment/Authority -> central Control.
+- Mechanical Representation Fitness: **BOUNDED** to the P23 Condor/Patriot compact-guided profile; broader vehicle authority remains unclaimed.
+- Passage arrangements: symmetric/asymmetric/unilateral burden split supported by the bounded search where positively supported by Field World.
+- Passage Reassessment: safe-abandon/escalate behavior implemented for execution support loss; Control cannot silently broaden the guide.
+- Diagnostic Churn from v4.7.100: **CORRECTED**.
+- Offline tests: 204 Lua + 104 Python PASS before packaging.
+- Next authority: live GIANTS execution evidence, not another preplanned passive implementation slice.
+
+---
+
+# v4.7.100 TEST BUILD status — D-0146 Step 1 implemented passively, awaiting live validation
+
+**Canonical baseline:** owner-declared v4.7.99 (`c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`; 307 files).  
+**Build purpose:** implement the concluded Step-1 architecture without changing the proven traffic/control path.
+
+## IMPLEMENTED IN THIS TEST BUILD
+
+- Situation-owned Established Trajectory persistence from observed physical displacement.
+- Current Excursion without immediate history destruction; sustained coherent contradictory travel can supersede the established trajectory.
+- Potential / Established Opposed Corridor Conflict classification.
+- Supported Corridor Overlap from existing positive cached assembly primitives; any positive overlap is sufficient conflict support.
+- Passive Operational Picture publication and transition-only diagnostics.
+- Map lifecycle reset of temporal trajectory Knowledge.
+
+## PRESERVED / NOT CONSUMING STEP-1 KNOWLEDGE
+
+- Existing bounded TS015 Cooperative Passage admission and execution.
+- D-0141 follower Regulation.
+- Candidate / Constraints / Decision / Commitment / Control chain.
+
+## VALIDATION
+
+Offline: 201/201 Lua behaviour tests PASS; 78/78 Python structural/conformance tests PASS. Live GIANTS validation has not yet been performed. The numeric persistence/filter values are provisional empirical calibration and have no architectural or action-selection authority.
+
+## STILL OUTSIDE THIS BUILD
+
+Generic Step-2 Local Passage Space discovery, Boundary Encroachment planning, arbitrary Passage Arrangement/Guide construction, nominal-clearance/swept-occupancy proof, Passage Reassessment, broad configuration support and wider live regression coverage remain outside this implementation slice.
+
 # v4.7.99 candidate status — D-0146 architecture recorded, implementation intentionally unchanged
 
 **Canonical baseline:** v4.7.98 (`105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`; Git `982992b926839c854f6d4d7979fe24885e267eae`; 307 files).  

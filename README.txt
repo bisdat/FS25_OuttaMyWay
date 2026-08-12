@@ -1,44 +1,23 @@
-FS25_OuttaMyWay v4.7.99 CANONICAL CANDIDATE — D-0146 Trajectory-Based Opposed Corridor Passage Architecture
+FS25_OuttaMyWay v4.7.101 TEST BUILD — D-0146 STEP-2 ACTIVE COOPERATIVE PASSAGE
 
 BASELINE
-Owner-declared canonical v4.7.98 (`105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`; Git `982992b926839c854f6d4d7979fe24885e267eae`; 307 files).
+Owner-declared canonical v4.7.99 (`c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`; 307 files). v4.7.100 supplied the first live validation of D-0146 Step-1 Situation Knowledge.
 
 PURPOSE
-Record the architecture discovered after v4.7.98 without changing proven runtime behaviour. Step 1 now classifies opposed corridor conflict from persistent observed trajectories and current spatial demand; Step 2 presumes local passage and searches only as far as necessary for a sufficient supported arrangement.
+Implement the already-agreed D-0146 Step 2 as one coherent active path: Established Opposed Corridor Conflict -> Candidate-owned Local Passage Space / Progressive Passage Search -> sufficient Passage Arrangement -> multi-gate Passage Guide -> normal Decision / Commitment / Authority -> central Control execution.
 
-HEALTH WARNING
-Bounded TS015 Cooperative Passage production capability is demonstrated; general Cooperative Passage is incomplete. The new D-0146 concepts are architecture ahead of implementation. The live controller remains the bounded v4.7.98 Condor/Patriot implementation and its existing calibration remains fixture evidence, not universal architecture.
+IMPLEMENTATION BOUNDARY
+- Step-1 `trajectoryKnowledge` / `opposedCorridorKnowledge` remains Situation-owned.
+- `PassageCapabilityAssessment` publishes purpose-specific mechanical Representation Fitness. Current executable mechanics are deliberately bounded to the demonstrated P23 Condor Endurance II / Patriot 4450 compact/hold/reposition/restore profile; no general-vehicle or generic negative-clearance authority is claimed.
+- `LocalPassagePlanner` owns the Step-2 search. It satisfices over symmetric, asymmetric and unilateral burden splits and emits an explicit five-gate Passage Guide.
+- Candidate/Constraint/Decision/Commitment use the normal production chain. Control executes only the supplied Guide; it does not invent Local Passage Space or replacement geometry.
+- Candidate search samples the complete centreline guide against the immutable current Field World and samples simultaneous pair centre separation against the bounded P23 empirical profile. Boundary Encroachment remains architecturally legitimate but is not required or newly claimed by this bounded expression.
+- Passage Support Loss at a Control gate causes safe halt/restore/hold and an explicit Passage Reassessment outcome; Control does not silently broaden the plan.
+- v4.7.100 Diagnostic Churn is corrected by excluding continuously changing trajectory/conflict measurements from transition signatures while retaining those measurements in emitted evidence.
+- Historical D-0143 TS015 Candidate/Control code remains only as a regression/mechanical donor when the D-0146 Step-2 flag is explicitly disabled.
 
-KEY BOUNDARIES
-- Productive/Transitional and TURN_SEGMENT are contextual evidence, not Step-1 binary gates.
-- Any positively supported trajectory-corridor overlap is conflict evidence; no 10%/2m-style overlap admission threshold.
-- Passage may be asymmetric/unilateral, leave the productive lane and encroach across the Field Boundary while the assembly remains partly in-field.
-- Wholly extra-field relocation is not Cooperative Passage.
-- Nominal Inter-Assembly Clearance protects controlled passage; no architectural metre value is declared.
-- Passage Reassessment is required conceptually when the current arrangement loses positive support; implementation mechanism is unresolved.
+VALIDATION STATUS
+Offline before packaging: Lua behavioural suite 204/204 PASS; Python structural/conformance suite 104/104 PASS. Live GIANTS validation is required for the active Passage Guide.
 
-FS25_OuttaMyWay v4.7.98 CANONICAL CANDIDATE — D-0144 Progressive Situational Sufficiency Consolidation
-
-Owner-declared canonical baseline:
-- Version: v4.7.95
-- ZIP SHA-256: 1eaf0af3abafb5310a17a60437df0d161ad00943dee5f504cf79f0d3586050e1
-- Git commit: f1a3ec95d2cfd554c7c3f2715090b48e4576706b
-- Repository files: 305
-
-v4.7.98 reapplies the live-successful v4.7.97 TS015 production implementation over exact canonical v4.7.95, then performs one controlled simplification pass. The proven Cooperative Passage physical geometry, D-0141 follower Regulation, Candidate/Constraint/Decision/Commitment path and GIANTS handoff behaviour are intentionally unchanged.
-
-Current governing direction:
-Reality / Observation -> Situation Assessment -> Operational Picture -> Candidate -> Constraints -> Traffic Policeman / Decision -> Commitment -> Bounded Authority -> Control -> GIANTS.
-Situation Assessment now seeks only the positively supported current Knowledge needed for the next least-authority action. Productive/Transitional state, current motion/heading, current physical representation, cooperative relevance, current obligations and optional Turning Rank awareness remain useful. Rook/Successor-Rook prediction, chessboard colouring and continuous Productive History reasoning are retired from governing production architecture. King Reserve, continuous Refuge search and headland-U-turn-specific solving remain retired.
-
-PROVEN:
-- bounded TS015 Condor Endurance II / Patriot 4450 near-collinear Productive/Productive Cooperative Passage through the real production chain;
-- repeated automatic passages in one live session, with same Job Episodes preserved and no post-handoff cooldown;
-- D-0141 leader/follower Regulation may preserve Action Space before a later Cooperative Passage and may be superseded by it.
-
-COOPERATIVE PASSAGE SCOPE BOUNDARY / HEALTH WARNING:
-Current status is "bounded Cooperative Passage production capability demonstrated; general Cooperative Passage incomplete." Transitional/Productive opposed encounters remain unresolved; asymmetric encounters are not generally supported; other assembly combinations are unvalidated; the current 50-70 m / 2 m / +/-6 m / 12 m / 8 m / 8 km/h values are TS015 calibration, not architecture; generic physical negative-clearance authority remains incomplete; broader regression coverage has not yet been engineered.
-
-Implementation tidying in this candidate removes live sourcing of the historical Demonstrated Productive Coverage, Productive Coverage Residual and Refuge Qualification Shadow diagnostics. Their files remain in the repository as evidence-only donors. No new footprint, polygon, sweep or shape calculation is introduced; Cooperative Passage continues to consume bootstrap-cached physical-space evidence already present in Situation Assessment.
-
-This is a candidate, not canonical, until explicitly declared by the repository owner.
+LIVE EVIDENCE TO WATCH
+`D0146_PASSAGE_SUPPORTED` -> normal Constraint/Decision/Commitment creation -> `COOPERATIVE_ACCEPTED architecture=D0146_STEP2` -> `START architecture=D0146_STEP2` -> ordered `GUIDE_START` / `GUIDE_REACHED` gates -> RESTORE -> HANDOFF. Any support failure should produce `PASSAGE_REASSESSMENT ... outcome=SAFE_ABANDON_ESCALATE`.

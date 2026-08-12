@@ -248,6 +248,7 @@ function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations
     self.publishedCount = 0
     self.latestProductiveContinuationByReference={}
     self.latestGuardedRecoveryKnowledge={}
+    self.trajectoryTracks={}
     return self
 end
 
@@ -288,6 +289,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             memberAssemblyIds = operation.memberAssemblyIds,
             relevantAssemblyIds = {},
             futureSpaceRelationships = {},
+            opposedCorridorRelationships = {},
             provenance = { observationSnapshotId=snapshot.identity, operationRevision=operation.revision }
         }
         situations[#situations+1]=situation
@@ -596,6 +598,37 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         clearanceFactor=OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR or 0.90
     })
 
+    local trajectoryKnowledge=OuttaMyWay.TrajectoryConflictAssessment.updateTrajectories(self.trajectoryTracks,{
+        observationSnapshotId=snapshot.identity,timestamp=snapshot.timestamp,
+        motionEvidence=motionEvidence,currentSpace=currentSpace,productiveKnowledge=productiveKnowledge,
+        minSampleDistanceM=OuttaMyWay.TRAJECTORY_MIN_SAMPLE_DISTANCE_M,
+        establishDistanceM=OuttaMyWay.TRAJECTORY_ESTABLISH_DISTANCE_M,
+        coherenceMinDot=OuttaMyWay.TRAJECTORY_COHERENCE_MIN_DOT,
+        persistenceAlignmentMinDot=OuttaMyWay.TRAJECTORY_PERSISTENCE_ALIGNMENT_MIN_DOT,
+        supersessionDistanceM=OuttaMyWay.TRAJECTORY_SUPERSESSION_DISTANCE_M,
+        stableMemoryDistanceM=OuttaMyWay.TRAJECTORY_STABLE_MEMORY_DISTANCE_M
+    })
+    local opposedCorridorKnowledge=OuttaMyWay.TrajectoryConflictAssessment.classifyPairs({
+        situations=situations,trajectoryKnowledge=trajectoryKnowledge,motionEvidence=motionEvidence,currentSpace=currentSpace,
+        physicalSpaceEvidence=physicalSpaceEvidence,opposedMaxDot=OuttaMyWay.OPPOSED_TRAJECTORY_MAX_DOT,
+        currentOpposedMaxDot=OuttaMyWay.OPPOSED_CURRENT_MAX_DOT,persistenceAlignmentMinDot=OuttaMyWay.TRAJECTORY_PERSISTENCE_ALIGNMENT_MIN_DOT,
+        currentStableDistanceM=OuttaMyWay.OPPOSED_CURRENT_STABLE_DISTANCE_M,minClosingRateMps=OuttaMyWay.OPPOSED_MIN_CLOSING_RATE_MPS
+    })
+    for _,relation in OuttaMyWay.ValueRecord.ipairs(opposedCorridorKnowledge) do
+        local situation=situationByOperation[relation.operationId]
+        if situation~=nil then situation.opposedCorridorRelationships[#situation.opposedCorridorRelationships+1]=copyValue(relation) end
+    end
+
+    -- D-0146 Step 2: Situation owns only purpose-specific mechanical
+    -- Representation Fitness. Candidate responsibility later searches Local
+    -- Passage Space and chooses the sufficient Arrangement/Guide.
+    local d0146PassageFitness=OuttaMyWay.PassageCapabilityAssessment.buildFitness({
+        opposedCorridorKnowledge=opposedCorridorKnowledge,motionEvidence=motionEvidence,physicalSpaceEvidence=physicalSpaceEvidence
+    })
+    for _,fitness in OuttaMyWay.ValueRecord.ipairs(d0146PassageFitness or {}) do
+        representationFitness[#representationFitness+1]=fitness
+    end
+
     local cooperativePassageKnowledge,cooperativePassageFitness=OuttaMyWay.CooperativePassageAssessment.buildKnowledge({
         currentSpace=currentSpace,motionEvidence=motionEvidence,productiveKnowledge=productiveKnowledge,
         physicalSpaceEvidence=physicalSpaceEvidence,situations=situations,encounters=encounters
@@ -635,6 +668,8 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         productiveContinuationKnowledge=productiveKnowledge,
         guardedRecoveryKnowledge=guardedKnowledge,
         followerBoundaryKnowledge=followerBoundaryKnowledge,
+        trajectoryKnowledge=trajectoryKnowledge,
+        opposedCorridorKnowledge=opposedCorridorKnowledge,
         cooperativePassageKnowledge=cooperativePassageKnowledge,
         uncertainty=uncertainty,
         representationFitness=representationFitness,
@@ -646,6 +681,13 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     })
     self.publishedCount = self.publishedCount + 1
     return picture
+end
+
+
+function Assessment:resetSituationKnowledge()
+    self.trajectoryTracks={}
+    self.latestProductiveContinuationByReference={}
+    self.latestGuardedRecoveryKnowledge={}
 end
 
 function Assessment:getEvidence(referenceKeyValue, jobToken)

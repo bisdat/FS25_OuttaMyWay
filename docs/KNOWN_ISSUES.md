@@ -1,3 +1,28 @@
+# v4.7.101 explicit incompleteness / live-validation boundary
+
+- The new D-0146 Step-2 path is **active**, not passive, but live GIANTS execution of the Candidate-supplied Passage Guide has not yet been validated.
+- Mechanical Representation Fitness remains intentionally bounded to Condor Endurance II / Patriot 4450 evidence. Other assemblies remain unsupported rather than inferred.
+- Pair centre-separation and guide-centreline checks are P23-specific implementation support, not generic negative-clearance authority.
+- Boundary Encroachment is valid D-0146 architecture but the current supported expression searches complete centreline guides inside the Field World; no generic margin/encroachment geometry authority is claimed.
+- Passage Support Loss currently implements the safe-abandon/escalate branch. Re-expression of the same Commitment must return through current Situation/Candidate authority and is not invented inside Control.
+- D-0143 TS015 code remains repository regression/mechanical-donor debt but is disabled as the live Candidate path while D-0146 Step 2 is enabled.
+- Wider live regression and other vehicle/configuration profiles remain to be demonstrated by Reality.
+
+---
+
+# v4.7.100 explicit incompleteness / validation boundary
+
+- Step-1 trajectory/conflict Knowledge is implemented but **not yet live-validated**.
+- Establishment, persistence, supersession, direction-dot, stability and closing-rate values are provisional empirical calibration; they are not architecture.
+- The new Step-1 Knowledge is intentionally passive and does not yet alter Candidate/Decision/Control behaviour.
+- Existing bounded TS015 Productive/Productive admission remains the only live Cooperative Passage controller path.
+- Absence of positive Supported Corridor Overlap is not negative-clearance proof; the classifier remains Potential/unresolved rather than manufacturing clearance.
+- Generic Step-2 Local Passage Space, Boundary Encroachment, swept-occupancy/nominal-clearance proof, dynamic Passage Guide and Passage Reassessment remain unimplemented.
+- Other assembly configurations and broad asymmetric passage remain unvalidated.
+- Wider live regression scenarios remain to be engineered.
+
+---
+
 # v4.7.99 explicit incompleteness — D-0146 architecture/implementation gap
 
 - D-0146 trajectory/opposed-corridor architecture is accepted but not implemented in this candidate.

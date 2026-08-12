@@ -1,3 +1,37 @@
+# v4.7.101 D-0146 Step-2 architecture/code alignment
+
+| Architectural concept | Runtime owner | Alignment |
+|---|---|---|
+| Established Trajectory / Persistence | `TrajectoryConflictAssessment` under Situation | ALIGNED; v4.7.100 live supported |
+| Established Opposed Corridor Conflict | `TrajectoryConflictAssessment` under Situation | ALIGNED; consumed, not re-derived downstream |
+| Passage Presumption / Local Passage Space | `LocalPassagePlanner` under Candidate responsibility | ACTIVE bounded implementation |
+| Progressive Passage Search / Passage Sufficiency | `LocalPassagePlanner` | ACTIVE; satisfices first lowest-burden supported expression |
+| Pairwise Passage Economy | `LocalPassagePlanner` + normal Decision | ACTIVE; symmetric/asymmetric/unilateral expressions |
+| Passage Guide | Candidate bridge | ACTIVE; five ordered gates, not fixed Control geometry |
+| Passage Support Loss / Reassessment | `CooperativePassageControl` feedback | ACTIVE safe-abandon/escalate branch |
+| Mechanical passage capability | `PassageCapabilityAssessment` | PURPOSE-SPECIFIC P23 BOUND; generic authority not claimed |
+
+**Discovery recorded:** **Semantic Generalisation / Mechanical Boundedness** — generic D-0146 conflict/passage semantics may be implemented while mechanical actuation remains purpose-specific until representation/evidence justifies broader authority. This prevents old TS015 geometry from becoming architecture while also preventing speculative generic clearance claims.
+
+---
+
+# v4.7.100 D-0146 Step-1 architecture-to-code alignment
+
+This build closes only the previously recorded Step-1 architecture/implementation gap.
+
+| D-0146 responsibility | v4.7.100 implementation owner | Authority |
+|---|---|---|
+| Established Trajectory persistence | `SituationAssessment` + `TrajectoryConflictAssessment` | Situation Knowledge |
+| Current Excursion / trajectory supersession | `TrajectoryConflictAssessment` persistent state | Situation Knowledge |
+| Supported Corridor Overlap | `TrajectoryConflictAssessment` consuming existing positive cached physical primitives | positive-support Knowledge only; no negative-clearance authority |
+| Potential / Established Opposed Corridor Conflict | `TrajectoryConflictAssessment`, published by `SituationAssessment` | passive Situation Knowledge |
+| diagnostics | `PassiveLiveValidator` | evidence only |
+| Candidate / Decision / Commitment / Control response | unchanged | new Step-1 Knowledge has no consumer in this build |
+
+The implementation deliberately does **not** create a second Observation source, head-on Candidate path or controller. It reuses existing current motion and cached physical occupancy evidence. Numerical persistence/filter values are implementation calibration, not D-0146 architecture. Generic Step 2 remains an architecture/implementation gap.
+
+---
+
 # v4.7.99 D-0146 architecture-to-code alignment addendum
 
 **Baseline:** owner-declared canonical v4.7.98 (`105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`; Git `982992b926839c854f6d4d7979fe24885e267eae`; 307 files).

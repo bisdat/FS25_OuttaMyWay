@@ -70,17 +70,17 @@ function Validator.new(runtime)
         runtime=runtime,progressionPreservationProbe=nil,
         elapsed=0,lastLogAt=-math.huge,lastSignature=nil,records={},errorCount=0,
         acquisitionSignatures={},assemblyDiagnosticSignatures={},profileDiagnosticSignatures={},pairDiagnosticSignatures={},warningLastAt={},
-        previousEncounters={},previousPairs={},lastEncounterHeartbeatAt=-math.huge,futureSpaceHud=OuttaMyWay.FutureSpaceHud.new(),transitionHud=OuttaMyWay.TransitionHud.new(),futureSpaceLogSignatures={},followerBoundaryLogSignatures={}
+        previousEncounters={},previousPairs={},lastEncounterHeartbeatAt=-math.huge,futureSpaceHud=OuttaMyWay.FutureSpaceHud.new(),transitionHud=OuttaMyWay.TransitionHud.new(),futureSpaceLogSignatures={},followerBoundaryLogSignatures={},trajectoryLogSignatures={},opposedCorridorLogSignatures={}
     },Validator)
 end
 function Validator:setProgressionPreservationProbe(probe) self.progressionPreservationProbe=probe end
 function Validator:loadMap()
     self.elapsed=0; self.lastSignature=nil; self.lastLogAt=-math.huge; self.records={}; self.errorCount=0
-    self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.pairDiagnosticSignatures={}; self.warningLastAt={}; self.previousEncounters={}; self.previousPairs={}; self.lastEncounterHeartbeatAt=-math.huge; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.futureSpaceHud:reset(); self.transitionHud:reset()
+    self.acquisitionSignatures={}; self.assemblyDiagnosticSignatures={}; self.profileDiagnosticSignatures={}; self.pairDiagnosticSignatures={}; self.warningLastAt={}; self.previousEncounters={}; self.previousPairs={}; self.lastEncounterHeartbeatAt=-math.huge; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}; self.futureSpaceHud:reset(); self.transitionHud:reset()
     logInfo("Diagnostic observer active; Runtime processing and bounded Control dispatch are already complete before trace publication; diagnosticOnly=true")
 end
 function Validator:deleteMap()
-    self.elapsed=0; self.lastSignature=nil; self.previousEncounters={}; self.previousPairs={}; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.futureSpaceHud:reset(); self.transitionHud:reset()
+    self.elapsed=0; self.lastSignature=nil; self.previousEncounters={}; self.previousPairs={}; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}; self.futureSpaceHud:reset(); self.transitionHud:reset()
 end
 function Validator:keyEvent() end
 function Validator:mouseEvent() end
@@ -210,6 +210,49 @@ function Validator:_logFollowerBoundaryKnowledge(picture,due)
     end
 end
 
+function Validator:_logTrajectoryConflictKnowledge(picture,due)
+    for _,item in OuttaMyWay.ValueRecord.ipairs(picture and picture.trajectoryKnowledge or {}) do
+        local key=tostring(item.assemblyReferenceKey or item.assemblyId or "assembly")
+        -- Transition signature intentionally excludes continuously changing
+        -- direction/distance diagnostics. v4.7.100 proved those values turned
+        -- nominal "transition-only" logging into per-cycle Diagnostic Churn.
+        local signature=table.concat({
+            tostring(item.status),tostring(item.lastTransition),booleanText(item.currentExcursion),
+            tostring(item.contextEvidenceClass),booleanText(item.contextProductivePositive),tostring(item.jobToken)
+        },"|")
+        if self.trajectoryLogSignatures[key]~=signature or due then
+            self.trajectoryLogSignatures[key]=signature
+            logInfo(string.format("TRAJECTORY assembly=%s job=%s status=%s transition=%s establishedDir=(%s,%s) anchor=(%s,%s) currentDir=(%s,%s) currentDot=%s forming=%sm aligned=%sm excursion=%s excursionDistance=%sm context=%s productivePositive=%s authority=D0146_SITUATION_KNOWLEDGE diagnosticOnly=true",
+                key,tostring(item.jobToken or "n/a"),tostring(item.status),tostring(item.lastTransition),
+                numberText(item.establishedDirectionX),numberText(item.establishedDirectionZ),numberText(item.corridorAnchorX),numberText(item.corridorAnchorZ),
+                numberText(item.currentDirectionX),numberText(item.currentDirectionZ),numberText(item.currentToEstablishedDot),numberText(item.formationDistanceM),
+                numberText(item.currentAlignedDistanceM),booleanText(item.currentExcursion),numberText(item.excursionDistanceM),
+                tostring(item.contextEvidenceClass or "UNRESOLVED"),booleanText(item.contextProductivePositive)))
+        end
+    end
+    for _,item in OuttaMyWay.ValueRecord.ipairs(picture and picture.opposedCorridorKnowledge or {}) do
+        local key=tostring(item.identity or (tostring(item.subjectAssemblyId)..":"..tostring(item.otherAssemblyId)))
+        local overlap=item.supportedCorridorOverlap or {}
+        local closing=item.currentClosing or {}
+        local signature=table.concat({
+            tostring(item.status),tostring(item.classification),tostring(item.reason),
+            tostring(overlap.status),booleanText(overlap.positive),
+            booleanText(item.mutuallyFacing),booleanText(item.currentOpposed),booleanText(item.currentClosingPositive),
+            booleanText(item.subjectCurrentStable),booleanText(item.otherCurrentStable),
+            booleanText(item.subjectCurrentExcursion),booleanText(item.otherCurrentExcursion)
+        },"|")
+        if self.opposedCorridorLogSignatures[key]~=signature or due then
+            self.opposedCorridorLogSignatures[key]=signature
+            logInfo(string.format("OPPOSED_CORRIDOR pair=%s operation=%s classification=%s status=%s reason=%s trajectoryDot=%s mutuallyFacing=%s overlap=%s positiveOverlap=%s overlapM=%s currentDot=%s closingRate=%s currentOpposed=%s closingPositive=%s stable=%s/%s excursions=%s/%s primitives=%d+%d authority=D0146_SITUATION_KNOWLEDGE diagnosticOnly=true",
+                key,tostring(item.operationId or "n/a"),tostring(item.classification or "UNRESOLVED"),tostring(item.status),tostring(item.reason),numberText(item.trajectoryDot),
+                booleanText(item.mutuallyFacing),tostring(overlap.status or "UNRESOLVED"),booleanText(overlap.positive),numberText(overlap.overlapM),
+                numberText(closing.currentDirectionDot),numberText(closing.closingRateMps),booleanText(item.currentOpposed),booleanText(item.currentClosingPositive),
+                booleanText(item.subjectCurrentStable),booleanText(item.otherCurrentStable),booleanText(item.subjectCurrentExcursion),booleanText(item.otherCurrentExcursion),
+                tonumber(overlap.subjectPhysicalPrimitiveCount) or 0,tonumber(overlap.otherPhysicalPrimitiveCount) or 0))
+        end
+    end
+end
+
 function Validator:_logLifecycle(records,nowMilliseconds)
     local currentPairs,activeReferences,transitions={}, {}, {}
     for _,record in ipairs(records) do
@@ -277,7 +320,7 @@ function Validator:observeRuntimeResult(raw,live,due,nowMilliseconds)
         local locators={}; for _,id in OuttaMyWay.ValueRecord.ipairs(record.playerFacingFieldLocators or {}) do locators[#locators+1]=tostring(id) end
         logInfo(string.format("trace=%s field=%s fingerprint=%s locators=%s observed=%d active=%d activeJobVehicles=%d poseResolved=%d episodes=%d admitted=%d ended=%d operations=%d globalOperations=%d operationMembers=%d operationSituations=%d pairCandidates=%d eligiblePairs=%d evaluatedPairs=%d excludedPairs=%d qualifyingPairs=%d interactionEmitted=%d interactionReceived=%d encounters=%d decisionCandidates=%d pass=%d unresolved=%d failed=%d gaps=%d selected=%s decision=%s generalControl=false boundedDispatch=%s",record.identity,tostring(record.fieldWorldReferenceKey),tostring(record.fieldWorldFingerprint or "waiting"),#locators>0 and table.concat(locators,",") or "unresolved",record.observedAssemblyCount or 0,record.activeAssemblyCount,record.cycleActiveJobVehicleCount or 0,record.poseResolvedWorkerCount or 0,record.activeJobEpisodeCount,record.admittedEpisodeCount or 0,record.endedEpisodeCount or 0,record.activeOperationCount,record.globalActiveOperationCount or 0,record.activeOperationMemberCount or 0,record.situationCount,record.relevantPairCount or 0,record.eligiblePairCount or 0,record.evaluatedPairCount or 0,record.excludedPairCount or 0,record.qualifyingPairCount or 0,record.interactionEvidenceEmittedCount or 0,record.interactionEvidenceReceivedCount or 0,record.encounterCount,record.candidateCount or 0,record.allPassCandidateCount or 0,record.unresolvedCandidateCount or 0,record.failedCandidateCount or 0,record.unavailableSourceCount or 0,tostring(record.selectedCapability),tostring(record.nonIntervention and record.nonIntervention.classification),tostring(record.boundedControlDispatchStatus or "NO_DISPATCH")))
     end
-    self:_logRecordDiagnostics(record,due,nowMilliseconds); self:_logFutureSpaceRelationships(record); self:_logFollowerBoundaryKnowledge(live.picture,due)
+    self:_logRecordDiagnostics(record,due,nowMilliseconds); self:_logFutureSpaceRelationships(record); self:_logFollowerBoundaryKnowledge(live.picture,due); self:_logTrajectoryConflictKnowledge(live.picture,due)
     return record
 end
 function Validator:observeRuntimeError(errorValue) self.errorCount=self.errorCount+1; logError(tostring(errorValue)) end

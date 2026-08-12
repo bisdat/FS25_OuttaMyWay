@@ -1,3 +1,35 @@
+# v4.7.101 D-0146 Step-2 conformance addendum
+
+| Contract | Evidence in code | Status |
+|---|---|---|
+| Situation owns Step-1 meaning | `TrajectoryConflictAssessment` called by `SituationAssessment` | PASS |
+| Candidate owns local passage search | `LocalPassagePlanner` loaded before `LiveTrafficCandidateSupport` | PASS |
+| Control does not invent passage geometry | D-0146 Control consumes `cooperativePassageBridge.passageGuide` gates only | PASS |
+| Passage search satisfices | progressive candidates sorted by burden; first positively supported guide returned | PASS |
+| Asymmetric/unilateral expression possible | burden fractions include coupled 25/75 and 0/100 alternatives | PASS |
+| No generic negative-clearance claim | purpose-specific P23 fitness + explicit false provenance | PASS |
+| Passage Support Loss cannot silently broaden | gate revalidation -> held safe-abandon/escalate `PASSAGE_REASSESSMENT` | PASS |
+| Historical TS015 geometry not live admission authority | legacy path only reached when D-0146 Step-2 flag is false | PASS |
+
+---
+
+# v4.7.100 D-0146 Step-1 conformance addendum
+
+| D-0146 concept | Architecture | v4.7.100 runtime | Validation |
+|---|---|---|---|
+| Established Trajectory | CURRENT | IMPLEMENTED PASSIVELY in Situation Knowledge | OFFLINE PASS; LIVE PENDING |
+| Current Excursion / Trajectory Persistence | CURRENT | IMPLEMENTED PASSIVELY | OFFLINE PASS; LIVE PENDING |
+| Potential / Established Opposed Corridor Conflict | CURRENT | IMPLEMENTED PASSIVELY | OFFLINE PASS; LIVE PENDING |
+| categorical Supported Corridor Overlap | CURRENT | IMPLEMENTED from existing positive cached physical primitives | OFFLINE PASS; LIVE PENDING |
+| Productive/Transitional as context, not gate | CURRENT | IMPLEMENTED | STRUCTURAL PASS; LIVE PENDING |
+| Candidate/Decision action from new Step-1 Knowledge | not part of passive validation slice | NOT WIRED | INTENTIONALLY ABSENT |
+| Passage Presumption / Local Passage Space | CURRENT | NOT IMPLEMENTED GENERICALLY | PENDING LATER STEP 2 |
+| Passage Arrangement / Guide / Reassessment | CURRENT | bounded TS015 donor only / generic NOT IMPLEMENTED | PENDING LATER STEP 2 |
+| existing bounded TS015 Cooperative Passage | PRESERVED EVIDENCE | LIVE BOUNDED, unchanged consumer path | PREVIOUSLY LIVE PROVEN |
+| D-0141 follower Regulation | PRESERVED | LIVE BOUNDED, unchanged | PREVIOUSLY LIVE PROVEN |
+
+---
+
 # v4.7.99 D-0146 conformance addendum
 
 | D-0146 concept | Architecture | Runtime in this candidate |

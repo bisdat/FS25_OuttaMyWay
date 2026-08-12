@@ -1,9 +1,10 @@
 -- Architecture-alignment live Control dispatcher.
 --
 -- This module is the only automatic bridge from a sealed live Decision /
--- Commitment application into physical Control. D-0143 adds one bounded joint
--- Cooperative Passage Control path while retaining the existing D-0141/D-0123
--- Regulation donors. The dispatcher does not invent traffic meaning.
+-- Commitment application into physical Control. D-0146 Step-2 adds an active
+-- Candidate-supplied Passage Guide path while retaining the mechanically proven
+-- D-0143 donor and existing D-0141/D-0123 Regulation paths. The dispatcher does
+-- not invent traffic meaning or passage geometry.
 
 OuttaMyWay.LiveControlDispatcher = {}
 local Dispatcher = OuttaMyWay.LiveControlDispatcher
@@ -29,7 +30,12 @@ end
 local function cooperativePassageBridge(candidate)
     local evidence=candidate and candidate.evidenceBasis or nil
     local bridge=evidence and evidence.cooperativePassageBridge or nil
-    if type(bridge)=="table" and type(bridge.condorReferenceKey)=="string" and type(bridge.patriotReferenceKey)=="string" then return bridge end
+    if type(bridge)~="table" then return nil end
+    if bridge.architecture=="D0146_STEP2" then
+        if type(bridge.subjectReferenceKey)=="string" and type(bridge.otherReferenceKey)=="string" and type(bridge.passageGuide)=="table" then return bridge end
+        return nil
+    end
+    if type(bridge.condorReferenceKey)=="string" and type(bridge.patriotReferenceKey)=="string" then return bridge end
     return nil
 end
 
@@ -75,10 +81,17 @@ function Dispatcher:_jointCooperativeRequests(picture,evaluated,candidate,commit
             if candidateToken.assemblyId==assemblyId then token=candidateToken break end
         end
         if token==nil or self.runtime.authorities:validate(token)~=true then return nil,"VALID_JOINT_COMMITMENT_AUTHORITY_TOKEN_UNAVAILABLE" end
+        local target
+        if bridge.architecture=="D0146_STEP2" then
+            target={kind="D0146_COOPERATIVE_PASSAGE",conflictIdentity=bridge.conflictIdentity,encounterIdentity=bridge.encounterIdentity,governingRequirementKey=bridge.governingRequirementKey,
+                subjectReferenceKey=bridge.subjectReferenceKey,otherReferenceKey=bridge.otherReferenceKey,passageGuideId=bridge.passageGuide and bridge.passageGuide.identity,controlProfile=bridge.controlProfile}
+        else
+            target={kind="TS015_COOPERATIVE_PASSAGE",pairReferenceKey=bridge.pairReferenceKey,encounterIdentity=bridge.encounterIdentity,governingRequirementKey=bridge.governingRequirementKey,
+                condorReferenceKey=bridge.condorReferenceKey,patriotReferenceKey=bridge.patriotReferenceKey,controlProfile=bridge.controlProfile}
+        end
         local request=OuttaMyWay.ControlRequest.new({
             identity=self.runtime.identities:issue("CONTROL_REQUEST"),commitmentId=commitment.identity,assemblyId=assemblyId,capability="REPOSITION",
-            target={kind="TS015_COOPERATIVE_PASSAGE",pairReferenceKey=bridge.pairReferenceKey,encounterIdentity=bridge.encounterIdentity,governingRequirementKey=bridge.governingRequirementKey,
-                condorReferenceKey=bridge.condorReferenceKey,patriotReferenceKey=bridge.patriotReferenceKey,controlProfile=bridge.controlProfile},
+            target=target,
             authorityToken=token.identity,operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=commitment.effectiveActuationCompositionId,
             preconditions=candidate.preconditions or {},invalidationConditions=candidate.invalidationConditions or {}
         })
@@ -379,7 +392,9 @@ function Dispatcher:dispatch(picture,evaluated)
     if self.cooperativePassageControl==nil then return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_CONTROL_UNAVAILABLE",candidateId=candidate.identity} end
     local inventory=evaluated.candidateInventory
     local boundary=inventory and inventory.supportBoundary or nil
-    if type(boundary)~="table" or boundary.mode~="TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST" then
+    local d0146=bridge.architecture=="D0146_STEP2"
+    local expectedBoundary=d0146 and "D0146_COOPERATIVE_PASSAGE_STEP2_TEST" or "TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST"
+    if type(boundary)~="table" or boundary.mode~=expectedBoundary then
         return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_SUPPORT_BOUNDARY_MISMATCH",candidateId=candidate.identity}
     end
     if type(self.cooperativePassageControl.isActive)=="function" and self.cooperativePassageControl:isActive() then
@@ -396,12 +411,12 @@ function Dispatcher:dispatch(picture,evaluated)
 
     local requests,requestReason=self:_jointCooperativeRequests(picture,evaluated,candidate,commitment,bridge)
     if requests==nil then
-        self:_onCooperativePassageCompletion({status="FAILED",commitmentId=commitment.identity,evidence={kind="D0143_JOINT_CONTROL_REQUEST_CREATION_FAILED",reason=requestReason}})
+        self:_onCooperativePassageCompletion({status="FAILED",commitmentId=commitment.identity,evidence={kind=d0146 and "D0146_JOINT_CONTROL_REQUEST_CREATION_FAILED" or "D0143_JOINT_CONTROL_REQUEST_CREATION_FAILED",reason=requestReason}})
         return {status="NO_DISPATCH",reason=requestReason,candidateId=candidate.identity,commitmentId=commitment.identity}
     end
     local started,result=self.cooperativePassageControl:executeJointRequests(requests[1],requests[2],candidate)
     if started~=true then
-        self:_onCooperativePassageCompletion({status="FAILED",commitmentId=commitment.identity,evidence={kind="D0143_COOPERATIVE_CONTROL_START_REJECTED",reason=tostring(result)}})
+        self:_onCooperativePassageCompletion({status="FAILED",commitmentId=commitment.identity,evidence={kind=d0146 and "D0146_COOPERATIVE_CONTROL_START_REJECTED" or "D0143_COOPERATIVE_CONTROL_START_REJECTED",reason=tostring(result)}})
         local outcomes={
             self:_outcome(requests[1],"REJECTED",{kind="NO_PHYSICAL_EFFECT_OBSERVED"},{reason=tostring(result)}),
             self:_outcome(requests[2],"REJECTED",{kind="NO_PHYSICAL_EFFECT_OBSERVED"},{reason=tostring(result)})
@@ -411,12 +426,12 @@ function Dispatcher:dispatch(picture,evaluated)
     end
     self.dispatchCount=self.dispatchCount+1
     local outcomes={
-        self:_outcome(requests[1],"ACCEPTED",{kind="D0143_JOINT_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"},nil),
-        self:_outcome(requests[2],"ACCEPTED",{kind="D0143_JOINT_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"},nil)
+        self:_outcome(requests[1],"ACCEPTED",{kind=d0146 and "D0146_JOINT_REPOSITION_DISPATCH_ACCEPTED" or "D0143_JOINT_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"},nil),
+        self:_outcome(requests[2],"ACCEPTED",{kind=d0146 and "D0146_JOINT_REPOSITION_DISPATCH_ACCEPTED" or "D0143_JOINT_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"},nil)
     }
-    logInfo("COOPERATIVE_ACCEPTED decision=%s candidate=%s commitment=%s requestA=%s requestB=%s condor=%s patriot=%s result=%s",
-        tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(commitment.identity),tostring(requests[1].identity),tostring(requests[2].identity),
-        tostring(bridge.condorReferenceKey),tostring(bridge.patriotReferenceKey),tostring(result))
+    logInfo("COOPERATIVE_ACCEPTED architecture=%s decision=%s candidate=%s commitment=%s requestA=%s requestB=%s subject=%s other=%s result=%s",
+        tostring(bridge.architecture or "D0143_TS015"),tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(commitment.identity),tostring(requests[1].identity),tostring(requests[2].identity),
+        tostring(bridge.subjectReferenceKey or bridge.condorReferenceKey),tostring(bridge.otherReferenceKey or bridge.patriotReferenceKey),tostring(result))
     return {status="ACCEPTED",requests=requests,outcomes=outcomes,commitment=commitment,candidate=candidate,result=result}
 
 end
