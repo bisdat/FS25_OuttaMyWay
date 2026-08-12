@@ -1,3 +1,11 @@
+# v4.7.102 continuity boundary — validated Step 2 awaiting owner canonicalisation
+
+Owner-declared canonical baseline is v4.7.99 (`c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`; 307 files). D-0146 Step 1 and Step 2 are implemented. The bounded Condor/Patriot Step-2 path completed three successful live passages on 2026-08-12. v4.7.101 cannot be canonicalised because its producer and owner-observed ZIP hashes disagreed; v4.7.102 is the fresh RRS candidate with no Step-2 behavioural algorithm change.
+
+If accepted, canonicalise only the exact v4.7.102 candidate fingerprint and then synchronise that accepted package into the owner's local repository. The next engineering issue is not more passive Step-2 work; the known final-few-metres single-worker blocked-zero-command condition remains separate.
+
+---
+
 # v4.7.99 continuity boundary — D-0146 architecture ahead of implementation
 
 Owner-declared canonical is v4.7.98 (`105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`; Git `982992b926839c854f6d4d7979fe24885e267eae`; 307 files). v4.7.99 is an architecture/documentation candidate only. It records trajectory-based Opposed Corridor Conflict and Local Cooperative Passage concepts while deliberately preserving v4.7.98 runtime behaviour.

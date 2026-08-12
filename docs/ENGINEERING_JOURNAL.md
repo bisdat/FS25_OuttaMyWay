@@ -1,3 +1,15 @@
+# 2026-08-12 — v4.7.102 Candidate Byte Identity Recovery
+
+**Observation:** the repository owner calculated SHA-256 `5aa39f23e9601cbe3eaef856b70394950fab166e8438c3500f151d7b36008e13` for the supplied v4.7.101 test ZIP, while the producer runtime retained `64f7b4b67f1c7f308cf3241c79678f0a442d7fe7cc5c4e41e111e5c7d82f921`.
+
+**Interpretation:** behavioural success does not cure an ambiguous candidate byte identity. RRS already names cross-platform/cross-producer candidate hash disagreement as a blocking Artifact Determinism Gap.
+
+**Decision:** do not attempt to canonicalise v4.7.101. Produce v4.7.102 afresh from exact owner-declared canonical v4.7.99 through RRS, carrying the validated Step-1/Step-2 implementation unchanged in behaviour and issuing new candidate/evidence fingerprints.
+
+**Record correction:** direct rerun of the Python structural/conformance suite contains 79 tests, all passing; earlier 104/104 reporting was bookkeeping error.
+
+---
+
 # 2026-08-12 — v4.7.101 Step-2 implementation: Semantic Generalisation / Mechanical Boundedness
 
 **Observation:** v4.7.100 live evidence supported the complete Step-1 trajectory/conflict chain and showed that Established conflict became known materially before the old TS015 gate. It also exposed Diagnostic Churn caused by continuously changing numeric values inside transition signatures.
@@ -8,7 +20,7 @@
 
 **Implementation:** added Candidate-owned Progressive Passage Search with symmetric/asymmetric/unilateral burden splits and a five-gate guide; wired it through normal Decision/Commitment/Authority; Control executes only supplied gates and treats support loss as explicit Passage Reassessment. Corrected Diagnostic Churn separately inside the same build.
 
-**Validation:** 204/204 Lua behavioural tests and 104/104 structural/conformance tests pass before packaging. Live GIANTS evidence remains final authority.
+**Validation:** 204/204 Lua behavioural tests and 79/79 structural/conformance tests pass before packaging. Live GIANTS evidence remains final authority.
 
 ---
 

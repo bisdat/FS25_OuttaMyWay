@@ -1,3 +1,23 @@
+# v4.7.102 CANONICAL CANDIDATE handover — D-0146 Step-2 validated / provenance reset
+
+**Baseline:** owner-declared canonical v4.7.99, SHA-256 `c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`, 307 files.
+
+## Why this candidate exists
+
+v4.7.101 supplied successful live Step-2 evidence but cannot enter Authority Transformation because producer and repository-owner candidate ZIP hashes disagreed. RRS defines that as a blocking candidate-determinism finding. Do not canonicalise either v4.7.101 byte identity.
+
+v4.7.102 is a fresh candidate from exact v4.7.99 canonical baseline containing the completed Step-1 + Step-2 engineering increment. No passage-planning or Control algorithm was changed during the recovery; only release identity/provenance, documentation and version assertions changed.
+
+## Live evidence carried forward as behavioural support
+
+The 2026-08-12 Condor/Patriot TS015 run produced three D-0146 Step-2 activations, all five guide gates on each activation, and three `SUCCEEDED` settlements with no Passage Reassessment or safe-abandon escalation. The later final-few-metres condition occurred after Condor's Job Episode ended and while Patriot was the sole active worker; it is not attributed to Step 2.
+
+## Canonicalisation boundary
+
+Review and canonicalise only the exact v4.7.102 candidate fingerprint produced with its new evidence package. v4.7.101 is historical test evidence and must not be used as the authority artefact.
+
+---
+
 # v4.7.101 TEST BUILD handover — D-0146 Step-2 active Cooperative Passage
 
 **Baseline:** owner-declared canonical v4.7.99, SHA-256 `c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`, 307 files.  
@@ -17,7 +37,7 @@ Control revalidates each Candidate-supplied gate. Loss of support does not trigg
 
 ## Validation
 
-204/204 Lua behavioural tests PASS; 104/104 Python structural/conformance tests PASS before packaging. Live GIANTS validation remains the authority for the active guide.
+204/204 Lua behavioural tests PASS; 79/79 Python structural/conformance tests PASS before packaging. Live GIANTS validation remains the authority for the active guide.
 
 ---
 

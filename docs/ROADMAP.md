@@ -1,3 +1,12 @@
+# v4.7.102 immediate roadmap — canonicalise validated Step 2, then return to remaining work
+
+1. Review the fresh v4.7.102 RRS candidate/evidence package and canonicalise only its exact fingerprint if accepted.
+2. Do not schedule another Step-2 build in the absence of contradictory Reality; the bounded Condor/Patriot Step-2 path has completed three live passages successfully.
+3. Keep wider vehicle/configuration authority evidence-driven rather than inferred from TS015.
+4. Treat the final-few-metres single-worker blocked-zero-command condition as a separate subsequent engineering problem.
+
+---
+
 # v4.7.100 immediate roadmap — validate Step 1 before Step 2
 
 1. Live-test the passive Established Trajectory / Current Excursion state against normal GIANTS productive, turn and reposition motion.

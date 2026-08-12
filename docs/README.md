@@ -1,3 +1,13 @@
+# Current architecture / implementation lineage — v4.7.102 canonical candidate
+
+Owner-declared canonical baseline is v4.7.99 (`c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`; 307 files). D-0146 governs trajectory-based Opposed Corridor Conflict and Local Cooperative Passage. Step 1 and the bounded Condor/Patriot Step-2 implementation are now live-supported: the 2026-08-12 TS015 run completed three D-0146 passages successfully.
+
+v4.7.101 remains test evidence only because its candidate ZIP byte identity disagreed between producer and repository owner. v4.7.102 is the fresh RRS canonical candidate; no Step-2 behavioural algorithm changes were introduced during provenance recovery.
+
+Read `ARCHITECTURE.md` D-0146 first, then `PROJECT_STATUS.md`, `ENGINEERING_HANDOVER.md`, `KNOWN_ISSUES.md` and `ROADMAP.md`. General vehicle/configuration passage authority remains incomplete, and the final-few-metres single-worker blocked-zero-command condition is a separate unresolved issue.
+
+---
+
 # Current architecture / implementation lineage — v4.7.99 canonical candidate
 
 Owner-declared canonical is v4.7.98 (`105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`; Git `982992b926839c854f6d4d7979fe24885e267eae`; 307 files). D-0146 now governs the **architecture** of opposed-corridor recognition and local Cooperative Passage; the **implementation** remains the bounded live-proven v4.7.98 TS015 path.

@@ -1,3 +1,13 @@
+# v4.7.102 explicit incompleteness / authority boundary
+
+- Candidate Byte Identity Mismatch blocks v4.7.101 canonicalisation; only the fresh v4.7.102 fingerprint is eligible for review.
+- D-0146 Step-2 live support remains mechanically bounded to the demonstrated Condor Endurance II / Patriot 4450 profile; general vehicle/configuration authority is not claimed.
+- Generic Boundary Encroachment geometry and general negative-clearance authority remain incomplete.
+- The final-few-metres single-worker `VALID_BLOCKED_ZERO_COMMAND` condition remains unresolved and is separate from Cooperative Passage.
+- Passage Reassessment's safe-abandon/escalate branch is implemented but was not exercised in the successful three-passage live run.
+
+---
+
 # v4.7.101 explicit incompleteness / live-validation boundary
 
 - The new D-0146 Step-2 path is **active**, not passive, but live GIANTS execution of the Candidate-supplied Passage Guide has not yet been validated.

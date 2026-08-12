@@ -1,3 +1,13 @@
+# v4.7.102 CANONICAL CANDIDATE — D-0146 Step-2 validated implementation / provenance recovery
+
+- Starts from exact owner-declared canonical v4.7.99 (`c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`; 307 files) through the Repository Release System.
+- Reapplies the v4.7.100 Step-1 and v4.7.101 Step-2 engineering increment that produced three successful live D-0146 passages in the 2026-08-12 TS015 run.
+- v4.7.101 is **not** promoted: the repository owner observed candidate ZIP SHA-256 `5aa39f23e9601cbe3eaef856b70394950fab166e8438c3500f151d7b36008e13`, while the producer runtime retained `64f7b4b67f1c7f308cf3241c79678f0a442d7fe7cc5c4e41e111e5c7d82f921`. Under RRS Candidate Determinism this byte-identity mismatch is blocking.
+- v4.7.102 therefore creates a fresh canonical candidate and fresh evidence identity rather than attempting an Authority Transformation on v4.7.101.
+- **No passage-planning, Situation Assessment, Candidate, Decision, Commitment or Control behaviour is changed from the live-successful Step-2 implementation.** Runtime changes are release/version/build-label diagnostics only.
+- Corrects the v4.7.101 evidence-count bookkeeping error: the direct Python structural/conformance suite is 79/79 PASS, not 104/104.
+- The known final-few-metres single-worker `VALID_BLOCKED_ZERO_COMMAND` condition remains separate and unaddressed; it occurred after all three Step-2 Commitments had settled `SUCCEEDED`.
+
 # v4.7.101 TEST BUILD — D-0146 Step-2 active Cooperative Passage
 
 - Baseline remains owner-declared canonical v4.7.99; v4.7.100 live evidence validated the complete Step-1 trajectory/opposed-conflict chain.
@@ -9,7 +19,7 @@
 - Progressive search can express symmetric, asymmetric or unilateral intervention and satisfices on the lowest supported combined lateral burden.
 - Corrected v4.7.100 **Diagnostic Churn**: transition signatures no longer include continuously changing direction/distance/overlap/rate values.
 - Historical D-0143 TS015 path remains as a disabled regression/mechanical donor.
-- Offline validation before packaging: 204/204 Lua behavioural tests and 104/104 Python structural/conformance tests PASS.
+- Offline validation before packaging: 204/204 Lua behavioural tests and 79/79 Python structural/conformance tests PASS.
 
 # v4.7.100 TEST BUILD — D-0146 Step-1 passive trajectory/conflict implementation
 

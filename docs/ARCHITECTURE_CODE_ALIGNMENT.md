@@ -1,3 +1,9 @@
+# v4.7.102 D-0146 Step-2 validation/provenance addendum
+
+No architecture-to-code ownership changes are introduced in v4.7.102. The v4.7.101 active chain remains authoritative in code: Situation-owned trajectory/conflict Knowledge -> Candidate-owned Local Passage Search/Passage Guide -> normal Decision/Commitment -> central Control. The 2026-08-12 TS015 run supplied three successful live executions. v4.7.102 changes release identity/provenance only so the validated implementation can be reviewed under one exact candidate fingerprint.
+
+---
+
 # v4.7.101 D-0146 Step-2 architecture/code alignment
 
 | Architectural concept | Runtime owner | Alignment |

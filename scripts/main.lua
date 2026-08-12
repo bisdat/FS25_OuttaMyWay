@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.101 TEST BUILD — D-0146 Step-2 active Cooperative Passage from live-validated Step-1 Situation Knowledge.
+-- FS25_OuttaMyWay v4.7.102 CANONICAL CANDIDATE — D-0146 Step-2 active Cooperative Passage from live-validated Step-1 Situation Knowledge.
 -- modDesc.xml loads only this file. Historical archived modules are never sourced.
 local modDirectory=g_currentModDirectory or ""
 local modules={

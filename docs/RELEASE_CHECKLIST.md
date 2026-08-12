@@ -1,3 +1,15 @@
+## v4.7.102 canonical-candidate scope gate
+
+- [ ] Candidate begins from exact owner-declared canonical v4.7.99 SHA-256 `c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`.
+- [ ] Complete v4.7.100 Step-1 + v4.7.101 Step-2 engineering increment is reproduced from the canonical baseline.
+- [ ] No Step-2 planning/assessment/Candidate/Decision/Commitment/Control behavioural algorithm changes are introduced during v4.7.102 provenance recovery.
+- [ ] v4.7.101 is explicitly blocked from canonicalisation because producer/owner candidate ZIP hashes disagreed.
+- [ ] Current release identity is v4.7.102 and candidate authority is not presented as canonical.
+- [ ] Known Python validation count is 79/79, not the previously reported 104/104.
+- [ ] Lua behavioural, Python structural/conformance, RRS, Lua parse, manifest, ZIP-integrity and deterministic rebuild checks pass against the exact packaged candidate.
+
+---
+
 ## v4.7.99 candidate-scope acceptance gate
 
 - [ ] Exact baseline is owner-declared canonical v4.7.98 SHA-256 `105462f44b902312e5dc63c6176d44f848f15c1466d942a4bee70635ced6cd69`.

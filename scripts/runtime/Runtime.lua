@@ -41,7 +41,7 @@ end
 function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
     self.trace:append("PROGRESSIVE_SITUATIONAL_SUFFICIENCY_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";d0146Step1Passive=true;trajectoryPersistence=true;opposedCorridorClassification=true;d0143CooperativePassage=true;ts015NarrowAuthority=true;d0141FollowerRegulation=true;turningRankAwarenessRetained=true;successorRookRetired=true;continuousProductiveHistoryRetired=true;kingRetired=true;continuousRefugeRetired=true;runtimeOwnedCycle=true;situationOwnsCurrentKnowledge=true;diagnosticsAuthority=false;generalControl=false")
-    print(string.format("FS25_OuttaMyWay v%s TEST BUILD loaded; owner-declared v4.7.99 is canonical; D-0146 Step-1 Situation Knowledge is live-validated and Step-2 Established Conflict -> Candidate-owned Local Passage Search -> Passage Guide -> Commitment/Control is ACTIVE for the bounded P23 Condor/Patriot mechanical profile; D-0141 follower Regulation preserved; general production Control authority disabled; general vehicle authority is not claimed",OuttaMyWay.VERSION))
+    print(string.format("FS25_OuttaMyWay v%s CANONICAL CANDIDATE loaded; owner-declared v4.7.99 is canonical; D-0146 Step-1 Situation Knowledge is live-validated and Step-2 Established Conflict -> Candidate-owned Local Passage Search -> Passage Guide -> Commitment/Control is ACTIVE for the bounded P23 Condor/Patriot mechanical profile; D-0141 follower Regulation preserved; general production Control authority disabled; general vehicle authority is not claimed",OuttaMyWay.VERSION))
 end
 
 function Runtime:setLiveControlCapability(capability)

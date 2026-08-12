@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.101 TEST BUILD — D-0146 Step-2 active local Cooperative Passage implementation.
+-- FS25_OuttaMyWay v4.7.102 CANONICAL CANDIDATE — D-0146 Step-2 active local Cooperative Passage implementation.
 -- Owner-declared v4.7.99 is canonical. v4.7.100 live-validated Step-1 Situation Knowledge; this build consumes it through Candidate/Commitment/Control.
 -- D-0144 simplifies the governing Situation model while preserving D-0143 bounded TS015 Cooperative Passage and D-0141 follower Regulation.
 -- King Reserve, continuous Refuge discovery, chessboard colouring/continuous Productive History and Successor Rook prediction are retired from governing production architecture.
@@ -6,7 +6,7 @@
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.101"
+OuttaMyWay.VERSION = "4.7.102"
 OuttaMyWay.ARCHITECTURE_VERSION = "4.7.99"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -192,7 +192,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
 OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "4.7.101 D-0146 STEP2 ACTIVE TEST"
+OuttaMyWay.BUILD_LABEL = "4.7.102 D-0146 STEP2 CANONICAL CANDIDATE"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720

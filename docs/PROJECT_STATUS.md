@@ -1,3 +1,18 @@
+# v4.7.102 canonical-candidate status — Step 2 live supported, byte identity reset
+
+**Owner-declared canonical baseline:** v4.7.99 (`c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`; 307 files).  
+**Current candidate:** v4.7.102.
+
+- D-0146 Step 1: **IMPLEMENTED + LIVE SUPPORTED**.
+- D-0146 Step 2: **IMPLEMENTED + LIVE SUPPORTED for the bounded Condor/Patriot mechanical profile**.
+- Live TS015 evidence: three Step-2 activations, 15/15 Passage Guide gates reached, 3/3 Commitments settled `SUCCEEDED`, zero Passage Reassessments and zero safe-abandon escalations.
+- v4.7.101 canonicalisation is blocked by Candidate Byte Identity Mismatch; its runtime evidence is retained as behavioural evidence, not exact-package authority evidence.
+- v4.7.102 contains no Step-2 behavioural algorithm change relative to that tested implementation; it is the fresh RRS-produced candidate whose exact fingerprint must be reviewed/canonicalised.
+- Python structural/conformance evidence count corrected to 79/79.
+- Final-few-metres single-worker blocked-zero-command behaviour remains an explicit separate issue.
+
+---
+
 # v4.7.101 D-0146 Step-2 active implementation status
 
 **Current test build:** v4.7.101 over owner-declared canonical v4.7.99.
@@ -8,7 +23,7 @@
 - Passage arrangements: symmetric/asymmetric/unilateral burden split supported by the bounded search where positively supported by Field World.
 - Passage Reassessment: safe-abandon/escalate behavior implemented for execution support loss; Control cannot silently broaden the guide.
 - Diagnostic Churn from v4.7.100: **CORRECTED**.
-- Offline tests: 204 Lua + 104 Python PASS before packaging.
+- Offline tests: 204 Lua + 79 Python PASS before packaging.
 - Next authority: live GIANTS execution evidence, not another preplanned passive implementation slice.
 
 ---
