@@ -1,61 +1,56 @@
-# v4.7.77 Architecture-to-Code Alignment Baseline — D-0142
+# v4.7.95 Architecture-to-Code Alignment Baseline — D-0143
 
-**Canonical implementation baseline:** owner-declared v4.7.76 (`7cc2db3fcd02ca7979acfafe81f7765344a70275a11de9754594bde8fed4aeaf`; Git `4758a3428f9bcba23093f60edfd0087bb87843ab`).  
-**Candidate:** v4.7.77 architecture/documentation only.
+**Canonical implementation baseline:** owner-declared v4.7.77 (`0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`; Git `1742c197c21a1fb127932dcc15303dbd58515d6d`).  
+**Candidate:** v4.7.95 architecture/documentation only.
 
-This section supersedes earlier module-migration assumptions where they conflict with D-0142. The audit now maps only **surviving architectural concepts**. Old code first passes the Preserve / Re-express / Retire Supersession Filter.
+This section supersedes the v4.7.77/D-0142 first-build plan where D-0143 conflicts. Do not migrate P23 wholesale and do not continue King implementation. The alignment target is the smallest production path that makes the demonstrated TS015 Cooperative Passage capability flow through existing owners.
 
 ## Surviving-concept implementation map
 
-| Architectural concept/layer | v4.7.76 status | Alignment consequence |
+| Architectural concept/layer | v4.7.77 status | Alignment consequence |
 |---|---|---|
 | Field World identity/equivalence | strong existing owner/donor | preserve |
-| raw GIANTS Observation | strong donors, semantic leakage present | strip semantic promotion over time |
-| Configuration-Dependent Assembly Footprint | strong representation donor | promote phase-specific fitness semantics in Situation |
-| positive productive work evidence | strong donor | promote to production Knowledge |
-| Productive Regime / Rook | mostly absent as coherent production Knowledge | implement |
-| Successor Rook Set | absent | implement |
-| bounded Transitional Demand | absent | implement |
-| King Reserve Availability | absent | implement |
-| positive cooperative relevance | partial through old Current/Future-Space admission | re-express |
-| Resolution-Space Conservation | distributed historical evidence, no generic implementation | implement |
-| Candidate Action Space | structural skeleton exists; semantic generation sits in `LiveTrafficCandidateSupport` | replace old scenario-specific content after Knowledge validates |
-| Mandatory Constraints | structural skeleton exists; many verdicts are Candidate-authored/pass-through | make independently authoritative after Knowledge validates |
-| Traffic Policeman | strong structural donor | preserve; add Conflict Serialization/admission reasoning later |
-| Commitment/Obligations | strong core | add durable selected spatial relation/Committed Demand later |
-| Bounded Authority | ownership basis exists | strengthen to phase/manoeuvre-specific authority later |
-| Control | useful physical donors embedded in superseded P22/orchestration | preserve donors, retire semantic/orchestration leakage |
-| Guarded Recovery | live compatibility behaviour | do not expand; validate replacement by generic Committed-Demand protection |
-| P22 | superseded prototype | do not migrate as a system |
+| raw GIANTS Observation | strong donors, semantic leakage present | preserve facts; strip semantic promotion over time |
+| Configuration-Dependent Assembly Footprint | strong representation donor | preserve/extend only as required by TS015 admissibility |
+| Productive Regime / Rook and productive-history Knowledge | partial production/shadow evidence | reuse current Situation ownership; do not rebuild broadly before TS015 |
+| Successor Rook Set / bounded Transitional Demand | architecture survives; implementation incomplete | retain architecture; implement only where TS015 coupling genuinely requires it |
+| King Reserve Availability | absent/experimental post-canonical implementation lineage | **RETIRE; do not implement** |
+| continuous Refuge discovery/qualification | experimental post-canonical lineage | **RETIRE; do not optimise or promote** |
+| Configuration-Released Space support | not a coherent production Knowledge contract | add the minimum Situation evidence needed for supported TS015 applicability |
+| Cooperative Passage Candidate | absent in canonical v4.7.77 | implement narrowly for supported TS015 pair/geometry |
+| positive cooperative relevance | partial through existing admission/Future-Space evidence | re-express/use without creating a new head-on subsystem |
+| Candidate Action Space | structural skeleton exists; semantic generation partly scenario-specific | add joint multi-assembly `REPOSITION` without bypassing Candidate ownership |
+| Mandatory Constraints | structural skeleton exists; some verdicts remain candidate/pass-through | independently gate the new Candidate using existing contracts; no fake clearance authority |
+| Traffic Policeman / Decision | strong structural donor | select Cooperative Passage after ordinary preference-band exhaustion |
+| Commitment/Obligations | strong core | represent joint staged passage obligations and immediate reusability after handoff |
+| Bounded Authority | ownership basis exists | admit only the current passage phase |
+| Control | P22/P23 physical donors exist | extract/reuse Hold, compact/restore, bounded drive and handoff donors; no semantic selection |
+| post-handoff observation | diagnostic donors exist | separate from Commitment/Control; no cooldown |
+| asymmetric passage solver | unsupported by v4.7.94 boundary evidence | **DO NOT IMPLEMENT in TS015 tranche** |
 
-## Explicit abstraction mismatches in v4.7.76
+## Explicit implementation constraints
 
-- Observation creates semantic Future-Space/admission/follower meaning that belongs above Observation.
-- Observation uses `COMMITTED_DEMAND` for active-job membership; D-0142 reserves Committed Demand for post-Decision Commitment-derived spatial demand.
-- Operational Picture is rewritten with Candidate specifications; D-0142 requires immutable Knowledge-only publication.
-- `LiveTrafficCandidateSupport` performs duplicate assessment, representation-fitness promotion, mandatory-verdict manufacture and scenario preselection.
-- mandatory Constraint evaluators frequently consume Candidate-authored verdict packets rather than independently evaluating invariants.
-- Control/P22 reconstructs participants, selects/qualifies Refuge, interprets recovery safety and mutates Commitment meaning.
-- P22 return/rejoin fixture routing is experimental mechanism evidence, not a production concept to relocate.
-- HEAD_ON/follower/exactly-two-worker branches are scenario implementations, not governing architectural classes.
-- Guarded Recovery is retained only as bounded compatibility behaviour pending proof that generic Committed-Demand protection subsumes it.
+- Do not source `Prototype23` as a parallel production controller. P23 is evidence/donor material only.
+- Do not restore `HEAD_ON` as a governing solver class. The first authority envelope may recognise supported opposed geometry within Situation Assessment.
+- Do not add continuous King/Refuge geometry, certificates or performance work.
+- Do not silently convert incomplete Physical Assembly representation into negative clearance authority.
+- Do not make the 70 m / 6 m / 12 m / 8 m / 8 km/h P23 fixture values architectural constants. If temporarily reused for TS015 closure, keep them isolated and visibly fixture-derived/calibrated.
+- Do not let passive recovery observation retain an AuthorityToken, Commitment ownership or lockout.
 
-## First implementation build — Operational Picture Knowledge Foundation
+## First implementation build — TS015 Cooperative Passage Production Integration
 
-Implement the production-intent Knowledge layer in one decisive build:
+Implement one narrow end-to-end slice:
 
-1. Productive Regime / Rook.
-2. Positive productive-history colouring.
-3. Configuration-dependent footprint Knowledge.
-4. Successor Rook Set.
-5. Bounded Transitional Demand.
-6. King Reserve Availability.
-7. Positive cooperative relevance.
-8. Resolution-Space state.
+1. Situation Assessment publishes the positive facts/Knowledge required to recognise the demonstrated near-collinear Condor/Patriot opposed-working class.
+2. Candidate generation exposes one complete joint Cooperative Passage `REPOSITION` when supported.
+3. Mandatory Constraints gate capability, configuration and currently available spatial/demand evidence.
+4. Traffic Policeman / Decision selects it only when the physical conflict requires Reposition and earlier preference bands cannot resolve the established incompatibility.
+5. Commitment owns stop/compact/separate/pass/rejoin/restore/handoff obligations for both assemblies under one governing purpose.
+6. Bounded Authority and Control execute the current phase using proven physical donors.
+7. Handoff releases Control immediately; later observation is passive.
+8. Unsupported asymmetric geometry is rejected rather than expanded.
 
-Temporary structured logging/shadow comparison is required for validation. The new Knowledge layer is non-authoritative for behaviour during this build: no Candidate, Decision, Commitment, Bounded Authority or Control consumer changes until validation supports promotion.
-
-No P22 cleanup, Guarded-Recovery deletion, Candidate refactor or behavioural routing change belongs in this first build.
+Live TS015 evidence, not further prototype work, decides the next increment.
 
 ---
 

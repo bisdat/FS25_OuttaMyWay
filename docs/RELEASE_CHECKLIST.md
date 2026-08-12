@@ -36,26 +36,19 @@
 - [ ] A competent engineer can validate and create the next canonical release.
 - [ ] Independent reviewer breadcrumb findings will be recorded in the next release.
 
-## Code
+## Code / candidate-scope gate — v4.7.95
 
-- [ ] No Lua errors in repeated test scenarios.
-- [ ] Debug-only code disabled or gated.
-- [ ] Observer and live modes both verified.
-- [ ] Automatic admission requires exactly the active Condor/Patriot fixture pair and does not register `otmTS015Arm`.
-- [ ] Admission produces four calculated candidates and one selected Yield/Progress role when geometry resolves.
-- [ ] `PROTOTYPE18 COMMITMENT_POINT` states `fixedRole=false fixedSide=false fixed28=false fixed12=false`.
-- [ ] Confirmed-stop recalculation evaluates both sides for the selected role and supplies a fresh world-space target.
-- [ ] `HOLD_CONFIRMED` logs calculated lateral and rearward values and identifies the selected candidate.
-- [ ] No normal-Control reference or fallback remains for fixed Condor Yield, physical-right, 28 m lateral or 12 m rearward movement.
-- [ ] Calculation failure withholds admission or enters the existing safe held failure state without substituting former constants.
-- [ ] Progress remains under unmodified GIANTS control while the selected Yield performs the sidestep.
-- [ ] Hold, work-off, raise/fold, egress, passage confirmation, rejoin, deployment, work restoration and GIANTS handback complete in order.
-- [ ] Runtime evidence shows physical passage without contact, `failure=nil` and `fenceViolation=false`.
-- [ ] One Encounter Episode Latch prevents a second commitment in the same continuous fixture episode.
-- [ ] Representation sources, coverage and confidence are logged for Progress lateral, Yield lateral and Yield forward extents.
-- [ ] Conservative working-width fallback remains visibly distinct from compact or discovered representation.
-- [ ] Prototype 17 diagnostic records remain distinct from the calculated Control target.
-- [ ] Lua syntax and XML validation pass for the packaged release.
+- [ ] Candidate begins from exact owner-declared canonical v4.7.77.
+- [ ] Runtime behaviour is unchanged apart from release/version/provenance identity.
+- [ ] No P23 prototype module is sourced or copied into the candidate implementation.
+- [ ] No King/King-Reserve/continuous Refuge implementation is added or promoted.
+- [ ] `modDesc.xml`, `scripts/config.lua`, `scripts/main.lua` and version assertions identify v4.7.95.
+- [ ] Documentation records D-0143, P23 evidence closure, asymmetric scope boundary and TS015 production objective.
+- [ ] Structural/conformance tests pass.
+- [ ] Lua/XML/package validation passes.
+- [ ] Release manifest is regenerated from candidate bytes.
+
+**Next behavioural release gate after canonicalisation:** the first production implementation must route supported TS015 Cooperative Passage through Situation Assessment → Candidate → Constraints → Decision → Commitment → Bounded Authority → Control without a P23 arming command or parallel prototype controller. Unsupported asymmetric geometry remains outside that tranche.
 
 ## Compatibility
 

@@ -1,18 +1,19 @@
-# v4.7.77 chessboard architecture continuity boundary
+# v4.7.95 Cooperative Passage production-direction continuity boundary
 
-Owner-declared canonical baseline is v4.7.76:
-- ZIP SHA-256 `7cc2db3fcd02ca7979acfafe81f7765344a70275a11de9754594bde8fed4aeaf`
-- Git `4758a3428f9bcba23093f60edfd0087bb87843ab`
+Owner-declared canonical baseline is v4.7.77:
+- ZIP SHA-256 `0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`
+- Git `1742c197c21a1fb127932dcc15303dbd58515d6d`
 - 305 files
 
-v4.7.77 consolidates D-0142 only; no runtime behaviour is intentionally changed. Subsequent implementation must start from the owner-declared canonical artefact/provenance after owner review/canonicalisation, not from GitHub.
+v4.7.95 is architecture/documentation only; runtime remains v4.7.77. P23 v4.7.91-v4.7.94 is evidence lineage only and must not be used as the implementation baseline.
 
-The governing implementation objective is **Operational Picture Knowledge Foundation** in one decisive build. Implement Productive Regime/Rook, productive history, configuration-dependent footprint Knowledge, Successor Rook Set, bounded Transitional Demand, King Reserve Availability, positive cooperative relevance and Resolution-Space state as production-intent architecture with temporary non-authoritative logging.
+D-0143 retires King Reserve Availability, continuous Refuge discovery and the ordinary King `A→R→A` lifecycle from the governing production direction. Configuration-Released Space and Cooperative Passage are accepted from repeated P23 evidence. The final asymmetric v4.7.94 encounter defines an explicit boundary: unsupported asymmetric geometry is outside the first production authority envelope.
 
-Do not begin by moving P22 responsibilities. Apply the Supersession Filter first. P22, HEAD_ON solver, exactly-two-worker assumptions and bespoke multi-worker solving are superseded. Preserve proven physical/evidence donors only. Guarded Recovery is expected to disappear if generic Committed-Demand protection validates equivalently, but its proven protection requirement must not be lost before that validation.
+The next and only immediate implementation objective is **TS015 Cooperative Passage Production Integration** through the normal architecture chain. Do not begin another prototype branch, King optimisation or broad generalisation before live TS015 production evidence.
 
-The architecture/code sequence after Knowledge validation is:
-Knowledge → Candidate/Constraint/Decision alignment → selected A↔R in Commitment as Committed Demand → bounded authority → Control simplification/P22 retirement.
+The first implementation scope is the demonstrated Condor Endurance II / Patriot 4450 near-collinear opposed-working class. P23 numeric literals remain scoped evidence; they are not architecture. Post-handoff observation is passive and creates no cooldown/ownership.
+
+Subsequent work must start from the owner-declared canonical artefact/provenance after owner canonicalisation, not from GitHub or a non-canonical P23 package.
 
 
 # v4.7.76 canonical-candidate continuity boundary

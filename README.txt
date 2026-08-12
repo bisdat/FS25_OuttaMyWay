@@ -1,23 +1,16 @@
-FS25_OuttaMyWay v4.7.77 CANONICAL CANDIDATE — Chessboard Architecture Consolidation
+FS25_OuttaMyWay v4.7.95 CANONICAL CANDIDATE — Cooperative Passage Production Direction
 
 Owner-declared canonical baseline:
-- Version: v4.7.76
-- ZIP SHA-256: 7cc2db3fcd02ca7979acfafe81f7765344a70275a11de9754594bde8fed4aeaf
-- Git: 4758a3428f9bcba23093f60edfd0087bb87843ab
-- Files: 305
+- Version: v4.7.77
+- ZIP SHA-256: 0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153
+- Git commit: 1742c197c21a1fb127932dcc15303dbd58515d6d
+- Repository files: 305
 
-v4.7.77 is an architecture/documentation-only candidate. The active v4.7.76 runtime implementation is intentionally preserved apart from release/provenance identity text. This candidate does not claim that v4.7.76 implementation already conforms to the newly consolidated architecture.
+v4.7.95 is an architecture/documentation-only candidate. Runtime behaviour is intentionally retained from canonical v4.7.77 apart from release/provenance/version identity. Post-canonical P23 builds v4.7.91-v4.7.94 are evidence donors only and are not implementation baselines.
 
-D-0142 records the governing Field World/chessboard architecture. The canonical model now uses shared Field World Knowledge with worker-relative Productive Regime/Rook structures, positive productive-history colouring, Successor Rook Sets, bounded Transitional Demand, configuration-dependent assembly footprints, King Reserve Availability, Resolution-Space Conservation, Conflict Serialization and upstream admission control.
+D-0143 supersedes the King/Refuge provisions of D-0142 where they conflict. Continuous King Reserve / Refuge discovery and the ordinary A->R->A King lifecycle are retired from governing architecture. Refuge remains only a generic historical/spatial possibility with no standing production discovery obligation.
 
-The ordinary local Refuge lifecycle is provisionally:
-ROOK at Native Reacquisition Anchor A -> compact -> KING -> A->R -> Refuge -> R->A -> restore -> ROOK/native reacquisition.
+P23 demonstrated Configuration-Released Space and Cooperative Passage for the TS015 Condor Endurance II / Patriot 4450 near-collinear opposed-working fixture: both workers Hold, compact, establish opposite lateral passage paths, pass concurrently forward, rejoin their productive axes, restore and hand back to the same GIANTS Job Episodes. Repeated armed execution succeeded; the final asymmetric encounter exposed the boundary of the fixed fixture geometry and is outside the first production authority envelope.
 
-Before Decision, Refuge space is only resolution possibility and has no owner. After Decision selects a bounded A<->R relation, the required relation becomes Committed Demand until native reacquisition or explicit Commitment invalidation.
-
-Prototype #22 is superseded as architecture. Its proven physical mechanisms remain implementation donors only. Bespoke HEAD_ON, exactly-two-worker and bespoke multi-worker solvers are likewise not governing architectural concepts. Guarded Recovery remains a provisional compatibility concept until generic Committed-Demand protection has been validated to subsume its proven protection requirement.
-
-First implementation objective after canonicalisation:
-Operational Picture Knowledge Foundation — one decisive build implementing the production-intent Knowledge layer with temporary, non-authoritative validation logging. New chessboard Knowledge must not alter Candidate, Decision, Commitment, Bounded Authority or Control until validation supports promotion.
-
-Canonicalisation remains an explicit owner action.
+First production objective after canonicalisation:
+Integrate the proven TS015 Cooperative Passage capability through Situation Assessment -> Candidate Action -> Mandatory Constraints -> Traffic Policeman / Decision -> Commitment -> Bounded Authority -> Control. No new prototype branch, King optimisation, general Refuge search, arbitrary asymmetric resolver or broad vehicle generalisation belongs ahead of a working TS015 production path.

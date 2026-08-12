@@ -1,54 +1,50 @@
-## v4.7.77 Field World / chessboard vocabulary
+## v4.7.95 Cooperative Passage vocabulary
 
-**Field Boundary** — the agronomic polygon boundary defining the bounded Field World. Distinct from the productive Headland working band and Turning Rank.
+**Field Boundary** — the agronomic polygon boundary defining the bounded Field World. Distinct from the Productive Headland Working Band and Turning Rank.
 
-**Productive Headland Working Band** — productive work band adjacent to the Field Boundary. It is not the Field Boundary and not the Turning Rank.
+**Productive Headland Working Band** — productive work band adjacent to the Field Boundary. It is not synonymous with Turning Rank or Field Boundary.
 
-**Turning Rank** — first productive rank immediately infield of the productive Headland working band where native transition/turn demand may consume space.
+**Turning Rank** — the first productive rank immediately infield of the productive Headland Working Band where native transitions/turns may consume space.
 
-**Productive Regime** — Situation Knowledge positively supporting that a worker is actively performing productive field work in a coherent worker-relative structure.
+**Productive Regime / Rook** — positively supported active-work structure for one worker, represented through its current productive rank/file demand. Rook is a Knowledge abstraction, not an instruction to GIANTS.
 
-**Rook** — worker-relative productive rank/file structure representing current productive work and its Productive Demand. It is not a route or steering command.
+**Successor Rook Set** — bounded set of supportable next Productive Regime structures. It is not exact native route prediction.
 
-**Positive Productive History / Worker Colouring** — world-space history coloured only where active work is positively demonstrated as performed. Traversal alone does not colour space and uncoloured space remains unknown.
+**Transitional Demand** — bounded supported spatial demand while a continuing Job Episode is between Productive Regimes.
 
-**Successor Rook Set** — bounded set of supportable next Productive/Rook structures. It represents productive succession without predicting the exact GIANTS transition path.
+**Configuration-Dependent Assembly Footprint** — complete physical footprint/sweep relevant to a particular configuration and manoeuvre phase.
 
-**Productive Demand** — spatial demand positively supported by current Productive Regime/Rook and bounded productive succession.
+**Configuration-Released Space** — local spatial capacity made usable because a supported configuration change reduces physical assembly occupancy. Agricultural working width alone does not establish it.
 
-**Transitional Demand** — bounded spatial demand positively supported while a continuing Job Episode is between Productive Regimes. It is distinct from Productive Demand and may be `UNRESOLVED`.
+**Cooperative Passage** — joint Reposition strategy in which relevant assemblies compact, establish separated local passage paths, pass concurrently in their respective forward directions, return toward productive alignment, restore and hand native authority back to GIANTS.
 
-**Configuration-Dependent Assembly Footprint** — the complete assembly footprint/sweep appropriate to a specific physical/configuration phase. Fitness evidence does not automatically transfer between deployed productive, compact manoeuvre, stationary Refuge, restoration or transition configurations.
+**Cooperative Passage Authority Envelope** — the positively supported geometry/configuration/situation domain in which Situation Assessment may support a Cooperative Passage Candidate. The first production envelope is TS015 Condor Endurance II / Patriot 4450 near-collinear opposed-working only.
 
-**Native Reacquisition Anchor A** — positively demonstrated pre-egress pose/area where native productive continuation and deployed working configuration were spatially valid. It is a restoration/native-reacquisition reference, not a general route waypoint.
+**Passage Path** — one participant's bounded local compact-configured path during Cooperative Passage. A path is Candidate/Commitment-specific and is not a reconstructed GIANTS work route.
 
-**King** — compact Refuge-manoeuvre representation of an assembly under the configuration relevant to bounded local Refuge movement. It does not imply that every assembly literally occupies one grid square.
+**Native Reacquisition Anchor A** — positively demonstrated productive pose/area that may provide restoration/reacquisition evidence. D-0143 does not require the former ordinary `A→R→A` lifecycle.
 
-**King Reserve Availability** — Knowledge that at least one local Refuge opportunity remains (`SOME`/`NONE`; implementation may expose `UNKNOWN` when evidence is incomplete). It is not an exact Refuge Candidate, selection or ownership claim.
+**Resolution-Space Conservation** — once a potentially conflicting cooperative relationship is positively supported, ordinary progression must not consume the last locally admissible means of resolving it. Resolution space may be preserved or created by supported configuration reduction.
 
-**Cooperative Constraint Region** — bounded local topology/gateway context in which another participant's admission or progression can materially affect local resolvability.
+**Conflict Serialization** — Traffic Policeman reasoning that safely reduces concurrent complexity before reassessing Reality; not scripted one-worker-at-a-time choreography.
 
-**Resolution-Space Conservation** — invariant that once a potentially conflicting cooperative relationship is supported, ordinary progression must not consume the last locally admissible means of resolving it.
+**Committed Demand — v4.7.95 meaning** — post-Decision spatial demand made durable by a Commitment because the selected action/relation is required to discharge an obligation. Active GIANTS Job Episode membership alone is not Committed Demand.
 
-**Conflict Serialization** — Traffic Policeman reduction of multi-worker concurrency by Regulating/Holding safely deferrable progression, allowing a simpler resolvable relationship to mature, resolving it, then reassessing Reality.
+**Post-Handoff Observation** — passive evidence collection after native GIANTS authority resumes. It owns no Commitment, Control authority, reservation or cooldown and may be superseded by a later necessary Commitment.
 
-**Resolution Possibility** — local supportable resolution space before Decision. It carries no provisional ownership.
+**King — RETIRED governing term** — historical compact Refuge-manoeuvre metaphor. D-0143 retires King as the governing production resolution model.
 
-**Selected Refuge Relation A↔R** — exact bounded local relation selected by Decision between Native Reacquisition Anchor A and Refuge R, including phase-relevant configuration assumptions.
+**King Reserve Availability — RETIRED** — former D-0142 SOME/NONE local Refuge-opportunity Knowledge. It is no longer a continuously maintained production concept.
 
-**Committed Demand — v4.7.77 meaning** — post-Decision spatial demand made durable by a Commitment because a selected relation is required to discharge an obligation. Active GIANTS Job Episode membership alone is not Committed Demand.
+**Refuge — generic/historical term under D-0143** — a supportable stationary waiting region if a future strategy independently requires one. There is no standing obligation to search for, qualify or reserve Refuges continuously.
 
-**Configuration Phase Boundary** — rule that a manoeuvre relying on a particular configuration's spatial fitness begins only after that configuration is positively established, unless an independently represented transition configuration is fit.
+**P23 — evidence-only Cooperative Passage fixture** — post-canonical v4.7.91-v4.7.94 proof-of-concept lineage. Its state machine and numeric literals are physical/implementation donors, not production architecture.
 
-**Configuration-Safe Failure** — failure rule that preserves the currently demonstrated-safe occupancy/configuration unless another configuration change is independently authorised as spatially fit.
+**Forward-Only Waypoint Orbit** — Control failure observed in v4.7.91 where a forward-only point-target controller could not capture a nearby high-lateral-offset waypoint and orbited it instead. It was corrected for the PoC with a shallower entry leg; it is not a Cooperative Passage architectural failure.
 
-**Supersession Filter** — Preserve / Re-express / Retire classification applied to old mechanisms before architecture-to-code mapping. Retired mechanisms are not relocated merely because code exists.
+**HEAD_ON — scenario status** — useful descriptive/test geometry, not a governing solver class. The first TS015 production authority envelope may recognise supported opposed geometry without restoring a permanent HEAD_ON subsystem.
 
-**P22 / Prototype #22 — superseded architecture** — experimental physical-mechanism harness retained only as implementation/evidence donor in v4.7.76. It is not a production architectural component.
-
-**HEAD_ON — scenario status** — useful descriptive/test geometry, not a governing resolution-strategy class under D-0142.
-
-**Guarded Recovery — provisional compatibility term** — historical mechanism preserving an admitted recovery opportunity while other demand evolves. Its protection requirement remains valid; D-0142 expects generic Committed-Demand protection to subsume the distinct mechanism if validation supports equivalence.
+**Guarded Recovery — compatibility term** — historical mechanism preserving an admitted recovery opportunity while other demand evolves. Its requirement remains evidence; D-0143 does not make it part of Cooperative Passage's post-handoff cooldown or ownership.
 
 
 ## v4.7.69 vocabulary refinements
@@ -291,7 +287,7 @@ The complete combined effect of proposed actions, existing commands, capability 
 The sole Commitment authorised to pursue objective progress through physical Control of an assembly.
 
 **Committed Demand**  
-See **Committed Demand — v4.7.77 meaning**. Historical uses meaning merely “current admitted continuation” are superseded by D-0142.
+See **Committed Demand — v4.7.95 meaning**. Historical uses meaning merely “current admitted continuation” remain superseded by D-0142/D-0143.
 
 **Potential Demand**  
 Space plausibly required by a bounded future continuation.

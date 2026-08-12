@@ -1,13 +1,14 @@
--- FS25_OuttaMyWay v4.7.77 CANONICAL CANDIDATE — D-0142 Field World / Chessboard Architecture Consolidation; owner-declared v4.7.76 is canonical.
--- Runtime traffic/Commitment/Control behaviour remains the v4.7.76 implementation; D-0142 is documentation/architecture authority for the next implementation increment.
--- P22/head-on/follower/Guarded-Recovery runtime machinery remains unchanged as legacy implementation evidence/donors; v4.7.77 does not promote those mechanisms into the new architecture.
--- First implementation objective after canonicalisation: non-authoritative Operational Picture Knowledge Foundation with temporary validation logging.
--- Canonical architecture authority: v4.7.77 D-0142.
+-- FS25_OuttaMyWay v4.7.95 CANONICAL CANDIDATE — D-0143 Cooperative Passage Production Direction; owner-declared v4.7.77 is canonical.
+-- Runtime traffic/Commitment/Control behaviour remains the v4.7.77 implementation; v4.7.95 changes architecture/documentation and release identity only.
+-- King/continuous Refuge production direction is retired by D-0143; existing runtime/probe machinery remains untouched as historical implementation evidence/donors.
+-- P23 v4.7.91-v4.7.94 is evidence only and is not sourced into this canonical-based candidate.
+-- Next implementation objective after canonicalisation: TS015 Cooperative Passage Production Integration through the normal architecture chain.
+-- Canonical-candidate architecture authority: v4.7.95 D-0143 over surviving v4.7.77 D-0142.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.77"
-OuttaMyWay.ARCHITECTURE_VERSION = "4.7.77"
+OuttaMyWay.VERSION = "4.7.95"
+OuttaMyWay.ARCHITECTURE_VERSION = "4.7.95"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000

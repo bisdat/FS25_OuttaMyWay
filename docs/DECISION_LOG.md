@@ -1,6 +1,34 @@
+## D-0143 — Cooperative Passage Production Direction / King Retirement (2026-08-12)
+
+**Status:** Accepted for v4.7.95 canonical candidate; owner canonicalisation remains separate.  
+**Baseline:** owner-declared canonical v4.7.77 (`0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`; Git `1742c197c21a1fb127932dcc15303dbd58515d6d`; 305 files).
+
+**Triggering evidence:** Post-canonical King-space implementation work demonstrated a severe live performance cost when actual TRANSIT-footprint placement/swept-clearance was maintained continuously. Removing exact polygon decomposition and per-frame Knowledge-copy amplification did not remove the characteristic stutter; older circle-style clearance improved performance but lacked the required geometric authority. Subsequent certificate/re-proof reductions did not recover FPS proportionately. Continuing to optimise the current King fixture therefore has decreasing architectural value and no production justification for the immediate TS015 objective.
+
+P23 then tested an alternative physical hypothesis: instead of moving one worker into an externally discovered Refuge, compact both opposed sprayers and use the lateral capacity released inside their existing productive corridor. v4.7.91 exposed **Forward-Only Waypoint Orbit** in a too-short/high-lateral point-pursuit leg. v4.7.92 corrected only that Control geometry and completed Cooperative Passage. v4.7.93 repeated the manoeuvre twice in one uninterrupted working session with closely matching phase budgets and approximately 12 m closest centre separation while both original Job Episodes survived and native Productive motion resumed. v4.7.94 removed human trigger timing through persistent arming and automatically completed repeated near-collinear passages. Its final asymmetric opposed encounter was also admitted, but the fixed lateral split produced insufficient clearance and stalled; that is explicit authority-boundary evidence rather than permission to widen the PoC.
+
+**Decision:**
+
+1. Retire **King Reserve Availability** from governing production Knowledge.
+2. Retire continuous local Refuge discovery/qualification as an ordinary runtime obligation.
+3. Retire the provisional ordinary `A→R→A` King lifecycle as the expected head-on resolution path.
+4. Preserve `Refuge` only as a generic/historical spatial possibility; later Refuge use requires fresh positive architectural justification and carries no standing discovery obligation.
+5. Accept **Configuration-Released Space** as the observed physical concept that configuration reduction may create usable local resolution capacity.
+6. Accept **Cooperative Passage** as a Candidate Reposition strategy: multiple assemblies may jointly compact, occupy separated local passage paths, pass concurrently, return toward productive alignment, restore and hand back to GIANTS.
+7. Scope the first production authority narrowly to the demonstrated **TS015 Condor Endurance II / Patriot 4450 near-collinear opposed-working class**. The final v4.7.94 asymmetric encounter is outside this first authority envelope.
+8. Preserve the normal architecture chain. Situation Assessment establishes applicability; Candidate generation enumerates the joint action; Mandatory Constraints gate it; Traffic Policeman/Decision selects it; Commitment owns purpose/obligations; Bounded Authority limits each physical phase; Control executes only selected physical work.
+9. Treat P23 literals and state sequencing as evidence/implementation donors, not architectural constants or a parallel production solver.
+10. Separate passive post-handoff observation from Commitment/Control ownership. Observation creates no cooldown and may be superseded by a new necessary Commitment.
+11. Freeze further prototype/generalisation work until a production TS015 integration has been live validated. Do not resume King optimisation, arbitrary asymmetric solving or broad vehicle generalisation ahead of that objective.
+
+**Rationale:** The immediate project risk is no longer absence of a plausible head-on manoeuvre. A repeatable physical capability now exists for the target TS015 fixture. The engineering objective is to make that capability flow through the existing production architecture with the least new machinery. Preserving an unworkable continuous King fixture merely because it was previously architectural would violate the project's evidence-first and least-intervention principles.
+
+**Implementation impact in v4.7.95:** Architecture/documentation, provenance and release/version identity only. Runtime behaviour remains canonical v4.7.77. P23 v4.7.91-v4.7.94 remains non-canonical evidence lineage.
+
+
 ## D-0142 — Field World / Chessboard Architecture Consolidation (2026-08-11)
 
-**Status:** Accepted for v4.7.77 canonical candidate; owner canonicalisation remains separate.
+**Status:** Accepted in owner-declared canonical v4.7.77. D-0143 supersedes items 6-7 and the King/continuous-Refuge consequences where they conflict.
 
 **Context:** After v4.7.76 live closure, repeated architecture/code reconciliation kept attempting to relocate responsibilities from prototype/scenario mechanisms whose concepts had already been superseded. Field World/chessboard exploration provided a smaller architecture that explains P22, head-on, follower, multi-worker and constrained-topology evidence without preserving those mechanisms as permanent solvers.
 

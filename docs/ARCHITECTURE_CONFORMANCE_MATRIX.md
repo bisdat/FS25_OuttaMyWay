@@ -1,36 +1,34 @@
-# v4.7.77 D-0142 architecture consolidation — implementation alignment status
+# v4.7.95 D-0143 architecture consolidation — implementation alignment status
 
-**Architecture candidate:** v4.7.77.  
-**Implementation baseline:** owner-declared canonical v4.7.76.
+**Architecture candidate:** v4.7.95.  
+**Implementation baseline:** owner-declared canonical v4.7.77 (`0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`).
 
-This section deliberately does **not** mark the new architecture as implemented. v4.7.77 is an architecture/documentation candidate. The table records the starting alignment condition for subsequent builds.
+This table records the starting condition for the next narrow production increment. It does not claim Cooperative Passage is already production-integrated merely because P23 demonstrated the physical capability.
 
-| D-0142 concern | v4.7.76 implementation status | Classification |
+| D-0143 concern | v4.7.77 implementation status | Classification |
 |---|---|---|
 | Field World identity/equivalence | present and validated | PRESERVE |
-| configuration-specific representation | strong donor present | PRESERVE / EXTEND |
-| positive productive work evidence | present in Situation/probes | PRESERVE / PROMOTE |
-| Productive Regime/Rook | no coherent production model | MISSING |
-| Successor Rook Set | absent | MISSING |
-| bounded Transitional Demand | absent | MISSING |
-| King Reserve Availability | absent | MISSING |
-| Resolution-Space Conservation | scattered scenario evidence only | MISSING GENERIC MODEL |
-| positive cooperative relevance | old Current/Future-Space admission | RE-EXPRESS |
-| Operational Picture Knowledge-only contract | Candidate specifications are attached into picture | MISALIGNED |
-| genuine Candidate enumeration | scenario support layer preselects/assesses | MISALIGNED |
-| independent mandatory Constraints | many verdicts Candidate-authored/pass-through | MISALIGNED |
-| Traffic Policeman | strong structural donor | PRESERVE / EXTEND |
-| Conflict Serialization | absent as general Decision reasoning | MISSING |
-| Commitment/Obligations | strong core | PRESERVE / EXTEND |
-| post-Decision Committed Demand | term misused in Observation; selected relation not durable | MISALIGNED / MISSING |
-| bounded manoeuvre authority | generic ownership exists; exact phase/relation weak | PARTIAL |
-| bounded Control executor | physical donors exist; P22/dispatcher contain semantic leakage | RE-EXPRESS |
-| Guarded Recovery | live compatibility implementation exists | PROVISIONAL / DO NOT EXPAND |
-| P22 | live bounded prototype path exists | RETIRE AS ARCHITECTURE |
+| configuration-specific representation | strong donors present; complete negative-clearance authority remains limited | PRESERVE / BOUNDED USE |
+| Productive Regime/Rook / current productive evidence | partial/current Situation ownership exists | PRESERVE / USE FOR TS015 |
+| Successor Rook Set / bounded Transitional Demand | architecture exists; implementation incomplete | DEFER BROAD WORK UNLESS TS015 NEEDS IT |
+| King Reserve Availability | no canonical production implementation; expensive post-canonical lineage attempted | RETIRE |
+| continuous Refuge discovery/qualification | post-canonical experimental lineage | RETIRE |
+| Configuration-Released Space | demonstrated physically in P23, not production Knowledge | ADD MINIMUM TS015 SUPPORT |
+| Cooperative Passage Candidate | demonstrated by P23 fixture, absent from production Candidate Space | IMPLEMENT NARROWLY |
+| multi-assembly Candidate Subject | contract already supports assembly or assemblies | PRESERVE / USE |
+| independent mandatory Constraints | structural skeleton exists; some historical pass-through debt | USE WITHOUT MANUFACTURING CLEARANCE |
+| Traffic Policeman / Decision | strong structural donor | PRESERVE / SELECT NEW CANDIDATE |
+| Commitment/Obligations | strong core | EXTEND WITH JOINT PASSAGE OBLIGATIONS |
+| Bounded Authority | existing ownership basis | PRESERVE / PHASE-BOUND |
+| Control physical donors | P22 donors in canonical; P23 evidence donor outside canonical | EXTRACT MINIMUM, NO SCENARIO POLICY |
+| post-handoff observation | historically coupled to fixture run lifetime | SEPARATE; NO COOLDOWN |
+| asymmetric Cooperative Passage | v4.7.94 fixed geometry insufficient | OUTSIDE FIRST AUTHORITY ENVELOPE |
+| general vehicle/configuration support | unproven | OUTSIDE CURRENT TRANCHE |
 
-**First conformance target:** Operational Picture Knowledge Foundation. New D-0142 Knowledge remains non-authoritative until live evidence validates it.
+**First conformance target:** one natural TS015 production run in which the supported near-collinear Condor/Patriot opposed encounter is recognised, selected and executed through the normal architecture without a P23 arming command or parallel prototype authority.
 
 ---
+
 
 # v4.7.76 canonical-candidate conformance — D-0140/D-0141 integrated closure
 

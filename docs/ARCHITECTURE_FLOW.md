@@ -2,9 +2,9 @@
 
 > **Authority:** Normative replacement-core responsibility and lifecycle map
 >
-> **Currency:** D-0142 Field World / Chessboard Architecture Consolidation; owner-declared canonical v4.7.76 is the implementation baseline
+> **Currency:** D-0143 Cooperative Passage Production Direction over surviving D-0142; owner-declared canonical v4.7.77 is the implementation baseline
 >
-> **Implementation status:** v4.7.77 is architecture/documentation only. The v4.7.76 runtime remains the implementation baseline and is not claimed to conform yet to D-0142. P22/head-on/follower/Guarded-Recovery paths are legacy implementation evidence pending alignment.
+> **Implementation status:** v4.7.95 is architecture/documentation only. The v4.7.77 runtime remains the implementation baseline. P23 is evidence only; the next production target is the narrow TS015 Cooperative Passage path.
 
 ## 1. Closed-loop responsibility flow
 
@@ -26,7 +26,7 @@
 │                    SITUATION ASSESSMENT                     │
 │ Field World │ Productive Regime/Rook │ productive history  │
 │ Successor Rook Set │ Transitional Demand │ configuration RF │
-│ relevance │ King Reserve │ Resolution-Space state          │
+│ relevance │ Config-Released-Space support │ Resolution state│
 └──────────────────────────────┬──────────────────────────────┘
                                │ publishes Knowledge
                                ▼
@@ -78,6 +78,22 @@
                                │ observed
                                └───────────────────────────────↺
 ```
+
+## 1A. D-0143 TS015 Cooperative Passage path
+
+For the first production integration, a supported near-collinear opposed TS015 situation may flow as:
+
+```text
+Situation: authoritative opposed Productive incompatibility
+  -> Candidate: joint Cooperative Passage REPOSITION
+  -> Constraints: configuration/capability/demand/sweep support
+  -> Decision: select after Observe/Regulate/Hold are exhausted for physical resolution
+  -> Commitment: stop + compact + separate + pass + rejoin + restore + handoff obligations
+  -> Authority/Control: execute only the current bounded phase
+  -> GIANTS resumes; passive observation has no cooldown authority
+```
+
+King Reserve and continuous Refuge discovery do not participate in this path. Unsupported asymmetric geometry is rejected rather than routed through a broader solver during the TS015 closure increment.
 
 ## 2. Encounter lifecycle flow
 

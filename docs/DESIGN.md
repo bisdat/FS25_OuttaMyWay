@@ -2,9 +2,9 @@
 
 > **Authority:** Replacement-core design boundary
 >
-> **Currency:** v4.7.77 D-0142 architecture candidate; owner-declared canonical v4.7.76 is the implementation baseline
+> **Currency:** v4.7.95 D-0143 Cooperative Passage Production Direction over surviving D-0142; owner-declared canonical v4.7.77 is the implementation baseline
 >
-> **Implementation status:** v4.7.77 changes architecture/documentation only. The v4.7.76 runtime remains behaviourally unchanged and contains legacy P22/head-on/follower/Guarded-Recovery mechanisms pending D-0142 alignment.
+> **Implementation status:** v4.7.95 changes architecture/documentation only. The v4.7.77 runtime remains behaviourally unchanged. P23 is evidence only; King/continuous Refuge discovery is retired from the next production direction.
 
 ## Purpose
 
@@ -46,7 +46,7 @@ Observation does not assign Productive/Transitional meaning or traffic policy.
 - maintain positive productive-history colouring;
 - derive Successor Rook Set and bounded Transitional Demand;
 - evaluate configuration/phase-specific Representation Fitness;
-- maintain King Reserve Availability and Resolution-Space state;
+- maintain Resolution-Space state and current support for Configuration-Released Space / Cooperative Passage applicability where positively evidenced;
 - publish uncertainty and evidence gaps.
 
 Situation Assessment produces Knowledge only.
@@ -67,7 +67,7 @@ Encounter is lifecycle infrastructure, not a head-on/follower resolution class.
 ### Candidate Action Space
 
 - enumerate complete supportable actions from Operational Picture Knowledge;
-- represent exact bounded A↔R opportunities only where Knowledge supports them;
+- represent a joint Cooperative Passage `REPOSITION` only where the current authority envelope and Knowledge support it;
 - identify Purpose/evidence/preconditions/invalidation without selecting among alternatives;
 - never manufacture mandatory `PASS` verdicts.
 
@@ -109,7 +109,7 @@ Decision does not plan routes or actuate vehicles.
 - Hold, Regulate native GIANTS speed, compact/restore, execute selected bounded displacement and relinquish;
 - report physical outcomes.
 
-Control does not select Refuge, infer HEAD_ON/follower classes, interpret Rook/King/Transitional Demand or settle Commitments.
+Control does not select Cooperative Passage or Refuge, infer HEAD_ON/follower classes, interpret Rook/Transitional Demand or settle Commitments.
 
 ## Commitment state model
 
@@ -194,26 +194,20 @@ Reverse remains architecturally available but unproven. No fixed prototype speed
 
 OuttaMyWay does not own exact lane reconstruction or GIANTS route recreation.
 
-When OuttaMyWay materially displaces a worker under the ordinary local Refuge model, the Commitment owns restoration toward **Native Reacquisition Anchor A**, the positively demonstrated pre-egress pose/area where productive continuation and the deployed configuration were already valid.
-
-The provisional ordinary sequence is:
+For the first Cooperative Passage production path, the Commitment owns the bounded obligations required to return both assemblies toward their productive axes, restore their productive configurations and relinquish authority. The intended handback preserves forward-progress, heading and near-axis continuity where the selected action supports them; it does not command GIANTS to resume an exact lane.
 
 ```text
-A (ROOK)
-→ compact
-→ KING
-→ A→R
-→ Hold at R
-→ R→A
+compact opposed pair
+→ separated local passage paths
+→ positive passage
+→ return toward productive axes
 → restore
-→ GIANTS native reacquisition
+→ GIANTS native handoff
 ```
 
-The selected A↔R relation is post-Decision **Committed Demand** until the corresponding obligation is discharged or invalidated.
+The selected joint passage relation is post-Decision **Committed Demand** while its obligations remain open. Control owns only authorised physical phases. Observation/Assessment determine what GIANTS does after handback; Commitment determines lifecycle meaning.
 
-Control owns only authorised physical phases. Observation/Assessment determine whether GIANTS has positively reacquired native continuation; Commitment determines whether that evidence settles the obligation.
-
-Historical Native Continuation Restoration / Rejoin Anchor / Guarded Recovery terminology remains evidence provenance, not permission to create independent routing or recovery-policy subsystems.
+Post-handoff observation is passive and cannot impose a cooldown or retain Control ownership. Historical Native Reacquisition Anchor / Native Continuation Restoration / Rejoin Anchor / Guarded Recovery terminology remains evidence provenance and may still describe evidence where relevant, but D-0143 retires the ordinary King `A→R→A` lifecycle.
 
 ## Player boundary
 

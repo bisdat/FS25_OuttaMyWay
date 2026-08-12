@@ -1,3 +1,18 @@
+# v4.7.95 CANONICAL CANDIDATE — D-0143 Cooperative Passage Production Direction
+
+- Starts from exact owner-declared canonical v4.7.77 (`0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`; Git `1742c197c21a1fb127932dcc15303dbd58515d6d`; 305 files).
+- Architecture/documentation-only candidate. Runtime traffic, Regulation, Candidate, Constraint, Decision, Commitment, Control and GIANTS-integration behaviour is intentionally unchanged from v4.7.77 apart from release/provenance/version identity.
+- Records D-0143 **Cooperative Passage Production Direction / King Retirement**.
+- Retires King Reserve Availability, continuous local Refuge discovery/qualification and the provisional ordinary King `A→R→A` lifecycle from governing production architecture.
+- Preserves Refuge only as a generic/historical spatial possibility requiring fresh justification if later Reality needs it.
+- Accepts **Configuration-Released Space** and **Cooperative Passage** from post-canonical P23 evidence.
+- Records v4.7.91 Forward-Only Waypoint Orbit as a Control failure, v4.7.92 first successful passage, v4.7.93 repeatability/Post-Handoff Observation Lockout, and v4.7.94 armed repeated closure plus asymmetric negative-boundary evidence.
+- Restricts the first production authority envelope to the demonstrated TS015 Condor Endurance II / Patriot 4450 near-collinear opposed-working class. Unsupported asymmetric geometry is rejected rather than solved in this tranche.
+- Separates passive post-handoff observation from Commitment/Control ownership; observation creates no cooldown or reservation.
+- Replaces the D-0142 Operational Picture/King first-build objective with **TS015 Cooperative Passage Production Integration** through the existing Situation → Candidate → Constraints → Decision → Commitment → Bounded Authority → Control chain.
+- Freezes additional prototype, King optimisation, broad vehicle generalisation and asymmetric-solver work until live TS015 production evidence exists.
+- Updates current documentation/provenance from the historical v4.7.76/v4.7.77-candidate wording to owner-declared canonical v4.7.77 and candidate v4.7.95.
+
 # v4.7.77 CANONICAL CANDIDATE — Chessboard Architecture Consolidation
 
 - Starts from exact owner-declared canonical v4.7.76 (`7cc2db3fcd02ca7979acfafe81f7765344a70275a11de9754594bde8fed4aeaf`; Git `4758a3428f9bcba23093f60edfd0087bb87843ab`; 305 files).

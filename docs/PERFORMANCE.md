@@ -1,6 +1,22 @@
 # Performance Notes
 
-## Design targets
+## v4.7.95 performance disposition — continuous King path retired
+
+Post-canonical v4.7.77 evidence isolated a material performance problem in the continuous King-space implementation family:
+
+- with OuttaMyWay disabled under comparable load, the characteristic severe stutter was absent;
+- broad Knowledge/Productive-History work before actual King clearance did not reproduce the same regression;
+- introducing repeated actual-TRANSIT-footprint King placement/swept-clearance produced conspicuous stutter;
+- removing exact polygon decomposition and per-frame Knowledge-copy amplification did not remove it;
+- restoring older circle-style King clearance materially improved performance but lacked authoritative geometry;
+- reducing exact King re-proof count through retained certificates did not improve FPS proportionately;
+- attempted direct runtime timing instrumentation exposed an `os.clock()` availability gap and did not produce valid timings.
+
+**D-0143 consequence:** do not spend the TS015 tranche profiling or optimising continuous King/Refuge discovery. The governing path is retired. Cooperative Passage asks a bounded on-demand local question only when a supported opposed conflict requires Reposition. Performance must still be measured during production integration, but no background King-space fixture should be reintroduced.
+
+---
+
+## Historical/general design targets
 
 - No expensive full-field scan every frame.
 - Cache working widths and course geometry.

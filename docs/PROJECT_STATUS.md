@@ -1,81 +1,85 @@
-# v4.7.77 CANONICAL CANDIDATE — Chessboard Architecture Consolidation
+# v4.7.95 CANONICAL CANDIDATE — Cooperative Passage Production Direction
 
-**Canonical implementation baseline:** owner-declared v4.7.76  
-**Canonical ZIP SHA-256:** `7cc2db3fcd02ca7979acfafe81f7765344a70275a11de9754594bde8fed4aeaf`  
-**Canonical Git:** `4758a3428f9bcba23093f60edfd0087bb87843ab`  
+**Owner-declared canonical baseline:** v4.7.77  
+**Canonical ZIP SHA-256:** `0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`  
+**Canonical Git:** `1742c197c21a1fb127932dcc15303dbd58515d6d`  
 **Canonical file count:** 305
 
-**Candidate character:** architecture/documentation-only. Runtime behaviour remains the v4.7.76 implementation; v4.7.77 does not claim implementation conformance to the newly consolidated architecture.
+**Candidate character:** architecture/documentation-only plus release/provenance/version identity. Runtime behaviour intentionally remains canonical v4.7.77. P23 v4.7.91-v4.7.94 is evidence lineage only.
 
-## D-0142 governing architecture
+## Governing architecture
 
-The Field World/chessboard model is now the authoritative architecture for subsequent implementation alignment:
+D-0143 is normative where it supersedes D-0142. The surviving D-0142 architecture remains authoritative for:
 
-- Field World is shared world-space Knowledge with worker-relative productive structures overlaid.
-- Field Boundary, productive Headland working band and Turning Rank are distinct.
-- Positive productive work establishes worker colouring; mere traversal does not.
-- Positive active work is represented by Productive Regime / Rook structure.
-- When active work ceases but the Job Episode continues, the worker is Transitional; exact GIANTS continuation remains unresolved.
-- Successor Rook Set and bounded Transitional Demand represent supported productive succession without exact native turn-path prediction.
-- Productive Demand and Transitional Demand are separate spatial dimensions.
-- Each assembly has a Configuration-Dependent Assembly Footprint; spatial fitness uses the configuration relevant to the manoeuvre phase.
-- Native Reacquisition Anchor A is the positively demonstrated pre-egress productive pose/area used for ordinary local restoration.
-- King Reserve Availability is Knowledge-level local Refuge opportunity, provisionally `SOME` / `NONE`; it is not an exact Refuge Candidate or ownership claim.
-- Cooperative relevance requires positive supported spatial relationship; same-field presence or proximity is insufficient.
-- Resolution-Space Conservation prevents ordinary progression from consuming the last locally admissible means of resolving a supported conflict.
-- Conflict Serialization reduces concurrent multi-worker complexity by Regulating/Holding safely deferrable participants and repeatedly reassessing Reality.
-- Admission control belongs upstream when entry into constrained topology would destroy local resolvability.
-- Before Decision, potential Refuge space is unowned resolution possibility. After Decision selects A<->R, the required relation becomes Committed Demand until native reacquisition or explicit invalidation.
+- Field World and Field Boundary / Productive Headland Working Band / Turning Rank separation;
+- Productive Regime / Rook and positive productive-history Knowledge;
+- Successor Rook Set and bounded Transitional Demand without exact GIANTS route prediction;
+- Configuration-Dependent Assembly Footprint and action-specific Representation Fitness;
+- positive cooperative relevance;
+- Resolution-Space Conservation, Conflict Serialization and upstream admission control;
+- Knowledge → Candidate → Constraints → Traffic Policeman/Decision → Commitment → Bounded Authority → Control separation;
+- post-Decision Committed Demand and strict authority ownership.
 
-## Supersession decisions
+D-0143 changes the resolution direction:
 
-The implementation audit must apply **Preserve / Re-express / Retire** before relocating old code.
+- **King Reserve Availability is retired** from governing production Knowledge.
+- continuous Refuge discovery/qualification is retired as an ordinary runtime obligation;
+- the provisional ordinary King `A→R→A` lifecycle is retired as the expected head-on resolver;
+- Refuge remains only a generic/historical spatial possibility requiring fresh justification if ever needed again;
+- **Configuration-Released Space** is accepted as the physical phenomenon demonstrated by P23;
+- **Cooperative Passage** is accepted as a joint Reposition Candidate strategy.
 
-- P22: RETIRE as architecture; preserve bounded physical capability donors only.
-- P22 Refuge selection and bespoke return routing: RETIRE; new action-space derivation comes from Field World Knowledge.
-- HEAD_ON resolution class: RETIRE as governing solver; preserve as scenario/diagnostic description.
-- Exactly-two-worker assumptions and bespoke multi-worker solvers: RETIRE.
-- Leader/follower solver: RE-EXPRESS through productive/transitional demand, Resolution-Space Conservation and Traffic Policeman ordering.
-- Current fixed straight-to-boundary Future-Space representation: RE-EXPRESS through Productive/Transitional demand; preserve only the broader truth that current occupancy alone is insufficient.
-- Irregular-field special solver: RETIRE; topology remains Field World Knowledge.
-- General multi-leg Refuge routing: not required by ordinary local Refuge architecture; do not build one without Reality requiring it.
-- Guarded Recovery: RE-EXPRESS provisionally. Its proven protection requirement survives; the distinct mechanism is expected to retire if generic Committed-Demand protection validates equivalently.
+## P23 closure evidence
 
-## Provisional architecture
+The post-canonical P23 lineage deliberately tested only the Condor Endurance II / Patriot 4450 TS015 fixture:
 
-The following are intentionally canonical but provisional, not immutable:
+- v4.7.91: Hold and compaction succeeded, but a `4 m forward + 6 m lateral` point-pursuit leg produced Forward-Only Waypoint Orbit. This was a Control failure before the Cooperative Passage hypothesis was exercised.
+- v4.7.92: shallow `12 m forward + 6 m lateral` entry/rejoin succeeded; both compact assemblies passed, restored, kept the same GIANTS Job Episodes and resumed native work.
+- v4.7.93: two passages in one uninterrupted session repeated closely; post-handoff observation was found to block a later necessary Commitment and was identified as an ownership error rather than a cooldown requirement.
+- v4.7.94: persistent arming removed human timing; repeated near-collinear passages automatically succeeded. A later asymmetric opposed encounter was attempted but lacked sufficient lateral clearance under the fixed fixture geometry.
 
-- ordinary local Refuge lifecycle `ROOK at A -> compact -> KING -> A->R -> Refuge -> R->A -> restore -> ROOK/native reacquisition`;
-- ordinary Refuge can normally be represented by one bounded reversible local A<->R relation;
-- King Reserve production authority is fundamentally SOME/NONE even if implementation uses `UNKNOWN` while evidence is incomplete;
-- Native Reacquisition Anchor A is approximately the egress-origin pose/area where productive continuation and deployed working configuration were positively demonstrated.
+The final asymmetric event is a **scope boundary**, not a new immediate solver task.
 
-## Open hypotheses
+## Performance disposition
 
-These are not implementation permission:
+The current continuous King-space implementation direction is considered unworkable for the immediate product path. Live evidence associated the characteristic stutter with repeated actual-footprint King placement/swept-clearance work. Successive implementation optimisations did not recover acceptable FPS while preserving authoritative geometry. No further King performance work is authorised for the TS015 objective.
 
-- Guarded Recovery may disappear completely once generic Committed-Demand protection is validated.
-- General multi-leg Refuge routing may never be required.
+## First production implementation objective
 
-## First implementation build
+**TS015 Cooperative Passage Production Integration**
 
-**Operational Picture Knowledge Foundation**
+Make the demonstrated Condor/Patriot near-collinear opposed-working capability flow through the real production architecture:
 
-One decisive build should implement the coherent production-intent Knowledge layer:
+1. Situation Assessment recognises the positively supported TS015 opposed situation.
+2. Candidate Action Space can enumerate a joint Cooperative Passage `REPOSITION` for both assemblies.
+3. Mandatory Constraints independently gate the currently represented action.
+4. Traffic Policeman / Decision selects the action only after ordinary preference-band exhaustion.
+5. Commitment owns the joint purpose and staged obligations.
+6. Bounded Authority admits only the current physical phase.
+7. Control reuses proven physical donors for Hold, configuration transition, bounded movement, restoration and GIANTS handoff.
+8. New post-handoff observation remains passive and cannot block a later Commitment.
 
-1. Productive Regime / Rook Knowledge.
-2. Positive productive-history colouring.
-3. Configuration-dependent footprint Knowledge.
-4. Successor Rook Set.
-5. Bounded Transitional Demand.
-6. King Reserve Availability.
-7. Positive cooperative relevance.
-8. Resolution-Space state.
+The first production authority envelope is intentionally narrow: Condor/Patriot TS015 near-collinear opposed geometry only. Fixed P23 numbers remain scoped implementation evidence, not architecture.
 
-Temporary structured logging/shadow comparison is part of the validation contract. The implementation is production-intent, not a prototype. New Knowledge has **no behavioural authority** during this build: it must not alter Candidate generation, Decision, Commitment, Bounded Authority or Control until validated.
+## Work freeze until TS015 production evidence
 
-## Known implementation debt carried from v4.7.76
+Do **not**:
 
-The v4.7.76 runtime still contains superseded scenario/prototype machinery, including P22, HEAD_ON/follower-specific paths, Guarded-Recovery interpretation and old Future-Space semantics. Those mechanisms remain evidence/donors only where the new architecture preserves their underlying requirement. They must not be migrated merely because they exist.
+- create another prototype controller;
+- resume King/King-Reserve/continuous Refuge optimisation;
+- generalise Cooperative Passage to arbitrary vehicle combinations;
+- build an asymmetric passage solver;
+- allow P23 fixture state to bypass Candidate/Decision/Commitment ownership;
+- use implementation difficulty as a reason to invent new architecture.
 
-Canonicalisation of v4.7.77 remains an explicit owner action after review.
+If TS015 production integration disproves the current architecture, record that evidence and correct the architecture. Otherwise, finish the narrow path before broadening scope.
+
+## Known parked issues
+
+- terminal/post-completion physical occupancy remains unresolved;
+- broad vehicle/map compatibility remains unproven;
+- incomplete physical representation still cannot silently claim negative clearance;
+- D-0141 follower calibration remains bounded existing implementation evidence until the production path is aligned;
+- asymmetric Cooperative Passage is unsupported in the first authority envelope.
+
+Canonicalisation of v4.7.95 remains an explicit owner action after review.

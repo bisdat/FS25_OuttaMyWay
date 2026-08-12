@@ -1,17 +1,13 @@
-# Current architecture lineage — v4.7.77 D-0142 Chessboard Architecture Consolidation
+# Current architecture lineage — v4.7.95 D-0143 Cooperative Passage Production Direction
 
-Owner-declared canonical implementation baseline is v4.7.76 (`7cc2db3fcd02ca7979acfafe81f7765344a70275a11de9754594bde8fed4aeaf`; Git `4758a3428f9bcba23093f60edfd0087bb87843ab`; 305 files).
+Owner-declared canonical baseline is v4.7.77 (`0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`; Git `1742c197c21a1fb127932dcc15303dbd58515d6d`; 305 files).
 
-v4.7.77 is an architecture/documentation-only canonical candidate. `ARCHITECTURE.md` D-0142 has normative precedence for subsequent implementation. It establishes Productive Regime/Rook, productive history, Successor Rook Set, bounded Transitional Demand, configuration-dependent footprint, Native Reacquisition Anchor A, King Reserve Availability, Resolution-Space Conservation, Conflict Serialization and post-Decision Committed Demand.
+v4.7.95 is an architecture/documentation-only canonical candidate. Runtime behaviour remains v4.7.77. Post-canonical P23 v4.7.91-v4.7.94 is evidence lineage only.
 
-The first implementation objective is Operational Picture Knowledge Foundation in one decisive non-authoritative build. P22/head-on/exactly-two-worker/bespoke multi-worker mechanisms are superseded architecture; Guarded Recovery is provisional compatibility evidence.
+`ARCHITECTURE.md` D-0143 has normative precedence where it conflicts with D-0142. D-0143 retires King Reserve Availability, continuous Refuge discovery and the ordinary `A→R→A` King lifecycle from the governing production direction. It accepts Configuration-Released Space and Cooperative Passage, with the first production authority deliberately restricted to the demonstrated TS015 Condor Endurance II / Patriot 4450 near-collinear opposed-working class.
 
-The earlier v4.7.76 candidate lineage below is retained as historical implementation evidence.
+The immediate implementation objective is **TS015 Cooperative Passage Production Integration** through Situation Assessment → Candidate Action Space → Mandatory Constraints → Traffic Policeman / Decision → Commitment → Bounded Authority → Control. No new prototype branch or broader solver is authorised before that path works live.
 
-# Current candidate lineage — v4.7.76 canonical candidate / live-tested v4.7.75 D-0141 closure
+D-0142 remains authoritative for the Field World/chessboard Knowledge model, positive productive history, Productive Regime/Rook, Successor Rook Set, bounded Transitional Demand, Configuration-Dependent Assembly Footprint, cooperative relevance, Resolution-Space Conservation, Conflict Serialization, Committed Demand and layer ownership except for the retired King/continuous-Refuge provisions.
 
-Historical v4.7.76 candidate record: at that time owner-declared v4.7.49 remained canonical. v4.7.76 packaged the live-tested v4.7.75 closure behaviour, which fixed the final v4.7.74 role-reversal failure without changing the successful Regulation or Refuge behaviour.
-
-The selected Yield worker may already own a generic progress AuthorityToken because it was the D-0141 regulated follower. The same Commitment now reuses that token for REPOSITION rather than rejecting the strategy revision. Central Control then clears only the superseded D-0141 speed lease on that Yield worker and settles its follower obligation. Compatible Regulation on the other worker remains untouched.
-
-The integrated live test succeeded. Behavioural work is frozen for this tranche; remaining implementation issues are parked for later work while v4.7.76 is validated for canonical declaration.
+Historical release and decision sections elsewhere in the repository are retained for provenance; current authority is this v4.7.95/D-0143 lineage.

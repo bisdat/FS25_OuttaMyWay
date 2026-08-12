@@ -10,14 +10,16 @@ The active replacement core may discover and cache Job Episode assembly structur
 
 Archive donor mechanisms must be extracted into focused active modules; archived modules remain unsourced.
 
+**D-0143 boundary:** the immediate implementation objective is the narrow TS015 Cooperative Passage production path. King Reserve/continuous Refuge discovery is retired; P23 is an evidence/physical donor only and must not be sourced as a parallel controller. Unsupported asymmetric or broad vehicle generalisation remains outside this tranche.
+
 # FS25_OuttaMyWay Core Replacement Implementation Contract
 
-> **Implementation baseline:** owner-declared canonical v4.7.76  
-> **Canonical ZIP SHA-256:** `7cc2db3fcd02ca7979acfafe81f7765344a70275a11de9754594bde8fed4aeaf`  
-> **Canonical Git commit:** `4758a3428f9bcba23093f60edfd0087bb87843ab`  
+> **Implementation baseline:** owner-declared canonical v4.7.77  
+> **Canonical ZIP SHA-256:** `0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`  
+> **Canonical Git commit:** `1742c197c21a1fb127932dcc15303dbd58515d6d`  
 > **Repository files:** 305  
-> **Contract status:** D-0142-aligned implementation contract for work after v4.7.77 canonicalisation  
-> **Architecture authority:** current `docs/ARCHITECTURE.md` including D-0142 and its normative companion contracts
+> **Contract status:** D-0143-aligned implementation contract for work after v4.7.95 canonicalisation  
+> **Architecture authority:** current `docs/ARCHITECTURE.md`, with D-0143 normative where it supersedes D-0142 and the companion contracts
 
 ## 1. Purpose
 
@@ -39,7 +41,7 @@ The existing procedural core is not:
 
 ## 2. Canonical architecture implementation rule
 
-Implementation begins from the current owner-declared canonical artefact and the current canonical architecture. D-0142 is the governing architecture for the next alignment increment.
+Implementation begins from the current owner-declared canonical artefact and the current canonical architecture. D-0143 governs where it supersedes D-0142; surviving D-0142 contracts remain authoritative.
 
 Implementation must not:
 
@@ -48,13 +50,13 @@ Implementation must not:
 - let Observation assign Situation/Decision meaning;
 - let Operational Picture carry Candidate specifications or mandatory verdicts;
 - let Candidate manufacture mandatory `PASS` results;
-- let Control select Refuge, infer traffic classes or settle Commitment semantics;
+- let Control select Cooperative Passage or Refuge, infer traffic classes or settle Commitment semantics;
 - invent an exact GIANTS native route where architecture requires only bounded productive/transitional demand;
 - add a bespoke N-worker solver instead of using Resolution-Space Conservation, Conflict Serialization and upstream admission control;
 - convert `UNKNOWN` into negative authority;
 - add fixture-specific exceptions to mandatory constraints.
 
-The first implementation build after D-0142 canonicalisation is **Operational Picture Knowledge Foundation**. It must implement the intended production Knowledge contracts directly, with temporary validation diagnostics only. Newly introduced D-0142 Knowledge remains non-authoritative for Candidate, Decision, Commitment, Bounded Authority and Control until live evidence supports promotion.
+The first implementation build after v4.7.95/D-0143 canonicalisation is **TS015 Cooperative Passage Production Integration**. It must add only the minimum production Knowledge/Candidate/Constraint/Decision/Commitment/Authority/Control coupling required for the demonstrated Condor/Patriot near-collinear TS015 class. P23 remains evidence/donor material; King Reserve and continuous Refuge discovery remain retired. Unsupported asymmetric or broad vehicle generalisation is outside this tranche.
 
 ### Supersession stop condition
 

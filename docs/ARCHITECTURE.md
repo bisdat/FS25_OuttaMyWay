@@ -1,9 +1,130 @@
 # Architecture
 
-## v4.7.77 Field World / Chessboard Architecture Consolidation — normative precedence
+## v4.7.95 Cooperative Passage Production Direction — normative precedence
 
-**Status:** candidate architecture for owner canonicalisation.  
-**Implementation baseline:** owner-declared canonical v4.7.76.  
+**Status:** canonical candidate architecture for owner review.  
+**Implementation baseline:** owner-declared canonical v4.7.77 (`0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`; Git `1742c197c21a1fb127932dcc15303dbd58515d6d`; 305 files).  
+**Decision:** D-0143.
+
+This section supersedes D-0142 only where they conflict. D-0142 remains authoritative for Field World, Productive Regime/Rook, positive productive history, Successor Rook Set, bounded Transitional Demand, Configuration-Dependent Assembly Footprint, cooperative relevance, Resolution-Space Conservation, Conflict Serialization, post-Decision Committed Demand and the layer/authority boundaries. Its King/King-Reserve/ordinary-Refuge provisions are retired by D-0143.
+
+Post-canonical v4.7.91-v4.7.94 P23 builds are **evidence donors only**. They do not become the implementation baseline and their fixture literals do not become architecture merely because the PoC succeeded.
+
+### 0A.1 Disposition of King and continuous Refuge discovery
+
+The current King approach is **RETIRED as governing architecture and as the next production implementation direction**.
+
+The post-canonical performance lineage demonstrated that repeated actual-footprint King-space placement/swept-clearance work produced conspicuous stutter under live load. Removing polygon decomposition and Knowledge-copy amplification did not remove the characteristic regression; restoring the older circle-style clearance materially improved performance but reintroduced under-approximation/Endpoint Geometry Collapse risk. Reduced exact re-proof count also did not recover FPS proportionately. The current form is therefore not a production-capable basis to continue optimising.
+
+Consequences:
+
+- **King Reserve Availability is retired** as continuously maintained production Knowledge.
+- continuous local Refuge discovery/qualification is retired as an ordinary runtime obligation;
+- the provisional ordinary `A→R→A` King lifecycle is retired as the expected head-on resolver;
+- no implementation work is authorised to optimise, cache, certificate, profile or otherwise rescue continuous King-space search for the TS015 objective;
+- **Refuge** remains only a generic spatial/historical term for a supportable stationary waiting region should later Reality independently require one. There is no standing obligation to discover or maintain Refuges.
+
+If later evidence requires a Refuge-based strategy, that is a fresh architectural question. Retired King machinery receives no presumption of reuse.
+
+### 0A.2 Configuration-Released Space
+
+**Configuration-Released Space** is local spatial capacity made usable when an assembly changes from a larger physical configuration to a smaller one. It is a physical/configuration relationship, not an inference from agricultural working width alone.
+
+For the P23 Condor/Patriot fixture, folding both sprayers released substantial lateral capacity inside the immediate productive corridor. This was sufficient for two compact assemblies to occupy separated lateral paths simultaneously.
+
+Configuration-Released Space:
+
+- depends on Configuration-Dependent Assembly Footprint;
+- does not prove that every point beneath a deployed working width is traversable;
+- does not transfer endpoint fit into transition-sweep authority;
+- may be absent for assemblies whose compact footprint is not materially smaller than their working occupancy;
+- is assessed on demand for a current conflict, not maintained continuously as speculative escape-space Knowledge.
+
+### 0A.3 Cooperative Passage
+
+**Cooperative Passage** is a joint Reposition strategy in which two cooperatively relevant participants temporarily reduce physical occupancy, establish separated passage paths within the immediate encounter corridor, pass one another concurrently in their respective forward directions, return toward productive alignment, restore productive configuration and hand native authority back to GIANTS.
+
+The strategy changes the source of resolution space: it **creates usable capacity by configuration reduction inside the conflict corridor** rather than parking one participant in an externally discovered Refuge.
+
+A Cooperative Passage Candidate may have more than one assembly as its `Subject`; the existing Candidate Action contract already permits an assembly or assemblies. Concurrent compatible movement remains preferred over scripted one-worker-at-a-time choreography when mandatory constraints support it.
+
+The successful P23 physical sequence is evidence for capability, not a mandated production controller state machine:
+
+```text
+opposed productive conflict
+  → Hold both
+  → compact both
+  → establish separated lateral passage paths
+  → pass concurrently forward
+  → return toward productive axes
+  → restore
+  → hand both back to GIANTS
+```
+
+### 0A.4 First production authority envelope — TS015 only
+
+The first production objective is deliberately narrow: make **TS015 Condor Endurance II / Patriot 4450 near-collinear opposed-working encounters** use Cooperative Passage through the normal architecture.
+
+Situation Assessment may support a first Cooperative Passage Candidate only when current positive evidence establishes the bounded TS015 class, including:
+
+- both assemblies remain active participants with continuing GIANTS Job Episodes;
+- the pair is positively cooperatively relevant and forms an authoritative opposed/facing productive incompatibility;
+- the encounter is sufficiently near-collinear/common-axis for the demonstrated paired lateral split to be applicable;
+- both assemblies have positively supported compact/restore capability for the relevant configuration transition;
+- sufficient response margin remains to stop, compact and establish separated passage paths before physical blockage;
+- no incompatible third-party Committed Demand or other mandatory constraint invalidates the manoeuvre.
+
+The v4.7.94 final asymmetric attempt is explicit negative boundary evidence for the first authority envelope: P23 correctly attempted its fixed fixture geometry, but the resulting lateral clearance was insufficient. Production must reject unsupported asymmetric geometry rather than expand the solver during the TS015 closure increment.
+
+The P23 `70 m`, `6 m`, `12 m`, `8 m` and `8 km/h` literals are **fixture/calibration evidence only**. They are not architectural constants. A first narrow implementation may conservatively reuse proven fixture values where necessary to close TS015, but they must remain visibly scoped implementation constants rather than semantic definitions.
+
+### 0A.5 Layer ownership for production coupling
+
+The production chain remains:
+
+```text
+Reality / Observation
+  → Situation Assessment recognises the supported TS015 opposed situation
+  → Operational Picture publishes Knowledge only
+  → Candidate Action Space may enumerate a joint Cooperative Passage REPOSITION
+  → Mandatory Constraints independently gate admissibility
+  → Traffic Policeman / Decision selects the action after ordinary preference-band exhaustion
+  → Commitment owns the joint purpose and staged obligations
+  → Bounded Authority permits only the current physical phase
+  → Control executes the already-selected bounded physical work
+  → GIANTS resumes native jobs
+```
+
+No P23 fixture may become a parallel production decision path. No `HEAD_ON` scenario class regains governing solver authority. TS015 is a validation scope, not a permanent architectural scenario subsystem.
+
+For a pure established head-on, Regulation or Hold may preserve time/action space but cannot create passing space. Once such incompatibility is authoritative, some spatial Reposition is required. Cooperative Passage is the demonstrated first Reposition strategy for the supported TS015 class.
+
+### 0A.6 Commitment settlement and post-handoff observation
+
+A Cooperative Passage Commitment owns only the obligations required to execute and safely hand back the manoeuvre. After restoration, native handoff and supported resumption/decoupling, the Commitment may settle according to existing lifecycle rules.
+
+Passive post-handoff observation is **not Commitment ownership, Control authority, a reservation or a cooldown**. P23's earlier 120-second observer lockout was an implementation mistake: observation may continue independently and may be superseded by a new necessary Commitment without blocking it.
+
+### 0A.7 Immediate implementation objective and work freeze
+
+After v4.7.95 canonicalisation, the next implementation increment is **TS015 Cooperative Passage Production Integration**.
+
+Until that objective has live evidence:
+
+- do not create another prototype controller;
+- do not resume King/King-Reserve/continuous Refuge implementation or optimisation;
+- do not generalise to arbitrary vehicle pairs;
+- do not design an asymmetric Cooperative Passage solver;
+- do not reopen broad architecture questions merely because implementation is inconvenient.
+
+Use the smallest production coupling required to make the already-demonstrated TS015 capability flow through Situation Assessment → Candidate → Constraints → Decision → Commitment → Authority → Control. Reality from that integration is the next architect.
+
+---
+
+## v4.7.77 Field World / Chessboard Architecture Consolidation — historical D-0142 authority
+
+**Status:** accepted in owner-declared canonical v4.7.77; still authoritative except where superseded by D-0143 above.  
+**Historical implementation baseline at decision time:** owner-declared canonical v4.7.76.  
 **Decision:** D-0142.
 
 This section consolidates the architecture discovered after v4.7.76. **Where later historical text in this document conflicts with this consolidation, this section governs.** Historical mechanisms remain evidence and implementation donors only where explicitly preserved; they do not retain architectural authority merely because v4.7.76 implements them.
@@ -84,7 +205,7 @@ For ordinary local Refuge resolution the relevant phases may differ:
 
 Evidence that one configuration fits does not transfer automatically to another configuration or to an intermediate transition sweep.
 
-### 0.6 Native Reacquisition Anchor A and ordinary local Refuge lifecycle
+### 0.6 Historical D-0142 Native Reacquisition Anchor / local Refuge lifecycle — SUPERSEDED by D-0143
 
 **Native Reacquisition Anchor A** is the positively demonstrated pre-egress pose/area where native productive continuation was established and where the deployed working configuration has already been demonstrated spatially valid.
 
@@ -113,7 +234,7 @@ On execution failure, Control preserves the currently demonstrated-safe occupanc
 
 The ordinary architecture does not require a general route planner. A bounded reversible local A↔R relation is the current provisional model. General multi-leg routing must not be introduced unless Reality demonstrates that the ordinary model is insufficient.
 
-### 0.7 King Reserve Availability
+### 0.7 Historical D-0142 King Reserve Availability — RETIRED by D-0143
 
 **King Reserve Availability** is Knowledge maintained per worker indicating whether at least one local Refuge opportunity currently remains supportable.
 
@@ -153,9 +274,9 @@ Encounter/lifecycle machinery may consume this Knowledge, but the relationship m
 
 > Once a potentially conflicting cooperative relationship is positively supported, ordinary progression must not consume the last locally admissible means of resolving it.
 
-Before Decision, possible Refuge space is only **resolution possibility**. There is no provisional ownership.
+D-0143 preserves this invariant while retiring King Reserve as its standing implementation mechanism. Before Decision, any supportable resolution capacity — including Configuration-Released Space — is only **resolution possibility**; there is no provisional ownership. Situation Assessment need not continuously enumerate speculative escape space merely to preserve the invariant.
 
-A transition from King Reserve `SOME → NONE` caused by another relevant participant's ordinary progression is an early danger signal. The Traffic Policeman may need to constrain that progression before physical collision or complete blockage occurs.
+The historical D-0142 `King Reserve SOME → NONE` transition was one proposed early-danger signal and is **SUPERSEDED by D-0143**. For the immediate TS015 objective, the Traffic Policeman instead consumes positively supported current Situation/Action-Space evidence and may constrain ordinary progression before physical collision or complete blockage destroys the demonstrated Cooperative Passage option.
 
 Resolution-Space Conservation generalises several older observations including follower boundary protection, recovery protection and constrained-topology action-space compression.
 
@@ -175,15 +296,15 @@ If admitting another worker through a narrow neck, gateway or other constrained 
 
 **Candidate Action Space** enumerates complete supportable actions. It does not select among them and does not manufacture mandatory `PASS` verdicts.
 
-For local Refuge action a Candidate may identify, where supportable:
+Historical D-0142 local-Refuge Candidates could identify A, R and an A↔R relation. D-0143 retires that as the ordinary TS015 production path. For the current Cooperative Passage direction, a Candidate may instead identify, where positively supportable:
 
-- subject;
-- Native Reacquisition Anchor A;
-- Refuge R;
-- required configuration phases;
-- bounded A→R and R→A relation;
-- restoration requirement;
+- the participating assembly or assemblies;
+- the supported compact/restore configuration transitions;
+- the bounded separated passage relation inside the immediate encounter corridor;
+- restoration / native-handoff obligations;
 - Purpose and expected resulting situation.
+
+This does not create a general route planner or grant Candidate generation authority to manufacture clearance.
 
 **Mandatory Constraints** independently determine admissibility, including phase-specific Representation Fitness, Field World containment, transition clearance, demand compatibility, obligation compatibility and capability availability.
 
@@ -193,7 +314,7 @@ For local Refuge action a Candidate may identify, where supportable:
 
 Before Decision, Productive Demand, Transitional Demand and possible Refuge space are Knowledge; none is owned merely because it exists.
 
-After Decision selects a required A↔R relation, the **Commitment** makes that selected relation durable. The required relation becomes **Committed Demand** until its obligation is discharged, superseded or invalidated according to Commitment lifecycle rules.
+After Decision selects a spatial Reposition relation, the **Commitment** makes that selected relation durable. For D-0143 Cooperative Passage, this may be a joint separated-passage relation rather than the historical A↔R Refuge relation. The required relation becomes **Committed Demand** until its obligation is discharged, superseded or invalidated according to Commitment lifecycle rules.
 
 Committed Demand is therefore **post-Decision obligation-derived spatial demand**. Active GIANTS job membership alone is not Committed Demand.
 
@@ -250,7 +371,7 @@ Current classifications:
 - ordinary general multi-leg Refuge router — **RETIRE unless Reality demonstrates necessity**.
 - Guarded Recovery — **RE-EXPRESS provisionally**; its proven protection requirement survives while the distinct mechanism is expected to retire if generic Committed-Demand protection validates equivalently.
 
-### 0.15 Established, provisional and open status
+### 0.15 Historical D-0142 status at v4.7.77 (King items superseded by D-0143)
 
 **Established architecture**
 
@@ -262,7 +383,7 @@ Current classifications:
 - Productive Demand and Transitional Demand separation;
 - Configuration-Dependent Assembly Footprint;
 - positive cooperative relevance;
-- King Reserve as resolution opportunity rather than ownership;
+- **SUPERSEDED by D-0143:** King Reserve as resolution opportunity rather than ownership;
 - Resolution-Space Conservation;
 - Conflict Serialization;
 - upstream admission control;
@@ -272,9 +393,9 @@ Current classifications:
 
 **Provisional architecture**
 
-- ordinary local Refuge lifecycle A→R→A;
-- one reversible local King relation is normally sufficient;
-- King Reserve production authority is fundamentally SOME/NONE;
+- **SUPERSEDED by D-0143:** ordinary local Refuge lifecycle A→R→A;
+- **SUPERSEDED by D-0143:** one reversible local King relation is normally sufficient;
+- **SUPERSEDED by D-0143:** King Reserve production authority is fundamentally SOME/NONE;
 - A is approximately the egress-origin pose/area where productive continuation and deployed configuration were positively demonstrated.
 
 **Open hypotheses — not implementation permission**
@@ -282,9 +403,9 @@ Current classifications:
 - generic Committed-Demand protection will completely subsume and retire Guarded Recovery;
 - general multi-leg Refuge routing will never be required.
 
-### 0.16 First implementation objective
+### 0.16 Historical D-0142 first implementation objective — SUPERSEDED by D-0143
 
-The first implementation build after this architecture is canonicalised is **Operational Picture Knowledge Foundation**.
+The D-0142 first implementation build was **Operational Picture Knowledge Foundation**. D-0143 supersedes this objective with TS015 Cooperative Passage Production Integration.
 
 It introduces the coherent production-intent Knowledge layer:
 

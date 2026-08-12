@@ -1,7 +1,7 @@
-# v4.7.77 Field World / Chessboard Architecture Consolidation
+# v4.7.95 Cooperative Passage Production Direction
 
-**Decision:** D-0142  
-**Status:** canonical-candidate architecture; owner-declared v4.7.76 remains implementation baseline until owner canonicalisation of v4.7.77.
+**Decision:** D-0143  
+**Status:** canonical-candidate architecture; owner-declared v4.7.77 remains the implementation baseline until owner canonicalisation of v4.7.95.
 
 ## Accepted root / governing concepts
 
@@ -18,69 +18,49 @@ The bounded set of supportable next productive structures. It describes producti
 Bounded spatial demand positively supported while a continuing Job Episode is between Productive Regimes. It is distinct from Productive Demand and may remain unresolved where evidence is insufficient.
 
 ### Configuration-Dependent Assembly Footprint
-The complete assembly footprint/sweep relevant to the current manoeuvre phase. Productive, compact manoeuvre, stationary Refuge and restoration questions may require different configuration representations.
+The complete assembly footprint/sweep relevant to the current manoeuvre phase. Productive, compact manoeuvre, passage and restoration questions may require different configuration representations.
+
+### Configuration-Released Space
+Local usable capacity created when a supported configuration change materially reduces an assembly's physical occupancy. It is not inferred from agricultural working width and does not itself prove transition-sweep or terrain clearance.
+
+### Cooperative Passage
+A joint Reposition Candidate strategy in which multiple relevant assemblies compact, establish separated local passage paths, pass concurrently forward, return toward productive alignment, restore and hand native control back to GIANTS.
+
+### Cooperative Passage Authority Envelope
+The positively supported situation/configuration domain in which a Cooperative Passage Candidate may be offered. The first production envelope is deliberately limited to the demonstrated TS015 Condor Endurance II / Patriot 4450 near-collinear opposed-working case.
 
 ### Native Reacquisition Anchor A
-The positively demonstrated pre-egress pose/area where native productive continuation and deployed working configuration were valid. It is a restoration/reacquisition reference, not a general routing waypoint.
-
-### King Reserve Availability
-Knowledge that at least one local Refuge opportunity currently remains (`SOME` / `NONE`; implementation may expose `UNKNOWN` for incomplete evidence). It grants no exact Candidate, selection or ownership authority.
+A positively demonstrated productive pose/area useful as restoration/reacquisition evidence when a strategy requires it. D-0143 no longer makes `A→R→A` an ordinary governing lifecycle.
 
 ### Resolution-Space Conservation
-Once a potentially conflicting cooperative relationship is supported, ordinary progression must not consume the last locally admissible means of resolving it.
+The invariant that ordinary progression must not consume the last locally admissible means of resolving a positively supported cooperative conflict. D-0143 permits resolution space to be created on demand through configuration reduction rather than requiring continuously maintained King Reserve Knowledge.
 
 ### Conflict Serialization
-Traffic Policeman reduction of concurrent multi-worker complexity by constraining safely deferrable progression, allowing a simpler resolvable relationship to mature, resolving that form, then reassessing Reality.
+Decision-level reduction of concurrent complexity by deferring safely delayable progression and repeatedly reassessing Reality. It is not scripted one-worker choreography; compatible concurrent movement remains preferred.
 
-### Cooperative Constraint Region
-A bounded local topology/gateway context in which another worker's admission or progression can materially affect local resolvability. Same-field presence alone is insufficient.
+### Committed Demand
+Post-Decision spatial demand made durable by a Commitment because a selected action/relation is required to discharge an obligation. Active Job Episode membership alone does not create it.
 
-## Accepted refinements
+## Retired governing concepts / mechanisms
 
-### Field Boundary / productive Headland working band / Turning Rank
-These are separate concepts and must not be collapsed by ambiguous “headland” terminology.
+### King Reserve Availability — RETIRED
+Former D-0142 continuously maintained SOME/NONE Refuge-opportunity Knowledge. D-0143 retires it from governing production architecture.
 
-### Productive Demand / Transitional Demand / Committed Demand separation
-Native productive and transitional demand are Situation Knowledge. Committed Demand is post-Decision demand made durable by Commitment. Active-job membership alone does not create Committed Demand.
+### Ordinary King `A→R→A` lifecycle — RETIRED
+Former provisional expectation for head-on resolution. It remains historical evidence only.
 
-### Refuge possibility before ownership
-Before Decision, local Refuge space is resolution possibility only. Decision selects a specific bounded action; Commitment then protects the selected required relation.
+### Continuous Refuge discovery/qualification — RETIRED
+No standing runtime obligation remains. `Refuge` survives only as a generic spatial/historical term should later Reality independently justify such a strategy.
 
-### Ordinary local Refuge lifecycle — provisional
-`ROOK at A → compact → KING → A→R → Refuge → R→A → restore → ROOK/native reacquisition`.
+## Open boundary
 
-R fits stationary Refuge configuration; A↔R fits compact manoeuvre/swept footprint; A supports restoration of deployed working configuration.
+- Asymmetric Cooperative Passage is outside the first TS015 authority envelope.
+- Other vehicle/configuration combinations are not assumed compatible or incompatible; they are simply outside the immediate production objective.
+- P23 fixture literals are implementation evidence, not architecture.
 
-### Configuration Phase Boundary
-A King move begins only after the configuration on which its spatial fitness depends is positively established, unless a separately represented transition configuration is independently fit.
+## Immediate implementation consequence
 
-### Configuration-Safe Failure
-Failure preserves the currently demonstrated-safe occupancy/configuration unless another configuration change is independently authorised as spatially fit.
-
-### Supersession Filter
-Old mechanisms are classified `PRESERVE`, `RE-EXPRESS` or `RETIRE` before architecture-to-code ownership mapping. RETIRE items are not migrated merely because code exists.
-
-## Superseded / re-expressed mechanisms
-
-- P22 as system/prototype — **RETIRE**; physical capability donors survive.
-- P22 Refuge selection and bespoke rejoin routing — **RETIRE**.
-- HEAD_ON governing solver/class — **RETIRE**; scenario description survives.
-- exactly-two-worker assumption — **RETIRE**.
-- bespoke multi-worker solver — **RETIRE**; requirement re-expressed as Conflict Serialization/admission control.
-- leader/follower solver — **RE-EXPRESS** through demand relationships and Resolution-Space Conservation.
-- current straight-to-boundary Future-Space representation — **RE-EXPRESS** through Productive/Transitional Demand while preserving the broader need for prospective spatial Knowledge.
-- irregular-field solver/class — **RETIRE**; topology remains Field World Knowledge.
-- ordinary general multi-leg Refuge router — **RETIRE unless Reality proves required**.
-- Guarded Recovery — **RE-EXPRESS provisionally**; proven protection requirement survives while generic Committed-Demand protection is validated.
-
-## Open hypotheses
-
-- Generic Committed-Demand protection fully subsumes Guarded Recovery and permits the distinct mechanism to retire.
-- General multi-leg Refuge routing is never required for ordinary local Refuge.
-
-## Implementation consequence
-
-The first implementation build is the **Operational Picture Knowledge Foundation**. It introduces production-intent Knowledge contracts with temporary non-authoritative diagnostics. It must not alter Candidate, Decision, Commitment, Bounded Authority or Control until validated.
+The next increment is **TS015 Cooperative Passage Production Integration**, not another prototype. Couple the demonstrated capability through Situation Assessment → Candidate → Constraints → Decision → Commitment → Bounded Authority → Control and validate it live before broadening scope.
 
 
 # D-0141 follower alignment clarification

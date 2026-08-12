@@ -1,3 +1,54 @@
+## 2026-08-12 — P23 Cooperative Passage closure / D-0143 evidence
+
+### Problem reset
+
+After post-canonical King implementation work produced persistent live stutter, the head-on question was reset to the minimum physical requirement. A pure established head-on cannot be resolved by Regulation or in-path Hold alone: those actions change timing but do not create passing space. Reposition remains necessary. The new hypothesis was to treat both participants as capable of diversion rather than continuously discovering a Refuge for one.
+
+### Configuration-Released Space
+
+Comparable overhead screenshots of Condor Endurance II and Patriot 4450 showed that their deployed ~36 m sprayer configurations occupy a very large lateral working envelope while folded assemblies are much narrower laterally. This corrected an earlier over-conservative reading of maximum plan-view spans, which include substantial longitudinal extent. The hypothesis became: compact both workers and use the lateral capacity released inside the immediate productive corridor for a two-way passage.
+
+Named discovery: **Configuration-Released Space** — configuration reduction can create usable local resolution capacity without searching surrounding Field World for an arbitrary waiting Refuge.
+
+### P23 v4.7.91 — Forward-Only Waypoint Orbit
+
+The first PoC held and fully compacted both workers but failed on the first `4 m forward + 6 m lateral` point-target leg. Both forward-only controllers orbited their nearby high-lateral-offset waypoint instead of capturing it. This was a Control failure before Cooperative Passage itself was tested.
+
+Named implementation finding: **Forward-Only Waypoint Orbit**.
+
+### P23 v4.7.92 — first successful Cooperative Passage
+
+Changing only the entry/rejoin geometry to a shallower `12 m forward + 6 m lateral` leg allowed both compact sprayers to establish opposite lateral paths, pass concurrently forward, rejoin, restore and hand back to GIANTS. Both original Job Episodes survived and native productive continuation resumed.
+
+Named architectural candidate: **Cooperative Passage**.
+
+### P23 v4.7.93 — repeatability and observer lockout
+
+Two passages completed in one uninterrupted working session with closely matching physical results. The run also exposed that the 120-second post-handoff native-observation fixture occupied the same run slot as active Control and blocked a later necessary passage. The observation duration had evidence value only; it was not a physical cooldown.
+
+Named implementation finding: **Post-Handoff Observation Lockout**. Passive observation must not own Commitment/Control or reserve the Traffic Policeman.
+
+### P23 v4.7.94 — armed closure run
+
+Persistent arming removed human console timing. The first automatic passage started at 68.07 m with heading dot -1.0000. It completed to handoff in 63.403 s; maximum measured lateral displacement was about 6.02/6.01 m, closest centre separation was 12.02 m, both workers restored with the same Job Episodes, and native Productive motion resumed within 0.515 s.
+
+The second automatic passage started at 69.64 m with heading dot -1.0000 and completed to handoff in 63.246 s. Maximum lateral displacement was about 6.03/6.01 m and closest centre separation was again 12.02 m. Native Productive motion resumed within 0.524 s.
+
+Before the second post-handoff observation completed, a third necessary Commitment superseded it at 106.540 s with no authority retained by the observer. This validated that observation and Control lifecycles can be separated.
+
+The final opposed encounter started automatically at 68.83 m with heading dot -0.9935. It was materially asymmetric. Hold, compaction and sidestep completed, but the fixed passage geometry reached only about 10.2 m centre separation and stalled from insufficient lateral clearance. This is negative boundary evidence for the first authority envelope, not a request to extend the PoC.
+
+### Architectural disposition
+
+- P23 is complete and remains evidence/physical-donor lineage only.
+- King Reserve Availability, continuous Refuge discovery and the ordinary King `A→R→A` head-on lifecycle are retired from the governing production direction.
+- Configuration-Released Space and Cooperative Passage are accepted for a narrow first production target.
+- The next objective is production TS015 integration, not another prototype or broad generalisation.
+
+Evidence sources: `Screenshot_20260812_090757.png`, `Screenshot_20260812_090852.png`, P23 v4.7.91-v4.7.94 test packages, `log(20260812-102055).txt`, `log(20260812-112003).txt`, and corresponding owner video observations.
+
+---
+
 ## 2026-08-10 — v4.7.76 canonical-candidate closure after complete v4.7.75 TS015 working session
 
 **Observe:** the v4.7.75 integrated run completed the repeated head-on/follower/refuge/recovery sequence and both GIANTS jobs ultimately ended after completing work. Three autonomous Refuge moves were initiated. The final role-reversed head-on exercised same-Commitment authority reuse (`reusedAuthorityTokens=1`) and no longer failed with `YIELD_PROGRESS_AUTHORITY_ALREADY_OWNED`.

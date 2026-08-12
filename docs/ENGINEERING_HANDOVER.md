@@ -1,22 +1,24 @@
-# v4.7.77 CANONICAL CANDIDATE handover — D-0142
+# v4.7.95 CANONICAL CANDIDATE handover — D-0143
 
-**Baseline:** owner-declared canonical v4.7.76, SHA-256 `7cc2db3fcd02ca7979acfafe81f7765344a70275a11de9754594bde8fed4aeaf`, Git `4758a3428f9bcba23093f60edfd0087bb87843ab`, 305 files.
+**Baseline:** owner-declared canonical v4.7.77, SHA-256 `0964ba2583122088077e5e465fffb24820d07380f533d1f44ed7d1ad24355153`, Git `1742c197c21a1fb127932dcc15303dbd58515d6d`, 305 files.
 
 ## Candidate scope
 
-Architecture/documentation and release/provenance identity only. No runtime traffic/Control behaviour is intentionally changed.
+Architecture/documentation and release/provenance/version identity only. Runtime traffic/Control behaviour remains canonical v4.7.77. P23 v4.7.91-v4.7.94 is evidence only.
 
 ## Governing architecture
 
-Use the v4.7.77 D-0142 consolidation in `docs/ARCHITECTURE.md` as normative precedence over conflicting historical text. Key concepts: Rook/Productive Regime, productive history, Successor Rook Set, Transitional Demand, configuration-dependent footprint, Native Reacquisition Anchor A, King Reserve Availability, Resolution-Space Conservation, Conflict Serialization, post-Decision Committed Demand and bounded Control execution.
+Use D-0143 in `docs/ARCHITECTURE.md` as normative precedence where it conflicts with D-0142. King Reserve Availability, continuous Refuge discovery and the ordinary `A→R→A` King lifecycle are retired. Configuration-Released Space and Cooperative Passage are accepted; the first production authority envelope is deliberately limited to the demonstrated TS015 Condor Endurance II / Patriot 4450 near-collinear opposed-working class.
 
-## Do not migrate superseded mechanisms
+Surviving D-0142 Field World/Rook/Successor/Transitional-Demand/footprint/relevance/Resolution-Space/Conflict-Serialization/layer-boundary architecture remains authoritative.
 
-P22, HEAD_ON solver, exactly-two-worker assumptions, bespoke multi-worker solving and ordinary general Refuge routing have no architectural right to survive. Use Preserve / Re-express / Retire. Guarded Recovery is provisional compatibility evidence only; do not expand it.
+## Next implementation objective
 
-## First implementation build
+**TS015 Cooperative Passage Production Integration.** Couple the demonstrated capability through Situation Assessment → Candidate → Constraints → Traffic Policeman / Decision → Commitment → Bounded Authority → Control. Reuse P23 only as a physical donor; do not source it as a parallel production controller.
 
-Operational Picture Knowledge Foundation, one decisive build. Production-intent modules/contracts, temporary structured diagnostics, no behavioural authority. Do not alter Candidate/Decision/Commitment/Control consumers until the Knowledge model is live-validated.
+## Explicit freeze
+
+Do not create another prototype, resume King optimisation, generalise to arbitrary vehicle pairs or build an asymmetric solver before the TS015 production path has live evidence. Passive post-handoff observation owns no cooldown and must not block a new Commitment.
 
 
 # v4.7.76 CANONICAL CANDIDATE handover
