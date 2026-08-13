@@ -1,3 +1,30 @@
+## D-0147 — Bounded Terminal Egress for obstructive completed assemblies (2026-08-13)
+
+**Status:** Accepted for v4.7.112 canonical candidate; owner canonicalisation remains separate.  
+**Baseline:** owner-declared canonical v4.7.109 (`ea0b399e2f73759fa29982fc1b85d5bf446f6fd90eb324dec2902b333c7c6a74`; Git `cd9085ee40343d542a66b84948c27f7dd91a40c7`; 310 files).
+
+**Decision:**
+
+1. Preserve **GIANTS Completion Acceptance** as the default. Job completion alone never causes OuttaMyWay relocation.
+2. When a completed, unclaimed assembly's realised **Terminal Occupancy** positively obstructs continuing active demand, an enabled **Automatic Terminal Egress** may create a narrow post-job clearance obligation.
+3. Before translation, compact the completed assembly into its minimum positively supported transit configuration where a meaningful reduction exists. If compaction alone clears the obstruction, stop.
+4. If translation remains necessary, use a **Boundary-Normal Egress Objective**: sufficient outward displacement toward the locally nearest Field Boundary. The objective is not restricted to the vehicle's forward axis.
+5. Permit at most one **simple, continuous, bounded outward manoeuvre**. Do not search for a best region, parking position, alternate boundary, field-centre destination or multi-leg route.
+6. If the simple manoeuvre is unsupported or exhausted, transfer responsibility to the player. Failure does not authorise a more sophisticated solver.
+7. Treat multiple completed assemblies as independent Terminal Occupancy obligations, not a global relocation problem.
+8. **Player Claim** is absolute: positive player entry immediately ends OuttaMyWay post-job actuation and responsibility remains with the player for that Terminal Occupancy episode even if the player later exits.
+9. Expose Automatic Terminal Egress as a user-configurable switch. `Off` preserves historical behaviour; the eventual default is not decided here.
+10. Preserve **Zero-Configuration Compatibility**. Optional GIANTS `FieldCourseSettings` (`workHeadlands`, `headlandsFirst`) may strengthen declared productive-demand knowledge when positively available, but absent settings mean unknown and can never be required for safe operation.
+11. Do not implement D-0147 in v4.7.112. Disposable post-job actuation/player-claim and AI-settings probes are evidence only and must not be promoted wholesale into production.
+
+**Evidence:** the final v4.7.109 scenario exposed completed sprayers as deterministic obstacles to a still-active worker. Disposable v4.7.110 proved clean post-job physical actuation without AI-job restart and proved immediate player-entry pre-emption with zero subsequent OuttaMyWay drive calls. Disposable v4.7.111 proved that work-phase settings are authoritative when materialised but absent in the ordinary default-start path.
+
+**Why:** a general Terminal Clearance Region/parking search would recreate the complexity and performance failure mode of the retired King/continuous Refuge direction. A bounded outward exception can solve the common boundary-adjacent completion obstruction while making player escalation a legitimate, explicit endpoint.
+
+**Implementation consequence:** the next implementation activity, if selected after canonicalisation, must discover the smallest supportable mechanics for compaction plus one outward boundary-relative manoeuvre. Any pressure to add alternate destinations, repeated attempts, global parking coordination or exhaustive margin modelling is evidence that the capability should remain unimplemented or player-owned.
+
+---
+
 # v4.7.109 release record — close fixing cycle at validated stability plateau
 
 **Fact:** v4.7.108 live evidence supports the final Settled Relationship Dissolution correction and the broader three-worker D-0146 implementation. Five Cooperative Passages settled successfully with no Passage Reassessment/escalation or OuttaMyWay error stack.
@@ -1585,11 +1612,11 @@ The physical threshold is the sum of opposing Facing Clearance Extents. Policy r
 
 ## D-0041 — Accept GIANTS job completion disposition and retain the obstacle
 
-**Status:** Accepted baseline policy; Post-Job Configuration Normalisation Deferred
+**Status:** Accepted baseline policy; refined by D-0147 for positively obstructive Terminal Occupancy
 
-**Decision:** Wherever and however GIANTS ends an original AI job is accepted. OuttaMyWay does not choose a parking position, move the vehicle off-field or continue driving it. The completed assembly loses active membership and motion expectation but remains represented in its actual final pose as a non-member obstacle. Final relocation remains the player's responsibility.
+**Decision:** Wherever and however GIANTS ends an original AI job is accepted. Job completion alone does not authorise OuttaMyWay to choose a parking position or relocate the completed assembly. The assembly loses active membership and motion expectation but remains represented in its realised final pose as a non-member obstacle.
 
-**Deferred:** Safe in-place raising or folding may later be investigated only after control availability, sequence, sweep clearance and actual footprint reduction are proven.
+**D-0147 refinement:** if that realised occupancy later positively obstructs continuing active demand, and Automatic Terminal Egress is enabled, the completed unclaimed assembly may be compacted and given one simple bounded boundary-relative outward clearance manoeuvre. This is obstruction resolution, not parking or productive-job continuation. Unsupported/exhausted cases remain the player's responsibility.
 
 ## D-0040 — Park Assessment Deadline Escalation
 

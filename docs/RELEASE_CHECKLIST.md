@@ -1,3 +1,20 @@
+## v4.7.112 canonical-candidate scope gate
+
+- [x] Exact baseline is owner-declared canonical v4.7.109 SHA-256 `ea0b399e2f73759fa29982fc1b85d5bf446f6fd90eb324dec2902b333c7c6a74`.
+- [x] D-0147 architecture is recorded without Terminal Egress production implementation.
+- [x] Historical GIANTS Completion Acceptance remains default; only positively obstructive Terminal Occupancy is eligible for the optional exception.
+- [x] Supported compaction precedes translation and may itself settle the obligation.
+- [x] Translational objective is boundary-relative, not always vehicle-forward.
+- [x] Egress is limited to one simple continuous bounded outward manoeuvre; exhaustion escalates to player instead of search.
+- [x] Player Claim is absolute/sticky for the same Terminal Occupancy episode.
+- [x] Automatic Terminal Egress is required to be user-configurable; default remains undecided.
+- [x] Disposable v4.7.110/v4.7.111 code is excluded from production lineage; only evidence is recorded.
+- [x] Optional FieldCourseSettings are non-prerequisite evidence and default-start safety is preserved.
+- [ ] RRS Candidate Production from exact v4.7.109 baseline passes with zero blockers.
+- [ ] Exact packaged candidate passes behavioural, structural/conformance, RRS, manifest, XML/version and deterministic-byte checks.
+
+---
+
 ## v4.7.109 canonical-candidate scope gate
 
 - [x] Exact baseline is owner-declared canonical v4.7.102 SHA-256 `f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`.

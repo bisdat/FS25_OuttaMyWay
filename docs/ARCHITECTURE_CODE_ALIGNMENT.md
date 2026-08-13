@@ -1,3 +1,21 @@
+# v4.7.112 D-0147 architecture/code alignment — architecture intentionally ahead of implementation
+
+| D-0147 concept | v4.7.112 production implementation | Alignment |
+|---|---|---|
+| GIANTS Completion Acceptance remains default | Existing canonical v4.7.109 behaviour | ALIGNED |
+| Terminal Occupancy relevance | Existing replacement-core lifecycle concept | ARCHITECTURALLY PRESENT; no new egress admission |
+| Post-Job Actuation Authority | Disposable proof only | CAPABILITY SUPPORTED; NOT PRODUCTION |
+| Player Claim for completed assembly | Disposable `getIsEntered()` proof only | CAPABILITY SUPPORTED; NOT PRODUCTION |
+| Mandatory supported compaction | Existing configuration donors may inform later implementation | NOT IMPLEMENTED FOR TERMINAL EGRESS |
+| Boundary-Normal Egress Objective | No production planner/controller | NOT IMPLEMENTED |
+| One simple bounded outward manoeuvre | No production controller | NOT IMPLEMENTED |
+| Automatic Terminal Egress user switch | No production setting | NOT IMPLEMENTED |
+| Terminal Egress Exhaustion -> player | Architectural decision only | NOT IMPLEMENTED |
+
+**Boundary:** v4.7.112 does not close any of the NOT IMPLEMENTED rows. Disposable probe source is deliberately excluded. The next implementation increment must preserve this gap explicitly rather than silently importing experimental machinery.
+
+---
+
 # v4.7.105 D-0146 implementation-alignment addendum — Optional Configuration Reduction
 
 **Architecture already says:** Passage Arrangement may use optional configuration reduction; configuration reduction is not a universal prerequisite.

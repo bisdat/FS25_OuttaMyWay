@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.109 CANONICAL CANDIDATE — D-0146 three-worker stability plateau.
+-- FS25_OuttaMyWay v4.7.112 CANONICAL CANDIDATE — D-0147 architecture recorded; production Terminal Egress not implemented.
 -- modDesc.xml loads only this file. Historical archived modules are never sourced.
 local modDirectory=g_currentModDirectory or ""
 local modules={

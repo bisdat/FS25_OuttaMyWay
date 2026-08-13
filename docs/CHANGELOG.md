@@ -1,3 +1,17 @@
+# v4.7.112 CANONICAL CANDIDATE — D-0147 Bounded Terminal Egress architecture
+
+**Canonical baseline:** owner-declared canonical v4.7.109 (`ea0b399e2f73759fa29982fc1b85d5bf446f6fd90eb324dec2902b333c7c6a74`; Git `cd9085ee40343d542a66b84948c27f7dd91a40c7`; 310 files).
+
+**Architecture:** adds D-0147. GIANTS job-completion disposition remains the default. A completed unclaimed assembly may receive optional Terminal Egress authority only after its realised occupancy positively obstructs continuing active demand. Supported compaction is explicit; if translation remains necessary, only one simple continuous bounded outward manoeuvre toward the locally nearest Field Boundary is authorised. Player Claim immediately and sticky-transfers responsibility; unsupported/exhausted cases escalate to the player.
+
+**Complexity boundary:** no Terminal Clearance Region/parking search, field-centre relocation, alternate-boundary routing, repeated attempts, global completed-worker coordination or King/continuous Refuge revival.
+
+**Evidence recorded:** disposable v4.7.110 proved post-job actuation without AI-job restart and zero post-claim drive calls using `getIsEntered()`. Disposable v4.7.111 proved `workHeadlands` / `headlandsFirst` are useful when FieldCourseSettings exist but ordinary default-start jobs may expose no settings object. Probe code is not production lineage.
+
+**Candidate boundary:** documentation/architecture plus release/version identity only. No Terminal Egress production implementation and no intentional traffic/passage/Control behavioural algorithm change from canonical v4.7.109.
+
+---
+
 # v4.7.109 CANONICAL CANDIDATE — D-0146 three-worker stability plateau
 
 **Canonical baseline:** owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files).

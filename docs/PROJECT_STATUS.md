@@ -1,3 +1,21 @@
+# v4.7.112 CANONICAL CANDIDATE status — D-0147 Bounded Terminal Egress architecture
+
+**Canonical baseline:** owner-declared v4.7.109 (`ea0b399e2f73759fa29982fc1b85d5bf446f6fd90eb324dec2902b333c7c6a74`; Git `cd9085ee40343d542a66b84948c27f7dd91a40c7`; 310 files).
+
+**Candidate character:** architecture/documentation and release identity only. No Terminal Egress production code, no passage-planning change and no traffic/Control behavioural algorithm change is introduced relative to canonical v4.7.109. Disposable v4.7.110/v4.7.111 probes are evidence only.
+
+**Accepted architecture:** D-0147 retains GIANTS Completion Acceptance by default and permits an optional bounded exception only when a completed unclaimed assembly positively obstructs continuing active demand: compact to the minimum supported transit footprint, then if still necessary attempt one simple continuous outward manoeuvre toward the locally nearest Field Boundary. Player Claim pre-empts immediately; exhausted/unsupported egress transfers responsibility to the player.
+
+**Explicit complexity boundary:** no Terminal Clearance Region search, parking optimisation, field-centre relocation, alternate-boundary search, repeated manoeuvre escalation, global completed-worker relocation or King/continuous Refuge revival.
+
+**Configuration boundary:** Automatic Terminal Egress must be user-configurable. `Off` preserves canonical v4.7.109 completion behaviour. Default On/Off is not selected by this candidate.
+
+**Evidence boundary:** FieldCourseSettings (`workHeadlands`, `headlandsFirst`) are optional positive intent evidence when available; ordinary default-start jobs may expose no settings object, so absence remains unknown and the capability must satisfy Zero-Configuration Compatibility.
+
+**Next activity after canonicalisation:** implementation discovery only if selected. Start with compaction plus one boundary-relative outward control expression and stop if Reality demands route search or proliferating scenario branches.
+
+---
+
 # v4.7.109 CANONICAL CANDIDATE status — three-worker stability plateau
 
 **Canonical baseline:** v4.7.102 (`f85256dd...597b`; Git `cf514983...`; 310 files).

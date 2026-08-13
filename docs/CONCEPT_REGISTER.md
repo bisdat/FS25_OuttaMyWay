@@ -1,3 +1,19 @@
+# v4.7.112 D-0147 current concept addendum
+
+**CURRENT / GOVERNING TERMINAL-OCCUPANCY CONCEPTS:** Bounded Terminal Egress; Boundary-Normal Egress Objective; Post-Job Actuation Authority; Player Claim; Terminal Egress Exhaustion; Independent Terminal Egress; Zero-Configuration Compatibility.
+
+- **Bounded Terminal Egress** — optional completed-assembly clearance capability: supported compaction followed, only if still necessary, by one simple continuous bounded outward manoeuvre toward the local Field Boundary.
+- **Boundary-Normal Egress Objective** — sufficient outward displacement toward the locally nearest Field Boundary; not synonymous with vehicle-forward travel and not a parking destination.
+- **Post-Job Actuation Authority** — empirically demonstrated capability to actuate a genuinely completed assembly without restarting/creating a GIANTS AI Job Episode. Capability does not itself grant semantic authority.
+- **Player Claim** — positive player entry into the completed assembly; immediately terminates OuttaMyWay post-job actuation and is sticky for the same Terminal Occupancy episode.
+- **Terminal Egress Exhaustion** — the single supported outward manoeuvre cannot be established or cannot clear the obstruction within its bounded authority; consequence is player responsibility, not broader search.
+- **Independent Terminal Egress** — multiple completed assemblies create separate Terminal Occupancy obligations as Reality makes each obstructive; no global parking assignment exists.
+- **Zero-Configuration Compatibility** — ordinary default GIANTS job start must remain safe without requiring the player to open or materialise optional AI settings.
+
+**Explicit non-concepts:** Terminal Parking, best Terminal Clearance Region, field-centre relocation, repeated egress search, alternate-boundary routing and King/Refuge revival are not D-0147 responsibilities.
+
+---
+
 # v4.7.99 D-0146 current concept register addendum
 
 **CURRENT / GOVERNING ARCHITECTURE:** Established Trajectory; Current Motion; Current Excursion; Trajectory Persistence; Observed Trajectory Corridor; Potential Opposed Corridor Conflict; Established Opposed Corridor Conflict; Supported Corridor Overlap; Passage Presumption; Local Passage Space; Local Spatial Constraint; Boundary Encroachment; Passage Arrangement; Stable Passing Relationship; Passage Burden; Pairwise Passage Economy; Passage Sufficiency; Progressive Passage Search; Nominal Inter-Assembly Clearance; Passage Development Distance; Passage Traversal Distance; Reacquisition Distance; Manoeuvre Swept Occupancy; Passage Guide; Passage Support Loss; Passage Reassessment.

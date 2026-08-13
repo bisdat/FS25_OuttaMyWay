@@ -1,3 +1,118 @@
+## v4.7.112 Bounded Terminal Egress — normative candidate precedence
+
+**Status:** accepted architecture for owner canonical review; implementation intentionally unchanged from canonical v4.7.109.  
+**Canonical baseline:** owner-declared canonical v4.7.109 (`ea0b399e2f73759fa29982fc1b85d5bf446f6fd90eb324dec2902b333c7c6a74`; Git `cd9085ee40343d542a66b84948c27f7dd91a40c7`; 310 files).  
+**Decision:** D-0147.  
+**Implementation boundary:** architecture/documentation only. Disposable v4.7.110/v4.7.111 probes are evidence, not production donors or release lineage.
+
+D-0147 refines the historical GIANTS Completion Acceptance Boundary without replacing its default. A completed worker remains where GIANTS finishes it unless its realised physical occupancy later becomes materially obstructive to continuing active demand and the user has enabled Automatic Terminal Egress.
+
+### 0T.1 Terminal Occupancy trigger, not post-job housekeeping
+
+Job completion does not itself authorise movement. A completed assembly may remain exactly where GIANTS left it indefinitely while harmless.
+
+A **Terminal Egress obligation** may arise only when positive current Situation evidence establishes that the completed assembly's realised **Terminal Occupancy** materially obstructs Committed Demand, Potential Demand or another positively supported immediate continuation requirement of an active worker.
+
+Multiple completed assemblies remain independent Terminal Occupancy subjects. A three-worker Operation does not create a global parking problem: each completed assembly is considered only if and when its own realised occupancy becomes obstructive.
+
+D-0147 does not infer a correct parking place and does not attempt to tidy finished workers away pre-emptively.
+
+### 0T.2 Mandatory supported compaction before translation
+
+Once Terminal Egress is admitted, the completed assembly first enters its **minimum positively supported transit configuration** where a meaningful footprint-reducing configuration exists.
+
+This stage is explicit because a smaller configuration:
+
+- may resolve the Terminal Occupancy without translation;
+- reduces the footprint presented to continuing traffic;
+- reduces, but does not eliminate, exposure to terrain/static-object contact during any subsequent boundary crossing.
+
+An assembly already effectively compact, or one with no meaningful supported configuration reduction, satisfies this stage without synthetic fold actuation. Fold-interface presence alone is not Compact Configuration authority.
+
+If compaction alone removes the obstruction, the obligation is satisfied and no translational egress is authorised.
+
+### 0T.3 Boundary-Normal Egress Objective
+
+If translation remains necessary, the egress objective is **outward displacement toward the locally nearest Field Boundary**, sufficient to vacate the continuing Field World demand that created the Terminal Occupancy obligation.
+
+The objective is boundary-relative, not vehicle-forward. A completed assembly parallel and close to a field edge may therefore require a primarily lateral displacement relative to its current heading. Architecture does not prescribe forward, reverse or a steering law; implementation may use whichever single simple supported control expression can realise the outward objective.
+
+The Field Boundary establishes where outward is. It does **not** prove that the immediate extra-field margin is traversable, obstacle-free or generally safe.
+
+### 0T.4 One simple bounded manoeuvre; no King-like search
+
+A **Bounded Terminal Egress** has one purpose, one outward objective and at most one simple continuous bounded translational manoeuvre after compaction.
+
+It does not authorise:
+
+- local Refuge/King discovery or continuous escape-space maintenance;
+- selection of a best Terminal Clearance Region or parking place;
+- field-centre relocation;
+- navigation across the field to a different boundary;
+- alternate-boundary search after failure;
+- multi-leg lateral/rearward/forward choreography;
+- repeated progressively clever attempts;
+- global coordination of completed assemblies.
+
+If the one supported outward manoeuvre cannot be established or cannot achieve sufficient clearance within its bounded authority, **Terminal Egress Exhaustion** is reached. Exhaustion transfers the unresolved physical responsibility to the player; it does not reopen a broader search space.
+
+This boundary is deliberate protection against reintroducing the retired King/continuous Refuge architecture under a different name.
+
+### 0T.5 Post-Job Actuation Authority — empirically supported capability
+
+Disposable v4.7.110 evidence established that a genuinely completed assembly can be translated through the GIANTS vehicle-driving primitive while its original Job Episode remains authoritatively ended and without starting/restarting a GIANTS AI job. A bounded 5 m / 3 km/h proof completed and stopped cleanly with the original episode still `ENDED`.
+
+This establishes **Post-Job Actuation Authority** as a mechanically available capability. It does not by itself authorise production use; D-0147 supplies the narrow semantic purpose for which future implementation may request that capability.
+
+Productive completion remains completion. Terminal Egress is physical occupancy resolution, not resurrection of productive intent.
+
+### 0T.6 Player Claim is absolute and sticky
+
+**Player Claim** occurs when positive evidence establishes that the player has entered the completed assembly.
+
+Disposable v4.7.110 R4 evidence validated `vehicle:getIsEntered()` as a direct mechanical witness: the claim transition occurred with 204 direct drive calls and the probe ended with the same count, demonstrating zero further OuttaMyWay drive calls after claim.
+
+Architecturally:
+
+- OuttaMyWay never acquires or retains Terminal Egress actuation authority over a player-entered assembly;
+- Player Claim immediately terminates any active Post-Job Actuation Authority;
+- responsibility transfers to the player for that Terminal Occupancy episode;
+- leaving the vehicle again does not permit OuttaMyWay to reacquire that same completed-assembly obligation.
+
+Player Claim is an authority boundary, not one condition inside a scenario-specific decision tree.
+
+### 0T.7 Automatic Terminal Egress is user-configurable
+
+Automatic Terminal Egress must be exposed as a user-configurable policy switch.
+
+- **Off:** preserve the historical GIANTS Completion Acceptance behaviour exactly; completed assemblies remain where GIANTS leaves them and relocation is the player's responsibility.
+- **On:** permit D-0147's narrow exception when an unclaimed completed assembly positively obstructs continuing active demand and one Bounded Terminal Egress is supportable.
+
+The eventual default value is a product/validation decision and is not selected by this architecture candidate.
+
+### 0T.8 Zero-Configuration Compatibility and optional declared work intent
+
+Terminal Egress must remain safe for the ordinary GIANTS workflow in which the player simply starts the worker without visiting AI job-parameter screens.
+
+Disposable v4.7.111 evidence showed that `getAIModeFieldCourseSettings()` can expose useful positive settings such as `workHeadlands` and `headlandsFirst` after GIANTS materialises a `FieldCourseSettings` object, but a normally started default job may keep that object unavailable throughout observation.
+
+Therefore:
+
+- available `workHeadlands` may positively describe the declared productive phase set;
+- available `headlandsFirst` may positively describe phase ordering when headland work is enabled;
+- absent settings mean **unknown**, never assumed defaults;
+- these settings may enrich demand understanding but are never prerequisites for Terminal Egress admission or safety.
+
+This is **Zero-Configuration Compatibility**: OuttaMyWay must not require optional player ceremony to remain safe.
+
+### 0T.9 Relationship to D-0041 and implementation freeze
+
+D-0041 remains authoritative for ordinary job completion: accept GIANTS' realised completion disposition and do not infer a parking destination. D-0147 refines only the exceptional case where that realised occupancy later obstructs continuing active demand.
+
+No Terminal Egress production implementation is included in v4.7.112. After canonicalisation, implementation discovery must start from this narrow contract and may be abandoned if Reality shows that simple support requires a growing family of IF/THEN/ELSE cases, exhaustive margin qualification or route planning.
+
+---
+
 ## v4.7.99 Trajectory-Based Opposed Corridor Passage — normative candidate precedence
 
 **Status:** accepted architecture for owner canonical review; implementation intentionally remains bounded v4.7.98 behaviour.  

@@ -1,3 +1,14 @@
+# v4.7.112 immediate roadmap — canonicalise D-0147 before implementation
+
+1. Review/canonicalise the exact v4.7.112 architecture-only candidate if accepted.
+2. Keep canonical v4.7.109 traffic/passage behaviour unchanged during canonicalisation.
+3. If Terminal Egress is selected as the next implementation objective, start with the smallest expression: completed/unclaimed Terminal Occupancy admission -> supported compaction -> one boundary-relative outward manoeuvre -> settle or Player Escalation.
+4. Add the user-configurable Automatic Terminal Egress switch before autonomous production movement is enabled; default remains a later validation/product decision.
+5. Treat growth into destination search, field-centre relocation, alternate-boundary routing, repeated attempts, margin-world modelling or global parking coordination as evidence to stop rather than broaden automatically.
+6. Consume `workHeadlands` / `headlandsFirst` only opportunistically when positively available; preserve Zero-Configuration Compatibility.
+
+---
+
 # v4.7.109 immediate roadmap — canonicalise plateau, then discuss enhancements
 
 1. Review the exact v4.7.109 candidate and evidence fingerprints.

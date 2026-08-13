@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.109 CANONICAL CANDIDATE — D-0146 Step-2 active passage plus Settled Relationship Dissolution.
+-- FS25_OuttaMyWay v4.7.112 CANONICAL CANDIDATE — v4.7.109 D-0146 Candidate behaviour preserved; D-0147 is architecture-only.
 --
 -- Situation Assessment owns recognition of the supported encounter.  This
 -- module consumes cooperativePassageKnowledge and publishes one joint

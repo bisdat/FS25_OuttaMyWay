@@ -1,3 +1,25 @@
+# v4.7.112 D-0147 glossary addendum
+
+**Bounded Terminal Egress** — optional post-job clearance of a positively obstructive completed assembly by supported compaction and, only if still necessary, one simple continuous bounded outward manoeuvre toward the local Field Boundary.
+
+**Boundary-Normal Egress Objective** — sufficient outward displacement toward the locally nearest Field Boundary. It describes purpose/direction, not a requirement to drive vehicle-forward or to follow an exact mathematical normal.
+
+**Post-Job Actuation Authority** — mechanically demonstrated ability to move a genuinely completed assembly without resurrecting or creating a GIANTS AI Job Episode; production use still requires a valid architectural purpose.
+
+**Player Claim** — positive evidence that the player entered the completed assembly. Player Claim immediately pre-empts Terminal Egress authority and remains responsibility transfer for that Terminal Occupancy episode after the player later exits.
+
+**Terminal Egress Exhaustion** — the bounded outward action is unsupported or cannot achieve sufficient clearance; the architectural consequence is Player Escalation rather than expanded relocation/search.
+
+**Independent Terminal Egress** — each obstructive completed assembly is handled as its own Terminal Occupancy obligation; several finished workers do not create a global relocation/parking problem.
+
+**Zero-Configuration Compatibility** — requirement that OuttaMyWay remain safe when a player starts a normal GIANTS job without opening or altering AI job parameters.
+
+**Declared Productive Phase Set** — optional positive GIANTS configuration evidence describing whether headland work is part of the worker's productive plan (`workHeadlands` when a materialised `FieldCourseSettings` object exposes it).
+
+**Declared Work-Phase Order** — optional positive GIANTS configuration evidence describing headland-first versus up/down-first ordering (`headlandsFirst`) when headland work is enabled. Absence of the settings object means unknown, not assumed defaults.
+
+---
+
 # v4.7.99 D-0146 glossary addendum
 
 **Established Trajectory** — coherent recent physical direction/corridor that persists through short-lived deviations but is superseded by sustained contradictory motion.

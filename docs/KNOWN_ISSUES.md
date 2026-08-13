@@ -1,3 +1,14 @@
+# v4.7.112 candidate incompleteness / D-0147 implementation boundary
+
+- D-0147 Bounded Terminal Egress is accepted architecture only; production runtime remains canonical v4.7.109 behaviour.
+- Immediate extra-field margin traversability is not generally known merely from the Field Boundary. The boundary establishes outward direction, not environmental safety.
+- No production mechanism yet establishes whether one boundary-relative post-job manoeuvre is sufficiently supported.
+- Automatic Terminal Egress requires a user switch, but its eventual default is deliberately unresolved.
+- Optional `FieldCourseSettings` evidence may be absent in ordinary default-start jobs; absence must never be replaced with assumed defaults.
+- General parking, field-centre relocation, alternate-boundary search, repeated egress and King/Refuge-style Terminal Clearance Region search remain explicitly out of scope.
+
+---
+
 # v4.7.109 candidate incompleteness / parked work
 
 - v4.7.102 remains canonical until explicit owner declaration; v4.7.109 is a candidate.

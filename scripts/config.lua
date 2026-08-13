@@ -1,13 +1,13 @@
--- FS25_OuttaMyWay v4.7.109 CANONICAL CANDIDATE — D-0146 three-worker stability plateau.
--- Owner-declared v4.7.102 is canonical. v4.7.105 live evidence validated generic three-worker Step-2 passage but exposed late Action-Space loss during a Current Excursion.
--- D-0144 simplifies the governing Situation model while preserving D-0143 bounded TS015 Cooperative Passage and D-0141 follower Regulation.
--- King Reserve, continuous Refuge discovery, chessboard colouring/continuous Productive History and Successor Rook prediction are retired from governing production architecture.
--- General production Control authority remains disabled; D-0146 Step-2 compact actuation is admitted from current physical/configuration evidence and revalidated by Control.
+-- FS25_OuttaMyWay v4.7.112 CANONICAL CANDIDATE — D-0147 Bounded Terminal Egress architecture.
+-- Owner-declared v4.7.109 is canonical. This candidate changes architecture/documentation and release identity only.
+-- D-0147 keeps GIANTS Completion Acceptance as the default and defines an optional bounded post-job egress exception; production Terminal Egress is NOT implemented.
+-- D-0146 Cooperative Passage and all v4.7.109 traffic/Control behaviour remain unchanged.
+-- King Reserve, continuous Refuge discovery and Terminal parking/region search remain outside governing production architecture.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.109"
-OuttaMyWay.ARCHITECTURE_VERSION = "4.7.99"
+OuttaMyWay.VERSION = "4.7.112"
+OuttaMyWay.ARCHITECTURE_VERSION = "4.7.112"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000
@@ -199,7 +199,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
 OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "4.7.109 D-0146 THREE-WORKER STABILITY CANDIDATE"
+OuttaMyWay.BUILD_LABEL = "4.7.112 D-0147 TERMINAL EGRESS ARCHITECTURE CANDIDATE"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720

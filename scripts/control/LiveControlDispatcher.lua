@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.109 CANONICAL CANDIDATE — architecture-alignment live Control dispatcher.
+-- FS25_OuttaMyWay v4.7.112 CANONICAL CANDIDATE — v4.7.109 live Control behaviour preserved; D-0147 is architecture-only.
 --
 -- This module is the only automatic bridge from a sealed live Decision /
 -- Commitment application into physical Control. D-0146 Step-2 adds an active

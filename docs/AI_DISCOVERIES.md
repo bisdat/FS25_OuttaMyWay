@@ -1,3 +1,12 @@
+## 2026-08-13 — post-job authority and GIANTS AI settings observations
+
+- **Post-Job Actuation Authority supported:** after canonical Job Episode termination, disposable v4.7.110 directly moved Condor 5 m at a 3 km/h cap and stopped cleanly while the authoritative original episode remained `ENDED` and no replacement AI job appeared.
+- **Player Claim direct witness supported:** `vehicle:getIsEntered()` changed to true during the R4 movement proof; direct drive-call count was 204 at claim and 204 at probe termination, establishing zero further OuttaMyWay driving calls after player entry.
+- **Probe-plumbing failures retained as process evidence:** earlier revisions incorrectly attempted a second transient GIANTS completion proof, then compared architectural Assembly ID with physical reference key. The corrected probes consumed canonical `JobEpisodeAdmission` status and repository `IdentityRegistry` conventions.
+- **Declared Productive Phase Set:** when GIANTS materialises `FieldCourseSettings`, `workHeadlands=false` means the productive plan excludes headland work; `true` includes a headland productive phase. This does not imply the headland/Turning Rank area is spatially unused because manoeuvring demand may remain.
+- **Declared Work-Phase Order:** when headland work is enabled, `headlandsFirst` directly exposes headland-first versus up/down-first ordering.
+- **Settings availability is opportunistic:** opening/changing the AI settings screen caused the object to become readable and stable, but a normal default-start job produced `settingsAvailable=false`/`SETTINGS_NIL` while field work was definitely active. Do not infer default values from absence and do not require player interaction to make OuttaMyWay safe.
+
 ## 2026-08-10 — D-0141 aligned follower-protection findings
 
 - **Complementary follower counterexamples:** v4.7.69 proved the historical manoeuvre-envelope implementation can grant follower authority remotely; v4.7.70 proved that removing follower authority entirely allows a genuine current line-astern boundary encounter to consume the leader's Action Space and block both workers. The concept is supported; the old representation is not.

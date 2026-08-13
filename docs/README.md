@@ -1,3 +1,15 @@
+# Current architecture / implementation lineage — v4.7.112 canonical candidate
+
+Owner-declared canonical is v4.7.109 (`ea0b399e2f73759fa29982fc1b85d5bf446f6fd90eb324dec2902b333c7c6a74`; Git `cd9085ee40343d542a66b84948c27f7dd91a40c7`; 310 files). v4.7.112 records **D-0147 Bounded Terminal Egress** as architecture only; canonical v4.7.109 traffic/passage runtime behaviour is otherwise unchanged.
+
+D-0147 keeps GIANTS Completion Acceptance as the default. Only a completed, unclaimed assembly whose realised Terminal Occupancy positively obstructs continuing active demand may, when the user-enabled policy allows it, compact and attempt one simple bounded outward manoeuvre toward the locally nearest Field Boundary. Player Claim ends authority immediately; unsupported/exhausted cases belong to the player.
+
+Do not interpret D-0147 as parking, Terminal Clearance Region search, field-centre relocation or King/Refuge revival. Disposable v4.7.110/v4.7.111 probes are evidence only.
+
+Read `ARCHITECTURE.md` D-0147 first, then `DECISION_LOG.md`, `PROJECT_STATUS.md`, `ARCHITECTURE_CODE_ALIGNMENT.md`, `ENGINEERING_JOURNAL.md`, `KNOWN_ISSUES.md` and `ROADMAP.md`.
+
+---
+
 # Current architecture / implementation lineage — v4.7.109 canonical candidate
 
 Owner-declared canonical remains v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files) until explicit owner canonicalisation. v4.7.109 is a release/provenance-only successor to the live-validated v4.7.108 implementation.

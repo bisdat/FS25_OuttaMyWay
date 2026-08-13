@@ -1,3 +1,27 @@
+# v4.7.112 CANONICAL CANDIDATE handover — D-0147 Bounded Terminal Egress
+
+**Canonical baseline:** owner-declared v4.7.109, SHA-256 `ea0b399e2f73759fa29982fc1b85d5bf446f6fd90eb324dec2902b333c7c6a74`, Git `cd9085ee40343d542a66b84948c27f7dd91a40c7`, 310 files.
+
+## Candidate purpose
+
+Canonicalise the post-v4.7.109 architectural discussion before implementation. D-0147 narrowly refines the historical GIANTS Completion Acceptance Boundary for positively obstructive Terminal Occupancy. Production runtime behaviour remains canonical v4.7.109 aside from release/version identity.
+
+## Governing boundary
+
+Automatic Terminal Egress is optional. A harmless completed assembly is untouched. An obstructive unclaimed completed assembly may compact; only if still necessary may it receive one simple continuous bounded outward manoeuvre toward the nearest local Field Boundary. Player Claim ends authority immediately and permanently for that Terminal Occupancy episode. Unsupported/exhausted egress belongs to the player.
+
+Do not turn this into parking, Region Fit, King/Refuge search, field-centre relocation, alternate-boundary routing or global completed-worker coordination.
+
+## Evidence retained, code discarded
+
+Disposable v4.7.110 proved post-job actuation and Player Claim pre-emption. Disposable v4.7.111 established opportunistic `workHeadlands` / `headlandsFirst` visibility and the default-start settings gap. These are empirical records only; no disposable module is production lineage.
+
+## Continuation
+
+If the exact v4.7.112 candidate is canonicalised, implementation discovery begins from the canonical architecture—not from disposable probe code—and should be abandoned/escalated to player responsibility if a simple bounded expression cannot be supported.
+
+---
+
 # v4.7.109 CANONICAL CANDIDATE handover — three-worker stability plateau
 
 **Canonical baseline:** owner-declared v4.7.102, SHA-256 `f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`, Git `cf51498316714c568b75ee6e65dab544ccbe7af3`, 310 files.

@@ -1,3 +1,21 @@
+# 2026-08-13 — D-0147 Bounded Terminal Egress architecture closure
+
+**Observe:** canonical v4.7.109 closed the three-worker Cooperative Passage fixing cycle, but end-of-job evidence showed a different residual problem: GIANTS may finish a worker in a position that is perfectly acceptable for that worker yet deterministically obstructs another still-active worker. In the two-sprayer TS015 case the first finisher can block the other's final metres; with S 416, Condor and Patriot may both finish harmlessly until S 416's remaining work later reaches one of them.
+
+**Discuss:** a general answer to “where should the completed worker park?” immediately recreates Refuge/King-style region search, future-demand modelling and route planning. The project instead separated ordinary GIANTS completion acceptance from the exceptional case of positively obstructive Terminal Occupancy.
+
+**Capability proof:** disposable v4.7.110 demonstrated clean post-job movement after the original Job Episode was authoritatively `ENDED`: 5 m at 3 km/h completed without AI-job restart. A later Player Claim test using `vehicle:getIsEntered()` recorded 204 direct drive calls at claim and 204 at termination, proving zero further OuttaMyWay drive calls after player entry. Earlier disposable revisions failed only in probe plumbing (transient completion re-proof and Assembly-ID/reference-key mismatch), not in the actuation hypothesis.
+
+**AI-intent observation:** disposable v4.7.111 showed materialised `FieldCourseSettings` directly expose `workHeadlands` and `headlandsFirst`; however a normally started default job can leave the settings object nil throughout observation. These settings are therefore opportunistic positive evidence only. Absence means unknown. This establishes Zero-Configuration Compatibility as a requirement.
+
+**Decision — D-0147:** retain GIANTS completion disposition unless realised Terminal Occupancy positively obstructs continuing demand. If the user enables Automatic Terminal Egress, compact the completed unclaimed assembly to its minimum supported transit footprint; if still obstructive, allow one simple continuous bounded outward manoeuvre toward the locally nearest Field Boundary. The direction is boundary-relative, not always forward. Failure/exhaustion transfers responsibility to the player and must not open a broader destination/search problem.
+
+**Rejected direction:** Terminal Clearance Region optimisation, field-centre parking, alternate-boundary search, repeated manoeuvre escalation and global relocation of several completed assemblies. These would recreate the retired King/continuous Refuge problem at a different lifecycle point.
+
+**Record:** v4.7.112 is architecture/documentation only. Disposable probe code is not production lineage. Reality remains the gate before any implementation is promoted.
+
+---
+
 # 2026-08-13 — v4.7.108 clean live validation closes corrective cycle
 
 **Observation:** final three-worker validation produced five D-0146 Cooperative Passage settlements at `SUCCEEDED`, 25/25 Passage Guide gates reached, zero Passage Reassessment, zero safe-abandon escalation and no OuttaMyWay Lua error stack.

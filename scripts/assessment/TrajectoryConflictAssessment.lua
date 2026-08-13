@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.109 CANONICAL CANDIDATE — D-0146 trajectory/conflict Knowledge with Settled Relationship Dissolution evidence.
+-- FS25_OuttaMyWay v4.7.112 CANONICAL CANDIDATE — v4.7.109 D-0146 trajectory/conflict behaviour preserved; D-0147 is architecture-only.
 -- Situation Assessment owns the persistent state supplied to this module. This module
 -- consumes only sealed/current Situation evidence and has no Candidate/Decision/Control authority.
 

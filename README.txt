@@ -1,3 +1,19 @@
+FS25_OuttaMyWay v4.7.112 CANONICAL CANDIDATE — D-0147 BOUNDED TERMINAL EGRESS ARCHITECTURE
+
+BASELINE
+Owner-declared canonical v4.7.109 (`ea0b399e2f73759fa29982fc1b85d5bf446f6fd90eb324dec2902b333c7c6a74`; git `cd9085ee40343d542a66b84948c27f7dd91a40c7`; 310 files). v4.7.112 remains a candidate until explicit owner canonicalisation.
+
+CHARACTER
+Architecture/documentation and release identity only. No Terminal Egress production code and no intentional traffic/passage/Control behavioural change from canonical v4.7.109.
+
+D-0147
+Keep GIANTS completion disposition by default. If a completed unclaimed assembly later positively obstructs continuing active demand and the user enables the capability: compact to the minimum supported transit footprint; if still necessary attempt one simple continuous bounded outward manoeuvre toward the local Field Boundary; immediately surrender on Player Claim; escalate to the player if unsupported or exhausted. No parking/Region search/King revival.
+
+NEXT
+Canonicalise the exact reviewed candidate if accepted. Only then consider implementation discovery from the canonical architecture.
+
+---
+
 FS25_OuttaMyWay v4.7.109 CANONICAL CANDIDATE — D-0146 THREE-WORKER STABILITY PLATEAU
 
 BASELINE
