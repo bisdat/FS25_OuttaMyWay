@@ -477,7 +477,7 @@ def test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidenc
     operation=(ROOT/"scripts"/"identity"/"OperationAdmission.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
     assert "MEMBERSHIP_UPDATED_INCOMPLETE" in operation
     assert "removalDeferred=true" in operation
@@ -500,7 +500,7 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
     assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" not in config
     for forbidden in ("predictPair(", "evaluateShadowPair(", "composePositiveEvidence(", "legacyShadowPositive", "legacyTCPA", "legacyDCPA"):
@@ -526,7 +526,7 @@ def test_v4728_traffic_policeman_architecture_is_documented_without_production_c
     concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     for token in ("Traffic Policeman","Demonstrated Traversability","Revelation Oscillation"):
         assert token in adr
         assert token in glossary
@@ -546,7 +546,7 @@ def test_v4729_staged_recovery_architecture_is_documented_without_production_con
     glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     for token in (
         "Progress priority is not exclusive movement authority",
         "positively available recovery corridor",
@@ -571,7 +571,7 @@ def test_v4730_encounter_maturation_architecture_is_documented_without_productio
     concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     for token in ("Encounter Maturation","Action-Space Compression"):
         assert token in adr23
         assert token in architecture
@@ -613,7 +613,7 @@ def test_v4732_productive_continuation_preference_is_documented_without_producti
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     for token in (
         "Productive Continuation Preference",
         "Productive-Line Cross-Assembly Replication",
@@ -644,7 +644,7 @@ def test_v4733_speed_ordering_evidence_asymmetry_and_configuration_footprint_aut
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     for token in (
         "Native Speed-Ordering Variability",
         "Productive-State Evidence Asymmetry",
@@ -678,7 +678,7 @@ def test_v4736_prototype22_is_manual_capability_gate_not_production_traffic_poli
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert 'PROTOTYPE_22_CAPABILITY_GATE_ENABLED = true' in config
     for rel in (
@@ -735,7 +735,7 @@ def test_v4736_p22_spatial_reposition_requires_real_compaction_and_allows_fold_m
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert 'PROTOTYPE_22_HUD_ENABLED = false' in config
     assert 'PROTOTYPE_22_SPAN_REDUCTION_MIN_M' in config
@@ -764,7 +764,7 @@ def test_v4737_ts015_autonomous_relocation_characterisation_harness_is_explicit_
     gate=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
     harness=(ROOT/"scripts"/"prototypes"/"Prototype22TS015Relocation.lua").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert 'Prototype22TS015Relocation.lua' in main
     assert main.index('Prototype22TS015Relocation.lua') < main.index('Prototype22CapabilityGate.lua')
@@ -805,7 +805,7 @@ def test_v4739_ts015_restoration_first_handoff_returns_to_rejoin_anchor_before_g
     harness=(ROOT/"scripts"/"prototypes"/"Prototype22TS015Relocation.lua").read_text(encoding="utf-8")
     drive=(ROOT/"scripts"/"prototypes"/"Prototype22DriveAuthority.lua").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     assert 'PROTOTYPE_22_TS015_REJOIN_FORWARD_M = 6.0' in config
     assert 'PROTOTYPE_22_TS015_REJOIN_ORIENTATION_SPEED_KMH = 5.0' in config
     assert 'PROTOTYPE_22_TS015_REJOIN_ORIENTATION_FORWARD_DOT = 0.25' in config
@@ -835,7 +835,7 @@ def test_v4740_guarded_recovery_architecture_consolidation_preserves_non_product
     handover=(ROOT/"docs"/"ENGINEERING_HANDOVER.md").read_text(encoding="utf-8")
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     for token in (
         "Native Continuation Restoration",
@@ -863,7 +863,7 @@ def test_v4741_guarded_recovery_observe_exhaustion_contract_is_documented_withou
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     roadmap=(ROOT/"docs"/"ROADMAP.md").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert "D-0123" in decision
     for token in ("Vulnerable Space", "Convergent Projection"):
@@ -888,7 +888,7 @@ def test_v4742_traffic_policeman_decision_policy_is_implemented_without_unresolv
     passive=(ROOT/"scripts"/"candidates"/"PassiveLiveCandidateSupport.lua").read_text(encoding="utf-8")
     roadmap=(ROOT/"docs"/"ROADMAP.md").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert 'TrafficPolicemanDecisionPolicy.lua' in main
     assert main.index('TrafficPolicemanDecisionPolicy.lua') < main.index('DecisionSelector.lua')
@@ -1032,7 +1032,7 @@ def test_v4758_progression_preservation_probe_is_passive_and_knowledge_backed():
     op=(ROOT/"scripts"/"contracts"/"OperationalPicture.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"ProgressionPreservationProbe.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     assert 'PROGRESSION_PRESERVATION_PROBE_ENABLED = true' in config
     assert 'scripts/diagnostics/ProgressionPreservationProbe.lua' in main
     assert 'progressionEvidence = {}' in source
@@ -1111,7 +1111,7 @@ def test_v4765_d0136_productive_coverage_residual_settlement_is_intent_based_and
     residual=(ROOT/"scripts"/"diagnostics"/"ProductiveCoverageResidualProbe.lua").read_text(encoding="utf-8")
     coverage=(ROOT/"scripts"/"diagnostics"/"DemonstratedProductiveCoverageProbe.lua").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     assert 'PRODUCTIVE_COVERAGE_RESIDUAL_PROBE_ENABLED = false' in config
     assert 'scripts/diagnostics/ProductiveCoverageResidualProbe.lua' not in main
     assert 'addModEventListener(OuttaMyWay.productiveCoverageResidualProbe)' not in main
@@ -1161,7 +1161,7 @@ def test_v4767_d0138_native_field_worker_drive_command_probe_is_passive_and_sdk_
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     d0137=(ROOT/"docs"/"prototypes"/"PROTOTYPE_32_NATIVE_AI_DRIVE_SIGNAL_SHADOW.md").read_text(encoding="utf-8")
     d0138=(ROOT/"docs"/"prototypes"/"PROTOTYPE_33_NATIVE_FIELD_WORKER_DRIVE_COMMAND_SHADOW.md").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     assert 'NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_ENABLED = true' in config
     assert 'scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua' in main
     assert 'addModEventListener(OuttaMyWay.nativeFieldWorkerDriveCommandProbe)' in main
@@ -1186,7 +1186,7 @@ def test_v4768_d0136_settlement_future_space_uses_explicit_observation_adapter()
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     residual=(ROOT/"scripts"/"diagnostics"/"ProductiveCoverageResidualProbe.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     assert 'futureSpaceWorkerFromTrack' in residual
     assert 'activeObserved=Probe.trackIsActive(track)' in residual
     assert 'local settlingWorker=Probe.futureSpaceWorkerFromTrack(settlingTrack)' in residual
@@ -1315,7 +1315,7 @@ def test_v47100_d0146_step1_remains_situation_owned_knowledge_under_step2_consum
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "4.7.102"' in config
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
     assert "scripts/assessment/TrajectoryConflictAssessment.lua" in main
     assert main.index("scripts/assessment/TrajectoryConflictAssessment.lua") < main.index("scripts/assessment/SituationAssessment.lua")
     for token in ("updateTrajectories","classifyPairs","ESTABLISHED_TRAJECTORY","CURRENT_EXCURSION","POTENTIAL_OPPOSED_CORRIDOR_CONFLICT","ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT","D0146_SITUATION_KNOWLEDGE"):
@@ -1348,13 +1348,19 @@ def test_v47101_d0146_step2_is_active_candidate_owned_and_control_executes_only_
     assert "scripts/assessment/PassageCapabilityAssessment.lua" in main
     assert "scripts/candidates/LocalPassagePlanner.lua" in main
     assert 'D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED = true' in config
-    assert "D0146_P23_COMPACT_GUIDED_PASSAGE_V1" in fitness
-    for token in ("Passage Arrangement","Progressive Passage Search","pairSweepSupport","guideFieldSupport","satisficed=true"):
+    assert "D0146_OPTIONAL_CONFIGURATION_GUIDED_PASSAGE_V3" in fitness
+    assert "vehicleNameAdmissionGate=false" in fitness
+    assert "Condor Endurance II" not in fitness and "Patriot 4450" not in fitness
+    assert "Condor Endurance II" not in planner and "Patriot 4450" not in planner
+    for token in ("Passage Arrangement","Progressive Passage Search","pairSweepSupport","guideFieldSupport","thirdPartyGuideSupport","satisficed=true"):
+        assert token in planner
+    for token in ("thirdPartyConstraints","LOCAL_SPATIAL_CONSTRAINT_THIRD_PARTY_CURRENT_OCCUPANCY","CURRENT_POSITIVE_THIRD_PARTY_PHYSICAL_OCCUPANCY"):
         assert token in planner
     assert "D0146_COOPERATIVE_PASSAGE_STEP2_TEST" in support
     assert 'architecture="D0146_STEP2"' in support
     assert "D0146_COOPERATIVE_PASSAGE" in dispatcher
     assert "_startGuideGate" in control and "PASSAGE_REASSESSMENT" in control
+    assert "_thirdPartySupport" in control and "PASSAGE_SUPPORT_LOSS_THIRD_PARTY_ACTIVE_LEG" in control
     assert "controlBroadening=false" in control
     assert "sharedRightX*lateralM*p.sideSign" in control  # retained D-0143 donor only
     assert "trajectoryKnowledge" not in control and "opposedCorridorKnowledge" not in control
@@ -1362,4 +1368,139 @@ def test_v47101_d0146_step2_is_active_candidate_owned_and_control_executes_only_
     # But continuously changing values are no longer part of transition signatures.
     sig=validator[validator.index("local signature=table.concat({",validator.index("_logTrajectoryConflictKnowledge")):validator.index("if self.trajectoryLogSignatures",validator.index("_logTrajectoryConflictKnowledge"))]
     assert "currentDirectionX" not in sig and "formationDistanceM" not in sig
+
+
+
+def test_v47103_d0146_relationship_succession_retires_stale_follower_and_local_passage_is_operation_aware():
+    situation=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
+    follower=(ROOT/"scripts"/"assessment"/"FollowerBoundaryDemandAssessment.lua").read_text(encoding="utf-8")
+    planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
+    fitness=(ROOT/"scripts"/"assessment"/"PassageCapabilityAssessment.lua").read_text(encoding="utf-8")
+
+    assert situation.index("TrajectoryConflictAssessment.classifyPairs") < situation.index("FollowerBoundaryDemandAssessment.buildKnowledge")
+    assert "opposedCorridorKnowledge=opposedCorridorKnowledge" in situation
+    assert "ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION" in follower
+    assert "ESTABLISHED_OPPOSED_PASSAGE_INVALIDATES_FOLLOWER_BOUNDARY_PROTECTION" in follower
+    assert "D0146_POSITIVE_RELATIONSHIP_SUCCESSION" in follower
+    assert "operationMembers" in planner and "thirdPartyGuideSupport" in planner
+    assert "thirdPartyConstraints" in planner and "thirdPartyConstraints" in control
+    assert "PASSAGE_SUPPORT_LOSS_THIRD_PARTY_ACTIVE_LEG" in control
+    assert "vehicleNameAdmissionGate=false" in fitness
+    for text in (fitness,planner):
+        assert "Condor Endurance II" not in text and "Patriot 4450" not in text
+    for forbidden in ("driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
+        assert forbidden not in planner and forbidden not in fitness
+
+
+def test_v47104_d0146_configuration_reduction_is_optional_per_participant():
+    planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
+    support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
+    fitness=(ROOT/"scripts"/"assessment"/"PassageCapabilityAssessment.lua").read_text(encoding="utf-8")
+
+    assert "OPTIONAL_PER_PARTICIPANT_CONFIGURATION_REDUCTION" in planner
+    assert "CURRENT_REPRESENTED_LATERAL_ENVELOPE_ALREADY_WITHIN_PASSAGE_RESERVE" in planner
+    assert 'mode=compactRequired and "COMPACT_REQUIRED" or "RETAIN_CURRENT"' in planner
+    assert "passageConfiguration=plan.passageConfiguration" in support
+    assert "D0146_OPTIONAL_CONFIGURATION_GUIDED_PASSAGE_V3" in fitness
+    assert 'participant.configurationMode=="COMPACT_REQUIRED"' in control
+    assert 'participant.configurationMode~="RETAIN_CURRENT"' in control
+    assert "movementWaitsOnlyForRequiredReduction=true" in control
+    assert "RESTORE_SKIPPED" in control and "selective=true" in control
+    # The generic D-0146 path must no longer require both participants to be foldable.
+    d0146=control[control.index("function Control:_executeD0146JointRequests"):control.index("function Control:executeJointRequests")]
+    assert "D0146_PAIR_COMPACT_CAPABILITY_UNAVAILABLE" not in d0146
+    assert "foldA.foldableCount==0 or foldB.foldableCount==0" not in d0146
+
+def test_v47105_d0146_control_uses_giants_safe_value_record_traversal_for_candidate_collections():
+    control = (ROOT / "scripts/control/CooperativePassageControl.lua").read_text()
+    assert "for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.participants)" in control
+    assert "for _,constraint in OuttaMyWay.ValueRecord.ipairs(run.thirdPartyConstraints or {})" in control
+    assert "for index,gate in OuttaMyWay.ValueRecord.ipairs(run.guide.gates)" in control
+    assert "for _,entry in ipairs(plan.participants)" not in control
+    assert "for _,constraint in ipairs(run.thirdPartyConstraints or {})" not in control
+    assert "for index,gate in ipairs(run.guide.gates)" not in control
+
+
+def test_v47106_d0146_current_excursion_conserves_action_space_before_established_passage():
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    situation=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
+    assessment=(ROOT/"scripts"/"assessment"/"TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
+    support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+
+    assert 'OuttaMyWay.VERSION = "4.7.109"' in config
+    assert 'D0146_POTENTIAL_ACTION_SPACE_REGULATION_KMH = 8.0' in config
+    assert 'actionSpaceMaxSeparationM=OuttaMyWay.D0146_STEP2_LOCAL_PASSAGE_MAX_ENTRY_SEPARATION_M' in situation
+    assert 'actionSpaceRegulationKmh=OuttaMyWay.D0146_POTENTIAL_ACTION_SPACE_REGULATION_KMH' in situation
+
+    for token in (
+        "actionSpaceConservation", "currentCorridorOverlapOnAxis", "nativeForwardRateKmh",
+        "CURRENT_EXCURSION_CONSUMES_LOCAL_PASSAGE_ACTION_SPACE", "REGULATE_SUPPORTED",
+        "PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_RELATIONSHIP_MATURES_OR_POSITIVELY_DISSOLVES",
+        "resolutionSpaceRelationship", "positiveDissolution",
+        "D0146_TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION",
+    ):
+        assert token in assessment
+    assert 'result.negativeClearanceAuthority' not in assessment
+    assert 'negativeClearanceAuthority=false' in assessment
+    # Situation owns the semantic witness; it does not actuate.
+    for forbidden in ("executeControlRequest(", "setRegulationLease", "decisionCommitmentBoundary:apply"):
+        assert forbidden not in assessment and forbidden not in situation
+
+    for token in (
+        "d0146ActionSpaceRepresentation", "D0146_POTENTIAL_ACTION_SPACE_REGULATION",
+        "d0146ActionSpaceRegulationBridge", "D0146_PASSAGE_ACTION_SPACE_CONSERVATION",
+        "D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES",
+        '"d0146-cooperative-passage:"..tostring(item.relation.identity)',
+    ):
+        assert token in support
+    assert 'acceptedStates={"USABLE_WITH_UNCERTAINTY"}' in support
+
+    for token in ("applyD0146ActionSpaceDecision", "settleD0146ActionSpacePurpose", "D0146_ACTION_SPACE_PURPOSE_SETTLED"):
+        assert token in lifecycle
+    for token in (
+        'D0146_ACTION_SPACE_OWNER_TAG="D0146_ACTION_SPACE_CONSERVATION"',
+        "_dispatchD0146ActionSpace", "_releaseD0146ActionSpaceLease",
+        "_supersedeD0146ActionSpaceForCooperativePassage", "D0146_ACTION_SPACE_PASSAGE_SUPERSESSION",
+        "d0146ActionSpaceRelationshipState", "positiveDissolution",
+        "D0146_POTENTIAL_CONFLICT_RESOLUTION_SPACE_OBLIGATION_PERSISTS",
+    ):
+        assert token in dispatcher
+    dispatch_body=dispatcher[dispatcher.index("function Dispatcher:dispatch"):dispatcher.index("function Dispatcher:getRequests")]
+    assert dispatch_body.index("_dispatchD0146ActionSpace") < dispatch_body.index("local follower=self:_dispatchFollowerBoundary")
+    assert "trajectoryKnowledge" not in dispatcher
+    assert "currentExcursion" not in dispatcher and "nativeFieldWork" not in dispatcher
+    assert "currentCorridorOverlapOnAxis" not in dispatcher
+    assert "actionSpace=%s" in validator and "actionNative=%s" in validator and "actionCap=%s" in validator
+
+    # The v4.7.105 sealed-collection traversal contract remains mandatory on the
+    # active D-0146 control boundary; the new path must not regress it.
+    control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
+    assert "for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.participants)" in control
+    assert "for index,gate in OuttaMyWay.ValueRecord.ipairs(run.guide.gates)" in control
+
+def test_v47108_settled_relationship_dissolution_requires_positive_non_turn_continuation():
+    assessment=(ROOT/"scripts"/"assessment"/"TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+
+    for token in (
+        "positiveSettledContinuation",
+        'trajectory.contextEvidenceClass=="NON_TURN_LINE_ACTIVE"',
+        'motion.localIntentClassification=="SETTLED_CONTINUATION"',
+        "subjectSettledContinuation", "otherSettledContinuation",
+        "D0146_TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION",
+        "D0146_POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION",
+    ):
+        assert token in assessment
+    assert 'D0146_POSITIVE_STABLE_TRAJECTORY_RELATIONSHIP_DISSOLUTION' not in assessment
+    # Situation owns the settlement interpretation; Control remains semantic-only.
+    for forbidden in ("TURN_SEGMENT", "SETTLED_CONTINUATION", "productivePositive", "localIntentClassification"):
+        assert forbidden not in dispatcher
+    assert "settled=%s/%s" in validator
+    assert "relationshipReason=%s" in validator
 

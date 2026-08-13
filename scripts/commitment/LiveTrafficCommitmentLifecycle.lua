@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.57 TEST BUILD.
+-- FS25_OuttaMyWay v4.7.106 TEST BUILD — live Commitment lifecycle including D-0146 Potential Action-Space Conservation succession.
 -- Bounded live Commitment lifecycle catch-up for the autonomous initial-head-on
 -- test path. It uses the replacement-core Commitment/Obligation/Authority
 -- kernel; it does not introduce production Refuge Region or Durable Separation
@@ -334,6 +334,108 @@ function Lifecycle.settleFollowerBoundaryPurpose(runtime,commitmentId,bridge,evi
     end
     logInfo("FOLLOWER_BOUNDARY_PURPOSE_RETIRED commitment=%s pair=%s obligation=%s remainingObligations=%d terminal=%s reason=%s",
         tostring(commitmentId),tostring(bridge.pairKey),tostring(settledId or "NONE"),#remaining,tostring(terminal and terminal.state or "NO"),tostring(bridge.reason))
+    return {commitment=record,settledObligationId=settledId,remainingObligations=remaining,terminal=terminal},nil
+end
+
+local function d0146ActionSpaceBridge(candidate)
+    local basis=candidate and candidate.evidenceBasis or nil
+    local bridge=basis and basis.d0146ActionSpaceRegulationBridge or nil
+    if type(bridge)=="table" and type(bridge.conflictIdentity)=="string" and type(bridge.regulatedAssemblyId)=="string" then return bridge end
+    return nil
+end
+
+local function findD0146ActionSpaceObligation(runtime,commitmentId,conflictIdentity)
+    for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
+        local basis=obligation.basis
+        local outcome=obligation.requiredOutcome
+        if type(basis)=="table" and basis.kind=="D0146_PASSAGE_ACTION_SPACE_CONSERVATION" and basis.conflictIdentity==conflictIdentity
+            and type(outcome)=="table" and outcome.kind=="D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" then
+            return obligation
+        end
+    end
+    return nil
+end
+
+function Lifecycle.applyD0146ActionSpaceDecision(runtime,picture,evaluated)
+    if runtime==nil or picture==nil or evaluated==nil or evaluated.decision==nil then return nil,"MISSING_CONTEXT" end
+    local candidate=selectedCandidate(evaluated)
+    local bridge=d0146ActionSpaceBridge(candidate)
+    if bridge==nil or candidate.capability~="REGULATE_SPEED" then return nil,"SELECTED_D0146_ACTION_SPACE_CANDIDATE_UNAVAILABLE" end
+    local action=evaluated.decision.commitmentAction
+    local applied=nil
+    local record=nil
+    if action=="CREATE" then
+        local created,reason=Lifecycle.applyInitialDecision(runtime,picture,evaluated)
+        if created==nil then return nil,reason end
+        applied=created.application; record=created.commitment
+    elseif action=="MAINTAIN" or action=="REVISE" then
+        applied=runtime.decisionCommitmentBoundary:apply(picture,evaluated)
+        if applied==nil or type(applied.commitmentId)~="string" then return nil,"D0146_ACTION_SPACE_COMMITMENT_APPLICATION_UNRESOLVED" end
+        record=runtime.commitments:get(applied.commitmentId)
+    else
+        return nil,"D0146_ACTION_SPACE_DECISION_NOT_CREATE_MAINTAIN_OR_REVISE"
+    end
+    if record==nil or record.state~="ACTIVE" then return nil,"D0146_ACTION_SPACE_COMMITMENT_NOT_ACTIVE" end
+    local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or nil
+    if responsibility~=bridge.governingRequirementKey then return nil,"D0146_ACTION_SPACE_GOVERNING_REQUIREMENT_MISMATCH" end
+
+    local obligation=findD0146ActionSpaceObligation(runtime,record.identity,bridge.conflictIdentity)
+    if obligation==nil then
+        local specification=nil
+        for _,item in OuttaMyWay.ValueRecord.ipairs(candidate.obligationsCreated or {}) do
+            if type(item.requiredOutcome)=="table" and item.requiredOutcome.kind=="D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" then specification=item break end
+        end
+        if specification==nil then return nil,"D0146_ACTION_SPACE_OBLIGATION_SPECIFICATION_UNAVAILABLE" end
+        obligation=runtime.obligations:create({
+            origin=specification.origin,basis=specification.basis,ownerCommitmentId=record.identity,
+            requiredOutcome=specification.requiredOutcome,requiredAuthority=specification.requiredAuthority or {},
+            evidenceContract=specification.evidenceContract,ownershipClass=specification.ownershipClass,
+            transferPolicy=specification.transferPolicy or {},terminalDependency=specification.terminalDependency~=false,
+            creationEvidence={kind="D0146_ACTION_SPACE_REGULATION_SELECTED",decisionId=evaluated.decision.identity}
+        })
+        record=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(record,{obligationIds=appendCopy(record.obligationIds,obligation.identity),epoch=runtime.epochs:next()}))
+    end
+
+    local token=nil
+    for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(runtime.authorities:tokensForCommitment(record.identity)) do
+        if candidateToken.assemblyId==bridge.regulatedAssemblyId then token=candidateToken break end
+    end
+    local acquired=false
+    if token==nil then
+        local result,reason=Lifecycle.acquireSupportingRegulationAuthority(runtime,record.identity,bridge.regulatedAssemblyId,{governingPurpose=bridge.governingPurpose})
+        if result==nil then return nil,reason end
+        record=result.commitment; token=result.authorityToken; acquired=true
+    end
+    if token==nil or runtime.authorities:validate(token)~=true then return nil,"D0146_ACTION_SPACE_VALID_AUTHORITY_TOKEN_UNAVAILABLE" end
+    logInfo("D0146_ACTION_SPACE_DECISION_APPLIED decision=%s commitment=%s conflict=%s regulated=%s excursion=%s obligation=%s token=%s acquired=%s cap=%.2fkmh",
+        tostring(evaluated.decision.identity),tostring(record.identity),tostring(bridge.conflictIdentity),tostring(bridge.regulatedAssemblyId),tostring(bridge.excursionAssemblyId),
+        tostring(obligation.identity),tostring(token.identity),tostring(acquired),tonumber(bridge.requestedCapKmh) or 0)
+    return {application=applied,commitment=record,obligation=obligation,authorityToken=token,authorityAcquired=acquired,bridge=bridge},nil
+end
+
+function Lifecycle.settleD0146ActionSpacePurpose(runtime,commitmentId,bridge,evidence)
+    if runtime==nil or type(commitmentId)~="string" or type(bridge)~="table" or type(bridge.conflictIdentity)~="string" then return nil,"MISSING_D0146_ACTION_SPACE_SETTLEMENT_CONTEXT" end
+    local record=runtime.commitments:get(commitmentId)
+    if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then return nil,"D0146_ACTION_SPACE_COMMITMENT_NOT_LIVE" end
+    local obligation=findD0146ActionSpaceObligation(runtime,commitmentId,bridge.conflictIdentity)
+    local settledId=nil
+    if obligation~=nil then
+        local mode=bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_D0146_ACTION_SPACE_REGULATION" and "BASIS_CESSATION" or "SATISFACTION"
+        runtime.obligations:settle(obligation.identity,mode,evidence or {kind="D0146_ACTION_SPACE_PURPOSE_EXPIRED",reason=bridge.reason})
+        settledId=obligation.identity
+    end
+    local remaining=runtime.obligations:openForOwner(commitmentId)
+    record=runtime.commitments:get(commitmentId)
+    local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
+    local terminal=nil
+    if #remaining==0 and type(responsibility)=="string" and string.sub(responsibility,1,26)=="d0146-cooperative-passage:" then
+        local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {kind="D0146_ACTION_SPACE_PURPOSE_EXPIRED"},provenance={source="LiveTrafficCommitmentLifecycle.settleD0146ActionSpacePurpose"}})
+        runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
+        terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{kind="D0146_ACTION_SPACE_RELATIONSHIP_POSITIVELY_DISSOLVED",conflictIdentity=bridge.conflictIdentity,reason=bridge.reason})
+        record=terminal
+    end
+    logInfo("D0146_ACTION_SPACE_PURPOSE_SETTLED commitment=%s conflict=%s obligation=%s remainingObligations=%d terminal=%s reason=%s",
+        tostring(commitmentId),tostring(bridge.conflictIdentity),tostring(settledId or "NONE"),#remaining,tostring(terminal and terminal.state or "NO"),tostring(bridge.reason))
     return {commitment=record,settledObligationId=settledId,remainingObligations=remaining,terminal=terminal},nil
 end
 

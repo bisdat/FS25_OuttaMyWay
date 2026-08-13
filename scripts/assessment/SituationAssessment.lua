@@ -586,18 +586,6 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         end
     end
 
-    local followerBoundaryKnowledge=OuttaMyWay.FollowerBoundaryDemandAssessment.buildKnowledge({
-        currentSpace=currentSpace,futureSpace=futureSpace,motionEvidence=motionEvidence,productiveKnowledge=productiveKnowledge,
-        commitmentContext=commitmentContext,controlOutcomes=snapshot.controlOutcomes,operationByAssembly=operationByAssembly,
-        assemblyIdForReference=function(referenceKey) return assemblyIdForReference(map,referenceKey) end,
-        minHeadingDot=OuttaMyWay.FOLLOWER_BOUNDARY_CURRENT_ALIGNMENT_MIN_DOT or 0.99,
-        provisionalDurationSec=OuttaMyWay.FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC or 13.0,
-        establishedLateralRetentionM=OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_LATERAL_RETENTION_M or 1.0,
-        establishedAlignmentMinDot=OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_ALIGNMENT_MIN_DOT or 0.95,
-        establishedOpposedSuccessionMaxDot=OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_OPPOSED_SUCCESSION_MAX_DOT or -0.95,
-        clearanceFactor=OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR or 0.90
-    })
-
     local trajectoryKnowledge=OuttaMyWay.TrajectoryConflictAssessment.updateTrajectories(self.trajectoryTracks,{
         observationSnapshotId=snapshot.identity,timestamp=snapshot.timestamp,
         motionEvidence=motionEvidence,currentSpace=currentSpace,productiveKnowledge=productiveKnowledge,
@@ -612,12 +600,32 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         situations=situations,trajectoryKnowledge=trajectoryKnowledge,motionEvidence=motionEvidence,currentSpace=currentSpace,
         physicalSpaceEvidence=physicalSpaceEvidence,opposedMaxDot=OuttaMyWay.OPPOSED_TRAJECTORY_MAX_DOT,
         currentOpposedMaxDot=OuttaMyWay.OPPOSED_CURRENT_MAX_DOT,persistenceAlignmentMinDot=OuttaMyWay.TRAJECTORY_PERSISTENCE_ALIGNMENT_MIN_DOT,
-        currentStableDistanceM=OuttaMyWay.OPPOSED_CURRENT_STABLE_DISTANCE_M,minClosingRateMps=OuttaMyWay.OPPOSED_MIN_CLOSING_RATE_MPS
+        currentStableDistanceM=OuttaMyWay.OPPOSED_CURRENT_STABLE_DISTANCE_M,minClosingRateMps=OuttaMyWay.OPPOSED_MIN_CLOSING_RATE_MPS,
+        actionSpaceMaxSeparationM=OuttaMyWay.D0146_STEP2_LOCAL_PASSAGE_MAX_ENTRY_SEPARATION_M,
+        actionSpaceRegulationKmh=OuttaMyWay.D0146_POTENTIAL_ACTION_SPACE_REGULATION_KMH
     })
     for _,relation in OuttaMyWay.ValueRecord.ipairs(opposedCorridorKnowledge) do
         local situation=situationByOperation[relation.operationId]
         if situation~=nil then situation.opposedCorridorRelationships[#situation.opposedCorridorRelationships+1]=copyValue(relation) end
     end
+
+    -- D-0141 follower-purpose reassessment consumes the stronger D-0146
+    -- trajectory relationship witness.  This ordering is intentional: stale
+    -- follower Regulation must retire before Candidate selection when current
+    -- Reality has succeeded into Established Opposed Corridor Conflict or has
+    -- positively passed the former follower relationship.
+    local followerBoundaryKnowledge=OuttaMyWay.FollowerBoundaryDemandAssessment.buildKnowledge({
+        currentSpace=currentSpace,futureSpace=futureSpace,motionEvidence=motionEvidence,productiveKnowledge=productiveKnowledge,
+        opposedCorridorKnowledge=opposedCorridorKnowledge,
+        commitmentContext=commitmentContext,controlOutcomes=snapshot.controlOutcomes,operationByAssembly=operationByAssembly,
+        assemblyIdForReference=function(referenceKey) return assemblyIdForReference(map,referenceKey) end,
+        minHeadingDot=OuttaMyWay.FOLLOWER_BOUNDARY_CURRENT_ALIGNMENT_MIN_DOT or 0.99,
+        provisionalDurationSec=OuttaMyWay.FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC or 13.0,
+        establishedLateralRetentionM=OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_LATERAL_RETENTION_M or 1.0,
+        establishedAlignmentMinDot=OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_ALIGNMENT_MIN_DOT or 0.95,
+        establishedOpposedSuccessionMaxDot=OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_OPPOSED_SUCCESSION_MAX_DOT or -0.95,
+        clearanceFactor=OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR or 0.90
+    })
 
     -- D-0146 Step 2: Situation owns only purpose-specific mechanical
     -- Representation Fitness. Candidate responsibility later searches Local

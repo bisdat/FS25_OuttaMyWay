@@ -1,3 +1,71 @@
+# v4.7.109 candidate incompleteness / parked work
+
+- v4.7.102 remains canonical until explicit owner declaration; v4.7.109 is a candidate.
+- The three-worker D-0146 scenario is considered stable on current evidence; no further fixing is planned in this candidate.
+- **Unilateral Passage Execution** remains an accepted optional least-intervention refinement: architecture permits only one participant to compact/move, but the current successful joint Guide execution is retained.
+- The known final-few-metres single-worker `VALID_BLOCKED_ZERO_COMMAND` condition remains separate and unresolved.
+- Generic negative-clearance authority and broader vehicle/mechanical claims remain bounded by positive current Representation and existing implementation contracts.
+
+---
+
+# v4.7.108 explicit incompleteness / canonicalisation boundary
+
+- v4.7.102 remains canonical; v4.7.108 is the final planned corrective test build.
+- v4.7.107 validated the current three-worker passage scenario but released Resolution-Space Regulation too aggressively while TURN_SEGMENT/TURNING continuation was still transitional. v4.7.108 corrects only that release contract.
+- A clean v4.7.108 live run should stop the fixing cycle and proceed to a fresh canonical candidate.
+- **Parked, not blocking canonicalisation:** Unilateral Passage Execution / one-participant movement refinement; passage-guide economy/shortening; Regulation-speed optimisation; broader arbitrary assembly/configuration validation; final-few-metres single-worker `VALID_BLOCKED_ZERO_COMMAND`; wider scenario regression engineering.
+- Generic negative-clearance authority remains bounded by current positive physical representation; no claim of universal arbitrary-assembly passage capability is made.
+
+---
+
+# v4.7.107 explicit incompleteness / live-validation boundary
+
+- v4.7.102 remains canonical; v4.7.107 is a test build only.
+- Resolution-Space obligation persistence is not live validated until the temporary reverse/non-closing case retains Regulation and hands off successfully to Step 2.
+- The 8 km/h Action-Space cap remains empirical bounded calibration, not generic speed policy.
+- Positive relationship invalidation deliberately avoids negative-clearance claims; unresolved absence does not retire an admitted obligation.
+- Unilateral Passage Execution remains architecturally permitted but parked because current S 416 passages are successful.
+- Final-few-metres single-worker `VALID_BLOCKED_ZERO_COMMAND` remains separate and unaddressed.
+
+---
+
+# v4.7.106 explicit incompleteness / live-validation boundary
+
+- v4.7.102 remains canonical. v4.7.106 is a test build only.
+- The 8 km/h D-0146 Action-Space Conservation cap is bounded empirical calibration for the Current-Excursion test; it is not generic traffic speed policy.
+- The Potential witness claims only positive current corridor support and closure inside the existing Local Passage envelope. It has no route-prediction or negative-clearance authority.
+- The hypothesis that this earlier bounded Regulation preserves enough passage-development space is not live validated until Reality demonstrates it.
+- **Unilateral Passage Execution** is architecturally permitted and may reduce intervention further, but current successful S 416 joint-guide passage execution is intentionally unchanged.
+- Final-few-metres single-worker `VALID_BLOCKED_ZERO_COMMAND` remains separate and unaddressed.
+
+---
+
+# v4.7.105 explicit incompleteness / test boundary
+
+- v4.7.102 remains canonical. v4.7.105 is a test build only.
+- v4.7.104 is failed live evidence: passage planning succeeded but Candidate-supplied configuration data was not traversed correctly at Control.
+- v4.7.103 remains failed live evidence for mandatory configuration reduction.
+- Three-worker generic passage remains live-unvalidated until v4.7.105 demonstrates the corrected Candidate → Control bridge.
+
+
+- v4.7.102 is canonical. v4.7.105 is a test build only until live evidence supports it; v4.7.103 is failed test evidence.
+- The current per-participant configuration decision is a **bounded represented-envelope calibration** using positive current assembly primitives and the existing 12 m passage centreline reserve. It is not generic negative-clearance authority.
+- A wide assembly that exceeds the bounded reserve but exposes misleading/non-functional fold mechanics may still disprove the current expression at Control preflight/execution; broader configuration-capability discovery remains empirical work if Reality produces that case.
+- The final-few-metres single-worker `VALID_BLOCKED_ZERO_COMMAND` issue remains separate and unaddressed.
+
+---
+
+# v4.7.103 explicit incompleteness / test boundary
+
+- v4.7.102 is canonical. v4.7.103 is a test build only until live evidence supports it.
+- Passage remains pairwise; other active assemblies constrain Local Passage Space but are not jointly routed or controlled.
+- Third-party support is based on current positive physical occupancy. No prediction of the third party's future route and no generic negative-clearance authority is claimed.
+- Compact passage centreline separation remains a validated implementation calibration, not a universal vehicle-clearance theorem. Actual fold/compact capability is Control-revalidated; unsupported mechanics fail safely.
+- Boundary Encroachment and general static-obstacle support remain no broader than v4.7.102.
+- Final-few-metres single-worker `VALID_BLOCKED_ZERO_COMMAND` remains separate and unaddressed.
+
+---
+
 # v4.7.102 explicit incompleteness / authority boundary
 
 - Candidate Byte Identity Mismatch blocks v4.7.101 canonicalisation; only the fresh v4.7.102 fingerprint is eligible for review.

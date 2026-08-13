@@ -1,3 +1,93 @@
+# 2026-08-13 — v4.7.108 clean live validation closes corrective cycle
+
+**Observation:** final three-worker validation produced five D-0146 Cooperative Passage settlements at `SUCCEEDED`, 25/25 Passage Guide gates reached, zero Passage Reassessment, zero safe-abandon escalation and no OuttaMyWay Lua error stack.
+
+**Interpretation:** Settled Relationship Dissolution removed the aggressive transitional release defect without destabilising existing Condor/Patriot/S 416 passage behaviour.
+
+**Decision:** preserve the tested behaviour and move to a release/provenance-only v4.7.109 canonical candidate.
+
+---
+
+# 2026-08-13 — v4.7.107 live discovery: Settled Relationship Dissolution
+
+**Observation:** v4.7.107 produced an excellent three-worker run: five D-0146 passages settled successfully and both Condor and Patriot completed their Job Episodes. Resolution-Space Conservation worked, but four Regulation releases used `D0146_POSITIVE_STABLE_TRAJECTORY_RELATIONSHIP_DISSOLUTION` while the manoeuvring participant was still reported by GIANTS as `TURN_SEGMENT`, `TURNING`, `intentValid=false`. Several releases were followed quickly by reacquisition of essentially the same obligation.
+
+**Discovery — Settled Relationship Dissolution.** The trajectory model may legitimately accept a new direction before the native manoeuvre has settled. Therefore accepted non-opposed trajectory state is not by itself positive relationship invalidation.
+
+**Implementation correction:** preserve the Regulation until Situation sees positive settled continuation from both participants (`SETTLED_CONTINUATION`, valid intent, `NON_TURN_LINE_ACTIVE` productive evidence), or until a stronger independent dissolution witness such as actual post-passage ordering exists. Control remains ignorant of turn/productive internals.
+
+**Stopping discipline:** this correction is intentionally the final planned fixing build. A clean live result should be canonicalised before optional enhancements are considered.
+
+---
+
+# 2026-08-13 — v4.7.106 live discovery: Resolution-Space Obligation Persistence
+
+**Observation:** v4.7.106 successfully regulated Patriot while Condor's Current Excursion initially consumed passage-development space. At 07:15:13.558 the lease was released when Condor temporarily reversed/non-closed during its boundary manoeuvre. Patriot returned to native working speed; Regulation had to be reacquired later at materially smaller separation. A later release also occurred while the pair still remained Potential with strongly opposed Established Trajectories and positive supported corridor overlap.
+
+**Discovery — Resolution-Space Obligation Persistence.** The Current Excursion is evidence that can create the Resolution-Space Conservation obligation; it is not the obligation's lifetime. Once admitted, temporary reverse/non-closing or loss of the initiating witness does not positively prove the Passage problem has disappeared.
+
+**Implementation hypothesis:** Situation should publish positive relationship invalidation. Control should maintain the existing Regulation while dissolution is unresolved, and release only when that positive semantic evidence exists or Step 2 succeeds it. This protects abstraction levels: no headland prediction and no Current Motion interpretation in Control.
+
+**Repository pre-flight:** the existing structural contract explicitly forbids `currentExcursion` interpretation in `LiveControlDispatcher`. The first implementation sketch violated that boundary; pre-flight caught it before packaging. The correction moves transient-vs-positive-dissolution interpretation into `TrajectoryConflictAssessment` and leaves Control consuming sealed Situation semantics.
+
+---
+
+# 2026-08-13 — v4.7.105 live discovery: Excursion-to-Conflict Action-Space Loss
+
+**Observation:** the v4.7.105 three-worker run produced no false open-field follower Regulations, two successful S 416/sprayer passages and one successful Condor/Patriot passage. The final Condor/Patriot encounter nevertheless ended head-on. At 06:17:35.872 Condor was already in Current Excursion while the pair still had roughly the Local Passage entry reserve. At 06:17:44.373 Condor's current physical motion was almost exactly opposite its persisted Established Trajectory. Trajectory supersession occurred at 06:17:45.879 only after about 4.2 m of sustained contradictory motion, at which point `ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT` appeared with positive corridor overlap and 10.84 m/s closing, but usable passage-development space had largely gone.
+
+**Discovery — Excursion-to-Conflict Action-Space Loss.** Trajectory Persistence is correct and should not be weakened merely to force earlier conflict establishment. The missing executable part of D-0146 is its existing Potential-conflict rule: Observe, and Regulate where Action Space is being consumed.
+
+**Hypothesis:** while one Current Excursion remains unresolved, positive current physical corridor support and closing against a stable approaching participant can justify bounded Resolution-Space Conservation Regulation of the stable participant inside the existing Local Passage envelope. The excursion participant remains GIANTS-native so the relationship can either dissolve or mature naturally.
+
+**Implementation:** v4.7.106 makes that Potential witness executable through the normal Candidate → Representation Fitness → Constraints → Decision → Commitment → Authority → Control chain, using the same D-0146 governing requirement as later Step 2. Same-Commitment passage succession and immediate purpose-dissolution release are regression-tested.
+
+**Repository pre-flight finding:** the first offline integrated Candidate test correctly failed because the physical Regulation Candidate lacked purpose-specific Representation Fitness. The repository's existing D-0141 pattern supplied the correct contract; the Candidate was fixed rather than weakening the Constraint evaluator. This is the intended repository-first discipline following the preventable v4.7.104 sealed-collection traversal error.
+
+**Parked refinement — Unilateral Passage Execution:** D-0146 permits only one participant to compact/move. v4.7.105 S 416 evidence showed nearly zero lateral burden can be sufficient after sprayer compaction. The current successful joint Guide execution is retained for now; no additional authority-composition complexity is introduced without a failure requiring it.
+
+---
+
+# v4.7.105 live discovery — Sealed Candidate Collection Traversal
+
+**Observation:** v4.7.104 Step 1 and Local Passage Planning succeeded for Patriot/S416. At 05:57:03.579 the planner published `D0146_PASSAGE_SUPPORTED` at 79.81 m; Candidate constraints passed and Commitment CM-00001 was created. Control immediately rejected it with `D0146_PASSAGE_CONFIGURATION_PARTICIPANT_MISSING:AS-00002`, then repeated the rejection on fresh Commitments.
+
+**Discovery — Sealed Candidate Collection Traversal:** Candidate-owned Step-2 nested collections are immutable ValueRecord proxies by the time they reach Control. GIANTS does not reliably traverse these proxies with native Lua `ipairs`; the repository contract requires `ValueRecord.ipairs`. The v4.7.104 optional-configuration implementation violated that existing implementation contract at the Candidate → Control bridge.
+
+**Decision:** implementation correction only. Use the GIANTS-safe ValueRecord traversal accessor for all Control array traversal so both sealed Candidate collections and ordinary Control-owned arrays have one traversal discipline.
+
+# v4.7.105 live discovery — Optional Configuration Reduction
+
+**Observation:** in the v4.7.103 three-worker run, Patriot 4450 / S 416 was admitted into D-0146 Step 2 and both participants were held in `COMPACTING`. Runtime fold evidence for S 416 reported a foldable surface but no meaningful reducible passage configuration.
+
+**Disproved hypothesis:** exposing GIANTS fold mechanics is sufficient evidence that an assembly can and should enter Compact Configuration.
+
+**Discovery — Fold Interface ≠ Compact Configuration.** Configuration reduction is a passage-expression choice, not a universal precondition. D-0146 already defines it as optional; v4.7.103 had allowed a proven sprayer implementation sequence to overrule that architecture.
+
+**Implementation response:** Candidate expresses `COMPACT_REQUIRED` or `RETAIN_CURRENT` per participant from current positive represented lateral reserve. Control executes and selectively restores only required changes. This introduces no vehicle-name exception and no new architectural decision.
+
+**Validation hypothesis:** Patriot/S 416 should progress as compact Patriot / retain S 416; Condor/Patriot should preserve the proven compact-both expression.
+
+---
+
+# 2026-08-13 — Three-worker Reality closes remaining Step-2 specialisations
+
+**Baseline:** owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`).
+
+**Observation:** with Condor, Patriot and S 416 active, Step 1 positively established a Condor/S 416 opposed-corridor conflict roughly a minute before the eventual collision. Step 2 did not act because its purpose-specific mechanical fitness admitted only the named Condor/Patriot pair. Separate D-0141 follower leases remained active in open field after their original ordering purpose had become obsolete.
+
+**Discovery — Vehicle-Name Mechanical Gate Exhausted.** Vehicle identity was a justified initial empirical boundary for the first Step-2 live expression, but it is not passage capability authority. D-0146 Passage Presumption requires incapability to be discovered from current Reality. v4.7.103 therefore removes vehicle-name admission while retaining Control mechanical preflight.
+
+**Discovery — Third-Party Local Spatial Constraint.** Cooperative Passage remains a pairwise arrangement, but another active Operation assembly is part of Local Passage Space Reality. Its positive current physical occupancy constrains admissible pair arrangements and ongoing Passage Support. It does not become a hidden third participant in the pair Commitment.
+
+**Discovery — Stale Follower Purpose.** Positive D-0146 relationship evidence is stronger than historical D-0130 lease retention. An existing D-0141 follower purpose is retired when the pair has positively succeeded into Established Opposed Corridor Conflict or when established trajectories positively show they have passed.
+
+**Implementation decision:** targeted authority correction only. Keep proven Hold/compact/Reposition/restore mechanics and retain D-0143/TS015 as regression/mechanical donor; remove/demote pair-name policy, pair-isolated Local Passage Space, and stale follower-purpose persistence.
+
+**Validation hypothesis for v4.7.103:** three-worker Reality should now either find a supported pair passage that respects the third assembly, or fail safely via Passage Reassessment; the Condor/S 416 conflict must not be rejected solely because of vehicle names, and obsolete D-0141 open-field regulation should retire promptly.
+
+---
+
 # 2026-08-12 — v4.7.102 Candidate Byte Identity Recovery
 
 **Observation:** the repository owner calculated SHA-256 `5aa39f23e9601cbe3eaef856b70394950fab166e8438c3500f151d7b36008e13` for the supplied v4.7.101 test ZIP, while the producer runtime retained `64f7b4b67f1c7f308cf3241c79678f0a442d7fe7cc5c4e41e111e5c7d82f921`.

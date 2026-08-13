@@ -1,12 +1,12 @@
--- FS25_OuttaMyWay v4.7.102 CANONICAL CANDIDATE — D-0146 Step-2 active local Cooperative Passage implementation.
--- Owner-declared v4.7.99 is canonical. v4.7.100 live-validated Step-1 Situation Knowledge; this build consumes it through Candidate/Commitment/Control.
+-- FS25_OuttaMyWay v4.7.109 CANONICAL CANDIDATE — D-0146 three-worker stability plateau.
+-- Owner-declared v4.7.102 is canonical. v4.7.105 live evidence validated generic three-worker Step-2 passage but exposed late Action-Space loss during a Current Excursion.
 -- D-0144 simplifies the governing Situation model while preserving D-0143 bounded TS015 Cooperative Passage and D-0141 follower Regulation.
 -- King Reserve, continuous Refuge discovery, chessboard colouring/continuous Productive History and Successor Rook prediction are retired from governing production architecture.
--- General production Control authority remains disabled; D-0146 Step-2 actuation is bounded to the positively demonstrated P23 Condor/Patriot mechanical profile.
+-- General production Control authority remains disabled; D-0146 Step-2 compact actuation is admitted from current physical/configuration evidence and revalidated by Control.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.102"
+OuttaMyWay.VERSION = "4.7.109"
 OuttaMyWay.ARCHITECTURE_VERSION = "4.7.99"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -144,15 +144,16 @@ OuttaMyWay.OPPOSED_CURRENT_STABLE_DISTANCE_M = 1.0
 OuttaMyWay.OPPOSED_MIN_CLOSING_RATE_MPS = 0.05
 
 
--- D-0146 Step-2 active test implementation. Traffic semantics are generic; the
--- executable mechanical Representation Fitness remains bounded to the live-proven
--- P23 Condor/Patriot compact/hold/reposition/restore profile. These literals are
--- implementation calibration, not universal passage policy or clearance authority.
+-- D-0146 Step-2 active test implementation. Traffic semantics are generic and
+-- v4.7.105 live evidence includes Condor/Patriot plus mixed S416/sprayer passages.
+-- Mechanical execution still relies only on current positively supported
+-- compact/retain/hold/reposition/restore capabilities. These literals are test
+-- calibration, not universal passage policy or negative-clearance authority.
 OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED = true
 OuttaMyWay.D0146_STEP2_LOCAL_PASSAGE_MIN_ENTRY_SEPARATION_M = 50.0
 OuttaMyWay.D0146_STEP2_LOCAL_PASSAGE_MAX_ENTRY_SEPARATION_M = 80.0
-OuttaMyWay.D0146_STEP2_P23_PASSAGE_CENTRELINE_SEPARATION_M = 12.0
-OuttaMyWay.D0146_STEP2_P23_MIN_CENTRE_SEPARATION_M = 12.0
+OuttaMyWay.D0146_STEP2_COMPACT_PASSAGE_CENTRELINE_SEPARATION_M = 12.0
+OuttaMyWay.D0146_STEP2_COMPACT_MIN_CENTRE_SEPARATION_M = 12.0
 OuttaMyWay.D0146_STEP2_DEVELOPMENT_DISTANCE_M = 12.0
 OuttaMyWay.D0146_STEP2_TRAVERSAL_MARGIN_M = 8.0
 OuttaMyWay.D0146_STEP2_REACQUISITION_DISTANCE_M = 12.0
@@ -163,6 +164,12 @@ OuttaMyWay.D0146_STEP2_FIELD_SWEEP_SAMPLE_M = 2.0
 OuttaMyWay.D0146_STEP2_PAIR_SWEEP_SAMPLES_PER_LEG = 20
 OuttaMyWay.D0146_STEP2_MOVE_SPEED_KMH = 8.0
 OuttaMyWay.D0146_STEP2_PHASE_WATCHDOG_MS = 45000
+
+-- D-0146 Potential-conflict Action-Space Conservation test calibration. This is
+-- a bounded Regulation rate used only when current positive Situation evidence
+-- shows one Current Excursion and one stable approaching participant consuming
+-- the existing 80 m Local Passage envelope. It is not universal traffic policy.
+OuttaMyWay.D0146_POTENTIAL_ACTION_SPACE_REGULATION_KMH = 8.0
 
 -- D-0128 bounded head-on playbook evidence gate. This is a TEST REPRESENTATION-
 -- FITNESS literal, not production head-on policy: the live Refuge bridge is only
@@ -192,7 +199,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
 OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "4.7.102 D-0146 STEP2 CANONICAL CANDIDATE"
+OuttaMyWay.BUILD_LABEL = "4.7.109 D-0146 THREE-WORKER STABILITY CANDIDATE"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720

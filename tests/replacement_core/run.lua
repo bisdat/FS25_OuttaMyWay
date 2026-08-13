@@ -2522,6 +2522,23 @@ test("D-0141 established follower purpose survives clean opposed strategy succes
     equal(retired.reason,"PROGRESS_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION")
 end)
 
+test("D-0141 D0146 Established Opposed Corridor Conflict positively retires stale follower purpose before transition preservation", function()
+    local leader={assemblyId="AS-C",x=0,z=0,dx=0,dz=1,boundaryDistanceM=30,workingWidthM=36,productivePositive=false,settledContinuation=false,turning=true,progressSpeedKmh=15,nativeCommandValid=true,nativeMoveForwards=true,nativeMaxSpeedKmh=15}
+    local follower={assemblyId="AS-P",x=0,z=-28,dx=0,dz=-1,boundaryDistanceM=58,workingWidthM=36,productivePositive=true,settledContinuation=true,progressSpeedKmh=4,nativeCommandValid=true,nativeMoveForwards=true,nativeMaxSpeedKmh=25}
+    local result=OuttaMyWay.FollowerBoundaryDemandAssessment.evaluatePair(leader,follower,{existingPurpose=true,opposedRelationship={classification="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT",reason="PERSISTENT_OPPOSED_CLOSING_MOTION_WITH_POSITIVE_SUPPORTED_CORRIDOR_OVERLAP"},provisionalDurationSec=13,minHeadingDot=0.99,clearanceFactor=0.90})
+    equal(result.status,"RETIRE_SUPPORTED")
+    equal(result.purposeState,"RETIRE")
+    equal(result.reason,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION")
+end)
+
+test("D-0141 D0146 positive post-passage relationship invalidation retires stale follower purpose", function()
+    local leader={assemblyId="AS-C",x=0,z=0,dx=0,dz=1,boundaryDistanceM=30,workingWidthM=36,productivePositive=true,settledContinuation=true,progressSpeedKmh=10,nativeCommandValid=true,nativeMoveForwards=true,nativeMaxSpeedKmh=10}
+    local follower={assemblyId="AS-P",x=0,z=20,dx=0,dz=-1,boundaryDistanceM=50,workingWidthM=36,productivePositive=true,settledContinuation=true,progressSpeedKmh=10,nativeCommandValid=true,nativeMoveForwards=true,nativeMaxSpeedKmh=10}
+    local result=OuttaMyWay.FollowerBoundaryDemandAssessment.evaluatePair(leader,follower,{existingPurpose=true,opposedRelationship={classification="NO_OPPOSED_CONFLICT",reason="PARTICIPANTS_NOT_MUTUALLY_AHEAD_ON_ESTABLISHED_TRAJECTORIES"},provisionalDurationSec=13,minHeadingDot=0.99})
+    equal(result.status,"RETIRE_SUPPORTED")
+    equal(result.reason,"ESTABLISHED_OPPOSED_PASSAGE_INVALIDATES_FOLLOWER_BOUNDARY_PROTECTION")
+end)
+
 test("D-0141 admitted lease is frozen through P22 outbound egress until Progress Passage", function()
     local leader={assemblyId="AS-C",x=0,z=0,dx=0,dz=1,boundaryDistanceM=30,workingWidthM=36,productivePositive=false,settledContinuation=false,progressSpeedKmh=15,nativeCommandValid=false,nativeMoveForwards=nil,nativeMaxSpeedKmh=0,nativeZeroCommand=true}
     local follower={assemblyId="AS-P",x=0,z=-28,dx=0,dz=-1,boundaryDistanceM=58,workingWidthM=36,productivePositive=true,settledContinuation=true,progressSpeedKmh=4,nativeCommandValid=true,nativeMoveForwards=true,nativeMaxSpeedKmh=25,nativeZeroCommand=false}
@@ -3186,8 +3203,18 @@ test("D0136 settlement Future-Space adapter preserves representation boundary",f
 end)
 
 
-local function d0146Motion(assemblyId,jobToken,dx,dz,speed,interval)
-    return {assemblyId=assemblyId,assemblyReferenceKey="REF-"..assemblyId,sourceJobToken=jobToken,travelDirectionX=dx,travelDirectionZ=dz,positionDerivedSpeedMps=speed,sampleIntervalSeconds=interval,motionClassification="PHYSICAL_TRAVEL"}
+local function d0146Motion(assemblyId,jobToken,dx,dz,speed,interval,nativeForwardKmh,localIntentClassification,intentValid)
+    local result={assemblyId=assemblyId,assemblyReferenceKey="REF-"..assemblyId,sourceJobToken=jobToken,travelDirectionX=dx,travelDirectionZ=dz,positionDerivedSpeedMps=speed,sampleIntervalSeconds=interval,motionClassification="PHYSICAL_TRAVEL"}
+    if nativeForwardKmh~=nil then
+        result.nativeFieldWork={nativeDriveCommand={valid=true,zeroCommand=false,moveForwards=true,maxSpeedKmh=nativeForwardKmh}}
+    end
+    if localIntentClassification~=nil then result.localIntentClassification=localIntentClassification end
+    if intentValid~=nil then result.intentValid=intentValid==true end
+    return result
+end
+
+local function d0146Productive(assemblyId,positive,evidenceClass)
+    return {assemblyId=assemblyId,productivePositive=positive==true,evidenceClass=evidenceClass or (positive==true and "NON_TURN_LINE_ACTIVE" or "TURN_SEGMENT")}
 end
 
 local function d0146Space(assemblyId,x,z)
@@ -3198,9 +3225,9 @@ local function d0146Physical(assemblyId,x,z,radius)
     return {assemblyId=assemblyId,primitives={{kind="DISC",identity="DISC-"..assemblyId,x=x,z=z,radius=radius,positiveConflictSupport=true}}}
 end
 
-local function d0146Update(tracks,motions,spaces,snapshotId)
+local function d0146Update(tracks,motions,spaces,snapshotId,productiveKnowledge)
     return OuttaMyWay.TrajectoryConflictAssessment.updateTrajectories(tracks,{
-        motionEvidence=motions,currentSpace=spaces,productiveKnowledge={},observationSnapshotId=snapshotId,timestamp=snapshotId,
+        motionEvidence=motions,currentSpace=spaces,productiveKnowledge=productiveKnowledge or {},observationSnapshotId=snapshotId,timestamp=snapshotId,
         minSampleDistanceM=0.10,establishDistanceM=3.0,coherenceMinDot=0.94,persistenceAlignmentMinDot=0.85,supersessionDistanceM=4.0,stableMemoryDistanceM=12.0
     })
 end
@@ -3282,6 +3309,106 @@ test("D0146 lack of positive supported corridor overlap cannot establish opposed
     equal(classified.reason,"POSITIVE_SUPPORTED_CORRIDOR_OVERLAP_NOT_YET_ESTABLISHED")
 end)
 
+test("D0146 Current Excursion positively supports bounded Action-Space Conservation before trajectory supersession",function()
+    local tracks={}
+    local spaces={d0146Space("AS-A",0,0),d0146Space("AS-B",0,60)}
+    local physical={d0146Physical("AS-A",0,0,3),d0146Physical("AS-B",0,60,3)}
+    local initial={d0146Motion("AS-A","JE-A",0,-1,4,1),d0146Motion("AS-B","JE-B",0,-1,7,1,25)}
+    local trajectories=d0146Update(tracks,initial,spaces,1)
+    local excursion={d0146Motion("AS-A","JE-A",0,1,3,1),d0146Motion("AS-B","JE-B",0,-1,7,1,25)}
+    trajectories=d0146Update(tracks,excursion,spaces,2)
+    local classified=d0146Classify(trajectories,excursion,spaces,physical)
+    equal(classified.classification,"POTENTIAL_OPPOSED_CORRIDOR_CONFLICT")
+    equal(classified.reason,"CURRENT_EXCURSION_CONSUMES_LOCAL_PASSAGE_ACTION_SPACE")
+    equal(classified.actionSpaceConservation.status,"REGULATE_SUPPORTED")
+    equal(classified.actionSpaceConservation.supported,true)
+    equal(classified.actionSpaceConservation.excursionAssemblyId,"AS-A")
+    equal(classified.actionSpaceConservation.regulatedAssemblyId,"AS-B")
+    equal(classified.actionSpaceConservation.currentCorridorOverlap.positive,true)
+    equal(classified.actionSpaceConservation.requestedCapKmh,8)
+    equal(classified.actionSpaceConservation.nativeUnrestrictedKmh,25)
+    equal(classified.currentClosingPositive,true)
+end)
+
+test("D0146 Resolution-Space relationship requires Settled Continuation before non-opposed trajectories positively dissolve",function()
+    local tracks={}
+    local spaces={d0146Space("AS-A",0,0),d0146Space("AS-B",0,60)}
+    local physical={d0146Physical("AS-A",0,0,3),d0146Physical("AS-B",0,60,3)}
+    local initial={d0146Motion("AS-A","JE-A",1,0,4,1),d0146Motion("AS-B","JE-B",0,-1,4,1,25)}
+    local trajectories=d0146Update(tracks,initial,spaces,1)
+
+    local approaching={d0146Motion("AS-A","JE-A",0,1,2,1),d0146Motion("AS-B","JE-B",0,-1,2,1,25)}
+    trajectories=d0146Update(tracks,approaching,spaces,2)
+    local admitted=d0146Classify(trajectories,approaching,spaces,physical)
+    equal(admitted.classification,"POTENTIAL_OPPOSED_CORRIDOR_CONFLICT")
+    equal(admitted.resolutionSpaceRelationship.status,"RELATIONSHIP_REMAINS_ACTIVE")
+    equal(admitted.resolutionSpaceRelationship.positiveDissolution,false)
+
+    local reversingAway={d0146Motion("AS-A","JE-A",0,-1,2,1,15,"TURNING",false),d0146Motion("AS-B","JE-B",0,-1,2,1,25,"SETTLED_CONTINUATION",true)}
+    trajectories=d0146Update(tracks,reversingAway,spaces,3,{d0146Productive("AS-A",false,"TURN_SEGMENT"),d0146Productive("AS-B",true,"NON_TURN_LINE_ACTIVE")})
+    local transient=d0146Classify(trajectories,reversingAway,spaces,physical)
+    equal(transient.classification,"NO_OPPOSED_CONFLICT")
+    equal(transient.reason,"ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED")
+    equal(transient.subjectCurrentExcursion,true)
+    equal(transient.resolutionSpaceRelationship.status,"TRANSIENT_RELATIONSHIP_CHANGE")
+    equal(transient.resolutionSpaceRelationship.positiveDissolution,false)
+
+    local acceptedButTurning={d0146Motion("AS-A","JE-A",1,0,2,1,15,"TURNING",false),d0146Motion("AS-B","JE-B",0,-1,2,1,25,"SETTLED_CONTINUATION",true)}
+    trajectories=d0146Update(tracks,acceptedButTurning,spaces,4,{d0146Productive("AS-A",false,"TURN_SEGMENT"),d0146Productive("AS-B",true,"NON_TURN_LINE_ACTIVE")})
+    local transitional=d0146Classify(trajectories,acceptedButTurning,spaces,physical)
+    equal(transitional.classification,"NO_OPPOSED_CONFLICT")
+    equal(transitional.subjectCurrentExcursion,false)
+    equal(transitional.subjectSettledContinuation,false)
+    equal(transitional.otherSettledContinuation,true)
+    equal(transitional.resolutionSpaceRelationship.status,"TRANSITIONAL_RELATIONSHIP_CHANGE")
+    equal(transitional.resolutionSpaceRelationship.positiveDissolution,false)
+    equal(transitional.resolutionSpaceRelationship.reason,"D0146_TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION")
+
+    local settledDissolution={d0146Motion("AS-A","JE-A",1,0,2,1,25,"SETTLED_CONTINUATION",true),d0146Motion("AS-B","JE-B",0,-1,2,1,25,"SETTLED_CONTINUATION",true)}
+    trajectories=d0146Update(tracks,settledDissolution,spaces,5,{d0146Productive("AS-A",true,"NON_TURN_LINE_ACTIVE"),d0146Productive("AS-B",true,"NON_TURN_LINE_ACTIVE")})
+    local dissolved=d0146Classify(trajectories,settledDissolution,spaces,physical)
+    equal(dissolved.classification,"NO_OPPOSED_CONFLICT")
+    equal(dissolved.subjectCurrentExcursion,false)
+    equal(dissolved.subjectSettledContinuation,true)
+    equal(dissolved.otherSettledContinuation,true)
+    equal(dissolved.resolutionSpaceRelationship.status,"POSITIVELY_DISSOLVED")
+    equal(dissolved.resolutionSpaceRelationship.positiveDissolution,true)
+    equal(dissolved.resolutionSpaceRelationship.reason,"D0146_POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION")
+end)
+
+test("D0146 Current Excursion Action-Space Conservation fails closed outside local envelope or without positive corridor support",function()
+    local tracks={}
+    local spaces={d0146Space("AS-A",0,0),d0146Space("AS-B",0,90)}
+    local physical={d0146Physical("AS-A",0,0,3),d0146Physical("AS-B",0,90,3)}
+    local initial={d0146Motion("AS-A","JE-A",0,-1,4,1),d0146Motion("AS-B","JE-B",0,-1,7,1,25)}
+    local trajectories=d0146Update(tracks,initial,spaces,1)
+    local excursion={d0146Motion("AS-A","JE-A",0,1,3,1),d0146Motion("AS-B","JE-B",0,-1,7,1,25)}
+    trajectories=d0146Update(tracks,excursion,spaces,2)
+    local outside=d0146Classify(trajectories,excursion,spaces,physical)
+    equal(outside.actionSpaceConservation.supported,false)
+    equal(outside.actionSpaceConservation.reason,"CURRENT_EXCURSION_PAIR_OUTSIDE_LOCAL_PASSAGE_ACTION_SPACE_ENVELOPE")
+
+    spaces={d0146Space("AS-A",0,0),d0146Space("AS-B",12,60)}
+    physical={d0146Physical("AS-A",0,0,3),d0146Physical("AS-B",12,60,3)}
+    local lateral=d0146Classify(trajectories,excursion,spaces,physical)
+    equal(lateral.actionSpaceConservation.supported,false)
+    equal(lateral.actionSpaceConservation.reason,"CURRENT_EXCURSION_NOT_IN_STABLE_PARTICIPANT_SUPPORTED_CORRIDOR")
+end)
+
+test("D0146 Current Excursion does not add Regulation when native progression is already within bounded conservation rate",function()
+    local tracks={}
+    local spaces={d0146Space("AS-A",0,0),d0146Space("AS-B",0,60)}
+    local physical={d0146Physical("AS-A",0,0,3),d0146Physical("AS-B",0,60,3)}
+    local initial={d0146Motion("AS-A","JE-A",0,-1,4,1),d0146Motion("AS-B","JE-B",0,-1,2,1,8)}
+    local trajectories=d0146Update(tracks,initial,spaces,1)
+    local excursion={d0146Motion("AS-A","JE-A",0,1,3,1),d0146Motion("AS-B","JE-B",0,-1,2,1,8)}
+    trajectories=d0146Update(tracks,excursion,spaces,2)
+    local classified=d0146Classify(trajectories,excursion,spaces,physical)
+    equal(classified.actionSpaceConservation.status,"OBSERVE_SUPPORTED")
+    equal(classified.actionSpaceConservation.supported,false)
+    equal(classified.actionSpaceConservation.reason,"NATIVE_PROGRESS_ALREADY_WITHIN_ACTION_SPACE_CONSERVATION_RATE")
+end)
+
 test("D0146 missing trajectory corridor anchor fails closed instead of inventing an origin anchor",function()
     local tracks={}
     local spaces={d0146Space("AS-A",0,0),d0146Space("AS-B",0,20)}
@@ -3316,8 +3443,8 @@ local function d0146Step2Fixture(fieldMinX,fieldMaxX)
         {assemblyId="AS-B",assemblyReferenceKey="vehicle-root:201",name="Patriot 4450",sourceJobToken="job-B",headingX=0,headingZ=-1,localIntentClassification="SETTLED_CONTINUATION"}
     }
     local physical={
-        {assemblyId="AS-A",assemblyReferenceKey="vehicle-root:101",configurationProfileId="CFG-A",primitives={{kind="DISC",positiveConflictSupport=true},{kind="DISC",positiveConflictSupport=true}},summary={physicalPrimitiveCount=2}},
-        {assemblyId="AS-B",assemblyReferenceKey="vehicle-root:201",configurationProfileId="CFG-B",primitives={{kind="DISC",positiveConflictSupport=true},{kind="DISC",positiveConflictSupport=true}},summary={physicalPrimitiveCount=2}}
+        {assemblyId="AS-A",assemblyReferenceKey="vehicle-root:101",configurationProfileId="CFG-A",primitives={{kind="DISC",positiveConflictSupport=true,x=-17,z=0,radius=1},{kind="DISC",positiveConflictSupport=true,x=17,z=0,radius=1}},summary={physicalPrimitiveCount=2}},
+        {assemblyId="AS-B",assemblyReferenceKey="vehicle-root:201",configurationProfileId="CFG-B",primitives={{kind="DISC",positiveConflictSupport=true,x=-17,z=60,radius=1},{kind="DISC",positiveConflictSupport=true,x=17,z=60,radius=1}},summary={physicalPrimitiveCount=2}}
     }
     local fitness=OuttaMyWay.PassageCapabilityAssessment.buildFitness({opposedCorridorKnowledge={conflict},motionEvidence=motion,physicalSpaceEvidence=physical})
     local picture=OuttaMyWay.OperationalPicture.new({
@@ -3340,7 +3467,7 @@ end
 test("D0146 Step2 progressive local passage search selects a sufficient multi-gate arrangement",function()
     local picture,snapshot=d0146Step2Fixture()
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
-    equal(reason,nil); equal(plan.status,"SUPPORTED"); equal(plan.controlProfile,"D0146_P23_COMPACT_GUIDED_PASSAGE_V1")
+    equal(reason,nil); equal(plan.status,"SUPPORTED"); equal(plan.controlProfile,"D0146_OPTIONAL_CONFIGURATION_GUIDED_PASSAGE_V3")
     equal(#plan.passageGuide.gates,5); equal(plan.progressiveSearch.satisficed,true)
     equal(plan.passageGuide.gates[1].kind,"DEVELOPMENT_ENTRY"); equal(plan.passageGuide.gates[5].kind,"NATIVE_REACQUISITION")
     equal(plan.passageGuide.pairSweepSupport.minimumCentreSeparationM>=12,true)
@@ -3353,6 +3480,277 @@ test("D0146 Step2 Pairwise Passage Economy may choose a unilateral arrangement w
     equal(reason,nil); equal(plan.status,"SUPPORTED")
     equal(math.abs(plan.passageArrangement.subjectLateralOffsetM)<0.001 or math.abs(plan.passageArrangement.otherLateralOffsetM)<0.001,true)
     equal(plan.passageArrangement.maximumParticipantLateralBurdenM,12)
+end)
+
+test("D0146 Step2 mechanical preflight is vehicle-name independent and remains Control-revalidated",function()
+    local picture,snapshot=d0146Step2Fixture()
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    values.motionEvidence[1].name="S 416"
+    values.motionEvidence[2].name="Arbitrary Foldable Worker"
+    local fitness=OuttaMyWay.PassageCapabilityAssessment.buildFitness({opposedCorridorKnowledge=values.opposedCorridorKnowledge,motionEvidence=values.motionEvidence,physicalSpaceEvidence=values.physicalSpaceEvidence})
+    equal(#fitness,2)
+    equal(fitness[1].evidence.controlProfile,"D0146_OPTIONAL_CONFIGURATION_GUIDED_PASSAGE_V3")
+    equal(fitness[1].evidence.vehicleNameAdmissionGate,false)
+end)
+
+
+test("D0146 Step2 configuration reduction is optional per participant when current represented envelope already fits passage reserve",function()
+    local picture,snapshot=d0146Step2Fixture()
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    values.motionEvidence[2].name="S 416"
+    values.physicalSpaceEvidence[2].primitives={
+        {kind="DISC",positiveConflictSupport=true,x=-2,z=60,radius=1},
+        {kind="DISC",positiveConflictSupport=true,x=2,z=60,radius=1}
+    }
+    values.physicalSpaceEvidence[2].summary={physicalPrimitiveCount=2}
+    local adapted=OuttaMyWay.OperationalPicture.new(values)
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
+    equal(reason,nil); equal(plan.status,"SUPPORTED")
+    equal(plan.passageConfiguration.policy,"OPTIONAL_PER_PARTICIPANT_CONFIGURATION_REDUCTION")
+    local modes={}
+    for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.passageConfiguration.participants) do modes[entry.assemblyId]=entry.mode end
+    equal(modes["AS-A"],"COMPACT_REQUIRED")
+    equal(modes["AS-B"],"RETAIN_CURRENT")
+    equal(plan.passageArrangement.configurationReduction,"OPTIONAL_PER_PARTICIPANT")
+end)
+
+test("D0146 Step2 two already-narrow participants require no configuration reduction",function()
+    local picture,snapshot=d0146Step2Fixture()
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    values.physicalSpaceEvidence[1].primitives={{kind="DISC",positiveConflictSupport=true,x=-2,z=0,radius=1},{kind="DISC",positiveConflictSupport=true,x=2,z=0,radius=1}}
+    values.physicalSpaceEvidence[2].primitives={{kind="DISC",positiveConflictSupport=true,x=-2,z=60,radius=1},{kind="DISC",positiveConflictSupport=true,x=2,z=60,radius=1}}
+    local adapted=OuttaMyWay.OperationalPicture.new(values)
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
+    equal(reason,nil); equal(plan.status,"SUPPORTED")
+    for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.passageConfiguration.participants) do equal(entry.mode,"RETAIN_CURRENT") end
+end)
+
+test("D0146 Step2 treats a third active assembly's positive current occupancy as Local Spatial Constraint",function()
+    local picture,snapshot=d0146Step2Fixture()
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    values.situations={{operationId="OR-1",memberAssemblyIds={"AS-A","AS-B","AS-C"}}}
+    values.identities.assemblies={"AS-A","AS-B","AS-C"}
+    values.currentSpace[#values.currentSpace+1]={assemblyId="AS-C",occupancy={x=10,z=48}}
+    values.motionEvidence[#values.motionEvidence+1]={assemblyId="AS-C",assemblyReferenceKey="vehicle-root:301",name="Third Worker",sourceJobToken="job-C"}
+    values.physicalSpaceEvidence[#values.physicalSpaceEvidence+1]={assemblyId="AS-C",assemblyReferenceKey="vehicle-root:301",configurationProfileId="CFG-C",primitives={{kind="DISC",positiveConflictSupport=true,x=10,z=48,radius=2}},summary={physicalPrimitiveCount=1}}
+    local constrained=OuttaMyWay.OperationalPicture.new(values)
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(constrained,snapshot)
+    equal(reason,nil); equal(plan.status,"SUPPORTED")
+    equal(plan.localPassageSpace.thirdPartyConstraintCount,1)
+    equal(plan.localPassageSpace.thirdPartyConstraints[1].assemblyId,"AS-C")
+    equal(plan.passageArrangement.desiredSignedSeparationM<0,true)
+    equal(#plan.progressiveSearch.rejectedBeforeSelection>0,true)
+end)
+
+local function d0146ActionSpacePicture()
+    local relation={
+        identity="OC-D0146",operationId="OR-1",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",
+        subjectAssemblyReferenceKey="vehicle-root:101",otherAssemblyReferenceKey="vehicle-root:201",
+        status="CLASSIFIED",classification="POTENTIAL_OPPOSED_CORRIDOR_CONFLICT",reason="CURRENT_EXCURSION_CONSUMES_LOCAL_PASSAGE_ACTION_SPACE",
+        subjectCurrentExcursion=true,otherCurrentExcursion=false,
+        actionSpaceConservation={
+            status="REGULATE_SUPPORTED",supported=true,reason="CURRENT_EXCURSION_OCCUPIES_APPROACHING_STABLE_TRAJECTORY_CORRIDOR_WHILE_LOCAL_PASSAGE_ACTION_SPACE_COMPRESSES",
+            excursionAssemblyId="AS-A",excursionReferenceKey="vehicle-root:101",regulatedAssemblyId="AS-B",regulatedReferenceKey="vehicle-root:201",
+            separationM=70,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=6},currentClosing={resolved=true,separationM=70,closingRateMps=8},
+            nativeUnrestrictedKmh=25,requestedCapKmh=8,governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_RELATIONSHIP_MATURES_OR_POSITIVELY_DISSOLVES"
+        }
+    }
+    return OuttaMyWay.OperationalPicture.new({
+        identity="OP-D0146-ACTION",epoch=790,observationSnapshotId="OS-D0146-ACTION",situations={},encounters={},
+        identities={assemblies={"AS-A","AS-B"},components={},jobEpisodes={active={"JE-A","JE-B"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
+        currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},representationFitness={},
+        motionEvidence={},physicalSpaceEvidence={},productiveContinuationKnowledge={},guardedRecoveryKnowledge={},followerBoundaryKnowledge={},trajectoryKnowledge={},opposedCorridorKnowledge={relation},cooperativePassageKnowledge={},
+        provenance={source="d0146-action-space-test"},controlOutcomeEvidence={},candidateSupportEvidence={complete=false,supportBoundary={},candidateSpecifications={},provenance={}},commitmentContext={},diagnostics={}
+    })
+end
+
+test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Control and succeeds into same-Commitment Passage",function()
+    local runtime=autonomousHeadOnRuntime()
+    local regulationRequests={}; local cleared={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) regulationRequests[#regulationRequests+1]=request; return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) cleared[#cleared+1]={referenceKey=referenceKey,ownerTag=ownerTag}; return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setLiveControlCapability(capability)
+
+    local base=d0146ActionSpacePicture()
+    local supported=runtime.liveTrafficCandidateSupport:attach(base,headOnTestSnapshot())
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"D0146_POTENTIAL_ACTION_SPACE_REGULATION")
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    equal(evaluated.decision.commitmentAction,"CREATE")
+    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    equal(admitted.status,"ACCEPTED"); equal(admitted.d0146ActionSpace,true)
+    equal(regulationRequests[#regulationRequests].target.ownerTag,"D0146_ACTION_SPACE_CONSERVATION")
+    equal(regulationRequests[#regulationRequests].target.maxSpeedKmh,8)
+    local commitmentId=admitted.commitment.identity
+    equal(runtime.authorities:ownerOf("AS-B"),commitmentId)
+    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,true)
+    local actionObligation=runtime.obligations:openForOwner(commitmentId)[1]
+    equal(actionObligation.basis.kind,"D0146_PASSAGE_ACTION_SPACE_CONSERVATION")
+
+    local passagePicture,passageSnapshot=d0146Step2Fixture()
+    local values=OuttaMyWay.ValueRecord.toTable(passagePicture)
+    values.identity="OP-D0146-STEP2-SUCCESSION"; values.epoch=802; values.commitmentContext={{commitmentId=commitmentId}}
+    passagePicture=OuttaMyWay.OperationalPicture.new(values)
+    local accepted=nil
+    local cooperativeControl={}
+    function cooperativeControl:setCompletionHandler(fn) end
+    function cooperativeControl:isActive() return false end
+    function cooperativeControl:executeJointRequests(a,b,candidate) accepted={a,b,candidate}; return true,"D0146_COOPERATIVE_PASSAGE_STARTED" end
+    runtime.liveControlDispatcher:setCooperativePassageControl(cooperativeControl)
+    local passageSupported=runtime.liveTrafficCandidateSupport:attach(passagePicture,passageSnapshot)
+    equal(passageSupported.candidateSupportEvidence.supportBoundary.mode,"D0146_COOPERATIVE_PASSAGE_STEP2_TEST")
+    local passageEval=runtime:evaluateSealedOperationalPicture(passageSupported)
+    equal(passageEval.decision.commitmentAction,"REVISE")
+    local dispatched=runtime.liveControlDispatcher:dispatch(passageSupported,passageEval)
+    equal(dispatched.status,"ACCEPTED"); equal(dispatched.commitment.identity,commitmentId)
+    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,false)
+    equal(#cleared,1); equal(cleared[1].referenceKey,"vehicle-root:201"); equal(cleared[1].ownerTag,"D0146_ACTION_SPACE_CONSERVATION")
+    equal(runtime.obligations:get(actionObligation.identity).status,"SETTLED")
+    equal(#runtime.authorities:tokensForCommitment(commitmentId),2)
+    equal(#accepted,3)
+end)
+
+test("D0146 Action-Space Regulation persists through transient reverse/non-closing evidence after admission",function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setLiveControlCapability(capability)
+
+    local active=d0146ActionSpacePicture()
+    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    equal(admitted.status,"ACCEPTED")
+    local commitmentId=admitted.commitment.identity
+
+    local values=OuttaMyWay.ValueRecord.toTable(active)
+    values.identity="OP-D0146-ACTION-TRANSIENT"; values.epoch=791; values.commitmentContext={{commitmentId=commitmentId}}
+    local relation=values.opposedCorridorKnowledge[1]
+    relation.classification="NO_OPPOSED_CONFLICT"
+    relation.reason="ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED"
+    relation.subjectCurrentExcursion=true; relation.otherCurrentExcursion=false
+    relation.resolutionSpaceRelationship={status="TRANSIENT_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="D0146_TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
+    relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="CURRENT_EXCURSION_PAIR_NOT_POSITIVELY_CLOSING"}
+    local transient=OuttaMyWay.OperationalPicture.new(values)
+    local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
+    local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
+    local maintained=runtime.liveControlDispatcher:dispatch(transientSupported,transientEval)
+    equal(maintained.status,"MAINTAINED")
+    equal(maintained.reason,"D0146_TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION")
+    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,true)
+    equal(#requests,1)
+end)
+
+test("D0146 Action-Space Regulation persists after excursion witness ends while Potential conflict remains",function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setLiveControlCapability(capability)
+
+    local active=d0146ActionSpacePicture()
+    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local commitmentId=admitted.commitment.identity
+
+    local values=OuttaMyWay.ValueRecord.toTable(active)
+    values.identity="OP-D0146-ACTION-POTENTIAL"; values.epoch=792; values.commitmentContext={{commitmentId=commitmentId}}
+    local relation=values.opposedCorridorKnowledge[1]
+    relation.classification="POTENTIAL_OPPOSED_CORRIDOR_CONFLICT"
+    relation.reason="CURRENT_CLOSURE_NOT_YET_POSITIVELY_ESTABLISHED"
+    relation.subjectCurrentExcursion=false; relation.otherCurrentExcursion=false
+    relation.trajectoryDot=-0.999; relation.mutuallyFacing=true
+    relation.supportedCorridorOverlap={status="POSITIVE_SUPPORTED_CORRIDOR_OVERLAP",positive=true,overlapM=35.5}
+    relation.resolutionSpaceRelationship={status="RELATIONSHIP_REMAINS_ACTIVE",positiveDissolution=false,reason="OPPOSED_CORRIDOR_RELATIONSHIP_REMAINS_ESTABLISHED_OR_POTENTIAL"}
+    relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="NO_CURRENT_EXCURSION"}
+    local potential=OuttaMyWay.OperationalPicture.new(values)
+    local potentialSupported=runtime.liveTrafficCandidateSupport:attach(potential,headOnTestSnapshot())
+    local potentialEval=runtime:evaluateSealedOperationalPicture(potentialSupported)
+    local maintained=runtime.liveControlDispatcher:dispatch(potentialSupported,potentialEval)
+    equal(maintained.status,"MAINTAINED")
+    equal(maintained.reason,"D0146_POTENTIAL_CONFLICT_RESOLUTION_SPACE_OBLIGATION_PERSISTS")
+    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,true)
+    equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
+    equal(#requests,1)
+end)
+
+test("D0146 Action-Space Regulation persists while non-opposed trajectories remain Transitional Continuation",function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setLiveControlCapability(capability)
+
+    local active=d0146ActionSpacePicture()
+    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    equal(admitted.status,"ACCEPTED")
+    local commitmentId=admitted.commitment.identity
+
+    local values=OuttaMyWay.ValueRecord.toTable(active)
+    values.identity="OP-D0146-ACTION-TRANSITIONAL"; values.epoch=794; values.commitmentContext={{commitmentId=commitmentId}}
+    local relation=values.opposedCorridorKnowledge[1]
+    relation.classification="NO_OPPOSED_CONFLICT"
+    relation.reason="ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED"
+    relation.subjectCurrentExcursion=false; relation.otherCurrentExcursion=false
+    relation.subjectSettledContinuation=false; relation.otherSettledContinuation=true
+    relation.resolutionSpaceRelationship={status="TRANSITIONAL_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="D0146_TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
+    relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="NO_CURRENT_EXCURSION"}
+    local transitional=OuttaMyWay.OperationalPicture.new(values)
+    local transitionalSupported=runtime.liveTrafficCandidateSupport:attach(transitional,headOnTestSnapshot())
+    local transitionalEval=runtime:evaluateSealedOperationalPicture(transitionalSupported)
+    local maintained=runtime.liveControlDispatcher:dispatch(transitionalSupported,transitionalEval)
+    equal(maintained.status,"MAINTAINED")
+    equal(maintained.reason,"D0146_TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION")
+    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,true)
+    equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
+    equal(#requests,1)
+end)
+
+test("D0146 Action-Space Regulation releases only on positive settled relationship dissolution",function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setLiveControlCapability(capability)
+
+    local active=d0146ActionSpacePicture()
+    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    equal(admitted.status,"ACCEPTED")
+    local commitmentId=admitted.commitment.identity
+
+    local values=OuttaMyWay.ValueRecord.toTable(active)
+    values.identity="OP-D0146-ACTION-DISSOLVED"; values.epoch=793; values.commitmentContext={{commitmentId=commitmentId}}
+    local relation=values.opposedCorridorKnowledge[1]
+    relation.classification="NO_OPPOSED_CONFLICT"
+    relation.reason="ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED"
+    relation.subjectCurrentExcursion=false; relation.otherCurrentExcursion=false
+    relation.resolutionSpaceRelationship={status="POSITIVELY_DISSOLVED",positiveDissolution=true,reason="D0146_POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION"}
+    relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="NO_CURRENT_EXCURSION"}
+    local dissolved=OuttaMyWay.OperationalPicture.new(values)
+    local dissolvedSupported=runtime.liveTrafficCandidateSupport:attach(dissolved,headOnTestSnapshot())
+    local dissolvedEval=runtime:evaluateSealedOperationalPicture(dissolvedSupported)
+    local released=runtime.liveControlDispatcher:dispatch(dissolvedSupported,dissolvedEval)
+    equal(released.status,"RELEASED")
+    equal(released.reason,"D0146_POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION")
+    equal(requests[#requests].target.operation,"RELEASE")
+    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,false)
+    equal(runtime.authorities:ownerOf("AS-B"),nil)
+    equal(runtime.commitments:get(commitmentId).state,"SUCCEEDED")
 end)
 
 test("D0146 Step2 Established Conflict crosses Candidate Decision Commitment and central Control dispatch",function()

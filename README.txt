@@ -1,23 +1,34 @@
-FS25_OuttaMyWay v4.7.102 CANONICAL CANDIDATE — D-0146 STEP-2 ACTIVE COOPERATIVE PASSAGE
+FS25_OuttaMyWay v4.7.109 CANONICAL CANDIDATE — D-0146 THREE-WORKER STABILITY PLATEAU
 
 BASELINE
-Owner-declared canonical v4.7.99 (`c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`; 307 files). v4.7.102 is a fresh RRS candidate containing the live-supported Step-1 + Step-2 implementation after v4.7.101 byte-identity mismatch blocked canonicalisation.
+Owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files). v4.7.109 remains a candidate until explicit owner canonicalisation.
 
-PURPOSE
-Canonicalise the already-implemented and live-supported D-0146 Step 2 without changing its behavioural algorithms. Active path: Established Opposed Corridor Conflict -> Candidate-owned Local Passage Space / Progressive Passage Search -> sufficient Passage Arrangement -> multi-gate Passage Guide -> normal Decision / Commitment / Authority -> central Control execution.
+VALIDATION
+The v4.7.108 live run produced five successful D-0146 Cooperative Passages, 25/25 guide gates, zero Passage Reassessment/escalation and no OuttaMyWay Lua error stack. v4.7.109 carries that tested behaviour unchanged; this release changes identity/provenance/version records only.
 
-IMPLEMENTATION BOUNDARY
-- Step-1 `trajectoryKnowledge` / `opposedCorridorKnowledge` remains Situation-owned.
-- `PassageCapabilityAssessment` publishes purpose-specific mechanical Representation Fitness. Current executable mechanics are deliberately bounded to the demonstrated P23 Condor Endurance II / Patriot 4450 compact/hold/reposition/restore profile; no general-vehicle or generic negative-clearance authority is claimed.
-- `LocalPassagePlanner` owns the Step-2 search. It satisfices over symmetric, asymmetric and unilateral burden splits and emits an explicit five-gate Passage Guide.
-- Candidate/Constraint/Decision/Commitment use the normal production chain. Control executes only the supplied Guide; it does not invent Local Passage Space or replacement geometry.
-- Candidate search samples the complete centreline guide against the immutable current Field World and samples simultaneous pair centre separation against the bounded P23 empirical profile. Boundary Encroachment remains architecturally legitimate but is not required or newly claimed by this bounded expression.
-- Passage Support Loss at a Control gate causes safe halt/restore/hold and an explicit Passage Reassessment outcome; Control does not silently broaden the plan.
-- v4.7.100 Diagnostic Churn is corrected by excluding continuously changing trajectory/conflict measurements from transition signatures while retaining those measurements in emitted evidence.
-- Historical D-0143 TS015 Candidate/Control code remains only as a regression/mechanical donor when the D-0146 Step-2 flag is explicitly disabled.
+NEXT
+Canonicalise the exact reviewed candidate if accepted. Discuss optional enhancements only after establishing the new canonical plateau.
 
-VALIDATION STATUS
-Live evidence from the v4.7.101 implementation: three D-0146 passages, 15/15 guide gates, 3/3 SUCCEEDED, zero Passage Reassessments/escalations. v4.7.102 changes release/provenance identity only and must pass fresh offline validation against its exact packaged bytes. The v4.7.101 producer/owner ZIP hash mismatch blocks that older artefact from canonicalisation.
+---
 
-LIVE EVIDENCE TO WATCH
-`D0146_PASSAGE_SUPPORTED` -> normal Constraint/Decision/Commitment creation -> `COOPERATIVE_ACCEPTED architecture=D0146_STEP2` -> `START architecture=D0146_STEP2` -> ordered `GUIDE_START` / `GUIDE_REACHED` gates -> RESTORE -> HANDOFF. Any support failure should produce `PASSAGE_REASSESSMENT ... outcome=SAFE_ABANDON_ESCALATE`.
+FS25_OuttaMyWay v4.7.107 TEST BUILD — D-0146 RESOLUTION-SPACE OBLIGATION PERSISTENCE
+
+BASELINE
+Owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files). v4.7.107 is an implementation/test successor through the live-tested v4.7.106 lineage; v4.7.102 remains canonical.
+
+LIVE EVIDENCE LEADING TO THIS BUILD
+- v4.7.106 successfully applied bounded Resolution-Space Conservation Regulation before the final Condor/Patriot conflict.
+- Regulation was released when Condor temporarily reversed/non-closed during its boundary manoeuvre; Patriot then accelerated back to native working speed and consumed the passage-development reserve.
+- The eventual conflict was almost resolved, but Step 2 again lacked sufficient room.
+
+IMPLEMENTATION
+- No headland heuristic and no change to Trajectory Persistence.
+- The Current Excursion is an admission witness, not the lifetime of the Resolution-Space obligation.
+- Situation now publishes positive relationship-invalidation Knowledge. A transient reverse/non-closing phase does not positively dissolve an admitted obligation.
+- Once Action-Space Regulation is admitted, it persists through transient/unresolved observations and through Potential conflict until either positive relationship dissolution, Job/Operation disappearance, or same-Commitment Step-2 succession.
+- Positive release evidence includes actual post-passage ordering or stable Established Trajectories that are non-opposed after Current Excursion has ended.
+- The successful v4.7.105/v4.7.106 S 416 passage mechanics, Optional Configuration Reduction, third-party Passage Support and stale follower-purpose correction are unchanged.
+- Current test regulation cap remains 8 km/h, scoped only to this Resolution-Space Conservation purpose.
+
+TEST OBJECTIVE
+Repeat the three-worker scenario. Confirm Patriot remains regulated through Condor's temporary boundary reverse instead of accelerating when instantaneous closure disappears, then confirm the same Commitment succeeds into normal Step-2 passage when the opposed conflict establishes. Reconfirm no false open-field regulations and unchanged S 416 passages.

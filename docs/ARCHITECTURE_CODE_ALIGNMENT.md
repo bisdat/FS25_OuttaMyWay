@@ -1,3 +1,27 @@
+# v4.7.105 D-0146 implementation-alignment addendum — Optional Configuration Reduction
+
+**Architecture already says:** Passage Arrangement may use optional configuration reduction; configuration reduction is not a universal prerequisite.
+
+**v4.7.103 misalignment:** generic D-0146 execution inherited the historical compact-both mechanical sequence and interpreted GIANTS fold-interface presence as authority to wait for Compact Configuration.
+
+**v4.7.105 alignment:** `LocalPassagePlanner` owns the per-participant passage-expression demand (`COMPACT_REQUIRED` / `RETAIN_CURRENT`); `LiveTrafficCandidateSupport` transports it; `CooperativePassageControl` revalidates and executes only required changes, with selective restoration. ConfigurationAuthority remains an actuator/evidence donor and does not decide passage need.
+
+The bounded 6 m participant reserve remains implementation calibration. It does not amend D-0146 Nominal Inter-Assembly Clearance or create generic negative-clearance authority.
+
+---
+
+# v4.7.103 D-0146 implementation-alignment addendum
+
+No new architectural concept is introduced. The 2026-08-13 evidence demonstrated three code/authority mismatches against already-settled D-0146:
+
+1. `PassageCapabilityAssessment` had vehicle-name policy where architecture requires current mechanical evidence. **Corrected:** Situation grants only purpose-specific mechanical preflight from current representation/configuration; Control remains authority for actual capability.
+2. `LocalPassagePlanner` treated the selected pair in isolation. **Corrected:** other active Operation assemblies constrain Local Passage Space through positive current physical occupancy and are recorded in the Candidate-supplied Guide support.
+3. D-0141 historical purpose retention could outlive positive current relationship evidence. **Corrected:** Situation computes D-0146 opposed relationships before follower reassessment; established opposed conflict / established post-passage relation positively retires the old follower purpose.
+
+Authority remains protected: Situation owns Knowledge/fitness; Candidate owns Passage search/Guide; Decision/Commitment remain normal; Control may execute or reject the supplied Guide but may not invent replacement geometry. Third parties are constraints, not silently added Commitment participants. D-0143 remains regression/mechanical donor only.
+
+---
+
 # v4.7.102 D-0146 Step-2 validation/provenance addendum
 
 No architecture-to-code ownership changes are introduced in v4.7.102. The v4.7.101 active chain remains authoritative in code: Situation-owned trajectory/conflict Knowledge -> Candidate-owned Local Passage Search/Passage Guide -> normal Decision/Commitment -> central Control. The 2026-08-12 TS015 run supplied three successful live executions. v4.7.102 changes release identity/provenance only so the validated implementation can be reviewed under one exact candidate fingerprint.

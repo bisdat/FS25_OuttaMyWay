@@ -1,3 +1,40 @@
+## v4.7.109 canonical-candidate scope gate
+
+- [x] Exact baseline is owner-declared canonical v4.7.102 SHA-256 `f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`.
+- [x] v4.7.103–v4.7.108 implementation increment is carried forward from the tested lineage.
+- [x] v4.7.108 live evidence records five successful Cooperative Passages, 25/25 gates, zero Passage Reassessment/escalation and no OuttaMyWay error stack.
+- [x] v4.7.109 introduces no intentional traffic/planning/Control behavioural algorithm change from v4.7.108.
+- [x] Parked enhancements remain outside candidate scope.
+- [ ] RRS candidate/evidence production from exact v4.7.102 baseline passes with zero blockers.
+- [ ] Exact packaged candidate passes behavioural, structural/conformance, RRS, manifest, XML/version and deterministic-byte checks.
+
+---
+
+## v4.7.105 test-build scope gate
+
+- [x] Baseline remains owner-declared canonical v4.7.102.
+- [x] No D-0146 architecture reopened; optional configuration reduction was already accepted architecture.
+- [x] No S 416 or vehicle-name exception introduced.
+- [x] Candidate owns per-participant configuration demand; Control only actuates/revalidates it.
+- [x] Restoration is selective to configuration actually changed.
+- [x] v4.7.103 third-party Passage Support and stale follower-purpose corrections preserved.
+- [ ] Live three-worker validation demonstrates mixed configuration passage.
+
+---
+
+## v4.7.103 test-build scope gate
+
+- [ ] Exact baseline is owner-declared canonical v4.7.102 SHA-256 `f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`.
+- [ ] No D-0146 architecture change is introduced.
+- [ ] Condor/Patriot name admission is absent from D-0146 Passage Fitness / Local Passage Planner.
+- [ ] Other active Operation assemblies constrain Local Passage Space from positive current physical occupancy.
+- [ ] Third-party Passage Support is revalidated by Control without Control-side replanning.
+- [ ] Positive D-0146 opposed/post-passage relationship evidence retires stale D-0141 follower purpose before Candidate selection.
+- [ ] D-0143/TS015 remains only a regression/mechanical donor under active D-0146 Step 2.
+- [ ] Lua behavioural, Python structural/conformance, RRS, Lua/XML parse, manifest and exact packaged-ZIP checks pass.
+
+---
+
 ## v4.7.102 canonical-candidate scope gate
 
 - [ ] Candidate begins from exact owner-declared canonical v4.7.99 SHA-256 `c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`.

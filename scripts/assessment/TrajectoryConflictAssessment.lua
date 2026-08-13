@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.100 TEST BUILD — D-0146 passive Step-1 trajectory/conflict Knowledge.
+-- FS25_OuttaMyWay v4.7.109 CANONICAL CANDIDATE — D-0146 trajectory/conflict Knowledge with Settled Relationship Dissolution evidence.
 -- Situation Assessment owns the persistent state supplied to this module. This module
 -- consumes only sealed/current Situation evidence and has no Candidate/Decision/Control authority.
 
@@ -287,6 +287,142 @@ local function physicalLateralSupport(physical,currentSpace,rightX,rightZ)
     return {resolved=true,minOffsetM=minimum,maxOffsetM=maximum,physicalPrimitiveCount=count}
 end
 
+local currentClosing
+
+local function currentCorridorOverlapOnAxis(axisTrajectory,aPhysical,bPhysical,aSpace,bSpace)
+    local axisX,axisZ=normalize(axisTrajectory and axisTrajectory.establishedDirectionX,axisTrajectory and axisTrajectory.establishedDirectionZ)
+    if axisX==nil then return {status="UNRESOLVED",reason="STABLE_TRAJECTORY_AXIS_UNRESOLVED"} end
+    local rightX,rightZ=axisZ,-axisX
+    local aSupport=physicalLateralSupport(aPhysical,aSpace,rightX,rightZ)
+    local bSupport=physicalLateralSupport(bPhysical,bSpace,rightX,rightZ)
+    if aSupport.resolved~=true or bSupport.resolved~=true then
+        return {
+            status="UNRESOLVED",reason=aSupport.resolved~=true and aSupport.reason or bSupport.reason,
+            sharedAxisX=axisX,sharedAxisZ=axisZ,sharedRightX=rightX,sharedRightZ=rightZ,
+            subjectPhysicalPrimitiveCount=aSupport.physicalPrimitiveCount or 0,otherPhysicalPrimitiveCount=bSupport.physicalPrimitiveCount or 0
+        }
+    end
+    local aX,aZ=tonumber(aSpace and aSpace.occupancy and aSpace.occupancy.x),tonumber(aSpace and aSpace.occupancy and aSpace.occupancy.z)
+    local bX,bZ=tonumber(bSpace and bSpace.occupancy and bSpace.occupancy.x),tonumber(bSpace and bSpace.occupancy and bSpace.occupancy.z)
+    if not finite(aX) or not finite(aZ) or not finite(bX) or not finite(bZ) then
+        return {status="UNRESOLVED",reason="CURRENT_SPACE_POSE_UNAVAILABLE",sharedAxisX=axisX,sharedAxisZ=axisZ,sharedRightX=rightX,sharedRightZ=rightZ}
+    end
+    local aCentre=aX*rightX+aZ*rightZ
+    local bCentre=bX*rightX+bZ*rightZ
+    local aMin,aMax=aCentre+aSupport.minOffsetM,aCentre+aSupport.maxOffsetM
+    local bMin,bMax=bCentre+bSupport.minOffsetM,bCentre+bSupport.maxOffsetM
+    local overlapM=math.min(aMax,bMax)-math.max(aMin,bMin)
+    local positive=overlapM>0
+    return {
+        status=positive and "POSITIVE_CURRENT_CORRIDOR_SUPPORT" or "CURRENT_CORRIDOR_OVERLAP_NOT_SUPPORTED",
+        reason=positive and "CURRENT_POSITIVE_PHYSICAL_BANDS_SHARE_STABLE_TRAJECTORY_CORRIDOR" or "CURRENT_POSITIVE_PHYSICAL_BANDS_ARE_LATERALLY_DECOUPLED",
+        positive=positive,overlapM=overlapM,sharedAxisX=axisX,sharedAxisZ=axisZ,sharedRightX=rightX,sharedRightZ=rightZ,
+        subjectBandMinM=aMin,subjectBandMaxM=aMax,otherBandMinM=bMin,otherBandMaxM=bMax,
+        subjectPhysicalPrimitiveCount=aSupport.physicalPrimitiveCount,otherPhysicalPrimitiveCount=bSupport.physicalPrimitiveCount,negativeClearanceAuthority=false
+    }
+end
+
+local function nativeForwardRateKmh(motion)
+    local fieldWork=motion and motion.nativeFieldWork or nil
+    local command=fieldWork and fieldWork.nativeDriveCommand or nil
+    if type(command)~="table" or command.valid~=true or command.zeroCommand==true or command.moveForwards~=true then return nil end
+    local rate=tonumber(command.maxSpeedKmh)
+    if not finite(rate) or rate<=0 then return nil end
+    return rate
+end
+
+local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,aPhysical,bPhysical,aSpace,bSpace,context)
+    local result={status="NOT_REQUIRED",supported=false,reason="CURRENT_EXCURSION_ACTION_SPACE_CONSERVATION_NOT_REQUIRED",authority="D0146_SITUATION_KNOWLEDGE",decisionAuthority=false,controlAuthority=false}
+    local aExcursion=aTrajectory and aTrajectory.currentExcursion==true
+    local bExcursion=bTrajectory and bTrajectory.currentExcursion==true
+    if aExcursion==bExcursion then
+        result.reason=aExcursion and "MULTIPLE_CURRENT_EXCURSIONS_DO_NOT_SUPPORT_UNILATERAL_CONSERVATION_ROLE" or "NO_CURRENT_EXCURSION"
+        return result
+    end
+
+    local excursionTrajectory,stableTrajectory,excursionMotion,stableMotion,excursionPhysical,stablePhysical,excursionSpace,stableSpace
+    if aExcursion then
+        excursionTrajectory,stableTrajectory=aTrajectory,bTrajectory
+        excursionMotion,stableMotion=aMotion,bMotion
+        excursionPhysical,stablePhysical=aPhysical,bPhysical
+        excursionSpace,stableSpace=aSpace,bSpace
+    else
+        excursionTrajectory,stableTrajectory=bTrajectory,aTrajectory
+        excursionMotion,stableMotion=bMotion,aMotion
+        excursionPhysical,stablePhysical=bPhysical,aPhysical
+        excursionSpace,stableSpace=bSpace,aSpace
+    end
+    result.excursionAssemblyId=excursionTrajectory and excursionTrajectory.assemblyId or nil
+    result.excursionReferenceKey=excursionTrajectory and excursionTrajectory.assemblyReferenceKey or nil
+    result.regulatedAssemblyId=stableTrajectory and stableTrajectory.assemblyId or nil
+    result.regulatedReferenceKey=stableTrajectory and stableTrajectory.assemblyReferenceKey or nil
+
+    local persistenceAlignmentMinDot=threshold(context,"persistenceAlignmentMinDot",0.85)
+    local currentStableDistanceM=threshold(context,"currentStableDistanceM",1.0)
+    local stableCurrentDot=stableTrajectory and stableTrajectory.currentToEstablishedDot or nil
+    local stableCurrent=stableTrajectory~=nil and stableTrajectory.currentExcursion~=true
+        and tonumber(stableTrajectory.currentAlignedDistanceM or 0)>=currentStableDistanceM
+        and (stableCurrentDot==nil or stableCurrentDot>=persistenceAlignmentMinDot)
+    if not stableCurrent then result.reason="NON_EXCURSION_PARTICIPANT_CURRENT_TRAJECTORY_NOT_STABLE"; return result end
+
+    local closing=currentClosing(excursionMotion,stableMotion,excursionSpace,stableSpace)
+    result.currentClosing=copy(closing)
+    local minClosingRateMps=threshold(context,"minClosingRateMps",0.05)
+    if closing.resolved~=true or not finite(tonumber(closing.closingRateMps)) or closing.closingRateMps<minClosingRateMps then
+        result.reason="CURRENT_EXCURSION_PAIR_NOT_POSITIVELY_CLOSING"
+        return result
+    end
+    local maxSeparationM=threshold(context,"actionSpaceMaxSeparationM",80.0)
+    result.maxSeparationM=maxSeparationM
+    result.separationM=closing.separationM
+    if not finite(tonumber(closing.separationM)) or closing.separationM>maxSeparationM then
+        result.reason="CURRENT_EXCURSION_PAIR_OUTSIDE_LOCAL_PASSAGE_ACTION_SPACE_ENVELOPE"
+        return result
+    end
+
+    if stableSpace==nil or excursionSpace==nil or type(stableSpace.occupancy)~="table" or type(excursionSpace.occupancy)~="table" then
+        result.reason="CURRENT_EXCURSION_PAIR_SPACE_UNAVAILABLE"
+        return result
+    end
+    local stableX,stableZ=tonumber(stableSpace.occupancy.x),tonumber(stableSpace.occupancy.z)
+    local excursionX,excursionZ=tonumber(excursionSpace.occupancy.x),tonumber(excursionSpace.occupancy.z)
+    if not finite(stableX) or not finite(stableZ) or not finite(excursionX) or not finite(excursionZ) then
+        result.reason="CURRENT_EXCURSION_PAIR_POSE_UNAVAILABLE"
+        return result
+    end
+    local stableAhead=dot(excursionX-stableX,excursionZ-stableZ,stableTrajectory.establishedDirectionX,stableTrajectory.establishedDirectionZ)
+    result.regulatedParticipantAheadM=stableAhead
+    if not finite(stableAhead) or stableAhead<=0 then
+        result.reason="CURRENT_EXCURSION_NOT_AHEAD_ON_STABLE_PARTICIPANT_TRAJECTORY"
+        return result
+    end
+
+    local overlap=currentCorridorOverlapOnAxis(stableTrajectory,stablePhysical,excursionPhysical,stableSpace,excursionSpace)
+    result.currentCorridorOverlap=copy(overlap)
+    if overlap.positive~=true then
+        result.reason=overlap.status=="UNRESOLVED" and overlap.reason or "CURRENT_EXCURSION_NOT_IN_STABLE_PARTICIPANT_SUPPORTED_CORRIDOR"
+        return result
+    end
+
+    local nativeRate=nativeForwardRateKmh(stableMotion)
+    result.nativeUnrestrictedKmh=nativeRate
+    if nativeRate==nil then result.reason="REGULATED_PARTICIPANT_POSITIVE_NATIVE_FORWARD_RATE_UNAVAILABLE"; return result end
+    local requestedCapKmh=threshold(context,"actionSpaceRegulationKmh",8.0)
+    requestedCapKmh=math.max(0,math.min(nativeRate,requestedCapKmh))
+    result.requestedCapKmh=requestedCapKmh
+    if nativeRate<=requestedCapKmh+0.05 then
+        result.status="OBSERVE_SUPPORTED"
+        result.reason="NATIVE_PROGRESS_ALREADY_WITHIN_ACTION_SPACE_CONSERVATION_RATE"
+        return result
+    end
+
+    result.status="REGULATE_SUPPORTED"
+    result.supported=true
+    result.reason="CURRENT_EXCURSION_OCCUPIES_APPROACHING_STABLE_TRAJECTORY_CORRIDOR_WHILE_LOCAL_PASSAGE_ACTION_SPACE_COMPRESSES"
+    result.governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_RELATIONSHIP_MATURES_OR_POSITIVELY_DISSOLVES"
+    return result
+end
+
 local function corridorOverlap(aTrajectory,bTrajectory,aPhysical,bPhysical,aSpace,bSpace)
     local axisX,axisZ=normalize(aTrajectory.establishedDirectionX-bTrajectory.establishedDirectionX,aTrajectory.establishedDirectionZ-bTrajectory.establishedDirectionZ)
     if axisX==nil then return {status="UNRESOLVED",reason="COMMON_OPPOSED_AXIS_UNRESOLVED"} end
@@ -329,7 +465,7 @@ local function corridorOverlap(aTrajectory,bTrajectory,aPhysical,bPhysical,aSpac
     }
 end
 
-local function currentClosing(aMotion,bMotion,aSpace,bSpace)
+currentClosing=function(aMotion,bMotion,aSpace,bSpace)
     if aMotion==nil or bMotion==nil or aSpace==nil or bSpace==nil or type(aSpace.occupancy)~="table" or type(bSpace.occupancy)~="table" then
         return {resolved=false,reason="CURRENT_MOTION_OR_SPACE_UNAVAILABLE"}
     end
@@ -371,6 +507,49 @@ local function sortedMemberIds(values)
     return result
 end
 
+local function positiveSettledContinuation(trajectory,motion)
+    if trajectory==nil or motion==nil then return false end
+    return trajectory.contextProductivePositive==true
+        and trajectory.contextEvidenceClass=="NON_TURN_LINE_ACTIVE"
+        and motion.localIntentClassification=="SETTLED_CONTINUATION"
+        and motion.intentValid==true
+end
+
+-- Situation-owned positive relationship invalidation for an already-admitted
+-- Resolution-Space obligation.  This does not create Control authority.  It
+-- distinguishes actual relationship dissolution from a transient change in the
+-- Current Motion witness that first exposed the Potential conflict.
+local function resolutionSpaceRelationship(record)
+    local result={status="UNRESOLVED",positiveDissolution=false,reason="RELATIONSHIP_DISSOLUTION_NOT_POSITIVELY_ESTABLISHED",authority="D0146_SITUATION_KNOWLEDGE",decisionAuthority=false,controlAuthority=false}
+    if record.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" or record.classification=="POTENTIAL_OPPOSED_CORRIDOR_CONFLICT" then
+        result.status="RELATIONSHIP_REMAINS_ACTIVE"
+        result.reason="OPPOSED_CORRIDOR_RELATIONSHIP_REMAINS_ESTABLISHED_OR_POTENTIAL"
+        return result
+    end
+    if record.classification~="NO_OPPOSED_CONFLICT" then return result end
+    if record.reason=="PARTICIPANTS_NOT_MUTUALLY_AHEAD_ON_ESTABLISHED_TRAJECTORIES" then
+        result.status="POSITIVELY_DISSOLVED"; result.positiveDissolution=true
+        result.reason="D0146_POSITIVE_POST_PASSAGE_RELATIONSHIP_DISSOLUTION"
+        return result
+    end
+    if record.reason=="ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED" then
+        if record.subjectCurrentExcursion==true or record.otherCurrentExcursion==true then
+            result.status="TRANSIENT_RELATIONSHIP_CHANGE"
+            result.reason="D0146_TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"
+            return result
+        end
+        if record.subjectSettledContinuation~=true or record.otherSettledContinuation~=true then
+            result.status="TRANSITIONAL_RELATIONSHIP_CHANGE"
+            result.reason="D0146_TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"
+            return result
+        end
+        result.status="POSITIVELY_DISSOLVED"; result.positiveDissolution=true
+        result.reason="D0146_POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION"
+        return result
+    end
+    return result
+end
+
 function Assessment.classifyPairs(context)
     local trajectoryByAssembly=byAssembly(context.trajectoryKnowledge)
     local motionByAssembly=byAssembly(context.motionEvidence)
@@ -406,9 +585,22 @@ function Assessment.classifyPairs(context)
                     record.trajectoryDot=trajectoryDot
                     record.subjectCurrentExcursion=aTrajectory.currentExcursion==true
                     record.otherCurrentExcursion=bTrajectory.currentExcursion==true
+                    record.subjectSettledContinuation=positiveSettledContinuation(aTrajectory,motionByAssembly[aId])
+                    record.otherSettledContinuation=positiveSettledContinuation(bTrajectory,motionByAssembly[bId])
                     record.subjectCurrentToEstablishedDot=aTrajectory.currentToEstablishedDot
                     record.otherCurrentToEstablishedDot=bTrajectory.currentToEstablishedDot
-                    if trajectoryDot==nil then
+                    local actionSpace=actionSpaceConservation(
+                        aTrajectory,bTrajectory,motionByAssembly[aId],motionByAssembly[bId],physicalByAssembly[aId],physicalByAssembly[bId],
+                        spaceByAssembly[aId],spaceByAssembly[bId],context)
+                    record.actionSpaceConservation=copy(actionSpace)
+                    if actionSpace.supported==true then
+                        record.status="CLASSIFIED"
+                        record.classification="POTENTIAL_OPPOSED_CORRIDOR_CONFLICT"
+                        record.reason="CURRENT_EXCURSION_CONSUMES_LOCAL_PASSAGE_ACTION_SPACE"
+                        record.currentClosing=copy(actionSpace.currentClosing)
+                        record.currentClosingPositive=true
+                        record.currentOpposed=false
+                    elseif trajectoryDot==nil then
                         record.reason="ESTABLISHED_TRAJECTORY_RELATION_UNRESOLVED"
                     elseif trajectoryDot>opposedMaxDot then
                         record.status="CLASSIFIED"
@@ -453,6 +645,7 @@ function Assessment.classifyPairs(context)
                         end
                     end
                 end
+                record.resolutionSpaceRelationship=resolutionSpaceRelationship(record)
                 result[#result+1]=record
             end
         end

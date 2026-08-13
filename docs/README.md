@@ -1,3 +1,49 @@
+# Current architecture / implementation lineage — v4.7.109 canonical candidate
+
+Owner-declared canonical remains v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files) until explicit owner canonicalisation. v4.7.109 is a release/provenance-only successor to the live-validated v4.7.108 implementation.
+
+The current D-0146 implementation has live evidence for three-worker Operation-aware Cooperative Passage, third-party Local Spatial Constraints/Passage Support, Optional Configuration Reduction, bounded Resolution-Space Conservation and Settled Relationship Dissolution. Five passages settled successfully in the final v4.7.108 validation run.
+
+Parked refinements and the separate final-few-metres single-worker condition remain outside this candidate.
+
+---
+
+# Current architecture / implementation lineage — v4.7.108 final corrective test build
+
+Owner-declared canonical remains v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files). D-0146 remains governing. v4.7.108 makes one release-contract correction after the otherwise successful v4.7.107 three-worker run: **Transitional trajectory acceptance is not Settled Relationship Dissolution**.
+
+An admitted Resolution-Space obligation now survives non-opposed trajectory acceptance while either participant is still TURN_SEGMENT/TURNING. The non-opposed release path requires positive settled non-turn productive continuation from both participants. Actual post-passage ordering remains immediately authoritative. No headland heuristic or route prediction is introduced.
+
+If live validation is clean, stop corrective work and produce a fresh canonical candidate. Optional enhancements remain post-canonical discussion items.
+
+Read `ARCHITECTURE.md` D-0146 first, then `PROJECT_STATUS.md`, `ENGINEERING_JOURNAL.md`, `ARCHITECTURE_CODE_ALIGNMENT.md`, `KNOWN_ISSUES.md` and `ROADMAP.md`.
+
+---
+
+# Current architecture / implementation lineage — v4.7.107 test build
+
+Owner-declared canonical remains v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files). D-0146 remains governing. v4.7.107 corrects v4.7.106 lease lifetime: a Current Excursion may admit Resolution-Space Conservation, but only positive relationship invalidation or Step-2 succession ends that obligation. No headland heuristic is introduced.
+
+Read `ARCHITECTURE.md` D-0146 first, then `PROJECT_STATUS.md`, `ENGINEERING_JOURNAL.md`, `ARCHITECTURE_CODE_ALIGNMENT.md`, `KNOWN_ISSUES.md` and `ROADMAP.md`.
+
+---
+
+# Current architecture / implementation lineage — v4.7.105 test build
+
+Owner-declared canonical is v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files). D-0146 remains governing. v4.7.105 corrects the v4.7.103 implementation drift that made configuration reduction mandatory for both passage participants: configuration demand is now Candidate-owned and optional per participant, while Control changes and restores only what is required. Operation-aware third-party Passage Support and stale follower-purpose succession remain active.
+
+Read `ARCHITECTURE.md` D-0146 first, then `PROJECT_STATUS.md`, `ENGINEERING_JOURNAL.md`, `ARCHITECTURE_CODE_ALIGNMENT.md`, `KNOWN_ISSUES.md` and `ROADMAP.md`.
+
+---
+
+# Current architecture / implementation lineage — v4.7.103 test build
+
+Owner-declared canonical is v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files). D-0146 Step 1 and Step 2 architecture remain governing. v4.7.103 is implementation catch-up from the first three-worker live evidence: vehicle-name passage admission is retired, Local Passage Space is Operation-aware, and positive D-0146 relationship succession retires stale D-0141 follower purpose.
+
+Read `ARCHITECTURE.md` D-0146 first, then `PROJECT_STATUS.md`, `ENGINEERING_JOURNAL.md`, `ARCHITECTURE_CODE_ALIGNMENT.md`, `KNOWN_ISSUES.md` and `ROADMAP.md`.
+
+---
+
 # Current architecture / implementation lineage — v4.7.102 canonical candidate
 
 Owner-declared canonical baseline is v4.7.99 (`c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`; 307 files). D-0146 governs trajectory-based Opposed Corridor Conflict and Local Cooperative Passage. Step 1 and the bounded Condor/Patriot Step-2 implementation are now live-supported: the 2026-08-12 TS015 run completed three D-0146 passages successfully.

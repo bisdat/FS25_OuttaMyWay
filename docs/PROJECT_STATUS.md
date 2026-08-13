@@ -1,3 +1,89 @@
+# v4.7.109 CANONICAL CANDIDATE status — three-worker stability plateau
+
+**Canonical baseline:** v4.7.102 (`f85256dd...597b`; Git `cf514983...`; 310 files).
+
+**Live validation carried forward from v4.7.108:** five Cooperative Passages settled `SUCCEEDED`, all 25 Passage Guide gates were reached, no Passage Reassessment or safe-abandon escalation occurred, and no OuttaMyWay Lua error stack was observed. The tested scenario includes Condor, Patriot and S 416 with Operation-aware pairwise passage, optional per-participant configuration reduction, third-party Passage Support, Resolution-Space Conservation and Settled Relationship Dissolution.
+
+**Candidate delta from tested v4.7.108:** release/provenance/version only. No passage planner, Candidate, Decision, Commitment, authority, Regulation-admission or Cooperative Passage Control behavioural algorithm is intentionally changed.
+
+**Canonicalisation boundary:** review only the exact v4.7.109 candidate fingerprint and evidence package. v4.7.102 remains canonical until the repository owner explicitly declares this candidate canonical.
+
+---
+
+# v4.7.108 FINAL CORRECTIVE TEST status — Settled Relationship Dissolution
+
+**Canonical baseline:** v4.7.102 (`f85256dd...597b`; Git `cf514983...`; 310 files).
+
+**Latest live evidence (v4.7.107):** the three-worker scenario is stable: five Cooperative Passages settled `SUCCEEDED`, both Condor and Patriot completed their jobs, and no return of stale open-field follower Regulation was observed. The remaining defect was Regulation release/reacquisition while the manoeuvring participant was still `TURN_SEGMENT` / `TURNING`.
+
+**Current correction:** Situation may positively dissolve a non-opposed trajectory relationship only after both participants show valid Settled Continuation with positive non-turn productive-line evidence. Transitional continuation is retained as unresolved relationship change and cannot release the conserved Resolution Space. Actual post-passage ordering still dissolves immediately.
+
+**Preserved unchanged:** Action-Space admission, 8 km/h bounded conservation cap, Trajectory Persistence, Step-2 passage planner, Optional Configuration Reduction, S 416 `RETAIN_CURRENT`, Operation-aware third-party Passage Support, sealed Candidate traversal, stale D-0141 retirement, and Cooperative Passage Control mechanics.
+
+**Release discipline:** this is the last planned corrective build. Clean live evidence should lead directly to a fresh canonical candidate. One contingency corrective build is reserved only for a genuinely blocking defect. Nice-to-have enhancements are not part of this test.
+
+---
+
+# v4.7.107 TEST BUILD status — Resolution-Space Obligation Persistence
+
+**Canonical baseline:** v4.7.102 (`f85256dd...597b`; Git `cf514983...`; 310 files).
+
+**Live evidence:** v4.7.106 applied the desired early Patriot Regulation but released it during Condor's temporary reverse/non-closing boundary manoeuvre. Patriot accelerated and consumed the passage-development reserve; the final Condor/Patriot encounter was almost, but not fully, resolved.
+
+**Current implementation:** Current Excursion remains an admission witness only. Once admitted, the Resolution-Space Conservation obligation persists until positive relationship invalidation or Step-2 succession. Situation owns the positive-dissolution semantic record; Control no longer equates disappearance of the initiating witness with purpose completion.
+
+**Preserved:** v4.7.105/v4.7.106 S 416 passages, Optional Configuration Reduction, Operation-aware third-party Passage Support, stale follower-purpose correction, Trajectory Persistence and the 8 km/h bounded test cap.
+
+**Live validation required:** confirm the Regulation survives the temporary boundary reverse and hands the same Commitment to Step 2 with sufficient passage space.
+
+---
+
+# v4.7.106 TEST BUILD status — D-0146 Current-Excursion Action-Space Conservation
+
+**Canonical baseline:** owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files).
+
+**Latest live evidence (v4.7.105):** two S 416/sprayer passages and one Condor/Patriot passage succeeded; no false open-field follower Regulation was observed. The final Condor/Patriot head-on exposed late Step-2 action after a Current Excursion consumed the existing Local Passage entry reserve.
+
+**Current test implementation:** one Current Excursion may produce Potential Opposed Corridor Conflict and bounded Resolution-Space Conservation Regulation when positive current corridor/closure evidence shows a stable participant is consuming the 80 m Local Passage envelope. Trajectory Persistence remains unchanged. Regulation either releases on purpose dissolution or succeeds into the same D-0146 Commitment when Step 2 becomes supported.
+
+**Preserved:** v4.7.105 sealed-value Control bridge, Optional Configuration Reduction, S 416 `RETAIN_CURRENT`, Operation-aware third-party Local Spatial Constraints/Passage Support, and prompt stale D-0141 follower-purpose retirement.
+
+**Not in this build:** Unilateral Passage Execution refinement; final-few-metres single-worker `VALID_BLOCKED_ZERO_COMMAND` remains separate.
+
+**Validation status:** offline behavioural/structural/RRS/package validation required before handoff; live GIANTS evidence remains final authority for whether earlier bounded Regulation actually preserves sufficient passage-development space.
+
+---
+
+# v4.7.105 TEST BUILD status — D-0146 Optional Configuration Reduction
+
+**Canonical baseline:** v4.7.102 (`f85256dd...597b`; Git `cf514983...`; 310 files).
+
+**Live evidence:** v4.7.103 disproved the implementation assumption that a GIANTS fold interface implies a meaningful Compact Configuration. Patriot/S 416 entered D-0146 Step 2, both were held, and the run remained in `COMPACTING`. S 416 has no passage configuration to reduce.
+
+**Current implementation:** configuration reduction is now Candidate-planned per participant and optional. Control acts only on `COMPACT_REQUIRED`, leaves `RETAIN_CURRENT` untouched, and restores only configuration it changed. The v4.7.103 Operation-aware third-party passage support and stale follower-purpose corrections remain active.
+
+**Validation status:** offline regression complete; live three-worker validation pending.
+
+---
+
+# v4.7.103 TEST BUILD status — D-0146 Step 2 Operation-aware implementation catch-up
+
+**Canonical baseline:** v4.7.102 — SHA-256 `f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`, Git `cf51498316714c568b75ee6e65dab544ccbe7af3`, 310 files.
+
+**Architecture:** D-0146 remains governing and unchanged. Step 1 is live validated. Step 2 is active and was live validated for three Condor/Patriot passages in v4.7.101/102 lineage. The 2026-08-13 three-worker run exposed implementation specialisations rather than an architectural gap.
+
+**v4.7.103 implementation:**
+- vehicle-name-independent Step-2 mechanical preflight; Control retains actual capability authority;
+- Operation-aware Local Passage Space with other active assemblies as positive current spatial constraints;
+- dynamic third-party Passage Support revalidation;
+- D-0146 positive relationship succession retires stale D-0141 follower purpose before Candidate selection.
+
+**Still bounded:** generic negative-clearance authority is not claimed; static-obstacle/boundary-margin support is no broader than existing D-0146 implementation; passage remains a pair Commitment, not a three-way route planner; final-few-metres single-worker blocked-zero-command remains separate.
+
+**Next evidence:** rerun the three-worker scenario and inspect Condor/S 416 admission, third-party constraint/reassessment behaviour, and follower-regulation retirement.
+
+---
+
 # v4.7.102 canonical-candidate status — Step 2 live supported, byte identity reset
 
 **Owner-declared canonical baseline:** v4.7.99 (`c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`; 307 files).  

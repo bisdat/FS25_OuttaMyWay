@@ -1,3 +1,55 @@
+# v4.7.109 release record — close fixing cycle at validated stability plateau
+
+**Fact:** v4.7.108 live evidence supports the final Settled Relationship Dissolution correction and the broader three-worker D-0146 implementation. Five Cooperative Passages settled successfully with no Passage Reassessment/escalation or OuttaMyWay error stack.
+
+**Decision:** stop planned corrective work and produce v4.7.109 as a fresh canonical candidate. No new architecture is introduced and no traffic/planning/Control behavioural algorithm is changed from the tested v4.7.108 payload. Optional enhancements are deferred until after canonicalisation.
+
+---
+
+# v4.7.108 implementation record — Settled Relationship Dissolution; no new architectural decision
+
+D-0146, Trajectory Persistence, Resolution-Space Conservation and Productive/Transitional context already provide the governing architecture. v4.7.107 live evidence disproved one implementation implication: `currentExcursion=false` plus newly non-opposed Established Trajectories does **not** mean the underlying relationship is positively settled while GIANTS still reports a turn transition.
+
+**Implementation discovery — Settled Relationship Dissolution:** trajectory acceptance and relationship settlement are different facts. An admitted Resolution-Space obligation may be released through the non-opposed-trajectory path only when both participants positively demonstrate settled continuation: valid GIANTS `SETTLED_CONTINUATION` local intent and positive `NON_TURN_LINE_ACTIVE` continuation. TURN_SEGMENT/TURNING, unresolved intent, or non-productive transition leaves dissolution unresolved and the obligation persists.
+
+Physical post-passage ordering remains independent positive dissolution. No timer, hysteresis, headland heuristic, route prediction, or new Control interpretation is authorised. Situation owns the semantic witness; Control remains limited to consuming `positiveDissolution`.
+
+This is the last planned corrective implementation before a canonical plateau; optional refinements remain separate post-canonical work.
+
+---
+
+# v4.7.107 implementation record — Resolution-Space Obligation Persistence; no new architectural decision
+
+D-0146 and Resolution-Space Conservation already require ordinary progression not to consume the last locally admissible means of resolution. v4.7.106 correctly made that obligation executable but incorrectly tied its lifetime to the Current Excursion witness that first justified admission.
+
+**Implementation discovery — Resolution-Space Obligation Persistence:** evidence that creates an obligation does not necessarily define its lifetime. Once bounded Action-Space Conservation is admitted, loss of instantaneous closure, temporary reverse motion, stationary motion, or disappearance of `Current Excursion` is not by itself positive evidence that the underlying Potential Opposed Corridor Conflict has dissolved.
+
+v4.7.107 therefore keeps the obligation until Situation supplies **positive relationship invalidation**, the pair leaves the active Operation, or Established conflict succeeds into Step 2 under the same governing requirement. Positive invalidation currently includes actual post-passage ordering and stable non-opposed Established Trajectories after Current Excursion has ended. No headland heuristic or route prediction is added.
+
+The existing 8 km/h cap remains bounded empirical calibration, not architectural policy.
+
+---
+
+# v4.7.106 implementation record — Potential Conflict Action-Space Conservation; no new architectural decision
+
+D-0146 already states that Potential Opposed Corridor Conflict is observed and may be regulated where Action Space is being consumed, and Resolution-Space Conservation already prohibits ordinary progression from consuming the last locally admissible means of resolution. v4.7.105 live evidence showed that these accepted rules were not yet executable during Current Excursion.
+
+v4.7.106 therefore does **not** shorten Trajectory Persistence or grant Current Excursion Established-Trajectory authority. It adds a bounded positive witness for Potential conflict from one Current Excursion, one stable approaching participant, positive current physical corridor support, positive closure and the existing Local Passage envelope. Traffic Policeman may regulate only the stable participant to conserve passage-development space; the excursion remains GIANTS-native.
+
+The Regulation and later Established-conflict Cooperative Passage share one D-0146 governing requirement and may therefore be purpose succession within one Commitment. Dissolution of the Current Excursion purpose causes immediate Regulation release and obligation settlement. The 8 km/h value is an empirical test calibration scoped to this conservation purpose, not architectural speed policy.
+
+**Unilateral Passage Execution** remains architecturally permitted under Pairwise Passage Economy, but is deliberately not introduced in this correction because the current S 416 passages succeeded without requiring a new native/controlled authority composition.
+
+---
+
+# v4.7.105 implementation record — Optional Configuration Reduction; no new architectural decision
+
+D-0146 already permits **optional configuration reduction**. The v4.7.103 live Patriot/S 416 stall disproved the implementation assumption that GIANTS fold-interface presence implies a meaningful Compact Configuration and exposed that the generic Step-2 controller had inherited a sprayer-specific mandatory compact-both sequence.
+
+v4.7.105 restores the accepted authority boundary: Candidate expresses per-participant passage configuration demand from current positive represented envelope; Control revalidates/actuates only `COMPACT_REQUIRED` participants and selectively restores only changed configuration. `RETAIN_CURRENT` participants receive no fold actuation. The current 6 m per-participant reserve is bounded implementation calibration and does not amend D-0146 clearance architecture.
+
+---
+
 # v4.7.100 implementation record — no new architectural decision
 
 D-0146 remains the governing architectural decision. v4.7.100 adds a passive Situation-owned implementation of its Step-1 Established Trajectory / Current Excursion / Potential-to-Established Opposed Corridor Conflict semantics. The numeric filters are explicitly empirical implementation calibration and do not amend D-0146. Candidate/Decision/Commitment/Control behaviour is deliberately unchanged pending live evidence.

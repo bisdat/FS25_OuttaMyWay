@@ -1,3 +1,35 @@
+# v4.7.105 D-0146 Optional Configuration Reduction responsibility update
+
+| Responsibility | Owner | v4.7.105 test state |
+|---|---|---|
+| Decide whether each participant requires configuration reduction for the selected passage expression | Candidate / `LocalPassagePlanner` | `COMPACT_REQUIRED` or `RETAIN_CURRENT` from current positive represented envelope |
+| Carry the selected per-participant configuration demand | Candidate → Decision → Commitment bridge | Explicit `passageConfiguration` |
+| Revalidate and actuate required configuration change | Central `CooperativePassageControl` + ConfigurationAuthority | Only `COMPACT_REQUIRED` participants are commanded/waited upon |
+| Restore configuration | Central Control + ConfigurationAuthority | Only configuration actually changed by the Commitment is restored |
+| Decide Local Passage Space including other active assemblies | Candidate / `LocalPassagePlanner` | Operation-aware; unchanged from v4.7.103 |
+| Retire stale follower purpose under stronger opposed/passed relationship evidence | Situation/Candidate relationship succession | Active; unchanged from v4.7.103 |
+
+---
+
+# v4.7.103 D-0146 Operation-aware responsibility update
+
+| Responsibility | Owner | v4.7.103 test state |
+|---|---|---|
+| Established Trajectory / opposed relationship | Situation Assessment / `TrajectoryConflictAssessment` | unchanged; live supported |
+| Purpose-specific passage mechanical preflight | Situation Assessment / `PassageCapabilityAssessment` | vehicle-name independent; current representation/configuration evidence only |
+| Actual Hold/compact/Reposition capability | Control mechanical donors | revalidated from current vehicle Reality; may disprove Passage Presumption |
+| Local Passage Space / Progressive Passage Search | Candidate / `LocalPassagePlanner` | pairwise search constrained by every other active Operation assembly's positive current occupancy |
+| Third-party assembly role | Local Spatial Constraint | not a hidden Commitment participant; not controlled by pair passage |
+| Passage Guide | Candidate | records selected third-party support as part of candidate evidence |
+| Dynamic third-party Passage Support | Control | reject/reassess if positive current occupancy conflicts with pair current positions, gate target or active guide leg |
+| D-0141 purpose succession | Situation / `FollowerBoundaryDemandAssessment` | positive D-0146 opposed/post-passage evidence retires stale follower purpose before Candidate selection |
+| Replacement passage geometry after support loss | Candidate after reassessment | Control explicitly forbidden to invent it |
+| D-0143/TS015 mechanics | historical regression/mechanical donor | no competing semantic decision authority while D-0146 Step 2 is enabled |
+
+**Protected abstraction:** pairwise passage does not imply pair-isolated Reality. Other Operation assemblies constrain support without being silently recruited into the pair Commitment.
+
+---
+
 # v4.7.101 D-0146 Step-2 responsibility-map update
 
 | Responsibility | Owner | v4.7.101 state |

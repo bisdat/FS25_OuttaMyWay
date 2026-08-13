@@ -1,3 +1,61 @@
+# v4.7.109 candidate continuity — canonical plateau after validated three-worker Step 2
+
+Owner-declared canonical remains v4.7.102 until explicit canonicalisation. v4.7.108 closed the planned fixing cycle with clean three-worker live evidence: five successful D-0146 passages, no Passage Reassessment/escalation and no OuttaMyWay error stack.
+
+v4.7.109 is the fresh canonical candidate. It carries the tested v4.7.108 behaviour unchanged and changes only release identity/provenance plus repository validation records. After canonicalisation, discuss parked enhancements from this stable baseline rather than extending the candidate.
+
+---
+
+# v4.7.108 test continuity — final corrective before canonical plateau
+
+Owner-declared canonical remains v4.7.102. The tested v4.7.107 implementation produced five successful D-0146 passages and normal Condor/Patriot job completion in the three-worker scenario. The single remaining corrective finding is **Settled Relationship Dissolution**: v4.7.107 could release Resolution-Space Regulation after the trajectory filter accepted a new non-opposed direction even though GIANTS still reported TURN_SEGMENT/TURNING.
+
+v4.7.108 keeps the obligation through that transitional state. Situation grants non-opposed positive dissolution only after both participants are valid `SETTLED_CONTINUATION` with positive `NON_TURN_LINE_ACTIVE` evidence. Actual post-passage ordering remains immediate positive invalidation. Control consumes only the sealed semantic result.
+
+Do not introduce headland prediction, timers/hysteresis, passage replanning, unilateral-execution refinement, or other enhancements before the canonical decision. If v4.7.108 is clean, the next engineering action is canonical-candidate production.
+
+---
+
+# v4.7.107 test continuity — Resolution-Space Obligation Persistence
+
+Authoritative baseline remains owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files).
+
+v4.7.106 live evidence supports early Potential-conflict Action-Space Regulation but disproves immediate release on disappearance/non-closing of the initiating Current Excursion. v4.7.107 keeps the admitted Resolution-Space obligation alive until Situation supplies positive relationship invalidation or Step 2 succeeds it.
+
+No headland special case is introduced. Preserve the successful S 416 optional-configuration passages and all v4.7.105/v4.7.106 passage mechanics. Unilateral Passage Execution remains parked.
+
+---
+
+# v4.7.106 test continuity — Excursion-to-Conflict Action-Space Conservation
+
+Authoritative baseline remains owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files).
+
+v4.7.105 is the current live-successful implementation evidence lineage: no false follower Regulations, two successful S 416/sprayer passages, one successful Condor/Patriot passage. Its final Condor/Patriot head-on was not a Step-1 detection absence after trajectory supersession; rather, Trajectory Persistence allowed an unresolved Current Excursion to consume the Local Passage entry reserve before Established conflict matured.
+
+v4.7.106 implements the already-accepted D-0146 Potential-conflict / Resolution-Space Conservation rule. It regulates only the stable approaching participant under a single positively supported Current Excursion and keeps the excursion GIANTS-native. The Regulation shares the future passage governing requirement so it can succeed into the same Commitment, or releases immediately if the purpose dissolves.
+
+Do not change the successful S 416 passage expression in this build. Unilateral Passage Execution is architecturally valid but parked as a least-intervention refinement, not a current defect.
+
+---
+
+# v4.7.105 test continuity — Optional Configuration Reduction
+
+Authoritative baseline remains owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files).
+
+v4.7.103 successfully removed vehicle-name admission and exposed three-worker passage to generic D-0146 Step 2, but its live test disproved mandatory compact-both execution: S 416 exposes fold mechanics without a meaningful compact passage configuration and both participants remained held in `COMPACTING`.
+
+v4.7.105 realigns implementation with the already-accepted D-0146 rule that configuration reduction is optional. Candidate records per-participant configuration demand; Control only changes/waits/restores assemblies that require and undergo reduction. Third-party passage constraints and stale follower-purpose correction are preserved.
+
+---
+
+# v4.7.103 test continuity — three-worker implementation catch-up
+
+Authoritative baseline is owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`). v4.7.103 does not reopen architecture. It removes the exhausted Condor/Patriot name gate, makes pairwise Local Passage Space aware of every other active Operation assembly's positive current occupancy, and lets stronger D-0146 relationship evidence retire stale D-0141 follower purpose.
+
+Test the same three-worker scenario. Success means supported non-Condor/Patriot opposed pairs can enter Step 2; third-party occupancy either changes the selected arrangement or causes explicit Passage Reassessment; and stale follower regulation no longer persists after positive relationship succession.
+
+---
+
 # v4.7.102 continuity boundary — validated Step 2 awaiting owner canonicalisation
 
 Owner-declared canonical baseline is v4.7.99 (`c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`; 307 files). D-0146 Step 1 and Step 2 are implemented. The bounded Condor/Patriot Step-2 path completed three successful live passages on 2026-08-12. v4.7.101 cannot be canonicalised because its producer and owner-observed ZIP hashes disagreed; v4.7.102 is the fresh RRS candidate with no Step-2 behavioural algorithm change.

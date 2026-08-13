@@ -257,6 +257,30 @@ function Assessment.evaluatePair(leader,follower,options)
         }
     end
 
+    -- D-0146 is a stronger current relationship witness than the historical
+    -- D-0130 retention rule.  Once Established Trajectory knowledge positively
+    -- says this ordered follower purpose has succeeded into opposed conflict, or
+    -- that the opposed participants have already passed one another, the old
+    -- follower purpose is positively obsolete and must not keep a speed lease.
+    local opposed=options.opposedRelationship
+    if existingPurpose and type(opposed)=="table" then
+        if opposed.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" then
+            return {
+                pairKey=pairKey(leader.assemblyId,follower.assemblyId),leaderAssemblyId=leader.assemblyId,followerAssemblyId=follower.assemblyId,
+                status="RETIRE_SUPPORTED",purposeState="RETIRE",reason="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION",
+                relationship=relation,representationFitness="CURRENTLY_FIT",governingPurpose="PRESERVE_BOUNDARY_TRANSITION_ORDERING",
+                opposedRelationship=opposed,provenance={source="FollowerBoundaryDemandAssessment",authority="D0146_POSITIVE_RELATIONSHIP_SUCCESSION"}
+            }
+        elseif opposed.classification=="NO_OPPOSED_CONFLICT" and opposed.reason=="PARTICIPANTS_NOT_MUTUALLY_AHEAD_ON_ESTABLISHED_TRAJECTORIES" then
+            return {
+                pairKey=pairKey(leader.assemblyId,follower.assemblyId),leaderAssemblyId=leader.assemblyId,followerAssemblyId=follower.assemblyId,
+                status="RETIRE_SUPPORTED",purposeState="RETIRE",reason="ESTABLISHED_OPPOSED_PASSAGE_INVALIDATES_FOLLOWER_BOUNDARY_PROTECTION",
+                relationship=relation,representationFitness="CURRENTLY_FIT",governingPurpose="PRESERVE_BOUNDARY_TRANSITION_ORDERING",
+                opposedRelationship=opposed,provenance={source="FollowerBoundaryDemandAssessment",authority="D0146_POSITIVE_RELATIONSHIP_SUCCESSION"}
+            }
+        end
+    end
+
     -- During the already-admitted P22 outbound refuge manoeuvre, do not let the
     -- elastic follower magnitude relax upward merely because the Yield worker's
     -- productive/native evidence has changed under OuttaMyWay Control. Preserve
@@ -364,6 +388,27 @@ local function futureMap(values)
     return out
 end
 
+local function unorderedPairKey(a,b)
+    a,b=tostring(a),tostring(b)
+    if a>b then a,b=b,a end
+    return a.."|"..b
+end
+
+local function opposedRelationshipMap(values)
+    local out={}
+    for _,record in OuttaMyWay.ValueRecord.ipairs(values or {}) do
+        if record.subjectAssemblyId~=nil and record.otherAssemblyId~=nil then
+            local key=unorderedPairKey(record.subjectAssemblyId,record.otherAssemblyId)
+            local existing=out[key]
+            -- Prefer Established conflict; otherwise retain the current classified
+            -- relationship so post-passage positive invalidation can retire stale
+            -- follower purpose.
+            if existing==nil or record.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" then out[key]=record end
+        end
+    end
+    return out
+end
+
 local function activePurposeMap(commitmentContext)
     local out={}
     for _,context in OuttaMyWay.ValueRecord.ipairs(commitmentContext or {}) do
@@ -435,6 +480,7 @@ function Assessment.buildKnowledge(values)
     local future=futureMap(values.futureSpace); local productive=productiveMap(values.productiveKnowledge)
     local operationByAssembly=values.operationByAssembly or {}
     local active=activePurposeMap(values.commitmentContext)
+    local opposedByPair=opposedRelationshipMap(values.opposedCorridorKnowledge)
     local passage,outbound=relocationPhaseMaps(values.controlOutcomes,function(ref) return values.assemblyIdForReference and values.assemblyIdForReference(ref) or nil end)
     local ids={}
     for assemblyId,_ in pairs(operationByAssembly) do ids[#ids+1]=assemblyId end
@@ -455,6 +501,7 @@ function Assessment.buildKnowledge(values)
                 establishedLateralRetentionM=values.establishedLateralRetentionM,
                 establishedAlignmentMinDot=values.establishedAlignmentMinDot,
                 establishedOpposedSuccessionMaxDot=values.establishedOpposedSuccessionMaxDot,
+                opposedRelationship=opposedByPair[unorderedPairKey(purpose.leaderAssemblyId,purpose.followerAssemblyId)],
                 clearanceFactor=values.clearanceFactor
             })
             result.existingCommitmentId=purpose.commitmentId; result.existingObligationId=purpose.obligationId

@@ -1,3 +1,67 @@
+# v4.7.109 immediate roadmap — canonicalise plateau, then discuss enhancements
+
+1. Review the exact v4.7.109 candidate and evidence fingerprints.
+2. If accepted, repository owner explicitly declares that exact candidate canonical and synchronises it locally.
+3. Stop corrective work on the stable three-worker scenario unless new Reality disproves it.
+4. Discuss parked enhancements separately from the canonicalisation increment, including Unilateral Passage Execution and other optional least-intervention refinements.
+5. Keep the known final-few-metres single-worker condition separate unless it becomes the next selected engineering objective.
+
+---
+
+# v4.7.108 immediate roadmap — validate, then canonicalise
+
+1. Live repeat the stable three-worker scenario with v4.7.108.
+2. Confirm admitted Resolution-Space Regulation persists through TURN_SEGMENT/TURNING non-opposed trajectory acceptance instead of release/reacquire chatter.
+3. Confirm positive settled non-turn relationship dissolution still releases Regulation when the conflict genuinely disappears.
+4. Confirm Step-2 succession and all existing S 416 / Condor / Patriot passages remain unchanged.
+5. If clean, stop corrective work and produce a fresh canonical candidate and usual evidence package.
+6. Only a genuinely blocking live defect permits one contingency fixing build.
+7. After canonicalisation, discuss parked enhancements separately; do not fold them into the stability release.
+
+---
+
+# v4.7.107 immediate roadmap — live validate Resolution-Space Obligation Persistence
+
+1. Repeat the three-worker scenario that nearly resolved under v4.7.106.
+2. Confirm the early D-0146 Action-Space Regulation remains active while Condor temporarily reverses/non-closes during its boundary manoeuvre.
+3. Confirm Patriot does not accelerate merely because the initiating Current Excursion witness changes.
+4. Confirm the same governing Commitment succeeds into `D0146_PASSAGE_SUPPORTED` / Cooperative Passage once the conflict Establishes.
+5. Confirm positive relationship dissolution still releases promptly and no false open-field Regulation returns.
+6. Reconfirm S 416 optional-configuration passages remain unchanged.
+
+---
+
+# v4.7.106 immediate roadmap — live validate Current-Excursion Action-Space Conservation
+
+1. Repeat the three-worker scenario that produced the final v4.7.105 Condor/Patriot head-on.
+2. Confirm a positively supported Current Excursion can produce `POTENTIAL_OPPOSED_CORRIDOR_CONFLICT` and `D0146_ACTION_SPACE_REGULATION_SUPPORTED/APPLY` while useful Local Passage separation still exists.
+3. Confirm the excursion participant remains GIANTS-native and the regulated stable participant is the only physical Regulation target.
+4. If the relationship dissolves, confirm immediate `D0146_ACTION_SPACE_RELEASE`; if it matures, confirm same-Commitment succession into `D0146_PASSAGE_SUPPORTED` and Cooperative Passage.
+5. Reconfirm the v4.7.105 successes: no false open-field follower Regulations and unchanged S 416 optional-configuration passages.
+6. Let Reality determine correction or canonical-candidate preparation; do not add Unilateral Passage Execution unless evidence makes the current successful joint-guide expression a real problem.
+
+---
+
+# v4.7.105 immediate roadmap — live validate Optional Configuration Reduction
+
+1. Repeat the three-worker live scenario that falsified v4.7.103.
+2. Confirm Patriot/S 416 is admitted with per-participant modes showing S 416 `RETAIN_CURRENT`, and that passage advances beyond configuration handling.
+3. Confirm Condor/Patriot retains the proven compact-both behaviour when both represented lateral reserves require it.
+4. Confirm third-party Local Spatial Constraint / Passage Support handling and prompt stale D-0141 follower-purpose retirement remain intact.
+5. Let Reality determine whether correction or canonical-candidate production follows; do not pre-plan another feature cycle.
+
+---
+
+# v4.7.103 immediate roadmap — validate three-worker implementation catch-up
+
+1. Run the three-worker scenario from canonical v4.7.102 + v4.7.103 test build.
+2. Confirm non-name-gated D-0146 passage admission for a mechanically supported tractor/sprayer pair.
+3. Confirm third-party current occupancy constrains Progressive Passage Search and that moving support loss produces safe Passage Reassessment rather than collision/replanning.
+4. Confirm positive D-0146 relationship succession removes the isolated open-field stale follower regulations seen on 2026-08-13.
+5. If supported by Reality, prepare the normal canonical-candidate cycle; if disproved, change only the failed implementation assumption.
+
+---
+
 # v4.7.102 immediate roadmap — canonicalise validated Step 2, then return to remaining work
 
 1. Review the fresh v4.7.102 RRS candidate/evidence package and canonicalise only its exact fingerprint if accepted.

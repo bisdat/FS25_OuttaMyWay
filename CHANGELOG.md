@@ -1,3 +1,86 @@
+# v4.7.109 CANONICAL CANDIDATE — D-0146 three-worker stability plateau
+
+**Canonical baseline:** owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files).
+
+**Validated engineering increment:** v4.7.103–v4.7.108 remove the exhausted Condor/Patriot name gate, make Local Passage Space Operation-aware, add third-party Passage Support, retire stale follower purpose, make configuration reduction optional per participant, repair sealed Candidate collection traversal, conserve Resolution Space during Current Excursion, persist that obligation through Transitional Continuation, and require Settled Relationship Dissolution before non-opposed release.
+
+**v4.7.108 live validation (2026-08-13):** the three-worker run completed cleanly from the current scenario perspective. Five D-0146 Cooperative Passages settled `SUCCEEDED`; all 25 guide gates were reached; no Passage Reassessment or safe-abandon escalation occurred; no OuttaMyWay Lua error stack was observed. The final corrective release contract behaved as intended and the fixing cycle is closed.
+
+**Candidate boundary:** v4.7.109 introduces no traffic/planning/Control behavioural algorithm change from the tested v4.7.108 payload. Changes are release identity, provenance, validation records and version assertions only. Parked enhancements remain out of scope until after canonicalisation.
+
+---
+
+# v4.7.108 TEST BUILD — D-0146 Settled Relationship Dissolution
+
+**Canonical baseline:** owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files).
+
+v4.7.107 live evidence was operationally strong: five D-0146 passages settled successfully, both Condor and Patriot completed their Job Episodes, and the earlier false open-field follower Regulation did not return. The remaining defect was aggressive Resolution-Space Regulation release/reacquisition while the manoeuvring participant was still `TURN_SEGMENT` / `TURNING`.
+
+## Final planned corrective change
+
+- **Settled Relationship Dissolution:** non-opposed Established Trajectories are no longer sufficient positive evidence to release an admitted Resolution-Space obligation while either participant remains Transitional Continuation.
+- For that release path, Situation now requires positive settled continuation from both participants: current GIANTS local intent `SETTLED_CONTINUATION`, valid intent, and positive `NON_TURN_LINE_ACTIVE` Productive Continuation evidence.
+- Actual post-passage ordering (`PARTICIPANTS_NOT_MUTUALLY_AHEAD_ON_ESTABLISHED_TRAJECTORIES`) remains immediate positive dissolution; no unnecessary settlement wait is added after a passage is physically complete.
+- Control remains semantic-only and consumes Situation-owned `resolutionSpaceRelationship`; no TURN_SEGMENT, headland, trajectory, or Productive-state interpretation is added to Control.
+- No timers, hysteresis, route prediction, headland heuristic, passage-planning changes, configuration changes, or Regulation-admission changes are introduced.
+- This is the last planned corrective build before a canonical plateau. If live evidence is clean, the next release action is a fresh canonical candidate; only a genuinely blocking defect justifies one contingency correction.
+
+---
+
+# v4.7.106 TEST BUILD — D-0146 Potential Conflict Action-Space Conservation
+
+**Canonical baseline:** owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files).
+
+v4.7.105 three-worker live evidence was strong: no false open-field follower Regulations, two successful S 416/sprayer passages, and one successful Condor/Patriot passage. The final Condor/Patriot head-on exposed **Excursion-to-Conflict Action-Space Loss**: Trajectory Persistence correctly retained Condor's Established Trajectory while current physical motion reversed, but the relationship did not become Established Opposed Corridor Conflict until local Step-2 entry space had already been consumed.
+
+## Implementation correction
+
+- Preserve Trajectory Persistence; do not manufacture earlier Established Trajectory authority.
+- A single positively supported Current Excursion may now establish `POTENTIAL_OPPOSED_CORRIDOR_CONFLICT` when one stable participant is physically approaching/closing through the same positively supported current corridor inside the existing 80 m Local Passage envelope.
+- While unrestricted progression is consuming that envelope, Traffic Policeman `Observe` is exhausted only far enough to admit a bounded **Resolution-Space Conservation Regulation** of the stable participant. Current test cap is 8 km/h, bounded to this purpose; it is not universal traffic policy.
+- The excursion participant remains under GIANTS-native progression so Reality can reveal whether the excursion dissolves or matures.
+- The Regulation uses the same `d0146-cooperative-passage:<conflict>` governing requirement as Step 2. If the relationship matures, Decision `REVISE`s the same Commitment into Cooperative Passage and reuses authority. If it dissolves, the Regulation releases immediately and its dedicated obligation settles.
+- Existing v4.7.105 successful S 416/Condor/Patriot passage behaviour is otherwise unchanged. **Unilateral Passage Execution** remains an accepted least-intervention refinement but is not implemented in this build.
+- Repository-first pre-flight explicitly reviewed sealed `ValueRecord` traversal and Candidate/Constraint conventions. Offline end-to-end testing caught and corrected a missing purpose-specific Representation Fitness record before packaging.
+
+---
+
+# v4.7.105 TEST BUILD — D-0146 sealed-value Control bridge correction
+
+**Canonical baseline:** owner-declared v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`, Git `cf51498316714c568b75ee6e65dab544ccbe7af3`, 310 files).
+
+Live v4.7.104 evidence established a supported Patriot/S416 D-0146 Passage Arrangement at 79.81 m, created a valid Candidate/Decision/Commitment, then Control rejected every dispatch with `D0146_PASSAGE_CONFIGURATION_PARTICIPANT_MISSING:AS-00002`. The Candidate-owned `passageConfiguration.participants` collection is sealed ValueRecord data; Control incorrectly traversed Candidate-supplied collections with native Lua `ipairs`, contrary to the repository's GIANTS runtime traversal contract.
+
+## Implementation correction
+
+- `CooperativePassageControl` now traverses all array collections through `OuttaMyWay.ValueRecord.ipairs()`, which accepts both sealed Candidate value data and ordinary runtime arrays.
+- This covers the configuration plan, Candidate-supplied Passage Guide gates, and third-party Local Passage Space constraints as well as plain Control-owned arrays, preventing another sealed-proxy traversal gap at the same authority boundary.
+- v4.7.103 third-party/stale-follower corrections and v4.7.104 Optional Configuration Reduction remain unchanged.
+- No architecture is reopened and no vehicle-specific exception is added.
+
+
+- Starts from owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files).
+- Records v4.7.103 as failed live evidence, not a canonical candidate: Patriot/S 416 reached D-0146 Step 2, both were held, and execution remained in `COMPACTING` because S 416 exposes a GIANTS fold interface without a meaningful compact passage configuration.
+- **Optional Configuration Reduction:** implements the D-0146 rule already present in architecture. Fold-interface availability is no longer treated as Compact Configuration authority.
+- `LocalPassagePlanner` now publishes per-participant `COMPACT_REQUIRED` / `RETAIN_CURRENT` configuration demand from the current positively represented lateral envelope against the bounded 6 m participant reserve used by the existing 12 m passage calibration. No generic negative-clearance authority is claimed.
+- `LiveTrafficCandidateSupport` carries the configuration plan through the Candidate/Decision/Commitment chain.
+- D-0146 Control commands and waits for reduction only for participants marked `COMPACT_REQUIRED`, and selectively restores only configurations actually changed. A participant marked `RETAIN_CURRENT` receives no fold/unfold actuation.
+- No S 416 or vehicle-name special case is added. Expected current expression: Patriot/S 416 = compact Patriot / retain S 416; Condor/Patriot = compact both.
+- Retains v4.7.103 third-party Local Spatial Constraint / Passage Support and stale D-0141 follower-purpose corrections unchanged.
+- Adds behavioural and structural regression coverage for mixed and no-reduction passage plans.
+
+# v4.7.103 TEST BUILD — D-0146 Operation-aware Step-2 implementation catch-up
+
+- Starts from owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files).
+- Implements the 2026-08-13 three-worker evidence without changing D-0146 architecture.
+- **Vehicle-Name Mechanical Gate Exhausted:** removes Condor/Patriot name admission from `PassageCapabilityAssessment` and D-0146 Control admission. Current configuration/positive physical evidence admits mechanical preflight; actual compact capability remains Control-revalidated from Reality.
+- **Third-Party Local Spatial Constraint:** `LocalPassagePlanner` now treats every other active Operation assembly's positive current physical occupancy as a Local Spatial Constraint while searching pairwise Passage Arrangements.
+- Candidate-supplied Passage Guides carry third-party support records; Control revalidates them at preflight, guide boundaries, continuously against participant current positions, and against the remaining active guide leg. Passage Support Loss causes safe held Passage Reassessment rather than Control-side replanning.
+- **Stale Follower Purpose:** D-0141 existing follower Regulation now retires when stronger D-0146 positive relationship evidence establishes an opposed-corridor conflict or positively shows that the pair has passed. Situation ordering was changed so that witness exists before follower-purpose reassessment.
+- D-0143/TS015 remains a disabled-regression/mechanical donor when D-0146 Step 2 is enabled; no new parallel decision authority is introduced.
+- Renames the 12 m implementation calibration from P23-specific to compact-passage terminology. This is still an implementation calibration, not universal negative-clearance authority.
+- Adds behavioural/structural coverage for vehicle-name-independent preflight, third-party Local Passage Space, and D-0146 relationship succession over stale D-0141 purpose.
+
 # v4.7.102 CANONICAL CANDIDATE — D-0146 Step-2 validated implementation / provenance recovery
 
 - Starts from exact owner-declared canonical v4.7.99 (`c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`; 307 files) through the Repository Release System.

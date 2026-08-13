@@ -1,3 +1,55 @@
+# v4.7.109 CANONICAL CANDIDATE handover — three-worker stability plateau
+
+**Canonical baseline:** owner-declared v4.7.102, SHA-256 `f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`, Git `cf51498316714c568b75ee6e65dab544ccbe7af3`, 310 files.
+
+## Candidate purpose
+
+Promote the live-validated v4.7.103–v4.7.108 implementation increment into one fresh candidate identity. v4.7.109 changes release/version/provenance records only relative to tested v4.7.108; do not infer an additional behavioural change.
+
+## Final live evidence
+
+The v4.7.108 three-worker run recorded five accepted D-0146 Step-2 Cooperative Passages, all 25 guide gates reached, five `SUCCEEDED` settlements, zero Passage Reassessment, zero safe-abandon escalation and no OuttaMyWay error stack.
+
+## Canonicalisation boundary
+
+Review and canonicalise only the exact v4.7.109 candidate fingerprint produced with its evidence package. After canonicalisation, optional enhancements are a new engineering increment.
+
+---
+
+# v4.7.106 test continuity — D-0146 Potential Action-Space Conservation
+
+**Baseline:** owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files).
+
+**Live evidence carried forward:** v4.7.105 removed false follower Regulations and successfully completed two S 416/sprayer passages plus one Condor/Patriot passage. Final Condor/Patriot head-on occurred after Current Excursion persistence consumed the Step-2 Local Passage entry reserve before Established conflict matured.
+
+**v4.7.106 change:** preserve Trajectory Persistence; publish a bounded Potential-conflict Action-Space Conservation witness from current positive Reality; regulate only the stable approaching participant while the excursion remains GIANTS-native; release immediately on dissolution or `REVISE` the same D-0146 Commitment into Step 2 when Established conflict/passage becomes supported.
+
+**Repository-first checks:** sealed `ValueRecord` traversal conventions re-audited. Integrated offline Candidate/Constraint/Decision/Commitment/Control test caught a missing purpose-specific Representation Fitness record before live packaging and the implementation was corrected using the repository's established pattern.
+
+**Next evidence:** repeat the three-worker run. The decisive chronology is Potential + `D0146_ACTION_SPACE_REGULATION_SUPPORTED/APPLY` while useful separation remains, followed either by immediate `D0146_ACTION_SPACE_RELEASE` if the excursion dissolves or `D0146_PASSAGE_SUPPORTED` + same-Commitment passage succession if it matures.
+
+---
+
+# v4.7.105 test continuity — Optional Configuration Reduction
+
+**Baseline:** owner-declared canonical v4.7.102; SHA-256 `f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`; 310 files.
+
+**Immediate discovery:** v4.7.103 Patriot/S 416 passage stalled in `COMPACTING`; S 416 has no meaningful compact passage configuration. The implementation had contradicted D-0146's already-accepted optional configuration reduction.
+
+**v4.7.105 change:** per-participant Candidate configuration demand (`COMPACT_REQUIRED` / `RETAIN_CURRENT`), Control waits only for required reductions and restores only changed configurations. No vehicle-name special case. Retain v4.7.103 Operation-aware third-party support and stale follower-purpose fixes.
+
+**Next evidence:** repeat the same three-worker run. Successful evidence is passage beyond configuration handling for Patriot/S 416 with S 416 retained current, while preserving Condor/Patriot and third-party/stale-regulation behaviour.
+
+---
+
+# v4.7.103 test continuity — three-worker implementation catch-up
+
+Authoritative baseline is owner-declared canonical v4.7.102 (`f85256ddba7cdf4b0be84ef53cc011c0e907237e86dadf137ce2b065a91b597b`; Git `cf51498316714c568b75ee6e65dab544ccbe7af3`). v4.7.103 does not reopen architecture. It removes the exhausted Condor/Patriot name gate, makes pairwise Local Passage Space aware of every other active Operation assembly's positive current occupancy, and lets stronger D-0146 relationship evidence retire stale D-0141 follower purpose.
+
+Test the same three-worker scenario. Success means supported non-Condor/Patriot opposed pairs can enter Step 2; third-party occupancy either changes the selected arrangement or causes explicit Passage Reassessment; and stale follower regulation no longer persists after positive relationship succession.
+
+---
+
 # v4.7.102 CANONICAL CANDIDATE handover — D-0146 Step-2 validated / provenance reset
 
 **Baseline:** owner-declared canonical v4.7.99, SHA-256 `c3f1f6493fd0e44c8447637827989117daa77a20ba80816cf34270484e5eea8d`, 307 files.
