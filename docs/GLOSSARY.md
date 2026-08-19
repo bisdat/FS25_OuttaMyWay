@@ -1,8 +1,46 @@
+# v4.7.121 Terminal Yield glossary addendum
+
+**Pending Player Reclamation** — lifecycle condition after genuine worker completion and before Player Claim/cleanup (or other explicit termination of relevance). The productive Job Episode remains ended.
+
+**Terminal Yield Consent** — explicit player permission for OuttaMyWay to perform best-effort bounded movement of completed workers. The current development implementation remains gated by legacy `AUTOMATIC_TERMINAL_EGRESS=true`; eventual player-facing automatic yield is opt-in/default-off.
+
+**Continuity, Not Settlement** — architectural principle that completed-worker intervention exists to restore current active productive continuation, not to discover permanent parking.
+
+**Reactive Terminal Yield** — bounded relocation admitted by a positive current Terminal Occupancy conflict and ended when that current productive obstruction is resolved or higher authority terminates the attempt. A later positive conflict may admit another yield.
+
+**No Final Settlement Requirement** — absence of any obligation to prove a terminal position permanently safe while active demand remains.
+
+**Clearance Authority Conflict** — disagreement between GIANTS' conservative native continuation clearance and stronger/different physical or Field-World clearance evidence.
+
+**Egress Externality Constraint** — prohibition on resolving the source conflict by exporting comparable occupancy/demand into another Field World or otherwise illegitimate external space.
+
+**Conflict-Relative Infield Yield** — bounded source-field movement away from the current admitted conflict; neither field centre nor random displacement is itself authority.
+
+**Deterministic Dispersion** — stable identity-derived tie-break used only among materially equivalent, already-supportable spatial alternatives.
+
+**External Yield** — outward Terminal Yield expression. v4.7.120's live-supported Exit Alignment continuation is the current implemented form.
+
+# v4.7.115 terminal-egress terminology
+
+**Outward Reference** — local outer-boundary evidence establishing the outside side of the Field World; not a commanded trajectory.
+
+**Exit Alignment** — a kinematically natural forward/outward heading derived from compact assembly heading plus the outward reference.
+
+**Oblique Boundary Egress** — the single bounded D-0147 manoeuvre that uses Exit Alignment to cross the local outer boundary completely. A near-parallel start may naturally be roughly 45 degrees, but no fixed angle is architectural policy.
+
+**Boundary-Normal Egress Objective** — superseded manoeuvre terminology. The normal remains useful only as the Outward Reference.
+
+---
+
 # v4.7.112 D-0147 glossary addendum
 
 **Bounded Terminal Egress** — optional post-job clearance of a positively obstructive completed assembly by supported compaction and, only if still necessary, one simple continuous bounded outward manoeuvre toward the local Field Boundary.
 
 **Boundary-Normal Egress Objective** — sufficient outward displacement toward the locally nearest Field Boundary. It describes purpose/direction, not a requirement to drive vehicle-forward or to follow an exact mathematical normal.
+
+**Terminal Resolution Commitment** — persistence rule established by TS015/TS016 evidence: after positive Terminal Occupancy admits D-0147, supported compaction and the one bounded egress remain the same obligation even if the initiating obstruction is temporarily no longer visible.
+
+**Positive Field-Exit Settlement** — positive evidence that the current compact represented assembly is fully clear of the Field World outer polygon. D-0147 does not treat target arrival or transient active-demand clearance as equivalent settlement.
 
 **Post-Job Actuation Authority** — mechanically demonstrated ability to move a genuinely completed assembly without resurrecting or creating a GIANTS AI Job Episode; production use still requires a valid architectural purpose.
 

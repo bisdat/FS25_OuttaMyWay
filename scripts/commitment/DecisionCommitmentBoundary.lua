@@ -28,29 +28,28 @@ local function situationDependencies(picture)
     return result
 end
 
-local function validatePhysicalOwnershipAgainstComposition(ownership, compositionValues)
-    if type(compositionValues) ~= "table" then return end
-    local declared, composed = {}, {}
-    for _, assemblyId in OuttaMyWay.ValueRecord.ipairs(ownership.assemblyIds or {}) do
-        if type(assemblyId) ~= "string" or assemblyId == "" then error("progress-actuation ownership requires assembly identity",3) end
-        declared[assemblyId] = true
+local function validatePhysicalOwnershipAgainstComposition(progressOwnership,postJobOwnership,compositionValues)
+    if type(compositionValues)~="table" then return end
+    local progressDeclared,postJobDeclared,progressComposed,postJobComposed={},{},{},{}
+    for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(progressOwnership and progressOwnership.assemblyIds or {}) do
+        if type(assemblyId)~="string" or assemblyId=="" then error("progress-actuation ownership requires assembly identity",3) end
+        progressDeclared[assemblyId]=true
     end
-    for _, entry in OuttaMyWay.ValueRecord.ipairs(compositionValues.entries or {}) do
-        if entry.progressActuation == true then
-            if type(entry.assemblyId) ~= "string" or entry.assemblyId == "" then error("Effective Actuation Composition progress entry requires assembly identity",3) end
-            composed[entry.assemblyId] = true
-        end
+    for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(postJobOwnership and postJobOwnership.assemblyIds or {}) do
+        if type(assemblyId)~="string" or assemblyId=="" then error("post-job-actuation ownership requires assembly identity",3) end
+        postJobDeclared[assemblyId]=true
     end
-    for assemblyId in pairs(declared) do
-        if not composed[assemblyId] then
-            error("physical selected Candidate progress-actuation ownership disagrees with Effective Actuation Composition",3)
-        end
+    for _,entry in OuttaMyWay.ValueRecord.ipairs(compositionValues.entries or {}) do
+        if entry.progressActuation==true then progressComposed[entry.assemblyId]=true end
+        if entry.postJobActuation==true then postJobComposed[entry.assemblyId]=true end
     end
-    for assemblyId in pairs(composed) do
-        if not declared[assemblyId] then
-            error("physical selected Candidate progress-actuation ownership disagrees with Effective Actuation Composition",3)
-        end
+    local function same(a,b,label)
+        for id in pairs(a) do if not b[id] then error("physical selected Candidate "..label.." ownership disagrees with Effective Actuation Composition",3) end end
+        for id in pairs(b) do if not a[id] then error("physical selected Candidate "..label.." ownership disagrees with Effective Actuation Composition",3) end end
     end
+    same(progressDeclared,progressComposed,"progress-actuation")
+    same(postJobDeclared,postJobComposed,"post-job-actuation")
+    for id in pairs(progressDeclared) do if postJobDeclared[id] then error("one assembly cannot simultaneously own progress and post-job actuation",3) end end
 end
 
 function Boundary.new(identityRegistry,epochSequence,admission,commitmentRegistry,obligationLedger,authorityRegistry,governingBasisEvaluator,terminalSettlementEvaluator)
@@ -64,18 +63,19 @@ function Boundary:_admitFromCandidate(picture,decision,candidate)
     if candidate == nil then error("Commitment creation requires selected Candidate",3) end
     local basis = candidate.evidenceBasis.governingBasis
     if type(basis) ~= "table" then error("selected Candidate requires explicit Governing Basis",3) end
-    local progressAssemblyIds = {}
-    local ownership = candidate.evidenceBasis.progressActuationOwnership
+    local progressAssemblyIds,postJobAssemblyIds={},{}
+    local progressOwnership=candidate.evidenceBasis.progressActuationOwnership
+    local postJobOwnership=candidate.evidenceBasis.postJobActuationOwnership
     if physical[candidate.capability] then
-        if type(ownership) ~= "table" or type(ownership.assemblyIds) ~= "table" or #ownership.assemblyIds == 0 then
-            error("physical selected Candidate requires explicit progress-actuation ownership",3)
-        end
-        for _, assemblyId in OuttaMyWay.ValueRecord.ipairs(ownership.assemblyIds) do progressAssemblyIds[#progressAssemblyIds+1] = assemblyId end
+        local progressCount=type(progressOwnership)=="table" and type(progressOwnership.assemblyIds)=="table" and #progressOwnership.assemblyIds or 0
+        local postJobCount=type(postJobOwnership)=="table" and type(postJobOwnership.assemblyIds)=="table" and #postJobOwnership.assemblyIds or 0
+        if progressCount+postJobCount==0 then error("physical selected Candidate requires explicit actuation ownership",3) end
+        if progressCount>0 and postJobCount>0 then error("physical selected Candidate must select one actuation authority class",3) end
+        for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(progressOwnership and progressOwnership.assemblyIds or {}) do progressAssemblyIds[#progressAssemblyIds+1]=assemblyId end
+        for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(postJobOwnership and postJobOwnership.assemblyIds or {}) do postJobAssemblyIds[#postJobAssemblyIds+1]=assemblyId end
     end
-    local compositionValues = candidate.evidenceBasis.effectiveActuationComposition
-    if physical[candidate.capability] then
-        validatePhysicalOwnershipAgainstComposition(ownership, compositionValues)
-    end
+    local compositionValues=candidate.evidenceBasis.effectiveActuationComposition
+    if physical[candidate.capability] then validatePhysicalOwnershipAgainstComposition(progressOwnership,postJobOwnership,compositionValues) end
     local admitted = self.admission:admit({
         objective=candidate.purpose,
         governingBasis=basis,
@@ -83,7 +83,7 @@ function Boundary:_admitFromCandidate(picture,decision,candidate)
         situationDependencies=situationDependencies(picture),
         evidenceContracts=candidate.preconditions.evidenceContracts or {},
         obligationSpecifications=candidate.obligationsCreated,
-        progressAssemblyIds=progressAssemblyIds,
+        progressAssemblyIds=progressAssemblyIds,postJobAssemblyIds=postJobAssemblyIds,
         effectiveActuationCompositionId=nil
     })
     if type(compositionValues) == "table" then
@@ -153,7 +153,7 @@ function Boundary:apply(picture,decisionResult)
             commitmentId=waiting.identity; resultingState=waiting.state
             createdObligationIds=admitted.obligationIds
             for _, token in OuttaMyWay.ValueRecord.ipairs(admitted.authorityTokens) do authorityTokenIds[#authorityTokenIds+1]=token.identity end
-            if #authorityTokenIds>0 then error("WAITING_FOR_EVIDENCE cannot retain newly acquired progress authority",2) end
+            if #authorityTokenIds>0 then error("WAITING_FOR_EVIDENCE cannot retain newly acquired actuation authority",2) end
             explanation="Admitted an evidence-bound Commitment and entered WAITING_FOR_EVIDENCE"
         elseif context == nil then
             action="NO_MUTATION"; explanation="Explicit WAIT required no Commitment mutation"

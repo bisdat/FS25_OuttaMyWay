@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.112 CANONICAL CANDIDATE — v4.7.109 live Control behaviour preserved; D-0147 is architecture-only.
+-- FS25_OuttaMyWay v4.7.121 CANONICAL CANDIDATE — v4.7.120 D-0147 external-egress dispatcher retained unchanged in behaviour.
 --
 -- This module is the only automatic bridge from a sealed live Decision /
 -- Commitment application into physical Control. D-0146 Step-2 adds an active
@@ -39,6 +39,13 @@ local function cooperativePassageBridge(candidate)
     return nil
 end
 
+local function terminalEgressBridge(candidate)
+    local evidence=candidate and candidate.evidenceBasis or nil
+    local bridge=evidence and evidence.terminalEgressBridge or nil
+    if type(bridge)=="table" and bridge.architecture=="D0147" and type(bridge.terminalEpisodeId)=="string" then return bridge end
+    return nil
+end
+
 local function ownershipAssemblyIds(candidate)
     local ownership=candidate and candidate.evidenceBasis and candidate.evidenceBasis.progressActuationOwnership or nil
     local ids={}
@@ -49,7 +56,7 @@ end
 
 function Dispatcher.new(runtime)
     return setmetatable({
-        runtime=runtime,capability=nil,cooperativePassageControl=nil,requests={},outcomes={},dispatchCount=0,
+        runtime=runtime,capability=nil,cooperativePassageControl=nil,terminalEgressControl=nil,requests={},outcomes={},dispatchCount=0,
         guardedRecoveryLease=nil,guardedRecoveryApplyCount=0,guardedRecoveryReleaseCount=0,
         followerBoundaryLease=nil,followerBoundaryApplyCount=0,followerBoundaryReleaseCount=0,followerBoundaryUpdateCount=0,
         d0146ActionSpaceLease=nil,d0146ActionSpaceApplyCount=0,d0146ActionSpaceReleaseCount=0
@@ -61,6 +68,14 @@ function Dispatcher:setCooperativePassageControl(control)
     if control~=nil and type(control.setCompletionHandler)=="function" then
         control:setCompletionHandler(function(result) self:_onCooperativePassageCompletion(result) end)
     end
+end
+function Dispatcher:setTerminalEgressControl(control)
+    self.terminalEgressControl=control
+    if control~=nil and type(control.setCompletionHandler)=="function" then control:setCompletionHandler(function(result) self:_onTerminalEgressCompletion(result) end) end
+end
+function Dispatcher:getTerminalEgressObservation()
+    if self.terminalEgressControl~=nil and type(self.terminalEgressControl.getControlExecutionObservation)=="function" then return self.terminalEgressControl:getControlExecutionObservation() end
+    return nil
 end
 function Dispatcher:getCapabilityObservation()
     if self.capability~=nil and type(self.capability.getControlExecutionObservation)=="function" then return self.capability:getControlExecutionObservation() end
@@ -99,6 +114,51 @@ function Dispatcher:_jointCooperativeRequests(picture,evaluated,candidate,commit
         self.requests[#self.requests+1]=request; requests[#requests+1]=request
     end
     return requests,nil
+end
+
+function Dispatcher:_onTerminalEgressCompletion(result)
+    if type(result)~="table" or type(result.commitmentId)~="string" then return end
+    if result.status=="COMPACTION_COMPLETE" then
+        logInfo("D0147_COMPACTION_COMPLETE commitment=%s episode=%s freshSituationRequired=true",tostring(result.commitmentId),tostring(result.terminalEpisodeId))
+        return
+    end
+    if result.status=="MANOEUVRE_COMPLETE" then
+        if self.runtime.terminalOccupancyAssessment~=nil then self.runtime.terminalOccupancyAssessment:markManoeuvreCompleted(result.terminalEpisodeId) end
+        logInfo("D0147_MANOEUVRE_COMPLETE commitment=%s episode=%s freshSituationRequired=true",tostring(result.commitmentId),tostring(result.terminalEpisodeId))
+        return
+    end
+    local eventKind=nil
+    if result.status=="FAILED" then eventKind="OBJECTIVE_FAILED"
+    elseif result.status=="PLAYER_CLAIM" then eventKind="PLAYER_CLAIM"
+    elseif result.status=="SUPERSEDED" then eventKind="NEW_AUTHORITATIVE_INTENT" end
+    if eventKind~=nil then
+        local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self.runtime,result.commitmentId,eventKind,result.evidence,result.terminalEpisodeId)
+        if terminal==nil then logWarning("D0147_COMPLETION_SETTLEMENT_FAILED commitment=%s event=%s reason=%s",tostring(result.commitmentId),tostring(eventKind),tostring(reason)) end
+    end
+end
+
+function Dispatcher:_dispatchTerminalEgress(picture,evaluated,candidate)
+    local bridge=terminalEgressBridge(candidate); if bridge==nil then return nil end
+    local boundary=evaluated.candidateInventory and evaluated.candidateInventory.supportBoundary or nil
+    if type(boundary)~="table" or boundary.mode~="D0147_BOUNDED_TERMINAL_EGRESS" then return {status="NO_DISPATCH",reason="D0147_SUPPORT_BOUNDARY_MISMATCH"} end
+    if bridge.terminalEvent~=nil then
+        local commitmentId=bridge.existingCommitmentId
+        if type(commitmentId)~="string" then return {status="NO_DISPATCH",reason="D0147_SETTLEMENT_WITHOUT_LIVE_COMMITMENT"} end
+        local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self.runtime,commitmentId,bridge.terminalEvent,{kind="D0147_SITUATION_SETTLEMENT",terminalEpisodeId=bridge.terminalEpisodeId,playerEscalationRequired=bridge.terminalEvent=="OBJECTIVE_FAILED"},bridge.terminalEpisodeId)
+        return {status=terminal and "SETTLED" or "NO_DISPATCH",reason=reason,terminalEgress=true,terminalEvent=bridge.terminalEvent,commitment=terminal}
+    end
+    if candidate.capability~="REPOSITION" then return {status="NO_DISPATCH",reason="D0147_NON_REPOSITION_PHYSICAL_CANDIDATE",terminalEgress=true} end
+    if self.terminalEgressControl==nil then return {status="NO_DISPATCH",reason="D0147_CONTROL_UNAVAILABLE",terminalEgress=true} end
+    if type(self.terminalEgressControl.isActive)=="function" and self.terminalEgressControl:isActive() then return {status="NO_DISPATCH",reason="D0147_CONTROL_ALREADY_ACTIVE",terminalEgress=true} end
+    local applied,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(self.runtime,picture,evaluated)
+    if applied==nil then return {status="NO_DISPATCH",reason="D0147_COMMITMENT_APPLICATION_FAILED",detail=reason,terminalEgress=true} end
+    local request=OuttaMyWay.ControlRequest.new({identity=self.runtime.identities:issue("CONTROL_REQUEST"),commitmentId=applied.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase=bridge.phase,terminalEpisodeId=bridge.terminalEpisodeId,objective=bridge.objective},authorityToken=applied.authorityToken.identity,operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=applied.commitment.effectiveActuationCompositionId,preconditions=candidate.preconditions or {},invalidationConditions=candidate.invalidationConditions or {}})
+    self.requests[#self.requests+1]=request
+    local started,result=self.terminalEgressControl:executeControlRequest(request,candidate)
+    local outcome=self:_outcome(request,started and "ACCEPTED" or "REJECTED",{kind=started and "D0147_POST_JOB_CONTROL_ACCEPTED" or "NO_PHYSICAL_EFFECT_CONFIRMED",phase=bridge.phase,postJobActuation=true},started and nil or {reason=tostring(result)})
+    if started then self.dispatchCount=self.dispatchCount+1; logInfo("D0147_ACCEPTED commitment=%s episode=%s assembly=%s phase=%s request=%s result=%s",tostring(applied.commitment.identity),tostring(bridge.terminalEpisodeId),tostring(bridge.assemblyReferenceKey),tostring(bridge.phase),tostring(request.identity),tostring(result))
+    else logWarning("D0147_REJECTED commitment=%s episode=%s phase=%s reason=%s",tostring(applied.commitment.identity),tostring(bridge.terminalEpisodeId),tostring(bridge.phase),tostring(result)) end
+    return {status=started and "ACCEPTED" or "REJECTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,terminalEgress=true}
 end
 
 function Dispatcher:_onCooperativePassageCompletion(result)
@@ -532,6 +592,8 @@ end
 function Dispatcher:dispatch(picture,evaluated)
     if picture==nil or evaluated==nil or evaluated.decision==nil then return {status="NO_DISPATCH",reason="MISSING_SEALED_DECISION"} end
     local candidate=selectedCandidate(evaluated)
+    local terminal=self:_dispatchTerminalEgress(picture,evaluated,candidate)
+    if terminal~=nil then return terminal end
     local followerBridge=followerBoundaryBridge(candidate)
     if followerBridge~=nil and followerBridge.action=="RETIRE" then
         return self:_dispatchFollowerBoundary(picture,evaluated,candidate)

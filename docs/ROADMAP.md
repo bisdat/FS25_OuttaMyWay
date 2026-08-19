@@ -1,3 +1,19 @@
+# v4.7.121 immediate roadmap — Terminal Yield implementation alignment
+
+After owner canonicalisation, discuss before coding:
+
+1. define positive **current productive continuation restored** evidence for one Terminal Yield;
+2. define Egress Externality Constraint using existing Field World/assembly knowledge without global search;
+3. define the smallest Conflict-Relative Infield Yield Candidate expression;
+4. preserve external v4.7.120 mechanical donor and Actuation Neutralisation;
+5. permit repeat yield only from a later fresh positive Terminal Occupancy conflict;
+6. rename/migrate the config gate only when the broader implementation exists;
+7. escalate to the player rather than expanding into parking AI.
+
+Do not start with random displacement, field-centre attraction or guessed clearance metres.
+
+---
+
 # v4.7.112 immediate roadmap — canonicalise D-0147 before implementation
 
 1. Review/canonicalise the exact v4.7.112 architecture-only candidate if accepted.

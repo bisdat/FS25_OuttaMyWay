@@ -1,3 +1,24 @@
+# v4.7.121 CANONICAL CANDIDATE handover — D-0147 Terminal Yield / Pending Player Reclamation
+
+**Canonical authority:** v4.7.112 remains owner-declared canonical until explicit promotion.
+**Immediate implementation evidence:** v4.7.120 external egress is live-supported mechanically and retained unchanged in behaviour.
+
+## Continue from this architectural question
+
+Do not ask where a completed worker can be parked permanently. The governing problem is: **given a completed passive assembly Pending Player Reclamation and a positive current conflict, what is the least bounded Terminal Yield that restores useful active continuation without creating a worse externality?**
+
+Current architecture permits External Yield when legitimate and Conflict-Relative Infield Yield when external movement would export the problem. Do not implement a random move toward field centre. Other physical assemblies are constraints; deterministic identity may break a true symmetry only after support is established. A later positive conflict may justify another yield; absence of current conflict must remain passive.
+
+The player is expected to return to tidy completed workers. Automatic yield exists to buy time, not replace that gameplay. Player Escalation is therefore an acceptable outcome whenever bounded autonomous yielding cannot preserve continuation cleanly.
+
+For development testing keep legacy `AUTOMATIC_TERMINAL_EGRESS=true`. Do not rename the variable until the broader Terminal Yield implementation is agreed; eventual player-facing automatic yield is explicit opt-in/default-off.
+
+## Implementation gap to protect
+
+The retained v4.7.120 Control still treats Positive Field Exit as its successful objective and has no repeated/infield/externality-aware Candidate policy. This mismatch is deliberately documented. Architecture must drive the next implementation, not vice versa.
+
+---
+
 # v4.7.112 CANONICAL CANDIDATE handover — D-0147 Bounded Terminal Egress
 
 **Canonical baseline:** owner-declared v4.7.109, SHA-256 `ea0b399e2f73759fa29982fc1b85d5bf446f6fd90eb324dec2902b333c7c6a74`, Git `cd9085ee40343d542a66b84948c27f7dd91a40c7`, 310 files.

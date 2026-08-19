@@ -291,6 +291,7 @@ function Source:capture(mission, nowSeconds)
             track.shadowRepresentation=shadowRepresentation
             track.localIntent=localIntent
             track.everActive = true; track.active = true; track.object = object; track.pose = pose
+            track.sourceIntentTerminated = false
             track.diagnosticPose=copyPose(pose); track.diagnosticTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic; track.motionDiagnostic=motionDiagnostic
             track.fieldId = field.fieldId or 0; track.fieldResolved = field.resolved == true; track.fieldEvidence = field
             track.name = objectName(object); track.components = components; track.radius = radius; track.width = width; track.length = length
@@ -308,9 +309,18 @@ function Source:capture(mission, nowSeconds)
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
         elseif track ~= nil and track.everActive == true then
-            local playerControlled = mission.controlledVehicle == object
+            local okEntered,entered=safeCall(object,"getIsEntered")
+            local playerEntered=okEntered and entered==true
+            -- Preserve the established active-Job player-takeover witness on the
+            -- first inactive frame. D-0147 Player Claim after genuine completion
+            -- is intentionally narrower and is represented separately by
+            -- playerEntered == vehicle:getIsEntered().
+            local wasSourceIntentTerminated = track.sourceIntentTerminated == true
+            local activeJobPlayerTakeover = not wasSourceIntentTerminated and mission.controlledVehicle == object
+            local playerControlled = activeJobPlayerTakeover or playerEntered
             local termination = OuttaMyWay.LiveAIJobEvidence.sourceIntentTermination(mission, object, track.sourceJobToken)
-            local sourceIntentTerminationObserved = termination.observed == true
+            if termination.observed == true then track.sourceIntentTerminated=true end
+            local sourceIntentTerminationObserved = track.sourceIntentTerminated == true
             if pose ~= nil then
                 track.motionDiagnostic=OuttaMyWay.LiveInteractionDiagnostics.deriveMotion(track.diagnosticPose,pose,track.diagnosticTimestamp,nowSeconds,math.abs(tonumber(object.lastSpeedReal) or 0) * 1000)
                 track.pose = pose; track.diagnosticPose=copyPose(pose); track.diagnosticTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic
@@ -329,7 +339,7 @@ function Source:capture(mission, nowSeconds)
                 object = object, referenceKey = ref, name = track.name or objectName(object), pose = track.pose, poseDiagnostic=track.poseDiagnostic, motionDiagnostic=track.motionDiagnostic,
                 fieldId = track.fieldId or 0, fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence,
                 fieldActive = fieldActive, aiActive = aiActive, hasFieldWorker = hasFieldWorker, activeObserved = false,
-                playerControlled = playerControlled, playerTakeoverObserved = playerControlled,
+                playerControlled = playerControlled, playerPresent=playerEntered, playerEntered=playerEntered, playerTakeoverObserved = activeJobPlayerTakeover,
                 sourceIntentTerminationObserved = sourceIntentTerminationObserved, terminationEvidence = termination,
                 unresolvedTermination = not playerControlled and not sourceIntentTerminationObserved,
                 blocked = blockedState(object), speedMps = math.abs(tonumber(object.lastSpeedReal) or 0) * 1000,
@@ -338,7 +348,10 @@ function Source:capture(mission, nowSeconds)
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
-            if playerControlled or sourceIntentTerminationObserved then removeAfterCapture[ref] = true end
+            -- D-0147: genuine source completion ends Operation membership but not
+            -- physical observability. Retain the completed assembly until Player
+            -- Claim or a fresh GIANTS activation supersedes this terminal episode.
+            if activeJobPlayerTakeover or playerEntered then removeAfterCapture[ref] = true end
         end
     end
 
@@ -445,7 +458,7 @@ function Source:capture(mission, nowSeconds)
                 fieldActive = worker.fieldActive, aiActive = worker.aiActive, observedActive = worker.activeObserved,
                 blocked = worker.blocked == true, speedMps = worker.speedMps, name = worker.name
             }
-            raw.playerControl[worker.referenceKey] = {playerControlled = worker.playerControlled, playerPresent = worker.playerPresent == true}
+            raw.playerControl[worker.referenceKey] = {playerControlled = worker.playerControlled, playerPresent = worker.playerPresent == true, playerEntered=worker.playerEntered==true}
             local md=worker.motionDiagnostic or {}
             local li=worker.localIntent or {}
             local nativeFieldWork=nil
@@ -576,6 +589,7 @@ function Source:capture(mission, nowSeconds)
                     assemblyReferenceKey=worker.referenceKey,
                     episodeKey=worker.shadowRepresentation.episodeKey,
                     configurationProfileId=worker.shadowRepresentation.configurationProfileId,
+                    configurationEvidence=worker.shadowRepresentation.configurationEvidence,
                     primitives=worker.shadowRepresentation.worldPrimitives,
                     summary=worker.shadowRepresentation.planViewSummary,
                     coverageComplete=worker.shadowRepresentation.coverageComplete,
@@ -849,3 +863,20 @@ function Source:capture(mission, nowSeconds)
     end
     return observations
 end
+
+function Source:getTrackedObject(referenceKeyValue)
+    local track=self.tracks and self.tracks[referenceKeyValue] or nil
+    local object=track and track.object or nil
+    if isDeleted(object) then return nil end
+    return object
+end
+
+-- D-0147 Control consumes the same passively observed physical representation
+-- already owned by Observation. It does not rediscover assembly geometry or
+-- create a second representation cache lifetime after Job Episode completion.
+function Source:getTrackedRepresentation(referenceKeyValue)
+    local track=self.tracks and self.tracks[referenceKeyValue] or nil
+    if track==nil or isDeleted(track.object) then return nil end
+    return track.shadowRepresentation
+end
+

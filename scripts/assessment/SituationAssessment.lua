@@ -206,7 +206,7 @@ local function normalizePhysicalSpace(values,map)
     for _,item in OuttaMyWay.ValueRecord.ipairs(values or {}) do
         result[#result+1]={
             assemblyId=resolveAssembly(map,item),assemblyReferenceKey=item.assemblyReferenceKey,episodeKey=item.episodeKey,
-            configurationProfileId=item.configurationProfileId,primitives=item.primitives or {},summary=item.summary,
+            configurationProfileId=item.configurationProfileId,configurationEvidence=copyValue(item.configurationEvidence or {}),primitives=item.primitives or {},summary=item.summary,
             coverageComplete=item.coverageComplete==true,negativeClearanceAuthority=item.negativeClearanceAuthority==true,
             provenance=item.provenance
         }
@@ -236,7 +236,7 @@ local function normalizeDemand(values, map)
     return result
 end
 
-function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, encounters, commitments, obligations)
+function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, encounters, commitments, obligations, terminalOccupancyAssessment)
     local self = setmetatable({}, Assessment)
     self.identities = identityRegistry
     self.epochs = epochSequence
@@ -245,6 +245,7 @@ function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations
     self.encounters = encounters
     self.commitments = commitments
     self.obligations = obligations
+    self.terminalOccupancyAssessment=terminalOccupancyAssessment
     self.publishedCount = 0
     self.latestProductiveContinuationByReference={}
     self.latestGuardedRecoveryKnowledge={}
@@ -579,6 +580,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
                 obligationIds=commitment.obligationIds,
                 openObligations=openObligations,
                 progressActuationOwnership=commitment.progressActuationOwnership,
+                postJobActuationOwnership=commitment.postJobActuationOwnership,
                 capabilityReservations=commitment.capabilityReservations,
                 effectiveActuationCompositionId=commitment.effectiveActuationCompositionId,
                 evidenceContracts=commitment.evidenceContracts
@@ -644,6 +646,11 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     for _,fitness in OuttaMyWay.ValueRecord.ipairs(cooperativePassageFitness or {}) do
         representationFitness[#representationFitness+1]=fitness
     end
+    local terminalOccupancyKnowledge,terminalOccupancyFitness={},{}
+    if self.terminalOccupancyAssessment~=nil then
+        terminalOccupancyKnowledge,terminalOccupancyFitness=self.terminalOccupancyAssessment:assess(snapshot,currentSpace,futureSpace,physicalSpaceEvidence,commitmentContext)
+        for _,fitness in OuttaMyWay.ValueRecord.ipairs(terminalOccupancyFitness or {}) do representationFitness[#representationFitness+1]=fitness end
+    end
     table.sort(representationFitness,function(a,b) return tostring(a.representationId)<tostring(b.representationId) end)
 
     local candidateSupportEvidence = {
@@ -679,6 +686,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         trajectoryKnowledge=trajectoryKnowledge,
         opposedCorridorKnowledge=opposedCorridorKnowledge,
         cooperativePassageKnowledge=cooperativePassageKnowledge,
+        terminalOccupancyKnowledge=terminalOccupancyKnowledge,
         uncertainty=uncertainty,
         representationFitness=representationFitness,
         provenance={source="SituationAssessment", observationSnapshotId=snapshot.identity, observationEpoch=snapshot.epoch},
@@ -696,6 +704,7 @@ function Assessment:resetSituationKnowledge()
     self.trajectoryTracks={}
     self.latestProductiveContinuationByReference={}
     self.latestGuardedRecoveryKnowledge={}
+    if self.terminalOccupancyAssessment and type(self.terminalOccupancyAssessment.reset)=="function" then self.terminalOccupancyAssessment:reset() end
 end
 
 function Assessment:getEvidence(referenceKeyValue, jobToken)

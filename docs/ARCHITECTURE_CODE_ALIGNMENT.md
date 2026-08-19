@@ -1,18 +1,131 @@
-# v4.7.112 D-0147 architecture/code alignment — architecture intentionally ahead of implementation
+# v4.7.121 D-0147 architecture/code alignment — Terminal Yield canonical candidate
 
-| D-0147 concept | v4.7.112 production implementation | Alignment |
+| Governing concept | v4.7.121 candidate implementation | Alignment |
 |---|---|---|
-| GIANTS Completion Acceptance remains default | Existing canonical v4.7.109 behaviour | ALIGNED |
-| Terminal Occupancy relevance | Existing replacement-core lifecycle concept | ARCHITECTURALLY PRESENT; no new egress admission |
-| Post-Job Actuation Authority | Disposable proof only | CAPABILITY SUPPORTED; NOT PRODUCTION |
-| Player Claim for completed assembly | Disposable `getIsEntered()` proof only | CAPABILITY SUPPORTED; NOT PRODUCTION |
-| Mandatory supported compaction | Existing configuration donors may inform later implementation | NOT IMPLEMENTED FOR TERMINAL EGRESS |
-| Boundary-Normal Egress Objective | No production planner/controller | NOT IMPLEMENTED |
-| One simple bounded outward manoeuvre | No production controller | NOT IMPLEMENTED |
-| Automatic Terminal Egress user switch | No production setting | NOT IMPLEMENTED |
-| Terminal Egress Exhaustion -> player | Architectural decision only | NOT IMPLEMENTED |
+| Pending Player Reclamation | completed source-terminated assemblies remain observable and Player Claim remains sticky | PARTIAL / suitable substrate |
+| Terminal Yield Consent | legacy `AUTOMATIC_TERMINAL_EGRESS` gate remains `true` for testing | PARTIAL; rename/UI/default-off deferred |
+| Continuity, Not Settlement | current Control still settles the external manoeuvre on Positive Field Exit rather than active-worker continuation | **IMPLEMENTATION GAP** |
+| Reactive Terminal Yield | current commitment is one external-egress episode; later independent re-yield is not implemented | **NOT IMPLEMENTED** |
+| No Final Settlement Requirement | architecture accepted; current external-egress success still terminates the implementation obligation | **IMPLEMENTATION GAP** |
+| Egress Externality Constraint | no adjacent-Field/externality Candidate veto exists yet | **NOT IMPLEMENTED** |
+| External Yield | v4.7.120 compact + Vehicle Activity Context + Exit Alignment + field exit + neutralisation | LIVE-SUPPORTED mechanical expression |
+| Conflict-Relative Infield Yield | no infield Candidate/control expression exists | **NOT IMPLEMENTED** |
+| Deterministic Dispersion | no new tie-break introduced | DEFERRED until spatial alternatives exist |
+| Player Claim / Escalation | Player Claim pre-empts; bounded failures can fail/escalate | PRESERVED |
 
-**Boundary:** v4.7.112 does not close any of the NOT IMPLEMENTED rows. Disposable probe source is deliberately excluded. The next implementation increment must preserve this gap explicitly rather than silently importing experimental machinery.
+**Canonicalisation boundary:** this candidate deliberately records the architecture/code gap instead of hiding it. No new movement behaviour is introduced while architecture is being reset around the real player objective.
+
+---
+
+# v4.7.120 D-0147 architecture/code alignment — Exit Alignment continuation
+
+| D-0147 concept | v4.7.120 production test implementation | Alignment |
+|---|---|---|
+| Genuine productive completion remains ended | Vehicle Activity Context remains physical-only; no GIANTS AI job and no `getIsAIActive()` override | Preserved / live-supported |
+| Outward Reference is not trajectory | Candidate selects the nearest outer boundary and derives one Exit Alignment from current heading + outward reference | Preserved |
+| Exit Alignment governs crossing orientation | Candidate supplies `exitDirectionX/Z`; no terminal destination point is supplied | Corrected from v4.7.119 evidence |
+| Kinematic Egress Lead-In + continuation is one manoeuvre | `PostJobActuationAuthority.driveInWorldDirection()` holds the same world direction through GIANTS `driveInDirection()`; steering naturally reduces as heading aligns | Production expression |
+| Positive Field-Exit Settlement is authoritative | Control has no target-arrival success/failure branch and continues until the represented compact footprint is positively outside | Preserved and strengthened |
+| Bounded authority | existing watchdog, Player Claim/source reactivation, neutralisation and Vehicle Activity Context release bound the manoeuvre | Preserved |
+| No route/parking search | no alternate direction/boundary, retry, reverse rescue, target extension or parking behaviour | Preserved |
+
+**Abstraction boundary:** `driveInDirection()` is a mechanical actuator only. AutoDrive supplied implementation evidence for using that GIANTS surface outside a GIANTS job; AutoDrive route/task architecture is not imported.
+
+# v4.7.119 D-0147 architecture/code alignment — Terminal Egress Vehicle Activity Context
+
+| D-0147 concept | v4.7.119 production test implementation | Alignment |
+|---|---|---|
+| Genuine productive completion remains ended | `forceIsActive` is asserted only as physical vehicle activity; no AI job/Job Episode is started and `getIsAIActive()` is not overridden | Preserved |
+| One bounded Oblique Boundary Egress | Candidate objective and curvature actuator are unchanged from v4.7.118 | Preserved |
+| Post-job steering must be physically realisable | `PostJobActuationAuthority.acquireVehicleActivityContext()` captures prior `forceIsActive` and asserts it only for EGRESS | New implementation expression of live evidence |
+| Player Claim / source reactivation outrank OuttaMyWay | no post-claim/post-reactivation drive or neutralisation; temporary activity context is still restored | Preserved |
+| Actuation must not remain latched | owned exits neutralise before activity-context release | Preserved |
+| Reality validates assumptions | telemetry now includes realised `isActive`, `forceIsActive`, `rotatedTime`, CrabSteering state and wheel steering angles | Preserved |
+
+**Abstraction boundary:** Vehicle Activity Context is mechanical execution support, not a traffic concept, parking policy, route plan or productive-intent claim. Candidate, Situation and Commitment semantics are unchanged.
+
+---
+
+# v4.7.118 D-0147 architecture/code alignment — steering-state handoff diagnostic
+
+| D-0147 concept | v4.7.118 production test implementation | Alignment |
+|---|---|---|
+| Oblique Boundary Egress | Candidate geometry and fixed target unchanged from v4.7.117 | Preserved |
+| Post-job mechanical command | Existing bounded-curvature command unchanged | Preserved; no new steering hypothesis |
+| Deferred steering realisation | `PostJobActuationAuthority` exposes read-only steering telemetry: `rotatedTime`, CrabSteering state/AI mode, steerable-wheel physics angles/ranges | Diagnostic observation only |
+| Actuation Neutralisation | After owned EGRESS actuation, success/failure/exhaustion neutralises steering demand + wheel propulsion/braking before Control release | Safety correction from live v4.7.117 evidence |
+| Player Claim / source reactivation | Higher authority suppresses all later OuttaMyWay actuation, including neutralisation | Preserved |
+| Positive Field-Exit Settlement | v4.7.116 live-supported implementation unchanged | Preserved |
+
+**Reality boundary:** v4.7.118 does not claim that steering demand is overwritten, ignored by CrabSteering, or lost elsewhere. The live telemetry exists to distinguish those cases before another steering implementation is attempted.
+
+---
+
+# v4.7.117 D-0147 architecture/code alignment — explicit curvature steering realisation
+
+| D-0147 concept | v4.7.117 production test implementation | Alignment |
+|---|---|---|
+| Oblique Boundary Egress | Candidate still supplies exactly one fixed oblique world target from compact heading + outward reference | Preserved |
+| Kinematic realisation | `PostJobActuationAuthority` transforms that fixed target to current steering-node local space and derives one circular curvature for `AIVehicleUtil.driveAlongCurvature()` | Mechanical implementation only |
+| Straight-out case | Local lateral displacement of zero yields zero curvature; no special vehicle/scenario gate | Preserved |
+| Positive Field-Exit Settlement | v4.7.116 representation/boundary witness retained unchanged | Live-supported and preserved |
+| One-manoeuvre complexity boundary | Same fixed target throughout; target behind without positive exit exhausts; no alternate path/angle/boundary/retry | Preserved |
+| Player Claim | `vehicle:getIsEntered()` checked before every curvature/stop actuation | Preserved |
+
+**Reality boundary:** v4.7.117 does not assert that post-job curvature steering will work. It is a production E&OE attempt using GIANTS' explicit curvature steering primitive after `driveToPoint()` failed to change heading live.
+
+---
+
+# v4.7.116 D-0147 architecture/code alignment — post-job steering correction
+
+No architectural contract changes from v4.7.115. This tranche corrects two implementation mismatches exposed by TS016 v4.7.115.
+
+| D-0147 concept | v4.7.116 production test implementation | Alignment |
+|---|---|---|
+| Oblique Boundary Egress | Candidate remains unchanged semantically; `PostJobActuationAuthority` now supplies GIANTS the full steering-node local target **position** via `worldToLocal()` rather than a normalized direction | CORRECTED, LIVE VALIDATION REQUIRED |
+| Outward Reference / boundary evidence | Candidate/Control traverse and copy immutable outer-boundary data through `ValueRecord.length/ipairs` | CORRECTED |
+| Positive Field-Exit Settlement | Same represented AABB/disc witnesses as v4.7.115; now receives the preserved outer-boundary value | PRESERVED, LIVE VALIDATION REQUIRED |
+| Terminal Resolution Commitment | Sticky through compaction and one egress | PRESERVED |
+| Player Claim | `vehicle:getIsEntered()` before direct post-job actuation | PRESERVED |
+| Exhaustion | One manoeuvre only; no alternate route/angle/boundary | PRESERVED |
+
+TS015/TS016 live reruns remain final authority.
+
+---
+
+# v4.7.115 D-0147 architecture/code alignment — Oblique Boundary Egress production test
+
+| D-0147 concept | v4.7.115 production test implementation | Alignment |
+|---|---|---|
+| Terminal Resolution Commitment | Existing committed Terminal Occupancy proceeds through compaction and egress despite transient obstruction disappearance | TEST IMPLEMENTED |
+| Outward Reference | `TerminalEgressCandidateSupport` identifies one nearest local outer-boundary reference; islands remain excluded | TEST IMPLEMENTED |
+| Exit Alignment | Candidate consumes compact current heading and outward reference; materially outward heading may be retained, otherwise a deterministic heading/outward bisector supplies the oblique direction | TEST IMPLEMENTED, E&OE |
+| Oblique Boundary Egress | Candidate projects the single exit direction to its first outer-boundary crossing and one bounded outside target; Control receives geometry but invents none | TEST IMPLEMENTED |
+| Positive Field-Exit Settlement | `TerminalEgressControl` accepts sufficient disjoint represented/Field World bounds or the represented-disc/polygon witness; no second fold-state qualification | TEST IMPLEMENTED |
+| Player Claim | `vehicle:getIsEntered()` checked before every direct post-job actuation call | PRESERVED |
+| Exhaustion | Target/watchdog/control failure settles FAILED; no alternate trajectory is generated | PRESERVED |
+
+TS016/TS015 live reruns remain final authority.
+
+---
+
+# v4.7.114 D-0147 architecture/code alignment — decisive Terminal Egress production test
+
+| D-0147 concept | v4.7.114 production test implementation | Alignment |
+|---|---|---|
+| GIANTS Completion Acceptance remains default | No D-0147 admission without positive Terminal Occupancy and enabled config switch | ALIGNED |
+| Terminal Occupancy relevance | `TerminalOccupancyAssessment` over genuinely ended source-terminated assemblies and continuing active demand | TEST IMPLEMENTED |
+| Terminal Resolution Commitment | Existing D-0147 Commitment survives transient loss of initiating obstruction through compaction and egress | TEST IMPLEMENTED |
+| Post-Job Actuation Authority | Distinct `POST_JOB_ACTUATION` token plus `PostJobActuationAuthority` direct GIANTS drive primitive | TEST IMPLEMENTED |
+| Player Claim for completed assembly | Sticky `vehicle:getIsEntered()` witness; checked before every post-job drive/stop call | TEST IMPLEMENTED |
+| Mandatory supported compaction | `TerminalEgressControl` with existing configuration mechanical donor | TEST IMPLEMENTED |
+| Boundary-Normal Egress Objective | `TerminalEgressCandidateSupport` selects exactly one nearest outer-boundary objective | TEST IMPLEMENTED |
+| Decisive positive Field World exit | Control consumes Observation-owned current represented footprint; target radius is not success authority | TEST IMPLEMENTED |
+| One simple bounded outward manoeuvre | One Candidate target; target reached without positive exit exhausts; no extension/alternate boundary/retry | TEST IMPLEMENTED |
+| Automatic Terminal Egress user switch | `config.lua`; development/test default `true` | TEST IMPLEMENTED; UI/FUTURE PRODUCT DEFAULT DEFERRED |
+| Terminal Egress Exhaustion -> player | `FAILED` terminal settlement; no autonomous second attempt | TEST IMPLEMENTED |
+
+**Live evidence boundary:** TS015 showed the complete v4.7.113 compaction/egress mechanics can work; TS016 showed that compaction-only settlement can be a false success because later GIANTS manoeuvring demand may return through the same completion position. v4.7.114 therefore keeps the bounded architecture but changes responsibility persistence and the positive success witness. Live TS015/TS016 reruns remain final authority.
 
 ---
 

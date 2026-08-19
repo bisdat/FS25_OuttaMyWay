@@ -47,20 +47,24 @@ load("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
 load("scripts/assessment/CooperativePassageAssessment.lua")
 load("scripts/assessment/TrajectoryConflictAssessment.lua")
 load("scripts/assessment/PassageCapabilityAssessment.lua")
+load("scripts/assessment/TerminalOccupancyAssessment.lua")
 load("scripts/assessment/SituationAssessment.lua")
 load("scripts/commitment/CommitmentStateMachine.lua")
 load("scripts/commitment/CommitmentRegistry.lua")
 load("scripts/commitment/ObligationLedger.lua")
 load("scripts/authority/AuthorityRegistry.lua")
+load("scripts/authority/PostJobActuationAuthority.lua")
 load("scripts/authority/EffectiveActuationComposition.lua")
 load("scripts/commitment/CommitmentAdmission.lua")
 load("scripts/commitment/GoverningBasisEvaluator.lua")
 load("scripts/commitment/TerminalSettlementEvaluator.lua")
 load("scripts/commitment/DecisionCommitmentBoundary.lua")
 load("scripts/commitment/LiveTrafficCommitmentLifecycle.lua")
+load("scripts/commitment/TerminalEgressCommitmentLifecycle.lua")
 load("scripts/candidates/CandidateSpace.lua")
 load("scripts/candidates/PassiveLiveCandidateSupport.lua")
 load("scripts/candidates/LocalPassagePlanner.lua")
+load("scripts/candidates/TerminalEgressCandidateSupport.lua")
 load("scripts/candidates/LiveTrafficCandidateSupport.lua")
 load("scripts/constraints/ConstraintEvidence.lua")
 load("scripts/constraints/evaluators/FieldWorldContainment.lua")
@@ -101,6 +105,7 @@ load("scripts/prototypes/Prototype22ConfigurationAuthority.lua")
 load("scripts/prototypes/Prototype22TS015Relocation.lua")
 load("scripts/prototypes/Prototype22CapabilityGate.lua")
 load("scripts/control/CooperativePassageControl.lua")
+load("scripts/control/TerminalEgressControl.lua")
 load("scripts/control/LiveControlDispatcher.lua")
 load("scripts/runtime/LiveRuntimeCoordinator.lua")
 load("scripts/runtime/Runtime.lua")
@@ -3770,6 +3775,293 @@ test("D0146 Step2 Established Conflict crosses Candidate Decision Commitment and
     equal(dispatched.status,"ACCEPTED"); equal(#accepted,3); equal(#dispatched.requests,2)
     equal(dispatched.requests[1].target.kind,"D0146_COOPERATIVE_PASSAGE"); equal(dispatched.requests[2].target.kind,"D0146_COOPERATIVE_PASSAGE")
     equal(dispatched.candidate.evidenceBasis.cooperativePassageBridge.architecture,"D0146_STEP2")
+end)
+
+
+local function d0147TerminalPicture(runtime,configurationEvidence,options)
+    options=options or {}
+    local episodeId=options.terminalEpisodeId or "JOB-TERMINAL"
+    local assemblyId=options.assemblyId or "AS-TERMINAL"
+    local representationId="d0147-terminal-occupancy:"..episodeId
+    local context={}
+    if options.existingCommitmentId~=nil then
+        context={{commitmentId=options.existingCommitmentId,governingBasis={kind="TERMINAL_OCCUPANCY",terminalEpisodeId=episodeId}}}
+    end
+    return OuttaMyWay.OperationalPicture.new({
+        identity="OP-D0147-"..tostring(options.suffix or "BASE"),epoch=900,observationSnapshotId="OS-D0147",
+        situations={},encounters={},identities={assemblies={assemblyId,"AS-ACTIVE"},components={},jobEpisodes={active={"JOB-ACTIVE"},admitted={},ended={episodeId}},operations={active={"OP-ACTIVE"},ended={}}},
+        currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},
+        representationFitness={{representationId=representationId,assemblyId=assemblyId,question="D0147_TERMINAL_OCCUPANCY_AND_SINGLE_EGRESS",assessmentHorizon="CURRENT_PICTURE_ONLY",state="FIT_FOR_LIMITED_HORIZON",claimPermissions={"POSITIVE_TERMINAL_OBSTRUCTION"},coverage={complete=false},uncertainty={"NO_NEGATIVE_EXTERNAL_MARGIN_TRAVERSABILITY_AUTHORITY"},validityDependencies={},provenance={source="test"}}},
+        provenance={source="test"},controlOutcomeEvidence={outcomes={}},candidateSupportEvidence={complete=false},commitmentContext=context,
+        terminalOccupancyKnowledge={{identity="terminal-occupancy:"..episodeId,terminalEpisodeId=episodeId,assemblyId=assemblyId,assemblyReferenceKey="vehicle-root:terminal",existingCommitmentId=options.existingCommitmentId,obstructionPositive=options.obstructionPositive~=false,obstructedDemandAssemblyIds={"AS-ACTIVE"},obstructionEvidence={{activeAssemblyId="AS-ACTIVE",evidence={kind="CONTINUING_ACTIVE_FUTURE_SPACE"}}},playerClaimed=options.playerClaimed==true,manoeuvreCompleted=options.manoeuvreCompleted==true,exhausted=options.exhausted==true,configurationEvidence=configurationEvidence or {},representationId=representationId,currentSpace={assemblyId=assemblyId,occupancy={x=2,z=5,headingX=options.headingX or 0,headingZ=options.headingZ or 1}},physicalSpace={assemblyId=assemblyId,configurationEvidence=configurationEvidence or {},primitives={{identity="TP-1",kind="DISC",x=2,z=5,radius=1,positiveConflictSupport=true}},provenance={source="test"}},provenance={source="test"}}}
+    })
+end
+
+local d0147SnapshotFixture=OuttaMyWay.ValueRecord.define("D0147SnapshotFixture",{"identity","fieldWorld"},{},nil)
+local function d0147Snapshot()
+    return d0147SnapshotFixture.new({identity="OS-D0147",fieldWorld={boundary={{x=0,z=0},{x=10,z=0},{x=10,z=10},{x=0,z=10}}}})
+end
+test("D0147 development config enables Automatic Terminal Egress and decisive manoeuvre speed by default",function()
+    equal(OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS,true)
+    equal(OuttaMyWay.TERMINAL_EGRESS_SPEED_KMH,8.0)
+end)
+
+test("D0147 POST_JOB_ACTUATION remains exclusive with productive progress authority",function()
+    local _,_,registry,_,authority=newKernel(); local a=commitment(registry,"d0147-a"); local b=commitment(registry,"d0147-b")
+    local token=authority:acquirePostJob("AS-D0147",a.identity)
+    equal(token.authorityClass,"POST_JOB_ACTUATION"); equal(authority:classOf("AS-D0147"),"POST_JOB_ACTUATION")
+    expectError(function() authority:acquireProgress("AS-D0147",b.identity) end)
+    authority:release(token)
+    local progress=authority:acquireProgress("AS-D0147",b.identity)
+    equal(progress.authorityClass,"PROGRESS_ACTUATION")
+end)
+
+test("D0147 direct post-job actuation holds one world Exit Alignment direction and forbids post-claim actuation",function()
+    local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil,oldDrivable=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil,Drivable
+    local entered=false; local directionCalls=0; local wheelNeutralizeCalls=0; local observedLx,observedLz=nil,nil
+    AIVehicleUtil={
+        driveInDirection=function(vehicle,dt,steeringLimit,accel,slowAccel,slowLimit,allowed,forwards,lx,lz,maxSpeed,slowDown) directionCalls=directionCalls+1; observedLx,observedLz=lx,lz; vehicle.rotatedTime=0.35; return true end
+    }
+    WheelsUtil={updateWheelsPhysics=function(vehicle,dt,speed,acceleration,handbrake,stopAndGo) wheelNeutralizeCalls=wheelNeutralizeCalls+1; return true end}
+    Drivable={CRUISECONTROL_STATE_OFF=0,CRUISECONTROL_STATE_ACTIVE=1}
+    getWorldTranslation=function(node) return 10,0,20 end
+    worldDirectionToLocal=function(node,x,y,z) return x,y,z end
+    local motor={setSpeedLimit=function() end}
+    local vehicle={
+        rootNode=1,rotatedTime=0,minRotTime=-1,maxRotTime=1,isActive=false,forceIsActive=false,maxRotation=math.rad(60),
+        spec_crabSteering={state=2,aiSteeringModeIndex=2},
+        spec_wheels={wheels={{wheelIndex=1,steeringOffset=0,physics={steeringAngle=0.12,rotMin=-0.5,rotMax=0.5,rotSpeed=0.2}}}},
+        getIsEntered=function() return entered end,getIsAIActive=function() return false end,getIsControlled=function() return false end,
+        getMotor=function() return motor end,getCruiseControlState=function() return 0 end,
+        brake=function() return true end,stopVehicle=function() return true end,setCruiseControlState=function() return true end
+    }
+    local authority=OuttaMyWay.PostJobActuationAuthority.new()
+    local baseline=authority:steeringTelemetry(vehicle); equal(baseline.rotatedTime,0); equal(baseline.isActive,false); equal(baseline.forceIsActive,false); equal(baseline.crabState,2); equal(baseline.crabAiSteeringModeIndex,2); equal(baseline.steerableWheelCount,1); equal(baseline.wheels[1].steeringAngle,0.12)
+    local activityOk,activityContext=authority:acquireVehicleActivityContext(vehicle); equal(activityOk,true); equal(vehicle.forceIsActive,true); equal(activityContext.previousForceIsActive,false); equal(authority:getActivityContextAcquireCallCount(),1)
+    local ok,evidence=authority:driveInWorldDirection(vehicle,16,-1,1,8); equal(ok,true); equal(directionCalls,1); equal(authority:getDirectDriveCallCount(),1)
+    local inv=1/math.sqrt(2); if math.abs(observedLx+inv)>0.000001 or math.abs(observedLz-inv)>0.000001 then error("driveInDirection did not receive normalized Exit Alignment direction") end
+    if math.abs(evidence.headingErrorDeg-45)>0.0001 then error("unexpected Exit Alignment heading error") end
+    if math.abs(evidence.steeringAngleLimitDeg-60)>0.0001 then error("unexpected steering angle limit") end; equal(evidence.postCommandSteering.rotatedTime,0.35); equal(vehicle.motor,nil); equal(vehicle.cruiseControl,nil)
+    entered=true
+    local claimed,reason=authority:driveInWorldDirection(vehicle,16,-1,1,8); equal(claimed,false); equal(reason,"PLAYER_CLAIM"); equal(directionCalls,1); equal(authority:getDirectDriveCallCount(),1)
+    local stopped,stopReason=authority:neutralize(vehicle,16); equal(stopped,false); equal(stopReason,"PLAYER_CLAIM"); equal(wheelNeutralizeCalls,0)
+    entered=false
+    local neutralized,neutralEvidence=authority:neutralize(vehicle,16); equal(neutralized,true); equal(wheelNeutralizeCalls,1); equal(authority:getNeutralizeCallCount(),1); equal(vehicle.rotatedTime,0); equal(neutralEvidence.wheelPhysicsNeutralized,true)
+    local released,releaseEvidence=authority:releaseVehicleActivityContext(vehicle,activityContext); equal(released,true); equal(vehicle.forceIsActive,false); equal(releaseEvidence.restoredForceIsActive,false); equal(authority:getActivityContextReleaseCallCount(),1)
+    AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil,Drivable=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil,oldDrivable
+end)
+
+test("D0147 supported deployed configuration selects compaction before translation",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=1,transitionCount=0,foldedCount=0,unknownCount=0,allDeployed=true,allFolded=false,retainCurrent=false,compactionSupported=true},{suffix="COMPACT"})
+    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"D0147_BOUNDED_TERMINAL_EGRESS")
+    local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
+    equal(spec.evidenceBasis.terminalEgressBridge.phase,"COMPACT"); equal(spec.evidenceBasis.terminalEgressBridge.objective,nil)
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    equal(#evaluated.candidates,1); equal(evaluated.decision.selectedCandidateId,evaluated.candidates[1].identity)
+end)
+
+test("D0147 parallel compact assembly receives one deterministic Oblique Boundary Egress objective",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="EGRESS"})
+    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
+    local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
+    local bridge=spec.evidenceBasis.terminalEgressBridge; equal(bridge.phase,"EGRESS")
+    equal(bridge.objective.objectiveKind,"OBLIQUE_OUTER_FIELD_BOUNDARY_EGRESS"); equal(bridge.objective.referenceSegmentIndex,4); equal(bridge.objective.islandCandidatesConsidered,false)
+    equal(bridge.objective.alignmentMode,"OBLIQUE_HEADING_OUTWARD_BISECTOR")
+    if not (bridge.objective.exitDirectionX < 0 and bridge.objective.exitDirectionZ > 0) then error("parallel start did not produce forward/outward oblique direction") end
+    equal(bridge.objective.settlement,"POSITIVE_FIELD_EXIT_ONLY")
+    equal(bridge.objective.targetX,nil); equal(bridge.objective.targetZ,nil)
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    equal(#evaluated.candidates,1); equal(evaluated.decision.selectedCandidateId,evaluated.candidates[1].identity)
+end)
+
+test("D0147 already outward compact heading is retained rather than forced through an oblique turn",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="STRAIGHT-OUT",headingX=-1,headingZ=0})
+    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
+    local objective=supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.terminalEgressBridge.objective
+    equal(objective.objectiveKind,"OBLIQUE_OUTER_FIELD_BOUNDARY_EGRESS")
+    equal(objective.alignmentMode,"RETAIN_OUTWARD_HEADING")
+    if math.abs(objective.exitDirectionX+1)>0.0001 or math.abs(objective.exitDirectionZ)>0.0001 then error("already outward heading was not retained") end
+end)
+
+test("D0147 Terminal Resolution Commitment survives transient obstruction loss during compaction",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=1,foldedCount=0,unknownCount=0,allDeployed=false,allFolded=false,retainCurrent=false,compactionSupported=false},{suffix="TS016-INFLIGHT",existingCommitmentId="CM-D0147",obstructionPositive=false})
+    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
+    local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
+    equal(spec.capability,"REPOSITION"); equal(spec.evidenceBasis.terminalEgressBridge.phase,"COMPACT"); equal(spec.evidenceBasis.terminalEgressBridge.terminalEvent,nil)
+    for _,condition in OuttaMyWay.ValueRecord.ipairs(spec.invalidationConditions or {}) do
+        if condition.kind=="OBSTRUCTION_CEASES" then error("transient obstruction loss must not dissolve committed D-0147 resolution") end
+    end
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    equal(#evaluated.candidates,1); equal(evaluated.decision.selectedCandidateId,evaluated.candidates[1].identity)
+end)
+
+test("D0147 compacted committed assembly proceeds to egress even when initiating obstruction is no longer visible",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="TS016-POST-COMPACT",existingCommitmentId="CM-D0147",obstructionPositive=false})
+    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
+    local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
+    local bridge=spec.evidenceBasis.terminalEgressBridge
+    equal(spec.capability,"REPOSITION"); equal(bridge.phase,"EGRESS"); equal(bridge.terminalEvent,nil)
+    equal(bridge.objective.objectiveKind,"OBLIQUE_OUTER_FIELD_BOUNDARY_EGRESS")
+end)
+
+test("D0147 config switch disables admission rather than merely suppressing Control",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local picture=d0147TerminalPicture(runtime,{foldableCount=0,retainCurrent=true,compactionSupported=true},{suffix="DISABLED"})
+    local previous=OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS; OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS=false
+    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
+    OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS=previous
+    equal(supported,nil); equal(runtime.terminalEgressCandidateSupport:getLastStatus(),"DISABLED")
+end)
+
+
+test("D0147 Control succeeds only from positive represented Field World exit",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-POSITIVE-EXIT"})
+    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,supported,evaluated); if admitted==nil then error(tostring(reason)) end
+    local candidate=evaluated.candidates[1]; local bridge=candidate.evidenceBasis.terminalEgressBridge
+    local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldToLocal=AIVehicleUtil,getWorldTranslation,worldToLocal
+    local vehicle={rootNode=1,getIsEntered=function() return false end,getIsAIActive=function() return false end}
+    AIVehicleUtil={driveToPoint=function(...) return true end}; getWorldTranslation=function(node) return 2,0,5 end; worldToLocal=function(node,x,y,z) return x,y,z end
+    local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {configurationEvidence={allFolded=true,retainCurrent=true},worldPrimitives={{identity="EXIT-1",kind="DISC",x=-2,z=5,radius=1,positiveConflictSupport=true}}} end}
+    local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
+    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-POSITIVE",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="EGRESS"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
+    local started,startReason=control:executeControlRequest(request,candidate); equal(started,true); equal(startReason,"MANOEUVRE_STARTED")
+    control:update(16)
+    equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.fieldExitEvidence.kind,"D0147_POSITIVE_REPRESENTED_FIELD_EXIT")
+    AIVehicleUtil,getWorldTranslation,worldToLocal=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldToLocal
+end)
+
+test("D0147 live field-exit settlement accepts a represented footprint wholly beyond Field World bounds without re-qualifying fold state",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-AABB-EXIT"})
+    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,supported,evaluated); if admitted==nil then error(tostring(reason)) end
+    local candidate=evaluated.candidates[1]; local bridge=candidate.evidenceBasis.terminalEgressBridge
+    local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldToLocal=AIVehicleUtil,getWorldTranslation,worldToLocal
+    local vehicle={rootNode=1,getIsEntered=function() return false end,getIsAIActive=function() return false end}
+    AIVehicleUtil={driveToPoint=function(...) return true end}; getWorldTranslation=function(node) return 2,0,5 end; worldToLocal=function(node,x,y,z) return x,y,z end
+    local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {configurationEvidence={},planViewSummary={bounds={minX=-3,maxX=-1,minZ=4,maxZ=6}},worldPrimitives={{identity="EXIT-AABB-1",kind="DISC",x=-2,z=5,radius=1,positiveConflictSupport=true}}} end}
+    local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
+    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-AABB-POSITIVE",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="EGRESS"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
+    local started=control:executeControlRequest(request,candidate); equal(started,true)
+    control:update(16)
+    equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.fieldExitEvidence.witness,"DISJOINT_FIELD_WORLD_AABB")
+    AIVehicleUtil,getWorldTranslation,worldToLocal=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldToLocal
+end)
+
+test("D0147 Exit Alignment continuation ignores former endpoint and stops only on positive represented Field World exit",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-CONTINUE-TO-CLEAR"})
+    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,supported,evaluated); if admitted==nil then error(tostring(reason)) end
+    local candidate=evaluated.candidates[1]; local bridge=candidate.evidenceBasis.terminalEgressBridge
+    local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal
+    local driveCalls=0; local clear=false; local motor={setSpeedLimit=function() end}
+    local vehicle={rootNode=1,rotatedTime=0,minRotTime=-1,maxRotTime=1,isActive=false,forceIsActive=false,finishedFirstUpdate=true,lastSpeedReal=0,movingDirection=1,
+        getIsEntered=function() return false end,getIsAIActive=function() return false end,getIsControlled=function() return false end,
+        getMotor=function() return motor end,getCruiseControlState=function() return 0 end,setCruiseControlState=function() return true end,getAISteeringSpeed=function() return 0.001 end}
+    AIVehicleUtil={driveInDirection=function(v,dt,steeringLimit,accel,slowAccel,slowLimit,allowed,forwards,lx,lz,maxSpeed,slowDown) driveCalls=driveCalls+1; v.rotatedTime=-0.2; return true end}
+    getWorldTranslation=function(node) return 2,0,5 end; worldDirectionToLocal=function(node,x,y,z) return x,y,z end
+    local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function()
+        if clear then return {worldPrimitives={{identity="CLEAR-1",kind="DISC",x=-2,z=5,radius=1,positiveConflictSupport=true}}} end
+        return {worldPrimitives={{identity="NOT-CLEAR-1",kind="DISC",x=-0.5,z=5,radius=1,positiveConflictSupport=true}}}
+    end}
+    local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
+    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-CONTINUE",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="EGRESS"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
+    local started=control:executeControlRequest(request,candidate); equal(started,true)
+    control:update(16); equal(completion,nil); equal(driveCalls,1)
+    control:update(16); equal(completion,nil); equal(driveCalls,2)
+    clear=true
+    control:update(16); equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.fieldExitEvidence.kind,"D0147_POSITIVE_REPRESENTED_FIELD_EXIT"); equal(driveCalls,2)
+    AIVehicleUtil,getWorldTranslation,worldDirectionToLocal=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal
+end)
+
+test("D0147 owned Exit Alignment actuation failure positively neutralizes propulsion before completion",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-NEUTRALIZE"})
+    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,supported,evaluated); if admitted==nil then error(tostring(reason)) end
+    local candidate=evaluated.candidates[1]; local bridge=candidate.evidenceBasis.terminalEgressBridge
+    local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil
+    local driveCalls=0; local neutralizeCalls=0; local neutralizedWhileActive=nil; local failDrive=false; local motor={setSpeedLimit=function() end}
+    local vehicle={rootNode=1,rotatedTime=0,minRotTime=-1,maxRotTime=1,isActive=false,forceIsActive=false,finishedFirstUpdate=true,lastSpeedReal=0,movingDirection=1,
+        getIsEntered=function() return false end,getIsAIActive=function() return false end,getIsControlled=function() return false end,
+        getMotor=function() return motor end,getCruiseControlState=function() return 0 end,setCruiseControlState=function() return true end,getAISteeringSpeed=function() return 0.001 end}
+    AIVehicleUtil={driveInDirection=function(v,dt,steeringLimit,accel,slowAccel,slowLimit,allowed,forwards,lx,lz,maxSpeed,slowDown) driveCalls=driveCalls+1; if failDrive then error("synthetic direction actuation failure") end; v.rotatedTime=-0.2; return true end}
+    WheelsUtil={updateWheelsPhysics=function(v,dt,speed,accel,handbrake,stopAndGo) neutralizeCalls=neutralizeCalls+1; neutralizedWhileActive=v.forceIsActive; return true end}
+    getWorldTranslation=function(node) return 2,0,5 end; worldDirectionToLocal=function(node,x,y,z) return x,y,z end
+    local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="NEUTRALIZE-1",kind="DISC",x=2,z=5,radius=1,positiveConflictSupport=true}}} end}
+    local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
+    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-NEUTRALIZE",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="EGRESS"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
+    local started=control:executeControlRequest(request,candidate); equal(started,true); equal(vehicle.forceIsActive,true); equal(control.postJobAuthority:getActivityContextAcquireCallCount(),1)
+    control:update(16); equal(driveCalls,1); equal(vehicle.rotatedTime,-0.2); equal(completion,nil)
+    failDrive=true
+    control:update(16)
+    equal(completion.status,"FAILED"); if not string.find(completion.evidence.reason,"POST_JOB_DIRECTION_DRIVE_CALL_FAILED",1,true) then error("direction failure was not surfaced") end
+    equal(completion.evidence.neutralization.performed,true); equal(neutralizeCalls,1); equal(neutralizedWhileActive,true); equal(vehicle.rotatedTime,0); equal(vehicle.forceIsActive,false); equal(completion.evidence.activityContext.released,true); equal(control.postJobAuthority:getActivityContextReleaseCallCount(),1)
+    AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil
+end)
+
+test("D0147 Player Claim relinquishes Vehicle Activity Context without post-claim actuation",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-CLAIM-ACTIVITY"})
+    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,supported,evaluated); if admitted==nil then error(tostring(reason)) end
+    local candidate=evaluated.candidates[1]; local bridge=candidate.evidenceBasis.terminalEgressBridge
+    local entered=false; local driveCalls=0; local neutralizeCalls=0
+    local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil
+    local motor={setSpeedLimit=function() end}
+    local vehicle={rootNode=1,rotatedTime=0,minRotTime=-1,maxRotTime=1,isActive=false,forceIsActive=false,getIsEntered=function() return entered end,getIsAIActive=function() return false end,getIsControlled=function() return entered end,getMotor=function() return motor end,getCruiseControlState=function() return 0 end,setCruiseControlState=function() return true end}
+    AIVehicleUtil={driveInDirection=function() driveCalls=driveCalls+1; return true end}
+    WheelsUtil={updateWheelsPhysics=function() neutralizeCalls=neutralizeCalls+1; return true end}
+    getWorldTranslation=function() return 2,0,5 end; worldDirectionToLocal=function(node,x,y,z) return x,y,z end
+    local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="CLAIM-ACTIVITY-1",kind="DISC",x=2,z=5,radius=1,positiveConflictSupport=true}}} end}
+    local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
+    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-CLAIM-ACTIVITY",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="EGRESS"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
+    local started=control:executeControlRequest(request,candidate); equal(started,true); equal(vehicle.forceIsActive,true)
+    entered=true
+    control:update(16)
+    equal(completion.status,"PLAYER_CLAIM"); equal(driveCalls,0); equal(neutralizeCalls,0); equal(vehicle.forceIsActive,false); equal(completion.evidence.activityContext.released,true); equal(completion.evidence.neutralization,nil)
+    AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil
+end)
+
+test("D0147 compaction-to-egress revision preserves one Commitment and one post-job authority token",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local compactPicture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=1,transitionCount=0,foldedCount=0,unknownCount=0,allDeployed=true,allFolded=false,retainCurrent=false,compactionSupported=true},{suffix="LIFECYCLE-COMPACT"})
+    local compactSupported=runtime.terminalEgressCandidateSupport:attach(compactPicture,d0147Snapshot())
+    local compactEvaluated=runtime:evaluateSealedOperationalPicture(compactSupported)
+    equal(compactEvaluated.decision.commitmentAction,"CREATE")
+    local admitted,admitReason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,compactSupported,compactEvaluated)
+    if admitted==nil then error(tostring(admitReason)) end
+    local commitmentId=admitted.commitment.identity; local tokenId=admitted.authorityToken.identity
+    equal(admitted.authorityToken.authorityClass,"POST_JOB_ACTUATION")
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+
+    local egressPicture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="LIFECYCLE-EGRESS",existingCommitmentId=commitmentId,obstructionPositive=false})
+    local egressSupported=runtime.terminalEgressCandidateSupport:attach(egressPicture,d0147Snapshot())
+    local egressEvaluated=runtime:evaluateSealedOperationalPicture(egressSupported)
+    equal(egressEvaluated.decision.commitmentAction,"MAINTAIN")
+    local revised,reviseReason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,egressSupported,egressEvaluated)
+    if revised==nil then error(tostring(reviseReason)) end
+    equal(revised.commitment.identity,commitmentId); equal(revised.authorityToken.identity,tokenId)
+    equal(revised.commitment.strategy.expectedEffect.phase,"EGRESS")
+    equal(#runtime.authorities:tokensForCommitment(commitmentId),1)
+
+    local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(runtime,commitmentId,"OBJECTIVE_SATISFIED",{kind="TEST_COMPACTION_OR_EGRESS_CLEARANCE"},"JOB-TERMINAL")
+    if terminal==nil then error(tostring(reason)) end
+    equal(terminal.state,"SUCCEEDED"); equal(runtime.authorities:ownerOf("AS-TERMINAL"),nil); equal(#runtime.obligations:openForOwner(commitmentId),0)
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

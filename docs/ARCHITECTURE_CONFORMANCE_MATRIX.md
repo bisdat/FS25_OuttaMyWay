@@ -1,3 +1,19 @@
+# v4.7.121 D-0147 Terminal Yield conformance addendum
+
+| Contract | Required architecture | Candidate implementation | Status |
+|---|---|---|---|
+| Completion remains completion | Pending Player Reclamation must not resurrect productive Job Episode | Post-job authority leaves source Episode ended | PASS / live-supported |
+| Consent | completed-worker movement requires Terminal Yield Consent | legacy config gate active; true for test | PARTIAL / naming+UI deferred |
+| Continuity objective | settle current obstruction when productive continuation restored | external Control currently settles on Positive Field Exit | GAP DECLARED |
+| Repeatability | later positive conflict may admit another bounded yield | not implemented | GAP DECLARED |
+| Externality | another Field World is not free terminal space | no Candidate externality veto yet | GAP DECLARED |
+| External mechanics | bounded compact/steer/continue/neutralise | v4.7.120 live-supported | PASS |
+| Infield yield | bounded conflict-relative source-field displacement may be Candidate | not implemented | GAP DECLARED |
+| No parking/search | no permanent terminal placement obligation | no global parking/search implementation | PASS |
+| Player authority | Player Claim/escalation remain legitimate terminal authority | Player Claim live-supported; bounded failure exists | PASS |
+
+---
+
 # v4.7.101 D-0146 Step-2 conformance addendum
 
 | Contract | Evidence in code | Status |

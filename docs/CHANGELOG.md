@@ -1,4 +1,145 @@
-# v4.7.112 CANONICAL CANDIDATE — D-0147 Bounded Terminal Egress architecture
+# v4.7.121 CANONICAL CANDIDATE — D-0147 Terminal Yield / Pending Player Reclamation
+
+Owner-declared v4.7.112 remains canonical until explicit owner promotion. v4.7.121 carries the live-tested v4.7.120 external-egress mechanics unchanged and canonicalises the architectural learning from TS016 v4.7.120 plus the subsequent player/debug-physics review.
+
+**Live evidence:** v4.7.120 achieved the intended bounded turn, acquired Exit Alignment, continued substantially straight, positively exited Field 77 and neutralised cleanly. Roughly 107 seconds later the remaining S 416 entered a native turn and GIANTS set `blocked=true` despite Patriot being physically separated; the later debug-physics overlay also showed substantial body clearance. Moving Patriot farther outward risks solving Field 77 by impinging on the neighbouring Field World.
+
+**Architecture — Continuity, Not Settlement:** a genuinely completed worker is **Pending Player Reclamation**. OuttaMyWay does not own permanent parking. Its purpose is to buy the player time by preserving productive continuation while the completed assembly awaits return/cleanup. Movement requires positive Terminal Occupancy conflict plus **Terminal Yield Consent**. A successful yield resolves the current admitted productive obstruction; it does not certify a permanently safe terminal position.
+
+**Reactive Terminal Yield / No Final Settlement Requirement:** a completed passive occupant may yield again only if a later positive current conflict arises. No timer, speculative pre-clearance, arbitrary move count or global parking assignment is introduced. Player Claim, Operation end or inability to find a legitimate bounded yield ends OuttaMyWay responsibility. Player Escalation is a normal gameplay outcome, not feature failure.
+
+**Externality boundary:** external egress remains one legitimate Terminal Yield expression, but GIANTS' conservative native collision envelope is not unconditional authority to keep moving a completed vehicle outward. **Egress Externality Constraint** forbids solving one Operation by creating comparable demand in another Field World. Where external egress is inappropriate, **Conflict-Relative Infield Yield** is architecturally permitted: movement is away from the current admitted conflict while remaining constrained by the source Field World and other physical assemblies. Field centre is not a destination and true randomness is rejected; deterministic dispersion may break genuinely symmetric choices.
+
+**Implementation boundary:** v4.7.121 intentionally does **not** implement repeated/infield Terminal Yield or rename the config variable. The v4.7.120 one-boundary external-egress implementation, Vehicle Activity Context, Exit Alignment continuation, 8 km/h calibration, Positive Field-Exit Settlement, Player Claim and Actuation Neutralisation are byte-carried except for release/provenance comments and diagnostics. `AUTOMATIC_TERMINAL_EGRESS=true` remains enabled for testing as explicitly requested. Its name is now a legacy implementation label under the broader Terminal Yield Consent architecture; eventual player-facing automatic yield is explicit opt-in/default-off.
+
+# v4.7.120 TEST BUILD — D-0147 Exit Alignment continuation after TS016 v4.7.119
+
+Owner-declared v4.7.112 remains canonical.
+
+## Live evidence
+
+v4.7.119 proved the completed sprayer can steer when D-0147 temporarily owns Vehicle Activity Context: wheel steering angles became non-zero and Patriot yawed. The remaining behaviour was not the intended oblique crossing: tyre tracks and logged headings showed roughly 86 degrees of rotation while pursuing the fixed outside target, and Positive Field-Exit Settlement remained false at the endpoint.
+
+## Production correction
+
+The fixed endpoint is retired from D-0147 Control. Candidate now supplies only the deterministic Exit Alignment world direction plus the selected outer-boundary evidence. `PostJobActuationAuthority` transforms that direction into the steering-node local frame and uses GIANTS `AIVehicleUtil.driveInDirection()`. Control continuously holds the same direction until the represented compact footprint is positively outside the Field World.
+
+There is no nominal target arrival or target-radius settlement. Failure remains bounded by the existing one-manoeuvre watchdog or a positive actuation failure; there is no target extension, alternate angle, second boundary, route search or retry. Vehicle Activity Context and owned-exit Actuation Neutralisation are unchanged.
+
+# v4.7.119 TEST BUILD — D-0147 bounded Vehicle Activity Context
+
+Owner-declared v4.7.112 remains canonical. v4.7.119 is one narrow production E&OE test over v4.7.118 evidence.
+
+- v4.7.118 proved steering demand survives after genuine Job Episode completion (`rotatedTime` remained non-zero) and CrabSteering remained in AI mode, while every steerable wheel physics steering angle stayed zero.
+- Supplied FS25 SDK source identifies `vehicle.isActive` as the gate around `WheelPhysics:updateSteeringAngle()`.
+- Courseplay preserves active AI context; AutoDrive independently demonstrates non-job autonomous driving while asserting `forceIsActive=true`.
+- v4.7.119 therefore captures the prior `vehicle.forceIsActive`, asserts it only for D-0147 EGRESS, and restores the captured value on every exit. No AI job is created and `getIsAIActive()` is not overridden.
+- Existing Oblique Boundary Egress target, curvature formula, 8 km/h calibration, Terminal Resolution Commitment, Positive Field-Exit Settlement and steering telemetry remain unchanged.
+- Existing Actuation Neutralisation remains mandatory on owned success/failure/exhaustion and runs before activity restoration. Player Claim/source reactivation receive no later OuttaMyWay drive/stop command but still cause immediate activity-context release.
+- Regression coverage includes exact prior-state restoration, neutralisation-before-release ordering, and Player Claim release with zero post-claim actuation.
+
+# v4.7.118 TEST BUILD — D-0147 steering-state handoff diagnostic + actuation neutralisation after v4.7.117
+
+Owner-declared v4.7.112 remains canonical. v4.7.118 is a narrow production diagnostic over v4.7.117 TEST; no GitHub write access, no disposable probe lineage and no D-0147 Candidate/policy redesign.
+
+## Reality / SDK finding
+
+v4.7.117 issued explicit non-zero `driveAlongCurvature()` curvature to Patriot and Condor, yet both retained essentially straight headings. The uploaded FS25 SDK shows that `AIVehicleUtil.driveToPoint()` / `driveAlongCurvature()` write `vehicle.rotatedTime`, while actual wheel steering is realised later by `WheelPhysics:updateSteeringAngle()`. Courseplay keeps its custom routing inside an active AI worker lifecycle and ultimately uses the same GIANTS drive helper.
+
+## Production diagnostic
+
+The steering command is unchanged. D-0147 now logs `STEERING_BASELINE`, `STEERING_COMMAND_STATE`, `STEERING_NEXT_UPDATE` and one-second `STEERING_HEARTBEAT` evidence containing `rotatedTime`, steering range, `getIsControlled()`, CrabSteering state / AI mode index and actual steerable-wheel physics angles/ranges. This observes the command-to-wheel handoff without changing target geometry or steering policy.
+
+## Safety correction
+
+v4.7.117 exposed latched post-job propulsion when an egress exhausted after a prior curvature command. v4.7.118 therefore positively neutralises owned Terminal Egress actuation before success/failure/exhaustion release by zeroing steering demand and invoking GIANTS wheel-physics braking/vehicle stop surfaces. Player Claim and source reactivation still pre-empt OuttaMyWay and receive no post-claim/post-reactivation actuation.
+
+## Validation target
+
+One TS016 egress attempt is sufficient. The decisive comparison is steering demand immediately after the command versus the next update and actual wheel steering angles.
+
+---
+
+# v4.7.117 TEST BUILD — D-0147 explicit bounded-curvature post-job steering realisation after TS016 v4.7.116
+
+Owner-declared v4.7.112 remains canonical. v4.7.117 is a narrow production E&OE correction over v4.7.116 TEST; no GitHub access, no disposable probe lineage and no D-0147 Candidate/policy redesign.
+
+## Live evidence
+
+TS016 v4.7.116 preserved the full steering-node local target but neither completed sprayer materially changed heading. Patriot was observed at heading approximately `(0.988,-0.154)` both before and after about 22 m of post-job travel; Condor remained approximately `(-0.085,-0.996)` until the treeline constrained it. Therefore post-job translation is validated but `driveToPoint()` did not realise steering in the completed-worker control state.
+
+v4.7.116 separately fixed Positive Field-Exit Settlement: Patriot's egress settled successfully after its represented compact footprint cleared the Field World. That correction is retained unchanged.
+
+## Production correction
+
+`PostJobActuationAuthority` now converts the already-selected fixed Oblique Boundary Egress world target into the current AI-steering-node local position, derives the single circular target curvature `2*x/(x^2+z^2)`, converts that target curvature to GIANTS `driveAlongCurvature()` convention using the vehicle steering-direction witness, and supplies that curvature directly on each bounded egress update. A straight-out target naturally produces zero curvature.
+
+No new target, waypoint, route, alternate angle, boundary search or retry is introduced. If the fixed target ceases to be forward-reachable before Positive Field-Exit Settlement, the one manoeuvre exhausts.
+
+## Validation target
+
+Repeat TS015/TS016. The decisive evidence is now actual heading change after `CURVATURE_ACTUATION`; Positive Field-Exit Settlement should remain as in v4.7.116.
+
+---
+
+# v4.7.116 TEST BUILD — D-0147 post-job steering / field-exit plumbing correction after TS016 v4.7.115
+
+- Preserves the v4.7.115 Oblique Boundary Egress architecture and 8 km/h calibration; no new manoeuvre/search authority.
+- Corrects `PostJobActuationAuthority`: GIANTS `AIVehicleUtil.driveToPoint()` now receives the full steering-node **local target position** produced by `worldToLocal()`. The v4.7.115 production path incorrectly normalized the local target to unit length, which preserved a straight-ahead R3 case but discarded the distance information required for post-job steering.
+- Corrects Field World boundary transport/traversal in D-0147 to use repository `ValueRecord.length/ipairs` accessors throughout the Candidate/Control path. This addresses the live case where Patriot's represented footprint was wholly beyond the Field World bounds but Positive Field-Exit Settlement never received a usable boundary witness.
+- Adds regressions for non-normalized local target delivery, sealed boundary data, retained Player Claim pre-emption, Oblique Candidate geometry and positive field-exit settlement.
+- `AUTOMATIC_TERMINAL_EGRESS=true`, 8 km/h, one deterministic Oblique Boundary Egress, Positive Field-Exit Settlement and Terminal Egress Exhaustion remain unchanged.
+
+# v4.7.115 TEST BUILD — D-0147 Oblique Boundary Egress after TS016 v4.7.114
+
+**Status:** production refinement (E&OE) against owner-declared canonical v4.7.112; v4.7.114 remains non-canonical evidence lineage.
+
+**Reality:** TS016 v4.7.114 supported sticky Terminal Resolution Commitment, mandatory compaction and 8 km/h post-job actuation, but disproved the assumption that a geometrically nearest Boundary-Normal target is itself a kinematically suitable driven target. Patriot physically exited the Field World but live Control failed to settle and drove far into the neighbouring field. Condor was asked to realise an approximately lateral target, began a large forward steering arc and was constrained by the treeline.
+
+**Architecture refinement — Oblique Boundary Egress:** the local outer boundary still supplies the outward reference, but no longer dictates the driven heading. After compaction, Candidate combines current compact heading with that outward reference to derive exactly one deterministic forward/outward exit alignment. A parallel start naturally yields an oblique lead-in/crossing; an already materially outward-facing assembly may retain its heading. 45 degrees is not an architectural literal. The one manoeuvre still ends only at Positive Field-Exit Settlement or Terminal Egress Exhaustion; no alternate angle, boundary, gap search, reverse rescue, route planning or post-exit parking/alignment is authorised.
+
+**Positive Field-Exit Settlement correction:** EGRESS already follows positive `COMPACTION_COMPLETE`; Control therefore no longer requires a second live fold-state qualification. A represented footprint AABB wholly disjoint from the Field World AABB is accepted as a sufficient positive exit witness, with the existing positive-disc polygon test retained for other geometries.
+
+**Calibration:** `AUTOMATIC_TERMINAL_EGRESS=true`; egress speed remains 8 km/h.
+
+---
+
+# v4.7.114 TEST BUILD — D-0147 decisive Terminal Egress after TS015/TS016
+
+**Canonical baseline:** owner-declared canonical v4.7.112 (`f4018e7ab468adfb5ef83293aa4e472bf31efb9d937ea6ae72b448f4bdeb780e`; Git `c7867fe9d1baea74cab406a0caf25c2d14d64beb`; 310 files). v4.7.113 remains non-canonical live evidence.
+
+**Reality:** TS015 succeeded because the obstruction witness persisted through compaction; TS016 exposed premature `OBJECTIVE_SATISFIED` during compaction and later collision. Bench analysis showed that merely deferring reassessment until compaction completion would still permit false release before later GIANTS manoeuvring demand became visible.
+
+**Architecture refinement:** **Terminal Resolution Commitment** now persists from first positive Terminal Occupancy admission through mandatory supported compaction and the one bounded egress. Compaction-only settlement is withdrawn under the current evidence model. **Positive Field-Exit Settlement** requires the realised compact represented assembly to be positively clear of the Field World; target arrival alone is not success.
+
+**Implementation:** terminal Candidate invalidation no longer includes obstruction cessation after admission; compact committed assemblies always proceed to the single nearest outer-boundary objective; Observation exposes the existing cached live physical representation to Terminal Control; Control evaluates represented footprint against the outer Field World each update; positive exit succeeds, while reaching the one target without positive exit exhausts. Terminal egress speed changes from 3 to 8 km/h. No target extension, alternate boundary, retry, route search, parking or global relocation is added.
+
+**Testing:** adds TS016 regression coverage for obstruction loss during compaction and after compaction, plus Control tests proving positive represented Field World exit is required for success.
+
+---
+
+# v4.7.113 TEST BUILD — D-0147 Bounded Terminal Egress production attempt (E&OE)
+
+**Canonical baseline:** owner-declared canonical v4.7.112 (`f4018e7ab468adfb5ef83293aa4e472bf31efb9d937ea6ae72b448f4bdeb780e`; Git `c7867fe9d1baea74cab406a0caf25c2d14d64beb`; 310 files).
+
+**Architecture:** D-0147 is unchanged. This build is the first production realisation attempt of the already accepted Terminal Occupancy -> supported compaction -> fresh Situation -> one Boundary-Normal Egress manoeuvre -> settlement/exhaustion contract. No parking search, alternate-boundary selection, route planning, retry loop or global completed-worker relocation is introduced.
+
+**Implementation:**
+- `AUTOMATIC_TERMINAL_EGRESS` is present in `config.lua` and defaults to `true` for current development/live testing. `false` gates the capability at Candidate admission, not merely at Control. The eventual product/UI default remains undecided.
+- completed source-terminated assemblies remain observable after Operation membership ends, while active-job Player Takeover remains distinct from post-completion **Player Claim**; the latter uses only `vehicle:getIsEntered()` and is sticky for the Terminal Occupancy episode;
+- new Situation-owned `TerminalOccupancyAssessment` admits only positive obstruction between a genuinely ended assembly and continuing active demand;
+- new Candidate-owned `TerminalEgressCandidateSupport` requires supported compaction first and, after fresh reassessment, permits exactly one objective toward the nearest **outer** Field Boundary; island boundaries are never candidates;
+- `AuthorityRegistry` now distinguishes `PROGRESS_ACTUATION` from `POST_JOB_ACTUATION` while preserving one OuttaMyWay physical owner per assembly;
+- new `TerminalEgressControl` uses the existing configuration mechanical donor for supported compaction and a narrow `PostJobActuationAuthority` for direct bounded GIANTS drive calls. Player Claim is checked before every direct drive/stop call;
+- compaction-only clearance settles without translation. Unsupported objective/control, lost authority or one-manoeuvre watchdog exhaustion settles `FAILED` and requires Player Escalation; no second attempt is authorised.
+
+**Validation before handoff:** 109/109 Python repository structure/conformance tests pass; 227/227 Lua replacement-core behavioural/conformance tests pass, including new D-0147 cases; all repository Lua files parse successfully under LuaTeX's Lua parser. Live GIANTS validation remains authoritative and is the purpose of this test build.
+
+**Deferred maintenance:** the existing `Prototype22ConfigurationAuthority` name/provenance is retained as a mechanical donor to minimise behavioural change. Architectural baggage/literal cleanup is explicitly deferred to a separate future audit.
+
+---
+
+# v4.7.112 CANONICAL — D-0147 Bounded Terminal Egress architecture
 
 **Canonical baseline:** owner-declared canonical v4.7.109 (`ea0b399e2f73759fa29982fc1b85d5bf446f6fd90eb324dec2902b333c7c6a74`; Git `cd9085ee40343d542a66b84948c27f7dd91a40c7`; 310 files).
 

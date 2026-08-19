@@ -1,9 +1,46 @@
+# v4.7.121 current Terminal Yield concepts
+
+**CURRENT / GOVERNING TERMINAL-OCCUPANCY CONCEPTS:** Pending Player Reclamation; Terminal Yield Consent; Continuity, Not Settlement; Reactive Terminal Yield; No Final Settlement Requirement; Clearance Authority Conflict; Egress Externality Constraint; External Yield; Conflict-Relative Infield Yield; Deterministic Dispersion; Post-Job Actuation Authority; Vehicle Activity Context; Actuation Neutralisation; Player Claim; Player Escalation.
+
+- **Pending Player Reclamation** — post-completion passive lifecycle state: productive Job Episode remains ended; the player is expected eventually to return/tidy the assembly.
+- **Terminal Yield Consent** — explicit player opt-in authority for imperfect automatic completed-worker relocation. Current legacy config name remains `AUTOMATIC_TERMINAL_EGRESS`; true only as the current development/test setting.
+- **Continuity, Not Settlement** — D-0147 success objective is restoration of current useful active continuation, not proof of a permanently safe parking position.
+- **Reactive Terminal Yield** — bounded evidence-driven movement of a completed passive occupant admitted only by a positive current conflict; may recur if a later distinct positive conflict arises before Player Claim.
+- **No Final Settlement Requirement** — while useful active demand remains, architecture need not discover permanently released terminal space.
+- **Clearance Authority Conflict** — GIANTS native blocked/clear and OuttaMyWay physical/Field-World clearance may disagree; native conservatism cannot automatically authorise unlimited relocation.
+- **Egress Externality Constraint** — a yield must not solve one Operation by exporting comparable occupancy into another Field World or illegitimate external space.
+- **External Yield** — bounded outward displacement, including the live-supported v4.7.120 mechanism, when external movement is legitimate for the current conflict.
+- **Conflict-Relative Infield Yield** — bounded movement inside the source Field World away from the current admitted conflict; field centre is not a destination and the resulting occupancy is not claimed permanently safe.
+- **Deterministic Dispersion** — stable identity-based tie-breaking among materially equivalent supported spatial alternatives; not a substitute for conflict/geometry evidence and not random wandering.
+- **Positive Field-Exit Settlement** — still valid evidence that an External Yield has wholly exited the source Field World; no longer sufficient evidence that all future Terminal Occupancy conflict is impossible.
+- **Terminal Resolution Commitment** — retained implementation/historical term, refined to persistence through resolution of the currently admitted yield obligation; it no longer implies permanent terminal settlement.
+- **Player Escalation** — legitimate normal-gameplay outcome when no bounded autonomous yield can restore continuation without unacceptable externality or architecture expansion.
+
+**Superseded as universal policy:** Bounded Terminal Egress / Oblique Boundary Egress are retained physical capabilities and historical concepts but are no longer the complete governing answer to Terminal Occupancy.
+
+**Explicit non-concepts:** terminal parking, random field-centre relocation, move-until-GIANTS-clear, another-field parking, global completed-worker coordination and continuous terminal refuge search.
+
+---
+
+# v4.7.115 current terminal-egress concepts
+
+**CURRENT / GOVERNING TERMINAL-OCCUPANCY CONCEPTS:** Bounded Terminal Egress; Terminal Resolution Commitment; Outward Reference; Exit Alignment; Oblique Boundary Egress; Positive Field-Exit Settlement; Post-Job Actuation Authority; Player Claim; Terminal Egress Exhaustion; Independent Terminal Egress; Zero-Configuration Compatibility.
+
+- **Outward Reference** — the selected local outer Field Boundary establishes which side is outside; its normal is not the driven trajectory.
+- **Exit Alignment** — the deterministic relation between current compact heading and outward reference used to express one kinematically natural crossing.
+- **Oblique Boundary Egress** — one continuous forward/outward lead-in and crossing that removes the completed compact assembly from the Field World; may remain straight when current heading is already materially outward-facing.
+- **Boundary-Normal Egress Objective** — **superseded as the manoeuvre concept by v4.7.115**. Boundary normal survives only as Outward Reference.
+
+---
+
 # v4.7.112 D-0147 current concept addendum
 
-**CURRENT / GOVERNING TERMINAL-OCCUPANCY CONCEPTS:** Bounded Terminal Egress; Boundary-Normal Egress Objective; Post-Job Actuation Authority; Player Claim; Terminal Egress Exhaustion; Independent Terminal Egress; Zero-Configuration Compatibility.
+**CURRENT / GOVERNING TERMINAL-OCCUPANCY CONCEPTS:** Bounded Terminal Egress; Terminal Resolution Commitment; Boundary-Normal Egress Objective; Positive Field-Exit Settlement; Post-Job Actuation Authority; Player Claim; Terminal Egress Exhaustion; Independent Terminal Egress; Zero-Configuration Compatibility.
 
 - **Bounded Terminal Egress** — optional completed-assembly clearance capability: supported compaction followed, only if still necessary, by one simple continuous bounded outward manoeuvre toward the local Field Boundary.
 - **Boundary-Normal Egress Objective** — sufficient outward displacement toward the locally nearest Field Boundary; not synonymous with vehicle-forward travel and not a parking destination.
+- **Terminal Resolution Commitment** — once positive Terminal Occupancy crosses the D-0147 intervention threshold, responsibility persists through supported compaction and the one bounded egress; transient disappearance of the initiating obstruction is not settlement authority.
+- **Positive Field-Exit Settlement** — D-0147 succeeds only when the current compact represented assembly is positively clear of the Field World; reaching a guidance target alone is insufficient.
 - **Post-Job Actuation Authority** — empirically demonstrated capability to actuate a genuinely completed assembly without restarting/creating a GIANTS AI Job Episode. Capability does not itself grant semantic authority.
 - **Player Claim** — positive player entry into the completed assembly; immediately terminates OuttaMyWay post-job actuation and is sticky for the same Terminal Occupancy episode.
 - **Terminal Egress Exhaustion** — the single supported outward manoeuvre cannot be established or cannot clear the obstruction within its bounded authority; consequence is player responsibility, not broader search.

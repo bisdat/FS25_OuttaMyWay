@@ -23,6 +23,7 @@ function Registry:create(values)
         situationDependencies = values.situationDependencies or {},
         obligationIds = values.obligationIds or {},
         progressActuationOwnership = values.progressActuationOwnership or {},
+        postJobActuationOwnership = values.postJobActuationOwnership or {},
         capabilityReservations = values.capabilityReservations or {},
         effectiveActuationCompositionId = values.effectiveActuationCompositionId,
         evidenceContracts = values.evidenceContracts or {},

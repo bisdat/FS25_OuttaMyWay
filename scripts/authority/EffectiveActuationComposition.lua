@@ -17,19 +17,21 @@ end
 
 function Composition.create(values)
     values = values or {}
-    local progressOwners = {}
+    local progressOwners,postJobOwners = {},{}
     local held = {}
     for _, entry in OuttaMyWay.ValueRecord.ipairs(values.entries or {}) do
         if type(entry.assemblyId) ~= "string" or type(entry.commitmentId) ~= "string" or type(entry.capability) ~= "string" then
             error("composition entry requires assemblyId, commitmentId and capability", 2)
         end
         if entry.progressActuation then
-            local owner = progressOwners[entry.assemblyId]
-            if owner ~= nil and owner ~= entry.commitmentId then
-                error("composition contains multiple progress owners for one assembly", 2)
-            end
-            progressOwners[entry.assemblyId] = entry.commitmentId
+            local owner=progressOwners[entry.assemblyId]; if owner~=nil and owner~=entry.commitmentId then error("composition contains multiple progress owners for one assembly",2) end
+            progressOwners[entry.assemblyId]=entry.commitmentId
         end
+        if entry.postJobActuation then
+            local owner=postJobOwners[entry.assemblyId]; if owner~=nil and owner~=entry.commitmentId then error("composition contains multiple post-job owners for one assembly",2) end
+            postJobOwners[entry.assemblyId]=entry.commitmentId
+        end
+        if entry.progressActuation and entry.postJobActuation then error("composition entry cannot be both progress and post-job actuation",2) end
         if entry.effectClass == "HOLD" then held[entry.assemblyId] = true end
     end
 

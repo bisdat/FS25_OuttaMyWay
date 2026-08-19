@@ -1,3 +1,23 @@
+# v4.7.121 D-0147 Terminal Yield Candidate addendum
+
+A Terminal Yield Candidate may exist only when all of the following are positively supported:
+
+1. source productive Job Episode is genuinely ended;
+2. completed assembly is Pending Player Reclamation and not Player Claimed;
+3. current Terminal Occupancy positively obstructs useful active continuation;
+4. Terminal Yield Consent is enabled;
+5. one bounded movement expression is supportable from current Reality;
+6. the expression does not knowingly create an equal/worse externality, including treating another Field World as free space;
+7. all other positively represented assemblies are respected as spatial constraints.
+
+Candidate families may include **External Yield** or **Conflict-Relative Infield Yield**. The field centre and randomness are not Candidate objectives. If multiple materially equivalent supported expressions remain, stable identity may supply deterministic tie-breaking after admissibility, never before it.
+
+Candidate success semantics are **current-continuation purpose**, not permanent parking. Control may execute only the selected bounded expression and may not discover a new refuge/route.
+
+**Current implementation note:** v4.7.121 retains only the v4.7.120 External Yield Candidate expression. This addendum defines the next implementation contract; it does not silently broaden runtime authority.
+
+---
+
 # Candidate Action and Constraint Verdict Contract
 
 > **Authority:** Normative implementation-facing schema.

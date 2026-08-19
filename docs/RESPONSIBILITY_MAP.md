@@ -1,3 +1,23 @@
+# v4.7.121 D-0147 Terminal Yield responsibility update
+
+| Responsibility | Owner | Candidate state |
+|---|---|---|
+| Observe completed passive assembly / Player Claim | Observation | existing substrate / live-supported |
+| Establish positive current Terminal Occupancy conflict | Situation Assessment | existing D-0147 substrate |
+| Determine whether automatic yield is permitted | Candidate + Terminal Yield Consent | legacy config gate only; broader policy accepted |
+| Select supported External vs Conflict-Relative Infield Yield | Candidate Action Space | external only implemented; infield not implemented |
+| Enforce Egress Externality Constraint / other-assembly constraints | Candidate mandatory constraints | not implemented |
+| Choose among materially equivalent supported alternatives | Decision; deterministic identity tie-break only if needed | not implemented |
+| Own current admitted yield purpose | Commitment | existing Terminal Resolution machinery; semantics require refinement to current-conflict continuity |
+| Execute selected bounded movement | Control + Post-Job Actuation Authority | external v4.7.120 live-supported |
+| Determine when current productive continuation is restored | Situation/Observation feeding settlement | architecture accepted; current implementation still uses field exit |
+| Return completed vehicle to passive Pending Player Reclamation | Commitment/Control settlement | concept accepted; repeated-cycle implementation absent |
+| Player cleanup / irreducible conflict | Player | governing final housekeeping authority |
+
+**Protected abstraction:** neither Candidate nor Control owns permanent parking, global completed-worker placement, random wandering or another-field occupation.
+
+---
+
 # v4.7.105 D-0146 Optional Configuration Reduction responsibility update
 
 | Responsibility | Owner | v4.7.105 test state |

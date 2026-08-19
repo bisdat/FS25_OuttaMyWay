@@ -1,3 +1,52 @@
+# v4.7.121 note — native clearance is evidence, not relocation authority
+
+v4.7.120 live evidence shows GIANTS may later mark a continuing field worker blocked after a completed assembly has positively exited the source Field World and remains physically separate. A subsequent debug-physics-overlay reconstruction showed substantial body clearance. This supports a distinction between physical/Field-World clearance and GIANTS' conservative runtime collision acceptance.
+
+The native blocked state remains authoritative evidence that GIANTS is not continuing. It does not establish a universal metre clearance and does not by itself authorise OuttaMyWay to keep relocating a completed vehicle farther into external or neighbouring Field World space. v4.7.121 architecture records this as Clearance Authority Conflict and applies Egress Externality Constraint above the actuator layer.
+
+---
+
+# v4.7.120 note — direction holding after Vehicle Activity Context validation
+
+TS016 v4.7.119 closed the previous WheelPhysics Activity Gate question: while D-0147 owned `forceIsActive`, GIANTS realised non-zero `rotatedTime` as non-zero physical wheel steering angles and the completed Patriot yawed. Post-job steering is therefore mechanically available without restarting a GIANTS Job Episode.
+
+The remaining problem was controller semantics. A fixed oblique point caused a pursuit arc of about 86 degrees even though Candidate's intended Exit Alignment was the heading/outward bisector. AutoDrive supplies a useful non-job donor for this distinction: its normal route follower calls `AIVehicleUtil.driveInDirection()` with a local direction and temporarily provides the legacy `self.motor` / `self.cruiseControl` fields expected by that GIANTS helper.
+
+v4.7.120 uses that helper only as a physical direction-holding surface. Candidate still owns the single world Exit Alignment and selected boundary; Control does not import AutoDrive routing, graph search, jobs or task semantics. Vehicle Activity Context remains the separate WheelPhysics activity condition.
+
+# v4.7.119 note — WheelPhysics activity gate and non-job driving context
+
+Live v4.7.118 telemetry showed persistent non-zero `vehicle.rotatedTime`, CrabSteering still in AI mode, and zero realised wheel steering angles. The supplied FS25 SDK narrows the handoff: `WheelPhysics:serverUpdate()` calls `updateSteeringAngle(dt)` only inside `if self.vehicle.isActive then ... end`. `Vehicle:getIsActive()` accepts `forceIsActive`; `AIJobVehicle:getIsActive()` accepts active AI.
+
+Courseplay therefore succeeds inside a genuine AI-active lifecycle. AutoDrive demonstrates a separate pattern: it is not a GIANTS AI job but asserts `forceIsActive=true` while its own driving state is active. v4.7.119 tests only that activity condition around the existing D-0147 actuator.
+
+Do not infer from this note that `forceIsActive` is itself productive AI intent or that a synthetic Job Episode is required. The live test must show whether wheel steering angles and yaw begin to realise once the completed vehicle is physically active.
+
+---
+
+# v4.7.118 note — deferred steering realisation in supplied FS25 SDK
+
+The supplied SDK `debugger/gameSource.zip` establishes a two-stage steering path relevant to D-0147:
+
+1. `AIVehicleUtil.driveToPoint()` / `driveAlongCurvature()` compute/write `vehicle.rotatedTime` while also invoking wheel propulsion physics.
+2. Actual physical wheel steering is realised later by `WheelPhysics:updateSteeringAngle()`, which reads `vehicle.rotatedTime`, applies wheel steering ranges/speeds and, when present, the vehicle's custom `updateSteeringAngle()` specialization chain such as CrabSteering.
+
+`Drivable:updateVehiclePhysics()` rewrites `vehicle.rotatedTime` from steering input only when `getIsControlled()` is true. `CrabSteering:startFieldWorker()` selects `aiSteeringModeIndex`, but no corresponding CrabSteering worker-end restoration is present in the supplied source. This makes a simple "AI crab mode disappeared at completion" explanation unsupported.
+
+Courseplay comparison: Courseplay customises routing/drive strategy but remains inside an active GIANTS AI worker lifecycle and ultimately invokes `AIVehicleUtil.driveToPoint()` with steering-node local targets. The useful question is therefore where post-job `rotatedTime` stops becoming physical wheel steering, not which additional target formula to try.
+
+---
+
+# v4.7.117 note — post-job curvature steering surface
+
+**Repository/live evidence:** v4.7.116 proved that supplying a materially lateral full local-space target to `AIVehicleUtil.driveToPoint()` can still produce essentially straight post-job travel after the Job Episode has ended. Therefore the earlier R3 post-job actuation result is authority for translation, not steering.
+
+**GIANTS FS25 LuaDoc evidence:** `AIVehicleUtil.driveAlongCurvature(self, dt, curvature, maxSpeed, acceleration)` obtains steering rotation from `getSteeringRotTimeByCurvature(curvature)`, assigns the resulting steering state directly to `rotatedTime`, and then updates wheel physics. Normal active AIDrivable agent execution uses this function for navigation-agent curvature.
+
+**v4.7.117 production use:** derive target-circle curvature from the already-selected fixed Oblique Boundary Egress target. This is a mechanical control surface only; it creates no route-planning or Candidate authority. Live validation remains required.
+
+---
+
 ## 2026-08-10 — D-0141 GIANTS observations used by aligned follower protection
 
 D-0141 consumes only two additional raw GIANTS surfaces for its provisional follower-demand representation: observed working width and the already-validated D-0138 `spec_aiFieldWorker.aiDriveParams.maxSpeed`. Working width is used as a coarse demand seed, not Assembly footprint. `aiDriveParams.maxSpeed` is used only as the current pre-OuttaMyWay unrestricted rate; target coordinates still have no route/continuation authority. A zero command is treated as unresolved rate evidence.

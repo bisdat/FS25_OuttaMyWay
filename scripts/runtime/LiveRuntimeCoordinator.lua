@@ -26,6 +26,11 @@ local function appendCapabilityObservation(raw, observation)
     raw.controlOutcomes[#raw.controlOutcomes+1]=observation
     return true
 end
+local function appendTerminalEgressObservation(raw,observation)
+    if type(observation)~="table" or observation.kind~="D0147_TERMINAL_EGRESS_CONTROL_OBSERVATION" then return false end
+    if not rawContainsReference(raw,observation.assemblyReferenceKey) then return false end
+    raw.controlOutcomes=raw.controlOutcomes or {}; raw.controlOutcomes[#raw.controlOutcomes+1]=observation; return true
+end
 
 function Coordinator.new(runtime,source,targetedFieldIdentityProbe,fieldWorldSnapshots,diagnosticObserver)
     return setmetatable({runtime=runtime,source=source,targetedFieldIdentityProbe=targetedFieldIdentityProbe,fieldWorldSnapshots=fieldWorldSnapshots,diagnosticObserver=diagnosticObserver,elapsed=0,cycleCount=0,errorCount=0},Coordinator)
@@ -64,8 +69,10 @@ function Coordinator:update(dt)
     if self.diagnosticObserver and type(self.diagnosticObserver.beginRuntimeCycle)=="function" then due=self.diagnosticObserver:beginRuntimeCycle(self.source:getLastDiagnostics(),nowMilliseconds)==true end
     local records={}
     local capabilityObservation=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getCapabilityObservation() or nil
+    local terminalEgressObservation=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getTerminalEgressObservation() or nil
     for _,raw in OuttaMyWay.ValueRecord.ipairs(observations) do
         appendCapabilityObservation(raw,capabilityObservation)
+        appendTerminalEgressObservation(raw,terminalEgressObservation)
         local ok,live=pcall(self.runtime.processLiveObservation,self.runtime,raw)
         if ok then
             if self.diagnosticObserver and type(self.diagnosticObserver.observeRuntimeResult)=="function" then

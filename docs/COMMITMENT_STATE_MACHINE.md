@@ -1,3 +1,17 @@
+# v4.7.121 D-0147 Terminal Yield commitment addendum
+
+A completed worker's productive Job Episode remains ended while it is Pending Player Reclamation. Each positively admitted Terminal Yield is a bounded Commitment objective tied to one current obstruction/continuation purpose.
+
+- `ACTIVE`: may execute only the selected bounded yield needed for the current admitted conflict.
+- `WAITING_FOR_EVIDENCE`: completed vehicle remains passive; no speculative relocation merely to prevent hypothetical future conflict.
+- `SETTLING`: reconcile actuation, release authority and establish whether current productive continuation was restored, Player Claim/higher authority transferred responsibility, or the bounded yield failed/exhausted.
+- `SUCCEEDED` for one yield does **not** mean the completed vehicle is permanently settled. It returns to Pending Player Reclamation and may later participate in a new Terminal Occupancy Situation if fresh positive conflict evidence appears.
+- No terminal-yield timer or maximum-move count is architectural authority.
+
+This refines the historical Terminal Resolution Commitment: stickiness applies to the currently admitted yield obligation, not to finding permanent parking.
+
+---
+
 # Commitment State Machine
 
 > **Authority:** Normative companion to `ARCHITECTURE.md` and ADR-0019.

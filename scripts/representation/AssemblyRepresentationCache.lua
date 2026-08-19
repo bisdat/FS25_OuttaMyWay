@@ -152,6 +152,26 @@ local function configurationKey(members)
     end
     table.sort(values); return table.concat(values,";")
 end
+local function foldConfigurationEvidence(members)
+    local result={foldableCount=0,deployedCount=0,transitionCount=0,foldedCount=0,unknownCount=0}
+    for _,member in ipairs(members or {}) do
+        local state=member.currentConfiguration and member.currentConfiguration.foldState or "NOT_FOLDABLE_OR_UNKNOWN"
+        local object=member.object
+        local foldable=object~=nil and (object.spec_foldable~=nil or type(object.getFoldAnimTime)=="function")
+        if foldable then
+            result.foldableCount=result.foldableCount+1
+            if state=="DEPLOYED" then result.deployedCount=result.deployedCount+1
+            elseif state=="TRANSITION" then result.transitionCount=result.transitionCount+1
+            elseif state=="FOLDED" then result.foldedCount=result.foldedCount+1
+            else result.unknownCount=result.unknownCount+1 end
+        end
+    end
+    result.allDeployed=result.foldableCount>0 and result.deployedCount==result.foldableCount
+    result.allFolded=result.foldableCount>0 and result.foldedCount==result.foldableCount
+    result.retainCurrent=result.foldableCount==0 or result.allFolded
+    result.compactionSupported=result.retainCurrent or (result.unknownCount==0 and result.transitionCount==0 and result.allDeployed)
+    return result
+end
 local function donorConfigurationEvidence(object,donor)
     if donor==nil then return {status="NOT_APPLICABLE",selector="n/a",selected=nil,expected=nil} end
     local name=donor.configurationName
@@ -421,7 +441,7 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
         runtimeConfirmedPrimitiveCount=profile.runtimeConfirmedCount,donorFallbackPrimitiveCount=profile.donorFallbackCount,configurationSelectorSummary=profile.configurationSelectorSummary,
         participatingPrimitiveNames=profile.participatingPrimitiveNames,inactivePrimitiveNames=profile.inactivePrimitiveNames,unresolvedPrimitiveNames=profile.unresolvedPrimitiveNames,
         physicalPrimitiveCount=summary.physicalPrimitiveCount,diagnosticPrimitiveCount=summary.diagnosticPrimitiveCount,
-        configurationKey=config,configurationProfileId=profile.identity,configurationProfileCacheHit=profileCacheHit,configurationProfileCount=countKeys(record.profiles),
+        configurationKey=config,configurationEvidence=foldConfigurationEvidence(record.members),configurationProfileId=profile.identity,configurationProfileCacheHit=profileCacheHit,configurationProfileCount=countKeys(record.profiles),
         structurallyValid=record.structurallyValid and profile.participatingPrimitiveCount>0,coverageComplete=false,conservativeForRepresentedComponents=record.conservativeForRepresentedComponents,
         negativeClearanceAuthority=false,claimPermissions={"POTENTIAL_INTERACTION_FROM_REPRESENTED_COMPONENTS"},
         worldPrimitives=worldPrimitives,planViewSummary=summary,geometryStats=record.geometryStats,transformFailureCount=#transformFailures,

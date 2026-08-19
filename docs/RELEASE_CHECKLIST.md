@@ -1,3 +1,16 @@
+## v4.7.121 canonical-candidate scope gate — D-0147 Terminal Yield
+
+- [x] Exact authority baseline remains owner-declared canonical v4.7.112 (`f4018e7ab468adfb5ef83293aa4e472bf31efb9d937ea6ae72b448f4bdeb780e`; Git `c7867fe9d1baea74cab406a0caf25c2d14d64beb`; 310 files).
+- [x] v4.7.120 live-tested external-egress mechanics are carried forward without intentional traffic/control behavioural change.
+- [x] Pending Player Reclamation, Terminal Yield Consent, Continuity Not Settlement, Reactive Terminal Yield, No Final Settlement Requirement and Egress Externality Constraint are recorded consistently.
+- [x] Conflict-Relative Infield Yield is architecture only; no random/field-centre implementation is introduced.
+- [x] Legacy `AUTOMATIC_TERMINAL_EGRESS` remains `true` for development testing by owner request; player-facing automatic Terminal Yield is documented as explicit opt-in/default-off.
+- [x] Architecture/code mismatch is explicit: current runtime still implements external egress only.
+- [ ] Owner review and explicit canonical declaration.
+- [ ] Owner applies candidate to local repository, records canonical ZIP SHA-256/Git provenance and synchronises GitHub independently.
+
+---
+
 ## v4.7.112 canonical-candidate scope gate
 
 - [x] Exact baseline is owner-declared canonical v4.7.109 SHA-256 `ea0b399e2f73759fa29982fc1b85d5bf446f6fd90eb324dec2902b333c7c6a74`.

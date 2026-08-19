@@ -18,7 +18,7 @@ function Evaluator:enterSettling(commitmentId,governingBasisVerdict)
         end
         local released = self.authorities:releaseForCommitment(commitmentId)
         if #released > 0 then
-            record = OuttaMyWay.CommitmentStateMachine.revise(record,{progressActuationOwnership={},epoch=self.epochs:next()})
+            record = OuttaMyWay.CommitmentStateMachine.revise(record,{progressActuationOwnership={},postJobActuationOwnership={},epoch=self.epochs:next()})
             record = self.commitments:save(record)
         end
         return {commitment=record,releasedAuthorityTokenIds=released}
@@ -32,7 +32,7 @@ function Evaluator:enterSettling(commitmentId,governingBasisVerdict)
     updated = self.commitments:save(updated)
     local released = self.authorities:releaseForCommitment(commitmentId)
     if #released > 0 then
-        updated = OuttaMyWay.CommitmentStateMachine.revise(updated,{progressActuationOwnership={},epoch=self.epochs:next()})
+        updated = OuttaMyWay.CommitmentStateMachine.revise(updated,{progressActuationOwnership={},postJobActuationOwnership={},epoch=self.epochs:next()})
         updated = self.commitments:save(updated)
     end
     return {commitment=updated,releasedAuthorityTokenIds=released}
@@ -42,7 +42,7 @@ function Evaluator:attemptTerminal(commitmentId,terminalSettlementEvidence)
     local record = self.commitments:get(commitmentId)
     if record == nil then error("unknown Commitment " .. tostring(commitmentId),2) end
     if record.state ~= "SETTLING" then error("Terminal Settlement requires SETTLING Commitment",2) end
-    if self.authorities:hasProgressAuthority(commitmentId) then error("Terminal Settlement rejected while progress authority remains",2) end
+    if self.authorities:hasAnyAuthority(commitmentId) then error("Terminal Settlement rejected while actuation authority remains",2) end
     local terminal = OuttaMyWay.CommitmentStateMachine.transition(record,record.intendedTerminalDisposition,{
         epoch=self.epochs:next(),terminalSettlementEvidence=terminalSettlementEvidence
     },self.obligations)

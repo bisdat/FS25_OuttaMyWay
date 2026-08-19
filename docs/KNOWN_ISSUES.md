@@ -1,3 +1,16 @@
+# v4.7.121 canonical-candidate known gaps — Terminal Yield
+
+- Governing D-0147 architecture is broader than the retained v4.7.120 implementation. The runtime currently implements only one external-egress expression.
+- Positive Field-Exit Settlement remains the implemented external manoeuvre success witness even though v4.7.121 architecture defines current productive continuation, not permanent settlement, as the governing objective.
+- Reactive repeat yield is not implemented.
+- Conflict-Relative Infield Yield is accepted architecture but not implemented; no field-centre/random move is authorised.
+- Egress Externality Constraint is accepted architecture but no Candidate currently rejects neighbouring-Field impingement.
+- The config variable remains named `AUTOMATIC_TERMINAL_EGRESS`; this is intentionally stale for the architecture-only candidate. It remains `true` for testing. A future implementation increment should rename/migrate it to Terminal Yield Consent semantics and make the player-facing default false.
+- Native GIANTS collision conservatism remains evidence about whether active continuation is actually occurring, but no attempt should infer a universal metre clearance from it.
+- `Prototype22ConfigurationAuthority` baggage/literal cleanup remains separate housekeeping.
+
+---
+
 # v4.7.112 candidate incompleteness / D-0147 implementation boundary
 
 - D-0147 Bounded Terminal Egress is accepted architecture only; production runtime remains canonical v4.7.109 behaviour.

@@ -226,6 +226,8 @@ Player-controlled assemblies remain represented as physical entities when they a
 
 A completed worker may become a Terminal Occupancy subject. This is a Decision/Commitment concern, not a continuation of the completed Job Episode.
 
+Under v4.7.121 D-0147, the completed assembly is **Pending Player Reclamation**. Automatic movement is consented best-effort **Reactive Terminal Yield** whose objective is current productive continuity, not permanent settlement. External yield is only one expression; infield yield may be supportable where outward movement would create an externality. The player remains the final housekeeping authority.
+
 ## Implementation order
 
 1. introduce passive contracts and identities;

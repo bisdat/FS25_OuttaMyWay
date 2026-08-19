@@ -1,3 +1,37 @@
+# v4.7.121 D-0147 Terminal Yield lifecycle flow
+
+```text
+GIANTS Job Episode genuinely ends
+        ↓
+Pending Player Reclamation
+        ↓
+positive current Terminal Occupancy conflict?
+        ├─ no  → remain passive / wait for player
+        └─ yes
+             ↓
+      Terminal Yield Consent?
+        ├─ no  → Player Escalation / native gameplay
+        └─ yes
+             ↓
+      Candidate: least supported bounded yield
+        ├─ legitimate External Yield
+        ├─ Conflict-Relative Infield Yield
+        └─ no legitimate expression → Player Escalation
+             ↓
+      Commitment / bounded authority / Control
+             ↓
+      current productive continuation restored?
+        ├─ yes → neutralise/release → Pending Player Reclamation
+        └─ no  → reassess only within admitted bounded policy or escalate
+
+Later positive conflict before Player Claim may create a new Reactive Terminal Yield.
+No current conflict means no speculative completed-worker movement.
+```
+
+**Externality rule:** another Field World is not free clearance. GIANTS native blocked state proves lack of continuation but does not itself grant unlimited relocation authority.
+
+---
+
 # v4.7.99 D-0146 governing flow addendum
 
 ```text

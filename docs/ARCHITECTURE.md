@@ -1,9 +1,91 @@
-## v4.7.112 Bounded Terminal Egress — normative candidate precedence
+## v4.7.121 D-0147 normative refinement — Terminal Yield while Pending Player Reclamation
 
-**Status:** accepted architecture for owner canonical review; implementation intentionally unchanged from canonical v4.7.109.  
-**Canonical baseline:** owner-declared canonical v4.7.109 (`ea0b399e2f73759fa29982fc1b85d5bf446f6fd90eb324dec2902b333c7c6a74`; Git `cd9085ee40343d542a66b84948c27f7dd91a40c7`; 310 files).  
-**Decision:** D-0147.  
-**Implementation boundary:** architecture/documentation only. Disposable v4.7.110/v4.7.111 probes are evidence, not production donors or release lineage.
+**Status:** canonical-candidate architecture; owner-declared v4.7.112 remains canonical until explicit promotion.
+**Evidence basis:** TS016 v4.7.120 live result, subsequent log/video review, player-described normal gameplay, and debug-physics-overlay review.
+**Implementation boundary:** v4.7.120 external-egress mechanics are retained as one live-supported expression. Repeated/infield Terminal Yield is not implemented by this candidate.
+
+### 0U.1 Pending Player Reclamation
+A genuinely completed worker whose Job Episode has ended enters **Pending Player Reclamation** until the player claims/tidies it, all relevant active demand ends, or responsibility is otherwise explicitly transferred. This is not a resurrected productive Job Episode and does not create an OuttaMyWay parking obligation. The normal gameplay expectation is that the player eventually returns to completed workers.
+
+GIANTS Completion Acceptance remains the default. A harmless completed assembly remains where GIANTS left it. OuttaMyWay acts only after positive current Terminal Occupancy evidence establishes that the passive completed assembly materially prevents useful active continuation.
+
+### 0U.2 Terminal Yield Consent
+Automatic movement of a completed assembly is an explicitly imperfect assistance feature and requires **Terminal Yield Consent**. Consent authorises bounded best-effort yielding; it does not authorise arbitrary relocation, parking search, another-field occupation, or indefinite autonomous housekeeping.
+
+The current implementation switch `AUTOMATIC_TERMINAL_EGRESS` is retained temporarily as a legacy implementation name and remains `true` for development testing. For a player-facing release, automatic Terminal Yield is explicit opt-in/default-off. Renaming the switch is deferred until implementation is changed to express the broader policy.
+
+### 0U.3 Continuity, Not Settlement
+**Continuity, Not Settlement** is the governing objective. D-0147 exists to buy time for the player by restoring useful active-worker continuation, not to prove that the completed vehicle has found a universally safe final position.
+
+Positive Field-Exit Settlement remains valid evidence that one external-egress manoeuvre has physically left the source Field World; it is no longer sufficient architectural proof that Terminal Occupancy can never matter again. GIANTS' later conservative collision decision and future active demand may legitimately differ from physical field-exit evidence.
+
+### 0U.4 Reactive Terminal Yield
+A **Reactive Terminal Yield** is admitted only from a positive current conflict involving a completed passive occupant and useful active demand. The selected yield is bounded to resolving that admitted conflict. Once continuation is positively restored, the completed vehicle becomes passive again and remains Pending Player Reclamation.
+
+If a later distinct positive conflict develops before player reclamation, the same completed assembly may receive another bounded Terminal Yield. This repeatability is evidence-driven, not timer-driven and not speculative future parking. No relocation occurs solely because a future conflict seems possible.
+
+### 0U.5 No Final Settlement Requirement
+There is **No Final Settlement Requirement** while the Operation still contains useful active demand. D-0147 does not need to identify permanent released space, a Terminal Clearance Region or a correct parking location. Repeated yield is legitimate only while each move is justified by a new/current admitted obstruction.
+
+The historical **Terminal Resolution Commitment** is therefore refined: after one current conflict admits a yield, responsibility remains sticky through the bounded actuation needed to resolve that admitted conflict or reach a higher-authority terminal outcome. It does not create an obligation to discover permanent settlement after current productive continuation has been restored.
+
+### 0U.6 Clearance Authority Conflict
+TS016 v4.7.120 established that Positive Field-Exit Settlement and GIANTS native continuation clearance can disagree. Later S 416 turning became natively blocked even though Patriot was physically separate and already outside Field 77. This is **Clearance Authority Conflict**: GIANTS' conservative runtime collision envelope is authoritative for what GIANTS will currently do, but it is not by itself authority for OuttaMyWay to consume unlimited external space.
+
+OuttaMyWay must not convert a conservative native clearance request into an unbounded relocation policy. If satisfying GIANTS by moving farther would create an equal or worse spatial conflict, autonomous external clearance is exhausted as a legitimate solution.
+
+### 0U.7 Egress Externality Constraint
+**Egress Externality Constraint:** a Terminal Yield must not solve the source Operation merely by exporting comparable occupancy/demand into another Field World or otherwise illegitimate external space. The immediate margin can be consumed only while that occupation remains a bounded acceptable externality. Another usable/active Field World is not free space merely because it lies outside the source polygon.
+
+This constraint supersedes any interpretation that Terminal Egress should continue outward until GIANTS' native collision handler is satisfied.
+
+### 0U.8 External and infield yield expressions
+**External Yield:** the v4.7.120 compact → Vehicle Activity Context → acquire/hold Exit Alignment → positive source-Field exit → neutralise mechanism remains a valid physical expression when external displacement is legitimate and sufficient for the current conflict. It is a capability, not the universal settlement policy.
+
+**Conflict-Relative Infield Yield:** where external egress is inappropriate or would violate Egress Externality Constraint, architecture permits a bounded move within the source Field World away from the current admitted conflict. The field centre is not a destination. True randomness is not conflict authority and is rejected as the primary anti-collision mechanism. Other represented physical assemblies constrain candidate support. If materially equivalent alternatives remain, stable assembly identity may provide deterministic dispersion/tie-breaking.
+
+Infield movement does not claim the destination is permanently safe. It stops when the current active continuation is positively restored, after which the completed assembly becomes passive again.
+
+### 0U.9 Player escalation is normal gameplay
+If no bounded legitimate Terminal Yield can restore continuation without unacceptable externality, repeated thrashing, unsafe physical conflict or architecture expansion into parking/routing search, responsibility escalates to the player. This is not feature failure. The player's normal return to completed workers is the terminal housekeeping authority.
+
+Player Claim remains immediate and sticky for the Terminal Occupancy episode. No arbitrary timeout or maximum-move count is introduced; the natural lifecycle is completion → Pending Player Reclamation → zero or more positively admitted bounded yields → Player Claim / active-demand end / justified Player Escalation.
+
+### 0U.10 Complexity boundary
+D-0147 does not authorise global parking optimisation, field-centre parking, random wandering, continuous refuge discovery, another-field parking, permanent released-space inference or proactive relocation. Architecture discovers only enough current spatial response to restore useful continuation. Reality remains final authority.
+
+---
+
+## v4.7.115 D-0147 reality refinement — Oblique Boundary Egress
+
+**Status:** accepted architectural refinement from TS016 v4.7.114 live evidence; owner-declared v4.7.112 remains canonical until the user canonically promotes a later build.
+
+### 0T.1 Terminal Resolution Commitment — retained
+Positive Terminal Occupancy admission commits the completed assembly to the full bounded resolution. Supported compaction completes first; transient disappearance of the initiating obstruction does not cancel the obligation.
+
+### 0T.2 Outward Reference
+The selected local outer Field Boundary establishes which side is outside. Its normal is an **outward reference**, not a commanded vehicle trajectory and not a parking orientation.
+
+### 0T.3 Exit Alignment
+A wheeled assembly's realised compact heading participates in the egress expression. Candidate derives one deterministic forward/outward alignment from compact heading plus the local outward reference. Where the assembly is approximately parallel to the edge this should be oblique rather than an immediate 90-degree steering demand. Where current heading is already materially outward-facing, continuing substantially straight is valid. No fixed 45-degree architectural literal exists.
+
+### 0T.4 Oblique Boundary Egress
+The resulting lead-in/steering arc/boundary crossing is one continuous bounded manoeuvre with one purpose: complete removal of the assembly from Field World demand. It is not a sequence of relocation decisions. It may initially continue forward or consume a small amount of infield space solely as part of the same continuous crossing.
+
+### 0T.5 Positive Field-Exit Settlement
+Success requires positive evidence that the realised compact assembly is wholly outside the Field World. The egress phase already depends on positive compaction completion, so settlement does not require an independent second fold-state qualification. A represented footprint wholly beyond Field World bounds is sufficient positive evidence; represented primitive/polygon evidence may establish the same fact where bounds overlap.
+
+### 0T.6 Complexity boundary
+Exactly one deterministic oblique manoeuvre is authorised. No alternate angle, alternate boundary, gap search, reverse rescue, repeated attempt, field-centre move, margin traversal model, post-exit alignment or parking search follows failure. Unsupported or failed egress becomes **Terminal Egress Exhaustion** and Player Escalation.
+
+---
+
+## v4.7.114 D-0147 Terminal Resolution Commitment refinement — normative candidate precedence
+
+**Status:** accepted live-evidence refinement for v4.7.114 TEST; owner-declared v4.7.112 remains canonical.  
+**Canonical baseline:** owner-declared canonical v4.7.112 (`f4018e7ab468adfb5ef83293aa4e472bf31efb9d937ea6ae72b448f4bdeb780e`; Git `c7867fe9d1baea74cab406a0caf25c2d14d64beb`; 310 files).  
+**Decision:** D-0147, refined by TS015/TS016 live evidence on 2026-08-18.  
+**Implementation boundary:** bounded production attempt only. Disposable v4.7.110/v4.7.111 probes remain evidence, not production donors or release lineage.
 
 D-0147 refines the historical GIANTS Completion Acceptance Boundary without replacing its default. A completed worker remains where GIANTS finishes it unless its realised physical occupancy later becomes materially obstructive to continuing active demand and the user has enabled Automatic Terminal Egress.
 
@@ -23,17 +105,17 @@ Once Terminal Egress is admitted, the completed assembly first enters its **mini
 
 This stage is explicit because a smaller configuration:
 
-- may resolve the Terminal Occupancy without translation;
-- reduces the footprint presented to continuing traffic;
-- reduces, but does not eliminate, exposure to terrain/static-object contact during any subsequent boundary crossing.
+- reduces the footprint presented during the egress manoeuvre;
+- reduces, but does not eliminate, exposure to terrain/static-object contact during boundary crossing;
+- provides the realised compact footprint used for positive Field World exit settlement.
 
 An assembly already effectively compact, or one with no meaningful supported configuration reduction, satisfies this stage without synthetic fold actuation. Fold-interface presence alone is not Compact Configuration authority.
 
-If compaction alone removes the obstruction, the obligation is satisfied and no translational egress is authorised.
+**TS015/TS016 refinement — Terminal Resolution Commitment:** once positive Terminal Occupancy evidence has crossed the intervention threshold and admitted D-0147, disappearance of the initiating obstruction does not dissolve the obligation during or after compaction. Compaction is preparation for decisive egress, not a terminal resolution under the current evidence model. This prevents a temporarily clear revealed trajectory from masking later continuing demand through the same completion position.
 
 ### 0T.3 Boundary-Normal Egress Objective
 
-If translation remains necessary, the egress objective is **outward displacement toward the locally nearest Field Boundary**, sufficient to vacate the continuing Field World demand that created the Terminal Occupancy obligation.
+After supported compaction, the egress objective is **outward displacement toward the locally nearest Field Boundary**, sufficient to remove the realised compact assembly from the Field World. The initiating obstruction need not remain visible once Terminal Resolution Commitment has been admitted.
 
 The objective is boundary-relative, not vehicle-forward. A completed assembly parallel and close to a field edge may therefore require a primarily lateral displacement relative to its current heading. Architecture does not prescribe forward, reverse or a steering law; implementation may use whichever single simple supported control expression can realise the outward objective.
 
@@ -57,6 +139,15 @@ It does not authorise:
 If the one supported outward manoeuvre cannot be established or cannot achieve sufficient clearance within its bounded authority, **Terminal Egress Exhaustion** is reached. Exhaustion transfers the unresolved physical responsibility to the player; it does not reopen a broader search space.
 
 This boundary is deliberate protection against reintroducing the retired King/continuous Refuge architecture under a different name.
+
+
+### 0T.4a Positive Field-Exit Settlement
+
+The Candidate-supplied target is a bounded guidance target, not itself proof of success. A Terminal Egress succeeds only when the current realised compact represented footprint is positively clear of the Field World across the selected outer boundary.
+
+Control therefore may stop early when positive represented Field World exit is established. If the one supplied guidance target is reached while any positively represented compact primitive still lies inside or intersects the Field World, the manoeuvre reaches **Terminal Egress Exhaustion**. It does not extend the target, select another boundary, or begin a second attempt.
+
+Transient disappearance of the original active-demand conflict is not a settlement witness after admission. Player Claim, authoritative source-intent supersession, positive represented Field World exit, or bounded failure/exhaustion are the valid terminal outcomes.
 
 ### 0T.5 Post-Job Actuation Authority — empirically supported capability
 
@@ -109,7 +200,7 @@ This is **Zero-Configuration Compatibility**: OuttaMyWay must not require option
 
 D-0041 remains authoritative for ordinary job completion: accept GIANTS' realised completion disposition and do not infer a parking destination. D-0147 refines only the exceptional case where that realised occupancy later obstructs continuing active demand.
 
-No Terminal Egress production implementation is included in v4.7.112. After canonicalisation, implementation discovery must start from this narrow contract and may be abandoned if Reality shows that simple support requires a growing family of IF/THEN/ELSE cases, exhaustive margin qualification or route planning.
+v4.7.114 TEST is a bounded production implementation attempt against this refined contract. Reality remains final authority; any pressure to add alternate boundaries, repeated target extension, exhaustive margin qualification or route planning is evidence for Terminal Egress Exhaustion/player ownership rather than architectural expansion.
 
 ---
 
