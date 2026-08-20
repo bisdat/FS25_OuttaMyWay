@@ -421,6 +421,7 @@ function Source:capture(mission, nowSeconds)
                 canonicalizationVersion=representative and representative.canonicalizationVersion or nil,
                 quantizationMetres=representative and representative.quantizationMetres or nil,
                 boundary=representative and representative.boundary or {},islands=representative and representative.islands or {},
+                geometryMetrics=representative and representative.geometryMetrics or nil,
                 boundaryPointCount=representative and representative.boundaryPointCount or 0,islandCount=representative and representative.islandCount or 0,
                 representativeSnapshotReferenceKey=representative and representative.referenceKey or nil,
                 representativeGeometryOnly=representative~=nil,

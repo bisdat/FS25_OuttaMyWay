@@ -70,6 +70,8 @@ Implementation must not:
 - convert `UNKNOWN` into negative authority;
 - add fixture-specific exceptions to mandatory constraints.
 
+**D-0147 explicit architecture exception:** the v4.7.127 **Courtesy Constraint Exception** is not a fixture-specific implementation escape hatch. It is a governing architecture decision for the player-consented D-0147 capability class. Only `FIELD_WORLD_CONTAINMENT` and `TRANSITION_CLEARANCE` are non-applicable to the crude Bounded Infield Retreat; all other mandatory constraints remain applicable. Normal physical Candidates retain the full mandatory proof contract.
+
 The bounded TS015 Cooperative Passage production integration is now live-demonstrated. Subsequent implementation must preserve that behaviour and address only explicitly unresolved authority. The next known question is Productive/Transitional near-collinear opposed support; it must not be solved by silently weakening the Productive/Transitional distinction. Broader vehicle/asymmetric/general-clearance work remains outside the immediate tranche.
 
 ### Supersession stop condition

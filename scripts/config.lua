@@ -1,12 +1,11 @@
--- FS25_OuttaMyWay v4.7.121 CANONICAL CANDIDATE — D-0147 Terminal Yield / Pending Player Reclamation architecture.
--- Owner-declared v4.7.112 remains canonical until explicit owner promotion. v4.7.120 supplies the immediate live-tested mechanical baseline.
--- This candidate changes architecture/provenance/identity only: the v4.7.120 external-egress implementation remains behaviourally unchanged.
--- D-0147 now treats automatic completed-worker movement as temporary Terminal Yield while Pending Player Reclamation, not permanent parking.
+-- FS25_OuttaMyWay v4.7.128 CANONICAL CANDIDATE — audited live-validated D-0147 lineage; identity/provenance only.
+-- Owner-declared v4.7.121 remains authoritative until explicit owner canonicalisation. v4.7.128 is the canonical candidate carrying live-validated v4.7.127 behaviour unchanged.
+-- D-0147 now implements the agreed optional Bounded Infield Retreat courtesy hypothesis while retaining the validated v4.7.120 mechanical actuator substrate.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.121"
-OuttaMyWay.ARCHITECTURE_VERSION = "4.7.121"
+OuttaMyWay.VERSION = "4.7.128"
+OuttaMyWay.ARCHITECTURE_VERSION = "4.7.128"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000
@@ -198,7 +197,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
 OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "4.7.121 D-0147 TERMINAL-YIELD CANONICAL CANDIDATE"
+OuttaMyWay.BUILD_LABEL = "4.7.128 CANONICAL CANDIDATE — D-0147 AUDIT-CLOSED"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720
@@ -216,17 +215,18 @@ OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_KMH = 1.0
 OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_HEARTBEAT_MS = 500
 
 -- D-0147 automatic completed-worker movement consent gate.
--- The legacy implementation name AUTOMATIC_TERMINAL_EGRESS is retained for this architecture-only
--- candidate so no live behaviour changes from v4.7.120. It remains deliberately ON for development
--- testing as requested by the repository owner. Governing v4.7.121 architecture names the broader
--- capability Terminal Yield Consent; an eventual player-facing release should require explicit opt-in
--- (default false) because bounded yield is best-effort and may still escalate to the player.
+-- The legacy implementation name AUTOMATIC_TERMINAL_EGRESS is retained deliberately to avoid
+-- interface/plumbing churn. It remains ON for development testing as requested by the repository owner.
+-- Governing architecture treats it as Terminal Yield Consent; an eventual player-facing release should
+-- require explicit opt-in/default-off because D-0147 is best-effort courtesy behaviour.
 OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS = true
--- v4.7.114 reuses the project's already exercised bounded low-speed manoeuvre value;
--- this is Terminal Egress calibration, not a universal traffic-speed policy.
-OuttaMyWay.TERMINAL_EGRESS_SPEED_KMH = 8.0
+-- v4.7.127 preserves the live-validated v4.7.126 D-0147 courtesy calibration unchanged. This does not claim clearance or settlement;
+-- it bounds one admitted infield retreat to 60 m of realised progress toward the immutable
+-- Field World centroid. Translation uses the vehicle motor's native maximum forward speed.
+-- A later retreat still requires Continuation Renewal plus a later attributed native block.
+OuttaMyWay.TERMINAL_INFIELD_RETREAT_DISTANCE_M = 60.0
 OuttaMyWay.TERMINAL_EGRESS_COMPACTION_TIMEOUT_MS = 25000 -- watchdog only; not policy authority
-OuttaMyWay.TERMINAL_EGRESS_MOVE_TIMEOUT_MS = 45000 -- watchdog only; one manoeuvre, no retry
+OuttaMyWay.TERMINAL_EGRESS_MOVE_TIMEOUT_MS = 45000 -- watchdog only; one bounded retreat
 
 -- D-0133 retains the latest positively supported Progress field-bounded continuation
 -- horizon before committed-transition admission; D-0132 may seal that retained

@@ -30,10 +30,10 @@ local function dot(ax,az,bx,bz) return ax*bx+az*bz end
 local function distance(ax,az,bx,bz) local dx,dz=bx-ax,bz-az; return math.sqrt(dx*dx+dz*dz) end
 
 local function pointInRing(x,z,ring)
-    if type(ring)~="table" or #ring<3 then return false end
+    if type(ring)~="table" or OuttaMyWay.ValueRecord.length(ring)<3 then return false end
     local inside=false
-    local j=#ring
-    for i=1,#ring do
+    local j=OuttaMyWay.ValueRecord.length(ring)
+    for i=1,OuttaMyWay.ValueRecord.length(ring) do
         local xi,zi=tonumber(ring[i].x),tonumber(ring[i].z)
         local xj,zj=tonumber(ring[j].x),tonumber(ring[j].z)
         if xi~=nil and zi~=nil and xj~=nil and zj~=nil then
@@ -147,7 +147,7 @@ local function makeGuide(conflict,aTrajectory,bTrajectory,aSpace,bSpace,aOffset,
 end
 
 local function guideFieldSupport(guide,aSpace,bSpace,fieldWorld)
-    if type(fieldWorld)~="table" or type(fieldWorld.boundary)~="table" or #fieldWorld.boundary<3 then return false,"FIELD_WORLD_GEOMETRY_UNAVAILABLE" end
+    if type(fieldWorld)~="table" or type(fieldWorld.boundary)~="table" or OuttaMyWay.ValueRecord.length(fieldWorld.boundary)<3 then return false,"FIELD_WORLD_GEOMETRY_UNAVAILABLE" end
     local stepM=OuttaMyWay.D0146_STEP2_FIELD_SWEEP_SAMPLE_M or 2.0
     local previous={
         subject={x=tonumber(aSpace.occupancy and aSpace.occupancy.x),z=tonumber(aSpace.occupancy and aSpace.occupancy.z)},

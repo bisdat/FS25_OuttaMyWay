@@ -314,7 +314,7 @@ function Control:_guideTargetFor(run,p,gate)
 end
 
 function Control:_preflightD0146Guide(run)
-    if type(run.guide)~="table" or type(run.guide.gates)~="table" or #run.guide.gates<1 then return false,"PASSAGE_GUIDE_UNAVAILABLE" end
+    if type(run.guide)~="table" or type(run.guide.gates)~="table" or OuttaMyWay.ValueRecord.length(run.guide.gates)<1 then return false,"PASSAGE_GUIDE_UNAVAILABLE" end
     for index,gate in OuttaMyWay.ValueRecord.ipairs(run.guide.gates) do
         if tonumber(gate.index)~=index then return false,"PASSAGE_GUIDE_GATE_INDEX_INVALID:"..tostring(index) end
         for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants) do
@@ -351,7 +351,7 @@ function Control:_startGuideGate(run,index)
     run.guideIndex=index
     self:_setPhase(run,"GUIDE_"..tostring(gate.kind or index),g_time or 0)
     logInfo("GUIDE_START commitment=%s guide=%s gate=%d/%d kind=%s speed=%.1fkmh A=%s target=(%.2f,%.2f) r=%.2f B=%s target=(%.2f,%.2f) r=%.2f",
-        tostring(run.commitmentId),tostring(run.guide.identity),index,#run.guide.gates,tostring(gate.kind),run.speedKmh,
+        tostring(run.commitmentId),tostring(run.guide.identity),index,OuttaMyWay.ValueRecord.length(run.guide.gates),tostring(gate.kind),run.speedKmh,
         run.a.name,run.a.targetX,run.a.targetZ,run.a.targetRadiusM,run.b.name,run.b.targetX,run.b.targetZ,run.b.targetRadiusM)
     return true,nil
 end
@@ -564,7 +564,7 @@ function Control:_executeD0146JointRequests(requestA,requestB,candidate,bridge)
     local arrangement=bridge.passageArrangement or {}
     logInfo("START architecture=D0146_STEP2 commitment=%s candidate=%s conflict=%s A=%s job=%s B=%s job=%s separation=%.2fm headingDot=%.4f arrangement=%s offsets=%+.2f/%+.2f guide=%s gates=%d sequence=HOLD_OPTIONAL_CONFIGURATION_GUIDE_SELECTIVE_RESTORE_HANDOFF configuration=%s controlInventsGeometry=false vehicleNameGate=false thirdPartyConstraints=%d generalVehicleAuthority=false",
         tostring(run.commitmentId),tostring(run.candidateId),tostring(bridge.conflictIdentity),a.name,tostring(a.startJobToken),b.name,tostring(b.startJobToken),run.initialSeparationM,run.headingDot,
-        tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tostring(run.guide and run.guide.identity),#(run.guide and run.guide.gates or {}),configurationModeText(run),#(run.thirdPartyConstraints or {}))
+        tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tostring(run.guide and run.guide.identity),OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}),configurationModeText(run),OuttaMyWay.ValueRecord.length(run.thirdPartyConstraints or {}))
     return true,"D0146_COOPERATIVE_PASSAGE_STARTED"
 end
 
@@ -693,8 +693,8 @@ function Control:update(dt)
             local completedIndex=run.guideIndex or 0
             local gate=run.guide and run.guide.gates and run.guide.gates[completedIndex] or nil
             self:_stopLeg(run)
-            logInfo("GUIDE_REACHED commitment=%s guide=%s gate=%d/%d kind=%s",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),completedIndex,#(run.guide and run.guide.gates or {}),tostring(gate and gate.kind or "n/a"))
-            if completedIndex>=#(run.guide and run.guide.gates or {}) then
+            logInfo("GUIDE_REACHED commitment=%s guide=%s gate=%d/%d kind=%s",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),completedIndex,OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}),tostring(gate and gate.kind or "n/a"))
+            if completedIndex>=OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}) then
                 local ok,reason=self:_beginD0146Restore(run); if not ok then self:_failHeld("RESTORE_START:"..tostring(reason)) end
             else
                 local ok,reason=self:_startGuideGate(run,completedIndex+1); if not ok then self:_failHeld(tostring(reason)) end

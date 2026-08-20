@@ -1,3 +1,80 @@
+# v4.7.128 CANONICAL CANDIDATE — audited D-0147 three-assembly plateau
+
+Owner-declared v4.7.121 remains canonical until explicit owner declaration. v4.7.128 packages the live-validated v4.7.127 behaviour unchanged; changes are candidate identity/provenance, canonical-review records and version assertions only.
+
+The candidate records two successful end-to-end validations of the current D-0147 shape: v4.7.126 first completed the Patriot + Condor + S416 theatre, and v4.7.127 completed fully again after audit alignment. No traffic, Candidate, Commitment, authority, Regulation or Control behavioural algorithm is intentionally changed.
+
+The separately agreed pre-1.0 versioning reset remains deferred until after the owner canonicalises or rejects this exact candidate.
+
+---
+
+# v4.7.127 TEST BUILD — D-0147 Courtesy Constraint Exception / architecture-code audit alignment
+
+Owner-declared v4.7.121 remains the authoritative canonical baseline. v4.7.127 preserves the live-validated v4.7.126 D-0147 movement and closes the agreed architecture/code audit.
+
+- Records the **Three-Assembly Courtesy Continuation Validation** from v4.7.126: Patriot and Condor both completed protected 60 m native-max Bounded Infield Retreats; S416 completed the operation.
+- Resolves the **Courtesy Evidence Gap** by defining the **D-0147 Courtesy Constraint Exception**. Generic predictive Field World containment and complete-envelope Transition Clearance are not applicable to this player-consented special-case movement; no synthetic PASS evidence is allowed.
+- Keeps all authority/safety/lifecycle contracts mandatory: Terminal Yield Consent, positive Terminal Occupancy, Protected Yield, Player Claim/source supersession, boundedness, Continuation Renewal, Courtesy Exhaustion and Actuation Neutralisation.
+- Corrects proven ValueRecord native-length defects found during audit in Candidate/Commitment/D-0146 paths.
+- Updates governing current-state documentation while preserving historical records.
+- Makes no change to 60 m, native maximum speed, one-shot centroid bearing, fixed-direction actuation, or Protected Yield timing.
+
+---
+
+# v4.7.126 TEST BUILD — D-0147 60 m Native-Max Bounded Infield Retreat
+
+Owner-declared v4.7.121 remains the authoritative canonical baseline. v4.7.126 is a narrow non-canonical calibration change over v4.7.125.
+
+**Observed v4.7.125 result:** Protected Yield and Continuation Renewal worked, but a 30 m courtesy quantum merely relocated Patriot far enough for S416 to resume and then encounter it again. Removing only the 8 km/h cap would reach the same blocking position sooner and would not increase bought time.
+
+**Change:** increase `TERMINAL_INFIELD_RETREAT_DISTANCE_M` from 30 m to **60 m** and remove the artificial 8 km/h D-0147 retreat cap. At INFIELD admission, Control samples the completed vehicle motor's native maximum forward speed once and supplies that value to the existing forward-only fixed-bearing `driveInDirection()` actuation.
+
+**Preserved:** one-shot Field World centroid bearing with no course correction; Protected Yield Interval; Continuation Renewal plus later attributed native block for repetition; Courtesy Exhaustion; Player Claim; Actuation Neutralisation; no future-demand/exclusion/parking/path planning. The 60 m value and native-max speed policy are deliberately crude optional-courtesy calibration, not clearance or settlement claims.
+
+# v4.7.125 TEST BUILD — D-0147 Continuation Renewal
+
+Owner-declared v4.7.121 remains the authoritative canonical baseline. v4.7.125 is a narrow non-canonical lifecycle correction over v4.7.124.
+
+**Observed v4.7.124 result:** Protected Yield worked. S416 was held during Patriot's 30 m Bounded Infield Retreat and released after neutralisation. Patriot then stopped on the configured 30 m inward-progress allowance; S416 resumed productive travel for roughly 70 m before later becoming blocked again by Patriot. The first courtesy intervention therefore bought useful time, but strict Conflict Renewal did not admit the intended repeat.
+
+**Discovery — Continuation Renewal:** a completed courtesy retreat is re-armed by positive post-release physical progression of the authorising GIANTS worker, not by disappearance of conservative conflict geometry. Re-arming alone does not move the terminal assembly: a repeated retreat additionally requires a later native `blocked=true` state that is still positively attributed to the same terminal assembly. This preserves no-immediate-chaining while allowing repeated 30 m courtesy quanta when productive continuation was genuinely restored and later consumed.
+
+**Change:** replace `yieldAwaitingRenewal` / conflict-disappearance gating with per-terminal `yieldRenewalState`. Dispatcher records the authorising productive assembly ids when the Protected Yield Interval ends. Situation Assessment observes post-release physical motion (`STABLE_FORWARD`, `TURNING` or `REVERSING_OR_OPPOSED_TRAVEL`) while the worker is active and unblocked. After that continuation witness, a later attributed `blocked=true` re-admits one fresh Bounded Infield Retreat. No change to 8 km/h, 30 m, one-shot centroid bearing, Protected Yield, Courtesy Exhaustion, or route/exclusion policy.
+
+# v4.7.124 TEST BUILD — D-0147 Protected Yield ValueRecord traversal fix
+
+Owner-declared v4.7.121 remains the authoritative canonical baseline. v4.7.124 is a narrow non-canonical corrective build over v4.7.123.
+
+**Observed v4.7.123 result:** behaviour was unchanged from v4.7.122. Logs showed `D0147_PROTECTED_YIELD_RELEASE ... released=0` and no `D0147_PROTECTED_YIELD_HOLD`, proving the new protection path never physically applied its 0 km/h Regulation lease.
+
+**Root cause — Protected Yield Traversal Defect:** `terminalEgressBridge.protectedDemandAssemblies` is a sealed nested ValueRecord. v4.7.123 used native Lua `#` and `ipairs`, a recurring known GIANTS proxy-table defect class already covered by the project ValueRecord access contract. The collection therefore passed the non-empty check but yielded zero iteration entries at runtime.
+
+**Change:** use `ValueRecord.length()` and `ValueRecord.ipairs()` for `protectedDemandAssemblies`; add structural regression assertions forbidding native `#`/`ipairs` on this collection. Local `leases` remains an ordinary Lua table and keeps native iteration. No D-0147 architecture, speed, distance, bearing, renewal or exhaustion behaviour changes.
+
+# v4.7.123 TEST BUILD — D-0147 Protected Yield Interval
+
+Owner-declared v4.7.121 remains the authoritative canonical baseline. v4.7.123 is a narrow non-canonical continuation of the v4.7.122 Bounded Infield Retreat test.
+
+**Observed v4.7.122 result:** Patriot's one-shot fixed Infield Alignment produced the intended large forward arc, steering unwound naturally, and the 30 m inward retreat completed cleanly. The failure was a genuine concurrent collision: productive S416 continued through the moving terminal assembly's evolving space. Changing the 8 km/h terminal speed could alter that rendezvous in TS016 but would be scenario timing rather than a general resolution.
+
+**Change:** add **Protected Yield Interval**. The active assembly/assemblies whose positive Terminal Occupancy conflict authorised D-0147 are carried in the same Commitment as progress-actuation owners. Immediately before `INFIELD` translation they receive a 0 km/h composable Regulation lease; their GIANTS jobs/routes remain intact. The hold is released after terminal Actuation Neutralisation on manoeuvre completion, failure, Player Claim, supersession or settlement. Compaction itself is not protected.
+
+No change to the 8 km/h terminal speed, 30 m courtesy quantum, fixed one-shot centroid bearing, Conflict Renewal, Courtesy Exhaustion, external-yield policy, exclusion modelling or route planning.
+
+# v4.7.122 TEST BUILD — D-0147 Bounded Infield Retreat
+
+Owner-declared v4.7.121 is the authoritative canonical baseline. v4.7.122 is a narrow test implementation of the agreed optional courtesy mechanism; no GitHub access or authority is implied.
+
+- Retires the live D-0147 External Egress Candidate/Positive Field-Exit endpoint from the test path.
+- Propagates the already-computed immutable Field World centroid into the live Field World observation.
+- After supported compaction, Candidate samples one fixed **Infield Alignment** from current terminal position toward that centroid. The centroid is a direction reference only.
+- `TerminalEgressControl` retains its legacy module name but now executes phase `INFIELD`, reusing validated Vehicle Activity Context, forward-only `AIVehicleUtil.driveInDirection()` and Actuation Neutralisation. There is no continuous centre pursuit or mid-course re-aiming.
+- First courtesy calibration is `TERMINAL_INFIELD_RETREAT_DISTANCE_M = 30.0` at the existing 8 km/h. Completion requires 30 m of realised progress toward the centre, not elapsed time or wheel travel.
+- One retreat now settles its current Commitment immediately without permanently marking the terminal Job Episode complete.
+- Adds **Conflict Renewal** gating: a persistent conflict cannot chain retreats; the prior obstruction must disappear before a later positive obstruction can authorise another retreat.
+- Adds **Courtesy Exhaustion**: if another retreat is admitted when the completed assembly is already within one retreat allowance of the centre, D-0147 escalates to the player rather than choosing another destination.
+- Does not add productive exclusion zones, parking/refuge search, route planning, reverse rescue, dispersion logic or external-yield fallback.
+
 # v4.7.121 CANONICAL CANDIDATE — D-0147 Terminal Yield / Pending Player Reclamation
 
 Owner-declared v4.7.112 remains canonical until explicit owner promotion. v4.7.121 carries the live-tested v4.7.120 external-egress mechanics unchanged and canonicalises the architectural learning from TS016 v4.7.120 plus the subsequent player/debug-physics review.

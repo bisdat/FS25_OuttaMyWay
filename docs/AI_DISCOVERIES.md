@@ -1,3 +1,12 @@
+# v4.7.127 discoveries / validation
+
+- **Three-Assembly Courtesy Continuation Validation:** v4.7.126 Patriot + Condor + S416 completed end-to-end. Both completed sprayers yielded decisively and S416 finished. This validates the current D-0147 courtesy mechanism for the tested configuration only.
+- **Courtesy Evidence Gap:** live success does not equal predictive full-sweep clearance authority. Candidate had overstated two generic spatial constraints.
+- **D-0147 Courtesy Constraint Exception:** because D-0147 is explicit player-consented buy-time behaviour, predictive Field World containment and complete-envelope Transition Clearance are non-applicable special-case constraints. Normal physical Candidates are unchanged.
+- **ValueRecord audit recurrence:** additional active paths still used native length on sealed architecture values. The standing order is reaffirmed and the proven cases are corrected.
+
+---
+
 ## 2026-08-13 — post-job authority and GIANTS AI settings observations
 
 - **Post-Job Actuation Authority supported:** after canonical Job Episode termination, disposable v4.7.110 directly moved Condor 5 m at a 3 km/h cap and stopped cleanly while the authoritative original episode remained `ENDED` and no replacement AI job appeared.

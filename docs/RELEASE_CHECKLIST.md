@@ -1,3 +1,34 @@
+## v4.7.128 canonical-candidate scope gate
+
+- [x] Exact behavioural lineage is live-validated v4.7.127; no D-0147 behavioural delta is intended.
+- [x] Candidate derives from owner-declared v4.7.121 canonical through the declared/tested v4.7.122–v4.7.127 lineage.
+- [x] Three-Assembly Courtesy Continuation Validation is recorded and scoped to Patriot + Condor + S416.
+- [x] v4.7.127 post-audit live run fully completed, confirming audit alignment did not disturb behaviour.
+- [x] Courtesy Constraint Exception remains explicit and narrow; normal Candidate mandatory constraints are not weakened.
+- [x] ValueRecord traversal standing-order corrections remain present.
+- [x] Candidate changes release/version identity, provenance and review records only.
+- [x] Pre-1.0 versioning reset remains explicitly deferred until after canonicalisation.
+- [ ] Exact RRS candidate/evidence production from owner-declared v4.7.121 canonical passes with zero blockers.
+- [ ] Exact packaged candidate passes structural/RRS/manifest/version/deterministic-byte verification.
+- [ ] Owner reviews exact candidate fingerprint and explicitly declares canonical or rejects it.
+
+---
+
+## v4.7.127 audit-alignment / canonicalisation gate
+
+- [x] Exact behavioural source is the successfully tested v4.7.126 lineage; no D-0147 movement/calibration change is intended.
+- [x] Three-Assembly Courtesy Continuation Validation recorded with Patriot + Condor + S416 scope only.
+- [x] D-0147 Courtesy Constraint Exception explicitly excludes predictive `FIELD_WORLD_CONTAINMENT` and `TRANSITION_CLEARANCE` proof without weakening normal Candidate constraints.
+- [x] Consent, positive conflict, Protected Yield, authority composition, Player Claim/source supersession, boundedness, Continuation Renewal, Courtesy Exhaustion and Actuation Neutralisation remain mandatory.
+- [x] Proven native `#` operations on sealed ValueRecord collections found by the audit are corrected with explicit accessors.
+- [x] Governing overview documentation reflects current Bounded Infield Retreat reality; historical architecture records are retained.
+- [x] Legacy names/config are intentionally retained; no plumbing rename bundled into the audit.
+- [x] Planned versioning reset is explicitly deferred until after canonicalisation.
+- [x] Structural/RRS/package validation clean.
+- [ ] Owner review and explicit canonical declaration after candidate preparation.
+
+---
+
 ## v4.7.121 canonical-candidate scope gate — D-0147 Terminal Yield
 
 - [x] Exact authority baseline remains owner-declared canonical v4.7.112 (`f4018e7ab468adfb5ef83293aa4e472bf31efb9d937ea6ae72b448f4bdeb780e`; Git `c7867fe9d1baea74cab406a0caf25c2d14d64beb`; 310 files).

@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.121 CANONICAL CANDIDATE — v4.7.120 D-0147 external-egress dispatcher retained unchanged in behaviour.
+-- FS25_OuttaMyWay v4.7.128 CANONICAL CANDIDATE — D-0147 Continuation Renewal dispatcher.
 --
 -- This module is the only automatic bridge from a sealed live Decision /
 -- Commitment application into physical Control. D-0146 Step-2 adds an active
@@ -11,6 +11,7 @@ local Dispatcher = OuttaMyWay.LiveControlDispatcher
 Dispatcher.__index = Dispatcher
 
 local physical = {REGULATE_SPEED=true,HOLD=true,REPOSITION=true}
+local D0147_PROTECTED_YIELD_OWNER_TAG="D0147_PROTECTED_YIELD"
 
 local function logInfo(formatText,...)
     local message=string.format(formatText,...)
@@ -57,6 +58,7 @@ end
 function Dispatcher.new(runtime)
     return setmetatable({
         runtime=runtime,capability=nil,cooperativePassageControl=nil,terminalEgressControl=nil,requests={},outcomes={},dispatchCount=0,
+        d0147ProtectedYieldLeases={},
         guardedRecoveryLease=nil,guardedRecoveryApplyCount=0,guardedRecoveryReleaseCount=0,
         followerBoundaryLease=nil,followerBoundaryApplyCount=0,followerBoundaryReleaseCount=0,followerBoundaryUpdateCount=0,
         d0146ActionSpaceLease=nil,d0146ActionSpaceApplyCount=0,d0146ActionSpaceReleaseCount=0
@@ -116,15 +118,82 @@ function Dispatcher:_jointCooperativeRequests(picture,evaluated,candidate,commit
     return requests,nil
 end
 
+local function d0147TokenFor(runtime,commitmentId,assemblyId,authorityClass)
+    for _,token in OuttaMyWay.ValueRecord.ipairs(runtime.authorities:tokensForCommitment(commitmentId)) do
+        if token.assemblyId==assemblyId and token.authorityClass==authorityClass and runtime.authorities:validate(token)==true then return token end
+    end
+    return nil
+end
+
+function Dispatcher:_releaseD0147ProtectedYield(commitmentId,reason)
+    local leases=self.d0147ProtectedYieldLeases[commitmentId]
+    if type(leases)~="table" then return 0 end
+    local released=0
+    for _,lease in ipairs(leases) do
+        if self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" and type(lease.referenceKey)=="string" then
+            local ok=self.capability:clearRegulationLeaseByReference(lease.referenceKey,D0147_PROTECTED_YIELD_OWNER_TAG)
+            if ok==true then released=released+1 end
+        end
+    end
+    self.d0147ProtectedYieldLeases[commitmentId]=nil
+    logInfo("D0147_PROTECTED_YIELD_RELEASE commitment=%s released=%d reason=%s",tostring(commitmentId),released,tostring(reason))
+    return released
+end
+
+function Dispatcher:_applyD0147ProtectedYield(picture,evaluated,candidate,commitment,bridge)
+    if bridge.phase~="INFIELD" then return true,"NOT_TRANSLATING" end
+    -- protectedDemandAssemblies is nested architecture value data and may be a sealed
+    -- ValueRecord proxy in GIANTS. Never use native #/pairs/ipairs here.
+    local protected=bridge.protectedDemandAssemblies or {}
+    if OuttaMyWay.ValueRecord.length(protected)==0 then return false,"D0147_PROTECTED_YIELD_AUTHORISING_DEMAND_UNAVAILABLE" end
+    if self.capability==nil or type(self.capability.executeControlRequest)~="function" then return false,"D0147_PROTECTED_YIELD_CONTROL_CAPABILITY_UNAVAILABLE" end
+    if self.d0147ProtectedYieldLeases[commitment.identity]~=nil then return true,"ALREADY_PROTECTED" end
+    local leases={}
+    for _,item in OuttaMyWay.ValueRecord.ipairs(protected) do
+        if type(item.assemblyId)~="string" or type(item.referenceKey)~="string" then
+            for _,lease in ipairs(leases) do if type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.referenceKey,D0147_PROTECTED_YIELD_OWNER_TAG) end end
+            return false,"D0147_PROTECTED_YIELD_REFERENCE_UNAVAILABLE"
+        end
+        local token=d0147TokenFor(self.runtime,commitment.identity,item.assemblyId,"PROGRESS_ACTUATION")
+        if token==nil then
+            for _,lease in ipairs(leases) do if type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.referenceKey,D0147_PROTECTED_YIELD_OWNER_TAG) end end
+            return false,"D0147_PROTECTED_YIELD_PROGRESS_AUTHORITY_UNAVAILABLE"
+        end
+        local regulationBridge={regulatedAssemblyId=item.assemblyId,regulatedReferenceKey=item.referenceKey,governingPurpose="D0147_PROTECTED_YIELD_INTERVAL"}
+        local request=self:_regulationRequest(picture,evaluated,candidate,commitment,token,regulationBridge,"APPLY",D0147_PROTECTED_YIELD_OWNER_TAG,0.0)
+        local started,result=self.capability:executeControlRequest(request,candidate)
+        local outcome=self:_outcome(request,started and "ACCEPTED" or "REJECTED",{kind=started and "D0147_PROTECTED_YIELD_HOLD_APPLIED" or "NO_PHYSICAL_EFFECT_CONFIRMED",capability="REGULATE_SPEED",maxSpeedKmh=0.0},started and nil or {reason=tostring(result)})
+        if started~=true then
+            for _,lease in ipairs(leases) do if type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.referenceKey,D0147_PROTECTED_YIELD_OWNER_TAG) end end
+            return false,"D0147_PROTECTED_YIELD_HOLD_REJECTED:"..tostring(result),outcome
+        end
+        leases[#leases+1]={assemblyId=item.assemblyId,referenceKey=item.referenceKey,requestId=request.identity,outcomeId=outcome.identity}
+        logInfo("D0147_PROTECTED_YIELD_HOLD commitment=%s assembly=%s ref=%s request=%s cap=0.00kmh",tostring(commitment.identity),tostring(item.assemblyId),tostring(item.referenceKey),tostring(request.identity))
+    end
+    self.d0147ProtectedYieldLeases[commitment.identity]=leases
+    return true,"PROTECTED_YIELD_HOLD_APPLIED"
+end
+
 function Dispatcher:_onTerminalEgressCompletion(result)
     if type(result)~="table" or type(result.commitmentId)~="string" then return end
     if result.status=="COMPACTION_COMPLETE" then
         logInfo("D0147_COMPACTION_COMPLETE commitment=%s episode=%s freshSituationRequired=true",tostring(result.commitmentId),tostring(result.terminalEpisodeId))
         return
     end
+    local protectedDemandAssemblyIds={}
+    for _,lease in ipairs(self.d0147ProtectedYieldLeases[result.commitmentId] or {}) do
+        if type(lease.assemblyId)=="string" then protectedDemandAssemblyIds[#protectedDemandAssemblyIds+1]=lease.assemblyId end
+    end
+    table.sort(protectedDemandAssemblyIds)
+    self:_releaseD0147ProtectedYield(result.commitmentId,"TERMINAL_CONTROL_"..tostring(result.status))
     if result.status=="MANOEUVRE_COMPLETE" then
-        if self.runtime.terminalOccupancyAssessment~=nil then self.runtime.terminalOccupancyAssessment:markManoeuvreCompleted(result.terminalEpisodeId) end
-        logInfo("D0147_MANOEUVRE_COMPLETE commitment=%s episode=%s freshSituationRequired=true",tostring(result.commitmentId),tostring(result.terminalEpisodeId))
+        if self.runtime.terminalOccupancyAssessment~=nil then self.runtime.terminalOccupancyAssessment:markRetreatCompleted(result.terminalEpisodeId,protectedDemandAssemblyIds) end
+        local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self.runtime,result.commitmentId,"OBJECTIVE_SATISFIED",result.evidence,result.terminalEpisodeId)
+        if terminal==nil then
+            logWarning("D0147_INFIELD_RETREAT_SETTLEMENT_FAILED commitment=%s episode=%s reason=%s",tostring(result.commitmentId),tostring(result.terminalEpisodeId),tostring(reason))
+        else
+            logInfo("D0147_INFIELD_RETREAT_COMPLETE commitment=%s episode=%s continuationRenewalRequired=true freshSituationRequired=true",tostring(result.commitmentId),tostring(result.terminalEpisodeId))
+        end
         return
     end
     local eventKind=nil
@@ -144,6 +213,7 @@ function Dispatcher:_dispatchTerminalEgress(picture,evaluated,candidate)
     if bridge.terminalEvent~=nil then
         local commitmentId=bridge.existingCommitmentId
         if type(commitmentId)~="string" then return {status="NO_DISPATCH",reason="D0147_SETTLEMENT_WITHOUT_LIVE_COMMITMENT"} end
+        self:_releaseD0147ProtectedYield(commitmentId,"SITUATION_SETTLEMENT_"..tostring(bridge.terminalEvent))
         local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self.runtime,commitmentId,bridge.terminalEvent,{kind="D0147_SITUATION_SETTLEMENT",terminalEpisodeId=bridge.terminalEpisodeId,playerEscalationRequired=bridge.terminalEvent=="OBJECTIVE_FAILED"},bridge.terminalEpisodeId)
         return {status=terminal and "SETTLED" or "NO_DISPATCH",reason=reason,terminalEgress=true,terminalEvent=bridge.terminalEvent,commitment=terminal}
     end
@@ -152,6 +222,15 @@ function Dispatcher:_dispatchTerminalEgress(picture,evaluated,candidate)
     if type(self.terminalEgressControl.isActive)=="function" and self.terminalEgressControl:isActive() then return {status="NO_DISPATCH",reason="D0147_CONTROL_ALREADY_ACTIVE",terminalEgress=true} end
     local applied,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(self.runtime,picture,evaluated)
     if applied==nil then return {status="NO_DISPATCH",reason="D0147_COMMITMENT_APPLICATION_FAILED",detail=reason,terminalEgress=true} end
+    if bridge.phase=="INFIELD" then
+        local protected,protectedReason=self:_applyD0147ProtectedYield(picture,evaluated,candidate,applied.commitment,bridge)
+        if protected~=true then
+            self:_releaseD0147ProtectedYield(applied.commitment.identity,"PROTECTED_YIELD_START_FAILED")
+            local terminal,settleReason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self.runtime,applied.commitment.identity,"OBJECTIVE_FAILED",{kind="D0147_PROTECTED_YIELD_START_FAILED",reason=protectedReason},bridge.terminalEpisodeId)
+            logWarning("D0147_PROTECTED_YIELD_REJECTED commitment=%s episode=%s reason=%s settlement=%s",tostring(applied.commitment.identity),tostring(bridge.terminalEpisodeId),tostring(protectedReason),tostring(settleReason))
+            return {status="REJECTED",reason=protectedReason,terminalEgress=true,commitment=terminal or applied.commitment}
+        end
+    end
     local request=OuttaMyWay.ControlRequest.new({identity=self.runtime.identities:issue("CONTROL_REQUEST"),commitmentId=applied.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase=bridge.phase,terminalEpisodeId=bridge.terminalEpisodeId,objective=bridge.objective},authorityToken=applied.authorityToken.identity,operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=applied.commitment.effectiveActuationCompositionId,preconditions=candidate.preconditions or {},invalidationConditions=candidate.invalidationConditions or {}})
     self.requests[#self.requests+1]=request
     local started,result=self.terminalEgressControl:executeControlRequest(request,candidate)

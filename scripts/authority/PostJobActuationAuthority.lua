@@ -1,13 +1,12 @@
--- FS25_OuttaMyWay v4.7.121 CANONICAL CANDIDATE — v4.7.120 external-egress mechanical expression retained; broader Terminal Yield policy is not yet implemented here.
+-- FS25_OuttaMyWay v4.7.128 CANONICAL CANDIDATE — validated post-job forward-direction actuator substrate retained for D-0147 Bounded Infield Retreat.
 -- D-0147 mechanical authority only. No traffic meaning, route construction or
--- boundary selection lives here. Each direct drive call is guarded by the
+-- spatial-proof policy lives here. Each direct drive call is guarded by the
 -- validated Player Claim witness vehicle:getIsEntered(). v4.7.118 added
--- steering-state telemetry and positive actuation neutralisation. v4.7.119
+-- steering-state telemetry and positive actuation neutralisation; v4.7.119
 -- validated one bounded Vehicle Activity Context so GIANTS WheelPhysics can
--- realise post-job steering. v4.7.120 retires fixed-point pursuit and commands
--- one Candidate-supplied world Exit Alignment direction through GIANTS'
--- driveInDirection helper until Positive Field-Exit Settlement ends the same
--- continuous Terminal Egress manoeuvre.
+-- realise post-job steering; v4.7.120 validated fixed-world-direction actuation.
+-- Current D-0147 consumes one Candidate-supplied fixed Infield Alignment and
+-- Control terminates on its bounded retreat allowance, not Positive Field Exit.
 
 OuttaMyWay.PostJobActuationAuthority={}
 local Authority=OuttaMyWay.PostJobActuationAuthority
@@ -102,6 +101,14 @@ function Authority:heading(vehicle)
     if not ok or not finite(hx) or not finite(hz) then return nil end
     local length=math.sqrt(hx*hx+hz*hz); if length<=0.000001 then return nil end
     return {x=hx/length,z=hz/length}
+end
+function Authority:maximumForwardSpeedKmh(vehicle)
+    local motorOk,motor=safeCall(vehicle,"getMotor")
+    if not motorOk or motor==nil or type(motor.getMaximumForwardSpeed)~="function" then return nil,"POST_JOB_MOTOR_MAX_FORWARD_SPEED_UNAVAILABLE" end
+    local ok,value=pcall(motor.getMaximumForwardSpeed,motor)
+    local speedMps=ok and tonumber(value) or nil
+    if not finite(speedMps) or speedMps<=0 then return nil,"POST_JOB_MOTOR_MAX_FORWARD_SPEED_INVALID" end
+    return speedMps*3.6,nil
 end
 
 local function steeringAngleLimitDeg(vehicle)

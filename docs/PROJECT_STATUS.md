@@ -1,3 +1,85 @@
+# v4.7.128 CANONICAL CANDIDATE status — audited three-assembly courtesy-continuation plateau
+
+**Authority:** owner-declared v4.7.121 remains canonical until explicit owner canonicalisation. v4.7.128 is the fresh canonical candidate.
+
+**Candidate lineage:** v4.7.126 completed the full Patriot + Condor + S416 theatre; v4.7.127 repeated full completion after the architecture/code audit corrections. The current D-0147 implementation is therefore live-supported for this tested theatre and explicitly not universalised to untested assembly classes/configurations.
+
+**Candidate delta from tested v4.7.127:** release/version identity, provenance and canonical-review records only. D-0147 movement, 60 m calibration, native-max speed, one-shot centroid bearing, Protected Yield, Continuation Renewal, Courtesy Exhaustion, Player Claim/source supersession, Courtesy Constraint Exception and Actuation Neutralisation are unchanged.
+
+**Next gate:** owner review of the exact packaged v4.7.128 fingerprint and explicit canonical declaration or rejection. Do not mix the separately agreed pre-1.0 versioning transition into this candidate.
+
+---
+
+# v4.7.127 TEST BUILD status — architecture/code audit alignment after first full three-vehicle completion
+
+**Authoritative baseline:** owner-declared v4.7.121 canonical. v4.7.127 is non-canonical and preserves v4.7.126 control behaviour.
+
+**Live milestone:** v4.7.126 completed the full Patriot + Condor + S416 theatre. Both completed sprayers made decisive protected 60 m native-max Bounded Infield Retreats; S416 then completed. This is the first fully completed three-vehicle OuttaMyWay test.
+
+**Audit finding resolved:** D-0147's crude retreat had empirical support but overstated `FIELD_WORLD_CONTAINMENT` and `TRANSITION_CLEARANCE` as positive proof. Architecture now explicitly classifies D-0147 as a special player-consented courtesy case and exempts those two generic predictive proof obligations. Code records them not-applicable rather than fabricating PASS evidence.
+
+**Audit housekeeping:** proven sealed ValueRecord native-length defects in active Candidate/Commitment/Passage paths are corrected. Governing overview documents are updated; historical entries remain intact.
+
+**No behavioural changes:** 60 m retreat, native max speed, one-shot centroid bearing, Protected Yield, Continuation Renewal, Courtesy Exhaustion, Player Claim and Actuation Neutralisation are unchanged.
+
+**Next gate:** validate this audit-alignment build, then prepare/review the canonical candidate. The separately agreed versioning reset is later and must not be mixed into this audit/canonicalisation step.
+
+---
+
+# v4.7.126 TEST BUILD status — D-0147 60 m Native-Max Retreat
+
+**Authoritative baseline:** owner-declared v4.7.121 canonical. v4.7.126 is non-canonical.
+
+**Latest evidence:** v4.7.125 confirmed Protected Yield and Continuation Renewal, but the 30 m retreat can leave Patriot on a later S416 pass. Speed-only change was rejected because it would reach the same stopping geometry sooner.
+
+**v4.7.126 objective:** test a more decisive but still deliberately crude courtesy quantum: 60 m realised progress toward the fixed one-shot Field World centroid bearing at the completed vehicle's native maximum forward speed. S416 remains held throughout translation. All repetition/exhaustion/authority rules are unchanged.
+
+# v4.7.125 TEST BUILD status — D-0147 Continuation Renewal
+
+**Authoritative baseline:** owner-declared v4.7.121 canonical. v4.7.125 is non-canonical.
+
+**v4.7.124 evidence:** Protected Yield is live-supported. S416 was held while Patriot executed one 30 m Bounded Infield Retreat, then resumed useful native progression for about 70 m before a later attributed block. The courtesy move therefore succeeded locally in time. The remaining defect was lifecycle: Conflict Renewal required represented conflict disappearance and could suppress a legitimate repeat even after productive continuation had demonstrably resumed.
+
+**v4.7.125 objective:** test **Continuation Renewal**. After one retreat, the authorising productive assembly/assemblies must positively resume physical GIANTS-owned motion before D-0147 can re-arm. Re-arming does not trigger movement by itself; another retreat requires a later native `blocked=true` state that remains positively attributed to the same completed assembly. This allows repeatable crude courtesy moves without immediate chained 30 m retreats.
+
+**Preserved:** Pending Player Reclamation; Terminal Yield Consent; Bounded Infield Retreat; one-shot fixed Infield Alignment; 8 km/h; 30 m inward-progress allowance; Protected Yield Interval; Actuation Neutralisation; Player Claim; Courtesy Exhaustion near the field centre; no productive exclusion map, parking/refuge search, route planning or external-yield fallback.
+
+**Live target:** repeat TS016. Expected sequence is `HOLD S416 → Patriot retreat → RELEASE S416 → positive S416 physical progression → later S416 blocked by Patriot → second Protected Yield + second Patriot retreat`.
+
+---
+
+# v4.7.124 TEST BUILD status — D-0147 Protected Yield traversal correction
+
+**Authoritative baseline:** owner-declared v4.7.121 canonical. v4.7.124 is non-canonical.
+
+**v4.7.123 evidence:** Protected Yield architecture was not exercised because sealed `protectedDemandAssemblies` was traversed with native Lua collection operators. The 0 km/h hold never applied; behaviour therefore repeated v4.7.122.
+
+**v4.7.124 objective:** exercise the already-agreed Protected Yield Interval with canonical ValueRecord traversal. No behavioural calibration changes.
+
+# v4.7.123 TEST BUILD status — D-0147 Protected Bounded Infield Retreat
+
+**Authoritative baseline:** owner-declared v4.7.121 canonical (`86fbdcdea4a7967c4987eee5ca22101ead136b56`, canonical ZIP SHA-256 `f003ad7d23d80372f3dc8892aa1c1fd683d5c2dacab34f1809ee97cad08ff327`). v4.7.123 is non-canonical.
+
+**Validated by v4.7.122 evidence:** fixed one-shot centroid bearing, forward-only large arcing turn, steering unwind, 30 m realised inward translation and clean neutralisation for Patriot.
+
+**Current hypothesis under test:** prevent the observed genuine collision by adding a Protected Yield Interval. The authorising productive assembly/assemblies are held at a 0 km/h Regulation cap only during `INFIELD` translation, then released after terminal neutralisation. No speed calibration or planning change is made.
+
+# v4.7.122 TEST BUILD status — D-0147 Bounded Infield Retreat
+
+**Authoritative baseline:** owner-declared v4.7.121 canonical (`86fbdcdea4a7967c4987eee5ca22101ead136b56`, canonical ZIP SHA-256 `f003ad7d23d80372f3dc8892aa1c1fd683d5c2dacab34f1809ee97cad08ff327`). v4.7.122 is a test implementation over that baseline and is not canonical unless the owner explicitly promotes it.
+
+**Objective:** implement the deliberately simple optional D-0147 courtesy behaviour agreed after TS016: buy player-reclamation time with a crude infield move rather than attempting near-impossible proof of safe External Yield.
+
+**Implementation hypothesis:** after positive Terminal Occupancy admission and supported compaction, Candidate samples the immutable Field World centroid exactly once and supplies one fixed **Infield Alignment**. `TerminalEgressControl` (legacy name retained) reuses validated Vehicle Activity Context and forward-only `driveInDirection()` at 8 km/h. It never recomputes a centre bearing during the manoeuvre. One retreat completes after 30 m of realised progress toward the centroid; 30 m is a courtesy calibration, not a clearance claim.
+
+**Repeatability:** retreat completion settles the current Commitment immediately but does not permanently settle the completed Job Episode. `TerminalOccupancyAssessment` then requires **Conflict Renewal**: the prior obstruction must disappear before a later positive obstruction can admit another retreat. If the assembly begins an admitted retreat within one retreat allowance of the centroid, D-0147 records **Courtesy Exhaustion** and escalates to the player.
+
+**Explicitly absent:** Positive Field-Exit Settlement, boundary egress geometry, continuous centre pursuit, demand/exclusion-zone prediction, parking/refuge search, deterministic dispersion, route planning, reverse rescue, external-yield fallback and arbitrary overall move counts.
+
+**Validation target:** TS016 first. Observe whether Patriot/Condor realise the large forward arc toward the fixed initial centre bearing without reverse, whether 30 m inward progress is a useful courtesy quantum, whether actuation neutralises cleanly, and whether the conflict-renewal latch prevents immediate repeat chaining. Reality decides the next refinement.
+
+---
+
 # v4.7.121 CANONICAL CANDIDATE status — Terminal Yield / Pending Player Reclamation
 
 **Canonical baseline:** owner-declared v4.7.112 — SHA-256 `f4018e7ab468adfb5ef83293aa4e472bf31efb9d937ea6ae72b448f4bdeb780e`, Git `c7867fe9d1baea74cab406a0caf25c2d14d64beb`, 310 files. v4.7.113–v4.7.120 are non-canonical implementation/live-evidence lineage.

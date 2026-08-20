@@ -1,3 +1,49 @@
+# v4.7.128 candidate flow status
+
+No flow change from live-validated v4.7.127. The D-0147 courtesy flow below is carried unchanged into canonical review.
+
+---
+
+# v4.7.127 current D-0147 courtesy flow
+
+```text
+GIANTS Job Episode genuinely ends
+        ↓
+Pending Player Reclamation
+        ↓
+positive Terminal Occupancy?
+   ├─ no → passive / player cleanup
+   └─ yes
+        ↓
+Terminal Yield Consent?
+   ├─ no → Player Escalation / native gameplay
+   └─ yes
+        ↓
+D-0147 special-case Candidate
+   - fixed one-shot Field World-centre bearing
+   - FIELD_WORLD_CONTAINMENT: N/A by Courtesy Constraint Exception
+   - TRANSITION_CLEARANCE: N/A by Courtesy Constraint Exception
+   - all authority/safety/lifecycle constraints still mandatory
+        ↓
+Protected Yield holds authorising productive worker
+        ↓
+completed assembly: forward-only 60 m native-max Bounded Infield Retreat
+        ↓
+Actuation Neutralisation → release Protected Yield
+        ↓
+productive continuation resumes?
+   ├─ yes → Continuation Renewal; terminal worker passive again
+   └─ no → no automatic chaining; reassess/escalate
+        ↓
+later attributed native block?
+   ├─ yes + not broadly central → fresh bounded retreat
+   └─ yes + Courtesy Exhaustion → Player Escalation
+```
+
+No point pursuit, route planning, future-demand exclusion map, parking search or universal clearance claim is implied.
+
+---
+
 # v4.7.121 D-0147 Terminal Yield lifecycle flow
 
 ```text

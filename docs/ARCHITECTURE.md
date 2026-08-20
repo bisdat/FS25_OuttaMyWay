@@ -1,3 +1,70 @@
+## v4.7.127 D-0147 normative amendment — Courtesy Constraint Exception
+
+**Decision:** D-0147 is a deliberately exceptional, player-consented courtesy capability. Its only objective is to buy useful time while a genuinely completed assembly remains **Pending Player Reclamation**. It is not a general autonomous manoeuvre planner and is not responsible for proving final settlement.
+
+### D-0147 Courtesy Constraint Exception
+For a D-0147 **Bounded Infield Retreat**, the generic physical Candidate requirements `FIELD_WORLD_CONTAINMENT` and `TRANSITION_CLEARANCE` are **not applicable as predictive proof obligations**. The fixed one-shot Field World centroid bearing is a crude directional heuristic; the representation does not prove the complete swept assembly stays within the polygon or clears every third-party assembly. The Candidate must therefore record an explicit exception, not synthetic PASS evidence.
+
+This exception is narrowly scoped to player-consented bounded buy-time movement. It does **not** relax: Terminal Yield Consent; genuine Pending Player Reclamation state; positive current obstruction/admission; POST_JOB/PROGRESS authority ownership; Protected Yield of the authorising productive worker; Player Claim and source-reactivation supersession; bounded movement/Courtesy Exhaustion; Continuation Renewal before repetition; or mandatory Actuation Neutralisation before authority release.
+
+### Three-Assembly Courtesy Continuation Validation
+v4.7.126 provided the first fully completed three-vehicle OuttaMyWay test in the current theatre. Patriot and Condor each executed a decisive 60 m, native-maximum-speed, one-shot-centroid Bounded Infield Retreat under Protected Yield. S416 then completed its remaining work. This strongly validates the crude courtesy mechanism **for the tested Patriot + Condor + S416 configuration only**; it is not universal clearance proof for other assemblies or field geometries.
+
+**Architectural consequence:** the earlier **Courtesy Evidence Gap** is resolved by explicit special-case architecture, not by adding swept-path prediction, exclusion zones or parking search. Normal physical Candidates retain their mandatory positive containment/clearance contracts.
+
+---
+
+## v4.7.126 D-0147 calibration — decisive crude courtesy retreat
+
+D-0147 remains optional **buy-time** behaviour for a completed assembly Pending Player Reclamation. v4.7.125 showed that a 30 m quantum may restore continuation yet leave the assembly close enough to be encountered again soon. Speed alone cannot change that stopping geometry.
+
+The current TEST calibration therefore grants one admitted Bounded Infield Retreat **60 m of realised progress toward the fixed one-shot centroid bearing** and removes the artificial 8 km/h retreat ceiling in favour of the completed vehicle's native maximum forward speed. This is intentionally simple calibration, not a clearance envelope or settlement proof.
+
+All governing boundaries remain unchanged: the productive worker is protected during translation; the bearing is sampled once with no centre pursuit; repetition still requires Continuation Renewal plus a later attributed native block; Courtesy Exhaustion escalates near the centre; no exclusion map, route planner or permanent parking concept is introduced.
+
+## v4.7.125 D-0147 refinement — Continuation Renewal
+
+D-0147 remains optional courtesy behaviour for a completed assembly **Pending Player Reclamation**. One Bounded Infield Retreat need only buy useful productive time; it is not required to create a future-safe settlement.
+
+**Continuation Renewal:** after an admitted retreat finishes and Protected Yield releases the authorising productive worker, that worker must positively demonstrate GIANTS-owned physical progression before another courtesy retreat can become possible. Represented conflict disappearance is not required.
+
+**Repeat admission:** renewal does not itself move the completed assembly. A later Bounded Infield Retreat requires a subsequent native `blocked=true` state that remains positively attributed by Terminal Occupancy to that same completed assembly. Conservative Future Space remaining continuously positive therefore cannot chain repeated 30 m moves while productive work is still continuing.
+
+This preserves **Continuity, Not Settlement**: one retreat succeeds locally when useful continuation resumes; a later real block is a new courtesy opportunity. 8 km/h, 30 m inward progress, fixed one-shot centroid bearing, Protected Yield and Courtesy Exhaustion remain implementation calibrations/policies rather than permanent-clearance claims.
+
+## v4.7.124 D-0147 correction — Protected Yield Traversal Defect
+
+**Observed reality:** v4.7.123 reproduced v4.7.122 because Protected Yield was never applied. The authorising productive assembly was correctly carried through the Commitment, but Dispatcher attempted to traverse sealed `protectedDemandAssemblies` using native Lua `#`/`ipairs`. GIANTS proxy-table traversal returned no entries.
+
+**Architectural effect:** none. Protected Yield Interval remains the agreed sequencing concept. This is an implementation-boundary defect, not evidence against the architecture. The canonical ValueRecord traversal contract is reaffirmed as a standing engineering rule for all sealed architecture collections.
+
+## v4.7.123 D-0147 refinement — Protected Yield Interval
+
+**Discovery from v4.7.122 TS016:** the Bounded Infield Retreat geometry/control hypothesis is supported; Patriot realised the intended large forward arc and fixed alignment. A genuine collision followed because S416 remained productively mobile while Patriot crossed its evolving space. Treating this as an 8 km/h calibration problem would tune one rendezvous rather than resolve the concurrent-authority relationship.
+
+**Protected Yield Interval:** once a positive Terminal Occupancy conflict has admitted a Bounded Infield Retreat and translation is about to begin, the productive assembly/assemblies whose conflict authorised that retreat are temporarily held while retaining their GIANTS job/route. The hold lasts only for the terminal assembly's translational Yield Quantum and ends after terminal Actuation Neutralisation. This is sequencing authority, not route prediction, collision prediction or permanent priority.
+
+The interval does not alter D-0147's courtesy nature: 8 km/h, 30 m inward progress, one-shot Infield Alignment, Conflict Renewal and Courtesy Exhaustion remain test calibrations/behaviour. No demand exclusion zone or path planner is introduced.
+
+## v4.7.122 D-0147 refinement — Bounded Infield Retreat as optional courtesy
+
+**Baseline:** owner-declared v4.7.121 canonical. D-0147 is an optional, player-consented convenience whose purpose is only to **buy time** before the player manually reclaims completed AI workers. Precision parking is not an objective; deliberately crude, bounded behaviour is acceptable when it preserves the authority boundaries below.
+
+### 0V.1 Bounded Infield Retreat
+After positive Terminal Occupancy admission and supported compaction, the preferred current implementation hypothesis is one **Bounded Infield Retreat**. The completed assembly samples the immutable source Field World centroid once, derives one fixed **Infield Alignment**, then uses forward-only post-job actuation to acquire that world direction naturally and continue inward for one bounded movement allowance.
+
+The Field World centroid is a **directional reference, not a destination or refuge**. The alignment is sampled once after compaction. There is no continuous centre pursuit, no mid-manoeuvre course correction, no waypoint route and no future productive-demand exclusion map.
+
+### 0V.2 Courtesy Exhaustion
+Repeated retreats are permitted only after **Conflict Renewal**: the prior positive conflict must first disappear, after which a later positive conflict may authorise another independent bounded retreat. When the completed assembly is already broadly central such that the configured retreat allowance would consume the remaining centre distance, D-0147 reaches **Courtesy Exhaustion** and escalates to the player rather than inventing another destination. The number of retreats is therefore field/pose dependent rather than a move-count policy.
+
+### 0V.3 Simplicity boundary
+D-0147 does not model S416's later passes, reserve productive exclusion zones, allocate terminal parking slots, shuffle unrelated completed assemblies, or guarantee that a yielded assembly will never obstruct again. Other represented assemblies remain hard constraints. External Yield remains architecturally possible only when its substantially stronger clearance, adjacent-field-exclusion and margin-traversability proof obligations can be closed; v4.7.122 does not attempt that proof.
+
+**Current analytical envelope:** reason about one completed assembly, one continuing productive assembly, and at most one other materially relevant assembly. This is a working scope hypothesis motivated by complementary agronomic work, not a hard maximum vehicle count; a future agronomic concurrency matrix and wider assembly testing may revise it.
+
+---
+
 ## v4.7.121 D-0147 normative refinement — Terminal Yield while Pending Player Reclamation
 
 **Status:** canonical-candidate architecture; owner-declared v4.7.112 remains canonical until explicit promotion.

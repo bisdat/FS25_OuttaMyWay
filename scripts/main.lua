@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.121 CANONICAL CANDIDATE — v4.7.120 live-tested Terminal Egress mechanics retained under refined D-0147 Terminal Yield architecture.
+-- FS25_OuttaMyWay v4.7.126 TEST BUILD — D-0147 Bounded Infield Retreat over owner-declared v4.7.121 canonical.
 -- modDesc.xml loads only this file. Historical archived modules are never sourced.
 local modDirectory=g_currentModDirectory or ""
 local modules={

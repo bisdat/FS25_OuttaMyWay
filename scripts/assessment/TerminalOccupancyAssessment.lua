@@ -7,6 +7,10 @@ OuttaMyWay.TerminalOccupancyAssessment={}
 local Assessment=OuttaMyWay.TerminalOccupancyAssessment
 Assessment.__index=Assessment
 
+local function logInfo(fmt,...)
+    local msg=string.format(fmt,...)
+    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][D0147] %s",msg) else print("[FS25_OuttaMyWay][D0147] "..msg) end
+end
 local function copy(value,seen)
     if type(value)~="table" then return value end
     seen=seen or {}; if seen[value] then return nil end; seen[value]=true
@@ -25,6 +29,24 @@ local function currentByAssembly(values)
 end
 local function referenceByAssembly(snapshot)
     local result={}; for _,item in OuttaMyWay.ValueRecord.ipairs(snapshot.assemblies or {}) do result[item.assemblyId]=item.referenceKey end; return result
+end
+local function motionByReference(snapshot)
+    local result={}
+    local motion=snapshot and snapshot.motion and snapshot.motion.progressionEvidence or {}
+    for _,item in OuttaMyWay.ValueRecord.ipairs(motion) do
+        if type(item.assemblyReferenceKey)=="string" then result[item.assemblyReferenceKey]=item end
+    end
+    return result
+end
+local function aiStateByReference(snapshot)
+    local result={}
+    for referenceKey,item in OuttaMyWay.ValueRecord.pairs(snapshot and snapshot.aiStates or {}) do result[referenceKey]=item end
+    return result
+end
+local function positivePhysicalProgress(motion,aiState)
+    if type(motion)~="table" or type(aiState)~="table" or aiState.observedActive~=true or aiState.blocked==true then return false end
+    local class=motion.motionClassification
+    return class=="STABLE_FORWARD" or class=="TURNING" or class=="REVERSING_OR_OPPOSED_TRAVEL"
 end
 local function pointSegmentDistance(px,pz,ax,az,bx,bz)
     local vx,vz=bx-ax,bz-az; local denom=vx*vx+vz*vz
@@ -69,26 +91,31 @@ local function positiveObstruction(completedPhysical,activePhysical,activeFuture
 end
 
 function Assessment.new(jobEpisodes)
-    return setmetatable({jobEpisodes=jobEpisodes,playerClaimed={},manoeuvreCompleted={},exhausted={}},Assessment)
+    return setmetatable({jobEpisodes=jobEpisodes,playerClaimed={},yieldRenewalState={},exhausted={}},Assessment)
 end
 function Assessment:reset()
-    self.playerClaimed={}; self.manoeuvreCompleted={}; self.exhausted={}
+    self.playerClaimed={}; self.yieldRenewalState={}; self.exhausted={}
 end
 function Assessment:markPlayerClaimed(terminalEpisodeId) if type(terminalEpisodeId)=="string" then self.playerClaimed[terminalEpisodeId]=true end end
 function Assessment:markExhausted(terminalEpisodeId) if type(terminalEpisodeId)=="string" then self.exhausted[terminalEpisodeId]=true end end
-function Assessment:markManoeuvreCompleted(terminalEpisodeId) if type(terminalEpisodeId)=="string" then self.manoeuvreCompleted[terminalEpisodeId]=true end end
+function Assessment:markRetreatCompleted(terminalEpisodeId,authorizingDemandAssemblyIds)
+    if type(terminalEpisodeId)~="string" then return end
+    local ids={}
+    for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(authorizingDemandAssemblyIds or {}) do if type(assemblyId)=="string" then ids[#ids+1]=assemblyId end end
+    table.sort(ids)
+    self.yieldRenewalState[terminalEpisodeId]={authorizingDemandAssemblyIds=ids,continuationObserved=false}
+end
 function Assessment:_consumeControlOutcomes(snapshot)
     for _,outcome in OuttaMyWay.ValueRecord.ipairs(snapshot.controlOutcomes or {}) do
         if outcome.kind=="D0147_TERMINAL_EGRESS_CONTROL_OBSERVATION" and type(outcome.terminalEpisodeId)=="string" then
             if outcome.playerClaimed==true then self.playerClaimed[outcome.terminalEpisodeId]=true end
-            if outcome.manoeuvreCompleted==true then self.manoeuvreCompleted[outcome.terminalEpisodeId]=true end
             if outcome.exhausted==true then self.exhausted[outcome.terminalEpisodeId]=true end
         end
     end
 end
 function Assessment:assess(snapshot,currentSpace,futureSpace,physicalSpaceEvidence,commitmentContext)
     self:_consumeControlOutcomes(snapshot)
-    local physical=physicalByAssembly(physicalSpaceEvidence); local future=futureByAssembly(futureSpace); local current=currentByAssembly(currentSpace); local refs=referenceByAssembly(snapshot)
+    local physical=physicalByAssembly(physicalSpaceEvidence); local future=futureByAssembly(futureSpace); local current=currentByAssembly(currentSpace); local refs=referenceByAssembly(snapshot); local motion=motionByReference(snapshot); local aiStates=aiStateByReference(snapshot)
     local activeSet={}; for _,episode in OuttaMyWay.ValueRecord.ipairs(self.jobEpisodes:list()) do if episode.status=="ACTIVE" then activeSet[episode.assemblyId]=episode end end
     local liveTerminalCommitmentByEpisode={}
     for _,context in OuttaMyWay.ValueRecord.ipairs(commitmentContext or {}) do
@@ -125,15 +152,51 @@ function Assessment:assess(snapshot,currentSpace,futureSpace,physicalSpaceEviden
             end
             table.sort(obstructed); table.sort(obstructionEvidence,function(a,b) return tostring(a.activeAssemblyId)<tostring(b.activeAssemblyId) end)
             local obstructionPositive=#obstructed>0
+            -- Continuation Renewal: a completed retreat does not re-arm merely because
+            -- conservative conflict geometry flickers or remains positive. The authorising
+            -- productive assembly/assemblies must first demonstrate GIANTS-owned physical
+            -- progression after release. A repeated courtesy retreat is then admitted only
+            -- on a later blocked=true state that is still positively attributed to this
+            -- terminal assembly. This prevents immediate chained retreats while allowing
+            -- a later real encounter even when Future Space never became fully negative.
+            local renewal=self.yieldRenewalState[episode.identity]
+            local awaitingContinuation=renewal~=nil
+            local continuationRenewed=renewal~=nil and renewal.continuationObserved==true
+            if renewal~=nil and renewal.continuationObserved~=true then
+                local required=renewal.authorizingDemandAssemblyIds or {}
+                local allProgressed=OuttaMyWay.ValueRecord.length(required)>0
+                for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(required) do
+                    local ref=refs[assemblyId]
+                    if ref==nil or not positivePhysicalProgress(motion[ref],aiStates[ref]) then allProgressed=false break end
+                end
+                if allProgressed then
+                    renewal.continuationObserved=true; continuationRenewed=true
+                    logInfo("CONTINUATION_RENEWED episode=%s authorisingAssemblies=%s physicalProgress=true",tostring(episode.identity),table.concat(required,","))
+                end
+            end
+            local repeatBlockedPositive=false
+            if renewal~=nil and renewal.continuationObserved==true and obstructionPositive then
+                local authorizing={}
+                for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(renewal.authorizingDemandAssemblyIds or {}) do authorizing[assemblyId]=true end
+                for _,assemblyId in ipairs(obstructed) do
+                    local ref=refs[assemblyId]; local aiState=ref and aiStates[ref] or nil
+                    if authorizing[assemblyId] and type(aiState)=="table" and aiState.observedActive==true and aiState.blocked==true then repeatBlockedPositive=true break end
+                end
+            end
+            if repeatBlockedPositive then
+                logInfo("CONTINUATION_RENEWAL_REPEAT_BLOCK episode=%s blockedAttributed=true freshCourtesyAuthority=true",tostring(episode.identity))
+                self.yieldRenewalState[episode.identity]=nil
+                renewal=nil; awaitingContinuation=false
+            end
             local representationId="d0147-terminal-occupancy:"..episode.identity
             local primitiveCount=0
             for _,primitive in OuttaMyWay.ValueRecord.ipairs(terminalPhysical and terminalPhysical.primitives or {}) do if primitive.kind=="DISC" and primitive.positiveConflictSupport==true then primitiveCount=primitiveCount+1 end end
             local fit=primitiveCount>0 and terminalCurrent~=nil and "FIT_FOR_LIMITED_HORIZON" or "REFRESH_REQUIRED"
-            fitness[#fitness+1]={representationId=representationId,assemblyId=episode.assemblyId,question="D0147_TERMINAL_OCCUPANCY_AND_SINGLE_EGRESS",assessmentHorizon="CURRENT_PICTURE_ONLY",state=fit,claimPermissions=fit=="FIT_FOR_LIMITED_HORIZON" and {"POSITIVE_TERMINAL_OBSTRUCTION","OBLIQUE_BOUNDARY_EGRESS_FROM_REPRESENTED_COMPACT_POSE"} or {},coverage={complete=false,conservative=false,underApproximationRisk=true},uncertainty=fit=="FIT_FOR_LIMITED_HORIZON" and {"NO_NEGATIVE_EXTERNAL_MARGIN_TRAVERSABILITY_AUTHORITY"} or {"TERMINAL_PHYSICAL_REPRESENTATION_UNAVAILABLE"},validityDependencies={"ENDED_JOB_EPISODE","CURRENT_TERMINAL_POSE","CURRENT_ACTIVE_DEMAND","JOB_SEEDED_FIELD_WORLD"},provenance={source="TerminalOccupancyAssessment",authority="POSITIVE_CONFLICT_SUPPORT_ONLY"}}
+            fitness[#fitness+1]={representationId=representationId,assemblyId=episode.assemblyId,question="D0147_TERMINAL_OCCUPANCY_AND_REACTIVE_INFIELD_YIELD",assessmentHorizon="CURRENT_PICTURE_ONLY",state=fit,claimPermissions=fit=="FIT_FOR_LIMITED_HORIZON" and {"POSITIVE_TERMINAL_OBSTRUCTION","REACTIVE_BOUNDED_INFIELD_YIELD_AUTHORITY"} or {},coverage={complete=false,conservative=false,underApproximationRisk=true},uncertainty=fit=="FIT_FOR_LIMITED_HORIZON" and {"NO_NEGATIVE_EXTERNAL_MARGIN_TRAVERSABILITY_AUTHORITY"} or {"TERMINAL_PHYSICAL_REPRESENTATION_UNAVAILABLE"},validityDependencies={"ENDED_JOB_EPISODE","CURRENT_TERMINAL_POSE","CURRENT_ACTIVE_DEMAND","JOB_SEEDED_FIELD_WORLD"},provenance={source="TerminalOccupancyAssessment",authority="POSITIVE_CONFLICT_SUPPORT_ONLY"}}
             records[#records+1]={
                 identity="terminal-occupancy:"..episode.identity,terminalEpisodeId=episode.identity,assemblyId=episode.assemblyId,assemblyReferenceKey=refs[episode.assemblyId],fieldWorldReferenceKey=episode.fieldWorldReferenceKey,
                 existingCommitmentId=existingCommitmentId,obstructionPositive=obstructionPositive,obstructedDemandAssemblyIds=obstructed,obstructionEvidence=obstructionEvidence,
-                playerClaimed=claimed,manoeuvreCompleted=self.manoeuvreCompleted[episode.identity]==true,exhausted=self.exhausted[episode.identity]==true,
+                playerClaimed=claimed,yieldAwaitingContinuation=awaitingContinuation,continuationRenewed=continuationRenewed,repeatBlockedPositive=repeatBlockedPositive,exhausted=self.exhausted[episode.identity]==true,
                 configurationEvidence=copy(terminalPhysical and terminalPhysical.configurationEvidence or {}),representationId=representationId,
                 currentSpace=copy(terminalCurrent),physicalSpace=copy(terminalPhysical),
                 provenance={source="TerminalOccupancyAssessment",jobEpisodeTerminalCause=episode.terminalCause,authority="D0147_POSITIVE_TERMINAL_OCCUPANCY"}

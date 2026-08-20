@@ -1,3 +1,19 @@
+# 2026-08-20 — v4.7.128 canonical-candidate preparation
+
+v4.7.127 completed the full Patriot + Condor + S416 theatre after the architecture/code audit alignment. Candidate preparation therefore freezes that tested behaviour and advances only release identity/provenance and canonical-review records. Pre-1.0 versioning migration remains intentionally later.
+
+---
+
+# 2026-08-20 — v4.7.126 three-assembly completion and v4.7.127 audit closure
+
+**Observe:** v4.7.126 live test moved Patriot and Condor decisively using the same protected 60 m native-max one-shot-centroid retreat; S416 then completed. This is the first complete three-vehicle OuttaMyWay theatre.
+
+**Audit:** current D-0147 Candidate claimed Field World containment and Transition Clearance PASS without predictive sweep evidence. Several additional sealed ValueRecord collections still used native length operations.
+
+**Decision:** preserve the successful control behaviour. Amend architecture with the D-0147 Courtesy Constraint Exception for those two predictive spatial constraints only; correct proven ValueRecord traversal defects; align current-state documents. Do not add path planning, exclusions or versioning changes in this tranche.
+
+---
+
 # 2026-08-13 — D-0147 Bounded Terminal Egress architecture closure
 
 **Observe:** canonical v4.7.109 closed the three-worker Cooperative Passage fixing cycle, but end-of-job evidence showed a different residual problem: GIANTS may finish a worker in a position that is perfectly acceptable for that worker yet deterministically obstructs another still-active worker. In the two-sprayer TS015 case the first finisher can block the other's final metres; with S 416, Condor and Patriot may both finish harmlessly until S 416's remaining work later reaches one of them.

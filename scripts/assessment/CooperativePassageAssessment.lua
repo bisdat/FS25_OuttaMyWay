@@ -28,7 +28,7 @@ end
 local function footprintAvailable(item)
     if type(item)~="table" then return false,"BOOTSTRAP_CACHED_FOOTPRINT_UNAVAILABLE" end
     if item.configurationProfileId==nil then return false,"BOOTSTRAP_CACHED_CONFIGURATION_PROFILE_UNAVAILABLE" end
-    if type(item.primitives)~="table" or #item.primitives<1 then return false,"BOOTSTRAP_CACHED_FOOTPRINT_PRIMITIVES_UNAVAILABLE" end
+    if type(item.primitives)~="table" or OuttaMyWay.ValueRecord.length(item.primitives)<1 then return false,"BOOTSTRAP_CACHED_FOOTPRINT_PRIMITIVES_UNAVAILABLE" end
     local summary=item.summary or {}
     if (tonumber(summary.physicalPrimitiveCount) or 0)<1 then return false,"BOOTSTRAP_CACHED_PHYSICAL_PRIMITIVES_UNAVAILABLE" end
     return true,nil

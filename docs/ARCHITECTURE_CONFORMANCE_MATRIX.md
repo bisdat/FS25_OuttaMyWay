@@ -1,3 +1,30 @@
+# v4.7.128 canonical-candidate conformance — no behavioural delta from live-validated v4.7.127
+
+v4.7.128 introduces no architecture or Control change. It packages the v4.7.127 audit-closed state for owner canonical review. All v4.7.127 D-0147 conformance conclusions below carry forward unchanged.
+
+---
+
+# v4.7.127 D-0147 audit conformance matrix
+
+| Contract | Required architecture | v4.7.127 state | Status |
+|---|---|---|---|
+| Completion remains completion | completed worker stays Pending Player Reclamation; no job resurrection | post-job actuation only | PASS / live-supported |
+| Terminal Yield Consent | automatic completed-worker movement is explicit consented courtesy | legacy config gate remains true for development | PASS for development / UI naming deferred |
+| Continuity, Not Settlement | buy time, no final parking obligation | Bounded Infield Retreat + repeat + player escalation | PASS / live-supported in TS016 theatre |
+| Infield Alignment | one fixed centre bearing; no pursuit | Candidate samples once; Control never re-aims | PASS / live-supported |
+| Protected Yield | authorising productive worker cannot race moving terminal assembly | 0 km/h Regulation during translation | PASS / live-supported |
+| Continuation Renewal | repeat only after useful progression and later attributed block | implemented | PASS / live-supported |
+| Courtesy Exhaustion | stop autonomous courtesy near centre | implemented | PASS / broader live coverage pending |
+| Predictive Field World containment | normal Candidates require proof; D-0147 special case does not claim it | explicit `applicable=false` Courtesy Constraint Exception | PASS / architecture-aligned exception |
+| Predictive Transition Clearance | normal Candidates require proof; D-0147 special case does not claim it | explicit `applicable=false` Courtesy Constraint Exception | PASS / architecture-aligned exception |
+| No parking/search/exclusion planner | D-0147 must remain crude and bounded | no planner introduced | PASS |
+| ValueRecord traversal | sealed architecture collections use explicit accessors | audited proven defects corrected | PASS / regression-protected |
+| Player authority / neutralisation | Player Claim supersedes; actuation neutralised before release | unchanged | PASS / live-supported |
+
+**Scope:** v4.7.126 three-vehicle completion validates Patriot + Condor + S416 only. Other assembly types/configurations remain future Reality tests.
+
+---
+
 # v4.7.121 D-0147 Terminal Yield conformance addendum
 
 | Contract | Required architecture | Candidate implementation | Status |

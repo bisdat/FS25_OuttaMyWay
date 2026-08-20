@@ -1,3 +1,17 @@
+# Current project state — v4.7.128 CANONICAL CANDIDATE
+
+Owner-declared v4.7.121 remains canonical pending explicit review. v4.7.128 carries the fully live-validated v4.7.127 D-0147 behaviour unchanged and exists solely as the audited canonical candidate. Versioning-policy migration remains deferred.
+
+---
+
+# Current project state — v4.7.127 audit-alignment TEST
+
+Owner-declared v4.7.121 remains canonical. v4.7.126 supplied the first fully completed Patriot + Condor + S416 test using D-0147 Bounded Infield Retreat. v4.7.127 preserves that behaviour and closes the architecture/code audit by introducing the explicit D-0147 Courtesy Constraint Exception and correcting proven ValueRecord traversal defects.
+
+Read `ARCHITECTURE.md`, `ARCHITECTURE_CODE_ALIGNMENT.md`, `PROJECT_STATUS.md`, `ENGINEERING_HANDOVER.md`, `KNOWN_ISSUES.md`, and `ROADMAP.md` for the governing current view. Historical v4.7.121 external-egress implementation-gap sections remain provenance only.
+
+---
+
 # Current architecture / implementation lineage — v4.7.112 canonical candidate
 
 Owner-declared canonical is v4.7.109 (`ea0b399e2f73759fa29982fc1b85d5bf446f6fd90eb324dec2902b333c7c6a74`; Git `cd9085ee40343d542a66b84948c27f7dd91a40c7`; 310 files). v4.7.112 records **D-0147 Bounded Terminal Egress** as architecture only; canonical v4.7.109 traffic/passage runtime behaviour is otherwise unchanged.

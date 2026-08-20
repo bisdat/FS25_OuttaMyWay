@@ -1,3 +1,23 @@
+# v4.7.128 canonical-candidate continuity — audited D-0147 plateau
+
+Owner-declared v4.7.121 remains canonical pending explicit owner review. v4.7.128 carries the fully live-validated v4.7.127 behaviour unchanged and advances only release identity/provenance plus canonical-review records.
+
+The validated current D-0147 shape remains deliberately crude optional courtesy: fixed one-shot Field World-centre bearing, 60 m native-max forward retreat, Protected Yield, Continuation Renewal and possible repeat until Courtesy Exhaustion. The Courtesy Constraint Exception remains explicit and narrow.
+
+If accepted, canonicalise only the exact v4.7.128 candidate fingerprint. The planned pre-1.0 versioning transition follows later as a separate repository change.
+
+---
+
+# v4.7.127 continuity checkpoint — first full three-vehicle completion and audit closure
+
+The current live-supported D-0147 shape is deliberately crude optional courtesy: one fixed Field World-centre bearing, 60 m native-max forward retreat, Protected Yield of the authorising productive worker, then release/Continuation Renewal and possible later repeat until Courtesy Exhaustion. v4.7.126 completed the full Patriot + Condor + S416 theatre.
+
+v4.7.127 changes architecture representation, traversal correctness and documentation only. D-0147 is now explicitly exempt from generic predictive Field World containment and Transition Clearance proof under the **Courtesy Constraint Exception**; no planner is introduced and no normal Candidate constraint is weakened.
+
+The next project checkpoint is audit validation and canonical-candidate preparation. Versioning-policy migration is intentionally later.
+
+---
+
 # v4.7.109 candidate continuity — canonical plateau after validated three-worker Step 2
 
 Owner-declared canonical remains v4.7.102 until explicit canonicalisation. v4.7.108 closed the planned fixing cycle with clean three-worker live evidence: five successful D-0146 passages, no Passage Reassessment/escalation and no OuttaMyWay error stack.

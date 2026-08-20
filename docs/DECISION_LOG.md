@@ -1,3 +1,79 @@
+# v4.7.128 canonical-candidate preparation — accepted review boundary
+
+**Status:** Candidate preparation authorised by owner after successful v4.7.127 live validation.
+
+**Decision:** Carry v4.7.127 behaviour unchanged into v4.7.128 canonical review. Candidate preparation may change release/version identity, provenance and validation/review records only. Do not combine the separately agreed pre-1.0 versioning transition with this candidate.
+
+**Canonical authority:** v4.7.121 remains canonical until the owner explicitly accepts the exact v4.7.128 fingerprint.
+
+---
+
+# v4.7.127 decision — resolve Courtesy Evidence Gap by explicit D-0147 special-case exception
+
+**Observation:** architecture/code audit of live-validated v4.7.126 found that `TerminalEgressCandidateSupport` labelled `FIELD_WORLD_CONTAINMENT` and `TRANSITION_CLEARANCE` PASS although the crude one-shot-centroid retreat does not predict the complete swept assembly or third-party clearance. TS016/three-vehicle success is empirical support, not predictive clearance authority.
+
+**Decision:** classify D-0147 as an explicit player-consented special case. Its Bounded Infield Retreat is excluded from the generic predictive Field World Containment and Transition Clearance mandatory proof obligations. Candidate records those constraints as not applicable with `D0147_COURTESY_CONSTRAINT_EXCEPTION` provenance. Do not weaken PASS semantics globally and do not add swept-path planning merely to satisfy a paper contract.
+
+**Boundaries retained:** consent, positive obstruction, Pending Player Reclamation, authority ownership, Protected Yield, Player Claim/source supersession, one bounded retreat, Continuation Renewal, Courtesy Exhaustion and Actuation Neutralisation remain mandatory.
+
+**Validation record:** v4.7.126 is the first fully completed three-vehicle OuttaMyWay test: Patriot and Condor both yielded decisively and S416 completed. Treat this as strong validation of the current courtesy mechanism for that theatre/configuration, not universal proof.
+
+**Audit implementation decision:** correct proven native `#` traversal of sealed ValueRecord collections found in Candidate/Commitment/D-0146 paths. This is implementation-contract housekeeping with no intended traffic/control behavioural change.
+
+**Versioning:** explicitly deferred. Complete audit alignment/canonicalisation first; only then perform the separately agreed pre-1.0 versioning transition.
+
+---
+
+# v4.7.126 decision refinement — enlarge the courtesy quantum and remove the D-0147 speed cap
+
+**Evidence:** v4.7.125 showed that the repeat lifecycle works, but 30 m simply allowed S416 to resume and later encounter Patriot again. Increasing speed alone would reach the same 30 m endpoint sooner and therefore would not buy additional spatial separation.
+
+**Decision:** for the next narrow D-0147 test, increase one Bounded Infield Retreat from 30 m to **60 m of realised progress toward the fixed initial centroid bearing** and let the completed vehicle translate at its own native maximum forward speed. The productive worker remains held for the Protected Yield Interval.
+
+**Why:** D-0147 is optional, deliberately crude courtesy behaviour. A larger literal is acceptable because it bounds player-consented movement rather than claiming a universal clearance requirement. Native maximum speed shortens the intervention; the 60 m quantum, not speed, is what increases bought separation/time.
+
+**Preserved:** one-shot bearing/no course correction, Continuation Renewal plus later attributed native block, Courtesy Exhaustion, Player Claim, Actuation Neutralisation, and no planner/exclusion/settlement machinery.
+
+# v4.7.125 decision refinement — replace Conflict Renewal with Continuation Renewal for D-0147
+
+**Evidence:** v4.7.124 held S416 correctly, Patriot completed one bounded 30 m retreat, S416 resumed and travelled materially before later blocking on Patriot again. The first retreat therefore achieved the D-0147 objective of buying time even though the conservative represented conflict did not provide the clean disappearance witness required by v4.7.122 Conflict Renewal.
+
+**Decision:** D-0147 repetition is now gated by **Continuation Renewal**. After retreat completion, record the authorising productive assembly/assemblies. Require positive post-release physical progression while active and unblocked. Only after that witness may a later positively attributed native `blocked=true` admit a fresh retreat.
+
+**Why:** this follows observed productive reality, prevents immediate chained retreats, and avoids tuning the 30 m quantum to one TS016 geometry.
+
+**Preserved:** one-shot centre bearing, forward-only 8 km/h actuation, 30 m inward-progress quantum, Protected Yield Interval, Courtesy Exhaustion, no planner/exclusion map.
+
+# v4.7.124 decision refinement — reaffirm ValueRecord traversal contract
+
+**Evidence:** v4.7.123 logs contained no protected-hold application and later reported `released=0`. Inspection found native `#`/`ipairs` applied to sealed `protectedDemandAssemblies`.
+
+**Decision:** retain Protected Yield Interval unchanged. Correct traversal to `ValueRecord.length/ipairs`, and treat native `pairs`/`ipairs`/`#` on possibly sealed architecture values as a mandatory implementation-review and regression-test check.
+
+# v4.7.123 decision refinement — D-0147 Protected Yield Interval
+
+**Evidence:** v4.7.122 validated the fixed one-shot Infield Alignment and forward arc but produced a genuine collision when S416 continued at productive speed through Patriot's retreat. Speed changes could avoid this specific rendezvous but are not general.
+
+**Decision:** preserve 8 km/h and the 30 m Bounded Infield Retreat unchanged. When INFIELD translation begins, temporarily hold every productive assembly whose positive conflict authorised the retreat. Implement the hold as an existing composable 0 km/h Regulation lease under the same D-0147 Commitment; release it after terminal neutralisation on every exit. Do not hold during compaction.
+
+**Rejected for this tranche:** speed tuning, stopping-distance prediction, trajectory intersection calculation, future-demand exclusion zones, route planning.
+
+# v4.7.122 decision refinement — D-0147 Bounded Infield Retreat / Courtesy Exhaustion
+
+**Context:** TS016 showed that External Yield cannot be treated as the preferred simple solution. A long completed assembly may require an unknown conservative GIANTS AI clearance envelope while simultaneously remaining wholly outside adjacent Field Worlds and avoiding hedges/trees/ditches at the margin. Closing all three proof obligations is sufficiently difficult that D-0147 now investigates infield courtesy movement as the current best-case option.
+
+**Decision — optional courtesy, not precision settlement:** D-0147 exists only to buy time before manual Player Reclamation. Literals are acceptable when they bound courtesy authority rather than claiming physical/agronomic truth. Do not introduce future-demand exclusion zones or parking optimisation merely to make the courtesy move precise.
+
+**Decision — one-shot Infield Alignment:** after compaction, sample the immutable source Field World centroid once. Derive one fixed world direction from current terminal position to that centroid and hold it through forward-only `driveInDirection()`. Do **not** continuously pursue the centroid or issue mid-course corrections. The resulting large arc is GIANTS' kinematic realisation of a fixed heading, not an explicitly scripted 90/180-degree turn.
+
+**Decision — Bounded Infield Retreat calibration:** first implementation uses 30 m of realised progress toward the centroid at the existing 8 km/h. The centroid is a bearing reference, not a destination. A retreat completes its current Commitment; it does not permanently settle the terminal Job Episode.
+
+**Decision — Conflict Renewal / Courtesy Exhaustion:** after one retreat, the authorising positive conflict must disappear before a later positive conflict can admit another retreat. If the assembly is already within one retreat allowance of the centre when another retreat would be admitted, courtesy authority is exhausted and responsibility escalates to the player. No overall move-count literal is introduced.
+
+**Working scope hypothesis:** current D-0147 reasoning may use three materially relevant assemblies as the analytical envelope. This reflects the likely small number of complementary concurrent agronomic operations, but it is not a hard system maximum. A future agronomic capability/concurrency matrix and broader assembly testing may disprove it.
+
+---
+
 # v4.7.121 decision refinement — D-0147 Terminal Yield / Pending Player Reclamation
 
 **Observation:** v4.7.120 successfully realised the intended external egress mechanics and positively settled Patriot outside Field 77. About 107 seconds later, during a later S 416 turn, GIANTS changed S 416 to `blocked=true`. Patriot and S 416 remained physically separated in OuttaMyWay representation, and a subsequent debug-physics-overlay reconstruction also showed substantial body clearance. Moving Patriot farther outward would increasingly occupy the neighbouring Field World.

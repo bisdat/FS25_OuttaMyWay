@@ -1,3 +1,27 @@
+# v4.7.128 candidate terminology status
+
+No terminology change from the v4.7.127 audit closure. The current D-0147 glossary addendum below remains governing for this candidate.
+
+---
+
+# v4.7.127 D-0147 current glossary addendum
+
+**D-0147 Courtesy Constraint Exception** — explicit architecture declaration that the player-consented Bounded Infield Retreat is not required to positively prove generic predictive `FIELD_WORLD_CONTAINMENT` or complete-envelope `TRANSITION_CLEARANCE`. The exception is limited to D-0147's bounded buy-time movement and does not weaken normal Candidate constraints or D-0147 consent/authority/safety/lifecycle requirements.
+
+**Bounded Infield Retreat** — one crude forward-only post-job courtesy manoeuvre using a single Field World-centre bearing captured at admission. Current calibration is 60 m of realised inward progress at the vehicle's native maximum forward speed. The centre is a directional reference, not a refuge/destination.
+
+**Infield Alignment** — the fixed world direction from the completed assembly's position toward the Field World centroid, captured once for one retreat. No continuous course correction follows.
+
+**Protected Yield Interval** — interval during terminal translation in which the productive assembly/assemblies whose conflict authorised D-0147 retain GIANTS job ownership but receive a temporary 0 km/h Regulation hold.
+
+**Continuation Renewal** — positive post-release productive progression re-arms the courtesy lifecycle. A later attributed native block may then admit a new retreat.
+
+**Courtesy Exhaustion** — D-0147 stops attempting further centre-directed courtesy movement once the completed assembly is broadly central; a later conflict escalates to the player.
+
+**Three-Assembly Courtesy Continuation Validation** — v4.7.126 Patriot + Condor + S416 end-to-end completion. Strong evidence for that configuration, not universal proof.
+
+---
+
 # v4.7.121 Terminal Yield glossary addendum
 
 **Pending Player Reclamation** — lifecycle condition after genuine worker completion and before Player Claim/cleanup (or other explicit termination of relevance). The productive Job Episode remains ended.

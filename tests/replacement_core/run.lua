@@ -3778,6 +3778,42 @@ test("D0146 Step2 Established Conflict crosses Candidate Decision Commitment and
 end)
 
 
+test("D0147 Continuation Renewal requires post-release motion then a later attributed native block",function()
+    local episodes={
+        {identity="JOB-TERMINAL",status="ENDED",terminalCause="SOURCE_INTENT_TERMINATION",assemblyId="AS-TERMINAL",fieldWorldReferenceKey="FIELD-1"},
+        {identity="JOB-ACTIVE",status="ACTIVE",assemblyId="AS-ACTIVE"}
+    }
+    local jobEpisodes={list=function() return episodes end}
+    local assessment=OuttaMyWay.TerminalOccupancyAssessment.new(jobEpisodes)
+    assessment:markRetreatCompleted("JOB-TERMINAL",{"AS-ACTIVE"})
+    local currentSpace={{assemblyId="AS-TERMINAL",occupancy={x=0,z=0,headingX=1,headingZ=0}}}
+    local futureSpace={}
+    local physicalSpace={
+        {assemblyId="AS-TERMINAL",configurationEvidence={},primitives={{identity="TP",kind="DISC",x=0,z=0,radius=2,positiveConflictSupport=true}}},
+        {assemblyId="AS-ACTIVE",configurationEvidence={},primitives={{identity="AP",kind="DISC",x=1,z=0,radius=2,positiveConflictSupport=true}}}
+    }
+    local function snapshot(motionClass,blocked)
+        return {
+            controlOutcomes={},playerControl={},
+            assemblies={{assemblyId="AS-TERMINAL",referenceKey="vehicle-root:terminal"},{assemblyId="AS-ACTIVE",referenceKey="vehicle-root:active"}},
+            motion={progressionEvidence={{assemblyReferenceKey="vehicle-root:active",motionClassification=motionClass}}},
+            aiStates={["vehicle-root:active"]={observedActive=true,blocked=blocked==true}}
+        }
+    end
+    local first=assessment:assess(snapshot("STATIONARY",false),currentSpace,futureSpace,physicalSpace,{})
+    equal(#first,1); equal(first[1].obstructionPositive,true); equal(first[1].yieldAwaitingContinuation,true); equal(first[1].continuationRenewed,false)
+
+    -- Conflict remains continuously positive, but physical GIANTS-owned progression
+    -- re-arms the courtesy lifecycle without immediately admitting another retreat.
+    local resumed=assessment:assess(snapshot("STABLE_FORWARD",false),currentSpace,futureSpace,physicalSpace,{})
+    equal(resumed[1].obstructionPositive,true); equal(resumed[1].yieldAwaitingContinuation,true); equal(resumed[1].continuationRenewed,true); equal(resumed[1].repeatBlockedPositive,false)
+
+    -- Only a later native block, still positively attributed to the terminal assembly,
+    -- clears the latch and makes one fresh courtesy retreat eligible.
+    local blockedAgain=assessment:assess(snapshot("STATIONARY",true),currentSpace,futureSpace,physicalSpace,{})
+    equal(blockedAgain[1].obstructionPositive,true); equal(blockedAgain[1].yieldAwaitingContinuation,false); equal(blockedAgain[1].continuationRenewed,true); equal(blockedAgain[1].repeatBlockedPositive,true)
+end)
+
 local function d0147TerminalPicture(runtime,configurationEvidence,options)
     options=options or {}
     local episodeId=options.terminalEpisodeId or "JOB-TERMINAL"
@@ -3799,11 +3835,11 @@ end
 
 local d0147SnapshotFixture=OuttaMyWay.ValueRecord.define("D0147SnapshotFixture",{"identity","fieldWorld"},{},nil)
 local function d0147Snapshot()
-    return d0147SnapshotFixture.new({identity="OS-D0147",fieldWorld={boundary={{x=0,z=0},{x=10,z=0},{x=10,z=10},{x=0,z=10}}}})
+    return d0147SnapshotFixture.new({identity="OS-D0147",fieldWorld={boundary={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}},geometryMetrics={centroidX=50,centroidZ=50}}})
 end
-test("D0147 development config enables Automatic Terminal Egress and decisive manoeuvre speed by default",function()
+test("D0147 development config enables Automatic Terminal Egress without an artificial retreat speed cap",function()
     equal(OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS,true)
-    equal(OuttaMyWay.TERMINAL_EGRESS_SPEED_KMH,8.0)
+    equal(OuttaMyWay.TERMINAL_EGRESS_SPEED_KMH,nil)
 end)
 
 test("D0147 POST_JOB_ACTUATION remains exclusive with productive progress authority",function()
@@ -3826,7 +3862,7 @@ test("D0147 direct post-job actuation holds one world Exit Alignment direction a
     Drivable={CRUISECONTROL_STATE_OFF=0,CRUISECONTROL_STATE_ACTIVE=1}
     getWorldTranslation=function(node) return 10,0,20 end
     worldDirectionToLocal=function(node,x,y,z) return x,y,z end
-    local motor={setSpeedLimit=function() end}
+    local motor={setSpeedLimit=function() end,getMaximumForwardSpeed=function() return 25/3.6 end}
     local vehicle={
         rootNode=1,rotatedTime=0,minRotTime=-1,maxRotTime=1,isActive=false,forceIsActive=false,maxRotation=math.rad(60),
         spec_crabSteering={state=2,aiSteeringModeIndex=2},
@@ -3836,6 +3872,7 @@ test("D0147 direct post-job actuation holds one world Exit Alignment direction a
         brake=function() return true end,stopVehicle=function() return true end,setCruiseControlState=function() return true end
     }
     local authority=OuttaMyWay.PostJobActuationAuthority.new()
+    local nativeMax,nativeMaxReason=authority:maximumForwardSpeedKmh(vehicle); equal(nativeMaxReason,nil); if math.abs(nativeMax-25)>0.0001 then error("unexpected native maximum forward speed") end
     local baseline=authority:steeringTelemetry(vehicle); equal(baseline.rotatedTime,0); equal(baseline.isActive,false); equal(baseline.forceIsActive,false); equal(baseline.crabState,2); equal(baseline.crabAiSteeringModeIndex,2); equal(baseline.steerableWheelCount,1); equal(baseline.wheels[1].steeringAngle,0.12)
     local activityOk,activityContext=authority:acquireVehicleActivityContext(vehicle); equal(activityOk,true); equal(vehicle.forceIsActive,true); equal(activityContext.previousForceIsActive,false); equal(authority:getActivityContextAcquireCallCount(),1)
     local ok,evidence=authority:driveInWorldDirection(vehicle,16,-1,1,8); equal(ok,true); equal(directionCalls,1); equal(authority:getDirectDriveCallCount(),1)
@@ -3862,29 +3899,31 @@ test("D0147 supported deployed configuration selects compaction before translati
     equal(#evaluated.candidates,1); equal(evaluated.decision.selectedCandidateId,evaluated.candidates[1].identity)
 end)
 
-test("D0147 parallel compact assembly receives one deterministic Oblique Boundary Egress objective",function()
+test("D0147 compact assembly receives one fixed initial Field World centre bearing",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
-    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="EGRESS"})
+    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="INFIELD"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
-    local bridge=spec.evidenceBasis.terminalEgressBridge; equal(bridge.phase,"EGRESS")
-    equal(bridge.objective.objectiveKind,"OBLIQUE_OUTER_FIELD_BOUNDARY_EGRESS"); equal(bridge.objective.referenceSegmentIndex,4); equal(bridge.objective.islandCandidatesConsidered,false)
-    equal(bridge.objective.alignmentMode,"OBLIQUE_HEADING_OUTWARD_BISECTOR")
-    if not (bridge.objective.exitDirectionX < 0 and bridge.objective.exitDirectionZ > 0) then error("parallel start did not produce forward/outward oblique direction") end
-    equal(bridge.objective.settlement,"POSITIVE_FIELD_EXIT_ONLY")
-    equal(bridge.objective.targetX,nil); equal(bridge.objective.targetZ,nil)
+    local bridge=spec.evidenceBasis.terminalEgressBridge; equal(bridge.phase,"INFIELD")
+    local objective=bridge.objective
+    equal(objective.objectiveKind,"BOUNDED_INFIELD_RETREAT"); equal(objective.alignmentMode,"FIXED_INITIAL_CENTRE_BEARING")
+    equal(objective.fieldCentreX,50); equal(objective.fieldCentreZ,50); equal(objective.retreatDistanceM,60)
+    equal(objective.fieldCentreIsDirectionalReferenceOnly,true); equal(objective.continuousCourseCorrection,false)
+    equal(objective.settlement,"BOUNDED_INFIELD_PROGRESS")
+    equal(objective.targetX,nil); equal(objective.targetZ,nil)
+    local magnitude=math.sqrt(objective.infieldDirectionX*objective.infieldDirectionX+objective.infieldDirectionZ*objective.infieldDirectionZ)
+    if math.abs(magnitude-1)>0.0001 then error("fixed Infield Alignment direction was not normalized") end
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     equal(#evaluated.candidates,1); equal(evaluated.decision.selectedCandidateId,evaluated.candidates[1].identity)
 end)
 
-test("D0147 already outward compact heading is retained rather than forced through an oblique turn",function()
+test("D0147 Infield Alignment is derived from centre bearing rather than terminal heading",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
-    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="STRAIGHT-OUT",headingX=-1,headingZ=0})
-    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
-    local objective=supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.terminalEgressBridge.objective
-    equal(objective.objectiveKind,"OBLIQUE_OUTER_FIELD_BOUNDARY_EGRESS")
-    equal(objective.alignmentMode,"RETAIN_OUTWARD_HEADING")
-    if math.abs(objective.exitDirectionX+1)>0.0001 or math.abs(objective.exitDirectionZ)>0.0001 then error("already outward heading was not retained") end
+    local a=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="HEADING-A",headingX=-1,headingZ=0})
+    local b=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="HEADING-B",headingX=1,headingZ=0})
+    local oa=runtime.terminalEgressCandidateSupport:attach(a,d0147Snapshot()).candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.terminalEgressBridge.objective
+    local ob=runtime.terminalEgressCandidateSupport:attach(b,d0147Snapshot()).candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.terminalEgressBridge.objective
+    if math.abs(oa.infieldDirectionX-ob.infieldDirectionX)>0.000001 or math.abs(oa.infieldDirectionZ-ob.infieldDirectionZ)>0.000001 then error("terminal heading incorrectly changed fixed centre bearing") end
 end)
 
 test("D0147 Terminal Resolution Commitment survives transient obstruction loss during compaction",function()
@@ -3900,14 +3939,14 @@ test("D0147 Terminal Resolution Commitment survives transient obstruction loss d
     equal(#evaluated.candidates,1); equal(evaluated.decision.selectedCandidateId,evaluated.candidates[1].identity)
 end)
 
-test("D0147 compacted committed assembly proceeds to egress even when initiating obstruction is no longer visible",function()
+test("D0147 compacted committed assembly proceeds to infield retreat even when initiating obstruction is no longer visible",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="TS016-POST-COMPACT",existingCommitmentId="CM-D0147",obstructionPositive=false})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
     local bridge=spec.evidenceBasis.terminalEgressBridge
-    equal(spec.capability,"REPOSITION"); equal(bridge.phase,"EGRESS"); equal(bridge.terminalEvent,nil)
-    equal(bridge.objective.objectiveKind,"OBLIQUE_OUTER_FIELD_BOUNDARY_EGRESS")
+    equal(spec.capability,"REPOSITION"); equal(bridge.phase,"INFIELD"); equal(bridge.terminalEvent,nil)
+    equal(bridge.objective.objectiveKind,"BOUNDED_INFIELD_RETREAT"); equal(bridge.objective.alignmentMode,"FIXED_INITIAL_CENTRE_BEARING")
 end)
 
 test("D0147 config switch disables admission rather than merely suppressing Control",function()
@@ -3920,73 +3959,35 @@ test("D0147 config switch disables admission rather than merely suppressing Cont
 end)
 
 
-test("D0147 Control succeeds only from positive represented Field World exit",function()
+test("D0147 Control completes one retreat from bounded realised inward progress",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
-    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-POSITIVE-EXIT"})
+    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-INFIELD-PROGRESS"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,supported,evaluated); if admitted==nil then error(tostring(reason)) end
     local candidate=evaluated.candidates[1]; local bridge=candidate.evidenceBasis.terminalEgressBridge
-    local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldToLocal=AIVehicleUtil,getWorldTranslation,worldToLocal
-    local vehicle={rootNode=1,getIsEntered=function() return false end,getIsAIActive=function() return false end}
-    AIVehicleUtil={driveToPoint=function(...) return true end}; getWorldTranslation=function(node) return 2,0,5 end; worldToLocal=function(node,x,y,z) return x,y,z end
-    local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {configurationEvidence={allFolded=true,retainCurrent=true},worldPrimitives={{identity="EXIT-1",kind="DISC",x=-2,z=5,radius=1,positiveConflictSupport=true}}} end}
-    local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
-    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-POSITIVE",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="EGRESS"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
-    local started,startReason=control:executeControlRequest(request,candidate); equal(started,true); equal(startReason,"MANOEUVRE_STARTED")
-    control:update(16)
-    equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.fieldExitEvidence.kind,"D0147_POSITIVE_REPRESENTED_FIELD_EXIT")
-    AIVehicleUtil,getWorldTranslation,worldToLocal=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldToLocal
-end)
-
-test("D0147 live field-exit settlement accepts a represented footprint wholly beyond Field World bounds without re-qualifying fold state",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
-    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-AABB-EXIT"})
-    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
-    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,supported,evaluated); if admitted==nil then error(tostring(reason)) end
-    local candidate=evaluated.candidates[1]; local bridge=candidate.evidenceBasis.terminalEgressBridge
-    local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldToLocal=AIVehicleUtil,getWorldTranslation,worldToLocal
-    local vehicle={rootNode=1,getIsEntered=function() return false end,getIsAIActive=function() return false end}
-    AIVehicleUtil={driveToPoint=function(...) return true end}; getWorldTranslation=function(node) return 2,0,5 end; worldToLocal=function(node,x,y,z) return x,y,z end
-    local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {configurationEvidence={},planViewSummary={bounds={minX=-3,maxX=-1,minZ=4,maxZ=6}},worldPrimitives={{identity="EXIT-AABB-1",kind="DISC",x=-2,z=5,radius=1,positiveConflictSupport=true}}} end}
-    local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
-    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-AABB-POSITIVE",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="EGRESS"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
-    local started=control:executeControlRequest(request,candidate); equal(started,true)
-    control:update(16)
-    equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.fieldExitEvidence.witness,"DISJOINT_FIELD_WORLD_AABB")
-    AIVehicleUtil,getWorldTranslation,worldToLocal=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldToLocal
-end)
-
-test("D0147 Exit Alignment continuation ignores former endpoint and stops only on positive represented Field World exit",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
-    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-CONTINUE-TO-CLEAR"})
-    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
-    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,supported,evaluated); if admitted==nil then error(tostring(reason)) end
-    local candidate=evaluated.candidates[1]; local bridge=candidate.evidenceBasis.terminalEgressBridge
-    local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal
-    local driveCalls=0; local clear=false; local motor={setSpeedLimit=function() end}
+    local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil
+    local driveCalls=0; local commandedMaxSpeed=nil; local px,pz=2,5; local motor={setSpeedLimit=function() end,getMaximumForwardSpeed=function() return 25/3.6 end}
     local vehicle={rootNode=1,rotatedTime=0,minRotTime=-1,maxRotTime=1,isActive=false,forceIsActive=false,finishedFirstUpdate=true,lastSpeedReal=0,movingDirection=1,
         getIsEntered=function() return false end,getIsAIActive=function() return false end,getIsControlled=function() return false end,
         getMotor=function() return motor end,getCruiseControlState=function() return 0 end,setCruiseControlState=function() return true end,getAISteeringSpeed=function() return 0.001 end}
-    AIVehicleUtil={driveInDirection=function(v,dt,steeringLimit,accel,slowAccel,slowLimit,allowed,forwards,lx,lz,maxSpeed,slowDown) driveCalls=driveCalls+1; v.rotatedTime=-0.2; return true end}
-    getWorldTranslation=function(node) return 2,0,5 end; worldDirectionToLocal=function(node,x,y,z) return x,y,z end
-    local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function()
-        if clear then return {worldPrimitives={{identity="CLEAR-1",kind="DISC",x=-2,z=5,radius=1,positiveConflictSupport=true}}} end
-        return {worldPrimitives={{identity="NOT-CLEAR-1",kind="DISC",x=-0.5,z=5,radius=1,positiveConflictSupport=true}}}
-    end}
+    AIVehicleUtil={driveInDirection=function(v,dt,steeringLimit,accel,slowAccel,slowLimit,allowed,forwards,lx,lz,maxSpeed,slowDown) driveCalls=driveCalls+1; commandedMaxSpeed=maxSpeed; v.rotatedTime=0.2; return true end}
+    WheelsUtil={updateWheelsPhysics=function() return true end}
+    getWorldTranslation=function() return px,0,pz end; worldDirectionToLocal=function(node,x,y,z) return x,y,z end
+    local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="INFIELD-1",kind="DISC",x=px,z=pz,radius=1,positiveConflictSupport=true}}} end}
     local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
-    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-CONTINUE",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="EGRESS"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
-    local started=control:executeControlRequest(request,candidate); equal(started,true)
-    control:update(16); equal(completion,nil); equal(driveCalls,1)
-    control:update(16); equal(completion,nil); equal(driveCalls,2)
-    clear=true
-    control:update(16); equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.fieldExitEvidence.kind,"D0147_POSITIVE_REPRESENTED_FIELD_EXIT"); equal(driveCalls,2)
-    AIVehicleUtil,getWorldTranslation,worldDirectionToLocal=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal
+    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-INFIELD",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="INFIELD"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
+    local started,startReason=control:executeControlRequest(request,candidate); equal(started,true); equal(startReason,"MANOEUVRE_STARTED")
+    control:update(16); equal(completion,nil); equal(driveCalls,1); if math.abs((commandedMaxSpeed or 0)-25)>0.0001 then error("D0147 retreat did not use native maximum forward speed") end
+    px,pz=50,50
+    control:update(16)
+    equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.kind,"D0147_BOUNDED_INFIELD_RETREAT_COMPLETE")
+    if completion.evidence.inwardProgressM < 60 then error("retreat completed before configured inward progress") end
+    equal(completion.evidence.continuousCourseCorrection,false); equal(driveCalls,1)
+    AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil
 end)
 
-test("D0147 owned Exit Alignment actuation failure positively neutralizes propulsion before completion",function()
+test("D0147 owned Infield Alignment actuation failure positively neutralizes propulsion before completion",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-NEUTRALIZE"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
@@ -3994,7 +3995,7 @@ test("D0147 owned Exit Alignment actuation failure positively neutralizes propul
     local admitted,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,supported,evaluated); if admitted==nil then error(tostring(reason)) end
     local candidate=evaluated.candidates[1]; local bridge=candidate.evidenceBasis.terminalEgressBridge
     local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil
-    local driveCalls=0; local neutralizeCalls=0; local neutralizedWhileActive=nil; local failDrive=false; local motor={setSpeedLimit=function() end}
+    local driveCalls=0; local neutralizeCalls=0; local neutralizedWhileActive=nil; local failDrive=false; local motor={setSpeedLimit=function() end,getMaximumForwardSpeed=function() return 25/3.6 end}
     local vehicle={rootNode=1,rotatedTime=0,minRotTime=-1,maxRotTime=1,isActive=false,forceIsActive=false,finishedFirstUpdate=true,lastSpeedReal=0,movingDirection=1,
         getIsEntered=function() return false end,getIsAIActive=function() return false end,getIsControlled=function() return false end,
         getMotor=function() return motor end,getCruiseControlState=function() return 0 end,setCruiseControlState=function() return true end,getAISteeringSpeed=function() return 0.001 end}
@@ -4003,7 +4004,7 @@ test("D0147 owned Exit Alignment actuation failure positively neutralizes propul
     getWorldTranslation=function(node) return 2,0,5 end; worldDirectionToLocal=function(node,x,y,z) return x,y,z end
     local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="NEUTRALIZE-1",kind="DISC",x=2,z=5,radius=1,positiveConflictSupport=true}}} end}
     local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
-    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-NEUTRALIZE",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="EGRESS"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
+    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-NEUTRALIZE",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="INFIELD"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
     local started=control:executeControlRequest(request,candidate); equal(started,true); equal(vehicle.forceIsActive,true); equal(control.postJobAuthority:getActivityContextAcquireCallCount(),1)
     control:update(16); equal(driveCalls,1); equal(vehicle.rotatedTime,-0.2); equal(completion,nil)
     failDrive=true
@@ -4022,14 +4023,14 @@ test("D0147 Player Claim relinquishes Vehicle Activity Context without post-clai
     local candidate=evaluated.candidates[1]; local bridge=candidate.evidenceBasis.terminalEgressBridge
     local entered=false; local driveCalls=0; local neutralizeCalls=0
     local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil
-    local motor={setSpeedLimit=function() end}
+    local motor={setSpeedLimit=function() end,getMaximumForwardSpeed=function() return 25/3.6 end}
     local vehicle={rootNode=1,rotatedTime=0,minRotTime=-1,maxRotTime=1,isActive=false,forceIsActive=false,getIsEntered=function() return entered end,getIsAIActive=function() return false end,getIsControlled=function() return entered end,getMotor=function() return motor end,getCruiseControlState=function() return 0 end,setCruiseControlState=function() return true end}
     AIVehicleUtil={driveInDirection=function() driveCalls=driveCalls+1; return true end}
     WheelsUtil={updateWheelsPhysics=function() neutralizeCalls=neutralizeCalls+1; return true end}
     getWorldTranslation=function() return 2,0,5 end; worldDirectionToLocal=function(node,x,y,z) return x,y,z end
     local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="CLAIM-ACTIVITY-1",kind="DISC",x=2,z=5,radius=1,positiveConflictSupport=true}}} end}
     local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
-    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-CLAIM-ACTIVITY",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="EGRESS"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
+    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-CLAIM-ACTIVITY",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="INFIELD"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
     local started=control:executeControlRequest(request,candidate); equal(started,true); equal(vehicle.forceIsActive,true)
     entered=true
     control:update(16)
@@ -4037,7 +4038,7 @@ test("D0147 Player Claim relinquishes Vehicle Activity Context without post-clai
     AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil
 end)
 
-test("D0147 compaction-to-egress revision preserves one Commitment and one post-job authority token",function()
+test("D0147 compaction-to-infield revision preserves one Commitment with post-job plus protected progress authority",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
     local compactPicture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=1,transitionCount=0,foldedCount=0,unknownCount=0,allDeployed=true,allFolded=false,retainCurrent=false,compactionSupported=true},{suffix="LIFECYCLE-COMPACT"})
     local compactSupported=runtime.terminalEgressCandidateSupport:attach(compactPicture,d0147Snapshot())
@@ -4056,8 +4057,14 @@ test("D0147 compaction-to-egress revision preserves one Commitment and one post-
     local revised,reviseReason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,egressSupported,egressEvaluated)
     if revised==nil then error(tostring(reviseReason)) end
     equal(revised.commitment.identity,commitmentId); equal(revised.authorityToken.identity,tokenId)
-    equal(revised.commitment.strategy.expectedEffect.phase,"EGRESS")
-    equal(#runtime.authorities:tokensForCommitment(commitmentId),1)
+    equal(revised.commitment.strategy.expectedEffect.phase,"INFIELD")
+    local tokens=runtime.authorities:tokensForCommitment(commitmentId); equal(#tokens,2)
+    local sawPost,sawProgress=false,false
+    for _,token in OuttaMyWay.ValueRecord.ipairs(tokens) do
+        if token.assemblyId=="AS-TERMINAL" and token.authorityClass=="POST_JOB_ACTUATION" then sawPost=true end
+        if token.assemblyId=="AS-ACTIVE" and token.authorityClass=="PROGRESS_ACTUATION" then sawProgress=true end
+    end
+    equal(sawPost,true); equal(sawProgress,true)
 
     local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(runtime,commitmentId,"OBJECTIVE_SATISFIED",{kind="TEST_COMPACTION_OR_EGRESS_CLEARANCE"},"JOB-TERMINAL")
     if terminal==nil then error(tostring(reason)) end

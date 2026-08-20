@@ -1,3 +1,22 @@
+# v4.7.128 canonical-candidate known-issue status
+
+No new known issue is introduced by candidate preparation. The v4.7.127 explicit limits below remain current. The candidate does not generalise three-assembly validation beyond the tested theatre.
+
+---
+
+# v4.7.127 current known issues / explicit limits
+
+- **D-0147 is intentionally best-effort.** Under the Courtesy Constraint Exception it does not predict or prove complete swept Field World containment or third-party Transition Clearance. This is accepted special-case architecture, not an unimplemented planner requirement.
+- The successful v4.7.126 Patriot + Condor + S416 run does not establish universal behaviour for cultivators, articulated implements, unusual field geometry or larger same-type fleets. Reality testing remains authoritative.
+- `AUTOMATIC_TERMINAL_EGRESS` remains a deliberately stale legacy config name and remains `true` for development testing. Player-facing release policy remains explicit opt-in/default-off.
+- Legacy `TerminalEgress*` module/bridge names remain implementation debt intentionally retained to avoid plumbing churn.
+- External Yield is not the current live D-0147 path; its clearance/adjacent-field/margin proof burden remains high enough that no new external implementation should be inferred from historical records.
+- The agronomic concurrency envelope / likely small number of complementary simultaneous assemblies remains a working scope hypothesis, not a hard vehicle-count invariant.
+- Repository-wide ValueRecord traversal remains a standing review concern. v4.7.127 fixes the **proven** sealed-collection native-length defects found by this audit; native traversal is still legitimate for implementation-owned plain tables, so mechanical global replacement is not authorised.
+- `Prototype22ConfigurationAuthority` baggage/literal cleanup remains separate housekeeping.
+
+---
+
 # v4.7.121 canonical-candidate known gaps — Terminal Yield
 
 - Governing D-0147 architecture is broader than the retained v4.7.120 implementation. The runtime currently implements only one external-egress expression.

@@ -1,3 +1,89 @@
+# v4.7.127 architecture/code audit closure — D-0147 Courtesy Constraint Exception
+
+| Governing concept / contract | v4.7.127 implementation | Alignment |
+|---|---|---|
+| Pending Player Reclamation / buy-time only | completed worker moves only after positive D-0147 admission and returns passive after bounded retreat | ALIGNED / live-supported |
+| Bounded Infield Retreat | fixed one-shot centroid bearing, forward-only natural arc, 60 m realised inward progress, native max speed | ALIGNED / v4.7.126 live-supported |
+| Protected Yield | authorising productive worker held at 0 km/h during terminal translation and released after neutralisation | ALIGNED / live-supported |
+| Continuation Renewal | productive resumption re-arms; later attributed native block admits repeat | ALIGNED / live-supported |
+| Courtesy Exhaustion | near-centre repeat demand escalates to player | ALIGNED / implementation present; broader live coverage pending |
+| Generic predictive Field World containment | **not applicable to D-0147 under explicit Courtesy Constraint Exception** | ALIGNED; no fabricated PASS |
+| Generic complete-envelope Transition Clearance | **not applicable to D-0147 under explicit Courtesy Constraint Exception** | ALIGNED; no fabricated PASS |
+| Normal physical Candidate constraints | unchanged; no global weakening | ALIGNED |
+| Player Claim / source supersession | sticky immediate authority boundary | ALIGNED / previously live-supported |
+| Actuation Neutralisation | mandatory before activity/authority release | ALIGNED / live-supported |
+| ValueRecord traversal contract | audited proven sealed collections use `ValueRecord.length/ipairs/pairs`; local plain tables may use native traversal | CORRECTED |
+| External Yield | not part of current live D-0147 Candidate/control path; retained only as historical/possible concept with prohibitive proof burden | ALIGNED |
+
+**Audit conclusion:** no redesign of the successful v4.7.126 D-0147 control model is indicated. v4.7.127 is architecture/code/documentation alignment only.
+
+---
+
+# v4.7.126 D-0147 architecture/code alignment — 60 m Native-Max calibration TEST
+
+| Governing concept | v4.7.126 test implementation | Alignment |
+|---|---|---|
+| Bounded Infield Retreat / one-shot Infield Alignment | fixed initial centroid bearing, no continuous correction | PRESERVED |
+| Courtesy movement allowance | 60 m realised progress toward centroid | TEST CALIBRATION |
+| Retreat speed | vehicle motor native maximum forward speed sampled once at INFIELD admission; no D-0147 8 km/h cap | TEST CALIBRATION |
+| Protected Yield Interval | authorising productive worker(s) remain held during terminal translation | PRESERVED |
+| Continuation Renewal / repeat admission | unchanged from v4.7.125 | PRESERVED |
+| Courtesy Exhaustion | unchanged near Field World centre | PRESERVED |
+| Prediction / exclusion / path planning | absent | INTENTIONALLY NOT IMPLEMENTED |
+
+# v4.7.125 D-0147 architecture/code alignment — Continuation Renewal TEST
+
+| Governing concept | v4.7.125 test implementation | Alignment |
+|---|---|---|
+| Bounded Infield Retreat / one-shot Infield Alignment | unchanged from v4.7.124 | PRESERVED |
+| Protected Yield Interval | unchanged 0 km/h authorising-worker hold during terminal translation | PRESERVED |
+| Continuation Renewal | terminal episode stores authorising demand ids after retreat; physical post-release motion re-arms courtesy authority | TEST IMPLEMENTED |
+| Repeat admission | after Continuation Renewal, requires later native `blocked=true` plus positive Terminal Occupancy attribution | TEST IMPLEMENTED |
+| No immediate chaining | continuously positive conservative Future Space alone cannot trigger another 30 m retreat | PRESERVED / STRENGTHENED |
+| Conflict Renewal by disappearance | removed from live D-0147 repeat lifecycle | RETIRED |
+| 8 km/h / 30 m courtesy calibration | unchanged | PRESERVED |
+| Courtesy Exhaustion | unchanged near Field World centre | PRESERVED |
+
+# v4.7.124 D-0147 architecture/code alignment — Protected Yield traversal correction
+
+| Governing concept | v4.7.124 test implementation | Alignment |
+|---|---|---|
+| Protected Yield Interval | unchanged: 0 km/h Regulation lease on authorising productive assembly during terminal translation | PRESERVED |
+| Immutable architecture values | `protectedDemandAssemblies` traversed only with `ValueRecord.length/ipairs` | CORRECTED |
+| Bounded Infield Retreat / one-shot Infield Alignment | unchanged from v4.7.122 | PRESERVED |
+| 8 km/h / 30 m courtesy calibration | unchanged | PRESERVED |
+
+# v4.7.123 D-0147 architecture/code alignment — Protected Yield Interval TEST
+
+| Governing concept | v4.7.123 test implementation | Alignment |
+|---|---|---|
+| Bounded Infield Retreat / one-shot Infield Alignment | unchanged from v4.7.122 | PRESERVED |
+| Protected Yield Interval | Candidate carries authorising demand assemblies in the D-0147 Commitment; Dispatcher applies 0 km/h Regulation leases only before `INFIELD` translation | TEST IMPLEMENTED |
+| Productive job preservation | Regulation modifies only GIANTS max-speed ceiling; route, steering, forward/reverse choice and AI Job Episode remain native | PRESERVED |
+| Mixed authority composition | distinct assemblies may coexist in one Commitment: terminal POST_JOB_ACTUATION plus productive PROGRESS_ACTUATION/HOLD; same-assembly mixed ownership remains forbidden | TEST IMPLEMENTED |
+| Protected release | Dispatcher clears D-0147 Regulation leases after TerminalEgressControl has neutralised terminal actuation, and on settlement/failure/higher-authority exits | TEST IMPLEMENTED |
+| 8 km/h / 30 m | unchanged | TEST CALIBRATION |
+| Prediction / exclusion / path planning | absent | INTENTIONALLY NOT IMPLEMENTED |
+
+# v4.7.122 D-0147 architecture/code alignment — Bounded Infield Retreat TEST
+
+| Governing concept | v4.7.122 test implementation | Alignment |
+|---|---|---|
+| D-0147 is optional courtesy | legacy `AUTOMATIC_TERMINAL_EGRESS=true` remains the development consent gate; no automatic movement without positive Terminal Occupancy | ALIGNED for testing |
+| Bounded Infield Retreat | Candidate derives one fixed centroid bearing after compaction; Control uses forward-only `driveInWorldDirection()` | TEST IMPLEMENTED |
+| Field Centre is directional reference only | `geometryMetrics.centroidX/Z` propagated from immutable Field World snapshot; no target point/pursuit loop | TEST IMPLEMENTED |
+| No continuous course corrections | Candidate sets `continuousCourseCorrection=false`; Control stores fixed `infieldDirectionX/Z` and never recomputes it | TEST IMPLEMENTED |
+| Bounded courtesy quantum | `TERMINAL_INFIELD_RETREAT_DISTANCE_M=30.0`; completion is realised reduction in centre distance | TEST CALIBRATION |
+| Reactive Terminal Yield | retreat completion settles the current Commitment; episode remains Pending Player Reclamation | TEST IMPLEMENTED |
+| Conflict Renewal | `yieldAwaitingRenewal` suppresses a fresh retreat until the prior positive obstruction has disappeared | TEST IMPLEMENTED |
+| Courtesy Exhaustion | if centre distance is already within one retreat allowance, Control rejects further movement as exhaustion and Player Escalation follows | TEST IMPLEMENTED |
+| Positive Field-Exit Settlement | removed from live D-0147 Control/Candidate path | RETIRED by v4.7.122 test |
+| Vehicle Activity Context / Actuation Neutralisation | v4.7.119/v4.7.120 mechanics reused unchanged in principle, now around INFIELD phase | PRESERVED |
+| External Yield | no v4.7.122 candidate expression; stronger admissibility proof remains unresolved | NOT ATTEMPTED |
+| Productive exclusion zones / parking search | absent | INTENTIONALLY NOT IMPLEMENTED |
+
+---
+
 # v4.7.121 D-0147 architecture/code alignment — Terminal Yield canonical candidate
 
 | Governing concept | v4.7.121 candidate implementation | Alignment |

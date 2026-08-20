@@ -14,8 +14,8 @@ end
 
 local function targetContext(picture)
     local contexts = picture.commitmentContext or {}
-    if #contexts == 0 then return nil end
-    if #contexts ~= 1 then error("Commitment application requires one unambiguous target context",3) end
+    if OuttaMyWay.ValueRecord.length(contexts) == 0 then return nil end
+    if OuttaMyWay.ValueRecord.length(contexts) ~= 1 then error("Commitment application requires one unambiguous target context",3) end
     if type(contexts[1].commitmentId) ~= "string" then error("Commitment context requires commitmentId",3) end
     return contexts[1]
 end
@@ -67,10 +67,13 @@ function Boundary:_admitFromCandidate(picture,decision,candidate)
     local progressOwnership=candidate.evidenceBasis.progressActuationOwnership
     local postJobOwnership=candidate.evidenceBasis.postJobActuationOwnership
     if physical[candidate.capability] then
-        local progressCount=type(progressOwnership)=="table" and type(progressOwnership.assemblyIds)=="table" and #progressOwnership.assemblyIds or 0
-        local postJobCount=type(postJobOwnership)=="table" and type(postJobOwnership.assemblyIds)=="table" and #postJobOwnership.assemblyIds or 0
+        local progressCount=type(progressOwnership)=="table" and type(progressOwnership.assemblyIds)=="table" and OuttaMyWay.ValueRecord.length(progressOwnership.assemblyIds) or 0
+        local postJobCount=type(postJobOwnership)=="table" and type(postJobOwnership.assemblyIds)=="table" and OuttaMyWay.ValueRecord.length(postJobOwnership.assemblyIds) or 0
         if progressCount+postJobCount==0 then error("physical selected Candidate requires explicit actuation ownership",3) end
-        if progressCount>0 and postJobCount>0 then error("physical selected Candidate must select one actuation authority class",3) end
+        -- v4.7.125 D-0147 Protected Yield may compose progress authority for one
+        -- productive assembly with post-job authority for a different completed
+        -- assembly. validatePhysicalOwnershipAgainstComposition() below remains the
+        -- invariant: one assembly may never own both classes simultaneously.
         for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(progressOwnership and progressOwnership.assemblyIds or {}) do progressAssemblyIds[#progressAssemblyIds+1]=assemblyId end
         for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(postJobOwnership and postJobOwnership.assemblyIds or {}) do postJobAssemblyIds[#postJobAssemblyIds+1]=assemblyId end
     end

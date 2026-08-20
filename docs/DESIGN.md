@@ -1,3 +1,9 @@
+# v4.7.127 D-0147 design note — explicit best-effort special case
+
+D-0147 is intentionally outside the normal precision envelope for physical Candidate spatial proof. Because the player explicitly consents to bounded movement of an already-completed worker solely to buy time before reclamation, the current Bounded Infield Retreat does not require predictive full-sweep containment or complete transition-clearance proof. The implementation must state that exception explicitly; it must not relabel empirical success as geometry evidence. Normal productive/cooperative manoeuvres remain governed by the ordinary mandatory constraints.
+
+---
+
 # v4.7.99 D-0146 design precedence
 
 Current design separates Step 1 trajectory-based Opposed Corridor Conflict classification from Step 2 local passage construction. The runtime is intentionally not yet aligned beyond the bounded v4.7.98 TS015 implementation. Where older design text assumes Productive-only head-on admission, fixed sidestep geometry, King/Refuge or Rook/file prediction, D-0146 takes precedence.

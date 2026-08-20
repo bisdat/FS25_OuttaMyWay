@@ -1,3 +1,30 @@
+# v4.7.128 candidate responsibility status
+
+No responsibility change from live-validated v4.7.127. Existing D-0147 ownership below is carried unchanged into canonical review.
+
+---
+
+# v4.7.127 D-0147 current responsibility map
+
+| Responsibility | Owner | Current state |
+|---|---|---|
+| Observe completed worker / Player Claim / source reactivation | Observation | established |
+| Establish positive Terminal Occupancy and Continuation Renewal | Situation Assessment | implemented / live-supported |
+| Apply Terminal Yield Consent and choose one crude Bounded Infield Retreat | Candidate | implemented |
+| Mark generic predictive containment/transition constraints non-applicable for this special case | Candidate contract | explicit D-0147 Courtesy Constraint Exception |
+| Preserve normal mandatory constraints outside the special case | Constraint architecture | unchanged |
+| Own POST_JOB authority for terminal assembly and PROGRESS/HOLD authority for authorising productive assembly | Commitment / Authority | implemented |
+| Hold authorising productive worker during translation | Protected Yield / Control Dispatcher | implemented / live-supported |
+| Execute fixed one-shot Infield Alignment and 60 m native-max retreat | Terminal Control / Post-Job Actuation Authority | implemented / live-supported |
+| Neutralise before release | Control / Authority | mandatory / live-supported |
+| Re-arm only after useful continuation, then later attributed block | Situation / Commitment lifecycle | implemented / live-supported |
+| Stop trying near centre | Courtesy Exhaustion → Player Escalation | implemented |
+| Final cleanup / any unsupported configuration | Player | governing final housekeeping authority |
+
+**Protected abstraction:** D-0147 owns no parking optimisation, route planner, future-demand exclusion map, third-party sweep guarantee, or permanent settlement claim.
+
+---
+
 # v4.7.121 D-0147 Terminal Yield responsibility update
 
 | Responsibility | Owner | Candidate state |

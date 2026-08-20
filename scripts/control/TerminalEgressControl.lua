@@ -1,10 +1,8 @@
--- FS25_OuttaMyWay v4.7.121 CANONICAL CANDIDATE — v4.7.120 external-egress mechanical expression retained; broader Terminal Yield policy is not yet implemented here.
--- D-0147 bounded post-job Control. It executes only a Candidate-supplied phase:
--- supported compaction OR one supplied Oblique Boundary Egress Exit Alignment. It
--- does not assess Terminal Occupancy, choose boundaries, search margins or retry.
--- v4.7.119 validated Vehicle Activity Context. v4.7.120 retires fixed-point pursuit:
--- Control holds one Candidate world Exit Alignment direction until Positive
--- Field-Exit Settlement proves the compact assembly is completely clear.
+-- FS25_OuttaMyWay v4.7.128 CANONICAL CANDIDATE — D-0147 Bounded Infield Retreat.
+-- Legacy module naming is retained to minimise plumbing change. Control executes only
+-- supported compaction OR one Candidate-supplied fixed Infield Alignment. The world
+-- direction is captured once; driveInDirection() remains forward-only and receives no
+-- continuous point-pursuit/course-correction updates.
 
 OuttaMyWay.TerminalEgressControl={}
 local Control=OuttaMyWay.TerminalEgressControl
@@ -44,86 +42,10 @@ local function steeringTelemetryText(telemetry)
 end
 
 local function finite(value) return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge end
-local function pointInRing(x,z,ring)
-    if type(ring)~="table" then return false end
-    local ringLength=OuttaMyWay.ValueRecord.length(ring)
-    if ringLength<3 then return false end
-    local inside=false; local j=ringLength
-    for i=1,ringLength do
-        local a,b=ring[i],ring[j]
-        if finite(a and a.x) and finite(a and a.z) and finite(b and b.x) and finite(b and b.z) then
-            if ((a.z>z)~=(b.z>z)) then
-                local crossX=(b.x-a.x)*(z-a.z)/(b.z-a.z)+a.x
-                if x<crossX then inside=not inside end
-            end
-        end
-        j=i
-    end
-    return inside
-end
-local function pointSegmentDistance(px,pz,a,b)
-    local vx,vz=b.x-a.x,b.z-a.z; local denom=vx*vx+vz*vz
-    local t=0
-    if denom>0.0000001 then t=((px-a.x)*vx+(pz-a.z)*vz)/denom; t=math.max(0,math.min(1,t)) end
-    local qx,qz=a.x+t*vx,a.z+t*vz; local dx,dz=px-qx,pz-qz
+local function distanceTo(x,z,cx,cz)
+    if not finite(x) or not finite(z) or not finite(cx) or not finite(cz) then return nil end
+    local dx,dz=x-cx,z-cz
     return math.sqrt(dx*dx+dz*dz)
-end
-local function positiveRepresentedFieldExit(representation,boundary)
-    if type(representation)~="table" or type(boundary)~="table" then
-        return false,{kind="D0147_FIELD_EXIT_UNRESOLVED",reason="LIVE_REPRESENTATION_OR_OUTER_BOUNDARY_UNAVAILABLE"}
-    end
-    local boundaryLength=OuttaMyWay.ValueRecord.length(boundary)
-    if boundaryLength<3 then
-        return false,{kind="D0147_FIELD_EXIT_UNRESOLVED",reason="LIVE_REPRESENTATION_OR_OUTER_BOUNDARY_UNAVAILABLE"}
-    end
-    local worldPrimitives=representation.worldPrimitives or {}
-    local count=0
-    for _,primitive in OuttaMyWay.ValueRecord.ipairs(worldPrimitives) do
-        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true and finite(primitive.x) and finite(primitive.z) and finite(primitive.radius) then count=count+1 end
-    end
-    if count==0 then return false,{kind="D0147_FIELD_EXIT_UNRESOLVED",reason="POSITIVE_TERMINAL_FOOTPRINT_UNAVAILABLE"} end
-
-    -- A represented-footprint AABB wholly beyond the Field World AABB is a
-    -- sufficient positive exit witness and avoids depending on a second live
-    -- fold-state qualification after COMPACTION_COMPLETE already established
-    -- the compact configuration for this Commitment.
-    local fieldMinX,fieldMaxX,fieldMinZ,fieldMaxZ=nil,nil,nil,nil
-    for _,point in OuttaMyWay.ValueRecord.ipairs(boundary) do
-        if finite(point and point.x) and finite(point and point.z) then
-            fieldMinX=fieldMinX==nil and point.x or math.min(fieldMinX,point.x); fieldMaxX=fieldMaxX==nil and point.x or math.max(fieldMaxX,point.x)
-            fieldMinZ=fieldMinZ==nil and point.z or math.min(fieldMinZ,point.z); fieldMaxZ=fieldMaxZ==nil and point.z or math.max(fieldMaxZ,point.z)
-        end
-    end
-    local bounds=representation.planViewSummary and representation.planViewSummary.bounds or nil
-    if bounds and finite(bounds.minX) and finite(bounds.maxX) and finite(bounds.minZ) and finite(bounds.maxZ) and fieldMinX~=nil then
-        if bounds.maxX<fieldMinX or bounds.minX>fieldMaxX or bounds.maxZ<fieldMinZ or bounds.minZ>fieldMaxZ then
-            return true,{kind="D0147_POSITIVE_REPRESENTED_FIELD_EXIT",witness="DISJOINT_FIELD_WORLD_AABB",primitiveCount=count,representedBounds=bounds,fieldBounds={minX=fieldMinX,maxX=fieldMaxX,minZ=fieldMinZ,maxZ=fieldMaxZ}}
-        end
-    end
-
-    local minClearance=nil
-    for _,primitive in OuttaMyWay.ValueRecord.ipairs(worldPrimitives) do
-        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true and finite(primitive.x) and finite(primitive.z) and finite(primitive.radius) then
-            if pointInRing(primitive.x,primitive.z,boundary) then
-                return false,{kind="D0147_FIELD_EXIT_UNRESOLVED",reason="REPRESENTED_PRIMITIVE_CENTRE_INSIDE_FIELD",primitiveId=primitive.identity,primitiveCount=count}
-            end
-            local distance=nil
-            for i=1,boundaryLength do
-                local a,b=boundary[i],boundary[(i % boundaryLength)+1]
-                if finite(a and a.x) and finite(a and a.z) and finite(b and b.x) and finite(b and b.z) then
-                    local d=pointSegmentDistance(primitive.x,primitive.z,a,b)
-                    if distance==nil or d<distance then distance=d end
-                end
-            end
-            if distance==nil then return false,{kind="D0147_FIELD_EXIT_UNRESOLVED",reason="OUTER_BOUNDARY_DISTANCE_UNAVAILABLE",primitiveId=primitive.identity} end
-            local clearance=distance-primitive.radius
-            if minClearance==nil or clearance<minClearance then minClearance=clearance end
-            if clearance<=0 then
-                return false,{kind="D0147_FIELD_EXIT_UNRESOLVED",reason="REPRESENTED_PRIMITIVE_INTERSECTS_FIELD_WORLD",primitiveId=primitive.identity,clearanceM=clearance,primitiveCount=count}
-            end
-        end
-    end
-    return true,{kind="D0147_POSITIVE_REPRESENTED_FIELD_EXIT",witness="ALL_POSITIVE_DISC_PRIMITIVES_OUTSIDE_POLYGON",primitiveCount=count,minBoundaryClearanceM=minClearance}
 end
 
 function Control.new(runtime,observationSource)
@@ -150,7 +72,7 @@ function Control:_complete(status,evidence)
     -- control path. Player Claim and source reactivation outrank OuttaMyWay, so
     -- no post-claim/post-reactivation actuation is permitted.
     local vehicle=state.vehicle or self:_vehicle(state.assemblyReferenceKey)
-    if state.phase=="EGRESS" and state.actuationIssued==true then
+    if state.phase=="INFIELD" and state.actuationIssued==true then
         if status=="PLAYER_CLAIM" then
             completionEvidence.neutralization={performed=false,reason="PLAYER_CLAIM_HIGHER_AUTHORITY"}
         elseif status=="SUPERSEDED" then
@@ -170,10 +92,10 @@ function Control:_complete(status,evidence)
     end
 
     -- Activity is context, not productive intent. Always relinquish the temporary
-    -- forceIsActive assertion when D-0147 leaves EGRESS, including Player Claim and
+    -- forceIsActive assertion when D-0147 leaves INFIELD, including Player Claim and
     -- source reactivation. On owned exits the actuation neutralisation above occurs
     -- first while GIANTS wheel physics is still active.
-    if state.phase=="EGRESS" and state.activityContext~=nil then
+    if state.phase=="INFIELD" and state.activityContext~=nil then
         if vehicle==nil then
             completionEvidence.activityContext={released=false,reason="COMPLETED_ASSEMBLY_RUNTIME_OBJECT_LOST"}
             logWarning("VEHICLE_ACTIVITY_CONTEXT_RELEASE_UNAVAILABLE commitment=%s episode=%s reason=%s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),"COMPLETED_ASSEMBLY_RUNTIME_OBJECT_LOST")
@@ -191,7 +113,7 @@ function Control:_complete(status,evidence)
     self.active=nil
     local observation={status=status}
     if status=="COMPACTION_COMPLETE" then observation.compactionComplete=true
-    elseif status=="MANOEUVRE_COMPLETE" then observation.manoeuvreCompleted=true
+    elseif status=="MANOEUVRE_COMPLETE" then observation.retreatCompleted=true
     elseif status=="PLAYER_CLAIM" then observation.playerClaimed=true
     elseif status=="FAILED" then observation.exhausted=true
     elseif status=="SUPERSEDED" then observation.sourceIntentReactivated=true end
@@ -237,10 +159,18 @@ function Control:executeControlRequest(request,candidate)
         self:_publish(state,{status="COMPACTION_IN_PROGRESS",existingMotion=false})
         logInfo("COMPACTION_STARTED commitment=%s episode=%s assembly=%s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey))
         return true,"COMPACTION_STARTED"
-    elseif bridge.phase=="EGRESS" then
+    elseif bridge.phase=="INFIELD" then
         local objective=bridge.objective
-        if type(objective)~="table" or not tonumber(objective.exitDirectionX) or not tonumber(objective.exitDirectionZ) then
-            return self:_rejectBeforeStart(request,bridge,"FAILED","OBLIQUE_EGRESS_OBJECTIVE_UNSUPPORTED:"..tostring(bridge.objectiveReason))
+        if type(objective)~="table" then
+            return self:_rejectBeforeStart(request,bridge,"FAILED","INFIELD_RETREAT_OBJECTIVE_UNSUPPORTED:"..tostring(bridge.objectiveReason))
+        end
+        if objective.courtesyExhausted==true then
+            return self:_rejectBeforeStart(request,bridge,"FAILED","COURTESY_EXHAUSTED_AT_FIELD_CENTRE")
+        end
+        if not tonumber(objective.infieldDirectionX) or not tonumber(objective.infieldDirectionZ)
+            or not tonumber(objective.fieldCentreX) or not tonumber(objective.fieldCentreZ)
+            or not tonumber(objective.initialDistanceToCentreM) or not tonumber(objective.retreatDistanceM) then
+            return self:_rejectBeforeStart(request,bridge,"FAILED","INFIELD_RETREAT_OBJECTIVE_INCOMPLETE:"..tostring(bridge.objectiveReason))
         end
         local position=self.postJobAuthority:position(vehicle); if position==nil then return self:_rejectBeforeStart(request,bridge,"FAILED","POST_JOB_POSE_UNAVAILABLE") end
         local activityOk,activityContext=self.postJobAuthority:acquireVehicleActivityContext(vehicle)
@@ -250,9 +180,18 @@ function Control:executeControlRequest(request,candidate)
         end
         state.activityContext=activityContext
         logInfo("VEHICLE_ACTIVITY_CONTEXT_ACQUIRED commitment=%s episode=%s assembly=%s acquireCalls=%d previousForceIsActive=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),self.postJobAuthority:getActivityContextAcquireCallCount(),tostring(activityContext.previousForceIsActive),steeringTelemetryText(activityContext.postAcquireSteering))
-        state.exitDirectionX=objective.exitDirectionX; state.exitDirectionZ=objective.exitDirectionZ; state.speedKmh=OuttaMyWay.TERMINAL_EGRESS_SPEED_KMH; state.outerBoundary=objective.outerBoundary
-        self:_publish(state,{status="MANOEUVRE_IN_PROGRESS",exitDirectionX=state.exitDirectionX,exitDirectionZ=state.exitDirectionZ,settlement="POSITIVE_FIELD_EXIT_ONLY"})
-        logInfo("MANOEUVRE_STARTED commitment=%s episode=%s assembly=%s exitDirection=(%.4f,%.4f) speed=%.2fkmh objective=%s alignment=%s referenceSegment=%s crossingSegment=%s headingOutwardDot=%.3f exitOutwardDot=%.3f settlement=POSITIVE_FIELD_EXIT_ONLY",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),tonumber(state.exitDirectionX) or 0,tonumber(state.exitDirectionZ) or 0,tonumber(state.speedKmh) or 0,tostring(objective.objectiveKind),tostring(objective.alignmentMode),tostring(objective.referenceSegmentIndex),tostring(objective.segmentIndex),tonumber(objective.headingOutwardDot) or 0,tonumber(objective.exitOutwardDot) or 0)
+        state.infieldDirectionX=objective.infieldDirectionX; state.infieldDirectionZ=objective.infieldDirectionZ
+        state.fieldCentreX=objective.fieldCentreX; state.fieldCentreZ=objective.fieldCentreZ
+        state.initialDistanceToCentreM=objective.initialDistanceToCentreM
+        state.retreatDistanceM=objective.retreatDistanceM
+        state.completionDistanceToCentreM=objective.completionDistanceToCentreM or (state.initialDistanceToCentreM-state.retreatDistanceM)
+        local nativeMaxSpeedKmh,nativeMaxReason=self.postJobAuthority:maximumForwardSpeedKmh(vehicle)
+        if nativeMaxSpeedKmh==nil then
+            return self:_rejectBeforeStart(request,bridge,"FAILED","POST_JOB_NATIVE_MAX_SPEED_UNAVAILABLE:"..tostring(nativeMaxReason))
+        end
+        state.speedKmh=nativeMaxSpeedKmh
+        self:_publish(state,{status="MANOEUVRE_IN_PROGRESS",infieldDirectionX=state.infieldDirectionX,infieldDirectionZ=state.infieldDirectionZ,fieldCentreX=state.fieldCentreX,fieldCentreZ=state.fieldCentreZ,initialDistanceToCentreM=state.initialDistanceToCentreM,retreatDistanceM=state.retreatDistanceM,continuousCourseCorrection=false,settlement="BOUNDED_INFIELD_PROGRESS",speedPolicy="NATIVE_MAX_FORWARD"})
+        logInfo("INFIELD_RETREAT_STARTED commitment=%s episode=%s assembly=%s fixedDirection=(%.4f,%.4f) centre=(%.2f,%.2f) initialCentreDistance=%.2fm retreatAllowance=%.2fm speed=%.2fkmh speedPolicy=NATIVE_MAX_FORWARD alignment=%s continuousCourseCorrection=false",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),tonumber(state.infieldDirectionX) or 0,tonumber(state.infieldDirectionZ) or 0,tonumber(state.fieldCentreX) or 0,tonumber(state.fieldCentreZ) or 0,tonumber(state.initialDistanceToCentreM) or 0,tonumber(state.retreatDistanceM) or 0,tonumber(state.speedKmh) or 0,tostring(objective.alignmentMode))
         logInfo("STEERING_BASELINE commitment=%s episode=%s assembly=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),steeringTelemetryText(self.postJobAuthority:steeringTelemetry(vehicle)))
         return true,"MANOEUVRE_STARTED"
     end
@@ -261,8 +200,8 @@ end
 function Control:update(dt)
     local state=self.active; if state==nil then return end
     state.lastDt=dt
-    if tokenFor(self.runtime,state)==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_EGRESS_EXHAUSTION",reason="POST_JOB_AUTHORITY_LOST"}); return end
-    local vehicle=self:_vehicle(state.assemblyReferenceKey); if vehicle==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_EGRESS_EXHAUSTION",reason="COMPLETED_ASSEMBLY_RUNTIME_OBJECT_LOST"}); return end
+    if tokenFor(self.runtime,state)==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="POST_JOB_AUTHORITY_LOST"}); return end
+    local vehicle=self:_vehicle(state.assemblyReferenceKey); if vehicle==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="COMPLETED_ASSEMBLY_RUNTIME_OBJECT_LOST"}); return end
     if self.postJobAuthority:isPlayerClaimed(vehicle) then self:_complete("PLAYER_CLAIM",{kind="D0147_PLAYER_CLAIM",directDriveCallsAtClaim=self.postJobAuthority:getDirectDriveCallCount()}); return end
     if self.postJobAuthority:isSourceReactivated(vehicle) then self:_complete("SUPERSEDED",{kind="D0147_SOURCE_INTENT_REACTIVATED"}); return end
     local elapsed=(tonumber(g_time) or 0)-state.startedAt
@@ -275,12 +214,12 @@ function Control:update(dt)
         end
         if elapsed>(tonumber(OuttaMyWay.TERMINAL_EGRESS_COMPACTION_TIMEOUT_MS) or 25000) then
             if state.configurationOwned then self.configurationAuthority:clear(vehicle) end
-            self:_complete("FAILED",{kind="D0147_TERMINAL_EGRESS_EXHAUSTION",reason="COMPACTION_WATCHDOG_EXPIRED",configurationEvidence=evidence}); return
+            self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="COMPACTION_WATCHDOG_EXPIRED",configurationEvidence=evidence}); return
         end
         self:_publish(state,{status="COMPACTION_IN_PROGRESS",configurationEvidence=evidence})
         return
     end
-    if state.phase=="EGRESS" then
+    if state.phase=="INFIELD" then
         if state.actuationIssued==true then
             local now=tonumber(g_time) or 0
             if state.nextUpdateTelemetryLogged~=true then
@@ -291,30 +230,31 @@ function Control:update(dt)
                 logInfo("STEERING_HEARTBEAT commitment=%s episode=%s assembly=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),steeringTelemetryText(self.postJobAuthority:steeringTelemetry(vehicle)))
             end
         end
-        local representation=self.source and type(self.source.getTrackedRepresentation)=="function" and self.source:getTrackedRepresentation(state.assemblyReferenceKey) or nil
-        local fieldExitPositive,fieldExitEvidence=positiveRepresentedFieldExit(representation,state.outerBoundary)
-        if fieldExitPositive then
-            self:_complete("MANOEUVRE_COMPLETE",{kind="D0147_OBLIQUE_BOUNDARY_EGRESS_COMPLETE",fieldExitEvidence=fieldExitEvidence,directDriveCalls=self.postJobAuthority:getDirectDriveCallCount()}); return
+        local position=self.postJobAuthority:position(vehicle); if position==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="POST_JOB_POSE_LOST"}); return end
+        local centreDistance=distanceTo(position.x,position.z,state.fieldCentreX,state.fieldCentreZ)
+        if centreDistance==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="FIELD_CENTRE_DISTANCE_UNAVAILABLE"}); return end
+        local inwardProgress=state.initialDistanceToCentreM-centreDistance
+        if inwardProgress>=state.retreatDistanceM or centreDistance<=state.completionDistanceToCentreM then
+            self:_complete("MANOEUVRE_COMPLETE",{kind="D0147_BOUNDED_INFIELD_RETREAT_COMPLETE",initialDistanceToCentreM=state.initialDistanceToCentreM,finalDistanceToCentreM=centreDistance,inwardProgressM=inwardProgress,retreatDistanceM=state.retreatDistanceM,fixedDirectionX=state.infieldDirectionX,fixedDirectionZ=state.infieldDirectionZ,continuousCourseCorrection=false,directDriveCalls=self.postJobAuthority:getDirectDriveCallCount()}); return
         end
-        local position=self.postJobAuthority:position(vehicle); if position==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_EGRESS_EXHAUSTION",reason="POST_JOB_POSE_LOST"}); return end
         if elapsed>(tonumber(OuttaMyWay.TERMINAL_EGRESS_MOVE_TIMEOUT_MS) or 45000) then
-            self:_complete("FAILED",{kind="D0147_TERMINAL_EGRESS_EXHAUSTION",reason="ONE_MANOEUVRE_WATCHDOG_EXPIRED",fieldExitEvidence=fieldExitEvidence}); return
+            self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="ONE_RETREAT_WATCHDOG_EXPIRED",initialDistanceToCentreM=state.initialDistanceToCentreM,currentDistanceToCentreM=centreDistance,inwardProgressM=inwardProgress}); return
         end
-        local ok,result=self.postJobAuthority:driveInWorldDirection(vehicle,dt,state.exitDirectionX,state.exitDirectionZ,state.speedKmh)
+        local ok,result=self.postJobAuthority:driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)
         if not ok then
             if result=="PLAYER_CLAIM" then self:_complete("PLAYER_CLAIM",{kind="D0147_PLAYER_CLAIM",directDriveCallsAtClaim=self.postJobAuthority:getDirectDriveCallCount()})
             elseif result=="SOURCE_INTENT_REACTIVATED" then self:_complete("SUPERSEDED",{kind="D0147_SOURCE_INTENT_REACTIVATED"})
-            else self:_complete("FAILED",{kind="D0147_TERMINAL_EGRESS_EXHAUSTION",reason=tostring(result)}) end
+            else self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason=tostring(result)}) end
             return
         end
         state.actuationIssued=true
         if state.directionEvidenceLogged~=true and type(result)=="table" then
             state.directionEvidenceLogged=true
             state.lastSteeringHeartbeatAt=tonumber(g_time) or 0
-            logInfo("EXIT_ALIGNMENT_ACTUATION commitment=%s episode=%s assembly=%s localDirection=(%.4f,%.4f) headingErrorDeg=%.2f steeringAngleLimitDeg=%.2f",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),tonumber(result.localDirectionX) or 0,tonumber(result.localDirectionZ) or 0,tonumber(result.headingErrorDeg) or 0,tonumber(result.steeringAngleLimitDeg) or 0)
+            logInfo("INFIELD_ALIGNMENT_ACTUATION commitment=%s episode=%s assembly=%s localDirection=(%.4f,%.4f) headingErrorDeg=%.2f steeringAngleLimitDeg=%.2f fixedWorldDirection=(%.4f,%.4f)",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),tonumber(result.localDirectionX) or 0,tonumber(result.localDirectionZ) or 0,tonumber(result.headingErrorDeg) or 0,tonumber(result.steeringAngleLimitDeg) or 0,tonumber(state.infieldDirectionX) or 0,tonumber(state.infieldDirectionZ) or 0)
             logInfo("STEERING_COMMAND_STATE commitment=%s episode=%s assembly=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),steeringTelemetryText(result.postCommandSteering))
         end
-        self:_publish(state,{status="MANOEUVRE_IN_PROGRESS",exitDirectionX=state.exitDirectionX,exitDirectionZ=state.exitDirectionZ,fieldExitEvidence=fieldExitEvidence,directDriveCalls=self.postJobAuthority:getDirectDriveCallCount(),directionEvidence=result})
+        self:_publish(state,{status="MANOEUVRE_IN_PROGRESS",infieldDirectionX=state.infieldDirectionX,infieldDirectionZ=state.infieldDirectionZ,fieldCentreX=state.fieldCentreX,fieldCentreZ=state.fieldCentreZ,currentDistanceToCentreM=centreDistance,inwardProgressM=inwardProgress,retreatDistanceM=state.retreatDistanceM,continuousCourseCorrection=false,directDriveCalls=self.postJobAuthority:getDirectDriveCallCount(),directionEvidence=result})
     end
 end
 function Control:loadMap() self.active=nil; self.latestObservation=nil; self.configurationAuthority:clearAll() end

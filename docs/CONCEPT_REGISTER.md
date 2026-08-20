@@ -1,3 +1,55 @@
+# v4.7.127 audit concepts — D-0147 Courtesy Constraint Exception
+
+**CURRENT / GOVERNING D-0147 CONCEPTS:** Pending Player Reclamation; Terminal Yield Consent; Continuity, Not Settlement; Reactive Terminal Yield; Bounded Infield Retreat; Infield Alignment; Protected Yield Interval; Continuation Renewal; Courtesy Exhaustion; Player Claim; Actuation Neutralisation; Player Escalation; **D-0147 Courtesy Constraint Exception**.
+
+- **D-0147 Courtesy Constraint Exception** — narrow architectural exemption for the player-consented Bounded Infield Retreat from generic predictive `FIELD_WORLD_CONTAINMENT` and complete-envelope `TRANSITION_CLEARANCE` proof. It does not weaken mandatory constraints for normal physical Candidates and does not relax D-0147 authority, consent, protection, boundedness or neutralisation boundaries.
+- **Courtesy Evidence Gap — RESOLVED** — v4.7.126 behaviour had empirical support but Candidate overstated that support as positive containment/clearance evidence. v4.7.127 resolves the mismatch by making those constraints not applicable for this special case rather than adding a planner or redefining PASS.
+- **Three-Assembly Courtesy Continuation Validation** — v4.7.126 Patriot + Condor + S416 live evidence: both completed sprayers yielded decisively under Protected Yield and S416 completed the operation. Scope is the tested configuration, not universal assembly authority.
+
+**SUPERSEDED AS CURRENT D-0147 DIRECTION POLICY:** Conflict-Relative Infield Yield and Deterministic Dispersion remain historical architectural exploration. The live mechanism derives one fixed bearing from the terminal assembly to the Field World centroid and does not derive destination/direction from productive demand or perform dispersion.
+
+---
+
+# v4.7.126 calibration addendum
+
+## Decisive Courtesy Quantum
+For D-0147's optional buy-time behaviour, a deliberately large literal movement allowance is acceptable when it bounds consented movement rather than asserting environmental clearance. v4.7.126 tests 60 m of realised inward progress.
+
+## Native-Max Courtesy Translation
+D-0147 no longer imposes its historical 8 km/h retreat ceiling. After admission, Control samples the completed vehicle motor's native maximum forward speed once and uses that value for the fixed-bearing translation. This is intervention-duration calibration, not traffic priority or clearance authority.
+
+# v4.7.125 implementation discovery addendum
+
+## Continuation Renewal
+After a completed D-0147 Bounded Infield Retreat, the courtesy mechanism becomes eligible for a later repeat only after the authorising productive GIANTS assembly/assemblies positively resume physical progression. Renewal is about demonstrated continuation, not disappearance of conservative conflict geometry.
+
+## Repeat Courtesy Admission
+Continuation Renewal only re-arms D-0147. A later retreat additionally requires a subsequent native `blocked=true` state that is positively attributed to the same Pending Player Reclamation assembly. This prevents immediate chained retreats while permitting a new courtesy quantum after bought time has genuinely been consumed.
+
+## Conflict Renewal — superseded for D-0147 repetition
+The v4.7.122 rule requiring the previous represented conflict to disappear is retained as historical evidence but is no longer the live repeat gate. v4.7.124 showed that useful continuation can resume even while conservative Future Space remains positive.
+
+# v4.7.124 implementation discovery addendum
+
+- **Protected Yield Traversal Defect** — recurring implementation defect class where a sealed nested ValueRecord is read with native Lua `#`/`pairs`/`ipairs`, causing GIANTS proxy traversal to omit architecture values. v4.7.123 therefore admitted Protected Yield authority but applied no physical hold. This does not alter Protected Yield architecture.
+- **ValueRecord Traversal Standing Order** — before iterating any project architecture value, prove it is a plain Lua table or use `ValueRecord.length`, `ValueRecord.pairs`, and `ValueRecord.ipairs`. Native traversal of sealed/immutable architecture values is forbidden unless plain-table provenance is explicit.
+
+# v4.7.123 D-0147 concept addendum
+
+- **Protected Yield Interval** — bounded interval from immediately before admitted terminal `INFIELD` translation until terminal Actuation Neutralisation completes. The productive assembly/assemblies whose conflict authorised the retreat retain their GIANTS jobs/routes but are temporarily held so the moving completed assembly does not race them through shared space.
+- **Concurrent Yield Conflict** — observed failure mode in v4.7.122 where a productive worker and a moving terminal-yield assembly remain simultaneously mobile and their evolving occupancies can collide. It is resolved by sequencing, not scenario-specific speed tuning.
+
+# v4.7.122 D-0147 current concept addendum
+
+- **Bounded Infield Retreat** — one optional, positively admitted, forward-only courtesy movement of a completed assembly into its source Field World; intended to buy player-reclamation time, not to park or settle the assembly.
+- **Infield Alignment** — one fixed world direction sampled after compaction from the completed assembly's current position toward the immutable Field World centroid. The centroid is a directional reference only; no continuous centre pursuit/course correction is permitted.
+- **Conflict Renewal** — after a bounded retreat, the authorising conflict must positively disappear before a later positive conflict can authorise another retreat. A persistent conflict cannot chain retreats back-to-back.
+- **Courtesy Exhaustion** — D-0147's autonomous courtesy options are exhausted once the completed assembly is broadly central (or another bounded retreat is unsupported); a later/current obstruction escalates to the player rather than triggering parking search or another destination heuristic.
+
+**Working scope hypothesis, not invariant:** current D-0147 thought experiments use at most three materially relevant assemblies (completed subject + continuing worker + one other assembly). Evidence from broader assembly/agronomic configurations may revise this.
+
+---
+
 # v4.7.121 current Terminal Yield concepts
 
 **CURRENT / GOVERNING TERMINAL-OCCUPANCY CONCEPTS:** Pending Player Reclamation; Terminal Yield Consent; Continuity, Not Settlement; Reactive Terminal Yield; No Final Settlement Requirement; Clearance Authority Conflict; Egress Externality Constraint; External Yield; Conflict-Relative Infield Yield; Deterministic Dispersion; Post-Job Actuation Authority; Vehicle Activity Context; Actuation Neutralisation; Player Claim; Player Escalation.

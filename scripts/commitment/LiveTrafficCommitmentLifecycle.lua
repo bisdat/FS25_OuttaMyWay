@@ -67,7 +67,7 @@ function Lifecycle.applyHeadOnDecision(runtime,picture,evaluated)
     if decision.commitmentAction=="CREATE" then return Lifecycle.applyInitialDecision(runtime,picture,evaluated) end
     if decision.commitmentAction~="REVISE" then return nil,"DECISION_NOT_CREATE_OR_REVISE" end
     local contexts=picture.commitmentContext or {}
-    if #contexts~=1 or type(contexts[1].commitmentId)~="string" then return nil,"UNRESOLVED_COMMITMENT_CONTEXT" end
+    if OuttaMyWay.ValueRecord.length(contexts)~=1 or type(contexts[1].commitmentId)~="string" then return nil,"UNRESOLVED_COMMITMENT_CONTEXT" end
     local candidate=selectedCandidate(evaluated)
     if candidate==nil or candidate.capability~="REPOSITION" then return nil,"SELECTED_HEAD_ON_REPOSITION_UNAVAILABLE" end
 
@@ -525,7 +525,7 @@ function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated)
     if action=="CREATE" then
         local result,reason=Lifecycle.applyInitialDecision(runtime,picture,evaluated)
         if result~=nil then
-            logInfo("COOPERATIVE_PASSAGE_CREATE commitment=%s owners=%d",tostring(result.commitment.identity),#(candidate.evidenceBasis.progressActuationOwnership and candidate.evidenceBasis.progressActuationOwnership.assemblyIds or {}))
+            logInfo("COOPERATIVE_PASSAGE_CREATE commitment=%s owners=%d",tostring(result.commitment.identity),OuttaMyWay.ValueRecord.length(candidate.evidenceBasis.progressActuationOwnership and candidate.evidenceBasis.progressActuationOwnership.assemblyIds or {}))
         end
         return result,reason
     end

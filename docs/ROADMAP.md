@@ -1,3 +1,22 @@
+# v4.7.128 immediate roadmap — canonical review boundary
+
+1. Review the exact v4.7.128 candidate fingerprint and evidence; no new behavioural work belongs in this candidate.
+2. If accepted, owner explicitly declares v4.7.128 canonical and synchronises the authoritative local repository.
+3. Only after canonicalisation, perform the separately agreed pre-1.0 versioning-policy transition as its own governed increment.
+
+---
+
+# v4.7.127 immediate roadmap — validate audit alignment, then canonicalise
+
+1. Validate that v4.7.127 preserves the live-validated v4.7.126 D-0147 behaviour; no new driving hypothesis is under test.
+2. Confirm D-0147 Candidate verdicts show the explicit Courtesy Constraint Exception for Field World containment and Transition Clearance while all authority/safety constraints remain mandatory.
+3. Confirm no ValueRecord traversal regression is introduced by the audit corrections.
+4. If clean, prepare the canonical candidate and owner review/provenance package.
+5. Only after canonicalisation, perform the separately agreed versioning-policy transition toward a meaningful `0.x.y.z` pre-release line.
+6. Resume new behavioural/assembly testing only after this milestone; do not add planning, exclusion geometry or parking logic pre-emptively.
+
+---
+
 # v4.7.121 immediate roadmap — Terminal Yield implementation alignment
 
 After owner canonicalisation, discuss before coding:

@@ -1,3 +1,13 @@
+FS25_OuttaMyWay v4.7.128 CANONICAL CANDIDATE — AUDITED THREE-ASSEMBLY COURTESY CONTINUATION BASELINE
+
+Authoritative baseline remains owner-declared v4.7.121 until explicit canonicalisation. v4.7.128 is the canonical candidate derived from that baseline through the validated v4.7.122–v4.7.127 engineering lineage.
+
+**Behaviour is frozen from live-validated v4.7.127:** Patriot and Condor each completed a protected 60 m one-shot-centroid Bounded Infield Retreat at native maximum speed; S416 then completed the full three-vehicle theatre. The v4.7.127 audit-alignment build subsequently completed fully with the same behaviour.
+
+**Candidate delta:** release identity, provenance, canonical-review records and version assertions only. No D-0147 movement, timing, distance, speed, bearing, hold, renewal, authority, constraint or Control behaviour is intentionally changed.
+
+**Canonicalisation boundary:** owner review applies only to the exact v4.7.128 candidate fingerprint. The separately agreed pre-1.0 versioning transition remains deferred until after this canonicalisation decision.
+
 FS25_OuttaMyWay v4.7.121 CANONICAL CANDIDATE — D-0147 TERMINAL YIELD / PENDING PLAYER RECLAMATION
 
 BASELINE
