@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.128 CANONICAL CANDIDATE — D-0147 Continuation Renewal dispatcher.
+-- FS25_OuttaMyWay v0.1.0.0 CANONICAL CANDIDATE — D-0147 Continuation Renewal dispatcher; behaviour inherited unchanged from canonical v4.7.128.
 --
 -- This module is the only automatic bridge from a sealed live Decision /
 -- Commitment application into physical Control. D-0146 Step-2 adds an active

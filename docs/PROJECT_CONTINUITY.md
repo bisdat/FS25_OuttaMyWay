@@ -1,3 +1,9 @@
+# v0.1.0.0 continuity boundary — version identity only
+
+Continue from owner-declared canonical v4.7.128. v0.1.0.0 introduces the deliberate pre-1.0 numbering epoch and no behavioural change. Historical 4.7.x references remain valid provenance. If accepted, canonicalise only the exact v0.1.0.0 candidate fingerprint. Future TEST builds on this line use the fourth component; accepted compatible canonical corrections advance PATCH; significant capability/architecture milestones advance MINOR.
+
+---
+
 # v4.7.128 canonical-candidate continuity — audited D-0147 plateau
 
 Owner-declared v4.7.121 remains canonical pending explicit owner review. v4.7.128 carries the fully live-validated v4.7.127 behaviour unchanged and advances only release identity/provenance plus canonical-review records.

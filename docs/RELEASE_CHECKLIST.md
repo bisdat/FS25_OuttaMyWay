@@ -1,3 +1,15 @@
+## v0.1.0.0 pre-1.0 versioning transition gate
+
+- [x] Owner-declared v4.7.128 canonical is the exact authority baseline.
+- [x] Version identity resets prospectively to `0.1.0.0`; historical 4.7.x records remain unchanged.
+- [x] `0.MINOR.PATCH.BUILD` policy is recorded: canonical BUILD=0; TEST uses BUILD; compatible accepted change advances PATCH; significant capability/architecture milestone advances MINOR; public release is `1.0.0.0`.
+- [x] Runtime/gameplay behaviour is frozen from canonical v4.7.128.
+- [ ] RRS candidate production passes from exact v4.7.128 canonical fingerprint with zero blockers.
+- [ ] Candidate package passes structural/RRS/manifest/version/deterministic-byte verification.
+- [ ] Owner reviews exact v0.1.0.0 fingerprint and explicitly declares canonical or rejects it.
+
+---
+
 ## v4.7.128 canonical-candidate scope gate
 
 - [x] Exact behavioural lineage is live-validated v4.7.127; no D-0147 behavioural delta is intended.

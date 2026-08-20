@@ -1,3 +1,11 @@
+# 2026-08-20 — pre-1.0 versioning epoch
+
+After owner declaration of v4.7.128 canonical, the project adopts deliberate pre-release numbering at v0.1.0.0. This is a governance/provenance correction: the earlier 4.7.x sequence reflected rapid experimental iteration rather than meaningful semantic release progression. Historical versions remain untouched. No engineering behaviour changes in this tranche.
+
+Future TEST iterations consume BUILD; accepted compatible corrections consume PATCH; significant architecture/capability milestones consume MINOR; public release remains `1.0.0.0`.
+
+---
+
 # 2026-08-20 — v4.7.128 canonical-candidate preparation
 
 v4.7.127 completed the full Patriot + Condor + S416 theatre after the architecture/code audit alignment. Candidate preparation therefore freezes that tested behaviour and advances only release identity/provenance and canonical-review records. Pre-1.0 versioning migration remains intentionally later.

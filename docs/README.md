@@ -1,3 +1,9 @@
+# Current project state — v0.1.0.0 CANONICAL CANDIDATE
+
+Owner-declared v4.7.128 is canonical. v0.1.0.0 changes version identity/provenance only and starts the deliberate pre-1.0 `0.MINOR.PATCH.BUILD` line. Canonical releases use BUILD=0; TEST iterations use BUILD; accepted compatible corrections advance PATCH; significant architecture/capability milestones advance MINOR; first public release is `1.0.0.0`. Runtime behaviour is unchanged from v4.7.128.
+
+---
+
 # Current project state — v4.7.128 CANONICAL CANDIDATE
 
 Owner-declared v4.7.121 remains canonical pending explicit review. v4.7.128 carries the fully live-validated v4.7.127 D-0147 behaviour unchanged and exists solely as the audited canonical candidate. Versioning-policy migration remains deferred.

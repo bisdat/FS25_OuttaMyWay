@@ -1,3 +1,13 @@
+# v0.1.0.0 CANONICAL CANDIDATE — pre-1.0 versioning epoch
+
+Owner-declared v4.7.128 is canonical (`3933bd60ef7dc5e603647835a2959de34cd8e79f44a7436ba7bf122021b262f1`; Git `d90057eb3adafa7204517eaa0ded0c696a13fd1b`; 315 files). v0.1.0.0 is a release-identity/provenance-only successor; canonical gameplay behaviour is unchanged.
+
+**Versioning policy:** prospectively retire the ad-hoc 4.7.x development sequence and begin deliberate pre-release numbering at `0.1.0.0`. Use `0.MINOR.PATCH.BUILD`: canonical releases have `BUILD=0`; non-canonical TEST iterations increment BUILD; accepted compatible corrections increment PATCH and reset BUILD; significant architecture/capability milestones increment MINOR and reset PATCH/BUILD. Historical 4.7.x identities are immutable provenance and are not renumbered. Public release remains reserved for `1.0.0.0`.
+
+**Behavioural boundary:** no Situation, Candidate, Decision, Commitment, authority, Control, D-0146, D-0147, calibration or GIANTS-integration behaviour changes.
+
+---
+
 # v4.7.128 CANONICAL CANDIDATE — audited D-0147 three-assembly plateau
 
 Owner-declared v4.7.121 remains canonical until explicit owner declaration. v4.7.128 carries the fully live-validated v4.7.127 behaviour unchanged and changes only release identity, provenance, candidate-review records and version assertions.

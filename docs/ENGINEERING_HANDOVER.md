@@ -1,3 +1,15 @@
+# v0.1.0.0 handover — pre-1.0 version identity transition
+
+**Baseline:** owner-declared canonical v4.7.128 (`3933bd60ef7dc5e603647835a2959de34cd8e79f44a7436ba7bf122021b262f1`; Git `d90057eb3adafa7204517eaa0ded0c696a13fd1b`; 315 files).
+
+**Scope:** version/provenance/documentation/test assertions only. Runtime behaviour is intentionally unchanged.
+
+**Policy:** `0.MINOR.PATCH.BUILD`; canonical BUILD=0, TEST uses BUILD, PATCH for accepted compatible corrections, MINOR for significant capability/architecture milestones, `1.0.0.0` for first public release.
+
+**Review boundary:** verify exact package/hash and absence of behavioural delta, then owner canonicalises or rejects.
+
+---
+
 # v4.7.128 CANONICAL CANDIDATE handover — audited three-assembly plateau
 
 Owner-declared v4.7.121 remains authoritative until explicit canonicalisation. v4.7.128 is a release/provenance-only candidate over live-validated v4.7.127 behaviour.

@@ -1,12 +1,16 @@
-FS25_OuttaMyWay v4.7.128 CANONICAL CANDIDATE — AUDITED THREE-ASSEMBLY COURTESY CONTINUATION BASELINE
+FS25_OuttaMyWay v0.1.0.0 CANONICAL CANDIDATE — PRE-1.0 VERSIONING EPOCH
 
-Authoritative baseline remains owner-declared v4.7.121 until explicit canonicalisation. v4.7.128 is the canonical candidate derived from that baseline through the validated v4.7.122–v4.7.127 engineering lineage.
+Authoritative baseline is owner-declared canonical v4.7.128 (`3933bd60ef7dc5e603647835a2959de34cd8e79f44a7436ba7bf122021b262f1`; Git `d90057eb3adafa7204517eaa0ded0c696a13fd1b`; 315 files).
 
-**Behaviour is frozen from live-validated v4.7.127:** Patriot and Condor each completed a protected 60 m one-shot-centroid Bounded Infield Retreat at native maximum speed; S416 then completed the full three-vehicle theatre. The v4.7.127 audit-alignment build subsequently completed fully with the same behaviour.
+**Versioning transition only:** v0.1.0.0 carries canonical v4.7.128 behaviour unchanged. The 4.7.x development numbering is retired prospectively, not rewritten historically.
 
-**Candidate delta:** release identity, provenance, canonical-review records and version assertions only. No D-0147 movement, timing, distance, speed, bearing, hold, renewal, authority, constraint or Control behaviour is intentionally changed.
+**Pre-1.0 scheme:** `0.MINOR.PATCH.BUILD`. Canonical releases use `BUILD=0`; test iterations use the fourth component; accepted compatible corrections advance PATCH and reset BUILD; significant capability/architecture milestones advance MINOR and reset PATCH/BUILD. The intended public-release identity is `1.0.0.0`.
 
-**Canonicalisation boundary:** owner review applies only to the exact v4.7.128 candidate fingerprint. The separately agreed pre-1.0 versioning transition remains deferred until after this canonicalisation decision.
+**Behavioural freeze:** D-0147 remains the live-validated 60 m native-max one-shot-centroid Bounded Infield Retreat with Protected Yield, Continuation Renewal, Courtesy Exhaustion, Player Claim/source supersession, Courtesy Constraint Exception and Actuation Neutralisation. No gameplay/control algorithm changes are introduced.
+
+**Canonicalisation boundary:** review and canonicalise only the exact v0.1.0.0 candidate fingerprint.
+
+---
 
 FS25_OuttaMyWay v4.7.121 CANONICAL CANDIDATE — D-0147 TERMINAL YIELD / PENDING PLAYER RECLAMATION
 

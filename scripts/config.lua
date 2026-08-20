@@ -1,11 +1,11 @@
--- FS25_OuttaMyWay v4.7.128 CANONICAL CANDIDATE — audited live-validated D-0147 lineage; identity/provenance only.
--- Owner-declared v4.7.121 remains authoritative until explicit owner canonicalisation. v4.7.128 is the canonical candidate carrying live-validated v4.7.127 behaviour unchanged.
+-- FS25_OuttaMyWay v0.1.0.0 CANONICAL CANDIDATE — pre-1.0 versioning epoch transition; behaviour unchanged from canonical v4.7.128.
+-- Owner-declared v4.7.128 is authoritative. v0.1.0.0 changes release identity/provenance/versioning policy only.
 -- D-0147 now implements the agreed optional Bounded Infield Retreat courtesy hypothesis while retaining the validated v4.7.120 mechanical actuator substrate.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "4.7.128"
-OuttaMyWay.ARCHITECTURE_VERSION = "4.7.128"
+OuttaMyWay.VERSION = "0.1.0.0"
+OuttaMyWay.ARCHITECTURE_VERSION = "0.1.0.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000
@@ -197,7 +197,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
 OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "4.7.128 CANONICAL CANDIDATE — D-0147 AUDIT-CLOSED"
+OuttaMyWay.BUILD_LABEL = "0.1.0.0 CANONICAL CANDIDATE — PRE-1.0 VERSIONING EPOCH"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720

@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.128 CANONICAL CANDIDATE — D-0147 Courtesy Constraint Exception audit alignment.
+-- FS25_OuttaMyWay v0.1.0.0 CANONICAL CANDIDATE — D-0147 Courtesy Constraint Exception retained unchanged from canonical v4.7.128.
 -- Legacy module/bridge names are retained to minimise plumbing change. Candidate owns
 -- one fixed Infield Alignment sampled after supported compaction. The immutable Field
 -- World centroid is a directional reference only; it is not a refuge or destination.

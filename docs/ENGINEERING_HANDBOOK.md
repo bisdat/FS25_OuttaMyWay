@@ -1,3 +1,9 @@
+## v0.1.0.0 pre-1.0 versioning authority
+
+From the owner-declared v4.7.128 canonical baseline onward, release identity uses `0.MINOR.PATCH.BUILD` until public release. Canonical releases use `BUILD=0`; non-canonical TEST iterations increment BUILD; accepted compatible corrections increment PATCH and reset BUILD; significant architecture/capability milestones increment MINOR and reset PATCH/BUILD. The first public release is reserved for `1.0.0.0`. Historical 4.7.x identities remain immutable engineering provenance and are never renumbered.
+
+This versioning policy is release governance only and does not alter architecture or runtime behaviour.
+
 ## v4.7.0 replacement-core implementation authority
 
 Canonical v4.6.78 remains the closed replacement-core foundation. Later architecture may change only through an explicit evidence-backed owner decision and ADR; ADR-0021 is the sole bounded extension currently accepted. Active v4.7.x code implements the resulting architecture directly. Archived v4.6.78 scripts have empirical and historical value only and may not be sourced by the active runtime. Implementation difficulty is classified as implementation defect, adapter gap, evidence gap, unsupported capability or apparent architecture contradiction; only the last category stops for explicit owner review.

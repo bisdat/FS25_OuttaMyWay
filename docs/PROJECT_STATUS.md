@@ -1,3 +1,15 @@
+# Current status — v0.1.0.0 pre-1.0 versioning canonical candidate
+
+**Authoritative baseline:** owner-declared canonical v4.7.128 (`3933bd60ef7dc5e603647835a2959de34cd8e79f44a7436ba7bf122021b262f1`; Git `d90057eb3adafa7204517eaa0ded0c696a13fd1b`; 315 files).
+
+**Candidate purpose:** release-identity transition only. Canonical v4.7.128 behaviour is frozen unchanged.
+
+**Versioning policy:** `0.MINOR.PATCH.BUILD`; canonical `BUILD=0`, TEST uses BUILD, compatible canonical correction advances PATCH, significant capability/architecture milestone advances MINOR, public release is `1.0.0.0`. Historical 4.7.x records remain immutable.
+
+**Next gate:** owner review of the exact v0.1.0.0 candidate fingerprint and explicit canonical declaration or rejection.
+
+---
+
 # v4.7.128 CANONICAL CANDIDATE status — audited three-assembly courtesy-continuation plateau
 
 **Authority:** owner-declared v4.7.121 remains canonical until explicit owner canonicalisation. v4.7.128 is the fresh canonical candidate.

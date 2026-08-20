@@ -1,3 +1,14 @@
+# v0.1.x roadmap — deliberate pre-release line
+
+1. Canonicalise the exact v0.1.0.0 version-identity candidate if accepted.
+2. Resume engineering from that baseline with TEST iterations in the fourth component (`0.1.0.1`, `0.1.0.2`, ...).
+3. Promote accepted compatible corrections to PATCH (`0.1.1.0`, `0.1.2.0`, ...).
+4. Advance MINOR only for a meaningful capability/architecture milestone (`0.2.0.0`, ...).
+5. Reserve `1.0.0.0` for the first public release.
+6. Do not renumber historical 4.7.x artifacts or use version increments as mere tranche counters.
+
+---
+
 # v4.7.128 immediate roadmap — canonical review boundary
 
 1. Review the exact v4.7.128 candidate fingerprint and evidence; no new behavioural work belongs in this candidate.

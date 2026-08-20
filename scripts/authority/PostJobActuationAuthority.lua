@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.128 CANONICAL CANDIDATE — validated post-job forward-direction actuator substrate retained for D-0147 Bounded Infield Retreat.
+-- FS25_OuttaMyWay v0.1.0.0 CANONICAL CANDIDATE — validated post-job forward-direction actuator substrate retained unchanged from canonical v4.7.128.
 -- D-0147 mechanical authority only. No traffic meaning, route construction or
 -- spatial-proof policy lives here. Each direct drive call is guarded by the
 -- validated Player Claim witness vehicle:getIsEntered(). v4.7.118 added

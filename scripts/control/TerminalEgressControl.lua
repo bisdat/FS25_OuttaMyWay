@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.128 CANONICAL CANDIDATE — D-0147 Bounded Infield Retreat.
+-- FS25_OuttaMyWay v0.1.0.0 CANONICAL CANDIDATE — D-0147 Bounded Infield Retreat; behaviour inherited unchanged from canonical v4.7.128.
 -- Legacy module naming is retained to minimise plumbing change. Control executes only
 -- supported compaction OR one Candidate-supplied fixed Infield Alignment. The world
 -- direction is captured once; driveInDirection() remains forward-only and receives no

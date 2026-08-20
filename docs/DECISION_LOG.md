@@ -1,3 +1,17 @@
+# v0.1.0.0 decision — adopt deliberate pre-1.0 versioning epoch
+
+**Status:** accepted by owner after explicit canonical declaration of v4.7.128.
+
+**Decision:** retire the historical ad-hoc 4.7.x numbering prospectively and reset release identity to `0.1.0.0` without changing behaviour. Do not renumber historical artifacts, changelog entries, decisions, test evidence or implementation-provenance references.
+
+**Scheme:** `0.MINOR.PATCH.BUILD` while pre-publication. canonical releases use `BUILD=0`. TEST iterations increment BUILD. Accepted compatible corrections advance PATCH and reset BUILD. Significant architecture/capability milestones advance MINOR and reset PATCH/BUILD. first public release is `1.0.0.0`.
+
+**Baseline:** owner-declared canonical v4.7.128, SHA-256 `3933bd60ef7dc5e603647835a2959de34cd8e79f44a7436ba7bf122021b262f1`, Git `d90057eb3adafa7204517eaa0ded0c696a13fd1b`, 315 files.
+
+**Boundary:** version identity/provenance/documentation/tests only. No behaviour change.
+
+---
+
 # v4.7.128 canonical-candidate preparation — accepted review boundary
 
 **Status:** Candidate preparation authorised by owner after successful v4.7.127 live validation.
