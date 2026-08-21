@@ -1,3 +1,135 @@
+## D-0153 — Cut v0.1.1.0 candidate at the D-0146 small-field alignment plateau
+
+**Decision:** prepare v0.1.1.0 as a release/provenance-only canonical candidate from the exact tested v0.1.0.14 runtime. Do not add another behavioural correction during candidate preparation. Owner-declared v0.1.0.0 remains canonical until the exact v0.1.1.0 fingerprint is explicitly accepted.
+
+**Why now:** the v0.1.0.4–v0.1.0.14 tranche produced a coherent set of generic architecture/code corrections and retained known-good TS015/TS016 passage behaviour. The remaining TS010 failure has crossed an abstraction boundary: it now challenges the empirical 8 km/h Regulation literal and the timing/response authority behind supportable progression, rather than revealing another settled passage/membership/release mismatch.
+
+**Captured knowledge:** Pair-Specific Passage Clearance, Configuration-Released-Space authority, removal of the 50 m development surrogate, Resolution-Space role attribution/migration, reversible Regulate↔Hold, Pre-Productive Intent Relevance, and ADR-0006 Safe Release conformance remain current implementation knowledge.
+
+**Next after canonical review:** resume the Literal Provenance Audit at the 8 km/h D-0146 Regulation family. Architecture leads: recover the requirement for response-adjusted supportable progression before choosing implementation. Do not substitute another speed literal simply because the present cap failed.
+
+---
+
+## D-0152 — Remove Transitional-only eligibility from D-0146 Hold escalation (v0.1.0.14 TEST)
+
+**Evidence:** TS010 v0.1.0.13 produced a settled-vs-settled Established Opposed Corridor Conflict. Role Migration correctly assigned Regulation to the materially closing mower; the mower positively complied with the 8 km/h cap; positive closure nevertheless continued into mutual blockage. Hold never escalated because the v0.1.0.9 gate required the protected participant to remain Transitional.
+
+**Decision:** Regulation Sufficiency is determined by the effect of realised Regulation on the current pair, not by the continuation class of the protected participant. Under a live D-0146 Resolution-Space obligation, realised bounded Regulation plus continuing positive closure may escalate the regulated participant to Hold whether the protected participant is Transitional or Settled.
+
+**Why:** the Transitional prerequisite was prototype/context leakage from the scenario that first motivated Hold. Settled-vs-settled conflicts can consume Resolution Space just as decisively. No new literal or encounter class is introduced.
+
+**Retained:** Hold remains reversible on positive resolved non-closing evidence; Role Migration, Pre-Productive Intent Relevance, Safe Release vetoes and Cooperative Passage are unchanged. The 8 km/h first-stage cap remains empirical and under literal review.
+
+## D-0151 — Enforce ADR-0006 Safe Release on D-0146 relationship dissolution (v0.1.0.13 TEST)
+
+**Decision:** an active D-0146 Resolution-Space relationship cannot be declared positively dissolved solely from a current non-opposed/settled trajectory classification when contradictory positive Safe Release evidence remains. `blocked=true` for either participant or a positive relevant Field-Bounded Future-Space intersection vetoes positive dissolution. The Commitment remains live and may revise its current Control expression.
+
+**Why:** TS010 demonstrated both false-release forms on the 0.99 ha field. Capability effectiveness and current conflict cessation did not establish operational resolution. This is direct conformance with ADR-0006, not new fixture architecture.
+
+**Generic boundary:** blockage does not invalidate productive intent; it invalidates blockage as release evidence. Future-Space positive evidence is used only as a veto to a positive release claim, not as negative-clearance authority.
+
+## D-0150 — Separate Pre-Productive Intent Relevance from Cooperative Operation Membership (v0.1.0.12 TEST)
+
+**Evidence:** v0.1.0.11 prevented pre-productive Cooperative Passage but also made the pre-productive MT665 invisible to D-0146 traffic authority, producing an immediate head-on collision despite positive physical interaction evidence.
+
+**Decision:** retain Job-Episode productive commencement as the positive latch for cooperative Operation membership. Independently admit a same-Field-World active GIANTS field-work worker with productive commencement pending as Situation-relevant for D-0146 Resolution-Space Conservation only. The known Operation member may be Regulated/Held; the pending worker remains GIANTS-owned and cannot be folded/repositioned/Passaged. Completed or inactive workers are excluded from this class.
+
+**Reason:** Operational Membership and Situation Relevance are distinct architectural layers. The correction lets the Policeman preserve evidence-gathering / native intent revelation without replacing GIANTS' unrevealed job-entry manoeuvre.
+
+**Validation obligation:** TS010 must show early Regulation/Hold rather than either premature Cooperative Passage or traffic invisibility. Prior TS015/16 and completed-worker semantics remain regression constraints.
+
+# v0.1.0.11 implementation decision — Productive commencement gates participation; Resolution-Space roles may migrate
+
+**Evidence:** TS010 v0.1.0.10 Runs 1–3 repeatedly admitted Cooperative Passage while MT665 had never emitted a positive productive-work sample and subsequently developed constant circling. Run 6 productively commenced and passed, then a later active Resolution-Space Commitment retained Regulation on MT665 after Situation had positively reassigned the regulated role to the much faster-closing mower, ending in deadlock.
+
+**Decision 1 — Productive Commencement Latch:** cooperative Operation participation requires one positive productive field-work commencement witness for the current Job Episode. This is latched, not continuously required: later normal turns remain participating. A new/replacement Job Episode must establish its own commencement. Before commencement the worker remains observable but cannot enter D-0146 cooperative participation merely because GIANTS lists an active job vehicle.
+
+**Decision 2 — Resolution-Space Role Migration:** regulated/protected identities are mutable Control expression under a persistent purpose. When current Situation Assessment changes them for the same D-0146 governing requirement, retain the Commitment and obligation, acquire/apply the new role's bounded authority first, then release the old role. Do not create a new conflict or settle/recreate purpose solely to change roles.
+
+**Retained decision:** v0.1.0.10 reversible Hold remains. Role migration resets the newly selected participant to the current bounded Regulation expression; subsequent positive sufficiency evidence may escalate/de-escalate normally.
+
+**Regression principle:** evaluate both corrections against prior scenarios. Retained TS015/16 logs show productive commencement before their successful passages and no Action-Space leases, so their known-good paths are not exercised by the new mechanisms.
+
+# v0.1.0.10 implementation decision — Resolution-Space Hold must be reversible
+
+**Decision:** an active D-0146 Resolution-Space obligation may express Regulation or Hold according to current positive Situation evidence. A Hold is not latched for the lifetime of the Commitment. When Situation positively establishes resolved non-closing, Control reapplies the prior bounded Regulation cap while retaining the obligation and authority. Renewed positive closure may re-escalate.
+
+**Reason:** TS010 v0.1.0.9 showed one-way Hold persistence can turn the regulated participant into a stationary obstruction after the immediate closure threat has ended. Obligation persistence remains correct; sticky physical Hold does not.
+
+**Evidence contract:** de-escalation requires Situation-owned `currentNonClosingPositive=true` backed by resolved current closing evidence. Absence of positive closure, unavailable motion, or transient classification alone is insufficient.
+
+**Regression/generality:** prior TS015/16 logs were checked before implementation; their successful Cooperative Passages never entered D-0146 Action-Space Regulation/Hold. The change is owner-scoped to `D0146_ACTION_SPACE_CONSERVATION`; Cooperative Passage and D-0147 Holds remain untouched.
+
+**Not decided here:** the 8 km/h calibration remains under review; Guide Development Non-Convergence and D-0147 Courtesy Exhaustion remain separate.
+
+# v0.1.0.9 implementation decision — Regulation must prove sufficient or escalate to Hold
+
+**Evidence:** TS010 v0.1.0.8 Run #4 positively applied the 8 km/h Resolution-Space cap to the correct participant, yet separation continued to collapse while the protected participant remained Transitional and no supported Passage expression emerged.
+
+**Decision:** retain Regulation as the least initial intervention, but do not equate cap application with Resolution-Space conservation. Under the same D-0146 purpose, zero-speed Hold is authorised only after Control-execution evidence confirms the regulated participant has reached the admitted cap and Situation still positively reports closure with the protected participant Transitional.
+
+**Non-decision:** 8 km/h is not promoted to policy and is not replaced in this tranche. Variable/calculated regulation speed remains a separate literal/history review question. No new distance/time trigger is introduced.
+
+**Abstraction boundary:** Hold conserves Resolution Space; it does not resolve the opposed spatial relationship. Cooperative Passage remains the preferred spatial resolution when a supported expression exists.
+
+# v0.1.0.8 implementation decision — Closure contribution is pair-relative, not gear-relative
+
+**Observation:** after a successful TS010 v0.1.0.7 Cooperative Passage and normal handoff, GIANTS created a new conflict by reversing the MT665 toward the mower. Both participants could be reversing while the pair closed rapidly. The Established-conflict Resolution-Space selector nevertheless reported no usable native forward rate because `moveForwards=false` was excluded.
+
+**Decision:** do not special-case reverse and do not reconnect the new conflict to the completed passage. For Established opposed conflicts, Situation computes each participant's current **native closure contribution** by projecting its GIANTS native command direction onto the instantaneous pair axis. Reverse is represented by the sign of `moveForwards`; it is neither forbidden nor privileged.
+
+**Role rule:** preserve the existing Settled-vs-Transitional preference where applicable. When continuation classes are equivalent, defer the participant with the greater positive pair-closing contribution. A command moving laterally or away from the peer cannot become the regulated role merely because its speed magnitude is high.
+
+**Control consequence:** Regulation still changes only the speed ceiling and preserves GIANTS route, steering and forward/reverse choice. No Hold escalation is introduced in v0.1.0.8; runtime TS010 first tests whether correct attribution is sufficient.
+
+**Architecture status:** implementation correction against existing Resolution-Space Conservation / Conflict Serialization. No new top-level architecture concept is created.
+
+# v0.1.0.7 implementation decision — Native blocked is observation, not standalone Passage Support Loss
+
+TS015 v0.1.0.6 disproved the assumption that GIANTS `isBlocked=true` positively proves physical obstruction during an OuttaMyWay Cooperative Passage. The signal remains valid observation evidence and is not removed globally. D-0146 Control no longer lets that signal independently fail a Candidate-proven guide.
+
+A D-0146 guide failure now preserves the current configuration while both participants are held. Failure restoration must not enlarge an assembly inside the unresolved conflict. This is an implementation correction to fail-safe behaviour, not a new passage architecture.
+
+# v0.1.0.6 implementation decision — Configuration-Released Space before lateral displacement
+
+**Observation:** v0.1.0.5 passage succeeded while the deployed offset mower became positively blocked during Candidate-owned traversal.
+
+**Decision:** restore configuration reduction as a first-class D-0146 planning expression, but only from **AI-Reachable Productive Configuration** evidence. Mechanical foldability alone is insufficient. A configuration profile must have been passively observed natively in the same Job Episode, outside OuttaMyWay configuration authority, and must positively release conflict-side Facing Clearance Extent. OuttaMyWay-created configuration observations cannot bootstrap future selection authority.
+
+**Control consequence:** Candidate owns the expected compact profile; Control may actuate the existing fold donor only for `COMPACT_REQUIRED`, waits for exact live profile realisation, and treats fresh native blockage during guide motion as support loss rather than force-through permission.
+
+---
+
+# v0.1.0.5 implementation decision — Resolution-Space Conservation admission and 50 m surrogate retirement
+
+**No new architectural decision.** D-0146 already defines Potential/Established Opposed Corridor Conflict, Resolution-Space Conservation, Conflict Serialization, Passage Presumption and Progressive Passage Search. v0.1.0.4 TS010 evidence exposed two code mismatches.
+
+**Implementation discovery — Resolution-Space Conservation Admission Gap:** the live Regulation Candidate could be created only while `currentExcursion=true`. An Established opposed conflict with no supported Step-2 Passage could therefore consume resolution space at unrestricted native speeds even though the governing architecture already required conservation. The initiating Current Excursion remains one valid early witness, not a prerequisite for all later admission. v0.1.0.5 adds Situation-owned Established-conflict Regulation support; Candidate still gives a supported Passage expression precedence.
+
+**Implementation correction — Development-Space Surrogate retired:** the fixed 50 m minimum entry separation has no architectural authority and pre-empted the existing concrete passage-support tests. v0.1.0.5 removes it entirely rather than replacing it with another arbitrary distance. The retained 80 m maximum remains only the current locality/action-space calibration pending separate evidence.
+
+**Role expression:** preserve a positively Transitional participant's GIANTS-native revelation by regulating the positively Settled participant. Where continuation class does not distinguish the pair, defer the participant with the greater current native forward-rate contribution to closure; equal-rate ties are deterministic. The 8 km/h cap remains bounded empirical calibration, not architecture.
+
+**Preserved:** Pair-Specific Passage Clearance + provisional 1 m nominal margin, current configuration, same-Commitment Regulation→Passage succession, positive relationship dissolution, 80 m locality ceiling, guide-shape and burden calibrations, Boundary Encroachment status and D-0147.
+
+---
+
+# v0.1.0.4 implementation decision — retire D-0146 12/6 geometry surrogate
+
+**Status:** authorised TEST correction over owner-declared canonical v0.1.0.0; no new D-0146 architecture required.
+
+**Decision:** remove the inherited 12 m centreline target, the second 12 m compact minimum and the derived 6 m participant reserve from generic D-0146 authority. Implement Pair-Specific Passage Clearance as Physical Contact Threshold = opposing conflict-facing extents, then add the provisional 1.0 m Nominal Inter-Assembly Clearance policy calibration. Evaluate the two possible passage sides separately.
+
+**Named implementation discovery — Passage-Side Clearance Asymmetry:** for an offset/asymmetric assembly, the required separation can differ materially depending on which side of the shared lateral axis the opposing assembly passes. Reusing the current-side facing extents for both candidate sides would silently reintroduce symmetric-width reasoning. Candidate therefore carries side-specific contact threshold and required separation.
+
+**Configuration decision for this tranche:** emit `RETAIN_CURRENT` for both participants. Do not infer `COMPACT_REQUIRED` from width. Configuration-Released Space remains architecture, but the FW212 evidence demonstrates that Mechanical Foldability alone is not passage configuration authority.
+
+**Preserved for later evidence:** 50/80 m Development-Space calibration, fixed guide geometry, burden fractions, Boundary Encroachment, Blocked Conflict Persistence and all D-0147 work.
+
+**Evidence boundary:** participating represented primitives are used as bounded TEST evidence only. `coverageComplete=false` and `negativeClearanceAuthority=false` remain explicit. No generic Coverage Closure decision is changed.
+
+---
+
 # v0.1.0.0 decision — adopt deliberate pre-1.0 versioning epoch
 
 **Status:** accepted by owner after explicit canonical declaration of v4.7.128.

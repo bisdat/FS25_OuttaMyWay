@@ -1,3 +1,16 @@
+## v0.1.1.0 canonical-candidate scope gate
+
+- [x] Exact runtime lineage is tested v0.1.0.14; candidate preparation introduces no intentional traffic/planning/Control behavioural delta.
+- [x] Owner-declared v0.1.0.0 remains authoritative until explicit acceptance of this candidate.
+- [x] Pair-Specific Passage Clearance, Configuration-First Passage, Resolution-Space role migration/reversible Hold, Pre-Productive Intent Relevance and ADR-0006 Safe Release corrections are recorded as the captured plateau.
+- [x] Final v0.1.0.14 TS010 slow-march collision is explicitly retained as evidence; candidate does not claim full TS010 resolution.
+- [x] 8 km/h Resolution-Space Regulation is explicitly OPEN under literal/provenance review and is not promoted to policy.
+- [x] Guide Development Non-Convergence and D-0147 `<=60 m` Courtesy Exhaustion remain parked and are not changed in candidate preparation.
+- [x] Exact packaged candidate passes behavioural, structural/conformance, RRS, Lua/XML parse, manifest and deterministic-byte verification.
+- [ ] Owner reviews exact v0.1.1.0 fingerprint and explicitly declares canonical or rejects it.
+
+---
+
 ## v0.1.0.0 pre-1.0 versioning transition gate
 
 - [x] Owner-declared v4.7.128 canonical is the exact authority baseline.

@@ -1,3 +1,11 @@
+# Current project state — v0.1.1.0 CANONICAL CANDIDATE
+
+Owner-declared v0.1.0.0 remains canonical pending explicit review. v0.1.1.0 carries the exact tested v0.1.0.14 runtime behaviour and changes release/provenance identity only.
+
+The candidate captures the D-0146 small-field architecture/code alignment plateau: Pair-Specific Passage Clearance, configuration-first passage authority, Resolution-Space role migration and reversible Regulate↔Hold, Pre-Productive Intent Relevance, and ADR-0006 Safe Release conformance. It does **not** claim the final TS010 regulation problem is solved; the empirical 8 km/h cap is the first item for the resumed Literal Provenance investigation.
+
+---
+
 # Current project state — v0.1.0.0 CANONICAL CANDIDATE
 
 Owner-declared v4.7.128 is canonical. v0.1.0.0 changes version identity/provenance only and starts the deliberate pre-1.0 `0.MINOR.PATCH.BUILD` line. Canonical releases use BUILD=0; TEST iterations use BUILD; accepted compatible corrections advance PATCH; significant architecture/capability milestones advance MINOR; first public release is `1.0.0.0`. Runtime behaviour is unchanged from v4.7.128.

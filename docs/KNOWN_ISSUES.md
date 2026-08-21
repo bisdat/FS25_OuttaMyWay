@@ -1,3 +1,97 @@
+# v0.1.1.0 CANONICAL CANDIDATE — known issues / explicit limits
+
+- **8 km/h D-0146 Resolution-Space Regulation is OPEN and under literal/provenance review.** It remains an empirical first-stage cap in the inherited runtime and is explicitly not generic sufficiency authority. The final v0.1.0.14 TS010 evidence showed that physical deceleration to the cap can consume Resolution Space before Hold becomes timely.
+- **Do not replace 8 km/h with another guessed constant during candidate review.** The next investigation should recover response-adjusted / distance-time supportable progression authority from architecture and historical evidence before implementation.
+- **Guide Development Non-Convergence remains parked.** Reopen only if constant circling reproduces after genuine productive commencement and while OuttaMyWay owns an active guide.
+- **D-0147 `<=60 m` Courtesy Exhaustion / broadly-centre coupling remains parked and behaviourally disproved in TS010.** It is not corrected in this candidate.
+- **Other literal-audit items remain open:** 80 m locality ceiling, guide 12/8/12 +4 geometry, burden fractions, and other recorded provenance challenges. Candidate preparation does not promote them to architecture.
+- v0.1.1.0 is a candidate only. Owner review of the exact package fingerprint is required before canonical authority moves from v0.1.0.0.
+
+---
+
+# v0.1.0.14 TEST known issues / explicit limits
+
+- The 8 km/h first-stage Resolution-Space regulation remains empirical and under renewed literal review; v0.1.0.14 changes Hold eligibility, not speed selection.
+- Hold escalation still waits for positive Control evidence that the regulated participant has actually complied with the admitted cap. Runtime may show whether that evidence arrives too late on very small/high-closing encounters.
+- Guide Development Non-Convergence remains parked unless it reproduces after genuine productive commencement.
+- D-0147 `<=60 m` / "broadly centre" Courtesy Exhaustion remains known and unfixed.
+
+# v0.1.0.13 TEST known issues / explicit limits
+
+- The Safe Release correction vetoes false positive dissolution from participant blockage or positive relevant Field-Bounded Future-Space intersection. It does not claim complete implementation of every ADR-0006 Safe Release obligation.
+- The 8 km/h first-stage Resolution-Space regulation remains empirical and under renewed literal review.
+- Guide Development Non-Convergence remains parked.
+- D-0147 `<=60 m` / "broadly centre" Courtesy Exhaustion remains known and unfixed.
+
+# v0.1.0.12 TEST known issues / explicit limits
+
+- **Pre-productive Intent Relevance is deliberately narrow.** It requires same Field World, active GIANTS `activeJobVehicles` membership, field-worker specialization and productive commencement still pending. It is not generic authority over every non-operational vehicle.
+- **The pending worker remains wholly GIANTS-owned.** D-0146 may constrain the known Operation member only; no configuration/reposition/Cooperative Passage authority is granted until positive productive commencement.
+- **8 km/h first-stage Regulation remains under literal review.** This build changes relevance/admission, not speed calibration. Existing Regulation Sufficiency may still escalate to Hold.
+- **Guide Development Non-Convergence remains parked.** The test target is whether pre-productivity circling disappears when OuttaMyWay no longer takes passage control before productive commencement.
+- **D-0147 Courtesy Exhaustion coupling remains parked.** `<=60 m` / broadly-centre failure evidence is unchanged.
+
+# v0.1.0.11 TEST known issues / explicit limits
+
+- **Guide Development Non-Convergence remains under observation, not fixed here.** Runs 1–3 associated circling with MT665 before productive commencement; v0.1.0.11 first removes that invalid participation path. If circling still occurs after genuine commencement, reopen it as a separate guide-control issue.
+- **8 km/h Regulation literal remains under review.** Role migration changes who is controlled, not the empirical first-stage cap.
+- **Role migration is scoped to the same D-0146 Resolution-Space governing requirement.** It does not transfer between unrelated commitments or invent new traffic purpose.
+- **Productive commencement is a positive latch, not a current-productivity gate.** A later native turn/transitional segment remains an Operation participant.
+- **D-0147 Courtesy Exhaustion coupling remains parked.** `<=60 m` / broadly-centre exhaustion has live failure evidence and is unchanged.
+- **Reversible Hold remains active.** This build neither weakens nor extends the v0.1.0.10 positive-non-closing de-escalation rule.
+
+# v0.1.0.10 TEST known issues / explicit limits
+
+- **8 km/h Regulation literal remains under review.** It remains first-stage empirical calibration; this tranche changes Hold persistence, not speed selection.
+- **Guide Development Non-Convergence remains parked.** TS010 can still produce constant circling during `GUIDE_DEVELOPMENT_ENTRY`; no fix is included here.
+- **D-0147 Courtesy Exhaustion coupling remains parked.** `<=60 m` / broadly-centre exhaustion has live failure evidence.
+- **Role persistence after major geometry change remains an observation target.** v0.1.0.10 makes Hold reversible but deliberately does not reassign protected/regulated roles under an existing Resolution-Space obligation; runtime evidence will determine whether that is a separate mismatch.
+- **Positive non-closing is required for de-escalation.** Unresolved/missing motion retains Hold rather than treating absence of evidence as safety.
+
+# v0.1.0.9 TEST known issues / explicit limits
+
+- **8 km/h Regulation literal remains under review.** It is retained as first-stage empirical calibration only; v0.1.0.9 adds sufficiency escalation rather than replacing it with another guessed speed.
+- **Guide Development Non-Convergence remains parked.** TS010 v0.1.0.8 Run #3 timed out during a later Cooperative Passage while MT665 circled under OuttaMyWay guide control. This tranche does not address it.
+- **D-0147 Courtesy Exhaustion coupling remains parked.** `<=60 m` / broadly-centre exhaustion has live failure evidence and still requires separate correction.
+- Hold escalation is intentionally one-way for the live Resolution-Space obligation: once insufficiency is proven, the regulated participant remains held until positive relationship dissolution or Cooperative Passage succession.
+
+# v0.1.0.8 TEST known issues / explicit limits
+
+- Reverse-aware native closure contribution is implemented only for **Established-conflict Resolution-Space role assignment**. The earlier Current-Excursion admission path remains unchanged in this isolated test.
+- The 8 km/h Resolution-Space Regulation cap remains empirical calibration. v0.1.0.8 changes who is regulated, not the calibration itself.
+- No Regulate→Hold escalation is added. If TS010 still reaches physical interaction after the correct reverse closer is regulated, **Regulation Sufficiency** becomes the next implementation/evidence question.
+- Reverse is not treated as a fault or special manoeuvre. GIANTS retains route, steering and forward/reverse authority.
+- D-0147 Courtesy Exhaustion / `<=60 m` centre coupling remains parked and unchanged.
+
+# v0.1.0.7 TEST known issues / explicit limits
+
+- TS015 runtime regression is required after removing native `isBlocked` as standalone D-0146 guide-abort authority.
+- `isBlocked` remains a valid general observation signal; this change does not resolve how it should contribute to static-object or other blockage reasoning.
+- D-0147 Courtesy Exhaustion / `<=60 m` centre coupling remains parked and unchanged.
+- Generic reverse-conflict intervention sufficiency remains under investigation after TS010 v0.1.0.6.
+
+# v0.1.0.6 TEST known issues / explicit limits
+
+- Configuration-first selection is deliberately **evidence-limited**: if the same Job Episode has not passively observed a stable native folded profile before passage planning, Candidate retains current configuration rather than inferring one. Runtime evidence must show whether normal GIANTS job startup gives adequate observation opportunity for TS010 mower assemblies.
+- The existing Prototype22 configuration actuator still mechanically toggles the selected assembly's foldable members. Safety comes from Candidate refusing to select an assembly unless the exact all-folded profile was already observed natively; this TEST does not redesign that low-level donor.
+- Fresh GIANTS `isBlocked=true` during Candidate guide motion is treated as positive Support Loss. Runtime testing must establish whether that witness is sufficiently specific or flickers during otherwise valid controlled movement.
+- 1.0 m Nominal Inter-Assembly Clearance remains provisional policy calibration.
+- 80 m locality ceiling, guide-shape literals and burden fractions remain separate audited calibrations.
+
+---
+
+# v0.1.0.5 TEST known issues / explicit limits
+
+- The **50 m D-0146 minimum-entry surrogate is retired**. No new lower-distance literal replaces it.
+- The **80 m upper Local Passage / Resolution-Space envelope remains empirical calibration** and is not claimed as universal architecture.
+- D-0146 Resolution-Space Regulation still uses an **8 km/h empirical cap**; v0.1.0.5 broadens its admission semantics, not the authority of that speed value.
+- Pair-Specific Passage Clearance remains bounded to current represented participating primitives and does not manufacture generic Coverage Closure / negative-clearance authority.
+- The fixed 12/8/12 +4 guide-shape calibration and discrete burden fractions remain live prototype-era implementation values pending evidence.
+- Candidate/Control Field-target proof mismatch remains a separate issue only if reproduced after these corrections.
+- Passage-relevant Configuration-Released Space actuation, Boundary Encroachment and Blocked Conflict Persistence remain parked.
+
+---
+
 # v4.7.128 canonical-candidate known-issue status
 
 No new known issue is introduced by candidate preparation. The v4.7.127 explicit limits below remain current. The candidate does not generalise three-assembly validation beyond the tested theatre.

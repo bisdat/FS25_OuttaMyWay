@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.105 TEST BUILD — D-0146 Step-2 sealed-value Control bridge correction; D-0143 retained as regression donor.
+-- FS25_OuttaMyWay v0.1.1.0 CANONICAL CANDIDATE — D-0146 configuration-first passage inherited unchanged from v0.1.0.14 TEST; D-0143 retained as regression donor.
 --
 -- Situation/Candidate/Decision/Commitment establish meaning and choose the
 -- Passage Arrangement/Guide before this module is invoked. Control only executes
@@ -127,7 +127,7 @@ function Control:mouseEvent() end
 
 function Control:loadMap()
     local ok,reason=self.driveAuthority:install()
-    logInfo("LOAD d0146Step2=%s mechanicalProfile=OPTIONAL_CONFIGURATION_GUIDED_PASSAGE_V3 vehicleNameGate=false legacyD0143=%s driveHook=%s reason=%s king=false refuge=false cooldown=false generalVehicleAuthority=false",
+    logInfo("LOAD d0146Step2=%s mechanicalProfile=CONFIGURATION_FIRST_GUIDED_PASSAGE_V5 vehicleNameGate=false legacyD0143=%s driveHook=%s reason=%s king=false refuge=false cooldown=false generalVehicleAuthority=false",
         tostring(OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED==true),tostring(OuttaMyWay.COOPERATIVE_PASSAGE_TS015_ENABLED==true),tostring(ok),tostring(reason or "ready"))
 end
 
@@ -137,6 +137,7 @@ function Control:deleteMap()
         for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
             self.driveAuthority:clear(p.vehicle); self.permissionGate:release(p.vehicle)
             if self.configurationAuthority:getState(p.vehicle)~=nil then self.configurationAuthority:clear(p.vehicle) end
+            self:_endRepresentationConfigurationAuthority(p)
         end
     end
     self.run=nil
@@ -188,15 +189,30 @@ local function configurationModeText(run)
     return table.concat(values,",")
 end
 
+local function thirdPartyParticipantReserve(constraint,assemblyId)
+    for _,entry in OuttaMyWay.ValueRecord.ipairs(constraint and constraint.participantRepresentedRadialReserves or {}) do
+        if entry.assemblyId==assemblyId then return tonumber(entry.reserveM) end
+    end
+    return nil
+end
+
 function Control:_thirdPartySupport(run,gate)
     for _,constraint in OuttaMyWay.ValueRecord.ipairs(run.thirdPartyConstraints or {}) do
         local vehicle=self:_resolveReference(constraint.assemblyReferenceKey)
         if vehicle==nil then return false,"PASSAGE_SUPPORT_LOSS_THIRD_PARTY_REFERENCE_UNRESOLVED:"..tostring(constraint.assemblyId) end
         local thirdPose=pose(vehicle)
         if thirdPose==nil then return false,"PASSAGE_SUPPORT_LOSS_THIRD_PARTY_POSE_UNRESOLVED:"..tostring(constraint.assemblyId) end
-        local required=(tonumber(constraint.maxPositiveRadiusFromReferenceM) or 0)+(tonumber(constraint.participantCompactReserveM) or 0)
-        if required<=0 then return false,"PASSAGE_SUPPORT_LOSS_THIRD_PARTY_RESERVE_UNRESOLVED:"..tostring(constraint.assemblyId) end
+        local thirdReserve=tonumber(constraint.maxPositiveRadiusFromReferenceM)
+        local nominalClearance=tonumber(constraint.nominalInterAssemblyClearanceM)
+        if thirdReserve==nil or thirdReserve<=0 or nominalClearance==nil or nominalClearance<=0 then
+            return false,"PASSAGE_SUPPORT_LOSS_THIRD_PARTY_RESERVE_UNRESOLVED:"..tostring(constraint.assemblyId)
+        end
         for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
+            local participantReserve=thirdPartyParticipantReserve(constraint,participant.assemblyId)
+            if participantReserve==nil or participantReserve<=0 then
+                return false,"PASSAGE_SUPPORT_LOSS_PARTICIPANT_RESERVE_UNRESOLVED:"..tostring(participant.assemblyId)
+            end
+            local required=thirdReserve+participantReserve+nominalClearance
             local pp=pose(participant.vehicle)
             if pp==nil then return false,"PASSAGE_SUPPORT_LOSS_PARTICIPANT_POSE_UNRESOLVED:"..tostring(participant.assemblyId) end
             if distance(pp.x,pp.z,thirdPose.x,thirdPose.z)<required then
@@ -259,6 +275,23 @@ function Control:_allDeployed(run)
     return true
 end
 
+function Control:_beginRepresentationConfigurationAuthority(participant)
+    local cache=self.runtime and self.runtime.assemblyRepresentationCache or nil
+    if participant==nil or participant.representationConfigurationAuthority==true or cache==nil or type(cache.beginOuttaMyWayConfigurationAuthority)~="function" then return end
+    cache:beginOuttaMyWayConfigurationAuthority(participant.referenceKey,participant.startJobToken)
+    participant.representationConfigurationAuthority=true
+end
+function Control:_endRepresentationConfigurationAuthority(participant)
+    local cache=self.runtime and self.runtime.assemblyRepresentationCache or nil
+    if participant==nil or participant.representationConfigurationAuthority~=true then return end
+    if cache~=nil and type(cache.endOuttaMyWayConfigurationAuthority)=="function" then cache:endOuttaMyWayConfigurationAuthority(participant.referenceKey,participant.startJobToken) end
+    participant.representationConfigurationAuthority=false
+end
+function Control:_currentRepresentationProfile(participant)
+    local cache=self.runtime and self.runtime.assemblyRepresentationCache or nil
+    if cache==nil or type(cache.getCurrentConfigurationProfileId)~="function" then return nil end
+    return cache:getCurrentConfigurationProfileId(participant.referenceKey,participant.startJobToken)
+end
 function Control:_setPhase(run,phase,nowMs)
     run.phase=phase; run.phaseStartedAt=nowMs
 end
@@ -371,8 +404,10 @@ function Control:_beginD0146Configuration(run)
     local requested=0
     for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
         if participant.configurationMode=="COMPACT_REQUIRED" then
+            self:_beginRepresentationConfigurationAuthority(participant)
             local ok,state=self.configurationAuthority:prepareCompact(participant.vehicle)
             if not ok then
+                self:_endRepresentationConfigurationAuthority(participant)
                 for _,rollback in OuttaMyWay.ValueRecord.ipairs(owned) do self.configurationAuthority:requestRestore(rollback.vehicle) end
                 return false,participant.name..":"..tostring(state)
             end
@@ -396,6 +431,9 @@ function Control:_d0146ConfigurationReady(run)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
         if participant.configurationMode=="COMPACT_REQUIRED" then
             if self.configurationAuthority:getEvidence(participant.vehicle).allFolded~=true then return false end
+            local expected=participant.expectedCompactConfigurationProfileId
+            local observed=self:_currentRepresentationProfile(participant)
+            if expected~=nil and observed~=expected then return false end
         elseif participant.configurationMode~="RETAIN_CURRENT" then
             return false
         end
@@ -435,6 +473,7 @@ function Control:_finishD0146Restore(run)
         if self.configurationAuthority:getState(participant.vehicle)~=nil then
             local ok,reason=self.configurationAuthority:finishRestore(participant.vehicle)
             if not ok then return false,participant.name..":"..tostring(reason) end
+            self:_endRepresentationConfigurationAuthority(participant)
         end
     end
     self:_complete(run)
@@ -480,23 +519,30 @@ function Control:_failHeld(reason)
     self.permissionGate:setHold(run.a.vehicle,"COOPERATIVE-PASSAGE-FAIL-HELD")
     self.permissionGate:setHold(run.b.vehicle,"COOPERATIVE-PASSAGE-FAIL-HELD")
     run.failureReason=tostring(reason or "UNRESOLVED")
+
+    -- D-0146 failure is still an unresolved spatial situation.  Preserve the
+    -- current (possibly compact) configuration rather than enlarging an
+    -- assembly inside that unresolved conflict.  The legacy D-0143 donor keeps
+    -- its historical restoration behaviour.
     local requested=false
-    for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants) do
-        if self.configurationAuthority:getState(p.vehicle)~=nil then
-            local ok,restoreReason=self.configurationAuthority:requestRestore(p.vehicle)
-            if ok then requested=true else logWarning("FAIL_RESTORE_REQUEST participant=%s detail=%s",p.name,tostring(restoreReason)) end
+    if run.mode~="D0146_GUIDE" then
+        for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants) do
+            if self.configurationAuthority:getState(p.vehicle)~=nil then
+                local ok,restoreReason=self.configurationAuthority:requestRestore(p.vehicle)
+                if ok then requested=true else logWarning("FAIL_RESTORE_REQUEST participant=%s detail=%s",p.name,tostring(restoreReason)) end
+            end
         end
     end
     self:_setPhase(run,requested and "FAILED_RESTORING" or "FAILED_HELD",g_time or 0)
     self.failedCount=self.failedCount+1
     if run.mode=="D0146_GUIDE" then
-        logWarning("PASSAGE_REASSESSMENT commitment=%s guide=%s cause=%s outcome=SAFE_ABANDON_ESCALATE controlBroadening=false bothHeld=true",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),run.failureReason)
+        logWarning("PASSAGE_REASSESSMENT commitment=%s guide=%s cause=%s outcome=SAFE_ABANDON_ESCALATE controlBroadening=false bothHeld=true configurationPreserved=true",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),run.failureReason)
     end
-    logWarning("HALT commitment=%s reason=%s phase=%s bothHeld=true noBlindRelease=true action=PLAYER_INTERVENTION_OR_JOB_CHANGE",tostring(run.commitmentId),run.failureReason,run.phase)
+    logWarning("HALT commitment=%s reason=%s phase=%s bothHeld=true noBlindRelease=true configurationPreserved=%s action=PLAYER_INTERVENTION_OR_JOB_CHANGE",tostring(run.commitmentId),run.failureReason,run.phase,tostring(run.mode=="D0146_GUIDE"))
 end
 
 function Control:_abandonAfterJobChange(run,changed)
-    for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants) do self.driveAuthority:clear(p.vehicle); self.permissionGate:release(p.vehicle); self.configurationAuthority:clear(p.vehicle) end
+    for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants) do self.driveAuthority:clear(p.vehicle); self.permissionGate:release(p.vehicle); self.configurationAuthority:clear(p.vehicle); self:_endRepresentationConfigurationAuthority(p) end
     self.run=nil
     logWarning("ABORT commitment=%s reason=JOB_EPISODE_CHANGED participant=%s physicalAuthorityCleared=true",tostring(run.commitmentId),changed and changed.name or "unknown")
     self:_notify({status="FAILED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind="COOPERATIVE_PASSAGE_JOB_EPISODE_CHANGED",participant=changed and changed.name or nil}})
@@ -512,7 +558,7 @@ function Control:_executeD0146JointRequests(requestA,requestB,candidate,bridge)
     if requestA.capability~="REPOSITION" or requestB.capability~="REPOSITION" then return false,"JOINT_REQUEST_REQUIRES_REPOSITION" end
     if requestA.effectiveActuationCompositionId~=requestB.effectiveActuationCompositionId then return false,"JOINT_REQUEST_COMPOSITION_MISMATCH" end
     if not self:_validAuthority(requestA) or not self:_validAuthority(requestB) then return false,"JOINT_REQUEST_AUTHORITY_INVALID" end
-    if type(bridge)~="table" or bridge.architecture~="D0146_STEP2" or bridge.controlProfile~="D0146_OPTIONAL_CONFIGURATION_GUIDED_PASSAGE_V3" then return false,"D0146_PASSAGE_BRIDGE_INVALID" end
+    if type(bridge)~="table" or bridge.architecture~="D0146_STEP2" or bridge.controlProfile~="D0146_CONFIGURATION_FIRST_GUIDED_PASSAGE_V5" then return false,"D0146_PASSAGE_BRIDGE_INVALID" end
 
     local subjectVehicle=self:_resolveReference(bridge.subjectReferenceKey)
     local otherVehicle=self:_resolveReference(bridge.otherReferenceKey)
@@ -532,8 +578,11 @@ function Control:_executeD0146JointRequests(requestA,requestB,candidate,bridge)
         local planned=configurationByAssembly[participant.assemblyId]
         if planned==nil then return false,"D0146_PASSAGE_CONFIGURATION_PARTICIPANT_MISSING:"..tostring(participant.assemblyId) end
         participant.configurationMode=planned.mode
-        participant.currentRepresentedLateralReserveM=tonumber(planned.currentRepresentedLateralReserveM)
-        participant.passageReserveM=tonumber(planned.passageReserveM)
+        participant.currentFacingClearanceExtentM=tonumber(planned.currentFacingClearanceExtentM)
+        participant.selectedFacingClearanceExtentM=tonumber(planned.selectedFacingClearanceExtentM)
+        participant.configurationReleasedSpaceM=tonumber(planned.configurationReleasedSpaceM) or 0
+        participant.expectedCompactConfigurationProfileId=planned.expectedCompactConfigurationProfileId
+        participant.configurationAuthority=planned.configurationAuthority
         if participant.configurationMode=="COMPACT_REQUIRED" then
             local fold=self.configurationAuthority:getEvidence(participant.vehicle)
             if fold.foldableCount==0 then return false,"D0146_REQUIRED_CONFIGURATION_REDUCTION_UNAVAILABLE:"..participant.name end
@@ -562,9 +611,11 @@ function Control:_executeD0146JointRequests(requestA,requestB,candidate,bridge)
 
     self.run=run
     local arrangement=bridge.passageArrangement or {}
-    logInfo("START architecture=D0146_STEP2 commitment=%s candidate=%s conflict=%s A=%s job=%s B=%s job=%s separation=%.2fm headingDot=%.4f arrangement=%s offsets=%+.2f/%+.2f guide=%s gates=%d sequence=HOLD_OPTIONAL_CONFIGURATION_GUIDE_SELECTIVE_RESTORE_HANDOFF configuration=%s controlInventsGeometry=false vehicleNameGate=false thirdPartyConstraints=%d generalVehicleAuthority=false",
+    logInfo("START architecture=D0146_STEP2 commitment=%s candidate=%s conflict=%s A=%s job=%s B=%s job=%s separation=%.2fm headingDot=%.4f arrangement=%s offsets=%+.2f/%+.2f contact=%.2fm nominal=%.2fm required=%.2fm currentLateral=%.2fm reserve=%+.2fm guide=%s gates=%d sequence=HOLD_OPTIONAL_CONFIGURATION_GUIDE_SELECTIVE_RESTORE_HANDOFF configuration=%s controlInventsGeometry=false vehicleNameGate=false thirdPartyConstraints=%d generalVehicleAuthority=false",
         tostring(run.commitmentId),tostring(run.candidateId),tostring(bridge.conflictIdentity),a.name,tostring(a.startJobToken),b.name,tostring(b.startJobToken),run.initialSeparationM,run.headingDot,
-        tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tostring(run.guide and run.guide.identity),OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}),configurationModeText(run),OuttaMyWay.ValueRecord.length(run.thirdPartyConstraints or {}))
+        tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,
+        tonumber(arrangement.physicalContactThresholdM) or 0,tonumber(arrangement.nominalInterAssemblyClearanceM) or 0,tonumber(arrangement.policyRequiredSeparationM) or 0,tonumber(arrangement.currentLateralSeparationM) or 0,tonumber(arrangement.currentPolicyReserveM) or 0,
+        tostring(run.guide and run.guide.identity),OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}),configurationModeText(run),OuttaMyWay.ValueRecord.length(run.thirdPartyConstraints or {}))
     return true,"D0146_COOPERATIVE_PASSAGE_STARTED"
 end
 
@@ -689,6 +740,11 @@ function Control:update(dt)
             end
         end
     elseif string.sub(tostring(run.phase),1,6)=="GUIDE_" then
+        -- GIANTS native isBlocked remains observation evidence, but it is not
+        -- standalone physical Passage Support Loss authority while OuttaMyWay
+        -- executes a Candidate-proven guide.  TS015 v0.1.0.6 demonstrated that
+        -- GIANTS can report blocked=true for a folded sprayer while represented
+        -- pair occupancy is still safely separated.
         if self:_bothReached(run) then
             local completedIndex=run.guideIndex or 0
             local gate=run.guide and run.guide.gates and run.guide.gates[completedIndex] or nil
@@ -729,7 +785,10 @@ function Control:update(dt)
     elseif run.phase=="FAILED_RESTORING" then
         local restored=(run.mode=="D0146_GUIDE" and self:_d0146RestoreReady(run)) or (run.mode~="D0146_GUIDE" and self:_allDeployed(run))
         if restored then
-            for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants) do if self.configurationAuthority:getState(p.vehicle)~=nil then self.configurationAuthority:finishRestore(p.vehicle) end end
+            for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants) do
+                if self.configurationAuthority:getState(p.vehicle)~=nil then self.configurationAuthority:finishRestore(p.vehicle) end
+                self:_endRepresentationConfigurationAuthority(p)
+            end
             self:_setPhase(run,"FAILED_HELD",nowMs)
             logWarning("FAIL_RESTORE_COMPLETE commitment=%s bothRemainHeld=true action=PLAYER_INTERVENTION_OR_JOB_CHANGE",tostring(run.commitmentId))
         end

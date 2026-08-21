@@ -185,9 +185,23 @@ local function donorConfigurationEvidence(object,donor)
 end
 
 function Cache.new(options)
-    return setmetatable({records={},seen={},options=options or {},retiredCount=0},Cache)
+    return setmetatable({records={},seen={},options=options or {},retiredCount=0,configurationAuthorityWindows={}},Cache)
 end
-function Cache:reset() self.records={}; self.seen={}; self.retiredCount=0 end
+function Cache:reset() self.records={}; self.seen={}; self.retiredCount=0; self.configurationAuthorityWindows={} end
+
+local function episodeKey(assemblyReferenceKey,sourceJobToken) return tostring(assemblyReferenceKey).."|"..tostring(sourceJobToken) end
+function Cache:beginOuttaMyWayConfigurationAuthority(assemblyReferenceKey,sourceJobToken)
+    local key=episodeKey(assemblyReferenceKey,sourceJobToken)
+    self.configurationAuthorityWindows[key]=(self.configurationAuthorityWindows[key] or 0)+1
+end
+function Cache:endOuttaMyWayConfigurationAuthority(assemblyReferenceKey,sourceJobToken)
+    local key=episodeKey(assemblyReferenceKey,sourceJobToken)
+    local count=(self.configurationAuthorityWindows[key] or 0)-1
+    if count>0 then self.configurationAuthorityWindows[key]=count else self.configurationAuthorityWindows[key]=nil end
+end
+function Cache:isOuttaMyWayConfigurationAuthorityActive(assemblyReferenceKey,sourceJobToken)
+    return (self.configurationAuthorityWindows[episodeKey(assemblyReferenceKey,sourceJobToken)] or 0)>0
+end
 function Cache:beginObservationCycle() self.seen={} end
 function Cache:endObservationCycle()
     for key in pairs(self.records) do if self.seen[key]~=true then self.records[key]=nil; self.retiredCount=self.retiredCount+1 end end
@@ -360,8 +374,58 @@ function Cache:_runtimeCompoundChild(node)
     if not ok or type(value)~="boolean" then return nil,ok and "INVALID_RETURN" or tostring(value) end
     return value,nil
 end
+local function referenceFrameForWorker(worker)
+    if worker==nil then return nil end
+    local node=nil
+    local okSteering,steering=safeCall(worker,"getAISteeringNode")
+    if okSteering and steering~=nil and steering~=0 then node=steering else node=worker.rootNode end
+    if node==nil or node==0 or type(getWorldTranslation)~="function" or type(localDirectionToWorld)~="function" then return nil end
+    local okPos,x,_,z=pcall(getWorldTranslation,node)
+    local okDir,dx,_,dz=pcall(localDirectionToWorld,node,0,0,1)
+    if not okPos or not okDir or not finite(x) or not finite(z) or not finite(dx) or not finite(dz) then return nil end
+    local length=math.sqrt(dx*dx+dz*dz)
+    if length<=0.0001 then return nil end
+    dx,dz=dx/length,dz/length
+    return {x=x,z=z,forwardX=dx,forwardZ=dz,rightX=dz,rightZ=-dx}
+end
+local function relativeDiscSnapshot(worldPrimitives,frame)
+    if type(frame)~="table" then return nil end
+    local result={}
+    for _,primitive in ipairs(worldPrimitives or {}) do
+        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true and finite(tonumber(primitive.x)) and finite(tonumber(primitive.z)) and finite(tonumber(primitive.radius)) and tonumber(primitive.radius)>0 then
+            local dx,dz=tonumber(primitive.x)-frame.x,tonumber(primitive.z)-frame.z
+            result[#result+1]={localRightM=dx*frame.rightX+dz*frame.rightZ,localForwardM=dx*frame.forwardX+dz*frame.forwardZ,radius=tonumber(primitive.radius),identity=primitive.identity}
+        end
+    end
+    if #result<1 then return nil end
+    table.sort(result,function(a,b) return tostring(a.identity)<tostring(b.identity) end)
+    return result
+end
+
+function Cache:_configurationAlternatives(record,currentProfileId)
+    local result={}
+    for _,profile in pairs(record and record.profiles or {}) do
+        local evidence=profile.configurationEvidence or {}
+        if profile.relativeDiscs~=nil and (profile.nativeObservationCount or 0)>0 and (evidence.allFolded==true or evidence.allDeployed==true) then
+            local discs={}
+            for _,disc in ipairs(profile.relativeDiscs) do discs[#discs+1]={localRightM=disc.localRightM,localForwardM=disc.localForwardM,radius=disc.radius,identity=disc.identity} end
+            result[#result+1]={
+                configurationProfileId=profile.identity,configurationKey=profile.configurationKey,configurationEvidence=evidence,relativeDiscs=discs,
+                nativeObservationCount=profile.nativeObservationCount or 0,outtaMyWayObservationCount=profile.outtaMyWayObservationCount or 0,
+                current=profile.identity==currentProfileId,authority="OBSERVED_WITHOUT_OUTTAMYWAY_CONFIGURATION_AUTHORITY"
+            }
+        end
+    end
+    table.sort(result,function(a,b) return tostring(a.configurationProfileId)<tostring(b.configurationProfileId) end)
+    return result
+end
+function Cache:getCurrentConfigurationProfileId(assemblyReferenceKey,sourceJobToken)
+    local record=self.records[episodeKey(assemblyReferenceKey,sourceJobToken)]
+    return record and record.currentProfileId or nil
+end
+
 function Cache:_buildProfile(record,key,config,nowSeconds)
-    local profile={identity=key..":configuration:"..tostring(countKeys(record.profiles)+1),configurationKey=config,firstObservedAt=nowSeconds,observations=0,participationById={},includedPrimitiveIds={},participatingPrimitiveNames={},inactivePrimitiveNames={},unresolvedPrimitiveNames={},diagnosticPrimitiveNames={},runtimeConfirmedCount=0,donorFallbackCount=0}
+    local profile={identity=key..":configuration:"..tostring(countKeys(record.profiles)+1),configurationKey=config,firstObservedAt=nowSeconds,observations=0,nativeObservationCount=0,outtaMyWayObservationCount=0,configurationEvidence=foldConfigurationEvidence(record.members),relativeDiscs=nil,participationById={},includedPrimitiveIds={},participatingPrimitiveNames={},inactivePrimitiveNames={},unresolvedPrimitiveNames={},diagnosticPrimitiveNames={},runtimeConfirmedCount=0,donorFallbackCount=0}
     local selectors={}
     for _,member in ipairs(record.members or {}) do
         local evidence=member.donorConfigurationEvidence
@@ -403,7 +467,7 @@ function Cache:_buildProfile(record,key,config,nowSeconds)
 end
 
 function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
-    local key=assemblyReferenceKey.."|"..tostring(sourceJobToken)
+    local key=episodeKey(assemblyReferenceKey,sourceJobToken)
     self.seen[key]=true
     local record=self.records[key]
     local cacheHit=record~=nil
@@ -423,6 +487,10 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
         record.profiles[config]=profile
     end
     profile.observations=profile.observations+1; profile.lastObservedAt=nowSeconds
+    local underOuttaMyWayAuthority=self:isOuttaMyWayConfigurationAuthorityActive(assemblyReferenceKey,sourceJobToken)
+    if underOuttaMyWayAuthority then profile.outtaMyWayObservationCount=profile.outtaMyWayObservationCount+1 else profile.nativeObservationCount=profile.nativeObservationCount+1 end
+    record.currentProfileId=profile.identity
+    record.currentConfigurationKey=config
     local worldPrimitives,transformFailures={},{}
     if record.membershipChanged~=true then
         for _,primitiveId in ipairs(profile.includedPrimitiveIds or {}) do
@@ -432,6 +500,9 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
             if world~=nil then worldPrimitives[#worldPrimitives+1]=world else transformFailures[#transformFailures+1]={primitiveId=primitive.identity,reason=errorReason} end
         end
     end
+    local frame=referenceFrameForWorker(worker)
+    local relativeDiscs=relativeDiscSnapshot(worldPrimitives,frame)
+    if relativeDiscs~=nil then profile.relativeDiscs=relativeDiscs end
     local summary=OuttaMyWay.PlanViewFootprint.summarise(worldPrimitives)
     return {
         episodeKey=key,assemblyReferenceKey=assemblyReferenceKey,sourceJobToken=sourceJobToken,cacheHit=cacheHit,
@@ -441,7 +512,7 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
         runtimeConfirmedPrimitiveCount=profile.runtimeConfirmedCount,donorFallbackPrimitiveCount=profile.donorFallbackCount,configurationSelectorSummary=profile.configurationSelectorSummary,
         participatingPrimitiveNames=profile.participatingPrimitiveNames,inactivePrimitiveNames=profile.inactivePrimitiveNames,unresolvedPrimitiveNames=profile.unresolvedPrimitiveNames,
         physicalPrimitiveCount=summary.physicalPrimitiveCount,diagnosticPrimitiveCount=summary.diagnosticPrimitiveCount,
-        configurationKey=config,configurationEvidence=foldConfigurationEvidence(record.members),configurationProfileId=profile.identity,configurationProfileCacheHit=profileCacheHit,configurationProfileCount=countKeys(record.profiles),
+        configurationKey=config,configurationEvidence=foldConfigurationEvidence(record.members),configurationProfileId=profile.identity,configurationProfileCacheHit=profileCacheHit,configurationProfileCount=countKeys(record.profiles),configurationAlternatives=self:_configurationAlternatives(record,profile.identity),outtaMyWayConfigurationAuthorityActive=underOuttaMyWayAuthority,
         structurallyValid=record.structurallyValid and profile.participatingPrimitiveCount>0,coverageComplete=false,conservativeForRepresentedComponents=record.conservativeForRepresentedComponents,
         negativeClearanceAuthority=false,claimPermissions={"POTENTIAL_INTERACTION_FROM_REPRESENTED_COMPONENTS"},
         worldPrimitives=worldPrimitives,planViewSummary=summary,geometryStats=record.geometryStats,transformFailureCount=#transformFailures,

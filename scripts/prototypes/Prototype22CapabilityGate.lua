@@ -1,3 +1,4 @@
+-- FS25_OuttaMyWay v0.1.1.0 CANONICAL CANDIDATE — D-0146 Regulation/Hold executor inherited unchanged from v0.1.0.14 TEST; relevance and role selection remain upstream.
 -- Prototype 22 bounded capability executor. Under D-0140 this module is below
 -- the Control boundary: it executes valid typed Control requests supplied by the
 -- central LiveControlDispatcher, maintains the existing TS015 mechanical donor,
@@ -652,11 +653,21 @@ function Probe:getVehicleControlObservation(vehicle)
     local state=self.driveAuthority and self.driveAuthority:getState(vehicle) or nil
     return {
         mode=state and state.mode or nil,ownerTag=state and state.ownerTag or nil,
-        regulationSpeedKmh=state and state.regulationSpeedKmh or nil,
+        regulationSpeedKmh=state and state.regulationSpeedKmh or nil,actualSpeedKmh=vehicle and actualSpeedKmh(vehicle) or nil,
         driveCalls=state and state.driveCalls or 0,lastInputMaxSpeed=state and state.lastInputMaxSpeed or nil,
         lastOutputMaxSpeed=state and state.lastOutputMaxSpeed or nil,lastInputForward=state and state.lastInputForward or nil,
         provenance={source="Prototype22CapabilityGate",layer="CONTROL_CAPABILITY_OBSERVATION",semanticAuthority=false}
     }
+end
+
+-- Reference-scoped raw Control observation for the live dispatcher. This exposes
+-- only whether the already-authorised Regulation actuator has actually been
+-- consumed by GIANTS and the participant's measured speed; it grants no traffic
+-- or escalation authority by itself.
+function Probe:getVehicleControlObservationByReference(referenceKey)
+    local vehicle=self:_vehicleForReferenceKey(referenceKey)
+    if vehicle==nil then return nil end
+    return self:getVehicleControlObservation(vehicle)
 end
 
 function Probe:executeControlRequest(request,candidate)

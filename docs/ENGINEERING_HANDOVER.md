@@ -1,3 +1,139 @@
+## v0.1.1.0 CANONICAL CANDIDATE handover — small-field D-0146 plateau
+
+Authoritative baseline remains owner-declared canonical v0.1.0.0 until explicit acceptance. v0.1.1.0 carries the exact v0.1.0.14 runtime behaviour and changes only release identity/provenance/canonical-review records.
+
+**Do not continue fixing inside this candidate.** The recent D-0146 tranche has isolated the next problem to literal authority: the fixed empirical 8 km/h Resolution-Space cap can be physically reached too late because braking consumes the Resolution Space that the Policeman is trying to conserve. Hold mechanics themselves now operate generically; the next discussion should recover response-adjusted supportable progression from architecture/history before implementation.
+
+**Regression plateau retained:** TS015 full completion after the passage-support correction; TS016 initial passage smoke regression; TS010 successful Pair-Specific / Configuration-First / Pre-Productive Intent Relevance passages. Remaining final TS010 collision is explicitly known and does not block capturing the generic corrections as a candidate plateau.
+
+**Parked:** Guide Development Non-Convergence after genuine productive commencement; D-0147 `<=60 m` Courtesy Exhaustion; 80 m locality; guide/burden literals; Boundary Encroachment; remaining Literal Audit items.
+
+If the owner accepts this candidate, record the exact ZIP SHA-256, local Git commit/provenance, file count and clean repository state, then treat that declaration as the next authoritative baseline.
+
+---
+
+## v0.1.0.14 TEST handover — Generic Regulation Sufficiency Hold
+
+Authoritative baseline remains owner-declared canonical v0.1.0.0. v0.1.0.14 is cumulative over v0.1.0.13.
+
+TS010 v0.1.0.13 demonstrated a settled-vs-settled opposed conflict where Role Migration and Safe Release conformance worked but the 8 km/h regulated mower still marched into collision. Hold did not escalate solely because the v0.1.0.9 gate required the protected participant to remain Transitional.
+
+v0.1.0.14 removes that accidental coupling. After Regulation is positively realised, continuing material positive closure may escalate the regulated participant to Hold under the same Resolution-Space Commitment for either Transitional or Settled protected continuation. Positive resolved non-closing still de-escalates Hold to the prior Regulation cap.
+
+Do not infer that 8 km/h is validated policy; it remains under the literal audit. Do not mix D-0147 `<=60 m` Courtesy Exhaustion or guide/burden calibration changes into this runtime test.
+
+Runtime target: reproduce a settled-vs-settled TS010 approach. Expected sequence is Regulation → cap realised → continued positive closure → `D0146_ACTION_SPACE_HOLD_ESCALATION ... reason=REGULATION_REALISED_BUT_POSITIVE_CLOSURE_CONTINUES`, before physical blockage.
+
+## v0.1.0.13 TEST handover
+
+- Canonical baseline remains v0.1.0.0.
+- v0.1.0.13 corrects only D-0146 Safe Release conformance.
+- Expected runtime diagnostic on the prior false-release sequence: `resolutionSpaceRelationship.status=POSITIVE_DISSOLUTION_VETOED` with reason `D0146_POSITIVE_FUTURE_SPACE_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION` or `D0146_BLOCKED_PARTICIPANT_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION`; the current Resolution-Space Commitment must remain live.
+- Regulate↔Hold, role migration, pre-productive relevance and passage behaviour are unchanged.
+- Separate parked issues remain: 8 km/h literal review, Guide Development Non-Convergence, and D-0147 <=60 m Courtesy Exhaustion coupling.
+
+## v0.1.0.12 TEST handover
+
+Canonical remains v0.1.0.0. Runtime target: TS010 with MT665 started after the mower. Before MT665 first productive work, expect `participation=.../ACTIVE_JOB_INTENT_REVELATION_PENDING`, `passageEligible=false`, and Resolution-Space Regulation/Hold applied only to the productive mower when supported. After productive commencement, the same pair identity may become passage-eligible. TS015/16 remain regression targets.
+
+# v0.1.0.11 TEST handover — Productive Commencement + Resolution-Space Role Migration
+
+Authoritative baseline remains owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). v0.1.0.11 is cumulative over v0.1.0.10.
+
+**Why this build exists:** TS010 v0.1.0.10 isolated two code mismatches. Pre-productive MT665 job-entry motion was being admitted into Cooperative Passage before any productive field-work commencement. Separately, an existing Resolution-Space Commitment failed to move its physical Regulation lease when Situation later reassigned the regulated/protected roles.
+
+**Implementation:** Live Observation latches positive productive commencement per source Job token; Operation membership uses that latch rather than current productivity, so later turns remain members. D-0146 Candidate marks role assignment mutable. Live Control migrates an active Resolution-Space lease under the same Commitment by applying the newly selected role before releasing the old one. Reversible Hold from v0.1.0.10 is retained.
+
+**Prior-scenario bench:** retained v0.1.0.7 TS015 contained 3 successful passages and TS016 1 successful initial passage; all passage participants had positive productive evidence before admission, and neither log used Action-Space Regulation/Hold. These recorded paths therefore predict no behavioural change.
+
+**Runtime targets:** TS010 starts where MT665 has not yet commenced work should leave it outside cooperative Operation participation until productive commencement. A Run-6-like later conflict should log `D0146_ACTION_SPACE_ROLE_MIGRATION` when Situation changes roles, with the same Commitment ID and authority moving to the new regulated participant. Then regression TS015/16 as normal.
+
+Do not mix the parked D-0147 `<=60 m` correction, 8 km/h review, or guide-shape literal work into this tranche.
+
+# v0.1.0.10 TEST handover — Reversible Resolution-Space Hold
+
+Authoritative baseline remains owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). v0.1.0.10 is cumulative over v0.1.0.9.
+
+TS010 v0.1.0.9 validated reverse-aware role assignment and Regulate→Hold escalation, then exposed One-Way Hold Persistence: Hold remained at zero after positive non-closing evidence and eventually became an obstruction. v0.1.0.10 retains the same Commitment but de-escalates Hold to the prior Regulation cap only from positive resolved Situation non-closing evidence. Re-escalation is permitted if closure returns.
+
+**Bench regression before implementation:** retained v0.1.0.7 TS015 log contained 3 successful passages and TS016 contained 1 successful initial passage; neither log contained `D0146_ACTION_SPACE_APPLY` or Hold events. Cooperative Passage Holds and D-0147 Protected Yield are not modified.
+
+**Runtime target:** TS010 through reverse/conflict-rich encounters. Expected diagnostic cycle is `D0146_ACTION_SPACE_APPLY` → optional `D0146_ACTION_SPACE_HOLD_ESCALATION` → `D0146_ACTION_SPACE_HOLD_DEESCALATION` when Situation proves non-closing, with the same Commitment active. If closure renews, re-escalation is legitimate.
+
+Do not mix the parked Guide Development Non-Convergence or D-0147 centre-exhaustion correction into validation of this tranche.
+
+---
+
+# v0.1.0.9 TEST handover — Regulation Sufficiency / Hold Escalation
+
+Authoritative baseline remains owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). v0.1.0.9 is a cumulative TEST branch over v0.1.0.8.
+
+TS010 v0.1.0.8 demonstrated that correctly assigned and realised 8 km/h Resolution-Space Regulation can still fail to conserve enough action space. v0.1.0.9 retains that cap as empirical first intervention, then tightens the same D-0146 lease to 0 km/h Hold only when: no supported same-conflict Passage has superseded it; the protected participant remains Transitional; Situation reports positive closure; and raw Control evidence shows the regulated participant has actually reached the cap.
+
+**Runtime target:** reproduce TS010 conflict-rich starts. Expected sequence is `D0146_ACTION_SPACE_APPLY ... cap=8.00` followed, if closure persists after cap compliance, by `D0146_ACTION_SPACE_HOLD_ESCALATION ... priorCap=8.00 ...`. If Passage becomes supported first, it should supersede the lease without Hold.
+
+Do not tune 8 km/h in this tranche. Record whether Hold conserves enough space for native revelation and later Passage/dissolution. Separately record any recurrence of Guide Development Non-Convergence or D-0147 `<=60 m` Courtesy Exhaustion.
+
+---
+
+# v0.1.0.8 TEST handover — Reverse-Aware Resolution-Space Role Assignment
+
+Authoritative baseline remains owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). v0.1.0.8 is a cumulative TEST branch over v0.1.0.7.
+
+**Why this build exists:** TS015 fully completed on v0.1.0.7; TS016 reached a successful initial S416 passage; TS010 completed passage and then GIANTS created a new reverse conflict. That conflict is intentionally treated as new Situation Assessment, not continuation of Cooperative Passage.
+
+**Correction:** Established-conflict role assignment now derives positive native closure contribution from `nativeDriveCommand.maxSpeedKmh`, chassis heading, `moveForwards` forward/reverse sign, and the current pair axis. Reverse commands therefore participate normally in Resolution-Space role assignment. The 8 km/h Regulation actuator already preserves GIANTS forward/reverse choice.
+
+**Primary runtime test:** reproduce TS010 through the unusual MT665 reverse. At the new Established conflict, logs should show `D0146_ACTION_SPACE_REGULATION_SUPPORTED ... closureContribution=... moveForwards=false` when a reversing participant is selected, followed by `D0146_ACTION_SPACE_APPLY` for the participant with the greater positive closure contribution when continuation classes are equivalent.
+
+**Discriminator:** if correct reverse-aware Regulation prevents contact, the forward-only surrogate was the failure. If physical interaction still occurs, do not retune this projection immediately; examine whether Regulation was insufficient and whether existing Regulate→Hold escalation needs implementation.
+
+**Regression:** TS015/TS016 need only smoke regression after TS010 unless the role correction affects them unexpectedly. D-0147 `<=60 m` Courtesy Exhaustion remains parked.
+
+# v0.1.0.7 TEST handover — Passage Support / failure configuration
+
+Authoritative baseline remains owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). v0.1.0.7 is a cumulative TEST branch over v0.1.0.6.
+
+Runtime target: rerun TS015. Expected difference: folded sprayers must continue the Candidate-proven guide despite GIANTS native `isBlocked=true` unless an actual passage-support check fails; any genuine D-0146 failure must remain held without automatic unfolding.
+
+# v0.1.0.6 TEST handover — Configuration-First Cooperative Passage
+
+Authoritative baseline remains owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). v0.1.0.6 is a cumulative TEST branch over the successful v0.1.0.5 small-field corrections.
+
+**Evidence:** v0.1.0.5 resolved the deadlock but retained the mower deployed. The selected guide demanded a large sidestep and GIANTS emitted fresh positive blocked evidence during traversal while OuttaMyWay continued motion. Success therefore disproved the assumption that current-configuration passage was an acceptable least-intervention expression.
+
+**Implementation:** configuration profiles are now provenance-labelled by the Job Episode cache. Candidate may use a stable folded profile only after native observation outside OuttaMyWay authority and only when its conflict-side projection releases space. Candidate recomputes pair clearance and residual burden under that profile. Control owns the fold/restore mechanics but must realise the exact expected profile before guide motion. Native blocked evidence during a guide is Support Loss and fails held.
+
+**Expected TS010:** mower should compact; FW212 should remain current because its player-only crane lacks AI-reachable productive configuration evidence; lateral burden should be reduced relative to v0.1.0.5. If the mower has no natively observed compact profile in that Job Episode, Candidate must retain current rather than infer one.
+
+---
+
+# v0.1.0.5 TEST handover — Resolution-Space Conservation / Progressive Passage
+
+Authoritative baseline remains owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). v0.1.0.5 is a cumulative TEST candidate retaining the v0.1.0.4 Pair-Specific Passage Clearance correction.
+
+Two v0.1.0.4 TS010 runs supplied the evidence. One passed. In the deadlock, the pair reached Established Opposed Corridor Conflict while MT665 still reported GIANTS `TURN_SEGMENT`; no Current Excursion remained, so the Potential-only Action-Space admission produced neither Regulation nor Hold. The pair then closed through the inherited 50 m Step-2 minimum.
+
+v0.1.0.5 corrects both code mismatches. Established conflict may now create the same pair-scoped Resolution-Space Regulation obligation when no supported Passage Candidate exists. Where one participant remains Transitional, preserve it and regulate the positively Settled participant; otherwise regulate the greater native closure contribution. The fixed 50 m Step-2 minimum is deleted with no replacement literal. Concrete guide support now decides Passage Development Feasibility below 50 m.
+
+**TS010 test:** reproduce the former v0.1.0.4 deadlock start pattern. Look for `D0146_ACTION_SPACE_REGULATION_SUPPORTED` with `classification=ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT admission=ESTABLISHED_CONFLICT`, then `D0146_ACTION_SPACE_APPLY`. If geometry subsequently becomes supportable, `D0146_PASSAGE_SUPPORTED` may occur below 50 m and should supersede the Regulation under the same Commitment. Repeat the previously successful start order as regression/control.
+
+Do not alter the 80 m upper locality bound, guide-shape literals, burden fractions, 1 m nominal clearance, or D-0147 during this validation unless new Runtime evidence directly identifies them.
+
+---
+
+# v0.1.0.4 TEST handover — Pair-Specific Passage Clearance
+
+Authoritative baseline is owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). v0.1.0.4 is rebuilt directly from that baseline; v0.1.0.1-.3 remain evidence only.
+
+The 12 m centreline target and derived 6 m participant reserve are removed from live D-0146 generic passage authority. Candidate now computes **side-specific** required separation from opposing Facing Clearance Extents plus the agreed provisional 1.0 m Nominal Inter-Assembly Clearance. Current configuration is retained for both participants to eliminate False Compaction Demand without yet granting passage authority to generic fold states.
+
+**TS010 test:** reproduce both former deadlock start patterns, then the successful third-run start-order control. Record video plus log. Key markers are `D0146_PASSAGE_SUPPORTED` and `[D0146-CONTROL] START`, especially `contact`, `nominal`, `required`, `currentLateral`, `reserve`, offsets and `minimumRepresentedClearance`. If the pair now reaches the fixed 50 m floor before a supported guide is found, that is evidence about the parked Development-Space Surrogate. If Candidate accepts but Control reports `PASSAGE_SUPPORT_LOSS_FIELD_TARGET`, retain it as the separate Candidate/Control spatial-proof mismatch.
+
+Do not tune 50/80 m, guide-shape literals, burden fractions or D-0147 during this validation.
+
+---
+
 # v0.1.0.0 handover — pre-1.0 version identity transition
 
 **Baseline:** owner-declared canonical v4.7.128 (`3933bd60ef7dc5e603647835a2959de34cd8e79f44a7436ba7bf122021b262f1`; Git `d90057eb3adafa7204517eaa0ded0c696a13fd1b`; 315 files).

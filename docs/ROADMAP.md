@@ -1,3 +1,14 @@
+# v0.1.1.x immediate roadmap — candidate review then Regulation literal authority
+
+1. Review the exact v0.1.1.0 candidate fingerprint; no behavioural work belongs in candidate preparation.
+2. If accepted, owner explicitly declares v0.1.1.0 canonical and records local Git/repository provenance.
+3. Resume the Literal Provenance Audit with the D-0146 **8 km/h Resolution-Space Regulation** family first.
+4. Recover the architecture/evidence requirement for response-adjusted supportable progression, including vehicle response/deceleration opportunity, before implementation.
+5. Do not replace 8 km/h with another guessed fixed speed merely to satisfy TS010.
+6. Keep Guide Development Non-Convergence, D-0147 `<=60 m` Courtesy Exhaustion, 80 m locality and remaining guide/burden audit items separate unless selected by evidence.
+
+---
+
 # v0.1.x roadmap — deliberate pre-release line
 
 1. Canonicalise the exact v0.1.0.0 version-identity candidate if accepted.

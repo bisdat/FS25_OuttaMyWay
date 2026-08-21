@@ -1,3 +1,11 @@
+# v0.1.1.0 candidate continuity — D-0146 small-field alignment plateau
+
+Owner-declared v0.1.0.0 remains canonical pending review. v0.1.1.0 carries v0.1.0.14 runtime behaviour unchanged and exists to capture the cumulative generic D-0146 corrections before resuming the Literal Provenance investigation.
+
+If accepted, canonicalise only the exact v0.1.1.0 package fingerprint supplied with this candidate and record owner-local Git provenance separately. Resume engineering from that accepted baseline. First selected investigation: fixed 8 km/h Resolution-Space Regulation authority / response-adjusted supportable progression. Do not chase the final TS010 collision by inserting another speed constant into the candidate.
+
+---
+
 # v0.1.0.0 continuity boundary — version identity only
 
 Continue from owner-declared canonical v4.7.128. v0.1.0.0 introduces the deliberate pre-1.0 numbering epoch and no behavioural change. Historical 4.7.x references remain valid provenance. If accepted, canonicalise only the exact v0.1.0.0 candidate fingerprint. Future TEST builds on this line use the fourth component; accepted compatible canonical corrections advance PATCH; significant capability/architecture milestones advance MINOR.

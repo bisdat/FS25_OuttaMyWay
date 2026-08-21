@@ -206,7 +206,7 @@ local function normalizePhysicalSpace(values,map)
     for _,item in OuttaMyWay.ValueRecord.ipairs(values or {}) do
         result[#result+1]={
             assemblyId=resolveAssembly(map,item),assemblyReferenceKey=item.assemblyReferenceKey,episodeKey=item.episodeKey,
-            configurationProfileId=item.configurationProfileId,configurationEvidence=copyValue(item.configurationEvidence or {}),primitives=item.primitives or {},summary=item.summary,
+            configurationProfileId=item.configurationProfileId,configurationEvidence=copyValue(item.configurationEvidence or {}),configurationAlternatives=copyValue(item.configurationAlternatives or {}),primitives=item.primitives or {},summary=item.summary,
             coverageComplete=item.coverageComplete==true,negativeClearanceAuthority=item.negativeClearanceAuthority==true,
             provenance=item.provenance
         }
@@ -279,15 +279,56 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     local situations = {}
     local situationByOperation={}
     local operationMembership={}
+    local operationEvidenceByAssembly={}
+    for _,evidence in OuttaMyWay.ValueRecord.ipairs(snapshot.operationMembershipEvidence or {}) do
+        operationEvidenceByAssembly[resolveAssembly(map,evidence)]=evidence
+    end
     for _, operationId in OuttaMyWay.ValueRecord.ipairs(activeOperationIds) do
         local operation = self.operations:get(operationId)
         local memberSet={}
-        for _, id in OuttaMyWay.ValueRecord.ipairs(operation.memberAssemblyIds) do relevant[#relevant+1]=id; memberSet[id]=true end
+        local resolutionSpaceAssemblyIds={}
+        local resolutionSpaceParticipation={}
+        for _, id in OuttaMyWay.ValueRecord.ipairs(operation.memberAssemblyIds) do
+            relevant[#relevant+1]=id
+            memberSet[id]=true
+            resolutionSpaceAssemblyIds[#resolutionSpaceAssemblyIds+1]=id
+            resolutionSpaceParticipation[id]={
+                class="OPERATION_MEMBER",operationMember=true,resolutionSpaceEligible=true,
+                productiveCommencementPending=false,fieldWorldReferenceKey=operation.fieldWorldReferenceKey,
+                provenance={source="OperationAdmission",authority="ACTIVE_OPERATION_MEMBERSHIP"}
+            }
+        end
+        -- Operational Membership and Situation Relevance are deliberately distinct.
+        -- An active GIANTS field-work worker whose Job Episode has not yet shown a
+        -- positive productive-commencement witness is not yet a cooperative Operation
+        -- participant, but it may already constrain a productive member of this Field
+        -- World.  Keep GIANTS in control of that unrevealed job-entry intent while
+        -- allowing D-0146 Resolution-Space Conservation to regulate/hold the known
+        -- productive member. Completed/non-active workers are excluded from this class.
+        for assemblyId,evidence in OuttaMyWay.ValueRecord.pairs(operationEvidenceByAssembly) do
+            local details=evidence.evidence or {}
+            if memberSet[assemblyId]~=true
+                and evidence.fieldWorldReferenceKey==operation.fieldWorldReferenceKey
+                and details.activeJobVehicleMembership==true
+                and details.fieldWorkerSpecializationPresent==true
+                and details.productiveWorkCommenced~=true then
+                relevant[#relevant+1]=assemblyId
+                resolutionSpaceAssemblyIds[#resolutionSpaceAssemblyIds+1]=assemblyId
+                resolutionSpaceParticipation[assemblyId]={
+                    class="ACTIVE_JOB_INTENT_REVELATION_PENDING",operationMember=false,resolutionSpaceEligible=true,
+                    productiveCommencementPending=true,fieldWorldReferenceKey=evidence.fieldWorldReferenceKey,
+                    provenance={source="OperationMembershipEvidence",authority="SAME_FIELD_WORLD_ACTIVE_JOB_INTENT_REVELATION_PENDING"}
+                }
+            end
+        end
+        resolutionSpaceAssemblyIds=sortedUnique(resolutionSpaceAssemblyIds)
         operationMembership[operationId]=memberSet
         local situation={
             identity = self.identities:resolve("SITUATION", operationId),
             operationId = operationId,
             memberAssemblyIds = operation.memberAssemblyIds,
+            resolutionSpaceAssemblyIds = resolutionSpaceAssemblyIds,
+            resolutionSpaceParticipation = resolutionSpaceParticipation,
             relevantAssemblyIds = {},
             futureSpaceRelationships = {},
             opposedCorridorRelationships = {},
@@ -604,7 +645,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         currentOpposedMaxDot=OuttaMyWay.OPPOSED_CURRENT_MAX_DOT,persistenceAlignmentMinDot=OuttaMyWay.TRAJECTORY_PERSISTENCE_ALIGNMENT_MIN_DOT,
         currentStableDistanceM=OuttaMyWay.OPPOSED_CURRENT_STABLE_DISTANCE_M,minClosingRateMps=OuttaMyWay.OPPOSED_MIN_CLOSING_RATE_MPS,
         actionSpaceMaxSeparationM=OuttaMyWay.D0146_STEP2_LOCAL_PASSAGE_MAX_ENTRY_SEPARATION_M,
-        actionSpaceRegulationKmh=OuttaMyWay.D0146_POTENTIAL_ACTION_SPACE_REGULATION_KMH
+        actionSpaceRegulationKmh=OuttaMyWay.D0146_RESOLUTION_SPACE_REGULATION_KMH
     })
     for _,relation in OuttaMyWay.ValueRecord.ipairs(opposedCorridorKnowledge) do
         local situation=situationByOperation[relation.operationId]

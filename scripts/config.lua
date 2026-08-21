@@ -1,11 +1,11 @@
--- FS25_OuttaMyWay v0.1.0.0 CANONICAL CANDIDATE — pre-1.0 versioning epoch transition; behaviour unchanged from canonical v4.7.128.
--- Owner-declared v4.7.128 is authoritative. v0.1.0.0 changes release identity/provenance/versioning policy only.
+-- FS25_OuttaMyWay v0.1.1.0 CANONICAL CANDIDATE — cumulative D-0146 small-field architecture/code alignment over owner-declared canonical v0.1.0.0.
+-- Diagnostic v0.1.0.1-.3 supplied evidence only; this implementation starts from canonical v0.1.0.0.
 -- D-0147 now implements the agreed optional Bounded Infield Retreat courtesy hypothesis while retaining the validated v4.7.120 mechanical actuator substrate.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.1.0.0"
-OuttaMyWay.ARCHITECTURE_VERSION = "0.1.0.0"
+OuttaMyWay.VERSION = "0.1.1.0"
+OuttaMyWay.ARCHITECTURE_VERSION = "0.1.1.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000
@@ -142,16 +142,15 @@ OuttaMyWay.OPPOSED_CURRENT_STABLE_DISTANCE_M = 1.0
 OuttaMyWay.OPPOSED_MIN_CLOSING_RATE_MPS = 0.05
 
 
--- D-0146 Step-2 active test implementation. Traffic semantics are generic and
--- v4.7.105 live evidence includes Condor/Patriot plus mixed S416/sprayer passages.
--- Mechanical execution still relies only on current positively supported
--- compact/retain/hold/reposition/restore capabilities. These literals are test
--- calibration, not universal passage policy or negative-clearance authority.
+-- D-0146 Step-2 active test implementation. Traffic semantics are generic.
+-- Pair-Specific Passage Clearance replaces the inherited 12 m centreline / 6 m
+-- participant reserve geometry surrogate. The 1 m value below is the currently
+-- agreed Nominal Inter-Assembly Clearance policy calibration; architecture owns
+-- the concept, not this universal magnitude. Current represented geometry remains
+-- bounded evidence and does not itself claim generic Coverage Closure.
 OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED = true
-OuttaMyWay.D0146_STEP2_LOCAL_PASSAGE_MIN_ENTRY_SEPARATION_M = 50.0
 OuttaMyWay.D0146_STEP2_LOCAL_PASSAGE_MAX_ENTRY_SEPARATION_M = 80.0
-OuttaMyWay.D0146_STEP2_COMPACT_PASSAGE_CENTRELINE_SEPARATION_M = 12.0
-OuttaMyWay.D0146_STEP2_COMPACT_MIN_CENTRE_SEPARATION_M = 12.0
+OuttaMyWay.D0146_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0
 OuttaMyWay.D0146_STEP2_DEVELOPMENT_DISTANCE_M = 12.0
 OuttaMyWay.D0146_STEP2_TRAVERSAL_MARGIN_M = 8.0
 OuttaMyWay.D0146_STEP2_REACQUISITION_DISTANCE_M = 12.0
@@ -163,11 +162,12 @@ OuttaMyWay.D0146_STEP2_PAIR_SWEEP_SAMPLES_PER_LEG = 20
 OuttaMyWay.D0146_STEP2_MOVE_SPEED_KMH = 8.0
 OuttaMyWay.D0146_STEP2_PHASE_WATCHDOG_MS = 45000
 
--- D-0146 Potential-conflict Action-Space Conservation test calibration. This is
--- a bounded Regulation rate used only when current positive Situation evidence
--- shows one Current Excursion and one stable approaching participant consuming
--- the existing 80 m Local Passage envelope. It is not universal traffic policy.
-OuttaMyWay.D0146_POTENTIAL_ACTION_SPACE_REGULATION_KMH = 8.0
+-- D-0146 Resolution-Space Conservation test calibration. This bounded
+-- Regulation rate may preserve local Passage Action Space either while a
+-- Current Excursion is still revealing the relationship or after an Established
+-- Opposed Corridor Conflict exists but no supported Step-2 Passage expression is
+-- yet available. It is not universal traffic speed policy.
+OuttaMyWay.D0146_RESOLUTION_SPACE_REGULATION_KMH = 8.0
 
 -- D-0128 bounded head-on playbook evidence gate. This is a TEST REPRESENTATION-
 -- FITNESS literal, not production head-on policy: the live Refuge bridge is only
@@ -197,7 +197,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
 OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.1.0.0 CANONICAL CANDIDATE — PRE-1.0 VERSIONING EPOCH"
+OuttaMyWay.BUILD_LABEL = "0.1.1.0 CANONICAL CANDIDATE — D-0146 SMALL-FIELD ALIGNMENT PLATEAU"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720

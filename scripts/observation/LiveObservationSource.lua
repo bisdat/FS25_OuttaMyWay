@@ -1,3 +1,4 @@
+-- FS25_OuttaMyWay v0.1.1.0 CANONICAL CANDIDATE — Job-Episode productive commencement / pre-productive relevance semantics inherited unchanged from v0.1.0.14 TEST.
 OuttaMyWay.LiveObservationSource = {}
 local Source = OuttaMyWay.LiveObservationSource
 Source.__index = Source
@@ -61,6 +62,19 @@ end
 
 local function blockedState(object)
     return object ~= nil and object.spec_aiFieldWorker ~= nil and object.spec_aiFieldWorker.isBlocked == true
+end
+
+-- Operation membership begins only after this Job Episode has positively
+-- demonstrated actual productive field work.  This is deliberately narrower
+-- than activeJobVehicles membership: native job-entry/turn revelation remains
+-- observable but is not yet a cooperative Operation participant.  Once seen,
+-- the witness is latched for the Job Episode so later headland turns do not
+-- eject a genuine participant.
+local function productiveWorkCommencementWitness(nativeFieldWork)
+    return type(nativeFieldWork)=="table"
+        and nativeFieldWork.segmentAvailable==true
+        and nativeFieldWork.isTurn~=true
+        and nativeFieldWork.implementLineClassification=="ACTIVE"
 end
 
 local function appendComponent(result, seen, object)
@@ -259,6 +273,10 @@ function Source:capture(mission, nowSeconds)
             if sourceToken == nil then
                 if track.fallbackEpisodeToken == nil or reactivated then track.fallbackEpisodeToken = self:_mintEpisodeToken(ref) end
                 sourceToken = track.fallbackEpisodeToken
+            end
+            if replacementObserved or reactivated then
+                track.productiveWorkCommencedJobToken=nil
+                track.productiveWorkCommencementEvidence=nil
             end
             if track.fieldWorldCaptureToken==nil or replacementObserved or reactivated then
                 track.fieldWorldSnapshot=nil; track.fieldWorldError=nil
@@ -466,6 +484,20 @@ function Source:capture(mission, nowSeconds)
             if worker.activeObserved==true and worker.object~=nil and OuttaMyWay.NativeFieldWorkObservation~=nil then
                 nativeFieldWork=OuttaMyWay.NativeFieldWorkObservation.observe(worker.object)
             end
+            local commencementCurrentSample=productiveWorkCommencementWitness(nativeFieldWork)
+            local track=self.tracks[worker.referenceKey]
+            if worker.activeObserved==true and commencementCurrentSample==true and track~=nil and worker.sourceJobToken~=nil then
+                if track.productiveWorkCommencedJobToken~=worker.sourceJobToken then
+                    track.productiveWorkCommencedJobToken=worker.sourceJobToken
+                    track.productiveWorkCommencementEvidence={
+                        sourceJobToken=worker.sourceJobToken,observedAtSeconds=nowSeconds,
+                        segmentAvailable=nativeFieldWork.segmentAvailable==true,isTurn=nativeFieldWork.isTurn,
+                        implementLineClassification=nativeFieldWork.implementLineClassification,
+                        provenance={source="NativeFieldWorkObservation",authority="JOB_EPISODE_PRODUCTIVE_COMMENCEMENT_POSITIVE_WITNESS"}
+                    }
+                end
+            end
+            local productiveWorkCommenced=track~=nil and worker.sourceJobToken~=nil and track.productiveWorkCommencedJobToken==worker.sourceJobToken
             raw.motion.progressionEvidence[#raw.motion.progressionEvidence+1]={
                 assemblyReferenceKey=worker.referenceKey,name=worker.name,sourceJobToken=worker.sourceJobToken,
                 reportedSpeedMps=worker.speedMps,positionDerivedSpeedMps=md.positionDerivedSpeedMps,
@@ -517,7 +549,7 @@ function Source:capture(mission, nowSeconds)
             end
             local snapshotResolved=worker.fieldWorldSnapshot~=nil
             local worldResolved=worker.fieldWorldResolution~=nil and worker.fieldWorldResolution.fieldWorldReferenceKey~=nil
-            local recognised=worker.activeObserved and worldResolved and worker.hasFieldWorker
+            local recognised=worker.activeObserved and worldResolved and worker.hasFieldWorker and productiveWorkCommenced
             worker.futureSpace=OuttaMyWay.FieldBoundedFutureSpace.build(worker)
             raw.diagnostics.sourceCounters.activeGroupWorkerCount=raw.diagnostics.sourceCounters.activeGroupWorkerCount+(worker.activeObserved and 1 or 0)
             raw.diagnostics.sourceCounters.poseResolvedWorkerCount=raw.diagnostics.sourceCounters.poseResolvedWorkerCount+(worker.pose~=nil and 1 or 0)
@@ -529,6 +561,8 @@ function Source:capture(mission, nowSeconds)
                 fieldWorkerSpecializationPresent=worker.hasFieldWorker==true,
                 fieldActive=worker.fieldActive==true,
                 aiActive=worker.aiActive==true,
+                productiveWorkCommenced=productiveWorkCommenced==true,
+                productiveWorkCommencementCurrentSample=commencementCurrentSample==true,
                 blocked=worker.blocked==true,
                 poseResolved=worker.pose~=nil,
                 node=worker.poseDiagnostic and worker.poseDiagnostic.node or (worker.pose and worker.pose.node or nil),
@@ -575,6 +609,8 @@ function Source:capture(mission, nowSeconds)
                     configurationProfileId=worker.shadowRepresentation.configurationProfileId,
                     configurationProfileCacheHit=worker.shadowRepresentation.configurationProfileCacheHit,
                     configurationProfileCount=worker.shadowRepresentation.configurationProfileCount,
+                    configurationAlternatives=worker.shadowRepresentation.configurationAlternatives,
+                    outtaMyWayConfigurationAuthorityActive=worker.shadowRepresentation.outtaMyWayConfigurationAuthorityActive,
                     membershipChanged=worker.shadowRepresentation.membershipChanged,
                     structurallyValid=worker.shadowRepresentation.structurallyValid,
                     coverageComplete=worker.shadowRepresentation.coverageComplete,
@@ -591,6 +627,7 @@ function Source:capture(mission, nowSeconds)
                     episodeKey=worker.shadowRepresentation.episodeKey,
                     configurationProfileId=worker.shadowRepresentation.configurationProfileId,
                     configurationEvidence=worker.shadowRepresentation.configurationEvidence,
+                    configurationAlternatives=worker.shadowRepresentation.configurationAlternatives,
                     primitives=worker.shadowRepresentation.worldPrimitives,
                     summary=worker.shadowRepresentation.planViewSummary,
                     coverageComplete=worker.shadowRepresentation.coverageComplete,
@@ -612,10 +649,12 @@ function Source:capture(mission, nowSeconds)
                     fieldWorldSnapshotCaptured=snapshotResolved,fieldWorldIdentityResolved=worldResolved,
                     fieldWorldEquivalenceStatus=worker.fieldWorldResolution and worker.fieldWorldResolution.outcome or (snapshotResolved and "UNRESOLVED" or nil),
                     fieldActive=worker.fieldActive,aiActive=worker.aiActive,
-                    activeJobVehicleMembership=worker.activeObserved,blocked=worker.blocked==true,
+                    activeJobVehicleMembership=worker.activeObserved,fieldWorkerSpecializationPresent=worker.hasFieldWorker==true,blocked=worker.blocked==true,
+                    productiveWorkCommenced=productiveWorkCommenced==true,productiveWorkCommencementCurrentSample=commencementCurrentSample==true,
+                    productiveWorkCommencementEvidence=track and track.productiveWorkCommencementEvidence or nil,
                     playerFacingFieldId=worker.playerFacingFieldId,playerFacingLocatorSource=worker.playerFacingLocatorSource
                 },
-                provenance={source="AISystem.activeJobVehicles+JobSeededFieldWorldSnapshot+FieldWorldEquivalenceAuthority",fieldWorldIdentityStatus=worldResolved and "AUTHORITATIVE_SPATIAL_EQUIVALENCE" or "UNRESOLVED"}
+                provenance={source="AISystem.activeJobVehicles+JobSeededFieldWorldSnapshot+FieldWorldEquivalenceAuthority+ProductiveWorkCommencementLatch",fieldWorldIdentityStatus=worldResolved and "AUTHORITATIVE_SPATIAL_EQUIVALENCE" or "UNRESOLVED",operationAdmissionAuthority="JOB_EPISODE_PRODUCTIVE_COMMENCEMENT_LATCH"}
             }
             if not snapshotResolved then
                 raw.unavailableSources[#raw.unavailableSources + 1] = {

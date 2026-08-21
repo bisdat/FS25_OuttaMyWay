@@ -1,12 +1,14 @@
--- FS25_OuttaMyWay v4.7.105 TEST BUILD — D-0146 Step-2 purpose-specific
+-- FS25_OuttaMyWay v0.1.0.4 TEST — D-0146 Pair-Specific Passage Clearance purpose-specific
 -- mechanical Representation Fitness.
 --
 -- Situation does not pre-classify passage capability by vehicle name.  Once an
 -- Established Opposed Corridor Conflict exists, current cached assembly geometry
 -- and configuration identity are enough to admit the pair to Candidate-owned
--- Local Passage Space search.  Actual Hold/optional-configuration/Reposition capability remains
--- a Control preflight responsibility and may still disprove the Passage
--- Presumption from Reality.
+-- Local Passage Space search. Candidate derives Pair-Specific Passage Clearance
+-- from current participating represented components plus the explicit Nominal
+-- Inter-Assembly Clearance calibration. This test tranche retains current
+-- configuration; actual Hold/Reposition capability remains a Control preflight
+-- responsibility and may still disprove the Passage Presumption from Reality.
 
 OuttaMyWay.PassageCapabilityAssessment={}
 local Assessment=OuttaMyWay.PassageCapabilityAssessment
@@ -35,13 +37,14 @@ local function record(conflict,motion,physical,assemblyId,otherAssemblyId)
     return {
         representationId="d0146-step2-mechanical:"..tostring(conflict.identity)..":"..tostring(assemblyId),
         assemblyId=assemblyId,
-        question="D0146_STEP2_OPTIONAL_CONFIGURATION_GUIDED_PASSAGE_MECHANICAL_PREFLIGHT",
+        question="D0146_STEP2_PAIR_SPECIFIC_CLEARANCE_GUIDED_PASSAGE_MECHANICAL_PREFLIGHT",
         assessmentHorizon="CURRENT_ESTABLISHED_OPPOSED_CONFLICT_ONLY",
         state=ok and "FIT_FOR_LIMITED_HORIZON" or "REFRESH_REQUIRED",
-        claimPermissions=ok and {"D0146_STEP2_OPTIONAL_CONFIGURATION_GUIDED_PASSAGE_MECHANICAL_PREFLIGHT"} or {},
+        claimPermissions=ok and {"D0146_STEP2_PAIR_SPECIFIC_CLEARANCE_GUIDED_PASSAGE_MECHANICAL_PREFLIGHT"} or {},
         coverage={complete=false,conservative=false,underApproximationRisk=true},
         uncertainty=ok and {
-            "CONFIGURATION_REDUCTION_IS_OPTIONAL_AND_CONTROL_REVALIDATED_FROM_CURRENT_VEHICLE_REALITY",
+            "CURRENT_CONFIGURATION_RETAINED_BY_THIS_PAIR_SPECIFIC_CLEARANCE_TEST_TRANCHE",
+            "CONFIGURATION_REDUCTION_REMAINS_OPTIONAL_ARCHITECTURE_BUT_IS_NOT_SELECTED_HERE",
             "GENERIC_NEGATIVE_CLEARANCE_AUTHORITY_NOT_CLAIMED",
             "BOUNDARY_ENCROACHMENT_REQUIRES_SEPARATE_POSITIVE_SUPPORT"
         } or {reason},
@@ -56,9 +59,9 @@ local function record(conflict,motion,physical,assemblyId,otherAssemblyId)
             physicalPrimitiveCount=p and p.summary and p.summary.physicalPrimitiveCount or 0,
             physicalCoverageComplete=p and p.coverageComplete==true or false,
             negativeClearanceAuthority=p and p.negativeClearanceAuthority==true or false,
-            controlProfile="D0146_OPTIONAL_CONFIGURATION_GUIDED_PASSAGE_V3",
+            controlProfile="D0146_CONFIGURATION_FIRST_GUIDED_PASSAGE_V5",
             vehicleNameAdmissionGate=false,
-            configurationReductionAuthority="CANDIDATE_OPTIONAL_CONTROL_PREFLIGHT_FROM_CURRENT_REALITY"
+            configurationReductionAuthority="NOT_SELECTED_CURRENT_CONFIGURATION_RETAINED"
         },
         provenance={
             source="PassageCapabilityAssessment",layer="SITUATION_ASSESSMENT",
@@ -75,7 +78,7 @@ function Assessment.buildFitness(context)
     local physical=byAssembly(context.physicalSpaceEvidence)
     local result={}
     for _,conflict in OuttaMyWay.ValueRecord.ipairs(context.opposedCorridorKnowledge or {}) do
-        if conflict.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" then
+        if conflict.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" and conflict.cooperativePassageEligible~=false then
             local aId,bId=conflict.subjectAssemblyId,conflict.otherAssemblyId
             result[#result+1]=record(conflict,motion,physical,aId,bId)
             result[#result+1]=record(conflict,motion,physical,bId,aId)

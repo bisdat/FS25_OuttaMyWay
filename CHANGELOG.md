@@ -1,3 +1,189 @@
+# v0.1.1.0 CANONICAL CANDIDATE — D-0146 Small-Field Architecture Alignment Plateau
+
+**Authority:** owner-declared canonical v0.1.0.0 remains authoritative pending explicit review of this candidate. v0.1.1.0 is derived from the tested v0.1.0.14 lineage and introduces **no intentional traffic/planning/Control behavioural change**; release identity, provenance and canonical-review records only are changed.
+
+**Why cut the candidate now:** the small 0.99 ha TS010 theatre exposed and corrected a coherent set of architecture/code mismatches without invalidating the known-good TS015/TS016 Cooperative Passage path. The remaining final v0.1.0.14 failure is now isolated to a different authority question: the fixed empirical 8 km/h Resolution-Space Regulation cap is retrospective because Hold waits for physical cap realisation while braking itself consumes Resolution Space. That belongs to the resumed literal/provenance investigation rather than another candidate-scope patch.
+
+**Captured plateau:** Pair-Specific Passage Clearance with provisional 1.0 m Nominal Inter-Assembly Clearance; retirement of the 50 m minimum-entry surrogate; Configuration-First Passage and passage-relevant configuration authority; native `isBlocked` retained as observation but removed as standalone Passage Support Loss; failure preserves the safer current/compact configuration; reverse-aware pair closure contribution; generic Resolution-Space Regulate→Hold, reversible Hold→Regulate and Role Migration; productive-commencement-latched Operation membership separated from Pre-Productive Intent Relevance; ADR-0006 Safe Release vetoes for blockage/Future-Space contradiction; and Hold sufficiency independent of Transitional/Settled continuation class.
+
+**Evidence boundary:** TS015 returned to full completion after the v0.1.0.7 passage regression fix; TS016 initial S416/other passage regression remained successful in subsequent smoke runs; TS010 v0.1.0.12 validated pre-productive intent relevance and successful transition into ordinary Passage. The final v0.1.0.14 TS010 run still produced a slow regulated march into blockage before Hold could become timely. This candidate records that limitation rather than presenting the theatre as solved.
+
+**Open next:** resume the Literal Provenance Audit with the D-0146 8 km/h Regulation family first. Reconstruct the architectural requirement for response-adjusted / distance-time supportable progression before implementation; do not replace 8 km/h with another guessed constant. Separately parked: Guide Development Non-Convergence if it reproduces after genuine productive commencement; D-0147 `<=60 m` Courtesy Exhaustion coupling; 80 m locality; guide-shape/burden literals; Boundary Encroachment and other remaining audit items.
+
+---
+
+# v0.1.0.14 TEST — D-0146 Generic Regulation Sufficiency Hold
+
+**Canonical baseline:** owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). This is a cumulative TEST branch over v0.1.0.13; canonical authority does not move.
+
+**Evidence:** TS010 on the 0.99 ha field showed a settled-vs-settled opposed conflict where Resolution-Space Role Migration correctly put the 8 km/h Regulation on the closing mower and ADR-0006 Safe Release correctly kept the obligation live, yet separation continued to collapse into blockage. Hold never escalated because the v0.1.0.9 implementation required the protected participant to remain Transitional.
+
+**Discovery — Transitional Hold Eligibility Coupling:** the Transitional prerequisite was fixture-derived context from the first Regulation Sufficiency test, not architecture. Resolution-Space Conservation must judge whether realised Regulation is sufficient for the current pair, regardless of whether the protected participant is Transitional or Settled.
+
+**Correction:** while the same live D-0146 Resolution-Space obligation remains active, realised bounded Regulation plus continuing positive pair closure may escalate the regulated participant to zero-speed Hold whenever no superior same-conflict Passage has succeeded it. Existing Hold de-escalation still requires positive resolved non-closing evidence. No new speed, distance or time literal is introduced.
+
+**Prior-scenario / generic bench:** the existing Transitional Hold regression remains and a new settled-vs-settled Established-conflict regression proves the same Regulate→Hold semantics. Retained TS015/TS016 successful passage evidence does not exercise D-0146 Action-Space leases, so their known-good Cooperative Passage path remains outside this change. Pre-Productive Intent Relevance, Role Migration and Safe Release conformance are unchanged.
+
+**Explicitly unchanged:** the empirical 8 km/h first-stage Regulation cap remains under literal review; Pair-Specific Passage Clearance; provisional 1.0 m nominal clearance; Configuration-First Passage; 80 m locality ceiling; guide/burden calibrations; and D-0147 `<=60 m` Courtesy Exhaustion coupling.
+
+# v0.1.0.13 TEST — D-0146 Safe Release Conformance
+
+**Canonical baseline:** owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). This is a cumulative TEST branch over v0.1.0.12; canonical authority does not move.
+
+**Evidence:** TS010 on the 0.99 ha field showed Resolution-Space Regulation/Hold behaving correctly, then being released when current trajectories became settled/non-opposed even though `FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION_POSITIVE` remained present; at the final release both workers were also `blocked=true`. The pair then remained physically deadlocked.
+
+**Correction:** `TrajectoryConflictAssessment` no longer treats settled/non-opposed or post-passage trajectory labels as positive relationship dissolution when contradictory positive Safe Release evidence exists. A blocked participant or a positively intersecting relevant Field-Bounded Future-Space relationship vetoes positive dissolution and keeps the Resolution-Space obligation live for reassessment. Productive intent may remain valid while blocked; blockage simply cannot prove independent continuation.
+
+**Architecture:** this is conformance with canonical ADR-0006 `Future Space, Persistent Situation Relevance and Safe Release`, especially `Conflict Cessation Is Not Conflict Resolution` and the Safe Release requirement for no blocked participant plus Future-Space clearance through the Continuation Safety Horizon. No TS010-specific branch, distance, speed or timeout is added.
+
+**Explicitly unchanged:** Regulate↔Hold escalation/de-escalation, Resolution-Space Role Migration, Pre-Productive Intent Relevance, 8 km/h first-stage regulation literal under review, Pair-Specific Passage Clearance, 1.0 m nominal clearance, configuration-first passage, 80 m locality ceiling, guide/burden calibrations, and D-0147 `<=60 m` Courtesy Exhaustion coupling.
+
+**Offline validation:** 253/253 Lua replacement-core behavioural tests, 96/96 Python structural tests, 25/25 RRS tests, and 105/105 live-loaded Lua files parse. Retained TS015/TS016 successful passage logs contain no D-0146 Action-Space leases, so the corrected release gate is not on their exercised control path. Runtime validation remains authoritative.
+
+# v0.1.0.12 TEST — D-0146 Pre-Productive Intent Relevance
+
+**Canonical baseline:** owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). This is a cumulative TEST branch over v0.1.0.11; canonical authority does not move.
+
+**0.1.0.11 regression evidence:** the productive-commencement latch correctly prevented a pre-productive MT665 from becoming a Cooperative Passage participant, but the implementation also removed it from D-0146 Situation pairing. The head-on pair therefore remained `sameOperation=false` while closing into positive physical interaction. This disproved the implementation equation `not Operation member = traffic irrelevant`.
+
+**Architecture alignment — Operational Membership != Situation Relevance:** productive commencement remains the Job-Episode-latched gate for cooperative Operation membership. A same-Field-World active GIANTS field-work worker whose productive commencement is still pending is now classified as `ACTIVE_JOB_INTENT_REVELATION_PENDING`: Situation-relevant to a current Operation, but not an Operation member. Completed/non-active workers do not enter this class.
+
+**Control authority boundary:** D-0146 may Observe, assess and apply Resolution-Space Regulation/Hold to the known Operation member while the pre-productive worker remains wholly GIANTS-owned. The unrevealed worker cannot be folded, sidestepped, repositioned or admitted to Cooperative Passage. Once productive commencement is positively latched, the same pair identity remains valid and normal cooperative membership/Passage eligibility may emerge without resetting the Situation.
+
+**Generic role semantics:** when exactly one participant is `ACTIVE_JOB_INTENT_REVELATION_PENDING`, Resolution-Space role assignment protects that participant's native intent revelation and constrains only the current Operation member when that member is positively contributing to closure. Existing Current-Excursion/Established geometry, Regulation Sufficiency, reversible Hold and Role Migration remain the intervention machinery; no TS010-specific route or distance rule is introduced.
+
+**Prior-scenario / exclusion bench:** retained TS015/TS016 successful passages already had productive commencement for both participants and therefore remain on their existing passage path. New behavioural regressions prove (1) a pre-productive active same-Field-World worker is relevant but not a member, (2) removing it from GIANTS `activeJobVehicles` removes this D-0146 relevance class, (3) Cooperative Passage is denied while pending, and (4) the pair identity is unchanged when later membership becomes productive.
+
+**Explicitly unchanged:** Resolution-Space Role Migration; Regulate↔Hold escalation/de-escalation; 8 km/h first-stage Regulation literal under review; Pair-Specific Passage Clearance; provisional 1.0 m nominal clearance; Configuration-First Passage; 80 m locality ceiling; guide/burden calibrations; D-0147 `<=60 m` Courtesy Exhaustion coupling.
+
+**Offline validation:** 251/251 Lua replacement-core behavioural tests, 95/95 Python structural tests, 25/25 RRS tests, and 105/105 live-loaded Lua files parse. Runtime validation remains authoritative.
+
+# v0.1.0.11 TEST — D-0146 Productive Commencement + Resolution-Space Role Migration
+
+**Canonical baseline:** owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). This is a cumulative TEST branch over v0.1.0.10; canonical authority does not move.
+
+**TS010 v0.1.0.10 evidence:** six runs exposed two independent implementation mismatches. Runs 1–3 admitted Cooperative Passage before MT665 had ever begun productive field work and then developed the repeated circling/non-convergence behaviour. In Run 6 MT665 had productively commenced, passage succeeded, but a later Resolution-Space obligation changed its Situation-owned regulated/protected roles while the live Control lease remained attached to the old participant; the unregulated mower then consumed the remaining space and the pair deadlocked.
+
+**Correction 1 — Productive Commencement Latch:** cooperative Operation participation now requires one positive native productive-work commencement witness in the current Job Episode. The latch is Job-Episode scoped: before first productive work the worker remains observable but is not a cooperative Operation participant; after commencement, later turns/transitional segments do not eject it. Job replacement/reactivation resets the latch.
+
+**Correction 2 — Resolution-Space Role Migration:** regulated/protected roles are current Control expression, not immutable obligation identity. When Situation Assessment reassigns roles under the same unresolved D-0146 Resolution-Space governing requirement, Control first applies the new participant's bounded lease, then releases the old participant's lease/authority, retaining the same Commitment and obligation. Existing Regulate↔Hold reversibility remains intact and resets to Regulation on role migration.
+
+**Prior-scenario bench:** retained v0.1.0.7 TS015 (3 successful passages) and TS016 (1 successful initial passage) both had positive productive evidence for each passage participant before passage admission and zero D-0146 Action-Space leases; therefore neither correction changes a path exercised by those known-good runs. TS010 Run 6 productively commenced MT665 before passage and is the direct role-migration validation target.
+
+**Explicitly unchanged:** reversible Hold from v0.1.0.10; 8 km/h first-stage Regulation literal under renewed review; Pair-Specific Passage Clearance and provisional 1.0 m nominal clearance; Configuration-First passage; 80 m locality ceiling; guide-shape/burden calibrations; D-0147 `<=60 m` Courtesy Exhaustion coupling. Guide Development Non-Convergence remains parked pending evidence after pre-productive participation is removed.
+
+**Offline validation:** 248/248 Lua replacement-core behavioural tests, 95/95 Python structural tests, 25/25 RRS tests, 105/105 live-loaded Lua files parse, and zero introduced repository-policy findings. Runtime validation remains authoritative.
+
+# v0.1.0.10 TEST — D-0146 Reversible Resolution-Space Hold
+
+**Canonical baseline:** owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). This is a cumulative TEST branch over v0.1.0.9; canonical authority does not move.
+
+**TS010 v0.1.0.9 evidence:** Regulate→Hold escalation correctly stopped the MT665 during the unusual reverse conflict, but the zero-speed Hold remained physically active for about 83 seconds even after Situation positively established that the pair was no longer closing. In the final encounter the same one-way Hold persisted after non-closing evidence, leaving the MT665 stationary until the protected mower later returned and both deadlocked.
+
+**Discovery — One-Way Hold Persistence:** Resolution-Space obligation lifetime and the current physical Control expression are not the same thing. Persistent Situation Relevance may retain the obligation without requiring a zero-speed Hold to remain latched after its immediate purpose has ceased.
+
+**Correction — Hold de-escalation:** while the same Resolution-Space obligation remains active, a Hold relaxes back to its prior bounded Regulation cap only when Situation positively establishes resolved current non-closing. Missing/unresolved motion does not de-escalate. If positive closure later returns while the protected participant remains Transitional and Regulation is realised, the same obligation may re-escalate to Hold. No new distance or time literal is introduced.
+
+**Generic/regression boundary:** Cooperative Passage participant Holds and D-0147 Protected Yield Holds are untouched. Bench review of retained v0.1.0.7 logs found 3 successful TS015 passages and 1 successful initial TS016 passage with zero D-0146 Action-Space Regulation/Hold events, so this correction does not alter any control path exercised by those successful scenarios. Every new issue/fix remains subject to prior-scenario regression and generic constructive applicability.
+
+**Explicitly unchanged:** 8 km/h first-stage Regulation remains empirical and under literal review; Reverse Closure Contribution; Pair-Specific Passage Clearance; provisional 1.0 m Nominal Inter-Assembly Clearance; Configuration-First passage; 80 m locality ceiling; guide geometry/burden fractions; parked Guide Development Non-Convergence; D-0147 `<=60 m` Courtesy Exhaustion coupling.
+
+**Offline validation:** 246/246 Lua replacement-core behavioural tests, 95/95 Python structural tests, 25/25 RRS tests, and all 105 live-loaded Lua files parse. Runtime validation remains authoritative.
+
+# v0.1.0.9 TEST — D-0146 Regulation Sufficiency / Hold Escalation
+
+**Canonical baseline:** owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). This is a cumulative TEST branch over v0.1.0.8; canonical authority does not move.
+
+**TS010 v0.1.0.8 evidence:** four runs produced two successful passages, one Guide Development Non-Convergence timeout, and one later deadlock. In the deadlock, Resolution-Space Conservation correctly protected the Transitional mower and regulated MT665 to the empirical 8 km/h cap, but separation still collapsed from roughly 53 m to roughly 13 m before both native workers blocked. No supported Cooperative Passage expression had emerged while the protected native situation remained Transitional.
+
+**Discovery — Regulation Sufficiency:** applying the admitted speed cap is not itself evidence that Resolution Space is being conserved. The 8 km/h value remains empirical calibration under renewed literal review; v0.1.0.9 does not replace it with another guessed speed.
+
+**Correction — Regulate → Hold escalation:** Regulation remains the least initial intervention. While the same D-0146 Resolution-Space obligation is active, Control may tighten its existing purpose-bound Regulation lease to 0 km/h Hold only after all of the following are positively true: (1) no same-conflict Cooperative Passage Candidate has superseded the lease; (2) the protected participant remains Transitional; (3) Situation still reports positive current closing; and (4) Control-execution evidence shows GIANTS has consumed the Regulation request and the regulated participant has actually reached the admitted cap. No new distance or time threshold is introduced.
+
+**Authority boundary:** Hold is not promoted as a Passage solution. It is a stronger expression of the already-admitted Resolution-Space Conservation purpose. Cooperative Passage still owns spatial resolution. The protected participant remains GIANTS-native; the regulated participant's route, steering and forward/reverse choice are preserved while its speed ceiling tightens to zero.
+
+**Explicitly unchanged:** reverse-aware closure contribution; Pair-Specific Passage Clearance; provisional 1.0 m Nominal Inter-Assembly Clearance; Configuration-First passage; 80 m locality ceiling; guide geometry; burden fractions; D-0147 including the parked `<=60 m` Courtesy Exhaustion coupling. Run #3's Guide Development Non-Convergence is recorded but not fixed in this tranche.
+
+**Offline validation:** 244/244 Lua replacement-core behavioural tests, 95/95 Python structural tests, and 25/25 RRS tests pass. Runtime validation remains authoritative.
+
+# v0.1.0.8 TEST — D-0146 Reverse-Aware Resolution-Space Role Correction
+
+**Canonical baseline:** owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). This is a cumulative TEST branch over v0.1.0.7; canonical authority does not move.
+
+**Regression evidence:** v0.1.0.7 restored TS015 full completion and produced successful initial TS016 and TS010 passages. TS010 then exposed a separate new conflict after passage handoff: GIANTS drove the MT665 through an unusual reverse `TURN_SEGMENT` toward the mower. The Established opposed relationship was detected, but Situation role assignment treated reverse commands as having no usable native rate because it required `moveForwards=true`. While both participants were reversing and closing, no Resolution-Space Regulation could be admitted; later the first forward command could be selected even though the other reversing participant remained a larger contributor to closure.
+
+**Correction — pair-relative native closure contribution:** Established-conflict role assignment now projects each valid GIANTS native drive command onto the instantaneous participant-to-participant pair axis. Chassis heading supplies orientation; `moveForwards` supplies the forward/reverse sign; `maxSpeedKmh` supplies command magnitude. Positive projected contribution means that native command is consuming pair separation. When continuation classes are equivalent, the larger positive closure contributor is regulated. Transitional-vs-Settled preference remains unchanged, but the selected settled participant must itself positively contribute to closure for Regulation to conserve Resolution Space.
+
+**Control boundary:** the existing Regulation lease actuator already preserves GIANTS route, steering and forward/reverse choice and only caps speed. No reverse driving authority, route choice or new manoeuvre is introduced. The Current-Excursion admission path remains unchanged.
+
+**Test isolation:** no Regulate→Hold escalation is added in this tranche. TS010 must determine whether correct reverse-aware attribution alone prevents the new physical interaction. If contact persists despite correctly assigned Regulation, Regulation Sufficiency becomes the next evidence question.
+
+**Explicitly unchanged:** Pair-Specific Passage Clearance; provisional 1.0 m Nominal Inter-Assembly Clearance; Configuration-First passage; 80 m locality ceiling; guide geometry; burden fractions; 8 km/h Regulation calibration; v0.1.0.7 passage-support/failure-state corrections; D-0147 including the parked `<=60 m` Courtesy Exhaustion coupling.
+
+# v0.1.0.7 TEST — D-0146 Passage Support / Failure-Configuration correction
+
+**Canonical baseline:** owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). This is a cumulative TEST branch over v0.1.0.6; canonical authority does not move.
+
+**TS015 regression evidence:** v0.1.0.6 folded both sprayers and progressed normally through Cooperative Passage, but during `GUIDE_TRAVERSAL` GIANTS reported `spec_aiFieldWorker.isBlocked=true` for Condor while OuttaMyWay's represented pair occupancy remained widely separated. Control incorrectly treated that native AI signal as positive physical Passage Support Loss, failed the passage, and immediately restored both compacted sprayers. The resulting unfolding enlarged both assemblies inside the unresolved opposed situation and caused the observed deadlock.
+
+**Correction 1 — native blocked authority separation:** `isBlocked` remains available to Observation and other architecture (including possible static-object blockage reasoning). It is removed only as standalone D-0146 `GUIDE_*` abort authority. Candidate/Control passage-support evidence, represented occupancy, Field World and third-party checks continue to own passage validity.
+
+**Correction 2 — preserve safer configuration on D-0146 failure:** `_failHeld()` now stops guide actuation and holds both participants in their current physical configuration. A compacted participant is not automatically unfolded/restored while the spatial situation remains unresolved. The legacy D-0143 donor retains its historical restoration path.
+
+**Explicitly unchanged:** Pair-Specific Passage Clearance; provisional 1.0 m Nominal Inter-Assembly Clearance; Configuration-First profile authority; 80 m locality ceiling; guide geometry; burden fractions; Resolution-Space Regulation; D-0147.
+
+# v0.1.0.6 TEST — D-0146 Configuration-First Cooperative Passage
+
+**Canonical baseline:** owner-declared canonical v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). This is a cumulative TEST branch over v0.1.0.5; canonical authority does not move.
+
+**Live evidence:** TS010 v0.1.0.5 resolved the former small-field deadlock after Resolution-Space Regulation and retirement of the 50 m surrogate, but Candidate deliberately retained the deployed mower configuration. The resulting passage demanded several metres of lateral burden and, during `GUIDE_TRAVERSAL`, GIANTS exposed fresh positive `isBlocked=true` while OuttaMyWay continued commanded motion. The run completed, but this was operationally a brute-force passage rather than the least-intervention configuration-first expression intended by D-0146.
+
+**Correction — passage-relevant configuration authority:** `AssemblyRepresentationCache` now retains stable configuration profiles in assembly-relative coordinates and records whether each profile was observed natively or while OuttaMyWay owned configuration authority. A compact profile is eligible only when the current profile is stably deployed, the compact profile was positively observed natively in the same Job Episode, it is stably folded, and it releases conflict-side Facing Clearance Extent for the candidate passage side. OuttaMyWay-created profiles cannot bootstrap their own authority. This excludes generic mechanical foldability as sufficient evidence and therefore does not select the FW212 player-only crane merely because GIANTS exposes it as foldable.
+
+**Configuration-first planning:** Candidate evaluates configuration release before lateral burden. For each passage side it predicts the natively observed compact represented DISC profile at the current assembly pose, recomputes Physical Contact Threshold + the provisional 1.0 m Nominal Inter-Assembly Clearance, and gives only the residual deficit to the existing burden/guide search. Control compacts only participants marked `COMPACT_REQUIRED` and waits until the live representation cache positively matches Candidate's expected compact profile before starting guide motion.
+
+**Support-loss correction:** during Candidate-owned `GUIDE_*` motion, fresh positive GIANTS `spec_aiFieldWorker.isBlocked=true` now causes held failure (`POSITIVE_NATIVE_BLOCKED_DURING_PASSAGE_GUIDE`) instead of continuing commanded traversal through the obstruction.
+
+**Explicitly unchanged:** 80 m locality ceiling; 1.0 m provisional Nominal Inter-Assembly Clearance; 12/8/12 m +4 guide-shape calibration; burden fractions; 8 km/h Resolution-Space Regulation calibration; Boundary Encroachment; generic Blocked Conflict Persistence; D-0147.
+
+**Offline validation:** 239/239 Lua replacement-core behavioural tests, 95/95 Python structural tests, and 25/25 RRS tests pass; all 105 live-loaded Lua files compile. Runtime validation remains authoritative.
+
+---
+
+# v0.1.0.5 TEST — D-0146 Resolution-Space Conservation / Progressive Passage
+
+**Canonical baseline:** owner-declared v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). This cumulative TEST candidate retains the v0.1.0.4 Pair-Specific Passage Clearance correction; v0.1.0.1-.3 remain diagnostic evidence only.
+
+**Live evidence:** TS010 v0.1.0.4 produced one deadlock and one successful passage. In the deadlock, Current Excursion failed to admit early Regulation, the relationship later became Established, Step-2 was temporarily unsupported while the MT665 remained in native TURN_SEGMENT, and neither participant was regulated. The pair then crossed the inherited 50 m minimum before its geometry became suitable.
+
+**Correction 1 — Resolution-Space Conservation Admission Gap:** Situation can now positively support bounded Regulation after an `ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT` even when no Current Excursion remains. If one participant is Transitional and the other has positive Settled Productive Continuation, the settled participant is regulated so GIANTS-native transitional revelation remains unrestricted. If both have the same continuation class, the greater current native forward-rate contribution is regulated with deterministic tie-break. Candidate consumes this only when Step-2 has not already found a supported Passage expression. Existing pair-scoped Commitment succession/release semantics are preserved.
+
+**Correction 2 — retire 50 m Development-Space Surrogate:** `D0146_STEP2_LOCAL_PASSAGE_MIN_ENTRY_SEPARATION_M` and `LOCAL_PASSAGE_DEVELOPMENT_DISTANCE_INSUFFICIENT` are removed from the live generic Step-2 path. No replacement 5/30/other metre literal is introduced. Inside the retained 80 m locality ceiling, Progressive Passage Search now lets concrete Passage Arrangement, Field World, pair-sweep and third-party support determine whether passage can still be developed.
+
+**Explicitly unchanged:** Pair-Specific Passage Clearance; provisional 1.0 m Nominal Inter-Assembly Clearance; current-configuration-only expression; 80 m locality ceiling; 12/8/12 m +4 guide-shape calibration; burden fractions; 8 km/h Resolution-Space Regulation calibration; Boundary Encroachment; Blocked Conflict Persistence; D-0147.
+
+**Offline validation:** 94/94 Python structural tests, 237/237 Lua replacement-core behavioural tests, and 25/25 RRS tests pass. Runtime validation remains authoritative.
+
+---
+
+# v0.1.0.4 TEST — D-0146 Pair-Specific Passage Clearance
+
+**Canonical baseline:** owner-declared v0.1.0.0 (`7298efe929d2739a9cb2c9d8b6ef1d3d5ea1caa872d4d8c2fa3659eec4bacb19`; Git `1b970e2075031cd96143776d49cc625cb48f82f8`; 315 files). v0.1.0.1-.3 are evidence-generating branches only; this TEST implementation is rebuilt directly from canonical v0.1.0.0.
+
+**Evidence / correction:** TS010 and the literal-provenance audit showed that the inherited 12 m centreline target and derived 6 m participant reserve were sprayer-fixture geometry surrogates that had acquired generic authority. They caused excessive lateral demand, Field Boundary rejection and False Compaction Demand on the offset-mower/lime-spreader pair. The replacement uses **Pair-Specific Passage Clearance**.
+
+**Implementation:** add `PairSpecificPassageClearance` as a representation adapter. For each candidate passage side it projects the two current participating represented primitive sets onto the shared lateral axis, takes only the two conflict-facing one-sided extents, forms the Physical Contact Threshold, then adds the agreed provisional **1.0 m Nominal Inter-Assembly Clearance**. Passage-side requirements are evaluated independently so asymmetric assemblies do not inherit a false symmetric width. Candidate guide sweep checks translated current represented DISC sets against the same 1 m margin; third-party checks no longer use the derived 6 m reserve.
+
+**Configuration boundary:** this tranche deliberately emits `RETAIN_CURRENT` for both participants. It removes the generic width-derived `COMPACT_REQUIRED` path and therefore cannot command player-only/mechanically-foldable accessories such as the FW212 crane. Configuration-Released Space remains valid architecture but is not selected until passage-relevant configuration authority is implemented.
+
+**Explicitly unchanged:** 50/80 m entry window; 12/8/12 m guide-shape calibration and hidden +4 m traversal floor; discrete burden fractions; 8 km/h D-0146 movement; Boundary Encroachment; Blocked Conflict Persistence; D-0147 behaviour and calibration. The 1 m margin is current policy calibration, not universal architecture.
+
+**Representation boundary:** current participating represented components remain bounded evidence with `coverageComplete=false` / `negativeClearanceAuthority=false`; this TEST does not manufacture generic Coverage Closure. Guide sweep translates the current represented DISC pose and therefore does not claim articulated rotational swept-envelope proof.
+
+**Offline validation:** 119/119 Python structural tests and 234/234 Lua replacement-core behavioural tests pass. Runtime validation remains required.
+
+---
+
 # v0.1.0.0 CANONICAL CANDIDATE — pre-1.0 versioning epoch
 
 Owner-declared v4.7.128 is canonical (`3933bd60ef7dc5e603647835a2959de34cd8e79f44a7436ba7bf122021b262f1`; Git `d90057eb3adafa7204517eaa0ded0c696a13fd1b`; 315 files). v0.1.0.0 is a release-identity/provenance-only successor; canonical gameplay behaviour is unchanged.

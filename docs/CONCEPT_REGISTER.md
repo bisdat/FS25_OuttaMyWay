@@ -931,6 +931,10 @@ An observer-only estimate of the separation required by an already selected cand
 
 The one-sided projection from an assembly reference to its furthest relevant physical point toward the opposing corridor or refuge. Required separation combines the opposing facing extents rather than using whole width or centre distance alone.
 
+### Passage-Side Clearance Asymmetry
+
+For an offset or otherwise asymmetric assembly pair, the opposing Facing Clearance Extents depend on which signed side of the shared lateral axis is selected for passage. Positive-side and negative-side Passage Arrangements may therefore have different Physical Contact Thresholds and Policy Required Separations. Pair-specific clearance must preserve this side dependence rather than reusing one symmetric width.
+
 ### Clearance Calculation Closure
 
 Both opposing Facing Clearance Extents are available in one reference frame, allowing the required separation formula to be evaluated. Missing operands remain explicit rather than being replaced by a hidden constant.

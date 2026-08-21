@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.105 TEST BUILD — D-0146 Step-2 Candidate-owned
+-- FS25_OuttaMyWay v0.1.0.6 TEST — D-0146 configuration-first Pair-Specific Passage Clearance
 -- Local Passage Space / Progressive Passage Search / Passage Arrangement / Passage Guide implementation.
 --
 -- Established conflict admission is vehicle-name independent.  The planner
@@ -8,12 +8,16 @@
 -- which pair arrangement is supportable; they do not become hidden participants
 -- in the pair Commitment.
 --
--- The passage reserve remains an implementation calibration. Configuration
--- reduction is optional per participant: current represented lateral envelope
--- inside that reserve is retained; only an envelope exceeding it requests
--- compacting. Control revalidates any requested reduction from current Reality.
--- This is not universal architecture and does not manufacture generic
--- negative-clearance authority.
+-- The inherited 12 m centreline / derived 6 m participant reserve is retired.
+-- Candidate derives the current pair's Physical Contact Threshold from opposing
+-- Facing Clearance Extents and adds the configured Nominal Inter-Assembly
+-- Clearance. A participant may select COMPACT_REQUIRED only when the same Job
+-- Episode has already passively observed a stable folded profile outside any
+-- OuttaMyWay configuration-authority window and that profile positively reduces
+-- the conflict-facing extent for the candidate passage side. The resulting
+-- configuration-conditioned geometry is used before lateral burden is derived.
+-- Current represented components remain bounded evidence and do not manufacture
+-- generic Coverage Closure or negative-clearance authority.
 
 OuttaMyWay.LocalPassagePlanner={}
 local Planner=OuttaMyWay.LocalPassagePlanner
@@ -73,7 +77,7 @@ local function fitnessForConflict(picture,conflict)
     local result={}
     for _,item in OuttaMyWay.ValueRecord.ipairs(picture.representationFitness or {}) do
         local evidence=item.evidence or {}
-        if evidence.conflictIdentity==conflict.identity and evidence.controlProfile=="D0146_OPTIONAL_CONFIGURATION_GUIDED_PASSAGE_V3" then result[#result+1]=item end
+        if evidence.conflictIdentity==conflict.identity and evidence.controlProfile=="D0146_CONFIGURATION_FIRST_GUIDED_PASSAGE_V5" then result[#result+1]=item end
     end
     table.sort(result,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
     if #result~=2 then return nil,"PURPOSE_SPECIFIC_MECHANICAL_FITNESS_UNAVAILABLE" end
@@ -89,7 +93,7 @@ end
 local function establishedConflicts(picture)
     local result={}
     for _,item in OuttaMyWay.ValueRecord.ipairs(picture.opposedCorridorKnowledge or {}) do
-        if item.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" then result[#result+1]=item end
+        if item.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" and item.cooperativePassageEligible~=false then result[#result+1]=item end
     end
     table.sort(result,function(a,b)
         local sa,sb=conflictSeparation(a),conflictSeparation(b)
@@ -165,7 +169,8 @@ local function guideFieldSupport(guide,aSpace,bSpace,fieldWorld)
     return true,nil,{centrelineFieldSupported=true,boundaryEncroachmentUsed=false,sampleStepM=stepM}
 end
 
-local function pairSweepSupport(guide,aSpace,bSpace)
+local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearanceM)
+    if type(aDiscs)~="table" or type(bDiscs)~="table" then return false,"CONFIGURATION_CONDITIONED_PAIR_SWEEP_PHYSICAL_UNAVAILABLE" end
     local minimum=math.huge
     local samples=OuttaMyWay.D0146_STEP2_PAIR_SWEEP_SAMPLES_PER_LEG or 20
     local previous={
@@ -179,13 +184,21 @@ local function pairSweepSupport(guide,aSpace,bSpace)
             local az=previous.subject.z+(gate.subject.z-previous.subject.z)*t
             local bx=previous.other.x+(gate.other.x-previous.other.x)*t
             local bz=previous.other.z+(gate.other.z-previous.other.z)*t
-            minimum=math.min(minimum,distance(ax,az,bx,bz))
+            local clearance=OuttaMyWay.PairSpecificPassageClearance.minimumTranslatedDiscClearance(aDiscs,ax,az,bDiscs,bx,bz)
+            if clearance==nil then return false,"PAIR_SWEEP_CLEARANCE_UNRESOLVED" end
+            minimum=math.min(minimum,clearance)
         end
         previous.subject={x=gate.subject.x,z=gate.subject.z}; previous.other={x=gate.other.x,z=gate.other.z}
     end
-    local required=OuttaMyWay.D0146_STEP2_COMPACT_MIN_CENTRE_SEPARATION_M or 12.0
-    if minimum+0.001<required then return false,"COMPACT_PAIR_CENTRE_RESERVE_NOT_SUPPORTED",{minimumCentreSeparationM=minimum,requiredCentreSeparationM=required} end
-    return true,nil,{minimumCentreSeparationM=minimum,requiredCentreSeparationM=required,nominalClearanceAuthority="COMPACT_PASSAGE_IMPLEMENTATION_CALIBRATION_CONTROL_REVALIDATED"}
+    local required=tonumber(nominalClearanceM) or 1.0
+    if minimum+0.001<required then
+        return false,"PAIR_SPECIFIC_NOMINAL_CLEARANCE_NOT_SUPPORTED",{minimumRepresentedClearanceM=minimum,requiredNominalClearanceM=required}
+    end
+    return true,nil,{
+        minimumRepresentedClearanceM=minimum,requiredNominalClearanceM=required,
+        supportBasis="TRANSLATED_CONFIGURATION_CONDITIONED_REPRESENTED_DISCS",
+        negativeClearanceAuthority=false
+    }
 end
 
 local function thirdPartyPrimitiveRecords(physical,current,motion,memberIds,aId,bId)
@@ -220,23 +233,22 @@ local function thirdPartyPrimitiveRecords(physical,current,motion,memberIds,aId,
     return records,nil
 end
 
-local function segmentAgainstThirdParty(ax,az,bx,bz,third,participantReserveM,samplesPerLeg)
+local function segmentAgainstThirdParty(ax,az,bx,bz,participantDiscs,third,nominalClearanceM,samplesPerLeg)
     local length=distance(ax,az,bx,bz)
     local count=math.max(samplesPerLeg or 20,math.ceil(length/2.0))
     local minimum=math.huge
     for i=0,count do
         local t=i/count
         local x=ax+(bx-ax)*t; local z=az+(bz-az)*t
-        for _,primitive in ipairs(third.primitives) do
-            local clearance=distance(x,z,primitive.x,primitive.z)-primitive.radius-participantReserveM
-            minimum=math.min(minimum,clearance)
-            if clearance<=0 then return false,{x=x,z=z,t=t,clearanceM=clearance,primitive=primitive} end
-        end
+        local clearance=OuttaMyWay.PairSpecificPassageClearance.minimumTranslatedDiscToWorldClearance(participantDiscs,x,z,third.primitives)
+        if clearance==nil then return false,{reason="THIRD_PARTY_CLEARANCE_UNRESOLVED"} end
+        minimum=math.min(minimum,clearance)
+        if clearance<=nominalClearanceM then return false,{x=x,z=z,t=t,clearanceM=clearance} end
     end
-    return true,{minimumPositivePrimitiveClearanceM=minimum}
+    return true,{minimumRepresentedClearanceM=minimum}
 end
 
-local function thirdPartyGuideSupport(guide,aSpace,bSpace,picture,conflict)
+local function thirdPartyGuideSupport(guide,aSpace,bSpace,aDiscs,bDiscs,picture,conflict,nominalClearanceM)
     local members=operationMembers(picture,conflict.operationId)
     if #members<=2 then return true,nil,{thirdPartyConstraintCount=0,constraints={}} end
     local current=byAssembly(picture.currentSpace)
@@ -244,8 +256,10 @@ local function thirdPartyGuideSupport(guide,aSpace,bSpace,picture,conflict)
     local motion=byAssembly(picture.motionEvidence)
     local thirds,reason=thirdPartyPrimitiveRecords(physical,current,motion,members,conflict.subjectAssemblyId,conflict.otherAssemblyId)
     if thirds==nil then return false,reason end
-    local pairReserve=OuttaMyWay.D0146_STEP2_COMPACT_MIN_CENTRE_SEPARATION_M or 12.0
-    local participantReserve=0.5*pairReserve
+    local aRadius=OuttaMyWay.PairSpecificPassageClearance.radialReserveFromRelativeDiscs(aDiscs)
+    local bRadius=OuttaMyWay.PairSpecificPassageClearance.radialReserveFromRelativeDiscs(bDiscs)
+    if aRadius==nil or bRadius==nil then return false,"PARTICIPANT_CONFIGURATION_CONDITIONED_RADIAL_RESERVE_UNAVAILABLE" end
+    local participantDiscs={subject=aDiscs,other=bDiscs}
     local samples=OuttaMyWay.D0146_STEP2_PAIR_SWEEP_SAMPLES_PER_LEG or 20
     local support={}
     for _,third in ipairs(thirds) do
@@ -256,11 +270,11 @@ local function thirdPartyGuideSupport(guide,aSpace,bSpace,picture,conflict)
         local minimum=math.huge
         for _,gate in ipairs(guide.gates or {}) do
             for _,role in ipairs({"subject","other"}) do
-                local ok,evidence=segmentAgainstThirdParty(previous[role].x,previous[role].z,gate[role].x,gate[role].z,third,participantReserve,samples)
+                local ok,evidence=segmentAgainstThirdParty(previous[role].x,previous[role].z,gate[role].x,gate[role].z,participantDiscs[role],third,nominalClearanceM,samples)
                 if not ok then
                     return false,"LOCAL_SPATIAL_CONSTRAINT_THIRD_PARTY_CURRENT_OCCUPANCY",{assemblyId=third.assemblyId,name=third.name,role=role,gateIndex=gate.index,witness=evidence}
                 end
-                minimum=math.min(minimum,tonumber(evidence.minimumPositivePrimitiveClearanceM) or math.huge)
+                minimum=math.min(minimum,tonumber(evidence.minimumRepresentedClearanceM) or math.huge)
             end
             previous.subject={x=gate.subject.x,z=gate.subject.z}; previous.other={x=gate.other.x,z=gate.other.z}
         end
@@ -268,75 +282,137 @@ local function thirdPartyGuideSupport(guide,aSpace,bSpace,picture,conflict)
             assemblyId=third.assemblyId,assemblyReferenceKey=third.assemblyReferenceKey,name=third.name,
             configurationProfileId=third.configurationProfileId,physicalPrimitiveCount=third.physicalPrimitiveCount,
             currentX=third.currentX,currentZ=third.currentZ,maxPositiveRadiusFromReferenceM=third.maxPositiveRadiusFromReferenceM,
-            participantCompactReserveM=participantReserve,minimumPositivePrimitiveClearanceM=minimum,
-            supportBasis="CURRENT_POSITIVE_THIRD_PARTY_PHYSICAL_OCCUPANCY",negativeClearanceAuthority=false
+            participantRepresentedRadialReserves={
+                {assemblyId=conflict.subjectAssemblyId,reserveM=aRadius},
+                {assemblyId=conflict.otherAssemblyId,reserveM=bRadius}
+            },
+            nominalInterAssemblyClearanceM=nominalClearanceM,minimumRepresentedClearanceM=minimum,
+            constraintBasis="CURRENT_POSITIVE_THIRD_PARTY_PHYSICAL_OCCUPANCY",
+            supportBasis="CONFIGURATION_CONDITIONED_PARTICIPANT_DISCS_AGAINST_CURRENT_THIRD_PARTY_OCCUPANCY",negativeClearanceAuthority=false
         }
     end
-    return true,nil,{thirdPartyConstraintCount=#support,constraints=support,participantCompactReserveM=participantReserve,dynamicRevalidation="CONTROL_GATE_AND_CURRENT_POSITION"}
+    return true,nil,{thirdPartyConstraintCount=#support,constraints=support,nominalInterAssemblyClearanceM=nominalClearanceM,dynamicRevalidation="CONTROL_GATE_AND_CURRENT_POSITION"}
 end
 
+local function facingExtent(support,sideSign)
+    if sideSign>0 then return math.max(0,tonumber(support.maxOffsetM) or 0) end
+    return math.max(0,-(tonumber(support.minOffsetM) or 0))
+end
 
-local function representedLateralReserve(physical,space,rightX,rightZ)
-    if type(physical)~="table" or type(space)~="table" or type(space.occupancy)~="table" then return nil,0 end
-    local cx,cz=tonumber(space.occupancy.x),tonumber(space.occupancy.z)
-    if not finite(cx) or not finite(cz) then return nil,0 end
-    local reserve=nil
-    local count=0
-    for _,primitive in OuttaMyWay.ValueRecord.ipairs(physical.primitives or {}) do
-        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true
-            and finite(tonumber(primitive.x)) and finite(tonumber(primitive.z))
-            and finite(tonumber(primitive.radius)) and tonumber(primitive.radius)>0 then
-            local px,pz,r=tonumber(primitive.x),tonumber(primitive.z),tonumber(primitive.radius)
-            local lateral=math.abs(dot(px-cx,pz-cz,rightX,rightZ))+r
-            reserve=reserve==nil and lateral or math.max(reserve,lateral)
-            count=count+1
+local function currentParticipantGeometry(physical,space,rightX,rightZ)
+    local discs,discReason=OuttaMyWay.PairSpecificPassageClearance.relativeDiscs(physical,space)
+    if discs==nil then return nil,discReason end
+    local support,supportReason=OuttaMyWay.PairSpecificPassageClearance.lateralSupportFromRelativeDiscs(discs,rightX,rightZ)
+    if support==nil then return nil,supportReason end
+    return {discs=discs,support=support,configurationProfileId=physical.configurationProfileId,mode="RETAIN_CURRENT"},nil
+end
+
+local function compactParticipantGeometry(physical,space,rightX,rightZ,conflictSideSign,currentGeometry)
+    local currentEvidence=physical.configurationEvidence or {}
+    if currentEvidence.allDeployed~=true then return nil,"CURRENT_CONFIGURATION_NOT_STABLY_DEPLOYED" end
+    local currentFacing=facingExtent(currentGeometry.support,conflictSideSign)
+    local best=nil
+    for _,profile in OuttaMyWay.ValueRecord.ipairs(physical.configurationAlternatives or {}) do
+        local evidence=profile.configurationEvidence or {}
+        if profile.current~=true and evidence.allFolded==true and (tonumber(profile.nativeObservationCount) or 0)>0 then
+            local discs=OuttaMyWay.PairSpecificPassageClearance.relativeDiscsFromObservedProfile(profile,space)
+            if discs~=nil then
+                local support=OuttaMyWay.PairSpecificPassageClearance.lateralSupportFromRelativeDiscs(discs,rightX,rightZ)
+                if support~=nil then
+                    local facing=facingExtent(support,conflictSideSign)
+                    local release=currentFacing-facing
+                    if release>0.001 and (best==nil or release>best.releaseM+0.001 or (math.abs(release-best.releaseM)<=0.001 and tostring(profile.configurationProfileId)<tostring(best.configurationProfileId))) then
+                        best={
+                            mode="COMPACT_REQUIRED",discs=discs,support=support,configurationProfileId=profile.configurationProfileId,
+                            configurationKey=profile.configurationKey,releaseM=release,currentFacingM=currentFacing,selectedFacingM=facing,
+                            authority="AI_REACHABLE_PRODUCTIVE_CONFIGURATION_OBSERVED_WITHOUT_OUTTAMYWAY_AUTHORITY"
+                        }
+                    end
+                end
+            end
         end
     end
-    return reserve,count
+    if best==nil then return nil,"NO_AI_REACHABLE_COMPACT_PROFILE_RELEASES_CONFLICT_SIDE_SPACE" end
+    return best,nil
 end
 
-local function passageConfigurationPlan(conflict,aSpace,bSpace,aPhysical,bPhysical,rightX,rightZ,targetSeparation)
-    local compactReserve=0.5*targetSeparation
-    local aReserve,aCount=representedLateralReserve(aPhysical,aSpace,rightX,rightZ)
-    local bReserve,bCount=representedLateralReserve(bPhysical,bSpace,rightX,rightZ)
-    if aReserve==nil or aCount<1 then return nil,"SUBJECT_CURRENT_REPRESENTED_LATERAL_ENVELOPE_UNAVAILABLE" end
-    if bReserve==nil or bCount<1 then return nil,"OTHER_CURRENT_REPRESENTED_LATERAL_ENVELOPE_UNAVAILABLE" end
-    local function participant(assemblyId,reserve,count)
-        local compactRequired=reserve>compactReserve+0.001
-        return {
-            assemblyId=assemblyId,
-            mode=compactRequired and "COMPACT_REQUIRED" or "RETAIN_CURRENT",
-            currentRepresentedLateralReserveM=reserve,
-            representedPrimitiveCount=count,
-            passageReserveM=compactReserve,
-            reason=compactRequired and "CURRENT_REPRESENTED_LATERAL_ENVELOPE_EXCEEDS_PASSAGE_RESERVE"
-                or "CURRENT_REPRESENTED_LATERAL_ENVELOPE_ALREADY_WITHIN_PASSAGE_RESERVE"
-        }
-    end
+local function participantSelection(physical,space,rightX,rightZ,conflictSideSign)
+    local current,currentReason=currentParticipantGeometry(physical,space,rightX,rightZ)
+    if current==nil then return nil,currentReason end
+    local currentFacing=facingExtent(current.support,conflictSideSign)
+    local compact,compactReason=compactParticipantGeometry(physical,space,rightX,rightZ,conflictSideSign,current)
+    if compact~=nil then return compact,nil end
     return {
-        policy="OPTIONAL_PER_PARTICIPANT_CONFIGURATION_REDUCTION",
-        compactParticipantReserveM=compactReserve,
-        participants={
-            participant(conflict.subjectAssemblyId,aReserve,aCount),
-            participant(conflict.otherAssemblyId,bReserve,bCount)
-        },
-        negativeClearanceAuthority=false,
-        authority="D0146_STEP2_BOUNDED_REPRESENTED_ENVELOPE_CALIBRATION"
+        mode="RETAIN_CURRENT",discs=current.discs,support=current.support,configurationProfileId=current.configurationProfileId,
+        releaseM=0,currentFacingM=currentFacing,selectedFacingM=currentFacing,authority="CURRENT_CONFIGURATION_RETAINED",reason=compactReason
     },nil
 end
 
-local function arrangementCandidates(currentSigned,targetSeparation)
+local function configurationConditionedPair(pairClearance,aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearanceM)
+    local function relation(sign)
+        local aSelection,aReason=participantSelection(aPhysical,aSpace,rightX,rightZ,sign)
+        if aSelection==nil then return nil,"SUBJECT_CONFIGURATION_SELECTION:"..tostring(aReason) end
+        local bSelection,bReason=participantSelection(bPhysical,bSpace,rightX,rightZ,-sign)
+        if bSelection==nil then return nil,"OTHER_CONFIGURATION_SELECTION:"..tostring(bReason) end
+        local contact=aSelection.selectedFacingM+bSelection.selectedFacingM
+        return {
+            relationSign=sign,subjectFacingExtentM=aSelection.selectedFacingM,otherFacingExtentM=bSelection.selectedFacingM,
+            physicalContactThresholdM=contact,nominalInterAssemblyClearanceM=nominalClearanceM,policyRequiredSeparationM=contact+nominalClearanceM,
+            subjectConfiguration=aSelection,otherConfiguration=bSelection,
+            configurationReleasedSpaceM=(aSelection.releaseM or 0)+(bSelection.releaseM or 0)
+        },nil
+    end
+    local positive,pReason=relation(1); if positive==nil then return nil,pReason end
+    local negative,nReason=relation(-1); if negative==nil then return nil,nReason end
+    local current=pairClearance.currentSignedSeparationM>=0 and positive or negative
+    return {
+        currentSignedSeparationM=pairClearance.currentSignedSeparationM,currentLateralSeparationM=pairClearance.currentLateralSeparationM,currentRelationSign=current.relationSign,
+        subjectFacingExtentM=current.subjectFacingExtentM,otherFacingExtentM=current.otherFacingExtentM,physicalContactThresholdM=current.physicalContactThresholdM,
+        nominalInterAssemblyClearanceM=nominalClearanceM,policyRequiredSeparationM=current.policyRequiredSeparationM,policyReserveM=pairClearance.currentLateralSeparationM-current.policyRequiredSeparationM,
+        positiveRelation=positive,negativeRelation=negative,baselineCurrentConfiguration=pairClearance,
+        representationBasis="CONFIGURATION_CONDITIONED_FROM_NATIVE_OBSERVED_PROFILES",coverageComplete=false,negativeClearanceAuthority=false
+    },nil
+end
+
+local function passageConfigurationPlan(conflict,arrangement)
+    local function participant(assemblyId,selection)
+        return {
+            assemblyId=assemblyId,mode=selection.mode,currentFacingClearanceExtentM=selection.currentFacingM,selectedFacingClearanceExtentM=selection.selectedFacingM,
+            configurationReleasedSpaceM=selection.releaseM or 0,currentConfigurationProfileId=selection.mode=="RETAIN_CURRENT" and selection.configurationProfileId or nil,
+            expectedCompactConfigurationProfileId=selection.mode=="COMPACT_REQUIRED" and selection.configurationProfileId or nil,
+            configurationAuthority=selection.authority,reason=selection.reason
+        }
+    end
+    return {
+        policy="CONFIGURATION_RELEASED_SPACE_PRECEDES_LATERAL_DISPLACEMENT",selection="AI_REACHABLE_PRODUCTIVE_CONFIGURATION_WHEN_CONFLICT_SIDE_RELEASE_POSITIVE",
+        participants={participant(conflict.subjectAssemblyId,arrangement.subjectConfiguration),participant(conflict.otherAssemblyId,arrangement.otherConfiguration)},
+        selectedRelationSign=arrangement.relationSign,configurationReleasedSpaceEvaluated=true,
+        totalConfigurationReleasedSpaceM=(arrangement.subjectConfiguration.releaseM or 0)+(arrangement.otherConfiguration.releaseM or 0),
+        negativeClearanceAuthority=false,authority="D0146_CONFIGURATION_FIRST_PAIR_SPECIFIC_CLEARANCE_TEST"
+    },nil
+end
+
+local function arrangementCandidates(currentSigned,pairClearance)
     local fractions={0.5,0.25,0.75,0.0,1.0}
     local result={}
-    for _,desired in ipairs({targetSeparation,-targetSeparation}) do
-        local correction=desired-currentSigned
-        for _,fraction in ipairs(fractions) do
-            local aOffset=-fraction*correction
-            local bOffset=(1-fraction)*correction
-            result[#result+1]={
-                desiredSignedSeparationM=desired,subjectLateralOffsetM=aOffset,otherLateralOffsetM=bOffset,
-                combinedLateralBurdenM=math.abs(aOffset)+math.abs(bOffset),maximumParticipantLateralBurdenM=math.max(math.abs(aOffset),math.abs(bOffset))
-            }
+    local currentRelation=currentSigned>=0 and pairClearance.positiveRelation or pairClearance.negativeRelation
+    local function append(relation,aOffset,bOffset,alreadySufficient)
+        result[#result+1]={
+            relationSign=relation.relationSign,desiredSignedSeparationM=alreadySufficient and currentSigned or relation.relationSign*relation.policyRequiredSeparationM,
+            subjectLateralOffsetM=aOffset,otherLateralOffsetM=bOffset,combinedLateralBurdenM=math.abs(aOffset)+math.abs(bOffset),maximumParticipantLateralBurdenM=math.max(math.abs(aOffset),math.abs(bOffset)),
+            currentSeparationAlreadySufficient=alreadySufficient==true,subjectFacingExtentM=relation.subjectFacingExtentM,otherFacingExtentM=relation.otherFacingExtentM,
+            physicalContactThresholdM=relation.physicalContactThresholdM,nominalInterAssemblyClearanceM=relation.nominalInterAssemblyClearanceM,policyRequiredSeparationM=relation.policyRequiredSeparationM,
+            subjectConfiguration=relation.subjectConfiguration,otherConfiguration=relation.otherConfiguration,configurationReleasedSpaceM=relation.configurationReleasedSpaceM,
+            subjectPassageDiscs=relation.subjectConfiguration.discs,otherPassageDiscs=relation.otherConfiguration.discs
+        }
+    end
+    if math.abs(currentSigned)+0.001>=currentRelation.policyRequiredSeparationM then
+        append(currentRelation,0,0,true)
+    else
+        for _,relation in ipairs({pairClearance.positiveRelation,pairClearance.negativeRelation}) do
+            local desired=relation.relationSign*relation.policyRequiredSeparationM
+            local correction=desired-currentSigned
+            for _,fraction in ipairs(fractions) do append(relation,-fraction*correction,(1-fraction)*correction,false) end
         end
     end
     table.sort(result,function(a,b)
@@ -362,11 +438,9 @@ local function planConflict(picture,snapshot,conflict)
     if not aTrajectory or not bTrajectory or not aSpace or not bSpace or not aMotion or not bMotion or not aPhysical or not bPhysical then return nil,"PASSAGE_INPUT_KNOWLEDGE_INCOMPLETE" end
     local closing=conflict.currentClosing or {}
     local separation=tonumber(closing.separationM)
-    local minSeparation=OuttaMyWay.D0146_STEP2_LOCAL_PASSAGE_MIN_ENTRY_SEPARATION_M or 50.0
     local maxSeparation=OuttaMyWay.D0146_STEP2_LOCAL_PASSAGE_MAX_ENTRY_SEPARATION_M or 80.0
     if separation==nil then return nil,"CURRENT_PAIR_SEPARATION_UNRESOLVED" end
     if separation>maxSeparation then return nil,"ESTABLISHED_CONFLICT_NOT_YET_LOCAL" end
-    if separation<minSeparation then return nil,"LOCAL_PASSAGE_DEVELOPMENT_DISTANCE_INSUFFICIENT" end
     local interacting,encounterIdentity=currentInteraction(picture,conflict.subjectAssemblyId,conflict.otherAssemblyId)
     if interacting then return nil,"CURRENT_PHYSICAL_INTERACTION_ALREADY_BEGUN" end
     local overlap=conflict.supportedCorridorOverlap or {}
@@ -375,26 +449,33 @@ local function planConflict(picture,snapshot,conflict)
     local ax,az=tonumber(aSpace.occupancy and aSpace.occupancy.x),tonumber(aSpace.occupancy and aSpace.occupancy.z)
     local bx,bz=tonumber(bSpace.occupancy and bSpace.occupancy.x),tonumber(bSpace.occupancy and bSpace.occupancy.z)
     if not finite(ax) or not finite(az) or not finite(bx) or not finite(bz) then return nil,"CURRENT_SPACE_POSE_UNAVAILABLE" end
-    local currentSigned=dot(bx-ax,bz-az,rightX,rightZ)
-    local targetSeparation=OuttaMyWay.D0146_STEP2_COMPACT_PASSAGE_CENTRELINE_SEPARATION_M or 12.0
-    local passageConfiguration,configurationReason=passageConfigurationPlan(conflict,aSpace,bSpace,aPhysical,bPhysical,rightX,rightZ,targetSeparation)
-    if passageConfiguration==nil then return nil,configurationReason end
+    local nominalClearance=tonumber(OuttaMyWay.D0146_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M) or 1.0
+    local baselinePairClearance,clearanceReason=OuttaMyWay.PairSpecificPassageClearance.currentPair(aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)
+    if baselinePairClearance==nil then return nil,"PAIR_SPECIFIC_PASSAGE_CLEARANCE_UNAVAILABLE:"..tostring(clearanceReason) end
+    local pairClearance,conditionReason=configurationConditionedPair(baselinePairClearance,aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)
+    if pairClearance==nil then return nil,"CONFIGURATION_CONDITIONED_PAIR_CLEARANCE_UNAVAILABLE:"..tostring(conditionReason) end
+    local currentSigned=pairClearance.currentSignedSeparationM
     local fieldWorld=snapshot and snapshot.fieldWorld or nil
     local rejected={}
-    local arrangements=arrangementCandidates(currentSigned,targetSeparation)
+    local arrangements=arrangementCandidates(currentSigned,pairClearance)
     for index,arrangement in ipairs(arrangements) do
         local guide,guideReason=makeGuide(conflict,aTrajectory,bTrajectory,aSpace,bSpace,arrangement.subjectLateralOffsetM,arrangement.otherLateralOffsetM,separation)
         if guide~=nil then
             local fieldOk,fieldReason,fieldEvidence=guideFieldSupport(guide,aSpace,bSpace,fieldWorld)
-            local sweepOk,sweepReason,sweepEvidence=pairSweepSupport(guide,aSpace,bSpace)
-            local thirdOk,thirdReason,thirdEvidence=thirdPartyGuideSupport(guide,aSpace,bSpace,picture,conflict)
+            local sweepOk,sweepReason,sweepEvidence=pairSweepSupport(guide,aSpace,bSpace,arrangement.subjectPassageDiscs,arrangement.otherPassageDiscs,nominalClearance)
+            local thirdOk,thirdReason,thirdEvidence=thirdPartyGuideSupport(guide,aSpace,bSpace,arrangement.subjectPassageDiscs,arrangement.otherPassageDiscs,picture,conflict,nominalClearance)
             if fieldOk and sweepOk and thirdOk then
                 arrangement.identity="d0146-arrangement:"..tostring(conflict.identity)..":"..tostring(index)
                 arrangement.currentSignedSeparationM=currentSigned
-                arrangement.targetCentrelineSeparationM=targetSeparation
+                arrangement.targetCentrelineSeparationM=arrangement.policyRequiredSeparationM
+                arrangement.currentLateralSeparationM=pairClearance.currentLateralSeparationM
+                arrangement.currentRelationPolicyReserveM=pairClearance.policyReserveM
+                arrangement.currentPolicyReserveM=pairClearance.policyReserveM
                 arrangement.boundaryEncroachment=false
                 arrangement.configurationReduction="OPTIONAL_PER_PARTICIPANT"
                 arrangement.pairwisePassageEconomy={combinedNecessaryInterventionM=arrangement.combinedLateralBurdenM,tieBreak="MINIMUM_MAX_PARTICIPANT_BURDEN_THEN_STABLE_ORDER"}
+                local passageConfiguration,configurationReason=passageConfigurationPlan(conflict,arrangement)
+                if passageConfiguration==nil then return nil,configurationReason end
                 guide.identity="d0146-guide:"..tostring(conflict.identity)..":"..tostring(index)
                 guide.fieldSupport=fieldEvidence
                 guide.pairSweepSupport=sweepEvidence
@@ -418,9 +499,9 @@ local function planConflict(picture,snapshot,conflict)
                         thirdPartyConstraintCount=thirdEvidence and thirdEvidence.thirdPartyConstraintCount or 0,
                         thirdPartySupportBasis="CURRENT_POSITIVE_OPERATION_ASSEMBLY_OCCUPANCY"
                     },
-                    passageArrangement=arrangement,passageGuide=guide,passageConfiguration=passageConfiguration,
+                    passageArrangement=arrangement,passageGuide=guide,passageConfiguration=passageConfiguration,pairSpecificPassageClearance=pairClearance,
                     progressiveSearch={candidateCount=#arrangements,selectedIndex=index,rejectedBeforeSelection=rejected,satisficed=true,conflictSelection="NEAREST_LOCAL_ESTABLISHED_CONFLICT_FIRST"},
-                    controlProfile="D0146_OPTIONAL_CONFIGURATION_GUIDED_PASSAGE_V3",
+                    controlProfile="D0146_CONFIGURATION_FIRST_GUIDED_PASSAGE_V5",
                     provenance={source="LocalPassagePlanner",layer="CANDIDATE_SUPPORT",decisionAuthority=false,controlAuthority=false,generalVehicleAuthority=false,globalOptimisation=false,vehicleNameAdmissionGate=false}
                 },nil
             end

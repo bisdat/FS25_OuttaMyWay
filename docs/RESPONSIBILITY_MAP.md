@@ -1,3 +1,157 @@
+## v0.1.1.0 candidate responsibility boundary
+
+| Question | Owner | Current rule |
+|---|---|---|
+| Who is relevant before productive commencement? | Situation / membership knowledge | active same-Field-World field-work entrant may be Situation-relevant without Cooperative Operation membership |
+| Who may be spatially Passaged/configured? | D-0146 Candidate / Passage authority | cooperative Operation members only, with legitimate configuration authority |
+| Who is regulated/held? | Situation chooses roles; Control executes purpose-bound lease | pair-relative current evidence, with role migration and reversible Hold |
+| When may the Resolution-Space obligation release? | Situation / ADR-0006 Safe Release | no positive dissolution while blockage or relevant Future-Space intersection contradicts release |
+| How fast should Regulation permit progression? | **OPEN architecture/literal review** | inherited 8 km/h empirical cap remains implementation calibration, not generic policy |
+
+---
+
+## v0.1.0.14 responsibility clarification — Regulation Sufficiency is pair-state evidence
+
+| Question | Owner | Rule |
+|---|---|---|
+| Has the bounded Regulation physically taken effect? | Control execution observation | actual regulated participant is within the admitted cap and GIANTS drive output reflects that cap |
+| Is material positive pair closure still continuing? | Situation Assessment | current resolved pair-closing evidence; independent of Transitional/Settled continuation class |
+| Has Regulation proved insufficient? | D-0146 Control consuming Situation + execution evidence | yes when Regulation is realised and positive closure continues under the same live Resolution-Space obligation |
+| May Hold replace Regulation? | Same purpose-bound D-0146 Control authority | yes; tighten the regulated participant's existing lease to 0 km/h |
+| When may Hold relax? | Situation Assessment + Control | only positive resolved non-closing evidence; obligation remains live until its own Safe Release/succession |
+
+**Protected abstraction:** Transitional/Settled classification describes continuation knowledge. It does not own generic Regulation Sufficiency.
+
+## v0.1.0.13 responsibility clarification — Safe Release evidence ownership
+
+- **Observation** continues to publish GIANTS blockage and Field-Bounded Future-Space evidence without Decision/Control authority.
+- **Situation Assessment** owns whether that evidence contradicts a proposed D-0146 positive relationship dissolution.
+- **Commitment/Control** consume only the resulting `positiveDissolution` semantics; they do not independently interpret `blocked`, trajectories, or Future Space.
+- **Future-Space positive intersection** is positive coupling evidence only; it is not negative-clearance authority.
+
+## v0.1.0.12 responsibility clarification — membership vs intent relevance
+
+| Question | Owner | Rule |
+|---|---|---|
+| Has productive work commenced in this Job Episode? | Observation | positive native productive witness, latched per Job Episode |
+| Is the worker a cooperative Operation member? | Operation Admission | yes only after productive commencement |
+| Can an unrevealed active job affect a current Operation? | Situation Assessment | yes when same Field World + active GIANTS field-work job + productive commencement pending |
+| Who may be constrained? | D-0146 Situation / Candidate / Control | constrain the known Operation member; preserve pending worker's GIANTS-native intent revelation |
+| Can pending worker fold/sidestep/reposition? | Cooperative Passage admission | no |
+| Does later productive commencement create a new pair? | Situation identity | no; relationship identity is preserved and eligibility reclassifies |
+
+# v0.1.0.11 participation / Resolution-Space role responsibility update
+
+| Responsibility | Owner | v0.1.0.11 TEST state |
+|---|---|---|
+| Observe current GIANTS productive-line witness | `NativeFieldWorkObservation` / Live Observation | raw evidence only |
+| Remember whether productive work has commenced in this Job Episode | `LiveObservationSource` Job-token-scoped latch | new; reset on replacement/reactivation |
+| Admit cooperative Operation membership | Live Observation → `OperationAdmission` | requires latched productive commencement; current turns do not revoke membership |
+| Assess current D-0146 regulated/protected roles | Situation / `TrajectoryConflictAssessment` | unchanged authority; roles may evolve as geometry/continuation changes |
+| Persist Resolution-Space purpose | Commitment/Obligation lifecycle | same Commitment remains owner |
+| Migrate current Regulation/Hold expression | `LiveControlDispatcher` + lifecycle supporting authority | new; apply new role then release old role under same Commitment |
+| Regulate↔Hold sufficiency/de-escalation | `LiveControlDispatcher` | v0.1.0.9/.10 behaviour retained |
+| Cooperative Passage participant Holds | `CooperativePassageControl` | unchanged |
+| D-0147 Protected Yield | D-0147 control path | unchanged |
+
+**Protected abstraction:** participation commencement and current Control role are evidence/state questions; neither becomes a TS010 equipment exception.
+
+# v0.1.0.10 D-0146 reversible Hold responsibility update
+
+| Responsibility | Owner | v0.1.0.10 TEST state |
+|---|---|---|
+| Determine positive current closing/non-closing | `TrajectoryConflictAssessment` Situation Knowledge | publishes distinct positive witnesses; unresolved is neither |
+| Retain/dissolve Resolution-Space obligation | Situation + Commitment lifecycle | unchanged |
+| Regulate→Hold on proven insufficiency | `LiveControlDispatcher` | existing v0.1.0.9 behaviour |
+| Hold→Regulation on positive non-closing | `LiveControlDispatcher` consuming Situation witness | new reversible expression; Commitment retained |
+| Re-escalate if closure returns | `LiveControlDispatcher` | allowed under same purpose/authority |
+| Cooperative Passage Holds | `CooperativePassageControl` | unchanged |
+| D-0147 Protected Yield Holds | D-0147 dispatcher/control | unchanged |
+
+# v0.1.0.9 D-0146 Regulation Sufficiency responsibility update
+
+| Responsibility | Owner | v0.1.0.9 TEST state |
+|---|---|---|
+| Positive pair closing / Transitional status | `TrajectoryConflictAssessment` Situation Knowledge | Existing authority; unchanged |
+| Initial participant role and 8 km/h cap request | D-0146 Situation/Candidate path | Existing authority; 8 km/h remains calibration |
+| Proof that the admitted cap has physically taken effect | `Prototype22CapabilityGate` raw Control observation | Adds actual speed + reference-scoped observation; no traffic semantics |
+| Regulate→Hold expression under already-admitted purpose | `LiveControlDispatcher` | Tightens same lease to 0 km/h only from positive Situation + Control-effect evidence |
+| Spatial resolution | `LocalPassagePlanner` / Cooperative Passage | Unchanged; Passage supersedes conservation lease |
+| Hold release | Existing positive relationship dissolution or Passage succession | Unchanged |
+
+# v0.1.0.8 D-0146 reverse-conflict responsibility update
+
+| Responsibility | Owner | v0.1.0.8 TEST state |
+|---|---|---|
+| Observe GIANTS native drive command and chassis heading | Live Observation | existing evidence retained |
+| Determine whether native movement consumes pair separation | Situation / `TrajectoryConflictAssessment` | pair-axis forward/reverse projection |
+| Assign Established-conflict regulated/protected roles | Situation | greater positive closure contributor when continuation classes are equal |
+| Preserve Transitional revelation | Situation | existing Settled-vs-Transitional preference retained |
+| Decide whether Passage already supersedes Regulation | Candidate | unchanged |
+| Apply speed ceiling while preserving direction/steering/route | Control / P22 Regulation lease | unchanged; reverse already supported |
+| Escalate Regulation to Hold if insufficient | not changed in this tranche | pending runtime evidence |
+
+**Protected abstraction:** Situation assesses pair-relative contribution; Control does not infer conflict roles and does not choose forward/reverse direction.
+
+# v0.1.0.7 D-0146 passage-support responsibility update
+
+| Responsibility | Owner | v0.1.0.7 TEST state |
+|---|---|---|
+| Observe GIANTS `isBlocked` | Live Observation | RETAINED |
+| Prove/deny physical Cooperative Passage support | Candidate/representation + Control revalidation | PRESERVED; native blocked alone excluded |
+| Fail active D-0146 guide | CooperativePassageControl on actual support/actuation/watchdog failure | CORRECTED |
+| Failure configuration | CooperativePassageControl | HOLD CURRENT; no automatic D-0146 restore |
+
+# v0.1.0.6 D-0146 configuration-first responsibility update
+
+| Responsibility | Owner | v0.1.0.6 TEST state |
+|---|---|---|
+| Observe/cache configuration profiles and provenance | AssemblyRepresentationCache | Stable profile geometry cached assembly-relative; native vs OuttaMyWay observations distinguished |
+| Decide whether a compact profile is passage-relevant | LocalPassagePlanner / Candidate | Requires native stable folded profile + positive conflict-side release |
+| Compute selected-profile Pair-Specific Passage Clearance | PairSpecificPassageClearance + LocalPassagePlanner | Per passage side; provisional 1 m policy margin retained |
+| Authorise exact configuration change | Candidate | `COMPACT_REQUIRED` only with expected compact profile ID |
+| Execute fold/restore mechanics | CooperativePassageControl | Existing mechanical donor; no independent configuration choice |
+| Verify realised compact profile | AssemblyRepresentationCache + Control | Guide motion waits for expected profile match |
+| React to positive blockage during guide | CooperativePassageControl | Fail held; do not brute-force traversal |
+
+---
+
+# v0.1.0.5 D-0146 Resolution-Space Conservation responsibility update
+
+| Responsibility | Owner | v0.1.0.5 TEST state |
+|---|---|---|
+| Establish Potential / Established Opposed Corridor Conflict | Situation / `TrajectoryConflictAssessment` | unchanged classification authority |
+| Determine whether active relationship needs Resolution-Space Regulation | Situation / `TrajectoryConflictAssessment` | broadened to Established conflict inside locality envelope |
+| Assign temporary regulated/protected roles | Situation | preserve Transitional peer when known; otherwise defer greater native closure contribution |
+| Determine whether a supported Passage already exists | Candidate / `LocalPassagePlanner` | Passage remains preferred; no Regulation Candidate consumed when plan is supported |
+| Decide passage feasibility below 50 m | Candidate concrete guide support | 50 m pre-gate removed |
+| Select Regulation vs Passage | Candidate / Decision | same pair-scoped governing requirement |
+| Own Regulation obligation/authority | Commitment / Authority | existing D-0146 lifecycle reused |
+| Apply/release speed lease and hand off to Passage | `LiveControlDispatcher` | existing lease mechanics generalised to protected participant terminology |
+| Choose route/geometry | Candidate / Passage planner only | Control still does not choose |
+
+**Protected abstraction:** Situation supplies semantic support and temporary roles; Candidate owns whether a physical passage expression is supportable; Control executes only sealed selected authority.
+
+---
+
+# v0.1.0.4 D-0146 Pair-Specific Passage Clearance responsibility update
+
+| Responsibility | Owner | v0.1.0.4 TEST state |
+|---|---|---|
+| Establish opposed conflict and shared lateral frame | Situation Assessment / `TrajectoryConflictAssessment` | unchanged |
+| Supply current physical primitives / configuration identity | Representation / `AssemblyRepresentationCache` | unchanged bounded evidence |
+| Derive side-specific Facing Clearance Extents and contact thresholds | Representation adapter / `PairSpecificPassageClearance` | NEW TEST IMPLEMENTATION |
+| Apply Nominal Inter-Assembly Clearance | Candidate policy / `LocalPassagePlanner` | 1.0 m TEST calibration |
+| Select passage side and lateral burden | Candidate / `LocalPassagePlanner` | side-specific target; existing burden fractions retained |
+| Decide configuration expression | Candidate | `RETAIN_CURRENT` for both participants in this tranche |
+| Validate sampled pair/third-party guide support | Candidate | translated represented-DISC test support; no generic negative authority |
+| Execute supplied guide / reject unsupported runtime state | `CooperativePassageControl` | unchanged ownership; V4 bridge and per-participant third-party reserve metadata |
+| Prove generic Coverage Closure | Representation architecture | not claimed by this TEST |
+
+**Protected abstraction:** Control still does not choose passage geometry. Mechanical foldability still does not imply OuttaMyWay passage-configuration authority.
+
+---
+
 # v4.7.128 candidate responsibility status
 
 No responsibility change from live-validated v4.7.127. Existing D-0147 ownership below is carried unchanged into canonical review.

@@ -631,6 +631,8 @@ Reality disproved the assumption that the Traffic Permission Gate constrains tra
 
 **Facing Extent Provider** — A representation adapter that supplies a one-sided assembly extent for a declared axis, together with evidence source, coverage, confidence and any unresolved physical allowance.
 
+**Passage-Side Clearance Asymmetry** — the property that an offset/asymmetric pair can require different separation on the positive and negative sides of the shared lateral axis because the conflict-facing one-sided extents change with selected passage side.
+
 **Clearance Calculation Closure** — The state in which both opposing Facing Clearance Extents are available in the same reference frame so a required separation can be evaluated.
 
 **Shadow Clearance Calculation** — observer-only estimate of required separation for an already selected candidate, without Control authority.

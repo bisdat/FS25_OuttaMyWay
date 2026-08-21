@@ -331,7 +331,43 @@ local function nativeForwardRateKmh(motion)
     return rate
 end
 
-local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,aPhysical,bPhysical,aSpace,bSpace,context)
+-- Established-conflict Resolution-Space role assignment must value what a
+-- native command does to this pair, not whether GIANTS chose forward gear.
+-- The Regulation actuator already preserves GIANTS' forward/reverse choice and
+-- only caps speed, so this Situation-owned calculation projects the commanded
+-- motion direction onto the instantaneous subject->other pair axis.
+local function nativeClosureContribution(motion,subjectSpace,otherSpace)
+    local fieldWork=motion and motion.nativeFieldWork or nil
+    local command=fieldWork and fieldWork.nativeDriveCommand or nil
+    if type(command)~="table" or command.valid~=true then return nil,"NATIVE_DRIVE_COMMAND_UNAVAILABLE" end
+    local moveForwards=command.moveForwards
+    if moveForwards~=true and moveForwards~=false then return nil,"NATIVE_DRIVE_DIRECTION_UNAVAILABLE" end
+    local rate=tonumber(command.maxSpeedKmh)
+    if not finite(rate) or rate<0 then return nil,"NATIVE_DRIVE_RATE_UNAVAILABLE" end
+
+    local occupancy=subjectSpace and subjectSpace.occupancy or nil
+    local otherOccupancy=otherSpace and otherSpace.occupancy or nil
+    if type(occupancy)~="table" or type(otherOccupancy)~="table" then return nil,"PAIR_POSE_UNAVAILABLE" end
+    local subjectX,subjectZ=tonumber(occupancy.x),tonumber(occupancy.z)
+    local otherX,otherZ=tonumber(otherOccupancy.x),tonumber(otherOccupancy.z)
+    if not finite(subjectX) or not finite(subjectZ) or not finite(otherX) or not finite(otherZ) then return nil,"PAIR_POSE_UNAVAILABLE" end
+    local pairX,pairZ=normalize(otherX-subjectX,otherZ-subjectZ)
+    if pairX==nil then return nil,"PAIR_AXIS_UNRESOLVED" end
+
+    local headingX,headingZ=normalize(tonumber(motion and motion.headingX) or tonumber(occupancy.headingX),tonumber(motion and motion.headingZ) or tonumber(occupancy.headingZ))
+    if headingX==nil then return nil,"NATIVE_CHASSIS_HEADING_UNAVAILABLE" end
+    local directionSign=moveForwards and 1 or -1
+    local commandDirectionX,commandDirectionZ=headingX*directionSign,headingZ*directionSign
+    local signedContribution=rate*dot(commandDirectionX,commandDirectionZ,pairX,pairZ)
+    if command.zeroCommand==true then signedContribution=0; rate=0 end
+    return {
+        nativeRateKmh=rate,moveForwards=moveForwards,commandDirectionX=commandDirectionX,commandDirectionZ=commandDirectionZ,
+        pairAxisX=pairX,pairAxisZ=pairZ,signedClosureContributionKmh=signedContribution,
+        positiveClosureContributionKmh=math.max(0,signedContribution)
+    },nil
+end
+
+local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,aPhysical,bPhysical,aSpace,bSpace,aParticipation,bParticipation,context)
     local result={status="NOT_REQUIRED",supported=false,reason="CURRENT_EXCURSION_ACTION_SPACE_CONSERVATION_NOT_REQUIRED",authority="D0146_SITUATION_KNOWLEDGE",decisionAuthority=false,controlAuthority=false}
     local aExcursion=aTrajectory and aTrajectory.currentExcursion==true
     local bExcursion=bTrajectory and bTrajectory.currentExcursion==true
@@ -354,8 +390,6 @@ local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,a
     end
     result.excursionAssemblyId=excursionTrajectory and excursionTrajectory.assemblyId or nil
     result.excursionReferenceKey=excursionTrajectory and excursionTrajectory.assemblyReferenceKey or nil
-    result.regulatedAssemblyId=stableTrajectory and stableTrajectory.assemblyId or nil
-    result.regulatedReferenceKey=stableTrajectory and stableTrajectory.assemblyReferenceKey or nil
 
     local persistenceAlignmentMinDot=threshold(context,"persistenceAlignmentMinDot",0.85)
     local currentStableDistanceM=threshold(context,"currentStableDistanceM",1.0)
@@ -404,7 +438,46 @@ local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,a
         return result
     end
 
-    local nativeRate=nativeForwardRateKmh(stableMotion)
+    local aPending=aParticipation and aParticipation.productiveCommencementPending==true
+    local bPending=bParticipation and bParticipation.productiveCommencementPending==true
+    local regulatedTrajectory,regulatedMotion,regulatedSpace,protectedTrajectory,protectedSpace
+    if aPending~=bPending then
+        if aPending then
+            protectedTrajectory,protectedSpace=aTrajectory,aSpace
+            regulatedTrajectory,regulatedMotion,regulatedSpace=bTrajectory,bMotion,bSpace
+        else
+            protectedTrajectory,protectedSpace=bTrajectory,bSpace
+            regulatedTrajectory,regulatedMotion,regulatedSpace=aTrajectory,aMotion,aSpace
+        end
+        if regulatedTrajectory==nil or protectedTrajectory==nil then result.reason="PRE_PRODUCTIVE_INTENT_REVELATION_ROLE_UNRESOLVED"; return result end
+        result.regulatedAssemblyId=regulatedTrajectory.assemblyId
+        result.regulatedReferenceKey=regulatedTrajectory.assemblyReferenceKey
+        result.protectedAssemblyId=protectedTrajectory.assemblyId
+        result.protectedReferenceKey=protectedTrajectory.assemblyReferenceKey
+        result.roleBasis="PRESERVE_PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION"
+    else
+        regulatedTrajectory,regulatedMotion,regulatedSpace=stableTrajectory,stableMotion,stableSpace
+        protectedTrajectory,protectedSpace=excursionTrajectory,excursionSpace
+        result.regulatedAssemblyId=stableTrajectory and stableTrajectory.assemblyId or nil
+        result.regulatedReferenceKey=stableTrajectory and stableTrajectory.assemblyReferenceKey or nil
+        result.protectedAssemblyId=result.excursionAssemblyId
+        result.protectedReferenceKey=result.excursionReferenceKey
+    end
+
+    local nativeRate=nil
+    if aPending~=bPending then
+        local contribution,contributionReason=nativeClosureContribution(regulatedMotion,regulatedSpace,protectedSpace)
+        result.nativeClosureContribution=contribution and copy(contribution) or nil
+        result.nativeClosureContributionReason=contributionReason
+        local positive=contribution and tonumber(contribution.positiveClosureContributionKmh) or nil
+        if not finite(positive) or positive<=0 then result.reason="KNOWN_OPERATION_MEMBER_POSITIVE_NATIVE_CLOSURE_CONTRIBUTION_UNAVAILABLE"; return result end
+        nativeRate=contribution.nativeRateKmh
+        result.nativeClosureContributionKmh=positive
+        result.nativeSignedClosureContributionKmh=contribution.signedClosureContributionKmh
+        result.nativeMoveForwards=contribution.moveForwards
+    else
+        nativeRate=nativeForwardRateKmh(stableMotion)
+    end
     result.nativeUnrestrictedKmh=nativeRate
     if nativeRate==nil then result.reason="REGULATED_PARTICIPANT_POSITIVE_NATIVE_FORWARD_RATE_UNAVAILABLE"; return result end
     local requestedCapKmh=threshold(context,"actionSpaceRegulationKmh",8.0)
@@ -418,8 +491,124 @@ local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,a
 
     result.status="REGULATE_SUPPORTED"
     result.supported=true
+    result.admissionKind="CURRENT_EXCURSION"
+    if result.roleBasis==nil then result.roleBasis="PRESERVE_CURRENT_EXCURSION_NATIVE_REVELATION" end
     result.reason="CURRENT_EXCURSION_OCCUPIES_APPROACHING_STABLE_TRAJECTORY_CORRIDOR_WHILE_LOCAL_PASSAGE_ACTION_SPACE_COMPRESSES"
-    result.governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_RELATIONSHIP_MATURES_OR_POSITIVELY_DISSOLVES"
+    if aPending~=bPending then
+        result.reason="PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION_REQUIRES_RESOLUTION_SPACE_CONSERVATION"
+    end
+    result.governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
+    return result
+end
+
+-- Once Step 1 has positively Established an opposed conflict, Resolution-Space
+-- Conservation no longer depends on the Current Excursion witness that may have
+-- revealed the encounter.  This Situation-owned record assigns only a temporary
+-- Regulation role; Candidate still decides whether a supported Step-2 Passage
+-- expression is already available and therefore superior.
+local function establishedConflictConservation(record,aTrajectory,bTrajectory,aMotion,bMotion,aSpace,bSpace,aParticipation,bParticipation,context)
+    local result={status="NOT_REQUIRED",supported=false,reason="ESTABLISHED_CONFLICT_RESOLUTION_SPACE_CONSERVATION_NOT_REQUIRED",authority="D0146_SITUATION_KNOWLEDGE",decisionAuthority=false,controlAuthority=false,admissionKind="ESTABLISHED_CONFLICT"}
+    if record==nil or record.classification~="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" then return result end
+    local closing=record.currentClosing or {}
+    local separation=tonumber(closing.separationM)
+    local maxSeparationM=threshold(context,"actionSpaceMaxSeparationM",80.0)
+    result.maxSeparationM=maxSeparationM; result.separationM=separation; result.currentClosing=copy(closing)
+    if not finite(separation) or separation>maxSeparationM then
+        result.reason="ESTABLISHED_CONFLICT_PAIR_OUTSIDE_LOCAL_PASSAGE_ACTION_SPACE_ENVELOPE"
+        return result
+    end
+    local overlap=record.supportedCorridorOverlap or {}
+    result.currentCorridorOverlap=copy(overlap)
+    if overlap.positive~=true then
+        result.reason="ESTABLISHED_CONFLICT_POSITIVE_CORRIDOR_SUPPORT_UNAVAILABLE"
+        return result
+    end
+
+    local aContribution,aContributionReason=nativeClosureContribution(aMotion,aSpace,bSpace)
+    local bContribution,bContributionReason=nativeClosureContribution(bMotion,bSpace,aSpace)
+    result.subjectNativeClosureContribution=aContribution and copy(aContribution) or nil
+    result.otherNativeClosureContribution=bContribution and copy(bContribution) or nil
+    result.subjectNativeClosureContributionReason=aContributionReason
+    result.otherNativeClosureContributionReason=bContributionReason
+    local aPositive=aContribution and tonumber(aContribution.positiveClosureContributionKmh) or nil
+    local bPositive=bContribution and tonumber(bContribution.positiveClosureContributionKmh) or nil
+    result.subjectNativeClosureContributionKmh=aPositive
+    result.otherNativeClosureContributionKmh=bPositive
+
+    local aSettled=record.subjectSettledContinuation==true
+    local bSettled=record.otherSettledContinuation==true
+    local aPending=aParticipation and aParticipation.productiveCommencementPending==true
+    local bPending=bParticipation and bParticipation.productiveCommencementPending==true
+    local regulateA
+    if aPending~=bPending then
+        -- A Job-Episode whose productive intent has not yet been positively
+        -- revealed is Situation-relevant but not a cooperative participant.
+        -- Preserve GIANTS' native revelation and constrain the known Operation
+        -- member; do not fold, reposition, or otherwise replace the pending job.
+        regulateA=bPending
+        local knownContribution=regulateA and aPositive or bPositive
+        if not finite(knownContribution) or knownContribution<=0 then
+            result.reason="KNOWN_OPERATION_MEMBER_POSITIVE_NATIVE_CLOSURE_CONTRIBUTION_UNAVAILABLE"
+            return result
+        end
+        result.roleBasis="PRESERVE_PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION"
+    elseif aSettled~=bSettled then
+        -- Preserve the participant still revealing a GIANTS-native transition;
+        -- defer the positively settled participant exactly as Current-Excursion
+        -- conservation already does before Establishment.  If that settled
+        -- participant is not itself consuming pair separation, Regulation cannot
+        -- conserve Resolution Space without constraining the transitional mover.
+        regulateA=aSettled
+        local settledContribution=regulateA and aPositive or bPositive
+        if not finite(settledContribution) or settledContribution<=0 then
+            result.reason="SETTLED_PARTICIPANT_POSITIVE_NATIVE_CLOSURE_CONTRIBUTION_UNAVAILABLE"
+            return result
+        end
+        result.roleBasis="PRESERVE_TRANSITIONAL_NATIVE_REVELATION"
+    else
+        local aUsable=finite(aPositive) and aPositive>0
+        local bUsable=finite(bPositive) and bPositive>0
+        if not aUsable and not bUsable then
+            result.reason="ESTABLISHED_CONFLICT_POSITIVE_NATIVE_CLOSURE_CONTRIBUTION_UNAVAILABLE"
+            return result
+        elseif not aUsable then
+            regulateA=false; result.roleBasis="ONLY_OTHER_POSITIVE_NATIVE_CLOSURE_CONTRIBUTION"
+        elseif not bUsable then
+            regulateA=true; result.roleBasis="ONLY_SUBJECT_POSITIVE_NATIVE_CLOSURE_CONTRIBUTION"
+        elseif math.abs(aPositive-bPositive)>0.001 then
+            regulateA=aPositive>bPositive; result.roleBasis="DEFER_GREATER_NATIVE_CLOSURE_CONTRIBUTION"
+        else
+            regulateA=tostring(aTrajectory.assemblyId)<=tostring(bTrajectory.assemblyId)
+            result.roleBasis="DETERMINISTIC_EQUAL_CLOSURE_CONTRIBUTION_TIE_BREAK"
+        end
+    end
+
+    local regulatedTrajectory=regulateA and aTrajectory or bTrajectory
+    local protectedTrajectory=regulateA and bTrajectory or aTrajectory
+    local regulatedContribution=regulateA and aContribution or bContribution
+    local nativeRate=regulatedContribution and tonumber(regulatedContribution.nativeRateKmh) or nil
+    result.regulatedAssemblyId=regulatedTrajectory and regulatedTrajectory.assemblyId or nil
+    result.regulatedReferenceKey=regulatedTrajectory and regulatedTrajectory.assemblyReferenceKey or nil
+    result.protectedAssemblyId=protectedTrajectory and protectedTrajectory.assemblyId or nil
+    result.protectedReferenceKey=protectedTrajectory and protectedTrajectory.assemblyReferenceKey or nil
+    result.nativeUnrestrictedKmh=nativeRate
+    result.nativeClosureContributionKmh=regulatedContribution and tonumber(regulatedContribution.positiveClosureContributionKmh) or nil
+    result.nativeSignedClosureContributionKmh=regulatedContribution and tonumber(regulatedContribution.signedClosureContributionKmh) or nil
+    if regulatedContribution~=nil then result.nativeMoveForwards=regulatedContribution.moveForwards end
+    if nativeRate==nil then result.reason="SELECTED_REGULATED_PARTICIPANT_NATIVE_RATE_UNAVAILABLE"; return result end
+
+    local requestedCapKmh=threshold(context,"actionSpaceRegulationKmh",8.0)
+    requestedCapKmh=math.max(0,math.min(nativeRate,requestedCapKmh))
+    result.requestedCapKmh=requestedCapKmh
+    if nativeRate<=requestedCapKmh+0.05 then
+        result.status="OBSERVE_SUPPORTED"
+        result.reason="NATIVE_PROGRESS_ALREADY_WITHIN_ACTION_SPACE_CONSERVATION_RATE"
+        return result
+    end
+
+    result.status="REGULATE_SUPPORTED"; result.supported=true
+    result.reason="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_CONSUMES_LOCAL_PASSAGE_ACTION_SPACE"
+    result.governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     return result
 end
 
@@ -527,6 +716,25 @@ local function resolutionSpaceRelationship(record)
         return result
     end
     if record.classification~="NO_OPPOSED_CONFLICT" then return result end
+
+    -- ADR-0006 Safe Release: loss of the current OPPOSED label cannot become
+    -- positive dissolution while current Reality still carries contradictory
+    -- positive evidence.  A blocked participant may still have valid productive
+    -- intent, but blockage cannot prove independent continuation.  Likewise a
+    -- positively intersecting relevant Future-Space relationship means the
+    -- Continuation Safety Horizon remains coupled even when instantaneous
+    -- trajectories are currently non-opposed.
+    if record.subjectBlocked==true or record.otherBlocked==true then
+        result.status="POSITIVE_DISSOLUTION_VETOED"
+        result.reason="D0146_BLOCKED_PARTICIPANT_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION"
+        return result
+    end
+    if record.relevantFutureSpacePositive==true then
+        result.status="POSITIVE_DISSOLUTION_VETOED"
+        result.reason="D0146_POSITIVE_FUTURE_SPACE_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION"
+        return result
+    end
+
     if record.reason=="PARTICIPANTS_NOT_MUTUALLY_AHEAD_ON_ESTABLISHED_TRAJECTORIES" then
         result.status="POSITIVELY_DISSOLVED"; result.positiveDissolution=true
         result.reason="D0146_POSITIVE_POST_PASSAGE_RELATIONSHIP_DISSOLUTION"
@@ -550,6 +758,17 @@ local function resolutionSpaceRelationship(record)
     return result
 end
 
+local function relevantFutureSpacePositive(situation,aId,bId)
+    for _,relationship in OuttaMyWay.ValueRecord.ipairs(situation and situation.futureSpaceRelationships or {}) do
+        local subject=relationship.subjectAssemblyId
+        local other=relationship.otherAssemblyId
+        if ((subject==aId and other==bId) or (subject==bId and other==aId)) and relationship.positiveIntersection==true then
+            return true,relationship.outcome,relationship.interactionReferenceKey
+        end
+    end
+    return false,nil,nil
+end
+
 function Assessment.classifyPairs(context)
     local trajectoryByAssembly=byAssembly(context.trajectoryKnowledge)
     local motionByAssembly=byAssembly(context.motionEvidence)
@@ -563,18 +782,29 @@ function Assessment.classifyPairs(context)
     local result={}
 
     for _,situation in OuttaMyWay.ValueRecord.ipairs(context.situations or {}) do
-        local members=sortedMemberIds(situation.memberAssemblyIds)
+        local members=sortedMemberIds(situation.resolutionSpaceAssemblyIds or situation.memberAssemblyIds)
+        local participation=situation.resolutionSpaceParticipation or {}
         for i=1,#members-1 do
             for j=i+1,#members do
                 local aId,bId=members[i],members[j]
-                local aTrajectory=trajectoryByAssembly[aId]
-                local bTrajectory=trajectoryByAssembly[bId]
-                local record={
+                local aParticipation=participation[aId] or {class="OPERATION_MEMBER",operationMember=true,productiveCommencementPending=false}
+                local bParticipation=participation[bId] or {class="OPERATION_MEMBER",operationMember=true,productiveCommencementPending=false}
+                if aParticipation.operationMember==true or bParticipation.operationMember==true then
+                    local aTrajectory=trajectoryByAssembly[aId]
+                    local bTrajectory=trajectoryByAssembly[bId]
+                    local record={
                     identity="d0146-opposed:"..tostring(situation.operationId)..":"..tostring(aId)..":"..tostring(bId),
                     operationId=situation.operationId,
                     subjectAssemblyId=aId,otherAssemblyId=bId,
                     subjectAssemblyReferenceKey=aTrajectory and aTrajectory.assemblyReferenceKey or nil,
                     otherAssemblyReferenceKey=bTrajectory and bTrajectory.assemblyReferenceKey or nil,
+                    subjectOperationMember=aParticipation.operationMember==true,
+                    otherOperationMember=bParticipation.operationMember==true,
+                    subjectParticipationClass=aParticipation.class,
+                    otherParticipationClass=bParticipation.class,
+                    subjectProductiveCommencementPending=aParticipation.productiveCommencementPending==true,
+                    otherProductiveCommencementPending=bParticipation.productiveCommencementPending==true,
+                    cooperativePassageEligible=aParticipation.operationMember==true and bParticipation.operationMember==true,
                     classification=nil,
                     status="INSUFFICIENT_KNOWLEDGE",
                     reason="ESTABLISHED_TRAJECTORY_NOT_AVAILABLE_FOR_BOTH_PARTICIPANTS",
@@ -587,18 +817,36 @@ function Assessment.classifyPairs(context)
                     record.otherCurrentExcursion=bTrajectory.currentExcursion==true
                     record.subjectSettledContinuation=positiveSettledContinuation(aTrajectory,motionByAssembly[aId])
                     record.otherSettledContinuation=positiveSettledContinuation(bTrajectory,motionByAssembly[bId])
+                    record.subjectBlocked=motionByAssembly[aId]~=nil and motionByAssembly[aId].blocked==true
+                    record.otherBlocked=motionByAssembly[bId]~=nil and motionByAssembly[bId].blocked==true
+                    local futurePositive,futureOutcome,futureRelationshipKey=relevantFutureSpacePositive(situation,aId,bId)
+                    record.relevantFutureSpacePositive=futurePositive==true
+                    record.relevantFutureSpaceOutcome=futureOutcome
+                    record.relevantFutureSpaceRelationshipKey=futureRelationshipKey
                     record.subjectCurrentToEstablishedDot=aTrajectory.currentToEstablishedDot
                     record.otherCurrentToEstablishedDot=bTrajectory.currentToEstablishedDot
                     local actionSpace=actionSpaceConservation(
                         aTrajectory,bTrajectory,motionByAssembly[aId],motionByAssembly[bId],physicalByAssembly[aId],physicalByAssembly[bId],
-                        spaceByAssembly[aId],spaceByAssembly[bId],context)
+                        spaceByAssembly[aId],spaceByAssembly[bId],aParticipation,bParticipation,context)
                     record.actionSpaceConservation=copy(actionSpace)
+                    -- Situation owns the distinction between missing closure evidence
+                    -- and positive evidence that the pair is no longer closing.  Control
+                    -- may use the latter to relax a zero-speed Hold without settling the
+                    -- still-relevant Resolution-Space obligation.
+                    if type(actionSpace.currentClosing)=="table" then
+                        record.currentClosing=copy(actionSpace.currentClosing)
+                        local actionClosingRate=tonumber(actionSpace.currentClosing.closingRateMps)
+                        if actionSpace.currentClosing.resolved==true and finite(actionClosingRate) then
+                            record.currentClosingPositive=actionClosingRate>=minClosingRateMps
+                            record.currentNonClosingPositive=actionClosingRate<minClosingRateMps
+                        end
+                    end
                     if actionSpace.supported==true then
                         record.status="CLASSIFIED"
                         record.classification="POTENTIAL_OPPOSED_CORRIDOR_CONFLICT"
                         record.reason="CURRENT_EXCURSION_CONSUMES_LOCAL_PASSAGE_ACTION_SPACE"
-                        record.currentClosing=copy(actionSpace.currentClosing)
                         record.currentClosingPositive=true
+                        record.currentNonClosingPositive=false
                         record.currentOpposed=false
                     elseif trajectoryDot==nil then
                         record.reason="ESTABLISHED_TRAJECTORY_RELATION_UNRESOLVED"
@@ -629,10 +877,13 @@ function Assessment.classifyPairs(context)
                             record.otherCurrentStable=bStable
                             record.currentOpposed=currentOpposed
                             record.currentClosingPositive=closingPositive
+                            record.currentNonClosingPositive=closing.resolved==true and finite(tonumber(closing.closingRateMps)) and not closingPositive or false
                             record.status="CLASSIFIED"
                             if facing==true and positiveOverlap and currentOpposed and closingPositive and aStable and bStable then
                                 record.classification="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT"
                                 record.reason="PERSISTENT_OPPOSED_CLOSING_MOTION_WITH_POSITIVE_SUPPORTED_CORRIDOR_OVERLAP"
+                                local establishedConservation=establishedConflictConservation(record,aTrajectory,bTrajectory,motionByAssembly[aId],motionByAssembly[bId],spaceByAssembly[aId],spaceByAssembly[bId],aParticipation,bParticipation,context)
+                                record.actionSpaceConservation=copy(establishedConservation)
                             else
                                 record.classification="POTENTIAL_OPPOSED_CORRIDOR_CONFLICT"
                                 if facing~=true then record.reason="MUTUAL_FACING_RELATION_UNRESOLVED"
@@ -645,8 +896,9 @@ function Assessment.classifyPairs(context)
                         end
                     end
                 end
-                record.resolutionSpaceRelationship=resolutionSpaceRelationship(record)
-                result[#result+1]=record
+                    record.resolutionSpaceRelationship=resolutionSpaceRelationship(record)
+                    result[#result+1]=record
+                end
             end
         end
     end

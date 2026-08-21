@@ -1,3 +1,173 @@
+## v0.1.1.0 canonical-candidate alignment checkpoint
+
+| Architectural responsibility | Current implementation state | Candidate assessment |
+|---|---|---|
+| Pair-specific physical passage requirement | conflict-facing represented extents + provisional 1.0 m nominal clearance | aligned enough for current evidence; 1.0 m remains policy calibration |
+| Least necessary configuration reduction | same-episode natively observed compact profile must release conflict-side space | aligned; mechanical foldability alone carries no authority |
+| Resolution-Space Conservation | pair-relative role attribution, Role Migration, bounded Regulation, reversible Hold | materially aligned, but Regulation speed authority remains open |
+| Unknown pre-productive intent | Situation-relevant active job; known productive peer may Regulate/Hold; entrant remains GIANTS-owned | aligned with Operational Membership / Situation Relevance distinction |
+| Safe Release | blocked participant or positive relevant Future-Space intersection vetoes positive dissolution | aligned with ADR-0006 |
+| Regulation Sufficiency timing | Hold waits for physical cap realisation | **open mismatch:** retrospective under final v0.1.0.14 TS010 evidence |
+
+Candidate preparation changes release identity/provenance only; the runtime column is inherited from v0.1.0.14.
+
+---
+
+## v0.1.0.14 — D-0146 Regulation Sufficiency Hold eligibility
+
+| Architectural responsibility | Implementation owner | v0.1.0.14 alignment |
+|---|---|---|
+| Regulation is least initial intervention | `LiveControlDispatcher` | unchanged 8 km/h bounded first-stage expression |
+| Control effectiveness is not operational sufficiency | `d0146RegulationRealised` + current Situation closing evidence | realised cap is necessary but not sufficient |
+| Escalate when Resolution Space is still being consumed | `LiveControlDispatcher:_dispatchD0146ActionSpace` | no longer requires protected participant to be Transitional |
+| Hold remains temporary physical expression | `_escalateD0146ActionSpaceToHold` / `_deescalateD0146ActionSpaceHold` | 0 km/h Hold with positive non-closing de-escalation retained |
+| Situation/Commitment lifetime remains separate | existing Resolution-Space relationship + Commitment lifecycle | unchanged |
+
+**Removed surrogate:** `protected participant still Transitional` as generic Hold-eligibility authority.
+
+## v0.1.0.13 — D-0146 Safe Release conformance
+
+| Architectural responsibility | Implementation owner | v0.1.0.13 alignment |
+|---|---|---|
+| Persistent Situation Relevance / Conflict Cessation Is Not Resolution | `TrajectoryConflictAssessment.resolutionSpaceRelationship` | Current relationship labels cannot positively dissolve the obligation while contradictory blocked/Future-Space evidence remains. |
+| Safe Release — no blocked participant | `TrajectoryConflictAssessment` from sealed Motion evidence | Either participant `blocked=true` vetoes positive dissolution; productive intent is not erased. |
+| Safe Release — Future Space clear through Continuation Safety Horizon | `SituationAssessment.futureSpaceRelationships` → `TrajectoryConflictAssessment` | Positive relevant Field-Bounded Future-Space intersection vetoes positive dissolution; no negative-clearance claim is introduced. |
+| Capability completion != Commitment completion | existing D-0146 Commitment/Control lifecycle | Regulate/Hold state may change, but the obligation is not settled until positive relationship dissolution survives Safe Release contradictions. |
+
+## v0.1.0.12 — Pre-Productive Intent Relevance alignment
+
+| Architectural responsibility | Implementation owner | v0.1.0.12 alignment |
+|---|---|---|
+| Productive commencement latch | `LiveObservationSource` / `OperationAdmission` | still gates cooperative Operation membership only |
+| Situation Relevance for unrevealed active job | `SituationAssessment` | same-Field-World active AI field-work Job Episode is added to `resolutionSpaceAssemblyIds` as `ACTIVE_JOB_INTENT_REVELATION_PENDING` |
+| Pair assessment | `TrajectoryConflictAssessment` | evaluates Operation-member ↔ pending-intent pair without requiring both to be members |
+| Intent protection / least intervention | `TrajectoryConflictAssessment` + Candidate/Control | pending worker remains GIANTS-owned; known Operation member is Regulation/Hold subject when positively contributing to closure |
+| Cooperative Passage gate | `LocalPassagePlanner` / `PassageCapabilityAssessment` | requires `cooperativePassageEligible`; pending-intent pair is excluded |
+| Relationship continuity | pair identity `operation + assembly pair` | unchanged across later productive-membership reclassification |
+| Completed/non-active influence | existing terminal/non-operational architecture | not broadened into pre-productive Resolution-Space authority |
+
+# v0.1.0.11 architecture/code alignment — Productive Commencement and Mutable Resolution-Space Roles
+
+| Governing concept / contract | v0.1.0.11 implementation | Alignment |
+|---|---|---|
+| Operation starts after worker has commenced recognised field work | positive productive commencement is latched per Job Episode before cooperative membership | CORRECTED |
+| Transitional turns after commencement remain part of the same Operation | latch survives later `isTurn=true` samples | PRESERVED |
+| Job-entry / travel before productive commencement is not cooperative participation | worker remains observable but membership is false | CORRECTED |
+| Resolution-Space obligation persistence | same Commitment/obligation survives changing role assignment | PRESERVED |
+| Least sufficient intervention follows current Situation | active regulated/protected role may migrate without settling/recreating obligation | CORRECTED |
+| Safe actuation transfer | new role lease is applied before old role lease/authority is released | IMPLEMENTED |
+| Regulate↔Hold reversibility | retained after migration; migration resumes bounded Regulation for the newly selected role | PRESERVED |
+| Fixture specificity | no vehicle/name/map exceptions | ALIGNED |
+
+**Alignment conclusion:** v0.1.0.11 restores two existing architectural boundaries rather than adding new top-level concepts: productive commencement gates cooperative participation, and mutable Control expression follows current Situation while purpose persists.
+
+# v0.1.0.10 D-0146 architecture/code alignment — Reversible Hold Expression
+
+| Governing concept / contract | v0.1.0.10 implementation | Alignment |
+|---|---|---|
+| Resolution-Space obligation persistence | Commitment remains active through transient/non-closing geometry until positive relationship dissolution or Passage succession | PRESERVED |
+| Least sufficient intervention | Physical expression may relax Hold→bounded Regulation once Hold's immediate purpose is positively absent | CORRECTED |
+| Positive evidence boundary | Situation publishes resolved `currentNonClosingPositive`; missing/unresolved motion cannot de-escalate | ALIGNED |
+| Re-escalation | Renewed positive closure may tighten the same obligation Regulation→Hold again | IMPLEMENTED |
+| Cooperative Passage Holds | separate owner/control path; unchanged | ISOLATED |
+| D-0147 Protected Yield Holds | separate owner/control path; unchanged | ISOLATED |
+| New literals | none | ALIGNED |
+
+**Alignment conclusion:** v0.1.0.10 separates Situation relevance from momentary physical prohibition. It makes Resolution-Space Control reversible without weakening the obligation or introducing TS010-specific geometry.
+
+# v0.1.0.9 D-0146 architecture/code alignment — Regulation Sufficiency
+
+| Governing concept / contract | v0.1.0.9 implementation | Alignment |
+|---|---|---|
+| Least Intervention | Begin with bounded Regulation rather than immediate Hold | ALIGNED |
+| Resolution-Space Conservation | A realised cap that still permits positive closure is not treated as sufficient | CORRECTED |
+| Regulate → Hold escalation | Same purpose-bound speed lease tightens to 0 km/h after positive insufficiency evidence | IMPLEMENTED |
+| Protected Transitional revelation | Protected participant remains GIANTS-native while regulated peer is held | ALIGNED |
+| Cooperative Passage priority | Same-conflict supported Passage supersedes Action-Space lease before escalation | ALIGNED |
+| No surrogate trigger | Uses existing currentClosingPositive + Transitional state + measured cap compliance; no distance/time literal | ALIGNED |
+| 8 km/h calibration | Retained only as empirical first-stage calibration under renewed review | PROVISIONAL |
+
+**Alignment conclusion:** v0.1.0.9 implements the existing intervention hierarchy without promoting Hold into a passage solution or adding another geometric/temporal surrogate.
+
+# v0.1.0.8 D-0146 architecture/code alignment — Reverse-Aware Resolution-Space Roles
+
+| Governing concept / contract | v0.1.0.8 implementation | Alignment |
+|---|---|---|
+| Resolution-Space Conservation | Established-conflict Regulation role is based on pair-relative native closure contribution | CORRECTED |
+| Conflict Serialization | when continuation classes are equal, defer the greater positive closer rather than the first forward-only speed | CORRECTED |
+| GIANTS direction authority | forward/reverse choice remains native; Regulation caps speed only | PRESERVED |
+| Transitional revelation | Settled-vs-Transitional preference retained; settled role must positively consume pair separation for Regulation to help | PRESERVED / CLARIFIED |
+| Reverse movement | ordinary native movement evidence, not a special-case conflict class | ALIGNED |
+| Regulate→Hold escalation | deliberately unchanged pending runtime sufficiency evidence | DEFERRED |
+| Current-Excursion conservation | existing forward-only pre-Establishment path unchanged in this tranche | ISOLATED |
+
+**Alignment conclusion:** v0.1.0.8 removes a gear-relative implementation surrogate from Established-conflict role assignment without changing D-0146 architecture or passage geometry.
+
+# v0.1.0.7 D-0146 architecture/code alignment — Passage Support authority
+
+| Governing concept / contract | v0.1.0.7 implementation | Alignment |
+|---|---|---|
+| GIANTS native blockage evidence | retained in Observation; not treated as standalone physical D-0146 guide-failure proof | CORRECTED |
+| Candidate-proven Passage Support | Field World / pair representation / third-party / actuation support retain execution authority | PRESERVED |
+| Fail-safe failure state | guide actuation stops and both participants Hold | PRESERVED |
+| Configuration economy / safer footprint | D-0146 failure preserves current compact configuration; no automatic expansion inside unresolved conflict | CORRECTED |
+| Legacy D-0143 donor | historical failure-restoration behaviour unchanged | ISOLATED |
+
+# v0.1.0.6 D-0146 architecture/code alignment — Configuration-First Cooperative Passage
+
+| Governing concept / contract | v0.1.0.6 implementation | Alignment |
+|---|---|---|
+| Configuration-Released Space precedes lateral displacement | Candidate evaluates native compact profile before burden search | ALIGNED / TEST |
+| Mechanical Foldability is not passage authority | Foldable state alone cannot create `COMPACT_REQUIRED` | ALIGNED |
+| AI-Reachable Productive Configuration | Requires same-episode native observation outside OuttaMyWay authority | ALIGNED / empirical runtime validation required |
+| Pair-Specific Passage Clearance | Recomputed from selected passage-side profile + 1 m nominal margin | ALIGNED / provisional margin |
+| Candidate owns policy; Control executes | Candidate supplies mode + expected profile; Control does not choose configuration | ALIGNED |
+| Passage Support Loss must not be driven through | Fresh native blocked during guide fails held | ALIGNED / runtime sensitivity to validate |
+| Coverage Closure | No new negative-clearance authority manufactured | UNCHANGED |
+
+---
+
+# v0.1.0.5 D-0146 architecture/code alignment — Resolution-Space Conservation / Progressive Passage
+
+| Governing concept / contract | v0.1.0.5 implementation | Alignment |
+|---|---|---|
+| Resolution-Space Conservation | Potential Current-Excursion admission retained; Established conflict can now also admit Regulation when Step-2 has no supported Passage expression | CORRECTED |
+| Conflict Serialization / least intervention | one participant is speed-regulated; no Hold or displacement is added before a supported passage exists | ALIGNED / TEST |
+| Productive/Transitional context | Transitional GIANTS-native revelation preserved where positively known; Settled peer regulated | ALIGNED / TEST |
+| Same-Commitment succession | Regulation persists through active Potential/Established relationship and is superseded only after supported Cooperative Passage admission or positive dissolution | PRESERVED |
+| Passage Development Distance | no fixed minimum entry threshold; concrete Passage Guide / Field / pair-sweep / third-party support decides feasibility | CORRECTED |
+| 50 m Development-Space Surrogate | removed; no replacement literal | RETIRED |
+| 80 m Local Passage envelope | retained as current locality/action-space calibration | PARKED |
+| Pair-Specific Passage Clearance | side-specific facing extents + provisional 1.0 m nominal margin | PRESERVED |
+| 12/8/12 +4 guide geometry / burden fractions | unchanged | PARKED |
+| Boundary Encroachment | unchanged / not implemented | PARKED |
+
+**Alignment conclusion:** the two v0.1.0.4 TS010 failure mechanisms identified in Reality now map to existing architecture without introducing a new spatial or traffic concept.
+
+---
+
+# v0.1.0.4 D-0146 architecture/code alignment — Pair-Specific Passage Clearance TEST
+
+| Governing concept / contract | v0.1.0.4 implementation | Alignment |
+|---|---|---|
+| Facing Clearance Extent | one-sided projection of current participating represented components on the shared lateral axis | TEST IMPLEMENTED |
+| Passage-Side Clearance Asymmetry | positive and negative passage relations calculate their own opposing extents / contact threshold | CORRECTED |
+| Physical Contact Threshold | selected-side subject facing extent + selected-side other facing extent | ALIGNED |
+| Nominal Inter-Assembly Clearance | explicit 1.0 m policy calibration added after physical threshold | TEST CALIBRATION |
+| Pairwise Passage Economy | lateral target comes from selected pair/side requirement, not 12 m | CORRECTED; burden fractions remain legacy calibration |
+| Configuration-Released Space | valid architecture, but not selected in this tranche | DEFERRED INTENTIONALLY |
+| False Compaction Demand | generic 6 m width-derived `COMPACT_REQUIRED` removed | CORRECTED |
+| Pair transition support | translated current represented DISC sets sampled against 1 m nominal margin | TEST IMPLEMENTED; no rotational swept-envelope claim |
+| Third-party Local Spatial Constraint | current positive third-party represented occupancy checked without derived 6 m participant reserve | CORRECTED / TEST |
+| Coverage Closure / negative-clearance authority | remains explicitly unavailable in current bootstrap representation | PRESERVED; no fabricated authority |
+| 50/80 m Development-Space surrogate | unchanged | PARKED |
+| 12/8/12 +4 guide geometry / burden fractions | unchanged | PARKED |
+| Boundary Encroachment | unchanged / not implemented | PARKED |
+
+**Alignment conclusion:** this tranche removes the principal 12/6 architecture/code mismatch without changing the surrounding passage-development calibration. Runtime TS010 decides what remains material.
+
+---
+
 # v4.7.127 architecture/code audit closure — D-0147 Courtesy Constraint Exception
 
 | Governing concept / contract | v4.7.127 implementation | Alignment |
