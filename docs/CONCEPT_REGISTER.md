@@ -1,3 +1,21 @@
+# v0.1.2.0 Resolution-Space Conservation concept addendum
+
+**CURRENT / SELECTED ARCHITECTURAL DIRECTION:** Supportable Progression; Resolution-Space Progression Envelope; Resolution Contingency Reserve; Reverse-Created Resolution Reserve; Intent-Revelation Opportunity; Resolution-Space Recovery; Back-Out Recovery.
+
+- **Supportable Progression** — greatest present conflict-consuming progression that preserves the required next resolution opportunity under the current live Resolution-Space obligation.
+- **Resolution-Space Progression Envelope** — state-derived maximum progression curve whose ordinary progression reaches zero before deliberately protected contingency capacity. It is Control magnitude authority, not Situation/release authority and not a model of GIANTS physical deceleration.
+- **Resolution Contingency Reserve** — explicitly owned percentage of otherwise established usable Resolution Space withheld from ordinary progression. It is policy margin, not claimed braking distance or passage clearance. Exact percentage remains calibration.
+- **Reverse-Created Resolution Reserve** — temporary positive separation created when the protected/uncertain participant moves away. It is observed bonus capacity, not automatically reusable progression authority. It may be consumed by that participant's later forward return or promoted/rebased only by positive changed Situation evidence.
+- **Intent-Revelation Opportunity** — opportunity preserved while Reality has not yet revealed whether native continuation, Cooperative Passage or another resolution applies. This explains why large Resolution Space can remain productive rather than immediately Held.
+- **Resolution-Space Recovery** — post-prevention Reposition responsibility that seeks to buy back resolution capacity after conservation has already failed.
+- **Back-Out Recovery** — candidate bounded Recovery expression toward recently demonstrated clear space; not automatic reverse-on-blockage and not general reverse route planning.
+
+**RETIRED AS SELECTED FUTURE AUTHORITY:** fixed 8 km/h Resolution-Space Regulation as generic sufficiency policy; total native manoeuvre-duration prediction as the Goldilocks scale; measured per-vehicle braking/deceleration modelling; field-area speed policy. The current v0.1.2.0 runtime still contains the inherited 8 km/h implementation pending alignment.
+
+**RELATIONSHIP TO PASSAGE:** Resolution Space is not Passage Space. Passage is one supported resolution that may later consume/protect Resolution Space once positively established. Conservation can precede Passage and buy the observation opportunity from which Passage becomes knowable.
+
+---
+
 # v4.7.127 audit concepts — D-0147 Courtesy Constraint Exception
 
 **CURRENT / GOVERNING D-0147 CONCEPTS:** Pending Player Reclamation; Terminal Yield Consent; Continuity, Not Settlement; Reactive Terminal Yield; Bounded Infield Retreat; Infield Alignment; Protected Yield Interval; Continuation Renewal; Courtesy Exhaustion; Player Claim; Actuation Neutralisation; Player Escalation; **D-0147 Courtesy Constraint Exception**.

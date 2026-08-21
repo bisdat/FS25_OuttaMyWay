@@ -748,6 +748,42 @@ The historical D-0142 `King Reserve SOME → NONE` transition was one proposed e
 
 Resolution-Space Conservation generalises several older observations including follower boundary protection, recovery protection and constrained-topology action-space compression.
 
+### 0.9.1 Supportable Progression and Progression Envelope
+
+When a Resolution-Space obligation is positively supported, Least Intervention does not require immediate Hold. Hold maximises raw distance but can unnecessarily sacrifice productive continuation when positive progression preserves the same required resolution options.
+
+**Supportable Progression** is therefore the greatest present conflict-consuming progression that preserves the required next resolution opportunity while the obligation remains unresolved. Situation Assessment and Commitment own whether the purpose exists; Control magnitude may vary without settling/recreating that purpose. **Purpose is sticky; magnitude is elastic.**
+
+The selected replacement direction for generic fixed-speed Regulation is a **Resolution-Space Progression Envelope**. Let `D0` denote currently established usable Resolution Space before policy withholding. A deliberately selected fraction is withheld as **Resolution Contingency Reserve** `C`; ordinary progression allowance is `S0 = D0 - C`. Let `u` be the constrained participant's current progression when the envelope is established. A coarse zero-terminal-progression policy trajectory may then be represented by:
+
+`a_p = -u^2 / (2*S0)`
+
+For remaining ordinary authorised space `r`:
+
+`v_supportable = sqrt(2*abs(a_p)*r)`
+
+`a_p` is **not** a claim about physical GIANTS braking acceleration. It defines how aggressively ordinary progression authority is consumed. Control expresses the resulting ceiling coarsely as a whole integer km/h; zero becomes Hold. Exact contingency percentage is policy calibration and must remain explicit rather than masquerading as geometry.
+
+This architecture deliberately rejects total native-manoeuvre-duration prediction, precise learned braking/response models, field-area speed rules and another universal fixed speed. Large available Resolution Space naturally gives Reality more opportunity to reveal intent; small encounters naturally tighten earlier.
+
+### 0.9.2 Uncertain manoeuvres, bonus reserve and positive rebase
+
+A transient reverse or non-closing sample does not itself settle an unresolved cooperative relationship. The same Resolution-Space purpose may persist while the uncertain/protected participant performs several reverse/forward native manoeuvres.
+
+Positive separation created by that participant moving away is **Reverse-Created Resolution Reserve**. It is observed additional capacity but is not immediately returned to ordinary progression authority. If the participant returns forward, it consumes that bonus before newly consuming the conservative ordinary space. This prevents Control chatter without predicting manoeuvre duration.
+
+The conservative distance memory is bounded to the same unresolved Situation; it is not a historical minimum-ever ratchet. Positive Situation evidence may establish Safe Release, Intent Supersession into native continuation/Cooperative Passage, or an explicit Authority Reset/rebase from changed Reality.
+
+### 0.9.3 Intent-Revelation Opportunity and Passage relationship
+
+Resolution Space is not predicated on Passage Space. Conservation may begin before Cooperative Passage is knowable, especially for an active same-Field-World job whose productive intent is still being revealed. The preserved capacity buys **Intent-Revelation Opportunity**. Once Reality positively establishes an actual supported resolution — including Cooperative Passage — the uncertainty envelope is superseded by that resolution's own Candidate/Constraint/Commitment authority.
+
+### 0.9.4 Resolution-Space Recovery
+
+Conservation prevents option loss; **Resolution-Space Recovery** addresses the distinct case where prevention was too late or Reality nevertheless exhausted the supported option set. Recovery belongs to the Traffic Policeman's existing Reposition family, not to Regulation/Hold magnitude.
+
+A candidate **Back-Out Recovery** may move a bounded participant toward recently demonstrated clear space rather than inventing a speculative route into unknown space. GIANTS `isBlocked` may contribute evidence that native continuation is unavailable but is not physical obstruction proof and cannot independently authorise reverse. Static-blockage use and exact Recovery admission remain future architecture/implementation work.
+
 ### 0.10 Conflict Serialization and admission control
 
 Multi-worker traffic does not require bespoke N-worker physical solvers.

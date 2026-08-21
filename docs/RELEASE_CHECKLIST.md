@@ -1,3 +1,18 @@
+## v0.1.2.0 canonical-candidate scope gate — Resolution-Space Conservation architecture
+
+- [x] Exact baseline is owner-declared canonical v0.1.1.0 SHA-256 `10ad10c0eb5956fbd32f3e82408201513dec6073e72b758db4b6bf394e8316b3`; Git `5cd2ae0c768a1a771b817b5ed5879ca02745f9de`; 316 files.
+- [x] Candidate changes architecture/documentation and version identity only; no intentional Situation/Decision/Commitment/Control behavioural algorithm delta.
+- [x] Fixed 8 km/h Resolution-Space Regulation is explicitly retained in runtime but retired as selected future generic sufficiency authority.
+- [x] Supportable Progression, Resolution-Space Progression Envelope, Resolution Contingency Reserve, Reverse-Created Resolution Reserve and Intent-Revelation Opportunity are recorded consistently.
+- [x] Exact contingency percentage remains unresolved explicit policy calibration; historical 0.90 is not silently promoted.
+- [x] Manoeuvre-duration prediction, measured braking-response modelling, field-area policy and guessed replacement speed are explicitly excluded from the selected direction.
+- [x] Resolution-Space Recovery / Back-Out Recovery is recorded as separate Reposition architecture only; no static-blockage/reverse implementation is bundled.
+- [x] Passage-in-extenso remains separate; Resolution Space is not predicated on Passage Space.
+- [x] Exact packaged candidate passes behavioural, structural/conformance, RRS, Lua/XML parse, manifest and deterministic-byte verification: 254/254 Lua behavioural, 96/96 structural, 25/25 RRS, 105/105 live Lua parse, XML/version and manifest clean, 316 files, deterministic byte-identical rebuild.
+- [ ] Owner reviews exact v0.1.2.0 fingerprint and explicitly declares canonical or rejects it.
+
+---
+
 ## v0.1.1.0 canonical-candidate scope gate
 
 - [x] Exact runtime lineage is tested v0.1.0.14; candidate preparation introduces no intentional traffic/planning/Control behavioural delta.

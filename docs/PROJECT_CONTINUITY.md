@@ -1,3 +1,51 @@
+# v0.1.2.0 candidate continuity — Resolution-Space Progression Envelope
+
+Authoritative baseline is owner-declared canonical v0.1.1.0 (`10ad10c0eb5956fbd32f3e82408201513dec6073e72b758db4b6bf394e8316b3`; Git `5cd2ae0c768a1a771b817b5ed5879ca02745f9de`; 316 files). v0.1.2.0 is an architecture/documentation candidate only. No Goldilocks/Progression-Envelope traffic code has been implemented; inherited runtime still uses the empirical 8 km/h D-0146 Resolution-Space Regulation cap.
+
+## Carry-forward question
+
+How do we implement the smallest **Resolution-Space Progression Envelope** that replaces fixed 8 km/h authority while preserving existing Situation/Decision/Commitment ownership and known-good TS015/TS016 behaviour?
+
+## Settled architecture
+
+- Objective: preserve enough opportunity for the next justified resolution while maximising Productive Continuation; raw maximum space is not the objective.
+- Resolution Space is not predicated on Passage Space. Conservation buys **Intent-Revelation Opportunity** while intent remains uncertain; established Cooperative Passage later supersedes the envelope.
+- Situation Assessment decides whether the Resolution-Space obligation exists and when positive Safe Release / Intent Supersession occurs. The envelope owns only maximum permitted conflict-consuming progression while that obligation remains live.
+- Purpose is sticky; magnitude is elastic. Native reverse/forward corner shuffling must not repeatedly manufacture clear/danger/release cycles.
+- Do not predict total native manoeuvre duration. Do not model precise GIANTS deceleration/response behaviour. The game's physics do not justify that precision.
+- Let `D0` be established usable Resolution Space before policy reserve. Withhold a percentage **Resolution Contingency Reserve**; exact percentage (90%, 75% or another value) is unresolved explicit policy calibration.
+- Let `S0` be ordinary progression allowance after the contingency reserve and `u` the constrained participant's current progression at envelope establishment. Candidate policy trajectory: `a_p = -u^2/(2*S0)`. For remaining ordinary authorised space `r`, raw Supportable Progression is `sqrt(2*abs(a_p)*r)`. `a_p` is not predicted physical braking acceleration.
+- Control is deliberately coarse: floor the resulting cap to an integer km/h. Positive integer => Regulation; zero => Hold. Do not add decimal-speed authority.
+- Maintain a conservative minimum available distance during the same unresolved Situation. Positive separation created by the uncertain/protected participant reversing becomes **Reverse-Created Resolution Reserve**, not immediately spendable ordinary progression. If it subsequently comes forward, it consumes this bonus first.
+- Do not turn the conservative minimum into a minimum-ever ratchet. Positive changed Reality may release/supersede the obligation or explicitly rebase the envelope.
+- Large separation naturally gives Reality more time to reveal intent; small fields tighten quickly. Do not introduce field-area speed policy.
+
+## Resolution-Space Recovery
+
+Prevention and recovery are separate. Regulation/Hold conserve remaining space. If option space is already lost, `REPOSITION` may attempt **Resolution-Space Recovery**. A candidate **Back-Out Recovery** retraces toward recently demonstrated clear space rather than inventing a route into unknown space. GIANTS `isBlocked` may support the claim that native continuation is unavailable but does not prove a physical obstruction or independently authorise reverse. Static-blockage recovery is explicitly parked.
+
+## Nasty-case results
+
+1. **Late admission / short distance:** envelope may tighten rapidly to Hold; it cannot create already-lost Resolution Space. If prevention is already too late, Recovery becomes the separate tool.
+2. **Low constrained-participant speed at admission:** only a narrow edge case remains (for example MT665 immediately after its own turn). GIANTS acceleration appears rapid; validate before inventing reference-speed estimation. In ordinary TS010 the mower is the shuffling/uncertain participant and MT665 supplies `u`.
+3. **Reverse-created space:** TS015 Condor's long reverse is prior positive evidence for protecting gained separation while Patriot remains regulated. TS010 also contains MT665 forward-then-reverse job-entry evidence. Treat gained space as bonus reserve until the reverse develops into positive changed Situation evidence.
+4. **Genuine improvement:** positive reclassification may release, supersede into Passage, or rebase. Temporary distance gain alone cannot.
+
+## Next-chat sequence
+
+1. Review/canonicalise the exact v0.1.2.0 candidate if accepted.
+2. Before code, perform the standing **Authority-Layer Impact Review**: Representation -> Field World Membership -> Operational Membership -> Situation Relevance -> Candidate eligibility -> Decision authority -> Commitment authority -> Control authority. Test newly affected populations, not only TS010.
+3. Select a provisional contingency-reserve percentage as explicit policy calibration; do not inherit historical `0.90` automatically merely because its margin concept was useful.
+4. Implement the smallest envelope replacement for the fixed 8 km/h Resolution-Space cap. Preserve existing Regulate/Hold, role migration, Safe Release and Pre-Productive Intent Relevance.
+5. Validate TS010 first, then TS015/TS016. Specifically verify that Condor's long reverse does not relax Patriot into consuming bonus space and that established Passage still succeeds normally.
+6. Only after this tranche, return to Cooperative Passage **in extenso**. Keep Space Recovery/static blockage separate unless Reality selects it earlier.
+
+## Other parked work
+
+Guide Development Non-Convergence if reproduced after genuine productive commencement; D-0147 Courtesy Quantum/Exhaustion coupling; 80 m locality; guide-shape/burden literals; Boundary Encroachment; broader literal-audit cleanup.
+
+---
+
 # v0.1.1.0 candidate continuity — D-0146 small-field alignment plateau
 
 Owner-declared v0.1.0.0 remains canonical pending review. v0.1.1.0 carries v0.1.0.14 runtime behaviour unchanged and exists to capture the cumulative generic D-0146 corrections before resuming the Literal Provenance investigation.

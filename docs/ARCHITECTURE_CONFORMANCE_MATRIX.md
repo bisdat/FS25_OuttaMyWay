@@ -1,3 +1,19 @@
+## v0.1.2.0 Resolution-Space architecture conformance addendum
+
+| Contract | Candidate architecture | v0.1.2.0 runtime | Status |
+|---|---|---|---|
+| Fixed generic 8 km/h authority | RETIRED as selected future sufficiency authority | still live | GAP DECLARED |
+| Supportable Progression | CURRENT | diagnostic/probe fragments only; no governing envelope | GAP DECLARED |
+| Resolution-Space Progression Envelope | CURRENT selected direction | NOT IMPLEMENTED | GAP DECLARED |
+| Resolution Contingency Reserve | CURRENT policy-margin concept; exact % unresolved | NOT IMPLEMENTED | GAP DECLARED |
+| Integer-km/h Regulation / zero Hold | CURRENT selected Control expression | existing fixed 8 km/h / Hold mechanics only | GAP DECLARED |
+| Sticky purpose / elastic magnitude | CURRENT | existing Commitment/Regulate-Hold/role-migration machinery partly supports | PARTIAL |
+| Reverse-Created Resolution Reserve | CURRENT selected direction | NOT IMPLEMENTED | GAP DECLARED |
+| Passage supersession after positive revelation | CURRENT | existing D-0146 succession mechanisms retained | PARTIAL / LIVE-EVIDENCED IN PRIOR PATHS |
+| Resolution-Space Recovery / Back-Out | CURRENT conceptual Reposition direction | NOT IMPLEMENTED | GAP DECLARED |
+
+---
+
 # v4.7.128 canonical-candidate conformance — no behavioural delta from live-validated v4.7.127
 
 v4.7.128 introduces no architecture or Control change. It packages the v4.7.127 audit-closed state for owner canonical review. All v4.7.127 D-0147 conformance conclusions below carry forward unchanged.

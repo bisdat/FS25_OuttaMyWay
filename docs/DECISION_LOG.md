@@ -1,3 +1,33 @@
+## D-0155 — Replace fixed Resolution-Space speed authority with a Progression Envelope
+
+**Decision:** the future generic D-0146 Resolution-Space Control magnitude must not be a fixed speed such as 8 km/h. While the obligation remains live, use a coarse **Resolution-Space Progression Envelope** whose terminal condition is zero ordinary progression before a deliberately withheld Resolution Contingency Reserve.
+
+**Reasoning:** TS010 showed that a fixed cap can be physically realised only after substantial Resolution Space has already been consumed. Precise GIANTS braking-response modelling would add false precision. A state-derived policy envelope preserves the objective — buy time/opportunity while maximising Productive Continuation — without claiming to model vehicle physics.
+
+**Candidate form:** from constrained-participant current progression `u` and ordinary authorised distance `S0`, derive `a_p = -u^2/(2*S0)` with terminal progression zero. Remaining ordinary authorised space `r` yields raw Supportable Progression `sqrt(2*abs(a_p)*r)`. `a_p` is a policy trajectory parameter, not physical deceleration. Control uses a conservative integer-km/h cap; zero means Hold.
+
+**Resolution Contingency Reserve:** withhold an explicit percentage of established usable Resolution Space before constructing ordinary progression allowance. The concept is accepted; exact percentage is unresolved calibration. Do not automatically inherit historical 0.90.
+
+**Persistence:** Situation/Commitment owns purpose. Temporary reverse/forward manoeuvring does not release/recreate the obligation. Positive separation produced by the protected/uncertain participant becomes Reverse-Created Resolution Reserve rather than immediate progression authority. Positive changed Reality may release, supersede into Passage/native continuation, or rebase.
+
+**Passage boundary:** Resolution Space is not Passage Space. The envelope buys Intent-Revelation Opportunity. Once Cooperative Passage is positively supportable, normal Passage authority supersedes the uncertainty envelope.
+
+**Implementation status:** architecture only in v0.1.2.0. The inherited 8 km/h runtime remains unchanged until a separate implementation/test tranche.
+
+---
+
+## D-0154 — Treat Resolution-Space Recovery as a Policeman Reposition tool
+
+**Decision:** Resolution-Space Conservation and Resolution-Space Recovery are distinct responsibilities. Regulation/Hold preserve option space prospectively. If usable option space has already been lost, the Policeman may eventually select `REPOSITION` to recover it rather than holding a permanent deadlock.
+
+**Candidate physical expression:** **Back-Out Recovery** may retrace a bounded participant toward recently demonstrated clear space, subject to current conflict/relevance checks, rather than inventing a route into unknown space. This is especially relevant to nose-to-nose and future static-blockage cases.
+
+**`isBlocked` boundary:** GIANTS `isBlocked=true` may support the statement that native productive continuation is unavailable. It is not physical-obstruction proof and does not independently authorise reverse or Passage abort.
+
+**Implementation status:** concept recorded only. Do not mix Recovery implementation into the Resolution-Space Progression Envelope tranche unless live evidence shows prevention is already too late.
+
+---
+
 ## D-0153 — Cut v0.1.1.0 candidate at the D-0146 small-field alignment plateau
 
 **Decision:** prepare v0.1.1.0 as a release/provenance-only canonical candidate from the exact tested v0.1.0.14 runtime. Do not add another behavioural correction during candidate preparation. Owner-declared v0.1.0.0 remains canonical until the exact v0.1.1.0 fingerprint is explicitly accepted.

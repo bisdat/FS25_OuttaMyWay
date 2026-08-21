@@ -1,3 +1,29 @@
+# v0.1.2.0 CANONICAL CANDIDATE — Resolution-Space Conservation Architecture
+
+**Authority:** owner-declared canonical v0.1.1.0 (`10ad10c0eb5956fbd32f3e82408201513dec6073e72b758db4b6bf394e8316b3`; Git `5cd2ae0c768a1a771b817b5ed5879ca02745f9de`; 316 files) is the exact implementation baseline. v0.1.2.0 is a documentation/architecture consolidation candidate and introduces **no intentional Situation Assessment, Decision, Commitment or Control behavioural algorithm change**. Runtime traffic behaviour remains the v0.1.1.0 behaviour, including the inherited empirical 8 km/h D-0146 Resolution-Space Regulation cap.
+
+**Why this candidate exists:** renewed Literal Provenance review of the 8 km/h cap showed that the problem is not another speed calibration. TS010 demonstrated that a fixed cap plus compliance-before-sufficiency reasoning can consume the very Resolution Space the Policeman intends to conserve. The architecture discussion therefore returned to first principles: preserve enough opportunity for Reality to reveal the next justified resolution while applying the least intervention that preserves that opportunity.
+
+**D-0154 — Resolution-Space Recovery:** prevention and recovery are distinct. Regulation/Hold conserve remaining Resolution Space; when usable option space has already been lost, `REPOSITION` may recover it. A bounded **Back-Out Recovery** toward recently demonstrated clear space is a candidate physical expression. GIANTS `isBlocked` may contribute evidence that native productive continuation is unavailable, but is not physical-obstruction proof and does not itself authorise reverse. Static-blockage application is explicitly future work.
+
+**D-0155 — Resolution-Space Progression Envelope:** retire the fixed 8 km/h value as generic future sufficiency authority. While a Resolution-Space obligation is live, Situation Assessment owns whether the obligation exists and when it is positively superseded/released; the envelope owns only the maximum conflict-consuming progression permitted while uncertainty remains. Purpose stays sticky; Control magnitude remains elastic.
+
+**Candidate envelope:** from the constrained participant's current progression `u` and the currently established usable Resolution Space `D0`, withhold an explicit percentage **Resolution Contingency Reserve** before ordinary progression. If `S0` is the resulting ordinary progression allowance, define a zero-terminal-progression policy trajectory `a_p = -u^2/(2*S0)`. For remaining authorised ordinary space `r`, raw Supportable Progression is `sqrt(2*abs(a_p)*r)`. This is a policy envelope, **not a claim about GIANTS braking acceleration**. The eventual Control cap is deliberately coarse: floor to an integer km/h; zero means Hold. The exact reserve percentage (90%, 75% or another evidence-supported value) is intentionally **not selected in this candidate**.
+
+**Uncertain native manoeuvres:** mower reverse/forward corner shuffling does not repeatedly clear/recreate the conflict. The underlying Resolution-Space purpose remains sticky until positive Safe Release / Intent Supersession evidence. Positive space created while the protected/uncertain participant reverses is **Reverse-Created Resolution Reserve**: observed bonus space that is not immediately returned to ordinary progression authority. If the participant comes forward again it consumes that bonus first. Positive Situation change may authorise an Authority Reset/rebase; no minimum-ever ratchet survives changed Reality.
+
+**Passage relationship:** Resolution Space is not predicated on Passage Space. Conservation buys **Intent-Revelation Opportunity**; once Reality positively establishes Cooperative Passage, normal Passage mechanics supersede the uncertainty envelope. Large initial separation therefore naturally provides more time for intent revelation, while small-field encounters tighten quickly without a field-area rule. Passage itself remains scheduled for later in-extenso review.
+
+**Explicit non-solutions:** no predicted manoeuvre-duration input; no measured deceleration/braking model; no field-size speed table; no replacement fixed speed; no raw nose-to-nose universal reserve; no release on a transient non-closing/reverse sample; no automatic expansion of the envelope from temporary gained separation.
+
+**Next:** after owner review/canonicalisation, perform an Authority-Layer Impact Review, choose a provisional contingency-reserve percentage as explicit policy calibration, implement the smallest envelope replacement for the 8 km/h authority, and validate against TS010 plus prior TS015/TS016 behaviour. Keep Resolution-Space Recovery implementation and Passage-in-extenso separate unless evidence selects them.
+
+**Release-identity maintenance:** structural tests that intentionally assert the current `OuttaMyWay.VERSION` are advanced from 0.1.1.0 to 0.1.2.0; no behavioural expectation is changed.
+
+**Candidate validation:** 254/254 Lua behavioural tests, 96/96 Python structural tests, 25/25 RRS tests, 105/105 live-loaded Lua parse, XML/version and release manifest clean, 316 packaged files, deterministic byte-identical rebuild.
+
+---
+
 # v0.1.1.0 CANONICAL CANDIDATE — D-0146 Small-Field Architecture Alignment Plateau
 
 **Authority:** owner-declared canonical v0.1.0.0 remains authoritative pending explicit review of this candidate. v0.1.1.0 is derived from the tested v0.1.0.14 lineage and introduces **no intentional traffic/planning/Control behavioural change**; release identity, provenance and canonical-review records only are changed.

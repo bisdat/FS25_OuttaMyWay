@@ -1,3 +1,21 @@
+# Current status — v0.1.2.0 CANONICAL CANDIDATE
+
+**Canonical baseline:** owner-declared v0.1.1.0 (`10ad10c0eb5956fbd32f3e82408201513dec6073e72b758db4b6bf394e8316b3`; Git `5cd2ae0c768a1a771b817b5ed5879ca02745f9de`; 316 files). v0.1.2.0 is architecture/documentation consolidation plus release identity only; runtime traffic behaviour is intentionally unchanged.
+
+**Current architectural result:** the fixed 8 km/h D-0146 Resolution-Space Regulation cap is rejected as future generic sufficiency authority. The selected replacement direction is a **Resolution-Space Progression Envelope**: preserve a percentage Resolution Contingency Reserve, derive a zero-terminal-progression policy curve from the constrained participant's current progression and ordinary authorised Resolution Space, reassess against remaining conservative space, floor the cap to whole km/h, and Hold at zero. The curve is policy geometry, not a model of GIANTS braking physics.
+
+**Purpose/magnitude:** Resolution-Space purpose remains sticky through uncertain reverse/forward manoeuvres; Control magnitude is elastic. Temporary gained separation is Reverse-Created Resolution Reserve and is not automatically spendable. Positive changed Reality may release, supersede into Passage/native continuation, or authorise a rebase.
+
+**Architecture/code gap:** v0.1.2.0 does **not** implement this envelope. Live code still uses `D0146_RESOLUTION_SPACE_REGULATION_KMH = 8.0` and the existing Regulate/Hold machinery. This gap is explicit and selected for the next implementation tranche after canonical review.
+
+**Recovery direction:** Resolution-Space Recovery is accepted as a possible Policeman `REPOSITION` tool after prevention fails. Back-Out toward recently demonstrated clear space is a candidate expression; static blockage is a future application. No recovery code is added.
+
+**Passage boundary:** Resolution Space is not Passage Space. Conservation buys Intent-Revelation Opportunity; once Passage becomes positively supportable it supersedes the uncertainty envelope. Passage-in-extenso remains deliberately later work.
+
+**Open calibration/validation:** exact contingency-reserve percentage remains undecided; constrained-participant low-speed-at-admission is a validation edge case rather than a pre-emptive design branch. TS010 is the primary small-space validation theatre; TS015/TS016 are mandatory prior-scenario regressions.
+
+---
+
 # Current status — v0.1.1.0 CANONICAL CANDIDATE
 
 **Canonical remains v0.1.0.0 until explicit owner declaration.** v0.1.1.0 is a release/provenance-only successor to the tested v0.1.0.14 runtime; there is no intentional behavioural algorithm delta in candidate preparation.

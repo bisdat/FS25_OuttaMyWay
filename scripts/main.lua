@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.1.0 CANONICAL CANDIDATE — cumulative tested D-0146 alignment over owner-declared canonical v0.1.0.0; runtime behaviour inherited from v0.1.0.14 TEST.
+-- FS25_OuttaMyWay v0.1.2.0 CANONICAL CANDIDATE — architecture/documentation consolidation over owner-declared canonical v0.1.1.0; traffic behaviour unchanged.
 -- modDesc.xml loads only this file. Historical archived modules are never sourced.
 local modDirectory=g_currentModDirectory or ""
 local modules={

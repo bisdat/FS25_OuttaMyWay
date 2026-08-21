@@ -1,3 +1,18 @@
+# v0.1.2.x immediate roadmap — implement Resolution-Space Progression Envelope
+
+1. Review the exact v0.1.2.0 architecture candidate; candidate preparation contains no intentional traffic behavioural algorithm change.
+2. If accepted, owner explicitly declares that exact fingerprint canonical and records local Git/repository provenance.
+3. Perform the standing Authority-Layer Impact Review before changing the 8 km/h Control authority.
+4. Select a provisional Resolution Contingency Reserve percentage as explicit policy calibration. Historical 0.90 supports the concept of a deliberate margin but does not automatically select 90%.
+5. Implement the smallest Resolution-Space Progression Envelope: current constrained-participant progression + usable Resolution Space -> contingency reserve -> zero-terminal policy curve -> integer km/h Regulation / zero Hold.
+6. Do not add manoeuvre-duration prediction, measured braking/deceleration modelling, field-size speed rules, a replacement fixed speed, or Control-side Passage logic.
+7. Protect reverse-created separation as bonus reserve while the same uncertainty remains unresolved; permit release/supersession/rebase only from positive Situation evidence.
+8. Validate TS010 plus TS015/TS016 prior scenarios, especially Condor's long reverse and normal Passage succession.
+9. If prevention still reaches an already-unresolvable state, analyse Resolution-Space Recovery separately rather than complicating the envelope.
+10. After this tranche, return to Cooperative Passage in extenso.
+
+---
+
 # v0.1.1.x immediate roadmap — candidate review then Regulation literal authority
 
 1. Review the exact v0.1.1.0 candidate fingerprint; no behavioural work belongs in candidate preparation.

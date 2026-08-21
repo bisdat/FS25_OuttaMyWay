@@ -1,3 +1,52 @@
+## v0.1.2.0 CANONICAL CANDIDATE handover — Resolution-Space Conservation
+
+Baseline: owner-declared canonical v0.1.1.0 (`10ad10c0eb5956fbd32f3e82408201513dec6073e72b758db4b6bf394e8316b3`; Git `5cd2ae0c768a1a771b817b5ed5879ca02745f9de`; 316 files). Candidate scope is documentation/architecture plus version identity; no traffic behavioural implementation.
+
+**Do not mistake documentation for runtime:** the fixed 8 km/h D-0146 Resolution-Space Regulation remains live in this candidate. The next selected implementation is to replace that generic authority with the architecture below, not to tune 8 km/h.
+
+### Accepted architecture
+
+- **Supportable Progression:** greatest present conflict-consuming progression that preserves the required next resolution opportunity while the current Resolution-Space obligation remains unresolved.
+- **Resolution-Space Progression Envelope:** coarse zero-terminal-progression policy curve over the ordinary authorised portion of established Resolution Space. It is not a GIANTS vehicle-dynamics model.
+- **Resolution Contingency Reserve:** deliberately withheld percentage of established usable Resolution Space that ordinary progression has no authority to consume. Exact percentage remains explicit calibration.
+- **Reverse-Created Resolution Reserve:** positive space created by the protected/uncertain participant reversing; hold it as bonus reserve rather than immediately relaxing the constrained participant's envelope.
+- **Intent-Revelation Opportunity:** one purpose of Resolution-Space Conservation is to buy enough opportunity for Reality to reveal whether native continuation, Cooperative Passage or another supported resolution actually applies.
+- **Resolution-Space Recovery:** separate `REPOSITION` family for buying space back after conservation has already failed; Back-Out Recovery toward recently demonstrated clear space is a candidate physical expression. No implementation in this tranche.
+
+### Candidate maths
+
+`D0` = established usable Resolution Space before contingency policy.
+
+`C = reserveFraction * D0`
+
+`S0 = D0 - C`
+
+`u` = constrained participant's current progression when the envelope is established.
+
+`a_p = -u^2 / (2*S0)`
+
+For remaining ordinary authorised space `r`:
+
+`v_raw = sqrt(2*abs(a_p)*r)`
+
+Control cap = conservative whole-integer km/h floor of `v_raw`; 0 => Hold. This trajectory consumes the authorised allowance toward zero progression before the Contingency Reserve is reached. `a_p` is a policy parameter derived from current state, not a prediction that GIANTS will physically decelerate at that rate.
+
+### Persistence / release
+
+The Resolution-Space purpose remains sticky through mower reverse/forward corner shuffling. Temporary negative closure may create bonus reserve and alter current geometry but does not itself establish Safe Release. Positive Situation evidence may release, supersede into ordinary Passage/native continuation, or authorise rebase. Do not recreate the historical minimum-ever speed ratchet.
+
+### Prior-scenario implications
+
+- TS015 Condor long reverse is a positive benchmark: Patriot should remain appropriately regulated and the gained space should not be immediately spent before Passage establishes.
+- TS010 small-field mower/MT665 should naturally tighten much sooner because usable Resolution Space is small, not because the field is 0.99 ha.
+- A 500 m encounter naturally offers abundant intent-revelation opportunity; normal Situation maturation should usually supersede the envelope long before the contingency boundary matters.
+
+### Mandatory process before implementation
+
+Run an Authority-Layer Impact Review. The envelope must not change Operational Membership, Situation Relevance, Passage eligibility or player/GIANTS ownership merely because it changes Control magnitude. Bench the newly affected populations and prior successful TS015/TS016 paths before live testing.
+
+---
+
 ## v0.1.1.0 CANONICAL CANDIDATE handover — small-field D-0146 plateau
 
 Authoritative baseline remains owner-declared canonical v0.1.0.0 until explicit acceptance. v0.1.1.0 carries the exact v0.1.0.14 runtime behaviour and changes only release identity/provenance/canonical-review records.

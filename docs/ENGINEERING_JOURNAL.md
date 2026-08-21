@@ -1,3 +1,23 @@
+# 2026-08-21 — Resolution-Space Conservation / Goldilocks architecture
+
+**Observation:** TS010 v0.1.0.14 could still slow-march into blockage under a fixed 8 km/h Regulation because compliance was observed only after deceleration had consumed much of the remaining Resolution Space.
+
+**Discussion:** immediate Hold maximises raw distance but violates Least Intervention when positive progression preserves the same useful option set. The objective became “buy time/opportunity to maximise options” while preserving Productive Continuation. Passage Space was separated from Resolution Space: Passage is a later supported resolution, not a prerequisite for early conservation.
+
+**Disproved/retired hypotheses:** another fixed speed; exact measured deceleration/response modelling; total mower-manoeuvre duration as the governing horizon; field-size speed policy; simple speed/distance linear ratio anchored only to admission distance.
+
+**Useful historical recovery:** the old D-0141 0.90 margin was remembered as an explicit conservative factor rather than geometry. The general margin concept survived, but the selected interpretation is to withhold a percentage of usable Resolution Space as **Resolution Contingency Reserve** before deriving progression authority. Exact percentage remains open.
+
+**Hypothesis:** a zero-terminal-speed kinematic relation can define a policy envelope without claiming physical braking precision. From constrained-participant progression `u` and ordinary progression allowance `S0`, use `a_p=-u^2/(2*S0)` and `v=sqrt(2*abs(a_p)*r)` for remaining authorised ordinary space. Whole-integer km/h caps keep Control coarse; zero means Hold.
+
+**Nasty-case challenge:** late admission may legitimately tighten quickly; a constrained participant caught at low speed after its own turn remains an empirical edge case; reverse-created separation should be protected rather than instantly spent; genuine positive Situation improvement must permit release/supersession/rebase so no minimum-ever ratchet returns. TS015 Condor's long reverse supplies prior evidence for this reserve behaviour.
+
+**New tool discovery:** if conservation already failed, Hold merely freezes the deadlock. **Resolution-Space Recovery** may therefore be another Policeman Reposition tool; bounded Back-Out toward recently demonstrated clear space is a candidate physical expression and may later generalise to static blockage.
+
+**Decision:** record architecture now, implement later from canonical baseline after Authority-Layer Impact Review.
+
+---
+
 ## 2026-08-21 — v0.1.1.0 candidate boundary: capture wins, reopen Regulation authority
 
 **Observe:** v0.1.0.14 broadened Hold eligibility correctly, but the final TS010 run still marched into blockage under the fixed 8 km/h Regulation. Hold did fire, but only after the regulated assembly physically decelerated below the cap, by which time blockage had begun.

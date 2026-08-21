@@ -1,3 +1,16 @@
+# v0.1.2.0 CANONICAL CANDIDATE — known issues / explicit limits
+
+- **Architecture/code gap is intentional:** the Resolution-Space Progression Envelope is documented but not implemented. Runtime still uses the inherited empirical 8 km/h D-0146 Resolution-Space Regulation cap.
+- **Exact Resolution Contingency Reserve percentage is unresolved calibration.** 90%, 75% and other values remain candidates; do not promote historical 0.90 automatically.
+- **Low constrained-participant progression at envelope admission remains a validation edge case.** If MT665 or another constrained participant is caught immediately after its own slow turn, Reality must determine whether current-speed anchoring needs refinement; do not pre-emptively invent a reference-speed estimator.
+- **Reverse-Created Resolution Reserve has no runtime implementation yet.** TS015 Condor's long reverse is the primary prior-scenario benchmark for eventual validation.
+- **Resolution-Space Recovery / Back-Out Recovery is architecture only.** Static blockage remains future work; `isBlocked` is not reverse authority.
+- **Passage-in-extenso remains deliberately parked** until the Resolution-Space tranche is implemented/validated.
+- Existing parked issues remain: Guide Development Non-Convergence after genuine productive commencement, D-0147 Courtesy Quantum/Exhaustion coupling, 80 m locality, guide/burden literals, Boundary Encroachment and remaining literal-audit items.
+- v0.1.2.0 is a candidate only until explicit owner declaration of its exact fingerprint.
+
+---
+
 # v0.1.1.0 CANONICAL CANDIDATE — known issues / explicit limits
 
 - **8 km/h D-0146 Resolution-Space Regulation is OPEN and under literal/provenance review.** It remains an empirical first-stage cap in the inherited runtime and is explicitly not generic sufficiency authority. The final v0.1.0.14 TS010 evidence showed that physical deceleration to the cap can consume Resolution Space before Hold becomes timely.

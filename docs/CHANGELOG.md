@@ -1,3 +1,20 @@
+# v0.1.2.0 CANONICAL CANDIDATE — Resolution-Space Conservation Architecture
+
+- Baseline: owner-declared canonical v0.1.1.0 (`10ad10c0eb5956fbd32f3e82408201513dec6073e72b758db4b6bf394e8316b3`; Git `5cd2ae0c768a1a771b817b5ed5879ca02745f9de`; 316 files).
+- Documentation/architecture and release identity only; no intentional traffic/planning/Control behavioural algorithm delta.
+- Records **Resolution-Space Recovery** as a generic Policeman/Reposition capability candidate when conservation has already failed; Back-Out Recovery may recover recently demonstrated clear space. No recovery implementation is added.
+- Records **Supportable Progression** and the **Resolution-Space Progression Envelope** as the replacement architecture for the fixed 8 km/h Resolution-Space Regulation authority.
+- Defines the envelope as a zero-terminal-progression policy trajectory over ordinary authorised Resolution Space after withholding a percentage **Resolution Contingency Reserve**. The policy acceleration parameter is not a physical braking model.
+- Requires whole-integer km/h Control caps; zero means Hold. Exact reserve percentage is deliberately unresolved calibration.
+- Records **Reverse-Created Resolution Reserve**: temporary positive separation created by the uncertain/protected participant is bonus reserve, not immediately spendable progression authority. Positive changed Reality may rebase; transient reverse/forward motion does not release/recreate the underlying purpose.
+- Clarifies that Resolution Space is not predicated on Passage Space. Conservation buys **Intent-Revelation Opportunity** until native continuation, Cooperative Passage or another supported resolution becomes positively knowable.
+- Retires manoeuvre-duration prediction and measured response/deceleration modelling from the selected direction; no field-area policy and no guessed replacement speed.
+- Leaves the inherited 8 km/h runtime unchanged and explicitly marks architecture/code alignment as the next implementation tranche.
+- Advances structural current-version assertions to 0.1.2.0 as release-identity maintenance only.
+- Candidate validation: 254/254 Lua behavioural, 96/96 structural, 25/25 RRS, 105/105 live Lua parse; XML/version/manifest clean; 316 files; deterministic byte-identical rebuild.
+
+---
+
 # v0.1.1.0 CANONICAL CANDIDATE — D-0146 Small-Field Architecture Alignment Plateau
 
 **Authority:** owner-declared canonical v0.1.0.0 remains authoritative pending explicit review of this candidate. v0.1.1.0 is derived from the tested v0.1.0.14 lineage and introduces **no intentional traffic/planning/Control behavioural change**; release identity, provenance and canonical-review records only are changed.

@@ -1,11 +1,11 @@
--- FS25_OuttaMyWay v0.1.1.0 CANONICAL CANDIDATE — cumulative D-0146 small-field architecture/code alignment over owner-declared canonical v0.1.0.0.
--- Diagnostic v0.1.0.1-.3 supplied evidence only; this implementation starts from canonical v0.1.0.0.
+-- FS25_OuttaMyWay v0.1.2.0 CANONICAL CANDIDATE — Resolution-Space Conservation architecture consolidation over owner-declared canonical v0.1.1.0.
+-- Traffic behaviour is unchanged from canonical v0.1.1.0; the Progression Envelope recorded in documentation is not implemented in this candidate.
 -- D-0147 now implements the agreed optional Bounded Infield Retreat courtesy hypothesis while retaining the validated v4.7.120 mechanical actuator substrate.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.1.1.0"
-OuttaMyWay.ARCHITECTURE_VERSION = "0.1.1.0"
+OuttaMyWay.VERSION = "0.1.2.0"
+OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000
@@ -197,7 +197,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
 OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.1.1.0 CANONICAL CANDIDATE — D-0146 SMALL-FIELD ALIGNMENT PLATEAU"
+OuttaMyWay.BUILD_LABEL = "0.1.2.0 CANONICAL CANDIDATE — RESOLUTION-SPACE ARCHITECTURE"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720
