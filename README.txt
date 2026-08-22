@@ -1,25 +1,39 @@
-FS25_OuttaMyWay v0.1.3.0 CANONICAL CANDIDATE — RESOLUTION-SPACE PROGRESSION ENVELOPE
+FS25_OuttaMyWay v0.1.4.0 CANONICAL CANDIDATE — COOPERATIVE PASSAGE CHECKPOINT
 
-Authoritative baseline remains owner-declared canonical v0.1.2.0 (`1d861caca5f6d06656c0fcd41b1c278c01ac7cda223af1fdf101203fe6e0e583`; Git `f841717285fb9a02d4dc8c0c469adbecd56cb38c`; 316 files) until explicit promotion. This candidate consolidates the live-validated 0.1.2.1/0.1.2.2 Resolution-Space tranche and introduces no additional behavioural algorithm change.
+Authoritative baseline: owner-declared canonical v0.1.3.0
+SHA-256: 818507fc054484c2fe1a92bd4f6147cc849516f892642c0169f9055788d41de9
+Git: 6e39cb443dd2cb313beac3ddf367f6521317947a
+Files: 317
 
-Validated behaviour:
-- D-0146 Situation owns the Resolution-Space obligation and roles; Control owns elastic magnitude.
-- 75% Resolution Contingency Reserve remains the current calibrated policy.
-- Supportable Progression is expressed as whole-integer km/h caps.
-- reverse-created separation is protected as Reverse-Created Resolution Reserve.
-- Role Migration rebases magnitude without manufacturing new capacity.
-- Magnitude Freeze is corrected for the lifetime of the sticky Commitment.
-- when ordinary allowance is exhausted while intent remains unresolved, Control retains 1 km/h Intent-Revelation Creep rather than Hold.
+Purpose of this candidate:
+- consolidate the cumulative v0.1.3.1-v0.1.3.7 Cooperative Passage development line into a reviewable checkpoint;
+- introduce no further traffic-behaviour algorithm after v0.1.3.7;
+- preserve successful Passage discoveries while explicitly retaining the unresolved TS009 safety failure as a known issue;
+- establish a clean authority boundary before continuing in a new engineering chat.
 
-Field validation:
-- TS010: successful envelope -> 1 km/h creep -> unchanged Cooperative Passage -> normal MT665 completion.
-- TS015: full successful completion.
-- TS016: successful relevant traffic behaviour; final terminal move intentionally unavailable after genuine Player Claim caused by briefly entering the completed vehicles.
+Field-supported progress carried forward:
+- Resolution-Space -> Passage authority handoff is immediate again; delayed physical Passage Entry lives inside Passage Approach;
+- Execution-Origin Capture prevents short guide targets becoming stale after settling/configuration;
+- Hold-Witness Deadlock is corrected: active Passage Hold + physical settlement is sufficient, regardless of causal GIANTS/OMW veto provenance;
+- Nominal ~1 m Passage Clearance is a Crossing-Window contract; Development/Recovery require non-contact, not the full nominal margin;
+- GIANTS directional width/length evidence substantially improves Condor/Patriot clearance planning versus isotropic component spheres;
+- directional multi-member geometry produced successful TS016 and TS010 passages, including generic unilateral displacement and materially reduced agronomic debt.
 
-Explicitly parked:
-- TS010's later <=60 m locality/projection blockage.
-- possible timeout/reset semantics for abandoned post-completion Player Claim.
-- the observed ~18-second pacing stutter, for which no periodic OuttaMyWay log correlate was found.
-- Cooperative Passage geometry and literal review.
+Known unresolved safety issue:
+- TS009 front/rear SaMASZ mower combination versus S416 was authorised as a straight RETAIN_CURRENT Passage with claimed +0.87 m reserve, then physically collided/tangled. This candidate does NOT claim that current multi-member negative-clearance authority is safe for arbitrary complex assemblies.
+- the same TS009 observation reported assemblyMembers=2 for a physical tractor + front mower + rear mower combination; the meaning/cause of that membership result is unresolved and must be investigated before widening Passage further.
 
-Next selected activity after canonicalisation is Cooperative Passage in extenso, beginning from the architectural problem rather than replacement constants.
+Selected next architecture (NOT implemented here):
+- Transit-First, Reality-Verified Passage.
+- Passage attempts a plausible Transit preparation where available unless positive configuration knowledge excludes it; missing allowUnfoldingByAI metadata is not a prohibition.
+- the actual achieved configuration, not an assumed XML/API capability, owns subsequent Passage geometry.
+- failure to achieve Transit does not justify hypothetical compact geometry; replan conservatively from verified Reality.
+- defer fold-vs-don't-fold optimisation/productive-Passage sophistication until the fail-safe Transit-first path is sound.
+
+Still parked:
+- exact finishing orientation / Restoration Alignment;
+- straight-reverse agronomic restoration and how much debt to recover;
+- 8 km/h Passage guide speed;
+- deeper candidate burden/configuration economy;
+- offset-plough challenge until complex-assembly membership/coverage is understood;
+- TS010 <=60 m terminal/locality literal and other previously parked literal work.

@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.3.0 CANONICAL CANDIDATE — validated D-0155 Resolution-Space Progression Envelope + Intent-Revelation Creep.
+-- FS25_OuttaMyWay v0.1.4.0 CANONICAL CANDIDATE — Cooperative Passage checkpoint; no new behavioural algorithm change.
 -- modDesc.xml loads only this file. Historical archived modules are never sourced.
 local modDirectory=g_currentModDirectory or ""
 local modules={

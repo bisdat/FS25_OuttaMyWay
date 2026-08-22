@@ -1,3 +1,128 @@
+# v0.1.4.0 CANONICAL CANDIDATE — Cooperative Passage architecture checkpoint
+
+**Authority:** owner-declared canonical v0.1.3.0 (`818507fc054484c2fe1a92bd4f6147cc849516f892642c0169f9055788d41de9`; Git `6e39cb443dd2cb313beac3ddf367f6521317947a`; 317 files) is the exact implementation baseline. v0.1.4.0 consolidates the cumulative v0.1.3.1-v0.1.3.7 Passage line with **no additional behavioural algorithm change after v0.1.3.7**.
+
+**Validated/corrected Passage results carried forward:** immediate Resolution-to-Passage Commitment succession with delayed physical Entry inside Passage Approach; Execution-Origin Capture after settlement/configuration; Hold-Witness settlement correction; Nominal Passage Clearance scoped to the physical Crossing Window; Passage-specific GIANTS directional width/length evidence; generic member directional-envelope experiments; bounded rejected-candidate telemetry; and preservation of conservative DISC interaction evidence outside Passage planning.
+
+**Field evidence:** TS010 and TS015/TS016 demonstrated successful Passage Approach and bounded Passage Excursions. Condor/Patriot directional geometry reduced the inflated sphere-derived crossing gap toward the intended approximately 1 m physical relationship. TS016 produced four successful passages including opposite unilateral allocations for the same Condor/Patriot pair. TS010 generic multi-member directional geometry later produced small deployed-mower excursions and materially less agronomic debt.
+
+**Known negative evidence — not waived by canonicalisation:** TS009 with S416 and the MF 7S.210 + SaMASZ front/rear mower combination was planned as a straight `RETAIN_CURRENT` Passage with `deficit=0` and claimed approximately `+0.87 m` reserve, but the assemblies physically collided and completed tangled. The log also reported `assemblyMembers=2` for a physical tractor/front-mower/rear-mower combination. The exact cause of that membership/coverage discrepancy is unresolved; do not promote a speculative root cause into architecture.
+
+**Selected simplification for the next tranche — not implemented in this candidate:** **Transit-First, Reality-Verified Passage.** Attempt plausible Transit preparation at Passage Entry unless positive configuration knowledge excludes that mechanism; missing AI-capability metadata is unknown, not prohibition. Verify the actual achieved configuration before granting compact-geometry authority. If Transit is not achieved, replan from verified conservative Reality rather than bluffing with assumed compact dimensions. Fold-vs-don't-fold optimisation and productive-Passage configuration economy are parked until this fail-safe baseline is sound.
+
+**Outstanding Passage work:** investigate the TS009 `assemblyMembers=2` result and Physical Assembly completeness; define fail-safe negative-clearance authority for complex assemblies; retain exact finishing orientation/Restoration Alignment as open; agronomic straight-reverse restoration remains unimplemented; 8 km/h guide speed remains inherited calibration; offset-plough validation is deferred until complex assembly membership is trustworthy.
+
+**Release identity:** canonical BUILD resets to `0`; runtime/test identity advances from v0.1.3.7 TEST to v0.1.4.0 CANONICAL CANDIDATE only. This is a checkpoint candidate with known issues, not a claim that Cooperative Passage is complete.
+
+---
+
+# v0.1.3.7 TEST — Crossing-Window Clearance alignment
+
+**Authority:** exact owner-declared canonical v0.1.3.0 (`818507fc054484c2fe1a92bd4f6147cc849516f892642c0169f9055788d41de9`; Git `6e39cb443dd2cb313beac3ddf367f6521317947a`; 317 files) remains the implementation baseline. v0.1.3.7 is cumulative over the validated/corrective v0.1.3.1-v0.1.3.6 Passage work.
+
+**D-0165 correction — Global Clearance Residue:** Passage Candidate pair-sweep validation still required the full nominal 1 m Passage clearance over Development, Crossing Window and Recovery even though the settled architecture defines Development as creating the clearance and Recovery as relinquishing it after positive crossing. Field telemetry on successful v0.1.3.6 TS010 passages showed fresh candidates being rejected with `PAIR_SPECIFIC_NOMINAL_CLEARANCE_NOT_SUPPORTED` while the already-committed geometry completed successfully.
+
+**Targeted alignment:** represented non-contact remains mandatory throughout Development and Recovery; the full nominal Passage clearance is required only from Crossing Window Entry through Crossing Window Exit. The nominal 1 m policy value itself is unchanged. Pair sweep now records overall, outside-window and Crossing-Window minimum clearance separately.
+
+**Scope deliberately unchanged:** generic directional member-union envelopes, Passage-Side Clearance Asymmetry, Passage Selection/Approach/Entry, Hold-Witness settlement correction, configuration policy, 8 km/h guide speed, Native Reacquisition, finishing orientation and absence of agronomic reverse restoration are unchanged.
+
+**Live objective:** validate the corrected invariant in the new larger-field scenario, then continue generic mixed/offset-assembly Passage testing without carrying a known false-rejection rule.
+
+---
+
+# v0.1.3.6 TEST — Mechanical Foldability Leakage correction + Passage rejection telemetry
+
+**Authority:** exact owner-declared canonical v0.1.3.0 (`818507fc054484c2fe1a92bd4f6147cc849516f892642c0169f9055788d41de9`; Git `6e39cb443dd2cb313beac3ddf367f6521317947a`; 317 files) remains the implementation baseline. v0.1.3.6 is cumulative over the validated/corrective v0.1.3.1-v0.1.3.5 Passage work.
+
+**D-0164 correction — Mechanical Foldability Leakage:** v0.1.3.5 incorrectly allowed raw GIANTS `spec_foldable` to suppress member directional Passage metadata unless the member was physically folded. This bypassed the already-settled Passage Configuration Authority distinction between mechanical foldability and AI-reachable productive configuration. Directional member evidence now remains admissible in the current productive pose when GIANTS explicitly marks the folding mechanism `allowUnfoldingByAI=false`; otherwise the conservative folded/non-foldable applicability rule remains. This is generic reachability evidence, not an FW212 vehicle-name exception.
+
+**Diagnostic addition — bounded Progressive Passage rejection telemetry:** when an Established Conflict has no supported local Passage arrangement, Candidate Support now logs a deduplicated `D0146_PASSAGE_REJECTED` summary classifying rejected candidates as guide/geometry, Field World, pair sweep, third-party or other rejection. No Candidate acceptance condition is changed by the telemetry.
+
+**Scope deliberately unchanged:** the generic directional member-union envelope, nominal 1 m Passage clearance, Passage Approach/Entry timing, 8 km/h guide speed, Hold-Witness settlement correction, configuration-selection policy, guide geometry, Native Reacquisition and absence of agronomic reverse restoration remain unchanged. **Global Clearance Residue and Member-Union Collapse are observations only and are not corrected in this TEST.**
+
+**Live objective:** rerun TS010. If Passage appears, Mechanical Foldability Leakage was a dominant blocker. If it still fails, the new rejection telemetry should identify the next failing Candidate constraint without speculative multi-change repair.
+
+---
+
+# v0.1.3.5 TEST — Generic directional member-union Passage envelope
+
+**Authority:** exact owner-declared canonical v0.1.3.0 (`818507fc054484c2fe1a92bd4f6147cc849516f892642c0169f9055788d41de9`; Git `6e39cb443dd2cb313beac3ddf367f6521317947a`; 317 files) remains the implementation baseline. v0.1.3.5 is cumulative over the validated v0.1.3.4 Passage work.
+
+**Field evidence selecting this experiment:** v0.1.3.3/0.1.3.4 proved GIANTS `base.size` width/length materially improves single-member Condor/Patriot Passage geometry, while mixed S416 passages still used the multi-member DISC fallback and could look much closer physically than their claimed reserve. The existing architecture already contains Facing Clearance Extent, Passage-Side Clearance Asymmetry and diagnostic member rectangles; this TEST completes that lineage rather than inventing a vehicle-specific path.
+
+**D-0163 experiment — Directional Physical Assembly Envelope:** each assembly member contributes a bootstrap-cached directional rectangle when its GIANTS width/length metadata is applicable to the observed Passage configuration. Rectangles are transformed through the member's actual pose and unioned in the operational worker frame, preserving separate left/right/front/rear extents. If a member lacks applicable directional metadata, that member alone contributes its conservative represented-DISC bounds. If no member provides directional metadata, Passage retains the existing whole-assembly DISC path.
+
+**Planner use:** Passage-facing extent, Crossing Window and pair sweep can consume the generic asymmetric assembly envelope. The conservative DISC representation remains untouched for interaction/conflict evidence and third-party constraints. Nominal clearance remains 1 m; no articulation sweep margin is added before Reality requires it.
+
+**Isolation:** Passage Selection/Approach/Entry, 8 km/h guide speed, configuration/folding policy, v0.1.3.4 Hold-Witness settlement correction, Native Reacquisition, agronomic restoration and D-0147 are unchanged.
+
+**Validation:** bench tests cover an offset tractor+implement member union and a hybrid rectangle+DISC member fallback. Field sequence is TS016 -> TS010 -> offset plough if the first two remain credible.
+
+---
+
+
+# v0.1.3.4 TEST — Hold-Witness settlement correction
+
+**Authority:** owner-declared canonical v0.1.3.0 (`818507fc054484c2fe1a92bd4f6147cc849516f892642c0169f9055788d41de9`; Git `6e39cb443dd2cb313beac3ddf367f6521317947a`; 317 files) remains the implementation baseline. This TEST is cumulative over the validated/corrected v0.1.3.3 Passage line and changes one settlement proof only.
+
+**Field discovery — Hold-Witness Deadlock:** TS016 Condor–S416 reached Passage Entry with both participants physically stationary, but Condor had already been refused native continuation by GIANTS before Passage Hold was applied. `Prototype22PermissionGate` therefore correctly recorded zero OuttaMyWay veto calls. `CooperativePassageControl:_allStopped()` incorrectly treated that missing causal witness as proof that settling had not occurred, so `CONFIGURATION_START` was never reached and Condor never folded.
+
+**Targeted correction:** D-0146 Passage settling now requires (1) Passage Hold authority still owned for each participant and (2) actual speed at/below the existing 0.25 km/h settlement threshold. It no longer requires OuttaMyWay to prove that its Hold was the causal reason the participant stopped. GIANTS-native refusal remains respected; no native refusal is overridden.
+
+**Scope deliberately unchanged:** v0.1.3.3 directional Passage envelopes and DISC fallback, nominal 1 m clearance, Passage Approach/Entry timing, Execution-Origin Capture, guide geometry, 8 km/h movement, configuration policy, Native Reacquisition and no Agronomic Restoration reverse all remain unchanged.
+
+**Validation target:** reproduce the previously unreachable state in bench tests with `isHolding=true`, physical speed zero and PermissionGate call count zero; settling must be accepted. TS016 Condor–S416 is the live regression target.
+
+---
+
+# v0.1.3.3 TEST — GIANTS Directional Passage Envelope
+
+**Authority:** exact owner-declared canonical v0.1.3.0 (`818507fc054484c2fe1a92bd4f6147cc849516f892642c0169f9055788d41de9`; Git `6e39cb443dd2cb313beac3ddf367f6521317947a`; 317 files) remains the implementation baseline. This TEST is cumulative over the successful v0.1.3.2 Passage Approach / Execution-Origin corrections.
+
+**Field evidence selecting this experiment:** TS015 v0.1.3.2 completed Passage successfully, but the planned pair contact threshold was ~9.22 m and the visible gap was several metres despite a nominal 1 m policy clearance. Condor/Patriot source XML declares directional base sizes of 3.5 x 11.1 m and 3.9 x 9.0 m. The component-DISC representation is therefore conservatively useful for interaction evidence but materially inflated for directional Passage width.
+
+**Limited behavioural change:** Assembly Representation reads GIANTS `vehicle.base.size` metadata once at bootstrap when available. For a single-member assembly, that metadata is exposed to Passage planning only for a stably folded configuration (or a non-foldable single-member assembly). Passage then uses the coarse directional width/length for pair contact, Crossing Window and pair-sweep validation. Existing represented DISCs remain the fallback and continue to own conservative positive-interaction / third-party evidence.
+
+**Isolation:** nominal Passage clearance remains 1 m; existing configuration policy, Passage Approach, Execution-Origin Capture, Development formula, 8 km/h guide speed, Recovery/Native Reacquisition and D-0147 are unchanged. Attached multi-member assemblies such as TS010 remain on DISC fallback in this TEST. No agronomic reverse restoration is added.
+
+**Expected TS015 discriminator:** when both sprayers select their natively observed folded profiles and base-size metadata is reachable, the log should show `envelopeBasis=GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES`, pair contact near 3.70 m and required separation near 4.70 m rather than ~10.22 m.
+
+---
+
+# v0.1.3.2 TEST — Passage Approach authority handoff + Execution-Origin Capture
+
+**Authority:** exact owner-declared canonical v0.1.3.0 (`818507fc054484c2fe1a92bd4f6147cc849516f892642c0169f9055788d41de9`; Git `6e39cb443dd2cb313beac3ddf367f6521317947a`; 317 files) remains the implementation baseline. v0.1.3.2 is cumulative over the rejected v0.1.3.1 field experiment.
+
+**Field evidence from v0.1.3.1:** delayed physical Passage Entry worked, but Candidate Support deliberately withheld the already-supported Cooperative Passage candidate and retained D-0155 Resolution-Space Regulation until the Entry Boundary. In TS010 this kept the mower at the validated 1 km/h Intent-Revelation Creep after Passage was already known while MT665 continued natively, moving the encounter strongly toward the mower. After Entry, stopping overshoot moved MT665 beyond the first short Development waypoint, causing forward-only point pursuit to orbit.
+
+**Correction — Passage Commitment Deferral withdrawn:** Passage Selection again immediately publishes/commits Cooperative Passage, restoring the v0.1.3.0 Resolution-to-Passage handoff. Delayed physical Entry now lives inside Cooperative Passage Control as `PASSAGE_APPROACH`; D-0155 is settled/superseded as soon as Passage is selected. During Passage Approach neither participant is Held by Passage; native productive progression continues until the Candidate-owned longitudinal Entry Boundary is reached.
+
+**Correction — Execution-Origin Capture:** after Entry settling and any required configuration transition, Control captures the participants' actual current poses and rebases the Candidate-supplied excursion from those origins before starting the first guide gate. The Clearance Deficit, Development/Crossing-Window/Recovery geometry and side allocation are unchanged; only absolute execution origin is refreshed from Reality. This removes the stale-behind-waypoint failure without increasing Development to hide stopping overshoot.
+
+**Unchanged experiment:** non-negative Clearance Deficit, represented longitudinal Crossing Window, Recovery to native lateral axis, existing configuration policy, 8 km/h Passage movement, selective restore and Native Reacquisition remain as in v0.1.3.1. Agronomic reverse restoration, configuration economy and one-vs-both burden optimisation remain out of scope.
+
+**Bench validation target:** Passage selected before Entry must publish `REPOSITION`, same-Commitment D-0155 succession must settle at Selection even at 60 m, `PASSAGE_APPROACH` must not Hold before the Entry Boundary, and rebased short Development targets must remain forward-reachable after stopping overshoot. TS010 is again the first field test.
+
+---
+
+# v0.1.3.1 TEST — Passage Excursion Envelope
+
+**Authority:** exact owner-declared canonical v0.1.3.0 (`818507fc054484c2fe1a92bd4f6147cc849516f892642c0169f9055788d41de9`; Git `6e39cb443dd2cb313beac3ddf367f6521317947a`; 317 files) is the implementation baseline. This is the first field experiment after the Passage in-extenso architecture review.
+
+**Selected hypothesis:** preserve existing Passage admission, D-0155 Resolution-Space succession, configuration selection, 8 km/h guide speed, restoration and Native Reacquisition while replacing only the inherited long offset choreography. Passage Selection may precede physical Passage Entry; until Entry is required the existing Resolution-Space action remains authoritative.
+
+**Passage Excursion:** Candidate derives a non-negative Clearance Deficit from the Passage-configured represented pair. Zero deficit creates no lateral excursion. A positive deficit is developed over a shallow bounded approach, held through a **Crossing Window** derived from represented longitudinal assembly extents, then recovered toward the native lateral axis. The historical P23 `12 m / +8 m / 12 m` guide distances are retired from active geometry; their evidence survives only as provenance for a shallow forward-only steering donor.
+
+**Passage Entry:** Entry is derived from current longitudinal pair separation, represented front extents, required Development and a provisional 3 m control allowance. Passage may therefore be selected before physical configuration/guide control begins. The allowance is an implementation calibration for live control acquisition, not physical braking distance or architecture.
+
+**Implementation discovery — Longitudinal Entry Separation:** Passage Entry/Crossing reasoning must use separation projected onto the established opposed trajectories, not Euclidean centre distance. With an already-large lateral offset, Euclidean separation can remain larger than a legitimate short Entry boundary and would prevent a zero-deficit straight passage from ever entering.
+
+**Scope deliberately unchanged:** Passage current-motion/admission evidence, D-0155 1 km/h Intent-Revelation Creep, existing configuration-first policy, burden ordering, forward-only point-pursuit, 8 km/h Passage movement, gate/control donors, selective configuration restoration, joint native handoff and D-0147 remain unchanged. **Agronomic reverse restoration is not implemented in this TEST.** The first objective is to materially reduce intervention-created missed work by delaying Entry and shortening the controlled excursion, not yet to eliminate all agronomic debt.
+
+**Bench validation target:** focused tests require (1) Selection before Entry retaining D-0155, (2) zero Clearance Deficit producing straight Passage, (3) positive deficit producing Development -> physical Crossing Window -> Recovery, and (4) unchanged Resolution-Space -> Passage succession. TS010 is the first live test; TS015/TS016 follow only if the geometry is promising.
+
+---
+
 # v0.1.3.0 CANONICAL CANDIDATE — Resolution-Space Progression Envelope
 
 **Authority:** owner-declared canonical v0.1.2.0 (`1d861caca5f6d06656c0fcd41b1c278c01ac7cda223af1fdf101203fe6e0e583`; Git `f841717285fb9a02d4dc8c0c469adbecd56cb38c`; 316 files) is the exact repository baseline. v0.1.3.0 consolidates the field-validated v0.1.2.1/v0.1.2.2 D-0155 work with no additional behavioural algorithm change.

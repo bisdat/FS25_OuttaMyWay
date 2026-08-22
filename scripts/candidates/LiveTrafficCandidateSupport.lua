@@ -1,3 +1,4 @@
+-- FS25_OuttaMyWay v0.1.3.6 TEST — D-0164 Passage rejection telemetry.
 -- FS25_OuttaMyWay v0.1.1.0 CANONICAL CANDIDATE — D-0146 Resolution-Space Candidate contract inherited unchanged from v0.1.0.14 TEST.
 -- FS25_OuttaMyWay v4.7.112 CANONICAL CANDIDATE — v4.7.109 D-0146 Candidate behaviour preserved; D-0147 is architecture-only.
 --
@@ -65,7 +66,7 @@ local function supportedCooperativePassage(picture)
 end
 
 function Support.new(identityRegistry,epochSequence,passiveSupport)
-    return setmetatable({identities=identityRegistry,epochs=epochSequence,passiveSupport=passiveSupport,publishedCount=0,lastStatus="PASSIVE",lastCooperativeTraceKey=nil},Support)
+    return setmetatable({identities=identityRegistry,epochs=epochSequence,passiveSupport=passiveSupport,publishedCount=0,lastStatus="PASSIVE",lastCooperativeTraceKey=nil,lastPassageRejectionTraceKey=nil},Support)
 end
 
 -- Retained API for LiveRuntimeCoordinator compatibility.  D-0143 no longer
@@ -276,7 +277,8 @@ local function makeD0146PassageCandidate(pictureId,pictureValues,plan,governingR
                 subjectStartX=plan.subjectStartX,subjectStartZ=plan.subjectStartZ,otherStartX=plan.otherStartX,otherStartZ=plan.otherStartZ,
                 initialSeparationM=plan.separationM,trajectoryDot=plan.trajectoryDot,
                 localPassageSpace=plan.localPassageSpace,
-                passageArrangement=plan.passageArrangement,passageGuide=plan.passageGuide,passageConfiguration=plan.passageConfiguration,progressiveSearch=plan.progressiveSearch,
+                passageArrangement=plan.passageArrangement,passageGuide=plan.passageGuide,passageConfiguration=plan.passageConfiguration,
+                passageEntry=plan.passageEntry,passageExcursion=plan.passageExcursion,progressiveSearch=plan.progressiveSearch,
                 controlProfile=plan.controlProfile
             }
         },
@@ -770,6 +772,32 @@ local function attachGuardedRecovery(self,picture,snapshot,guard)
     return OuttaMyWay.OperationalPicture.new(values)
 end
 
+
+local function passageRejectionTelemetry(allRejected)
+    if type(allRejected)~="table" then return nil,nil end
+    local geometry,field,sweep,third,other,total=0,0,0,0,0,0
+    local details={}
+    local conflictId,topReason=nil,nil
+    for _,conflict in ipairs(allRejected) do
+        conflictId=conflictId or conflict.conflictIdentity
+        topReason=topReason or conflict.reason
+        for _,candidate in ipairs(conflict.rejected or {}) do
+            total=total+1
+            local reason=nil
+            if candidate.guideReason~=nil then geometry=geometry+1; reason="GUIDE:"..tostring(candidate.guideReason)
+            elseif candidate.fieldReason~=nil then field=field+1; reason="FIELD:"..tostring(candidate.fieldReason)
+            elseif candidate.sweepReason~=nil then sweep=sweep+1; reason="SWEEP:"..tostring(candidate.sweepReason)
+            elseif candidate.thirdPartyReason~=nil then third=third+1; reason="THIRD:"..tostring(candidate.thirdPartyReason)
+            else other=other+1; reason="OTHER" end
+            if #details<6 then details[#details+1]=tostring(candidate.index or "?").."="..reason end
+        end
+    end
+    local signature=table.concat({tostring(conflictId),tostring(topReason),geometry,field,sweep,third,other,total,table.concat(details,"|")},":")
+    local text=string.format("conflict=%s reason=%s candidates=%d geometry=%d field=%d sweep=%d thirdParty=%d other=%d details=%s",
+        tostring(conflictId or "n/a"),tostring(topReason or "n/a"),total,geometry,field,sweep,third,other,#details>0 and table.concat(details,",") or "none")
+    return signature,text
+end
+
 local function followerMatchesCooperative(follower,record)
     if type(follower)~="table" or type(record)~="table" then return false end
     local ids={}
@@ -794,8 +822,13 @@ function Support:attach(picture,snapshot)
     -- Candidate path is retained only as disabled historical/mechanical evidence
     -- when the D-0146 active path is explicitly switched off.
     if OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED==true then
-        local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
+        local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
         if plan==nil then
+            local rejectionKey,rejectionText=passageRejectionTelemetry(rejected)
+            if rejectionKey~=nil and rejectionKey~=self.lastPassageRejectionTraceKey then
+                self.lastPassageRejectionTraceKey=rejectionKey
+                logInfo("D0146_PASSAGE_REJECTED %s",rejectionText)
+            end
             local actionSpace,actionReason=d0146ActionSpaceRecord(picture)
             if actionSpace~=nil then return attachD0146ActionSpace(self,picture,snapshot,actionSpace) end
             if actionReason~=nil then self.lastStatus=actionReason; return self.passiveSupport:attach(picture,snapshot) end
@@ -804,9 +837,15 @@ function Support:attach(picture,snapshot)
             self.lastStatus=reason or "NO_SUPPORTED_D0146_LOCAL_PASSAGE"
             return self.passiveSupport:attach(picture,snapshot)
         end
+        self.lastPassageRejectionTraceKey=nil
         if follower~=nil and not followerMatchesCooperative(follower,{assemblyIds=plan.assemblyIds or {}}) then
             return attachFollowerBoundary(self,picture,snapshot,follower)
         end
+
+        -- D-0159 corrective boundary: Passage Selection immediately restores the
+        -- proven v0.1.3.0 Resolution-to-Passage authority handoff.  Physical
+        -- Passage Entry may still be delayed, but that delay is owned inside
+        -- Cooperative Passage execution rather than by retaining D-0155.
 
         local values=OuttaMyWay.ValueRecord.toTable(picture)
         local pictureId=self.identities:issue("PICTURE")
@@ -820,11 +859,11 @@ function Support:attach(picture,snapshot)
             local arrangement=plan.passageArrangement or {}; local guide=plan.passageGuide or {}; local sweep=guide.pairSweepSupport or {}
             local config=plan.passageConfiguration or {}; local participants=config.participants or {}
             local c1=participants[1] or {}; local c2=participants[2] or {}
-            logInfo("D0146_PASSAGE_SUPPORTED conflict=%s separation=%.2f lateral=%.2f contact=%.2f nominal=%.2f required=%.2f reserve=%+.2f arrangement=%s offsets=%+.2f/%+.2f burden=%.2f configuration=%s/%s release=%.2f profiles=%s/%s guide=%s gates=%d minimumRepresentedClearance=%.2f searchIndex=%s",
-                tostring(plan.conflictIdentity),tonumber(plan.separationM) or -1,tonumber(arrangement.currentLateralSeparationM) or -1,tonumber(arrangement.physicalContactThresholdM) or -1,tonumber(arrangement.nominalInterAssemblyClearanceM) or -1,tonumber(arrangement.policyRequiredSeparationM) or -1,tonumber(arrangement.currentPolicyReserveM) or -1,
-                tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tonumber(arrangement.combinedLateralBurdenM) or 0,
+            logInfo("D0146_PASSAGE_SELECTED conflict=%s separation=%.2f entryReady=%s entryBoundary=%.2f lateral=%.2f contact=%.2f nominal=%.2f required=%.2f reserve=%+.2f envelopeBasis=%s sweepBasis=%s crossingBasis=%s arrangement=%s offsets=%+.2f/%+.2f deficit=%.2f configuration=%s/%s release=%.2f profiles=%s/%s guide=%s gates=%d development=%.2f crossingForward=%.2f recovery=%.2f minimumRepresentedClearance=%.2f searchIndex=%s",
+                tostring(plan.conflictIdentity),tonumber(plan.separationM) or -1,tostring(plan.passageEntry and plan.passageEntry.ready==true),tonumber(plan.passageEntry and plan.passageEntry.boundarySeparationM) or -1,tonumber(arrangement.currentLateralSeparationM) or -1,tonumber(arrangement.physicalContactThresholdM) or -1,tonumber(arrangement.nominalInterAssemblyClearanceM) or -1,tonumber(arrangement.policyRequiredSeparationM) or -1,tonumber(arrangement.currentPolicyReserveM) or -1,
+                tostring(arrangement.directionalPassageEnvelopeBasis or "DISC_FALLBACK"),tostring(sweep.supportBasis or "n/a"),tostring(plan.passageExcursion and plan.passageExcursion.crossingWindowBasis or "n/a"),tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tonumber(plan.passageExcursion and plan.passageExcursion.clearanceDeficitM) or 0,
                 tostring(c1.mode or "n/a"),tostring(c2.mode or "n/a"),tonumber(config.totalConfigurationReleasedSpaceM) or 0,tostring(c1.expectedCompactConfigurationProfileId or c1.currentConfigurationProfileId or "n/a"),tostring(c2.expectedCompactConfigurationProfileId or c2.currentConfigurationProfileId or "n/a"),
-                tostring(guide.identity),#(guide.gates or {}),tonumber(sweep.minimumRepresentedClearanceM) or -1,tostring(plan.progressiveSearch and plan.progressiveSearch.selectedIndex or "n/a"))
+                tostring(guide.identity),#(guide.gates or {}),tonumber(plan.passageExcursion and plan.passageExcursion.developmentDistanceM) or 0,tonumber(plan.passageExcursion and plan.passageExcursion.crossingWindowForwardPerParticipantM) or 0,tonumber(plan.passageExcursion and plan.passageExcursion.recoveryDistanceM) or 0,tonumber(sweep.minimumRepresentedClearanceM) or -1,tostring(plan.progressiveSearch and plan.progressiveSearch.selectedIndex or "n/a"))
         end
         local specification=makeD0146PassageCandidate(pictureId,values,plan,governingRequirementKey)
         values.candidateSupportEvidence={

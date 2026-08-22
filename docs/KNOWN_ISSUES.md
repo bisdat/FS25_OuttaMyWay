@@ -1,3 +1,18 @@
+# v0.1.4.0 CANONICAL CANDIDATE — known issues / explicit limits
+
+- **TS009 complex-mower Passage collision is OPEN and safety-relevant.** S416 versus MF 7S.210 + SaMASZ front/rear mower was approved as a straight `RETAIN_CURRENT` Passage with `deficit=0` and approximately `+0.87 m` claimed reserve, then physically collided/tangled. Do not treat current arbitrary complex-assembly directional negative-clearance authority as validated.
+- **Physical Assembly membership anomaly is OPEN.** The TS009 physical tractor/front-mower/rear-mower combination logged `assemblyMembers=2`. The cause is unresolved; do not silently attribute it to one missing implement or one API until evidence establishes that.
+- **Transit-First, Reality-Verified Passage is selected architecture but NOT implemented.** Runtime remains v0.1.3.7 behaviour, including retained-current Passage candidates where the current configuration planner supports them.
+- **Missing AI-capability metadata is not prohibition.** SaMASZ fold XML lacks `allowUnfoldingByAI` while GIANTS AI can still fold the implements. Conversely, raw mechanical `spec_foldable` does not prove a productive AI Passage configuration (FW212 crane evidence).
+- **Directional geometry remains Passage-specific.** Conservative DISC representation still owns positive interaction evidence. The boundary for trustworthy negative-clearance claims from member directional geometry needs strengthening for complex assemblies.
+- **Finishing orientation remains permissive.** Native Reacquisition is position-driven; `Axis Recovery != Orientation Recovery`. Restoration Alignment is required before any future straight-reverse debt recovery.
+- **Agronomic restoration is not implemented.** Late Passage Entry and smaller excursions reduce missed work, but no bounded straight reverse currently revisits remaining Passage-created debt.
+- **8 km/h Passage guide speed remains inherited calibration** and has not been re-derived.
+- Existing parked issues remain, including the TS010 `<=60 m` terminal/locality literal, D-0147 Courtesy Quantum/Exhaustion coupling, Boundary Encroachment and remaining literal/provenance work.
+- v0.1.4.0 is a candidate only until explicit owner declaration of its exact fingerprint.
+
+---
+
 # v0.1.2.0 CANONICAL CANDIDATE — known issues / explicit limits
 
 - **Architecture/code gap is intentional:** the Resolution-Space Progression Envelope is documented but not implemented. Runtime still uses the inherited empirical 8 km/h D-0146 Resolution-Space Regulation cap.

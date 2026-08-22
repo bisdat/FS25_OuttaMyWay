@@ -171,6 +171,30 @@ function Clearance.lateralSupportFromRelativeDiscs(discs,rightX,rightZ)
     return {minOffsetM=minimum,maxOffsetM=maximum,physicalPrimitiveCount=count},nil
 end
 
+
+function Clearance.longitudinalSupportFromRelativeDiscs(discs,forwardX,forwardZ)
+    if type(discs)~="table" or not finite(forwardX) or not finite(forwardZ) then return nil,"RELATIVE_DISC_OR_LONGITUDINAL_AXIS_UNAVAILABLE" end
+    local length=math.sqrt(forwardX*forwardX+forwardZ*forwardZ)
+    if length<=0.0001 then return nil,"LONGITUDINAL_AXIS_UNAVAILABLE" end
+    forwardX,forwardZ=forwardX/length,forwardZ/length
+    local minimum,maximum,count=nil,nil,0
+    for _,disc in ipairs(discs) do
+        local dx,dz,radius=tonumber(disc.dx),tonumber(disc.dz),tonumber(disc.radius)
+        if finite(dx) and finite(dz) and finite(radius) and radius>0 then
+            local offset=dx*forwardX+dz*forwardZ
+            minimum=minimum==nil and offset-radius or math.min(minimum,offset-radius)
+            maximum=maximum==nil and offset+radius or math.max(maximum,offset+radius)
+            count=count+1
+        end
+    end
+    if count<1 then return nil,"RELATIVE_DISC_GEOMETRY_EMPTY" end
+    return {
+        minOffsetM=minimum,maxOffsetM=maximum,
+        frontExtentM=math.max(0,maximum),rearExtentM=math.max(0,-minimum),
+        physicalPrimitiveCount=count
+    },nil
+end
+
 function Clearance.radialReserveFromRelativeDiscs(discs)
     if type(discs)~="table" then return nil end
     local reserve,count=0,0

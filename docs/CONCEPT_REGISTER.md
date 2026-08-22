@@ -1,3 +1,74 @@
+## v0.1.4.0 checkpoint concepts
+
+**Transit-First, Reality-Verified Passage** — simplified Passage configuration policy selected after the v0.1.3.x experiments. Passage requests a plausible Transit preparation where available unless positive knowledge excludes it, then derives geometry only from the state Reality actually achieved. Missing AI-capability metadata is not prohibition. A failed/unavailable Transit transition causes conservative replanning, not assumed compact geometry.
+
+**Configuration Optimisation Deferral** — fold-vs-don't-fold and productive-Passage candidate economy remain possible future refinements but are not prerequisites for the fail-safe Passage baseline. Late Passage Entry already removes much of the historical agronomic debt without requiring configuration optimisation.
+
+**Complex-Assembly Membership Gap (open observation)** — TS009 reported `assemblyMembers=2` for an observed tractor + front mower + rear mower physical combination. A straight retained-current Passage based on the available directional envelope later collided/tangled. The observation proves an authority gap but does not yet prove whether member discovery, membership interpretation, geometry applicability, or another representation layer is the root cause.
+
+---
+
+## v0.1.3.7 discovery — Global Clearance Residue
+
+**Global Clearance Residue** — an obsolete implementation invariant that required full Nominal Passage Clearance throughout Development, Crossing Window and Recovery after the architecture had already limited that clearance requirement to the physical Crossing Window. Reality exposed the residue when successful committed v0.1.3.6 passages coexisted with fresh Candidate rejections for insufficient nominal clearance on the slopes.
+
+**Resolution:** non-contact outside the Crossing Window; full nominal clearance inside it.
+
+## v0.1.3.6 discovery — Mechanical Foldability Leakage
+
+**Mechanical Foldability Leakage:** raw GIANTS mechanical foldability bypasses the established AI-Reachable Productive Configuration abstraction and incorrectly changes Passage representation eligibility. Representation must consume configuration-reachability evidence rather than treating every fold animation as a productive compaction state.
+
+## v0.1.3.5 concept completion — Directional Physical Assembly Envelope
+
+**Directional Physical Assembly Envelope:** the Passage-planning union of member-specific directional extents in the operational assembly frame, preserving left/right/front/rear asymmetry. Trustworthy GIANTS member rectangles are preferred; unresolved members retain conservative represented-DISC bounds. This is an implementation completion beneath existing **Facing Clearance Extent**, **Passage-Side Clearance Asymmetry** and **Physical Assembly Envelope**, not a replacement for conservative interaction representation.
+
+---
+
+
+## v0.1.3.4 discovery — Hold-Witness Deadlock
+
+**Hold-Witness Deadlock** — a Passage settling failure in which both participants are physically stationary under owned Passage Hold authority, but configuration cannot begin because an inherited prototype proof additionally requires a PermissionGate veto-call witness. If GIANTS has already refused native continuation, that causal witness cannot occur. The correct settlement evidence is owned Hold + physical stationary state.
+
+---
+
+## v0.1.3.3 discovery — Component-Sphere Directional Inflation
+
+**Component-Sphere Directional Inflation** — a represented collision component's bounding sphere is isotropic, so longitudinal/vertical extent can inflate its lateral Passage support. The DISC representation remains useful conservative interaction evidence but is not automatically the best directional Passage envelope.
+
+**Directional Passage Envelope** — coarse Passage-only width/length evidence from GIANTS base-size metadata for a supported single-member compact/non-foldable configuration. It does not replace the general interaction representation.
+
+---
+
+## v0.1.3.2 discoveries
+
+**Passage Commitment Deferral** — v0.1.3.1 implementation defect in which already-supported Passage was withheld until physical Entry readiness, allowing obsolete D-0155 uncertainty regulation to continue after the resolution was known. Withdrawn in v0.1.3.2.
+
+**Passage Approach** — Passage-owned interval between positive Passage Selection and physical participant Entry. The resolution is known; productive progression may continue until Entry is required.
+
+**Pre-Guide Origin Staleness** — participant motion while settling/configuring can consume a short Candidate-predicted first waypoint before forward-only guide execution begins.
+
+**Execution-Origin Capture** — refresh each participant's absolute guide origin from its actual stopped/configured pose immediately before guide execution while preserving the Candidate-owned joint geometry.
+
+---
+
+# v0.1.3.1 TEST concepts — Passage Excursion Envelope
+
+**Passage Selection / Passage Entry:** selecting Cooperative Passage establishes the supported pair resolution; it does not itself authorise premature configuration or guide control. **Passage Entry** is participant intervention beginning when the selected configuration/geometry actually needs to be established. This TEST retains D-0155 Resolution-Space control between Selection and Entry rather than introducing another approach controller.
+
+**Clearance Deficit:** the nominal Passage clearance is a sufficient target only when current Passage-configured geometry lacks clearance: `max(0, nominal clearance - natural clearance)`. It is never a destination. If natural clearance is already greater than nominal, lateral excursion is zero.
+
+**Passage Excursion Envelope:** bounded lateral departure from native trajectory: **Development -> Crossing Window -> Recovery**. Development creates only the required deficit; Recovery removes it toward the native lateral axis. The trapezoid is a system model, not a demand for exact geometric corners.
+
+**Crossing Window:** the pair-level interval during which full required clearance is maintained because represented Passage-configured longitudinal assembly envelopes overlap. It is derived from front/rear represented extents rather than reference-point crossing plus an inherited fixed margin.
+
+**Longitudinal Entry Separation:** Passage readiness is measured along the established opposed longitudinal frame. Euclidean centre separation is not sufficient because existing lateral offset can keep Euclidean distance large even when longitudinal crossing is imminent.
+
+**First-whistle / second-whistle direction:** the Policeman owns the joint pair objective while execution remains participant-specific. The current TEST logs a second-whistle marker at completion of the pair-dependent Passage guide. Full participant-independent settlement, agronomic debt return and sophisticated burden/configuration choice remain future work rather than conditions of this first geometry test.
+
+**Agronomic debt:** productive ground left to revisit because OuttaMyWay interrupted or displaced productive work. No richer semantic model is required for this TEST. The immediate objective is to reduce debt by delaying Passage Entry and bounding the excursion; reverse debt recovery is deliberately deferred until Reality shows the residual.
+
+---
+
 # v0.1.3.0 canonical-candidate concepts — validated Resolution-Space control
 
 **Intent-Revelation Creep:** when a live D-0146 Resolution-Space obligation has exhausted ordinary progression allowance but remains unresolved, Control retains a minimal 1 km/h positive progression. TS010 v0.1.2.2 showed that this preserved current-motion evidence long enough for unchanged Cooperative Passage to mature and supersede the conservation commitment. It is not a universal minimum speed.

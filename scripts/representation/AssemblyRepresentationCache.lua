@@ -1,3 +1,4 @@
+-- FS25_OuttaMyWay v0.1.3.6 TEST — D-0164 Mechanical Foldability Leakage correction.
 OuttaMyWay.AssemblyRepresentationCache = {}
 local Cache=OuttaMyWay.AssemblyRepresentationCache
 Cache.__index=Cache
@@ -172,6 +173,108 @@ local function foldConfigurationEvidence(members)
     result.compactionSupported=result.retainCurrent or (result.unknownCount==0 and result.transitionCount==0 and result.allDeployed)
     return result
 end
+local function xmlNumericValue(xmlFile,key)
+    if type(xmlFile)~="table" then return nil,nil end
+    for _,methodName in ipairs({"getValue","getFloat"}) do
+        if type(xmlFile[methodName])=="function" then
+            local ok,value=pcall(xmlFile[methodName],xmlFile,key)
+            value=ok and tonumber(value) or nil
+            if finite(value) then return value,"LOADED_XML:"..methodName end
+        end
+    end
+    return nil,nil
+end
+local function xmlBooleanValue(xmlFile,key)
+    if type(xmlFile)~="table" then return nil,nil end
+    for _,methodName in ipairs({"getValue","getBool"}) do
+        if type(xmlFile[methodName])=="function" then
+            local ok,value=pcall(xmlFile[methodName],xmlFile,key)
+            if ok then
+                if type(value)=="boolean" then return value,"LOADED_XML:"..methodName end
+                if value==0 or value=="false" or value=="0" then return false,"LOADED_XML:"..methodName end
+                if value==1 or value=="true" or value=="1" then return true,"LOADED_XML:"..methodName end
+            end
+        end
+    end
+    return nil,nil
+end
+local function directionalFoldReachabilityMetadata(object)
+    if type(object)~="table" then return {aiUnfoldingAllowed=nil,source="UNRESOLVED"} end
+    local spec=object.spec_foldable
+    if type(spec)=="table" and type(spec.foldingParts)=="table" then
+        for _,part in pairs(spec.foldingParts) do
+            if type(part)=="table" and type(part.allowUnfoldingByAI)=="boolean" then
+                return {aiUnfoldingAllowed=part.allowUnfoldingByAI,source="RUNTIME_FOLDING_PART"}
+            end
+        end
+    end
+    local keys={
+        "vehicle.foldable.foldingConfigurations.foldingConfiguration(0).foldingParts#allowUnfoldingByAI",
+        "vehicle.foldable.foldingConfigurations.foldingConfiguration.foldingParts#allowUnfoldingByAI"
+    }
+    for _,key in ipairs(keys) do
+        local value,source=xmlBooleanValue(object.xmlFile,key)
+        if value~=nil then return {aiUnfoldingAllowed=value,source=source..":"..key} end
+    end
+    local filename=object.configFileName or object.configFileNameClean or object.xmlFilename
+    local loadFn=type(_G)=="table" and _G.loadXMLFile or nil
+    local getBoolFn=type(_G)=="table" and _G.getXMLBool or nil
+    local deleteFn=type(_G)=="table" and _G.delete or nil
+    if type(filename)=="string" and filename~="" and type(loadFn)=="function" and type(getBoolFn)=="function" then
+        local ok,handle=pcall(loadFn,"OuttaMyWayDirectionalFoldReachability",filename)
+        if ok and handle~=nil and handle~=0 then
+            for _,key in ipairs(keys) do
+                local vok,value=pcall(getBoolFn,handle,key)
+                if vok and type(value)=="boolean" then
+                    if type(deleteFn)=="function" then pcall(deleteFn,handle) end
+                    return {aiUnfoldingAllowed=value,source="CONFIG_XML_FOLDING_PART:"..key}
+                end
+            end
+            if type(deleteFn)=="function" then pcall(deleteFn,handle) end
+        end
+    end
+    return {aiUnfoldingAllowed=nil,source="UNRESOLVED"}
+end
+
+local function directionalSizeMetadata(object)
+    if type(object)~="table" then return nil end
+    local width,length=tonumber(object.sizeWidth),tonumber(object.sizeLength)
+    if finite(width) and width>0 and width<150 and finite(length) and length>0 and length<150 then
+        return {widthM=width,lengthM=length,widthOffsetM=0,lengthOffsetM=0,source="RUNTIME_SIZE_FIELDS"}
+    end
+
+    local xmlFile=object.xmlFile
+    if type(xmlFile)=="table" then
+        local w,wSource=xmlNumericValue(xmlFile,"vehicle.base.size#width")
+        local l,lSource=xmlNumericValue(xmlFile,"vehicle.base.size#length")
+        if finite(w) and w>0 and w<150 and finite(l) and l>0 and l<150 then
+            local wo=select(1,xmlNumericValue(xmlFile,"vehicle.base.size#widthOffset")) or 0
+            local lo=select(1,xmlNumericValue(xmlFile,"vehicle.base.size#lengthOffset")) or 0
+            return {widthM=w,lengthM=l,widthOffsetM=finite(wo) and wo or 0,lengthOffsetM=finite(lo) and lo or 0,source=tostring(wSource or lSource or "LOADED_XML")}
+        end
+    end
+
+    local filename=object.configFileName or object.configFileNameClean or object.xmlFilename
+    local loadFn=type(_G)=="table" and _G.loadXMLFile or nil
+    local getFloatFn=type(_G)=="table" and _G.getXMLFloat or nil
+    local deleteFn=type(_G)=="table" and _G.delete or nil
+    if type(filename)=="string" and filename~="" and type(loadFn)=="function" and type(getFloatFn)=="function" then
+        local ok,handle=pcall(loadFn,"OuttaMyWayDirectionalSize",filename)
+        if ok and handle~=nil and handle~=0 then
+            local function legacy(key) local vok,value=pcall(getFloatFn,handle,key); value=vok and tonumber(value) or nil; return finite(value) and value or nil end
+            local w=legacy("vehicle.base.size#width")
+            local l=legacy("vehicle.base.size#length")
+            local wo=legacy("vehicle.base.size#widthOffset") or 0
+            local lo=legacy("vehicle.base.size#lengthOffset") or 0
+            if type(deleteFn)=="function" then pcall(deleteFn,handle) end
+            if finite(w) and w>0 and w<150 and finite(l) and l>0 and l<150 then
+                return {widthM=w,lengthM=l,widthOffsetM=wo,lengthOffsetM=lo,source="CONFIG_XML_BASE_SIZE"}
+            end
+        end
+    end
+    return nil
+end
+
 local function donorConfigurationEvidence(object,donor)
     if donor==nil then return {status="NOT_APPLICABLE",selector="n/a",selected=nil,expected=nil} end
     local name=donor.configurationName
@@ -321,9 +424,12 @@ function Cache:_discoverMemberGeometry(member)
         if primitive~=nil then primitives[#primitives+1]=primitive; stats.resolved=stats.resolved+1
         else rejections[#rejections+1]=rejection; stats.rejected=stats.rejected+1; if rejection.rootAlias then stats.rejectedAliases=stats.rejectedAliases+1 end; if rejection.shapeReason=="NOT_SHAPE" then stats.nonShapeRejected=stats.nonShapeRejected+1 elseif rejection.shapeReason~=nil then stats.shapeClassUnresolved=stats.shapeClassUnresolved+1 end end
     end
-    local width=tonumber(member.object.sizeWidth); local length=tonumber(member.object.sizeLength)
+    local sizeMetadata=directionalSizeMetadata(member.object)
+    member.directionalSizeMetadata=sizeMetadata
+    member.directionalFoldReachabilityMetadata=directionalFoldReachabilityMetadata(member.object)
+    local width=sizeMetadata and tonumber(sizeMetadata.widthM) or nil; local length=sizeMetadata and tonumber(sizeMetadata.lengthM) or nil
     if width~=nil and width>0 and length~=nil and length>0 then
-        primitives[#primitives+1]={identity=member.referenceKey..":metadata-rectangle",kind="LOCAL_RECTANGLE",memberReferenceKey=member.referenceKey,node=member.object.rootNode,halfWidth=width/2,halfLength=length/2,source="SIZE_METADATA_UNVERIFIED",positiveConflictSupport=false,negativeClearanceSupport=false}
+        primitives[#primitives+1]={identity=member.referenceKey..":metadata-rectangle",kind="LOCAL_RECTANGLE",memberReferenceKey=member.referenceKey,node=member.object.rootNode,halfWidth=width/2,halfLength=length/2,widthOffsetM=tonumber(sizeMetadata.widthOffsetM) or 0,lengthOffsetM=tonumber(sizeMetadata.lengthOffsetM) or 0,source="DIRECTIONAL_SIZE_METADATA:"..tostring(sizeMetadata.source),positiveConflictSupport=false,negativeClearanceSupport=false}
     end
     return primitives,rejections,stats,donor
 end
@@ -344,6 +450,17 @@ function Cache:_build(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
         for _,rejection in ipairs(rejections) do record.rejections[#record.rejections+1]=rejection end
         for key,value in pairs(stats) do if type(value)=="number" and record.geometryStats[key]~=nil then record.geometryStats[key]=record.geometryStats[key]+value end end
     end
+    if #record.members==1 then
+        local metadata=record.members[1].directionalSizeMetadata
+        if type(metadata)=="table" and finite(tonumber(metadata.widthM)) and tonumber(metadata.widthM)>0 and finite(tonumber(metadata.lengthM)) and tonumber(metadata.lengthM)>0 then
+            record.directionalPassageEnvelope={
+                widthM=tonumber(metadata.widthM),lengthM=tonumber(metadata.lengthM),
+                halfWidthM=tonumber(metadata.widthM)*0.5,halfLengthM=tonumber(metadata.lengthM)*0.5,
+                widthOffsetM=tonumber(metadata.widthOffsetM) or 0,lengthOffsetM=tonumber(metadata.lengthOffsetM) or 0,
+                source=metadata.source,assemblyScope="SINGLE_MEMBER_BASE_SIZE"
+            }
+        end
+    end
     record.structurallyValid=#record.localPrimitives>0
     return record
 end
@@ -359,8 +476,10 @@ function Cache:_worldPrimitive(localPrimitive,participation)
     if localPrimitive.kind=="LOCAL_RECTANGLE" then
         if localToWorldFn==nil then return nil,"LOCAL_TO_WORLD_UNAVAILABLE" end
         local corners={}
+        local centreRight=tonumber(localPrimitive.widthOffsetM) or 0
+        local centreForward=tonumber(localPrimitive.lengthOffsetM) or 0
         for _,offset in ipairs({{-localPrimitive.halfWidth,-localPrimitive.halfLength},{localPrimitive.halfWidth,-localPrimitive.halfLength},{localPrimitive.halfWidth,localPrimitive.halfLength},{-localPrimitive.halfWidth,localPrimitive.halfLength}}) do
-            local ok,x,y,z=pcall(localToWorldFn,localPrimitive.node,offset[1],0,offset[2]); if not ok then return nil,"WORLD_TRANSFORM_FAILED" end
+            local ok,x,y,z=pcall(localToWorldFn,localPrimitive.node,centreRight+offset[1],0,centreForward+offset[2]); if not ok then return nil,"WORLD_TRANSFORM_FAILED" end
             corners[#corners+1]={x=x,y=y,z=z}
         end
         return {identity=localPrimitive.identity,kind="ORIENTED_RECTANGLE",corners=corners,memberReferenceKey=localPrimitive.memberReferenceKey,source=localPrimitive.source,positiveConflictSupport=false,negativeClearanceSupport=false,participationStatus="DIAGNOSTIC_ONLY"},nil
@@ -388,13 +507,84 @@ local function referenceFrameForWorker(worker)
     dx,dz=dx/length,dz/length
     return {x=x,z=z,forwardX=dx,forwardZ=dz,rightX=dz,rightZ=-dx}
 end
+
+local function memberDirectionalRectangleApplicable(member)
+    if type(member)~="table" or type(member.object)~="table" or type(member.directionalSizeMetadata)~="table" then return false end
+    local object=member.object
+    local foldable=object.spec_foldable~=nil or type(object.getFoldAnimTime)=="function"
+    if not foldable then return true end
+    if member.currentConfiguration and member.currentConfiguration.foldState=="FOLDED" then return true end
+    -- D-0164: raw mechanical foldability is not Passage-configuration authority.
+    -- When GIANTS explicitly marks the folding mechanism as unavailable to AI,
+    -- do not let that player-only/mechanical accessory suppress otherwise useful
+    -- directional base-size evidence for the current productive member pose.
+    local reachability=member.directionalFoldReachabilityMetadata or {}
+    if reachability.aiUnfoldingAllowed==false then return true end
+    return false
+end
+
+local function relativeDirectionalAssemblyEnvelope(record,worldPrimitives,frame)
+    if type(record)~="table" or type(frame)~="table" then return nil end
+    local rectanglesByMember,discsByMember={},{}
+    for _,primitive in ipairs(worldPrimitives or {}) do
+        local memberKey=primitive.memberReferenceKey
+        if memberKey~=nil and primitive.kind=="ORIENTED_RECTANGLE" and type(primitive.corners)=="table" then
+            rectanglesByMember[memberKey]=primitive
+        elseif memberKey~=nil and primitive.kind=="DISC" and primitive.positiveConflictSupport==true and finite(tonumber(primitive.x)) and finite(tonumber(primitive.z)) and finite(tonumber(primitive.radius)) and tonumber(primitive.radius)>0 then
+            local list=discsByMember[memberKey] or {}; list[#list+1]=primitive; discsByMember[memberKey]=list
+        end
+    end
+    local minRight,maxRight,minForward,maxForward=nil,nil,nil,nil
+    local rectangleMembers,fallbackMembers,coveredMembers=0,0,0
+    local function include(right,forward)
+        minRight=minRight==nil and right or math.min(minRight,right); maxRight=maxRight==nil and right or math.max(maxRight,right)
+        minForward=minForward==nil and forward or math.min(minForward,forward); maxForward=maxForward==nil and forward or math.max(maxForward,forward)
+    end
+    for _,member in ipairs(record.members or {}) do
+        local rectangle=rectanglesByMember[member.referenceKey]
+        if rectangle~=nil and memberDirectionalRectangleApplicable(member) then
+            local count=0
+            for _,corner in ipairs(rectangle.corners or {}) do
+                local x,z=tonumber(corner.x),tonumber(corner.z)
+                if finite(x) and finite(z) then
+                    local dx,dz=x-frame.x,z-frame.z
+                    include(dx*frame.rightX+dz*frame.rightZ,dx*frame.forwardX+dz*frame.forwardZ); count=count+1
+                end
+            end
+            if count>0 then rectangleMembers=rectangleMembers+1; coveredMembers=coveredMembers+1 end
+        else
+            local discs=discsByMember[member.referenceKey] or {}
+            local count=0
+            for _,disc in ipairs(discs) do
+                local dx,dz=tonumber(disc.x)-frame.x,tonumber(disc.z)-frame.z; local radius=tonumber(disc.radius)
+                local right=dx*frame.rightX+dz*frame.rightZ; local forward=dx*frame.forwardX+dz*frame.forwardZ
+                include(right-radius,forward-radius); include(right+radius,forward+radius); count=count+1
+            end
+            if count>0 then fallbackMembers=fallbackMembers+1; coveredMembers=coveredMembers+1 end
+        end
+    end
+    if rectangleMembers<1 or coveredMembers~=#(record.members or {}) or minRight==nil or maxRight==nil or minForward==nil or maxForward==nil then return nil end
+    local width=maxRight-minRight; local length=maxForward-minForward
+    if not finite(width) or width<=0 or not finite(length) or length<=0 then return nil end
+    return {
+        minRightM=minRight,maxRightM=maxRight,minForwardM=minForward,maxForwardM=maxForward,
+        leftExtentM=math.max(0,-minRight),rightExtentM=math.max(0,maxRight),frontExtentM=math.max(0,maxForward),rearExtentM=math.max(0,-minForward),
+        widthM=width,lengthM=length,halfWidthM=width*0.5,halfLengthM=length*0.5,
+        widthOffsetM=(minRight+maxRight)*0.5,lengthOffsetM=(minForward+maxForward)*0.5,
+        memberCount=#(record.members or {}),directionalRectangleMemberCount=rectangleMembers,representedDiscFallbackMemberCount=fallbackMembers,
+        source=(#(record.members or {})==1 and fallbackMembers==0) and ((record.members[1].directionalSizeMetadata or {}).source or "GIANTS_BASE_SIZE") or (fallbackMembers==0 and "GIANTS_BASE_SIZE_MEMBER_RECTANGLE_UNION" or "GIANTS_BASE_SIZE_MEMBER_RECTANGLES_WITH_DISC_FALLBACK"),
+        assemblyScope=#(record.members or {})==1 and "SINGLE_MEMBER_BASE_SIZE" or "MULTI_MEMBER_DIRECTIONAL_UNION",
+        authority=#(record.members or {})==1 and "GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST" or "GIANTS_DIRECTIONAL_MEMBER_UNION_PASSAGE_TEST"
+    }
+end
+
 local function relativeDiscSnapshot(worldPrimitives,frame)
     if type(frame)~="table" then return nil end
     local result={}
     for _,primitive in ipairs(worldPrimitives or {}) do
         if primitive.kind=="DISC" and primitive.positiveConflictSupport==true and finite(tonumber(primitive.x)) and finite(tonumber(primitive.z)) and finite(tonumber(primitive.radius)) and tonumber(primitive.radius)>0 then
             local dx,dz=tonumber(primitive.x)-frame.x,tonumber(primitive.z)-frame.z
-            result[#result+1]={localRightM=dx*frame.rightX+dz*frame.rightZ,localForwardM=dx*frame.forwardX+dz*frame.forwardZ,radius=tonumber(primitive.radius),identity=primitive.identity}
+            result[#result+1]={localRightM=dx*frame.rightX+dz*frame.rightZ,localForwardM=dx*frame.forwardX+dz*frame.forwardZ,radius=tonumber(primitive.radius),identity=primitive.identity,memberReferenceKey=primitive.memberReferenceKey}
         end
     end
     if #result<1 then return nil end
@@ -411,6 +601,7 @@ function Cache:_configurationAlternatives(record,currentProfileId)
             for _,disc in ipairs(profile.relativeDiscs) do discs[#discs+1]={localRightM=disc.localRightM,localForwardM=disc.localForwardM,radius=disc.radius,identity=disc.identity} end
             result[#result+1]={
                 configurationProfileId=profile.identity,configurationKey=profile.configurationKey,configurationEvidence=evidence,relativeDiscs=discs,
+                directionalPassageEnvelope=profile.directionalPassageEnvelope,
                 nativeObservationCount=profile.nativeObservationCount or 0,outtaMyWayObservationCount=profile.outtaMyWayObservationCount or 0,
                 current=profile.identity==currentProfileId,authority="OBSERVED_WITHOUT_OUTTAMYWAY_CONFIGURATION_AUTHORITY"
             }
@@ -463,6 +654,21 @@ function Cache:_buildProfile(record,key,config,nowSeconds)
     profile.inactivePrimitiveCount=#profile.inactivePrimitiveNames
     profile.unresolvedPrimitiveCount=#profile.unresolvedPrimitiveNames
     profile.diagnosticPrimitiveCount=#profile.diagnosticPrimitiveNames
+    local directional=record.directionalPassageEnvelope
+    local configurationEvidence=profile.configurationEvidence or {}
+    local singleMember=record.members and record.members[1] or nil
+    local directionallyApplicable=singleMember~=nil and memberDirectionalRectangleApplicable(singleMember)
+    if type(directional)=="table" and directionallyApplicable then
+        local reachability=singleMember.directionalFoldReachabilityMetadata or {}
+        local applicability=configurationEvidence.foldableCount==0 and "NON_FOLDABLE_SINGLE_MEMBER"
+            or (configurationEvidence.allFolded==true and "STABLY_FOLDED_SINGLE_MEMBER"
+            or (reachability.aiUnfoldingAllowed==false and "MECHANICAL_ONLY_FOLDABILITY_AI_DISABLED" or "PROFILE_SUPPORTED_CURRENT_CONFIGURATION"))
+        profile.directionalPassageEnvelope={
+            widthM=directional.widthM,lengthM=directional.lengthM,halfWidthM=directional.halfWidthM,halfLengthM=directional.halfLengthM,
+            widthOffsetM=directional.widthOffsetM,lengthOffsetM=directional.lengthOffsetM,source=directional.source,assemblyScope=directional.assemblyScope,
+            authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST",configurationApplicability=applicability
+        }
+    end
     return profile
 end
 
@@ -503,6 +709,14 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
     local frame=referenceFrameForWorker(worker)
     local relativeDiscs=relativeDiscSnapshot(worldPrimitives,frame)
     if relativeDiscs~=nil then profile.relativeDiscs=relativeDiscs end
+    local directionalEnvelope=relativeDirectionalAssemblyEnvelope(record,worldPrimitives,frame)
+    if directionalEnvelope~=nil then
+        local configurationEvidence=profile.configurationEvidence or {}
+        directionalEnvelope.configurationApplicability=configurationEvidence.foldableCount==0 and "NON_FOLDABLE_ASSEMBLY" or (configurationEvidence.allFolded==true and "STABLY_FOLDED_ASSEMBLY" or "MEMBER_CONDITIONED_HYBRID")
+        profile.directionalPassageEnvelope=directionalEnvelope
+    elseif #record.members>1 then
+        profile.directionalPassageEnvelope=nil
+    end
     local summary=OuttaMyWay.PlanViewFootprint.summarise(worldPrimitives)
     return {
         episodeKey=key,assemblyReferenceKey=assemblyReferenceKey,sourceJobToken=sourceJobToken,cacheHit=cacheHit,
@@ -512,7 +726,7 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
         runtimeConfirmedPrimitiveCount=profile.runtimeConfirmedCount,donorFallbackPrimitiveCount=profile.donorFallbackCount,configurationSelectorSummary=profile.configurationSelectorSummary,
         participatingPrimitiveNames=profile.participatingPrimitiveNames,inactivePrimitiveNames=profile.inactivePrimitiveNames,unresolvedPrimitiveNames=profile.unresolvedPrimitiveNames,
         physicalPrimitiveCount=summary.physicalPrimitiveCount,diagnosticPrimitiveCount=summary.diagnosticPrimitiveCount,
-        configurationKey=config,configurationEvidence=foldConfigurationEvidence(record.members),configurationProfileId=profile.identity,configurationProfileCacheHit=profileCacheHit,configurationProfileCount=countKeys(record.profiles),configurationAlternatives=self:_configurationAlternatives(record,profile.identity),outtaMyWayConfigurationAuthorityActive=underOuttaMyWayAuthority,
+        configurationKey=config,configurationEvidence=foldConfigurationEvidence(record.members),configurationProfileId=profile.identity,configurationProfileCacheHit=profileCacheHit,configurationProfileCount=countKeys(record.profiles),configurationAlternatives=self:_configurationAlternatives(record,profile.identity),directionalPassageEnvelope=profile.directionalPassageEnvelope,outtaMyWayConfigurationAuthorityActive=underOuttaMyWayAuthority,
         structurallyValid=record.structurallyValid and profile.participatingPrimitiveCount>0,coverageComplete=false,conservativeForRepresentedComponents=record.conservativeForRepresentedComponents,
         negativeClearanceAuthority=false,claimPermissions={"POTENTIAL_INTERACTION_FROM_REPRESENTED_COMPONENTS"},
         worldPrimitives=worldPrimitives,planViewSummary=summary,geometryStats=record.geometryStats,transformFailureCount=#transformFailures,

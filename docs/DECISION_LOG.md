@@ -1,3 +1,86 @@
+## D-0166 — Checkpoint the Passage tranche and simplify the next configuration policy
+
+**Decision:** prepare v0.1.4.0 as a canonical checkpoint consolidating v0.1.3.1-v0.1.3.7 without new behavioural algorithm changes. Outstanding Passage defects are retained explicitly rather than solved speculatively during canonicalisation.
+
+**Accepted next direction:** **Transit-First, Reality-Verified Passage.** At physical Passage Entry, attempt a plausible Transit configuration unless positive configuration evidence excludes that mechanism; verify the actual resulting state before using Transit geometry. Missing `allowUnfoldingByAI` or equivalent metadata is not sufficient negative evidence. If Transit cannot be achieved, replan from verified current/conservative geometry. Do not reintroduce vehicle-specific IF/THEN configuration exceptions.
+
+**Evidence:** late Passage Entry, directional clearance and generic unilateral allocations materially improved gameplay and reduced agronomic debt in TS010/TS015/TS016. However TS009 front/rear SaMASZ mower + S416 was incorrectly authorised as a straight retained-current Passage and physically collided/tangled. The same run reported only two assembly members for an apparently three-member physical combination. This negative evidence lowers confidence in current generic complex-assembly negative-clearance authority.
+
+**Non-decisions:** do not yet choose the cause of the TS009 membership anomaly; do not implement fold-vs-don't-fold optimisation; do not alter the ~1 m policy margin; do not add articulation sweep allowance; do not implement agronomic reverse restoration or exact finishing alignment in this checkpoint.
+
+---
+
+## D-0165 — Nominal Passage Clearance is scoped to the Crossing Window
+
+**Decision:** correct D-0146 pair-sweep validation so Development and Recovery require represented non-contact but do not require the full nominal Passage clearance. Full nominal clearance remains mandatory from Crossing Window Entry through Crossing Window Exit.
+
+**Evidence:** v0.1.3.6 TS010 committed passages completed successfully while concurrent fresh Candidate assessment rejected all arrangements under the obsolete global nominal-clearance rule.
+
+**Non-decisions:** do not change the 1 m policy value, directional-envelope representation, Passage speed, configuration selection, orientation recovery or agronomic restoration in this tranche.
+
+## D-0164 — Restore configuration reachability abstraction in directional Passage geometry
+
+**Decision:** correct v0.1.3.5 Mechanical Foldability Leakage. Do not use raw `spec_foldable` as sufficient reason to suppress directional member evidence. Explicit GIANTS AI-unreachable fold metadata may establish that a mechanical accessory is not a Passage configuration alternative. Preserve existing native-profile configuration selection and all Passage policy. Add bounded rejection telemetry before changing any remaining suspected constraints.
+
+## D-0163 — Test generic directional member-union Passage geometry
+
+**Decision:** accepted for v0.1.3.5 TEST. Generalise the successful single-member GIANTS base-size Passage envelope by unioning member directional rectangles at their actual configured poses. Preserve one-sided left/right and front/rear extents. A member lacking applicable directional metadata falls back individually to conservative represented-DISC extent; the assembly falls back wholly to the previous DISC path only when no directional member evidence exists.
+
+**Reason:** mixed S416 Passage field evidence showed that whole-assembly sphere-conditioned reserve can be substantially less credible than the successful Condor/Patriot directional model. The repository already owns member discovery, diagnostic oriented rectangles and one-sided Facing Clearance Extent; the experiment tests whether those existing concepts generalise cheaply before adding articulation sweep allowances.
+
+**Not decided:** no change to 1 m nominal clearance, no swept-volume model, no per-vehicle rules, no configuration optimisation, and no agronomic reverse restoration.
+
+---
+
+
+## D-0162 — Retire causal Hold witness from Passage settlement
+
+**Decision:** accepted for v0.1.3.4 TEST. `CooperativePassageControl` must advance from `SETTLING` when Passage Hold authority is active for both participants and both are physically stationary at the existing threshold. PermissionGate call count is not a settlement invariant.
+
+**Evidence:** TS016 v0.1.3.3 Condor–S416 entered Passage at close range after GIANTS had already set Condor blocked/zero-command. Both participants stopped, but Condor's PermissionGate count remained zero because the wrapper correctly preserves GIANTS' prior refusal; configuration never began and Condor remained unfolded. The same `_allStopped()` causal-proof requirement predates the Passage Excursion work and is therefore a latent defect exposed by later Passage Entry.
+
+**Boundary:** no suppression/override of GIANTS `isBlocked`; no Entry change; no configuration special case; no geometry or directional-envelope change.
+
+---
+
+## D-0161 — Test GIANTS base-size metadata as a directional Passage envelope
+
+**Decision:** accepted for v0.1.3.3 TEST. Preserve the nominal 1 m Passage clearance and the v0.1.3.2 Passage execution. Where a single-member selected Passage configuration is stably folded (or non-foldable) and GIANTS `vehicle.base.size` can be read at bootstrap, use its coarse width/length for Passage pair contact, Crossing Window and pair-sweep planning. Fall back to the existing configuration-conditioned DISC geometry otherwise.
+
+**Evidence:** TS015 v0.1.3.2 physically succeeded but planned `contact≈9.22 m` / `required≈10.22 m`; supplied GIANTS XML declares Condor 3.5 x 11.1 m and Patriot 3.9 x 9.0 m. Lowering the 1 m policy margin would hide a representation problem rather than solve it.
+
+**Boundary:** no global replacement of DISC interaction evidence; no attached-assembly envelope synthesis; no change to folding policy, Development, speed, Reacquisition or agronomic restoration.
+
+---
+
+## D-0160 — Restore immediate Resolution-to-Passage succession; delay execution, not Commitment
+
+**Decision:** accepted for v0.1.3.2 TEST. Positive Cooperative Passage Selection immediately supersedes D-0155 as it did in canonical v0.1.3.0. A later Passage Entry is represented by `PASSAGE_APPROACH` inside the Passage Commitment. After settling/configuration, absolute participant guide origins are captured from Reality before the first short Development target is issued.
+
+**Why:** TS010 v0.1.3.1 showed two independent defects: retaining 1 km/h Resolution-Space regulation after Passage Selection produced gross approach asymmetry; then stopping overshoot placed MT665 beyond its first short forward-only waypoint. Increasing Development would hide the second defect and retaining D-0155 contradicts the already-validated authority handoff.
+
+**Out of scope:** no reverse Agronomic Restoration, no selective folding/configuration candidate optimisation, no burden-allocation redesign, no Passage speed change.
+
+---
+
+## D-0159 — Test delayed Passage Entry and a physical Passage Excursion Envelope (v0.1.3.1 TEST)
+
+**Evidence:** TS010 Passage succeeds physically but begins control far too early, carries a large/long lateral offset, and leaves conspicuous missed mower work. Audit showed the current guide is already a crude trapezoid: the P23 donor `12 m` Development, separation-derived long plateau, `+8 m` post-centre margin and `12 m` reacquisition. The `12 m` donor was originally evidence that a 6 m sprayer sidestep needed a shallow forward-only approach; it is not evidence that a ~1 m participant excursion needs 12 m.
+
+**Decision:** keep existing Passage admission/evidence, D-0155 succession, configuration-first selection, burden ordering, 8 km/h guide speed and Native Reacquisition unchanged. Separate **Passage Selection** from **Passage Entry**. Before Entry, retain the already-validated Resolution-Space action. At Entry, execute a bounded **Passage Excursion Envelope**: derive non-negative Clearance Deficit; Development creates only that required lateral relationship; maintain it through a **Crossing Window** derived from represented longitudinal extents; Recovery returns lateral displacement toward zero/native axis.
+
+**Clearance semantics:** nominal ~1 m remains calibration, not a geometric destination. If current selected-configuration geometry already supplies sufficient natural clearance, lateral excursion is zero. Do not move inward to manufacture exactly 1 m.
+
+**Entry mechanics for this TEST:** derive an Entry Boundary from represented front extents + twice derived Development + provisional 3 m control allowance, using **longitudinal projected pair separation**. The 3 m allowance is test calibration only and is not braking/stopping-distance authority. Development retains the P23 shallow `2 m forward : 1 m lateral` donor with a small 4 m minimum floor for the first experiment; these are implementation mechanics subject to Reality.
+
+**Crossing completion:** represented front/rear longitudinal extents replace the inherited fixed `+8 m` traversal margin. Control logs a second-whistle marker after the pair-dependent guide has crossed and recovered. Existing configuration restore / Native Reacquisition remain after that marker for this experiment; participant-independent settlement is not yet implemented.
+
+**Explicitly out of scope:** reverse Agronomic Restoration; exact debt recovery; selective folding/configuration economy; one-vs-both/asymmetric burden redesign; Passage speed; admission/current-motion semantics; D-0155; D-0147; the parked `<=60 m` locality issue.
+
+**Validation claim sought:** materially shorter productive interruption, a visibly shallower or zero lateral excursion where geometry permits, full displacement only through physical crossing, return toward native lateral axes, no contact, and preservation of the validated TS010 Resolution-Space -> Passage succession. Remaining missed work is evidence for the next Agronomic Restoration decision, not a failure to have solved it in this build.
+
+---
+
 ## D-0158 — Promote validated Resolution-Space Progression Envelope to v0.1.3.0 canonical candidate
 
 **Decision:** consolidate the cumulative v0.1.2.1/v0.1.2.2 D-0155 implementation without additional behavioural change. Retain 75% Resolution Contingency Reserve, integer Supportable Progression, Reverse-Created Resolution Reserve protection, Magnitude Rebase on Role Migration, continuous Commitment-lifetime magnitude updates and the 1 km/h Intent-Revelation Creep endpoint.

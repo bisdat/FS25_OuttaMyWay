@@ -1,23 +1,20 @@
--- FS25_OuttaMyWay v0.1.0.6 TEST — D-0146 configuration-first Pair-Specific Passage Clearance
--- Local Passage Space / Progressive Passage Search / Passage Arrangement / Passage Guide implementation.
+-- FS25_OuttaMyWay v0.1.3.7 TEST — D-0165 Crossing-Window Clearance alignment; D-0163/D-0164 directional envelope and rejection telemetry retained.
+-- Candidate-owned Local Passage planning remains vehicle-name independent: Local Passage Space, Progressive Passage Search, Passage Arrangement and Passage Guide remain the governing Candidate concepts.
 --
--- Established conflict admission is vehicle-name independent.  The planner
--- consumes Situation-owned trajectory/current-positive-physical knowledge and
--- discovers Local Spatial Constraint from the Field World plus every other
--- active Operation assembly.  Passage remains pairwise: third parties constrain
--- which pair arrangement is supportable; they do not become hidden participants
--- in the pair Commitment.
+-- Passage Selection may precede physical Passage Entry.  Selection immediately
+-- commits Cooperative Passage and supersedes D-0155, restoring the proven
+-- v0.1.3.0 authority handoff.  The derived Entry Boundary is consumed later by
+-- Cooperative Passage Control's PASSAGE_APPROACH phase; Candidate does not
+-- retain uncertainty regulation after the resolution is known.
+-- Candidate configuration policy is intentionally inherited unchanged.  From
+-- the selected Passage-configured represented geometry the planner derives a
+-- non-negative Clearance Deficit, participant excursion, physical Crossing
+-- Window from longitudinal extents, and Recovery toward the native lateral
+-- axis.  The old P23 12/8/12 guide distances are donor evidence, not geometry.
 --
--- The inherited 12 m centreline / derived 6 m participant reserve is retired.
--- Candidate derives the current pair's Physical Contact Threshold from opposing
--- Facing Clearance Extents and adds the configured Nominal Inter-Assembly
--- Clearance. A participant may select COMPACT_REQUIRED only when the same Job
--- Episode has already passively observed a stable folded profile outside any
--- OuttaMyWay configuration-authority window and that profile positively reduces
--- the conflict-facing extent for the candidate passage side. The resulting
--- configuration-conditioned geometry is used before lateral burden is derived.
--- Current represented components remain bounded evidence and do not manufacture
--- generic Coverage Closure or negative-clearance authority.
+-- Current represented discs remain bounded evidence: translated-disc sweep
+-- does not claim exact articulated swept-envelope closure.  Third parties and
+-- Field World remain constraints on the pair plan, not hidden participants.
 
 OuttaMyWay.LocalPassagePlanner={}
 local Planner=OuttaMyWay.LocalPassagePlanner
@@ -77,7 +74,7 @@ local function fitnessForConflict(picture,conflict)
     local result={}
     for _,item in OuttaMyWay.ValueRecord.ipairs(picture.representationFitness or {}) do
         local evidence=item.evidence or {}
-        if evidence.conflictIdentity==conflict.identity and evidence.controlProfile=="D0146_CONFIGURATION_FIRST_GUIDED_PASSAGE_V5" then result[#result+1]=item end
+        if evidence.conflictIdentity==conflict.identity and evidence.controlProfile=="D0146_PASSAGE_EXCURSION_V6" then result[#result+1]=item end
     end
     table.sort(result,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
     if #result~=2 then return nil,"PURPOSE_SPECIFIC_MECHANICAL_FITNESS_UNAVAILABLE" end
@@ -89,6 +86,17 @@ end
 
 local function conflictSeparation(conflict)
     return tonumber(conflict and conflict.currentClosing and conflict.currentClosing.separationM) or math.huge
+end
+local function longitudinalPairSeparation(aSpace,bSpace,aTrajectory,bTrajectory)
+    local ax,az=tonumber(aSpace and aSpace.occupancy and aSpace.occupancy.x),tonumber(aSpace and aSpace.occupancy and aSpace.occupancy.z)
+    local bx,bz=tonumber(bSpace and bSpace.occupancy and bSpace.occupancy.x),tonumber(bSpace and bSpace.occupancy and bSpace.occupancy.z)
+    local afx,afz=tonumber(aTrajectory and aTrajectory.establishedDirectionX),tonumber(aTrajectory and aTrajectory.establishedDirectionZ)
+    local bfx,bfz=tonumber(bTrajectory and bTrajectory.establishedDirectionX),tonumber(bTrajectory and bTrajectory.establishedDirectionZ)
+    if not finite(ax) or not finite(az) or not finite(bx) or not finite(bz) or not finite(afx) or not finite(afz) or not finite(bfx) or not finite(bfz) then return nil end
+    local aAhead=(bx-ax)*afx+(bz-az)*afz
+    local bAhead=(ax-bx)*bfx+(az-bz)*bfz
+    if not finite(aAhead) or not finite(bAhead) then return nil end
+    return math.max(0,(aAhead+bAhead)*0.5)
 end
 local function establishedConflicts(picture)
     local result={}
@@ -123,39 +131,181 @@ local function operationMembers(picture,operationId)
     return {}
 end
 
-local function makeGuide(conflict,aTrajectory,bTrajectory,aSpace,bSpace,aOffset,bOffset,separationM)
-    local development=OuttaMyWay.D0146_STEP2_DEVELOPMENT_DISTANCE_M or 12.0
-    local traversalMargin=OuttaMyWay.D0146_STEP2_TRAVERSAL_MARGIN_M or 8.0
-    local reacquisition=OuttaMyWay.D0146_STEP2_REACQUISITION_DISTANCE_M or 12.0
-    local traversal=math.max(development+4.0,separationM*0.5+traversalMargin)
-    local gates={
-        {kind="DEVELOPMENT_ENTRY",forwardM=development*0.5,lateralFraction=0.5,radiusM=OuttaMyWay.D0146_STEP2_DEVELOPMENT_GATE_RADIUS_M or 2.0},
-        {kind="PASSAGE_ARRANGEMENT",forwardM=development,lateralFraction=1.0,radiusM=OuttaMyWay.D0146_STEP2_DEVELOPMENT_GATE_RADIUS_M or 2.0},
-        {kind="TRAVERSAL",forwardM=traversal,lateralFraction=1.0,radiusM=OuttaMyWay.D0146_STEP2_TRAVERSAL_GATE_RADIUS_M or 1.0},
-        {kind="REACQUISITION_EXIT",forwardM=traversal+reacquisition*0.5,lateralFraction=0.5,radiusM=OuttaMyWay.D0146_STEP2_REACQUISITION_GATE_RADIUS_M or 2.0},
-        {kind="NATIVE_REACQUISITION",forwardM=traversal+reacquisition,lateralFraction=0.0,radiusM=OuttaMyWay.D0146_STEP2_REACQUISITION_GATE_RADIUS_M or 2.0}
-    }
+local function directionalEnvelopeBounds(envelope)
+    if type(envelope)~="table" then return nil end
+    local minRight,maxRight,minForward,maxForward=tonumber(envelope.minRightM),tonumber(envelope.maxRightM),tonumber(envelope.minForwardM),tonumber(envelope.maxForwardM)
+    if not finite(minRight) or not finite(maxRight) then
+        local half,offset=tonumber(envelope.halfWidthM),tonumber(envelope.widthOffsetM) or 0
+        if not finite(half) or half<=0 then return nil end
+        minRight,maxRight=offset-half,offset+half
+    end
+    if not finite(minForward) or not finite(maxForward) then
+        local half,offset=tonumber(envelope.halfLengthM),tonumber(envelope.lengthOffsetM) or 0
+        if not finite(half) or half<=0 then return nil end
+        minForward,maxForward=offset-half,offset+half
+    end
+    if maxRight<=minRight or maxForward<=minForward then return nil end
+    return {minRightM=minRight,maxRightM=maxRight,minForwardM=minForward,maxForwardM=maxForward}
+end
+
+local function directionalEnvelopeValid(envelope)
+    return directionalEnvelopeBounds(envelope)~=nil
+end
+
+local function spaceFrame(space)
+    local headingX,headingZ=tonumber(space and space.occupancy and space.occupancy.headingX),tonumber(space and space.occupancy and space.occupancy.headingZ)
+    if not finite(headingX) or not finite(headingZ) then return nil end
+    local length=math.sqrt(headingX*headingX+headingZ*headingZ); if length<=0.0001 then return nil end
+    headingX,headingZ=headingX/length,headingZ/length
+    return {forwardX=headingX,forwardZ=headingZ,rightX=headingZ,rightZ=-headingX}
+end
+
+local function directionalSupport(envelope,space,axisX,axisZ)
+    local bounds=directionalEnvelopeBounds(envelope); local frame=spaceFrame(space)
+    if bounds==nil or frame==nil or not finite(axisX) or not finite(axisZ) then return nil end
+    local length=math.sqrt(axisX*axisX+axisZ*axisZ); if length<=0.0001 then return nil end
+    axisX,axisZ=axisX/length,axisZ/length
+    local minimum,maximum=nil,nil
+    for _,corner in ipairs({
+        {bounds.minRightM,bounds.minForwardM},{bounds.maxRightM,bounds.minForwardM},
+        {bounds.maxRightM,bounds.maxForwardM},{bounds.minRightM,bounds.maxForwardM}
+    }) do
+        local wx=frame.rightX*corner[1]+frame.forwardX*corner[2]
+        local wz=frame.rightZ*corner[1]+frame.forwardZ*corner[2]
+        local projection=wx*axisX+wz*axisZ
+        minimum=minimum==nil and projection or math.min(minimum,projection)
+        maximum=maximum==nil and projection or math.max(maximum,projection)
+    end
+    return {minOffsetM=minimum,maxOffsetM=maximum}
+end
+
+local function directionalFacingExtent(envelope,space,rightX,rightZ,sideSign)
+    local support=directionalSupport(envelope,space,rightX,rightZ); if support==nil then return nil end
+    if sideSign>0 then return math.max(0,support.maxOffsetM) end
+    return math.max(0,-support.minOffsetM)
+end
+
+local function directionalBasis(envelope)
+    if type(envelope)~="table" then return nil end
+    if envelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST" then return "GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPE" end
+    return "GIANTS_DIRECTIONAL_ASSEMBLY_ENVELOPE"
+end
+
+local function longitudinalSupport(discs,directionalEnvelope,space,trajectory,role)
+    if directionalEnvelopeValid(directionalEnvelope) then
+        local support=directionalSupport(directionalEnvelope,space,tonumber(trajectory and trajectory.establishedDirectionX),tonumber(trajectory and trajectory.establishedDirectionZ))
+        if support~=nil then
+            return {minOffsetM=support.minOffsetM,maxOffsetM=support.maxOffsetM,frontExtentM=math.max(0,support.maxOffsetM),rearExtentM=math.max(0,-support.minOffsetM),physicalPrimitiveCount=0,basis=directionalBasis(directionalEnvelope)},nil
+        end
+    end
+    local support,reason=OuttaMyWay.PairSpecificPassageClearance.longitudinalSupportFromRelativeDiscs(
+        discs,tonumber(trajectory and trajectory.establishedDirectionX),tonumber(trajectory and trajectory.establishedDirectionZ))
+    if support==nil then return nil,tostring(role).."_PASSAGE_LONGITUDINAL_SUPPORT:"..tostring(reason) end
+    support.basis="CONFIGURATION_CONDITIONED_REPRESENTED_DISCS"
+    return support,nil
+end
+
+local function excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpace,longitudinalSeparationM)
+    local aLong,aReason=longitudinalSupport(arrangement.subjectPassageDiscs,arrangement.subjectDirectionalPassageEnvelope,aSpace,aTrajectory,"SUBJECT")
+    if aLong==nil then return nil,aReason end
+    local bLong,bReason=longitudinalSupport(arrangement.otherPassageDiscs,arrangement.otherDirectionalPassageEnvelope,bSpace,bTrajectory,"OTHER")
+    if bLong==nil then return nil,bReason end
+
+    local maximumOffset=math.max(math.abs(tonumber(arrangement.subjectLateralOffsetM) or 0),math.abs(tonumber(arrangement.otherLateralOffsetM) or 0))
+    local development=0
+    if maximumOffset>0.001 then
+        local minimumDevelopment=tonumber(OuttaMyWay.D0146_STEP2_MIN_DEVELOPMENT_DISTANCE_M) or 4.0
+        local forwardPerLateral=tonumber(OuttaMyWay.D0146_STEP2_DEVELOPMENT_FORWARD_PER_LATERAL_M) or 2.0
+        development=math.max(minimumDevelopment,maximumOffset*forwardPerLateral)
+    end
+    local recovery=development
+    local frontOverlap=aLong.frontExtentM+bLong.frontExtentM
+    local rearClear=aLong.rearExtentM+bLong.rearExtentM
+    local entryAllowance=tonumber(OuttaMyWay.D0146_STEP2_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M) or 3.0
+    local entryBoundary=frontOverlap+2*development+entryAllowance
+    local currentSeparation=tonumber(longitudinalSeparationM)
+    if not finite(currentSeparation) or currentSeparation<0 then return nil,"CURRENT_PAIR_LONGITUDINAL_SEPARATION_UNRESOLVED" end
+    local entryReady=currentSeparation<=entryBoundary
+    local approachPerParticipant=entryReady and 0 or math.max(0,(currentSeparation-entryBoundary)*0.5)
+    local plannedEntrySeparation=entryReady and currentSeparation or entryBoundary
+    local postDevelopmentSeparation=math.max(0,plannedEntrySeparation-2*development)
+    local crossingForward=math.max(0,(postDevelopmentSeparation+rearClear)*0.5)
+    return {
+        maximumParticipantLateralExcursionM=maximumOffset,
+        developmentDistanceM=development,recoveryDistanceM=recovery,
+        subjectFrontExtentM=aLong.frontExtentM,subjectRearExtentM=aLong.rearExtentM,
+        otherFrontExtentM=bLong.frontExtentM,otherRearExtentM=bLong.rearExtentM,
+        crossingWindowEntrySeparationM=frontOverlap,crossingWindowRearClearSeparationM=rearClear,
+        crossingWindowBasis=(aLong.basis~="CONFIGURATION_CONDITIONED_REPRESENTED_DISCS" and bLong.basis~="CONFIGURATION_CONDITIONED_REPRESENTED_DISCS") and ((aLong.basis=="GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPE" and bLong.basis=="GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPE") and "GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES" or "GIANTS_DIRECTIONAL_ASSEMBLY_ENVELOPES") or "CONFIGURATION_CONDITIONED_REPRESENTED_LONGITUDINAL_EXTENTS",
+        crossingWindowForwardPerParticipantM=crossingForward,
+        passageEntryControlAllowanceM=entryAllowance,passageEntryBoundarySeparationM=entryBoundary,
+        passageEntryReady=entryReady,approachDistancePerParticipantM=approachPerParticipant,
+        plannedEntrySeparationM=plannedEntrySeparation,
+        totalForwardDistanceM=development+crossingForward+recovery,
+        model="DEVELOPMENT_CROSSING_WINDOW_RECOVERY_EXCURSION",
+        clearanceDeficitM=math.max(0,tonumber(arrangement.combinedLateralBurdenM) or 0)
+    },nil
+end
+
+local function makeGuide(conflict,aTrajectory,bTrajectory,aSpace,bSpace,aOffset,bOffset,geometry)
+    if type(geometry)~="table" then return nil,"PASSAGE_EXCURSION_GEOMETRY_UNAVAILABLE" end
+    local development=tonumber(geometry.developmentDistanceM) or 0
+    local traversal=tonumber(geometry.crossingWindowForwardPerParticipantM) or 0
+    local recovery=tonumber(geometry.recoveryDistanceM) or 0
+    local traversalRadius=tonumber(OuttaMyWay.D0146_STEP2_TRAVERSAL_GATE_RADIUS_M) or 1.0
+    local developmentRadius=math.min(tonumber(OuttaMyWay.D0146_STEP2_DEVELOPMENT_GATE_RADIUS_M) or 2.0,math.max(traversalRadius,development*0.25))
+    local recoveryRadius=math.min(tonumber(OuttaMyWay.D0146_STEP2_REACQUISITION_GATE_RADIUS_M) or 2.0,math.max(traversalRadius,recovery*0.25))
+    local gates={}
+    if development>0.001 then
+        gates[#gates+1]={kind="DEVELOPMENT_ENTRY",forwardM=development*0.5,lateralFraction=0.5,radiusM=developmentRadius}
+    end
+    gates[#gates+1]={kind="CROSSING_WINDOW_ENTRY",forwardM=development,lateralFraction=1.0,radiusM=traversalRadius}
+    gates[#gates+1]={kind="CROSSING_WINDOW_EXIT",forwardM=development+traversal,lateralFraction=1.0,radiusM=traversalRadius}
+    if recovery>0.001 then
+        gates[#gates+1]={kind="RECOVERY_EXIT",forwardM=development+traversal+recovery*0.5,lateralFraction=0.5,radiusM=recoveryRadius}
+    end
+    gates[#gates+1]={kind="NATIVE_REACQUISITION",forwardM=development+traversal+recovery,lateralFraction=0.0,radiusM=recoveryRadius}
+
     local overlap=conflict.supportedCorridorOverlap or {}
     local rightX,rightZ=tonumber(overlap.sharedRightX),tonumber(overlap.sharedRightZ)
     if rightX==nil or rightZ==nil then return nil,"SHARED_PASSAGE_FRAME_UNAVAILABLE" end
     local a0x,a0z=tonumber(aSpace.occupancy and aSpace.occupancy.x),tonumber(aSpace.occupancy and aSpace.occupancy.z)
     local b0x,b0z=tonumber(bSpace.occupancy and bSpace.occupancy.x),tonumber(bSpace.occupancy and bSpace.occupancy.z)
     if not finite(a0x) or not finite(a0z) or not finite(b0x) or not finite(b0z) then return nil,"CURRENT_SPACE_POSE_UNAVAILABLE" end
+    local approach=tonumber(geometry.approachDistancePerParticipantM) or 0
+    a0x=a0x+aTrajectory.establishedDirectionX*approach; a0z=a0z+aTrajectory.establishedDirectionZ*approach
+    b0x=b0x+bTrajectory.establishedDirectionX*approach; b0z=b0z+bTrajectory.establishedDirectionZ*approach
+
     for index,gate in ipairs(gates) do
         local af=gate.lateralFraction*aOffset; local bf=gate.lateralFraction*bOffset
         gate.index=index
         gate.subject={assemblyId=conflict.subjectAssemblyId,x=a0x+aTrajectory.establishedDirectionX*gate.forwardM+rightX*af,z=a0z+aTrajectory.establishedDirectionZ*gate.forwardM+rightZ*af,radiusM=gate.radiusM}
         gate.other={assemblyId=conflict.otherAssemblyId,x=b0x+bTrajectory.establishedDirectionX*gate.forwardM+rightX*bf,z=b0z+bTrajectory.establishedDirectionZ*gate.forwardM+rightZ*bf,radiusM=gate.radiusM}
     end
-    return {gates=gates,developmentDistanceM=development,traversalDistanceM=traversal,reacquisitionDistanceM=reacquisition},nil
+    return {
+        gates=gates,entryOrigins={subject={x=a0x,z=a0z},other={x=b0x,z=b0z}},
+        executionFrame={
+            sharedRightX=rightX,sharedRightZ=rightZ,
+            subjectForwardX=aTrajectory.establishedDirectionX,subjectForwardZ=aTrajectory.establishedDirectionZ,
+            otherForwardX=bTrajectory.establishedDirectionX,otherForwardZ=bTrajectory.establishedDirectionZ
+        },
+        developmentDistanceM=development,traversalDistanceM=traversal,reacquisitionDistanceM=recovery,
+        crossingWindow={
+            entrySeparationM=geometry.crossingWindowEntrySeparationM,rearClearSeparationM=geometry.crossingWindowRearClearSeparationM,
+            forwardPerParticipantM=traversal,reference=geometry.crossingWindowBasis or "PASSAGE_CONFIGURED_REPRESENTED_LONGITUDINAL_EXTENTS"
+        },
+        passageEntry={ready=geometry.passageEntryReady,boundarySeparationM=geometry.passageEntryBoundarySeparationM,controlAllowanceM=geometry.passageEntryControlAllowanceM,approachDistancePerParticipantM=approach},
+        excursionModel=geometry.model,totalForwardDistanceM=geometry.totalForwardDistanceM,clearanceDeficitM=geometry.clearanceDeficitM
+    },nil
 end
 
 local function guideFieldSupport(guide,aSpace,bSpace,fieldWorld)
     if type(fieldWorld)~="table" or type(fieldWorld.boundary)~="table" or OuttaMyWay.ValueRecord.length(fieldWorld.boundary)<3 then return false,"FIELD_WORLD_GEOMETRY_UNAVAILABLE" end
     local stepM=OuttaMyWay.D0146_STEP2_FIELD_SWEEP_SAMPLE_M or 2.0
+    local entryOrigins=guide.entryOrigins or {}
     local previous={
-        subject={x=tonumber(aSpace.occupancy and aSpace.occupancy.x),z=tonumber(aSpace.occupancy and aSpace.occupancy.z)},
-        other={x=tonumber(bSpace.occupancy and bSpace.occupancy.x),z=tonumber(bSpace.occupancy and bSpace.occupancy.z)}
+        subject={x=tonumber(entryOrigins.subject and entryOrigins.subject.x) or tonumber(aSpace.occupancy and aSpace.occupancy.x),z=tonumber(entryOrigins.subject and entryOrigins.subject.z) or tonumber(aSpace.occupancy and aSpace.occupancy.z)},
+        other={x=tonumber(entryOrigins.other and entryOrigins.other.x) or tonumber(bSpace.occupancy and bSpace.occupancy.x),z=tonumber(entryOrigins.other and entryOrigins.other.z) or tonumber(bSpace.occupancy and bSpace.occupancy.z)}
     }
     for _,gate in ipairs(guide.gates or {}) do
         for _,role in ipairs({"subject","other"}) do
@@ -169,34 +319,102 @@ local function guideFieldSupport(guide,aSpace,bSpace,fieldWorld)
     return true,nil,{centrelineFieldSupported=true,boundaryEncroachmentUsed=false,sampleStepM=stepM}
 end
 
-local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearanceM)
+local function rectangleCorners(x,z,forwardX,forwardZ,envelope)
+    local bounds=directionalEnvelopeBounds(envelope); if bounds==nil then return nil end
+    local length=math.sqrt(forwardX*forwardX+forwardZ*forwardZ); if length<=0.0001 then return nil end
+    forwardX,forwardZ=forwardX/length,forwardZ/length; local rightX,rightZ=forwardZ,-forwardX
+    local result={}
+    for _,corner in ipairs({
+        {bounds.minRightM,bounds.minForwardM},{bounds.maxRightM,bounds.minForwardM},
+        {bounds.maxRightM,bounds.maxForwardM},{bounds.minRightM,bounds.maxForwardM}
+    }) do result[#result+1]={x=x+rightX*corner[1]+forwardX*corner[2],z=z+rightZ*corner[1]+forwardZ*corner[2]} end
+    return result
+end
+local function pointSegmentDistance(px,pz,ax,az,bx,bz)
+    local vx,vz=bx-ax,bz-az; local denom=vx*vx+vz*vz
+    if denom<=1e-12 then return distance(px,pz,ax,az) end
+    local t=((px-ax)*vx+(pz-az)*vz)/denom; t=math.max(0,math.min(1,t))
+    return distance(px,pz,ax+vx*t,az+vz*t)
+end
+local function projection(corners,axisX,axisZ)
+    local minimum,maximum=nil,nil
+    for _,p in ipairs(corners) do local v=p.x*axisX+p.z*axisZ; minimum=minimum==nil and v or math.min(minimum,v); maximum=maximum==nil and v or math.max(maximum,v) end
+    return minimum,maximum
+end
+local function polygonSeparation(a,b)
+    local minPenetration=math.huge; local separated=false
+    local axes={}
+    for _,poly in ipairs({a,b}) do
+        for i=1,2 do local p,q=poly[i],poly[i+1]; local ex,ez=q.x-p.x,q.z-p.z; local len=math.sqrt(ex*ex+ez*ez); if len>0.0001 then axes[#axes+1]={x=-ez/len,z=ex/len} end end
+    end
+    for _,axis in ipairs(axes) do
+        local amin,amax=projection(a,axis.x,axis.z); local bmin,bmax=projection(b,axis.x,axis.z)
+        local gap=math.max(bmin-amax,amin-bmax)
+        if gap>0 then separated=true else minPenetration=math.min(minPenetration,math.min(amax,bmax)-math.max(amin,bmin)) end
+    end
+    if not separated then return -minPenetration end
+    local minimum=math.huge
+    for _,pair in ipairs({{a,b},{b,a}}) do
+        for _,p in ipairs(pair[1]) do
+            for i=1,4 do local q=pair[2][i]; local r=pair[2][i%4+1]; minimum=math.min(minimum,pointSegmentDistance(p.x,p.z,q.x,q.z,r.x,r.z)) end
+        end
+    end
+    return minimum
+end
+local function directionalRectangleClearance(ax,az,bx,bz,guide,aEnvelope,bEnvelope)
+    if not directionalEnvelopeValid(aEnvelope) or not directionalEnvelopeValid(bEnvelope) then return nil end
+    local frame=guide.executionFrame or {}
+    local afx,afz=tonumber(frame.subjectForwardX),tonumber(frame.subjectForwardZ)
+    local bfx,bfz=tonumber(frame.otherForwardX),tonumber(frame.otherForwardZ)
+    if not finite(afx) or not finite(afz) or not finite(bfx) or not finite(bfz) then return nil end
+    local a=rectangleCorners(ax,az,afx,afz,aEnvelope); local b=rectangleCorners(bx,bz,bfx,bfz,bEnvelope)
+    if a==nil or b==nil then return nil end
+    return polygonSeparation(a,b)
+end
+
+local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearanceM,aEnvelope,bEnvelope)
     if type(aDiscs)~="table" or type(bDiscs)~="table" then return false,"CONFIGURATION_CONDITIONED_PAIR_SWEEP_PHYSICAL_UNAVAILABLE" end
     local minimum=math.huge
+    local minimumCrossing=math.huge
+    local minimumOutsideCrossing=math.huge
     local samples=OuttaMyWay.D0146_STEP2_PAIR_SWEEP_SAMPLES_PER_LEG or 20
+    local directional=directionalEnvelopeValid(aEnvelope) and directionalEnvelopeValid(bEnvelope)
+    local entryOrigins=guide.entryOrigins or {}
     local previous={
-        subject={x=tonumber(aSpace.occupancy and aSpace.occupancy.x),z=tonumber(aSpace.occupancy and aSpace.occupancy.z)},
-        other={x=tonumber(bSpace.occupancy and bSpace.occupancy.x),z=tonumber(bSpace.occupancy and bSpace.occupancy.z)}
+        subject={x=tonumber(entryOrigins.subject and entryOrigins.subject.x) or tonumber(aSpace.occupancy and aSpace.occupancy.x),z=tonumber(entryOrigins.subject and entryOrigins.subject.z) or tonumber(aSpace.occupancy and aSpace.occupancy.z)},
+        other={x=tonumber(entryOrigins.other and entryOrigins.other.x) or tonumber(bSpace.occupancy and bSpace.occupancy.x),z=tonumber(entryOrigins.other and entryOrigins.other.z) or tonumber(bSpace.occupancy and bSpace.occupancy.z)}
     }
+    local crossingActive=false
     for _,gate in ipairs(guide.gates or {}) do
+        local segmentIsCrossing=crossingActive and gate.kind=="CROSSING_WINDOW_EXIT"
         for i=0,samples do
             local t=i/samples
             local ax=previous.subject.x+(gate.subject.x-previous.subject.x)*t
             local az=previous.subject.z+(gate.subject.z-previous.subject.z)*t
             local bx=previous.other.x+(gate.other.x-previous.other.x)*t
             local bz=previous.other.z+(gate.other.z-previous.other.z)*t
-            local clearance=OuttaMyWay.PairSpecificPassageClearance.minimumTranslatedDiscClearance(aDiscs,ax,az,bDiscs,bx,bz)
+            local clearance=directional and directionalRectangleClearance(ax,az,bx,bz,guide,aEnvelope,bEnvelope) or OuttaMyWay.PairSpecificPassageClearance.minimumTranslatedDiscClearance(aDiscs,ax,az,bDiscs,bx,bz)
             if clearance==nil then return false,"PAIR_SWEEP_CLEARANCE_UNRESOLVED" end
             minimum=math.min(minimum,clearance)
+            local atCrossingEntry=(gate.kind=="CROSSING_WINDOW_ENTRY" and i==samples)
+            local inCrossing=segmentIsCrossing or atCrossingEntry
+            if inCrossing then minimumCrossing=math.min(minimumCrossing,clearance) else minimumOutsideCrossing=math.min(minimumOutsideCrossing,clearance) end
         end
+        if gate.kind=="CROSSING_WINDOW_ENTRY" then crossingActive=true elseif gate.kind=="CROSSING_WINDOW_EXIT" then crossingActive=false end
         previous.subject={x=gate.subject.x,z=gate.subject.z}; previous.other={x=gate.other.x,z=gate.other.z}
     end
     local required=tonumber(nominalClearanceM) or 1.0
-    if minimum+0.001<required then
-        return false,"PAIR_SPECIFIC_NOMINAL_CLEARANCE_NOT_SUPPORTED",{minimumRepresentedClearanceM=minimum,requiredNominalClearanceM=required}
+    -- D-0165: Nominal Passage Clearance is a Crossing-Window contract. Development may build toward it and Recovery may relinquish it once the physical crossing is positively complete, but represented overlap is never authorised outside the window.
+    if minimumOutsideCrossing<-0.001 then
+        return false,"PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW",{minimumRepresentedClearanceM=minimum,minimumOutsideCrossingClearanceM=minimumOutsideCrossing,minimumCrossingWindowClearanceM=minimumCrossing,requiredNominalClearanceM=required}
+    end
+    if minimumCrossing==math.huge or minimumCrossing+0.001<required then
+        return false,"PAIR_SPECIFIC_NOMINAL_CLEARANCE_NOT_SUPPORTED_IN_CROSSING_WINDOW",{minimumRepresentedClearanceM=minimum,minimumOutsideCrossingClearanceM=minimumOutsideCrossing,minimumCrossingWindowClearanceM=minimumCrossing,requiredNominalClearanceM=required}
     end
     return true,nil,{
-        minimumRepresentedClearanceM=minimum,requiredNominalClearanceM=required,
-        supportBasis="TRANSLATED_CONFIGURATION_CONDITIONED_REPRESENTED_DISCS",
+        minimumRepresentedClearanceM=minimum,minimumOutsideCrossingClearanceM=minimumOutsideCrossing,minimumCrossingWindowClearanceM=minimumCrossing,requiredNominalClearanceM=required,
+        clearanceContract="NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_CLEARANCE_INSIDE_CROSSING_WINDOW",
+        supportBasis=directional and (((aEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST") and (bEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST")) and "TRANSLATED_GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES" or "TRANSLATED_GIANTS_DIRECTIONAL_ASSEMBLY_ENVELOPES") or "TRANSLATED_CONFIGURATION_CONDITIONED_REPRESENTED_DISCS",
         negativeClearanceAuthority=false
     }
 end
@@ -263,9 +481,10 @@ local function thirdPartyGuideSupport(guide,aSpace,bSpace,aDiscs,bDiscs,picture,
     local samples=OuttaMyWay.D0146_STEP2_PAIR_SWEEP_SAMPLES_PER_LEG or 20
     local support={}
     for _,third in ipairs(thirds) do
+        local entryOrigins=guide.entryOrigins or {}
         local previous={
-            subject={x=tonumber(aSpace.occupancy.x),z=tonumber(aSpace.occupancy.z)},
-            other={x=tonumber(bSpace.occupancy.x),z=tonumber(bSpace.occupancy.z)}
+            subject={x=tonumber(entryOrigins.subject and entryOrigins.subject.x) or tonumber(aSpace.occupancy.x),z=tonumber(entryOrigins.subject and entryOrigins.subject.z) or tonumber(aSpace.occupancy.z)},
+            other={x=tonumber(entryOrigins.other and entryOrigins.other.x) or tonumber(bSpace.occupancy.x),z=tonumber(entryOrigins.other and entryOrigins.other.z) or tonumber(bSpace.occupancy.z)}
         }
         local minimum=math.huge
         for _,gate in ipairs(guide.gates or {}) do
@@ -304,13 +523,14 @@ local function currentParticipantGeometry(physical,space,rightX,rightZ)
     if discs==nil then return nil,discReason end
     local support,supportReason=OuttaMyWay.PairSpecificPassageClearance.lateralSupportFromRelativeDiscs(discs,rightX,rightZ)
     if support==nil then return nil,supportReason end
-    return {discs=discs,support=support,configurationProfileId=physical.configurationProfileId,mode="RETAIN_CURRENT"},nil
+    local directional=directionalEnvelopeValid(physical.directionalPassageEnvelope) and physical.directionalPassageEnvelope or nil
+    return {discs=discs,support=support,directionalEnvelope=directional,configurationProfileId=physical.configurationProfileId,mode="RETAIN_CURRENT"},nil
 end
 
 local function compactParticipantGeometry(physical,space,rightX,rightZ,conflictSideSign,currentGeometry)
     local currentEvidence=physical.configurationEvidence or {}
     if currentEvidence.allDeployed~=true then return nil,"CURRENT_CONFIGURATION_NOT_STABLY_DEPLOYED" end
-    local currentFacing=facingExtent(currentGeometry.support,conflictSideSign)
+    local currentFacing=currentGeometry.directionalEnvelope and directionalFacingExtent(currentGeometry.directionalEnvelope,space,rightX,rightZ,conflictSideSign) or facingExtent(currentGeometry.support,conflictSideSign)
     local best=nil
     for _,profile in OuttaMyWay.ValueRecord.ipairs(physical.configurationAlternatives or {}) do
         local evidence=profile.configurationEvidence or {}
@@ -319,13 +539,14 @@ local function compactParticipantGeometry(physical,space,rightX,rightZ,conflictS
             if discs~=nil then
                 local support=OuttaMyWay.PairSpecificPassageClearance.lateralSupportFromRelativeDiscs(discs,rightX,rightZ)
                 if support~=nil then
-                    local facing=facingExtent(support,conflictSideSign)
+                    local directional=directionalEnvelopeValid(profile.directionalPassageEnvelope) and profile.directionalPassageEnvelope or nil
+                    local facing=directional and directionalFacingExtent(directional,space,rightX,rightZ,conflictSideSign) or facingExtent(support,conflictSideSign)
                     local release=currentFacing-facing
                     if release>0.001 and (best==nil or release>best.releaseM+0.001 or (math.abs(release-best.releaseM)<=0.001 and tostring(profile.configurationProfileId)<tostring(best.configurationProfileId))) then
                         best={
-                            mode="COMPACT_REQUIRED",discs=discs,support=support,configurationProfileId=profile.configurationProfileId,
+                            mode="COMPACT_REQUIRED",discs=discs,support=support,directionalEnvelope=directional,configurationProfileId=profile.configurationProfileId,
                             configurationKey=profile.configurationKey,releaseM=release,currentFacingM=currentFacing,selectedFacingM=facing,
-                            authority="AI_REACHABLE_PRODUCTIVE_CONFIGURATION_OBSERVED_WITHOUT_OUTTAMYWAY_AUTHORITY"
+                            authority=directional and "GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST" or "AI_REACHABLE_PRODUCTIVE_CONFIGURATION_OBSERVED_WITHOUT_OUTTAMYWAY_AUTHORITY"
                         }
                     end
                 end
@@ -339,12 +560,12 @@ end
 local function participantSelection(physical,space,rightX,rightZ,conflictSideSign)
     local current,currentReason=currentParticipantGeometry(physical,space,rightX,rightZ)
     if current==nil then return nil,currentReason end
-    local currentFacing=facingExtent(current.support,conflictSideSign)
+    local currentFacing=current.directionalEnvelope and directionalFacingExtent(current.directionalEnvelope,space,rightX,rightZ,conflictSideSign) or facingExtent(current.support,conflictSideSign)
     local compact,compactReason=compactParticipantGeometry(physical,space,rightX,rightZ,conflictSideSign,current)
     if compact~=nil then return compact,nil end
     return {
-        mode="RETAIN_CURRENT",discs=current.discs,support=current.support,configurationProfileId=current.configurationProfileId,
-        releaseM=0,currentFacingM=currentFacing,selectedFacingM=currentFacing,authority="CURRENT_CONFIGURATION_RETAINED",reason=compactReason
+        mode="RETAIN_CURRENT",discs=current.discs,support=current.support,directionalEnvelope=current.directionalEnvelope,configurationProfileId=current.configurationProfileId,
+        releaseM=0,currentFacingM=currentFacing,selectedFacingM=currentFacing,authority=current.directionalEnvelope and "GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST" or "CURRENT_CONFIGURATION_RETAINED",reason=compactReason
     },nil
 end
 
@@ -359,6 +580,8 @@ local function configurationConditionedPair(pairClearance,aPhysical,aSpace,bPhys
             relationSign=sign,subjectFacingExtentM=aSelection.selectedFacingM,otherFacingExtentM=bSelection.selectedFacingM,
             physicalContactThresholdM=contact,nominalInterAssemblyClearanceM=nominalClearanceM,policyRequiredSeparationM=contact+nominalClearanceM,
             subjectConfiguration=aSelection,otherConfiguration=bSelection,
+            subjectDirectionalPassageEnvelope=aSelection.directionalEnvelope,otherDirectionalPassageEnvelope=bSelection.directionalEnvelope,
+            representationBasis=(aSelection.directionalEnvelope and bSelection.directionalEnvelope) and ((aSelection.directionalEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST" and bSelection.directionalEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST") and "GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES" or "GIANTS_DIRECTIONAL_ASSEMBLY_ENVELOPES") or "CONFIGURATION_CONDITIONED_FROM_NATIVE_OBSERVED_PROFILES",
             configurationReleasedSpaceM=(aSelection.releaseM or 0)+(bSelection.releaseM or 0)
         },nil
     end
@@ -370,7 +593,7 @@ local function configurationConditionedPair(pairClearance,aPhysical,aSpace,bPhys
         subjectFacingExtentM=current.subjectFacingExtentM,otherFacingExtentM=current.otherFacingExtentM,physicalContactThresholdM=current.physicalContactThresholdM,
         nominalInterAssemblyClearanceM=nominalClearanceM,policyRequiredSeparationM=current.policyRequiredSeparationM,policyReserveM=pairClearance.currentLateralSeparationM-current.policyRequiredSeparationM,
         positiveRelation=positive,negativeRelation=negative,baselineCurrentConfiguration=pairClearance,
-        representationBasis="CONFIGURATION_CONDITIONED_FROM_NATIVE_OBSERVED_PROFILES",coverageComplete=false,negativeClearanceAuthority=false
+        representationBasis=current.representationBasis or "CONFIGURATION_CONDITIONED_FROM_NATIVE_OBSERVED_PROFILES",coverageComplete=false,negativeClearanceAuthority=false
     },nil
 end
 
@@ -403,7 +626,8 @@ local function arrangementCandidates(currentSigned,pairClearance)
             currentSeparationAlreadySufficient=alreadySufficient==true,subjectFacingExtentM=relation.subjectFacingExtentM,otherFacingExtentM=relation.otherFacingExtentM,
             physicalContactThresholdM=relation.physicalContactThresholdM,nominalInterAssemblyClearanceM=relation.nominalInterAssemblyClearanceM,policyRequiredSeparationM=relation.policyRequiredSeparationM,
             subjectConfiguration=relation.subjectConfiguration,otherConfiguration=relation.otherConfiguration,configurationReleasedSpaceM=relation.configurationReleasedSpaceM,
-            subjectPassageDiscs=relation.subjectConfiguration.discs,otherPassageDiscs=relation.otherConfiguration.discs
+            subjectPassageDiscs=relation.subjectConfiguration.discs,otherPassageDiscs=relation.otherConfiguration.discs,
+            subjectDirectionalPassageEnvelope=relation.subjectDirectionalPassageEnvelope,otherDirectionalPassageEnvelope=relation.otherDirectionalPassageEnvelope
         }
     end
     if math.abs(currentSigned)+0.001>=currentRelation.policyRequiredSeparationM then
@@ -449,6 +673,8 @@ local function planConflict(picture,snapshot,conflict)
     local ax,az=tonumber(aSpace.occupancy and aSpace.occupancy.x),tonumber(aSpace.occupancy and aSpace.occupancy.z)
     local bx,bz=tonumber(bSpace.occupancy and bSpace.occupancy.x),tonumber(bSpace.occupancy and bSpace.occupancy.z)
     if not finite(ax) or not finite(az) or not finite(bx) or not finite(bz) then return nil,"CURRENT_SPACE_POSE_UNAVAILABLE" end
+    local longitudinalSeparation=longitudinalPairSeparation(aSpace,bSpace,aTrajectory,bTrajectory)
+    if not finite(longitudinalSeparation) then return nil,"CURRENT_PAIR_LONGITUDINAL_SEPARATION_UNRESOLVED" end
     local nominalClearance=tonumber(OuttaMyWay.D0146_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M) or 1.0
     local baselinePairClearance,clearanceReason=OuttaMyWay.PairSpecificPassageClearance.currentPair(aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)
     if baselinePairClearance==nil then return nil,"PAIR_SPECIFIC_PASSAGE_CLEARANCE_UNAVAILABLE:"..tostring(clearanceReason) end
@@ -459,10 +685,16 @@ local function planConflict(picture,snapshot,conflict)
     local rejected={}
     local arrangements=arrangementCandidates(currentSigned,pairClearance)
     for index,arrangement in ipairs(arrangements) do
-        local guide,guideReason=makeGuide(conflict,aTrajectory,bTrajectory,aSpace,bSpace,arrangement.subjectLateralOffsetM,arrangement.otherLateralOffsetM,separation)
+        local geometry,geometryReason=excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpace,longitudinalSeparation)
+        local guide,guideReason=nil,nil
+        if geometry~=nil then
+            guide,guideReason=makeGuide(conflict,aTrajectory,bTrajectory,aSpace,bSpace,arrangement.subjectLateralOffsetM,arrangement.otherLateralOffsetM,geometry)
+        else
+            guideReason=geometryReason
+        end
         if guide~=nil then
             local fieldOk,fieldReason,fieldEvidence=guideFieldSupport(guide,aSpace,bSpace,fieldWorld)
-            local sweepOk,sweepReason,sweepEvidence=pairSweepSupport(guide,aSpace,bSpace,arrangement.subjectPassageDiscs,arrangement.otherPassageDiscs,nominalClearance)
+            local sweepOk,sweepReason,sweepEvidence=pairSweepSupport(guide,aSpace,bSpace,arrangement.subjectPassageDiscs,arrangement.otherPassageDiscs,nominalClearance,arrangement.subjectDirectionalPassageEnvelope,arrangement.otherDirectionalPassageEnvelope)
             local thirdOk,thirdReason,thirdEvidence=thirdPartyGuideSupport(guide,aSpace,bSpace,arrangement.subjectPassageDiscs,arrangement.otherPassageDiscs,picture,conflict,nominalClearance)
             if fieldOk and sweepOk and thirdOk then
                 arrangement.identity="d0146-arrangement:"..tostring(conflict.identity)..":"..tostring(index)
@@ -473,6 +705,7 @@ local function planConflict(picture,snapshot,conflict)
                 arrangement.currentPolicyReserveM=pairClearance.policyReserveM
                 arrangement.boundaryEncroachment=false
                 arrangement.configurationReduction="OPTIONAL_PER_PARTICIPANT"
+                arrangement.directionalPassageEnvelopeBasis=pairClearance.representationBasis
                 arrangement.pairwisePassageEconomy={combinedNecessaryInterventionM=arrangement.combinedLateralBurdenM,tieBreak="MINIMUM_MAX_PARTICIPANT_BURDEN_THEN_STABLE_ORDER"}
                 local passageConfiguration,configurationReason=passageConfigurationPlan(conflict,arrangement)
                 if passageConfiguration==nil then return nil,configurationReason end
@@ -490,7 +723,7 @@ local function planConflict(picture,snapshot,conflict)
                     subjectJobToken=aTrajectory.jobToken,otherJobToken=bTrajectory.jobToken,
                     subjectName=aMotion.name,otherName=bMotion.name,
                     subjectStartX=ax,subjectStartZ=az,otherStartX=bx,otherStartZ=bz,
-                    separationM=separation,trajectoryDot=conflict.trajectoryDot,
+                    separationM=separation,longitudinalSeparationM=longitudinalSeparation,trajectoryDot=conflict.trajectoryDot,
                     representationFitnessIds={fitness[1].representationId,fitness[2].representationId},
                     localPassageSpace={
                         fieldWorldReferenceKey=fieldWorld and fieldWorld.referenceKey or nil,passagePresumption=true,
@@ -500,8 +733,21 @@ local function planConflict(picture,snapshot,conflict)
                         thirdPartySupportBasis="CURRENT_POSITIVE_OPERATION_ASSEMBLY_OCCUPANCY"
                     },
                     passageArrangement=arrangement,passageGuide=guide,passageConfiguration=passageConfiguration,pairSpecificPassageClearance=pairClearance,
+                    passageEntry={
+                        ready=geometry.passageEntryReady,boundarySeparationM=geometry.passageEntryBoundarySeparationM,
+                        controlAllowanceM=geometry.passageEntryControlAllowanceM,approachDistancePerParticipantM=geometry.approachDistancePerParticipantM,
+                        selectionSeparationM=separation,selectionLongitudinalSeparationM=longitudinalSeparation,plannedEntrySeparationM=geometry.plannedEntrySeparationM
+                    },
+                    passageExcursion={
+                        model=geometry.model,clearanceDeficitM=geometry.clearanceDeficitM,maximumParticipantLateralExcursionM=geometry.maximumParticipantLateralExcursionM,
+                        developmentDistanceM=geometry.developmentDistanceM,recoveryDistanceM=geometry.recoveryDistanceM,totalForwardDistanceM=geometry.totalForwardDistanceM,
+                        crossingWindowEntrySeparationM=geometry.crossingWindowEntrySeparationM,crossingWindowRearClearSeparationM=geometry.crossingWindowRearClearSeparationM,
+                        crossingWindowForwardPerParticipantM=geometry.crossingWindowForwardPerParticipantM,
+                        subjectFrontExtentM=geometry.subjectFrontExtentM,subjectRearExtentM=geometry.subjectRearExtentM,
+                        otherFrontExtentM=geometry.otherFrontExtentM,otherRearExtentM=geometry.otherRearExtentM,crossingWindowBasis=geometry.crossingWindowBasis
+                    },
                     progressiveSearch={candidateCount=#arrangements,selectedIndex=index,rejectedBeforeSelection=rejected,satisficed=true,conflictSelection="NEAREST_LOCAL_ESTABLISHED_CONFLICT_FIRST"},
-                    controlProfile="D0146_CONFIGURATION_FIRST_GUIDED_PASSAGE_V5",
+                    controlProfile="D0146_PASSAGE_EXCURSION_V6",
                     provenance={source="LocalPassagePlanner",layer="CANDIDATE_SUPPORT",decisionAuthority=false,controlAuthority=false,generalVehicleAuthority=false,globalOptimisation=false,vehicleNameAdmissionGate=false}
                 },nil
             end

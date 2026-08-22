@@ -1,14 +1,11 @@
--- FS25_OuttaMyWay v0.1.0.4 TEST — D-0146 Pair-Specific Passage Clearance purpose-specific
--- mechanical Representation Fitness.
+-- FS25_OuttaMyWay v0.1.3.3 TEST — D-0146/D-0159 purpose-specific Passage fitness.
 --
--- Situation does not pre-classify passage capability by vehicle name.  Once an
--- Established Opposed Corridor Conflict exists, current cached assembly geometry
--- and configuration identity are enough to admit the pair to Candidate-owned
--- Local Passage Space search. Candidate derives Pair-Specific Passage Clearance
--- from current participating represented components plus the explicit Nominal
--- Inter-Assembly Clearance calibration. This test tranche retains current
--- configuration; actual Hold/Reposition capability remains a Control preflight
--- responsibility and may still disprove the Passage Presumption from Reality.
+-- Situation does not pre-classify Passage capability by vehicle identity. Once
+-- an Established Opposed Corridor Conflict exists, cached current/observed
+-- assembly geometry and configuration identity support Candidate-owned Local
+-- Passage search.  This assessment exposes mechanical fitness for the
+-- D0146_PASSAGE_EXCURSION_V6 control profile; configuration selection and the
+-- Passage Excursion geometry remain Candidate responsibilities.
 
 OuttaMyWay.PassageCapabilityAssessment={}
 local Assessment=OuttaMyWay.PassageCapabilityAssessment
@@ -59,7 +56,7 @@ local function record(conflict,motion,physical,assemblyId,otherAssemblyId)
             physicalPrimitiveCount=p and p.summary and p.summary.physicalPrimitiveCount or 0,
             physicalCoverageComplete=p and p.coverageComplete==true or false,
             negativeClearanceAuthority=p and p.negativeClearanceAuthority==true or false,
-            controlProfile="D0146_CONFIGURATION_FIRST_GUIDED_PASSAGE_V5",
+            controlProfile="D0146_PASSAGE_EXCURSION_V6",
             vehicleNameAdmissionGate=false,
             configurationReductionAuthority="NOT_SELECTED_CURRENT_CONFIGURATION_RETAINED"
         },

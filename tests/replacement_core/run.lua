@@ -2139,6 +2139,124 @@ test("Job Episode representation cache discovers compound members once and reuse
     if not found then error("cached local geometry did not follow current articulated member pose") end
 end)
 
+test("representation cache reads GIANTS base size once and exposes it only for compact or non-foldable single-member Passage",function()
+    local oldWorldTranslation=getWorldTranslation
+    local oldLocalDirectionToWorld=localDirectionToWorld
+    getWorldTranslation=function(node) return 0,0,0 end
+    localDirectionToWorld=function(node,x,y,z) return x,y,z end
+    local xmlReads=0
+    local xmlFile={getValue=function(self,key)
+        xmlReads=xmlReads+1
+        local values={
+            ["vehicle.base.size#width"]=3.5,["vehicle.base.size#length"]=11.1,
+            ["vehicle.base.size#widthOffset"]=0,["vehicle.base.size#lengthOffset"]=0.25
+        }
+        return values[key]
+    end}
+    local worker={rootNode=1,configFileName="data/vehicles/agrifac/condorEndurance2/condorEndurance2.xml",xmlFile=xmlFile,components={{node=1}},spec_foldable={foldAnimTime=0},getName=function() return "Condor" end,getAttachedImplements=function() return {} end,getAISteeringNode=function() return 1 end}
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={
+        getNumOfChildren=function() return 0 end,getChildAt=function() return nil end,getName=function() return "root" end,
+        localToWorld=function(node,x,y,z) return x,y,z end,
+        getShapeGeometryBoundingSphere=function() return 0,0,0,5,true end,getShapeBoundingSphere=function() return 0,0,0,5,true end,
+        getShapeWorldBoundingSphere=function() return 0,0,0,5 end,getIsCompoundChild=function() return false end
+    }})
+    cache:beginObservationCycle(); local deployed=cache:observe(worker,"vehicle-root:1","job-size",0); cache:endObservationCycle()
+    equal(deployed.directionalPassageEnvelope,nil,"deployed foldable incorrectly used compact base size")
+    local readsAfterBuild=xmlReads
+    worker.spec_foldable.foldAnimTime=1
+    cache:beginObservationCycle(); local folded=cache:observe(worker,"vehicle-root:1","job-size",1); cache:endObservationCycle()
+    equal(xmlReads,readsAfterBuild,"base size XML was reread after bootstrap")
+    equal(math.abs(folded.directionalPassageEnvelope.widthM-3.5)<0.001,true)
+    equal(math.abs(folded.directionalPassageEnvelope.lengthM-11.1)<0.001,true)
+    equal(folded.directionalPassageEnvelope.authority,"GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST")
+    getWorldTranslation=oldWorldTranslation
+    localDirectionToWorld=oldLocalDirectionToWorld
+end)
+
+test("representation cache does not let AI-disabled mechanical foldability suppress directional Passage metadata",function()
+    local oldWorldTranslation=getWorldTranslation
+    local oldLocalDirectionToWorld=localDirectionToWorld
+    getWorldTranslation=function(node) return 0,0,0 end
+    localDirectionToWorld=function(node,x,y,z) return x,y,z end
+    local xmlFile={getValue=function(self,key)
+        local values={
+            ["vehicle.base.size#width"]=3.02,["vehicle.base.size#length"]=10.2,
+            ["vehicle.foldable.foldingConfigurations.foldingConfiguration(0).foldingParts#allowUnfoldingByAI"]=false
+        }
+        return values[key]
+    end}
+    local worker={rootNode=1,configFileName="data/vehicles/streumaster/fw212tdProfi/fw212tdProfi.xml",xmlFile=xmlFile,components={{node=1}},spec_foldable={foldAnimTime=0},getName=function() return "FW212" end,getAttachedImplements=function() return {} end,getAISteeringNode=function() return 1 end}
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={
+        getNumOfChildren=function() return 0 end,getChildAt=function() return nil end,getName=function() return "root" end,
+        localToWorld=function(node,x,y,z) return x,y,z end,
+        getShapeGeometryBoundingSphere=function() return 0,0,0,5,true end,getShapeBoundingSphere=function() return 0,0,0,5,true end,
+        getShapeWorldBoundingSphere=function() return 0,0,0,5 end,getIsCompoundChild=function() return false end
+    }})
+    cache:beginObservationCycle(); local evidence=cache:observe(worker,"vehicle-root:fw212","job-fw212",0); cache:endObservationCycle()
+    equal(evidence.directionalPassageEnvelope~=nil,true,"AI-disabled role-play foldability incorrectly suppressed directional envelope")
+    equal(math.abs(evidence.directionalPassageEnvelope.widthM-3.02)<0.001,true)
+    equal(math.abs(evidence.directionalPassageEnvelope.lengthM-10.2)<0.001,true)
+    getWorldTranslation=oldWorldTranslation
+    localDirectionToWorld=oldLocalDirectionToWorld
+end)
+
+test("representation cache composes generic multi-member directional Passage envelope from offset member rectangles",function()
+    local oldWorldTranslation=getWorldTranslation
+    local oldLocalDirectionToWorld=localDirectionToWorld
+    local positions={[1]={0,0,0},[10]={3,0,-5}}
+    getWorldTranslation=function(node) local p=positions[node] or {0,0,0}; return p[1],p[2],p[3] end
+    localDirectionToWorld=function(node,x,y,z) return x,y,z end
+    local attached={}
+    local implement={rootNode=10,sizeWidth=4,sizeLength=8,components={{node=10}},getName=function() return "Offset Implement" end,getAttachedImplements=function() return {} end}
+    local worker={rootNode=1,sizeWidth=3,sizeLength=5,components={{node=1}},getName=function() return "Tractor" end,getAttachedImplements=function() return attached end,getAISteeringNode=function() return 1 end}
+    attached={{object=implement}}
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={
+        getNumOfChildren=function() return 0 end,getChildAt=function() return nil end,getName=function(node) return node==1 and "tractorRoot" or "implementRoot" end,
+        localToWorld=function(node,x,y,z) local p=positions[node] or {0,0,0}; return p[1]+x,p[2]+y,p[3]+z end,
+        getShapeGeometryBoundingSphere=function(node) return 0,0,0,node==1 and 2 or 2.5,true end,
+        getShapeBoundingSphere=function(node) return 0,0,0,node==1 and 2 or 2.5,true end,
+        getShapeWorldBoundingSphere=function(node) local p=positions[node]; return p[1],p[2],p[3],node==1 and 2 or 2.5 end,
+        getIsCompoundChild=function() return false end
+    }})
+    cache:beginObservationCycle(); local evidence=cache:observe(worker,"vehicle-root:1","job-directional-union",0); cache:endObservationCycle()
+    local envelope=evidence.directionalPassageEnvelope
+    equal(envelope~=nil,true)
+    equal(envelope.authority,"GIANTS_DIRECTIONAL_MEMBER_UNION_PASSAGE_TEST")
+    equal(envelope.directionalRectangleMemberCount,2); equal(envelope.representedDiscFallbackMemberCount,0)
+    equal(math.abs(envelope.minRightM+1.5)<0.001,true); equal(math.abs(envelope.maxRightM-5.0)<0.001,true)
+    equal(math.abs(envelope.minForwardM+9.0)<0.001,true); equal(math.abs(envelope.maxForwardM-2.5)<0.001,true)
+    equal(math.abs(envelope.leftExtentM-1.5)<0.001,true); equal(math.abs(envelope.rightExtentM-5.0)<0.001,true)
+    equal(math.abs(envelope.frontExtentM-2.5)<0.001,true); equal(math.abs(envelope.rearExtentM-9.0)<0.001,true)
+    getWorldTranslation=oldWorldTranslation; localDirectionToWorld=oldLocalDirectionToWorld
+end)
+
+test("representation cache keeps generic directional assembly envelope conservative when one member lacks size metadata",function()
+    local oldWorldTranslation=getWorldTranslation
+    local oldLocalDirectionToWorld=localDirectionToWorld
+    local positions={[1]={0,0,0},[10]={3,0,-5}}
+    getWorldTranslation=function(node) local p=positions[node] or {0,0,0}; return p[1],p[2],p[3] end
+    localDirectionToWorld=function(node,x,y,z) return x,y,z end
+    local attached={}
+    local implement={rootNode=10,components={{node=10}},getName=function() return "Unknown Width Implement" end,getAttachedImplements=function() return {} end}
+    local worker={rootNode=1,sizeWidth=3,sizeLength=5,components={{node=1}},getName=function() return "Tractor" end,getAttachedImplements=function() return attached end,getAISteeringNode=function() return 1 end}
+    attached={{object=implement}}
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={
+        getNumOfChildren=function() return 0 end,getChildAt=function() return nil end,getName=function(node) return node==1 and "tractorRoot" or "implementRoot" end,
+        localToWorld=function(node,x,y,z) local p=positions[node] or {0,0,0}; return p[1]+x,p[2]+y,p[3]+z end,
+        getShapeGeometryBoundingSphere=function(node) return 0,0,0,node==1 and 2 or 2.5,true end,
+        getShapeBoundingSphere=function(node) return 0,0,0,node==1 and 2 or 2.5,true end,
+        getShapeWorldBoundingSphere=function(node) local p=positions[node]; return p[1],p[2],p[3],node==1 and 2 or 2.5 end,
+        getIsCompoundChild=function() return false end
+    }})
+    cache:beginObservationCycle(); local evidence=cache:observe(worker,"vehicle-root:1","job-directional-hybrid",0); cache:endObservationCycle()
+    local envelope=evidence.directionalPassageEnvelope
+    equal(envelope~=nil,true)
+    equal(envelope.directionalRectangleMemberCount,1); equal(envelope.representedDiscFallbackMemberCount,1)
+    equal(envelope.source,"GIANTS_BASE_SIZE_MEMBER_RECTANGLES_WITH_DISC_FALLBACK")
+    if envelope.maxRightM<5.49 then error("missing-metadata member disc fallback failed to preserve conservative right extent") end
+    getWorldTranslation=oldWorldTranslation; localDirectionToWorld=oldLocalDirectionToWorld
+end)
+
 test("configuration alternatives require a native observation outside OuttaMyWay configuration authority",function()
     local oldWorldTranslation=getWorldTranslation
     local oldLocalDirectionToWorld=localDirectionToWorld
@@ -3797,17 +3915,126 @@ test("D0146 Pair-Specific Passage Clearance uses conflict-facing one-sided exten
     equal(clearance.negativeClearanceAuthority,false)
 end)
 
-test("D0146 Step2 progressive local passage search selects a sufficient multi-gate arrangement",function()
-    local picture,snapshot=d0146Step2Fixture()
+test("D0146 Passage Excursion enters only when derived Entry Boundary is reached and uses a physical Crossing Window",function()
+    local picture,snapshot=d0146Step2Fixture(nil,nil,18)
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
-    equal(reason,nil); equal(plan.status,"SUPPORTED"); equal(plan.controlProfile,"D0146_CONFIGURATION_FIRST_GUIDED_PASSAGE_V5")
+    equal(reason,nil); equal(plan.status,"SUPPORTED"); equal(plan.controlProfile,"D0146_PASSAGE_EXCURSION_V6")
+    equal(plan.passageEntry.ready,true); equal(plan.passageEntry.boundarySeparationM>=18,true)
     equal(#plan.passageGuide.gates,5); equal(plan.progressiveSearch.satisficed,true)
-    equal(plan.passageGuide.gates[1].kind,"DEVELOPMENT_ENTRY"); equal(plan.passageGuide.gates[5].kind,"NATIVE_REACQUISITION")
+    equal(plan.passageGuide.gates[1].kind,"DEVELOPMENT_ENTRY")
+    equal(plan.passageGuide.gates[2].kind,"CROSSING_WINDOW_ENTRY")
+    equal(plan.passageGuide.gates[3].kind,"CROSSING_WINDOW_EXIT")
+    equal(plan.passageGuide.gates[5].kind,"NATIVE_REACQUISITION")
     equal(math.abs(plan.passageArrangement.physicalContactThresholdM-6)<0.0001,true)
     equal(math.abs(plan.passageArrangement.nominalInterAssemblyClearanceM-1)<0.0001,true)
     equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-7)<0.0001,true)
+    equal(plan.passageExcursion.developmentDistanceM<12,true)
+    equal(plan.passageExcursion.crossingWindowEntrySeparationM>0,true)
+    equal(plan.passageExcursion.crossingWindowRearClearSeparationM>0,true)
     equal(plan.passageGuide.pairSweepSupport.minimumRepresentedClearanceM>=1,true)
     equal(math.abs(math.abs(plan.passageArrangement.subjectLateralOffsetM)+math.abs(plan.passageArrangement.otherLateralOffsetM)-7)<0.0001,true)
+end)
+
+test("D0146 directional Passage envelope uses GIANTS base size instead of inflated component discs when available",function()
+    local picture,snapshot=d0146Step2Fixture(nil,nil,30)
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    values.physicalSpaceEvidence[1].primitives={
+        {kind="DISC",positiveConflictSupport=true,x=-3.61,z=0,radius=1},{kind="DISC",positiveConflictSupport=true,x=3.61,z=0,radius=1}
+    }
+    values.physicalSpaceEvidence[2].primitives={
+        {kind="DISC",positiveConflictSupport=true,x=-3.61,z=30,radius=1},{kind="DISC",positiveConflictSupport=true,x=3.61,z=30,radius=1}
+    }
+    values.physicalSpaceEvidence[1].directionalPassageEnvelope={widthM=3.5,lengthM=11.1,halfWidthM=1.75,halfLengthM=5.55,source="CONFIG_XML_BASE_SIZE",authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST"}
+    values.physicalSpaceEvidence[2].directionalPassageEnvelope={widthM=3.9,lengthM=9.0,halfWidthM=1.95,halfLengthM=4.5,source="CONFIG_XML_BASE_SIZE",authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST"}
+    local adapted=OuttaMyWay.OperationalPicture.new(values)
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
+    equal(reason,nil); equal(plan.status,"SUPPORTED")
+    equal(plan.passageArrangement.directionalPassageEnvelopeBasis,"GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES")
+    equal(math.abs(plan.passageArrangement.physicalContactThresholdM-3.70)<0.001,true)
+    equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-4.70)<0.001,true)
+    equal(math.abs(plan.passageExcursion.subjectFrontExtentM-5.55)<0.001,true)
+    equal(math.abs(plan.passageExcursion.otherFrontExtentM-4.5)<0.001,true)
+    equal(plan.passageExcursion.crossingWindowBasis,"GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES")
+    equal(plan.passageGuide.pairSweepSupport.supportBasis,"TRANSLATED_GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES")
+    equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.999,true)
+    equal(plan.passageGuide.pairSweepSupport.minimumOutsideCrossingClearanceM>=-0.001,true)
+    equal(plan.passageGuide.pairSweepSupport.clearanceContract,"NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_CLEARANCE_INSIDE_CROSSING_WINDOW")
+    equal(math.abs(math.abs(plan.passageArrangement.subjectLateralOffsetM)+math.abs(plan.passageArrangement.otherLateralOffsetM)-4.70)<0.001,true)
+end)
+
+test("D0165 Nominal Passage Clearance is required only through the Crossing Window",function()
+    local picture,snapshot=d0146Step2Fixture(nil,nil,30)
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    values.physicalSpaceEvidence[1].primitives={
+        {kind="DISC",positiveConflictSupport=true,x=-3.61,z=0,radius=1},{kind="DISC",positiveConflictSupport=true,x=3.61,z=0,radius=1}
+    }
+    values.physicalSpaceEvidence[2].primitives={
+        {kind="DISC",positiveConflictSupport=true,x=-3.61,z=30,radius=1},{kind="DISC",positiveConflictSupport=true,x=3.61,z=30,radius=1}
+    }
+    values.physicalSpaceEvidence[1].directionalPassageEnvelope={widthM=3.5,lengthM=11.1,halfWidthM=1.75,halfLengthM=5.55,source="CONFIG_XML_BASE_SIZE",authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST"}
+    values.physicalSpaceEvidence[2].directionalPassageEnvelope={widthM=3.9,lengthM=9.0,halfWidthM=1.95,halfLengthM=4.5,source="CONFIG_XML_BASE_SIZE",authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST"}
+    local adapted=OuttaMyWay.OperationalPicture.new(values)
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
+    equal(reason,nil); equal(plan.status,"SUPPORTED")
+    local sweep=plan.passageGuide.pairSweepSupport
+    equal(sweep.minimumCrossingWindowClearanceM>=0.999,true)
+    equal(sweep.minimumOutsideCrossingClearanceM>=-0.001,true)
+    equal(sweep.minimumRepresentedClearanceM<=sweep.minimumCrossingWindowClearanceM,true)
+    equal(sweep.clearanceContract,"NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_CLEARANCE_INSIDE_CROSSING_WINDOW")
+end)
+
+test("D0146 Passage Selection may precede Entry while Resolution Space remains available",function()
+    local picture,snapshot=d0146Step2Fixture(nil,nil,60)
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
+    equal(reason,nil); equal(plan.status,"SUPPORTED")
+    equal(plan.passageEntry.ready,false)
+    equal(plan.passageEntry.boundarySeparationM<60,true)
+    equal(plan.passageEntry.approachDistancePerParticipantM>0,true)
+    equal(plan.passageGuide.pairSweepSupport.minimumRepresentedClearanceM>=1,true)
+end)
+
+test("D0146 zero Clearance Deficit produces straight Passage with no manufactured one-metre excursion",function()
+    local picture,snapshot=d0146Step2Fixture(nil,nil,4)
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    values.currentSpace[2].occupancy.x=8
+    values.trajectoryKnowledge[2].corridorAnchorX=8
+    values.physicalSpaceEvidence[2].primitives={
+        {kind="DISC",positiveConflictSupport=true,x=6,z=4,radius=1},
+        {kind="DISC",positiveConflictSupport=true,x=10,z=4,radius=1}
+    }
+    values.opposedCorridorKnowledge[1].currentClosing.separationM=math.sqrt(80)
+    local adapted=OuttaMyWay.OperationalPicture.new(values)
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
+    equal(reason,nil); equal(plan.status,"SUPPORTED"); equal(plan.passageEntry.ready,true)
+    equal(plan.passageArrangement.currentSeparationAlreadySufficient,true)
+    equal(plan.passageExcursion.clearanceDeficitM,0)
+    equal(plan.passageArrangement.subjectLateralOffsetM,0); equal(plan.passageArrangement.otherLateralOffsetM,0)
+    equal(plan.passageExcursion.developmentDistanceM,0); equal(plan.passageExcursion.recoveryDistanceM,0)
+    equal(#plan.passageGuide.gates,3)
+    equal(plan.passageGuide.gates[1].kind,"CROSSING_WINDOW_ENTRY")
+    equal(plan.passageGuide.gates[3].kind,"NATIVE_REACQUISITION")
+    equal(plan.passageGuide.pairSweepSupport.minimumRepresentedClearanceM>=1,true)
+end)
+
+test("D0146 Passage Selection immediately supersedes D0155 even when physical Entry is later",function()
+    local runtime=autonomousHeadOnRuntime()
+    local picture,snapshot=d0146Step2Fixture(nil,nil,60)
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    local relation=values.opposedCorridorKnowledge[1]
+    relation.actionSpaceConservation={
+        status="REGULATE_SUPPORTED",supported=true,admissionKind="ESTABLISHED_CONFLICT",
+        reason="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_CONSUMES_LOCAL_PASSAGE_ACTION_SPACE",
+        regulatedAssemblyId="AS-A",regulatedReferenceKey="vehicle-root:101",protectedAssemblyId="AS-B",protectedReferenceKey="vehicle-root:201",
+        roleBasis="DEFER_GREATER_NATIVE_CLOSURE_CONTRIBUTION",separationM=60,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=4},
+        currentClosing={resolved=true,separationM=60,closingRateMps=6,currentDirectionDot=-1},nativeUnrestrictedKmh=25,nativeClosureContributionKmh=25,nativeSignedClosureContributionKmh=25,nativeMoveForwards=true,
+        governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
+    }
+    local adapted=OuttaMyWay.OperationalPicture.new(values)
+    local supported=runtime.liveTrafficCandidateSupport:attach(adapted,snapshot)
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"D0146_COOPERATIVE_PASSAGE_STEP2_TEST")
+    equal(supported.candidateSupportEvidence.candidateSpecifications[1].capability,"REPOSITION")
+    equal(supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.passageEntry.ready,false)
+    equal(runtime.liveTrafficCandidateSupport:getLastStatus(),"D0146_STEP2_COOPERATIVE_PASSAGE_CANDIDATE_PUBLISHED")
 end)
 
 test("D0146 Step2 has no arbitrary minimum entry separation and lets concrete Passage Guide support decide below 50 m",function()
@@ -3834,7 +4061,7 @@ test("D0146 Step2 mechanical preflight is vehicle-name independent and remains C
     values.motionEvidence[2].name="Arbitrary Foldable Worker"
     local fitness=OuttaMyWay.PassageCapabilityAssessment.buildFitness({opposedCorridorKnowledge=values.opposedCorridorKnowledge,motionEvidence=values.motionEvidence,physicalSpaceEvidence=values.physicalSpaceEvidence})
     equal(#fitness,2)
-    equal(fitness[1].evidence.controlProfile,"D0146_CONFIGURATION_FIRST_GUIDED_PASSAGE_V5")
+    equal(fitness[1].evidence.controlProfile,"D0146_PASSAGE_EXCURSION_V6")
     equal(fitness[1].evidence.vehicleNameAdmissionGate,false)
 end)
 
@@ -3890,6 +4117,36 @@ test("D0146 Step2 uses a natively observed compact profile only when it releases
     equal(math.abs(plan.passageArrangement.combinedLateralBurdenM-6)<0.0001,true)
 end)
 
+test("D0146 Step2 compact profile may replace sphere-inflated lateral extent with GIANTS directional base size",function()
+    local picture,snapshot=d0146Step2Fixture()
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    local a=values.physicalSpaceEvidence[1]
+    local b=values.physicalSpaceEvidence[2]
+    a.configurationEvidence={foldableCount=1,deployedCount=1,transitionCount=0,foldedCount=0,unknownCount=0,allDeployed=true,allFolded=false}
+    b.configurationEvidence={foldableCount=1,deployedCount=1,transitionCount=0,foldedCount=0,unknownCount=0,allDeployed=true,allFolded=false}
+    a.configurationAlternatives={{
+        configurationProfileId="CFG-A-DIRECTIONAL-COMPACT",configurationKey="native-folded-a",current=false,nativeObservationCount=3,outtaMyWayObservationCount=0,
+        configurationEvidence={foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true},
+        relativeDiscs={{localRightM=-3.5,localForwardM=0,radius=1},{localRightM=3.5,localForwardM=0,radius=1}},
+        directionalPassageEnvelope={widthM=3.5,lengthM=11.1,halfWidthM=1.75,halfLengthM=5.55,source="CONFIG_XML_BASE_SIZE",authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST"}
+    }}
+    b.configurationAlternatives={{
+        configurationProfileId="CFG-B-DIRECTIONAL-COMPACT",configurationKey="native-folded-b",current=false,nativeObservationCount=3,outtaMyWayObservationCount=0,
+        configurationEvidence={foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true},
+        relativeDiscs={{localRightM=-3.5,localForwardM=0,radius=1},{localRightM=3.5,localForwardM=0,radius=1}},
+        directionalPassageEnvelope={widthM=3.9,lengthM=9.0,halfWidthM=1.95,halfLengthM=4.5,source="CONFIG_XML_BASE_SIZE",authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST"}
+    }}
+    local adapted=OuttaMyWay.OperationalPicture.new(values)
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
+    equal(reason,nil); equal(plan.status,"SUPPORTED")
+    equal(plan.passageConfiguration.participants[1].mode,"COMPACT_REQUIRED")
+    equal(plan.passageConfiguration.participants[2].mode,"COMPACT_REQUIRED")
+    equal(math.abs(plan.passageArrangement.physicalContactThresholdM-3.7)<0.001,true)
+    equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-4.7)<0.001,true)
+    equal(plan.passageArrangement.directionalPassageEnvelopeBasis,"GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES")
+    equal(plan.passageGuide.pairSweepSupport.supportBasis,"TRANSLATED_GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES")
+end)
+
 test("D0146 Step2 two already-narrow participants require no configuration reduction",function()
     local picture,snapshot=d0146Step2Fixture()
     local values=OuttaMyWay.ValueRecord.toTable(picture)
@@ -3914,8 +4171,7 @@ test("D0146 Step2 treats a third active assembly's positive current occupancy as
     equal(reason,nil); equal(plan.status,"SUPPORTED")
     equal(plan.localPassageSpace.thirdPartyConstraintCount,1)
     equal(plan.localPassageSpace.thirdPartyConstraints[1].assemblyId,"AS-C")
-    equal(plan.passageArrangement.desiredSignedSeparationM<0,true)
-    equal(#plan.progressiveSearch.rejectedBeforeSelection>0,true)
+    equal(plan.localPassageSpace.thirdPartySupportBasis,"CURRENT_POSITIVE_OPERATION_ASSEMBLY_OCCUPANCY")
 end)
 
 local function d0146ActionSpacePicture()
@@ -4024,7 +4280,7 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     local actionObligation=runtime.obligations:openForOwner(commitmentId)[1]
     equal(actionObligation.basis.kind,"D0146_PASSAGE_ACTION_SPACE_CONSERVATION")
 
-    local passagePicture,passageSnapshot=d0146Step2Fixture()
+    local passagePicture,passageSnapshot=d0146Step2Fixture(nil,nil,60)
     local values=OuttaMyWay.ValueRecord.toTable(passagePicture)
     values.identity="OP-D0146-STEP2-SUCCESSION"; values.epoch=802; values.commitmentContext={{commitmentId=commitmentId}}
     passagePicture=OuttaMyWay.OperationalPicture.new(values)
@@ -4036,6 +4292,7 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     runtime.liveControlDispatcher:setCooperativePassageControl(cooperativeControl)
     local passageSupported=runtime.liveTrafficCandidateSupport:attach(passagePicture,passageSnapshot)
     equal(passageSupported.candidateSupportEvidence.supportBoundary.mode,"D0146_COOPERATIVE_PASSAGE_STEP2_TEST")
+    equal(passageSupported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.passageEntry.ready,false)
     local passageEval=runtime:evaluateSealedOperationalPicture(passageSupported)
     equal(passageEval.decision.commitmentAction,"REVISE")
     local dispatched=runtime.liveControlDispatcher:dispatch(passageSupported,passageEval)
@@ -4441,7 +4698,7 @@ end)
 
 test("D0146 Step2 Established Conflict crosses Candidate Decision Commitment and central Control dispatch",function()
     local runtime=autonomousHeadOnRuntime()
-    local picture,snapshot=d0146Step2Fixture()
+    local picture,snapshot=d0146Step2Fixture(nil,nil,18)
     local supported=runtime.liveTrafficCandidateSupport:attach(picture,snapshot)
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"D0146_COOPERATIVE_PASSAGE_STEP2_TEST")
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
@@ -4458,6 +4715,101 @@ test("D0146 Step2 Established Conflict crosses Candidate Decision Commitment and
     equal(dispatched.candidate.evidenceBasis.cooperativePassageBridge.architecture,"D0146_STEP2")
 end)
 
+
+test("D0146 Passage Approach stays native until Entry Boundary then begins settling",function()
+    local vehicleA={rootNode=1201,lastSpeedReal=0,job={token="JOB-A"}}
+    local vehicleB={rootNode=1202,lastSpeedReal=0,job={token="JOB-B"}}
+    function vehicleA:getAISteeringNode() return self.rootNode end
+    function vehicleB:getAISteeringNode() return self.rootNode end
+    local positions={[1201]={0,0,0},[1202]={0,0,30}}
+    local directions={[1201]={0,1},[1202]={0,-1}}
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local oldCurrentJob,oldJobToken=OuttaMyWay.LiveAIJobEvidence.currentJob,OuttaMyWay.LiveAIJobEvidence.jobToken
+    getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
+    localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
+    OuttaMyWay.LiveAIJobEvidence.currentJob=function(vehicle) return vehicle.job end
+    OuttaMyWay.LiveAIJobEvidence.jobToken=function(job) return job and job.token end
+    local holds=0
+    local donor={
+        permissionGate={setHold=function() holds=holds+1; return true end,release=function() return true end,getCallCount=function() return 1 end},
+        driveAuthority={clear=function() end,getState=function() return {targetReached=false} end},
+        configurationAuthority={getState=function() return nil end,getEvidence=function() return {allDeployed=true,allFolded=false} end}
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    control.run={
+        mode="D0146_GUIDE",commitmentId="CM-APPROACH",phase="PASSAGE_APPROACH",phaseStartedAt=0,startedAt=0,
+        passageEntry={boundarySeparationM=20},thirdPartyConstraints={},failureReason=nil,
+        a={vehicle=vehicleA,name="A",assemblyId="AS-A",startJobToken="JOB-A",startForwardX=0,startForwardZ=1},
+        b={vehicle=vehicleB,name="B",assemblyId="AS-B",startJobToken="JOB-B",startForwardX=0,startForwardZ=-1},
+        participants={}
+    }
+    control.run.participants={control.run.a,control.run.b}
+    local oldTime=g_time; g_time=1000
+    control:update(16)
+    equal(control.run.phase,"PASSAGE_APPROACH"); equal(holds,0)
+    positions[1202]={0,0,18}
+    g_time=1250
+    control:update(16)
+    equal(control.run.phase,"SETTLING"); equal(holds,2)
+    g_time=oldTime
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+    OuttaMyWay.LiveAIJobEvidence.currentJob,OuttaMyWay.LiveAIJobEvidence.jobToken=oldCurrentJob,oldJobToken
+end)
+
+test("D0146 execution-origin capture rebases short Development ahead of stopped participants",function()
+    local vehicleA={rootNode=1301}; local vehicleB={rootNode=1302}
+    function vehicleA:getAISteeringNode() return self.rootNode end
+    function vehicleB:getAISteeringNode() return self.rootNode end
+    local positions={[1301]={0,0,3},[1302]={0,0,17}}
+    local directions={[1301]={0,1},[1302]={0,-1}}
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local oldFieldAt=OuttaMyWay.LiveAIJobEvidence.fieldAtPosition
+    getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
+    localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId=1} end
+    local donor={permissionGate={},driveAuthority={},configurationAuthority={}}
+    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    control.run={
+        mode="D0146_GUIDE",commitmentId="CM-REBASE",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
+        passageArrangement={subjectLateralOffsetM=1,otherLateralOffsetM=-1},
+        a={vehicle=vehicleA,name="A",assemblyId="AS-A"},b={vehicle=vehicleB,name="B",assemblyId="AS-B"},
+        participants={},
+        guide={identity="PG-REBASE",entryOrigins={subject={x=0,z=0},other={x=0,z=20}},executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},gates={
+            {index=1,kind="DEVELOPMENT_ENTRY",forwardM=2,lateralFraction=0.5,radiusM=1,subject={assemblyId="AS-A",x=0.5,z=2,radiusM=1},other={assemblyId="AS-B",x=-0.5,z=18,radiusM=1}},
+            {index=2,kind="CROSSING_WINDOW_ENTRY",forwardM=4,lateralFraction=1,radiusM=1,subject={assemblyId="AS-A",x=1,z=4,radiusM=1},other={assemblyId="AS-B",x=-1,z=16,radiusM=1}}
+        }}
+    }
+    control.run.participants={control.run.a,control.run.b}
+    local ok,reason=control:_rebaseD0146Guide(control.run)
+    equal(ok,true); equal(reason,nil)
+    local first=control.run.guide.gates[1]
+    equal(math.abs(first.subject.z-5)<0.0001,true)
+    equal(math.abs(first.other.z-15)<0.0001,true)
+    equal(first.subject.z>positions[1301][3],true)
+    equal(first.other.z<positions[1302][3],true)
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+    OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=oldFieldAt
+end)
+
+test("D0146 settling accepts owned Hold plus physical stationary state even when GIANTS refused before PermissionGate",function()
+    local vehicleA={rootNode=1351,lastSpeedReal=0}; local vehicleB={rootNode=1352,lastSpeedReal=0}
+    local held={[vehicleA]=true,[vehicleB]=true}
+    local donor={
+        permissionGate={
+            isHolding=function(self,vehicle) return held[vehicle]==true end,
+            getCallCount=function() return 0 end
+        },
+        driveAuthority={},configurationAuthority={}
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    local run={participants={{vehicle=vehicleA},{vehicle=vehicleB}}}
+    equal(control:_allStopped(run),true)
+    vehicleB.lastSpeedReal=0.001 -- above the 0.25 km/h settlement threshold
+    equal(control:_allStopped(run),false)
+    vehicleB.lastSpeedReal=0
+    held[vehicleA]=false
+    equal(control:_allStopped(run),false)
+end)
 
 test("D0146 failed guide holds compact configuration without restore request",function()
     local vehicleA={rootNode=1001}; local vehicleB={rootNode=1002}

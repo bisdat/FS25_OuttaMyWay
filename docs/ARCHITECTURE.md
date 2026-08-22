@@ -1,3 +1,83 @@
+## v0.1.4.0 checkpoint amendment — Passage configuration simplicity and fail-safe Reality authority
+
+The v0.1.3.x Passage experiments establish useful geometry/control concepts but do **not** yet justify configuration optimisation across arbitrary complex assemblies. The selected next architecture is **Transit-First, Reality-Verified Passage**:
+
+1. Passage Selection/Commitment remains pairwise and occurs as soon as Cooperative Passage is positively supported.
+2. Physical Passage Entry remains delayed until intervention is required.
+3. At Entry, request a plausible Transit preparation for each participant where such a transition is available, unless positive configuration knowledge excludes that mechanism from AI-reachable productive Passage use.
+4. Missing capability metadata is unknown, not negative evidence. In particular, absence of `allowUnfoldingByAI` must not by itself suppress an otherwise normal GIANTS AI fold action.
+5. Geometry authority comes from the **actual achieved configuration**. If requested Transit is not reached, do not use hypothetical compact geometry; conservatively replan from verified Reality.
+6. Configuration optimisation (fold-vs-retain-current, productive Passage economy) is parked until Transit-first execution and Physical Assembly completeness are robust.
+
+This amendment preserves the established distinction between mechanical foldability and AI-reachable productive configuration. It also preserves the existing Passage Excursion model: non-negative Clearance Deficit, Development, physical-envelope Crossing Window, Recovery, participant-specific execution and pairwise first/second whistle boundaries.
+
+**Safety boundary:** TS009 negative evidence demonstrates that current directional multi-member Passage planning cannot yet claim generic negative-clearance authority for arbitrary complex assemblies. A physical tractor + front mower + rear mower combination was logged with `assemblyMembers=2` and subsequently collided during a planned straight retained-current Passage. The exact membership/coverage cause remains unresolved and must be investigated separately; the architecture records the observed authority gap without asserting a root cause.
+
+---
+
+## v0.1.3.7 D-0165 alignment — Crossing-Window Clearance
+
+Nominal Passage Clearance is a **Crossing-Window contract**, not a global guide invariant. Development is authorised to create the required Clearance Deficit progressively and Recovery is authorised to remove it after positive physical crossing. Neither phase gains collision authority: represented overlap remains prohibited throughout the guide. The Crossing Window alone must preserve the full nominal clearance.
+
+This replaces the residual implementation rule that required nominal clearance at every pair-sweep sample. The nominal policy value remains approximately 1 m; only its spatial authority is corrected.
+
+## v0.1.3.6 D-0164 alignment — Mechanical Foldability Leakage
+
+Raw mechanical `spec_foldable` evidence does not own Passage configuration semantics. A directional member envelope may remain valid in the current productive pose when GIANTS explicitly identifies the fold mechanism as unavailable to AI (`allowUnfoldingByAI=false`). This preserves the established distinction between mechanical accessories and AI-reachable productive Passage configurations. Unknown/ordinary foldable mechanisms remain conservative: directional base-size evidence is admitted only in a supported folded configuration.
+
+Progressive Passage rejection telemetry is diagnostic only and creates no new Candidate authority.
+
+## v0.1.3.5 D-0163 amendment — Directional Physical Assembly Envelope
+
+Passage-specific directional geometry now completes the existing Facing Clearance Extent / Passage-Side Clearance Asymmetry architecture for multi-member assemblies. A member with applicable GIANTS width/length metadata contributes an oriented directional rectangle at its actual assembly-relative pose; a member without such evidence contributes its existing conservative represented-DISC bounds. The pair planner consumes the resulting asymmetric left/right/front/rear assembly extent only for Passage width, Crossing Window and Passage sweep reasoning. Conservative DISC interaction evidence remains authoritative for positive interaction; this amendment does not create general negative-clearance authority or swept-articulation proof.
+
+The nominal ~1 m Passage clearance remains policy margin outside the directional physical envelope. No extra articulation margin is introduced until field evidence demonstrates that static configured-pose union is insufficient.
+
+---
+
+
+## v0.1.3.4 D-0162 amendment — Passage settlement evidence
+
+**Passage settlement is a state requirement, not a causal-proof requirement.** Once Passage owns Hold authority for a participant, physical stationary state at the existing settlement threshold is sufficient evidence for configuration transition. A GIANTS-native refusal may have caused or contributed to that stationary state; Passage must not wait for a PermissionGate veto call that GIANTS can legitimately prevent by refusing continuation first.
+
+The PermissionGate remains transparent to pre-existing GIANTS/mod refusal and Hold remains owned. This amendment removes only the prototype-era requirement that OuttaMyWay prove its own Hold caused the stop.
+
+---
+
+## v0.1.3.3 D-0161 experimental amendment — directional Passage evidence
+
+**Interaction geometry and Passage geometry are distinct questions.** Conservative component DISCs continue to answer positive interaction / occupancy questions. Passage may use stronger directional evidence when available to answer the narrower question: how much lateral separation and longitudinal overlap does this selected Passage configuration require?
+
+For the v0.1.3.3 experiment, a bootstrap-cached GIANTS `vehicle.base.size` envelope is admissible only for a single-member stably folded or non-foldable configuration. It supplies coarse width/length, not exact collision closure. The nominal Passage clearance remains a policy margin outside that directional envelope. If either selected participant lacks supported directional metadata, Passage falls back to the existing DISC representation.
+
+---
+
+## v0.1.3.2 D-0159 corrective amendment — Passage authority before physical Entry
+
+**Passage Selection owns the encounter immediately.** Once Cooperative Passage is positively supported, Resolution-Space Conservation has completed its purpose and is superseded. Physical Passage Entry may still occur later, but that delay is an execution phase inside the Passage Commitment rather than a reason to retain D-0155.
+
+**Passage Approach:** between Selection and Entry, Cooperative Passage owns the known resolution while native productive progression continues. Passage may introduce coordination only when required to preserve its Entry opportunity; v0.1.3.2 first tests the least-intervention form: no Passage Hold before the longitudinal Entry Boundary.
+
+**Execution-Origin Capture:** the joint Passage contract may be planned before participants finish settling/configuration. Absolute guide targets are therefore instantiated from actual stopped/configured participant poses immediately before guide execution. The pair contract and excursion geometry remain Candidate-owned; Control refreshes only the participant execution origins and revalidates the rebased guide.
+
+---
+
+## v0.1.3.1 D-0159 Passage Excursion first implementation amendment
+
+**Passage Selection and Passage Entry are distinct.** Selection establishes Cooperative Passage as the supported pair resolution. Entry is the point at which OuttaMyWay first needs to interrupt a participant's native productive continuation for the selected Passage. Early Selection does not itself authorise premature folding or guide control.
+
+**Nominal Passage Clearance is a deficit target, not a destination.** For selected Passage configurations, lateral intervention is driven only by a non-negative **Clearance Deficit**. Sufficient natural clearance requires no manufactured lateral excursion.
+
+**Passage Excursion Envelope:** where Clearance Deficit is positive, each participant's temporary lateral displacement develops toward the required relationship, is maintained through the pair's **Crossing Window**, then recovers toward the native lateral axis. The Crossing Window is a physical pair condition derived from supported longitudinal extents of the Passage-configured assembly representations; reference-point coincidence is not itself the crossing definition. Architecture requires sufficient non-contact, not millimetric optimisation.
+
+**Joint contract / participant execution:** the Traffic Policeman owns the pair objective and the critical crossing relationship; participant execution may have different Entry/configuration/development obligations. The pair-dependent crossing may complete before all participant-specific restoration work is complete. v0.1.3.1 tests only the geometry/timing foundation and retains existing joint handoff mechanics.
+
+**Agronomic boundary:** productive ground missed because Passage interrupts/displaces work is Agronomic Debt. The immediate objective is to avoid unnecessary debt by delaying Entry and bounding the excursion. Exact debt recovery and reverse Agronomic Restoration are not prerequisites for this first field test and remain subsequent decisions.
+
+**Implementation calibration boundary:** the v0.1.3.1 `4 m` minimum Development, `2:1` forward/lateral donor and `3 m` Entry control allowance are explicit experiment mechanics, not architectural constants. The inherited `8 km/h` Passage speed is deliberately frozen so geometry can be tested independently.
+
+---
+
 ## v4.7.127 D-0147 normative amendment — Courtesy Constraint Exception
 
 **Decision:** D-0147 is a deliberately exceptional, player-consented courtesy capability. Its only objective is to buy useful time while a genuinely completed assembly remains **Pending Player Reclamation**. It is not a general autonomous manoeuvre planner and is not responsible for proving final settlement.

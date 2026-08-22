@@ -1,3 +1,9 @@
+## v0.1.4.0 Passage checkpoint continuity
+
+The v0.1.3.x Passage line is checkpointed with both its successes and its TS009 negative evidence. The next chat must not resume from the attractive no-fold passages alone: the physical front/rear mower collision shows that complex assembly membership/coverage and configuration authority remain unresolved. The agreed simplification is Transit-First, Reality-Verified Passage, not further fold-vs-don't-fold optimisation.
+
+---
+
 # v0.1.2.0 candidate continuity — Resolution-Space Progression Envelope
 
 Authoritative baseline is owner-declared canonical v0.1.1.0 (`10ad10c0eb5956fbd32f3e82408201513dec6073e72b758db4b6bf394e8316b3`; Git `5cd2ae0c768a1a771b817b5ed5879ca02745f9de`; 316 files). v0.1.2.0 is an architecture/documentation candidate only. No Goldilocks/Progression-Envelope traffic code has been implemented; inherited runtime still uses the empirical 8 km/h D-0146 Resolution-Space Regulation cap.

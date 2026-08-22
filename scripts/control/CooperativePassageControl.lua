@@ -1,10 +1,14 @@
--- FS25_OuttaMyWay v0.1.1.0 CANONICAL CANDIDATE — D-0146 configuration-first passage inherited unchanged from v0.1.0.14 TEST; D-0143 retained as regression donor.
+-- FS25_OuttaMyWay v0.1.3.3 TEST — D-0159 Passage Approach / execution-origin correction.
 --
--- Situation/Candidate/Decision/Commitment establish meaning and choose the
--- Passage Arrangement/Guide before this module is invoked. Control only executes
--- that bounded Guide using the proven Hold/optional-configuration/reposition/restore mechanical
--- donors. Vehicle identity is not passage authority; current mechanical Reality is. It does not search Local Passage Space or silently broaden a
--- Guide after Passage Support Loss.
+-- Situation/Candidate/Decision/Commitment establish the pair meaning and the
+-- bounded Passage plan before this module is invoked. Passage Selection now
+-- immediately owns the encounter, restoring the v0.1.3.0 authority handoff.
+-- Control may remain in PASSAGE_APPROACH until the Candidate Entry Boundary is
+-- reached, then settles/configures the pair and instantiates the participant
+-- guide from actual execution origins before forward-only point pursuit.
+-- Passage speed and configuration policy are intentionally unchanged in this
+-- TEST. The second-whistle trace marks completion of the pair-dependent guide;
+-- agronomic reverse restoration is explicitly not implemented here.
 
 OuttaMyWay.CooperativePassageControl={}
 local Control=OuttaMyWay.CooperativePassageControl
@@ -262,9 +266,35 @@ end
 function Control:_allStopped(run)
     local limit=OuttaMyWay.COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH or 0.25
     for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants) do
-        if self.permissionGate:getCallCount(p.vehicle)<=0 or actualSpeedKmh(p.vehicle)>limit then return false end
+        -- Passage settling needs owned Hold authority plus physical settlement.
+        -- Do not require proof that OuttaMyWay causally stopped the participant:
+        -- GIANTS may already refuse native continuation before Passage Hold is
+        -- applied, in which case the PermissionGate call count legitimately
+        -- remains zero even though the required stationary state is present.
+        if self.permissionGate:isHolding(p.vehicle)~=true or actualSpeedKmh(p.vehicle)>limit then return false end
     end
     return true
+end
+
+function Control:_d0146LongitudinalSeparation(run)
+    local pa,pb=pose(run and run.a and run.a.vehicle),pose(run and run.b and run.b.vehicle)
+    if pa==nil or pb==nil then return nil end
+    local aAhead=(pb.x-pa.x)*run.a.startForwardX+(pb.z-pa.z)*run.a.startForwardZ
+    local bAhead=(pa.x-pb.x)*run.b.startForwardX+(pa.z-pb.z)*run.b.startForwardZ
+    if type(aAhead)~="number" or type(bAhead)~="number" then return nil end
+    return math.max(0,(aAhead+bAhead)*0.5),pa,pb
+end
+
+function Control:_beginD0146Settling(run,reason)
+    local holdA,holdReasonA=self.permissionGate:setHold(run.a.vehicle,"D0146-COOPERATIVE-PASSAGE")
+    if not holdA then return false,"SUBJECT_HOLD_UNAVAILABLE:"..tostring(holdReasonA) end
+    local holdB,holdReasonB=self.permissionGate:setHold(run.b.vehicle,"D0146-COOPERATIVE-PASSAGE")
+    if not holdB then self.permissionGate:release(run.a.vehicle); return false,"OTHER_HOLD_UNAVAILABLE:"..tostring(holdReasonB) end
+    self:_setPhase(run,"SETTLING",g_time or 0)
+    local separation=self:_d0146LongitudinalSeparation(run)
+    logInfo("D0146_PASSAGE_ENTRY_TRIGGER commitment=%s reason=%s longitudinalSeparation=%s entryBoundary=%.2fm action=HOLD_THEN_CONFIGURE",
+        tostring(run.commitmentId),tostring(reason or "ENTRY_BOUNDARY"),separation and string.format("%.2fm",separation) or "n/a",tonumber(run.passageEntry and run.passageEntry.boundarySeparationM) or -1)
+    return true,nil
 end
 function Control:_allFolded(run)
     for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants) do if self.configurationAuthority:getEvidence(p.vehicle).allFolded~=true then return false end end
@@ -389,6 +419,53 @@ function Control:_startGuideGate(run,index)
     return true,nil
 end
 
+function Control:_rebaseD0146Guide(run)
+    local source=run and run.guide
+    if type(source)~="table" then return false,"PASSAGE_GUIDE_UNAVAILABLE_FOR_EXECUTION_REBASE" end
+    local function copyValue(value)
+        if type(value)~="table" then return value end
+        local result={}
+        for key,item in OuttaMyWay.ValueRecord.pairs(value) do result[key]=copyValue(item) end
+        return result
+    end
+    local guide=copyValue(source)
+    local frame=guide.executionFrame or {}
+    local rightX,rightZ=tonumber(frame.sharedRightX),tonumber(frame.sharedRightZ)
+    local sfx,sfz=tonumber(frame.subjectForwardX),tonumber(frame.subjectForwardZ)
+    local ofx,ofz=tonumber(frame.otherForwardX),tonumber(frame.otherForwardZ)
+    if rightX==nil or rightZ==nil or sfx==nil or sfz==nil or ofx==nil or ofz==nil then return false,"PASSAGE_EXECUTION_FRAME_UNAVAILABLE" end
+    local pa,pb=pose(run.a.vehicle),pose(run.b.vehicle)
+    if pa==nil or pb==nil then return false,"PASSAGE_EXECUTION_ORIGIN_POSE_UNAVAILABLE" end
+    local arrangement=run.passageArrangement or {}
+    local subjectOffset=tonumber(arrangement.subjectLateralOffsetM) or 0
+    local otherOffset=tonumber(arrangement.otherLateralOffsetM) or 0
+    local subjectParticipant=(run.a.assemblyId==run.subjectAssemblyId) and run.a or run.b
+    local otherParticipant=(run.a.assemblyId==run.otherAssemblyId) and run.a or run.b
+    local poses={[run.a.assemblyId]=pa,[run.b.assemblyId]=pb}
+    local subjectPose,otherPose=poses[run.subjectAssemblyId],poses[run.otherAssemblyId]
+    if subjectPose==nil or otherPose==nil then return false,"PASSAGE_EXECUTION_ORIGIN_ASSEMBLY_BINDING_UNAVAILABLE" end
+    local oldOrigins=guide.entryOrigins or {}
+    guide.entryOrigins={subject={x=subjectPose.x,z=subjectPose.z},other={x=otherPose.x,z=otherPose.z}}
+    for index,gate in ipairs(guide.gates or {}) do
+        local forward=tonumber(gate.forwardM) or 0
+        local fraction=tonumber(gate.lateralFraction) or 0
+        local radius=tonumber(gate.radiusM) or 1
+        gate.index=index
+        gate.subject={assemblyId=run.subjectAssemblyId,x=subjectPose.x+sfx*forward+rightX*(fraction*subjectOffset),z=subjectPose.z+sfz*forward+rightZ*(fraction*subjectOffset),radiusM=radius}
+        gate.other={assemblyId=run.otherAssemblyId,x=otherPose.x+ofx*forward+rightX*(fraction*otherOffset),z=otherPose.z+ofz*forward+rightZ*(fraction*otherOffset),radiusM=radius}
+    end
+    run.guide=guide
+    local ok,reason=self:_preflightD0146Guide(run)
+    if not ok then return false,"EXECUTION_REBASE_PREFLIGHT:"..tostring(reason) end
+    local oldSubject=oldOrigins.subject or {}; local oldOther=oldOrigins.other or {}
+    logInfo("D0146_EXECUTION_ORIGIN_CAPTURE commitment=%s subject=%s origin=(%.2f,%.2f) planned=(%s,%s) other=%s origin=(%.2f,%.2f) planned=(%s,%s) guideRebased=true geometryUnchanged=true",
+        tostring(run.commitmentId),subjectParticipant and subjectParticipant.name or tostring(run.subjectAssemblyId),subjectPose.x,subjectPose.z,
+        oldSubject.x and string.format("%.2f",oldSubject.x) or "n/a",oldSubject.z and string.format("%.2f",oldSubject.z) or "n/a",
+        otherParticipant and otherParticipant.name or tostring(run.otherAssemblyId),otherPose.x,otherPose.z,
+        oldOther.x and string.format("%.2f",oldOther.x) or "n/a",oldOther.z and string.format("%.2f",oldOther.z) or "n/a")
+    return true,nil
+end
+
 function Control:_beginCompact(run)
     local okA,stateA=self.configurationAuthority:prepareCompact(run.a.vehicle)
     if not okA then return false,run.a.name..":"..tostring(stateA) end
@@ -419,7 +496,9 @@ function Control:_beginD0146Configuration(run)
         end
     end
     if requested==0 then
-        logInfo("CONFIGURATION_READY commitment=%s policy=OPTIONAL_PER_PARTICIPANT modes=%s changed=0 next=GUIDE",tostring(run.commitmentId),configurationModeText(run))
+        logInfo("CONFIGURATION_READY commitment=%s policy=OPTIONAL_PER_PARTICIPANT modes=%s changed=0 next=CAPTURE_EXECUTION_ORIGIN",tostring(run.commitmentId),configurationModeText(run))
+        local rebased,rebaseReason=self:_rebaseD0146Guide(run)
+        if not rebased then return false,rebaseReason end
         return self:_startGuideGate(run,1)
     end
     self:_setPhase(run,"CONFIGURING",g_time or 0)
@@ -558,7 +637,7 @@ function Control:_executeD0146JointRequests(requestA,requestB,candidate,bridge)
     if requestA.capability~="REPOSITION" or requestB.capability~="REPOSITION" then return false,"JOINT_REQUEST_REQUIRES_REPOSITION" end
     if requestA.effectiveActuationCompositionId~=requestB.effectiveActuationCompositionId then return false,"JOINT_REQUEST_COMPOSITION_MISMATCH" end
     if not self:_validAuthority(requestA) or not self:_validAuthority(requestB) then return false,"JOINT_REQUEST_AUTHORITY_INVALID" end
-    if type(bridge)~="table" or bridge.architecture~="D0146_STEP2" or bridge.controlProfile~="D0146_CONFIGURATION_FIRST_GUIDED_PASSAGE_V5" then return false,"D0146_PASSAGE_BRIDGE_INVALID" end
+    if type(bridge)~="table" or bridge.architecture~="D0146_STEP2" or bridge.controlProfile~="D0146_PASSAGE_EXCURSION_V6" then return false,"D0146_PASSAGE_BRIDGE_INVALID" end
 
     local subjectVehicle=self:_resolveReference(bridge.subjectReferenceKey)
     local otherVehicle=self:_resolveReference(bridge.otherReferenceKey)
@@ -592,11 +671,12 @@ function Control:_executeD0146JointRequests(requestA,requestB,candidate,bridge)
         end
     end
 
+    local entryReady=bridge.passageEntry and bridge.passageEntry.ready==true
     local run={
         mode="D0146_GUIDE",commitmentId=requestA.commitmentId,candidateId=candidate.identity,a=a,b=b,participants={a,b},
         subjectAssemblyId=bridge.subjectAssemblyId,otherAssemblyId=bridge.otherAssemblyId,
-        phase="SETTLING",phaseStartedAt=g_time or 0,startedAt=g_time or 0,guide=bridge.passageGuide,guideIndex=0,
-        passageArrangement=bridge.passageArrangement,passageConfiguration=configurationPlan,controlProfile=bridge.controlProfile,
+        phase=entryReady and "SETTLING" or "PASSAGE_APPROACH",phaseStartedAt=g_time or 0,startedAt=g_time or 0,guide=bridge.passageGuide,guideIndex=0,
+        passageArrangement=bridge.passageArrangement,passageConfiguration=configurationPlan,passageEntry=bridge.passageEntry,passageExcursion=bridge.passageExcursion,controlProfile=bridge.controlProfile,
         thirdPartyConstraints=bridge.localPassageSpace and bridge.localPassageSpace.thirdPartyConstraints or {},
         initialSeparationM=distance(a.startX,a.startZ,b.startX,b.startZ),headingDot=dot(a.startForwardX,a.startForwardZ,b.startForwardX,b.startForwardZ),
         speedKmh=OuttaMyWay.D0146_STEP2_MOVE_SPEED_KMH or 8.0
@@ -604,18 +684,22 @@ function Control:_executeD0146JointRequests(requestA,requestB,candidate,bridge)
     local guideOk,guideReason=self:_preflightD0146Guide(run)
     if not guideOk then return false,"D0146_GUIDE_PREFLIGHT:"..tostring(guideReason) end
 
-    local holdA,holdReasonA=self.permissionGate:setHold(a.vehicle,"D0146-COOPERATIVE-PASSAGE")
-    if not holdA then return false,"SUBJECT_HOLD_UNAVAILABLE:"..tostring(holdReasonA) end
-    local holdB,holdReasonB=self.permissionGate:setHold(b.vehicle,"D0146-COOPERATIVE-PASSAGE")
-    if not holdB then self.permissionGate:release(a.vehicle); return false,"OTHER_HOLD_UNAVAILABLE:"..tostring(holdReasonB) end
-
     self.run=run
+    if entryReady then
+        local settleOk,settleReason=self:_beginD0146Settling(run,"ENTRY_READY_AT_SELECTION")
+        if not settleOk then self.run=nil; return false,settleReason end
+    else
+        logInfo("D0146_PASSAGE_APPROACH_START commitment=%s resolutionSpaceSuperseded=true nativeProductiveApproach=true longitudinalSeparation=%.2fm entryBoundary=%.2fm",
+            tostring(run.commitmentId),tonumber(bridge.passageEntry and bridge.passageEntry.selectionLongitudinalSeparationM) or -1,tonumber(bridge.passageEntry and bridge.passageEntry.boundarySeparationM) or -1)
+    end
     local arrangement=bridge.passageArrangement or {}
-    logInfo("START architecture=D0146_STEP2 commitment=%s candidate=%s conflict=%s A=%s job=%s B=%s job=%s separation=%.2fm headingDot=%.4f arrangement=%s offsets=%+.2f/%+.2f contact=%.2fm nominal=%.2fm required=%.2fm currentLateral=%.2fm reserve=%+.2fm guide=%s gates=%d sequence=HOLD_OPTIONAL_CONFIGURATION_GUIDE_SELECTIVE_RESTORE_HANDOFF configuration=%s controlInventsGeometry=false vehicleNameGate=false thirdPartyConstraints=%d generalVehicleAuthority=false",
-        tostring(run.commitmentId),tostring(run.candidateId),tostring(bridge.conflictIdentity),a.name,tostring(a.startJobToken),b.name,tostring(b.startJobToken),run.initialSeparationM,run.headingDot,
-        tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,
+    local excursion=run.passageExcursion or {}
+    local entry=run.passageEntry or {}
+    logInfo("START architecture=D0146_STEP2 commitment=%s candidate=%s conflict=%s A=%s job=%s B=%s job=%s separation=%.2fm entryBoundary=%.2fm headingDot=%.4f envelopeBasis=%s crossingBasis=%s arrangement=%s offsets=%+.2f/%+.2f deficit=%.2fm contact=%.2fm nominal=%.2fm required=%.2fm currentLateral=%.2fm reserve=%+.2fm guide=%s gates=%d development=%.2fm crossingForward=%.2fm recovery=%.2fm sequence=PASSAGE_APPROACH_THEN_HOLD_OPTIONAL_CONFIGURATION_CAPTURE_EXECUTION_ORIGIN_PASSAGE_EXCURSION_SELECTIVE_RESTORE_HANDOFF configuration=%s controlInventsGeometry=false vehicleNameGate=false thirdPartyConstraints=%d generalVehicleAuthority=false",
+        tostring(run.commitmentId),tostring(run.candidateId),tostring(bridge.conflictIdentity),a.name,tostring(a.startJobToken),b.name,tostring(b.startJobToken),run.initialSeparationM,tonumber(entry.boundarySeparationM) or -1,run.headingDot,
+        tostring(arrangement.directionalPassageEnvelopeBasis or "DISC_FALLBACK"),tostring(excursion.crossingWindowBasis or "n/a"),tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tonumber(excursion.clearanceDeficitM) or 0,
         tonumber(arrangement.physicalContactThresholdM) or 0,tonumber(arrangement.nominalInterAssemblyClearanceM) or 0,tonumber(arrangement.policyRequiredSeparationM) or 0,tonumber(arrangement.currentLateralSeparationM) or 0,tonumber(arrangement.currentPolicyReserveM) or 0,
-        tostring(run.guide and run.guide.identity),OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}),configurationModeText(run),OuttaMyWay.ValueRecord.length(run.thirdPartyConstraints or {}))
+        tostring(run.guide and run.guide.identity),OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}),tonumber(excursion.developmentDistanceM) or 0,tonumber(excursion.crossingWindowForwardPerParticipantM) or 0,tonumber(excursion.recoveryDistanceM) or 0,configurationModeText(run),OuttaMyWay.ValueRecord.length(run.thirdPartyConstraints or {}))
     return true,"D0146_COOPERATIVE_PASSAGE_STARTED"
 end
 
@@ -714,7 +798,16 @@ function Control:update(dt)
     local timeout=(run.mode=="D0146_GUIDE" and OuttaMyWay.D0146_STEP2_PHASE_WATCHDOG_MS) or OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS or 45000
     if run.failureReason==nil and nowMs-(run.phaseStartedAt or nowMs)>=timeout then self:_failHeld("PHASE_WATCHDOG:"..tostring(run.phase)); return end
 
-    if run.phase=="SETTLING" then
+    if run.phase=="PASSAGE_APPROACH" then
+        local longitudinal=self:_d0146LongitudinalSeparation(run)
+        if longitudinal==nil then self:_failHeld("PASSAGE_APPROACH_LONGITUDINAL_SEPARATION_UNAVAILABLE"); return end
+        local boundary=tonumber(run.passageEntry and run.passageEntry.boundarySeparationM)
+        if boundary==nil then self:_failHeld("PASSAGE_ENTRY_BOUNDARY_UNAVAILABLE"); return end
+        if longitudinal<=boundary then
+            local ok,reason=self:_beginD0146Settling(run,"ENTRY_BOUNDARY_REACHED")
+            if not ok then self:_failHeld(reason) end
+        end
+    elseif run.phase=="SETTLING" then
         if self:_allStopped(run) then
             if run.mode=="D0146_GUIDE" then
                 local ok,reason=self:_beginD0146Configuration(run); if not ok then self:_failHeld("CONFIGURATION_START:"..tostring(reason)) end
@@ -724,7 +817,9 @@ function Control:update(dt)
         end
     elseif run.phase=="CONFIGURING" then
         if self:_d0146ConfigurationReady(run) then
-            logInfo("CONFIGURATION_CONFIRMED commitment=%s modes=%s",tostring(run.commitmentId),configurationModeText(run))
+            logInfo("CONFIGURATION_CONFIRMED commitment=%s modes=%s next=CAPTURE_EXECUTION_ORIGIN",tostring(run.commitmentId),configurationModeText(run))
+            local rebased,rebaseReason=self:_rebaseD0146Guide(run)
+            if not rebased then self:_failHeld(tostring(rebaseReason)); return end
             local ok,reason=self:_startGuideGate(run,1)
             if not ok then self:_failHeld(tostring(reason)) end
         end
@@ -751,6 +846,7 @@ function Control:update(dt)
             self:_stopLeg(run)
             logInfo("GUIDE_REACHED commitment=%s guide=%s gate=%d/%d kind=%s",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),completedIndex,OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}),tostring(gate and gate.kind or "n/a"))
             if completedIndex>=OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}) then
+                logInfo("D0146_PASSAGE_SECOND_WHISTLE commitment=%s guide=%s pairDependentCrossingComplete=true nativeAxisRecoveryPlanned=true next=SELECTIVE_RESTORE_HANDOFF",tostring(run.commitmentId),tostring(run.guide and run.guide.identity))
                 local ok,reason=self:_beginD0146Restore(run); if not ok then self:_failHeld("RESTORE_START:"..tostring(reason)) end
             else
                 local ok,reason=self:_startGuideGate(run,completedIndex+1); if not ok then self:_failHeld(tostring(reason)) end

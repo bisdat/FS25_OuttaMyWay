@@ -1,3 +1,11 @@
+## 2026-08-22 — Passage checkpoint after TS009 negative evidence
+
+The Passage Excursion work produced substantial gains: delayed intervention, closer physical clearance, generic unilateral passage, less agronomic debt and robust TS010/TS015/TS016 examples. A larger-field TS009 experiment then disproved the assumption that the current generic directional member envelope can safely authorise arbitrary retained-current complex-assembly Passage: S416 and a front/rear SaMASZ mower combination collided/tangled after a zero-deficit straight plan. Runtime also reported only two assembly members for the apparently three-member physical combination.
+
+Rather than deepen configuration candidate optimisation, the collaboration selected a simpler next architecture: Transit-First, Reality-Verified Passage. Attempt plausible Transit, verify what Reality actually achieved, plan from that state, and conservatively replan if Transit is unavailable. Canonicalisation is used as an explicit checkpoint with the safety issue still open.
+
+---
+
 # 2026-08-21 — Resolution-Space Conservation / Goldilocks architecture
 
 **Observation:** TS010 v0.1.0.14 could still slow-march into blockage under a fixed 8 km/h Regulation because compliance was observed only after deceleration had consumed much of the remaining Resolution Space.
