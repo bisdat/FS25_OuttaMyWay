@@ -1,13 +1,25 @@
-FS25_OuttaMyWay v0.1.2.0 CANONICAL CANDIDATE — RESOLUTION-SPACE CONSERVATION ARCHITECTURE
+FS25_OuttaMyWay v0.1.3.0 CANONICAL CANDIDATE — RESOLUTION-SPACE PROGRESSION ENVELOPE
 
-Authoritative baseline is owner-declared canonical v0.1.1.0 (`10ad10c0eb5956fbd32f3e82408201513dec6073e72b758db4b6bf394e8316b3`; Git `5cd2ae0c768a1a771b817b5ed5879ca02745f9de`; 316 files). v0.1.2.0 changes architecture/documentation and release identity only. It does not implement the new Resolution-Space Progression Envelope; runtime traffic behaviour remains v0.1.1.0, including the inherited empirical 8 km/h D-0146 Resolution-Space Regulation cap.
+Authoritative baseline remains owner-declared canonical v0.1.2.0 (`1d861caca5f6d06656c0fcd41b1c278c01ac7cda223af1fdf101203fe6e0e583`; Git `f841717285fb9a02d4dc8c0c469adbecd56cb38c`; 316 files) until explicit promotion. This candidate consolidates the live-validated 0.1.2.1/0.1.2.2 Resolution-Space tranche and introduces no additional behavioural algorithm change.
 
-This candidate records the replacement direction for that fixed cap. A live Resolution-Space obligation should preserve enough opportunity for Reality to reveal the next justified resolution while maximising Productive Continuation. Situation Assessment owns whether the obligation exists; a Resolution-Space Progression Envelope owns only the maximum conflict-consuming progression permitted while it remains unresolved.
+Validated behaviour:
+- D-0146 Situation owns the Resolution-Space obligation and roles; Control owns elastic magnitude.
+- 75% Resolution Contingency Reserve remains the current calibrated policy.
+- Supportable Progression is expressed as whole-integer km/h caps.
+- reverse-created separation is protected as Reverse-Created Resolution Reserve.
+- Role Migration rebases magnitude without manufacturing new capacity.
+- Magnitude Freeze is corrected for the lifetime of the sticky Commitment.
+- when ordinary allowance is exhausted while intent remains unresolved, Control retains 1 km/h Intent-Revelation Creep rather than Hold.
 
-The candidate envelope uses a coarse zero-terminal-progression kinematic policy curve, not a GIANTS braking model. From the constrained participant's current progression and established usable Resolution Space, a percentage Resolution Contingency Reserve is withheld from ordinary progression; the remaining allowance defines the envelope. Resulting caps are whole integer km/h and zero means Hold. The exact reserve percentage remains an explicit calibration decision for the next implementation tranche.
+Field validation:
+- TS010: successful envelope -> 1 km/h creep -> unchanged Cooperative Passage -> normal MT665 completion.
+- TS015: full successful completion.
+- TS016: successful relevant traffic behaviour; final terminal move intentionally unavailable after genuine Player Claim caused by briefly entering the completed vehicles.
 
-Temporary reverse-created separation is protected as Reverse-Created Resolution Reserve rather than immediately consumed. Purpose remains sticky through native reverse/forward manoeuvring; magnitude remains elastic and may be rebased only on positive changed Reality. Resolution Space is not Passage Space: conservation buys Intent-Revelation Opportunity until native continuation, Cooperative Passage or another supported resolution becomes positively knowable.
+Explicitly parked:
+- TS010's later <=60 m locality/projection blockage.
+- possible timeout/reset semantics for abandoned post-completion Player Claim.
+- the observed ~18-second pacing stutter, for which no periodic OuttaMyWay log correlate was found.
+- Cooperative Passage geometry and literal review.
 
-D-0154 also records Resolution-Space Recovery as a possible `REPOSITION` tool when conservation has already failed. Bounded Back-Out Recovery toward recently demonstrated clear space is a candidate expression, relevant to future static-blockage work; it is not implemented here.
-
-Open/parked: exact contingency-reserve percentage; implementation and live validation of the progression envelope; constrained-participant low-speed-at-admission edge case; Space Recovery implementation/static blockage; Passage-in-extenso; Guide Development Non-Convergence if reproduced after productive commencement; D-0147 Courtesy Quantum/Exhaustion coupling; 80 m locality and remaining guide/burden literals.
+Next selected activity after canonicalisation is Cooperative Passage in extenso, beginning from the architectural problem rather than replacement constants.

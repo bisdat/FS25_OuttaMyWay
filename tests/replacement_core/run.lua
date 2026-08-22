@@ -107,6 +107,7 @@ load("scripts/prototypes/Prototype22TS015Relocation.lua")
 load("scripts/prototypes/Prototype22CapabilityGate.lua")
 load("scripts/control/CooperativePassageControl.lua")
 load("scripts/control/TerminalEgressControl.lua")
+load("scripts/control/ResolutionSpaceProgressionEnvelope.lua")
 load("scripts/control/LiveControlDispatcher.lua")
 load("scripts/runtime/LiveRuntimeCoordinator.lua")
 load("scripts/runtime/Runtime.lua")
@@ -3386,7 +3387,7 @@ test("D0146 protects pre-productive native intent while regulating the known Ope
             }
         }},
         opposedMaxDot=-0.85,currentOpposedMaxDot=-0.85,persistenceAlignmentMinDot=0.85,currentStableDistanceM=1.0,minClosingRateMps=0.05,
-        actionSpaceMaxSeparationM=80,actionSpaceRegulationKmh=8
+        actionSpaceMaxSeparationM=80
     })[1]
     equal(relation.classification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
     equal(relation.cooperativePassageEligible,false)
@@ -3396,7 +3397,7 @@ test("D0146 protects pre-productive native intent while regulating the known Ope
     equal(relation.actionSpaceConservation.regulatedAssemblyId,"AS-A")
     equal(relation.actionSpaceConservation.protectedAssemblyId,"AS-B")
     equal(relation.actionSpaceConservation.roleBasis,"PRESERVE_PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION")
-    equal(relation.actionSpaceConservation.requestedCapKmh,8)
+    equal(relation.actionSpaceConservation.requestedCapKmh,nil)
 
     local previousPassageEnabled=OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED
     OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED=true
@@ -3411,7 +3412,7 @@ test("D0146 protects pre-productive native intent while regulating the known Ope
             ["AS-B"]={class="OPERATION_MEMBER",operationMember=true,productiveCommencementPending=false}
         }}},
         opposedMaxDot=-0.85,currentOpposedMaxDot=-0.85,persistenceAlignmentMinDot=0.85,currentStableDistanceM=1.0,minClosingRateMps=0.05,
-        actionSpaceMaxSeparationM=80,actionSpaceRegulationKmh=8
+        actionSpaceMaxSeparationM=80
     })[1]
     equal(productiveRelation.identity,relation.identity)
     equal(productiveRelation.cooperativePassageEligible,true)
@@ -3502,7 +3503,7 @@ test("D0146 Current Excursion positively supports bounded Action-Space Conservat
     equal(classified.actionSpaceConservation.excursionAssemblyId,"AS-A")
     equal(classified.actionSpaceConservation.regulatedAssemblyId,"AS-B")
     equal(classified.actionSpaceConservation.currentCorridorOverlap.positive,true)
-    equal(classified.actionSpaceConservation.requestedCapKmh,8)
+    equal(classified.actionSpaceConservation.requestedCapKmh,nil)
     equal(classified.actionSpaceConservation.nativeUnrestrictedKmh,25)
     equal(classified.currentClosingPositive,true)
 end)
@@ -3547,7 +3548,7 @@ test("D0146 Established conflict can newly admit Resolution-Space Regulation aft
     equal(classified.actionSpaceConservation.protectedAssemblyId,"AS-B")
     equal(classified.actionSpaceConservation.roleBasis,"PRESERVE_TRANSITIONAL_NATIVE_REVELATION")
     equal(classified.actionSpaceConservation.nativeUnrestrictedKmh,22)
-    equal(classified.actionSpaceConservation.requestedCapKmh,8)
+    equal(classified.actionSpaceConservation.requestedCapKmh,nil)
 end)
 
 test("D0146 Established conflict assigns Resolution-Space Regulation from reverse-aware native closure contribution",function()
@@ -3578,7 +3579,7 @@ test("D0146 Established conflict assigns Resolution-Space Regulation from revers
     equal(classified.actionSpaceConservation.nativeMoveForwards,false)
     equal(classified.actionSpaceConservation.nativeUnrestrictedKmh,12)
     equal(classified.actionSpaceConservation.nativeClosureContributionKmh,12)
-    equal(classified.actionSpaceConservation.requestedCapKmh,8)
+    equal(classified.actionSpaceConservation.requestedCapKmh,nil)
 end)
 
 test("D0146 Resolution-Space relationship requires Settled Continuation before non-opposed trajectories positively dissolve",function()
@@ -3699,7 +3700,7 @@ test("D0146 Current Excursion Action-Space Conservation fails closed outside loc
     equal(lateral.actionSpaceConservation.reason,"CURRENT_EXCURSION_NOT_IN_STABLE_PARTICIPANT_SUPPORTED_CORRIDOR")
 end)
 
-test("D0146 Current Excursion does not add Regulation when native progression is already within bounded conservation rate",function()
+test("D0146 Resolution-Space obligation remains supported at 8 kmh because Control owns magnitude",function()
     local tracks={}
     local spaces={d0146Space("AS-A",0,0),d0146Space("AS-B",0,60)}
     local physical={d0146Physical("AS-A",0,0,3),d0146Physical("AS-B",0,60,3)}
@@ -3708,9 +3709,10 @@ test("D0146 Current Excursion does not add Regulation when native progression is
     local excursion={d0146Motion("AS-A","JE-A",0,1,3,1),d0146Motion("AS-B","JE-B",0,-1,2,1,8)}
     trajectories=d0146Update(tracks,excursion,spaces,2)
     local classified=d0146Classify(trajectories,excursion,spaces,physical)
-    equal(classified.actionSpaceConservation.status,"OBSERVE_SUPPORTED")
-    equal(classified.actionSpaceConservation.supported,false)
-    equal(classified.actionSpaceConservation.reason,"NATIVE_PROGRESS_ALREADY_WITHIN_ACTION_SPACE_CONSERVATION_RATE")
+    equal(classified.actionSpaceConservation.status,"REGULATE_SUPPORTED")
+    equal(classified.actionSpaceConservation.supported,true)
+    equal(classified.actionSpaceConservation.nativeUnrestrictedKmh,8)
+    equal(classified.actionSpaceConservation.requestedCapKmh,nil)
 end)
 
 test("D0146 missing trajectory corridor anchor fails closed instead of inventing an origin anchor",function()
@@ -3926,7 +3928,7 @@ local function d0146ActionSpacePicture()
             status="REGULATE_SUPPORTED",supported=true,reason="CURRENT_EXCURSION_OCCUPIES_APPROACHING_STABLE_TRAJECTORY_CORRIDOR_WHILE_LOCAL_PASSAGE_ACTION_SPACE_COMPRESSES",
             excursionAssemblyId="AS-A",excursionReferenceKey="vehicle-root:101",regulatedAssemblyId="AS-B",regulatedReferenceKey="vehicle-root:201",
             separationM=70,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=6},currentClosing={resolved=true,separationM=70,closingRateMps=8},
-            nativeUnrestrictedKmh=25,requestedCapKmh=8,governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
+            nativeUnrestrictedKmh=25,governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
         }
     }
     return OuttaMyWay.OperationalPicture.new({
@@ -3957,7 +3959,7 @@ test("D0146 pre-productive intent relevance crosses Candidate as Regulation only
         reason="PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION_REQUIRES_RESOLUTION_SPACE_CONSERVATION",
         regulatedAssemblyId="AS-A",regulatedReferenceKey="vehicle-root:101",protectedAssemblyId="AS-B",protectedReferenceKey="vehicle-root:201",
         roleBasis="PRESERVE_PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION",separationM=60,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=4},
-        currentClosing={resolved=true,separationM=60,closingRateMps=6},nativeUnrestrictedKmh=25,nativeClosureContributionKmh=25,nativeSignedClosureContributionKmh=25,nativeMoveForwards=true,requestedCapKmh=8,
+        currentClosing={resolved=true,separationM=60,closingRateMps=6},nativeUnrestrictedKmh=25,nativeClosureContributionKmh=25,nativeSignedClosureContributionKmh=25,nativeMoveForwards=true,
         governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
     local picture=OuttaMyWay.OperationalPicture.new(values)
@@ -3984,7 +3986,7 @@ test("D0146 Established conflict Resolution-Space Regulation crosses Candidate s
         reason="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_CONSUMES_LOCAL_PASSAGE_ACTION_SPACE",
         regulatedAssemblyId="AS-A",regulatedReferenceKey="vehicle-root:101",protectedAssemblyId="AS-B",protectedReferenceKey="vehicle-root:201",
         roleBasis="PRESERVE_TRANSITIONAL_NATIVE_REVELATION",separationM=42,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=4},
-        currentClosing={resolved=true,separationM=42,closingRateMps=8},nativeUnrestrictedKmh=22,requestedCapKmh=8,
+        currentClosing={resolved=true,separationM=42,closingRateMps=8},nativeUnrestrictedKmh=22,
         governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
     base=OuttaMyWay.OperationalPicture.new(values)
@@ -4013,10 +4015,12 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
     equal(admitted.status,"ACCEPTED"); equal(admitted.d0146ActionSpace,true)
     equal(regulationRequests[#regulationRequests].target.ownerTag,"D0146_ACTION_SPACE_CONSERVATION")
-    equal(regulationRequests[#regulationRequests].target.maxSpeedKmh,8)
+    equal(regulationRequests[#regulationRequests].target.maxSpeedKmh,25)
     local commitmentId=admitted.commitment.identity
     equal(runtime.authorities:ownerOf("AS-B"),commitmentId)
-    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,true)
+    local envelopeStatus=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    equal(envelopeStatus.active,true); equal(envelopeStatus.currentCapKmh,25); equal(envelopeStatus.effectClass,"REGULATE")
+    equal(envelopeStatus.initialDistanceM,70); equal(envelopeStatus.contingencyReserveM,52.5); equal(envelopeStatus.remainingOrdinaryM,17.5)
     local actionObligation=runtime.obligations:openForOwner(commitmentId)[1]
     equal(actionObligation.basis.kind,"D0146_PASSAGE_ACTION_SPACE_CONSERVATION")
 
@@ -4077,7 +4081,7 @@ test("D0146 Resolution-Space role migration moves actuation under the same Commi
         reason="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_CONSUMES_LOCAL_PASSAGE_ACTION_SPACE",
         regulatedAssemblyId="AS-A",regulatedReferenceKey="vehicle-root:101",protectedAssemblyId="AS-B",protectedReferenceKey="vehicle-root:201",
         roleBasis="DEFER_GREATER_NATIVE_CLOSURE_CONTRIBUTION",separationM=32,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=5},
-        currentClosing=relation.currentClosing,nativeUnrestrictedKmh=22,nativeClosureContributionKmh=21.8,nativeSignedClosureContributionKmh=21.8,nativeMoveForwards=true,requestedCapKmh=8,
+        currentClosing=relation.currentClosing,nativeUnrestrictedKmh=22,nativeClosureContributionKmh=21.8,nativeSignedClosureContributionKmh=21.8,nativeMoveForwards=true,
         governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
     local changed=OuttaMyWay.OperationalPicture.new(values)
@@ -4092,22 +4096,22 @@ test("D0146 Resolution-Space role migration moves actuation under the same Commi
     equal(runtime.authorities:ownerOf("AS-B"),nil)
     equal(#requests,3)
     equal(requests[1].target.operation,"APPLY"); equal(requests[1].target.vehicleReferenceKey,"vehicle-root:201")
-    equal(requests[2].target.operation,"APPLY"); equal(requests[2].target.vehicleReferenceKey,"vehicle-root:101"); equal(requests[2].target.maxSpeedKmh,8)
+    equal(requests[2].target.operation,"APPLY"); equal(requests[2].target.vehicleReferenceKey,"vehicle-root:101"); equal(requests[2].target.maxSpeedKmh,1)
     equal(requests[3].target.operation,"RELEASE"); equal(requests[3].target.vehicleReferenceKey,"vehicle-root:201")
     local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
     equal(status.active,true); equal(status.commitmentId,commitmentId); equal(status.regulatedReferenceKey,"vehicle-root:101")
-    equal(status.holdEscalated,false); equal(status.roleMigrationCount,1)
+    equal(status.effectClass,"INTENT_REVELATION_CREEP"); equal(status.currentCapKmh,1); equal(status.remainingOrdinaryM,0); equal(status.roleRebaseCount,1); equal(status.roleMigrationCount,1)
 end)
 
-test("D0146 Action-Space Regulation escalates to Hold after realised cap leaves positive closure while protected participant is Transitional",function()
+test("D0155 Resolution-Space Progression Envelope tightens prospectively as ordinary space is consumed",function()
     local runtime=autonomousHeadOnRuntime()
     local requests={}
-    local capability={actualSpeedKmh=8}
+    local capability={actualSpeedKmh=24}
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
     function capability:getVehicleControlObservationByReference(referenceKey)
-        return {mode="REGULATE",ownerTag="D0146_ACTION_SPACE_CONSERVATION",regulationSpeedKmh=8,actualSpeedKmh=self.actualSpeedKmh,driveCalls=4,lastOutputMaxSpeed=8,lastInputForward=true}
+        return {mode="REGULATE",ownerTag="D0146_ACTION_SPACE_CONSERVATION",regulationSpeedKmh=25,actualSpeedKmh=self.actualSpeedKmh,driveCalls=1,lastOutputMaxSpeed=25,lastInputForward=true}
     end
     runtime:setLiveControlCapability(capability)
 
@@ -4115,152 +4119,112 @@ test("D0146 Action-Space Regulation escalates to Hold after realised cap leaves 
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
-    equal(admitted.status,"ACCEPTED")
+    equal(admitted.status,"ACCEPTED"); equal(#requests,1); equal(requests[1].target.maxSpeedKmh,25)
     local commitmentId=admitted.commitment.identity
-    equal(#requests,1); equal(requests[1].target.maxSpeedKmh,8)
 
     local values=OuttaMyWay.ValueRecord.toTable(active)
-    values.identity="OP-D0146-ACTION-HOLD"; values.epoch=795; values.commitmentContext={{commitmentId=commitmentId}}
+    values.identity="OP-D0155-ENVELOPE-65"; values.epoch=795; values.commitmentContext={{commitmentId=commitmentId}}
     local relation=values.opposedCorridorKnowledge[1]
-    relation.subjectCurrentExcursion=true; relation.subjectSettledContinuation=false
-    relation.otherCurrentExcursion=false; relation.otherSettledContinuation=true
-    relation.currentClosingPositive=true
-    relation.currentClosing={resolved=true,separationM=38,closingRateMps=3.2,currentDirectionDot=-0.98}
+    relation.currentClosingPositive=true; relation.currentNonClosingPositive=false
+    relation.currentClosing={resolved=true,separationM=65,closingRateMps=3.2,currentDirectionDot=-0.98}
     relation.resolutionSpaceRelationship={status="RELATIONSHIP_REMAINS_ACTIVE",positiveDissolution=false,reason="OPPOSED_CORRIDOR_RELATIONSHIP_REMAINS_ESTABLISHED_OR_POTENTIAL"}
     local closing=OuttaMyWay.OperationalPicture.new(values)
     local closingSupported=runtime.liveTrafficCandidateSupport:attach(closing,headOnTestSnapshot())
     local closingEval=runtime:evaluateSealedOperationalPicture(closingSupported)
-    local escalated=runtime.liveControlDispatcher:dispatch(closingSupported,closingEval)
-    equal(escalated.status,"ESCALATED_TO_HOLD")
-    equal(escalated.d0146ActionSpace,true)
-    equal(#requests,2); equal(requests[2].target.maxSpeedKmh,0)
+    local updated=runtime.liveControlDispatcher:dispatch(closingSupported,closingEval)
+    equal(updated.status,"ENVELOPE_UPDATED")
+    equal(updated.reason,"D0155_SUPPORTABLE_PROGRESSION_MAGNITUDE_UPDATED")
+    equal(#requests,2); equal(requests[2].target.maxSpeedKmh,21)
     local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
-    equal(status.active,true); equal(status.holdEscalated,true); equal(status.currentCapKmh,0); equal(status.holdEscalationCount,1)
-
-    local maintained=runtime.liveControlDispatcher:dispatch(closingSupported,closingEval)
-    equal(maintained.status,"MAINTAINED")
-    equal(#requests,2)
+    equal(status.currentCapKmh,21); equal(status.effectClass,"REGULATE")
+    equal(status.conservativeDistanceM,65); equal(status.contingencyReserveM,52.5); equal(status.remainingOrdinaryM,12.5)
+    equal(status.envelopeUpdateCount,1)
 end)
 
-test("D0146 Action-Space Regulation escalates to Hold after realised cap leaves positive closure for settled participants",function()
+test("D0155 active Commitment keeps magnitude elastic when currentClosing becomes unresolved",function()
     local runtime=autonomousHeadOnRuntime()
     local requests={}
-    local capability={actualSpeedKmh=8}
+    local capability={}
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
-    function capability:getVehicleControlObservationByReference(referenceKey)
-        return {mode="REGULATE",ownerTag="D0146_ACTION_SPACE_CONSERVATION",regulationSpeedKmh=8,actualSpeedKmh=self.actualSpeedKmh,driveCalls=4,lastOutputMaxSpeed=8,lastInputForward=true}
-    end
     runtime:setLiveControlCapability(capability)
 
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
-    equal(admitted.status,"ACCEPTED")
+    equal(admitted.status,"ACCEPTED"); equal(#requests,1); equal(requests[1].target.maxSpeedKmh,25)
     local commitmentId=admitted.commitment.identity
-    equal(#requests,1); equal(requests[1].target.maxSpeedKmh,8)
 
     local values=OuttaMyWay.ValueRecord.toTable(active)
-    values.identity="OP-D0146-ACTION-HOLD-SETTLED"; values.epoch=800; values.commitmentContext={{commitmentId=commitmentId}}
+    values.identity="OP-D0155-MAGNITUDE-FREEZE"; values.epoch=799; values.commitmentContext={{commitmentId=commitmentId}}
+    values.currentSpace={
+        {assemblyId="AS-A",occupancy={x=0,z=0}},
+        {assemblyId="AS-B",occupancy={x=60,z=0}}
+    }
+    local relation=values.opposedCorridorKnowledge[1]
+    relation.classification="NO_OPPOSED_CONFLICT"
+    relation.reason="ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED"
+    relation.currentClosing=nil; relation.currentClosingPositive=false; relation.currentNonClosingPositive=false
+    relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="CURRENT_EXCURSION_PAIR_NOT_POSITIVELY_CLOSING"}
+    relation.resolutionSpaceRelationship={status="TRANSIENT_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="D0146_TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
+    local transient=OuttaMyWay.OperationalPicture.new(values)
+    local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
+    local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
+    local updated=runtime.liveControlDispatcher:dispatch(transientSupported,transientEval)
+    equal(updated.status,"ENVELOPE_UPDATED")
+    equal(updated.reason,"D0155_SUPPORTABLE_PROGRESSION_MAGNITUDE_UPDATED")
+    equal(#requests,2); equal(requests[2].target.maxSpeedKmh,16)
+    local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    equal(status.active,true); equal(status.currentCapKmh,16); equal(status.conservativeDistanceM,60); equal(status.remainingOrdinaryM,7.5)
+end)
+
+test("D0155 exhausted ordinary space retains 1 kmh Intent-Revelation Creep instead of Hold",function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setLiveControlCapability(capability)
+
+    local active=d0146ActionSpacePicture()
+    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local commitmentId=admitted.commitment.identity
+    equal(#requests,1); equal(requests[1].target.maxSpeedKmh,25)
+
+    local values=OuttaMyWay.ValueRecord.toTable(active)
+    values.identity="OP-D0155-ENVELOPE-HOLD"; values.epoch=800; values.commitmentContext={{commitmentId=commitmentId}}
     local relation=values.opposedCorridorKnowledge[1]
     relation.classification="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT"
     relation.reason="PERSISTENT_OPPOSED_CLOSING_MOTION_WITH_POSITIVE_SUPPORTED_CORRIDOR_OVERLAP"
     relation.subjectCurrentExcursion=false; relation.subjectSettledContinuation=true
     relation.otherCurrentExcursion=false; relation.otherSettledContinuation=true
     relation.currentClosingPositive=true; relation.currentNonClosingPositive=false
-    relation.currentClosing={resolved=true,separationM=13.5,closingRateMps=4.8,currentDirectionDot=-0.98}
+    relation.currentClosing={resolved=true,separationM=52.5,closingRateMps=4.8,currentDirectionDot=-0.98}
     relation.resolutionSpaceRelationship={status="RELATIONSHIP_REMAINS_ACTIVE",positiveDissolution=false,reason="OPPOSED_CORRIDOR_RELATIONSHIP_REMAINS_ESTABLISHED_OR_POTENTIAL"}
     local closing=OuttaMyWay.OperationalPicture.new(values)
     local closingSupported=runtime.liveTrafficCandidateSupport:attach(closing,headOnTestSnapshot())
     local closingEval=runtime:evaluateSealedOperationalPicture(closingSupported)
-    local escalated=runtime.liveControlDispatcher:dispatch(closingSupported,closingEval)
-    equal(escalated.status,"ESCALATED_TO_HOLD")
-    equal(escalated.d0146ActionSpace,true)
-    equal(escalated.reason,"REGULATION_REALISED_BUT_POSITIVE_CLOSURE_CONTINUES")
-    equal(#requests,2); equal(requests[2].target.maxSpeedKmh,0)
+    local updated=runtime.liveControlDispatcher:dispatch(closingSupported,closingEval)
+    equal(updated.status,"ENVELOPE_UPDATED")
+    equal(#requests,2); equal(requests[2].target.maxSpeedKmh,1)
+    equal(updated.reason,"D0155_INTENT_REVELATION_CREEP_APPLIED")
     local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
-    equal(status.active,true); equal(status.holdEscalated,true); equal(status.currentCapKmh,0); equal(status.holdEscalationCount,1)
-end)
-
-test("D0146 Action-Space Hold de-escalates to prior Regulation on positive non-closing evidence and may re-escalate",function()
-    local runtime=autonomousHeadOnRuntime()
-    local requests={}
-    local capability={actualSpeedKmh=8}
-    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
-    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
-    function capability:getControlExecutionObservation() return nil end
-    function capability:getVehicleControlObservationByReference(referenceKey)
-        return {mode="REGULATE",ownerTag="D0146_ACTION_SPACE_CONSERVATION",regulationSpeedKmh=8,actualSpeedKmh=self.actualSpeedKmh,driveCalls=4,lastOutputMaxSpeed=8,lastInputForward=true}
-    end
-    runtime:setLiveControlCapability(capability)
-
-    local active=d0146ActionSpacePicture()
-    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
-    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
-    local commitmentId=admitted.commitment.identity
-
-    local values=OuttaMyWay.ValueRecord.toTable(active)
-    values.identity="OP-D0146-ACTION-HOLD-DEESCALATE-CLOSING"; values.epoch=797; values.commitmentContext={{commitmentId=commitmentId}}
-    local relation=values.opposedCorridorKnowledge[1]
-    relation.subjectCurrentExcursion=true; relation.subjectSettledContinuation=false
-    relation.otherCurrentExcursion=false; relation.otherSettledContinuation=true
-    relation.currentClosingPositive=true; relation.currentNonClosingPositive=false
-    relation.currentClosing={resolved=true,separationM=38,closingRateMps=3.2,currentDirectionDot=-0.98}
-    relation.resolutionSpaceRelationship={status="RELATIONSHIP_REMAINS_ACTIVE",positiveDissolution=false,reason="OPPOSED_CORRIDOR_RELATIONSHIP_REMAINS_ESTABLISHED_OR_POTENTIAL"}
-    local closing=OuttaMyWay.OperationalPicture.new(values)
-    local closingSupported=runtime.liveTrafficCandidateSupport:attach(closing,headOnTestSnapshot())
-    local closingEval=runtime:evaluateSealedOperationalPicture(closingSupported)
-    local escalated=runtime.liveControlDispatcher:dispatch(closingSupported,closingEval)
-    equal(escalated.status,"ESCALATED_TO_HOLD")
-    equal(#requests,2); equal(requests[2].target.maxSpeedKmh,0)
-
-    values=OuttaMyWay.ValueRecord.toTable(closing)
-    values.identity="OP-D0146-ACTION-HOLD-DEESCALATE-NONCLOSING"; values.epoch=798
-    relation=values.opposedCorridorKnowledge[1]
-    relation.classification="NO_OPPOSED_CONFLICT"
-    relation.reason="ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED"
-    relation.currentClosingPositive=false; relation.currentNonClosingPositive=true
-    relation.currentClosing={resolved=true,separationM=37.5,closingRateMps=-0.6,currentDirectionDot=-0.2}
-    relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="CURRENT_EXCURSION_PAIR_NOT_POSITIVELY_CLOSING",currentClosing=relation.currentClosing}
-    relation.resolutionSpaceRelationship={status="TRANSIENT_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="D0146_TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
-    local nonClosing=OuttaMyWay.OperationalPicture.new(values)
-    local nonClosingSupported=runtime.liveTrafficCandidateSupport:attach(nonClosing,headOnTestSnapshot())
-    local nonClosingEval=runtime:evaluateSealedOperationalPicture(nonClosingSupported)
-    local deescalated=runtime.liveControlDispatcher:dispatch(nonClosingSupported,nonClosingEval)
-    equal(deescalated.status,"DEESCALATED_TO_REGULATION")
-    equal(#requests,3); equal(requests[3].target.maxSpeedKmh,8)
-    local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
-    equal(status.active,true); equal(status.holdEscalated,false); equal(status.currentCapKmh,8); equal(status.regulationCapKmh,8); equal(status.holdDeescalationCount,1)
+    equal(status.active,true); equal(status.effectClass,"INTENT_REVELATION_CREEP"); equal(status.currentCapKmh,1); equal(status.remainingOrdinaryM,0)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
-
-    values=OuttaMyWay.ValueRecord.toTable(closing)
-    values.identity="OP-D0146-ACTION-HOLD-REESCALATE"; values.epoch=799
-    relation=values.opposedCorridorKnowledge[1]
-    relation.currentClosingPositive=true; relation.currentNonClosingPositive=false
-    relation.currentClosing={resolved=true,separationM=35,closingRateMps=2.4,currentDirectionDot=-0.95}
-    local closingAgain=OuttaMyWay.OperationalPicture.new(values)
-    local closingAgainSupported=runtime.liveTrafficCandidateSupport:attach(closingAgain,headOnTestSnapshot())
-    local closingAgainEval=runtime:evaluateSealedOperationalPicture(closingAgainSupported)
-    local reescalated=runtime.liveControlDispatcher:dispatch(closingAgainSupported,closingAgainEval)
-    equal(reescalated.status,"ESCALATED_TO_HOLD")
-    equal(#requests,4); equal(requests[4].target.maxSpeedKmh,0)
-    status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
-    equal(status.holdEscalated,true); equal(status.holdEscalationCount,2); equal(status.holdDeescalationCount,1)
 end)
 
-test("D0146 Action-Space Regulation does not escalate before regulated participant has complied with its cap",function()
+test("D0155 Reverse-Created Resolution Reserve is not immediately spendable ordinary progression authority",function()
     local runtime=autonomousHeadOnRuntime()
     local requests={}
-    local capability={actualSpeedKmh=11}
+    local capability={}
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
-    function capability:getVehicleControlObservationByReference(referenceKey)
-        return {mode="REGULATE",ownerTag="D0146_ACTION_SPACE_CONSERVATION",regulationSpeedKmh=8,actualSpeedKmh=self.actualSpeedKmh,driveCalls=4,lastOutputMaxSpeed=8,lastInputForward=true}
-    end
     runtime:setLiveControlCapability(capability)
 
     local active=d0146ActionSpacePicture()
@@ -4269,21 +4233,68 @@ test("D0146 Action-Space Regulation does not escalate before regulated participa
     local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
     local commitmentId=admitted.commitment.identity
 
-    local values=OuttaMyWay.ValueRecord.toTable(active)
-    values.identity="OP-D0146-ACTION-NOT-YET-HOLD"; values.epoch=796; values.commitmentContext={{commitmentId=commitmentId}}
+    local function dispatchAt(source,identity,epoch,separation)
+        local values=OuttaMyWay.ValueRecord.toTable(source)
+        values.identity=identity; values.epoch=epoch; values.commitmentContext={{commitmentId=commitmentId}}
+        local relation=values.opposedCorridorKnowledge[1]
+        relation.currentClosing={resolved=true,separationM=separation,closingRateMps=2.0,currentDirectionDot=-0.95}
+        relation.currentClosingPositive=true; relation.currentNonClosingPositive=false
+        relation.resolutionSpaceRelationship={status="RELATIONSHIP_REMAINS_ACTIVE",positiveDissolution=false,reason="OPPOSED_CORRIDOR_RELATIONSHIP_REMAINS_ESTABLISHED_OR_POTENTIAL"}
+        local picture=OuttaMyWay.OperationalPicture.new(values)
+        local supportedPicture=runtime.liveTrafficCandidateSupport:attach(picture,headOnTestSnapshot())
+        local evaluatedPicture=runtime:evaluateSealedOperationalPicture(supportedPicture)
+        return picture,runtime.liveControlDispatcher:dispatch(supportedPicture,evaluatedPicture)
+    end
+
+    local consumed,first=dispatchAt(active,"OP-D0155-ENVELOPE-60",797,60)
+    equal(first.status,"ENVELOPE_UPDATED"); equal(#requests,2); equal(requests[2].target.maxSpeedKmh,16)
+    local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    equal(status.conservativeDistanceM,60); equal(status.reverseCreatedReserveM,0); equal(status.remainingOrdinaryM,7.5)
+
+    local reversed,second=dispatchAt(consumed,"OP-D0155-ENVELOPE-REVERSE-68",798,68)
+    equal(second.status,"MAINTAINED"); equal(#requests,2)
+    status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    equal(status.currentCapKmh,16); equal(status.conservativeDistanceM,60); equal(status.reverseCreatedReserveM,8); equal(status.remainingOrdinaryM,7.5)
+
+    local _,third=dispatchAt(reversed,"OP-D0155-ENVELOPE-FORWARD-59",799,59)
+    equal(third.status,"ENVELOPE_UPDATED"); equal(#requests,3); equal(requests[3].target.maxSpeedKmh,15)
+    status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    equal(status.conservativeDistanceM,59); equal(status.reverseCreatedReserveM,0); equal(status.remainingOrdinaryM,6.5)
+end)
+
+test("D0155 low admission speed seeds the envelope instead of suppressing the Resolution-Space obligation",function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setLiveControlCapability(capability)
+
+    local values=OuttaMyWay.ValueRecord.toTable(d0146ActionSpacePicture())
+    values.identity="OP-D0155-LOW-SPEED-ADMISSION"; values.epoch=796
     local relation=values.opposedCorridorKnowledge[1]
-    relation.subjectCurrentExcursion=true; relation.subjectSettledContinuation=false
-    relation.otherCurrentExcursion=false; relation.otherSettledContinuation=true
-    relation.currentClosingPositive=true
-    relation.currentClosing={resolved=true,separationM=38,closingRateMps=3.2,currentDirectionDot=-0.98}
+    relation.actionSpaceConservation.nativeUnrestrictedKmh=8
+    local active=OuttaMyWay.OperationalPicture.new(values)
+    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    equal(admitted.status,"ACCEPTED"); equal(#requests,1); equal(requests[1].target.maxSpeedKmh,8)
+    local commitmentId=admitted.commitment.identity
+
+    values=OuttaMyWay.ValueRecord.toTable(active)
+    values.identity="OP-D0155-LOW-SPEED-60"; values.epoch=797; values.commitmentContext={{commitmentId=commitmentId}}
+    relation=values.opposedCorridorKnowledge[1]
+    relation.currentClosing={resolved=true,separationM=60,closingRateMps=1.0,currentDirectionDot=-0.95}
+    relation.currentClosingPositive=true; relation.currentNonClosingPositive=false
     relation.resolutionSpaceRelationship={status="RELATIONSHIP_REMAINS_ACTIVE",positiveDissolution=false,reason="OPPOSED_CORRIDOR_RELATIONSHIP_REMAINS_ESTABLISHED_OR_POTENTIAL"}
     local closing=OuttaMyWay.OperationalPicture.new(values)
     local closingSupported=runtime.liveTrafficCandidateSupport:attach(closing,headOnTestSnapshot())
     local closingEval=runtime:evaluateSealedOperationalPicture(closingSupported)
-    local maintained=runtime.liveControlDispatcher:dispatch(closingSupported,closingEval)
-    equal(maintained.status,"MAINTAINED")
-    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().holdEscalated,false)
-    equal(#requests,1)
+    local updated=runtime.liveControlDispatcher:dispatch(closingSupported,closingEval)
+    equal(updated.status,"ENVELOPE_UPDATED"); equal(#requests,2); equal(requests[2].target.maxSpeedKmh,5)
+    local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    equal(status.currentCapKmh,5); equal(status.effectClass,"REGULATE"); equal(status.remainingOrdinaryM,7.5)
 end)
 
 test("D0146 Action-Space Regulation persists through transient reverse/non-closing evidence after admission",function()

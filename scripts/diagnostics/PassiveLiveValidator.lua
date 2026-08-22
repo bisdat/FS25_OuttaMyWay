@@ -248,7 +248,7 @@ function Validator:_logTrajectoryConflictKnowledge(picture,due)
         if self.opposedCorridorLogSignatures[key]~=signature or due then
             self.opposedCorridorLogSignatures[key]=signature
             local actionOverlap=action.currentCorridorOverlap or {}
-            logInfo(string.format("OPPOSED_CORRIDOR pair=%s operation=%s classification=%s status=%s reason=%s participation=%s/%s pending=%s/%s passageEligible=%s trajectoryDot=%s mutuallyFacing=%s overlap=%s positiveOverlap=%s overlapM=%s currentDot=%s closingRate=%s currentOpposed=%s closingPositive=%s stable=%s/%s excursions=%s/%s settled=%s/%s relationship=%s relationshipReason=%s primitives=%d+%d actionSpace=%s actionReason=%s regulated=%s protected=%s excursion=%s role=%s actionSep=%s actionOverlap=%s actionNative=%s actionCap=%s authority=D0146_SITUATION_KNOWLEDGE diagnosticOnly=true",
+            logInfo(string.format("OPPOSED_CORRIDOR pair=%s operation=%s classification=%s status=%s reason=%s participation=%s/%s pending=%s/%s passageEligible=%s trajectoryDot=%s mutuallyFacing=%s overlap=%s positiveOverlap=%s overlapM=%s currentDot=%s closingRate=%s currentOpposed=%s closingPositive=%s stable=%s/%s excursions=%s/%s settled=%s/%s relationship=%s relationshipReason=%s primitives=%d+%d actionSpace=%s actionReason=%s regulated=%s protected=%s excursion=%s role=%s actionSep=%s actionOverlap=%s actionNative=%s magnitudeAuthority=CONTROL authority=D0146_SITUATION_KNOWLEDGE diagnosticOnly=true",
                 key,tostring(item.operationId or "n/a"),tostring(item.classification or "UNRESOLVED"),tostring(item.status),tostring(item.reason),
                 tostring(item.subjectParticipationClass or "OPERATION_MEMBER"),tostring(item.otherParticipationClass or "OPERATION_MEMBER"),booleanText(item.subjectProductiveCommencementPending),booleanText(item.otherProductiveCommencementPending),booleanText(item.cooperativePassageEligible),numberText(item.trajectoryDot),
                 booleanText(item.mutuallyFacing),tostring(overlap.status or "UNRESOLVED"),booleanText(overlap.positive),numberText(overlap.overlapM),
@@ -259,7 +259,7 @@ function Validator:_logTrajectoryConflictKnowledge(picture,due)
                 tostring(item.resolutionSpaceRelationship and item.resolutionSpaceRelationship.reason or "n/a"),
                 tonumber(overlap.subjectPhysicalPrimitiveCount) or 0,tonumber(overlap.otherPhysicalPrimitiveCount) or 0,
                 tostring(action.status or "NOT_REQUIRED"),tostring(action.reason or "n/a"),tostring(action.regulatedAssemblyId or "NONE"),tostring(action.protectedAssemblyId or action.excursionAssemblyId or "NONE"),tostring(action.excursionAssemblyId or "NONE"),tostring(action.roleBasis or "n/a"),
-                numberText(action.separationM),numberText(actionOverlap.overlapM),numberText(action.nativeUnrestrictedKmh),numberText(action.requestedCapKmh)))
+                numberText(action.separationM),numberText(actionOverlap.overlapM),numberText(action.nativeUnrestrictedKmh)))
         end
     end
 end

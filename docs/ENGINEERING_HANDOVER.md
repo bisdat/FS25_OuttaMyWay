@@ -1,3 +1,55 @@
+## v0.1.3.0 CANONICAL CANDIDATE handover — Resolution-Space tranche complete
+
+**Baseline authority:** owner-declared canonical v0.1.2.0 (`1d861caca5f6d06656c0fcd41b1c278c01ac7cda223af1fdf101203fe6e0e583`; Git `f841717285fb9a02d4dc8c0c469adbecd56cb38c`; 316 files).
+
+**Candidate scope:** cumulative promotion of the validated 0.1.2.1/0.1.2.2 Resolution-Space work; no new behaviour is intentionally introduced during canonicalisation. D-0155 now comprises the 75% contingency reserve, integer progression envelope, Reverse-Created Resolution Reserve, role-migration magnitude rebase, Magnitude Freeze correction and 1 km/h Intent-Revelation Creep.
+
+**Live evidence:** TS010 validated conservation -> creep -> unchanged Passage succession; TS015 ran to full completion; TS016 validated the same traffic behaviour. TS016's missing final terminal move is explained by genuine Player Claim after the player entered both completed vehicles and is not a D-0147 regression.
+
+**Do not fold into this tranche:** the TS010 post-completion `<=60 m` blockage, Player-Claim expiry/reset ideas, the ~18-second pacing observation, Passage geometry/literals or Resolution-Space Recovery.
+
+**Next discussion:** Cooperative Passage in extenso. Start from observed system needs and the user's passage observations; treat 12 m/6 m/50 m/8 km/h/<=60 m and related values as evidence questions rather than replacement-calibration tasks.
+
+---
+
+## v0.1.2.2 TEST handover — Intent-Revelation Creep + Magnitude Freeze correction
+
+Authoritative baseline: owner-declared canonical v0.1.2.0 (`1d861caca5f6d06656c0fcd41b1c278c01ac7cda223af1fdf101203fe6e0e583`; Git `f841717285fb9a02d4dc8c0c469adbecd56cb38c`; 316 files).
+
+**Why this build exists:** TS010 v0.1.2.1 provided positive evidence for the Resolution-Space progression curve but exposed two separable issues. **Magnitude Freeze** was an implementation defect: temporary loss of resolved `currentClosing` stopped Control magnitude updates even though the Commitment persisted. The deadlock also selected a new experimental endpoint: 1 km/h **Intent-Revelation Creep** instead of D-0146 Hold while the same uncertainty obligation remains unresolved.
+
+**Freeze correction:** when `currentClosing.separationM` is unavailable, Control reads both participants' current reference poses from `OperationalPicture.currentSpace` and computes the same centre-to-centre separation used by the normal closing calculation. No Situation, Candidate, Decision, Commitment or Passage evidence is invented.
+
+**Creep hypothesis:** the envelope remains integer-valued and the 75% reserve is unchanged. Raw progression still tends to zero, but the applied D-0146 cap bottoms at 1 km/h and emits `D0155_INTENT_REVELATION_CREEP`. This is intended to keep current motion observable while consuming contingency space very slowly. Treat the value as test calibration, not proof.
+
+**What not to infer:** Passage's current-motion requirement has not been reinterpreted or changed. The stationary-obstacle rationale is plausible but unproven. If 1 km/h does not permit Passage to mature, inspect the existing Passage evidence contract next rather than adding Control-Preserved Intent automatically.
+
+**Bench validation:** 255/255 Lua behavioural; 96/96 structural. Focused tests cover magnitude update through unresolved closing evidence, 1 km/h terminal creep, reverse-created reserve, low-speed admission and role-migration rebase.
+
+**Live sequence:** TS010 first. Confirm that cap updates continue through mower manoeuvre; then see whether 1 km/h preserves enough current-motion evidence for ordinary Passage succession. Only after positive TS010 evidence run TS015/TS016 regressions.
+
+---
+
+## v0.1.2.1 TEST handover — Resolution-Space Progression Envelope
+
+Authoritative baseline: owner-declared canonical v0.1.2.0 (`1d861caca5f6d06656c0fcd41b1c278c01ac7cda223af1fdf101203fe6e0e583`; Git `f841717285fb9a02d4dc8c0c469adbecd56cb38c`; 316 files).
+
+**What changed:** D-0155 is now implemented as a separate Control-owned Resolution-Space Progression Envelope. Situation no longer supplies or filters on an 8 km/h magnitude. A provisional 75% Resolution Contingency Reserve is withheld; ordinary progression decays on the zero-terminal policy curve and is floored to whole integer km/h. Zero is Hold within the same envelope.
+
+**Discovery to retain:** **Magnitude Leakage** was the implementation mismatch: a Control magnitude had leaked into Situation/Candidate eligibility. Do not reintroduce magnitude thresholds above Control merely to simplify dispatch.
+
+**Reverse behaviour:** gained separation while the protected/uncertain participant reverses becomes Reverse-Created Resolution Reserve. The constrained participant must not accelerate merely because current physical separation temporarily increased. Forward return consumes that bonus first.
+
+**Role migration:** Magnitude Rebase on Role Migration preserves original contingency capacity and consumed ordinary space, then samples the new regulated participant and rebases only over what remains. In the bench nasty case, migration after separation has already fallen inside the original contingency reserve correctly yields immediate zero-cap Hold.
+
+**Bench validation:** 254/254 Lua behavioural, 96/96 structural and 25/25 RRS tests pass. New tests cover prospective tightening without actuator-compliance gating, zero-cap Hold, reverse reserve, low-speed admission and role rebase.
+
+**Next live sequence:** TS010 first. Observe the actual progression caps and whether mower intent is revealed before option space is lost; do not tune from one fixture immediately. Then TS015/TS016, specifically Condor's long reverse and normal same-Commitment Cooperative Passage succession. If a state is already unrecoverable when the envelope acts, analyse D-0154 Recovery separately rather than adding special cases here.
+
+**Do not mix into this test:** 80 m locality, Passage-in-extenso, guide/burden literal work, D-0147 Courtesy Quantum/Exhaustion, or generic static-blockage Recovery.
+
+---
+
 ## v0.1.2.0 CANONICAL CANDIDATE handover — Resolution-Space Conservation
 
 Baseline: owner-declared canonical v0.1.1.0 (`10ad10c0eb5956fbd32f3e82408201513dec6073e72b758db4b6bf394e8316b3`; Git `5cd2ae0c768a1a771b817b5ed5879ca02745f9de`; 316 files). Candidate scope is documentation/architecture plus version identity; no traffic behavioural implementation.

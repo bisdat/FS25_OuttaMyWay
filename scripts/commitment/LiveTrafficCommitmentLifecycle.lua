@@ -407,9 +407,9 @@ function Lifecycle.applyD0146ActionSpaceDecision(runtime,picture,evaluated)
         record=result.commitment; token=result.authorityToken; acquired=true
     end
     if token==nil or runtime.authorities:validate(token)~=true then return nil,"D0146_ACTION_SPACE_VALID_AUTHORITY_TOKEN_UNAVAILABLE" end
-    logInfo("D0146_ACTION_SPACE_DECISION_APPLIED decision=%s commitment=%s conflict=%s admission=%s regulated=%s protected=%s obligation=%s token=%s acquired=%s cap=%.2fkmh",
+    logInfo("D0146_ACTION_SPACE_DECISION_APPLIED decision=%s commitment=%s conflict=%s admission=%s regulated=%s protected=%s obligation=%s token=%s acquired=%s magnitudeAuthority=CONTROL",
         tostring(evaluated.decision.identity),tostring(record.identity),tostring(bridge.conflictIdentity),tostring(bridge.admissionKind or "CURRENT_EXCURSION"),tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),
-        tostring(obligation.identity),tostring(token.identity),tostring(acquired),tonumber(bridge.requestedCapKmh) or 0)
+        tostring(obligation.identity),tostring(token.identity),tostring(acquired))
     return {application=applied,commitment=record,obligation=obligation,authorityToken=token,authorityAcquired=acquired,bridge=bridge},nil
 end
 

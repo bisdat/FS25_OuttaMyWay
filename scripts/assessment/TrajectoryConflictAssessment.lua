@@ -480,15 +480,6 @@ local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,a
     end
     result.nativeUnrestrictedKmh=nativeRate
     if nativeRate==nil then result.reason="REGULATED_PARTICIPANT_POSITIVE_NATIVE_FORWARD_RATE_UNAVAILABLE"; return result end
-    local requestedCapKmh=threshold(context,"actionSpaceRegulationKmh",8.0)
-    requestedCapKmh=math.max(0,math.min(nativeRate,requestedCapKmh))
-    result.requestedCapKmh=requestedCapKmh
-    if nativeRate<=requestedCapKmh+0.05 then
-        result.status="OBSERVE_SUPPORTED"
-        result.reason="NATIVE_PROGRESS_ALREADY_WITHIN_ACTION_SPACE_CONSERVATION_RATE"
-        return result
-    end
-
     result.status="REGULATE_SUPPORTED"
     result.supported=true
     result.admissionKind="CURRENT_EXCURSION"
@@ -596,15 +587,6 @@ local function establishedConflictConservation(record,aTrajectory,bTrajectory,aM
     result.nativeSignedClosureContributionKmh=regulatedContribution and tonumber(regulatedContribution.signedClosureContributionKmh) or nil
     if regulatedContribution~=nil then result.nativeMoveForwards=regulatedContribution.moveForwards end
     if nativeRate==nil then result.reason="SELECTED_REGULATED_PARTICIPANT_NATIVE_RATE_UNAVAILABLE"; return result end
-
-    local requestedCapKmh=threshold(context,"actionSpaceRegulationKmh",8.0)
-    requestedCapKmh=math.max(0,math.min(nativeRate,requestedCapKmh))
-    result.requestedCapKmh=requestedCapKmh
-    if nativeRate<=requestedCapKmh+0.05 then
-        result.status="OBSERVE_SUPPORTED"
-        result.reason="NATIVE_PROGRESS_ALREADY_WITHIN_ACTION_SPACE_CONSERVATION_RATE"
-        return result
-    end
 
     result.status="REGULATE_SUPPORTED"; result.supported=true
     result.reason="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_CONSUMES_LOCAL_PASSAGE_ACTION_SPACE"
@@ -830,9 +812,9 @@ function Assessment.classifyPairs(context)
                         spaceByAssembly[aId],spaceByAssembly[bId],aParticipation,bParticipation,context)
                     record.actionSpaceConservation=copy(actionSpace)
                     -- Situation owns the distinction between missing closure evidence
-                    -- and positive evidence that the pair is no longer closing.  Control
-                    -- may use the latter to relax a zero-speed Hold without settling the
-                    -- still-relevant Resolution-Space obligation.
+                    -- and positive evidence that the pair is no longer closing. Control
+                    -- does not require a resolved travel vector merely to maintain an
+                    -- already-admitted elastic Resolution-Space magnitude.
                     if type(actionSpace.currentClosing)=="table" then
                         record.currentClosing=copy(actionSpace.currentClosing)
                         local actionClosingRate=tonumber(actionSpace.currentClosing.closingRateMps)

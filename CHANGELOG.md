@@ -1,3 +1,55 @@
+# v0.1.3.0 CANONICAL CANDIDATE — Resolution-Space Progression Envelope
+
+**Authority:** owner-declared canonical v0.1.2.0 (`1d861caca5f6d06656c0fcd41b1c278c01ac7cda223af1fdf101203fe6e0e583`; Git `f841717285fb9a02d4dc8c0c469adbecd56cb38c`; 316 files) is the exact repository baseline. v0.1.3.0 consolidates the field-validated v0.1.2.1/v0.1.2.2 D-0155 work with no additional behavioural algorithm change.
+
+**Promoted behaviour:** Resolution-Space magnitude is owned by Control rather than Situation; the provisional 75% Resolution Contingency Reserve, whole-integer Supportable Progression envelope, Reverse-Created Resolution Reserve protection and Magnitude Rebase on Role Migration are retained. **Magnitude Freeze** is corrected by Commitment-lifetime updates using current-space separation when motion-derived closing separation is temporarily unavailable. The unresolved endpoint is **1 km/h Intent-Revelation Creep**, not Hold, so existing Passage evidence can continue to mature while native intent reveals itself.
+
+**Live validation:** TS010 progressed successfully from Resolution-Space regulation through 1 km/h creep into unchanged Cooperative Passage and normal MT665 completion. TS015 ran perfectly to completion. TS016 was successful through the relevant Resolution-Space/Passage behaviour; the final D-0147 move did not trigger because the player had briefly entered both completed vehicles, which is expected Player Claim behaviour under the current architecture. No Magnitude Freeze recurrence was observed.
+
+**Separate evidence:** the TS010 final blockage after MT665 completion remains the parked `<=60 m` locality/projection-literal issue and is not attributed to Resolution Space or Passage. A regular ~18-second pacing stutter observed during TS016 had no matching periodic OuttaMyWay log stall or event and is not acted upon in this release.
+
+**Passage boundary:** Cooperative Passage mechanics and evidence semantics are unchanged. The next selected engineering activity is Passage in-extenso review, including passage-specific literal provenance, rather than further D-0155 tuning.
+
+**Release identity:** canonical BUILD resets to `0`; implementation/test expectations advance from 0.1.2.2 to 0.1.3.0 only. `ARCHITECTURE_VERSION` remains the existing legacy field and is not used to drive this release.
+
+---
+
+# v0.1.2.2 TEST — Intent-Revelation Creep + Magnitude Freeze correction
+
+**Authority:** exact owner-declared canonical v0.1.2.0 (`1d861caca5f6d06656c0fcd41b1c278c01ac7cda223af1fdf101203fe6e0e583`; Git `f841717285fb9a02d4dc8c0c469adbecd56cb38c`; 316 files) remains the implementation authority; v0.1.2.2 is a cumulative TEST candidate over the v0.1.2.1 D-0155 implementation.
+
+**Field discovery — Magnitude Freeze:** TS010 v0.1.2.1 showed the envelope tightening correctly from native 20 km/h to 15 km/h, then freezing while the mower's native manoeuvre made current travel-vector/closing evidence unresolved. The D-0146 Commitment remained sticky, but Control was coupled to `currentClosing.separationM`. This consumed Resolution Space without updating magnitude.
+
+**Correction:** while the same D-0146 Commitment remains live, Control now derives centre-to-centre separation directly from `OperationalPicture.currentSpace` if motion-based `currentClosing` cannot supply separation. The fallback is the same reference-pose distance used by the normal closing calculation and does not alter Situation classification, release, role or Passage authority.
+
+**Experimental policy — Intent-Revelation Creep:** the envelope's unresolved terminal expression changes from 0 km/h Hold to a configured **1 km/h** minimum Regulation. This is a TEST hypothesis intended to preserve current-motion evidence and resolution opportunity while the protected participant reveals native intent. The 75% Resolution Contingency Reserve remains unchanged; creep may consume that reserve slowly and is therefore not described as ordinary progression authority.
+
+**Passage boundary:** Cooperative Passage code and evidence rules are unchanged. The conjecture that its current-motion requirement exists to exclude stationary obstacles remains unproven and is not promoted into architecture by this build.
+
+**Bench validation:** 255/255 Lua behavioural tests PASS; 96/96 Python structural tests PASS before RRS packaging. New coverage proves Commitment-lifetime magnitude updates with unresolved `currentClosing`, 1 km/h terminal creep, and role migration at exhausted ordinary allowance.
+
+---
+
+# v0.1.2.1 TEST — Resolution-Space Progression Envelope
+
+**Authority:** exact owner-declared canonical v0.1.2.0 (`1d861caca5f6d06656c0fcd41b1c278c01ac7cda223af1fdf101203fe6e0e583`; Git `f841717285fb9a02d4dc8c0c469adbecd56cb38c`; 316 files) is the implementation baseline.
+
+**Authority-Layer Impact Review:** Representation already exposes pair separation and observed progression; Field World Membership, Operational Membership, Situation Relevance, Passage eligibility, Decision authority and Commitment purpose remain unchanged. The review discovered **Magnitude Leakage**: the inherited 8 km/h value was chosen by Situation Assessment and could suppress a candidate when native progression happened to be <=8 km/h. v0.1.2.1 removes Control magnitude from Situation/Candidate evidence; Control owns the envelope.
+
+**D-0155 implementation:** adds `ResolutionSpaceProgressionEnvelope.lua`. At admission it withholds a provisional **75% Resolution Contingency Reserve**, uses the remaining 25% as ordinary progression allowance, seeds the zero-terminal-progression policy curve from current native progression, floors each resulting cap to a whole integer km/h, and expresses Hold as the zero endpoint of that same curve. No physical braking/deceleration model is introduced.
+
+**Reverse-created reserve:** current physical separation may increase while the protected/uncertain participant reverses, but conservative authorised distance cannot increase within the same unresolved Situation. The difference is recorded as **Reverse-Created Resolution Reserve** and is not immediately spendable ordinary progression authority.
+
+**Role migration:** **Magnitude Rebase on Role Migration** preserves the existing absolute contingency reserve and consumed allowance, samples the newly regulated participant's current progression, and reconstructs the policy trajectory only over remaining ordinary allowance. The same Commitment and obligation are retained.
+
+**Retired D-0146 Control behaviour:** fixed generic 8 km/h magnitude; candidate suppression based on already being <=8 km/h; retrospective `cap realised + still closing => Hold`; transient non-closing as an automatic return to 8 km/h. Situation still owns positive release/supersession.
+
+**Explicitly unchanged:** 80 m locality ceiling; Pair-Specific/Configuration-First Cooperative Passage mechanics; Pre-Productive Intent Relevance; Safe Release; Recovery; D-0147; other parked literal work.
+
+**Bench validation before field test:** 254/254 Lua behavioural tests PASS; 96/96 Python structural tests PASS; 25/25 RRS tests PASS. New behavioural coverage proves prospective tightening, zero-cap Hold, reverse-created reserve protection, low-speed admission and role-migration rebase. Live TS010 then TS015/TS016 remain required.
+
+---
+
 # v0.1.2.0 CANONICAL CANDIDATE — Resolution-Space Conservation Architecture
 
 **Authority:** owner-declared canonical v0.1.1.0 (`10ad10c0eb5956fbd32f3e82408201513dec6073e72b758db4b6bf394e8316b3`; Git `5cd2ae0c768a1a771b817b5ed5879ca02745f9de`; 316 files) is the exact implementation baseline. v0.1.2.0 is a documentation/architecture consolidation candidate and introduces **no intentional Situation Assessment, Decision, Commitment or Control behavioural algorithm change**. Runtime traffic behaviour remains the v0.1.1.0 behaviour, including the inherited empirical 8 km/h D-0146 Resolution-Space Regulation cap.

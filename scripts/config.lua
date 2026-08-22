@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.1.2.0 CANONICAL CANDIDATE — Resolution-Space Conservation architecture consolidation over owner-declared canonical v0.1.1.0.
--- Traffic behaviour is unchanged from canonical v0.1.1.0; the Progression Envelope recorded in documentation is not implemented in this candidate.
+-- FS25_OuttaMyWay v0.1.3.0 CANONICAL CANDIDATE — validated D-0155 Resolution-Space Progression Envelope + Intent-Revelation Creep.
+-- Situation/Decision/Commitment admission semantics remain inherited; Control magnitude is now elastic.
 -- D-0147 now implements the agreed optional Bounded Infield Retreat courtesy hypothesis while retaining the validated v4.7.120 mechanical actuator substrate.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.1.2.0"
+OuttaMyWay.VERSION = "0.1.3.0"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -162,12 +162,19 @@ OuttaMyWay.D0146_STEP2_PAIR_SWEEP_SAMPLES_PER_LEG = 20
 OuttaMyWay.D0146_STEP2_MOVE_SPEED_KMH = 8.0
 OuttaMyWay.D0146_STEP2_PHASE_WATCHDOG_MS = 45000
 
--- D-0146 Resolution-Space Conservation test calibration. This bounded
--- Regulation rate may preserve local Passage Action Space either while a
--- Current Excursion is still revealing the relationship or after an Established
--- Opposed Corridor Conflict exists but no supported Step-2 Passage expression is
--- yet available. It is not universal traffic speed policy.
-OuttaMyWay.D0146_RESOLUTION_SPACE_REGULATION_KMH = 8.0
+-- D-0155 Resolution-Space Progression Envelope provisional policy calibration.
+-- This is a withheld fraction of positively established usable Resolution Space,
+-- not claimed GIANTS braking distance. Ordinary progression may consume only the
+-- remainder; Control derives an integer km/h cap from the zero-terminal policy
+-- trajectory. The 75% reserve remains provisional policy calibration.
+OuttaMyWay.D0146_RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION = 0.75
+
+-- v0.1.3.0 validated policy: when ordinary Resolution Space is exhausted while
+-- the same D-0146 intent-revelation obligation remains unresolved, retain a
+-- minimal positive progression rather than imposing Hold. This is intended to
+-- preserve current-motion evidence for existing Passage maturation without
+-- changing Passage eligibility or spending ordinary Resolution Space authority.
+OuttaMyWay.D0146_RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH = 1
 
 -- D-0128 bounded head-on playbook evidence gate. This is a TEST REPRESENTATION-
 -- FITNESS literal, not production head-on policy: the live Refuge bridge is only
@@ -197,7 +204,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
 OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.1.2.0 CANONICAL CANDIDATE — RESOLUTION-SPACE ARCHITECTURE"
+OuttaMyWay.BUILD_LABEL = "0.1.3.0 CANONICAL CANDIDATE — RESOLUTION-SPACE ENVELOPE"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720

@@ -373,14 +373,14 @@ local function makeD0146ActionSpaceCandidate(pictureId,pictureValues,item,govern
         "Situation positively supports an active opposed relationship, current physical corridor coupling, positive closure and bounded local-passage proximity",
         {currentCorridorOverlap=action.currentCorridorOverlap,separationM=action.separationM,maxSeparationM=action.maxSeparationM,negativeClearanceAuthority=false,admissionKind=action.admissionKind})
     constraints.CONTROL_CAPABILITY_AVAILABILITY=d0146ActionSpacePacket(
-        "The existing P22 Regulation lease can bound speed while GIANTS retains route, steering and direction, and may tighten that same purpose-bound lease to zero-speed Hold after positive evidence that realised Regulation is insufficient",
-        {controlCapability="REGULATE_SPEED",leaseKind="P22_REGULATION_LEASE",giantsRoutePreserved=true,zeroSpeedHoldExpression=true})
+        "The existing P22 Regulation lease can express the Control-owned Resolution-Space Progression Envelope while GIANTS retains route, steering and direction; a zero integer cap is Hold as the terminal magnitude of the same envelope",
+        {controlCapability="REGULATE_SPEED",leaseKind="P22_REGULATION_LEASE",giantsRoutePreserved=true,zeroSpeedHoldExpression=true,progressionEnvelope=true})
     constraints.CONTINUING_INTENT_PRIORITY=d0146ActionSpacePacket(
         "The protected participant remains GIANTS-native; an active pre-productive entrant is protected as unresolved native intent rather than folded/repositioned. Only the current Operation member selected by Situation is temporarily regulated, and that actuation role may migrate under the same unresolved obligation when Situation changes",
         {protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId,regulatedAssemblyId=action.regulatedAssemblyId,roleBasis=action.roleBasis,roleAssignmentMutable=true,protectedProductiveCommencementPending=(action.protectedAssemblyId==relation.subjectAssemblyId and relation.subjectProductiveCommencementPending==true) or (action.protectedAssemblyId==relation.otherAssemblyId and relation.otherProductiveCommencementPending==true)})
     constraints.PROGRESS_PRESERVATION=d0146ActionSpacePacket(
-        "Regulation is the least initial intervention; if its actuator is positively realised yet material positive closure continues and no Passage succeeds it, the same purpose may escalate the regulated participant to zero-speed Hold regardless of whether the protected participant is Transitional or Settled",
-        {requestedCapKmh=action.requestedCapKmh,nativeUnrestrictedKmh=action.nativeUnrestrictedKmh,holdEscalation="REGULATE_REALIZED_PLUS_POSITIVE_CLOSURE",reposition=false})
+        "Supportable Progression is the greatest present conflict-consuming progression that preserves the required next resolution opportunity; Control owns its elastic integer magnitude and withholds Reverse-Created Resolution Reserve from ordinary progression",
+        {nativeUnrestrictedKmh=action.nativeUnrestrictedKmh,progressionEnvelope="ZERO_TERMINAL_POLICY_TRAJECTORY",reverseCreatedReserveSpendable=false,reposition=false})
     constraints.RESPONSIBILITY_COMPATIBILITY=d0146ActionSpacePacket(
         "The bounded Regulation and any later Established-conflict Passage share one pair-scoped D-0146 governing requirement",
         {conflictIdentity=relation.identity,governingRequirementKey=governingRequirementKey})
@@ -408,7 +408,7 @@ local function makeD0146ActionSpaceCandidate(pictureId,pictureValues,item,govern
         referenceKey="d0146-action-space-regulation:"..tostring(relation.identity),
         purpose={kind="D0146_PASSAGE_ACTION_SPACE_CONSERVATION",result="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"},
         subject={assemblyId=action.regulatedAssemblyId,assemblyIds={action.regulatedAssemblyId}},capability="REGULATE_SPEED",
-        expectedEffect={physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,protectedParticipantUnrestricted=true,zeroSpeedHoldEscalationOnProvenRegulationInsufficiency=true},
+        expectedEffect={physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,protectedParticipantUnrestricted=true,elasticProgressionEnvelope=true,zeroSpeedHoldExpression=true},
         evidenceBasis={
             constraintEvidence=constraints,
             governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active},
@@ -425,7 +425,7 @@ local function makeD0146ActionSpaceCandidate(pictureId,pictureValues,item,govern
                 regulatedAssemblyId=action.regulatedAssemblyId,regulatedReferenceKey=action.regulatedReferenceKey,
                 protectedAssemblyId=protectedAssemblyId,protectedReferenceKey=protectedReferenceKey,
                 excursionAssemblyId=action.excursionAssemblyId,excursionReferenceKey=action.excursionReferenceKey,admissionKind=action.admissionKind,
-                requestedCapKmh=action.requestedCapKmh,nativeUnrestrictedKmh=action.nativeUnrestrictedKmh,
+                nativeUnrestrictedKmh=action.nativeUnrestrictedKmh,
                 nativeClosureContributionKmh=action.nativeClosureContributionKmh,nativeSignedClosureContributionKmh=action.nativeSignedClosureContributionKmh,nativeMoveForwards=action.nativeMoveForwards,
                 governingPurpose=action.governingPurpose,separationM=action.separationM,actionSpaceReason=action.reason,
                 cooperativePassageEligible=relation.cooperativePassageEligible~=false,
@@ -446,7 +446,7 @@ local function makeD0146ActionSpaceCandidate(pictureId,pictureValues,item,govern
             ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
         }},
         releaseImplications={releaseOnlyPurposeBoundRegulation=true,trafficSettlement=false,sameCommitmentPassageSuccession=true,currentRoleMayMigrateWithoutSettlingObligation=true},
-        uncertainty={"D0146_ACTION_SPACE_REGULATION_RATE_IS_BOUNDED_TEST_CALIBRATION_UNDER_RENEWED_LITERAL_REVIEW","NO_ROUTE_OR_PASSAGE_GEOMETRY_AUTHORITY","PRE_PRODUCTIVE_ACTIVE_JOB_REMAINS_GIANTS_OWNED_UNTIL_POSITIVE_PRODUCTIVE_COMMENCEMENT"},comparisonCost=0
+        uncertainty={"D0155_CONTINGENCY_RESERVE_FRACTION_IS_PROVISIONAL_POLICY_CALIBRATION","NO_ROUTE_OR_PASSAGE_GEOMETRY_AUTHORITY","PRE_PRODUCTIVE_ACTIVE_JOB_REMAINS_GIANTS_OWNED_UNTIL_POSITIVE_PRODUCTIVE_COMMENCEMENT"},comparisonCost=0
     }
 end
 
@@ -462,14 +462,14 @@ local function attachD0146ActionSpace(self,picture,snapshot,item)
     local specification=makeD0146ActionSpaceCandidate(pictureId,values,item,requirement,existing,representationId)
     values.candidateSupportEvidence={
         complete=true,
-        supportBoundary={mode="D0146_RESOLUTION_SPACE_REGULATION",supportedCandidateClasses={"REGULATE_SPEED"},physicalCapabilitiesImplemented=true,controlAuthority="D0146_BOUNDED_ACTION_SPACE_REGULATION_WITH_HOLD_ESCALATION",boundedScope="POTENTIAL_CURRENT_EXCURSION_OR_ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE_INCLUDING_SAME_FIELD_WORLD_ACTIVE_JOB_INTENT_REVELATION_PENDING",decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
+        supportBoundary={mode="D0146_RESOLUTION_SPACE_REGULATION",supportedCandidateClasses={"REGULATE_SPEED"},physicalCapabilitiesImplemented=true,controlAuthority="D0155_RESOLUTION_SPACE_PROGRESSION_ENVELOPE",boundedScope="POTENTIAL_CURRENT_EXCURSION_OR_ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE_INCLUDING_SAME_FIELD_WORLD_ACTIVE_JOB_INTENT_REVELATION_PENDING",decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
         candidateSpecifications={specification},provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,authority="D0146_RESOLUTION_SPACE_CONSERVATION"}
     }
     local action=item.action
-    logInfo("D0146_ACTION_SPACE_REGULATION_SUPPORTED conflict=%s classification=%s admission=%s regulated=%s protected=%s role=%s separation=%.2f overlap=%.2f native=%.2fkmh closureContribution=%.2fkmh moveForwards=%s cap=%.2fkmh existingCommitment=%s",
+    logInfo("D0146_ACTION_SPACE_REGULATION_SUPPORTED conflict=%s classification=%s admission=%s regulated=%s protected=%s role=%s separation=%.2f overlap=%.2f native=%.2fkmh closureContribution=%.2fkmh moveForwards=%s envelope=CONTROL_OWNED existingCommitment=%s",
         tostring(item.relation.identity),tostring(item.relation.classification),tostring(action.admissionKind or "CURRENT_EXCURSION"),tostring(action.regulatedReferenceKey or action.regulatedAssemblyId),tostring(action.protectedReferenceKey or action.excursionReferenceKey or action.protectedAssemblyId or action.excursionAssemblyId),tostring(action.roleBasis or "CURRENT_EXCURSION_STABLE_PARTICIPANT"),
         tonumber(action.separationM) or -1,tonumber(action.currentCorridorOverlap and action.currentCorridorOverlap.overlapM) or -1,
-        tonumber(action.nativeUnrestrictedKmh) or -1,tonumber(action.nativeClosureContributionKmh) or -1,tostring(action.nativeMoveForwards),tonumber(action.requestedCapKmh) or -1,tostring(existing or "NONE"))
+        tonumber(action.nativeUnrestrictedKmh) or -1,tonumber(action.nativeClosureContributionKmh) or -1,tostring(action.nativeMoveForwards),tostring(existing or "NONE"))
     self.publishedCount=self.publishedCount+1
     self.lastStatus="D0146_RESOLUTION_SPACE_REGULATION_CANDIDATE_PUBLISHED"
     return OuttaMyWay.OperationalPicture.new(values)

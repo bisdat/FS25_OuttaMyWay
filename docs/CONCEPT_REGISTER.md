@@ -1,3 +1,24 @@
+# v0.1.3.0 canonical-candidate concepts — validated Resolution-Space control
+
+**Intent-Revelation Creep:** when a live D-0146 Resolution-Space obligation has exhausted ordinary progression allowance but remains unresolved, Control retains a minimal 1 km/h positive progression. TS010 v0.1.2.2 showed that this preserved current-motion evidence long enough for unchanged Cooperative Passage to mature and supersede the conservation commitment. It is not a universal minimum speed.
+
+**Magnitude Freeze:** a Control-alignment defect in which a sticky Resolution-Space Commitment survived while its magnitude stopped updating because motion-derived closing separation became temporarily unavailable. The correction uses current-space centre separation as a Control fallback for the same live Commitment; Situation classification and release authority remain unchanged.
+
+**Resolution opportunity over stationary distance:** the field result strengthens the interpretation that Resolution-Space Conservation protects the next useful resolution opportunity, not merely maximum stationary geometric separation. Minimal creep may deliberately spend contingency capacity if that preserves the evidence needed for the successor resolution.
+
+**Passage rationale remains open:** the repository still does not prove why Passage requires current opposed motion. The successful creep result shows that Passage can remain untouched for now; its evidence contract will be examined in the planned Passage in-extenso review.
+
+---
+
+# v0.1.2.2 TEST concepts — Magnitude Freeze and Intent-Revelation Creep
+
+- **Magnitude Freeze** — implementation defect where an already-admitted sticky Resolution-Space Commitment retains purpose but its Control magnitude stops evolving because a transient evidence loss (here, unresolved current travel vectors) prevents access to the current distance measure. Correction: keep magnitude elastic from current-space pose separation while the same Commitment survives; do not require fresh Candidate publication.
+- **Intent-Revelation Creep** — experimental D-0146 terminal Control expression: retain a minimal positive 1 km/h progression when ordinary authorised Resolution Space is exhausted but the same intent-revelation obligation remains unresolved. Its purpose is to preserve resolution opportunity/current-motion evidence; it may slowly spend contingency reserve and is not yet generic policy.
+
+**Uncertainty:** the current Passage requirement for current opposed motion may exist partly to distinguish moving traffic from stationary obstacles, but that design intent is not proven by current repository evidence. v0.1.2.2 deliberately leaves Passage unchanged while testing whether Creep satisfies its existing contract.
+
+---
+
 # v0.1.2.0 Resolution-Space Conservation concept addendum
 
 **CURRENT / SELECTED ARCHITECTURAL DIRECTION:** Supportable Progression; Resolution-Space Progression Envelope; Resolution Contingency Reserve; Reverse-Created Resolution Reserve; Intent-Revelation Opportunity; Resolution-Space Recovery; Back-Out Recovery.

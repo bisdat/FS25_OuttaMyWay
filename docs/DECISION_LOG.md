@@ -1,3 +1,49 @@
+## D-0158 — Promote validated Resolution-Space Progression Envelope to v0.1.3.0 canonical candidate
+
+**Decision:** consolidate the cumulative v0.1.2.1/v0.1.2.2 D-0155 implementation without additional behavioural change. Retain 75% Resolution Contingency Reserve, integer Supportable Progression, Reverse-Created Resolution Reserve protection, Magnitude Rebase on Role Migration, continuous Commitment-lifetime magnitude updates and the 1 km/h Intent-Revelation Creep endpoint.
+
+**Evidence:** TS010 successfully transitioned from conservation through 1 km/h creep into existing Cooperative Passage and normal MT665 completion; TS015 completed fully; TS016 validated the relevant traffic behaviour. The TS016 final terminal move was intentionally unavailable after genuine post-completion Player Claim. Magnitude Freeze did not recur.
+
+**Separation of concerns:** no Passage change, no `<=60 m` locality fix, no D-0147 Player-Claim timeout/reset, no Recovery change and no pacing optimisation are included. Those observations remain separate.
+
+**Next:** review Cooperative Passage in extenso and examine its literals against the actual architectural problems of conflict clearance, protected transit, productive reacquisition and agronomic continuity.
+
+---
+
+## D-0157 — Correct Magnitude Freeze and test 1 km/h Intent-Revelation Creep (v0.1.2.2 TEST)
+
+**Evidence:** TS010 v0.1.2.1 showed the D-0155 envelope behaving constructively during approach, then freezing at 15 km/h while `currentClosing` became unresolved during the mower's native reverse/forward manoeuvre. The sticky D-0146 Commitment survived. Later, zero-cap Hold removed MT665 current motion and the encounter deadlocked before existing Passage maturation succeeded.
+
+**Decision 1 — Magnitude Freeze is an implementation/alignment defect:** Candidate publication is not required to keep re-authorising magnitude once the D-0146 Commitment exists. Control must continue updating the active envelope until positive Situation release/supersession. When motion-derived closing separation is unavailable, Control may use the pair's current reference-pose separation already present in `OperationalPicture.currentSpace`. This does not create Situation knowledge or release authority.
+
+**Decision 2 — Intent-Revelation Creep is experimental policy, not settled Passage architecture:** retain **1 km/h** Regulation when the raw envelope reaches zero while the same intent-revelation obligation remains unresolved. This deliberately trades a small amount of contingency distance for continued motion evidence and resolution opportunity. Genuine Hold remains available to other responsibilities; D-0146 Passage itself is unchanged.
+
+**Unproven interpretation retained as uncertainty:** Passage may require current opposed motion partly to exclude stationary obstacles, but repository evidence does not presently prove that design intent. Do not weaken Passage evidence semantics on this hypothesis. First test whether minimal positive motion allows the existing contract to mature.
+
+**Unchanged:** provisional 75% contingency reserve; Reverse-Created Resolution Reserve; Magnitude Rebase on Role Migration; Situation admission/relevance; Safe Release; Pre-Productive Intent Relevance; Cooperative Passage mechanics/succession; D-0154 Recovery; 80 m locality; D-0147.
+
+---
+
+## D-0156 — Implement D-0155 with Control-owned magnitude and a provisional 75% contingency reserve (v0.1.2.1 TEST)
+
+**Decision:** implement the smallest Resolution-Space Progression Envelope against owner-declared canonical v0.1.2.0. Use a provisional 75% Resolution Contingency Reserve for this TEST tranche; retain the 80 m Situation locality ceiling separately.
+
+**Authority-Layer discovery — Magnitude Leakage:** the prior implementation let Situation Assessment select `requestedCapKmh=8` and decide candidate support partly from that magnitude. This conflated “does the Resolution-Space obligation exist?” with “what current Control magnitude expresses it?”. Situation now owns obligation/relevance and regulated/protected role selection only; Control owns elastic progression magnitude.
+
+**Control expression:** establish `D0` from current usable pair separation, withhold `C=0.75*D0`, set ordinary allowance `S0=D0-C`, and seed the policy trajectory from current constrained-participant progression `u`. For remaining ordinary allowance `r`, derive `v_raw=u*sqrt(r/S0)` (equivalent to the D-0155 zero-terminal policy form) and floor to a whole integer km/h. Zero is Hold within the same envelope; it is not a separate escalation state and does not require proof that a previous cap was physically realised.
+
+**Reverse-Created Resolution Reserve:** during the same unresolved Situation, conservative authorised separation may tighten but cannot grow. Positive physical space gained by the protected/uncertain participant reversing is bonus reserve and is consumed again before ordinary progression authority can increase.
+
+**Magnitude Rebase on Role Migration:** role migration retains the same Commitment and absolute contingency reserve, preserves already-consumed ordinary capacity, samples the newly regulated participant's current progression and reconstructs only the remaining policy trajectory. Role change does not manufacture new Resolution Space.
+
+**Retired implementation semantics:** generic fixed 8 km/h authority; Situation suppression because current native progression is <=8; `cap realised + still closing => Hold`; and transient non-closing as an automatic restoration to the old fixed cap. Positive Safe Release / Intent Supersession remains Situation-owned.
+
+**Scope boundary:** no Resolution-Space Recovery implementation; no change to Operational Membership, Pre-Productive Intent Relevance, Cooperative Passage mechanics/succession, Safe Release, 80 m locality or D-0147. Validate TS010 first, then TS015/TS016.
+
+**Bench evidence:** 254/254 Lua behavioural, 96/96 Python structural and 25/25 RRS tests pass before live field validation.
+
+---
+
 ## D-0155 — Replace fixed Resolution-Space speed authority with a Progression Envelope
 
 **Decision:** the future generic D-0146 Resolution-Space Control magnitude must not be a fixed speed such as 8 km/h. While the obligation remains live, use a coarse **Resolution-Space Progression Envelope** whose terminal condition is zero ordinary progression before a deliberately withheld Resolution Contingency Reserve.
