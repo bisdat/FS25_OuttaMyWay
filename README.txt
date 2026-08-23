@@ -1,3 +1,56 @@
+FS25_OuttaMyWay v0.1.5.0 CANONICAL CANDIDATE — MINIMAL TRANSIT PASSAGE CHECKPOINT
+
+Authoritative baseline: owner-declared canonical v0.1.4.0
+SHA-256: 681573c2edd6256b092ab00d5955af72bbc5f231903ef81b3fc6d625929f437e
+Git: 77695913f0af72960194f8f9ad13397d59e2dadb
+Files: 317
+
+Candidate behaviour is the validated v0.1.4.8 state with no new traffic algorithm: preserve v0.1.4.0 Passage timing/guide execution; always attempt Transit at the existing configuration point; keep Candidate-required compaction strict; make inert RETAIN_CURRENT Transit non-blocking; keep 1.00 m nominal Crossing-Window construction with a 0.95 m policy floor and hard represented non-contact.
+
+Field regression: TS009 PASS (start-position caveat), controlled TS010S PASS, random-start TS010 PASS, TS015 PASS, TS016 PASS (start-position caveat).
+
+Next focused question after canonicalisation: Zero-Development Entry Compression — straight/zero-deficit Passage may begin visually close because zero lateral Development provides no incidental longitudinal approach reserve.
+
+Withdrawn: v0.1.4.1-v0.1.4.3 post-compaction replanning; v0.1.4.5 exhaustive Candidate backfill.
+
+Still open: complex-assembly coverage authority, inherited invalid allowUnfoldingByAI XML-path probing, agronomic restoration/Restoration Alignment, 8 km/h guide speed and other parked literals.
+
+This package is a canonical candidate only until the owner explicitly declares its exact fingerprint canonical.
+
+---
+
+FS25_OuttaMyWay v0.1.4.8 TEST — OPPORTUNISTIC TRANSIT NON-VETO
+
+Behaviour remains v0.1.4.7 except for one Control correction exposed by TS016: Candidate-required COMPACT_REQUIRED participants still have to positively complete compaction, but a successful RETAIN_CURRENT Transit request is non-authoritative. Passage waits while Reality shows that optional configuration is physically transitioning; an accepted but inert optional request cannot hold the Passage in CONFIGURING.
+
+Primary regression: TS016 first, then TS010S/TS015/TS009.
+
+---
+
+FS25_OuttaMyWay v0.1.4.7 TEST — NOMINAL PASSAGE CLEARANCE POLICY BAND
+
+Behaviour remains v0.1.4.4 plus v0.1.4.6 telemetry. Passage construction still targets 1.00 m nominal Crossing-Window clearance; validation now accepts an initial 0.95 m policy floor while represented non-contact remains hard. No timing, sampling or guide-geometry change.
+
+Primary field comparison: controlled TS010S active-worker save, then TS015.
+
+---
+
+FS25_OuttaMyWay v0.1.4.6 TEST — PASSAGE CLEARANCE TELEMETRY
+
+Behaviour is v0.1.4.4 unchanged. This TEST adds diagnostic `D0146_PASSAGE_CLEARANCE_TRACE` output only, using values already computed by ordinary Passage Candidate assessment. It performs no extra planner or sweep calls.
+
+Primary comparison: controlled TS010S active-worker save, then TS015.
+
+---
+
+FS25_OuttaMyWay v0.1.4.4 TEST — MINIMAL TRANSIT COMPACTION RESET
+
+Baseline: exact owner-declared canonical v0.1.4.0. This TEST preserves v0.1.4.0 Passage geometry/timing and changes only the configuration policy: every Passage participant is asked to compact at the existing configuration point. Unsupported opportunistic compaction for a RETAIN_CURRENT guide is ignored; Candidate-required compaction remains fail-safe.
+
+The v0.1.4.1-v0.1.4.3 replanning branch is intentionally not carried forward.
+
+---
+
 FS25_OuttaMyWay v0.1.4.0 CANONICAL CANDIDATE — COOPERATIVE PASSAGE CHECKPOINT
 
 Authoritative baseline: owner-declared canonical v0.1.3.0

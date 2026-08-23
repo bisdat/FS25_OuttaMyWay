@@ -1,3 +1,56 @@
+# v0.1.5.0 CANONICAL CANDIDATE — known issues / explicit limits
+
+- **Zero-Development Entry Compression is OPEN.** Straight/zero-deficit Passage can begin visually close because `Development=0` removes the longitudinal reserve that lateral Development otherwise contributes to the Entry Boundary. TS009 and TS016 showed this caveat; no contact was observed in the v0.1.4.8 regression. Do not add an arbitrary reserve literal during canonical review.
+- **Complex Physical Assembly negative-clearance authority remains OPEN.** Historical TS009 reported `assemblyMembers=2` for a physical tractor/front-mower/rear-mower combination. Current Transit-first behaviour made TS009 pass, but that does not prove generic complete assembly coverage.
+- **Invalid `allowUnfoldingByAI` XML-path probing remains inherited.** GIANTS logs emit schema-validation errors for unregistered paths. This is maintenance debt and is not required for the validated Passage behaviour; remove/replace separately rather than during canonicalisation.
+- **Agronomic Passage debt remains accepted compromise.** Always attempting Transit may create missed productive ground. Final Passage sequencing/restoration will address this later; no reverse recovery is implemented here.
+- **Restoration Alignment remains open.** `Axis Recovery != Orientation Recovery`; finishing orientation is not yet a hard restoration contract.
+- **Nominal Passage Clearance is currently calibrated as 1.00 m target / 0.95 m admissible floor.** Represented non-contact remains hard. If field Reality shows contact or insufficient comfort, revise the policy from evidence.
+- **8 km/h Passage guide speed remains inherited calibration.**
+- **Withdrawn tests are not production features:** v0.1.4.1-v0.1.4.3 post-compaction replanning and v0.1.4.5 exhaustive Candidate backfill are not carried forward as active behaviour.
+- Existing parked items remain, including TS010 `<=60 m` terminal/locality literal, D-0147 Courtesy Quantum/Exhaustion coupling, Boundary Encroachment and remaining literal/provenance work.
+- v0.1.5.0 is a candidate only until explicit owner declaration of its exact fingerprint.
+
+---
+
+# v0.1.4.8 TEST — known issues / explicit limits
+
+- TS009 and TS016 still suggest physical Passage Entry/start may be too close; that issue is deliberately not changed here.
+- `RETAIN_CURRENT` optional Transit is non-authoritative. A late/unusual configuration response after an initially inert observation remains field evidence to watch; the existing retained-current guide remains the safety basis.
+- 0.95 m remains an empirical Passage-clearance policy floor.
+- TS009 Physical Assembly coverage and final Passage restoration/agronomic debt remain separate.
+
+---
+
+# v0.1.4.7 TEST — known issues / explicit limits
+
+- 0.95 m is an initial empirical policy floor, not a proven universal clearance. Field contact or poor visual clearance is evidence to increase the target/floor.
+- TS010S asymmetry remains a likely sensitivity source but is not hard-coded or vehicle-special-cased.
+- TS009 initial Passage start margin / Physical Assembly coverage remains separate.
+- Final Passage restoration/alignment and agronomic debt repayment remain parked.
+
+---
+
+# v0.1.4.6 TEST — known issues / explicit limits
+
+- The TS010S detailed Passage Arrangement has demonstrated `NO -> YES -> NO` sampling sensitivity; cause is under investigation.
+- v0.1.4.6 is telemetry-only and does not correct that instability.
+- v0.1.4.5 exhaustive inter-sample Candidate backfill is withdrawn because field evidence showed significant frame-pacing cost.
+- TS009 initial Passage start margin / complex Physical Assembly coverage remains separate.
+- Final Passage restoration/alignment and agronomic debt repayment remain parked.
+
+---
+
+# v0.1.4.4 TEST — known issues / explicit limits
+
+- This is an isolation TEST from canonical v0.1.4.0. v0.1.4.1-v0.1.4.3 are discarded implementation experiments, not baselines.
+- Passage planning, Entry timing and guide geometry intentionally remain v0.1.4.0 behaviour. The only behavioural change is an additional Transit compaction attempt for `RETAIN_CURRENT` participants.
+- TS009 Physical Assembly coverage remains unresolved; the full tractor/front/rear mower assembly previously reported `assemblyMembers=2`.
+- The inherited configuration/representation metadata paths and other latent baseline issues are not opportunistically changed in this isolation build.
+- Restoration Alignment, agronomic restoration and inherited 8 km/h Passage speed remain parked.
+
+---
+
 # v0.1.4.0 CANONICAL CANDIDATE — known issues / explicit limits
 
 - **TS009 complex-mower Passage collision is OPEN and safety-relevant.** S416 versus MF 7S.210 + SaMASZ front/rear mower was approved as a straight `RETAIN_CURRENT` Passage with `deficit=0` and approximately `+0.87 m` claimed reserve, then physically collided/tangled. Do not treat current arbitrary complex-assembly directional negative-clearance authority as validated.

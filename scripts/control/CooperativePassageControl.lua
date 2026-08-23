@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.3.3 TEST — D-0159 Passage Approach / execution-origin correction.
+-- FS25_OuttaMyWay v0.1.4.4 TEST — D-0166 minimal Transit-first compaction policy.
 --
 -- Situation/Candidate/Decision/Commitment establish the pair meaning and the
 -- bounded Passage plan before this module is invoked. Passage Selection now
@@ -6,8 +6,12 @@
 -- Control may remain in PASSAGE_APPROACH until the Candidate Entry Boundary is
 -- reached, then settles/configures the pair and instantiates the participant
 -- guide from actual execution origins before forward-only point pursuit.
--- Passage speed and configuration policy are intentionally unchanged in this
--- TEST. The second-whistle trace marks completion of the pair-dependent guide;
+-- Passage geometry, Entry timing and guide semantics remain the v0.1.4.0
+-- baseline. At the existing configuration point Control now also attempts
+-- Transit compaction for participants whose Candidate retained current state.
+-- A failed opportunistic attempt is ignored; Candidate-required compaction
+-- retains the existing fail-safe requirement. The second-whistle trace marks
+-- completion of the pair-dependent guide;
 -- agronomic reverse restoration is explicitly not implemented here.
 
 OuttaMyWay.CooperativePassageControl={}
@@ -479,41 +483,78 @@ end
 function Control:_beginD0146Configuration(run)
     local owned={}
     local requested=0
+    local ignored=0
     for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
-        if participant.configurationMode=="COMPACT_REQUIRED" then
-            self:_beginRepresentationConfigurationAuthority(participant)
-            local ok,state=self.configurationAuthority:prepareCompact(participant.vehicle)
-            if not ok then
-                self:_endRepresentationConfigurationAuthority(participant)
-                for _,rollback in OuttaMyWay.ValueRecord.ipairs(owned) do self.configurationAuthority:requestRestore(rollback.vehicle) end
-                return false,participant.name..":"..tostring(state)
-            end
-            owned[#owned+1]=participant
-            requested=requested+1
-        elseif participant.configurationMode~="RETAIN_CURRENT" then
+        if participant.configurationMode~="COMPACT_REQUIRED" and participant.configurationMode~="RETAIN_CURRENT" then
             for _,rollback in OuttaMyWay.ValueRecord.ipairs(owned) do self.configurationAuthority:requestRestore(rollback.vehicle) end
             return false,participant.name..":unsupported-configuration-mode:"..tostring(participant.configurationMode)
         end
+
+        -- v0.1.4.4 isolation rule: retain the complete v0.1.4.0 Candidate
+        -- geometry and timing, but always ask for Transit compaction at the
+        -- existing configuration point.  RETAIN_CURRENT therefore means only
+        -- that the pre-existing guide does not depend on compaction.  Failure
+        -- of that opportunistic request is ignored.  COMPACT_REQUIRED remains
+        -- fail-safe because the Candidate geometry already depends on it.
+        self:_beginRepresentationConfigurationAuthority(participant)
+        local ok,state=self.configurationAuthority:prepareCompact(participant.vehicle)
+        if ok then
+            participant.passageTransitCompactionActive=true
+            participant.passageTransitCompactionReason=nil
+            owned[#owned+1]=participant
+            requested=requested+1
+        else
+            participant.passageTransitCompactionActive=false
+            participant.passageTransitCompactionReason=tostring(state)
+            self:_endRepresentationConfigurationAuthority(participant)
+            if participant.configurationMode=="COMPACT_REQUIRED" then
+                for _,rollback in OuttaMyWay.ValueRecord.ipairs(owned) do self.configurationAuthority:requestRestore(rollback.vehicle) end
+                return false,participant.name..":"..tostring(state)
+            end
+            ignored=ignored+1
+            logInfo("TRANSIT_COMPACTION_IGNORED commitment=%s participant=%s plannedMode=RETAIN_CURRENT reason=%s guideGeometryUnchanged=true",
+                tostring(run.commitmentId),participant.name,tostring(state))
+        end
     end
     if requested==0 then
-        logInfo("CONFIGURATION_READY commitment=%s policy=OPTIONAL_PER_PARTICIPANT modes=%s changed=0 next=CAPTURE_EXECUTION_ORIGIN",tostring(run.commitmentId),configurationModeText(run))
+        logInfo("CONFIGURATION_READY commitment=%s policy=ALWAYS_ATTEMPT_TRANSIT modes=%s changed=0 ignored=%d next=CAPTURE_EXECUTION_ORIGIN guideGeometryUnchanged=true",tostring(run.commitmentId),configurationModeText(run),ignored)
         local rebased,rebaseReason=self:_rebaseD0146Guide(run)
         if not rebased then return false,rebaseReason end
         return self:_startGuideGate(run,1)
     end
     self:_setPhase(run,"CONFIGURING",g_time or 0)
-    logInfo("CONFIGURATION_START commitment=%s policy=OPTIONAL_PER_PARTICIPANT modes=%s changed=%d movementWaitsOnlyForRequiredReduction=true",tostring(run.commitmentId),configurationModeText(run),requested)
+    logInfo("CONFIGURATION_START commitment=%s policy=ALWAYS_ATTEMPT_TRANSIT modes=%s changed=%d ignored=%d movementWaitsForRequiredOrObservedOptionalTransit=true guideGeometryUnchanged=true",tostring(run.commitmentId),configurationModeText(run),requested,ignored)
     return true
 end
 
 function Control:_d0146ConfigurationReady(run)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
         if participant.configurationMode=="COMPACT_REQUIRED" then
-            if self.configurationAuthority:getEvidence(participant.vehicle).allFolded~=true then return false end
+            -- Candidate-required compaction is safety-critical: the existing
+            -- v0.1.4.0 guide was authorised on the compact profile, so Passage
+            -- must not move until Reality positively confirms that state.
+            if participant.passageTransitCompactionActive~=true then return false end
+            local evidence=self.configurationAuthority:getEvidence(participant.vehicle)
+            if evidence.allFolded~=true then return false end
             local expected=participant.expectedCompactConfigurationProfileId
             local observed=self:_currentRepresentationProfile(participant)
             if expected~=nil and observed~=expected then return false end
-        elseif participant.configurationMode~="RETAIN_CURRENT" then
+        elseif participant.configurationMode=="RETAIN_CURRENT" then
+            -- Opportunistic Transit is deliberately non-authoritative. If
+            -- Reality shows that the optional request is physically moving,
+            -- let that motion finish before Passage starts. Otherwise the
+            -- request must never acquire veto authority over a guide already
+            -- proven for RETAIN_CURRENT.
+            if participant.passageTransitCompactionActive==true then
+                local evidence=self.configurationAuthority:getEvidence(participant.vehicle)
+                if (tonumber(evidence.transitionCount) or 0)>0 then return false end
+                if evidence.allFolded~=true and participant.passageTransitCompactionNonBlockingLogged~=true then
+                    participant.passageTransitCompactionNonBlockingLogged=true
+                    logInfo("TRANSIT_COMPACTION_OPTIONAL_NONBLOCKING commitment=%s participant=%s plannedMode=RETAIN_CURRENT allDeployed=%s allFolded=%s transitionCount=%d guideGeometryUnchanged=true",
+                        tostring(run.commitmentId),participant.name,tostring(evidence.allDeployed==true),tostring(evidence.allFolded==true),tonumber(evidence.transitionCount) or 0)
+                end
+            end
+        else
             return false
         end
     end
@@ -695,7 +736,7 @@ function Control:_executeD0146JointRequests(requestA,requestB,candidate,bridge)
     local arrangement=bridge.passageArrangement or {}
     local excursion=run.passageExcursion or {}
     local entry=run.passageEntry or {}
-    logInfo("START architecture=D0146_STEP2 commitment=%s candidate=%s conflict=%s A=%s job=%s B=%s job=%s separation=%.2fm entryBoundary=%.2fm headingDot=%.4f envelopeBasis=%s crossingBasis=%s arrangement=%s offsets=%+.2f/%+.2f deficit=%.2fm contact=%.2fm nominal=%.2fm required=%.2fm currentLateral=%.2fm reserve=%+.2fm guide=%s gates=%d development=%.2fm crossingForward=%.2fm recovery=%.2fm sequence=PASSAGE_APPROACH_THEN_HOLD_OPTIONAL_CONFIGURATION_CAPTURE_EXECUTION_ORIGIN_PASSAGE_EXCURSION_SELECTIVE_RESTORE_HANDOFF configuration=%s controlInventsGeometry=false vehicleNameGate=false thirdPartyConstraints=%d generalVehicleAuthority=false",
+    logInfo("START architecture=D0146_STEP2 commitment=%s candidate=%s conflict=%s A=%s job=%s B=%s job=%s separation=%.2fm entryBoundary=%.2fm headingDot=%.4f envelopeBasis=%s crossingBasis=%s arrangement=%s offsets=%+.2f/%+.2f deficit=%.2fm contact=%.2fm nominal=%.2fm required=%.2fm currentLateral=%.2fm reserve=%+.2fm guide=%s gates=%d development=%.2fm crossingForward=%.2fm recovery=%.2fm sequence=PASSAGE_APPROACH_THEN_HOLD_ALWAYS_ATTEMPT_TRANSIT_CAPTURE_EXECUTION_ORIGIN_PASSAGE_EXCURSION_SELECTIVE_RESTORE_HANDOFF configuration=%s controlInventsGeometry=false vehicleNameGate=false thirdPartyConstraints=%d generalVehicleAuthority=false",
         tostring(run.commitmentId),tostring(run.candidateId),tostring(bridge.conflictIdentity),a.name,tostring(a.startJobToken),b.name,tostring(b.startJobToken),run.initialSeparationM,tonumber(entry.boundarySeparationM) or -1,run.headingDot,
         tostring(arrangement.directionalPassageEnvelopeBasis or "DISC_FALLBACK"),tostring(excursion.crossingWindowBasis or "n/a"),tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tonumber(excursion.clearanceDeficitM) or 0,
         tonumber(arrangement.physicalContactThresholdM) or 0,tonumber(arrangement.nominalInterAssemblyClearanceM) or 0,tonumber(arrangement.policyRequiredSeparationM) or 0,tonumber(arrangement.currentLateralSeparationM) or 0,tonumber(arrangement.currentPolicyReserveM) or 0,

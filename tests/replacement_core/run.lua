@@ -3958,7 +3958,7 @@ test("D0146 directional Passage envelope uses GIANTS base size instead of inflat
     equal(plan.passageGuide.pairSweepSupport.supportBasis,"TRANSLATED_GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES")
     equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.999,true)
     equal(plan.passageGuide.pairSweepSupport.minimumOutsideCrossingClearanceM>=-0.001,true)
-    equal(plan.passageGuide.pairSweepSupport.clearanceContract,"NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_CLEARANCE_INSIDE_CROSSING_WINDOW")
+    equal(plan.passageGuide.pairSweepSupport.clearanceContract,"NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW")
     equal(math.abs(math.abs(plan.passageArrangement.subjectLateralOffsetM)+math.abs(plan.passageArrangement.otherLateralOffsetM)-4.70)<0.001,true)
 end)
 
@@ -3980,7 +3980,29 @@ test("D0165 Nominal Passage Clearance is required only through the Crossing Wind
     equal(sweep.minimumCrossingWindowClearanceM>=0.999,true)
     equal(sweep.minimumOutsideCrossingClearanceM>=-0.001,true)
     equal(sweep.minimumRepresentedClearanceM<=sweep.minimumCrossingWindowClearanceM,true)
-    equal(sweep.clearanceContract,"NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_CLEARANCE_INSIDE_CROSSING_WINDOW")
+    equal(sweep.clearanceContract,"NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW")
+end)
+
+test("D0165 nominal Passage Clearance uses a policy floor while construction remains at one metre",function()
+    local picture,snapshot=d0146Step2Fixture(nil,nil,30)
+    local previous=OuttaMyWay.D0146_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO
+    -- A stricter-than-construction floor proves the acceptance rule is separate
+    -- from the 1.00 m geometry target: the unchanged planner cannot satisfy it.
+    OuttaMyWay.D0146_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO=1.05
+    local strictPlan,strictReason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
+    equal(strictPlan,nil); equal(strictReason,"LOCAL_PASSAGE_SPACE_EXHAUSTED_WITHIN_SUPPORTED_PROFILE")
+    -- The production TEST policy retains the 1.00 m target but accepts a bounded
+    -- five-percent undershoot; ordinary fixture geometry is therefore supported.
+    OuttaMyWay.D0146_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO=0.95
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
+    OuttaMyWay.D0146_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO=previous
+    equal(reason,nil); equal(plan.status,"SUPPORTED")
+    local sweep=plan.passageGuide.pairSweepSupport
+    equal(math.abs(sweep.requiredNominalClearanceM-1.0)<0.0001,true)
+    equal(math.abs(sweep.acceptedNominalClearanceFloorM-0.95)<0.0001,true)
+    equal(math.abs(sweep.clearanceAcceptanceRatio-0.95)<0.0001,true)
+    equal(sweep.minimumCrossingWindowClearanceM+0.001>=sweep.acceptedNominalClearanceFloorM,true)
+    equal(sweep.clearanceContract,"NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW")
 end)
 
 test("D0146 Passage Selection may precede Entry while Resolution Space remains available",function()
@@ -4811,6 +4833,101 @@ test("D0146 settling accepts owned Hold plus physical stationary state even when
     equal(control:_allStopped(run),false)
 end)
 
+test("D0166 minimal Transit-first attempts RETAIN_CURRENT compaction without granting optional veto authority",function()
+    local vehicleA={rootNode=1371}; local vehicleB={rootNode=1372}
+    local attempts={}; local evidenceA={allDeployed=true,allFolded=false,transitionCount=0}
+    local donor={
+        permissionGate={},driveAuthority={},
+        configurationAuthority={
+            prepareCompact=function(self,vehicle)
+                attempts[#attempts+1]=vehicle
+                if vehicle==vehicleA then return true,{vehicle=vehicle} end
+                return false,"no-foldable-object"
+            end,
+            getEvidence=function(self,vehicle)
+                if vehicle==vehicleA then return evidenceA end
+                return {allDeployed=true,allFolded=false,transitionCount=0}
+            end,
+            requestRestore=function() return true end
+        }
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    local run={
+        mode="D0146_GUIDE",commitmentId="CM-TRANSIT-MINIMAL",phase="SETTLING",
+        a={vehicle=vehicleA,name="A",assemblyId="AS-A",configurationMode="RETAIN_CURRENT"},
+        b={vehicle=vehicleB,name="B",assemblyId="AS-B",configurationMode="RETAIN_CURRENT"},
+        participants={}
+    }
+    run.participants={run.a,run.b}
+    local ok,reason=control:_beginD0146Configuration(run)
+    equal(ok,true); equal(reason,nil)
+    equal(run.phase,"CONFIGURING")
+    equal(#attempts,2)
+    equal(run.a.configurationMode,"RETAIN_CURRENT")
+    equal(run.b.configurationMode,"RETAIN_CURRENT")
+    equal(run.a.passageTransitCompactionActive,true)
+    equal(run.b.passageTransitCompactionActive,false)
+    equal(run.b.passageTransitCompactionReason,"no-foldable-object")
+    -- An accepted but physically inert optional request cannot block a guide
+    -- already authorised for RETAIN_CURRENT.
+    equal(control:_d0146ConfigurationReady(run),true)
+    -- If Reality positively shows optional configuration motion, movement waits
+    -- for that physical transition to settle.
+    evidenceA={allDeployed=false,allFolded=false,transitionCount=1}
+    equal(control:_d0146ConfigurationReady(run),false)
+    evidenceA={allDeployed=false,allFolded=true,transitionCount=0}
+    equal(control:_d0146ConfigurationReady(run),true)
+end)
+
+test("D0166 minimal Transit-first preserves fail-safe required-compaction failure",function()
+    local vehicle={rootNode=1381}
+    local donor={
+        permissionGate={},driveAuthority={},
+        configurationAuthority={
+            prepareCompact=function() return false,"fold-command-unavailable" end,
+            requestRestore=function() return true end
+        }
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    local run={
+        mode="D0146_GUIDE",commitmentId="CM-TRANSIT-REQUIRED",phase="SETTLING",
+        a={vehicle=vehicle,name="A",assemblyId="AS-A",configurationMode="COMPACT_REQUIRED"},
+        participants={}
+    }
+    run.participants={run.a}
+    local ok,reason=control:_beginD0146Configuration(run)
+    equal(ok,false)
+    equal(reason,"A:fold-command-unavailable")
+end)
+
+test("D0166 required compaction remains authoritative while inert RETAIN_CURRENT request is nonblocking",function()
+    local required={rootNode=1382}; local optional={rootNode=1383}
+    local requiredFolded=false
+    local donor={
+        permissionGate={},driveAuthority={},
+        configurationAuthority={
+            prepareCompact=function(self,vehicle) return true,{vehicle=vehicle} end,
+            getEvidence=function(self,vehicle)
+                if vehicle==required then return {allDeployed=not requiredFolded,allFolded=requiredFolded,transitionCount=requiredFolded and 0 or 1} end
+                return {allDeployed=true,allFolded=false,transitionCount=0}
+            end,
+            requestRestore=function() return true end
+        }
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    local run={
+        mode="D0146_GUIDE",commitmentId="CM-TRANSIT-MIXED",phase="SETTLING",participants={},
+        a={vehicle=required,name="required",assemblyId="AS-R",configurationMode="COMPACT_REQUIRED"},
+        b={vehicle=optional,name="optional",assemblyId="AS-O",configurationMode="RETAIN_CURRENT"}
+    }
+    run.participants={run.a,run.b}
+    local ok=control:_beginD0146Configuration(run)
+    equal(ok,true)
+    equal(control:_d0146ConfigurationReady(run),false)
+    requiredFolded=true
+    equal(control:_d0146ConfigurationReady(run),true)
+end)
+
 test("D0146 failed guide holds compact configuration without restore request",function()
     local vehicleA={rootNode=1001}; local vehicleB={rootNode=1002}
     local restoreRequests=0; local holds=0; local clears=0
@@ -5167,5 +5284,28 @@ test("D0147 compaction-to-infield revision preserves one Commitment with post-jo
     equal(terminal.state,"SUCCEEDED"); equal(runtime.authorities:ownerOf("AS-TERMINAL"),nil); equal(#runtime.obligations:openForOwner(commitmentId),0)
 end)
 
+
+
+test("D0168 clearance telemetry retains already-computed rejected sweep evidence",function()
+    local picture,snapshot=d0146Step2Fixture(-0.2,0.2,30)
+    local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
+    equal(plan,nil)
+    equal(type(rejected),"table")
+    local found=false
+    for _,conflict in ipairs(rejected or {}) do
+        for _,candidate in ipairs(conflict.rejected or {}) do
+            if type(candidate.sweepEvidence)=="table" then
+                equal(type(candidate.sweepEvidence.minimumCrossingWindowClearanceM),"number")
+                equal(type(candidate.sweepEvidence.requiredNominalClearanceM),"number")
+                equal(type(candidate.separationM),"number")
+                equal(type(candidate.currentLateralSeparationM),"number")
+                found=true
+                break
+            end
+        end
+        if found then break end
+    end
+    equal(found,true)
+end)
 print(string.format("RESULT %d passed, %d failed",passed,failed))
 if failed > 0 then os.exit(1) end

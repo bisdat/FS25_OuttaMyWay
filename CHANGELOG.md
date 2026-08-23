@@ -1,3 +1,65 @@
+# v0.1.5.0 CANONICAL CANDIDATE — Minimal Transit Passage checkpoint
+
+**Authority:** owner-declared canonical v0.1.4.0 (`681573c2edd6256b092ab00d5955af72bbc5f231903ef81b3fc6d625929f437e`; Git `77695913f0af72960194f8f9ad13397d59e2dadb`; 317 files) remains the exact canonical baseline. This candidate consolidates the validated v0.1.4.4/v0.1.4.6/v0.1.4.7/v0.1.4.8 line with **no new traffic-behaviour algorithm change after v0.1.4.8**.
+
+**Validated Passage checkpoint:** preserve v0.1.4.0 Entry timing, pre-planned guide geometry, Hold settlement, Execution-Origin Capture, Crossing Window, Recovery and second whistle. At the existing configuration point, always attempt Transit compaction. Candidate-required `COMPACT_REQUIRED` remains strict; `RETAIN_CURRENT` Transit is opportunistic and cannot veto Passage when physically inert. Passage construction still targets 1.00 m nominal Crossing-Window clearance; Candidate validation accepts the evidence-backed 0.95 m policy floor while represented non-contact remains hard.
+
+**Field regression evidence:** v0.1.4.8 passed TS009, controlled TS010S, random-start TS010, TS015 and TS016. TS009 and TS016 retained a visual caveat that straight/zero-development Passage can begin uncomfortably close; exact nose-to-nose TS015 remained comfortable because non-zero Development creates additional approach space. No contact was observed in the validated v0.1.4.8 set.
+
+**Withdrawn experiments:** v0.1.4.1-v0.1.4.3 post-compaction fresh replanning changed Passage Entry/length outside the requested compaction experiment and is abandoned. v0.1.4.5 exhaustive 0.25 m inter-sample Candidate backfill proved that narrow Passage opportunities could be recovered but caused unacceptable frame pacing and is also abandoned.
+
+**Open observation:** **Zero-Development Entry Compression** — when natural lateral clearance makes Passage Development zero, the current Entry formula also loses the longitudinal approach reserve that Development incidentally provides. Investigate independently after canonicalisation; do not fold an arbitrary extra-distance literal into this checkpoint.
+
+**Other explicit limits:** the TS009 complex-assembly `assemblyMembers=2` / negative-clearance authority question remains unresolved; inherited invalid `allowUnfoldingByAI` XML-schema probing still emits GIANTS validation errors and should be cleaned separately; agronomic debt/restoration, Restoration Alignment, inherited 8 km/h guide speed and other parked literals remain open.
+
+**Release identity:** BUILD resets to `0`. v0.1.5.0 is a canonical candidate only until the owner explicitly declares the exact produced fingerprint canonical.
+
+---
+
+# v0.1.4.8 TEST — Opportunistic Transit Non-Veto
+
+**Evidence:** v0.1.4.7 TS016 selected a supported Patriot/S416 Passage with `COMPACT_REQUIRED/RETAIN_CURRENT`. Both Transit requests returned success, Patriot physically compacted, but S416 remained unchanged. Control incorrectly treated the successful opportunistic S416 request as mandatory and waited in `CONFIGURING` until the phase watchdog.
+
+**Single behavioural correction:** Candidate-required `COMPACT_REQUIRED` remains strict and must positively reach the expected compact state. A `RETAIN_CURRENT` Transit attempt is non-authoritative: if Reality shows active fold transition, Passage waits for that physical motion to settle; if the request is accepted but physically inert, it cannot veto the already-authorised retained-current guide.
+
+**Isolation:** v0.1.4.7 nominal-clearance policy band, telemetry, v0.1.4.0 Passage geometry/timing and the minimal always-attempt Transit policy are otherwise unchanged. No Entry/start-position correction is included.
+
+---
+
+# v0.1.4.7 TEST — Nominal Passage Clearance Policy Band
+
+**Evidence:** v0.1.4.6 telemetry showed TS010S repeatedly producing Crossing-Window minima of approximately 0.995-0.999 m against an exact 1.000 m rejection boundary, then selecting at 1.000 m. TS015 remained continuously stable at the nominal target. This supports a geometry/representation knife edge rather than a meaningful narrow physical Passage window.
+
+**Single behavioural experiment:** keep 1.00 m as the Passage construction target, but treat it as nominal policy rather than exact equality. Crossing-Window validation accepts a bounded 5% undershoot: initial policy floor 0.95 m. Represented non-contact remains hard; outside the Crossing Window the existing non-contact contract is unchanged. Clearance above nominal remains acceptable.
+
+**Isolation:** no sampling/backfill, Entry, Hold, Transit compaction, guide geometry, Recovery or second-whistle change. v0.1.4.6 telemetry is retained and now reports nominal residue and policy-floor residue without additional geometric work.
+
+---
+
+# v0.1.4.6 TEST — Passage Clearance Telemetry
+
+**Baseline behaviour:** v0.1.4.4 unchanged: canonical v0.1.4.0 Passage timing/geometry plus the isolated always-attempt Transit compaction policy. v0.1.4.5 Candidate-memory/backfill is not carried forward.
+
+**Telemetry-only experiment:** expose the Crossing-Window clearance values already computed by each ordinary Passage assessment. Within the final 40 m of an Established Opposed Corridor Conflict, `D0146_PASSAGE_CLEARANCE_TRACE` records selected/rejected outcome, current separation/lateral relationship, selected or best rejected arrangement, minimum Crossing-Window clearance, nominal required clearance, residue, outside-window clearance, offsets and configuration basis. Rejected-candidate residue summaries are emitted from evidence already produced by the normal planner pass.
+
+**Performance isolation:** no additional planner, guide, sweep, field or third-party calls are introduced. The telemetry exists to distinguish generic threshold instability from TS010 asymmetric-geometry sensitivity without recreating v0.1.4.5 Candidate Search Amplification.
+
+---
+
+# v0.1.4.4 TEST — Minimal Transit Compaction Reset
+
+**Baseline:** exact owner-declared canonical v0.1.4.0 (`681573c2edd6256b092ab00d5955af72bbc5f231903ef81b3fc6d625929f437e`; Git `77695913f0af72960194f8f9ad13397d59e2dadb`; 317 files). The v0.1.4.1-v0.1.4.3 implementation branch is intentionally discarded rather than evolved.
+
+**Single behavioural experiment:** retain v0.1.4.0 Passage selection, Candidate geometry, Entry timing, Hold settlement, Execution-Origin Capture, Passage Excursion, Crossing Window, Recovery and second-whistle behaviour. At the existing configuration point, Control now attempts Transit compaction for every participant.
+
+**Fail-safe boundary:** if v0.1.4.0 Candidate geometry already requires compaction, failure to obtain it remains a hard Passage failure exactly as before. If the Candidate selected `RETAIN_CURRENT`, the Transit request is opportunistic: unsupported/unavailable compaction is ignored and the unchanged current-configuration guide remains authoritative. A successful opportunistic compaction may only make that unchanged guide more conservative; this TEST does not recalculate Passage geometry after compaction.
+
+**Isolation:** no new Entry formula, no post-compaction replanning, no Passage-length correction, no Physical Assembly membership fix, no agronomic restoration and no metadata-capability redesign are included. The inherited TS009 `assemblyMembers=2` question remains separate.
+
+**Why:** field A/B evidence showed the v0.1.4.1-v0.1.4.3 two-stage replanning branch changed Passage timing/tolerances that were not part of the requested compaction experiment. This build restores v0.1.4.0 as the behavioural control and changes only the compaction policy.
+
+---
+
 # v0.1.4.0 CANONICAL CANDIDATE — Cooperative Passage architecture checkpoint
 
 **Authority:** owner-declared canonical v0.1.3.0 (`818507fc054484c2fe1a92bd4f6147cc849516f892642c0169f9055788d41de9`; Git `6e39cb443dd2cb313beac3ddf367f6521317947a`; 317 files) is the exact implementation baseline. v0.1.4.0 consolidates the cumulative v0.1.3.1-v0.1.3.7 Passage line with **no additional behavioural algorithm change after v0.1.3.7**.

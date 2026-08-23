@@ -1,3 +1,61 @@
+# Current status — v0.1.5.0 Minimal Transit Passage CANONICAL CANDIDATE
+
+**Authoritative baseline:** owner-declared canonical v0.1.4.0 (`681573c2edd6256b092ab00d5955af72bbc5f231903ef81b3fc6d625929f437e`; Git `77695913f0af72960194f8f9ad13397d59e2dadb`; 317 files).
+
+**Candidate state:** v0.1.4.8 behaviour, no new traffic algorithm. Passage retains v0.1.4.0 timing/guide execution, always attempts Transit at the existing configuration point, keeps required compaction strict, keeps inert optional Transit non-blocking, and validates the nominal 1.00 m Crossing-Window target against a 0.95 m policy floor with hard represented non-contact. Passive v0.1.4.6 clearance telemetry remains available.
+
+**Field regression:** TS009 PASS (visual start-position caveat), controlled TS010S PASS, random-start TS010 PASS, TS015 PASS, TS016 PASS (visual start-position caveat).
+
+**Next engineering question after canonicalisation:** Zero-Development Entry Compression — determine whether straight/zero-deficit Passage needs an independent longitudinal settlement/approach reserve rather than borrowing that reserve incidentally from lateral Development.
+
+**Still open:** TS009 complex-assembly coverage/membership authority; inherited invalid `allowUnfoldingByAI` XML-path validation errors; final Passage agronomic debt/restoration and Restoration Alignment; inherited 8 km/h guide speed; other parked literal/provenance work.
+
+**Withdrawn implementation experiments:** v0.1.4.1-v0.1.4.3 post-compaction replanning; v0.1.4.5 exhaustive inter-sample backfill.
+
+---
+
+# Current status — v0.1.4.8 Opportunistic Transit Non-Veto TEST
+
+**Field evidence:** v0.1.4.7 passed TS010S, TS015 and TS009. TS016 failed after a supported `COMPACT_REQUIRED/RETAIN_CURRENT` Passage because an accepted-but-inert S416 opportunistic Transit request acquired mandatory completion authority and held `CONFIGURING` until watchdog failure.
+
+**Experiment:** required compaction remains strict. Opportunistic `RETAIN_CURRENT` compaction waits only while Reality reports actual transition motion; a physically inert optional request cannot veto Passage.
+
+**Primary validation:** TS016 first. Then regress TS010S, TS015 and TS009. The separate TS009/TS016 concern that Passage Entry/start appears too close remains parked.
+
+---
+
+# Current status — v0.1.4.7 Nominal Passage Clearance Policy Band TEST
+
+**Evidence:** v0.1.4.6 telemetry supports millimetre-scale threshold sensitivity in TS010S rather than a meaningful narrow physical Passage opportunity.
+
+**Experiment:** retain 1.00 m construction target; accept Crossing-Window clearance down to 0.95 m while preserving hard represented non-contact and all v0.1.4.4 timing/execution behaviour. Telemetry remains passive.
+
+**Primary validation:** controlled TS010S active-worker save, then TS015.
+
+---
+
+# Current status — v0.1.4.6 Passage Clearance Telemetry TEST
+
+Behaviour remains v0.1.4.4. The active question is whether the TS010S `NO -> YES -> NO` Passage-arrangement transition is a generic nominal-clearance threshold instability or an asymmetric-geometry sensitivity. v0.1.4.6 adds no extra geometric work; it logs clearance evidence already computed by normal Candidate assessment inside the final 40 m.
+
+Primary field comparison: controlled TS010S active-worker save, then TS015.
+
+---
+
+# Current status — v0.1.4.4 Minimal Transit Compaction Reset TEST
+
+**Authoritative baseline:** owner-declared canonical v0.1.4.0 (`681573c2edd6256b092ab00d5955af72bbc5f231903ef81b3fc6d625929f437e`; Git `77695913f0af72960194f8f9ad13397d59e2dadb`; 317 files).
+
+**Selected experiment:** v0.1.4.0 is the behavioural control. Passage geometry/timing is unchanged; Control additionally attempts Transit compaction for every participant at the existing configuration point.
+
+**Discarded branch:** v0.1.4.1-v0.1.4.3 post-compaction replanning is not carried forward. Its Entry/tolerance changes were outside the intended experiment.
+
+**Field target:** rerun TS009, TS010 and TS015. Compare Entry/compaction point, Passage start/end and second-whistle behaviour directly against v0.1.4.0. Any difference other than additional successful compaction is a regression unless separately evidenced.
+
+**Still separate:** TS009 Physical Assembly membership/coverage, inherited representation errors, Restoration Alignment, agronomic restoration and Passage speed.
+
+---
+
 # Current status — v0.1.4.0 Cooperative Passage checkpoint CANONICAL CANDIDATE
 
 **Authoritative baseline:** owner-declared canonical v0.1.3.0 (`818507fc054484c2fe1a92bd4f6147cc849516f892642c0169f9055788d41de9`; Git `6e39cb443dd2cb313beac3ddf367f6521317947a`; 317 files).

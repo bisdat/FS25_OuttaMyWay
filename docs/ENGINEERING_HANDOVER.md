@@ -1,3 +1,67 @@
+# Engineering handover — v0.1.5.0 Minimal Transit Passage checkpoint
+
+Start from the exact owner-declared canonical package. Until explicit owner declaration of this candidate, v0.1.4.0 remains canonical.
+
+## Validated baseline carried by this candidate
+
+- v0.1.4.0 Passage selection, late Entry, Hold settlement, Execution-Origin Capture, Passage Guide, Crossing Window, Recovery and second whistle remain unchanged.
+- At the existing configuration point, always attempt Transit compaction.
+- `COMPACT_REQUIRED` remains strict. `RETAIN_CURRENT` Transit is opportunistic and cannot veto Passage when physically inert.
+- Passage construction targets 1.00 m nominal Crossing-Window clearance; validation floor is currently 0.95 m; represented non-contact remains hard.
+- v0.1.4.6 clearance telemetry remains passive and performs no additional planner/sweep calls.
+- v0.1.4.8 field regression passed TS009, TS010S, random-start TS010, TS015 and TS016.
+
+## Do not resurrect
+
+- v0.1.4.1-v0.1.4.3 post-compaction fresh replanning changed Entry/tolerances and is withdrawn.
+- v0.1.4.5 0.25 m Candidate backfill recovered a narrow TS010S opportunity but caused unacceptable frame pacing and is withdrawn.
+
+## Next focused question
+
+**Zero-Development Entry Compression.** Straight/zero-deficit Passage can start visually close because `Development=0` removes the longitudinal approach reserve that lateral Development otherwise contributes to Entry. Determine whether an independent settlement/approach reserve concept is required. Do not begin by adding an arbitrary distance literal.
+
+## Separate parked debt
+
+Complex-assembly coverage authority (`assemblyMembers=2` evidence), invalid `allowUnfoldingByAI` schema probing, agronomic restoration/Restoration Alignment, inherited 8 km/h guide speed and other parked literal work remain separate.
+
+---
+
+# Engineering handover — v0.1.4.8 opportunistic Transit non-veto
+
+Start with TS016. The expected discriminator is a Patriot/S416 `COMPACT_REQUIRED/RETAIN_CURRENT` Passage where Patriot still completes required folding, while an accepted-but-inert S416 Transit request logs `TRANSIT_COMPACTION_OPTIONAL_NONBLOCKING` and cannot hold the pair in `CONFIGURING`.
+
+Then regress TS010S, TS015 and TS009. v0.1.4.7 0.95 m policy floor remains unchanged. Do not mix the separate “Passage start position too close” concern into this correction.
+
+---
+
+# Engineering handover — v0.1.4.7 Passage Clearance Policy Band
+
+v0.1.4.7 is based on v0.1.4.4 behaviour with v0.1.4.6 telemetry retained. The only behavioural experiment is Crossing-Window acceptance: construction target remains 1.00 m, policy floor is 0.95 m, represented non-contact remains hard. Test controlled TS010S first, then TS015.
+
+---
+
+# Engineering handover — v0.1.4.6 clearance telemetry
+
+Use the controlled TS010S active-worker save first, then one normal TS015 Passage. Behaviour is intentionally v0.1.4.4. Ignore v0.1.4.5 Candidate-memory/backfill; it is not present.
+
+Inspect `D0146_PASSAGE_CLEARANCE_TRACE`. Compare `crossing`, `required` and `residue` across consecutive rejected/selected assessments. TS010S knife-edge evidence would look like small residues oscillating around zero; materially larger swings would support a real geometry-dependent window. Compare TS015 to determine whether the effect is generic or fixture-specific.
+
+No extra planner/sweep calls are made by the telemetry.
+
+---
+
+# Engineering handover — v0.1.4.4 minimal Transit reset
+
+Start from owner-declared canonical v0.1.4.0 only. Do not continue the v0.1.4.1-v0.1.4.3 implementation branch.
+
+The test has one behavioural variable: the existing v0.1.4.0 Passage configuration stage now attempts Transit compaction for every participant. All Passage geometry, Entry timing, Hold, Execution-Origin Capture, guide lengths, Recovery and second whistle remain v0.1.4.0 behaviour.
+
+For `RETAIN_CURRENT`, unsupported compaction is ignored and the unchanged guide executes. For `COMPACT_REQUIRED`, existing fail-safe requirements remain. Do not interpret this build as solving the TS009 two-member/coverage question or final agronomic restoration.
+
+Primary evidence: TS009, TS010 and TS015 A/B against v0.1.4.0.
+
+---
+
 # Engineering handover — v0.1.4.0 Passage checkpoint
 
 Start only from the latest owner-declared canonical package/provenance. Until the owner declares this candidate canonical, v0.1.3.0 remains authoritative.

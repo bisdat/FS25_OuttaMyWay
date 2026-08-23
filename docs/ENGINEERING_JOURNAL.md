@@ -1,3 +1,45 @@
+## 2026-08-23 — Minimal Transit Passage tranche converges; checkpoint selected
+
+The v0.1.4.x Passage tranche initially overreached. v0.1.4.1-v0.1.4.3 coupled the simple request to always compact with fresh post-compaction replanning, changing Entry and Passage length. A/B field comparison disproved that direction, so implementation reset to v0.1.4.0 behaviour. v0.1.4.4 then isolated the intended experiment: keep the existing Passage and always attempt Transit at the existing configuration point.
+
+Controlled TS010S later exposed millimetre-scale `NO -> YES -> NO` Candidate instability. v0.1.4.5 brute-force inter-sample backfill proved a positive Passage opportunity could be skipped but caused significant frame pacing. Passive v0.1.4.6 telemetry then showed the actual cause: TS010S repeatedly measured about 0.995-0.999 m Crossing-Window clearance against an exact 1.000 m policy boundary, while TS015 remained stable. This supported treating Nominal Passage Clearance as fuzzy policy rather than exact equality. v0.1.4.7 retained the 1.00 m construction target with an initial 0.95 m validation floor.
+
+TS016 then exposed optional configuration veto leakage: an accepted but physically inert S416 retained-current Transit request held `CONFIGURING` even though the authorised guide did not depend on S416 compaction. v0.1.4.8 restored the intended distinction: required compaction is strict; optional Transit cannot veto when Reality shows no transition.
+
+Final v0.1.4.8 regression completed TS009, TS010S, random-start TS010, TS015 and TS016. TS009 and TS016 still looked uncomfortably close at Passage start, while exact nose-to-nose TS015 looked comfortable. The emerging explanation is Zero-Development Entry Compression: zero lateral Development removes the approach reserve that Development otherwise contributes. This is recorded as the next independent investigation rather than patched into the checkpoint.
+
+The owner elected to pause here and prepare v0.1.5.0 as a canonical candidate.
+
+---
+
+## 2026-08-23 — TS016 separates command acceptance from optional configuration authority
+
+v0.1.4.7 passed TS010S, TS015 and TS009 but failed TS016 in `CONFIGURING`. The Candidate required Patriot compaction but retained S416 current geometry. Both `prepareCompact()` calls returned success; Patriot physically compacted while S416 remained unchanged. Control nevertheless required `allFolded` for every successful request and eventually hit the phase watchdog.
+
+**Learning:** “always attempt Transit” does not mean every accepted optional command becomes a new safety precondition. `COMPACT_REQUIRED` remains authoritative. `RETAIN_CURRENT` may wait for positively observed transition motion, but an inert optional request must be non-vetoing. This preserves the original simplification: attempt compaction without allowing capability ambiguity to deadlock an already-supported Passage.
+
+---
+
+## 2026-08-23 — TS010S/TS015 telemetry resolves NO -> YES -> NO toward threshold sensitivity
+
+TS010S showed repeated 0.995-0.999 m Crossing-Window minima against an exact 1.000 m threshold before eventual selection at 1.000 m. TS015 remained stably supported around the nominal target. Interpretation: the 1 m value is a Passage policy target used to minimise trapezoid slope, not a physical equality. v0.1.4.7 tests a 5% undershoot floor while retaining hard represented non-contact.
+
+---
+
+## 2026-08-23 — NO → YES → NO clearance discrimination
+
+Controlled TS010S A/B evidence showed that a detailed Passage arrangement can oscillate `NO -> YES -> NO` over a very small approach interval. Two live hypotheses remain: a generic knife-edge caused by Candidate construction aiming at the same nominal clearance used for rejection, or a geometry-specific sensitivity associated with the asymmetric working mower. v0.1.4.6 adds telemetry only, surfacing the already-computed Crossing-Window minimum/required clearance and residue on ordinary assessments. TS010S and TS015 are the discriminating fixtures.
+
+No Candidate-memory/backfill or new control behaviour is present in this TEST.
+
+---
+
+## 2026-08-23 — Resetting Transit-First to the actual experiment
+
+A/B field evidence showed that v0.1.4.1-v0.1.4.3 changed Passage Entry and guide sizing while trying to implement “always compact”. That coupling was unnecessary and produced rabbit-hole corrections. The implementation branch is abandoned. v0.1.4.4 restarts from exact canonical v0.1.4.0 and changes only Control's configuration request: every Passage participant is offered Transit compaction at the existing configuration point.
+
+The experimental control is now explicit: **if anything other than compaction behaviour changes relative to v0.1.4.0, treat it as a regression until Reality proves otherwise.**
+
 ## 2026-08-22 — Passage checkpoint after TS009 negative evidence
 
 The Passage Excursion work produced substantial gains: delayed intervention, closer physical clearance, generic unilateral passage, less agronomic debt and robust TS010/TS015/TS016 examples. A larger-field TS009 experiment then disproved the assumption that the current generic directional member envelope can safely authorise arbitrary retained-current complex-assembly Passage: S416 and a front/rear SaMASZ mower combination collided/tangled after a zero-deficit straight plan. Runtime also reported only two assembly members for the apparently three-member physical combination.

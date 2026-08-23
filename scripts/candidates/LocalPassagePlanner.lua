@@ -404,19 +404,24 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
         previous.subject={x=gate.subject.x,z=gate.subject.z}; previous.other={x=gate.other.x,z=gate.other.z}
     end
     local required=tonumber(nominalClearanceM) or 1.0
-    -- D-0165: Nominal Passage Clearance is a Crossing-Window contract. Development may build toward it and Recovery may relinquish it once the physical crossing is positively complete, but represented overlap is never authorised outside the window.
+    local acceptanceRatio=tonumber(OuttaMyWay.D0146_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO) or 1.0
+    acceptanceRatio=math.max(0,acceptanceRatio)
+    local acceptedFloor=required*acceptanceRatio
+    -- D-0165 + v0.1.4.7 TEST: Nominal Passage Clearance remains the Crossing-Window construction target, not an exact Boolean equality. The policy floor admits a bounded undershoot while represented non-contact remains hard. Development may build toward the target and Recovery may relinquish it once the physical crossing is positively complete, but represented overlap is never authorised outside the window.
+    local function evidence()
+        return {minimumRepresentedClearanceM=minimum,minimumOutsideCrossingClearanceM=minimumOutsideCrossing,minimumCrossingWindowClearanceM=minimumCrossing,requiredNominalClearanceM=required,acceptedNominalClearanceFloorM=acceptedFloor,clearanceAcceptanceRatio=acceptanceRatio}
+    end
     if minimumOutsideCrossing<-0.001 then
-        return false,"PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW",{minimumRepresentedClearanceM=minimum,minimumOutsideCrossingClearanceM=minimumOutsideCrossing,minimumCrossingWindowClearanceM=minimumCrossing,requiredNominalClearanceM=required}
+        return false,"PAIR_SPECIFIC_NON_CONTACT_NOT_SUPPORTED_OUTSIDE_CROSSING_WINDOW",evidence()
     end
-    if minimumCrossing==math.huge or minimumCrossing+0.001<required then
-        return false,"PAIR_SPECIFIC_NOMINAL_CLEARANCE_NOT_SUPPORTED_IN_CROSSING_WINDOW",{minimumRepresentedClearanceM=minimum,minimumOutsideCrossingClearanceM=minimumOutsideCrossing,minimumCrossingWindowClearanceM=minimumCrossing,requiredNominalClearanceM=required}
+    if minimumCrossing==math.huge or minimumCrossing+0.001<acceptedFloor then
+        return false,"PAIR_SPECIFIC_NOMINAL_CLEARANCE_FLOOR_NOT_SUPPORTED_IN_CROSSING_WINDOW",evidence()
     end
-    return true,nil,{
-        minimumRepresentedClearanceM=minimum,minimumOutsideCrossingClearanceM=minimumOutsideCrossing,minimumCrossingWindowClearanceM=minimumCrossing,requiredNominalClearanceM=required,
-        clearanceContract="NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_CLEARANCE_INSIDE_CROSSING_WINDOW",
-        supportBasis=directional and (((aEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST") and (bEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST")) and "TRANSLATED_GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES" or "TRANSLATED_GIANTS_DIRECTIONAL_ASSEMBLY_ENVELOPES") or "TRANSLATED_CONFIGURATION_CONDITIONED_REPRESENTED_DISCS",
-        negativeClearanceAuthority=false
-    }
+    local supported=evidence()
+    supported.clearanceContract="NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW"
+    supported.supportBasis=directional and (((aEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST") and (bEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST")) and "TRANSLATED_GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES" or "TRANSLATED_GIANTS_DIRECTIONAL_ASSEMBLY_ENVELOPES") or "TRANSLATED_CONFIGURATION_CONDITIONED_REPRESENTED_DISCS"
+    supported.negativeClearanceAuthority=false
+    return true,nil,supported
 end
 
 local function thirdPartyPrimitiveRecords(physical,current,motion,memberIds,aId,bId)
@@ -751,9 +756,27 @@ local function planConflict(picture,snapshot,conflict)
                     provenance={source="LocalPassagePlanner",layer="CANDIDATE_SUPPORT",decisionAuthority=false,controlAuthority=false,generalVehicleAuthority=false,globalOptimisation=false,vehicleNameAdmissionGate=false}
                 },nil
             end
-            rejected[#rejected+1]={index=index,fieldReason=fieldReason,sweepReason=sweepReason,thirdPartyReason=thirdReason,thirdPartyEvidence=thirdEvidence}
+            -- v0.1.4.6 telemetry retained: evidence already computed by the
+            -- normal Candidate pass so diagnostics can expose NO -> YES -> NO
+            -- clearance behaviour without repeating any geometric work.
+            rejected[#rejected+1]={
+                index=index,fieldReason=fieldReason,sweepReason=sweepReason,thirdPartyReason=thirdReason,thirdPartyEvidence=thirdEvidence,
+                sweepEvidence=sweepEvidence,separationM=separation,longitudinalSeparationM=longitudinalSeparation,
+                currentLateralSeparationM=pairClearance.currentLateralSeparationM,relationSign=arrangement.relationSign,
+                subjectLateralOffsetM=arrangement.subjectLateralOffsetM,otherLateralOffsetM=arrangement.otherLateralOffsetM,
+                physicalContactThresholdM=arrangement.physicalContactThresholdM,policyRequiredSeparationM=arrangement.policyRequiredSeparationM,
+                subjectConfigurationMode=arrangement.subjectConfiguration and arrangement.subjectConfiguration.mode or nil,
+                otherConfigurationMode=arrangement.otherConfiguration and arrangement.otherConfiguration.mode or nil
+            }
         else
-            rejected[#rejected+1]={index=index,guideReason=guideReason}
+            rejected[#rejected+1]={
+                index=index,guideReason=guideReason,separationM=separation,longitudinalSeparationM=longitudinalSeparation,
+                currentLateralSeparationM=pairClearance.currentLateralSeparationM,relationSign=arrangement.relationSign,
+                subjectLateralOffsetM=arrangement.subjectLateralOffsetM,otherLateralOffsetM=arrangement.otherLateralOffsetM,
+                physicalContactThresholdM=arrangement.physicalContactThresholdM,policyRequiredSeparationM=arrangement.policyRequiredSeparationM,
+                subjectConfigurationMode=arrangement.subjectConfiguration and arrangement.subjectConfiguration.mode or nil,
+                otherConfigurationMode=arrangement.otherConfiguration and arrangement.otherConfiguration.mode or nil
+            }
         end
     end
     return nil,"LOCAL_PASSAGE_SPACE_EXHAUSTED_WITHIN_SUPPORTED_PROFILE",rejected

@@ -1,3 +1,59 @@
+## D-0171 — Canonical checkpoint after minimal Transit Passage regression closure (v0.1.5.0 candidate)
+
+**Observation:** after resetting the over-complex v0.1.4.1-v0.1.4.3 implementation branch to v0.1.4.0 behaviour, the smaller Transit experiment converged: always attempt Transit at the existing configuration point; keep Candidate-required compaction strict; keep opportunistic retained-current Transit non-blocking; treat 1.00 m Passage Clearance as nominal policy with a 0.95 m floor. v0.1.4.8 then completed TS009, TS010S, random-start TS010, TS015 and TS016.
+
+**Decision:** prepare v0.1.5.0 as a canonical candidate with no new traffic behaviour after v0.1.4.8. Preserve v0.1.4.0 Passage timing/guide semantics and the validated D-0169/D-0170 corrections. Do not carry v0.1.4.1-v0.1.4.3 post-compaction replanning or v0.1.4.5 exhaustive Candidate backfill into the active implementation.
+
+**Known observation carried forward:** Zero-Development Entry Compression can make straight/zero-deficit Passage start visually close because the Entry formula receives no Development-derived approach reserve. Current evidence is discomfort rather than collision; investigate independently after the checkpoint.
+
+**Known maintenance debt:** invalid `allowUnfoldingByAI` XML-schema probing remains inherited and emits GIANTS validation errors. Complex-assembly coverage authority remains unresolved. Neither is repaired opportunistically during candidate preparation.
+
+**Authority:** candidate preparation is identity/documentation only. Canonical authority remains v0.1.4.0 until the owner explicitly declares the exact v0.1.5.0 candidate fingerprint canonical.
+
+---
+
+## D-0170 — Opportunistic Transit request cannot acquire Passage veto authority (v0.1.4.8 TEST)
+
+**Observation:** v0.1.4.7 TS016 selected Patriot/S416 with `COMPACT_REQUIRED/RETAIN_CURRENT`. `prepareCompact()` returned success for both. Patriot physically folded; S416 did not, yet Control waited for `allFolded` on both and failed on `PHASE_WATCHDOG:CONFIGURING`. The retained-current guide never depended on S416 compaction.
+
+**Decision:** preserve strict positive completion for `COMPACT_REQUIRED`. For `RETAIN_CURRENT`, Transit remains opportunistic. If Reality positively reports active configuration transition, wait for that motion to settle; otherwise the optional request is non-blocking. A successful command invocation is not sufficient evidence to promote optional configuration into a Passage precondition.
+
+**Isolation:** no Passage geometry, Entry, clearance-band, sampling, restoration or assembly-coverage change.
+
+---
+
+## D-0169 — Nominal Passage Clearance policy band (v0.1.4.7 TEST)
+
+**Observation:** TS010S v0.1.4.6 repeatedly measured approximately 0.995-0.999 m Crossing-Window clearance and rejected against an exact 1.000 m threshold, while TS015 remained stable. Millimetre-scale variation was controlling a policy decision.
+
+**Decision:** retain 1.00 m as the geometry construction target but test a 95% admissible floor. Represented non-contact remains hard. The band is policy tolerance, not numerical epsilon and not permission for represented overlap.
+
+**Validation:** TS010S and TS015 first. If Reality shows contact or insufficient comfort, revise the nominal target/floor from evidence rather than restoring exact-equality brittleness.
+
+---
+
+## D-0168 — Measure Passage threshold stability before changing resolution ownership
+
+**Decision:** before implementing early Passage Requirement ownership, discriminate whether TS010S `NO -> YES -> NO` is a real spatial opportunity window or a numerical/geometric threshold instability. Add telemetry only: expose already-computed Crossing-Window minimum clearance, required nominal clearance and residue for normal rejected/selected Candidate assessments.
+
+**Constraint:** no additional planner/sweep calls and no v0.1.4.5 backfill. Behaviour remains v0.1.4.4.
+
+**Validation:** controlled TS010S and TS015 comparison.
+
+---
+
+## D-0167 — Reset Transit-First implementation to one-variable experiment
+
+**Decision:** abandon the v0.1.4.1-v0.1.4.3 two-stage post-compaction replanning implementation and restart from exact canonical v0.1.4.0. Preserve all v0.1.4.0 Passage timing/geometry/control semantics and change only configuration policy: at the existing configuration point, attempt Transit compaction for every participant.
+
+**Required-compaction safety:** a Candidate that depends on compact geometry retains the existing hard requirement that compaction succeeds and the expected compact profile is observed.
+
+**Opportunistic-compaction rule:** a `RETAIN_CURRENT` Candidate still attempts Transit compaction, but request failure is ignored; the pre-existing guide remains unchanged and therefore does not depend on the attempt.
+
+**Evidence:** v0.1.4.1-v0.1.4.3 field runs changed Passage Entry and/or guide length even though the selected experiment was only “always attempt Transit”. The branch therefore violated experimental isolation and is not a production basis.
+
+---
+
 ## D-0166 — Checkpoint the Passage tranche and simplify the next configuration policy
 
 **Decision:** prepare v0.1.4.0 as a canonical checkpoint consolidating v0.1.3.1-v0.1.3.7 without new behavioural algorithm changes. Outstanding Passage defects are retained explicitly rather than solved speculatively during canonicalisation.

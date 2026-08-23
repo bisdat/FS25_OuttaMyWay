@@ -1,3 +1,53 @@
+## v0.1.5.0 checkpoint amendment — Minimal Transit Passage production baseline
+
+The validated Passage baseline deliberately favours robustness over configuration optimisation. For this checkpoint, v0.1.4.0 Passage selection/Entry/guide/execution semantics remain authoritative. At the existing settled configuration point, Control always attempts normal Transit compaction. If the Candidate geometry requires `COMPACT_REQUIRED`, that physical compact state remains a strict precondition. If the Candidate is already supported as `RETAIN_CURRENT`, Transit is opportunistic: observed physical configuration motion may be allowed to settle, but an inert or unsupported optional request cannot acquire veto authority.
+
+Nominal Passage Clearance remains a **policy target**, not an exact geometric equality. Passage construction targets 1.00 m through the physical Crossing Window. Validation admits the current evidence-backed floor of 0.95 m while represented non-contact remains mandatory everywhere and Development/Recovery retain the D-0165 non-contact contract. The 5% band is calibration policy, not numerical epsilon.
+
+The v0.1.4.1-v0.1.4.3 fresh post-compaction replanning branch is withdrawn: it changed Entry timing and guide sizing beyond the requested compaction policy. The v0.1.4.5 exhaustive inter-sample Candidate backfill is also withdrawn after field evidence showed unacceptable frame pacing. Positive knowledge from those tests is retained only as architectural evidence.
+
+**Open architectural observation — Zero-Development Entry Compression:** lateral Development currently contributes incidental longitudinal approach reserve through the Entry Boundary formula. A straight/zero-deficit Passage has `Development=0` and can therefore begin physically close even when it remains laterally safe. Whether Passage needs an independent longitudinal settlement reserve is unresolved; no new literal is authorised by this checkpoint.
+
+This candidate does not resolve complex Physical Assembly coverage, agronomic restoration, Restoration Alignment, Passage speed, or configuration-capability metadata.
+
+---
+
+## v0.1.4.8 TEST amendment — Optional configuration action has no veto authority
+
+Transit-First distinguishes **required configuration authority** from an **opportunistic Transit attempt**. If the Candidate geometry depends on `COMPACT_REQUIRED`, Control must positively observe the required compact state before Passage movement. If the Candidate is already supported as `RETAIN_CURRENT`, requesting Transit is a least-footprint courtesy and does not become a new Commitment Precondition merely because GIANTS accepted the command.
+
+Reality may still show useful optional configuration motion. Control may wait for an observed physical transition to settle before moving, but absence of such motion cannot invalidate or indefinitely withhold the already-supported retained-current Passage. Command acceptance is not configuration-achievement evidence.
+
+---
+
+## v0.1.4.7 TEST amendment — Nominal Passage Clearance is a policy target
+
+Nominal Passage Clearance describes the intended additional separation used to shape the bounded Passage trapezoid; it is not a physical law or an exact floating/geometric equality. Candidate construction continues to target 1.00 m. Validation may admit a bounded policy tolerance while represented physical non-contact remains the hard safety requirement.
+
+For this TEST the admissible Crossing-Window floor is 95% of nominal (0.95 m for the current 1.00 m target). Development/Recovery retain the D-0165 non-contact contract. The policy band changes only Candidate acceptance; it does not alter path construction, Entry timing, sampling, Control or restoration.
+
+---
+
+## v0.1.4.6 TEST note — Clearance telemetry only
+
+No architecture or Passage authority rule is changed in this TEST. The active architectural interpretation remains that Established Opposed Corridor Conflict can establish the need for Cooperative Passage before a detailed Passage Arrangement matures. Before changing that gate, v0.1.4.6 measures the existing planner's `NO -> YES -> NO` behaviour by surfacing Crossing-Window clearance evidence already computed during ordinary Candidate assessment.
+
+Telemetry has no decision or control authority and performs no additional geometric assessment.
+
+---
+
+## v0.1.4.4 TEST amendment — Minimal Transit Compaction Reset
+
+Field evidence from v0.1.4.1-v0.1.4.3 disproved the implementation assumption that Transit-First required a new post-compaction Passage-planning stage. Those TEST builds changed Entry timing and guide sizing in addition to compaction and are abandoned as an implementation branch.
+
+For this isolation TEST, v0.1.4.0 remains the complete Passage behavioural control. The only new policy is: **at the existing settled Passage configuration point, always attempt normal Transit compaction.** Candidate configuration optimisation is not allowed to suppress that attempt.
+
+The existing Candidate guide remains unchanged. If the Candidate required compact geometry, the existing required-compaction verification remains fail-safe. If the Candidate retained current configuration, inability to compact is ignored because the guide was already supported for that current configuration; successful compaction is not used to shorten or otherwise re-author the guide.
+
+This amendment deliberately does not solve Physical Assembly coverage, Restoration Alignment, agronomic debt, Passage speed or configuration capability metadata. New/latent defects exposed by the isolated experiment are to be handled separately rather than folded into this change.
+
+---
+
 ## v0.1.4.0 checkpoint amendment — Passage configuration simplicity and fail-safe Reality authority
 
 The v0.1.3.x Passage experiments establish useful geometry/control concepts but do **not** yet justify configuration optimisation across arbitrary complex assemblies. The selected next architecture is **Transit-First, Reality-Verified Passage**:

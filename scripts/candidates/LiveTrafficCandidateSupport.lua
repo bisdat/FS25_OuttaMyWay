@@ -798,6 +798,100 @@ local function passageRejectionTelemetry(allRejected)
     return signature,text
 end
 
+local function finiteNumber(value)
+    return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
+end
+
+local function clearanceTraceCandidate(candidate)
+    if type(candidate)~="table" or type(candidate.sweepEvidence)~="table" then return nil end
+    local sweep=candidate.sweepEvidence
+    local crossing=tonumber(sweep.minimumCrossingWindowClearanceM)
+    local required=tonumber(sweep.requiredNominalClearanceM)
+    if not finiteNumber(crossing) or not finiteNumber(required) then return nil end
+    return {
+        candidate=candidate,
+        crossing=crossing,
+        required=required,
+        residue=crossing-required,
+        outside=tonumber(sweep.minimumOutsideCrossingClearanceM),
+        minimum=tonumber(sweep.minimumRepresentedClearanceM),
+        floor=tonumber(sweep.acceptedNominalClearanceFloorM),
+        floorResidue=(finiteNumber(crossing) and finiteNumber(tonumber(sweep.acceptedNominalClearanceFloorM))) and (crossing-tonumber(sweep.acceptedNominalClearanceFloorM)) or nil
+    }
+end
+
+-- v0.1.4.6 telemetry retained.  This consumes evidence already computed by the
+-- ordinary LocalPassagePlanner pass.  It does not call the planner, sweep, or
+-- geometry functions again.  The trace is intentionally limited to the local
+-- 40 m approach so the field comparison exposes NO -> YES -> NO clearance
+-- behaviour without recreating v0.1.4.5 Candidate Search Amplification.
+local function passageClearanceRejectionTelemetry(allRejected)
+    local lines={}
+    if type(allRejected)~="table" then return lines end
+    local maxTraceSeparation=tonumber(OuttaMyWay.D0146_CLEARANCE_TRACE_MAX_SEPARATION_M) or 40.0
+    for _,conflict in ipairs(allRejected) do
+        local best=nil
+        local residues={}
+        local firstCandidate=nil
+        for _,candidate in ipairs(conflict.rejected or {}) do
+            firstCandidate=firstCandidate or candidate
+            local trace=clearanceTraceCandidate(candidate)
+            if trace~=nil then
+                residues[#residues+1]=string.format("%s=%+.3f",tostring(candidate.index or "?"),trace.residue)
+                if best==nil or trace.residue>best.residue then best=trace end
+            end
+        end
+        local reference=(best and best.candidate) or firstCandidate
+        local separation=tonumber(reference and reference.separationM)
+        if reference~=nil and finiteNumber(separation) and separation<=maxTraceSeparation then
+            local c=best and best.candidate or reference
+            local sweep=c and c.sweepEvidence or nil
+            local crossing=best and best.crossing or nil
+            local required=best and best.required or nil
+            local residue=best and best.residue or nil
+            local outside=best and best.outside or nil
+            local minimum=best and best.minimum or nil
+            local floor=best and best.floor or tonumber(sweep and sweep.acceptedNominalClearanceFloorM)
+            local floorResidue=best and best.floorResidue or ((finiteNumber(crossing) and finiteNumber(floor)) and (crossing-floor) or nil)
+            lines[#lines+1]=string.format(
+                "D0146_PASSAGE_CLEARANCE_TRACE conflict=%s outcome=REJECTED separation=%.2f longitudinal=%.2f lateral=%.3f bestIndex=%s crossing=%s nominal=%s nominalResidue=%s floor=%s floorResidue=%s outside=%s minimum=%s contact=%.3f offsets=%+.3f/%+.3f relation=%s configuration=%s/%s sweepReason=%s residues=%s",
+                tostring(conflict.conflictIdentity or "n/a"),separation,tonumber(c and c.longitudinalSeparationM) or -1,tonumber(c and c.currentLateralSeparationM) or -1,
+                tostring(c and c.index or "n/a"),finiteNumber(crossing) and string.format("%.3f",crossing) or "n/a",finiteNumber(required) and string.format("%.3f",required) or "n/a",
+                finiteNumber(residue) and string.format("%+.3f",residue) or "n/a",finiteNumber(floor) and string.format("%.3f",floor) or "n/a",finiteNumber(floorResidue) and string.format("%+.3f",floorResidue) or "n/a",finiteNumber(outside) and string.format("%.3f",outside) or "n/a",finiteNumber(minimum) and string.format("%.3f",minimum) or "n/a",
+                tonumber(c and c.physicalContactThresholdM) or -1,tonumber(c and c.subjectLateralOffsetM) or 0,tonumber(c and c.otherLateralOffsetM) or 0,tostring(c and c.relationSign or "n/a"),
+                tostring(c and c.subjectConfigurationMode or "n/a"),tostring(c and c.otherConfigurationMode or "n/a"),tostring(c and c.sweepReason or "n/a"),#residues>0 and table.concat(residues,"|") or "none")
+        end
+    end
+    return lines
+end
+
+local function passageClearanceSelectedTelemetry(plan)
+    if type(plan)~="table" then return nil end
+    local separation=tonumber(plan.separationM)
+    local maxTraceSeparation=tonumber(OuttaMyWay.D0146_CLEARANCE_TRACE_MAX_SEPARATION_M) or 40.0
+    if not finiteNumber(separation) or separation>maxTraceSeparation then return nil end
+    local arrangement=plan.passageArrangement or {}
+    local guide=plan.passageGuide or {}
+    local sweep=guide.pairSweepSupport or {}
+    local crossing=tonumber(sweep.minimumCrossingWindowClearanceM)
+    local required=tonumber(sweep.requiredNominalClearanceM)
+    local residue=(finiteNumber(crossing) and finiteNumber(required)) and (crossing-required) or nil
+    local outside=tonumber(sweep.minimumOutsideCrossingClearanceM)
+    local minimum=tonumber(sweep.minimumRepresentedClearanceM)
+    local floor=tonumber(sweep.acceptedNominalClearanceFloorM)
+    local floorResidue=(finiteNumber(crossing) and finiteNumber(floor)) and (crossing-floor) or nil
+    local config=plan.passageConfiguration or {}
+    local participants=config.participants or {}
+    local c1,c2=participants[1] or {},participants[2] or {}
+    return string.format(
+        "D0146_PASSAGE_CLEARANCE_TRACE conflict=%s outcome=SELECTED separation=%.2f longitudinal=%.2f lateral=%.3f selectedIndex=%s crossing=%s nominal=%s nominalResidue=%s floor=%s floorResidue=%s outside=%s minimum=%s contact=%.3f offsets=%+.3f/%+.3f relation=%s configuration=%s/%s",
+        tostring(plan.conflictIdentity or "n/a"),separation,tonumber(plan.longitudinalSeparationM) or -1,tonumber(arrangement.currentLateralSeparationM) or -1,
+        tostring(plan.progressiveSearch and plan.progressiveSearch.selectedIndex or "n/a"),finiteNumber(crossing) and string.format("%.3f",crossing) or "n/a",finiteNumber(required) and string.format("%.3f",required) or "n/a",
+        finiteNumber(residue) and string.format("%+.3f",residue) or "n/a",finiteNumber(floor) and string.format("%.3f",floor) or "n/a",finiteNumber(floorResidue) and string.format("%+.3f",floorResidue) or "n/a",finiteNumber(outside) and string.format("%.3f",outside) or "n/a",finiteNumber(minimum) and string.format("%.3f",minimum) or "n/a",
+        tonumber(arrangement.physicalContactThresholdM) or -1,tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tostring(arrangement.relationSign or "n/a"),
+        tostring(c1.mode or "n/a"),tostring(c2.mode or "n/a"))
+end
+
 local function followerMatchesCooperative(follower,record)
     if type(follower)~="table" or type(record)~="table" then return false end
     local ids={}
@@ -824,6 +918,7 @@ function Support:attach(picture,snapshot)
     if OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED==true then
         local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
         if plan==nil then
+            for _,clearanceTrace in ipairs(passageClearanceRejectionTelemetry(rejected)) do logInfo("%s",clearanceTrace) end
             local rejectionKey,rejectionText=passageRejectionTelemetry(rejected)
             if rejectionKey~=nil and rejectionKey~=self.lastPassageRejectionTraceKey then
                 self.lastPassageRejectionTraceKey=rejectionKey
@@ -838,6 +933,8 @@ function Support:attach(picture,snapshot)
             return self.passiveSupport:attach(picture,snapshot)
         end
         self.lastPassageRejectionTraceKey=nil
+        local selectedClearanceTrace=passageClearanceSelectedTelemetry(plan)
+        if selectedClearanceTrace~=nil then logInfo("%s",selectedClearanceTrace) end
         if follower~=nil and not followerMatchesCooperative(follower,{assemblyIds=plan.assemblyIds or {}}) then
             return attachFollowerBoundary(self,picture,snapshot,follower)
         end
