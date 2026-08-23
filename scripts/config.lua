@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.1.5.0 CANONICAL CANDIDATE — validated minimal Transit Passage checkpoint.
+-- FS25_OuttaMyWay v0.1.6.0 CANONICAL CANDIDATE — Native Base Transit Geometry checkpoint.
 -- Situation/Decision/Commitment admission semantics remain inherited; Control magnitude is now elastic.
 -- D-0147 now implements the agreed optional Bounded Infield Retreat courtesy hypothesis while retaining the validated v4.7.120 mechanical actuator substrate.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.1.5.0"
+OuttaMyWay.VERSION = "0.1.6.0"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -213,7 +213,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
 OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.1.5.0 CANONICAL CANDIDATE — PASSAGE CHECKPOINT"
+OuttaMyWay.BUILD_LABEL = "0.1.6.0 CANONICAL CANDIDATE — TRANSIT BASE GEOMETRY CHECKPOINT"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720

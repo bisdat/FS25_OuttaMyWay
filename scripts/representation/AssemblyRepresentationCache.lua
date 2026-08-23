@@ -238,11 +238,11 @@ end
 
 local function directionalSizeMetadata(object)
     if type(object)~="table" then return nil end
-    local width,length=tonumber(object.sizeWidth),tonumber(object.sizeLength)
-    if finite(width) and width>0 and width<150 and finite(length) and length>0 and length<150 then
-        return {widthM=width,lengthM=length,widthOffsetM=0,lengthOffsetM=0,source="RUNTIME_SIZE_FIELDS"}
-    end
 
+    -- D-0173: Passage now treats GIANTS <base><size> as static transport-scale
+    -- member geometry.  Prefer the already-loaded XML object so authored offsets
+    -- are preserved; runtime size fields remain a bounded fallback when the
+    -- loaded definition is unavailable.
     local xmlFile=object.xmlFile
     if type(xmlFile)=="table" then
         local w,wSource=xmlNumericValue(xmlFile,"vehicle.base.size#width")
@@ -252,6 +252,11 @@ local function directionalSizeMetadata(object)
             local lo=select(1,xmlNumericValue(xmlFile,"vehicle.base.size#lengthOffset")) or 0
             return {widthM=w,lengthM=l,widthOffsetM=finite(wo) and wo or 0,lengthOffsetM=finite(lo) and lo or 0,source=tostring(wSource or lSource or "LOADED_XML")}
         end
+    end
+
+    local width,length=tonumber(object.sizeWidth),tonumber(object.sizeLength)
+    if finite(width) and width>0 and width<150 and finite(length) and length>0 and length<150 then
+        return {widthM=width,lengthM=length,widthOffsetM=0,lengthOffsetM=0,source="RUNTIME_SIZE_FIELDS"}
     end
 
     local filename=object.configFileName or object.configFileNameClean or object.xmlFilename
@@ -578,6 +583,56 @@ local function relativeDirectionalAssemblyEnvelope(record,worldPrimitives,frame)
     }
 end
 
+function Cache:_transitPassageEnvelope(record,frame)
+    if type(record)~="table" or type(frame)~="table" then return nil,"TRANSIT_REFERENCE_FRAME_UNAVAILABLE" end
+    local localToWorldFn=self:_api("localToWorld")
+    if localToWorldFn==nil then return nil,"TRANSIT_LOCAL_TO_WORLD_UNAVAILABLE" end
+    local members=record.members or {}
+    if #members<1 then return nil,"TRANSIT_ASSEMBLY_MEMBERS_UNAVAILABLE" end
+
+    local minRight,maxRight,minForward,maxForward=nil,nil,nil,nil
+    local sources={}
+    local function include(right,forward)
+        minRight=minRight==nil and right or math.min(minRight,right); maxRight=maxRight==nil and right or math.max(maxRight,right)
+        minForward=minForward==nil and forward or math.min(minForward,forward); maxForward=maxForward==nil and forward or math.max(maxForward,forward)
+    end
+
+    for _,member in ipairs(members) do
+        local metadata=member.directionalSizeMetadata
+        local object=member.object
+        local width=metadata and tonumber(metadata.widthM) or nil
+        local length=metadata and tonumber(metadata.lengthM) or nil
+        if not finite(width) or width<=0 or not finite(length) or length<=0 or type(object)~="table" or object.rootNode==nil or object.rootNode==0 then
+            return nil,"TRANSIT_BASE_SIZE_UNAVAILABLE:"..tostring(member.referenceKey)
+        end
+        local centreRight=tonumber(metadata.widthOffsetM) or 0
+        local centreForward=tonumber(metadata.lengthOffsetM) or 0
+        for _,offset in ipairs({{-width*0.5,-length*0.5},{width*0.5,-length*0.5},{width*0.5,length*0.5},{-width*0.5,length*0.5}}) do
+            local ok,x,_,z=pcall(localToWorldFn,object.rootNode,centreRight+offset[1],0,centreForward+offset[2])
+            if not ok or not finite(x) or not finite(z) then return nil,"TRANSIT_MEMBER_TRANSFORM_FAILED:"..tostring(member.referenceKey) end
+            local dx,dz=x-frame.x,z-frame.z
+            include(dx*frame.rightX+dz*frame.rightZ,dx*frame.forwardX+dz*frame.forwardZ)
+        end
+        sources[tostring(metadata.source or "UNRESOLVED")]=true
+    end
+
+    if minRight==nil or maxRight==nil or minForward==nil or maxForward==nil then return nil,"TRANSIT_BASE_SIZE_ENVELOPE_EMPTY" end
+    local width=maxRight-minRight; local length=maxForward-minForward
+    if not finite(width) or width<=0 or not finite(length) or length<=0 then return nil,"TRANSIT_BASE_SIZE_ENVELOPE_INVALID" end
+    local sourceList={}; for source in pairs(sources) do sourceList[#sourceList+1]=source end; table.sort(sourceList)
+    return {
+        minRightM=minRight,maxRightM=maxRight,minForwardM=minForward,maxForwardM=maxForward,
+        leftExtentM=math.max(0,-minRight),rightExtentM=math.max(0,maxRight),frontExtentM=math.max(0,maxForward),rearExtentM=math.max(0,-minForward),
+        widthM=width,lengthM=length,halfWidthM=width*0.5,halfLengthM=length*0.5,
+        widthOffsetM=(minRight+maxRight)*0.5,lengthOffsetM=(minForward+maxForward)*0.5,
+        memberCount=#members,directionalRectangleMemberCount=#members,representedDiscFallbackMemberCount=0,
+        source=#members==1 and tostring((members[1].directionalSizeMetadata or {}).source or "GIANTS_BASE_SIZE") or "GIANTS_BASE_SIZE_MEMBER_RECTANGLE_UNION",
+        metadataSources=table.concat(sourceList,"|"),assemblyScope=#members==1 and "SINGLE_MEMBER_TRANSIT_BASE_SIZE" or "MULTI_MEMBER_TRANSIT_BASE_SIZE_UNION",
+        authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY",configurationBasis="TRANSIT_POLICY_STATIC_BASE_SIZE",geometryPurpose="COOPERATIVE_PASSAGE_TRANSIT",
+        memberBaseSizeComplete=true,coverageComplete=false,negativeClearanceAuthority=false
+    },nil
+end
+
 local function relativeDiscSnapshot(worldPrimitives,frame)
     if type(frame)~="table" then return nil end
     local result={}
@@ -707,6 +762,7 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
         end
     end
     local frame=referenceFrameForWorker(worker)
+    local transitPassageEnvelope,transitPassageReason=self:_transitPassageEnvelope(record,frame)
     local relativeDiscs=relativeDiscSnapshot(worldPrimitives,frame)
     if relativeDiscs~=nil then profile.relativeDiscs=relativeDiscs end
     local directionalEnvelope=relativeDirectionalAssemblyEnvelope(record,worldPrimitives,frame)
@@ -726,7 +782,7 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
         runtimeConfirmedPrimitiveCount=profile.runtimeConfirmedCount,donorFallbackPrimitiveCount=profile.donorFallbackCount,configurationSelectorSummary=profile.configurationSelectorSummary,
         participatingPrimitiveNames=profile.participatingPrimitiveNames,inactivePrimitiveNames=profile.inactivePrimitiveNames,unresolvedPrimitiveNames=profile.unresolvedPrimitiveNames,
         physicalPrimitiveCount=summary.physicalPrimitiveCount,diagnosticPrimitiveCount=summary.diagnosticPrimitiveCount,
-        configurationKey=config,configurationEvidence=foldConfigurationEvidence(record.members),configurationProfileId=profile.identity,configurationProfileCacheHit=profileCacheHit,configurationProfileCount=countKeys(record.profiles),configurationAlternatives=self:_configurationAlternatives(record,profile.identity),directionalPassageEnvelope=profile.directionalPassageEnvelope,outtaMyWayConfigurationAuthorityActive=underOuttaMyWayAuthority,
+        configurationKey=config,configurationEvidence=foldConfigurationEvidence(record.members),configurationProfileId=profile.identity,configurationProfileCacheHit=profileCacheHit,configurationProfileCount=countKeys(record.profiles),configurationAlternatives=self:_configurationAlternatives(record,profile.identity),directionalPassageEnvelope=profile.directionalPassageEnvelope,transitPassageEnvelope=transitPassageEnvelope,transitPassageReason=transitPassageReason,outtaMyWayConfigurationAuthorityActive=underOuttaMyWayAuthority,
         structurallyValid=record.structurallyValid and profile.participatingPrimitiveCount>0,coverageComplete=false,conservativeForRepresentedComponents=record.conservativeForRepresentedComponents,
         negativeClearanceAuthority=false,claimPermissions={"POTENTIAL_INTERACTION_FROM_REPRESENTED_COMPONENTS"},
         worldPrimitives=worldPrimitives,planViewSummary=summary,geometryStats=record.geometryStats,transformFailureCount=#transformFailures,

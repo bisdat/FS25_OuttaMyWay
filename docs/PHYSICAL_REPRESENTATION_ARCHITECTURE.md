@@ -1,3 +1,19 @@
+## v0.1.6.0 — Transit Geometry Completeness
+
+Native Base Transit Geometry is complete only if two independent conditions hold: (1) every represented member has usable GIANTS `vehicle.base.size` directional evidence and a usable assembly transform; and (2) Representation has positive evidence that the represented member set is the complete Physical Assembly relevant to Passage. The first condition alone proves only **Discovered-Member Geometry Completeness**.
+
+TS009 demonstrates the distinction: the base-size union was internally complete for two discovered members, but the physical tractor/front-mower/rear-mower combination contains three members and runtime already marked broader coverage as incomplete/under-approximate. A purpose-specific Transit rectangle must therefore inherit assembly-membership uncertainty rather than converting local metadata completeness into global negative-clearance authority.
+
+DISC/component representations retain their existing conservative occupancy and sweep roles. This rule does not make DISC equivalent to directional Transit geometry and does not require `base.size` to represent arbitrary Working configuration.
+
+---
+
+## v0.1.5.3 — Native Base Transit Geometry
+
+For Cooperative Passage only, Representation may expose a **Native Base Transit Geometry** assembled from all Physical Assembly members' GIANTS `vehicle.base.size` rectangles. Width, length and offsets are static member facts captured at bootstrap; runtime member transforms place them into the current assembly frame. The union is accepted only when every member supplies usable base-size evidence. No DISC fallback is mixed into this purpose-specific Transit envelope.
+
+This is not collision-shape closure and does not supersede DISC/component representations. DISC remains useful for conservative current occupancy, uncertainty and swept/fail-safe checks. The distinction preserves the earlier evidence that deployed 36 m sprayers cannot be represented by `base.size` while recognising that the same authored base size is appropriate to test the assembly in its policy-required Transit configuration.
+
 ## v4.7.19 implementation note — representation absence does not terminate Encounter Knowledge
 
 v4.7.19 changes no physical representation or positive predicate. It records the consequence of the existing permission model: when a current footprint sample is non-positive or unavailable, the result remains `CLEARANCE_UNRESOLVED`. Therefore, current evidence absence cannot terminate an already supported Encounter. Explicit lifecycle evidence governs exit until a separate same-Episode clearance contract is established.

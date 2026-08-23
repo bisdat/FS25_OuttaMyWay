@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.5.0 CANONICAL CANDIDATE — validated minimal Transit Passage checkpoint.
+-- FS25_OuttaMyWay v0.1.6.0 CANONICAL CANDIDATE — Native Base Transit Geometry checkpoint.
 -- modDesc.xml loads only this file. Historical archived modules are never sourced.
 local modDirectory=g_currentModDirectory or ""
 local modules={

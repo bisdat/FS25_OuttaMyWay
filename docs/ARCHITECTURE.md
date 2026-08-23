@@ -1,3 +1,21 @@
+## v0.1.6.0 checkpoint amendment — Transit Geometry Completeness
+
+Field evidence supports the purpose-specific **Native Base Transit Geometry** hypothesis but adds an upstream authority condition: a member-union is only a complete Transit Passage representation when the **Physical Assembly member set is itself complete**. Completeness over the members currently discovered by OuttaMyWay is not sufficient.
+
+TS009 is the counterexample. Passage used a complete `base.size` union over two discovered MF 7S.210 assembly members while Reality contained tractor + front mower + rear mower. Runtime simultaneously declared `coverageComplete=false` and `underApproximationRisk=true`, and physical contact occurred. Therefore negative-clearance authority must be gated by Physical Assembly Completeness before the Transit envelope can be treated as exhaustive.
+
+This amendment does not weaken the selected Transit policy and does not restore DISC as the preferred directional Passage footprint. DISC/current physical primitives retain conservative occupancy/sweep roles. It also does not authorise an Entry-distance fix: assembly completeness is the first unresolved boundary.
+
+---
+
+## v0.1.5.3 TEST amendment — Native Base Transit Geometry
+
+**Transit Passage Geometry** is now treated as a purpose-specific Representation product. Under the established policy that Cooperative Passage is executed in Transit, the planner need not infer the best configuration from current/observed profile alternatives. Each Physical Assembly member contributes its GIANTS-authored `vehicle.base.size` directional rectangle, including authored offsets; current member transforms place those static rectangles into the assembly frame. A complete member union becomes the preferred Passage width/length basis.
+
+This does not reverse the earlier representation finding that `base.size` is insufficient for arbitrary Working configuration or manoeuvre occupancy. Working/swept occupancy and conservative uncertainty may still require DISC/component evidence. The architectural separation is: **Transit Footprint answers configuration shape; Swept Occupancy answers where that shape may travel.** Base-size Transit geometry therefore carries no general negative-clearance authority. Missing member base-size evidence fails back to the existing configuration-conditioned Passage path.
+
+v0.1.5.3 retains the old configuration-selection machinery solely as a temporary Control/fallback bridge so validated `COMPACT_REQUIRED` versus opportunistic `RETAIN_CURRENT` behaviour is not changed at the same time as geometric planning authority.
+
 ## v0.1.5.0 checkpoint amendment — Minimal Transit Passage production baseline
 
 The validated Passage baseline deliberately favours robustness over configuration optimisation. For this checkpoint, v0.1.4.0 Passage selection/Entry/guide/execution semantics remain authoritative. At the existing settled configuration point, Control always attempts normal Transit compaction. If the Candidate geometry requires `COMPACT_REQUIRED`, that physical compact state remains a strict precondition. If the Candidate is already supported as `RETAIN_CURRENT`, Transit is opportunistic: observed physical configuration motion may be allowed to settle, but an inert or unsupported optional request cannot acquire veto authority.

@@ -1,3 +1,18 @@
+# v0.1.6.0 CANONICAL CANDIDATE — known issues / explicit limits
+
+- **TS009 remains safety-relevant negative evidence.** v0.1.5.3 Native Base Transit Geometry passed TS010S/TS015/TS016 but TS009 produced a small physical contact before Passage resumed.
+- **Transit Geometry Completeness is unresolved for complex assemblies.** TS009 logged `assemblyMembers=2`, `coverageComplete=false`, `underApproximationRisk=true` for the physical tractor + front mower + rear mower combination. Do not treat a base-size union as exhaustive merely because every discovered member contributed metadata.
+- **The missing-member mechanism is not established.** Do not assert which implement is absent or which GIANTS API is responsible until inspection proves it.
+- **Optional Transit authority remains inherited debt.** TS009 logged `TRANSIT_COMPACTION_IGNORED ... probe-requires-fully-deployed-start`. Keep this separate from assembly-completeness work.
+- **No Entry-distance correction is authorised by this checkpoint.** The earlier Pre-Transit Entry Mismatch interpretation is withdrawn as the primary diagnosis; Zero-Development Entry Compression remains an observation, not the established cause of TS009 contact.
+- v0.1.5.1/v0.1.5.2 Native Deployment Pair shadows are withdrawn and must not be resurrected as implementation ancestry.
+- Native Base Transit Geometry remains purpose-specific. DISC/current physical evidence remains valid conservative occupancy/sweep evidence; `<base><size>` is not universal collision closure.
+- Legacy configuration-selection machinery remains intentionally present until Transit geometry authority is trustworthy.
+- Existing parked debt remains: Restoration Alignment, agronomic restoration, inherited 8 km/h guide speed, invalid `allowUnfoldingByAI` schema probing, TS010 locality/terminal literals and broader provenance cleanup.
+- v0.1.6.0 is a candidate only until explicit owner declaration of its exact fingerprint.
+
+---
+
 # v0.1.5.0 CANONICAL CANDIDATE — known issues / explicit limits
 
 - **Zero-Development Entry Compression is OPEN.** Straight/zero-deficit Passage can begin visually close because `Development=0` removes the longitudinal reserve that lateral Development otherwise contributes to the Entry Boundary. TS009 and TS016 showed this caveat; no contact was observed in the v0.1.4.8 regression. Do not add an arbitrary reserve literal during canonical review.

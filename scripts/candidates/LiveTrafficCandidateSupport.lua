@@ -854,12 +854,12 @@ local function passageClearanceRejectionTelemetry(allRejected)
             local floor=best and best.floor or tonumber(sweep and sweep.acceptedNominalClearanceFloorM)
             local floorResidue=best and best.floorResidue or ((finiteNumber(crossing) and finiteNumber(floor)) and (crossing-floor) or nil)
             lines[#lines+1]=string.format(
-                "D0146_PASSAGE_CLEARANCE_TRACE conflict=%s outcome=REJECTED separation=%.2f longitudinal=%.2f lateral=%.3f bestIndex=%s crossing=%s nominal=%s nominalResidue=%s floor=%s floorResidue=%s outside=%s minimum=%s contact=%.3f offsets=%+.3f/%+.3f relation=%s configuration=%s/%s sweepReason=%s residues=%s",
+                "D0146_PASSAGE_CLEARANCE_TRACE conflict=%s outcome=REJECTED separation=%.2f longitudinal=%.2f lateral=%.3f bestIndex=%s crossing=%s nominal=%s nominalResidue=%s floor=%s floorResidue=%s outside=%s minimum=%s contact=%.3f offsets=%+.3f/%+.3f relation=%s configuration=%s/%s geometry=%s sweepReason=%s residues=%s",
                 tostring(conflict.conflictIdentity or "n/a"),separation,tonumber(c and c.longitudinalSeparationM) or -1,tonumber(c and c.currentLateralSeparationM) or -1,
                 tostring(c and c.index or "n/a"),finiteNumber(crossing) and string.format("%.3f",crossing) or "n/a",finiteNumber(required) and string.format("%.3f",required) or "n/a",
                 finiteNumber(residue) and string.format("%+.3f",residue) or "n/a",finiteNumber(floor) and string.format("%.3f",floor) or "n/a",finiteNumber(floorResidue) and string.format("%+.3f",floorResidue) or "n/a",finiteNumber(outside) and string.format("%.3f",outside) or "n/a",finiteNumber(minimum) and string.format("%.3f",minimum) or "n/a",
                 tonumber(c and c.physicalContactThresholdM) or -1,tonumber(c and c.subjectLateralOffsetM) or 0,tonumber(c and c.otherLateralOffsetM) or 0,tostring(c and c.relationSign or "n/a"),
-                tostring(c and c.subjectConfigurationMode or "n/a"),tostring(c and c.otherConfigurationMode or "n/a"),tostring(c and c.sweepReason or "n/a"),#residues>0 and table.concat(residues,"|") or "none")
+                tostring(c and c.subjectConfigurationMode or "n/a"),tostring(c and c.otherConfigurationMode or "n/a"),tostring(c and c.passageGeometrySource or "n/a"),tostring(c and c.sweepReason or "n/a"),#residues>0 and table.concat(residues,"|") or "none")
         end
     end
     return lines
@@ -884,12 +884,12 @@ local function passageClearanceSelectedTelemetry(plan)
     local participants=config.participants or {}
     local c1,c2=participants[1] or {},participants[2] or {}
     return string.format(
-        "D0146_PASSAGE_CLEARANCE_TRACE conflict=%s outcome=SELECTED separation=%.2f longitudinal=%.2f lateral=%.3f selectedIndex=%s crossing=%s nominal=%s nominalResidue=%s floor=%s floorResidue=%s outside=%s minimum=%s contact=%.3f offsets=%+.3f/%+.3f relation=%s configuration=%s/%s",
+        "D0146_PASSAGE_CLEARANCE_TRACE conflict=%s outcome=SELECTED separation=%.2f longitudinal=%.2f lateral=%.3f selectedIndex=%s crossing=%s nominal=%s nominalResidue=%s floor=%s floorResidue=%s outside=%s minimum=%s contact=%.3f offsets=%+.3f/%+.3f relation=%s configuration=%s/%s geometry=%s",
         tostring(plan.conflictIdentity or "n/a"),separation,tonumber(plan.longitudinalSeparationM) or -1,tonumber(arrangement.currentLateralSeparationM) or -1,
         tostring(plan.progressiveSearch and plan.progressiveSearch.selectedIndex or "n/a"),finiteNumber(crossing) and string.format("%.3f",crossing) or "n/a",finiteNumber(required) and string.format("%.3f",required) or "n/a",
         finiteNumber(residue) and string.format("%+.3f",residue) or "n/a",finiteNumber(floor) and string.format("%.3f",floor) or "n/a",finiteNumber(floorResidue) and string.format("%+.3f",floorResidue) or "n/a",finiteNumber(outside) and string.format("%.3f",outside) or "n/a",finiteNumber(minimum) and string.format("%.3f",minimum) or "n/a",
         tonumber(arrangement.physicalContactThresholdM) or -1,tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tostring(arrangement.relationSign or "n/a"),
-        tostring(c1.mode or "n/a"),tostring(c2.mode or "n/a"))
+        tostring(c1.mode or "n/a"),tostring(c2.mode or "n/a"),tostring(arrangement.passageGeometrySource or arrangement.directionalPassageEnvelopeBasis or "n/a"))
 end
 
 local function followerMatchesCooperative(follower,record)

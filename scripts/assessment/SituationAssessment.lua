@@ -206,7 +206,7 @@ local function normalizePhysicalSpace(values,map)
     for _,item in OuttaMyWay.ValueRecord.ipairs(values or {}) do
         result[#result+1]={
             assemblyId=resolveAssembly(map,item),assemblyReferenceKey=item.assemblyReferenceKey,episodeKey=item.episodeKey,
-            configurationProfileId=item.configurationProfileId,configurationEvidence=copyValue(item.configurationEvidence or {}),configurationAlternatives=copyValue(item.configurationAlternatives or {}),directionalPassageEnvelope=copyValue(item.directionalPassageEnvelope),primitives=item.primitives or {},summary=item.summary,
+            configurationProfileId=item.configurationProfileId,configurationEvidence=copyValue(item.configurationEvidence or {}),configurationAlternatives=copyValue(item.configurationAlternatives or {}),directionalPassageEnvelope=copyValue(item.directionalPassageEnvelope),transitPassageEnvelope=copyValue(item.transitPassageEnvelope),transitPassageReason=item.transitPassageReason,primitives=item.primitives or {},summary=item.summary,
             coverageComplete=item.coverageComplete==true,negativeClearanceAuthority=item.negativeClearanceAuthority==true,
             provenance=item.provenance
         }

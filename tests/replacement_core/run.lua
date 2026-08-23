@@ -2230,6 +2230,46 @@ test("representation cache composes generic multi-member directional Passage env
     getWorldTranslation=oldWorldTranslation; localDirectionToWorld=oldLocalDirectionToWorld
 end)
 
+test("representation cache exposes complete Transit Passage Geometry from loaded base sizes independent of current fold state",function()
+    local oldWorldTranslation=getWorldTranslation
+    local oldLocalDirectionToWorld=localDirectionToWorld
+    local positions={[1]={0,0,0},[10]={3,0,-5}}
+    getWorldTranslation=function(node) local p=positions[node] or {0,0,0}; return p[1],p[2],p[3] end
+    localDirectionToWorld=function(node,x,y,z) return x,y,z end
+    local function xml(values) return {getValue=function(_,key) return values[key] end} end
+    local attached={}
+    local implement={
+        rootNode=10,sizeWidth=99,sizeLength=99,components={{node=10}},spec_foldable={foldAnimTime=0},
+        xmlFile=xml({["vehicle.base.size#width"]=4,["vehicle.base.size#length"]=8,["vehicle.base.size#widthOffset"]=-0.5,["vehicle.base.size#lengthOffset"]=0.25}),
+        getName=function() return "Transit Implement" end,getAttachedImplements=function() return {} end
+    }
+    local worker={
+        rootNode=1,sizeWidth=99,sizeLength=99,components={{node=1}},spec_foldable={foldAnimTime=0},
+        xmlFile=xml({["vehicle.base.size#width"]=3,["vehicle.base.size#length"]=4,["vehicle.base.size#widthOffset"]=0.25,["vehicle.base.size#lengthOffset"]=0.5}),
+        getName=function() return "Transit Tractor" end,getAttachedImplements=function() return attached end,getAISteeringNode=function() return 1 end
+    }
+    attached={{object=implement}}
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={
+        getNumOfChildren=function() return 0 end,getChildAt=function() return nil end,getName=function(node) return node==1 and "tractorRoot" or "implementRoot" end,
+        localToWorld=function(node,x,y,z) local pos=positions[node] or {0,0,0}; return pos[1]+x,pos[2]+y,pos[3]+z end,
+        getShapeGeometryBoundingSphere=function(node) return 0,0,0,node==1 and 2 or 2.5,true end,
+        getShapeBoundingSphere=function(node) return 0,0,0,node==1 and 2 or 2.5,true end,
+        getShapeWorldBoundingSphere=function(node) local pos=positions[node]; return pos[1],pos[2],pos[3],node==1 and 2 or 2.5 end,
+        getIsCompoundChild=function() return false end
+    }})
+    cache:beginObservationCycle(); local evidence=cache:observe(worker,"vehicle-root:1","job-transit-base",0); cache:endObservationCycle()
+    local envelope=evidence.transitPassageEnvelope
+    equal(envelope~=nil,true); equal(evidence.transitPassageReason,nil)
+    equal(envelope.authority,"GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")
+    equal(envelope.memberCount,2); equal(envelope.directionalRectangleMemberCount,2); equal(envelope.representedDiscFallbackMemberCount,0)
+    equal(envelope.memberBaseSizeComplete,true); equal(envelope.coverageComplete,false); equal(envelope.negativeClearanceAuthority,false)
+    equal(math.abs(envelope.minRightM+1.25)<0.001,true); equal(math.abs(envelope.maxRightM-4.5)<0.001,true)
+    equal(math.abs(envelope.minForwardM+8.75)<0.001,true); equal(math.abs(envelope.maxForwardM-2.5)<0.001,true)
+    -- Conflicting runtime size fields deliberately remain 99 m: loaded XML base size + authored offsets must win.
+    equal(envelope.widthM<10,true); equal(string.find(envelope.metadataSources,"LOADED_XML",1,true)~=nil,true)
+    getWorldTranslation=oldWorldTranslation; localDirectionToWorld=oldLocalDirectionToWorld
+end)
+
 test("representation cache keeps generic directional assembly envelope conservative when one member lacks size metadata",function()
     local oldWorldTranslation=getWorldTranslation
     local oldLocalDirectionToWorld=localDirectionToWorld
@@ -4087,6 +4127,27 @@ test("D0146 Step2 mechanical preflight is vehicle-name independent and remains C
     equal(fitness[1].evidence.vehicleNameAdmissionGate,false)
 end)
 
+
+test("D0173 Cooperative Passage plans against Transit base geometry while retaining canonical configuration control semantics",function()
+    local picture,snapshot=d0146Step2Fixture()
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    local transit={
+        minRightM=-1,maxRightM=1,minForwardM=-4,maxForwardM=4,widthM=2,lengthM=8,halfWidthM=1,halfLengthM=4,widthOffsetM=0,lengthOffsetM=0,
+        authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY",configurationBasis="TRANSIT_POLICY_STATIC_BASE_SIZE",geometryPurpose="COOPERATIVE_PASSAGE_TRANSIT",memberBaseSizeComplete=true,coverageComplete=false,negativeClearanceAuthority=false
+    }
+    values.physicalSpaceEvidence[1].transitPassageEnvelope=transit
+    values.physicalSpaceEvidence[2].transitPassageEnvelope=transit
+    local adapted=OuttaMyWay.OperationalPicture.new(values)
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
+    equal(reason,nil); equal(plan.status,"SUPPORTED")
+    equal(plan.passageArrangement.passageGeometrySource,"TRANSIT_BASE")
+    equal(plan.passageArrangement.directionalPassageEnvelopeBasis,"GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")
+    equal(plan.pairSpecificPassageClearance.planningGeometrySource,"TRANSIT_BASE")
+    equal(math.abs(plan.passageArrangement.physicalContactThresholdM-2)<0.001,true)
+    equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-3)<0.001,true)
+    equal(plan.passageGuide.pairSweepSupport.supportBasis,"TRANSLATED_GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")
+    for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.passageConfiguration.participants) do equal(entry.mode,"RETAIN_CURRENT") end
+end)
 
 test("D0146 Step2 removes False Compaction Demand: width alone cannot authorise configuration reduction",function()
     local picture,snapshot=d0146Step2Fixture()

@@ -1,3 +1,23 @@
+## D-0174 — Transit Geometry Completeness requires Physical Assembly Completeness (v0.1.6.0 candidate)
+
+**Observation:** v0.1.5.3 Native Base Transit Geometry passed TS010S, TS015 and TS016. TS009 used `geometry=TRANSIT_BASE` but physically contacted before Passage resumed. The same run reported the MF 7S.210 assembly as `assemblyMembers=2`, `coverageComplete=false`, `underApproximationRisk=true` although the fixture physically contains tractor + front mower + rear mower.
+
+**Decision:** retain Native Base Transit Geometry as the selected purpose-specific Passage representation hypothesis, but do not treat completeness over the discovered member set as sufficient negative-clearance authority. A complete Transit Passage envelope requires evidence that the Physical Assembly membership itself is complete. Until that boundary is established, complex assemblies with unresolved membership/coverage must not be trusted merely because every discovered member has `base.size`.
+
+**Separation of concerns:** do not change Passage Entry distance, add a new margin literal, revive post-compaction replanning, or repair `Prototype22ConfigurationAuthority` in the same tranche. The TS009 `probe-requires-fully-deployed-start` result is separate configuration-authority evidence.
+
+**Next validation:** investigate TS009 assembly discovery/membership first; establish a generic completeness contract; rerun TS009 before removing legacy configuration-selection machinery or generalising Transit-base negative-clearance authority.
+
+---
+
+## D-0173 — Native Base Transit Geometry owns Cooperative Passage planning basis (v0.1.5.3 TEST)
+
+**Observation:** the configuration-profile shadows in v0.1.5.1/v0.1.5.2 repeatedly rediscovered fold-state qualification problems while the actual requirement was narrower: Passage needs the assembly's Transit footprint once. The TS010 vehicle definitions show `vehicle.base.size` dimensions at transport scale, distinct from productive working widths. Earlier rejection of base-size rectangles addressed arbitrary working/swept occupancy, especially 36 m sprayers, not the fixed Transit-planning question.
+
+**Decision:** under the policy that Cooperative Passage is planned in Transit, Representation publishes Native Base Transit Geometry from every assembly member's GIANTS-authored `base.size` width/length/offsets. Member dimensions are cached once; current runtime member transforms preserve assembly placement/articulation. The planner prefers this complete Transit envelope and falls back to the canonical configuration-conditioned path when any member is unresolved. DISC is retained for conservative occupancy/sweep roles and is not treated as equivalent directional Transit width.
+
+**Incremental boundary:** v0.1.5.3 does not yet delete `compactParticipantGeometry`, `participantSelection`, `configurationConditionedPair` or configuration-alternative propagation. They remain temporarily for validated Control configuration semantics and fallback. Removal requires field validation of the Transit geometry path first. No post-compaction replan is introduced.
+
 ## D-0171 — Canonical checkpoint after minimal Transit Passage regression closure (v0.1.5.0 candidate)
 
 **Observation:** after resetting the over-complex v0.1.4.1-v0.1.4.3 implementation branch to v0.1.4.0 behaviour, the smaller Transit experiment converged: always attempt Transit at the existing configuration point; keep Candidate-required compaction strict; keep opportunistic retained-current Transit non-blocking; treat 1.00 m Passage Clearance as nominal policy with a 0.95 m floor. v0.1.4.8 then completed TS009, TS010S, random-start TS010, TS015 and TS016.

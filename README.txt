@@ -1,3 +1,29 @@
+FS25_OuttaMyWay v0.1.6.0 CANONICAL CANDIDATE — NATIVE BASE TRANSIT GEOMETRY CHECKPOINT
+
+Authoritative baseline until owner declaration: v0.1.5.0
+SHA-256: 4ac4438a0ab89dc903d5f4d0fde799a141b666d6d49ccbb916aba98411f5148f
+Files: 317
+
+Candidate traffic behaviour is v0.1.5.3 unchanged. Cooperative Passage prefers a directional Transit envelope assembled from each discovered Physical Assembly member's GIANTS `vehicle.base.size` width/length/offsets and runtime transform. DISC/current physical representation remains separate conservative occupancy/sweep evidence.
+
+Field evidence: TS010S PASS; TS015 PASS; TS016 PASS; TS009 FAIL with small physical contact before Passage resumed. TS009 used TRANSIT_BASE but the MF 7S.210 assembly logged only two discovered members, `coverageComplete=false` and `underApproximationRisk=true` despite the physical tractor + front mower + rear mower combination.
+
+Primary carry-forward discovery: TRANSIT GEOMETRY COMPLETENESS REQUIRES PHYSICAL ASSEMBLY COMPLETENESS. Complete base-size metadata for all discovered members is not sufficient if assembly discovery itself is incomplete. Investigate TS009 membership first; do not add Entry margin or change Passage timing yet.
+
+Separate inherited observation: optional mower Transit was ignored because the configuration probe required a fully deployed start. Do not combine that configuration-authority debt with assembly membership in the next experiment.
+
+Withdrawn/non-ancestry: v0.1.5.1/v0.1.5.2 Native Deployment Pair shadows; v0.1.4.1-v0.1.4.3 post-compaction replanning; v0.1.4.5 exhaustive Candidate backfill.
+
+This package is a canonical candidate only until the owner explicitly declares its exact fingerprint canonical.
+
+---
+
+FS25_OuttaMyWay v0.1.5.3 TEST — NATIVE BASE TRANSIT PASSAGE GEOMETRY
+
+Owner-declared canonical baseline: v0.1.5.0 SHA-256 4ac4438a0ab89dc903d5f4d0fde799a141b666d6d49ccbb916aba98411f5148f, 317 files.
+
+Cooperative Passage now prefers a complete directional Transit envelope assembled from each member's GIANTS `vehicle.base.size` width/length/offsets and current assembly transforms. This geometry is used only for Transit Passage planning; current DISC/physical evidence remains conservative occupancy support. Missing member base-size evidence falls back to the canonical configuration-conditioned planner. Existing configuration selection remains temporarily only to preserve validated Control semantics.
+
 FS25_OuttaMyWay v0.1.5.0 CANONICAL CANDIDATE — MINIMAL TRANSIT PASSAGE CHECKPOINT
 
 Authoritative baseline: owner-declared canonical v0.1.4.0

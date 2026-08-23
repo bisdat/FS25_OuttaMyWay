@@ -1,3 +1,31 @@
+# Current status — v0.1.6.0 Native Base Transit Geometry CANONICAL CANDIDATE
+
+**Authoritative baseline:** owner-declared canonical v0.1.5.0 (`4ac4438a0ab89dc903d5f4d0fde799a141b666d6d49ccbb916aba98411f5148f`; 317 files) until explicit owner declaration of this exact candidate fingerprint.
+
+**Candidate implementation:** v0.1.5.3 behaviour, with no additional traffic algorithm. Cooperative Passage prefers Representation-owned Native Base Transit Geometry built from discovered member `vehicle.base.size` rectangles. DISC/current physical evidence remains separate conservative occupancy/sweep support; legacy configuration selection remains available for Control/fallback.
+
+**Field result:** TS010S PASS, TS015 PASS, TS016 PASS. TS009 FAIL with a small physical contact before Passage resumed. TS009 used `geometry=TRANSIT_BASE` but logged only `assemblyMembers=2` for the physical tractor + front mower + rear mower combination, with `coverageComplete=false` and `underApproximationRisk=true`.
+
+**Current architectural finding:** **Transit Geometry Completeness requires Physical Assembly Completeness.** Complete base-size evidence for every member OuttaMyWay happened to discover is insufficient negative-clearance authority if assembly discovery itself may be incomplete. This is the first problem for the next tranche.
+
+**Do not change yet:** do not add Entry-distance margin, revive post-compaction replanning, resurrect Native Deployment Pair inference, or remove legacy configuration-selection code. TS009's inherited optional compaction probe (`probe-requires-fully-deployed-start`) is separate evidence and should not be repaired in the same experiment as assembly membership.
+
+**Next-chat start:** inspect TS009 Physical Assembly membership/discovery against the actual tractor/front/rear attachment structure; establish the missing-member/ownership mechanism without guessing which member is absent; then design the smallest completeness gate and re-run TS009 before broader regression.
+
+---
+
+# Current status — v0.1.5.3 Native Base Transit Passage Geometry TEST
+
+**Baseline:** owner-declared canonical v0.1.5.0 (`4ac4438a0ab89dc903d5f4d0fde799a141b666d6d49ccbb916aba98411f5148f`; 317 files).
+
+**Active hypothesis:** because Cooperative Passage policy always requests Transit, Passage geometry should come from one Representation-owned Transit footprint rather than live configuration optimisation. v0.1.5.3 builds that footprint from complete member GIANTS `vehicle.base.size` rectangles using authored offsets and runtime member transforms.
+
+**Safety boundary:** Transit base geometry is purpose-specific, directional Passage geometry, not collision closure. Current DISC/physical evidence remains available for conservative occupancy and third-party checks. Incomplete Transit base geometry falls back to v0.1.5.0 planning. Legacy configuration selection is retained in this test only to preserve `COMPACT_REQUIRED`/`RETAIN_CURRENT` Control behaviour.
+
+**Validation order:** TS010S, TS009, TS015, TS016, then random TS010 if useful. Confirm `geometry=TRANSIT_BASE`, Passage shape/timing, no contact, and no regression in required/optional compaction behaviour.
+
+---
+
 # Current status — v0.1.5.0 Minimal Transit Passage CANONICAL CANDIDATE
 
 **Authoritative baseline:** owner-declared canonical v0.1.4.0 (`681573c2edd6256b092ab00d5955af72bbc5f231903ef81b3fc6d625929f437e`; Git `77695913f0af72960194f8f9ad13397d59e2dadb`; 317 files).

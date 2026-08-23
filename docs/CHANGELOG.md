@@ -1,3 +1,39 @@
+# v0.1.6.0 CANONICAL CANDIDATE — Native Base Transit Geometry checkpoint
+
+**Authority:** owner-declared canonical v0.1.5.0 (`4ac4438a0ab89dc903d5f4d0fde799a141b666d6d49ccbb916aba98411f5148f`; 317 files) remains the exact canonical baseline until the owner explicitly declares this candidate canonical. This candidate consolidates the v0.1.5.3 implementation with **no further traffic-behaviour change after v0.1.5.3**. The withdrawn v0.1.5.1/v0.1.5.2 configuration-profile shadows are retained as negative engineering evidence only and are not implementation ancestry.
+
+**Validated direction:** Cooperative Passage policy is Transit. Representation therefore provides a purpose-specific **Native Base Transit Geometry** from each discovered Physical Assembly member's GIANTS-authored `vehicle.base.size` width/length/offsets and runtime member transform. When the discovered member set is internally complete for base-size evidence, Passage uses that directional Transit envelope; DISC/current physical representation remains separate conservative occupancy/sweep evidence. Legacy configuration-selection machinery remains temporarily for Control semantics and fallback.
+
+**Field evidence:** v0.1.5.3 passed controlled TS010S, TS015 and TS016 with `geometry=TRANSIT_BASE`. TS009 failed: the user observed a small physical contact as the mower combination folded/settled before Passage resumed. The log confirms `geometry=TRANSIT_BASE`, Entry at about 13.60 m against a 13.66 m boundary, and later `CURRENT_PHYSICAL_INTERACTION_ALREADY_BEGUN`. It also reports `assemblyMembers=2`, `coverageComplete=false` and `underApproximationRisk=true` for the MF 7S.210 assembly even though the fixture physically comprises tractor + front mower + rear mower.
+
+**Discovery — Transit Geometry Completeness:** completeness of `base.size` evidence over the **discovered member set** is not equivalent to completeness of the **Physical Assembly**. v0.1.5.3 can therefore authorise an undersized Transit envelope when assembly discovery omitted a physical member. Native Base Transit Geometry remains the selected hypothesis, but trustworthy negative-clearance authority for complex assemblies now requires a Physical Assembly Completeness gate or equivalent evidence.
+
+**Separate configuration observation:** TS009 also logged `TRANSIT_COMPACTION_IGNORED ... reason=probe-requires-fully-deployed-start` for the mower's optional `RETAIN_CURRENT` Transit attempt. Do not conflate that inherited `Prototype22ConfigurationAuthority` limitation with the Transit-geometry completeness defect; investigate separately after membership is understood.
+
+**Withdrawn diagnosis:** do not yet change Passage Entry or add a longitudinal-distance literal on the basis of TS009. The earlier `Pre-Transit Entry Mismatch` interpretation was superseded by stronger assembly-membership evidence. Zero-Development Entry Compression remains a recorded observation, not the established root cause of this contact.
+
+**Next engineering objective:** start with TS009 Physical Assembly discovery. Establish why a tractor + front mower + rear mower is represented as two members and define what evidence is sufficient to grant complete Transit-geometry authority. Re-run TS009 first. Only after that should configuration-selection removal, optional compaction-authority cleanup, or further Passage timing changes be considered.
+
+**Release identity:** BUILD resets to `0`. v0.1.6.0 is a canonical candidate only until the owner explicitly declares the exact produced fingerprint canonical.
+
+---
+
+# v0.1.5.3 TEST — Native Base Transit Passage Geometry
+
+**Authority:** owner-declared canonical v0.1.5.0 (`4ac4438a0ab89dc903d5f4d0fde799a141b666d6d49ccbb916aba98411f5148f`; 317 files) is the exact implementation baseline. The withdrawn v0.1.5.1/v0.1.5.2 Transit-profile shadows are not implementation ancestry.
+
+**Problem:** Cooperative Passage policy now always attempts Transit, yet Local Passage planning still searches observed configuration alternatives to choose geometric width/length. That repeats work and lets configuration/fold semantics influence a question whose policy answer is already fixed: Passage is planned in Transit.
+
+**D-0173 hypothesis:** Representation owns **Native Base Transit Geometry**. Each Physical Assembly member contributes the GIANTS-authored `vehicle.base.size` width, length and offsets. Those static member dimensions are cached at assembly bootstrap and placed through current runtime member transforms to form one directional complete-assembly Transit Passage envelope. Loaded GIANTS XML is preferred over generic runtime size fields so authored offsets are preserved. No DISC fallback is allowed inside this primary Transit envelope: if any member lacks usable base size or transform evidence, the planner falls back to the canonical v0.1.5.0 configuration-conditioned path.
+
+**Passage change under test:** when both participants expose complete Native Base Transit Geometry, Passage lateral clearance, Crossing Window longitudinal extents and pair sweep use that fixed Transit geometry. Existing configuration-selection code remains temporarily active only to preserve validated `COMPACT_REQUIRED` versus `RETAIN_CURRENT` Control semantics and third-party conservative DISC checks; it is not yet removed in this build.
+
+**Representation boundary:** `<base><size>` is not promoted to universal collision closure. DISC/current physical primitives remain valid conservative/static/fail-safe evidence and continue to protect current/third-party occupancy. Transit base geometry has no negative-clearance authority outside the bounded Passage use.
+
+**Field order:** TS010S → TS009 → TS015 → TS016; random TS010 if the first four are sound. `D0146_PASSAGE_CLEARANCE_TRACE` now identifies `geometry=TRANSIT_BASE` or legacy fallback.
+
+---
+
 # v0.1.5.0 CANONICAL CANDIDATE — Minimal Transit Passage checkpoint
 
 **Canonical baseline:** v0.1.4.0, SHA-256 `681573c2edd6256b092ab00d5955af72bbc5f231903ef81b3fc6d625929f437e`, Git `77695913f0af72960194f8f9ad13397d59e2dadb`, 317 files.

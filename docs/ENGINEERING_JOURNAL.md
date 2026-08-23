@@ -1,3 +1,21 @@
+# v0.1.6.0 checkpoint — Native Base Transit Geometry and Assembly Completeness
+
+The v0.1.5.3 field tranche produced three positive regressions (TS010S, TS015, TS016) and one useful failure (TS009). The positive results increase confidence that GIANTS-authored `base.size` is a suitable static directional basis for Transit Passage planning when the complete Physical Assembly is represented. TS009 prevents promotion of that confidence into unrestricted negative-clearance authority.
+
+TS009 used `geometry=TRANSIT_BASE` and physically contacted before Passage resumed. Runtime simultaneously reported the MF 7S.210 Physical Assembly as only two members with incomplete/under-approximate coverage, although the fixture contains tractor, front mower and rear mower. The key discovery is therefore not an arbitrary Entry-margin deficiency but **Transit Geometry Completeness**: a union can be complete over OuttaMyWay's discovered members while still being incomplete over Reality's assembly.
+
+An earlier interpretation, Pre-Transit Entry Mismatch, is withdrawn as the primary explanation because the assembly-membership evidence is stronger and upstream. Zero-Development Entry Compression remains an observation but is not authorised as the cause of TS009 contact. The inherited optional Transit probe also refused the mower request because it did not see a fully deployed start; that is retained as separate configuration-authority debt.
+
+No further traffic change is made in candidate preparation. The next investigation should stay at the Physical Assembly/Representation boundary and determine the generic cause of the two-member observation before altering Passage timing or Control.
+
+---
+
+## 2026-08-23 — D-0173 Native Base Transit Geometry
+
+The v0.1.5.1/v0.1.5.2 shadow experiments were stopped after showing that Transit-profile promotion was being contaminated by member fold bookkeeping. Reframing the problem exposed the real requirement: fixed Transit geometry for Passage planning. Review of TS010 XML/I3D definitions and canonical Representation code showed GIANTS `base.size` values are already available and are transport-scale for the tested tractor/mower/spreader assemblies. The earlier reason for preferring DISC concerned complete working/manoeuvre occupancy, especially large deployed sprayers; it does not require DISC to own Transit width.
+
+v0.1.5.3 therefore tests a purpose-specific Native Base Transit Geometry: cache member base dimensions once, transform them in the current assembly frame, form a complete directional union, and let Passage prefer it. Missing member evidence falls back rather than mixing DISC into the Transit envelope. Legacy configuration selection remains only as a temporary Control/fallback bridge.
+
 ## 2026-08-23 — Minimal Transit Passage tranche converges; checkpoint selected
 
 The v0.1.4.x Passage tranche initially overreached. v0.1.4.1-v0.1.4.3 coupled the simple request to always compact with fresh post-compaction replanning, changing Entry and Passage length. A/B field comparison disproved that direction, so implementation reset to v0.1.4.0 behaviour. v0.1.4.4 then isolated the intended experiment: keep the existing Passage and always attempt Transit at the existing configuration point.

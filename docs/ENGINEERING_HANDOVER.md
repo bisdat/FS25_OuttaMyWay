@@ -1,3 +1,29 @@
+# Engineering handover — v0.1.6.0 Native Base Transit Geometry checkpoint
+
+Canonical authority remains owner-declared v0.1.5.0 until the owner declares the exact v0.1.6.0 candidate fingerprint canonical. The candidate itself contains v0.1.5.3 traffic behaviour with documentation/identity only added after field testing.
+
+**What the tranche established:** Passage only needs one Transit footprint. The v0.1.5.1/v0.1.5.2 configuration-history shadows are withdrawn. v0.1.5.3 instead derives a purpose-specific directional Transit envelope from GIANTS `vehicle.base.size` rectangles for all discovered assembly members. This preserves the earlier role of DISC/current physical primitives for conservative occupancy and sweep rather than treating DISC as precise Transit width.
+
+**Field evidence:** TS010S, TS015 and TS016 passed on `TRANSIT_BASE`. TS009 did not: small physical contact occurred before Passage resumed. The TS009 log is more important than the visual diagnosis: the MF 7S.210 assembly reports `assemblyMembers=2`, `coverageComplete=false`, `underApproximationRisk=true` despite the fixture physically containing tractor + front mower + rear mower. Passage nevertheless regarded the base-size union as complete over the discovered set.
+
+**Named discovery — Transit Geometry Completeness:** internal completeness of geometry for discovered members is not Physical Assembly Completeness. Do not grant complex-assembly negative-clearance authority until the member set itself has positive completeness evidence. This is now the primary next problem.
+
+**Separate evidence:** the same TS009 run logged `TRANSIT_COMPACTION_IGNORED ... probe-requires-fully-deployed-start`. Keep this inherited configuration-authority limitation separate. Do not repair membership, compaction authority and Entry timing in one tranche.
+
+**Recommended next-chat sequence:** begin from the owner-declared canonical artifact/provenance; inspect assembly discovery for the TS009 tractor/front/rear mower topology; determine why only two members are represented; define a generic Physical Assembly Completeness contract; instrument or correct only that boundary; rerun TS009; then regress TS010S/TS015/TS016. If membership becomes trustworthy and Native Base Transit Geometry remains sound, only then remove obsolete live configuration-selection layers incrementally.
+
+**Explicit non-decisions:** no Entry-distance literal; no `Pre-Transit Entry Mismatch` fix; no post-compaction replan; no Native Deployment Pair resurrection; no DISC prohibition; no active fold calibration; no claim that `configuration:1` has GIANTS semantic identity.
+
+---
+
+# Engineering handover — v0.1.5.3 Native Base Transit Geometry TEST
+
+Start only from owner-declared canonical v0.1.5.0. v0.1.5.1/v0.1.5.2 were shadow experiments and are not ancestry.
+
+Primary discriminator: `D0146_PASSAGE_CLEARANCE_TRACE ... geometry=TRANSIT_BASE`. Run TS010S first, then TS009, TS015 and TS016. Check that Passage uses sensible compact-scale contact thresholds/offsets and that existing compaction Control semantics still behave exactly as before. A legacy geometry trace is acceptable only when Representation reports incomplete member base-size evidence; inspect that as a representation/assembly-coverage question rather than adding configuration heuristics.
+
+Do not delete the legacy configuration-selection functions in this test. If the Transit path is field-valid, the next increment can remove them one layer at a time. Do not add post-compaction replanning or resurrect Native Deployment Pair promotion.
+
 # Engineering handover — v0.1.5.0 Minimal Transit Passage checkpoint
 
 Start from the exact owner-declared canonical package. Until explicit owner declaration of this candidate, v0.1.4.0 remains canonical.
