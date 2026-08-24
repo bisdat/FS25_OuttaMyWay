@@ -1,3 +1,25 @@
+# Current status — v0.1.10.0 CANONICAL CANDIDATE — validated D-0184 Closure C
+
+**Authoritative baseline:** owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; Git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files) remains authoritative pending owner acceptance of the exact candidate fingerprint.
+
+**Validated state:** Closure C removed dependency-proven runtime archaeology without changing supported Passage behaviour. Owner field validation of v0.1.9.1 ran TS009, TS010S and TS015: all PASS. TS015 was allowed to continue through AI job completion / D-0147 Terminal Egress and passed; when the owner tabbed into Condor during Terminal Egress, runtime recorded `PLAYER_CLAIM` and settled Terminal Egress as `SUPERSEDED_BY_NEW_INTENT`. The combined supplied log contains six D-0146 second whistles and six `COOPERATIVE_PASSAGE_SETTLED terminal=SUCCEEDED` outcomes across those sessions, including an additional successful TS015 Passage after reload.
+
+**Known findings:** Two separate non-blocking findings are carried forward without repair: **Post-Job Regulation Contamination** — D-0147 Infield Retreat produced repeated GIANTS `AIVehicleUtil.driveToPoint` divide-by-zero errors through the live `Prototype22DriveAuthority` REGULATE interceptor; no D-0123 apply/release event was present, so `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` is not implicated. **Termination Evidence Diagnostic Ambiguity** — a legitimate player claim can emit concurrent `PLAYER_TAKEOVER` and `SOURCE_INTENT_TERMINATION`, currently logged as conflicting authoritative termination evidence.
+
+**Next boundary:** canonicalisation review only. After canonicalisation, investigate Post-Job Regulation Contamination before resuming the surviving Literal Provenance Audit. No repair for either carried finding belongs in this candidate.
+
+---
+
+# Current status — v0.1.9.1 TEST — D-0184 Legacy Authority Closure C
+
+**Authoritative baseline:** owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; Git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files).
+
+Closure C removes runtime archaeology after validated Closure A/B: no in-tree `scripts/archive`, no retired D-0143/TS015 relocation or transition-test bridges, no dead generic Cooperative Passage restore branch, and no stale D-0143 lifecycle provenance. `Prototype22CapabilityGate` is narrowed to current bounded mechanism donation.
+
+`D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` is deliberately retained and renamed: HOLD previously prevented GIANTS from starting into the Passage/native-handover phase.
+
+**Validation state:** bench suites green before final release pass; four-scenario field regression required. No Literal Audit magnitude is tuned here. D-0147/TS010 configuration semantics remain deliberately untouched.
+
 # Current status — v0.1.9.0 CANONICAL CANDIDATE — validated D-0183 Closure B
 
 Owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files) remains authoritative pending owner acceptance of the exact candidate fingerprint.

@@ -1,3 +1,7 @@
+# D-0184 archive/authority closure amendment
+
+The former in-tree v4.6.78 script archive is no longer part of the active repository. References below to preserving donor code under `scripts/archive/v4_6_78/` describe the historical v4.7.0 bootstrap state, not a current packaging requirement. Git/canonical artifacts now preserve that evidence. Current code must consume only mechanisms with a named live owner.
+
 # v4.7.99 D-0146 implementation-contract addendum
 
 D-0146 is current architecture but **not permission to skip directly to a generic passage planner**. Implementation order protects abstraction levels:
@@ -196,7 +200,7 @@ scripts/
     └── ArchitectureTrace.lua
 ```
 
-These active implementation names are settled. The exact canonical v4.6.78 script tree is preserved under `scripts/archive/v4_6_78/` and is non-executable. Active code must never source or call the archive.
+These active implementation names are settled. The historical v4.6.78 donor tree is preserved through Git/canonical artifacts; D-0184 removes the former in-tree `scripts/archive` copy.
 
 ## 5. Authoritative data contracts
 
@@ -722,7 +726,7 @@ The owner accepted a new v4.7.x implementation line. v4.7.0 contains only:
 
 The candidate is acceptable only when:
 
-1. the v4.6.78 active script tree is preserved byte-exactly under `scripts/archive/v4_6_78/`;
+1. the historical v4.6.78 active script tree remains recoverable byte-exactly from Git/canonical artifacts; the former in-tree archive is removed by D-0184;
 2. the new kernel has no dependency on legacy Decision/control orchestration;
 3. all record validators pass;
 4. the three-state lifecycle legal table passes;

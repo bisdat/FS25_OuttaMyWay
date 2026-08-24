@@ -1,3 +1,31 @@
+FS25_OuttaMyWay v0.1.10.0 CANONICAL CANDIDATE — D-0184 LEGACY AUTHORITY CLOSURE C
+
+Authoritative baseline until owner declaration: v0.1.9.0
+SHA-256: 3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2
+Git: 4156e0d86363d524654d53f1e5cc5794484ffb12
+Files: 317
+
+Candidate behaviour is the exact live-validated v0.1.9.1 Closure C state; promotion introduces no further traffic/control algorithm. The live tree is reduced to 263 files after dependency-proven archaeology removal.
+
+Owner field validation of v0.1.9.1 ran TS009, TS010S and TS015: all PASS. TS015 was allowed to continue through AI job completion / D-0147 Terminal Egress and passed; when the owner tabbed into Condor during Terminal Egress, runtime recorded `PLAYER_CLAIM` and settled Terminal Egress as `SUPERSEDED_BY_NEW_INTENT`. The combined supplied log contains six D-0146 second whistles and six `COOPERATIVE_PASSAGE_SETTLED terminal=SUCCEEDED` outcomes across those sessions, including an additional successful TS015 Passage after reload.
+
+Known findings carried forward without repair: Post-Job Regulation Contamination during D-0147 direct retreat; Termination Evidence Diagnostic Ambiguity after legitimate Player Claim. `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` remains deliberate and is not implicated in the divide-by-zero evidence.
+
+This package is a canonical candidate only until the owner explicitly declares its exact RRS-produced fingerprint canonical.
+
+---
+
+FS25_OuttaMyWay v0.1.9.1 TEST — D-0184 LEGACY AUTHORITY CLOSURE C
+
+Authoritative baseline: v0.1.9.0 canonical
+SHA-256: 3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2
+Git: 4156e0d86363d524654d53f1e5cc5794484ffb12
+Files: 317
+
+Closure C removes 54 dependency-proven repository paths (50-file `scripts/archive/` tree plus four retired runtime/test-fixture modules), narrows the P22 capability donor to current mechanisms, and removes stale D-0143 provenance. The 1.0 km/h native handover creep remains deliberately live under `D0123_NATIVE_HANDOVER_CREEP_KMH`. No traffic behavior change is intended. Field regression required.
+
+---
+
 FS25_OuttaMyWay v0.1.9.0 CANONICAL CANDIDATE — D-0183 CACHED-ACTUATOR RESTORATION SYMMETRY
 
 Authoritative baseline until owner declaration: v0.1.8.0

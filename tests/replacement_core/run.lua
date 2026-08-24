@@ -45,7 +45,6 @@ load("scripts/assessment/EncounterRegistry.lua")
 load("scripts/assessment/ProgressionGeometry.lua")
 load("scripts/assessment/GuardedRecoveryThreatAssessment.lua")
 load("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
-load("scripts/assessment/CooperativePassageAssessment.lua")
 load("scripts/assessment/TrajectoryConflictAssessment.lua")
 load("scripts/assessment/PassageCapabilityAssessment.lua")
 load("scripts/assessment/TerminalOccupancyAssessment.lua")
@@ -100,10 +99,7 @@ load("scripts/diagnostics/FollowerMaturationCompressionProbe.lua")
 load("scripts/diagnostics/ProgressionPreservationProbe.lua")
 load("scripts/prototypes/Prototype22PermissionGate.lua")
 load("scripts/prototypes/Prototype22DriveAuthority.lua")
-load("scripts/prototypes/GuardedRecoveryRegulationTestBridge.lua")
-load("scripts/prototypes/CommittedTransitionRegulationTestBridge.lua")
 load("scripts/prototypes/Prototype22ConfigurationAuthority.lua")
-load("scripts/prototypes/Prototype22TS015Relocation.lua")
 load("scripts/prototypes/Prototype22CapabilityGate.lua")
 load("scripts/control/CooperativePassageControl.lua")
 load("scripts/control/TerminalEgressControl.lua")
@@ -889,79 +885,6 @@ test("autonomous head-on support remains passive without positive Productive Con
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"PASSIVE_LIVE_ZERO_CONTROL")
 end)
 
-local function d0143KnowledgeRecord(options)
-    options=options or {}
-    return {
-        status="SUPPORTED",reason="D0143_TS015_NEAR_COLLINEAR_COOPERATIVE_PASSAGE_SUPPORTED",authority="D0143_P23_EMPIRICALLY_BOUNDED_TS015",
-        operationId="OR-1",pairReferenceKey="vehicle-root:101|vehicle-root:201",encounterIdentity="EN-HEADON",
-        assemblyIds={"AS-00001","AS-00002"},condorAssemblyId="AS-00001",patriotAssemblyId="AS-00002",
-        condorReferenceKey="vehicle-root:101",patriotReferenceKey="vehicle-root:201",condorJobToken="job-A",patriotJobToken="job-B",
-        separationM=options.separationM or 60.0,initialLateralOffsetM=options.lateralOffsetM or 0.5,headingDot=options.headingDot or -1.0,
-        sharedAxisX=1,sharedAxisZ=0,sharedRightX=0,sharedRightZ=-1,
-        representationFitnessIds={"d0143-ts015-cooperative-passage:EN-HEADON:AS-00001","d0143-ts015-cooperative-passage:EN-HEADON:AS-00002"},
-        footprintEvidence={source="SITUATION_ASSESSMENT_PHYSICAL_SPACE_EVIDENCE",condorConfigurationProfileId="CFG-A",patriotConfigurationProfileId="CFG-B",noAdditionalGeometryCalculation=true},
-        scope={vehiclePair="Condor Endurance II|Patriot 4450",calibrationAuthority="P23_V4_7_92_TO_V4_7_94",generalVehicleAuthority=false,asymmetricAuthority=false},
-        provenance={source="CooperativePassageAssessment",layer="SITUATION_ASSESSMENT",decisionAuthority=false,controlAuthority=false}
-    }
-end
-
-local function d0143Picture(options)
-    -- Legacy D-0143 regression fixtures intentionally exercise the retained donor
-    -- path rather than the v4.7.101 D-0146 Step-2 production path.
-    OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED=false
-    options=options or {}
-    local record=options.record or d0143KnowledgeRecord(options)
-    return OuttaMyWay.OperationalPicture.new({
-        identity=options.identity or "OP-D0143",epoch=options.epoch or 220,observationSnapshotId="OS-HEADON",
-        situations={},encounters={{identity="EN-HEADON",operationId="OR-1",subjectAssemblyId="AS-00001",otherAssemblyId="AS-00002",relationship="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION",lifecycleState="ACTIVE",evidence={interactionReferenceKey="vehicle-root:101|vehicle-root:201",futureSpaceConverges=true,currentSpaceIntersects=false}}},
-        identities={assemblies={"AS-00001","AS-00002"},components={},jobEpisodes={active={"JE-A","JE-B"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
-        currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},
-        representationFitness={
-            {representationId="live-representation:vehicle-root:101",assemblyId="AS-00001",question="CURRENT_CONFLICT_SUPPORT",assessmentHorizon=0,state="STRUCTURALLY_INVALID",claimPermissions={},coverage={complete=false,conservative=false},uncertainty={{kind="METADATA_ENVELOPE_INCOMPLETE"}},validityDependencies={},provenance={source="fixture"}},
-            {representationId="live-representation:vehicle-root:201",assemblyId="AS-00002",question="CURRENT_CONFLICT_SUPPORT",assessmentHorizon=0,state="STRUCTURALLY_INVALID",claimPermissions={},coverage={complete=false,conservative=false},uncertainty={{kind="METADATA_ENVELOPE_INCOMPLETE"}},validityDependencies={},provenance={source="fixture"}},
-            {representationId="d0143-ts015-cooperative-passage:EN-HEADON:AS-00001",assemblyId="AS-00001",question="D0143_TS015_COOPERATIVE_PASSAGE_EMPIRICAL_ADMISSIBILITY",assessmentHorizon="CURRENT_SUPPORTED_TS015_ENCOUNTER_ONLY",state="FIT_FOR_LIMITED_HORIZON",claimPermissions={"D0143_TS015_COOPERATIVE_PASSAGE_EMPIRICAL_ADMISSIBILITY"},coverage={complete=false,conservative=false,underApproximationRisk=true},uncertainty={"GENERAL_NEGATIVE_CLEARANCE_NOT_CLAIMED"},validityDependencies={"BOOTSTRAP_CACHED_PLAN_VIEW_FOOTPRINT"},provenance={source="fixture"}},
-            {representationId="d0143-ts015-cooperative-passage:EN-HEADON:AS-00002",assemblyId="AS-00002",question="D0143_TS015_COOPERATIVE_PASSAGE_EMPIRICAL_ADMISSIBILITY",assessmentHorizon="CURRENT_SUPPORTED_TS015_ENCOUNTER_ONLY",state="FIT_FOR_LIMITED_HORIZON",claimPermissions={"D0143_TS015_COOPERATIVE_PASSAGE_EMPIRICAL_ADMISSIBILITY"},coverage={complete=false,conservative=false,underApproximationRisk=true},uncertainty={"GENERAL_NEGATIVE_CLEARANCE_NOT_CLAIMED"},validityDependencies={"BOOTSTRAP_CACHED_PLAN_VIEW_FOOTPRINT"},provenance={source="fixture"}}
-        },
-        motionEvidence={},physicalSpaceEvidence={},productiveContinuationKnowledge={},guardedRecoveryKnowledge={},followerBoundaryKnowledge=options.followerBoundaryKnowledge or {},cooperativePassageKnowledge={record},
-        provenance={source="d0143-test"},controlOutcomeEvidence={},candidateSupportEvidence={complete=false,supportBoundary={},candidateSpecifications={},provenance={}},commitmentContext=options.commitmentContext or {},diagnostics={}
-    })
-end
-
-local function d0143AssessmentContext(options)
-    options=options or {}
-    local lateral=options.lateralOffsetM or 0.5
-    local separation=options.separationM or 60.0
-    local headingDot=options.headingDot or -1.0
-    local hz=math.sqrt(math.max(0,1-headingDot*headingDot))
-    return {
-        currentSpace={
-            {assemblyId="AS-00001",occupancy={x=0,z=0}},{assemblyId="AS-00002",occupancy={x=separation,z=lateral}}
-        },
-        motionEvidence={
-            {assemblyId="AS-00001",assemblyReferenceKey="vehicle-root:101",name="Condor Endurance II",sourceJobToken="job-A",headingX=1,headingZ=0,localIntentClassification="SETTLED_CONTINUATION"},
-            {assemblyId="AS-00002",assemblyReferenceKey="vehicle-root:201",name="Patriot 4450",sourceJobToken="job-B",headingX=headingDot,headingZ=hz,localIntentClassification="SETTLED_CONTINUATION"}
-        },
-        productiveKnowledge={
-            {assemblyId="AS-00001",jobToken="job-A",productivePositive=true},{assemblyId="AS-00002",jobToken="job-B",productivePositive=true}
-        },
-        physicalSpaceEvidence=options.noFootprint and {} or {
-            {assemblyId="AS-00001",assemblyReferenceKey="vehicle-root:101",episodeKey="vehicle-root:101|job-A",configurationProfileId="CFG-A",primitives={{kind="DISC",positiveConflictSupport=true}},summary={physicalPrimitiveCount=14,hullPointCount=17},coverageComplete=false,negativeClearanceAuthority=false,provenance={source="AssemblyRepresentationCache"}},
-            {assemblyId="AS-00002",assemblyReferenceKey="vehicle-root:201",episodeKey="vehicle-root:201|job-B",configurationProfileId="CFG-B",primitives={{kind="DISC",positiveConflictSupport=true}},summary={physicalPrimitiveCount=12,hullPointCount=17},coverageComplete=false,negativeClearanceAuthority=false,provenance={source="AssemblyRepresentationCache"}}
-        },
-        situations={{identity="SI-HEADON",operationId="OR-1",memberAssemblyIds={"AS-00001","AS-00002"},futureSpaceRelationships={{interactionReferenceKey="vehicle-root:101|vehicle-root:201",subjectAssemblyId="AS-00001",otherAssemblyId="AS-00002",positiveIntersection=true}}}},
-        encounters={{identity="EN-HEADON",operationId="OR-1",lifecycleState="ACTIVE",evidence={interactionReferenceKey="vehicle-root:101|vehicle-root:201",currentSpaceIntersects=options.currentInteraction==true}}}
-    }
-end
-
-test("v4.7.57 refuge redispatch requires independent current head-on support",function()
-    equal(OuttaMyWay.Prototype22CapabilityGate.autonomousHeadOnDispatchDisposition({kind="TS015_RELOCATE"},nil,true),"BLOCK_ACTIVE_REFUGE_RESOLUTION")
-    equal(OuttaMyWay.Prototype22CapabilityGate.autonomousHeadOnDispatchDisposition(nil,{kind="TS015_RELOCATE",firstNativeAt=nil},true),"BLOCK_PRIOR_REFUGE_HANDOFF_UNRESOLVED")
-    equal(OuttaMyWay.Prototype22CapabilityGate.autonomousHeadOnDispatchDisposition(nil,{kind="TS015_RELOCATE",firstNativeAt=123},false),"BLOCK_NO_INDEPENDENT_HEAD_ON_SUPPORT")
-    equal(OuttaMyWay.Prototype22CapabilityGate.autonomousHeadOnDispatchDisposition(nil,{kind="TS015_RELOCATE",firstNativeAt=123},true),"ALLOW_SUPERSEDE_PRIOR_REFUGE_MONITOR_AFTER_INDEPENDENT_HEAD_ON_SUPPORT")
-    equal(OuttaMyWay.Prototype22CapabilityGate.autonomousHeadOnDispatchDisposition(nil,nil,false),"BLOCK_NO_INDEPENDENT_HEAD_ON_SUPPORT")
-    equal(OuttaMyWay.Prototype22CapabilityGate.autonomousHeadOnDispatchDisposition(nil,nil,true),"ALLOW")
-end)
-
 test("Follower Owns Closure rejects generic Leader reposition",function()
     local reposition=candidateSpec("leader-reposition","REPOSITION",1,"AS-00001")
     reposition.representationFitness={requirements={{representationId="REP-A",acceptedStates={"CURRENTLY_FIT"}}}}
@@ -1169,13 +1092,6 @@ test("v4.7.47 Native reacquisition settles recovery only and keeps traffic respo
     equal(#result.settledObligationIds,1); equal(#result.remainingObligations,1)
     equal(result.remainingObligations[1].requiredOutcome.kind,"DURABLE_SEPARATION_SUPPORTED")
     equal(#runtime.authorities:tokensForCommitment(admitted.commitment.identity),0)
-end)
-
-test("v4.7.47 recovery admission distinguishes refuge wait from Guarded Recovery start",function()
-    equal(OuttaMyWay.Prototype22TS015Relocation.recoveryAdmissionActionFromSignal({status="POSITIVE"}),"WAIT_AT_REFUGE")
-    equal(OuttaMyWay.Prototype22TS015Relocation.recoveryAdmissionActionFromSignal({status="NEGATIVE"}),"BEGIN_GUARDED_RECOVERY")
-    equal(OuttaMyWay.Prototype22TS015Relocation.recoveryAdmissionActionFromSignal({status="UNRESOLVED"}),"WAIT_FOR_EVIDENCE")
-    equal(OuttaMyWay.Prototype22TS015Relocation.recoveryAdmissionActionFromSignal({status="INVALIDATED"}),"FAIL_CONTEXT")
 end)
 
 test("SETTLING Commitment rejects maintain or revise strategy",function()
@@ -2509,121 +2425,6 @@ test("D-0123 shadow probe carries no actuation vocabulary", function()
 end)
 
 
-test("D-0123 Regulation test signal uses committed recovery plus current heading", function()
-    local base={
-        runNumber=1,geometryResolved=true,progressExpectedJobToken="JOB-P",progressEvidenceJobToken="JOB-P",
-        progressEvidenceClass="NON_TURN_LINE_ACTIVE",progressMovingDirection=1,
-        combinations={COMMITTED_RECOVERY_UNION__CURRENT_HEADING={resolved=true,positive=true,clearance=-2.5}}
-    }
-    local positive=OuttaMyWay.GuardedRecoveryRegulationTestBridge.evaluateSignal(base)
-    equal(positive.status,"POSITIVE")
-    equal(positive.reason,"REVEALED_NATIVE_CONTINUATION_INTERSECTS_VULNERABLE_SPACE")
-
-    base.progressEvidenceClass="TURN_SEGMENT"
-    equal(OuttaMyWay.GuardedRecoveryRegulationTestBridge.evaluateSignal(base).status,"POSITIVE")
-
-    base.combinations.COMMITTED_RECOVERY_UNION__CURRENT_HEADING.positive=false
-    base.combinations.COMMITTED_RECOVERY_UNION__CURRENT_HEADING.clearance=8.0
-    equal(OuttaMyWay.GuardedRecoveryRegulationTestBridge.evaluateSignal(base).status,"NEGATIVE")
-
-    base.progressEvidenceClass="NON_TURN_LINE_INACTIVE"
-    equal(OuttaMyWay.GuardedRecoveryRegulationTestBridge.evaluateSignal(base).status,"UNRESOLVED")
-
-    base.progressEvidenceClass="NON_TURN_LINE_ACTIVE"
-    base.progressMovingDirection=-1
-    equal(OuttaMyWay.GuardedRecoveryRegulationTestBridge.evaluateSignal(base).status,"UNRESOLVED")
-    base.progressMovingDirection=1
-    base.progressEvidenceJobToken="JOB-OTHER"
-    equal(OuttaMyWay.GuardedRecoveryRegulationTestBridge.evaluateSignal(base).status,"INVALIDATED")
-end)
-
-test("D-0123 Regulation test bridge maintains through uncertainty and releases only on positive clear or window end", function()
-    local vehicle={name="Patriot"}
-    local authority={states={}}
-    function authority:getState(v) return self.states[v] end
-    function authority:setRegulation(v,speed,ownerTag)
-        self.states[v]={mode="REGULATE",speedKmh=speed,ownerTag=ownerTag,driveCalls=0}
-        return true
-    end
-    function authority:clear(v) self.states[v]=nil end
-    local gate={driveAuthority=authority}
-    local probe={active=true}
-    function probe:getStatus() return {active=self.active} end
-    function probe:getLatestSample() return self.sample end
-    local function sample(positive,evidenceClass)
-        return {
-            runNumber=7,progressVehicle=vehicle,progressName="Patriot 4450",progressReferenceKey="vehicle-root:201",
-            progressExpectedJobToken="JOB-P",progressEvidenceJobToken="JOB-P",progressEvidenceClass=evidenceClass or "NON_TURN_LINE_ACTIVE",progressMovingDirection=1,
-            geometryResolved=true,combinations={COMMITTED_RECOVERY_UNION__CURRENT_HEADING={resolved=true,positive=positive,clearance=positive and -1 or 5}}
-        }
-    end
-    local bridge=OuttaMyWay.GuardedRecoveryRegulationTestBridge.new()
-    OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_ENABLED=true
-    OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_KMH=1.0
-
-    probe.sample=sample(true)
-    bridge:update(gate,probe,1000)
-    equal(bridge:getStatus().active,true)
-    equal(authority:getState(vehicle).mode,"REGULATE")
-    equal(authority:getState(vehicle).speedKmh,1.0)
-
-    -- Loss of positive continuing-intent evidence is uncertainty, not release.
-    probe.sample=sample(true,"NON_TURN_LINE_INACTIVE")
-    bridge:update(gate,probe,1100)
-    equal(bridge:getStatus().active,true)
-    equal(authority:getState(vehicle).mode,"REGULATE")
-
-    -- A positively supported clear current heading may release the cap.
-    probe.sample=sample(false,"NON_TURN_LINE_ACTIVE")
-    bridge:update(gate,probe,1200)
-    equal(bridge:getStatus().active,false)
-    equal(authority:getState(vehicle),nil)
-
-    -- Reapply on renewed convergence, then end on vulnerability-window expiry.
-    probe.sample=sample(true,"TURN_SEGMENT")
-    bridge:update(gate,probe,1300)
-    equal(bridge:getStatus().active,true)
-    probe.active=false
-    bridge:update(gate,probe,1400)
-    equal(bridge:getStatus().active,false)
-    equal(authority:getState(vehicle),nil)
-end)
-
-
-
-
-test("D-0130 Guarded-Recovery lease temporarily tightens retained maturation Regulation", function()
-    local oldAIVehicleUtil=AIVehicleUtil
-    AIVehicleUtil={driveToPoint=function(...) return true end}
-    local vehicle={name="Patriot"}
-    local authority=OuttaMyWay.Prototype22DriveAuthority.new()
-    equal(authority:setRegulationLease(vehicle,17.1,"MATURATION"),true)
-    local gate={driveAuthority=authority}
-    local probe={active=true}
-    function probe:getStatus() return {active=self.active} end
-    function probe:getLatestSample() return self.sample end
-    probe.sample={
-        runNumber=8,progressVehicle=vehicle,progressName="Patriot 4450",progressReferenceKey="vehicle-root:201",
-        progressExpectedJobToken="JOB-P",progressEvidenceJobToken="JOB-P",progressEvidenceClass="NON_TURN_LINE_ACTIVE",progressMovingDirection=1,
-        geometryResolved=true,combinations={COMMITTED_RECOVERY_UNION__CURRENT_HEADING={resolved=true,positive=true,clearance=-1}}
-    }
-    local bridge=OuttaMyWay.GuardedRecoveryRegulationTestBridge.new()
-    OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_ENABLED=true
-    OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_KMH=1.0
-    bridge:update(gate,probe,1000)
-    equal(authority:getState(vehicle).speedKmh,1.0)
-    equal(authority:hasRegulationLease(vehicle,"MATURATION"),true)
-    equal(authority:hasRegulationLease(vehicle,"D0123_GUARDED_RECOVERY_TEST"),true)
-    probe.sample.combinations.COMMITTED_RECOVERY_UNION__CURRENT_HEADING={resolved=true,positive=false,clearance=5}
-    bridge:update(gate,probe,1100)
-    equal(bridge:getStatus().active,false)
-    equal(authority:getState(vehicle).speedKmh,17.1)
-    equal(authority:hasRegulationLease(vehicle,"MATURATION"),true)
-    AIVehicleUtil=oldAIVehicleUtil
-end)
-
-
-
 test("D-0141 current Adjacent Following topology supports the v4.7.70 positive case without historical sweep authority", function()
     local leader={assemblyId="AS-C",x=0,z=0,dx=0,dz=1,boundaryDistanceM=144,workingWidthM=36,productivePositive=true,settledContinuation=true,progressSpeedKmh=25,nativeCommandValid=true,nativeMoveForwards=true,nativeMaxSpeedKmh=25}
     local follower={assemblyId="AS-P",x=0,z=-26,dx=0,dz=1,boundaryDistanceM=170,workingWidthM=30,productivePositive=true,settledContinuation=true,progressSpeedKmh=25,nativeCommandValid=true,nativeMoveForwards=true,nativeMaxSpeedKmh=25}
@@ -3081,83 +2882,12 @@ end)
 
 
 
-test("D-0133 retained Progress horizon survives the pre-handoff seam and preserves a fixed endpoint", function()
-    local bridge=OuttaMyWay.CommittedTransitionRegulationTestBridge.new()
-    local ok,reason=bridge:retainPositiveProgressHorizon({
-        progressName="Patriot",referenceKey="vehicle-root:P",jobToken="JOB-P",intentEpoch=7,
-        intentValid=true,intentClassification="SETTLED_CONTINUATION",productivePositive=true,movingDirection=1,
-        x=10,z=0,dx=1,dz=0,boundaryM=90,nowMs=1000,source="TEST_FIELD_BOUNDARY"
-    })
-    equal(ok,true); equal(reason,"RETAINED")
-    local retained=bridge.retainedProgressHorizons["vehicle-root:P"]
-    equal(retained~=nil,true)
-    equal(math.abs(retained.boundaryX-100)<0.000001,true)
-    equal(math.abs(retained.boundaryZ)<0.000001,true)
-
-    -- Advancing the worker shrinks the distance to the same retained endpoint;
-    -- it does not redefine a new moving baseline.
-    local current={jobToken="JOB-P",intentEpoch=7,intentValid=true,intentClassification="SETTLED_CONTINUATION",productivePositive=true,movingDirection=1,x=25,z=0}
-    local remaining,source=OuttaMyWay.CommittedTransitionRegulationTestBridge.remainingSealedBoundary(retained,current)
-    equal(math.abs(remaining-75)<0.000001,true)
-    equal(source,"SEALED_AT_COMMITTED_TRANSITION_ADMISSION")
+test("D-0184 retired fixture bridges remain absent while D-0123 native handover creep stays live",function()
+    equal(OuttaMyWay.Prototype22TS015Relocation,nil)
+    equal(OuttaMyWay.CommittedTransitionRegulationTestBridge,nil)
+    equal(OuttaMyWay.GuardedRecoveryRegulationTestBridge,nil)
+    equal(OuttaMyWay.D0123_NATIVE_HANDOVER_CREEP_KMH,1.0)
 end)
-
-test("D-0132 sealed Progress horizon bridges only the same positive Job and Local Intent epoch", function()
-    local sealed={jobToken="JOB-P",intentEpoch=7,boundaryX=100,boundaryZ=0,dx=1,dz=0}
-    local current={jobToken="JOB-P",intentEpoch=7,intentValid=true,intentClassification="SETTLED_CONTINUATION",productivePositive=true,movingDirection=1,x=10,z=0}
-    local remaining,source=OuttaMyWay.CommittedTransitionRegulationTestBridge.remainingSealedBoundary(sealed,current)
-    equal(math.abs(remaining-90)<0.000001,true)
-    equal(source,"SEALED_AT_COMMITTED_TRANSITION_ADMISSION")
-
-    local changed={} for k,v in pairs(current) do changed[k]=v end
-    changed.intentEpoch=8
-    local unavailable,reason=OuttaMyWay.CommittedTransitionRegulationTestBridge.remainingSealedBoundary(sealed,changed)
-    equal(unavailable,nil)
-    equal(reason,"SEALED_PROGRESS_INTENT_EPOCH_CHANGED")
-
-    local transitional={} for k,v in pairs(current) do transitional[k]=v end
-    transitional.intentValid=false; transitional.intentClassification="TURNING"
-    unavailable,reason=OuttaMyWay.CommittedTransitionRegulationTestBridge.remainingSealedBoundary(sealed,transitional)
-    equal(unavailable,nil)
-    equal(reason,"SEALED_PROGRESS_LOCAL_INTENT_NO_LONGER_SETTLED")
-end)
-
-test("D-0131 committed egress threat requires positive Productive bounded timing evidence", function()
-    local base={
-        progressExpectedJobToken="JOB-P",progressEvidenceJobToken="JOB-P",progressProductivePositive=true,progressMovingDirection=1,
-        progressEntryM=30,progressBoundaryM=100,progressSpeedMps=18.6/3.6,egressRemainingM=30,egressSpeedCeilingMps=15/3.6
-    }
-    local positive=OuttaMyWay.CommittedTransitionRegulationTestBridge.evaluateSignal(base)
-    equal(positive.status,"POSITIVE")
-    equal(positive.reason,"PROGRESS_ENTRY_NOT_LATER_THAN_IDEAL_EGRESS_COMPLETION_LOWER_BOUND")
-
-    local far={} for k,v in pairs(base) do far[k]=v end
-    far.progressEntryM=300
-    equal(OuttaMyWay.CommittedTransitionRegulationTestBridge.evaluateSignal(far).status,"UNRESOLVED")
-
-    local beyond={} for k,v in pairs(base) do beyond[k]=v end
-    beyond.progressBoundaryM=20
-    equal(OuttaMyWay.CommittedTransitionRegulationTestBridge.evaluateSignal(beyond).reason,"EGRESS_SWEEP_INTERSECTION_BEYOND_CURRENT_FIELD_BOUNDED_CONTINUATION")
-
-    local transitional={} for k,v in pairs(base) do transitional[k]=v end
-    transitional.progressProductivePositive=false
-    equal(OuttaMyWay.CommittedTransitionRegulationTestBridge.evaluateSignal(transitional).reason,"POSITIVE_PRODUCTIVE_CONTINUATION_UNAVAILABLE")
-end)
-
-test("D-0131 committed-transition timing remains passive shadow and cannot acquire a lease", function()
-    local bridge=OuttaMyWay.CommittedTransitionRegulationTestBridge.new()
-    equal(OuttaMyWay.COMMITTED_TRANSITION_REGULATION_TEST_ENABLED,false)
-    equal(bridge.driveAuthority,nil)
-    equal(bridge.active,nil)
-    local sample={
-        progressExpectedJobToken="JOB-P",progressEvidenceJobToken="JOB-P",progressProductivePositive=true,progressMovingDirection=1,
-        progressEntryM=20,progressBoundaryM=100,progressSpeedMps=18.6/3.6,egressRemainingM=30,egressSpeedCeilingMps=15/3.6
-    }
-    local signal=OuttaMyWay.CommittedTransitionRegulationTestBridge.evaluateSignal(sample)
-    equal(signal.status,"POSITIVE")
-    equal(bridge.active,nil)
-end)
-
 
 test("architecture alignment routes D-0123 through Situation Candidate Decision Commitment and central Control", function()
     local runtime=autonomousHeadOnRuntime()
@@ -3205,6 +2935,8 @@ test("architecture alignment routes D-0123 through Situation Candidate Decision 
     local dispatched=runtime.liveControlDispatcher:dispatch(positive,positiveEval)
     equal(dispatched.status,"ACCEPTED")
     equal(requests[#requests].target.operation,"APPLY")
+    equal(requests[#requests].target.maxSpeedKmh,OuttaMyWay.D0123_NATIVE_HANDOVER_CREEP_KMH)
+    equal(OuttaMyWay.D0123_NATIVE_HANDOVER_CREEP_KMH,1.0)
     equal(runtime.authorities:ownerOf(yieldAssemblyId),commitmentId)
     equal(runtime.authorities:ownerOf(progressAssemblyId),commitmentId)
     equal(#runtime.authorities:tokensForCommitment(commitmentId),2)

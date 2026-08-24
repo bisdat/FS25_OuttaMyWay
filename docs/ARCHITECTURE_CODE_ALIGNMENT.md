@@ -1,3 +1,21 @@
+## v0.1.10.0 CANONICAL CANDIDATE alignment — validated D-0184
+
+- `scripts/archive/` and dependency-proven D-0143/TS015 runtime fixtures remain absent from the live tree.
+- D-0146 remains the sole production Cooperative Passage path with D-0179 bootstrap capability and D-0183 cached-actuator restoration.
+- `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` remains production-owned and unchanged.
+- D-0147 implementation is unchanged; Post-Job Regulation Contamination is an explicit next investigation, not a candidate repair.
+- Candidate preparation is release/provenance only over field-validated v0.1.9.1 behaviour.
+
+## v0.1.9.1 TEST alignment — D-0184 Legacy Authority Closure C
+
+- `scripts/archive/`: deleted; Git/history owns legacy implementation evidence.
+- D-0143 CooperativePassageAssessment / TS015 relocation / committed-transition and guarded-recovery test bridges: deleted from the live repository.
+- `Prototype22CapabilityGate`: current bounded Permission/Drive/Configuration donor only; no Reposition/TS015 fixture branch.
+- `CooperativePassageControl`: D-0183 cached-actuator restoration only; dead generic restore branch removed.
+- `LiveTrafficCommitmentLifecycle`: live Cooperative Passage provenance is D-0146, not D-0143.
+- D-0123: `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` retains required non-zero native handover progression.
+- D-0147 generic configuration authority: intentionally untouched pending TS010 Terminal Completion.
+
 ## v0.1.9.0 CANONICAL CANDIDATE alignment — validated D-0183
 
 - **D-0179 bootstrap:** owns selected-runtime Transit actuator set and cached Transit geometry.

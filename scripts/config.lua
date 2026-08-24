@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.1.9.0 CANONICAL CANDIDATE — D-0183 Cached-Actuator Restoration Symmetry.
+-- FS25_OuttaMyWay v0.1.10.0 CANONICAL CANDIDATE — D-0184 Legacy Authority Closure C / Runtime Archaeology Removal.
 -- Situation/Decision/Commitment admission semantics remain inherited; Control magnitude is now elastic.
 -- D-0147 now implements the agreed optional Bounded Infield Retreat courtesy hypothesis while retaining the validated v4.7.120 mechanical actuator substrate.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.1.9.0"
+OuttaMyWay.VERSION = "0.1.10.0"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -203,7 +203,7 @@ OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.1.9.0 CANONICAL CANDIDATE — CACHED-ACTUATOR RESTORATION SYMMETRY"
+OuttaMyWay.BUILD_LABEL = "0.1.10.0 CANONICAL CANDIDATE — LEGACY AUTHORITY CLOSURE C"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720
@@ -214,11 +214,10 @@ OuttaMyWay.FOLLOWER_PACING_HUD_Y = 0.697
 OuttaMyWay.FOLLOWER_PACING_HUD_TEXT_SIZE = 0.013
 OuttaMyWay.FOLLOWER_PACING_HUD_MAX_ROWS = 3
 
--- v4.7.49 carries forward the live-PASS D-0123 active-recovery Regulation fallback unchanged. Test-fixture authority only.
--- TEMPORARY IMPLEMENTATION VALUE: the successful v4.7.48 test validated sequencing/integration, not 1 km/h as production speed policy.
-OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_ENABLED = true
-OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_KMH = 1.0
-OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_HEARTBEAT_MS = 500
+-- D-0123 Native Handover Creep. 1 km/h is retained deliberately: earlier HOLD
+-- prevented GIANTS from restarting into the Passage/handover, while bounded non-zero
+-- Regulation preserved native route/steering authority and allowed reacquisition.
+OuttaMyWay.D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0
 
 -- D-0147 automatic completed-worker movement consent gate.
 -- The legacy implementation name AUTOMATIC_TERMINAL_EGRESS is retained deliberately to avoid
@@ -242,17 +241,12 @@ OuttaMyWay.TERMINAL_EGRESS_MOVE_TIMEOUT_MS = 45000 -- watchdog only; one bounded
 -- existing 1 km/h temporary implementation value only after a positive bounded
 -- timing witness shows Productive Progress could reach an admitted TS015 egress
 -- sweep no later than even ideal max-speed egress completion. No new speed literal.
-OuttaMyWay.COMMITTED_TRANSITION_REGULATION_TEST_ENABLED = false
 
 OuttaMyWay.PROTOTYPE_22_CAPABILITY_GATE_ENABLED = true
 OuttaMyWay.PROTOTYPE_22_REGULATE_DEFAULT_KMH = 1.0
 OuttaMyWay.PROTOTYPE_22_REGULATE_MIN_KMH = 0.5
 OuttaMyWay.PROTOTYPE_22_REGULATE_MAX_KMH = 10.0
 OuttaMyWay.PROTOTYPE_22_HOLD_EFFECT_SPEED_KMH = 0.25
-OuttaMyWay.PROTOTYPE_22_REPOSITION_SPEED_KMH = 5.0
-OuttaMyWay.PROTOTYPE_22_REPOSITION_MAX_SPEED_KMH = 8.0
-OuttaMyWay.PROTOTYPE_22_REPOSITION_MAX_OFFSET_M = 20.0
-OuttaMyWay.PROTOTYPE_22_REPOSITION_TARGET_RADIUS_M = 1.0
 OuttaMyWay.PROTOTYPE_22_HEARTBEAT_MS = 1000
 OuttaMyWay.PROTOTYPE_22_RELEASE_MONITOR_MS = 5000
 OuttaMyWay.PROTOTYPE_22_RELEASE_RESUME_TRAVEL_M = 0.5
@@ -262,39 +256,16 @@ OuttaMyWay.PROTOTYPE_22_RELEASE_RESUME_SPEED_KMH = 0.5
 -- observation bounds, never Traffic Policeman policy thresholds. Movement may
 -- overlap folding after actual fold motion is observed; spatial PASS still
 -- requires full compact configuration plus positive represented-span reduction.
-OuttaMyWay.PROTOTYPE_22_FOLD_MOTION_TIMEOUT_MS = 5000
-OuttaMyWay.PROTOTYPE_22_FULL_COMPACT_TIMEOUT_MS = 25000
-OuttaMyWay.PROTOTYPE_22_SPATIAL_VERIFY_TIMEOUT_MS = 5000
-OuttaMyWay.PROTOTYPE_22_RESTORE_TIMEOUT_MS = 25000
-OuttaMyWay.PROTOTYPE_22_SPAN_REDUCTION_MIN_M = 1.0
 
 -- TS015 autonomous native-recovery characterisation fixture. These literals
 -- deliberately simulate one complete Traffic Policeman passing-place instruction
 -- after a genuine live autonomous head-on Decision. They are evidence-fixture values only:
 -- they grant no production Refuge Region, clearance, Durable Separation or
 -- Safe Release authority.
-OuttaMyWay.PROTOTYPE_22_TS015_RELOCATE_ENABLED = false
-OuttaMyWay.PROTOTYPE_22_TS015_REPOSITION_SPEED_KMH = 15.0 -- TEMPORARY TEST MECHANISM; not policy authority
-OuttaMyWay.PROTOTYPE_22_TS015_REPOSITION_TARGET_RADIUS_M = 1.0
-OuttaMyWay.PROTOTYPE_22_TS015_REFUGE_FORWARD_M = 10.0
-OuttaMyWay.PROTOTYPE_22_TS015_REFUGE_LATERAL_M = 30.0
-OuttaMyWay.PROTOTYPE_22_TS015_REFUGE_FIT_SAMPLE_RADIUS_M = 8.0
-OuttaMyWay.PROTOTYPE_22_TS015_REFUGE_FIT_SAMPLE_COUNT = 12
-OuttaMyWay.PROTOTYPE_22_TS015_SETTLE_TIMEOUT_MS = 15000 -- watchdog/failure detection only
-OuttaMyWay.PROTOTYPE_22_TS015_MOVE_TIMEOUT_MS = 45000 -- watchdog/failure detection only
 -- v4.7.40 restoration-first comparison: preserve the settled pre-egress pose as
 -- a Rejoin Anchor, return compact toward a short forward rejoin reference using
 -- the archived empirically successful orientation mechanism, then restore the
 -- original configuration before GIANTS handback. All values remain fixture-only.
-OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_FORWARD_M = 6.0
-OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_ORIENTATION_SPEED_KMH = 5.0 -- TEMPORARY TEST MECHANISM; not policy authority
-OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_ORIENTATION_STEER_LZ = 0.30
-OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_ORIENTATION_FORWARD_DOT = 0.25
-OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_ORIENTATION_TIMEOUT_MS = 12000 -- watchdog/failure detection only
-OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_ORIENTATION_MAX_TRAVEL_M = 20.0
-OuttaMyWay.PROTOTYPE_22_TS015_REJOIN_SETTLE_TIMEOUT_MS = 15000 -- watchdog/failure detection only
-OuttaMyWay.PROTOTYPE_22_TS015_OBSERVE_MS = 120000 -- forensic observation window only; no settlement authority
-OuttaMyWay.PROTOTYPE_22_TS015_OBSERVE_LOG_MS = 2000
 
 -- Transition-only operator signalling: raw forensic logs remain available but
 -- the tester need not follow the scrolling console during live actuation.

@@ -1,3 +1,24 @@
+## v0.1.10.0 CANONICAL CANDIDATE — D-0184 promotion
+
+- [x] Exact baseline is owner-declared v0.1.9.0 canonical SHA-256 `3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`, Git `4156e0d86363d524654d53f1e5cc5794484ffb12`, 317 files.
+- [x] Behavioural source is the exact field-validated v0.1.9.1 D-0184 Closure C implementation.
+- [x] Field validation: TS009 PASS, TS010S PASS, TS015 PASS; TS015 Terminal Egress PASS; Condor Player Claim correctly superseded Terminal Egress.
+- [x] Post-Job Regulation Contamination and Termination Evidence Diagnostic Ambiguity are recorded as separate carried findings, not candidate fixes.
+- [x] Candidate preparation changes release identity/provenance/documentation only; no intentional traffic/control algorithm delta.
+- [ ] Exact RRS candidate/evidence production passes with zero blockers and deterministic byte-identical candidate rebuild.
+- [ ] Exact packaged candidate passes structural/Lua/manifest/ZIP validation.
+- [ ] Owner reviews and explicitly canonicalises the exact candidate fingerprint.
+
+## v0.1.9.1 TEST — D-0184 Closure C
+
+- [x] Starts from owner-declared v0.1.9.0 canonical fingerprint.
+- [x] `scripts/archive/` and dependency-proven retired implementation removed.
+- [x] D-0146 retains only cached-actuator restoration; dead generic restore removed.
+- [x] D-0123 Native Handover Creep retained at 1.0 km/h under production naming.
+- [x] No D-0147/TS010 behavior or Literal Audit magnitude changed.
+- [x] Exact packaged TEST artifact passes structural, Lua, manifest and ZIP verification (263 files; 262/262 manifest entries; 98/98 structural; 266/266 Lua; ZIP integrity PASS).
+- [ ] Four-scenario field regression passes before canonical promotion.
+
 # v0.1.9.0 CANONICAL CANDIDATE — D-0183 promotion
 
 - [x] v0.1.8.1 field regression: TS009, TS010S, TS015, TS016 all PASS.

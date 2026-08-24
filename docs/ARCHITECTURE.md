@@ -1,3 +1,11 @@
+## v0.1.9.1 TEST amendment — D-0184 Legacy Authority Closure C
+
+Implementation archaeology is not architecture. Retired D-0143/TS015 fixture implementations and the in-tree v4.6.78 script archive are deleted; their evidence remains in Git/history and governance records. D-0146 is the only live Cooperative Passage architecture and D-0183 cached-actuator symmetry is its only restoration path.
+
+D-0123 retains a bounded 1.0 km/h Native Handover Creep because zero-speed HOLD was observed to prevent GIANTS from restarting into handover. This is a named mechanism value, not a generic traffic speed policy.
+
+D-0147 Terminal configuration semantics are outside Closure C and remain live pending the separate TS010 Terminal Completion investigation.
+
 ## v0.1.8.0 canonical-candidate checkpoint — Legacy Authority Closure A
 
 D-0181 is field-supported across TS016, TS015, TS010S and TS009. The governing Cooperative Passage authority is now deliberately singular:
@@ -535,7 +543,7 @@ v4.7.114 TEST is a bounded production implementation attempt against this refine
 **Decision:** D-0146.  
 **Implementation boundary:** architecture-only canonicalisation; no generic D-0146 motion/control implementation is introduced here.
 
-D-0146 refines D-0144 Progressive Situational Sufficiency by replacing solution-shaped opposed/head-on admission with direct trajectory-and-demand reasoning. D-0143 remains the live bounded Cooperative Passage implementation authority where not superseded, and D-0141 remains the live follower-Regulation authority.
+D-0146 refines D-0144 Progressive Situational Sufficiency by replacing solution-shaped opposed/head-on admission with direct trajectory-and-demand reasoning. D-0143 is historical lineage only; D-0146 is the sole live Cooperative Passage authority, while D-0141 remains the live follower-Regulation authority.
 
 ### 0.1 Two-step responsibility boundary
 
@@ -642,7 +650,7 @@ No future chat should infer these capabilities from their architectural acceptan
 **Production evidence donor:** live-successful v4.7.97.  
 **Decision:** D-0144.
 
-D-0144 governs current Situation-model simplification. D-0143 remains authoritative for bounded Cooperative Passage where not superseded, and D-0141 remains authoritative for follower Regulation. Older Rook/chessboard/Successor-Rook, King/Refuge and scenario-specific material below is historical unless explicitly preserved here.
+D-0144 governs current Situation-model simplification. D-0143 is historical for Cooperative Passage; D-0146 is authoritative, and D-0141 remains authoritative for follower Regulation. Older Rook/chessboard/Successor-Rook, King/Refuge and scenario-specific material below is historical unless explicitly preserved here.
 
 ### 0.1 Progressive Situational Sufficiency
 
@@ -682,7 +690,7 @@ Historical documents and diagnostics remain evidence provenance. Their continued
 
 D-0141 remains live and useful. When a follower is closing while the leader's native continuation is not yet sufficiently revealed, Regulation may preserve Action Space and ordering while GIANTS retains route/steering ownership.
 
-Regulation is not a head-on resolver. If Reality matures into the supported D-0143 opposed Productive/Productive class, Cooperative Passage may supersede the follower purpose through the ordinary Candidate → Decision → Commitment lifecycle.
+Regulation is not a head-on resolver. If Reality matures into a D-0146-supported Cooperative Passage, that Passage may supersede the follower purpose through the ordinary Candidate → Decision → Commitment lifecycle.
 
 ### 0.5 Cooperative Passage Scope Boundary
 

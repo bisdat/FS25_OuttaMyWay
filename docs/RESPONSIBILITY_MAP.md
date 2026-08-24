@@ -1,3 +1,25 @@
+## v0.1.10.0 CANONICAL CANDIDATE — D-0184 responsibility checkpoint
+
+| Concern | Owner | Candidate responsibility |
+|---|---|---|
+| Production Cooperative Passage | D-0146 | Sole live architecture; D-0143 archaeology removed |
+| Transit capability / restoration | D-0179 + D-0183 | Cached selected-runtime actuators outbound and restoration |
+| D-0123 native handover creep | LiveControlDispatcher | Retained at 1.0 km/h; prevents HOLD restart failure |
+| D-0147 Terminal Egress | TerminalEgressControl + direct actuation chain | Behaviour unchanged; Post-Job Regulation Contamination is next investigation |
+| Historical v4.6.78 / retired TS015 code | Git/history + governance | Not shipped in live repository |
+| Canonical authority | Repository owner | Candidate remains non-canonical until exact fingerprint acceptance |
+
+## v0.1.9.1 TEST — D-0184 responsibility closure
+
+| Concern | Current owner | Closure C result |
+|---|---|---|
+| Cooperative Passage assessment/control | D-0146 | sole live architecture; D-0143 implementation deleted |
+| Passage restoration | D-0183 cached actuator symmetry | sole live D-0146 restore path |
+| Permission / bounded Regulation / configuration mechanism | `Prototype22CapabilityGate` donors | retained; manual Reposition/TS015 fixture removed |
+| D-0123 native handover creep | LiveControlDispatcher | 1.0 km/h retained under production name |
+| v4.6.78 legacy implementation evidence | Git/history + governance docs | in-tree executable archive deleted |
+| Terminal configuration semantics | D-0147 | unchanged; TS010 investigation owner |
+
 ## v0.1.9.0 CANONICAL CANDIDATE — D-0183 responsibility checkpoint
 
 | Concern | Owner | Candidate responsibility |

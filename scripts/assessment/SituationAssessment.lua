@@ -679,9 +679,9 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         representationFitness[#representationFitness+1]=fitness
     end
 
-    -- D-0181: D-0143 CooperativePassageAssessment is historical donor/test
-    -- evidence only.  Production Situation Assessment publishes no D-0143
-    -- knowledge or fitness; D-0146 owns current Cooperative Passage fitness.
+    -- D-0184: retired D-0143 CooperativePassageAssessment implementation is deleted.
+    -- Production Situation Assessment publishes no D-0143 knowledge or fitness;
+    -- D-0146 owns current Cooperative Passage fitness.
     local cooperativePassageKnowledge={}
     local terminalOccupancyKnowledge,terminalOccupancyFitness={},{}
     if self.terminalOccupancyAssessment~=nil then

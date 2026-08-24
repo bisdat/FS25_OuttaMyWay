@@ -1,3 +1,9 @@
+# v0.1.9.1 D-0184 in-tree archaeology deletion boundary
+
+The replacement-core v4.6.78 copy formerly stored under `scripts/archive/v4_6_78/` is deleted from the live repository. Git history and the durable decision/removal records preserve that evidence. Executable-looking retired source is not an archive mechanism.
+
+Also deleted after dependency proof: D-0143 `CooperativePassageAssessment`, `Prototype22TS015Relocation`, `CommittedTransitionRegulationTestBridge`, and the already-unsourced `GuardedRecoveryRegulationTestBridge`. Current capability donors remain only where a live architectural owner exists.
+
 # v4.7.98 D-0144 live-runtime retirement boundary
 
 The following historical diagnostics remain in the repository as empirical evidence but are deliberately **not sourced or scheduled by `scripts/main.lua`** in v4.7.98:
@@ -10,7 +16,7 @@ Reason: D-0144 retires chessboard colouring, continuous Productive History reaso
 
 # v4.7.0 active-core removal boundary
 
-The complete canonical v4.6.78 active Lua tree was removed from execution and preserved under `scripts/archive/v4_6_78/`. It is not deleted from historical evidence. Active v4.7.x code must not import the archive. Module-level dispositions are recorded in `LEGACY_MODULE_DISPOSITION.csv`.
+Historically, v4.7.0 removed the canonical v4.6.78 active Lua tree from execution and preserved a byte-copy under `scripts/archive/v4_6_78/`. D-0184 later deletes that in-tree copy after authority closure; historical evidence remains in Git and `LEGACY_MODULE_DISPOSITION.csv`.
 
 # Experimental Removal and Donor Register
 

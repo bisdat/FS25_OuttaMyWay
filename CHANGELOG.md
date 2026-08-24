@@ -1,3 +1,29 @@
+## v0.1.10.0 CANONICAL CANDIDATE — D-0184 Legacy Authority Closure C checkpoint
+
+**Authority:** owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; Git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files) remains authoritative until the owner explicitly accepts this exact RRS-produced candidate fingerprint. v0.1.10.0 promotes the live-validated v0.1.9.1 Closure C behaviour with **no further traffic/control behavioural change** during candidate preparation.
+
+**Validated closure:** the live repository contains no `scripts/archive/` tree, retired D-0143/TS015 relocation or transition-test bridges, dead generic Cooperative Passage restore branch, or stale live D-0143 lifecycle authority. `Prototype22CapabilityGate` remains only as a bounded Permission/Drive/Configuration mechanism donor. The live D-0123 handover value remains `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0`; its magnitude is unchanged because HOLD previously prevented GIANTS from restarting into native Passage handover.
+
+**Field validation (v0.1.9.1):** Owner field validation of v0.1.9.1 ran TS009, TS010S and TS015: all PASS. TS015 was allowed to continue through AI job completion / D-0147 Terminal Egress and passed; when the owner tabbed into Condor during Terminal Egress, runtime recorded `PLAYER_CLAIM` and settled Terminal Egress as `SUPERSEDED_BY_NEW_INTENT`. The combined supplied log contains six D-0146 second whistles and six `COOPERATIVE_PASSAGE_SETTLED terminal=SUCCEEDED` outcomes across those sessions, including an additional successful TS015 Passage after reload.
+
+**Known findings carried forward:** Two separate non-blocking findings are carried forward without repair: **Post-Job Regulation Contamination** — D-0147 Infield Retreat produced repeated GIANTS `AIVehicleUtil.driveToPoint` divide-by-zero errors through the live `Prototype22DriveAuthority` REGULATE interceptor; no D-0123 apply/release event was present, so `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` is not implicated. **Termination Evidence Diagnostic Ambiguity** — a legitimate player claim can emit concurrent `PLAYER_TAKEOVER` and `SOURCE_INTENT_TERMINATION`, currently logged as conflicting authoritative termination evidence.
+
+**Explicit non-change:** D-0183 cached-actuator restoration, D-0181 D-0146-only fail-closed Passage, D-0179 Job-Start Physical Capability Record, Passage geometry, Entry, guide, D-0155, D-0147 behaviour, agronomic recovery and surviving Literal Audit magnitudes are unchanged. The next engineering investigation is Post-Job Regulation Contamination, after which the surviving Literal Provenance Audit resumes.
+
+**Release identity:** BUILD resets to `0`. v0.1.10.0 is a canonical candidate only until the owner explicitly accepts the exact RRS-produced fingerprint.
+
+## v0.1.9.1 TEST — D-0184 Legacy Authority Closure C / Runtime Archaeology Removal
+
+- Starts from owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; Git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files).
+- Deletes the in-repository `scripts/archive/` copy of the v4.6.78 implementation. Historical donor/failure evidence remains available through Git and durable governance records; executable-looking archived source is no longer shipped.
+- Deletes retired D-0143 `CooperativePassageAssessment`, `Prototype22TS015Relocation`, `CommittedTransitionRegulationTestBridge`, and the already-unsourced `GuardedRecoveryRegulationTestBridge`.
+- Removes the dead generic `CooperativePassageControl:_beginRestore()` branch and stale live D-0143 lifecycle provenance; D-0146 cached-actuator restoration remains the sole Passage restoration authority.
+- Strips manual Reposition/TS015 relocation branches from `Prototype22CapabilityGate`; the module remains only the bounded Permission/Drive/Configuration mechanism donor used by current Control.
+- Retires ownerless TS015/Reposition configuration literals and historical bridge switches.
+- Renames the retained 1.0 km/h live handover value to `D0123_NATIVE_HANDOVER_CREEP_KMH`. Magnitude is unchanged: bounded non-zero Regulation is retained because HOLD prevented GIANTS from restarting into Passage/native handover.
+- No D-0146 Passage geometry, Entry, guide, D-0155 magnitude, D-0183 restoration behavior, D-0147 Terminal Egress behavior, agronomic recovery, or surviving Literal Audit value is intentionally changed.
+- Final source validation: 98/98 structural tests and 266/266 replacement-core Lua tests. Exact pre-release package validation also passed at 263 files / 262 manifest entries with ZIP integrity clean. Field regression is required because runtime loading and capability-donor archaeology were removed.
+
 # v0.1.9.0 CANONICAL CANDIDATE — D-0183 Cached-Actuator Restoration Symmetry checkpoint
 
 **Authority:** owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; Git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files) remains authoritative until the owner explicitly accepts this exact RRS-produced candidate fingerprint. v0.1.9.0 promotes the live-validated v0.1.8.1 Closure B behaviour with **no further traffic/control behavioural change** during candidate preparation.

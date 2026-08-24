@@ -1,3 +1,27 @@
+# Engineering handover — v0.1.10.0 CANONICAL CANDIDATE
+
+Owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; Git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files) remains canonical until explicit owner acceptance of the exact RRS-produced candidate fingerprint. v0.1.10.0 carries the live-validated v0.1.9.1 D-0184 behaviour unchanged.
+
+**Validated regression:** Owner field validation of v0.1.9.1 ran TS009, TS010S and TS015: all PASS. TS015 was allowed to continue through AI job completion / D-0147 Terminal Egress and passed; when the owner tabbed into Condor during Terminal Egress, runtime recorded `PLAYER_CLAIM` and settled Terminal Egress as `SUPERSEDED_BY_NEW_INTENT`. The combined supplied log contains six D-0146 second whistles and six `COOPERATIVE_PASSAGE_SETTLED terminal=SUCCEEDED` outcomes across those sessions, including an additional successful TS015 Passage after reload.
+
+**Authority checkpoint:** `scripts/archive/` and dependency-proven D-0143/TS015 runtime archaeology are absent. D-0146 remains the sole production Cooperative Passage architecture with D-0179 bootstrap capability and D-0183 cached-actuator restoration. `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` remains deliberate.
+
+**Known findings, not candidate fixes:** Post-Job Regulation Contamination during D-0147 direct retreat; Termination Evidence Diagnostic Ambiguity after legitimate Player Claim.
+
+**Next action after canonicalisation:** investigate Post-Job Regulation Contamination first; then resume the surviving Literal Provenance Audit. Keep TS010 Terminal Completion, agronomic debt and assembly×agronomy work separate until selected.
+
+# Engineering handover — v0.1.9.1 TEST — D-0184 Closure C
+
+Start only from owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; Git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files).
+
+**Objective:** prove that deleting retired implementation and archive baggage causes zero behavioral regression. Production Cooperative Passage remains D-0146-only with D-0179 bootstrap capability and D-0183 cached-actuator restoration.
+
+**Deleted authority/baggage:** `scripts/archive/`; historical D-0143 CooperativePassageAssessment; TS015 relocation fixture; committed-transition and guarded-recovery test bridges; generic Passage `_beginRestore`; manual P22 Reposition/relocate branches and their ownerless literals.
+
+**Retained live handover:** `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0`; do not revert this to HOLD.
+
+**Field regression:** TS009, TS010S, TS015, TS016; where practical allow restoration/settlement and TS015 Terminal Egress to complete. Any behavior difference is a Closure C regression.
+
 # Engineering handover — v0.1.9.0 CANONICAL CANDIDATE
 
 Owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files) remains canonical until explicit owner acceptance of the exact RRS-produced candidate fingerprint. v0.1.9.0 carries the live-validated v0.1.8.1 D-0183 behaviour unchanged.

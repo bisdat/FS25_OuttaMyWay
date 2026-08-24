@@ -1,3 +1,5 @@
+> **D-0184 amendment (v0.1.9.1):** the in-tree `scripts/archive/v4_6_78/` copy is deleted after replacement-core authority closure. This does not reverse the original v4.7.0 decision; Git/canonical artifacts now provide the historical donor/failure record without shipping executable-looking legacy source.
+
 # ADR-0020 — Replacement-Core Implementation Series
 
 **Status:** Accepted; implemented by v4.7.0 bootstrap  

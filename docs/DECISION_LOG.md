@@ -1,3 +1,23 @@
+## D-0185 — Promote validated D-0184 Closure C to v0.1.10.0 canonical candidate
+
+**Status:** Accepted for canonical-candidate production; owner canonicalisation pending.
+
+**Evidence:** Owner field validation of v0.1.9.1 ran TS009, TS010S and TS015: all PASS. TS015 was allowed to continue through AI job completion / D-0147 Terminal Egress and passed; when the owner tabbed into Condor during Terminal Egress, runtime recorded `PLAYER_CLAIM` and settled Terminal Egress as `SUPERSEDED_BY_NEW_INTENT`. The combined supplied log contains six D-0146 second whistles and six `COOPERATIVE_PASSAGE_SETTLED terminal=SUCCEEDED` outcomes across those sessions, including an additional successful TS015 Passage after reload.
+
+**Decision:** freeze the tested v0.1.9.1 traffic/control behaviour and package it as v0.1.10.0 canonical candidate. Candidate preparation may change release identity, provenance and durable documentation only. Do not repair the newly observed Post-Job Regulation Contamination or Termination Evidence Diagnostic Ambiguity during promotion.
+
+**Authority:** owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; Git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files) remains canonical until the exact RRS-produced v0.1.10.0 candidate fingerprint is explicitly accepted.
+
+## D-0184 — Legacy Authority Closure C / Runtime Archaeology Removal
+
+**Decision:** Complete the current Legacy Authority Closure by deleting implementation that has no remaining production owner rather than preserving executable-looking archaeology in the live repository. The v4.6.78 in-tree script archive is removed; Git/history and governance records are the archive. Retired D-0143/TS015 relocation and transition-test bridges are deleted. D-0146 retains one restoration path only: D-0183 cached-actuator symmetry.
+
+`Prototype22CapabilityGate` remains temporarily named for lineage but owns only the proven bounded Permission, Drive and Configuration donor mechanisms required by current Control. Manual Reposition/TS015 fixture branches are withdrawn.
+
+The 1.0 km/h D-0123 Regulation value is **not** retired with the test bridges. It becomes `D0123_NATIVE_HANDOVER_CREEP_KMH`: field history established that HOLD prevented GIANTS from restarting into Passage/native handover, while bounded non-zero Regulation allowed native progression/reacquisition. The value remains subject to its named owner but is not an unexplained test literal.
+
+**Fail-safe boundary:** this decision removes authority and repository baggage only. D-0147 still owns its generic configuration semantics until TS010 Terminal Completion is investigated separately.
+
 ## D-0184 — Promote validated D-0183 Closure B to v0.1.9.0 canonical candidate
 
 **Status:** Accepted for canonical-candidate production; owner canonicalisation pending.

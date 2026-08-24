@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.8.0 CANONICAL CANDIDATE — D-0181 Legacy Authority Closure A; D-0146-only Cooperative Passage dispatch.
+-- FS25_OuttaMyWay v0.1.10.0 CANONICAL CANDIDATE — D-0184 names the retained D-0123 Native Handover Creep; traffic behavior unchanged.
 -- FS25_OuttaMyWay v0.1.0.0 CANONICAL CANDIDATE — D-0147 Continuation Renewal dispatcher; behaviour inherited unchanged from canonical v4.7.128.
 --
 -- This module is the only automatic bridge from a sealed live Decision /
@@ -316,7 +316,7 @@ end
 function Dispatcher:_regulationRequest(picture,evaluated,candidate,commitment,token,bridge,operation,ownerTag,maxSpeedKmh)
     ownerTag=ownerTag or D0123_OWNER_TAG
     local speed=maxSpeedKmh
-    if operation=="APPLY" and speed==nil then speed=OuttaMyWay.GUARDED_RECOVERY_REGULATION_TEST_KMH or OuttaMyWay.PROTOTYPE_22_REGULATE_DEFAULT_KMH or 1.0 end
+    if operation=="APPLY" and speed==nil then speed=OuttaMyWay.D0123_NATIVE_HANDOVER_CREEP_KMH or 1.0 end
     local assemblyId=bridge.progressAssemblyId or bridge.followerAssemblyId or bridge.regulatedAssemblyId
     local referenceKey=bridge.progressReferenceKey or bridge.followerReferenceKey or bridge.regulatedReferenceKey
     local request=OuttaMyWay.ControlRequest.new({

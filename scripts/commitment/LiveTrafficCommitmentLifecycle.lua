@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v4.7.106 TEST BUILD — live Commitment lifecycle including D-0146 Potential Action-Space Conservation succession.
+-- FS25_OuttaMyWay v0.1.10.0 CANONICAL CANDIDATE — D-0184 removes stale D-0143 live provenance; D-0146 lifecycle authority unchanged.
 -- Bounded live Commitment lifecycle catch-up for the autonomous initial-head-on
 -- test path. It uses the replacement-core Commitment/Obligation/Authority
 -- kernel; it does not introduce production Refuge Region or Durable Separation
@@ -510,7 +510,7 @@ local function isCooperativePassageObligation(obligation)
     return type(outcome)=="table" and outcome.kind=="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
 end
 
--- D-0143 joint Cooperative Passage admission/revision. CREATE uses the normal
+-- D-0146 joint Cooperative Passage admission/revision. CREATE uses the normal
 -- DecisionCommitmentBoundary. REVISE is needed only when an already-live traffic
 -- purpose (for example D-0141 follower protection) is succeeded by the joint
 -- TS015 Reposition; the fresh restoration/handoff obligation and both progress
@@ -551,7 +551,7 @@ function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated)
             requiredOutcome=specification.requiredOutcome,requiredAuthority=specification.requiredAuthority or {},
             evidenceContract=specification.evidenceContract,ownershipClass=specification.ownershipClass,
             transferPolicy=specification.transferPolicy or {},terminalDependency=specification.terminalDependency~=false,
-            creationEvidence={kind="D0143_COOPERATIVE_PASSAGE_REVISE",decisionId=evaluated.decision.identity}
+            creationEvidence={kind="D0146_COOPERATIVE_PASSAGE_REVISE",decisionId=evaluated.decision.identity}
         })
     end
 
@@ -596,7 +596,7 @@ function Lifecycle.completeCooperativePassage(runtime,commitmentId,evidence)
     local settled={}
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
         if isCooperativePassageObligation(obligation) then
-            runtime.obligations:settle(obligation.identity,"SATISFACTION",evidence or {kind="D0143_POSITIVE_RESTORATION_AND_HANDOFF"})
+            runtime.obligations:settle(obligation.identity,"SATISFACTION",evidence or {kind="D0146_POSITIVE_RESTORATION_AND_HANDOFF"})
             settled[#settled+1]=obligation.identity
         end
     end
@@ -604,9 +604,9 @@ function Lifecycle.completeCooperativePassage(runtime,commitmentId,evidence)
     if #remaining>0 then
         return nil,"COOPERATIVE_PASSAGE_COMPLETION_BLOCKED_BY_OTHER_OPEN_OBLIGATIONS"
     end
-    local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {},provenance={source="LiveTrafficCommitmentLifecycle.completeCooperativePassage",decision="D-0143"}})
+    local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {},provenance={source="LiveTrafficCommitmentLifecycle.completeCooperativePassage",decision="D-0146"}})
     local settling=runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
-    local terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,evidence or {kind="D0143_POSITIVE_RESTORATION_AND_HANDOFF"})
+    local terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,evidence or {kind="D0146_POSITIVE_RESTORATION_AND_HANDOFF"})
     logInfo("COOPERATIVE_PASSAGE_SETTLED commitment=%s terminal=%s settledObligations=%d releasedAuthorityTokens=%d cooldown=false",tostring(commitmentId),tostring(terminal.state),#settled,#(settling.releasedAuthorityTokenIds or {}))
     return {commitment=terminal,settledObligationIds=settled,releasedAuthorityTokenIds=settling.releasedAuthorityTokenIds or {}},nil
 end

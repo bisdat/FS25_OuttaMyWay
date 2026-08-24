@@ -1,8 +1,7 @@
 from pathlib import Path
-import hashlib
 
 ROOT = Path(__file__).resolve().parents[1]
-ARCHIVE = ROOT / "scripts" / "archive" / "v4_6_78"
+ARCHIVE = ROOT / "scripts" / "archive"
 
 
 def test_active_loader_never_sources_archive_or_legacy_core():
@@ -16,18 +15,6 @@ def test_active_loader_never_sources_archive_or_legacy_core():
 
 
 
-def test_archive_contains_exact_declared_legacy_file_set():
-    manifest = {}
-    for line in (ARCHIVE / "SHA256SUMS.txt").read_text(encoding="utf-8").splitlines():
-        digest, rel = line.split(maxsplit=1)
-        manifest[rel] = digest
-    assert len(manifest) == 48
-    for rel, expected in manifest.items():
-        path = ARCHIVE / rel
-        assert path.is_file()
-        assert hashlib.sha256(path.read_bytes()).hexdigest() == expected
-
-
 def test_active_lua_tree_is_small_and_archive_independent():
     active = [p for p in (ROOT / "scripts").rglob("*.lua") if "archive" not in p.parts]
     assert active
@@ -38,6 +25,45 @@ def test_active_lua_tree_is_small_and_archive_independent():
         assert "UnilateralSidestepController" not in text
         assert "EncounterController" not in text
 
+
+def test_d0184_retired_passage_and_fixture_implementation_is_deleted_not_archived():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    gate=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
+
+    assert not ARCHIVE.exists()
+    for rel in (
+        "scripts/assessment/CooperativePassageAssessment.lua",
+        "scripts/prototypes/Prototype22TS015Relocation.lua",
+        "scripts/prototypes/CommittedTransitionRegulationTestBridge.lua",
+        "scripts/prototypes/GuardedRecoveryRegulationTestBridge.lua",
+    ):
+        assert not (ROOT/rel).exists()
+        assert rel not in main
+
+    for token in ("TS015_RELOCATE","Prototype22TS015Relocation","CommittedTransitionRegulationTestBridge","P22_TS015_CONTROL_EXECUTION_OBSERVATION"):
+        assert token not in gate
+    assert 'request.capability=="REPOSITION"' not in gate
+    assert 'otmP22 reposition' not in gate
+    assert 'otmP22 relocate' not in gate
+    assert 'function Control:_beginRestore(run)' not in control
+    assert 'requestRestore(run.a.vehicle)' not in control
+
+    assert 'OuttaMyWay.D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0' in config
+    assert 'GUARDED_RECOVERY_REGULATION_TEST_KMH' not in config
+    assert 'GUARDED_RECOVERY_REGULATION_TEST_ENABLED' not in config
+    assert 'GUARDED_RECOVERY_REGULATION_TEST_HEARTBEAT_MS' not in config
+    assert 'PROTOTYPE_22_TS015_' not in config
+    assert 'D0123_NATIVE_HANDOVER_CREEP_KMH or 1.0' in dispatcher
+
+    assert 'D0143_COOPERATIVE_PASSAGE_REVISE' not in lifecycle
+    assert 'D0143_POSITIVE_RESTORATION_AND_HANDOFF' not in lifecycle
+    assert 'decision="D-0143"' not in lifecycle
+    assert 'D0146_COOPERATIVE_PASSAGE_REVISE' in lifecycle
+    assert 'D0146_POSITIVE_RESTORATION_AND_HANDOFF' in lifecycle
 
 def test_runtime_has_no_giants_observation_or_control_hook():
     text = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
@@ -480,7 +506,7 @@ def test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidenc
     operation=(ROOT/"scripts"/"identity"/"OperationAdmission.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
     assert "MEMBERSHIP_UPDATED_INCOMPLETE" in operation
     assert "removalDeferred=true" in operation
@@ -503,7 +529,7 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
     assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" not in config
     for forbidden in ("predictPair(", "evaluateShadowPair(", "composePositiveEvidence(", "legacyShadowPositive", "legacyTCPA", "legacyDCPA"):
@@ -529,7 +555,7 @@ def test_v4728_traffic_policeman_architecture_is_documented_without_production_c
     concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     for token in ("Traffic Policeman","Demonstrated Traversability","Revelation Oscillation"):
         assert token in adr
         assert token in glossary
@@ -549,7 +575,7 @@ def test_v4729_staged_recovery_architecture_is_documented_without_production_con
     glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     for token in (
         "Progress priority is not exclusive movement authority",
         "positively available recovery corridor",
@@ -574,7 +600,7 @@ def test_v4730_encounter_maturation_architecture_is_documented_without_productio
     concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     for token in ("Encounter Maturation","Action-Space Compression"):
         assert token in adr23
         assert token in architecture
@@ -616,7 +642,7 @@ def test_v4732_productive_continuation_preference_is_documented_without_producti
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     for token in (
         "Productive Continuation Preference",
         "Productive-Line Cross-Assembly Replication",
@@ -647,7 +673,7 @@ def test_v4733_speed_ordering_evidence_asymmetry_and_configuration_footprint_aut
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     for token in (
         "Native Speed-Ordering Variability",
         "Productive-State Evidence Asymmetry",
@@ -670,166 +696,6 @@ def test_v4733_speed_ordering_evidence_asymmetry_and_configuration_footprint_aut
     assert "decisionCommitmentBoundary:apply" not in runtime
 
 
-def test_v4736_prototype22_is_manual_capability_gate_not_production_traffic_policeman():
-    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    gate=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
-    permission=(ROOT/"scripts"/"prototypes"/"Prototype22PermissionGate.lua").read_text(encoding="utf-8")
-    drive=(ROOT/"scripts"/"prototypes"/"Prototype22DriveAuthority.lua").read_text(encoding="utf-8")
-    configuration=(ROOT/"scripts"/"prototypes"/"Prototype22ConfigurationAuthority.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
-    decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
-    assert 'CONTROL_AUTHORITY_ENABLED = false' in config
-    assert 'PROTOTYPE_22_CAPABILITY_GATE_ENABLED = true' in config
-    for rel in (
-        "scripts/prototypes/Prototype22PermissionGate.lua",
-        "scripts/prototypes/Prototype22DriveAuthority.lua",
-        "scripts/prototypes/Prototype22ConfigurationAuthority.lua",
-        "scripts/prototypes/Prototype22CapabilityGate.lua",
-    ):
-        assert rel in main
-    assert "prototype22CapabilityGate" in main
-    assert 'addConsoleCommand("otmP22"' in gate
-    assert "#vehicles < 2" in gate
-    assert "self.run ~= nil" in gate
-    assert "autonomousInitialHeadOnTest=true" in gate
-    assert "productionControlAuthority" in gate
-    assert "decisionCommitmentBoundary:apply" not in gate
-    assert "DecisionSelector" not in gate
-    assert "SituationAssessment" not in gate
-    assert "getCanAIFieldWorkerContinueWork" in permission
-    assert "return false, false, nil" in permission
-    assert "AIVehicleUtil.driveToPoint" in drive
-    assert "getToggledFoldDirection" in configuration
-    assert "setFoldDirection" in configuration
-    assert "setLowered" in configuration
-    assert 'state.mode == "REGULATE"' in drive
-    assert 'state.mode == "REPOSITION"' in drive
-    assert "moveForwards=true" in gate
-    assert "REVERSE_REPOSITION_UNRESOLVED" in gate
-    assert "target-clearance" in protocol.lower()
-    assert "participant-complete" in protocol
-    assert "D-0116" in decision
-    assert "Control authority disabled" in runtime
-    assert "decisionCommitmentBoundary:apply" not in runtime
-
-
-def test_v4736_regulation_preserves_giants_route_direction_and_reposition_is_one_forward_leg():
-    drive=(ROOT/"scripts"/"prototypes"/"Prototype22DriveAuthority.lua").read_text(encoding="utf-8")
-    gate=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
-    protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
-
-    assert "Preserve GIANTS route, steering, acceleration, permission" in drive
-    assert "return original(vehicle, dt, acceleration, isAllowedToDrive, moveForwards, lx, lz, outputMax)" in drive
-    assert "return original(vehicle, dt, 1, true, true, localX, localZ, cap)" in drive
-    assert "forwardM < 0" in gate
-    assert "reverse Reposition is architecturally valid but UNRESOLVED" in gate
-    assert "same Hold remains active" in protocol
-    assert "operator-selected" in protocol
-
-
-def test_v4736_p22_spatial_reposition_requires_real_compaction_and_allows_fold_move_overlap():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    gate=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
-    configuration=(ROOT/"scripts"/"prototypes"/"Prototype22ConfigurationAuthority.lua").read_text(encoding="utf-8")
-    protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
-    decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
-    assert 'CONTROL_AUTHORITY_ENABLED = false' in config
-    assert 'PROTOTYPE_22_HUD_ENABLED = false' in config
-    assert 'PROTOTYPE_22_SPAN_REDUCTION_MIN_M' in config
-    assert 'Prototype22ConfigurationAuthority.lua' in (ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    assert 'REPOSITION_COMPACT_START' in gate
-    assert 'movementOverlap=WAIT_FOR_ACTUAL_FOLD_MOTION' in gate
-    assert 'foldMovementOverlap=true' in gate
-    assert 'fold.motionObserved' in gate
-    assert 'fold.allFolded and targetSettled' in gate
-    assert 'run.initialSpanM - span' in gate
-    assert 'REPOSITION_SPATIAL_PASS' in gate
-    assert 'REPOSITION_SPATIAL_UNRESOLVED' in gate
-    assert 'REPOSITION_RESTORE_PASS' in gate
-    assert 'SUMMARY kind=%s' in gate
-    assert 'OTM P22 — REPOSITION PASS' in gate
-    assert 'foldAnimTime' in configuration
-    assert 'spatial PASS is established separately' in configuration
-    assert 'does not require full folding before movement' in protocol.lower()
-    assert 'foldanimtime' in protocol.lower() and 'diagnostic' in protocol.lower()
-    assert 'D-0117' in decision
-
-
-def test_v4737_ts015_autonomous_relocation_characterisation_harness_is_explicit_and_non_production():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    gate=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
-    harness=(ROOT/"scripts"/"prototypes"/"Prototype22TS015Relocation.lua").read_text(encoding="utf-8")
-
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
-    assert 'CONTROL_AUTHORITY_ENABLED = false' in config
-    assert 'Prototype22TS015Relocation.lua' in main
-    assert main.index('Prototype22TS015Relocation.lua') < main.index('Prototype22CapabilityGate.lua')
-    assert 'action == "relocate"' in gate
-    assert 'TS015_RELOCATE' in gate
-
-    # One explicit command may orchestrate the complete evidence fixture, but
-    # no production Decision/Traffic-Policeman path may arm it.
-    assert 'PROTOTYPE_22_TS015_RELOCATE_ENABLED = false' in config
-    assert 'PROTOTYPE_22_TS015_REPOSITION_SPEED_KMH = 15.0' in config
-    assert 'PROTOTYPE_22_TS015_REFUGE_LATERAL_M = 30.0' in config
-    assert 'PROTOTYPE_22_TS015_REFUGE_FORWARD_M = 10.0' in config
-    assert 'PROTOTYPE_22_TS015_MIN_TOTAL_REFUGE_HOLD_MS' not in config
-    assert 'PROTOTYPE_22_TS015_OBSERVE_MS = 120000' in config
-    assert 'requires exactly two active GIANTS AI field workers' in harness
-    assert 'P22 TS015 requires selected Yield assembly fully deployed' in harness
-    assert 'sameSourceField' in harness and 'qualifyTarget' in harness
-    assert 'obstacleClearance=OPERATOR_OWNED productionAuthority=false' in harness
-    assert 'targetClearanceAuthority=FIXTURE_ONLY' in harness
-    assert 'recoveryAdmission=EVENT_DRIVEN_NO_DWELL_TIMER' in harness
-    assert 'handsOff=true' in harness
-    assert 'result=CHARACTERISED' in harness
-    assert 'COMPACT_CONFIRMED_DURING_MOVE' in harness
-    assert 'watchdog=RETIRED_FOR_MANOEUVRE' in harness
-    assert 'run.fullCompactObservedAt == nil and nowMs - (run.targetReachedAt or nowMs)' in harness
-    assert 'target-full-compact-timeout' in harness
-    assert 'nowMs - (run.compactRequestedAt or nowMs) >= (OuttaMyWay.PROTOTYPE_22_FULL_COMPACT_TIMEOUT_MS' not in harness
-    assert 'setReposition' in harness
-    assert 'requestRestore' in harness
-    assert '_releaseImmediate' in harness
-    assert 'DecisionSelector' not in harness
-    assert 'SituationAssessment' not in harness
-    assert 'SafeRelease' not in harness
-
-
-def test_v4739_ts015_restoration_first_handoff_returns_to_rejoin_anchor_before_giants_release():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    harness=(ROOT/"scripts"/"prototypes"/"Prototype22TS015Relocation.lua").read_text(encoding="utf-8")
-    drive=(ROOT/"scripts"/"prototypes"/"Prototype22DriveAuthority.lua").read_text(encoding="utf-8")
-
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
-    assert 'PROTOTYPE_22_TS015_REJOIN_FORWARD_M = 6.0' in config
-    assert 'PROTOTYPE_22_TS015_REJOIN_ORIENTATION_SPEED_KMH = 5.0' in config
-    assert 'PROTOTYPE_22_TS015_REJOIN_ORIENTATION_FORWARD_DOT = 0.25' in config
-    assert 'run.rejoinAnchorX, run.rejoinAnchorZ = anchor.x, anchor.z' in harness
-    assert 'run.rejoinTargetX = anchor.x + anchor.dx * rejoinForwardM' in harness
-    assert 'TS015_REJOIN_ORIENTING' in harness
-    assert 'TS015_REJOINING' in harness
-    assert 'TS015_REJOIN_SETTLING' in harness
-    assert 'TS015_REJOIN_RESTORING' in harness
-    assert 'NATIVE_CONTINUATION_RESTORATION_PASS' in harness
-    assert 'ts015-restoration-first-handoff' in harness
-    assert 'setRepositionOrientation' in drive
-    assert 'mode = "REPOSITION_ORIENT"' in drive
-    assert 'legacyMechanismEvidenceOnly=true policyAuthority=false' in harness
-
-    # Direct refuge release is deliberately absent from the autonomous success path.
-    assert 'ts015-autonomous-timed-handoff' not in harness
-    assert 'TIMED_RELEASE_READY' not in harness
-    assert 'CONTROL_AUTHORITY_ENABLED = false' in config
-
-
 def test_v4740_guarded_recovery_architecture_consolidation_preserves_non_production_boundary():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
@@ -838,7 +704,7 @@ def test_v4740_guarded_recovery_architecture_consolidation_preserves_non_product
     handover=(ROOT/"docs"/"ENGINEERING_HANDOVER.md").read_text(encoding="utf-8")
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     for token in (
         "Native Continuation Restoration",
@@ -866,7 +732,7 @@ def test_v4741_guarded_recovery_observe_exhaustion_contract_is_documented_withou
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     roadmap=(ROOT/"docs"/"ROADMAP.md").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert "D-0123" in decision
     for token in ("Vulnerable Space", "Convergent Projection"):
@@ -891,7 +757,7 @@ def test_v4742_traffic_policeman_decision_policy_is_implemented_without_unresolv
     passive=(ROOT/"scripts"/"candidates"/"PassiveLiveCandidateSupport.lua").read_text(encoding="utf-8")
     roadmap=(ROOT/"docs"/"ROADMAP.md").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert 'TrafficPolicemanDecisionPolicy.lua' in main
     assert main.index('TrafficPolicemanDecisionPolicy.lua') < main.index('DecisionSelector.lua')
@@ -908,24 +774,6 @@ def test_v4742_traffic_policeman_decision_policy_is_implemented_without_unresolv
     assert 'unimplemented' in roadmap.lower() or 'unresolved' in roadmap.lower()
 
 
-
-def test_d0181_d0143_is_historical_donor_only_and_not_loaded_or_published_by_runtime():
-    assessment=(ROOT/"scripts"/"assessment"/"CooperativePassageAssessment.lua").read_text(encoding="utf-8")
-    candidate=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
-    situation=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
-    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
-    # Historical donor source remains inspectable/testable.
-    assert "Condor Endurance II" in assessment and "Patriot 4450" in assessment
-    assert "INITIAL_LATERAL_OFFSET_OUTSIDE_PROVEN_TS015_SCOPE" in assessment
-    # Production cannot load, assess, publish, switch to, or execute D-0143.
-    assert "scripts/assessment/CooperativePassageAssessment.lua" not in main
-    assert "CooperativePassageAssessment.buildKnowledge" not in situation
-    assert "TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST" not in candidate
-    assert "COOPERATIVE_PASSAGE_TS015_ENABLED" not in config
-    assert "_executeLegacyJointRequests" not in control
-    assert 'D0146_COOPERATIVE_PASSAGE_BRIDGE_REQUIRED' in control
 
 def test_v4745_guarded_recovery_convergence_probe_is_parallel_shadow_only():
     probe=(ROOT/"scripts"/"diagnostics"/"GuardedRecoveryConvergenceProbe.lua").read_text(encoding="utf-8")
@@ -949,19 +797,6 @@ def test_v4746_d0123_regulation_bridge_is_bounded_test_authority_only():
     assert "REGULATE_SPEED" in control
     assert "GUARDED_RECOVERY_D0123" in candidate
     assert "boundedObservationContract" in candidate
-
-
-
-def test_v4747_live_commitment_and_event_driven_recovery_admission_catchup():
-    gate=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
-    lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
-    assert "decisionCommitmentBoundary:apply" not in gate
-    assert "LiveTrafficCommitmentLifecycle" not in gate
-    assert "getControlExecutionObservation" in gate
-    assert "acquireSupportingRegulationAuthority" in lifecycle
-    assert "releaseSupportingRegulationAuthority" in lifecycle
-    assert "applyHeadOnDecision" in control
 
 
 
@@ -1038,7 +873,7 @@ def test_v4758_progression_preservation_probe_is_passive_and_knowledge_backed():
     op=(ROOT/"scripts"/"contracts"/"OperationalPicture.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"ProgressionPreservationProbe.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     assert 'PROGRESSION_PRESERVATION_PROBE_ENABLED = true' in config
     assert 'scripts/diagnostics/ProgressionPreservationProbe.lua' in main
     assert 'progressionEvidence = {}' in source
@@ -1066,58 +901,13 @@ def test_v4759_d0130_purpose_preserving_regulation_catchup():
 
 
 
-def test_v4760_d0131_committed_transition_regulation_catchup():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    bridge=(ROOT/"scripts"/"prototypes"/"CommittedTransitionRegulationTestBridge.lua").read_text(encoding="utf-8")
-    assert "COMMITTED_TRANSITION_REGULATION_TEST_ENABLED = false" in config
-    assert "SHADOW_SIGNAL" in bridge
-    assert "control=false" in bridge
-    assert "setRegulationLease" not in bridge
-    assert "clearRegulationLease" not in bridge
-
-
-
-def test_v4761_d0132_progress_horizon_handoff_evidence_continuity():
-    bridge=(ROOT/"scripts"/"prototypes"/"CommittedTransitionRegulationTestBridge.lua").read_text(encoding="utf-8")
-    ts015=(ROOT/"scripts"/"prototypes"/"Prototype22TS015Relocation.lua").read_text(encoding="utf-8")
-    decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    assert 'HORIZON_SEALED' in bridge
-    assert 'SEALED_AT_COMMITTED_TRANSITION_ADMISSION' in bridge
-    assert 'SEALED_PROGRESS_INTENT_EPOCH_CHANGED' in bridge
-    assert 'track.localIntentEpoch' in bridge and 'track.localIntentValid' in bridge
-    assert 'sealProgressHorizon' in ts015 and 'COMMITTED_REPOSITION_ADMISSION' in ts015
-    assert 'D-0132' in decision and 'moving baseline' in decision
-
-
-def test_v4762_d0133_pre_handoff_progress_horizon_retention():
-    bridge=(ROOT/"scripts"/"prototypes"/"CommittedTransitionRegulationTestBridge.lua").read_text(encoding="utf-8")
-    follower=(ROOT/"scripts"/"diagnostics"/"FollowerMaturationCompressionProbe.lua").read_text(encoding="utf-8")
-    assert "retainPositiveProgressHorizon" in bridge
-    assert "SEALED_FROM_RETAINED_PRE_HANDOFF" in bridge
-    assert "negativeClearanceAuthority=false" in bridge
-    assert "setCommittedTransitionRegulationBridge" not in follower
-    assert "setDriveAuthoritySource" not in follower
-
-
-
-def test_v4763_d0134_productive_coverage_and_refuge_qualification_are_passive_only():
-    relocation=(ROOT/"scripts"/"prototypes"/"Prototype22TS015Relocation.lua").read_text(encoding="utf-8")
-    shadow=(ROOT/"scripts"/"diagnostics"/"RefugeQualificationShadowProbe.lua").read_text(encoding="utf-8")
-    assert "refugeFixtureObservation" in relocation
-    assert "refugeQualificationShadowProbe" not in relocation
-    assert "run.refugeFixtureObservation" in shadow
-    assert "self:evaluateSelection" in shadow
-    assert "selectionInfluence=false" in shadow
-
-
-
 def test_v4765_d0136_productive_coverage_residual_settlement_is_intent_based_and_passive():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     residual=(ROOT/"scripts"/"diagnostics"/"ProductiveCoverageResidualProbe.lua").read_text(encoding="utf-8")
     coverage=(ROOT/"scripts"/"diagnostics"/"DemonstratedProductiveCoverageProbe.lua").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     assert 'PRODUCTIVE_COVERAGE_RESIDUAL_PROBE_ENABLED = false' in config
     assert 'scripts/diagnostics/ProductiveCoverageResidualProbe.lua' not in main
     assert 'addModEventListener(OuttaMyWay.productiveCoverageResidualProbe)' not in main
@@ -1167,7 +957,7 @@ def test_v4767_d0138_native_field_worker_drive_command_probe_is_passive_and_sdk_
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     d0137=(ROOT/"docs"/"prototypes"/"PROTOTYPE_32_NATIVE_AI_DRIVE_SIGNAL_SHADOW.md").read_text(encoding="utf-8")
     d0138=(ROOT/"docs"/"prototypes"/"PROTOTYPE_33_NATIVE_FIELD_WORKER_DRIVE_COMMAND_SHADOW.md").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     assert 'NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_ENABLED = true' in config
     assert 'scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua' in main
     assert 'addModEventListener(OuttaMyWay.nativeFieldWorkerDriveCommandProbe)' in main
@@ -1192,7 +982,7 @@ def test_v4768_d0136_settlement_future_space_uses_explicit_observation_adapter()
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     residual=(ROOT/"scripts"/"diagnostics"/"ProductiveCoverageResidualProbe.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     assert 'futureSpaceWorkerFromTrack' in residual
     assert 'activeObserved=Probe.trackIsActive(track)' in residual
     assert 'local settlingWorker=Probe.futureSpaceWorkerFromTrack(settlingTrack)' in residual
@@ -1344,7 +1134,7 @@ def test_v47100_d0146_step1_remains_situation_owned_knowledge_under_step2_consum
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     assert "scripts/assessment/TrajectoryConflictAssessment.lua" in main
     assert main.index("scripts/assessment/TrajectoryConflictAssessment.lua") < main.index("scripts/assessment/SituationAssessment.lua")
     for token in ("updateTrajectories","classifyPairs","ESTABLISHED_TRAJECTORY","CURRENT_EXCURSION","POTENTIAL_OPPOSED_CORRIDOR_CONFLICT","ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT","D0146_SITUATION_KNOWLEDGE"):
@@ -1472,7 +1262,7 @@ def test_v47106_d0146_current_excursion_conserves_action_space_before_establishe
     dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     assert 'D0146_RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION = 0.75' in config
     assert 'D0146_RESOLUTION_SPACE_REGULATION_KMH' not in config
     assert 'actionSpaceMaxSeparationM=OuttaMyWay.D0146_STEP2_LOCAL_PASSAGE_MAX_ENTRY_SEPARATION_M' in situation
@@ -1681,7 +1471,7 @@ def test_v47121_terminal_yield_canonical_candidate_contract():
     architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
     status=(ROOT/"docs"/"PROJECT_STATUS.md").read_text(encoding="utf-8")
     concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     assert 'OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"' in config
     assert 'OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS = true' in config
     for term in [
@@ -1796,7 +1586,6 @@ def test_v47127_d0147_courtesy_constraint_exception_and_audit_alignment():
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     passage_control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
-    passage_assessment=(ROOT/"scripts"/"assessment"/"CooperativePassageAssessment.lua").read_text(encoding="utf-8")
     capability_assessment=(ROOT/"scripts"/"assessment"/"PassageCapabilityAssessment.lua").read_text(encoding="utf-8")
     architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
     alignment=(ROOT/"docs"/"ARCHITECTURE_CODE_ALIGNMENT.md").read_text(encoding="utf-8")
@@ -1831,13 +1620,12 @@ def test_v47127_d0147_courtesy_constraint_exception_and_audit_alignment():
     assert 'OuttaMyWay.ValueRecord.length(fieldWorld.boundary)<3' in planner
     assert 'OuttaMyWay.ValueRecord.length(run.guide.gates)<1' in passage_control
     assert 'OuttaMyWay.ValueRecord.length(run.thirdPartyConstraints or {})' in passage_control
-    assert 'OuttaMyWay.ValueRecord.length(item.primitives)<1' in passage_assessment
     assert 'OuttaMyWay.ValueRecord.length(item.primitives)<1' in capability_assessment
 
     # The live-validated courtesy calibration remains frozen in this audit tranche.
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"TerminalEgressControl.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     assert 'OuttaMyWay.TERMINAL_INFIELD_RETREAT_DISTANCE_M = 60.0' in config
     assert 'driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)' in control
     assert 'continuousCourseCorrection=false' in control
@@ -1863,9 +1651,9 @@ def test_v0100_pre_1_0_versioning_epoch_contract():
     moddesc=(ROOT/"modDesc.xml").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     roadmap=(ROOT/"docs"/"ROADMAP.md").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.1.9.0"' in config
+    assert 'OuttaMyWay.VERSION = "0.1.10.0"' in config
     assert 'OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"' in config
-    assert '<version value="0.1.9.0">0.1.9.0</version>' in moddesc
+    assert '<version value="0.1.10.0">0.1.10.0</version>' in moddesc
     for token in ('0.MINOR.PATCH.BUILD','canonical releases use `BUILD=0`','TEST iterations increment BUILD','first public release is `1.0.0.0`'):
         assert token in decision
     assert '0.1.0.1' in roadmap
@@ -2089,8 +1877,9 @@ def test_v0181_d0182_d0146_restore_uses_cached_actuator_symmetry_only():
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     authority=(ROOT/"scripts"/"prototypes"/"Prototype22ConfigurationAuthority.lua").read_text(encoding="utf-8")
     start=control.index('function Control:_beginD0146Restore(run)')
-    end=control.index('function Control:_beginRestore(run)',start)
+    end=control.index('function Control:_notify(result)',start)
     restore=control[start:end]
+    assert 'function Control:_beginRestore(run)' not in control
     assert 'requestCachedTransitRestore(participant.vehicle)' in restore
     assert 'getCachedRestoreSettlement(participant.vehicle)' in restore
     assert 'finishCachedTransitRestore(participant.vehicle)' in restore

@@ -1,3 +1,13 @@
+# v0.1.10.0 canonical-candidate checkpoint
+
+D-0184 Legacy Authority Closure C is field-validated and promoted without further behavioural change from v0.1.9.1. The live tree contains no in-repository v4.6.78 script archive or retired D-0143/TS015 runtime fixture machinery. Known Post-Job Regulation Contamination and termination-diagnostic ambiguity are carried forward explicitly; neither is repaired during promotion.
+
+# Current project state — v0.1.9.1 TEST — D-0184 Legacy Authority Closure C
+
+Owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files) is authoritative. Closure C deletes retired runtime archaeology and the in-tree v4.6.78 archive while preserving current D-0146/D-0183 behavior. `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` remains live by explicit handover provenance. Field regression is required before promotion.
+
+---
+
 # Current project state — v0.1.9.0 CANONICAL CANDIDATE
 
 Owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files) remains authoritative pending explicit owner acceptance. v0.1.9.0 promotes validated D-0183 Closure B without further behavioural change.

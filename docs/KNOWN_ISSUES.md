@@ -1,3 +1,16 @@
+## v0.1.10.0 CANONICAL CANDIDATE — known issues / explicit validation boundary
+
+- No blocking D-0184 Closure C defect is known in the tested TS009, TS010S and TS015 regression; TS015 Terminal Egress also passed.
+- **Post-Job Regulation Contamination:** during D-0147 Infield Retreat, repeated GIANTS `AIVehicleUtil.driveToPoint` divide-by-zero errors pass through the live `Prototype22DriveAuthority` REGULATE interceptor. No D-0123 application appears in the supplied run; the retained 1.0 km/h native-handover creep is not implicated.
+- **Termination Evidence Diagnostic Ambiguity:** Player Claim can legitimately produce `PLAYER_TAKEOVER` plus `SOURCE_INTENT_TERMINATION`, currently logged as conflicting authoritative Job Episode termination evidence.
+- Literal Provenance Audit over surviving owners remains open. TS010 Terminal Completion/locality, agronomic debt/Restoration Alignment, assembly×agronomy capability integration and evidence-driven performance audit remain separate.
+
+## v0.1.9.1 TEST — Closure C boundary
+
+Legacy Authority Closure C removes repository/runtime archaeology but does not resolve the surviving engineering backlog. Still open: Literal Provenance Audit over live owners, TS010 Terminal Completion/locality, agronomic debt and Restoration Alignment, assembly×agronomy capability integration, and evidence-driven performance audit. D-0147 generic configuration semantics remain live until TS010 is addressed.
+
+The D-0123 1.0 km/h native handover creep is no longer classified as an unexplained TEST literal; it is retained by explicit restart/handover evidence.
+
 # v0.1.9.0 CANONICAL CANDIDATE — known issues / explicit validation boundary
 
 - No blocking D-0183 defect is known in the four-scenario regression.

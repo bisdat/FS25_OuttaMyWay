@@ -1,3 +1,23 @@
+## v0.1.10.0 CANONICAL CANDIDATE continuity — D-0184 Closure C
+
+- Baseline authority remains owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; Git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files).
+- Candidate promotes the field-validated v0.1.9.1 Closure C bytes with release/provenance changes only.
+- Runtime archaeology removed by D-0184 remains absent; Git/history is the archive.
+- D-0123 native handover creep remains 1.0 km/h by explicit restart evidence.
+- Field evidence: TS009 PASS, TS010S PASS, TS015 PASS; TS015 Terminal Egress PASS and Condor Player Claim correctly superseded D-0147.
+- Carry forward separately: Post-Job Regulation Contamination; Termination Evidence Diagnostic Ambiguity.
+- After canonicalisation: investigate Post-Job Regulation Contamination, then resume Literal Provenance Audit.
+
+## v0.1.9.1 TEST continuity — D-0184 Closure C
+
+- Baseline: owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; Git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files).
+- Git/history, not an executable `scripts/archive/` tree, now preserves the v4.6.78 greenfield donor.
+- D-0143/TS015 relocation and transition-test implementations are deleted after Closure A/B proved they no longer own runtime behavior.
+- D-0146 remains the sole Cooperative Passage path; D-0183 remains the sole Passage restoration path.
+- `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` is retained because non-zero GIANTS-native motion is required for handover/restart; the old TEST-labelled name is retired, not the behavior.
+- D-0147 Terminal configuration semantics remain live and are explicitly deferred to the TS010 Terminal Completion investigation.
+- After field validation/canonical checkpoint, resume the surviving Literal Provenance Audit.
+
 ## v0.1.9.0 CANONICAL CANDIDATE continuity checkpoint
 
 - Baseline: owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; Git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files).

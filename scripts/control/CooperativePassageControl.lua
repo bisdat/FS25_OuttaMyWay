@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.8.0 CANONICAL CANDIDATE — D-0181 Legacy Authority Closure A; D-0179 Physical Capability Record retained.
+-- FS25_OuttaMyWay v0.1.10.0 CANONICAL CANDIDATE — D-0184 removes dead generic restore residue; D-0183 cached-actuator restoration remains authoritative.
 --
 -- Situation/Candidate/Decision/Commitment establish the pair meaning and the
 -- bounded Passage plan before this module is invoked. Passage Selection now
@@ -609,16 +609,6 @@ function Control:_finishD0146Restore(run)
     end
     run.restorationExhausted=exhausted
     self:_complete(run)
-    return true
-end
-
-function Control:_beginRestore(run)
-    self:_stopLeg(run)
-    local okA,reasonA=self.configurationAuthority:requestRestore(run.a.vehicle)
-    local okB,reasonB=self.configurationAuthority:requestRestore(run.b.vehicle)
-    if not okA or not okB then return false,"A="..tostring(reasonA)..":B="..tostring(reasonB) end
-    self:_setPhase(run,"RESTORING",g_time or 0)
-    logInfo("RESTORE_START commitment=%s A=%s B=%s bothHeld=true",tostring(run.commitmentId),run.a.name,run.b.name)
     return true
 end
 
