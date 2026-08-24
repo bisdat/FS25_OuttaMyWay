@@ -1,3 +1,18 @@
+FS25_OuttaMyWay v0.1.12.0 CANONICAL CANDIDATE — D-0188 TERMINATION EVIDENCE COLLAPSE
+
+Authoritative baseline until owner declaration: v0.1.11.0
+SHA-256: 944d197b09d2145b49a1502fc0e9721bf2f11a2f5c3ee86d73beaff3a88669d3
+Git: 69a19cd116d6dc84286ca623dd5600f52315cae2
+Files: 263
+
+Candidate behaviour is the exact live-validated v0.1.11.2 D-0188 state; promotion introduces no further traffic/control algorithm. Positive GIANTS source-job end evidence now ends the Job Episode directly. Natural completion has no `SOURCE_INTENT_TERMINATION` terminal cause; succession remains represented only by `RESTARTED` / `REPLACED`. D-0147 Terminal Occupancy no longer depends on the retired cause string, while Player Claim remains post-completion Terminal Resolution.
+
+TS015 field validation recorded three successful Cooperative Passages, `JOB_EPISODE_ENDED ... terminalCause=nil`, successful D-0147 Terminal Egress and Continuation Renewal, with zero termination-conflict diagnostics and zero divide-by-zero errors.
+
+This package is a canonical candidate only until the owner explicitly declares its exact RRS-produced fingerprint canonical.
+
+---
+
 FS25_OuttaMyWay v0.1.11.0 CANONICAL CANDIDATE — D-0186 REGULATION–HOLD BOUNDARY
 
 Authoritative baseline until owner declaration: v0.1.10.0

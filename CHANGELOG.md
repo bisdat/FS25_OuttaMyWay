@@ -1,3 +1,31 @@
+## v0.1.12.0 CANONICAL CANDIDATE — D-0188 Termination Evidence Collapse checkpoint
+
+**Authority:** owner-declared v0.1.11.0 canonical (`944d197b09d2145b49a1502fc0e9721bf2f11a2f5c3ee86d73beaff3a88669d3`; Git `69a19cd116d6dc84286ca623dd5600f52315cae2`; 263 files) remains authoritative until the owner explicitly accepts this exact RRS-produced candidate fingerprint. v0.1.12.0 promotes the live-validated v0.1.11.2 D-0188 behaviour with **no further traffic/control behavioural change** during candidate preparation.
+
+**Validated simplification:** the positive GIANTS source-job end proof now drives Job Episode `ACTIVE -> ENDED` directly. Natural source-job completion carries no parallel `SOURCE_INTENT_TERMINATION` terminal cause and no synthetic player/GIANTS termination subtype taxonomy. `RESTARTED` and `REPLACED` remain explicit because they define Job Episode succession. D-0147 Terminal Occupancy consumes the ended/non-succession state rather than a termination-cause string; D-0147 `PLAYER_CLAIM` remains solely post-completion Terminal Resolution.
+
+**Field validation (v0.1.11.2):** TS015 ran through three successful D-0146 Cooperative Passages and natural D-0147 Terminal Egress. The completed episode was recorded `reason=JOB_EPISODE_ENDED ... terminalCause=nil`; that same episode was later admitted by D-0147 and settled `TERMINAL_EGRESS_SETTLED ... terminal=SUCCEEDED`, followed by `CONTINUATION_RENEWED physicalProgress=true`. Runtime recorded zero `terminalCause=SOURCE_INTENT_TERMINATION`, zero conflicting authoritative Job Episode termination diagnostics and zero GIANTS divide-by-zero errors.
+
+**Finding closure:** the earlier **Termination Evidence Diagnostic Ambiguity** is retired as a symptom of the redundant Job Episode termination-cause layer rather than repaired by cause reconciliation. The discarded D-0187 convergence line is not part of this candidate.
+
+**Explicit non-change:** D-0186 Regulation–Hold Boundary, D-0147 trajectory/one-shot/Continuation Renewal policy, Player Claim stickiness, D-0146 Passage geometry, D-0179 Transit capability, D-0183 restoration, D-0155 magnitudes, agronomic debt and surviving Literal Audit values are unchanged. The similarly named generic Commitment settlement vocabulary remains outside D-0188.
+
+**Release identity:** BUILD resets to `0`. v0.1.12.0 is a canonical candidate only until the owner explicitly accepts the exact RRS-produced fingerprint.
+
+## v0.1.11.2 TEST — D-0188 Termination Evidence Collapse
+
+**Baseline:** owner-declared v0.1.11.0 canonical (`944d197b09d2145b49a1502fc0e9721bf2f11a2f5c3ee86d73beaff3a88669d3`; Git `69a19cd116d6dc84286ca623dd5600f52315cae2`; 263 files).
+
+**Discovery:** `SOURCE_INTENT_TERMINATION` had become a parallel Job Episode termination-cause layer even though the authoritative GIANTS `lastJob`/`activeJobs` liveness proof already establishes the only fact required by Job Episode identity: the admitted source job has ended. The specific `PLAYER_STOP` / active-job `PLAYER_TAKEOVER` / GIANTS abort/fault Job Episode causes were not emitted by the live observer and existed only as synthetic admission authority.
+
+**Decision:** collapse that layer. Observation retains the raw positive GIANTS source-job end proof because generic inactivity remains insufficient; Job Episode admission consumes that proof directly and transitions `ACTIVE -> ENDED` without assigning a natural-completion terminal cause. `RESTARTED` and `REPLACED` remain explicit because they define Job Episode succession. D-0147 Terminal Occupancy no longer depends on `SOURCE_INTENT_TERMINATION`; naturally ended non-succession episodes remain eligible, while succession-ended episodes remain excluded. Post-completion player control remains solely D-0147 `PLAYER_CLAIM`.
+
+**Explicit non-change:** no Passage, Regulation, D-0186, D-0147 trajectory, Terminal Egress one-shot/Continuation Renewal policy, Player Claim stickiness, Transit, restoration, agronomic or literal magnitude changes. The similarly named generic Commitment settlement vocabulary is not modified in this tranche.
+
+**Validation target:** ordinary source-job completion/Stop AI must end the Job Episode and preserve current Terminal Egress behaviour; unresolved inactive evidence must still fail closed; replacement/restart must create fresh Job Episode identity without becoming Terminal Occupancy candidates.
+
+**Source validation:** 123/123 Python and 264/264 replacement-core Lua tests pass. Exact packaged TEST verification must remain clean at 263 files / 262 manifest entries before field use.
+
 ## v0.1.11.0 CANONICAL CANDIDATE — D-0186 Regulation–Hold Boundary checkpoint
 
 **Authority:** owner-declared v0.1.10.0 canonical (`9a3ace6f2c959e5d2b154ca0b89e4e6384f3093e20b367d227a2379cc0e014fa`; Git `30b7e54f9cbb930a9ccb61d954ec3e2c85c301c2`; 263 files) remains authoritative until the owner explicitly accepts this exact RRS-produced candidate fingerprint. v0.1.11.0 promotes the live-validated v0.1.10.1 D-0186 behaviour with **no further traffic/control behavioural change** during candidate preparation.

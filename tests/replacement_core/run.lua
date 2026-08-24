@@ -254,7 +254,7 @@ local function rawObservation(epoch, evidence, assemblyKey)
         provenance = { source="fixture", sequence=epoch },
         assemblies = {{ referenceKey=assemblyKey, componentReferenceKeys={assemblyKey.."/vehicle", assemblyKey.."/implement"}, source="fixture" }},
         fieldWorld = {}, geometry = {}, motion = {}, aiStates = {}, playerControl = {},
-        jobEpisodeEvidence = evidence and {{ assemblyReferenceKey=assemblyKey, sourceJobToken=evidence.sourceJobToken or "job-1", jobPresent=evidence.jobPresent, aiControlled=evidence.aiControlled, aiActive=evidence.aiActive, blocked=evidence.blocked, outtaMyWayHold=evidence.outtaMyWayHold, temporarilyInactive=evidence.temporarilyInactive, playerStopObserved=evidence.playerStopObserved, playerTakeoverObserved=evidence.playerTakeoverObserved, playerControlled=evidence.playerControlled, giantsAbortObserved=evidence.giantsAbortObserved, giantsFaultObserved=evidence.giantsFaultObserved, restartObserved=evidence.restartObserved, replacementObserved=evidence.replacementObserved, fieldWorldReferenceKey=evidence.fieldWorldReferenceKey, fieldWorldSnapshotReferenceKey=evidence.fieldWorldSnapshotReferenceKey, fieldPolygonReferenceKey=evidence.fieldPolygonReferenceKey, fieldWorldFingerprint=evidence.fieldWorldFingerprint, fieldWorldEquivalenceStatus=evidence.fieldWorldEquivalenceStatus, playerFacingFieldId=evidence.playerFacingFieldId, playerFacingLocatorSource=evidence.playerFacingLocatorSource, provenance={source="fixture"} }} or {},
+        jobEpisodeEvidence = evidence and {{ assemblyReferenceKey=assemblyKey, sourceJobToken=evidence.sourceJobToken or "job-1", jobPresent=evidence.jobPresent, aiControlled=evidence.aiControlled, aiActive=evidence.aiActive, blocked=evidence.blocked, outtaMyWayHold=evidence.outtaMyWayHold, temporarilyInactive=evidence.temporarilyInactive, sourceJobEndEvidence=evidence.sourceJobEndEvidence, restartObserved=evidence.restartObserved, replacementObserved=evidence.replacementObserved, fieldWorldReferenceKey=evidence.fieldWorldReferenceKey, fieldWorldSnapshotReferenceKey=evidence.fieldWorldSnapshotReferenceKey, fieldPolygonReferenceKey=evidence.fieldPolygonReferenceKey, fieldWorldFingerprint=evidence.fieldWorldFingerprint, fieldWorldEquivalenceStatus=evidence.fieldWorldEquivalenceStatus, playerFacingFieldId=evidence.playerFacingFieldId, playerFacingLocatorSource=evidence.playerFacingLocatorSource, provenance={source="fixture"} }} or {},
         operationMembershipEvidence = {}, physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {}
     }
 end
@@ -327,28 +327,14 @@ test("blockage hold and temporary inactivity do not end an episode", function()
     equal(result.activeEpisodeIds[1],episodeId); equal(admission:get(episodeId).status,"ACTIVE")
 end)
 
-test("player stop ends the episode without replacement", function()
+test("authoritative source-job end evidence ends the episode without a parallel cause", function()
     local _,_,adapter,admission=newObservationKernel()
     local first=admission:observe(adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true})))
-    local ended=admission:observe(adapter:publish(rawObservation(2,{jobPresent=false,aiControlled=false,playerStopObserved=true})))
-    equal(#ended.endedEpisodeIds,1); equal(#ended.activeEpisodeIds,0); equal(admission:get(first.activeEpisodeIds[1]).terminalCause,"PLAYER_STOP")
-end)
-
-test("player takeover ends the episode", function()
-    local _,_,adapter,admission=newObservationKernel()
-    local first=admission:observe(adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true})))
-    admission:observe(adapter:publish(rawObservation(2,{jobPresent=false,aiControlled=false,playerControlled=true})))
-    equal(admission:get(first.activeEpisodeIds[1]).terminalCause,"PLAYER_TAKEOVER")
-end)
-
-test("GIANTS abort and fault end episodes", function()
-    for field,cause in pairs({giantsAbortObserved="GIANTS_ABORT",giantsFaultObserved="GIANTS_FAULT"}) do
-        local _,_,adapter,admission=newObservationKernel()
-        local first=admission:observe(adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true})))
-        local evidence={jobPresent=false,aiControlled=false}; evidence[field]=true
-        admission:observe(adapter:publish(rawObservation(2,evidence)))
-        equal(admission:get(first.activeEpisodeIds[1]).terminalCause,cause)
-    end
+    local ended=admission:observe(adapter:publish(rawObservation(2,{jobPresent=false,aiControlled=false,sourceJobEndEvidence={observed=true,reason="FIXTURE_SOURCE_JOB_ENDED"}})))
+    equal(#ended.endedEpisodeIds,1); equal(#ended.activeEpisodeIds,0)
+    local episode=admission:get(first.activeEpisodeIds[1])
+    equal(episode.status,"ENDED"); equal(episode.terminalCause,nil)
+    equal(episode.terminalEvidence.sourceJobEndEvidence.observed,true)
 end)
 
 test("restart creates a new episode even with the same source token", function()
@@ -372,12 +358,6 @@ test("missing episode evidence does not imply termination", function()
     local first=admission:observe(adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true})))
     local missing=adapter:publish(rawObservation(2,nil)); local result=admission:observe(missing)
     equal(result.activeEpisodeIds[1],first.activeEpisodeIds[1]); equal(#result.endedEpisodeIds,0)
-end)
-
-test("conflicting authoritative termination evidence is rejected", function()
-    local _,_,adapter,admission=newObservationKernel()
-    admission:observe(adapter:publish(rawObservation(1,{jobPresent=true,aiControlled=true,aiActive=true})))
-    expectError(function() admission:observe(adapter:publish(rawObservation(2,{jobPresent=false,aiControlled=false,playerStopObserved=true,giantsFaultObserved=true}))) end)
 end)
 
 test("Observation and admission are deterministic from fresh state", function()
@@ -410,7 +390,7 @@ local function pictureFixture(epoch, options)
         },
         motion={closureEvidence={{followerAssemblyReferenceKey=follower,leaderAssemblyReferenceKey=leader,closingObserved=true,closingRate=2,horizon=5,provenance={source="fixture"}}}},
         aiStates={},playerControl={},
-        jobEpisodeEvidence={{assemblyReferenceKey=follower,sourceJobToken=evidenceA.sourceJobToken,jobPresent=evidenceA.jobPresent,aiControlled=evidenceA.aiControlled,aiActive=evidenceA.aiActive,blocked=evidenceA.blocked,playerStopObserved=evidenceA.playerStopObserved,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",fieldWorldFingerprint="fixture-A",fieldWorldEquivalenceStatus="SAME_FIELD_WORLD",provenance={source="fixture"}},{assemblyReferenceKey=leader,sourceJobToken=evidenceB.sourceJobToken,jobPresent=evidenceB.jobPresent,aiControlled=evidenceB.aiControlled,aiActive=evidenceB.aiActive,blocked=evidenceB.blocked,playerStopObserved=evidenceB.playerStopObserved,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-B",fieldPolygonReferenceKey="field-77",fieldWorldFingerprint="fixture-B",fieldWorldEquivalenceStatus="SAME_FIELD_WORLD",provenance={source="fixture"}}},
+        jobEpisodeEvidence={{assemblyReferenceKey=follower,sourceJobToken=evidenceA.sourceJobToken,jobPresent=evidenceA.jobPresent,aiControlled=evidenceA.aiControlled,aiActive=evidenceA.aiActive,blocked=evidenceA.blocked,sourceJobEndEvidence=evidenceA.sourceJobEndEvidence,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",fieldWorldFingerprint="fixture-A",fieldWorldEquivalenceStatus="SAME_FIELD_WORLD",provenance={source="fixture"}},{assemblyReferenceKey=leader,sourceJobToken=evidenceB.sourceJobToken,jobPresent=evidenceB.jobPresent,aiControlled=evidenceB.aiControlled,aiActive=evidenceB.aiActive,blocked=evidenceB.blocked,sourceJobEndEvidence=evidenceB.sourceJobEndEvidence,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-B",fieldPolygonReferenceKey="field-77",fieldWorldFingerprint="fixture-B",fieldWorldEquivalenceStatus="SAME_FIELD_WORLD",provenance={source="fixture"}}},
         operationMembershipEvidence=options.membership or {{assemblyReferenceKey=follower,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}},{assemblyReferenceKey=leader,fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-B",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}},
         physicalRepresentationEvidence=options.representations or {{assemblyReferenceKey=follower,representationId="REP-A",question="CURRENT_OCCUPANCY",assessmentHorizon=5,structurallyValid=true,refreshRequired=false,currentForQuestion=true,coversAssessmentHorizon=true,coverageComplete=true,conservative=true,permittedConclusions={"CONFLICT_SUPPORT","CONFLICT_EXCLUSION"},provenance={source="fixture"}},{assemblyReferenceKey=leader,representationId="REP-B",question="CURRENT_OCCUPANCY",assessmentHorizon=5,structurallyValid=true,refreshRequired=false,currentForQuestion=true,coversAssessmentHorizon=true,coverageComplete=true,conservative=true,permittedConclusions={"CONFLICT_SUPPORT"},provenance={source="fixture"}}},
         controlOutcomes={},unavailableSources=options.unavailableSources or {}
@@ -459,7 +439,7 @@ test("Job Episode end terminates Encounter and restart creates fresh identity",f
 
     local stopped=runtime:processSealedObservation(pictureFixture(2,{
         interactions={},
-        evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false,playerStopObserved=true},
+        evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false,sourceJobEndEvidence={observed=true,reason="FIXTURE_SOURCE_JOB_ENDED"}},
         membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}
     }))
     equal(#stopped.picture.encounters,0)
@@ -469,7 +449,7 @@ test("Job Episode end terminates Encounter and restart creates fresh identity",f
     for _,transition in ipairs(stopped.picture.diagnostics.encounterLifecycleTransitions) do
         if transition.encounterIdentity==oldEncounterId and transition.lifecycle=="TERMINATED" and transition.terminalReason=="JOB_EPISODE_ENDED" then
             local ended=transition.terminalEvidence.details.endedJobEpisodes
-            equal(#ended,1); equal(ended[1].terminalCause,"PLAYER_STOP")
+            equal(#ended,1); equal(ended[1].terminalCause,nil)
             terminated=true
         end
     end
@@ -537,7 +517,7 @@ test("incomplete membership cannot pre-empt authoritative Job Episode terminatio
 
     local authoritativeStop=runtime:processSealedObservation(pictureFixture(3,{
         interactions={},
-        evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false,playerStopObserved=true},
+        evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false,sourceJobEndEvidence={observed=true,reason="FIXTURE_SOURCE_JOB_ENDED"}},
         membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}
     }))
     equal(#authoritativeStop.picture.encounters,0)
@@ -547,7 +527,7 @@ test("incomplete membership cannot pre-empt authoritative Job Episode terminatio
     for _,transition in ipairs(authoritativeStop.picture.diagnostics.encounterLifecycleTransitions) do
         if transition.encounterIdentity==encounterId and transition.lifecycle=="TERMINATED" and transition.terminalReason=="JOB_EPISODE_ENDED" then
             local evidence=transition.terminalEvidence.details.endedJobEpisodes
-            equal(#evidence,1); equal(evidence[1].terminalCause,"PLAYER_STOP")
+            equal(#evidence,1); equal(evidence[1].terminalCause,nil)
             ended=true
         end
     end
@@ -1408,7 +1388,7 @@ test("active Job Episodes with unresolved field identity wait rather than exhaus
     end)
 end)
 
-test("inactive assembly without terminal cause preserves episode and unresolved Operation",function()
+test("inactive assembly without authoritative source-job end evidence preserves episode and unresolved Operation",function()
     withFakeLiveGlobals(function(mission,a,b)
         mission.vehicles={a}; setActiveVehicles(mission,a)
         local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
@@ -1417,8 +1397,8 @@ test("inactive assembly without terminal cause preserves episode and unresolved 
         setActiveVehicles(mission); a.spec_aiFieldWorker.isActive=false; a.spec_aiJobVehicle.job=nil; a.spec_aiFieldWorker.fieldJob=nil
         local secondRaw=runtime.liveObservationSource:capture(mission,11)[1]
         equal(secondRaw.fieldWorld.operationMembershipEvidenceComplete,false)
-        local gap=false; for _,item in ipairs(secondRaw.unavailableSources) do if item.source=="JOB_EPISODE_TERMINATION_CAUSE" then gap=true end end
-        if not gap then error("termination-cause gap was not published") end
+        local gap=false; for _,item in ipairs(secondRaw.unavailableSources) do if item.source=="JOB_EPISODE_END_EVIDENCE" then gap=true end end
+        if not gap then error("source-job end evidence gap was not published") end
         local second=runtime:processSealedObservation(secondRaw)
         equal(#second.jobEpisodes.activeEpisodeIds,1); equal(#second.operation.activeOperationIds,1)
         local supported=runtime.passiveCandidateSupport:attach(second.picture,second.snapshot)
@@ -1427,7 +1407,7 @@ test("inactive assembly without terminal cause preserves episode and unresolved 
     end)
 end)
 
-test("lastJob transition provides source-intent termination without guessing manual stop versus GIANTS termination",function()
+test("lastJob transition ends the Job Episode without guessing a termination subtype",function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA)
         mission.vehicles={a}; setActiveVehicles(mission,a); mission.aiSystem.activeJobs={jobA}
         local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
@@ -1437,7 +1417,7 @@ test("lastJob transition provides source-intent termination without guessing man
         a.spec_aiFieldWorker.isActive=false; a.spec_aiJobVehicle.job=nil; a.spec_aiFieldWorker.fieldJob=jobA; a.spec_aiJobVehicle.lastJob=jobA
         local second=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,11)[1])
         equal(#second.jobEpisodes.activeEpisodeIds,0); equal(#second.jobEpisodes.endedEpisodeIds,1)
-        equal(runtime.jobEpisodes:get(first.jobEpisodes.activeEpisodeIds[1]).terminalCause,"SOURCE_INTENT_TERMINATION")
+        equal(runtime.jobEpisodes:get(first.jobEpisodes.activeEpisodeIds[1]).terminalCause,nil)
         equal(#second.operation.activeOperationIds,0); equal(#second.operation.endedOperationIds,1)
     end)
 end)
@@ -1458,20 +1438,6 @@ test("restarted same source token captures a fresh immutable Field World Snapsho
         if secondEpisode==firstEpisode then error("restart reused Job Episode identity") end
         equal(runtime.fieldWorldSnapshots:getRecordCount(),2)
         equal(runtime.jobEpisodes:get(firstEpisode).fieldWorldReferenceKey,runtime.jobEpisodes:get(secondEpisode).fieldWorldReferenceKey)
-    end)
-end)
-
-test("player takeover supplies genuine Job Episode termination evidence",function()
-    withFakeLiveGlobals(function(mission,a,b)
-        mission.vehicles={a}; setActiveVehicles(mission,a)
-        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
-        local first=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,10)[1])
-        equal(#first.jobEpisodes.activeEpisodeIds,1)
-        setActiveVehicles(mission); a.spec_aiFieldWorker.isActive=false; a.spec_aiJobVehicle.job=nil; a.spec_aiFieldWorker.fieldJob=nil; mission.controlledVehicle=a
-        local second=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,11)[1])
-        equal(#second.jobEpisodes.activeEpisodeIds,0); equal(#second.jobEpisodes.endedEpisodeIds,1)
-        equal(runtime.jobEpisodes:get(first.jobEpisodes.activeEpisodeIds[1]).terminalCause,"PLAYER_TAKEOVER")
-        equal(#second.operation.activeOperationIds,0)
     end)
 end)
 
@@ -4575,9 +4541,26 @@ test("D0146 native blocked signal does not independently abort an active guide",
     OuttaMyWay.D0146_STEP2_PHASE_WATCHDOG_MS=oldWatchdog
 end)
 
+test("D0147 Terminal Occupancy accepts natural ended episodes but excludes succession-ended episodes",function()
+    local function countFor(cause)
+        local terminal={identity="JOB-TERMINAL",status="ENDED",assemblyId="AS-TERMINAL",fieldWorldReferenceKey="FIELD-1"}
+        if cause~=nil then terminal.terminalCause=cause end
+        local episodes={terminal,{identity="JOB-ACTIVE",status="ACTIVE",assemblyId="AS-ACTIVE"}}
+        local assessment=OuttaMyWay.TerminalOccupancyAssessment.new({list=function() return episodes end})
+        local snapshot={controlOutcomes={},playerControl={},assemblies={{assemblyId="AS-TERMINAL",referenceKey="vehicle-root:terminal"},{assemblyId="AS-ACTIVE",referenceKey="vehicle-root:active"}},motion={progressionEvidence={}},aiStates={}}
+        local current={{assemblyId="AS-TERMINAL",occupancy={x=0,z=0,headingX=1,headingZ=0}}}
+        local physical={{assemblyId="AS-TERMINAL",configurationEvidence={},primitives={{identity="TP",kind="DISC",x=0,z=0,radius=2,positiveConflictSupport=true}}},{assemblyId="AS-ACTIVE",configurationEvidence={},primitives={{identity="AP",kind="DISC",x=1,z=0,radius=2,positiveConflictSupport=true}}}}
+        local records=assessment:assess(snapshot,current,{},physical,{})
+        return #records
+    end
+    equal(countFor(nil),1)
+    equal(countFor("REPLACED"),0)
+    equal(countFor("RESTARTED"),0)
+end)
+
 test("D0147 Continuation Renewal requires post-release motion then a later attributed native block",function()
     local episodes={
-        {identity="JOB-TERMINAL",status="ENDED",terminalCause="SOURCE_INTENT_TERMINATION",assemblyId="AS-TERMINAL",fieldWorldReferenceKey="FIELD-1"},
+        {identity="JOB-TERMINAL",status="ENDED",assemblyId="AS-TERMINAL",fieldWorldReferenceKey="FIELD-1"},
         {identity="JOB-ACTIVE",status="ACTIVE",assemblyId="AS-ACTIVE"}
     }
     local jobEpisodes={list=function() return episodes end}

@@ -1,3 +1,21 @@
+## v0.1.12.0 CANONICAL CANDIDATE handover
+
+- Baseline authority remains owner-declared v0.1.11.0 (`944d197b09d2145b49a1502fc0e9721bf2f11a2f5c3ee86d73beaff3a88669d3`, Git `69a19cd116d6dc84286ca623dd5600f52315cae2`, 263 files) until candidate acceptance.
+- D-0188 is field-validated: TS015 naturally ended a Job Episode with `terminalCause=nil`; D-0147 subsequently admitted that episode, completed Terminal Egress and renewed continuation.
+- Termination Evidence Diagnostic Ambiguity is retired by collapsing the redundant Job Episode cause layer; the discarded D-0187 convergence line is not included.
+- No D-0147 trajectory/Player Claim policy, Passage geometry, D-0155 magnitude, Transit/restoration, agronomic debt or Literal Audit value changed during promotion.
+- Next planned engineering work returns to the surviving Literal Provenance Audit, with TS010 Terminal Completion/locality still parked as the following architectural investigation.
+
+# Engineering handover — v0.1.11.2 TEST — D-0188 Termination Evidence Collapse
+
+Start only from owner-declared v0.1.11.0 canonical (`944d197b09d2145b49a1502fc0e9721bf2f11a2f5c3ee86d73beaff3a88669d3`; Git `69a19cd116d6dc84286ca623dd5600f52315cae2`; 263 files).
+
+**Objective:** validate a deletion/simplification, not a new feature. The GIANTS source-job end proof remains positive evidence; the parallel Job Episode `SOURCE_INTENT_TERMINATION` cause and synthetic subtype authorities are gone. Natural Job Episode completion is simply `ENDED`. `RESTARTED`/`REPLACED` remain succession.
+
+**Field gate:** use an established scenario that reaches normal AI job completion and, preferably, D-0147 Terminal Egress. Expect the Job Episode to end, Operation membership to settle as before, Terminal Egress to remain available, and no termination-conflict diagnostic. No player-takeover discriminator is required.
+
+**Do not widen:** Terminal Egress repeat/Player Claim stickiness, TS010 completion/locality, Passage, D-0186, literals, agronomy and naming remain separate.
+
 ## v0.1.11.0 CANONICAL CANDIDATE handover
 
 - Baseline authority remains owner-declared v0.1.10.0 (`9a3ace6f2c959e5d2b154ca0b89e4e6384f3093e20b367d227a2379cc0e014fa`, Git `30b7e54f9cbb930a9ccb61d954ec3e2c85c301c2`, 263 files) until candidate acceptance.

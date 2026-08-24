@@ -1,3 +1,21 @@
+## v0.1.12.0 CANONICAL CANDIDATE — D-0188 Termination Evidence Collapse
+
+Promotes validated v0.1.11.2 without further behavioral change. GIANTS source-job end evidence now ends the Job Episode directly; natural completion carries no `SOURCE_INTENT_TERMINATION` terminal cause. TS015 natural Terminal Egress passed from `terminalCause=nil` with zero termination-conflict and divide-by-zero diagnostics.
+
+## v0.1.11.2 TEST — D-0188 Termination Evidence Collapse
+
+**Baseline:** owner-declared v0.1.11.0 canonical (`944d197b09d2145b49a1502fc0e9721bf2f11a2f5c3ee86d73beaff3a88669d3`; Git `69a19cd116d6dc84286ca623dd5600f52315cae2`; 263 files).
+
+**Discovery:** `SOURCE_INTENT_TERMINATION` had become a parallel Job Episode termination-cause layer even though the authoritative GIANTS `lastJob`/`activeJobs` liveness proof already establishes the only fact required by Job Episode identity: the admitted source job has ended. The specific `PLAYER_STOP` / active-job `PLAYER_TAKEOVER` / GIANTS abort/fault Job Episode causes were not emitted by the live observer and existed only as synthetic admission authority.
+
+**Decision:** collapse that layer. Observation retains the raw positive GIANTS source-job end proof because generic inactivity remains insufficient; Job Episode admission consumes that proof directly and transitions `ACTIVE -> ENDED` without assigning a natural-completion terminal cause. `RESTARTED` and `REPLACED` remain explicit because they define Job Episode succession. D-0147 Terminal Occupancy no longer depends on `SOURCE_INTENT_TERMINATION`; naturally ended non-succession episodes remain eligible, while succession-ended episodes remain excluded. Post-completion player control remains solely D-0147 `PLAYER_CLAIM`.
+
+**Explicit non-change:** no Passage, Regulation, D-0186, D-0147 trajectory, Terminal Egress one-shot/Continuation Renewal policy, Player Claim stickiness, Transit, restoration, agronomic or literal magnitude changes. The similarly named generic Commitment settlement vocabulary is not modified in this tranche.
+
+**Validation target:** ordinary source-job completion/Stop AI must end the Job Episode and preserve current Terminal Egress behaviour; unresolved inactive evidence must still fail closed; replacement/restart must create fresh Job Episode identity without becoming Terminal Occupancy candidates.
+
+**Source validation:** 123/123 Python and 264/264 replacement-core Lua tests pass. Exact packaged TEST verification must remain clean at 263 files / 262 manifest entries before field use.
+
 ## v0.1.11.0 CANONICAL CANDIDATE — D-0186 Regulation–Hold Boundary
 
 Promotes validated v0.1.10.1 without further behavioral change. Zero effective Regulation now carries no-drive permission as well as zero speed; TS015 natural Terminal Egress passes with zero GIANTS divide-by-zero errors.

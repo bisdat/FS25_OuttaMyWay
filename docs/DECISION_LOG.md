@@ -1,3 +1,19 @@
+## D-0188 — Termination Evidence Collapse (validated; v0.1.12.0 candidate)
+
+**Decision:** positive GIANTS source-job end evidence is sufficient to transition the admitted Job Episode directly to `ENDED`; natural completion does not create a second termination-cause representation. `RESTARTED` / `REPLACED` remain succession semantics, and D-0147 Player Claim remains post-completion Terminal Resolution.
+
+**Evidence:** v0.1.11.2 TS015 recorded `JOB_EPISODE_ENDED ... terminalCause=nil`, then admitted the same episode to D-0147 and completed Terminal Egress with continuation renewed. There were zero runtime `terminalCause=SOURCE_INTENT_TERMINATION`, zero termination-conflict diagnostics and zero divide-by-zero errors. The D-0187 cause-convergence approach is superseded and not promoted.
+
+## D-0188 — Termination Evidence Collapse (v0.1.11.2 TEST)
+
+**Observation:** normal FS25 control exposes start/stop of AI jobs; direct player control of an active AI worker is not a normal gameplay transition. During Terminal Egress the Job Episode has already ended and player entry is correctly represented by D-0147 `PLAYER_CLAIM`. The live observer already has a positive GIANTS source-job end proof (`lastJob` retained, admitted token absent from active jobs/active slot, AI inactive). The additional Job Episode cause `SOURCE_INTENT_TERMINATION` therefore duplicated the resulting `ENDED` fact and created a false conflict with an older active-job takeover taxonomy.
+
+**Decision — Termination Evidence Collapse:** retain the raw GIANTS source-job end proof at Observation because inactivity alone remains insufficient, but consume it directly in Job Episode admission. Natural source-job end produces `status=ENDED` with no terminal cause. Remove `SOURCE_INTENT_TERMINATION` and synthetic `PLAYER_STOP` / active-job `PLAYER_TAKEOVER` / GIANTS abort/fault as Job Episode admission authorities. Keep `RESTARTED` and `REPLACED` because they define episode succession.
+
+**D-0147 boundary:** Terminal Occupancy no longer asks for `terminalCause==SOURCE_INTENT_TERMINATION`. It accepts naturally ended non-succession episodes with no active successor; succession-ended episodes remain excluded. Player Claim remains post-completion Terminal Resolution and is unchanged.
+
+**Non-change:** the generic Commitment lifecycle has separately named historical source-intent settlement vocabulary; it is not modified here because this decision concerns Job Episode identity only. No traffic/control magnitude or manoeuvre policy changes.
+
 ## D-0186 — Regulation–Hold Boundary (validated; v0.1.11.0 candidate)
 
 **Decision:** a positive effective Regulation ceiling preserves GIANTS native drive permission; an effective zero ceiling is Hold and must set `isAllowedToDrive=false`.

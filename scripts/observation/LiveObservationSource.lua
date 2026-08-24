@@ -309,7 +309,6 @@ function Source:capture(mission, nowSeconds)
             track.shadowRepresentation=shadowRepresentation
             track.localIntent=localIntent
             track.everActive = true; track.active = true; track.object = object; track.pose = pose
-            track.sourceIntentTerminated = false
             track.diagnosticPose=copyPose(pose); track.diagnosticTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic; track.motionDiagnostic=motionDiagnostic
             track.fieldId = field.fieldId or 0; track.fieldResolved = field.resolved == true; track.fieldEvidence = field
             track.name = objectName(object); track.components = components; track.radius = radius; track.width = width; track.length = length
@@ -329,16 +328,12 @@ function Source:capture(mission, nowSeconds)
         elseif track ~= nil and track.everActive == true then
             local okEntered,entered=safeCall(object,"getIsEntered")
             local playerEntered=okEntered and entered==true
-            -- Preserve the established active-Job player-takeover witness on the
-            -- first inactive frame. D-0147 Player Claim after genuine completion
-            -- is intentionally narrower and is represented separately by
-            -- playerEntered == vehicle:getIsEntered().
-            local wasSourceIntentTerminated = track.sourceIntentTerminated == true
-            local activeJobPlayerTakeover = not wasSourceIntentTerminated and mission.controlledVehicle == object
-            local playerControlled = activeJobPlayerTakeover or playerEntered
-            local termination = OuttaMyWay.LiveAIJobEvidence.sourceIntentTermination(mission, object, track.sourceJobToken)
-            if termination.observed == true then track.sourceIntentTerminated=true end
-            local sourceIntentTerminationObserved = track.sourceIntentTerminated == true
+            -- The retained track supplies one raw GIANTS lifecycle proof: whether
+            -- the admitted source job is now conclusively ended. Job Episode
+            -- admission consumes that proof directly; no parallel termination-cause
+            -- flag is retained. Post-completion player control remains D-0147 Player Claim.
+            local playerControlled = playerEntered
+            local sourceJobEndEvidence = OuttaMyWay.LiveAIJobEvidence.sourceJobEndEvidence(mission, object, track.sourceJobToken)
             if pose ~= nil then
                 track.motionDiagnostic=OuttaMyWay.LiveInteractionDiagnostics.deriveMotion(track.diagnosticPose,pose,track.diagnosticTimestamp,nowSeconds,math.abs(tonumber(object.lastSpeedReal) or 0) * 1000)
                 track.pose = pose; track.diagnosticPose=copyPose(pose); track.diagnosticTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic
@@ -357,9 +352,9 @@ function Source:capture(mission, nowSeconds)
                 object = object, referenceKey = ref, name = track.name or objectName(object), pose = track.pose, poseDiagnostic=track.poseDiagnostic, motionDiagnostic=track.motionDiagnostic,
                 fieldId = track.fieldId or 0, fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence,
                 fieldActive = fieldActive, aiActive = aiActive, hasFieldWorker = hasFieldWorker, activeObserved = false,
-                playerControlled = playerControlled, playerPresent=playerEntered, playerEntered=playerEntered, playerTakeoverObserved = activeJobPlayerTakeover,
-                sourceIntentTerminationObserved = sourceIntentTerminationObserved, terminationEvidence = termination,
-                unresolvedTermination = not playerControlled and not sourceIntentTerminationObserved,
+                playerControlled = playerControlled, playerPresent=playerEntered, playerEntered=playerEntered,
+                sourceJobEndEvidence = sourceJobEndEvidence,
+                unresolvedTermination = sourceJobEndEvidence.observed ~= true,
                 blocked = blockedState(object), speedMps = math.abs(tonumber(object.lastSpeedReal) or 0) * 1000,
                 radius = track.radius, width = track.width, length = track.length, sourceJobToken = track.sourceJobToken,
                 nativeJobToken = nil, nativeJobTokenSource = nil, components = track.components or componentKeys(object), shadowRepresentation=track.shadowRepresentation, localIntent={classification="UNRESOLVED",intentEpoch=track.localIntentEpoch or 0,intentValid=false,reason="JOB_EPISODE_NOT_ACTIVE",source="RETAINED_TRACK"},
@@ -369,7 +364,7 @@ function Source:capture(mission, nowSeconds)
             -- D-0147: genuine source completion ends Operation membership but not
             -- physical observability. Retain the completed assembly until Player
             -- Claim or a fresh GIANTS activation supersedes this terminal episode.
-            if activeJobPlayerTakeover or playerEntered then removeAfterCapture[ref] = true end
+            if playerEntered then removeAfterCapture[ref] = true end
         end
     end
 
@@ -513,13 +508,13 @@ function Source:capture(mission, nowSeconds)
                 assemblyReferenceKey = worker.referenceKey, sourceJobToken = worker.sourceJobToken,
                 jobPresent = worker.activeObserved == true, aiControlled = worker.activeObserved == true,
                 aiActive = worker.aiActive == true, blocked = worker.blocked == true, outtaMyWayHold = false,
-                temporarilyInactive = worker.activeObserved ~= true, playerControlled = worker.playerControlled == true,
-                playerTakeoverObserved = worker.playerTakeoverObserved == true, sourceIntentTerminationObserved = worker.sourceIntentTerminationObserved == true, restartObserved = worker.restartObserved == true,
+                temporarilyInactive = worker.activeObserved ~= true,
+                sourceJobEndEvidence = worker.sourceJobEndEvidence, restartObserved = worker.restartObserved == true,
                 replacementObserved = worker.replacementObserved == true,
                 provenance = {
                     source = worker.nativeJobToken and "GIANTS_ACTIVE_JOB_IDENTITY" or "OBSERVED_NATIVE_AI_ACTIVITY_EPISODE",
                     nativeJobToken = worker.nativeJobToken, nativeJobTokenSource = worker.nativeJobTokenSource,
-                    activeJobVehicleMembership = worker.activeObserved == true, activeObserved = worker.activeObserved, terminationEvidence = worker.terminationEvidence
+                    activeJobVehicleMembership = worker.activeObserved == true, activeObserved = worker.activeObserved, sourceJobEndEvidence = worker.sourceJobEndEvidence
                 },
                 fieldWorldReferenceKey = worker.fieldWorldResolution and worker.fieldWorldResolution.fieldWorldReferenceKey or nil,
                 fieldWorldSnapshotReferenceKey = worker.fieldWorldSnapshot and worker.fieldWorldSnapshot.referenceKey or nil,
@@ -537,8 +532,8 @@ function Source:capture(mission, nowSeconds)
             end
             if worker.unresolvedTermination then
                 raw.unavailableSources[#raw.unavailableSources + 1] = {
-                    source = "JOB_EPISODE_TERMINATION_CAUSE", assemblyReferenceKey = worker.referenceKey,
-                    reason = "previously active job vehicle is no longer in activeJobVehicles; player stop, GIANTS abort/fault and transient loss are not yet distinguished"
+                    source = "JOB_EPISODE_END_EVIDENCE", assemblyReferenceKey = worker.referenceKey,
+                    reason = "previously active source job is no longer observed active, but authoritative GIANTS source-job end evidence is not yet established"
                 }
             end
             if worker.objectUnavailable then

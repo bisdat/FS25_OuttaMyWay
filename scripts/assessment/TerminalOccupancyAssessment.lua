@@ -129,14 +129,14 @@ function Assessment:assess(snapshot,currentSpace,futureSpace,physicalSpaceEviden
             for _,assembly in OuttaMyWay.ValueRecord.ipairs(snapshot.assemblies or {}) do if assembly.referenceKey==assemblyReferenceKey then assemblyId=assembly.assemblyId break end end
             if assemblyId~=nil then
                 for _,episode in OuttaMyWay.ValueRecord.ipairs(self.jobEpisodes:list()) do
-                    if episode.status=="ENDED" and episode.assemblyId==assemblyId and episode.terminalCause=="SOURCE_INTENT_TERMINATION" then self.playerClaimed[episode.identity]=true end
+                    if episode.status=="ENDED" and episode.assemblyId==assemblyId and episode.terminalCause==nil then self.playerClaimed[episode.identity]=true end
                 end
             end
         end
     end
     local records,fitness={},{}
     for _,episode in OuttaMyWay.ValueRecord.ipairs(self.jobEpisodes:list()) do
-        if episode.status=="ENDED" and episode.terminalCause=="SOURCE_INTENT_TERMINATION" and activeSet[episode.assemblyId]==nil then
+        if episode.status=="ENDED" and episode.terminalCause==nil and activeSet[episode.assemblyId]==nil then
             local terminalPhysical=physical[episode.assemblyId]
             local terminalCurrent=current[episode.assemblyId]
             local claimed=self.playerClaimed[episode.identity]==true
@@ -199,7 +199,7 @@ function Assessment:assess(snapshot,currentSpace,futureSpace,physicalSpaceEviden
                 playerClaimed=claimed,yieldAwaitingContinuation=awaitingContinuation,continuationRenewed=continuationRenewed,repeatBlockedPositive=repeatBlockedPositive,exhausted=self.exhausted[episode.identity]==true,
                 configurationEvidence=copy(terminalPhysical and terminalPhysical.configurationEvidence or {}),representationId=representationId,
                 currentSpace=copy(terminalCurrent),physicalSpace=copy(terminalPhysical),
-                provenance={source="TerminalOccupancyAssessment",jobEpisodeTerminalCause=episode.terminalCause,authority="D0147_POSITIVE_TERMINAL_OCCUPANCY"}
+                provenance={source="TerminalOccupancyAssessment",authority="D0147_POSITIVE_TERMINAL_OCCUPANCY"}
             }
         end
     end

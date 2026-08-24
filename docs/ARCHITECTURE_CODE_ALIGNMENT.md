@@ -1,3 +1,20 @@
+## v0.1.12.0 CANONICAL CANDIDATE — validated D-0188 alignment
+
+- Observation retains only the positive GIANTS source-job end proof required to distinguish real termination from generic inactivity.
+- JobEpisodeAdmission consumes that proof directly as `ACTIVE -> ENDED`; natural completion has no parallel termination cause.
+- `RESTARTED` / `REPLACED` remain explicit identity succession events.
+- D-0147 Terminal Occupancy consumes naturally ended non-succession state, not `SOURCE_INTENT_TERMINATION`.
+- D-0147 Player Claim remains post-completion Terminal Resolution; its stickiness and egress policy are unchanged.
+- Field evidence confirms the architecture/code path: `terminalCause=nil` -> D-0147 admission -> Terminal Egress success -> Continuation Renewal.
+
+## v0.1.11.2 TEST — D-0188 Termination Evidence Collapse alignment
+
+- Observation owns only the raw positive GIANTS source-job end proof; `sourceIntentTerminationObserved` / sticky source-intent state are removed.
+- Identity owns the direct `ACTIVE -> ENDED` Job Episode transition. Natural source-job end stores evidence but no parallel terminal cause.
+- `RESTARTED` / `REPLACED` remain identity succession events. Synthetic player/GIANTS termination subtype fields are removed from Job Episode evidence/admission.
+- D-0147 Terminal Occupancy no longer consumes `SOURCE_INTENT_TERMINATION`; Player Claim remains solely Terminal Resolution.
+- Generic Commitment lifecycle settlement vocabulary is outside this tranche and unchanged.
+
 ## v0.1.11.0 CANONICAL CANDIDATE — D-0186 alignment checkpoint
 
 - Positive Regulation remains a bounded speed ceiling and preserves native drive permission.

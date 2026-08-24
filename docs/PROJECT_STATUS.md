@@ -1,3 +1,19 @@
+## v0.1.12.0 CANONICAL CANDIDATE — current status
+
+D-0188 Termination Evidence Collapse is field-validated. TS015 produced three successful Passages, naturally ended JE-00001 with `terminalCause=nil`, admitted that ended episode to D-0147, completed Terminal Egress successfully and renewed continuation. The prior Termination Evidence Diagnostic Ambiguity is retired with the redundant Job Episode cause layer. Candidate promotion is release/provenance only over v0.1.11.2; Literal Provenance Audit and TS010 Terminal Completion remain parked next.
+
+## v0.1.11.2 TEST — D-0188 Termination Evidence Collapse
+
+**Authoritative baseline:** owner-declared v0.1.11.0 canonical (`944d197b09d2145b49a1502fc0e9721bf2f11a2f5c3ee86d73beaff3a88669d3`; Git `69a19cd116d6dc84286ca623dd5600f52315cae2`; 263 files).
+
+**Current understanding:** the carried Termination Evidence Diagnostic Ambiguity was not a real requirement for evidence convergence. It arose from a redundant Job Episode termination-cause layer. The live system needs only (1) authoritative positive evidence that the admitted GIANTS source job has ended, and (2) the resulting Job Episode `ENDED` state. D-0188 removes `SOURCE_INTENT_TERMINATION` as a Job Episode terminal cause and removes unsourced player/GIANTS termination subtype authority. `RESTARTED` / `REPLACED` remain succession facts.
+
+**Terminal boundary:** D-0147 continues to operate on naturally ended, non-succession Job Episodes with no active successor. Player Claim remains a separate post-completion Terminal Resolution event. No TS010/Terminal Occupancy redesign is included.
+
+**Bench state:** source suites must prove unresolved inactivity remains non-terminal, positive GIANTS source-job end evidence ends the episode directly, restart/replacement identity remains deterministic, and D-0147 excludes succession-ended episodes. Field gate is the established TS015-style completion/Terminal Egress regression; no contrived takeover discriminator is required.
+
+---
+
 ## v0.1.11.0 CANONICAL CANDIDATE — current status
 
 D-0186 Regulation–Hold Boundary is validated on TS015 natural Terminal Egress: Protected Yield and Infield Retreat completed successfully with zero GIANTS divide-by-zero errors. Candidate promotion is release/provenance only over v0.1.10.1. The next planned test is Termination Evidence Diagnostic Ambiguity plus the final Legacy Closure sweep.

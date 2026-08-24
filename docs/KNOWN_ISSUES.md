@@ -1,3 +1,16 @@
+## v0.1.12.0 candidate current issue boundary
+
+- **Resolved by D-0188:** Termination Evidence Diagnostic Ambiguity; natural source-job completion now ends the Job Episode directly without `SOURCE_INTENT_TERMINATION` cause reconciliation.
+- **Validated and retained:** D-0186 Regulation–Hold Boundary remains clean; field validation recorded zero divide-by-zero errors.
+- **Open next:** surviving Literal Provenance Audit. TS010 Terminal Completion/locality, agronomic debt, assembly/agronomy expansion and naming/ownership normalisation remain parked.
+
+## v0.1.11.2 TEST — current issue boundary
+
+- **Under test — D-0188 Termination Evidence Collapse:** remove the redundant Job Episode `SOURCE_INTENT_TERMINATION` cause layer while preserving the positive GIANTS source-job end proof and existing Terminal Egress behaviour.
+- **Withdrawn finding:** Termination Evidence Diagnostic Ambiguity is no longer treated as a convergence problem; the apparent conflict came from representing the same Job Episode end through competing cause labels.
+- Player Claim remains a separate Terminal Resolution event. Terminal Egress repeat/one-shot policy is explicitly parked for TS010.
+- Literal Provenance Audit, TS010 Terminal Completion, agronomic debt, assembly/agronomy expansion and naming/ownership normalisation remain parked.
+
 ## v0.1.11.0 candidate current issue boundary
 
 - **Resolved by D-0186:** zero-speed Regulation no longer violates the GIANTS drive-call contract; Post-Job Regulation Contamination is withdrawn as the diagnosis.

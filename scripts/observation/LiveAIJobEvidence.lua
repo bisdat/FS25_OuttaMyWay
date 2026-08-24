@@ -98,7 +98,7 @@ function Evidence.jobActiveInMission(mission, job, token)
     return false, "mission.aiSystem.activeJobs"
 end
 
-function Evidence.sourceIntentTermination(mission, vehicle, previousToken)
+function Evidence.sourceJobEndEvidence(mission, vehicle, previousToken)
     if not usableVehicle(vehicle) or previousToken == nil then
         return {observed = false, reason = "PREVIOUS_JOB_IDENTITY_UNAVAILABLE"}
     end
@@ -122,7 +122,7 @@ function Evidence.sourceIntentTermination(mission, vehicle, previousToken)
         aiActive = okAI and aiActive == true or false,
         fieldWorkActive = okField and fieldActive == true or false,
         specFieldWorkerActive = specActive,
-        reason = observed and "PREVIOUS_JOB_RETAINED_AS_LAST_JOB_AND_NO_LONGER_ACTIVE" or "SOURCE_INTENT_TERMINATION_NOT_ESTABLISHED"
+        reason = observed and "PREVIOUS_JOB_RETAINED_AS_LAST_JOB_AND_NO_LONGER_ACTIVE" or "SOURCE_JOB_END_NOT_ESTABLISHED"
     }
 end
 

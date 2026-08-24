@@ -1,3 +1,24 @@
+## v0.1.12.0 CANONICAL CANDIDATE — D-0188 responsibility checkpoint
+
+| Concern | Owner | Candidate responsibility |
+|---|---|---|
+| Positive proof that admitted GIANTS source job ended | `LiveAIJobEvidence` / `LiveObservationSource` | Observe source-job liveness only; do not manufacture termination subtype |
+| Job Episode natural completion | `JobEpisodeAdmission` | Direct `ACTIVE -> ENDED`; no natural-completion terminal cause |
+| Episode succession | `JobEpisodeAdmission` | `RESTARTED` / `REPLACED` remain explicit and admit fresh identity |
+| Terminal Occupancy eligibility | `TerminalOccupancyAssessment` | Naturally ended non-succession episode + no active successor; no termination-cause dependency |
+| Post-completion player control | D-0147 Terminal Resolution | `PLAYER_CLAIM`; separate from Job Episode termination |
+| Canonical authority | Repository owner | Candidate remains non-canonical until exact fingerprint acceptance |
+
+## v0.1.11.2 TEST — D-0188 ownership delta
+
+| Concern | Owner | Current rule |
+|---|---|---|
+| Positive proof that admitted GIANTS source job ended | `LiveAIJobEvidence` / `LiveObservationSource` | Observe `lastJob` + active-job absence + AI inactivity; do not infer subtype |
+| Job Episode end transition | `JobEpisodeAdmission` | Consume source-job end proof directly; natural end has no terminal cause |
+| Episode succession | `JobEpisodeAdmission` | `RESTARTED` / `REPLACED` remain explicit and admit fresh identity |
+| Terminal Occupancy eligibility | `TerminalOccupancyAssessment` | Naturally ended non-succession episode + no active successor; no source-intent cause dependency |
+| Post-completion player control | D-0147 Terminal Resolution | `PLAYER_CLAIM`; separate from Job Episode termination |
+
 ## v0.1.11.0 CANONICAL CANDIDATE — D-0186 responsibility checkpoint
 
 | Concern | Owner | Candidate responsibility |

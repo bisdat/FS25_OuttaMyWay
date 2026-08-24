@@ -1,3 +1,25 @@
+## v0.1.12.0 CANONICAL CANDIDATE checklist
+
+- [x] Starts from exact owner-declared v0.1.11.0 canonical fingerprint.
+- [x] Promotes validated v0.1.11.2 D-0188 behavior without additional traffic/control changes.
+- [x] Field evidence records three successful D-0146 Passages.
+- [x] Natural Job Episode completion records `terminalCause=nil`; no runtime `SOURCE_INTENT_TERMINATION` terminal cause remains.
+- [x] D-0147 admits the ended episode, completes Terminal Egress and renews continuation.
+- [x] Zero termination-conflict diagnostics and zero divide-by-zero errors.
+- [ ] Owner canonical declaration pending exact RRS-produced candidate fingerprint.
+
+## v0.1.11.2 TEST — D-0188 Termination Evidence Collapse
+
+- [x] Starts from owner-declared v0.1.11.0 canonical (`944d197b09d2145b49a1502fc0e9721bf2f11a2f5c3ee86d73beaff3a88669d3`; Git `69a19cd116d6dc84286ca623dd5600f52315cae2`; 263 files).
+- [x] Removes Job Episode `SOURCE_INTENT_TERMINATION` cause and sticky source-intent observation state.
+- [x] Removes unsourced Job Episode subtype authority (`PLAYER_STOP`, active-job `PLAYER_TAKEOVER`, GIANTS abort/fault).
+- [x] Retains positive GIANTS source-job end evidence; unresolved inactivity remains fail-closed.
+- [x] Retains `RESTARTED` / `REPLACED` succession and fresh Job Episode identity.
+- [x] D-0147 Terminal Occupancy no longer depends on source-intent cause; succession-ended episodes remain excluded.
+- [x] Player Claim / Terminal Egress policy unchanged.
+- [x] Source validation passes 123/123 Python and 264/264 Lua; exact packaged TEST verification target is 263 files / 262 manifest entries / ZIP integrity clean.
+- [ ] Established field completion/Terminal Egress regression passes before promotion.
+
 ## v0.1.11.0 CANONICAL CANDIDATE checklist
 
 - [x] Starts from exact owner-declared v0.1.10.0 canonical fingerprint.

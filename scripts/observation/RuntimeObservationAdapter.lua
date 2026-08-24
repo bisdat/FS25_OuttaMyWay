@@ -6,7 +6,7 @@ local function requirePlainTable(value, name)
     if type(value) ~= "table" or getmetatable(value) ~= nil then error(name .. " must be a plain table", 3) end
 end
 local function shallowCopy(value) local result={}; for key,item in OuttaMyWay.ValueRecord.pairs(value or {}) do result[key]=item end; return result end
-local jobEvidenceFields = {"sourceJobToken","jobPresent","aiControlled","aiActive","blocked","outtaMyWayHold","temporarilyInactive","playerStopObserved","sourceIntentTerminationObserved","playerTakeoverObserved","playerControlled","giantsAbortObserved","giantsFaultObserved","restartObserved","replacementObserved","fieldWorldReferenceKey","fieldWorldSnapshotReferenceKey","fieldPolygonReferenceKey","fieldWorldFingerprint","fieldWorldEquivalenceStatus","playerFacingFieldId","playerFacingLocatorSource","provenance"}
+local jobEvidenceFields = {"sourceJobToken","jobPresent","aiControlled","aiActive","blocked","outtaMyWayHold","temporarilyInactive","sourceJobEndEvidence","restartObserved","replacementObserved","fieldWorldReferenceKey","fieldWorldSnapshotReferenceKey","fieldPolygonReferenceKey","fieldWorldFingerprint","fieldWorldEquivalenceStatus","playerFacingFieldId","playerFacingLocatorSource","provenance"}
 
 function Adapter.new(identityRegistry, epochSequence)
     return setmetatable({identities=identityRegistry,epochs=epochSequence,publishedCount=0},Adapter)

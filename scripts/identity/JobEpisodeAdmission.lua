@@ -25,15 +25,9 @@ local AdmissionResult = OuttaMyWay.ValueRecord.register(
     )
 )
 
-local authoritativeCauseFields = {
-    {field="playerStopObserved", cause="PLAYER_STOP", startsReplacement=false},
-    {field="sourceIntentTerminationObserved", cause="SOURCE_INTENT_TERMINATION", startsReplacement=false},
-    {field="playerTakeoverObserved", cause="PLAYER_TAKEOVER", startsReplacement=false},
-    {field="playerControlled", cause="PLAYER_TAKEOVER", startsReplacement=false},
-    {field="giantsAbortObserved", cause="GIANTS_ABORT", startsReplacement=false},
-    {field="giantsFaultObserved", cause="GIANTS_FAULT", startsReplacement=false},
-    {field="restartObserved", cause="RESTARTED", startsReplacement=true},
-    {field="replacementObserved", cause="REPLACED", startsReplacement=true}
+local successionCauseFields = {
+    {field="restartObserved", cause="RESTARTED"},
+    {field="replacementObserved", cause="REPLACED"}
 }
 
 function Admission.new(identityRegistry, epochSequence)
@@ -45,27 +39,27 @@ function Admission.new(identityRegistry, epochSequence)
     return self
 end
 
-local function explicitCause(evidence, current)
+local function successionCause(evidence, current)
     local causes = {}
-    local replacement = false
-    for _, item in OuttaMyWay.ValueRecord.ipairs(authoritativeCauseFields) do
-        if evidence[item.field] == true then
-            causes[item.cause] = true
-            replacement = replacement or item.startsReplacement
-        end
+    for _, item in OuttaMyWay.ValueRecord.ipairs(successionCauseFields) do
+        if evidence[item.field] == true then causes[item.cause] = true end
     end
     if current ~= nil and evidence.jobPresent == true and evidence.sourceJobToken ~= nil
-        and evidence.sourceJobToken ~= current.sourceJobToken and not replacement then
+        and evidence.sourceJobToken ~= current.sourceJobToken then
         causes.REPLACED = true
-        replacement = true
     end
     local list = {}
     for cause, _ in OuttaMyWay.ValueRecord.pairs(causes) do list[#list + 1] = cause end
     table.sort(list)
     if #list > 1 then
-        error("conflicting authoritative Job Episode termination evidence: " .. table.concat(list, ","), 3)
+        error("conflicting authoritative Job Episode succession evidence: " .. table.concat(list, ","), 3)
     end
-    return list[1], replacement
+    return list[1]
+end
+
+local function sourceJobEnded(evidence)
+    local proof=evidence.sourceJobEndEvidence
+    return type(proof)=="table" and proof.observed==true
 end
 
 local function canAdmit(evidence)
@@ -142,17 +136,19 @@ function Admission:_bindFieldWorld(record, evidence, snapshot)
 end
 
 function Admission:_end(record, cause, evidence, snapshot)
-    local updated = OuttaMyWay.ValueRecord.update(record, {
+    local updates = {
         status = "ENDED",
         endedEpoch = snapshot.epoch,
-        terminalCause = cause,
         terminalEvidence = {
             observationSnapshotId = snapshot.identity,
             sourceJobToken = evidence.sourceJobToken,
+            sourceJobEndEvidence = evidence.sourceJobEndEvidence,
             provenance = evidence.provenance
         },
         revision = record.revision + 1
-    })
+    }
+    if cause ~= nil then updates.terminalCause=cause end
+    local updated = OuttaMyWay.ValueRecord.update(record, updates)
     self.records[record.identity] = updated
     self.activeByAssembly[record.assemblyId] = nil
     return updated
@@ -165,14 +161,15 @@ function Admission:observe(snapshot)
     for _, evidence in OuttaMyWay.ValueRecord.ipairs(snapshot.jobEpisodeEvidence) do
         local currentId = self.activeByAssembly[evidence.assemblyId]
         local current = currentId and self.records[currentId] or nil
-        local cause, startsReplacement = explicitCause(evidence, current)
-        if current ~= nil and cause == nil then
+        local cause = successionCause(evidence, current)
+        local endedBySourceJob = sourceJobEnded(evidence)
+        if current ~= nil and cause == nil and not endedBySourceJob then
             local bound, changed = self:_bindFieldWorld(current,evidence,snapshot)
             current=bound
             if changed then transitions[#transitions+1]={assemblyId=evidence.assemblyId,episodeId=current.identity,event="FIELD_WORLD_BOUND",fieldWorldReferenceKey=current.fieldWorldReferenceKey} end
         end
 
-        if current ~= nil and cause ~= nil then
+        if current ~= nil and (cause ~= nil or endedBySourceJob) then
             local endedRecord = self:_end(current, cause, evidence, snapshot)
             ended[#ended + 1] = endedRecord.identity
             transitions[#transitions + 1] = {
@@ -185,7 +182,7 @@ function Admission:observe(snapshot)
         end
 
         local shouldAdmit = current == nil and canAdmit(evidence)
-        if cause ~= nil and not startsReplacement then shouldAdmit = false end
+        if endedBySourceJob and cause == nil then shouldAdmit = false end
         if shouldAdmit then
             local record = self:_admit(evidence, snapshot)
             admitted[#admitted + 1] = record.identity
