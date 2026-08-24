@@ -1,3 +1,18 @@
+FS25_OuttaMyWay v0.1.11.0 CANONICAL CANDIDATE — D-0186 REGULATION–HOLD BOUNDARY
+
+Authoritative baseline until owner declaration: v0.1.10.0
+SHA-256: 9a3ace6f2c959e5d2b154ca0b89e4e6384f3093e20b367d227a2379cc0e014fa
+Git: 30b7e54f9cbb930a9ccb61d954ec3e2c85c301c2
+Files: 263
+
+Candidate behaviour is the exact live-validated v0.1.10.1 D-0186 state; promotion introduces no further traffic/control algorithm. Zero-speed Regulation is expressed to GIANTS as Hold (`isAllowedToDrive=false`, `maxSpeed=0`), while positive Regulation—including the deliberate 1.0 km/h native-handover creep—preserves native drive permission.
+
+TS015 field validation ran through natural D-0147 Terminal Egress with successful retreat/continuation and zero GIANTS divide-by-zero errors. The earlier Post-Job Regulation Contamination interpretation is withdrawn. Termination Evidence Diagnostic Ambiguity remains the next cleanup finding.
+
+This package is a canonical candidate only until the owner explicitly declares its exact RRS-produced fingerprint canonical.
+
+---
+
 FS25_OuttaMyWay v0.1.10.0 CANONICAL CANDIDATE — D-0184 LEGACY AUTHORITY CLOSURE C
 
 Authoritative baseline until owner declaration: v0.1.9.0

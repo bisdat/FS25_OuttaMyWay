@@ -1,3 +1,17 @@
+## D-0186 — Regulation–Hold Boundary (validated; v0.1.11.0 candidate)
+
+**Decision:** a positive effective Regulation ceiling preserves GIANTS native drive permission; an effective zero ceiling is Hold and must set `isAllowedToDrive=false`.
+
+**Evidence:** v0.1.10.1 TS015 completed natural D-0147 Terminal Egress with Protected Yield and zero `driveToPoint` divide-by-zero errors. The earlier Post-Job Regulation Contamination diagnosis is withdrawn. `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` remains unchanged.
+
+## D-0186 — Regulation–Hold Boundary / GIANTS drive-call contract (v0.1.10.1 TEST)
+
+**Observation:** successful D-0147 Terminal Egress runs emitted repeated GIANTS `AIVehicleUtil.driveToPoint` divide-by-zero errors immediately after `D0147_PROTECTED_YIELD_HOLD` applied a 0.00 km/h Regulation lease. GIANTS had computed `isAllowedToDrive=true` from its pre-interception positive native speed; the live Drive Authority then reduced only `maxSpeed` to zero, creating the inconsistent call pair `allowed=true,maxSpeed=0`. The error predates and is independent of the later Condor Player Claim. D-0123 Native Handover Creep at 1.0 km/h is not implicated.
+
+**Decision:** name the semantic boundary **Regulation–Hold Boundary**. Positive effective Regulation (`outputMax > 0`) preserves GIANTS native drive permission. An effective zero-speed Regulation is a Hold and must also revoke permission: `outputAllowedToDrive = nativeAllowed and outputMax > 0`. Native `allowed=false` is never promoted.
+
+**Isolation:** start from owner-declared v0.1.10.0 canonical (`9a3ace6f2c959e5d2b154ca0b89e4e6384f3093e20b367d227a2379cc0e014fa`; Git `30b7e54f9cbb930a9ccb61d954ec3e2c85c301c2`; 263 files). Do not change D-0147 geometry, Protected Yield selection, D-0123's 1.0 km/h handover creep, Passage behavior, Terminal Egress trajectory, or surviving Literal Audit magnitudes. Field validation must run TS015 through Terminal Egress and confirm the divide-by-zero spam disappears while Protected Yield/Terminal Egress still succeeds.
+
 ## D-0185 — Promote validated D-0184 Closure C to v0.1.10.0 canonical candidate
 
 **Status:** Accepted for canonical-candidate production; owner canonicalisation pending.

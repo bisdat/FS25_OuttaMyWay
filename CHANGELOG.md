@@ -1,3 +1,24 @@
+## v0.1.11.0 CANONICAL CANDIDATE — D-0186 Regulation–Hold Boundary checkpoint
+
+**Authority:** owner-declared v0.1.10.0 canonical (`9a3ace6f2c959e5d2b154ca0b89e4e6384f3093e20b367d227a2379cc0e014fa`; Git `30b7e54f9cbb930a9ccb61d954ec3e2c85c301c2`; 263 files) remains authoritative until the owner explicitly accepts this exact RRS-produced candidate fingerprint. v0.1.11.0 promotes the live-validated v0.1.10.1 D-0186 behaviour with **no further traffic/control behavioural change** during candidate preparation.
+
+**Validated correction:** a positive Regulation ceiling preserves native GIANTS drive permission; an effective zero ceiling is a Hold and now forces `isAllowedToDrive=false` together with `maxSpeed=0`. This prevents the invalid `driveToPoint(..., allowed=true, ..., maxSpeed=0)` contract that produced repeated GIANTS divide-by-zero errors during D-0147 Protected Yield. `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` remains unchanged and positive.
+
+**Field validation (v0.1.10.1):** TS015 was run through natural D-0147 Terminal Egress. The log records one Protected Yield hold, one Infield Retreat, `TERMINAL_EGRESS_SETTLED terminal=SUCCEEDED`, `D0147_INFIELD_RETREAT_COMPLETE`, `CONTINUATION_RENEWED`, and **zero** `Divide by zero error` entries. No Player Claim occurred in this validation run.
+
+**Finding correction:** the earlier **Post-Job Regulation Contamination** interpretation is withdrawn; the demonstrated defect was the **Zero-Speed Regulation Contract Violation / Regulation–Hold Boundary**. **Termination Evidence Diagnostic Ambiguity** remains carried forward for the next cleanup test.
+
+**Explicit non-change:** D-0184 Legacy Authority Closure C, D-0183 cached-actuator restoration, D-0181 D-0146-only fail-closed Passage, D-0179 Job-Start Physical Capability Record, D-0147 trajectory/geometry, Passage geometry, D-0155 magnitudes, agronomic debt and surviving Literal Audit values are unchanged.
+
+**Release identity:** BUILD resets to `0`. v0.1.11.0 is a canonical candidate only until the owner explicitly accepts the exact RRS-produced fingerprint.
+
+## v0.1.10.1 TEST — D-0186 Regulation–Hold Boundary
+
+- Correct the GIANTS drive-call contract at the zero-speed boundary: a REGULATE effective cap of 0.00 km/h now also sets `isAllowedToDrive=false`; positive caps preserve native permission.
+- Preserve `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` unchanged.
+- Add regression coverage proving 10 km/h and 1 km/h remain Regulation, zero becomes Hold, and native no-drive permission cannot be overridden.
+- No D-0147 path/geometry, Passage, Terminal Egress trajectory, or literal-audit magnitude changes.
+
 ## v0.1.10.0 CANONICAL CANDIDATE — D-0184 Legacy Authority Closure C checkpoint
 
 **Authority:** owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; Git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files) remains authoritative until the owner explicitly accepts this exact RRS-produced candidate fingerprint. v0.1.10.0 promotes the live-validated v0.1.9.1 Closure C behaviour with **no further traffic/control behavioural change** during candidate preparation.

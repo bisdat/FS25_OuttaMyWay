@@ -1,3 +1,19 @@
+## v0.1.11.0 CANONICAL CANDIDATE — current status
+
+D-0186 Regulation–Hold Boundary is validated on TS015 natural Terminal Egress: Protected Yield and Infield Retreat completed successfully with zero GIANTS divide-by-zero errors. Candidate promotion is release/provenance only over v0.1.10.1. The next planned test is Termination Evidence Diagnostic Ambiguity plus the final Legacy Closure sweep.
+
+# Current status — v0.1.10.1 TEST — D-0186 Regulation–Hold Boundary
+
+**Authoritative baseline:** owner-declared v0.1.10.0 canonical (`9a3ace6f2c959e5d2b154ca0b89e4e6384f3093e20b367d227a2379cc0e014fa`; Git `30b7e54f9cbb930a9ccb61d954ec3e2c85c301c2`; 263 files).
+
+**Finding:** the carried "Post-Job Regulation Contamination" diagnosis is withdrawn. The divide-by-zero originates on the protected productive worker when D-0147's 0.00 km/h Protected Yield lease is applied after GIANTS has already derived `isAllowedToDrive=true` from a positive native speed. The live drive hook previously emitted `allowed=true,maxSpeed=0`, a call pair GIANTS itself does not normally produce.
+
+**Test hypothesis:** positive Regulation, including `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0`, remains ordinary Regulation. An effective 0.00 km/h cap crosses the Regulation–Hold Boundary and revokes drive permission. This is a generic drive-call contract correction, not a D-0147 special case.
+
+**Validation boundary:** bench tests must prove 10 km/h and 1 km/h retain permission, 0 km/h revokes permission, and native no-drive permission is never overridden. Field validation should run TS015 through D-0147 Terminal Egress and verify both behavioral PASS and absence of `Divide by zero error`. The separate Termination Evidence Diagnostic Ambiguity remains open.
+
+---
+
 # Current status — v0.1.10.0 CANONICAL CANDIDATE — validated D-0184 Closure C
 
 **Authoritative baseline:** owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; Git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files) remains authoritative pending owner acceptance of the exact candidate fingerprint.

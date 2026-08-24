@@ -1,3 +1,20 @@
+## v0.1.11.0 CANONICAL CANDIDATE checklist
+
+- [x] Starts from exact owner-declared v0.1.10.0 canonical fingerprint.
+- [x] Promotes validated v0.1.10.1 D-0186 behavior without additional control changes.
+- [x] D-0123 1.0 km/h Native Handover Creep remains unchanged.
+- [x] TS015 natural Terminal Egress field evidence records zero divide-by-zero errors.
+- [ ] Owner canonical declaration pending exact RRS-produced candidate fingerprint.
+
+## v0.1.10.1 TEST — D-0186 Regulation–Hold Boundary
+
+- [x] Starts from owner-declared v0.1.10.0 canonical (`9a3ace6f2c959e5d2b154ca0b89e4e6384f3093e20b367d227a2379cc0e014fa`; Git `30b7e54f9cbb930a9ccb61d954ec3e2c85c301c2`; 263 files).
+- [x] Behavioral change isolated to REGULATE drive-call permission when effective cap is exactly zero.
+- [x] `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` unchanged and protected as positive Regulation.
+- [x] Bench coverage added for positive cap, 1 km/h creep, zero-speed Hold, and native-disallowed preservation.
+- [x] Exact packaged TEST artifact passes structural, Lua, manifest and ZIP verification (263 files; 262/262 manifest; 123/123 Python; 267/267 Lua; ZIP integrity PASS).
+- [ ] TS015 Terminal Egress PASS with no GIANTS divide-by-zero spam before promotion.
+
 ## v0.1.10.0 CANONICAL CANDIDATE — D-0184 promotion
 
 - [x] Exact baseline is owner-declared v0.1.9.0 canonical SHA-256 `3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`, Git `4156e0d86363d524654d53f1e5cc5794484ffb12`, 317 files.

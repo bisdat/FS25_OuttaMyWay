@@ -1,3 +1,14 @@
+## v0.1.11.0 CANONICAL CANDIDATE — D-0186 Regulation–Hold Boundary
+
+Promotes validated v0.1.10.1 without further behavioral change. Zero effective Regulation now carries no-drive permission as well as zero speed; TS015 natural Terminal Egress passes with zero GIANTS divide-by-zero errors.
+
+## v0.1.10.1 TEST — D-0186 Regulation–Hold Boundary
+
+- Correct the GIANTS drive-call contract at the zero-speed boundary: a REGULATE effective cap of 0.00 km/h now also sets `isAllowedToDrive=false`; positive caps preserve native permission.
+- Preserve `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` unchanged.
+- Add regression coverage proving 10 km/h and 1 km/h remain Regulation, zero becomes Hold, and native no-drive permission cannot be overridden.
+- No D-0147 path/geometry, Passage, Terminal Egress trajectory, or literal-audit magnitude changes.
+
 ## v0.1.10.0 CANONICAL CANDIDATE — D-0184 Legacy Authority Closure C checkpoint
 
 **Authority:** owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; Git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files) remains authoritative until the owner explicitly accepts this exact RRS-produced candidate fingerprint. v0.1.10.0 promotes the live-validated v0.1.9.1 Closure C behaviour with **no further traffic/control behavioural change** during candidate preparation.

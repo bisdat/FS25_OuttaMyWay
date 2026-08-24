@@ -1,3 +1,15 @@
+## v0.1.11.0 candidate current issue boundary
+
+- **Resolved by D-0186:** zero-speed Regulation no longer violates the GIANTS drive-call contract; Post-Job Regulation Contamination is withdrawn as the diagnosis.
+- **Open next:** Termination Evidence Diagnostic Ambiguity — legitimate Player Claim may yield concurrent `PLAYER_TAKEOVER` and `SOURCE_INTENT_TERMINATION` that is currently reported as conflicting.
+- Literal Provenance Audit, TS010 Terminal Completion, agronomic debt, assembly/agronomy expansion and naming/ownership normalisation remain parked.
+
+## v0.1.10.1 TEST — D-0186 validation boundary
+
+- **Regulation–Hold Boundary:** implementation under test. A zero effective Regulation cap now also revokes GIANTS drive permission; field validation is required to confirm D-0147 Protected Yield still works and prior divide-by-zero spam is gone.
+- **Termination Evidence Diagnostic Ambiguity:** still open. Legitimate Player Claim can emit concurrent `PLAYER_TAKEOVER` and `SOURCE_INTENT_TERMINATION`, currently logged as conflicting.
+- The prior label **Post-Job Regulation Contamination** is withdrawn: log/code analysis localised the divide-by-zero to the protected productive worker's zero-speed drive-call contract, not stale regulation on the retreating completed worker.
+
 ## v0.1.10.0 CANONICAL CANDIDATE — known issues / explicit validation boundary
 
 - No blocking D-0184 Closure C defect is known in the tested TS009, TS010S and TS015 regression; TS015 Terminal Egress also passed.

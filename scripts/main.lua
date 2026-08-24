@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.10.0 CANONICAL CANDIDATE — D-0184 Legacy Authority Closure C; D-0183/D-0181/D-0179 retained.
+-- FS25_OuttaMyWay v0.1.11.0 CANONICAL CANDIDATE — D-0186 Regulation–Hold Boundary; v0.1.10.0 Closure C baseline retained.
 -- modDesc.xml loads only this file. Retired implementation is preserved by repository history, not shipped runtime source.
 local modDirectory=g_currentModDirectory or ""
 local modules={

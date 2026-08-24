@@ -1,12 +1,7 @@
--- FS25_OuttaMyWay Prototype 22.
--- Temporary drive-call capability probe for bounded GIANTS-native Regulation
--- and manually requested forward Reposition / rejoin-orientation actuation.
---
--- REGULATE modifies only the speed ceiling passed through GIANTS' existing
--- driveToPoint request.  REPOSITION deliberately replaces steering/direction
--- only for the explicitly scoped probe subject. v4.7.47 additionally allows the
--- bounded D-0123 Guarded-Recovery test bridge to populate REGULATE for the
--- fixture Progress worker; this remains test authority, not production Control.
+-- FS25_OuttaMyWay v0.1.11.0 CANONICAL CANDIDATE — D-0186 Regulation–Hold Boundary.
+-- GIANTS-native drive-call authority for bounded Regulation.
+-- Positive Regulation preserves native permission; a zero effective cap is a Hold and revokes drive permission.
+-- Historical Reposition helpers remain non-production residue pending later naming/ownership normalisation.
 
 OuttaMyWay.Prototype22DriveAuthority = {}
 local Authority = OuttaMyWay.Prototype22DriveAuthority
@@ -84,10 +79,15 @@ function Authority:install()
             local cap = tonumber(state.speedKmh) or 0
             local outputMax = cap
             if tonumber(maxSpeed) ~= nil then outputMax = math.min(tonumber(maxSpeed), cap) end
+            -- D-0186 Regulation–Hold Boundary: GIANTS derives drive permission
+            -- from its native maxSpeed before this interception point. If a
+            -- Regulation lease tightens that ceiling to exactly zero, preserve
+            -- route/steering/direction but also revoke drive permission so we
+            -- never emit the internally inconsistent pair allowed=true,max=0.
+            local outputAllowedToDrive = isAllowedToDrive == true and outputMax > 0
             state.lastOutputMaxSpeed = outputMax
-            -- Preserve GIANTS route, steering, acceleration, permission and
-            -- forward/reverse choice. Only the speed ceiling is bounded.
-            return original(vehicle, dt, acceleration, isAllowedToDrive, moveForwards, lx, lz, outputMax)
+            state.lastOutputAllowed = outputAllowedToDrive
+            return original(vehicle, dt, acceleration, outputAllowedToDrive, moveForwards, lx, lz, outputMax)
         end
 
         if state.mode == "REPOSITION_ORIENT" then

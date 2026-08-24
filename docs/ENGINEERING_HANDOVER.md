@@ -1,3 +1,14 @@
+## v0.1.11.0 CANONICAL CANDIDATE handover
+
+- Baseline authority remains owner-declared v0.1.10.0 (`9a3ace6f2c959e5d2b154ca0b89e4e6384f3093e20b367d227a2379cc0e014fa`, Git `30b7e54f9cbb930a9ccb61d954ec3e2c85c301c2`, 263 files) until candidate acceptance.
+- D-0186 is field-validated: TS015 natural Terminal Egress succeeded with zero divide-by-zero errors.
+- Post-Job Regulation Contamination is withdrawn; Termination Evidence Diagnostic Ambiguity is the next planned cleanup test.
+- No D-0147 trajectory, Passage geometry, D-0155 magnitude, agronomic debt or Literal Audit value changed during promotion.
+
+## v0.1.10.1 TEST handover — D-0186 Regulation–Hold Boundary
+
+Baseline: owner-declared v0.1.10.0 canonical (`9a3ace6f2c959e5d2b154ca0b89e4e6384f3093e20b367d227a2379cc0e014fa`; Git `30b7e54f9cbb930a9ccb61d954ec3e2c85c301c2`; 263 files). The previous TS015 Terminal Egress divide-by-zero is now attributed to an inconsistent intercepted GIANTS call (`allowed=true,maxSpeed=0`) created by zero-speed Regulation. v0.1.10.1 changes only that boundary: zero cap revokes drive permission. Validate TS015 through Terminal Egress and search the log for `Divide by zero error`. The separate Player Claim termination-evidence diagnostic ambiguity remains open.
+
 # Engineering handover — v0.1.10.0 CANONICAL CANDIDATE
 
 Owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; Git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files) remains canonical until explicit owner acceptance of the exact RRS-produced candidate fingerprint. v0.1.10.0 carries the live-validated v0.1.9.1 D-0184 behaviour unchanged.

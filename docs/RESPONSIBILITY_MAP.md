@@ -1,3 +1,23 @@
+## v0.1.11.0 CANONICAL CANDIDATE — D-0186 responsibility checkpoint
+
+| Concern | Owner | Candidate responsibility |
+|---|---|---|
+| Positive Regulation | Drive Authority | Tighten native speed ceiling; preserve native no-drive/drive permission |
+| Zero-speed Hold boundary | Drive Authority | Emit zero speed **and** no-drive permission |
+| D-0123 native handover creep | LiveControlDispatcher | Remains positive 1.0 km/h Regulation |
+| D-0147 Protected Yield | TerminalEgressControl + central Regulation lease | Requests zero-speed effect; trajectory unchanged |
+| Termination evidence ambiguity | Runtime / Job Episode termination evidence | Open next cleanup finding |
+
+## v0.1.10.1 TEST — D-0186 Regulation–Hold responsibility
+
+| Concern | Owner | D-0186 responsibility |
+|---|---|---|
+| Positive Regulation speed ceiling | `Prototype22DriveAuthority` | Preserve native route/direction/permission while applying positive cap |
+| Zero-speed Regulation / Hold | `Prototype22DriveAuthority` | Apply `maxSpeed=0` **and** `isAllowedToDrive=false` |
+| D-0147 Protected Yield selection | `LiveControlDispatcher` / D-0147 | Unchanged; may request 0.00 km/h Hold |
+| D-0123 native handover creep | `LiveControlDispatcher` | Remains 1.0 km/h positive Regulation; unchanged |
+| Terminal Egress trajectory | D-0147 | Unchanged |
+
 ## v0.1.10.0 CANONICAL CANDIDATE — D-0184 responsibility checkpoint
 
 | Concern | Owner | Candidate responsibility |

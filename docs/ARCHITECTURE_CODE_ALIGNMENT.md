@@ -1,3 +1,17 @@
+## v0.1.11.0 CANONICAL CANDIDATE — D-0186 alignment checkpoint
+
+- Positive Regulation remains a bounded speed ceiling and preserves native drive permission.
+- Zero effective Regulation is mechanically a Hold: `maxSpeed=0` and `isAllowedToDrive=false`.
+- D-0147 Protected Yield uses this central boundary; its trajectory and selection policy are unchanged.
+- `D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0` remains deliberate positive Regulation.
+- Earlier Post-Job Regulation Contamination is withdrawn; Termination Evidence Diagnostic Ambiguity remains open.
+
+## v0.1.10.1 TEST — D-0186 Regulation–Hold alignment
+
+**Architecture:** Regulation with a positive ceiling constrains native GIANTS progression; a zero ceiling is semantically Hold.
+
+**Code alignment:** `Prototype22DriveAuthority` now derives output permission from both native permission and the effective post-composition cap. It may tighten permission (`true → false`) at zero, but never relax native permission (`false → true`). D-0147 continues to request a 0.00 km/h Protected Yield effect through the central Regulation lease mechanism.
+
 ## v0.1.10.0 CANONICAL CANDIDATE alignment — validated D-0184
 
 - `scripts/archive/` and dependency-proven D-0143/TS015 runtime fixtures remain absent from the live tree.
