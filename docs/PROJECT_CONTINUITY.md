@@ -1,3 +1,20 @@
+## v0.1.9.0 CANONICAL CANDIDATE continuity checkpoint
+
+- Baseline: owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; Git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files).
+- D-0183 Closure B is validated and promoted unchanged from v0.1.8.1 TEST.
+- Owner field validation of v0.1.8.1 ran TS009 → TS010S → TS015 → TS016, all PASS. The log records six second whistles and six `COOPERATIVE_PASSAGE_SETTLED terminal=SUCCEEDED` outcomes, with zero restoration-fold exhaustion, Transit-fold exhaustion, watchdog, or player-intervention rescue. TS015 also ran through AI job completion and D-0147 Terminal Egress / Infield Retreat passed with continuation renewed.
+- Do not reintroduce generic restoration fold discovery or aggregate fold-state authority.
+- Next work after canonicalisation: remaining Legacy Authority cleanup and Literal Provenance Audit.
+
+## v0.1.8.1 TEST continuity — D-0183 Closure B
+
+- Authoritative baseline: owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; Git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files).
+- D-0181 Closure A remains intact: D-0146-only, cached `TRANSIT_BASE` required, D-0143 historical-only.
+- Closure B removes Bootstrap–Restoration Bypass: outbound and restoration now share the same cached actuator ownership.
+- Restore only cached actuators that physically moved; inert/phantom outbound commands do not create compensating restoration commands.
+- Restoration endpoint settlement is bounded and cannot deadlock the completed pair; exhaustion is not a successful-restoration assertion.
+- Field validation must continue beyond second whistle. Literal Audit resumes only after Closure B validation/canonical checkpoint.
+
 ## v0.1.8.0 CANONICAL CANDIDATE continuity checkpoint
 
 - Entering authority: owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; Git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files).

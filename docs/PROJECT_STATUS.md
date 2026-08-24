@@ -1,3 +1,23 @@
+# Current status — v0.1.9.0 CANONICAL CANDIDATE — validated D-0183 Closure B
+
+Owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files) remains authoritative pending owner acceptance of the exact candidate fingerprint.
+
+**Validated state:** cached-actuator restoration symmetry is field-valid across TS009, TS010S, TS015 and TS016. Owner field validation of v0.1.8.1 ran TS009 → TS010S → TS015 → TS016, all PASS. The log records six second whistles and six `COOPERATIVE_PASSAGE_SETTLED terminal=SUCCEEDED` outcomes, with zero restoration-fold exhaustion, Transit-fold exhaustion, watchdog, or player-intervention rescue. TS015 also ran through AI job completion and D-0147 Terminal Egress / Infield Retreat passed with continuation renewed.
+
+**Next boundary:** canonicalisation review only. After canonicalisation, resume Legacy Authority cleanup / Literal Provenance Audit; no additional behavioural correction belongs in this candidate.
+
+---
+
+# Current status — v0.1.8.1 TEST — D-0183 Cached-Actuator Restoration Symmetry
+
+**Authoritative baseline:** owner-declared **v0.1.8.0 canonical** (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; Git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files).
+
+**Current hypothesis:** D-0146 restoration is now symmetrical with D-0179 outbound Transit actuation. Only cached actuators physically changed by this Passage may be commanded back; readiness is their requested return-endpoint settlement or bounded exhaustion. Generic fold discovery and aggregate `allDeployed`/`allFolded` are non-authoritative.
+
+**Bench state:** 134/134 structural tests and 274/274 replacement-core tests pass. Field validation remains required. Runs should continue beyond second whistle to verify restoration settlement and native handoff.
+
+**Explicit non-change:** Closure A, Transit geometry, Entry, guide, clearance, D-0155, D-0147, Literal Audit values, Restoration Alignment and agronomic debt recovery are unchanged.
+
 # Current status — v0.1.8.0 CANONICAL CANDIDATE — D-0181 Legacy Authority Closure A
 
 Authoritative baseline remains **owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; Git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files)** until explicit owner promotion. v0.1.8.0 is a release/provenance-only promotion of the field-validated v0.1.7.1 implementation.

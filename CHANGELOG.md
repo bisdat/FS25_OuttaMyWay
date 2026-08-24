@@ -1,3 +1,27 @@
+# v0.1.9.0 CANONICAL CANDIDATE — D-0183 Cached-Actuator Restoration Symmetry checkpoint
+
+**Authority:** owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; Git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files) remains authoritative until the owner explicitly accepts this exact RRS-produced candidate fingerprint. v0.1.9.0 promotes the live-validated v0.1.8.1 Closure B behaviour with **no further traffic/control behavioural change** during candidate preparation.
+
+**Validated closure:** outbound Transit and post-second-whistle restoration now share the same D-0179 cached actuator ownership. Restoration commands only cached actuators that physically moved away from their captured pre-Transit endpoints; generic fold rediscovery and aggregate `allDeployed` / `allFolded` have no D-0146 restoration authority. Settlement is bounded and exhaustion removes veto without asserting restoration.
+
+**Field validation (v0.1.8.1):** Owner field validation of v0.1.8.1 ran TS009 → TS010S → TS015 → TS016, all PASS. The log records six second whistles and six `COOPERATIVE_PASSAGE_SETTLED terminal=SUCCEEDED` outcomes, with zero restoration-fold exhaustion, Transit-fold exhaustion, watchdog, or player-intervention rescue. TS015 also ran through AI job completion and D-0147 Terminal Egress / Infield Retreat passed with continuation renewed.
+
+**Explicit non-change:** D-0181 fail-closed Passage authority, D-0179 bootstrap Transit capability, Passage planning, Entry, guide, clearance, D-0155, D-0147, literal values, agronomic debt and Restoration Alignment are unchanged.
+
+**Release identity:** BUILD resets to `0`. v0.1.9.0 is a canonical candidate only until the owner explicitly accepts the exact RRS-produced fingerprint.
+
+# v0.1.8.1 TEST — D-0183 Cached-Actuator Restoration Symmetry
+
+**Baseline:** owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; Git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files).
+
+**Closure B:** post-second-whistle D-0146 restoration now consumes the same D-0179 cached Transit actuator ownership used outbound. Restoration commands only cached actuators whose physical fold position actually moved away from the captured pre-Transit endpoint; generic assembly fold rediscovery and aggregate `allDeployed`/`allFolded` carry no D-0146 restoration authority.
+
+**Settlement:** each physically changed cached actuator is commanded back toward its captured pre-Transit endpoint and observed to that endpoint. Restoration uses the existing cached actuator settlement ceiling; exhaustion removes restoration veto but explicitly does not assert restoration. Work/lowered states captured by Passage are restored when the bounded restoration phase finishes.
+
+**Isolation:** D-0181 fail-closed Passage authority, D-0179 outbound Transit capability, Passage geometry, Entry, guide, clearance, D-0155, D-0147 and all surviving literals are unchanged. This tranche does not implement agronomic debt recovery or Restoration Alignment.
+
+**Bench:** 134 structural tests and 274 replacement-core Lua tests pass. New tests prove cached-only restore, no compensating restore command for an inert outbound fold request, and bounded restoration exhaustion without false success assertion. Field regression is required, with runs allowed to complete beyond second whistle so restoration itself is observed.
+
 # v0.1.8.0 CANONICAL CANDIDATE — D-0181 Legacy Authority Closure A checkpoint
 
 **Authority:** owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; Git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files) remains authoritative until the owner explicitly declares this exact candidate fingerprint canonical. v0.1.8.0 promotes the live-validated v0.1.7.1 Closure A behaviour with **no further traffic/control behavioural change** during candidate preparation.

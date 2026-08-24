@@ -125,6 +125,14 @@ local function toggleFold(object)
     return ok,ok and direction or nil
 end
 
+local function requestFoldDirection(object,direction)
+    direction=tonumber(direction)
+    if object==nil or object.isDeleted==true or direction==nil or direction==0 or type(object.setFoldDirection)~="function" then return false end
+    local ok=pcall(object.setFoldDirection,object,direction,true)
+    if not ok then ok=pcall(object.setFoldDirection,object,direction) end
+    return ok
+end
+
 function Authority.new()
     return setmetatable({states = setmetatable({}, {__mode = "k"})}, Authority)
 end
@@ -164,10 +172,15 @@ function Authority:prepareCachedTransit(vehicle,capability)
     end
     for _,actuator in ipairs(capability.actuators) do
         local object=actuator.object
+        local initialFoldAnimTime=foldTime(object)
         local ok,direction=toggleFold(object)
         if ok and direction~=nil then
             state.foldMutations=state.foldMutations+1
-            state.transitActuatorStates[#state.transitActuatorStates+1]={object=object,memberReferenceKey=actuator.memberReferenceKey,direction=direction,targetFoldAnimTime=direction>0 and 1 or 0,settled=false}
+            state.transitActuatorStates[#state.transitActuatorStates+1]={
+                object=object,memberReferenceKey=actuator.memberReferenceKey,direction=direction,
+                initialFoldAnimTime=initialFoldAnimTime,initialTargetFoldAnimTime=initialFoldAnimTime~=nil and (initialFoldAnimTime>=0.5 and 1 or 0) or (direction>0 and 0 or 1),
+                targetFoldAnimTime=direction>0 and 1 or 0,settled=false
+            }
         end
     end
     state.foldRequested=state.foldMutations>0
@@ -197,6 +210,68 @@ function Authority:getCachedTransitSettlement(vehicle)
     local normal=actuatorCount>0 and settledCount==actuatorCount
     local exhausted=not normal and elapsed>=timeout
     return {settled=normal or exhausted,normal=normal,exhausted=exhausted,actuatorCount=actuatorCount,settledCount=settledCount,elapsedMs=elapsed,timeoutMs=timeout,reason=normal and "ACTUATORS_SETTLED" or (exhausted and "TRANSIT_FOLD_SETTLEMENT_EXHAUSTED" or "ACTUATORS_PENDING")}
+end
+
+-- D-0183: D-0146 restoration is symmetrical with D-0179 Transit actuation.
+-- Restore only cached actuators whose fold position actually moved away from the
+-- pre-Transit endpoint; generic assembly rediscovery and aggregate fold state
+-- carry no D-0146 restoration authority.
+function Authority:requestCachedTransitRestore(vehicle)
+    local state=vehicle~=nil and self.states[vehicle] or nil
+    if state==nil or state.bootstrapTransitCapability~=true then return false,"cached-transit-authority-not-owned" end
+    if state.restoreRequestedAt~=nil then return true,state end
+    state.restoreRequestedAt=g_time or 0
+    state.restoreActuatorStates={}
+    local requested=0
+    for _,actuator in ipairs(state.transitActuatorStates or {}) do
+        local current=foldTime(actuator.object)
+        local initialTarget=tonumber(actuator.initialTargetFoldAnimTime)
+        local physicallyChanged=current~=nil and initialTarget~=nil and math.abs(current-initialTarget)>0.001
+        if physicallyChanged then
+            local direction=initialTarget>=0.5 and 1 or -1
+            if requestFoldDirection(actuator.object,direction) then
+                requested=requested+1
+                state.restoreActuatorStates[#state.restoreActuatorStates+1]={
+                    object=actuator.object,memberReferenceKey=actuator.memberReferenceKey,direction=direction,
+                    targetFoldAnimTime=initialTarget,settled=false
+                }
+            end
+        end
+    end
+    state.restoreFoldRequested=requested>0
+    return true,state
+end
+
+function Authority:getCachedRestoreSettlement(vehicle)
+    local state=vehicle~=nil and self.states[vehicle] or nil
+    if state==nil or state.bootstrapTransitCapability~=true then return {settled=true,normal=true,exhausted=false,actuatorCount=0,settledCount=0,elapsedMs=0,timeoutMs=0,reason="NO_CACHED_TRANSIT_STATE"} end
+    local actuators=state.restoreActuatorStates or {}
+    local actuatorCount=#actuators
+    if state.restoreRequestedAt==nil or actuatorCount==0 then return {settled=true,normal=true,exhausted=false,actuatorCount=actuatorCount,settledCount=actuatorCount,elapsedMs=0,timeoutMs=tonumber(state.settlementTimeoutMs) or 0,reason="NO_PHYSICAL_TRANSIT_CHANGE_TO_RESTORE"} end
+    local settledCount=0
+    for _,actuator in ipairs(actuators) do
+        local value=foldTime(actuator.object)
+        local target=tonumber(actuator.targetFoldAnimTime)
+        local settled=value~=nil and target~=nil and ((target>=0.5 and value>=0.999) or (target<0.5 and value<=0.001))
+        actuator.settled=settled==true
+        if settled then settledCount=settledCount+1 end
+    end
+    local elapsed=math.max(0,(g_time or 0)-(state.restoreRequestedAt or (g_time or 0)))
+    local timeout=tonumber(state.settlementTimeoutMs) or (OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS or 30000)
+    local normal=settledCount==actuatorCount
+    local exhausted=not normal and elapsed>=timeout
+    return {settled=normal or exhausted,normal=normal,exhausted=exhausted,actuatorCount=actuatorCount,settledCount=settledCount,elapsedMs=elapsed,timeoutMs=timeout,reason=normal and "RESTORE_ACTUATORS_SETTLED" or (exhausted and "RESTORE_FOLD_SETTLEMENT_EXHAUSTED" or "RESTORE_ACTUATORS_PENDING")}
+end
+
+function Authority:finishCachedTransitRestore(vehicle)
+    local state=vehicle~=nil and self.states[vehicle] or nil
+    if state==nil or state.bootstrapTransitCapability~=true then return false,"cached-transit-authority-not-owned" end
+    local settlement=self:getCachedRestoreSettlement(vehicle)
+    if settlement.settled~=true then return false,"restore-actuators-pending" end
+    for object,lowered in pairs(state.loweredStates) do setLoweredState(object,lowered) end
+    for object,enabled in pairs(state.workStates) do setWorkState(object,enabled) end
+    self.states[vehicle]=nil
+    return true,{state=state,settlement=settlement}
 end
 
 function Authority:prepareCompact(vehicle)

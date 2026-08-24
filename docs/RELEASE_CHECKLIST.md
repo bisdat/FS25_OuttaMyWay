@@ -1,3 +1,11 @@
+# v0.1.9.0 CANONICAL CANDIDATE — D-0183 promotion
+
+- [x] v0.1.8.1 field regression: TS009, TS010S, TS015, TS016 all PASS.
+- [x] TS015 AI job completion / D-0147 Terminal Egress regression PASS.
+- [ ] Exact RRS candidate/evidence production from owner-declared v0.1.8.0 canonical passes with zero blockers and deterministic byte-identical candidate rebuild.
+- [ ] Exact packaged candidate passes structural/Lua/manifest/ZIP validation.
+- [ ] Owner review and explicit canonicalisation of exact candidate fingerprint.
+
 ## v0.1.8.0 canonical-candidate scope gate — D-0181 Legacy Authority Closure A
 
 - [x] Exact source authority is owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; Git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files).

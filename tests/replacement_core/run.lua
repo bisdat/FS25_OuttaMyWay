@@ -5123,5 +5123,51 @@ test("D0168 clearance telemetry retains already-computed rejected sweep evidence
     end
     equal(found,true)
 end)
+
+test("D0183 cached restoration commands only physically changed cached Transit actuators",function()
+    g_time=1000
+    local active={spec_foldable={foldAnimTime=0},getToggledFoldDirection=function() return 1 end,setFoldDirection=function(self,direction) self.requested=direction end}
+    local unrelated={spec_foldable={foldAnimTime=0},getToggledFoldDirection=function() return 1 end,setFoldDirection=function(self,direction) self.requested=direction end}
+    local vehicle={rootNode=1380}
+    local capability={isFoldable=true,members={vehicle,active,unrelated},actuators={{object=active,memberReferenceKey="member-root:1381"}},settlementTimeoutMs=10000}
+    local authority=OuttaMyWay.Prototype22ConfigurationAuthority.new()
+    equal(authority:prepareCachedTransit(vehicle,capability),true); equal(active.requested,1); equal(unrelated.requested,nil)
+    active.spec_foldable.foldAnimTime=1; g_time=7000
+    local ok,state=authority:requestCachedTransitRestore(vehicle); equal(ok,true); equal(#state.restoreActuatorStates,1); equal(active.requested,-1); equal(unrelated.requested,nil)
+    local pending=authority:getCachedRestoreSettlement(vehicle); equal(pending.settled,false); equal(pending.actuatorCount,1)
+    active.spec_foldable.foldAnimTime=0; g_time=13000
+    local settled=authority:getCachedRestoreSettlement(vehicle); equal(settled.settled,true); equal(settled.normal,true); equal(settled.exhausted,false)
+    equal(authority:finishCachedTransitRestore(vehicle),true); equal(authority:getState(vehicle),nil)
+end)
+
+test("D0183 inert cached Transit command creates no compensating restore fold",function()
+    g_time=1000
+    local calls={}
+    local inert={spec_foldable={foldAnimTime=0},getToggledFoldDirection=function() return 1 end,setFoldDirection=function(self,direction) calls[#calls+1]=direction end}
+    local vehicle={rootNode=1382}
+    local capability={isFoldable=true,members={vehicle,inert},actuators={{object=inert,memberReferenceKey="member-root:1383"}},settlementTimeoutMs=2000}
+    local authority=OuttaMyWay.Prototype22ConfigurationAuthority.new()
+    equal(authority:prepareCachedTransit(vehicle,capability),true); equal(#calls,1); equal(calls[1],1)
+    -- Simulate a false-positive/native-inert Transit request: fold position never left its start endpoint.
+    g_time=3001; local exhausted=authority:getCachedTransitSettlement(vehicle); equal(exhausted.exhausted,true)
+    local ok,state=authority:requestCachedTransitRestore(vehicle); equal(ok,true); equal(#state.restoreActuatorStates,0); equal(#calls,1)
+    local restore=authority:getCachedRestoreSettlement(vehicle); equal(restore.settled,true); equal(restore.reason,"NO_PHYSICAL_TRANSIT_CHANGE_TO_RESTORE")
+    equal(authority:finishCachedTransitRestore(vehicle),true)
+end)
+
+test("D0183 restore settlement exhaustion removes restoration veto without asserting restoration",function()
+    g_time=1000
+    local active={spec_foldable={foldAnimTime=0},getToggledFoldDirection=function() return 1 end,setFoldDirection=function(self,direction) self.requested=direction end}
+    local vehicle={rootNode=1384}
+    local capability={isFoldable=true,members={vehicle,active},actuators={{object=active,memberReferenceKey="member-root:1385"}},settlementTimeoutMs=2000}
+    local authority=OuttaMyWay.Prototype22ConfigurationAuthority.new()
+    equal(authority:prepareCachedTransit(vehicle,capability),true)
+    active.spec_foldable.foldAnimTime=1; g_time=3001
+    equal(authority:requestCachedTransitRestore(vehicle),true); equal(active.requested,-1)
+    -- Restore command is inert: remain folded until the bounded settlement ceiling expires.
+    g_time=5002; local exhausted=authority:getCachedRestoreSettlement(vehicle)
+    equal(exhausted.settled,true); equal(exhausted.exhausted,true); equal(exhausted.normal,false)
+    equal(authority:finishCachedTransitRestore(vehicle),true)
+end)
 print(string.format("RESULT %d passed, %d failed",passed,failed))
 if failed > 0 then os.exit(1) end

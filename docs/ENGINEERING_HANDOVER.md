@@ -1,3 +1,25 @@
+# Engineering handover — v0.1.9.0 CANONICAL CANDIDATE
+
+Owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files) remains canonical until explicit owner acceptance of the exact RRS-produced candidate fingerprint. v0.1.9.0 carries the live-validated v0.1.8.1 D-0183 behaviour unchanged.
+
+**Validated regression:** Owner field validation of v0.1.8.1 ran TS009 → TS010S → TS015 → TS016, all PASS. The log records six second whistles and six `COOPERATIVE_PASSAGE_SETTLED terminal=SUCCEEDED` outcomes, with zero restoration-fold exhaustion, Transit-fold exhaustion, watchdog, or player-intervention rescue. TS015 also ran through AI job completion and D-0147 Terminal Egress / Infield Retreat passed with continuation renewed.
+
+**Authority checkpoint:** outbound Transit and restoration share the cached D-0179 actuator set. Restore only actuators physically changed by Passage; do not restore generic fold discovery, `allDeployed`, `allFolded`, configuration-profile or shop-option authority.
+
+**Next action after canonicalisation:** resume Legacy Authority cleanup / dead-code deletion and the Literal Provenance Audit. Keep TS010 terminal completion, agronomic debt and assembly×agronomy work separate until selected.
+
+# Engineering handover — v0.1.8.1 TEST — D-0183 Closure B
+
+Start only from owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; Git `aea77fe388884227e487d96076e9591fe99ce79b`).
+
+**Test objective:** validate post-second-whistle restoration, not Passage selection. For every genuinely folded participant, expect `RESTORE_CAPABILITY` to list only cached actuators that physically changed, followed by `RESTORE_FOLD_WAIT` and `RESTORE_FOLD_SETTLED`. Non-foldable/irrelevant mechanisms such as K105/FW212 must not acquire restoration authority.
+
+**Regression order:** TS016 → TS015 → TS010S → TS009. Let each run continue to `COOPERATIVE_PASSAGE_SETTLED` where practical. TS015 is especially valuable because both sprayers restore; TS009 checks two mower actuators while FW212 remains untouched; TS016 checks Patriot-only restoration while K105 remains untouched.
+
+**Fail-safe discriminator:** `RESTORE_FOLD_SETTLEMENT_EXHAUSTED` may release restoration veto but must report `restoredAsserted=false`; it should not occur in the established fixtures.
+
+**Do not widen:** no literal tuning, no agronomic reverse recovery, no Restoration Alignment work, no D-0147 change.
+
 # Engineering handover — v0.1.8.0 CANONICAL CANDIDATE
 
 Owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files) remains canonical until explicit acceptance of this exact RRS-produced candidate fingerprint. v0.1.8.0 carries the live-validated v0.1.7.1 D-0181 behaviour unchanged.

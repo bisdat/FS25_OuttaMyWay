@@ -1,3 +1,18 @@
+FS25_OuttaMyWay v0.1.9.0 CANONICAL CANDIDATE — D-0183 CACHED-ACTUATOR RESTORATION SYMMETRY
+
+Authoritative baseline until owner declaration: v0.1.8.0
+SHA-256: f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d
+Git: aea77fe388884227e487d96076e9591fe99ce79b
+Files: 317
+
+Candidate behaviour is the exact live-validated v0.1.8.1 Closure B state; promotion introduces no further traffic/control algorithm. Outbound Transit and restoration consume the same cached selected-runtime actuator set, and restoration addresses only actuators physically changed by Passage.
+
+Owner field validation of v0.1.8.1 ran TS009 → TS010S → TS015 → TS016, all PASS. The log records six second whistles and six `COOPERATIVE_PASSAGE_SETTLED terminal=SUCCEEDED` outcomes, with zero restoration-fold exhaustion, Transit-fold exhaustion, watchdog, or player-intervention rescue. TS015 also ran through AI job completion and D-0147 Terminal Egress / Infield Retreat passed with continuation renewed.
+
+This package is a canonical candidate only until the owner explicitly declares its exact RRS-produced fingerprint canonical.
+
+---
+
 FS25_OuttaMyWay v0.1.8.0 CANONICAL CANDIDATE — D-0181 LEGACY AUTHORITY CLOSURE A
 
 Authoritative baseline until owner declaration: v0.1.7.0

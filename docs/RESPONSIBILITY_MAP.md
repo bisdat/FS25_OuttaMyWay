@@ -1,3 +1,28 @@
+## v0.1.9.0 CANONICAL CANDIDATE — D-0183 responsibility checkpoint
+
+| Concern | Owner | Candidate responsibility |
+|---|---|---|
+| Transit actuator discovery | D-0179 Representation bootstrap | Selected-runtime cached actuator set |
+| Outbound Transit | D-0146 Configuration Authority | Command cached actuators only |
+| Pre-Transit endpoint capture | D-0146 Configuration Authority | Capture endpoint for successfully commanded cached actuators |
+| Restoration selection | D-0183 Configuration Authority | Restore only cached actuators that physically moved |
+| Restoration readiness | D-0146 Control | Requested return endpoint or bounded exhaustion |
+| Generic fold rediscovery / aggregate fold state | Historical/prototype evidence | No D-0146 restoration authority |
+| Canonical authority | Repository owner | Candidate remains non-canonical until exact fingerprint acceptance |
+
+## v0.1.8.1 TEST — D-0183 restoration authority
+
+| Concern | Current owner | Closure-B responsibility |
+|---|---|---|
+| Outbound Transit actuator selection | D-0179 Representation bootstrap | Unchanged cached selected-runtime actuators |
+| Pre-Transit fold endpoint | Configuration Authority state | Captured only for successfully commanded cached actuators |
+| Restoration actuator selection | D-0146 Configuration Authority | Only cached actuators that physically moved from the captured endpoint |
+| Restoration readiness | D-0146 Control + cached actuator endpoint evidence | Requested return endpoint or bounded exhaustion |
+| Generic `spec_foldable` discovery | Historical/prototype machinery | No D-0146 restoration authority |
+| Aggregate `allDeployed` / `allFolded` | Diagnostic/legacy evidence | No D-0146 restoration authority |
+| Work/lowered state restoration | D-0146 Configuration Authority | Restore the state captured when Transit authority was acquired |
+| Agronomic restoration / orientation | Future work | Explicitly out of Closure B |
+
 ## v0.1.8.0 CANONICAL CANDIDATE — D-0181 responsibility checkpoint
 
 | Concern | Owner | Candidate responsibility |

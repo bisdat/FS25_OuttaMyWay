@@ -471,7 +471,7 @@ function Control:_beginD0146Configuration(run)
     local ignored=0
     for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
         if participant.configurationMode~="TRANSIT_REQUIRED" then
-            for _,rollback in OuttaMyWay.ValueRecord.ipairs(owned) do self.configurationAuthority:requestRestore(rollback.vehicle) end
+            for _,rollback in OuttaMyWay.ValueRecord.ipairs(owned) do self.configurationAuthority:requestCachedTransitRestore(rollback.vehicle) end
             return false,participant.name..":unsupported-configuration-mode:"..tostring(participant.configurationMode)
         end
         participant.passageTransitFoldWaitingLogged=false
@@ -546,39 +546,68 @@ end
 
 function Control:_beginD0146Restore(run)
     self:_stopLeg(run)
-    local requested=0
+    local owned=0
+    local restoreActuators=0
     for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
+        participant.passageRestoreFoldWaitingLogged=false
+        participant.passageRestoreFoldSettledLogged=false
+        participant.passageRestoreFoldExhaustedLogged=false
         if self.configurationAuthority:getState(participant.vehicle)~=nil then
-            local ok,reason=self.configurationAuthority:requestRestore(participant.vehicle)
-            if not ok then return false,participant.name..":"..tostring(reason) end
-            requested=requested+1
+            local ok,state=self.configurationAuthority:requestCachedTransitRestore(participant.vehicle)
+            if not ok then return false,participant.name..":"..tostring(state) end
+            owned=owned+1
+            restoreActuators=restoreActuators+#(state.restoreActuatorStates or {})
+            logInfo("RESTORE_CAPABILITY commitment=%s participant=%s cachedOnly=true physicallyChangedActuators=%d genericFoldDiscovery=false",
+                tostring(run.commitmentId),participant.name,#(state.restoreActuatorStates or {}))
         end
     end
-    if requested==0 then
+    if owned==0 then
         logInfo("RESTORE_SKIPPED commitment=%s reason=NO_CONFIGURATION_CHANGED modes=%s",tostring(run.commitmentId),configurationModeText(run))
         self:_complete(run)
         return true,"COMPLETED_WITHOUT_CONFIGURATION_RESTORE"
     end
     self:_setPhase(run,"RESTORING",g_time or 0)
-    logInfo("RESTORE_START commitment=%s selective=true changedParticipants=%d modes=%s",tostring(run.commitmentId),requested,configurationModeText(run))
+    logInfo("RESTORE_START commitment=%s selective=true ownedParticipants=%d cachedActuators=%d restoreOnlyPhysicalTransitChanges=true modes=%s",tostring(run.commitmentId),owned,restoreActuators,configurationModeText(run))
     return true
 end
 
 function Control:_d0146RestoreReady(run)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
-        if self.configurationAuthority:getState(participant.vehicle)~=nil and self.configurationAuthority:getEvidence(participant.vehicle).allDeployed~=true then return false end
+        if self.configurationAuthority:getState(participant.vehicle)~=nil then
+            local settlement=self.configurationAuthority:getCachedRestoreSettlement(participant.vehicle)
+            if settlement.settled~=true then
+                if participant.passageRestoreFoldWaitingLogged~=true then
+                    participant.passageRestoreFoldWaitingLogged=true
+                    logInfo("RESTORE_FOLD_WAIT commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
+                end
+                return false
+            end
+            if settlement.exhausted==true then
+                if participant.passageRestoreFoldExhaustedLogged~=true then
+                    participant.passageRestoreFoldExhaustedLogged=true
+                    logWarning("RESTORE_FOLD_SETTLEMENT_EXHAUSTED commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f action=REMOVE_RESTORATION_VETO restoredAsserted=false",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
+                end
+            elseif participant.passageRestoreFoldSettledLogged~=true then
+                participant.passageRestoreFoldSettledLogged=true
+                logInfo("RESTORE_FOLD_SETTLED commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
+            end
+        end
     end
     return true
 end
 
 function Control:_finishD0146Restore(run)
+    local exhausted=false
     for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
         if self.configurationAuthority:getState(participant.vehicle)~=nil then
-            local ok,reason=self.configurationAuthority:finishRestore(participant.vehicle)
-            if not ok then return false,participant.name..":"..tostring(reason) end
+            local settlement=self.configurationAuthority:getCachedRestoreSettlement(participant.vehicle)
+            exhausted=exhausted or settlement.exhausted==true
+            local ok,result=self.configurationAuthority:finishCachedTransitRestore(participant.vehicle)
+            if not ok then return false,participant.name..":"..tostring(result) end
             self:_endRepresentationConfigurationAuthority(participant)
         end
     end
+    run.restorationExhausted=exhausted
     self:_complete(run)
     return true
 end
@@ -611,8 +640,8 @@ function Control:_complete(run)
         tostring(run.commitmentId),run.a.name,tostring(run.a.startJobToken),tostring(run.a.wakeMethod),run.b.name,tostring(run.b.startJobToken),tostring(run.b.wakeMethod),
         pa and pb and string.format("%.2fm",distance(pa.x,pa.z,pb.x,pb.z)) or "n/a")
     self.run=nil; self.completedCount=self.completedCount+1
-    local evidenceKind="D0146_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
-    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,sameJobs=true,bothRestored=true,cooldown=false,completedAt=g_time or 0}})
+    local evidenceKind=run.restorationExhausted==true and "D0146_COOPERATIVE_PASSAGE_RESTORE_EXHAUSTED_AND_HANDED_BACK" or "D0146_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
+    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,sameJobs=true,bothRestored=run.restorationExhausted~=true,restorationExhausted=run.restorationExhausted==true,cooldown=false,completedAt=g_time or 0}})
 end
 
 function Control:_failHeld(reason)

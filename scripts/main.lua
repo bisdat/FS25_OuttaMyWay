@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.8.0 CANONICAL CANDIDATE — D-0181 Legacy Authority Closure A; D-0179 Physical Capability Record retained.
+-- FS25_OuttaMyWay v0.1.9.0 CANONICAL CANDIDATE — D-0183 Cached-Actuator Restoration Symmetry; D-0181/D-0179 retained.
 -- modDesc.xml loads only this file. Historical archived modules are never sourced.
 local modDirectory=g_currentModDirectory or ""
 local modules={

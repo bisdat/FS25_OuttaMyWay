@@ -1,3 +1,20 @@
+## v0.1.9.0 CANONICAL CANDIDATE alignment — validated D-0183
+
+- **D-0179 bootstrap:** owns selected-runtime Transit actuator set and cached Transit geometry.
+- **Outbound Transit:** commands cached actuators only.
+- **D-0183 Restoration:** restores only cached actuators that physically changed, to captured pre-Transit endpoints; generic fold rediscovery and aggregate fold-state authority are absent from D-0146 restoration.
+- **Fail-safe:** bounded endpoint settlement releases veto on exhaustion without claiming restoration.
+- **Validation:** TS009/TS010S/TS015/TS016 all field-PASS; TS015 also passed Terminal Egress through AI job completion.
+- **Candidate preparation:** release/provenance only; no behavioural delta from v0.1.8.1.
+
+## v0.1.8.1 TEST alignment — D-0183 Cached-Actuator Restoration Symmetry
+
+- **D-0179 bootstrap capability:** unchanged; still owns the selected-runtime Transit actuator set.
+- **Prototype22ConfigurationAuthority (D-0146 use):** captures the pre-Transit endpoint for successfully commanded cached actuators; restoration addresses only cached actuators whose physical fold position moved.
+- **CooperativePassageControl restoration:** consumes `requestCachedTransitRestore` / `getCachedRestoreSettlement` / `finishCachedTransitRestore`; aggregate `allDeployed` and generic fold rediscovery have no D-0146 restoration authority.
+- **Fail-safe:** cached actuator settlement ceiling also bounds restoration; exhaustion removes restoration veto without asserting restoration.
+- **Isolation:** no Entry, guide, clearance, D-0155, D-0147, agronomic-recovery or literal-value change.
+
 ## v0.1.8.0 CANONICAL CANDIDATE alignment — validated D-0181
 
 - **LocalPassagePlanner:** cached `TRANSIT_BASE` is mandatory; missing evidence fails closed. No configuration-conditioned fallback remains in production.

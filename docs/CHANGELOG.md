@@ -1,3 +1,17 @@
+# v0.1.9.0 CANONICAL CANDIDATE — D-0183 Cached-Actuator Restoration Symmetry checkpoint
+
+**Authority:** owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; Git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files) remains authoritative until explicit acceptance of the exact candidate fingerprint. Candidate preparation promotes validated v0.1.8.1 behaviour without further traffic/control change.
+
+**Closure B:** restoration consumes only cached D-0179 Transit actuators that physically changed, returns them to captured pre-Transit endpoints, and uses bounded endpoint settlement without generic fold rediscovery or aggregate fold-state authority.
+
+**Field validation:** Owner field validation of v0.1.8.1 ran TS009 → TS010S → TS015 → TS016, all PASS. The log records six second whistles and six `COOPERATIVE_PASSAGE_SETTLED terminal=SUCCEEDED` outcomes, with zero restoration-fold exhaustion, Transit-fold exhaustion, watchdog, or player-intervention rescue. TS015 also ran through AI job completion and D-0147 Terminal Egress / Infield Retreat passed with continuation renewed.
+
+**Boundary:** Literal Provenance Audit, TS010 terminal completion/locality, agronomic debt, assembly×agronomy capability expansion and optimisation remain separate.
+
+# v0.1.8.1 TEST — D-0183 Cached-Actuator Restoration Symmetry
+
+Owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; Git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files) is the baseline. D-0146 restoration now commands only cached D-0179 Transit actuators that physically moved from their captured pre-Transit endpoint, waits for their requested return endpoints with bounded exhaustion, and no longer uses generic fold rediscovery or aggregate `allDeployed`/`allFolded` as restoration authority. Passage geometry/control before the second whistle, D-0155, D-0147 and surviving literal values are unchanged.
+
 # v0.1.8.0 CANONICAL CANDIDATE — D-0181 Legacy Authority Closure A checkpoint
 
 **Authority:** owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; Git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files) remains authoritative until the owner explicitly declares this exact candidate fingerprint canonical. v0.1.8.0 promotes the live-validated v0.1.7.1 Closure A behaviour with **no further traffic/control behavioural change** during candidate preparation.

@@ -1,3 +1,23 @@
+## D-0184 — Promote validated D-0183 Closure B to v0.1.9.0 canonical candidate
+
+**Status:** Accepted for canonical-candidate production; owner canonicalisation pending.
+
+**Evidence:** Owner field validation of v0.1.8.1 ran TS009 → TS010S → TS015 → TS016, all PASS. The log records six second whistles and six `COOPERATIVE_PASSAGE_SETTLED terminal=SUCCEEDED` outcomes, with zero restoration-fold exhaustion, Transit-fold exhaustion, watchdog, or player-intervention rescue. TS015 also ran through AI job completion and D-0147 Terminal Egress / Infield Retreat passed with continuation renewed.
+
+**Decision:** freeze the tested v0.1.8.1 traffic/control behaviour and package it as v0.1.9.0 canonical candidate. Candidate preparation may change release identity, provenance and durable documentation only. Do not alter D-0183 restoration symmetry, D-0181 authority closure, D-0179 Transit capability, Passage geometry, Entry, guide, D-0155, D-0147 or literal values during promotion.
+
+**Authority:** owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; Git `aea77fe388884227e487d96076e9591fe99ce79b`; 317 files) remains canonical until the exact RRS-produced v0.1.9.0 candidate fingerprint is explicitly accepted.
+
+## D-0183 — Cached-Actuator Restoration Symmetry / Closure B (v0.1.8.1 TEST)
+
+**Observation:** D-0179 made outbound Transit actuation authoritative from the Job-Episode cached actuator set, but D-0146 restoration still rediscovered generic `spec_foldable` members and waited on aggregate `allDeployed`. That Bootstrap–Restoration Bypass could reintroduce irrelevant foldables or false aggregate semantics after the second whistle.
+
+**Decision:** D-0146 restoration must consume only the configuration state already owned by its D-0179 Transit request. Capture each successfully commanded cached actuator's pre-Transit fold endpoint. At restoration, command only cached actuators whose fold position actually moved away from that endpoint; never rediscover fold capability or interpret aggregate `allDeployed`/`allFolded`.
+
+**Fail-safe:** restoration settlement is bounded by the same cached actuator ceiling used outbound. Exhaustion removes restoration veto but records that restoration is unproven; it does not assert successful deployment. Restore captured work/lowered states and return authority rather than deadlocking the pair.
+
+**Isolation:** owner-declared v0.1.8.0 canonical (`f4aa295d2c7cb1f94cd11d410b4426218bca48706b9b9a2081bf6eba015fac3d`; Git `aea77fe388884227e487d96076e9591fe99ce79b`) is the baseline. D-0181, Passage planning/execution, D-0155, D-0147, literals and agronomic restoration are unchanged.
+
 ## D-0182 — Promote validated D-0181 Closure A to v0.1.8.0 canonical candidate
 
 **Status:** Accepted for canonical-candidate production; owner canonicalisation pending.

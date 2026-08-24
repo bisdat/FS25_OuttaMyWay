@@ -1,3 +1,18 @@
+# v0.1.9.0 CANONICAL CANDIDATE — known issues / explicit validation boundary
+
+- No blocking D-0183 defect is known in the four-scenario regression.
+- Restoration Fold Settlement Exhaustion remains a bounded fail-safe and was not exercised in field validation.
+- Restoration Alignment and agronomic debt recovery remain open; actuator restoration does not imply agronomic/orientation recovery.
+- Remaining Legacy Authority cleanup / dead-code deletion and Literal Provenance Audit remain open.
+- TS010 terminal completion/locality, assembly×agronomy capability expansion and evidence-driven optimisation remain separate.
+
+# v0.1.8.1 TEST — known issues / validation boundary
+
+- Bootstrap–Restoration Bypass is implemented as D-0183 but remains field-unvalidated.
+- Restoration settlement exhaustion is a fail-safe, not a successful-restoration assertion; established fixtures should settle normally without exercising it.
+- Restoration Alignment and agronomic debt recovery remain open and are not implied by actuator restoration.
+- Literal Provenance Audit, TS010 terminal completion/locality, assembly×agronomy capability expansion and evidence-driven optimisation remain separate.
+
 # v0.1.8.0 CANONICAL CANDIDATE — known issues / explicit validation boundary
 
 - No blocking D-0181 defect is known in the current four-scenario Cooperative Passage regression.
