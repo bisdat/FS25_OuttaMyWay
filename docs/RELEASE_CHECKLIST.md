@@ -1,3 +1,14 @@
+## v0.1.7.0 canonical-candidate scope gate
+
+- [x] Source authority is owner-declared v0.1.6.0 canonical SHA-256 `dd17f654c73a0941617e49365cc58271f5d09d958e64f1faa235d6eca24141af`, Git `76eab8225bf400d5c168d8e57d6f7ad0c1dfe6a1`, 317 files.
+- [x] Behavioural source is the exact live-validated v0.1.6.5 D-0179 implementation.
+- [x] Candidate preparation changes release identity/provenance/documentation only; no traffic/control algorithm is intentionally changed.
+- [x] TS016, TS015, TS010S and TS009 field evidence is recorded, including the distinction between second-whistle completion and terminal settlement.
+- [x] Job-Start Physical Capability Record remains selected-runtime only; no shop-option enumeration is reintroduced.
+- [x] Transit Fold Settlement Exhaustion remains bounded, non-semantic and independent of successful compaction.
+- [ ] Exact candidate ZIP fingerprint reviewed and explicitly accepted by repository owner.
+- [ ] Owner records local Git/canonical provenance after acceptance.
+
 ## v0.1.2.0 canonical-candidate scope gate — Resolution-Space Conservation architecture
 
 - [x] Exact baseline is owner-declared canonical v0.1.1.0 SHA-256 `10ad10c0eb5956fbd32f3e82408201513dec6073e72b758db4b6bf394e8316b3`; Git `5cd2ae0c768a1a771b817b5ed5879ca02745f9de`; 316 files.

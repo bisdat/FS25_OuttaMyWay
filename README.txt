@@ -1,3 +1,39 @@
+FS25_OuttaMyWay v0.1.7.0 CANONICAL CANDIDATE — D-0179 JOB-START PHYSICAL CAPABILITY RECORD
+
+Authoritative baseline until owner declaration: v0.1.6.0
+SHA-256: dd17f654c73a0941617e49365cc58271f5d09d958e64f1faa235d6eca24141af
+Git: 76eab8225bf400d5c168d8e57d6f7ad0c1dfe6a1
+Files: 317
+
+Candidate behaviour is the exact live-validated v0.1.6.5 state; promotion introduces no further traffic/control algorithm. Job-Episode bootstrap caches DISC/local representation, one stable TRANSIT_BASE footprint, and active-runtime Transit fold capability for the actually instantiated selected configuration only. Passage consumes that cache, commands only cached actuators, and uses bounded endpoint settlement. Shop alternatives and aggregate fold-state semantics have no Transit Passage authority.
+
+Field regression in order TS016 → TS015 → TS010S → TS009: all four PASS. No Transit fold settlement exhaustion, configuration watchdog, or player-intervention rescue occurred. TS016 and TS009 reached terminal SUCCEEDED; TS015/TS010S reached second whistle before the user reloaded during restoration.
+
+This package is a canonical candidate only until the owner explicitly declares its exact fingerprint canonical.
+
+---
+
+FS25_OuttaMyWay v0.1.6.5 TEST — D-0179 JOB-START PHYSICAL CAPABILITY RECORD
+
+Baseline: owner-declared v0.1.6.0 canonical; incremental test line through v0.1.6.4.
+
+Field evidence entering this build:
+- v0.1.6.4 TS009 PASS, TS010S PASS, TS015 PASS
+- v0.1.6.4 TS016 FAIL: K105 retained fold intent without visible fold progress
+- D-0178 foldMoveDirection settlement is withdrawn
+
+Purpose:
+- cache DISC/local geometry, stable Transit Base footprint, and active-runtime `isFoldable`/Transit actuators once per Job Episode;
+- never enumerate unselected shop folding configurations for Passage capability;
+- freeze Transit Base union at first Job-Episode observation;
+- command only cached active Transit actuators;
+- wait for each commanded actuator's requested fold endpoint;
+- bound that wait from cached active animation duration, capped at 35 s with 30 s fallback;
+- on settlement exhaustion, remove configuration veto without asserting compaction;
+- preserve existing physical Passage safety as the backstop.
+
+Primary field order: TS016, TS009, TS015, TS010S.
+
 FS25_OuttaMyWay v0.1.6.0 CANONICAL CANDIDATE — NATIVE BASE TRANSIT GEOMETRY CHECKPOINT
 
 Authoritative baseline until owner declaration: v0.1.5.0

@@ -2185,7 +2185,7 @@ test("representation cache does not let AI-disabled mechanical foldability suppr
         }
         return values[key]
     end}
-    local worker={rootNode=1,configFileName="data/vehicles/streumaster/fw212tdProfi/fw212tdProfi.xml",xmlFile=xmlFile,components={{node=1}},spec_foldable={foldAnimTime=0},getName=function() return "FW212" end,getAttachedImplements=function() return {} end,getAISteeringNode=function() return 1 end}
+    local worker={rootNode=1,configFileName="data/vehicles/streumaster/fw212tdProfi/fw212tdProfi.xml",xmlFile=xmlFile,components={{node=1}},spec_foldable={foldAnimTime=0,allowUnfoldingByAI=false},getName=function() return "FW212" end,getAttachedImplements=function() return {} end,getAISteeringNode=function() return 1 end}
     local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={
         getNumOfChildren=function() return 0 end,getChildAt=function() return nil end,getName=function() return "root" end,
         localToWorld=function(node,x,y,z) return x,y,z end,
@@ -4128,7 +4128,7 @@ test("D0146 Step2 mechanical preflight is vehicle-name independent and remains C
 end)
 
 
-test("D0173 Cooperative Passage plans against Transit base geometry while retaining canonical configuration control semantics",function()
+test("D0175 Cooperative Passage plans against Transit base geometry with uniform Transit realisation authority",function()
     local picture,snapshot=d0146Step2Fixture()
     local values=OuttaMyWay.ValueRecord.toTable(picture)
     local transit={
@@ -4146,7 +4146,7 @@ test("D0173 Cooperative Passage plans against Transit base geometry while retain
     equal(math.abs(plan.passageArrangement.physicalContactThresholdM-2)<0.001,true)
     equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-3)<0.001,true)
     equal(plan.passageGuide.pairSweepSupport.supportBasis,"TRANSLATED_GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")
-    for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.passageConfiguration.participants) do equal(entry.mode,"RETAIN_CURRENT") end
+    for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.passageConfiguration.participants) do equal(entry.mode,"TRANSIT_REQUIRED"); equal(entry.transitPassageEnvelope~=nil,true) end
 end)
 
 test("D0146 Step2 removes False Compaction Demand: width alone cannot authorise configuration reduction",function()
@@ -4892,6 +4892,94 @@ test("D0146 settling accepts owned Hold plus physical stationary state even when
     vehicleB.lastSpeedReal=0
     held[vehicleA]=false
     equal(control:_allStopped(run),false)
+end)
+
+test("D0179 representation bootstrap caches only selected runtime AI-reachable folding parts",function()
+    local oldWorldTranslation=getWorldTranslation
+    local oldLocalDirectionToWorld=localDirectionToWorld
+    getWorldTranslation=function(node) return 0,0,0 end
+    localDirectionToWorld=function(node,x,y,z) return x,y,z end
+    local function baseXml() return {getValue=function(self,key) local v={["vehicle.base.size#width"]=3,["vehicle.base.size#length"]=5}; return v[key] end} end
+    local active={rootNode=1360,xmlFile=baseXml(),components={{node=1360}},spec_foldable={foldAnimTime=0,hasFoldingParts=true,allowUnfoldingByAI=true,maxFoldAnimDuration=15000,foldingParts={{animDuration=15000}}},getToggledFoldDirection=function() return 1 end,setFoldDirection=function() end,getAttachedImplements=function() return {} end,getName=function() return "Active" end}
+    local roleplay={rootNode=1361,xmlFile=baseXml(),components={{node=1361}},spec_foldable={foldAnimTime=0,hasFoldingParts=true,allowUnfoldingByAI=false,maxFoldAnimDuration=9000,foldingParts={{animDuration=9000}}},getToggledFoldDirection=function() return 1 end,setFoldDirection=function() end,getAttachedImplements=function() return {} end,getName=function() return "Roleplay" end}
+    local inactive={rootNode=1362,xmlFile=baseXml(),components={{node=1362}},spec_foldable={foldAnimTime=0,hasFoldingParts=false,allowUnfoldingByAI=true,maxFoldAnimDuration=20000,foldingParts={}},getToggledFoldDirection=function() return 1 end,setFoldDirection=function() end,getAttachedImplements=function() return {} end,getName=function() return "Unselected shop option" end}
+    local worker={rootNode=1359,xmlFile=baseXml(),components={{node=1359}},getName=function() return "Root" end,getAISteeringNode=function() return 1359 end,getAttachedImplements=function() return {{object=active},{object=roleplay},{object=inactive}} end}
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={getNumOfChildren=function() return 0 end,getChildAt=function() return nil end,getName=function() return "root" end,localToWorld=function(node,x,y,z) return x,y,z end,getShapeGeometryBoundingSphere=function() return 0,0,0,2,true end,getShapeBoundingSphere=function() return 0,0,0,2,true end,getShapeWorldBoundingSphere=function() return 0,0,0,2 end,getIsCompoundChild=function() return false end}})
+    cache:beginObservationCycle(); local evidence=cache:observe(worker,"vehicle-root:1359","JOB-D0179-CAP",0); cache:endObservationCycle()
+    local capability=cache:getTransitFoldCapability("vehicle-root:1359","JOB-D0179-CAP")
+    equal(capability.isFoldable,true); equal(capability.actuatorCount,1); equal(capability.actuators[1].object,active)
+    equal(capability.expectedFoldDurationMs,15000); equal(capability.settlementTimeoutMs,24500)
+    equal(evidence.transitFoldCapability.isFoldable,true); equal(evidence.transitFoldCapability.actuatorCount,1)
+    getWorldTranslation=oldWorldTranslation; localDirectionToWorld=oldLocalDirectionToWorld
+end)
+
+test("D0179 Transit Base envelope is frozen at first Job-Episode observation",function()
+    local oldWorldTranslation=getWorldTranslation
+    local oldLocalDirectionToWorld=localDirectionToWorld
+    local positions={[1]={0,0,0},[10]={3,0,-5}}
+    getWorldTranslation=function(node) local p=positions[node] or {0,0,0}; return p[1],p[2],p[3] end
+    localDirectionToWorld=function(node,x,y,z) return x,y,z end
+    local function xml(w,l) return {getValue=function(self,key) local v={["vehicle.base.size#width"]=w,["vehicle.base.size#length"]=l}; return v[key] end} end
+    local implement={rootNode=10,xmlFile=xml(4,8),components={{node=10}},getName=function() return "Implement" end,getAttachedImplements=function() return {} end}
+    local worker={rootNode=1,xmlFile=xml(3,5),components={{node=1}},getName=function() return "Root" end,getAISteeringNode=function() return 1 end,getAttachedImplements=function() return {{object=implement}} end}
+    local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={getNumOfChildren=function() return 0 end,getChildAt=function() return nil end,getName=function() return "root" end,localToWorld=function(node,x,y,z) local p=positions[node] or {0,0,0}; return p[1]+x,p[2]+y,p[3]+z end,getShapeGeometryBoundingSphere=function() return 0,0,0,2,true end,getShapeBoundingSphere=function() return 0,0,0,2,true end,getShapeWorldBoundingSphere=function(node) local p=positions[node] or {0,0,0}; return p[1],p[2],p[3],2 end,getIsCompoundChild=function() return false end}})
+    cache:beginObservationCycle(); local first=cache:observe(worker,"vehicle-root:1","JOB-D0179-TRANSIT",0); cache:endObservationCycle()
+    local firstMax=first.transitPassageEnvelope.maxRightM
+    positions[10]={20,0,-5}
+    cache:beginObservationCycle(); local second=cache:observe(worker,"vehicle-root:1","JOB-D0179-TRANSIT",1); cache:endObservationCycle()
+    equal(second.transitPassageEnvelope.maxRightM,firstMax,"Transit footprint was recomputed after bootstrap")
+    getWorldTranslation=oldWorldTranslation; localDirectionToWorld=oldLocalDirectionToWorld
+end)
+
+test("D0179 cached Transit actuator waits for requested endpoint and then settles",function()
+    g_time=1000
+    local implement={spec_foldable={foldAnimTime=0},getToggledFoldDirection=function() return 1 end,setFoldDirection=function(self,direction) self.requested=direction end}
+    local vehicle={rootNode=1363}
+    local capability={isFoldable=true,members={vehicle,implement},actuators={{object=implement,memberReferenceKey="member-root:1364"}},settlementTimeoutMs=10000}
+    local authority=OuttaMyWay.Prototype22ConfigurationAuthority.new()
+    local ok=authority:prepareCachedTransit(vehicle,capability); equal(ok,true); equal(implement.requested,1)
+    local pending=authority:getCachedTransitSettlement(vehicle); equal(pending.settled,false); equal(pending.exhausted,false)
+    implement.spec_foldable.foldAnimTime=0.5; g_time=6000
+    pending=authority:getCachedTransitSettlement(vehicle); equal(pending.settled,false)
+    implement.spec_foldable.foldAnimTime=1; g_time=7000
+    local settled=authority:getCachedTransitSettlement(vehicle); equal(settled.settled,true); equal(settled.normal,true); equal(settled.exhausted,false)
+end)
+
+test("D0179 cached Transit settlement exhaustion removes configuration veto without asserting compaction",function()
+    g_time=1000
+    local implement={spec_foldable={foldAnimTime=0},getToggledFoldDirection=function() return 1 end,setFoldDirection=function(self,direction) self.requested=direction end}
+    local vehicle={rootNode=1365}
+    local capability={isFoldable=true,members={vehicle,implement},actuators={{object=implement,memberReferenceKey="member-root:1366"}},settlementTimeoutMs=2000}
+    local authority=OuttaMyWay.Prototype22ConfigurationAuthority.new()
+    equal(authority:prepareCachedTransit(vehicle,capability),true)
+    g_time=2500; local pending=authority:getCachedTransitSettlement(vehicle); equal(pending.settled,false)
+    g_time=3001; local exhausted=authority:getCachedTransitSettlement(vehicle); equal(exhausted.settled,true); equal(exhausted.exhausted,true); equal(exhausted.normal,false); equal(exhausted.settledCount,0)
+end)
+
+test("D0179 TRANSIT_BASE Control consumes cached foldability and bounded settlement only",function()
+    local vehicle={rootNode=1367}
+    local capability={isFoldable=true,actuatorCount=1,expectedFoldDurationMs=6000,settlementTimeoutMs=11000,source="TEST",members={vehicle},actuators={{object=vehicle}}}
+    local settlement={settled=false,exhausted=false,settledCount=0,actuatorCount=1,elapsedMs=1000,timeoutMs=11000}
+    local cache={getTransitFoldCapability=function(self,reference,token) return capability end,beginOuttaMyWayConfigurationAuthority=function() end,endOuttaMyWayConfigurationAuthority=function() end}
+    local donor={permissionGate={},driveAuthority={},configurationAuthority={prepareCachedTransit=function() return true,{owned=true} end,getCachedTransitSettlement=function() return settlement end,requestRestore=function() return true end}}
+    local control=OuttaMyWay.CooperativePassageControl.new({assemblyRepresentationCache=cache},donor)
+    local participant={vehicle=vehicle,name="folding",assemblyId="AS-F",referenceKey="vehicle-root:1367",startJobToken="JOB-F",configurationMode="TRANSIT_REQUIRED"}
+    local run={mode="D0146_GUIDE",commitmentId="CM-D0179",phase="SETTLING",participants={participant}}
+    equal(control:_beginD0146Configuration(run),true); equal(participant.passageTransitFoldExpected,true); equal(control:_d0146ConfigurationReady(run),false)
+    settlement={settled=true,normal=true,exhausted=false,settledCount=1,actuatorCount=1,elapsedMs=6000,timeoutMs=11000}
+    equal(control:_d0146ConfigurationReady(run),true)
+end)
+
+test("D0179 non-foldable bootstrap capability is immediate non-veto and no live fold discovery occurs",function()
+    local vehicle={rootNode=1368}
+    local cache={getTransitFoldCapability=function() return {isFoldable=false,actuatorCount=0,expectedFoldDurationMs=0,settlementTimeoutMs=30000,source="TEST"} end}
+    local donor={permissionGate={},driveAuthority={},configurationAuthority={prepareCachedTransit=function() error("non-foldable capability must not actuate") end,getCachedTransitSettlement=function() error("non-foldable capability must not wait") end,requestRestore=function() return true end}}
+    local control=OuttaMyWay.CooperativePassageControl.new({assemblyRepresentationCache=cache},donor)
+    control._rebaseD0146Guide=function() return true,nil end
+    control._startGuideGate=function() return true,nil end
+    local participant={vehicle=vehicle,name="static",assemblyId="AS-S",referenceKey="vehicle-root:1368",startJobToken="JOB-S",configurationMode="TRANSIT_REQUIRED"}
+    local run={mode="D0146_GUIDE",commitmentId="CM-D0179-NF",phase="SETTLING",participants={participant}}
+    equal(control:_beginD0146Configuration(run),true); equal(participant.passageTransitFoldExpected,false); equal(control:_d0146ConfigurationReady(run),true)
 end)
 
 test("D0166 minimal Transit-first attempts RETAIN_CURRENT compaction without granting optional veto authority",function()

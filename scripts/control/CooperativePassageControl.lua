@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.4.4 TEST — D-0166 minimal Transit-first compaction policy.
+-- FS25_OuttaMyWay v0.1.7.0 CANONICAL CANDIDATE — D-0179 Job-Start Physical Capability Record.
 --
 -- Situation/Candidate/Decision/Commitment establish the pair meaning and the
 -- bounded Passage plan before this module is invoked. Passage Selection now
@@ -6,11 +6,13 @@
 -- Control may remain in PASSAGE_APPROACH until the Candidate Entry Boundary is
 -- reached, then settles/configures the pair and instantiates the participant
 -- guide from actual execution origins before forward-only point pursuit.
--- Passage geometry, Entry timing and guide semantics remain the v0.1.4.0
--- baseline. At the existing configuration point Control now also attempts
--- Transit compaction for participants whose Candidate retained current state.
--- A failed opportunistic attempt is ignored; Candidate-required compaction
--- retains the existing fail-safe requirement. The second-whistle trace marks
+-- Passage geometry, Entry timing and guide semantics remain unchanged. For
+-- TRANSIT_BASE plans every participant carries one TRANSIT_REQUIRED obligation:
+-- always request Transit, then wait only while GIANTS reports native fold actuation
+-- still moving. D-0178 Transit Motion Settlement does not interpret allFolded,
+-- allDeployed, configuration profiles, current-vs-Transit geometry, or command return
+-- as execution authority. Inert/unsupported requests are non-veto; real folding stays
+-- held until native foldMoveDirection settles to zero. The second-whistle trace marks
 -- completion of the pair-dependent guide;
 -- agronomic reverse restoration is explicitly not implemented here.
 
@@ -326,6 +328,7 @@ function Control:_currentRepresentationProfile(participant)
     if cache==nil or type(cache.getCurrentConfigurationProfileId)~="function" then return nil end
     return cache:getCurrentConfigurationProfileId(participant.referenceKey,participant.startJobToken)
 end
+
 function Control:_setPhase(run,phase,nowMs)
     run.phase=phase; run.phaseStartedAt=nowMs
 end
@@ -485,20 +488,34 @@ function Control:_beginD0146Configuration(run)
     local requested=0
     local ignored=0
     for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
-        if participant.configurationMode~="COMPACT_REQUIRED" and participant.configurationMode~="RETAIN_CURRENT" then
+        local transitRequired=participant.configurationMode=="TRANSIT_REQUIRED"
+        local legacyRequired=participant.configurationMode=="COMPACT_REQUIRED"
+        local legacyRetain=participant.configurationMode=="RETAIN_CURRENT"
+        participant.passageTransitFoldWaitingLogged=false
+        participant.passageTransitFoldSettledLogged=false
+        participant.passageTransitFoldExhaustedLogged=false
+        participant.passageTransitFoldExpected=false
+        if not transitRequired and not legacyRequired and not legacyRetain then
             for _,rollback in OuttaMyWay.ValueRecord.ipairs(owned) do self.configurationAuthority:requestRestore(rollback.vehicle) end
             return false,participant.name..":unsupported-configuration-mode:"..tostring(participant.configurationMode)
         end
 
-        -- v0.1.4.4 isolation rule: retain the complete v0.1.4.0 Candidate
-        -- geometry and timing, but always ask for Transit compaction at the
-        -- existing configuration point.  RETAIN_CURRENT therefore means only
-        -- that the pre-existing guide does not depend on compaction.  Failure
-        -- of that opportunistic request is ignored.  COMPACT_REQUIRED remains
-        -- fail-safe because the Candidate geometry already depends on it.
-        self:_beginRepresentationConfigurationAuthority(participant)
-        local ok,state=self.configurationAuthority:prepareCompact(participant.vehicle)
+        local capability=nil
+        if transitRequired then
+            local cache=self.runtime and self.runtime.assemblyRepresentationCache or nil
+            if cache~=nil and type(cache.getTransitFoldCapability)=="function" then capability=cache:getTransitFoldCapability(participant.referenceKey,participant.startJobToken) end
+            participant.passageTransitFoldExpected=type(capability)=="table" and capability.isFoldable==true
+            logInfo("TRANSIT_CAPABILITY_CACHE commitment=%s participant=%s available=%s isFoldable=%s actuators=%d expectedDurationMs=%.0f timeoutMs=%.0f source=%s",
+                tostring(run.commitmentId),participant.name,tostring(type(capability)=="table"),tostring(participant.passageTransitFoldExpected),type(capability)=="table" and tonumber(capability.actuatorCount) or 0,type(capability)=="table" and tonumber(capability.expectedFoldDurationMs) or 0,type(capability)=="table" and tonumber(capability.settlementTimeoutMs) or 0,type(capability)=="table" and tostring(capability.source) or "UNAVAILABLE")
+        end
+        local ok,state
+        if transitRequired then
+            if participant.passageTransitFoldExpected then ok,state=self.configurationAuthority:prepareCachedTransit(participant.vehicle,capability) else ok,state=false,"bootstrap-non-foldable" end
+        else
+            ok,state=self.configurationAuthority:prepareCompact(participant.vehicle)
+        end
         if ok then
+            self:_beginRepresentationConfigurationAuthority(participant)
             participant.passageTransitCompactionActive=true
             participant.passageTransitCompactionReason=nil
             owned[#owned+1]=participant
@@ -506,33 +523,59 @@ function Control:_beginD0146Configuration(run)
         else
             participant.passageTransitCompactionActive=false
             participant.passageTransitCompactionReason=tostring(state)
-            self:_endRepresentationConfigurationAuthority(participant)
-            if participant.configurationMode=="COMPACT_REQUIRED" then
+            if legacyRequired then
                 for _,rollback in OuttaMyWay.ValueRecord.ipairs(owned) do self.configurationAuthority:requestRestore(rollback.vehicle) end
                 return false,participant.name..":"..tostring(state)
             end
             ignored=ignored+1
-            logInfo("TRANSIT_COMPACTION_IGNORED commitment=%s participant=%s plannedMode=RETAIN_CURRENT reason=%s guideGeometryUnchanged=true",
-                tostring(run.commitmentId),participant.name,tostring(state))
+            logInfo("TRANSIT_REQUEST_IGNORED commitment=%s participant=%s plannedMode=%s reason=%s cachedFoldable=%s configurationVeto=false",
+                tostring(run.commitmentId),participant.name,tostring(participant.configurationMode),tostring(state),tostring(participant.passageTransitFoldExpected==true))
         end
     end
     if requested==0 then
-        logInfo("CONFIGURATION_READY commitment=%s policy=ALWAYS_ATTEMPT_TRANSIT modes=%s changed=0 ignored=%d next=CAPTURE_EXECUTION_ORIGIN guideGeometryUnchanged=true",tostring(run.commitmentId),configurationModeText(run),ignored)
-        local rebased,rebaseReason=self:_rebaseD0146Guide(run)
-        if not rebased then return false,rebaseReason end
-        return self:_startGuideGate(run,1)
+        if self:_d0146ConfigurationReady(run) then
+            logInfo("CONFIGURATION_READY commitment=%s policy=ALWAYS_ATTEMPT_TRANSIT modes=%s changed=0 ignored=%d next=CAPTURE_EXECUTION_ORIGIN guideGeometryUnchanged=true",tostring(run.commitmentId),configurationModeText(run),ignored)
+            local rebased,rebaseReason=self:_rebaseD0146Guide(run)
+            if not rebased then return false,rebaseReason end
+            return self:_startGuideGate(run,1)
+        end
+        self:_setPhase(run,"CONFIGURING",g_time or 0)
+        logInfo("CONFIGURATION_START commitment=%s policy=ALWAYS_ATTEMPT_TRANSIT modes=%s changed=0 ignored=%d movementWaitsForTransitRealisation=true guideGeometryUnchanged=true",tostring(run.commitmentId),configurationModeText(run),ignored)
+        return true
     end
     self:_setPhase(run,"CONFIGURING",g_time or 0)
-    logInfo("CONFIGURATION_START commitment=%s policy=ALWAYS_ATTEMPT_TRANSIT modes=%s changed=%d ignored=%d movementWaitsForRequiredOrObservedOptionalTransit=true guideGeometryUnchanged=true",tostring(run.commitmentId),configurationModeText(run),requested,ignored)
+    logInfo("CONFIGURATION_START commitment=%s policy=ALWAYS_ATTEMPT_TRANSIT modes=%s changed=%d ignored=%d movementWaitsForTransitRealisation=true guideGeometryUnchanged=true",tostring(run.commitmentId),configurationModeText(run),requested,ignored)
     return true
 end
 
 function Control:_d0146ConfigurationReady(run)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
-        if participant.configurationMode=="COMPACT_REQUIRED" then
-            -- Candidate-required compaction is safety-critical: the existing
-            -- v0.1.4.0 guide was authorised on the compact profile, so Passage
-            -- must not move until Reality positively confirms that state.
+        if participant.configurationMode=="TRANSIT_REQUIRED" then
+            -- D-0179: Control consumes only the Job-Episode bootstrap capability.
+            -- Non-foldable/missing/failed requests are non-veto.  A commanded
+            -- active actuator is waited to its requested endpoint, but only
+            -- boundedly; exhaustion removes configuration veto without asserting
+            -- successful compaction.
+            if participant.passageTransitFoldExpected==true and participant.passageTransitCompactionActive==true then
+                local settlement=self.configurationAuthority:getCachedTransitSettlement(participant.vehicle)
+                if settlement.settled~=true then
+                    if participant.passageTransitFoldWaitingLogged~=true then
+                        participant.passageTransitFoldWaitingLogged=true
+                        logInfo("TRANSIT_FOLD_WAIT commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
+                    end
+                    return false
+                end
+                if settlement.exhausted==true then
+                    if participant.passageTransitFoldExhaustedLogged~=true then
+                        participant.passageTransitFoldExhaustedLogged=true
+                        logWarning("TRANSIT_FOLD_SETTLEMENT_EXHAUSTED commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f action=REMOVE_CONFIGURATION_VETO compactionAsserted=false",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
+                    end
+                elseif participant.passageTransitFoldSettledLogged~=true then
+                    participant.passageTransitFoldSettledLogged=true
+                    logInfo("TRANSIT_FOLD_SETTLED commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
+                end
+            end
+        elseif participant.configurationMode=="COMPACT_REQUIRED" then
             if participant.passageTransitCompactionActive~=true then return false end
             local evidence=self.configurationAuthority:getEvidence(participant.vehicle)
             if evidence.allFolded~=true then return false end
@@ -540,19 +583,9 @@ function Control:_d0146ConfigurationReady(run)
             local observed=self:_currentRepresentationProfile(participant)
             if expected~=nil and observed~=expected then return false end
         elseif participant.configurationMode=="RETAIN_CURRENT" then
-            -- Opportunistic Transit is deliberately non-authoritative. If
-            -- Reality shows that the optional request is physically moving,
-            -- let that motion finish before Passage starts. Otherwise the
-            -- request must never acquire veto authority over a guide already
-            -- proven for RETAIN_CURRENT.
             if participant.passageTransitCompactionActive==true then
                 local evidence=self.configurationAuthority:getEvidence(participant.vehicle)
                 if (tonumber(evidence.transitionCount) or 0)>0 then return false end
-                if evidence.allFolded~=true and participant.passageTransitCompactionNonBlockingLogged~=true then
-                    participant.passageTransitCompactionNonBlockingLogged=true
-                    logInfo("TRANSIT_COMPACTION_OPTIONAL_NONBLOCKING commitment=%s participant=%s plannedMode=RETAIN_CURRENT allDeployed=%s allFolded=%s transitionCount=%d guideGeometryUnchanged=true",
-                        tostring(run.commitmentId),participant.name,tostring(evidence.allDeployed==true),tostring(evidence.allFolded==true),tonumber(evidence.transitionCount) or 0)
-                end
             end
         else
             return false
@@ -703,7 +736,10 @@ function Control:_executeD0146JointRequests(requestA,requestB,candidate,bridge)
         participant.configurationReleasedSpaceM=tonumber(planned.configurationReleasedSpaceM) or 0
         participant.expectedCompactConfigurationProfileId=planned.expectedCompactConfigurationProfileId
         participant.configurationAuthority=planned.configurationAuthority
-        if participant.configurationMode=="COMPACT_REQUIRED" then
+        participant.transitPassageEnvelope=planned.transitPassageEnvelope
+        if participant.configurationMode=="TRANSIT_REQUIRED" then
+            if type(participant.transitPassageEnvelope)~="table" then return false,"D0146_TRANSIT_PASSAGE_ENVELOPE_MISSING:"..participant.name end
+        elseif participant.configurationMode=="COMPACT_REQUIRED" then
             local fold=self.configurationAuthority:getEvidence(participant.vehicle)
             if fold.foldableCount==0 then return false,"D0146_REQUIRED_CONFIGURATION_REDUCTION_UNAVAILABLE:"..participant.name end
             if fold.allDeployed~=true then return false,"D0146_REQUIRED_CONFIGURATION_NOT_STABLE_DEPLOYED:"..participant.name end

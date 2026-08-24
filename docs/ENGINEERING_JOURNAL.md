@@ -1,3 +1,71 @@
+# v0.1.7.0 CANONICAL CANDIDATE — D-0179 field validation and promotion
+
+**Observation:** the owner reported a perfect v0.1.6.5 run in order TS016 → TS015 → TS010S → TS009. Log review supports all four observations.
+
+**TS016:** Patriot bootstrap `isFoldable=true`, 1 actuator, expected 15.5 s; S416/K105 `isFoldable=false`, 0 actuators. Patriot settled at 15.488 s; second whistle followed; terminal `SUCCEEDED`. This validates selected-runtime capability exclusion for the K105 case that deadlocked v0.1.6.1-v0.1.6.4.
+
+**TS015:** Condor and Patriot each cached one active actuator and settled together at 15.785 s before second whistle. Reload occurred during restoration.
+
+**TS010S:** mower cached one active actuator; MT665 cached non-foldable. Mower settled at 6.250 s against a 9.5 s derived ceiling; second whistle followed. Reload occurred during restoration.
+
+**TS009:** MF/FW212 cached non-foldable; S416 + front/rear mowers cached two active actuators and settled both at 6.296 s before second whistle and terminal `SUCCEEDED`. This directly confirms that the mower no longer moves before fold completion while FW212 role-play foldability remains non-authoritative.
+
+**Negative evidence:** no `TRANSIT_FOLD_SETTLEMENT_EXHAUSTED`, configuration watchdog or player-intervention rescue occurred.
+
+**Decision:** stop corrective work and promote the exact v0.1.6.5 behaviour to v0.1.7.0 canonical candidate without behavioural change.
+
+# v0.1.6.5 TEST — D-0179 Job-Start Physical Capability Record
+
+**Observation:** v0.1.6.4 passed TS009, TS010S and TS015; TS016 still failed at configuration. Video/log show Patriot's real fold completing while K105 retains fold intent without visible progression.
+
+**Discussion:** repeated completion checks (`allFolded`, geometry similarity, `foldMoveDirection`) were treating GIANTS bookkeeping as semantic Passage truth. The user proposed simplifying further: discover/cache what matters at Job start—DISC, Transit footprint, and our own `isFoldable`—then bound any fold wait.
+
+**Implementation hypothesis:** cache active-runtime selected fold actuators and `maxFoldAnimDuration`; freeze Transit Base union on first Job-Episode observation; Passage consumes only cached capability; wait for commanded actuator endpoint or bounded exhaustion. Shop alternatives and stale XML reachability probes are excluded.
+
+**Bench validation:** 108/108 Python structural tests and 281/281 Lua replacement-core tests before packaging. Focused tests prove shop-option exclusion, AI-disabled fold exclusion, static Transit cache, endpoint wait, bounded exhaustion, and non-foldable immediate non-veto.
+
+# v0.1.6.4 TEST — D-0178 Transit Motion Settlement
+
+**Observation:** v0.1.6.3 TS009 began Passage before the rear mower completed folding, while TS016 remained stuck in CONFIGURING. Geometry-only readiness therefore failed in opposite directions.
+
+**Disproved hypothesis:** represented directional occupancy matching cached Transit geometry is a reliable witness that Transit actuation has physically finished. It is not.
+
+**Discovery — Transit Motion Settlement:** the relevant Control question is narrower: “is native fold actuation still moving?” GIANTS Foldable exposes that directly through `spec_foldable.foldMoveDirection`; a magnitude above 0.1 drives Foldable's motion path and is cleared when that requested motion reaches its endpoint.
+
+**Implementation hypothesis:** always attempt Transit; while any participant member reports active native fold motion, hold. Once no active motion remains, proceed without interpreting endpoint semantics, command result, aggregate fold predicates, configuration profiles, or geometry similarity.
+
+**Bench validation:** 279/279 replacement-core Lua tests pass. Focused D-0178 tests prove active motion blocks, settlement releases, accepted-but-inert command success is non-veto, and command rejection cannot waive real motion.
+
+**Field validation priority:** TS009 first to prove the mower cannot release mid-fold; TS016 second to prove accepted-but-inert S416/Bredal no longer deadlocks; then TS015 and TS010S regressions.
+
+# v0.1.6.3 TEST — D-0177 Fold-State Non-Authority
+
+**Observation:** v0.1.6.2 passed TS009, TS010S and TS015; TS016 failed after both Transit requests were accepted. Patriot visibly compacted while the S416/Bredal combination did not satisfy the universal `allFolded` veto.
+
+**Disproved hypothesis:** `prepareCompact()` acceptance identifies a participant for which `allFolded=true` is a valid mandatory completion witness. D-0170 had already disproved this in TS016; v0.1.6.1 reintroduced the same assumption under `TRANSIT_REQUIRED`.
+
+**Bench check:** before changing Control, TS015 Condor/Patriot evidence was reviewed. During their ~15 s fold the current represented physical envelope remains much larger/unavailable for Transit comparison; the D-0176 5% geometry criterion becomes satisfiable only when the physical compact representation is realised.
+
+**Implementation hypothesis:** remove all fold-state and command-result authority from the `TRANSIT_REQUIRED` readiness branch. Keep Transit request actuation and restoration ownership, but ask Representation only whether current directional occupancy is Transit-similar to the cached selected envelope.
+
+**Validation target:** TS016 first because it directly falsified v0.1.6.2; then TS015 to verify Condor/Patriot do not move prematurely; TS009 and TS010S complete the four-scenario regression set.
+
+# v0.1.6.2 TEST — D-0176 Transit Representation Similarity
+
+**Observation:** v0.1.6.1 TS009 demonstrated the desired Transit request behaviour: S416 compacted before movement. Passage then remained in `TRANSIT_REALISATION_WAIT` for MF/FW212 with `currentWidth=3.02` and `transitWidth=3.02`. TS010S passed.
+
+**Disproven hypothesis:** exact directional containment is not a robust criterion for determining that an ignored/inert Transit request is already Transit-compatible.
+
+**Hypothesis under test:** a 5% dimensionless allowance on each cached directional Transit extent absorbs small representation/pose differences while remaining far below genuine working-vs-Transit differences such as deployed mower width. No new Transit sampling/replan is introduced as authority.
+
+# v0.1.6.1 TEST — TS009 asset review and Transit Realisation Gate
+
+TS009 asset inspection corrected the previous interpretation: the fixture contains two complete assemblies, MF 7S.210 + FW212 (2 members) and Valtra S 416 + KDD 941 STH + KDF 341 S (3 members). Runtime member counts were therefore correct. The approximately 3.54 m Transit contact threshold also matches the authored base widths, increasing confidence in Native Base Transit Geometry.
+
+The failure instead exposed **Legacy Authority Leakage**. The Transit Base planner still copied `COMPACT_REQUIRED` / `RETAIN_CURRENT` from configuration-history selection. S416 was classified `RETAIN_CURRENT`, so Control allowed Passage almost immediately after issuing the fold request even though the rear mower requires several seconds to fold.
+
+D-0175 isolates the correction: TRANSIT_BASE assigns `TRANSIT_REQUIRED`; successful fold requests wait for `allFolded`; ignored requests must already be represented inside the Transit envelope. No post-compaction replan is introduced.
+
 # v0.1.6.0 checkpoint — Native Base Transit Geometry and Assembly Completeness
 
 The v0.1.5.3 field tranche produced three positive regressions (TS010S, TS015, TS016) and one useful failure (TS009). The positive results increase confidence that GIANTS-authored `base.size` is a suitable static directional basis for Transit Passage planning when the complete Physical Assembly is represented. TS009 prevents promotion of that confidence into unrestricted negative-clearance authority.

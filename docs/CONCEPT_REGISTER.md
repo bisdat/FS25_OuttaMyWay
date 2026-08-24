@@ -1,10 +1,30 @@
+## Job-Start Physical Capability Record
+**Status:** Field-validated for v0.1.7.0 canonical candidate (D-0179); owner canonicalisation pending.
+
+One Job-Episode bootstrap record containing the complete discovered Physical Assembly's conservative DISC representation, stable Transit footprint, and semantic active-runtime Transit fold capability. It deliberately excludes unselected shop/catalogue configuration possibilities.
+
+## Transit Fold Settlement Exhaustion
+**Status:** Bench-protected fail-safe carried by v0.1.7.0 canonical candidate (D-0179); not exercised in the successful four-scenario field run.
+
+A bounded end to Transit configuration waiting. Exhaustion means supported configuration settlement has been attempted long enough and no longer owns veto authority; it does **not** mean compaction succeeded.
+
+## Transit Motion Settlement
+
+**Status:** Withdrawn after v0.1.6.4 TS016; retained as negative engineering evidence.
+
+**Definition:** the Cooperative Passage configuration gate for `TRANSIT_BASE` waits only for native GIANTS fold actuation motion to cease. It does not infer semantic fold endpoint, configuration identity or geometric Transit equivalence.
+
+**Evidence origin:** v0.1.6.3 disproved geometry-only readiness by releasing TS009 prematurely while still deadlocking TS016. Earlier D-0170/v0.1.5.x evidence separately disproved aggregate `allFolded` bookkeeping as generic Transit authority.
+
+**Implementation owner:** `Prototype22ConfigurationAuthority` reports active fold motion; `CooperativePassageControl` consumes that motion as settlement evidence.
+
 ## v0.1.4.0 checkpoint concepts
 
 **Transit-First, Reality-Verified Passage** — simplified Passage configuration policy selected after the v0.1.3.x experiments. Passage requests a plausible Transit preparation where available unless positive knowledge excludes it, then derives geometry only from the state Reality actually achieved. Missing AI-capability metadata is not prohibition. A failed/unavailable Transit transition causes conservative replanning, not assumed compact geometry.
 
 **Configuration Optimisation Deferral** — fold-vs-don't-fold and productive-Passage candidate economy remain possible future refinements but are not prerequisites for the fail-safe Passage baseline. Late Passage Entry already removes much of the historical agronomic debt without requiring configuration optimisation.
 
-**Complex-Assembly Membership Gap (open observation)** — TS009 reported `assemblyMembers=2` for an observed tractor + front mower + rear mower physical combination. A straight retained-current Passage based on the available directional envelope later collided/tangled. The observation proves an authority gap but does not yet prove whether member discovery, membership interpretation, geometry applicability, or another representation layer is the root cause.
+**Complex-Assembly Membership Gap (withdrawn TS009 diagnosis)** — later XML/I3D/savegame review established that the logged two-member MF 7S.210 assembly was tractor + FW212, while the Valtra S 416 mower assembly correctly contained three members. Preserve Physical Assembly Completeness as a general representation principle, but do not cite TS009 as evidence of missing membership.
 
 ---
 

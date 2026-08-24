@@ -1,10 +1,80 @@
-## v0.1.6.0 checkpoint amendment — Transit Geometry Completeness
+## v0.1.7.0 canonical-candidate checkpoint — Job-Start Physical Capability Record
 
-Field evidence supports the purpose-specific **Native Base Transit Geometry** hypothesis but adds an upstream authority condition: a member-union is only a complete Transit Passage representation when the **Physical Assembly member set is itself complete**. Completeness over the members currently discovered by OuttaMyWay is not sufficient.
+D-0179 is field-supported across TS016, TS015, TS010S and TS009. The governing abstraction is now:
 
-TS009 is the counterexample. Passage used a complete `base.size` union over two discovered MF 7S.210 assembly members while Reality contained tractor + front mower + rear mower. Runtime simultaneously declared `coverageComplete=false` and `underApproximationRisk=true`, and physical contact occurred. Therefore negative-clearance authority must be gated by Physical Assembly Completeness before the Transit envelope can be treated as exhaustive.
+```text
+JOB EPISODE BOOTSTRAP
+        |
+Physical Assembly
+   |        |          |
+  DISC   TRANSIT    FOLDABILITY
+physical  stable     semantic active-runtime
+/swept    base union  Transit actuator set
+```
 
-This amendment does not weaken the selected Transit policy and does not restore DISC as the preferred directional Passage footprint. DISC/current physical primitives retain conservative occupancy/sweep roles. It also does not authorise an Entry-distance fix: assembly completeness is the first unresolved boundary.
+Inventory is not participation: only mechanisms instantiated by the selected runtime configuration may enter `FOLDABILITY`. Passage consumes the cached record; it does not rediscover configuration capability. Fold settlement is bounded and non-semantic. Settlement exhaustion removes configuration veto but does not assert successful compaction; physical Passage safety remains independently authoritative.
+
+v0.1.7.0 introduces no architectural or traffic-behaviour delta beyond the validated v0.1.6.5 state; this section records the checkpoint for owner canonicalisation.
+
+## v0.1.6.5 TEST amendment — Job-Start Physical Capability Record
+
+For each Job Episode, Representation discovers and caches three principal Physical Assembly products once:
+
+```text
+JOB EPISODE BOOTSTRAP
+        |
+Physical Assembly
+   |        |          |
+  DISC   TRANSIT    FOLDABILITY
+physical  stable     semantic active-runtime
+/swept    base union  Transit actuator set
+```
+
+`TRANSIT` is a stable planning abstraction frozen at bootstrap/first observation. DISC remains the conservative current/swept physical backstop. `FOLDABILITY` describes only the actually instantiated selected runtime configuration, never catalogue/shop alternatives.
+
+Cooperative Passage must not rediscover configuration capability. If `isFoldable`, it commands cached Transit actuators and waits boundedly for their requested endpoints. Settlement exhaustion removes configuration veto without asserting that Transit was physically achieved. Reality remains final safety authority.
+
+## v0.1.6.4 TEST amendment — Transit Motion Settlement
+
+For `TRANSIT_BASE` Cooperative Passage, Transit configuration is always requested, but Control owns only **settlement**, not semantic configuration inference. Passage remains held while any participant assembly member reports active native Foldable motion (`abs(spec_foldable.foldMoveDirection) > 0.1`). When no such motion is active, configuration settlement is complete for Passage.
+
+`prepareCompact()` return status, aggregate `allFolded`/`allDeployed`/`transitionCount`, observed configuration profiles, and current-vs-cached Transit geometry are explicitly non-authoritative for this settlement decision. This replaces the withdrawn D-0177 geometry gate and removes D-0176's tolerance from active configuration.
+
+The distinction protects abstraction levels: Candidate/Representation define the Transit geometry used to plan; Configuration Authority observes whether requested native mechanical motion is still occurring; Control waits for motion settlement and then executes the frozen Passage plan.
+
+## v0.1.6.3 TEST amendment — Fold-State Non-Authority
+
+For `TRANSIT_BASE` Cooperative Passage, **Transit Realisation is observation-authoritative**. Control always requests Transit but does not infer readiness from `prepareCompact()` return status or aggregate GIANTS `allFolded`, `allDeployed`, or `transitionCount`.
+
+The execution gate asks one representation-level question: does current represented directional occupancy match the cached Transit Passage envelope within the D-0176 5% representation-similarity allowance? If yes, Transit is physically realised for Passage; if no or unavailable, the pair remains held.
+
+This protects abstraction levels: Representation may use mechanical state internally to determine which current geometry is valid, while Control consumes geometry rather than interpreting implement-specific fold semantics. Legacy configuration-conditioned fallback behaviour remains outside this amendment.
+
+## v0.1.6.2 TEST amendment — Transit Representation Similarity
+
+D-0175 Transit Realisation remains the execution invariant: `TRANSIT_BASE` Passage requests Transit for every participant before movement. D-0176 refines only the ignored/inert-request evidence. Exact numeric containment is not required; current directional occupancy is Transit-compatible when each directional extent is within 5% of the cached Transit extent.
+
+The cached Transit geometry remains planning authority. The 5% allowance expresses finite representation similarity and must not be added to Passage clearance or used to create a fresh Transit plan.
+
+## v0.1.6.1 TEST amendment — Transit Realisation Gate
+
+### Transit-only Passage invariant
+
+When Cooperative Passage is planned from Native Base Transit Geometry, **Transit is the execution configuration**, not an optional optimisation. The architecture is:
+
+`Plan in Transit → request Transit → establish Transit realisation → capture execution origin → move through Passage`.
+
+A successful Transit request establishes an obligation to wait for physical fold completion. A failed or irrelevant request is non-fatal only when current represented directional occupancy is already contained by the planned Transit envelope. Mechanical command failure is therefore not itself a Passage veto, but neither can it authorise a Transit-sized guide for a physically larger assembly.
+
+`COMPACT_REQUIRED` / `RETAIN_CURRENT` are legacy configuration-conditioned concepts and have no authority over a `TRANSIT_BASE` plan. They remain temporarily available only behind the pre-existing fallback when Native Base Transit Geometry is unavailable.
+
+## v0.1.6.0 checkpoint amendment — Transit Geometry Completeness (historical diagnosis withdrawn by D-0175)
+
+The v0.1.6.0 checkpoint recorded a provisional TS009 interpretation that `assemblyMembers=2` meant the mower Physical Assembly was incomplete. The subsequent TS009 XML/I3D/savegame review disproved that interpretation: MF 7S.210 + FW212 is correctly a two-member assembly, while Valtra S 416 + KDD 941 STH + KDF 341 S is correctly a three-member assembly and is discovered as such.
+
+The broader concept that representation authority depends on complete membership remains architecturally valid, but **TS009 is not evidence of a membership-completeness failure**. Its observed failure is instead D-0175 Legacy Authority Leakage / missing Transit Realisation on a correctly planned Transit Base guide.
+
+No Entry-distance fix is authorised by this correction.
 
 ---
 

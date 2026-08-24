@@ -1,3 +1,70 @@
+## v0.1.7.0 CANONICAL CANDIDATE — D-0179 responsibility checkpoint
+
+| Concern | Owner | Candidate responsibility |
+|---|---|---|
+| Physical Assembly discovery | Representation bootstrap | Discover actual Job-Episode members once; shop alternatives excluded |
+| DISC/local conservative representation | Representation bootstrap | Cache expensive/static member facts; preserve conservative safety role |
+| Transit Passage footprint | Representation bootstrap | Freeze one stable complete-assembly `TRANSIT_BASE` planning abstraction |
+| Semantic Transit fold capability | Representation bootstrap | Cache `isFoldable`, selected-runtime active actuators and expected duration |
+| Transit request/settlement | Cooperative Passage Control + mechanical donor | Command only cached actuators; wait to requested endpoints or bounded exhaustion |
+| Passage safety | Existing Passage/physical evidence | Remains independently authoritative; exhaustion never asserts compaction |
+| Candidate authority | Repository owner | v0.1.7.0 remains non-canonical until exact fingerprint acceptance |
+
+## v0.1.6.5 TEST — D-0179 responsibility alignment
+
+| Concern | Owner | v0.1.6.5 responsibility |
+|---|---|---|
+| Physical Assembly discovery | `AssemblyRepresentationCache` | Job-Episode bootstrap only; revalidation may detect membership drift but does not rebuild capability |
+| DISC/local geometry | `AssemblyRepresentationCache` | Cache conservative member geometry once; current transforms remain observation work |
+| Transit footprint | `AssemblyRepresentationCache` | Build once from member `base.size` union at first Job-Episode observation; reuse unchanged |
+| `isFoldable` / Transit actuators | `AssemblyRepresentationCache` | Cache selected-runtime `spec_foldable.foldingParts` only; require AI-reachable active configuration |
+| Transit request | `CooperativePassageControl` + configuration authority | Command only cached actuators; no live capability discovery |
+| Fold settlement | Configuration authority | Specific commanded actuator requested endpoint; bounded duration |
+| Settlement exhaustion | `CooperativePassageControl` | Remove configuration veto; do not assert compaction |
+| Physical Passage safety | existing Representation/constraints | Remains independent of configuration success |
+
+## v0.1.6.4 TEST — D-0178 responsibility alignment
+
+| Concern | Owner | v0.1.6.4 responsibility |
+|---|---|---|
+| Transit Passage geometry | Representation / Candidate | Cached `TRANSIT_BASE`; planning only, not settlement authority |
+| Transit request | Control / configuration authority | Always attempt; command result is non-authoritative |
+| Native fold actuation motion | Configuration authority | Observe assembly `foldMoveDirection`; report active motion only |
+| Transit settlement | Cooperative Passage Control | Hold while native fold motion is active; release when motion settles |
+| Semantic fold endpoint | No `TRANSIT_BASE` Control owner | `allFolded`, `allDeployed`, profiles and geometry similarity do not authorise settlement |
+| Legacy fallback/restoration | Existing legacy paths | Unchanged in this tranche |
+
+## v0.1.6.3 TEST — D-0177 responsibility alignment
+
+| Concern | Owner | v0.1.6.3 responsibility |
+|---|---|---|
+| Transit Passage geometry | Representation / Candidate | Cached `TRANSIT_BASE` envelope remains the selected Passage geometry |
+| Transit request | Control / configuration authority | Always attempt Transit; success/failure does not authorise movement |
+| Current physical configuration | Representation | Describe current directional occupancy; mechanical fold state may inform representation applicability |
+| Transit realisation | Control consuming Representation | Compare current directional occupancy with cached Transit envelope using D-0176 5% similarity |
+| GIANTS `allFolded` / `allDeployed` / `transitionCount` | Diagnostics / representation evidence | No `TRANSIT_BASE` Passage readiness authority in Control |
+| Passage clearance | Candidate / Constraint | Unchanged; D-0176 tolerance grants no crossing clearance |
+| Legacy geometry fallback | Existing legacy path | Unchanged in this tranche |
+
+## v0.1.6.2 TEST — D-0176 responsibility alignment
+
+| Concern | Owner | v0.1.6.2 responsibility |
+|---|---|---|
+| Transit Passage geometry | Representation / Candidate | Supply and freeze `TRANSIT_BASE` directional envelope at Passage Selection |
+| Transit request | Control / configuration authority | Always attempt Transit for `TRANSIT_REQUIRED` participants |
+| Successful fold completion | Control | Hold until GIANTS fold evidence reports `allFolded=true` |
+| Ignored/inert request realisation | Control + current Representation evidence | Compare current left/right/forward/rear extents to cached Transit extents with 5% similarity tolerance |
+| Passage clearance | Candidate / Constraint | Unchanged; D-0176 tolerance grants no additional crossing clearance |
+
+## v0.1.6.1 TEST — D-0175 authority alignment
+
+| Concern | Owner | v0.1.6.1 responsibility |
+|---|---|---|
+| Passage Transit geometry | `LocalPassagePlanner` | Uses `transitPassageEnvelope`; does not consult legacy compact-profile selection when Transit Base is available. |
+| Transit request | `CooperativePassageControl` + existing Configuration Authority | Best-effort request at the existing configuration point. |
+| Transit realisation | `CooperativePassageControl` | Successful request waits for `allFolded`; ignored request requires current directional occupancy within planned Transit envelope. |
+| Legacy configuration-conditioned fallback | `LocalPassagePlanner` / `CooperativePassageControl` | Retained only when Transit Base geometry is unavailable; not authoritative for `TRANSIT_BASE`. |
+
 ## v0.1.1.0 candidate responsibility boundary
 
 | Question | Owner | Current rule |

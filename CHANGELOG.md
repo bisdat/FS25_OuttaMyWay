@@ -1,3 +1,91 @@
+# v0.1.7.0 CANONICAL CANDIDATE — Job-Start Physical Capability Record checkpoint
+
+**Authority:** owner-declared v0.1.6.0 canonical (`dd17f654c73a0941617e49365cc58271f5d09d958e64f1faa235d6eca24141af`; Git `76eab8225bf400d5c168d8e57d6f7ad0c1dfe6a1`; 317 files) remains authoritative until the owner explicitly declares this exact candidate fingerprint canonical. v0.1.7.0 promotes the live-validated v0.1.6.5 behaviour with **no further traffic/control behavioural change** during candidate preparation.
+
+**Validated architecture — D-0179:** one Job-Episode bootstrap owns the actual Physical Assembly's conservative DISC/local representation, one stable cached `TRANSIT_BASE` footprint, and OuttaMyWay semantic active-runtime Transit fold capability (`isFoldable` plus only the actuators instantiated by the selected runtime folding configuration). Shop/catalogue alternatives carry no Passage authority. Cooperative Passage consumes this cache and performs no fold-capability rediscovery.
+
+**Bounded Transit settlement:** cached foldable participants command only their cached active actuators and wait for each requested `foldAnimTime` endpoint. The wait is bounded from the cached native duration (`1.5 × duration + 2000 ms`, 30 s fallback, 35 s hard maximum). Exhaustion removes configuration veto but does not assert compaction. Aggregate `allFolded`/`allDeployed`, configuration-profile semantics, `foldMoveDirection`, command success/failure and current-vs-Transit geometry do not own `TRANSIT_BASE` settlement.
+
+**Four-scenario field validation (v0.1.6.5):** the owner observed a perfect run in order TS016 → TS015 → TS010S → TS009. Logs support all four observations. TS016 cached Patriot as foldable (1 actuator) and S416/K105 as non-foldable (0), Patriot settled in 15.488 s, and the Passage reached second whistle and terminal `SUCCEEDED`. TS015 cached Condor/Patriot as one actuator each and settled both in 15.785 s before second whistle. TS010S cached the mower as foldable and MT665 as non-foldable; the mower settled in 6.250 s before second whistle. TS009 cached MF/FW212 as non-foldable and S416 + two mowers as two active actuators; both mower actuators settled in 6.296 s before second whistle and terminal `SUCCEEDED`.
+
+**No hidden rescue:** the four runs contain no Transit Fold Settlement Exhaustion, configuration watchdog or player-intervention rescue. TS015 and TS010S were reloaded during post-second-whistle restoration, so their logs stop before terminal settlement; both had completed all pair-dependent Passage gates with `failure=none` and second whistle.
+
+**Release identity:** BUILD resets to `0`. v0.1.7.0 is a canonical candidate only until the owner explicitly accepts the exact produced fingerprint. Intermediate v0.1.6.1-v0.1.6.4 hypotheses remain negative engineering evidence; D-0179/v0.1.6.5 is the validated behaviour being promoted.
+
+# v0.1.6.5 TEST — D-0179 Job-Start Physical Capability Record
+
+Baseline: v0.1.6.4 TEST over owner-declared v0.1.6.0 canonical.
+
+**Field evidence:** v0.1.6.4 passed TS009, TS010S and TS015, but TS016 again remained in `CONFIGURING`. Patriot completed a real fold; the S416/K105 side retained `foldMoveDirection=1` without visible animation or configuration change. This disproves D-0178's assumption that non-zero `foldMoveDirection` reliably denotes physical fold motion. `isBlocked` remains secondary evidence only.
+
+**D-0179:** Representation now establishes a Job-Start Physical Capability Record once per Job Episode: cached DISC/local geometry, a cached `TRANSIT_BASE` assembly footprint, and an OuttaMyWay semantic `isFoldable` plus active Transit actuator set. Foldability is derived only from the **selected runtime** `spec_foldable` configuration (`hasFoldingParts`, instantiated `foldingParts`, `allowUnfoldingByAI`, and callable fold actuation). Shop-available but unselected XML alternatives carry no authority; the stale `foldingConfiguration(0)...allowUnfoldingByAI` probe is removed.
+
+Cooperative Passage no longer rediscovers fold capability. If cached `isFoldable=false`, configuration is immediate non-veto. If true, Control commands only cached active actuators and waits for each commanded actuator's requested `foldAnimTime` endpoint. Settlement is bounded by cached `maxFoldAnimDuration * 1.5 + 2000 ms`, capped at 35 s, with a 30 s fallback when duration is unavailable. **Transit Fold Settlement Exhaustion ends the configuration wait but does not assert successful compaction.** Passage then proceeds to Reality's existing physical/safety backstops.
+
+The Transit footprint is now frozen on the first Job-Episode observation rather than rebuilt from changing member pose every passive sample. No Passage replan, Entry change, clearance change, D-0155 or D-0147 change is introduced.
+
+# v0.1.6.4 TEST — D-0178 Transit Motion Settlement
+
+Baseline: v0.1.6.3 TEST over owner-declared v0.1.6.0 canonical.
+
+**Field evidence:** v0.1.6.3 failed in opposite directions. TS009 released about 2 s after the Transit request while its rear mower was still visibly folding; TS016 remained held at the same S416/Bredal configuration point. This disproves D-0177 geometry-only Transit readiness: represented geometry can become Transit-like before physical folding finishes, while another valid assembly can remain represented wider than Transit indefinitely.
+
+**D-0177 withdrawal:** current-vs-cached Transit geometry and D-0176's 5% similarity tolerance no longer carry Transit settlement authority. The tolerance is removed from active config.
+
+**D-0178:** Transit-first Control still requests Transit for every `TRANSIT_BASE` participant. Passage readiness waits only while native GIANTS Foldable actuation is active (`abs(spec_foldable.foldMoveDirection) > 0.1`). When native fold motion settles to zero—or when a Transit request is accepted-but-inert/ignored and no native fold motion exists—the participant is settled for Passage. `prepareCompact()` success/failure, `allFolded`, `allDeployed`, `transitionCount`, configuration profiles and Transit geometry have no `TRANSIT_BASE` settlement authority.
+
+This is a settlement rule, not semantic configuration inference: Control does not ask which fold endpoint was reached. Legacy configuration-conditioned fallback and restoration behaviour remain outside this tranche. Passage geometry, Entry, guide, clearance, D-0155 and D-0147 are unchanged.
+
+# v0.1.6.3 TEST — D-0177 Fold-State Non-Authority
+
+Baseline: v0.1.6.2 TEST over owner-declared v0.1.6.0 canonical.
+
+**Field evidence:** v0.1.6.2 passed TS009, TS010S and TS015. TS016 failed in `CONFIGURING`: Patriot + S416 both reported accepted Transit requests (`changed=2`), Patriot physically compacted, while the S416/Bredal side did not acquire the universal `allFolded=true` condition. This repeats the earlier D-0170 finding that command acceptance and aggregate fold bookkeeping are not semantic Transit authority.
+
+**Bench evidence before implementation:** TS015 Condor/Patriot representation does not expose a Transit-compatible current directional envelope during the roughly 15 s real fold. The current representation remains far larger/unavailable until physical compaction is realised, so the D-0176 5% geometry test does not release the sprayers prematurely.
+
+**D-0177:** on the primary `TRANSIT_BASE` path, Control no longer reads `allFolded`, `allDeployed`, `transitionCount`, or `prepareCompact()` success/failure to decide Passage readiness. Transit is still always attempted. Readiness is determined only by current represented directional occupancy versus the cached Transit envelope using the existing 5% per-directional-extent similarity allowance. Representation may continue to use mechanical state internally to decide which current geometry is valid.
+
+No Passage geometry, Entry, guide, clearance, speed, Execution-Origin Capture, D-0155 or D-0147 behaviour is changed. The legacy configuration-conditioned fallback remains isolated and unchanged.
+
+# v0.1.6.2 TEST — D-0176 Transit Representation Similarity
+
+Baseline: v0.1.6.1 TEST over owner-declared v0.1.6.0 canonical.
+
+**Field evidence:** TS009 proved D-0175 compaction works: the S416 mower assembly reached Transit, but Passage then remained held on the MF/FW212 ignored-request branch. The rejecting trace reported `currentWidth=3.02` and `transitWidth=3.02`, showing exact directional containment was too brittle for representation/pose variation. TS010S completed successfully under v0.1.6.1.
+
+**D-0176:** retain the cached Passage Transit envelope and admit current occupancy as Transit-realised when each directional extent is no more than 5% larger than the cached Transit extent. The tolerance is dimensionless representation similarity, not extra Passage clearance. No fresh Transit geometry is substituted at the gate, no Passage replan occurs, and accepted fold requests still wait for `allFolded=true`.
+
+Primary validation remains TS009; TS010S is the first regression because it already passed the v0.1.6.1 gate.
+
+# v0.1.6.1 TEST — D-0175 Transit Realisation Gate
+
+Baseline: owner-declared v0.1.6.0 canonical.
+
+## Discovery
+
+TS009 XML/I3D and runtime evidence disproved the v0.1.6.0 carry-forward diagnosis that the mower Physical Assembly was incomplete. The Valtra S 416 correctly exposes tractor + rear mower + front mower (3 members); MF 7S.210 correctly exposes tractor + FW212 (2 members). Native Base Transit Geometry also reproduces the expected pair Transit contact threshold.
+
+The remaining failure was **Legacy Authority Leakage**: TRANSIT_BASE replaced Passage geometry, but the old configuration-conditioned planner still supplied `COMPACT_REQUIRED` / `RETAIN_CURRENT`, and Control used that legacy distinction to decide whether Transit realisation was mandatory.
+
+## D-0175
+
+For a `TRANSIT_BASE` Passage:
+
+1. Passage planning assigns `TRANSIT_REQUIRED` to every participant.
+2. Legacy configuration-profile selection is not evaluated unless Transit Base geometry is unavailable and the existing fallback is needed.
+3. Control always attempts Transit at the existing configuration point.
+4. A successful Transit request blocks Passage movement until fold evidence reports `allFolded=true`.
+5. An unsupported/inert request is silently non-fatal, but it does not waive the Transit geometry contract: current represented directional occupancy must already fit within the planned Transit envelope.
+6. Execution-Origin Capture and the existing guide are unchanged; there is no post-compaction replan.
+
+Third-party guide support now uses the authoritative directional Transit rectangles for TRANSIT_BASE participants rather than legacy compact-profile discs. The legacy disc path remains for the fallback geometry.
+
+## Validation target
+
+- TS009 first: S416 must fold fully before guide movement; FW212 must not create a false veto when already Transit-compatible.
+- Then TS016, TS010S and TS015 regression.
+
 # v0.1.6.0 CANONICAL CANDIDATE — Native Base Transit Geometry checkpoint
 
 **Authority:** owner-declared canonical v0.1.5.0 (`4ac4438a0ab89dc903d5f4d0fde799a141b666d6d49ccbb916aba98411f5148f`; 317 files) remains the exact canonical baseline until the owner explicitly declares this candidate canonical. This candidate consolidates the v0.1.5.3 implementation with **no further traffic-behaviour change after v0.1.5.3**. The withdrawn v0.1.5.1/v0.1.5.2 configuration-profile shadows are retained as negative engineering evidence only and are not implementation ancestry.

@@ -1,4 +1,64 @@
-# Current status — v0.1.6.0 Native Base Transit Geometry CANONICAL CANDIDATE
+# Current status — v0.1.7.0 CANONICAL CANDIDATE — D-0179 validated checkpoint
+
+Authoritative baseline remains owner-declared **v0.1.6.0 canonical** (`dd17f654c73a0941617e49365cc58271f5d09d958e64f1faa235d6eca24141af`; Git `76eab8225bf400d5c168d8e57d6f7ad0c1dfe6a1`; 317 files) until explicit owner promotion. v0.1.7.0 is a release/provenance-only promotion of the tested v0.1.6.5 implementation.
+
+**Field validation:** one ordered regression run TS016 → TS015 → TS010S → TS009 produced four observed PASS results. Logs show correct bootstrap fold capability, bounded endpoint settlement for every genuinely foldable participant, four second whistles, no Transit Fold Settlement Exhaustion, no configuration watchdog, and no player-intervention rescue. TS016 and TS009 reached terminal `SUCCEEDED`; TS015/TS010S were reloaded during restoration after second whistle.
+
+**Validated architecture:** Job-Episode Representation bootstrap owns DISC/local geometry, frozen Transit Base geometry, semantic `isFoldable`, active runtime Transit actuator set and expected active duration. Passage performs no capability rediscovery and never enumerates unselected shop configurations.
+
+**Canonicalisation boundary:** no further behavioural correction belongs in this candidate. Review the exact fingerprint; if accepted, owner explicitly declares it canonical and records local Git/provenance. Next engineering work is deliberately deferred until after that authority step.
+
+# Current status — v0.1.6.5 TEST — D-0179 Job-Start Physical Capability Record
+
+Authoritative baseline remains owner-declared **v0.1.6.0 canonical**. v0.1.6.5 is an incremental field-test candidate.
+
+**Last field result:** v0.1.6.4 TS009 PASS, TS010S PASS, TS015 PASS, TS016 FAIL. TS016 Patriot folded normally; S416/K105 held a non-zero `foldMoveDirection` without visible physical fold progress. D-0178 is disproven.
+
+**Active hypothesis:** simplify around Job-Episode bootstrap. Cache DISC, frozen Transit Base geometry, and semantic active-runtime `isFoldable`/actuator capability once. Passage consumes the cache, waits boundedly for only those commanded actuators, and removes configuration veto on settlement exhaustion without claiming compaction.
+
+**Primary validation:** TS016 first. The K105 should either bootstrap as non-foldable and proceed immediately, or bootstrap as foldable and eventually log `TRANSIT_FOLD_SETTLEMENT_EXHAUSTED` before proceeding. Then regress TS009 specifically for no premature mower movement, followed by TS015 and TS010S.
+
+# Current status — v0.1.6.4 TEST — D-0178 Transit Motion Settlement
+
+Authoritative baseline remains owner-declared **v0.1.6.0 canonical**. v0.1.6.4 is an incremental field-test candidate.
+
+**v0.1.6.3 result:** TS016 failed at the same configuration point; TS009 partially passed but moved before compaction completed. D-0177 geometry-only readiness is withdrawn.
+
+**Current hypothesis:** Transit-first execution should be governed by actuation settlement rather than semantic fold state or geometry. `TRANSIT_REQUIRED` waits only while native `foldMoveDirection` motion is active. Accepted-but-inert/ignored requests are non-veto.
+
+**Bench state:** 108/108 structural tests and 279/279 replacement-core Lua tests pass.
+
+**Regression priority:** TS009 → TS016 → TS015 → TS010S.
+
+# Current status — v0.1.6.3 TEST — D-0177 Fold-State Non-Authority
+
+Authoritative baseline remains owner-declared **v0.1.6.0 canonical**. v0.1.6.3 is a field-test build incorporating D-0175/D-0176 from the test line.
+
+**v0.1.6.2 field result:** TS009 PASS; TS010S PASS; TS015 PASS; TS016 FAIL in `CONFIGURING`.
+
+**Current hypothesis:** the Transit-first architecture is sound, but `allFolded`/command acceptance were wrongly reintroduced as Control authority in v0.1.6.1. D-0177 removes those semantics from the `TRANSIT_BASE` readiness decision. Current represented geometry versus cached Transit geometry is the sole readiness authority, with the existing 5% representation tolerance.
+
+**Regression priority:** TS016 → TS015 → TS009 → TS010S.
+
+# Current status — v0.1.6.2 TEST — D-0176 Transit Representation Similarity
+
+Authoritative baseline remains owner-declared **v0.1.6.0 canonical**. v0.1.6.2 is a field-test build incorporating v0.1.6.1 D-0175.
+
+**v0.1.6.1 field result:** TS009 compacted the S416 but then failed to progress because the ignored MF/FW212 Transit request failed exact directional-envelope containment despite equal logged 3.02 m current/Transit widths. TS010S completed successfully.
+
+**Current hypothesis:** cached Transit geometry is sound; the ignored-request realisation comparison needs finite representation tolerance. v0.1.6.2 uses 5% per directional extent without rebuilding Transit geometry or altering Passage clearance.
+
+**Validation:** TS009 first; then TS010S regression, followed by the broader TS015/TS016 set if sound.
+
+# Current status — v0.1.6.1 TEST — D-0175 Transit Realisation Gate
+
+Authoritative baseline remains owner-declared **v0.1.6.0 canonical**. v0.1.6.1 is a field-test build.
+
+Active hypothesis: TS009 failed because correct Native Base Transit Geometry was allowed to execute before the S416 mower assembly had physically realised Transit. The old configuration-conditioned `RETAIN_CURRENT` decision still waived Transit completion on a `TRANSIT_BASE` guide.
+
+This build removes that authority leak from the Transit Base path and introduces the **Transit Realisation Gate**. Primary validation is TS009, followed by TS016, TS010S and TS015 regression.
+
+# Historical checkpoint — v0.1.6.0 Native Base Transit Geometry (superseded diagnosis)
 
 **Authoritative baseline:** owner-declared canonical v0.1.5.0 (`4ac4438a0ab89dc903d5f4d0fde799a141b666d6d49ccbb916aba98411f5148f`; 317 files) until explicit owner declaration of this exact candidate fingerprint.
 
@@ -6,7 +66,7 @@
 
 **Field result:** TS010S PASS, TS015 PASS, TS016 PASS. TS009 FAIL with a small physical contact before Passage resumed. TS009 used `geometry=TRANSIT_BASE` but logged only `assemblyMembers=2` for the physical tractor + front mower + rear mower combination, with `coverageComplete=false` and `underApproximationRisk=true`.
 
-**Current architectural finding:** **Transit Geometry Completeness requires Physical Assembly Completeness.** Complete base-size evidence for every member OuttaMyWay happened to discover is insufficient negative-clearance authority if assembly discovery itself may be incomplete. This is the first problem for the next tranche.
+**Historical architectural finding, now corrected:** v0.1.6.0 treated TS009 as evidence that the discovered Physical Assembly was incomplete. D-0175 asset review disproved that fixture-specific inference: both TS009 assemblies have the correct runtime member counts. The active issue is Transit Realisation authority, not missing assembly membership.
 
 **Do not change yet:** do not add Entry-distance margin, revive post-compaction replanning, resurrect Native Deployment Pair inference, or remove legacy configuration-selection code. TS009's inherited optional compaction probe (`probe-requires-fully-deployed-start`) is separate evidence and should not be repaired in the same experiment as assembly membership.
 

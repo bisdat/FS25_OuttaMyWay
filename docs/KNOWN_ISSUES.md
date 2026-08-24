@@ -1,3 +1,52 @@
+# v0.1.7.0 CANONICAL CANDIDATE — known issues / explicit validation boundary
+
+- No blocking D-0179 defect is known in the current four-scenario Cooperative Passage regression: TS016, TS015, TS010S and TS009 passed v0.1.6.5.
+- Transit Fold Settlement Exhaustion is bench-tested but was **not exercised in the successful field run**; it remains a bounded fail-safe, not positive evidence of successful compaction.
+- TS015 and TS010S logs end during post-second-whistle restoration because the user reloaded; pair-dependent Passage completed successfully before reload, but those two runs do not independently record terminal `COOPERATIVE_PASSAGE_SETTLED`.
+- Legacy/fallback configuration machinery still exists for paths where Native Base Transit Geometry is unavailable. Do not let that implementation residue reacquire authority over the primary `TRANSIT_BASE` path.
+- The historical invalid `allowUnfoldingByAI` XML shop-path probe has been removed from D-0179 capability discovery; selected runtime configuration is authoritative.
+- Parked non-D-0179 work remains separate: restoration/agronomic debt, finishing orientation, straight-reverse restoration, TS010 terminal locality, and broader literal/audit cleanup.
+
+# v0.1.6.5 TEST — known issues / validation boundary
+
+- D-0179 is not field-validated yet. TS016 is the primary discriminator.
+- `isFoldable` is intentionally simplified: selected runtime folding parts + AI reachability + actuation methods. An unseen false-positive actuator may still exist; bounded settlement exhaustion is the fail-safe.
+- Settlement exhaustion deliberately permits Passage to attempt movement without proving compaction. Existing physical/safety mechanisms remain the backstop; field evidence must establish that this degrades safely rather than colliding.
+- Legacy configuration-conditioned fallback and restore semantics remain outside this tranche.
+- `isBlocked` remains observed but non-authoritative for this issue.
+- No Entry, guide, clearance, D-0155, D-0147, agronomy recovery or terminal-locality change is included.
+
+# v0.1.6.4 TEST — known issues / validation boundary
+
+- D-0178 is not field-validated yet. TS009 and TS016 are the paired discriminators.
+- D-0177 geometry-only Transit readiness and D-0176's 5% similarity tolerance are withdrawn from active Transit settlement authority. Historical documentation remains as negative evidence.
+- `Prototype22ConfigurationAuthority.prepareCompact()` still contains inherited start-state restrictions such as `probe-requires-fully-deployed-start`; D-0178 does not redesign command issuance. Transit command failures remain silently non-veto as previously agreed.
+- Restoration and legacy fallback still use older fold predicates; this tranche intentionally does not widen into those separate behaviours.
+- No Entry, guide, clearance, speed, D-0155, D-0147, agronomy recovery or terminal-locality debt is addressed.
+
+# v0.1.6.3 TEST — known issues / validation boundary
+
+- D-0177 is not field-validated yet. TS016 is the primary discriminator.
+- The 5% directional similarity from D-0176 remains test-line policy, not canonical policy.
+- Fold-state predicates still exist in Representation, Terminal Egress, prototypes, and the legacy Passage fallback. D-0177 prohibits them only as `TRANSIT_BASE` Control readiness authority; this build intentionally does not perform a repository-wide semantic rewrite.
+- If current directional representation is unavailable or exceeds Transit similarity, Passage remains held fail-safe.
+- No Entry, guide, clearance, speed, D-0155, D-0147, agronomy-recovery or terminal-locality debt is addressed here.
+
+# v0.1.6.2 TEST — known issues / validation boundary
+
+- D-0176 5% directional similarity is under field validation; it is not yet canonical policy.
+- The realisation gate still relies on the existing current representation sample; this tranche does not redesign representation sampling cadence.
+- Legacy configuration-conditioned behaviour remains only on the existing no-`TRANSIT_BASE` fallback path.
+- Existing parked issues (restoration/agronomic debt, finishing orientation, terminal locality and stale schema probes) remain out of scope.
+
+# v0.1.6.1 TEST — known issues / validation boundary
+
+- D-0175 is not field-validated yet. TS009 is the primary discriminator.
+- The v0.1.6.0 TS009 "Physical Assembly Completeness" diagnosis is withdrawn for this fixture: the runtime member counts match the savegame attachment topology.
+- Legacy configuration-conditioned planning still exists as the fallback when Transit Base geometry is unavailable; this build removes its authority only from the primary TRANSIT_BASE path.
+- The configuration capability remains the inherited Prototype22 implementation; this tranche does not refactor that module.
+- Finishing orientation, straight-reverse restoration, TS010 final locality, agronomic debt and stale schema probes remain parked.
+
 # v0.1.6.0 CANONICAL CANDIDATE — known issues / explicit limits
 
 - **TS009 remains safety-relevant negative evidence.** v0.1.5.3 Native Base Transit Geometry passed TS010S/TS015/TS016 but TS009 produced a small physical contact before Passage resumed.

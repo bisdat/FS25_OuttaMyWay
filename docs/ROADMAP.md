@@ -1,3 +1,11 @@
+# v0.1.7.0 immediate roadmap — canonical review boundary
+
+1. Review the exact v0.1.7.0 candidate fingerprint and evidence; no behavioural work belongs in candidate preparation.
+2. If accepted, owner explicitly declares that exact fingerprint canonical and records/synchronises local repository provenance.
+3. Only after canonicalisation, discuss and select the next engineering objective from current Reality and parked issues; do not let candidate review turn into another corrective tranche.
+
+---
+
 # v0.1.2.x immediate roadmap — implement Resolution-Space Progression Envelope
 
 1. Review the exact v0.1.2.0 architecture candidate; candidate preparation contains no intentional traffic behavioural algorithm change.

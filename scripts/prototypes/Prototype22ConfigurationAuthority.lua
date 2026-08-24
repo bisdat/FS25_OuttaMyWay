@@ -80,6 +80,25 @@ local function foldEvidence(vehicle)
     return evidence
 end
 
+local function activeFoldMotionEvidence(vehicle)
+    local evidence={foldableCount=0,motionObservableCount=0,activeCount=0,maximumAbsDirection=0}
+    for _,object in ipairs(collectAssembly(vehicle)) do
+        local spec=object~=nil and object.spec_foldable or nil
+        if spec~=nil then
+            evidence.foldableCount=evidence.foldableCount+1
+            local direction=tonumber(spec.foldMoveDirection)
+            if direction~=nil then
+                evidence.motionObservableCount=evidence.motionObservableCount+1
+                local magnitude=math.abs(direction)
+                evidence.maximumAbsDirection=math.max(evidence.maximumAbsDirection,magnitude)
+                if magnitude>0.1 then evidence.activeCount=evidence.activeCount+1 end
+            end
+        end
+    end
+    evidence.active=evidence.activeCount>0
+    return evidence
+end
+
 local function setWorkState(object, enabled)
     if object == nil or object.isDeleted == true then return false end
     if type(object.setIsTurnedOn) ~= "function" then return false end
@@ -96,13 +115,14 @@ local function setLoweredState(object, lowered)
 end
 
 local function toggleFold(object)
-    if object == nil or object.isDeleted == true then return false end
-    if type(object.getToggledFoldDirection) ~= "function" or type(object.setFoldDirection) ~= "function" then return false end
+    if object == nil or object.isDeleted == true then return false,nil end
+    if type(object.getToggledFoldDirection) ~= "function" or type(object.setFoldDirection) ~= "function" then return false,nil end
     local okDirection, direction = pcall(object.getToggledFoldDirection, object)
-    if not okDirection or direction == nil or direction == 0 then return false end
+    direction=okDirection and tonumber(direction) or nil
+    if direction == nil or direction == 0 then return false,nil end
     local ok = pcall(object.setFoldDirection, object, direction, true)
     if not ok then ok = pcall(object.setFoldDirection, object, direction) end
-    return ok
+    return ok,ok and direction or nil
 end
 
 function Authority.new()
@@ -111,6 +131,72 @@ end
 
 function Authority:getEvidence(vehicle)
     return foldEvidence(vehicle)
+end
+
+-- D-0178: actuation-motion evidence only; no semantic folded/deployed inference.
+function Authority:getActiveFoldMotionEvidence(vehicle)
+    return activeFoldMotionEvidence(vehicle)
+end
+
+
+-- D-0179: TRANSIT_BASE Passage consumes the Job-Episode bootstrap capability
+-- record directly.  No assembly/capability discovery is performed here.
+function Authority:prepareCachedTransit(vehicle,capability)
+    if vehicle==nil then return false,"vehicle-unavailable" end
+    if self.states[vehicle]~=nil then return false,"configuration-authority-already-owned" end
+    if type(capability)~="table" then return false,"transit-capability-unavailable" end
+    if capability.isFoldable~=true or type(capability.actuators)~="table" or #capability.actuators<1 then return false,"bootstrap-non-foldable" end
+
+    local state={
+        vehicle=vehicle,objects=capability.members or {},workStates={},loweredStates={},foldRequested=false,restoreFoldRequested=false,
+        compactRequestedAt=g_time or 0,restoreRequestedAt=nil,workMutations=0,raisedMutations=0,foldMutations=0,
+        bootstrapTransitCapability=true,transitActuatorStates={},settlementTimeoutMs=tonumber(capability.settlementTimeoutMs) or (OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS or 30000)
+    }
+    for _,object in ipairs(state.objects) do
+        if type(object.getIsTurnedOn)=="function" and type(object.setIsTurnedOn)=="function" then
+            local ok,current=pcall(object.getIsTurnedOn,object)
+            if ok and type(current)=="boolean" then state.workStates[object]=current; if current and setWorkState(object,false) then state.workMutations=state.workMutations+1 end end
+        end
+        if type(object.getIsLowered)=="function" and type(object.setLowered)=="function" then
+            local ok,current=pcall(object.getIsLowered,object)
+            if ok and type(current)=="boolean" then state.loweredStates[object]=current; if current and setLoweredState(object,false) then state.raisedMutations=state.raisedMutations+1 end end
+        end
+    end
+    for _,actuator in ipairs(capability.actuators) do
+        local object=actuator.object
+        local ok,direction=toggleFold(object)
+        if ok and direction~=nil then
+            state.foldMutations=state.foldMutations+1
+            state.transitActuatorStates[#state.transitActuatorStates+1]={object=object,memberReferenceKey=actuator.memberReferenceKey,direction=direction,targetFoldAnimTime=direction>0 and 1 or 0,settled=false}
+        end
+    end
+    state.foldRequested=state.foldMutations>0
+    if not state.foldRequested then
+        for object,lowered in pairs(state.loweredStates) do setLoweredState(object,lowered) end
+        for object,enabled in pairs(state.workStates) do setWorkState(object,enabled) end
+        return false,"cached-fold-command-unavailable"
+    end
+    self.states[vehicle]=state
+    return true,state
+end
+
+function Authority:getCachedTransitSettlement(vehicle)
+    local state=vehicle~=nil and self.states[vehicle] or nil
+    if state==nil or state.bootstrapTransitCapability~=true then return {settled=true,exhausted=false,actuatorCount=0,settledCount=0,elapsedMs=0,timeoutMs=0,reason="NO_CACHED_TRANSIT_STATE"} end
+    local settledCount=0
+    for _,actuator in ipairs(state.transitActuatorStates or {}) do
+        local value=foldTime(actuator.object)
+        local target=tonumber(actuator.targetFoldAnimTime)
+        local settled=value~=nil and target~=nil and ((target>=0.5 and value>=0.999) or (target<0.5 and value<=0.001))
+        actuator.settled=settled==true
+        if settled then settledCount=settledCount+1 end
+    end
+    local actuatorCount=#(state.transitActuatorStates or {})
+    local elapsed=math.max(0,(g_time or 0)-(state.compactRequestedAt or (g_time or 0)))
+    local timeout=tonumber(state.settlementTimeoutMs) or (OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS or 30000)
+    local normal=actuatorCount>0 and settledCount==actuatorCount
+    local exhausted=not normal and elapsed>=timeout
+    return {settled=normal or exhausted,normal=normal,exhausted=exhausted,actuatorCount=actuatorCount,settledCount=settledCount,elapsedMs=elapsed,timeoutMs=timeout,reason=normal and "ACTUATORS_SETTLED" or (exhausted and "TRANSIT_FOLD_SETTLEMENT_EXHAUSTED" or "ACTUATORS_PENDING")}
 end
 
 function Authority:prepareCompact(vehicle)

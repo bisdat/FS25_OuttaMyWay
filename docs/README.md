@@ -1,3 +1,13 @@
+# Current project state — v0.1.7.0 CANONICAL CANDIDATE
+
+Owner-declared v0.1.6.0 remains canonical pending explicit review. v0.1.7.0 promotes the exact live-validated v0.1.6.5 D-0179 behaviour with release/provenance identity only; no further traffic/control behaviour is introduced.
+
+The checkpoint establishes the **Job-Start Physical Capability Record**: cache the actual runtime assembly's DISC/local representation, stable Transit footprint, and semantic active Transit actuator set once per Job Episode; Cooperative Passage consumes that cache and bounds fold settlement without interpreting shop alternatives or aggregate GIANTS fold semantics.
+
+Field evidence: TS016, TS015, TS010S and TS009 all passed in one v0.1.6.5 run; no configuration exhaustion/watchdog/player rescue was required.
+
+---
+
 # Current project state — v0.1.1.0 CANONICAL CANDIDATE
 
 Owner-declared v0.1.0.0 remains canonical pending explicit review. v0.1.1.0 carries the exact tested v0.1.0.14 runtime behaviour and changes release/provenance identity only.

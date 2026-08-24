@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.1.6.0 CANONICAL CANDIDATE — Native Base Transit Geometry checkpoint.
+-- FS25_OuttaMyWay v0.1.7.0 CANONICAL CANDIDATE — D-0179 Job-Start Physical Capability Record.
 -- Situation/Decision/Commitment admission semantics remain inherited; Control magnitude is now elastic.
 -- D-0147 now implements the agreed optional Bounded Infield Retreat courtesy hypothesis while retaining the validated v4.7.120 mechanical actuator substrate.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.1.6.0"
+OuttaMyWay.VERSION = "0.1.7.0"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -212,8 +212,17 @@ OuttaMyWay.COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH = 0.25
 OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
 OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
+-- D-0179 Transit fold settlement is bounded.  The preferred ceiling is derived
+-- once at Job-Episode bootstrap from the active runtime folding configuration's
+-- maxFoldAnimDuration.  The factor/margin are fail-safe implementation policy,
+-- not Passage geometry or configuration semantics.
+OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR = 1.50
+OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MARGIN_MS = 2000
+OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
+OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
+
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.1.6.0 CANONICAL CANDIDATE — TRANSIT BASE GEOMETRY CHECKPOINT"
+OuttaMyWay.BUILD_LABEL = "0.1.7.0 CANONICAL CANDIDATE — JOB-START PHYSICAL CAPABILITY RECORD"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720

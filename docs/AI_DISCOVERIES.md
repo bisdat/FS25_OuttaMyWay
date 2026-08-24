@@ -1,3 +1,15 @@
+## D-0179 discovery — Available capability is not Active Capability
+
+GIANTS loads the selected runtime folding configuration into `spec_foldable.foldingParts`; the asset XML may describe other shop-purchasable folding configurations that are not instantiated. OuttaMyWay must cache capability from the runtime-selected configuration only.
+
+## D-0179 discovery — Latched Fold Intent is not motion
+
+v0.1.6.4 TS016 showed S416/K105 retaining `foldMoveDirection=1` while the visible machine and observed configuration did not progress. Non-zero fold direction is therefore not generic physical-motion evidence and cannot own Passage settlement.
+
+## D-0178 discovery — GIANTS Foldable motion is a narrower witness than fold semantics
+
+For Cooperative Passage settlement, `spec_foldable.foldMoveDirection` answers a useful mechanical question without claiming semantic configuration meaning: GIANTS Foldable processes motion while its magnitude is above 0.1 and clears the direction when the requested fold motion reaches its endpoint. OuttaMyWay therefore treats this as **actuation-motion evidence**, not evidence that an implement is semantically “Transit”, “folded”, or “productive”.
+
 # v4.7.127 discoveries / validation
 
 - **Three-Assembly Courtesy Continuation Validation:** v4.7.126 Patriot + Condor + S416 completed end-to-end. Both completed sprayers yielded decisively and S416 finished. This validates the current D-0147 courtesy mechanism for the tested configuration only.

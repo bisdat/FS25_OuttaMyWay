@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.6.0 CANONICAL CANDIDATE — Native Base Transit Geometry checkpoint.
+-- FS25_OuttaMyWay v0.1.7.0 CANONICAL CANDIDATE — D-0179 Job-Start Physical Capability Record.
 -- modDesc.xml loads only this file. Historical archived modules are never sourced.
 local modDirectory=g_currentModDirectory or ""
 local modules={

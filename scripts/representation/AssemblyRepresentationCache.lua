@@ -184,56 +184,61 @@ local function xmlNumericValue(xmlFile,key)
     end
     return nil,nil
 end
-local function xmlBooleanValue(xmlFile,key)
-    if type(xmlFile)~="table" then return nil,nil end
-    for _,methodName in ipairs({"getValue","getBool"}) do
-        if type(xmlFile[methodName])=="function" then
-            local ok,value=pcall(xmlFile[methodName],xmlFile,key)
-            if ok then
-                if type(value)=="boolean" then return value,"LOADED_XML:"..methodName end
-                if value==0 or value=="false" or value=="0" then return false,"LOADED_XML:"..methodName end
-                if value==1 or value=="true" or value=="1" then return true,"LOADED_XML:"..methodName end
-            end
-        end
-    end
-    return nil,nil
-end
 local function directionalFoldReachabilityMetadata(object)
     if type(object)~="table" then return {aiUnfoldingAllowed=nil,source="UNRESOLVED"} end
     local spec=object.spec_foldable
-    if type(spec)=="table" and type(spec.foldingParts)=="table" then
-        for _,part in pairs(spec.foldingParts) do
-            if type(part)=="table" and type(part.allowUnfoldingByAI)=="boolean" then
-                return {aiUnfoldingAllowed=part.allowUnfoldingByAI,source="RUNTIME_FOLDING_PART"}
-            end
-        end
-    end
-    local keys={
-        "vehicle.foldable.foldingConfigurations.foldingConfiguration(0).foldingParts#allowUnfoldingByAI",
-        "vehicle.foldable.foldingConfigurations.foldingConfiguration.foldingParts#allowUnfoldingByAI"
-    }
-    for _,key in ipairs(keys) do
-        local value,source=xmlBooleanValue(object.xmlFile,key)
-        if value~=nil then return {aiUnfoldingAllowed=value,source=source..":"..key} end
-    end
-    local filename=object.configFileName or object.configFileNameClean or object.xmlFilename
-    local loadFn=type(_G)=="table" and _G.loadXMLFile or nil
-    local getBoolFn=type(_G)=="table" and _G.getXMLBool or nil
-    local deleteFn=type(_G)=="table" and _G.delete or nil
-    if type(filename)=="string" and filename~="" and type(loadFn)=="function" and type(getBoolFn)=="function" then
-        local ok,handle=pcall(loadFn,"OuttaMyWayDirectionalFoldReachability",filename)
-        if ok and handle~=nil and handle~=0 then
-            for _,key in ipairs(keys) do
-                local vok,value=pcall(getBoolFn,handle,key)
-                if vok and type(value)=="boolean" then
-                    if type(deleteFn)=="function" then pcall(deleteFn,handle) end
-                    return {aiUnfoldingAllowed=value,source="CONFIG_XML_FOLDING_PART:"..key}
-                end
-            end
-            if type(deleteFn)=="function" then pcall(deleteFn,handle) end
-        end
+    if type(spec)=="table" and type(spec.allowUnfoldingByAI)=="boolean" then
+        return {aiUnfoldingAllowed=spec.allowUnfoldingByAI,source="RUNTIME_SELECTED_FOLDING_CONFIGURATION"}
     end
     return {aiUnfoldingAllowed=nil,source="UNRESOLVED"}
+end
+
+-- D-0179: Job-Start Physical Capability Record.  Only the selected/runtime
+-- Foldable configuration is authoritative.  GIANTS has already resolved shop
+-- alternatives into spec_foldable.foldingParts before this cache is built.
+local function bootstrapTransitFoldCapability(members,nowSeconds)
+    local capability={
+        isFoldable=false,actuatorCount=0,expectedFoldDurationMs=0,settlementTimeoutMs=0,
+        members={},actuators={},createdAt=nowSeconds,
+        source="JOB_EPISODE_BOOTSTRAP_RUNTIME_SELECTED_FOLDING_CONFIGURATION"
+    }
+    for _,member in ipairs(members or {}) do
+        local object=member.object
+        if type(object)=="table" and object.isDeleted~=true then
+            capability.members[#capability.members+1]=object
+            local spec=object.spec_foldable
+            local parts=type(spec)=="table" and spec.foldingParts or nil
+            local activePartCount=0
+            if type(parts)=="table" then
+                for _,part in pairs(parts) do
+                    if type(part)=="table" then activePartCount=activePartCount+1 end
+                end
+            end
+            local hasActiveParts=type(spec)=="table" and spec.hasFoldingParts==true and activePartCount>0
+            local aiReachable=type(spec)=="table" and spec.allowUnfoldingByAI~=false
+            local commandAvailable=type(object.getToggledFoldDirection)=="function" and type(object.setFoldDirection)=="function"
+            if hasActiveParts and aiReachable and commandAvailable then
+                local duration=tonumber(spec.maxFoldAnimDuration) or 0
+                capability.actuators[#capability.actuators+1]={
+                    object=object,memberReferenceKey=member.referenceKey,rootNode=object.rootNode,name=member.name,
+                    activeFoldingPartCount=activePartCount,maxFoldAnimDurationMs=duration
+                }
+                capability.expectedFoldDurationMs=math.max(capability.expectedFoldDurationMs,duration)
+            end
+        end
+    end
+    capability.actuatorCount=#capability.actuators
+    capability.isFoldable=capability.actuatorCount>0
+    local fallback=tonumber(OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS) or 30000
+    if capability.expectedFoldDurationMs>0 then
+        local factor=tonumber(OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR) or 1.5
+        local margin=tonumber(OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MARGIN_MS) or 2000
+        capability.settlementTimeoutMs=capability.expectedFoldDurationMs*factor+margin
+    else
+        capability.settlementTimeoutMs=fallback
+    end
+    capability.settlementTimeoutMs=math.min(capability.settlementTimeoutMs,tonumber(OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MAX_MS) or 35000)
+    return capability
 end
 
 local function directionalSizeMetadata(object)
@@ -466,6 +471,10 @@ function Cache:_build(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
             }
         end
     end
+    record.transitFoldCapability=bootstrapTransitFoldCapability(record.members,nowSeconds)
+    record.transitPassageBootstrapAttempted=false
+    record.cachedTransitPassageEnvelope=nil
+    record.cachedTransitPassageReason=nil
     record.structurallyValid=#record.localPrimitives>0
     return record
 end
@@ -669,6 +678,10 @@ function Cache:getCurrentConfigurationProfileId(assemblyReferenceKey,sourceJobTo
     local record=self.records[episodeKey(assemblyReferenceKey,sourceJobToken)]
     return record and record.currentProfileId or nil
 end
+function Cache:getTransitFoldCapability(assemblyReferenceKey,sourceJobToken)
+    local record=self.records[episodeKey(assemblyReferenceKey,sourceJobToken)]
+    return record and record.transitFoldCapability or nil
+end
 
 function Cache:_buildProfile(record,key,config,nowSeconds)
     local profile={identity=key..":configuration:"..tostring(countKeys(record.profiles)+1),configurationKey=config,firstObservedAt=nowSeconds,observations=0,nativeObservationCount=0,outtaMyWayObservationCount=0,configurationEvidence=foldConfigurationEvidence(record.members),relativeDiscs=nil,participationById={},includedPrimitiveIds={},participatingPrimitiveNames={},inactivePrimitiveNames={},unresolvedPrimitiveNames={},diagnosticPrimitiveNames={},runtimeConfirmedCount=0,donorFallbackCount=0}
@@ -762,7 +775,11 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
         end
     end
     local frame=referenceFrameForWorker(worker)
-    local transitPassageEnvelope,transitPassageReason=self:_transitPassageEnvelope(record,frame)
+    if record.transitPassageBootstrapAttempted~=true then
+        record.transitPassageBootstrapAttempted=true
+        record.cachedTransitPassageEnvelope,record.cachedTransitPassageReason=self:_transitPassageEnvelope(record,frame)
+    end
+    local transitPassageEnvelope,transitPassageReason=record.cachedTransitPassageEnvelope,record.cachedTransitPassageReason
     local relativeDiscs=relativeDiscSnapshot(worldPrimitives,frame)
     if relativeDiscs~=nil then profile.relativeDiscs=relativeDiscs end
     local directionalEnvelope=relativeDirectionalAssemblyEnvelope(record,worldPrimitives,frame)
@@ -782,7 +799,7 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
         runtimeConfirmedPrimitiveCount=profile.runtimeConfirmedCount,donorFallbackPrimitiveCount=profile.donorFallbackCount,configurationSelectorSummary=profile.configurationSelectorSummary,
         participatingPrimitiveNames=profile.participatingPrimitiveNames,inactivePrimitiveNames=profile.inactivePrimitiveNames,unresolvedPrimitiveNames=profile.unresolvedPrimitiveNames,
         physicalPrimitiveCount=summary.physicalPrimitiveCount,diagnosticPrimitiveCount=summary.diagnosticPrimitiveCount,
-        configurationKey=config,configurationEvidence=foldConfigurationEvidence(record.members),configurationProfileId=profile.identity,configurationProfileCacheHit=profileCacheHit,configurationProfileCount=countKeys(record.profiles),configurationAlternatives=self:_configurationAlternatives(record,profile.identity),directionalPassageEnvelope=profile.directionalPassageEnvelope,transitPassageEnvelope=transitPassageEnvelope,transitPassageReason=transitPassageReason,outtaMyWayConfigurationAuthorityActive=underOuttaMyWayAuthority,
+        configurationKey=config,configurationEvidence=foldConfigurationEvidence(record.members),configurationProfileId=profile.identity,configurationProfileCacheHit=profileCacheHit,configurationProfileCount=countKeys(record.profiles),configurationAlternatives=self:_configurationAlternatives(record,profile.identity),directionalPassageEnvelope=profile.directionalPassageEnvelope,transitPassageEnvelope=transitPassageEnvelope,transitPassageReason=transitPassageReason,transitFoldCapability={isFoldable=record.transitFoldCapability and record.transitFoldCapability.isFoldable==true or false,actuatorCount=record.transitFoldCapability and record.transitFoldCapability.actuatorCount or 0,expectedFoldDurationMs=record.transitFoldCapability and record.transitFoldCapability.expectedFoldDurationMs or 0,settlementTimeoutMs=record.transitFoldCapability and record.transitFoldCapability.settlementTimeoutMs or 0,source=record.transitFoldCapability and record.transitFoldCapability.source or "UNAVAILABLE"},outtaMyWayConfigurationAuthorityActive=underOuttaMyWayAuthority,
         structurallyValid=record.structurallyValid and profile.participatingPrimitiveCount>0,coverageComplete=false,conservativeForRepresentedComponents=record.conservativeForRepresentedComponents,
         negativeClearanceAuthority=false,claimPermissions={"POTENTIAL_INTERACTION_FROM_REPRESENTED_COMPONENTS"},
         worldPrimitives=worldPrimitives,planViewSummary=summary,geometryStats=record.geometryStats,transformFailureCount=#transformFailures,

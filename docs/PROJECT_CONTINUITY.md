@@ -1,3 +1,27 @@
+## v0.1.7.0 CANONICAL CANDIDATE continuity checkpoint
+
+- Owner-declared authority entering candidate review: v0.1.6.0 canonical (`dd17f654c73a0941617e49365cc58271f5d09d958e64f1faa235d6eca24141af`, Git `76eab8225bf400d5c168d8e57d6f7ad0c1dfe6a1`, 317 files).
+- Behaviour being promoted: exact v0.1.6.5 D-0179 field-tested implementation.
+- Regression evidence: TS016 PASS → TS015 PASS → TS010S PASS → TS009 PASS.
+- No Transit Fold Settlement Exhaustion, configuration watchdog or player-intervention rescue occurred.
+- TS016 validated K105 `isFoldable=false` versus Patriot active fold; TS009 validated MF/FW212 non-foldable versus two active S416 mower actuators.
+- Do not reopen the withdrawn TS009 assembly-member diagnosis or the v0.1.6.1-v0.1.6.4 readiness hypotheses unless new Reality contradicts D-0179.
+- Next step is owner canonicalisation; new engineering selection follows afterwards.
+
+## v0.1.6.5 TEST continuity checkpoint
+
+Transit-only was settled before this tranche: plan Passage in Transit, always attempt Transit where available, silently ignore unsupported/irrelevant configuration failures, and do not permit configuration bookkeeping to deadlock Passage.
+
+v0.1.6.4 proved `foldMoveDirection` can be latched intent rather than physical motion: TS009/010S/015 passed; TS016 K105 remained stuck. D-0178 is withdrawn. D-0179 moves capability discovery to Job-Episode bootstrap and freezes the Transit footprint. Runtime-selected `spec_foldable.foldingParts` only; never enumerate shop alternatives. Cached `isFoldable` is an OuttaMyWay semantic fact.
+
+Passage uses only the cached actuator set. Commanded actuators wait for their requested `foldAnimTime` endpoint, but only boundedly. Exhaustion removes configuration veto without asserting compaction. `isBlocked` remains secondary/non-authoritative.
+
+Field order: TS016 → TS009 → TS015 → TS010S.
+
+## v0.1.6.4 TEST continuity checkpoint
+
+D-0177 geometry-only Transit readiness is withdrawn after v0.1.6.3 produced opposite failures: TS009 moved before mower folding completed and TS016 remained stuck. D-0178 Transit Motion Settlement is the active test hypothesis: always request Transit; hold only while native `foldMoveDirection` motion is active; do not use `allFolded`, geometry similarity, configuration profiles or command success as `TRANSIT_BASE` settlement authority. Test TS009 then TS016 before broader regression.
+
 ## v0.1.4.0 Passage checkpoint continuity
 
 The v0.1.3.x Passage line is checkpointed with both its successes and its TS009 negative evidence. The next chat must not resume from the attractive no-fold passages alone: the physical front/rear mower collision shows that complex assembly membership/coverage and configuration authority remain unresolved. The agreed simplification is Transit-First, Reality-Verified Passage, not further fold-vs-don't-fold optimisation.

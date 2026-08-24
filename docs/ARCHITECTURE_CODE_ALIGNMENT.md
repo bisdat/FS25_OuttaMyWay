@@ -1,3 +1,26 @@
+## v0.1.7.0 CANONICAL CANDIDATE alignment — validated D-0179
+
+- **AssemblyRepresentationCache:** authoritative Job-Episode owner for Physical Assembly bootstrap, cached DISC/local representation, frozen Transit Base footprint and selected-runtime Transit fold capability.
+- **LocalPassagePlanner:** consumes cached Transit Base geometry; no fold/don't-fold optimisation is reintroduced.
+- **CooperativePassageControl:** consumes cached capability and bounded endpoint settlement only; no Passage-time capability rediscovery.
+- **Prototype22ConfigurationAuthority:** remains an implementation donor for commanding/observing cached actuators; prototype live-scan semantics do not own the `TRANSIT_BASE` path.
+- **Validation:** TS016/TS015/TS010S/TS009 all field-PASS under v0.1.6.5 without settlement exhaustion or watchdog rescue.
+- **Candidate preparation:** release/provenance only; no behavioural code delta from v0.1.6.5.
+
+## v0.1.6.5 TEST alignment — Job-Start Physical Capability Record
+
+- **AssemblyRepresentationCache:** now owns bootstrap Transit capability (`isFoldable`, actuator set, expected active duration) from selected runtime configuration only, and freezes Transit Base geometry at first observation.
+- **CooperativePassageControl:** consumes `AssemblyRepresentationCache:getTransitFoldCapability()`; it performs no fold-capability discovery for `TRANSIT_BASE`.
+- **Prototype22ConfigurationAuthority:** remains the mechanical actuator donor, but its new D-0179 path accepts cached members/actuators and reports specific endpoint settlement/exhaustion. The old live-scan methods remain only for legacy/fallback users.
+- **Safety:** configuration exhaustion is non-semantic and non-veto; it does not broaden Passage geometry or claim successful compaction.
+
+## v0.1.6.4 TEST alignment — Transit Motion Settlement
+
+- **Candidate/Representation:** continues to provide cached `TRANSIT_BASE` Passage geometry. It does not determine configuration settlement.
+- **Prototype22ConfigurationAuthority:** now exposes `getActiveFoldMotionEvidence()` from native `spec_foldable.foldMoveDirection` across the assembly.
+- **CooperativePassageControl:** `TRANSIT_REQUIRED` readiness consumes only that active-motion evidence. Semantic fold aggregates, configuration profiles, command return and geometry similarity are forbidden from this branch by structural regression test.
+- **Legacy fallback/restoration:** unchanged; their older fold semantics are not promoted into the Transit Base path.
+
 ## v0.1.1.0 canonical-candidate alignment checkpoint
 
 | Architectural responsibility | Current implementation state | Candidate assessment |
