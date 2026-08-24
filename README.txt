@@ -1,3 +1,31 @@
+FS25_OuttaMyWay v0.1.8.0 CANONICAL CANDIDATE — D-0181 LEGACY AUTHORITY CLOSURE A
+
+Authoritative baseline until owner declaration: v0.1.7.0
+SHA-256: ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c
+Git: fd3ac332f1a7ba7e501d1e19370b082728bd1fc2
+Files: 317
+
+Candidate behaviour is the exact live-validated v0.1.7.1 Closure A state; promotion introduces no further traffic/control algorithm. D-0146 is the only production Cooperative Passage architecture and fails closed without cached TRANSIT_BASE. D-0143 is historical donor/test evidence only.
+
+Field regression in order TS016 → TS015 → TS010S → TS009: all PASS. The combined log records six second whistles and six successful Cooperative Passage settlements with no fold-settlement exhaustion or watchdog/player rescue. TS015 also ran through job completion and successfully regression-tested D-0147 Terminal Exit / Bounded Infield Retreat.
+
+Restoration remains unchanged and is explicitly reserved for Closure B. This package is a canonical candidate only until the owner explicitly declares its exact RRS-produced fingerprint canonical.
+
+---
+
+FS25_OuttaMyWay v0.1.7.1 TEST — D-0181 LEGACY AUTHORITY CLOSURE A
+
+Authoritative baseline: owner-declared v0.1.7.0 canonical
+SHA-256: ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c
+Git: fd3ac332f1a7ba7e501d1e19370b082728bd1fc2
+Files: 317
+
+Closure A makes D-0146 the only production Cooperative Passage architecture. Missing cached TRANSIT_BASE evidence fails closed with no Cooperative Passage Candidate; no configuration-conditioned fallback exists. Historical D-0143 TS015 Passage is no longer production-loaded, assessed, candidate-published, switchable or executable. D-0179 Transit behavior and restoration are otherwise unchanged; restoration symmetry is reserved for Closure B.
+
+Field regression: TS016, TS015, TS010S, TS009.
+
+---
+
 FS25_OuttaMyWay v0.1.7.0 CANONICAL CANDIDATE — D-0179 JOB-START PHYSICAL CAPABILITY RECORD
 
 Authoritative baseline until owner declaration: v0.1.6.0

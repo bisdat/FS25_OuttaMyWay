@@ -1,3 +1,19 @@
+## v0.1.8.0 CANONICAL CANDIDATE continuity checkpoint
+
+- Entering authority: owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; Git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files).
+- Behaviour being promoted: exact field-validated v0.1.7.1 D-0181 Closure A implementation.
+- Regression evidence: TS016 PASS → TS015 PASS → TS010S PASS → TS009 PASS; six second whistles / six successful Passage settlements; TS015 terminal completion also PASS.
+- Production Cooperative Passage is D-0146-only and fail-closed without cached `TRANSIT_BASE`; D-0143 is historical-only.
+- D-0179 Job-Start Physical Capability Record remains the Transit/configuration authority.
+- Restoration is intentionally unchanged and remains Closure B.
+- Continue the Literal Provenance Audit only over surviving live owners; do not tune literals whose runtime owner was retired by D-0181.
+
+## v0.1.7.1 TEST continuity — D-0181 Legacy Authority Closure A
+
+Authoritative baseline is owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; Git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files).
+
+Current production Cooperative Passage authority is D-0146 only. Cached `TRANSIT_BASE` is mandatory; missing Transit evidence fails closed. D-0143 is historical donor/test evidence only. D-0179 Job-Start Physical Capability remains unchanged. Bootstrap–Restoration Bypass is the separately agreed Closure B after field validation.
+
 ## v0.1.7.0 CANONICAL CANDIDATE continuity checkpoint
 
 - Owner-declared authority entering candidate review: v0.1.6.0 canonical (`dd17f654c73a0941617e49365cc58271f5d09d958e64f1faa235d6eca24141af`, Git `76eab8225bf400d5c168d8e57d6f7ad0c1dfe6a1`, 317 files).

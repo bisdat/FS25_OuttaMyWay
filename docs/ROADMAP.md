@@ -1,3 +1,21 @@
+# v0.1.8.0 immediate roadmap — Closure A canonical review boundary
+
+1. Review the exact RRS-produced v0.1.8.0 candidate and evidence fingerprints; no behavioural work belongs in candidate preparation.
+2. If accepted, owner explicitly declares the locally materialised canonical package and records Git/provenance.
+3. Resume **Closure B** as a distinct behavioural tranche: restoration symmetry over cached actuators actually changed by Passage.
+4. Continue Literal Provenance Audit over surviving live owners; do not tune retired D-0143 literals.
+
+---
+
+# v0.1.7.x immediate roadmap — authority closure then literal audit
+
+1. Field-validate v0.1.7.1 Closure A against TS016, TS015, TS010S and TS009.
+2. Confirm missing-Transit evidence fails closed in bench tests and no D-0143 runtime authority can be resurrected.
+3. If clean, checkpoint Closure A before changing restoration semantics.
+4. Closure B: align restoration with the D-0179 cached actuator set and restore only configuration Passage actually changed.
+5. Resume Literal Provenance Audit on the surviving D-0146/trajectory/terminal values; do not audit D-0143 manoeuvre numbers whose runtime owner has been retired.
+6. Then select TS010 terminal completion/locality as the next behavioral problem unless new evidence changes priority.
+
 # v0.1.7.0 immediate roadmap — canonical review boundary
 
 1. Review the exact v0.1.7.0 candidate fingerprint and evidence; no behavioural work belongs in candidate preparation.

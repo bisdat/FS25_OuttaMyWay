@@ -1,3 +1,29 @@
+# v0.1.8.0 CANONICAL CANDIDATE — D-0181 Legacy Authority Closure A checkpoint
+
+**Authority:** owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; Git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files) remains authoritative until the owner explicitly declares this exact candidate fingerprint canonical. v0.1.8.0 promotes the live-validated v0.1.7.1 Closure A behaviour with **no further traffic/control behavioural change** during candidate preparation.
+
+**Validated closure:** D-0146 is the sole production Cooperative Passage architecture. Missing cached `TRANSIT_BASE` evidence fails closed rather than invoking configuration-conditioned planning. `COMPACT_REQUIRED` / `RETAIN_CURRENT` have no live D-0146 authority. D-0143 TS015 Cooperative Passage is historical donor/test evidence only and is not sourced, assessed, candidate-published, feature-switched or executable by production runtime.
+
+**Literal ownership closure:** the retired D-0143 manoeuvre literal family leaves production with its owner. The still-live 0.25 km/h Hold-effect threshold and 1000 ms Passage heartbeat were re-owned as D-0146 values without magnitude change. The broader Literal Provenance Audit remains open.
+
+**Field validation (v0.1.7.1):** owner ran TS016 → TS015 → TS010S → TS009, all PASS. The combined log records six `D0146_PASSAGE_SECOND_WHISTLE` events and six `COOPERATIVE_PASSAGE_SETTLED` events, with zero Transit Fold Settlement Exhaustion, configuration watchdog, Passage watchdog or player-intervention rescue. TS015 was allowed to run to job completion and additionally regression-tested D-0147 Terminal Exit / Bounded Infield Retreat successfully.
+
+**Explicit non-change:** D-0179 Job-Start Physical Capability Record, Transit geometry, Entry, guide, clearance, D-0155, D-0147 implementation and post-second-whistle Restoration are unchanged. Bootstrap–Restoration Bypass remains Closure B and is not modified in this candidate.
+
+**Release identity:** BUILD resets to `0`. v0.1.8.0 is a canonical candidate only until the owner explicitly accepts the exact RRS-produced candidate fingerprint.
+
+# v0.1.7.1 TEST — D-0181 Legacy Authority Closure A
+
+**Baseline:** owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; Git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files).
+
+**Closure A:** D-0146 is now the single production Cooperative Passage architecture. `LocalPassagePlanner` fails closed when either participant lacks cached `TRANSIT_BASE`; it does not invoke configuration-conditioned planning. The live D-0146 path no longer admits `COMPACT_REQUIRED` / `RETAIN_CURRENT`.
+
+**D-0143 retirement:** the historical TS015 Cooperative Passage donor is no longer sourced, assessed, candidate-published, feature-switchable or executable by production runtime. Historical donor/test files remain repository evidence only. Its 50/70 m admission band and 6/12/8/12 m manoeuvre family retire with that runtime owner rather than being tuned.
+
+**Literal ownership correction:** the existing 0.25 km/h Hold-effect threshold and 1000 ms Passage heartbeat are still live D-0146 implementation values, so Closure A re-owns them as `D0146_*` without changing magnitude. Remaining Literal Provenance Audit is unchanged.
+
+**Explicit non-change:** D-0179 Job-Start Physical Capability Record, Transit geometry, Entry, guide, clearance, D-0155, D-0147 and post-second-whistle restoration are unchanged. Bootstrap–Restoration Bypass is reserved for Closure B.
+
 # v0.1.7.0 CANONICAL CANDIDATE — Job-Start Physical Capability Record checkpoint
 
 **Authority:** owner-declared v0.1.6.0 canonical (`dd17f654c73a0941617e49365cc58271f5d09d958e64f1faa235d6eca24141af`; Git `76eab8225bf400d5c168d8e57d6f7ad0c1dfe6a1`; 317 files) remains authoritative until the owner explicitly declares this exact candidate fingerprint canonical. v0.1.7.0 promotes the live-validated v0.1.6.5 behaviour with **no further traffic/control behavioural change** during candidate preparation.

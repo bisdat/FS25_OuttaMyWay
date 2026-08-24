@@ -1,3 +1,23 @@
+# Current status — v0.1.8.0 CANONICAL CANDIDATE — D-0181 Legacy Authority Closure A
+
+Authoritative baseline remains **owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; Git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files)** until explicit owner promotion. v0.1.8.0 is a release/provenance-only promotion of the field-validated v0.1.7.1 implementation.
+
+**Validated authority:** D-0146 is the sole production Cooperative Passage path; missing cached Transit Base evidence fails closed; configuration-conditioned Passage and D-0143 runtime authority are retired. D-0179 bootstrap Transit capability remains unchanged.
+
+**Field validation:** TS016 → TS015 → TS010S → TS009 all PASS. Six second whistles and six `COOPERATIVE_PASSAGE_SETTLED` records occurred with no fold-settlement exhaustion, configuration/Passage watchdog or player rescue. TS015 additionally completed its job and successfully exercised D-0147 Terminal Exit / Bounded Infield Retreat.
+
+**Canonicalisation boundary:** Restoration is deliberately unchanged and remains Closure B. No further behavioural correction belongs in this candidate. Review the exact RRS candidate/evidence fingerprints; only the repository owner may declare canonical authority.
+
+# Current status — v0.1.7.1 TEST — D-0181 Legacy Authority Closure A
+
+**Authoritative baseline:** owner-declared **v0.1.7.0 canonical** (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; Git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files).
+
+**Current closure hypothesis:** Cooperative Passage has one production architecture. A valid cached `TRANSIT_BASE` is a prerequisite for D-0146 Candidate construction; missing evidence produces no Cooperative Passage Candidate. The superseded D-0143 TS015 Candidate/Control route is historical donor/test evidence only and cannot be resurrected through a runtime feature switch.
+
+**Validation state:** structural and replacement-core bench suites are green. Field regression remains required before promotion.
+
+**Not in this tranche:** D-0179 restoration remains on the inherited generic restore path. Bootstrap–Restoration Bypass is Closure B after Closure A field validation. Remaining live literals are not tuned here.
+
 # Current status — v0.1.7.0 CANONICAL CANDIDATE — D-0179 validated checkpoint
 
 Authoritative baseline remains owner-declared **v0.1.6.0 canonical** (`dd17f654c73a0941617e49365cc58271f5d09d958e64f1faa235d6eca24141af`; Git `76eab8225bf400d5c168d8e57d6f7ad0c1dfe6a1`; 317 files) until explicit owner promotion. v0.1.7.0 is a release/provenance-only promotion of the tested v0.1.6.5 implementation.

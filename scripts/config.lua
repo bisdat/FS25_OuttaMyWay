@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.1.7.0 CANONICAL CANDIDATE — D-0179 Job-Start Physical Capability Record.
+-- FS25_OuttaMyWay v0.1.8.0 CANONICAL CANDIDATE — D-0181 Legacy Authority Closure A checkpoint.
 -- Situation/Decision/Commitment admission semantics remain inherited; Control magnitude is now elastic.
 -- D-0147 now implements the agreed optional Bounded Infield Retreat courtesy hypothesis while retaining the validated v4.7.120 mechanical actuator substrate.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.1.7.0"
+OuttaMyWay.VERSION = "0.1.8.0"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -185,32 +185,13 @@ OuttaMyWay.D0146_RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION = 0.75
 -- changing Passage eligibility or spending ordinary Resolution Space authority.
 OuttaMyWay.D0146_RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH = 1
 
--- D-0128 bounded head-on playbook evidence gate. This is a TEST REPRESENTATION-
--- FITNESS literal, not production head-on policy: the live Refuge bridge is only
--- offered for a clean, positively opposed continuation. The magnitude mirrors the
--- already-bounded 0.99 coherent-heading test band without coupling the two policies.
-OuttaMyWay.AUTONOMOUS_HEAD_ON_TEST_MAX_HEADING_DOT = -0.99 -- historical donor/test literal; no active D-0143 authority
-
--- D-0143 first production authority envelope. These are deliberately narrow
--- implementation/calibration bounds derived from the successful P23 Condor/Patriot
--- TS015 evidence. They are not general Cooperative Passage architecture and must
--- not be extrapolated to other assemblies or asymmetric encounters.
-OuttaMyWay.COOPERATIVE_PASSAGE_TS015_ENABLED = true
-OuttaMyWay.COOPERATIVE_PASSAGE_TS015_MAX_HEADING_DOT = -0.99
-OuttaMyWay.COOPERATIVE_PASSAGE_TS015_MIN_START_SEPARATION_M = 50.0
-OuttaMyWay.COOPERATIVE_PASSAGE_TS015_MAX_START_SEPARATION_M = 70.0
-OuttaMyWay.COOPERATIVE_PASSAGE_TS015_MAX_INITIAL_LATERAL_OFFSET_M = 2.0
-OuttaMyWay.COOPERATIVE_PASSAGE_LATERAL_OFFSET_M = 6.0
-OuttaMyWay.COOPERATIVE_PASSAGE_SIDESTEP_FORWARD_M = 12.0
-OuttaMyWay.COOPERATIVE_PASSAGE_PASS_MARGIN_M = 8.0
-OuttaMyWay.COOPERATIVE_PASSAGE_POST_PASS_FORWARD_M = 12.0
-OuttaMyWay.COOPERATIVE_PASSAGE_MOVE_SPEED_KMH = 8.0
-OuttaMyWay.COOPERATIVE_PASSAGE_SIDESTEP_TARGET_RADIUS_M = 2.0
-OuttaMyWay.COOPERATIVE_PASSAGE_PASS_TARGET_RADIUS_M = 1.0
-OuttaMyWay.COOPERATIVE_PASSAGE_REJOIN_TARGET_RADIUS_M = 2.0
-OuttaMyWay.COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH = 0.25
-OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
-OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
+-- D-0181: D-0143 TS015 Cooperative Passage is historical donor/test evidence only.
+-- Its production feature switch and manoeuvre literals are intentionally absent;
+-- the live runtime cannot resurrect the superseded D-0143 Candidate/Control path.
+-- Two values originally carried under generic D-0143 names remain live D-0146
+-- implementation calibrations.  Closure A migrates ownership without tuning them.
+OuttaMyWay.D0146_COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH = 0.25
+OuttaMyWay.D0146_COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
 -- D-0179 Transit fold settlement is bounded.  The preferred ceiling is derived
 -- once at Job-Episode bootstrap from the active runtime folding configuration's
@@ -222,7 +203,7 @@ OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.1.7.0 CANONICAL CANDIDATE — JOB-START PHYSICAL CAPABILITY RECORD"
+OuttaMyWay.BUILD_LABEL = "0.1.8.0 CANONICAL CANDIDATE — LEGACY AUTHORITY CLOSURE A"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720

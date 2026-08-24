@@ -679,13 +679,10 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         representationFitness[#representationFitness+1]=fitness
     end
 
-    local cooperativePassageKnowledge,cooperativePassageFitness=OuttaMyWay.CooperativePassageAssessment.buildKnowledge({
-        currentSpace=currentSpace,motionEvidence=motionEvidence,productiveKnowledge=productiveKnowledge,
-        physicalSpaceEvidence=physicalSpaceEvidence,situations=situations,encounters=encounters
-    })
-    for _,fitness in OuttaMyWay.ValueRecord.ipairs(cooperativePassageFitness or {}) do
-        representationFitness[#representationFitness+1]=fitness
-    end
+    -- D-0181: D-0143 CooperativePassageAssessment is historical donor/test
+    -- evidence only.  Production Situation Assessment publishes no D-0143
+    -- knowledge or fitness; D-0146 owns current Cooperative Passage fitness.
+    local cooperativePassageKnowledge={}
     local terminalOccupancyKnowledge,terminalOccupancyFitness={},{}
     if self.terminalOccupancyAssessment~=nil then
         terminalOccupancyKnowledge,terminalOccupancyFitness=self.terminalOccupancyAssessment:assess(snapshot,currentSpace,futureSpace,physicalSpaceEvidence,commitmentContext)

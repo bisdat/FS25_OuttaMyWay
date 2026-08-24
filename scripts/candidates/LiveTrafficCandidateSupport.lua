@@ -3,7 +3,7 @@
 -- FS25_OuttaMyWay v4.7.112 CANONICAL CANDIDATE — v4.7.109 D-0146 Candidate behaviour preserved; D-0147 is architecture-only.
 --
 -- Situation Assessment owns recognition of the supported encounter.  This
--- module consumes cooperativePassageKnowledge and publishes one joint
+-- D-0181 production publishes only D-0146 Local Passage candidates; D-0143 is historical donor/test evidence.
 -- REPOSITION Candidate.  It does not re-derive head-on meaning and contains no
 -- King/Refuge selection or unilateral Yield/Progress role assignment.
 
@@ -24,45 +24,12 @@ local mandatory = {
     "EFFECTIVE_ACTUATION_COMPOSITION","SAFE_RELEASE_HANDOVER"
 }
 
-local function packet(reason,evidence,applicable)
-    return {
-        result="PASS",applicable=applicable~=false,evidence=evidence or {},reason=reason,
-        provenance={source="LiveTrafficCandidateSupport",authority="D0143_TS015_COOPERATIVE_PASSAGE"},
-        revalidationTrigger={kind="NEXT_LIVE_OPERATIONAL_PICTURE"}
-    }
-end
-
 local function d0146Packet(reason,evidence,applicable)
     return {
         result="PASS",applicable=applicable~=false,evidence=evidence or {},reason=reason,
         provenance={source="LiveTrafficCandidateSupport",authority="D0146_STEP2_ACTIVE_TEST"},
         revalidationTrigger={kind="NEXT_LIVE_OPERATIONAL_PICTURE"}
     }
-end
-
-local function requirementKey(record)
-    return "cooperative-passage:"..tostring(record.encounterIdentity or record.pairReferenceKey)
-end
-
-local function bandExhaustion(pictureId,governingRequirementKey,capability,reason)
-    return {
-        result="PASS",operationalPictureId=pictureId,governingRequirementKey=governingRequirementKey,
-        capability=capability,reason=reason,
-        evidence={pureEstablishedHeadOn=true,configurationReleasedSpaceSupported=true,informationGainNotRequired=true},
-        provenance={source="LiveTrafficCandidateSupport",authority="D0143_TS015_PREFERENCE_EXHAUSTION"}
-    }
-end
-
-local function supportedCooperativePassage(picture)
-    local supported={}
-    local firstReason=nil
-    for _,record in OuttaMyWay.ValueRecord.ipairs(picture.cooperativePassageKnowledge or {}) do
-        if record.status=="SUPPORTED" then supported[#supported+1]=record
-        elseif firstReason==nil then firstReason=record.reason end
-    end
-    if #supported==0 then return nil,firstReason or "NO_SUPPORTED_TS015_COOPERATIVE_PASSAGE" end
-    if #supported>1 then return nil,"MULTIPLE_SIMULTANEOUS_TS015_COOPERATIVE_PASSAGE_CONTEXTS" end
-    return supported[1],nil
 end
 
 function Support.new(identityRegistry,epochSequence,passiveSupport)
@@ -79,117 +46,6 @@ function Support:markAutonomousHeadOnDispatched(governingRequirementKey)
 end
 function Support:resetAutonomousState() self.lastStatus="PASSIVE" end
 function Support:getLastStatus() return self.lastStatus end
-
-local function makeCooperativeCandidate(pictureId,pictureValues,record,governingRequirementKey)
-    local constraints={}
-    for _,id in ipairs(mandatory) do constraints[id]=packet("D-0143 narrow TS015 Cooperative Passage candidate constraint",{boundedScope=true}) end
-    constraints.FIELD_WORLD_CONTAINMENT=packet(
-        "Both workers are current members of the same active TS015 Operation; Control revalidates each bounded passage target against the source field before movement",
-        {operationId=record.operationId,controlPreflight="ALL_BOUNDED_TARGETS_SAME_SOURCE_FIELD",generalRouteAuthority=false})
-    constraints.TRANSITION_CLEARANCE=packet(
-        "P23 repeatedly demonstrated the exact near-collinear Condor/Patriot compact-split/pass/rejoin sequence inside this bounded TS015 geometry; no generic negative-clearance claim is made",
-        {calibrationAuthority=record.scope and record.scope.calibrationAuthority or "P23",initialLateralOffsetM=record.initialLateralOffsetM,negativeClearanceAuthority=false,generalVehicleAuthority=false})
-    constraints.REPRESENTATION_FITNESS=packet(
-        "Current pose/heading geometry is fit for the narrow empirical TS015 authority envelope; incomplete general assembly geometry is not promoted to negative-clearance authority",
-        {nearCollinear=true,vehiclePair=record.scope and record.scope.vehiclePair,negativeClearanceAuthority=false})
-    constraints.CONTROL_CAPABILITY_AVAILABILITY=packet(
-        "The production CooperativePassageControl composes the already-proven Hold, configuration and forward-Reposition mechanical donors for both assemblies",
-        {controlModule="CooperativePassageControl",mechanicalDonors={"Prototype22PermissionGate","Prototype22DriveAuthority","Prototype22ConfigurationAuthority"}})
-    constraints.CONTINUING_INTENT_PRIORITY=packet(
-        "Both participants have positive settled Productive Continuation; the joint passage preserves broadly forward continuation for both rather than assigning unilateral Yield/Progress",
-        {bothProductive=true,jointResolution=true})
-    constraints.PROGRESS_PRESERVATION=packet(
-        "The temporary mutual Hold is part of a selected decisive Reposition Commitment, not an Information-Gaining Delay; both participants then progress concurrently through the passage",
-        {informationGainingDelay=false,concurrentCompatibleMovement=true})
-    constraints.RESPONSIBILITY_COMPATIBILITY=packet(
-        "One joint Candidate resolves the pair-scoped opposed incompatibility without transferring responsibility to an unrelated participant",
-        {encounterIdentity=record.encounterIdentity,assemblyIds=record.assemblyIds})
-    constraints.OBLIGATION_COMPATIBILITY=packet(
-        "The joint Commitment creates only the bounded restoration-and-handoff obligation required by this intervention; post-handoff observation owns no authority and imposes no cooldown",
-        {postHandoffCooldown=false})
-    constraints.COMMITMENT_PRECONDITIONS=packet(
-        "Actuation starts only after this same-picture joint Candidate passes mandatory Constraints and is admitted/revised through the central Commitment boundary",
-        {operatorCommandRequired=false,situationAuthority="CooperativePassageAssessment"})
-    constraints.EFFECTIVE_ACTUATION_COMPOSITION=packet(
-        "Both assemblies are explicit REPOSITION/MOVE progress-actuation owners under the same Commitment",
-        {assemblyIds=record.assemblyIds,jointCommitment=true})
-    constraints.SAFE_RELEASE_HANDOVER=packet(
-        "Control must restore both original configurations with the same Job Episodes before releasing both workers to GIANTS; authority is then released immediately",
-        {sameJobRequired=true,restoreBeforeHandoff=true,cooldown=false})
-
-    local compositionEntries={}
-    for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(record.assemblyIds or {}) do
-        compositionEntries[#compositionEntries+1]={assemblyId=assemblyId,commitmentId="$NEW_COMMITMENT",capability="REPOSITION",effectClass="MOVE",progressActuation=true}
-    end
-    table.sort(compositionEntries,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
-
-    return {
-        referenceKey="d0143-ts015-cooperative-passage:"..tostring(record.pairReferenceKey),
-        purpose={kind="TS015_COOPERATIVE_PASSAGE",result="RESOLVE_OPPOSED_PRODUCTIVE_INCOMPATIBILITY_WITH_CONFIGURATION_RELEASED_SPACE"},
-        subject={assemblyIds=record.assemblyIds},
-        capability="REPOSITION",
-        expectedEffect={
-            physicalChange=true,jointReposition=true,configurationReleasedSpace=true,
-            bothParticipantsForwardThroughEncounter=true,king=false,refuge=false,
-            sameJobRestorationRequired=true,postHandoffCooldown=false
-        },
-        evidenceBasis={
-            constraintEvidence=constraints,
-            governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active},
-            progressActuationOwnership={assemblyIds=record.assemblyIds},
-            effectiveActuationComposition={
-                identity="d0143-ts015-composition:"..tostring(record.pairReferenceKey)..":"..pictureId,
-                epoch=pictureValues.epoch,relevantAssemblyIds=record.assemblyIds,entries=compositionEntries
-            },
-            trafficPolicemanPreference={
-                primaryResolution=true,governingRequirementKey=governingRequirementKey,
-                exhaustionEvidence={
-                    CONTINUE_OBSERVATION=bandExhaustion(pictureId,governingRequirementKey,"CONTINUE_OBSERVATION","The supported near-collinear TS015 opposed incompatibility is already authoritative; additional observation cannot create passing space"),
-                    REGULATE_SPEED=bandExhaustion(pictureId,governingRequirementKey,"REGULATE_SPEED","Regulation can preserve Action Space before commitment but cannot resolve the established opposed spatial incompatibility"),
-                    HOLD=bandExhaustion(pictureId,governingRequirementKey,"HOLD","An in-path Hold alone converts a participant into a Static Obstacle; Configuration-Released Space requires joint Reposition")
-                }
-            },
-            cooperativePassageBridge={
-                governingRequirementKey=governingRequirementKey,
-                operationId=record.operationId,pairReferenceKey=record.pairReferenceKey,encounterIdentity=record.encounterIdentity,
-                assemblyIds=record.assemblyIds,
-                condorAssemblyId=record.condorAssemblyId,patriotAssemblyId=record.patriotAssemblyId,
-                condorReferenceKey=record.condorReferenceKey,patriotReferenceKey=record.patriotReferenceKey,
-                condorJobToken=record.condorJobToken,patriotJobToken=record.patriotJobToken,
-                initialSeparationM=record.separationM,initialLateralOffsetM=record.initialLateralOffsetM,
-                sharedAxisX=record.sharedAxisX,sharedAxisZ=record.sharedAxisZ,
-                sharedRightX=record.sharedRightX,sharedRightZ=record.sharedRightZ,
-                scope=record.scope,
-                controlProfile="TS015_CONDOR_PATRIOT_P23_PROVEN_GEOMETRY"
-            }
-        },
-        representationFitness={requirements={
-            {representationId=record.representationFitnessIds and record.representationFitnessIds[1] or ("d0143-ts015-cooperative-passage:"..tostring(record.encounterIdentity)..":"..tostring(record.condorAssemblyId)),acceptedStates={"FIT_FOR_LIMITED_HORIZON","CURRENTLY_FIT"}},
-            {representationId=record.representationFitnessIds and record.representationFitnessIds[2] or ("d0143-ts015-cooperative-passage:"..tostring(record.encounterIdentity)..":"..tostring(record.patriotAssemblyId)),acceptedStates={"FIT_FOR_LIMITED_HORIZON","CURRENTLY_FIT"}}
-        }},
-        preconditions={
-            evidenceContracts={},operatorCommandRequired=false,sameJobEpisodes=true,
-            bothProductiveContinuation=true,settledContinuation=true,nearCollinear=true,
-            initialSeparationM=record.separationM,initialLateralOffsetM=record.initialLateralOffsetM,
-            headingDot=record.headingDot,scope=record.scope
-        },
-        invalidationConditions={{kind="JOB_EPISODE_CHANGE"},{kind="ENCOUNTER_CHANGE"},{kind="LOCAL_INTENT_CHANGE"},{kind="CURRENT_PHYSICAL_INTERACTION"},{kind="TS015_SCOPE_EXIT"}},
-        reversibility={physicalEffect=true,restoreBothBeforeRelease=true},
-        obligationsCreated={{
-            origin={kind="OTM_MATERIAL_DISPLACEMENT",decision="D-0143",encounterIdentity=record.encounterIdentity},
-            basis={kind="COOPERATIVE_PASSAGE_RESTORATION_AND_HANDOFF",assemblyIds=record.assemblyIds},
-            requiredOutcome={kind="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK",assemblyIds=record.assemblyIds},
-            requiredAuthority={capabilities={"REPOSITION","RESTORE_CONFIGURATION","HANDOVER_TO_GIANTS"}},
-            evidenceContract={kind="BOTH_SAME_JOB_BOTH_RESTORED_THEN_GIANTS_HANDOFF"},
-            ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true
-        }},
-        releaseImplications={releaseBothProgressAuthoritiesAfterPositiveHandoff=true,postHandoffObservationAuthority=false,cooldown=false},
-        uncertainty={"GENERAL_VEHICLE_SUPPORT_OUT_OF_SCOPE","ASYMMETRIC_OPPOSED_GEOMETRY_OUT_OF_SCOPE","GENERIC_NEGATIVE_CLEARANCE_AUTHORITY_NOT_CLAIMED"},
-        comparisonCost=0
-    }
-end
-
-
 
 -- D-0146 Step-2 active Candidate expression.  Established conflict meaning is
 -- consumed, not re-derived. LocalPassagePlanner owns the progressive local
@@ -911,11 +767,8 @@ function Support:attach(picture,snapshot)
     if guard~=nil then return attachGuardedRecovery(self,picture,snapshot,guard) end
     if guardReason~=nil then self.lastStatus=guardReason; return self.passiveSupport:attach(picture,snapshot) end
 
-    -- D-0146 Step 2 consumes Established Opposed Corridor Conflict and performs
-    -- Candidate-owned Progressive Passage Search.  The older D-0143 TS015
-    -- Candidate path is retained only as disabled historical/mechanical evidence
-    -- when the D-0146 active path is explicitly switched off.
-    if OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED==true then
+    -- D-0181: D-0146 is the single production Cooperative Passage authority.
+    -- There is no feature switch or D-0143 fallback path to resurrect.
         local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
         if plan==nil then
             for _,clearanceTrace in ipairs(passageClearanceRejectionTelemetry(rejected)) do logInfo("%s",clearanceTrace) end
@@ -972,37 +825,6 @@ function Support:attach(picture,snapshot)
         self.publishedCount=self.publishedCount+1
         self.lastStatus="D0146_STEP2_COOPERATIVE_PASSAGE_CANDIDATE_PUBLISHED"
         return OuttaMyWay.OperationalPicture.new(values)
-    end
-
-    -- Historical bounded D-0143 path retained for regression/mechanical donor
-    -- tests only when the D-0146 Step-2 path is disabled.
-    local record,reason=supportedCooperativePassage(picture)
-    if record==nil or (follower~=nil and not followerMatchesCooperative(follower,record)) then
-        if follower~=nil then return attachFollowerBoundary(self,picture,snapshot,follower) end
-        self.lastCooperativeTraceKey=nil
-        self.lastStatus=reason or "NO_SUPPORTED_TS015_COOPERATIVE_PASSAGE"
-        return self.passiveSupport:attach(picture,snapshot)
-    end
-
-    local values=OuttaMyWay.ValueRecord.toTable(picture)
-    local pictureId=self.identities:issue("PICTURE")
-    values.identity=pictureId; values.epoch=self.epochs:next()
-    values.provenance={source="LiveTrafficCandidateSupport",parentOperationalPictureId=picture.identity,observationSnapshotId=snapshot.identity,authority="D0143_TS015_COOPERATIVE_PASSAGE",followerBoundarySupportingLeaseRetained=follower~=nil}
-    local governingRequirementKey=requirementKey(record)
-    local traceKey=tostring(record.encounterIdentity or record.pairReferenceKey)
-    local firstTrace=self.lastCooperativeTraceKey~=traceKey
-    if firstTrace then
-        self.lastCooperativeTraceKey=traceKey
-        logInfo("COOPERATIVE_ASSESSMENT_SUPPORTED encounter=%s pair=%s separation=%.2f lateral=%.2f headingDot=%.4f fitnessA=%s fitnessB=%s footprintReuse=%s",
-            tostring(record.encounterIdentity),tostring(record.pairReferenceKey),tonumber(record.separationM) or -1,tonumber(record.initialLateralOffsetM) or -1,tonumber(record.headingDot) or 0,
-            tostring(record.representationFitnessIds and record.representationFitnessIds[1] or "n/a"),tostring(record.representationFitnessIds and record.representationFitnessIds[2] or "n/a"),
-            tostring(record.footprintEvidence and record.footprintEvidence.noAdditionalGeometryCalculation==true))
-    end
-    local specification=makeCooperativeCandidate(pictureId,values,record,governingRequirementKey)
-    values.candidateSupportEvidence={complete=true,supportBoundary={mode="TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST",supportedCandidateClasses={"REPOSITION"},physicalCapabilitiesImplemented=true,controlAuthority="BOUNDED_TS015_ONLY",boundedScope="CONDOR_PATRIOT_NEAR_COLLINEAR_OPPOSED_PRODUCTIVE",king=false,refuge=false,generalVehicleAuthority=false,decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=governingRequirementKey}},candidateSpecifications={specification},provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,authority="D0143_TS015_COOPERATIVE_PASSAGE",operatorCommandRequired=false}}
-    self.publishedCount=self.publishedCount+1
-    self.lastStatus="TS015_COOPERATIVE_PASSAGE_CANDIDATE_PUBLISHED"
-    return OuttaMyWay.OperationalPicture.new(values)
 end
 
 function Support:getPublishedCount() return self.publishedCount end

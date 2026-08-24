@@ -1,3 +1,23 @@
+## v0.1.8.0 CANONICAL CANDIDATE alignment — validated D-0181
+
+- **LocalPassagePlanner:** cached `TRANSIT_BASE` is mandatory; missing evidence fails closed. No configuration-conditioned fallback remains in production.
+- **SituationAssessment / LiveTrafficCandidateSupport:** D-0143 is not assessed or candidate-published by production runtime.
+- **LiveControlDispatcher / CooperativePassageControl:** only D-0146 Cooperative Passage bridges are accepted; `COMPACT_REQUIRED` / `RETAIN_CURRENT` have no live D-0146 authority.
+- **D-0179 Physical Capability Record:** unchanged and still owns bootstrap Transit capability.
+- **Restoration:** intentionally unchanged; Bootstrap–Restoration Bypass remains Closure B.
+- **Validation:** TS016/TS015/TS010S/TS009 all field-PASS under v0.1.7.1; TS015 also completed Terminal Exit successfully.
+- **Candidate preparation:** release/provenance only; no behavioural code delta from v0.1.7.1.
+
+## v0.1.7.1 TEST alignment — D-0181 Legacy Authority Closure A
+
+- **LocalPassagePlanner:** cached `TRANSIT_BASE` is a hard D-0146 Candidate prerequisite; no configuration-conditioned fallback exists.
+- **SituationAssessment:** no production D-0143 CooperativePassageAssessment publication.
+- **LiveTrafficCandidateSupport:** publishes D-0146 Passage only; historical D-0143 candidate construction is absent from the production-loaded module.
+- **LiveControlDispatcher / CooperativePassageControl:** accept only D-0146 Cooperative Passage bridge/modes; legacy D-0143 execution and `COMPACT_REQUIRED` / `RETAIN_CURRENT` authority are absent.
+- **Historical D-0143 donor:** repository evidence/test material only; not sourced by `main.lua`.
+- **Literal ownership:** D-0143-only admission/manoeuvre values retire with that owner; 0.25 km/h Hold-effect and 1000 ms heartbeat remain D-0146-owned at unchanged magnitudes.
+- **Restoration:** deliberately unchanged; Closure B will address cached-actuator restoration symmetry separately.
+
 ## v0.1.7.0 CANONICAL CANDIDATE alignment — validated D-0179
 
 - **AssemblyRepresentationCache:** authoritative Job-Episode owner for Physical Assembly bootstrap, cached DISC/local representation, frozen Transit Base footprint and selected-runtime Transit fold capability.

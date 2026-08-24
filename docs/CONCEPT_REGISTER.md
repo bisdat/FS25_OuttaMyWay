@@ -1,3 +1,13 @@
+## Legacy Authority Closure
+**Status:** Field-validated for v0.1.8.0 canonical candidate (D-0181); owner canonicalisation pending.
+
+Production Cooperative Passage has one authority path: D-0146 using valid cached Transit Base geometry. Lack of that evidence fails closed rather than switching to a superseded Passage architecture. D-0143 remains historical donor/test evidence only.
+
+## Transit Fallback Authority Leakage
+**Status:** Closed by D-0181.
+
+A superseded representation/control model must not regain authority merely because the selected architecture lacks evidence. Missing `TRANSIT_BASE` therefore means no Cooperative Passage Candidate, not configuration-conditioned fallback.
+
 ## Job-Start Physical Capability Record
 **Status:** Field-validated for v0.1.7.0 canonical candidate (D-0179); owner canonicalisation pending.
 

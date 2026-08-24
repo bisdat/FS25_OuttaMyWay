@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.7.0 CANONICAL CANDIDATE — D-0179 Job-Start Physical Capability Record; TRANSIT_BASE planning remains Transit-only.
+-- FS25_OuttaMyWay v0.1.8.0 CANONICAL CANDIDATE — D-0181 Legacy Authority Closure A; TRANSIT_BASE planning fails closed.
 -- Candidate-owned Local Passage planning remains vehicle-name independent: Local Passage Space, Progressive Passage Search, Passage Arrangement and Passage Guide remain the governing Candidate concepts.
 --
 -- Passage Selection may precede physical Passage Entry.  Selection immediately
@@ -580,78 +580,12 @@ local function currentParticipantGeometry(physical,space,rightX,rightZ)
     local support,supportReason=OuttaMyWay.PairSpecificPassageClearance.lateralSupportFromRelativeDiscs(discs,rightX,rightZ)
     if support==nil then return nil,supportReason end
     local directional=directionalEnvelopeValid(physical.directionalPassageEnvelope) and physical.directionalPassageEnvelope or nil
-    return {discs=discs,support=support,directionalEnvelope=directional,configurationProfileId=physical.configurationProfileId,mode="RETAIN_CURRENT"},nil
+    return {discs=discs,support=support,directionalEnvelope=directional,configurationProfileId=physical.configurationProfileId},nil
 end
 
-local function compactParticipantGeometry(physical,space,rightX,rightZ,conflictSideSign,currentGeometry)
-    local currentEvidence=physical.configurationEvidence or {}
-    if currentEvidence.allDeployed~=true then return nil,"CURRENT_CONFIGURATION_NOT_STABLY_DEPLOYED" end
-    local currentFacing=currentGeometry.directionalEnvelope and directionalFacingExtent(currentGeometry.directionalEnvelope,space,rightX,rightZ,conflictSideSign) or facingExtent(currentGeometry.support,conflictSideSign)
-    local best=nil
-    for _,profile in OuttaMyWay.ValueRecord.ipairs(physical.configurationAlternatives or {}) do
-        local evidence=profile.configurationEvidence or {}
-        if profile.current~=true and evidence.allFolded==true and (tonumber(profile.nativeObservationCount) or 0)>0 then
-            local discs=OuttaMyWay.PairSpecificPassageClearance.relativeDiscsFromObservedProfile(profile,space)
-            if discs~=nil then
-                local support=OuttaMyWay.PairSpecificPassageClearance.lateralSupportFromRelativeDiscs(discs,rightX,rightZ)
-                if support~=nil then
-                    local directional=directionalEnvelopeValid(profile.directionalPassageEnvelope) and profile.directionalPassageEnvelope or nil
-                    local facing=directional and directionalFacingExtent(directional,space,rightX,rightZ,conflictSideSign) or facingExtent(support,conflictSideSign)
-                    local release=currentFacing-facing
-                    if release>0.001 and (best==nil or release>best.releaseM+0.001 or (math.abs(release-best.releaseM)<=0.001 and tostring(profile.configurationProfileId)<tostring(best.configurationProfileId))) then
-                        best={
-                            mode="COMPACT_REQUIRED",discs=discs,support=support,directionalEnvelope=directional,configurationProfileId=profile.configurationProfileId,
-                            configurationKey=profile.configurationKey,releaseM=release,currentFacingM=currentFacing,selectedFacingM=facing,
-                            authority=directional and "GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST" or "AI_REACHABLE_PRODUCTIVE_CONFIGURATION_OBSERVED_WITHOUT_OUTTAMYWAY_AUTHORITY"
-                        }
-                    end
-                end
-            end
-        end
-    end
-    if best==nil then return nil,"NO_AI_REACHABLE_COMPACT_PROFILE_RELEASES_CONFLICT_SIDE_SPACE" end
-    return best,nil
-end
-
-local function participantSelection(physical,space,rightX,rightZ,conflictSideSign)
-    local current,currentReason=currentParticipantGeometry(physical,space,rightX,rightZ)
-    if current==nil then return nil,currentReason end
-    local currentFacing=current.directionalEnvelope and directionalFacingExtent(current.directionalEnvelope,space,rightX,rightZ,conflictSideSign) or facingExtent(current.support,conflictSideSign)
-    local compact,compactReason=compactParticipantGeometry(physical,space,rightX,rightZ,conflictSideSign,current)
-    if compact~=nil then return compact,nil end
-    return {
-        mode="RETAIN_CURRENT",discs=current.discs,support=current.support,directionalEnvelope=current.directionalEnvelope,configurationProfileId=current.configurationProfileId,
-        releaseM=0,currentFacingM=currentFacing,selectedFacingM=currentFacing,authority=current.directionalEnvelope and "GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST" or "CURRENT_CONFIGURATION_RETAINED",reason=compactReason
-    },nil
-end
-
-local function configurationConditionedPair(pairClearance,aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearanceM)
-    local function relation(sign)
-        local aSelection,aReason=participantSelection(aPhysical,aSpace,rightX,rightZ,sign)
-        if aSelection==nil then return nil,"SUBJECT_CONFIGURATION_SELECTION:"..tostring(aReason) end
-        local bSelection,bReason=participantSelection(bPhysical,bSpace,rightX,rightZ,-sign)
-        if bSelection==nil then return nil,"OTHER_CONFIGURATION_SELECTION:"..tostring(bReason) end
-        local contact=aSelection.selectedFacingM+bSelection.selectedFacingM
-        return {
-            relationSign=sign,subjectFacingExtentM=aSelection.selectedFacingM,otherFacingExtentM=bSelection.selectedFacingM,
-            physicalContactThresholdM=contact,nominalInterAssemblyClearanceM=nominalClearanceM,policyRequiredSeparationM=contact+nominalClearanceM,
-            subjectConfiguration=aSelection,otherConfiguration=bSelection,
-            subjectDirectionalPassageEnvelope=aSelection.directionalEnvelope,otherDirectionalPassageEnvelope=bSelection.directionalEnvelope,
-            representationBasis=(aSelection.directionalEnvelope and bSelection.directionalEnvelope) and ((aSelection.directionalEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST" and bSelection.directionalEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST") and "GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES" or "GIANTS_DIRECTIONAL_ASSEMBLY_ENVELOPES") or "CONFIGURATION_CONDITIONED_FROM_NATIVE_OBSERVED_PROFILES",
-            configurationReleasedSpaceM=(aSelection.releaseM or 0)+(bSelection.releaseM or 0)
-        },nil
-    end
-    local positive,pReason=relation(1); if positive==nil then return nil,pReason end
-    local negative,nReason=relation(-1); if negative==nil then return nil,nReason end
-    local current=pairClearance.currentSignedSeparationM>=0 and positive or negative
-    return {
-        currentSignedSeparationM=pairClearance.currentSignedSeparationM,currentLateralSeparationM=pairClearance.currentLateralSeparationM,currentRelationSign=current.relationSign,
-        subjectFacingExtentM=current.subjectFacingExtentM,otherFacingExtentM=current.otherFacingExtentM,physicalContactThresholdM=current.physicalContactThresholdM,
-        nominalInterAssemblyClearanceM=nominalClearanceM,policyRequiredSeparationM=current.policyRequiredSeparationM,policyReserveM=pairClearance.currentLateralSeparationM-current.policyRequiredSeparationM,
-        positiveRelation=positive,negativeRelation=negative,baselineCurrentConfiguration=pairClearance,
-        representationBasis=current.representationBasis or "CONFIGURATION_CONDITIONED_FROM_NATIVE_OBSERVED_PROFILES",coverageComplete=false,negativeClearanceAuthority=false
-    },nil
-end
+-- D-0181: superseded configuration-conditioned Passage selection removed.
+-- Missing cached Transit geometry now fails closed; no legacy configuration
+-- mode can acquire Cooperative Passage authority.
 
 local function transitConditionedPair(pairClearance,aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearanceM)
     local aEnvelope=type(aPhysical)=="table" and aPhysical.transitPassageEnvelope or nil
@@ -703,30 +637,20 @@ local function transitConditionedPair(pairClearance,aPhysical,aSpace,bPhysical,b
 end
 
 local function passageConfigurationPlan(conflict,arrangement)
-    local transit=arrangement.passageGeometrySource=="TRANSIT_BASE"
     local function participant(assemblyId,selection)
-        if transit then
-            return {
-                assemblyId=assemblyId,mode="TRANSIT_REQUIRED",currentFacingClearanceExtentM=selection.currentFacingM,selectedFacingClearanceExtentM=selection.selectedFacingM,
-                configurationReleasedSpaceM=selection.releaseM or 0,currentConfigurationProfileId=selection.configurationProfileId,
-                expectedCompactConfigurationProfileId=nil,configurationAuthority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY",
-                transitPassageEnvelope=selection.directionalEnvelope,reason="TRANSIT_BASE_PASSAGE_REQUIRES_TRANSIT_REALISATION"
-            }
-        end
         return {
-            assemblyId=assemblyId,mode=selection.mode,currentFacingClearanceExtentM=selection.currentFacingM,selectedFacingClearanceExtentM=selection.selectedFacingM,
-            configurationReleasedSpaceM=selection.releaseM or 0,currentConfigurationProfileId=selection.mode=="RETAIN_CURRENT" and selection.configurationProfileId or nil,
-            expectedCompactConfigurationProfileId=selection.mode=="COMPACT_REQUIRED" and selection.configurationProfileId or nil,
-            configurationAuthority=selection.authority,reason=selection.reason
+            assemblyId=assemblyId,mode="TRANSIT_REQUIRED",currentFacingClearanceExtentM=selection.currentFacingM,selectedFacingClearanceExtentM=selection.selectedFacingM,
+            configurationReleasedSpaceM=selection.releaseM or 0,currentConfigurationProfileId=selection.configurationProfileId,
+            expectedCompactConfigurationProfileId=nil,configurationAuthority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY",
+            transitPassageEnvelope=selection.directionalEnvelope,reason="TRANSIT_BASE_PASSAGE_REQUIRES_TRANSIT_REALISATION"
         }
     end
     return {
-        policy=transit and "TRANSIT_ONLY_REALISATION_BEFORE_PASSAGE" or "CONFIGURATION_RELEASED_SPACE_PRECEDES_LATERAL_DISPLACEMENT",
-        selection=transit and "TRANSIT_REQUIRED_FOR_ALL_PARTICIPANTS" or "AI_REACHABLE_PRODUCTIVE_CONFIGURATION_WHEN_CONFLICT_SIDE_RELEASE_POSITIVE",
+        policy="TRANSIT_ONLY_REALISATION_BEFORE_PASSAGE",selection="TRANSIT_REQUIRED_FOR_ALL_PARTICIPANTS",
         participants={participant(conflict.subjectAssemblyId,arrangement.subjectConfiguration),participant(conflict.otherAssemblyId,arrangement.otherConfiguration)},
         selectedRelationSign=arrangement.relationSign,configurationReleasedSpaceEvaluated=true,
         totalConfigurationReleasedSpaceM=(arrangement.subjectConfiguration.releaseM or 0)+(arrangement.otherConfiguration.releaseM or 0),
-        negativeClearanceAuthority=false,authority=transit and "D0175_TRANSIT_REALISATION_GATE" or "D0146_CONFIGURATION_FIRST_PAIR_SPECIFIC_CLEARANCE_TEST"
+        negativeClearanceAuthority=false,authority="D0179_JOB_START_PHYSICAL_CAPABILITY_RECORD"
     },nil
 end
 
@@ -793,15 +717,8 @@ local function planConflict(picture,snapshot,conflict)
     local nominalClearance=tonumber(OuttaMyWay.D0146_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M) or 1.0
     local baselinePairClearance,clearanceReason=OuttaMyWay.PairSpecificPassageClearance.currentPair(aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)
     if baselinePairClearance==nil then return nil,"PAIR_SPECIFIC_PASSAGE_CLEARANCE_UNAVAILABLE:"..tostring(clearanceReason) end
-    local transitPairClearance,transitReason=transitConditionedPair(baselinePairClearance,aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)
-    local legacyPairClearance,conditionReason=nil,nil
-    if transitPairClearance==nil then
-        legacyPairClearance,conditionReason=configurationConditionedPair(baselinePairClearance,aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)
-        if legacyPairClearance==nil then return nil,"CONFIGURATION_CONDITIONED_PAIR_CLEARANCE_UNAVAILABLE:"..tostring(conditionReason) end
-    end
-    local pairClearance=transitPairClearance or legacyPairClearance
-    pairClearance.planningGeometrySource=transitPairClearance~=nil and "TRANSIT_BASE" or "LEGACY_CONFIGURATION_CONDITIONED"
-    pairClearance.transitGeometryFallbackReason=transitPairClearance==nil and transitReason or nil
+    local pairClearance,transitReason=transitConditionedPair(baselinePairClearance,aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)
+    if pairClearance==nil then return nil,"TRANSIT_BASE_PAIR_CLEARANCE_UNAVAILABLE:"..tostring(transitReason) end
     local currentSigned=pairClearance.currentSignedSeparationM
     local fieldWorld=snapshot and snapshot.fieldWorld or nil
     local rejected={}
@@ -828,8 +745,7 @@ local function planConflict(picture,snapshot,conflict)
                 arrangement.boundaryEncroachment=false
                 arrangement.directionalPassageEnvelopeBasis=pairClearance.representationBasis
                 arrangement.passageGeometrySource=pairClearance.planningGeometrySource
-                arrangement.configurationReduction=arrangement.passageGeometrySource=="TRANSIT_BASE" and "TRANSIT_REQUIRED_FOR_ALL_PARTICIPANTS" or "OPTIONAL_PER_PARTICIPANT"
-                arrangement.transitGeometryFallbackReason=pairClearance.transitGeometryFallbackReason
+                arrangement.configurationReduction="TRANSIT_REQUIRED_FOR_ALL_PARTICIPANTS"
                 arrangement.pairwisePassageEconomy={combinedNecessaryInterventionM=arrangement.combinedLateralBurdenM,tieBreak="MINIMUM_MAX_PARTICIPANT_BURDEN_THEN_STABLE_ORDER"}
                 local passageConfiguration,configurationReason=passageConfigurationPlan(conflict,arrangement)
                 if passageConfiguration==nil then return nil,configurationReason end
@@ -886,7 +802,7 @@ local function planConflict(picture,snapshot,conflict)
                 physicalContactThresholdM=arrangement.physicalContactThresholdM,policyRequiredSeparationM=arrangement.policyRequiredSeparationM,
                 subjectConfigurationMode=arrangement.subjectConfiguration and arrangement.subjectConfiguration.mode or nil,
                 otherConfigurationMode=arrangement.otherConfiguration and arrangement.otherConfiguration.mode or nil,
-                passageGeometrySource=pairClearance.planningGeometrySource,transitGeometryFallbackReason=pairClearance.transitGeometryFallbackReason
+                passageGeometrySource=pairClearance.planningGeometrySource
             }
         else
             rejected[#rejected+1]={
@@ -896,7 +812,7 @@ local function planConflict(picture,snapshot,conflict)
                 physicalContactThresholdM=arrangement.physicalContactThresholdM,policyRequiredSeparationM=arrangement.policyRequiredSeparationM,
                 subjectConfigurationMode=arrangement.subjectConfiguration and arrangement.subjectConfiguration.mode or nil,
                 otherConfigurationMode=arrangement.otherConfiguration and arrangement.otherConfiguration.mode or nil,
-                passageGeometrySource=pairClearance.planningGeometrySource,transitGeometryFallbackReason=pairClearance.transitGeometryFallbackReason
+                passageGeometrySource=pairClearance.planningGeometrySource
             }
         end
     end

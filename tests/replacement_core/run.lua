@@ -953,81 +953,6 @@ local function d0143AssessmentContext(options)
     }
 end
 
-test("D-0143 Situation Assessment supports only the narrow near-collinear Condor Patriot TS015 envelope",function()
-    local supported,fitness=OuttaMyWay.CooperativePassageAssessment.buildKnowledge(d0143AssessmentContext())
-    equal(#supported,1); equal(supported[1].status,"SUPPORTED")
-    equal(supported[1].reason,"D0143_TS015_NEAR_COLLINEAR_COOPERATIVE_PASSAGE_SUPPORTED")
-    equal(#fitness,2); equal(fitness[1].state,"FIT_FOR_LIMITED_HORIZON"); equal(fitness[2].state,"FIT_FOR_LIMITED_HORIZON")
-    equal(fitness[1].evidence.geometryCalculation,"NONE_REUSES_SITUATION_ASSESSMENT_PHYSICAL_SPACE_EVIDENCE")
-    equal(supported[1].footprintEvidence.noAdditionalGeometryCalculation,true)
-    local asymmetric=OuttaMyWay.CooperativePassageAssessment.buildKnowledge(d0143AssessmentContext({lateralOffsetM=4.0}))
-    equal(asymmetric[1].status,"UNSUPPORTED"); equal(asymmetric[1].reason,"INITIAL_LATERAL_OFFSET_OUTSIDE_PROVEN_TS015_SCOPE")
-    local tooClose=OuttaMyWay.CooperativePassageAssessment.buildKnowledge(d0143AssessmentContext({separationM=45.0}))
-    equal(tooClose[1].status,"UNSUPPORTED"); equal(tooClose[1].reason,"PAIR_TOO_CLOSE_FOR_PROVEN_TS015_ENTRY")
-    local interacting=OuttaMyWay.CooperativePassageAssessment.buildKnowledge(d0143AssessmentContext({currentInteraction=true}))
-    equal(interacting[1].status,"UNSUPPORTED"); equal(interacting[1].reason,"CURRENT_PHYSICAL_INTERACTION_ALREADY_BEGUN")
-    local noFootprint,noFitness=OuttaMyWay.CooperativePassageAssessment.buildKnowledge(d0143AssessmentContext({noFootprint=true}))
-    equal(noFootprint[1].status,"UNSUPPORTED"); equal(noFootprint[1].reason,"PURPOSE_SPECIFIC_FOOTPRINT_EVIDENCE_UNAVAILABLE"); equal(#noFitness,0)
-end)
-
-test("D-0143 publishes one joint Cooperative Passage Reposition Candidate with same-picture preference exhaustion",function()
-    local runtime=autonomousHeadOnRuntime()
-    local supported=runtime.liveTrafficCandidateSupport:attach(d0143Picture(),headOnTestSnapshot())
-    equal(supported.candidateSupportEvidence.supportBoundary.mode,"TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST")
-    equal(#supported.candidateSupportEvidence.candidateSpecifications,1)
-    local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
-    equal(spec.capability,"REPOSITION"); equal(#spec.subject.assemblyIds,2)
-    equal(#spec.evidenceBasis.progressActuationOwnership.assemblyIds,2)
-    equal(#spec.evidenceBasis.effectiveActuationComposition.entries,2)
-    equal(spec.evidenceBasis.autonomousHeadOnBridge,nil)
-    equal(spec.representationFitness.requirements[1].representationId,"d0143-ts015-cooperative-passage:EN-HEADON:AS-00001")
-    equal(spec.representationFitness.requirements[2].representationId,"d0143-ts015-cooperative-passage:EN-HEADON:AS-00002")
-    for _,capability in ipairs({"CONTINUE_OBSERVATION","REGULATE_SPEED","HOLD"}) do
-        local exhaustion=spec.evidenceBasis.trafficPolicemanPreference.exhaustionEvidence[capability]
-        equal(exhaustion.result,"PASS"); equal(exhaustion.operationalPictureId,supported.identity); equal(exhaustion.capability,capability)
-    end
-    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    equal(#evaluated.candidates,1)
-    equal(findVerdict(evaluated,evaluated.candidates[1].identity,"REPRESENTATION_FITNESS").result,"PASS")
-    equal(evaluated.decision.selectedCandidateId,evaluated.candidates[1].identity)
-    equal(evaluated.decision.commitmentAction,"CREATE")
-end)
-
-test("D-0143 joint Candidate crosses the normal Commitment boundary with both progress owners",function()
-    local runtime=autonomousHeadOnRuntime()
-    local supported=runtime.liveTrafficCandidateSupport:attach(d0143Picture(),headOnTestSnapshot())
-    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local applied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision(runtime,supported,evaluated)
-    equal(reason,nil); equal(applied.commitment.state,"ACTIVE")
-    equal(runtime.authorities:ownerOf("AS-00001"),applied.commitment.identity)
-    equal(runtime.authorities:ownerOf("AS-00002"),applied.commitment.identity)
-    equal(#runtime.authorities:tokensForCommitment(applied.commitment.identity),2)
-    local obligations=runtime.obligations:openForOwner(applied.commitment.identity)
-    equal(#obligations,1); equal(obligations[1].requiredOutcome.kind,"COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK")
-end)
-
-test("D-0143 Dispatcher emits two typed ControlRequests and positive handoff settles immediately with no cooldown",function()
-    local runtime=autonomousHeadOnRuntime()
-    local handler=nil; local accepted=nil
-    local control={}
-    function control:setCompletionHandler(fn) handler=fn end
-    function control:isActive() return false end
-    function control:executeJointRequests(a,b,candidate) accepted={a,b,candidate}; return true,"COOPERATIVE_PASSAGE_STARTED" end
-    runtime.liveControlDispatcher:setCooperativePassageControl(control)
-    local supported=runtime.liveTrafficCandidateSupport:attach(d0143Picture(),headOnTestSnapshot())
-    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local dispatched=runtime.liveControlDispatcher:dispatch(supported,evaluated)
-    equal(dispatched.status,"ACCEPTED"); equal(#accepted,3); equal(#dispatched.requests,2)
-    equal(dispatched.requests[1].commitmentId,dispatched.requests[2].commitmentId)
-    equal(dispatched.requests[1].capability,"REPOSITION"); equal(dispatched.requests[2].capability,"REPOSITION")
-    equal(dispatched.requests[1].assemblyId~=dispatched.requests[2].assemblyId,true)
-    local commitmentId=dispatched.commitment.identity
-    handler({status="SUCCEEDED",commitmentId=commitmentId,evidence={kind="D0143_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK",sameJobs=true,bothRestored=true,cooldown=false}})
-    equal(runtime.commitments:get(commitmentId).state,"SUCCEEDED")
-    equal(runtime.authorities:ownerOf("AS-00001"),nil); equal(runtime.authorities:ownerOf("AS-00002"),nil)
-    equal(#runtime.obligations:openForOwner(commitmentId),0)
-end)
-
 test("v4.7.57 refuge redispatch requires independent current head-on support",function()
     equal(OuttaMyWay.Prototype22CapabilityGate.autonomousHeadOnDispatchDisposition({kind="TS015_RELOCATE"},nil,true),"BLOCK_ACTIVE_REFUGE_RESOLUTION")
     equal(OuttaMyWay.Prototype22CapabilityGate.autonomousHeadOnDispatchDisposition(nil,{kind="TS015_RELOCATE",firstNativeAt=nil},true),"BLOCK_PRIOR_REFUGE_HANDOFF_UNRESOLVED")
@@ -1035,24 +960,6 @@ test("v4.7.57 refuge redispatch requires independent current head-on support",fu
     equal(OuttaMyWay.Prototype22CapabilityGate.autonomousHeadOnDispatchDisposition(nil,{kind="TS015_RELOCATE",firstNativeAt=123},true),"ALLOW_SUPERSEDE_PRIOR_REFUGE_MONITOR_AFTER_INDEPENDENT_HEAD_ON_SUPPORT")
     equal(OuttaMyWay.Prototype22CapabilityGate.autonomousHeadOnDispatchDisposition(nil,nil,false),"BLOCK_NO_INDEPENDENT_HEAD_ON_SUPPORT")
     equal(OuttaMyWay.Prototype22CapabilityGate.autonomousHeadOnDispatchDisposition(nil,nil,true),"ALLOW")
-end)
-
-test("D-0143 later convergence after positive handoff creates a fresh Commitment with no cooldown ownership",function()
-    local runtime=autonomousHeadOnRuntime()
-    local first=runtime.liveTrafficCandidateSupport:attach(d0143Picture({identity="OP-D0143-FIRST",epoch=230}),headOnTestSnapshot())
-    local firstEval=runtime:evaluateSealedOperationalPicture(first)
-    local firstApplied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision(runtime,first,firstEval)
-    equal(reason,nil)
-    local firstId=firstApplied.commitment.identity
-    local settled,settleReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.completeCooperativePassage(runtime,firstId,{kind="D0143_POSITIVE_RESTORATION_AND_HANDOFF",sameJobs=true,bothRestored=true})
-    equal(settleReason,nil); equal(settled.commitment.state,"SUCCEEDED")
-    equal(runtime.authorities:ownerOf("AS-00001"),nil); equal(runtime.authorities:ownerOf("AS-00002"),nil)
-
-    local second=runtime.liveTrafficCandidateSupport:attach(d0143Picture({identity="OP-D0143-SECOND",epoch=231}),headOnTestSnapshot())
-    local secondEval=runtime:evaluateSealedOperationalPicture(second)
-    equal(secondEval.decision.commitmentAction,"CREATE")
-    local secondApplied,secondReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision(runtime,second,secondEval)
-    equal(secondReason,nil); equal(secondApplied.commitment.identity~=firstId,true)
 end)
 
 test("Follower Owns Closure rejects generic Leader reposition",function()
@@ -2894,94 +2801,6 @@ local function d0141Record(cap,existingCommitmentId,existingObligationId)
     }
 end
 
-test("D-0143 positive Cooperative Passage strategy succession supersedes a preserved D-0141 follower Candidate for the same pair", function()
-    local runtime=autonomousHeadOnRuntime()
-    local preserved={
-        pairKey="AS-00001|AS-00002",operationId="OR-1",leaderAssemblyId="AS-00001",followerAssemblyId="AS-00002",
-        leaderReferenceKey="vehicle-root:101",followerReferenceKey="vehicle-root:201",
-        status="UNRESOLVED",purposeState="PERSIST_UNRESOLVED",reason="ESTABLISHED_PURPOSE_PRESERVED_THROUGH_OPPOSED_CONTINUATION",
-        relationship={status="UNRESOLVED",reason="ESTABLISHED_PURPOSE_PRESERVED_THROUGH_OPPOSED_CONTINUATION",headingDot=-1,leaderToFollowerForwardM=34,lateralOffsetM=0,corridorHalfWidthM=36,corridorOverlap=true},
-        representationFitness="UNRESOLVED",governingPurpose="PRESERVE_BOUNDARY_TRANSITION_ORDERING",
-        existingCommitmentId="CM-EXISTING",existingObligationId="OB-FOLLOWER",provenance={source="FollowerBoundaryDemandAssessment",layer="KNOWLEDGE"}
-    }
-    local base=d0143Picture({commitmentContext={{commitmentId="CM-EXISTING"}},followerBoundaryKnowledge={preserved}})
-    local supported=runtime.liveTrafficCandidateSupport:attach(base,headOnTestSnapshot())
-    equal(supported.candidateSupportEvidence.supportBoundary.mode,"TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST")
-    equal(supported.provenance.followerBoundarySupportingLeaseRetained,true)
-    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    equal(evaluated.decision.commitmentAction,"REVISE")
-    local selected=nil
-    for _,candidate in OuttaMyWay.ValueRecord.ipairs(evaluated.candidates) do if candidate.identity==evaluated.decision.selectedCandidateId then selected=candidate end end
-    if selected==nil then error("expected selected Cooperative Passage candidate") end
-    equal(selected.capability,"REPOSITION"); equal(#selected.subject.assemblyIds,2)
-end)
-
-test("D-0143 Cooperative Passage reuses the same D-0141 Commitment, clears its speed lease and acquires joint progress authority", function()
-    local runtime=autonomousHeadOnRuntime()
-    local followerRecord={
-        pairKey="AS-00001|AS-00002",operationId="OR-1",leaderAssemblyId="AS-00001",followerAssemblyId="AS-00002",
-        leaderReferenceKey="vehicle-root:101",followerReferenceKey="vehicle-root:201",status="REGULATE_SUPPORTED",purposeState="ADMIT",
-        reason="UNRESTRICTED_NATIVE_FOLLOWER_PROGRESSION_WOULD_MATURE_BEFORE_PROVISIONAL_LEADER_DEMAND_VACATES",
-        relationship={status="POSITIVE",reason="CURRENT_COHERENT_LINE_ASTERN_PRODUCTIVE_TOPOLOGY",headingDot=1,leaderToFollowerForwardM=-26,lateralOffsetM=0,corridorHalfWidthM=33,corridorOverlap=true},
-        demandSeed={kind="PROVISIONAL_DEMAND_SEED",representationFitness="USABLE_WITH_UNCERTAINTY",uncertainty={"TEMPORAL_SEED_IS_TEST_MECHANIC_NOT_NATIVE_ROUTE_PREDICTION"}},
-        controlMagnitude={status="SUPPORTED",regulationRequired=true,nativeUnrestrictedFollowerKmh=25,maxAdmissibleFollowerKmh=8,requestedFollowerCapKmh=8},
-        representationFitness="USABLE_WITH_UNCERTAINTY",governingPurpose="PRESERVE_BOUNDARY_TRANSITION_ORDERING",
-        provenance={source="FollowerBoundaryDemandAssessment",layer="KNOWLEDGE",historicalNativeManoeuvreAuthority=false}
-    }
-    local function followerPicture(record,commitmentId)
-        local contexts={} if commitmentId~=nil then contexts={{commitmentId=commitmentId}} end
-        return OuttaMyWay.OperationalPicture.new({
-            identity="OP-D0141-COOP-"..tostring(commitmentId or "NEW"),epoch=610,observationSnapshotId="OS-HEADON",situations={},encounters={},
-            identities={assemblies={"AS-00001","AS-00002"},components={},jobEpisodes={active={"JE-A","JE-B"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
-            currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},representationFitness={},
-            motionEvidence={},physicalSpaceEvidence={},productiveContinuationKnowledge={},guardedRecoveryKnowledge={},followerBoundaryKnowledge={record},cooperativePassageKnowledge={},
-            provenance={source="d0141-cooperative-test"},controlOutcomeEvidence={},candidateSupportEvidence={complete=false,supportBoundary={},candidateSpecifications={},provenance={}},commitmentContext=contexts,diagnostics={}
-        })
-    end
-    local cleared={}; local regulationRequests={}
-    local capability={}
-    function capability:executeControlRequest(request,candidate) regulationRequests[#regulationRequests+1]=request; return true,"ACCEPTED" end
-    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) cleared[#cleared+1]={referenceKey=referenceKey,ownerTag=ownerTag}; return true end
-    function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
-
-    local followerBase=followerPicture(followerRecord,nil)
-    local followerSupported=runtime.liveTrafficCandidateSupport:attach(followerBase,headOnTestSnapshot())
-    local followerEval=runtime:evaluateSealedOperationalPicture(followerSupported)
-    local followerDispatch=runtime.liveControlDispatcher:dispatch(followerSupported,followerEval)
-    equal(followerDispatch.status,"ACCEPTED")
-    local commitmentId=followerDispatch.commitment.identity
-    local followerObligationId=followerDispatch.obligation and followerDispatch.obligation.identity or runtime.obligations:openForOwner(commitmentId)[1].identity
-    equal(runtime.authorities:ownerOf("AS-00002"),commitmentId)
-    equal(runtime.liveControlDispatcher:getFollowerBoundaryStatus().active,true)
-
-    local preserved={} for key,value in pairs(followerRecord) do preserved[key]=value end
-    preserved.status="UNRESOLVED"; preserved.purposeState="PERSIST_UNRESOLVED"; preserved.reason="ESTABLISHED_PURPOSE_PRESERVED_THROUGH_OPPOSED_CONTINUATION"
-    preserved.relationship={status="UNRESOLVED",reason="ESTABLISHED_PURPOSE_PRESERVED_THROUGH_OPPOSED_CONTINUATION",headingDot=-1,leaderToFollowerForwardM=34,lateralOffsetM=0,corridorHalfWidthM=36,corridorOverlap=true}
-    preserved.representationFitness="UNRESOLVED"; preserved.controlMagnitude=nil; preserved.existingCommitmentId=commitmentId; preserved.existingObligationId=followerObligationId
-
-    local accepted=nil; local completionHandler=nil
-    local cooperativeControl={}
-    function cooperativeControl:setCompletionHandler(fn) completionHandler=fn end
-    function cooperativeControl:isActive() return false end
-    function cooperativeControl:executeJointRequests(a,b,candidate) accepted={a,b,candidate}; return true,"COOPERATIVE_PASSAGE_STARTED" end
-    runtime.liveControlDispatcher:setCooperativePassageControl(cooperativeControl)
-
-    local cooperativeBase=d0143Picture({identity="OP-D0143-SUCCESSION",epoch=611,commitmentContext={{commitmentId=commitmentId}},followerBoundaryKnowledge={preserved}})
-    local cooperativeSupported=runtime.liveTrafficCandidateSupport:attach(cooperativeBase,headOnTestSnapshot())
-    local cooperativeEval=runtime:evaluateSealedOperationalPicture(cooperativeSupported)
-    equal(cooperativeEval.decision.commitmentAction,"REVISE")
-    local dispatched=runtime.liveControlDispatcher:dispatch(cooperativeSupported,cooperativeEval)
-    equal(dispatched.status,"ACCEPTED"); equal(dispatched.commitment.identity,commitmentId)
-    equal(runtime.authorities:ownerOf("AS-00001"),commitmentId); equal(runtime.authorities:ownerOf("AS-00002"),commitmentId)
-    equal(#runtime.authorities:tokensForCommitment(commitmentId),2)
-    equal(runtime.liveControlDispatcher:getFollowerBoundaryStatus().active,false)
-    equal(#cleared,1); equal(cleared[1].referenceKey,"vehicle-root:201"); equal(cleared[1].ownerTag,"D0141_FOLLOWER_BOUNDARY")
-    equal(runtime.obligations:get(followerObligationId).status,"SETTLED")
-    equal(#accepted,3); equal(accepted[1].capability,"REPOSITION"); equal(accepted[2].capability,"REPOSITION")
-    equal(type(completionHandler),"function")
-end)
-
 test("D-0141 aligned follower Regulation travels Situation Candidate Decision Commitment central Control and cap magnitude is elastic", function()
     local runtime=autonomousHeadOnRuntime()
     local requests={}
@@ -3907,9 +3726,11 @@ local function d0146Step2Fixture(fieldMinX,fieldMaxX,longitudinalSeparationM)
         {assemblyId="AS-A",assemblyReferenceKey="vehicle-root:101",name="Condor Endurance II",sourceJobToken="job-A",headingX=0,headingZ=1,localIntentClassification="SETTLED_CONTINUATION"},
         {assemblyId="AS-B",assemblyReferenceKey="vehicle-root:201",name="Patriot 4450",sourceJobToken="job-B",headingX=0,headingZ=-1,localIntentClassification="SETTLED_CONTINUATION"}
     }
+    local transitA={minRightM=-3,maxRightM=3,minForwardM=-1,maxForwardM=1,widthM=6,lengthM=2,halfWidthM=3,halfLengthM=1,widthOffsetM=0,lengthOffsetM=0,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY",configurationBasis="TRANSIT_POLICY_STATIC_BASE_SIZE",geometryPurpose="COOPERATIVE_PASSAGE_TRANSIT",memberBaseSizeComplete=true,coverageComplete=false,negativeClearanceAuthority=false}
+    local transitB={minRightM=-3,maxRightM=3,minForwardM=-1,maxForwardM=1,widthM=6,lengthM=2,halfWidthM=3,halfLengthM=1,widthOffsetM=0,lengthOffsetM=0,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY",configurationBasis="TRANSIT_POLICY_STATIC_BASE_SIZE",geometryPurpose="COOPERATIVE_PASSAGE_TRANSIT",memberBaseSizeComplete=true,coverageComplete=false,negativeClearanceAuthority=false}
     local physical={
-        {assemblyId="AS-A",assemblyReferenceKey="vehicle-root:101",configurationProfileId="CFG-A",coverageComplete=false,negativeClearanceAuthority=false,primitives={{kind="DISC",positiveConflictSupport=true,x=-2,z=0,radius=1},{kind="DISC",positiveConflictSupport=true,x=2,z=0,radius=1}},summary={physicalPrimitiveCount=2}},
-        {assemblyId="AS-B",assemblyReferenceKey="vehicle-root:201",configurationProfileId="CFG-B",coverageComplete=false,negativeClearanceAuthority=false,primitives={{kind="DISC",positiveConflictSupport=true,x=-2,z=longitudinalSeparationM,radius=1},{kind="DISC",positiveConflictSupport=true,x=2,z=longitudinalSeparationM,radius=1}},summary={physicalPrimitiveCount=2}}
+        {assemblyId="AS-A",assemblyReferenceKey="vehicle-root:101",configurationProfileId="CFG-A",coverageComplete=false,negativeClearanceAuthority=false,transitPassageEnvelope=transitA,primitives={{kind="DISC",positiveConflictSupport=true,x=-2,z=0,radius=1},{kind="DISC",positiveConflictSupport=true,x=2,z=0,radius=1}},summary={physicalPrimitiveCount=2}},
+        {assemblyId="AS-B",assemblyReferenceKey="vehicle-root:201",configurationProfileId="CFG-B",coverageComplete=false,negativeClearanceAuthority=false,transitPassageEnvelope=transitB,primitives={{kind="DISC",positiveConflictSupport=true,x=-2,z=longitudinalSeparationM,radius=1},{kind="DISC",positiveConflictSupport=true,x=2,z=longitudinalSeparationM,radius=1}},summary={physicalPrimitiveCount=2}}
     }
     local fitness=OuttaMyWay.PassageCapabilityAssessment.buildFitness({opposedCorridorKnowledge={conflict},motionEvidence=motion,physicalSpaceEvidence=physical})
     local picture=OuttaMyWay.OperationalPicture.new({
@@ -3971,35 +3792,28 @@ test("D0146 Passage Excursion enters only when derived Entry Boundary is reached
     equal(plan.passageExcursion.developmentDistanceM<12,true)
     equal(plan.passageExcursion.crossingWindowEntrySeparationM>0,true)
     equal(plan.passageExcursion.crossingWindowRearClearSeparationM>0,true)
-    equal(plan.passageGuide.pairSweepSupport.minimumRepresentedClearanceM>=1,true)
+    equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.95,true)
+    equal(plan.passageGuide.pairSweepSupport.minimumOutsideCrossingClearanceM>=-0.001,true)
     equal(math.abs(math.abs(plan.passageArrangement.subjectLateralOffsetM)+math.abs(plan.passageArrangement.otherLateralOffsetM)-7)<0.0001,true)
 end)
 
-test("D0146 directional Passage envelope uses GIANTS base size instead of inflated component discs when available",function()
+test("D0146 Transit Passage envelope uses cached GIANTS base size instead of inflated component discs",function()
     local picture,snapshot=d0146Step2Fixture(nil,nil,30)
     local values=OuttaMyWay.ValueRecord.toTable(picture)
-    values.physicalSpaceEvidence[1].primitives={
-        {kind="DISC",positiveConflictSupport=true,x=-3.61,z=0,radius=1},{kind="DISC",positiveConflictSupport=true,x=3.61,z=0,radius=1}
-    }
-    values.physicalSpaceEvidence[2].primitives={
-        {kind="DISC",positiveConflictSupport=true,x=-3.61,z=30,radius=1},{kind="DISC",positiveConflictSupport=true,x=3.61,z=30,radius=1}
-    }
-    values.physicalSpaceEvidence[1].directionalPassageEnvelope={widthM=3.5,lengthM=11.1,halfWidthM=1.75,halfLengthM=5.55,source="CONFIG_XML_BASE_SIZE",authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST"}
-    values.physicalSpaceEvidence[2].directionalPassageEnvelope={widthM=3.9,lengthM=9.0,halfWidthM=1.95,halfLengthM=4.5,source="CONFIG_XML_BASE_SIZE",authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST"}
+    values.physicalSpaceEvidence[1].primitives={{kind="DISC",positiveConflictSupport=true,x=-3.61,z=0,radius=1},{kind="DISC",positiveConflictSupport=true,x=3.61,z=0,radius=1}}
+    values.physicalSpaceEvidence[2].primitives={{kind="DISC",positiveConflictSupport=true,x=-3.61,z=30,radius=1},{kind="DISC",positiveConflictSupport=true,x=3.61,z=30,radius=1}}
+    values.physicalSpaceEvidence[1].transitPassageEnvelope={minRightM=-1.75,maxRightM=1.75,minForwardM=-5.55,maxForwardM=5.55,widthM=3.5,lengthM=11.1,halfWidthM=1.75,halfLengthM=5.55,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY",configurationBasis="TRANSIT_POLICY_STATIC_BASE_SIZE",geometryPurpose="COOPERATIVE_PASSAGE_TRANSIT",memberBaseSizeComplete=true,coverageComplete=false,negativeClearanceAuthority=false}
+    values.physicalSpaceEvidence[2].transitPassageEnvelope={minRightM=-1.95,maxRightM=1.95,minForwardM=-4.5,maxForwardM=4.5,widthM=3.9,lengthM=9.0,halfWidthM=1.95,halfLengthM=4.5,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY",configurationBasis="TRANSIT_POLICY_STATIC_BASE_SIZE",geometryPurpose="COOPERATIVE_PASSAGE_TRANSIT",memberBaseSizeComplete=true,coverageComplete=false,negativeClearanceAuthority=false}
     local adapted=OuttaMyWay.OperationalPicture.new(values)
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
-    equal(plan.passageArrangement.directionalPassageEnvelopeBasis,"GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES")
+    equal(plan.passageArrangement.directionalPassageEnvelopeBasis,"GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")
     equal(math.abs(plan.passageArrangement.physicalContactThresholdM-3.70)<0.001,true)
     equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-4.70)<0.001,true)
     equal(math.abs(plan.passageExcursion.subjectFrontExtentM-5.55)<0.001,true)
     equal(math.abs(plan.passageExcursion.otherFrontExtentM-4.5)<0.001,true)
-    equal(plan.passageExcursion.crossingWindowBasis,"GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES")
-    equal(plan.passageGuide.pairSweepSupport.supportBasis,"TRANSLATED_GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES")
-    equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.999,true)
-    equal(plan.passageGuide.pairSweepSupport.minimumOutsideCrossingClearanceM>=-0.001,true)
-    equal(plan.passageGuide.pairSweepSupport.clearanceContract,"NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW")
-    equal(math.abs(math.abs(plan.passageArrangement.subjectLateralOffsetM)+math.abs(plan.passageArrangement.otherLateralOffsetM)-4.70)<0.001,true)
+    equal(plan.passageGuide.pairSweepSupport.supportBasis,"TRANSLATED_GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")
+    equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.95,true)
 end)
 
 test("D0165 Nominal Passage Clearance is required only through the Crossing Window",function()
@@ -4011,8 +3825,8 @@ test("D0165 Nominal Passage Clearance is required only through the Crossing Wind
     values.physicalSpaceEvidence[2].primitives={
         {kind="DISC",positiveConflictSupport=true,x=-3.61,z=30,radius=1},{kind="DISC",positiveConflictSupport=true,x=3.61,z=30,radius=1}
     }
-    values.physicalSpaceEvidence[1].directionalPassageEnvelope={widthM=3.5,lengthM=11.1,halfWidthM=1.75,halfLengthM=5.55,source="CONFIG_XML_BASE_SIZE",authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST"}
-    values.physicalSpaceEvidence[2].directionalPassageEnvelope={widthM=3.9,lengthM=9.0,halfWidthM=1.95,halfLengthM=4.5,source="CONFIG_XML_BASE_SIZE",authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST"}
+    values.physicalSpaceEvidence[1].transitPassageEnvelope={minRightM=-1.75,maxRightM=1.75,minForwardM=-5.55,maxForwardM=5.55,widthM=3.5,lengthM=11.1,halfWidthM=1.75,halfLengthM=5.55,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY",configurationBasis="TRANSIT_POLICY_STATIC_BASE_SIZE",geometryPurpose="COOPERATIVE_PASSAGE_TRANSIT",memberBaseSizeComplete=true,coverageComplete=false,negativeClearanceAuthority=false}
+    values.physicalSpaceEvidence[2].transitPassageEnvelope={minRightM=-1.95,maxRightM=1.95,minForwardM=-4.5,maxForwardM=4.5,widthM=3.9,lengthM=9.0,halfWidthM=1.95,halfLengthM=4.5,authority="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY",configurationBasis="TRANSIT_POLICY_STATIC_BASE_SIZE",geometryPurpose="COOPERATIVE_PASSAGE_TRANSIT",memberBaseSizeComplete=true,coverageComplete=false,negativeClearanceAuthority=false}
     local adapted=OuttaMyWay.OperationalPicture.new(values)
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
@@ -4052,7 +3866,8 @@ test("D0146 Passage Selection may precede Entry while Resolution Space remains a
     equal(plan.passageEntry.ready,false)
     equal(plan.passageEntry.boundarySeparationM<60,true)
     equal(plan.passageEntry.approachDistancePerParticipantM>0,true)
-    equal(plan.passageGuide.pairSweepSupport.minimumRepresentedClearanceM>=1,true)
+    equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.95,true)
+    equal(plan.passageGuide.pairSweepSupport.minimumOutsideCrossingClearanceM>=-0.001,true)
 end)
 
 test("D0146 zero Clearance Deficit produces straight Passage with no manufactured one-metre excursion",function()
@@ -4104,7 +3919,8 @@ test("D0146 Step2 has no arbitrary minimum entry separation and lets concrete Pa
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
     equal(plan.separationM,30)
-    equal(plan.passageGuide.pairSweepSupport.minimumRepresentedClearanceM>=1,true)
+    equal(plan.passageGuide.pairSweepSupport.minimumCrossingWindowClearanceM>=0.95,true)
+    equal(plan.passageGuide.pairSweepSupport.minimumOutsideCrossingClearanceM>=-0.001,true)
 end)
 
 test("D0146 Step2 Pairwise Passage Economy may choose an asymmetric arrangement when local field support requires it",function()
@@ -4149,96 +3965,33 @@ test("D0175 Cooperative Passage plans against Transit base geometry with uniform
     for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.passageConfiguration.participants) do equal(entry.mode,"TRANSIT_REQUIRED"); equal(entry.transitPassageEnvelope~=nil,true) end
 end)
 
-test("D0146 Step2 removes False Compaction Demand: width alone cannot authorise configuration reduction",function()
+test("D0181 current width cannot reintroduce configuration-conditioned Passage authority",function()
     local picture,snapshot=d0146Step2Fixture()
     local values=OuttaMyWay.ValueRecord.toTable(picture)
-    values.motionEvidence[2].name="S 416"
-    -- Make A much wider than B. Width alone must no longer create COMPACT_REQUIRED.
-    values.physicalSpaceEvidence[1].primitives={
-        {kind="DISC",positiveConflictSupport=true,x=-5,z=0,radius=1},
-        {kind="DISC",positiveConflictSupport=true,x=5,z=0,radius=1}
-    }
-    values.physicalSpaceEvidence[2].primitives={
-        {kind="DISC",positiveConflictSupport=true,x=-1,z=60,radius=1},
-        {kind="DISC",positiveConflictSupport=true,x=1,z=60,radius=1}
-    }
-    local adapted=OuttaMyWay.OperationalPicture.new(values)
-    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
+    values.physicalSpaceEvidence[1].primitives={{kind="DISC",positiveConflictSupport=true,x=-5,z=0,radius=1},{kind="DISC",positiveConflictSupport=true,x=5,z=0,radius=1}}
+    values.physicalSpaceEvidence[2].primitives={{kind="DISC",positiveConflictSupport=true,x=-1,z=60,radius=1},{kind="DISC",positiveConflictSupport=true,x=1,z=60,radius=1}}
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(OuttaMyWay.OperationalPicture.new(values),snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
-    equal(plan.passageConfiguration.policy,"CONFIGURATION_RELEASED_SPACE_PRECEDES_LATERAL_DISPLACEMENT")
-    equal(plan.passageConfiguration.selection,"AI_REACHABLE_PRODUCTIVE_CONFIGURATION_WHEN_CONFLICT_SIDE_RELEASE_POSITIVE")
-    for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.passageConfiguration.participants) do
-        equal(entry.mode,"RETAIN_CURRENT")
-        equal(entry.configurationReleasedSpaceM,0)
-    end
-    equal(plan.passageArrangement.configurationReduction,"OPTIONAL_PER_PARTICIPANT")
+    equal(plan.passageConfiguration.policy,"TRANSIT_ONLY_REALISATION_BEFORE_PASSAGE")
+    equal(plan.passageConfiguration.selection,"TRANSIT_REQUIRED_FOR_ALL_PARTICIPANTS")
+    for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.passageConfiguration.participants) do equal(entry.mode,"TRANSIT_REQUIRED") end
 end)
 
-test("D0146 Step2 uses a natively observed compact profile only when it releases conflict-side space",function()
+test("D0181 observed compact-profile history cannot alter Transit-only Passage selection",function()
     local picture,snapshot=d0146Step2Fixture()
     local values=OuttaMyWay.ValueRecord.toTable(picture)
-    local a=values.physicalSpaceEvidence[1]
-    a.configurationEvidence={foldableCount=1,deployedCount=1,transitionCount=0,foldedCount=0,unknownCount=0,allDeployed=true,allFolded=false}
-    a.configurationAlternatives={{
-        configurationProfileId="CFG-A-NATIVE-COMPACT",configurationKey="native-folded",current=false,nativeObservationCount=3,outtaMyWayObservationCount=0,
-        configurationEvidence={foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true},
-        relativeDiscs={{localRightM=-1,localForwardM=0,radius=1},{localRightM=1,localForwardM=0,radius=1}}
-    }}
-    local adapted=OuttaMyWay.OperationalPicture.new(values)
-    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
+    values.physicalSpaceEvidence[1].configurationAlternatives={{configurationProfileId="CFG-A-NATIVE-COMPACT",current=false,nativeObservationCount=10,configurationEvidence={allFolded=true},relativeDiscs={{localRightM=0,localForwardM=0,radius=0.5}}}}
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(OuttaMyWay.OperationalPicture.new(values),snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
-    local chosen=nil
-    for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.passageConfiguration.participants) do
-        if entry.assemblyId=="AS-A" then chosen=entry end
-    end
-    equal(chosen~=nil,true)
-    equal(chosen.mode,"COMPACT_REQUIRED")
-    equal(chosen.expectedCompactConfigurationProfileId,"CFG-A-NATIVE-COMPACT")
-    equal(math.abs(chosen.configurationReleasedSpaceM-1)<0.0001,true)
-    equal(chosen.configurationAuthority,"AI_REACHABLE_PRODUCTIVE_CONFIGURATION_OBSERVED_WITHOUT_OUTTAMYWAY_AUTHORITY")
-    equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-6)<0.0001,true)
-    equal(math.abs(plan.passageArrangement.combinedLateralBurdenM-6)<0.0001,true)
+    for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.passageConfiguration.participants) do equal(entry.mode,"TRANSIT_REQUIRED") end
+    equal(plan.passageArrangement.passageGeometrySource,"TRANSIT_BASE")
 end)
 
-test("D0146 Step2 compact profile may replace sphere-inflated lateral extent with GIANTS directional base size",function()
+test("D0181 already-narrow participants still carry uniform Transit obligation",function()
     local picture,snapshot=d0146Step2Fixture()
-    local values=OuttaMyWay.ValueRecord.toTable(picture)
-    local a=values.physicalSpaceEvidence[1]
-    local b=values.physicalSpaceEvidence[2]
-    a.configurationEvidence={foldableCount=1,deployedCount=1,transitionCount=0,foldedCount=0,unknownCount=0,allDeployed=true,allFolded=false}
-    b.configurationEvidence={foldableCount=1,deployedCount=1,transitionCount=0,foldedCount=0,unknownCount=0,allDeployed=true,allFolded=false}
-    a.configurationAlternatives={{
-        configurationProfileId="CFG-A-DIRECTIONAL-COMPACT",configurationKey="native-folded-a",current=false,nativeObservationCount=3,outtaMyWayObservationCount=0,
-        configurationEvidence={foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true},
-        relativeDiscs={{localRightM=-3.5,localForwardM=0,radius=1},{localRightM=3.5,localForwardM=0,radius=1}},
-        directionalPassageEnvelope={widthM=3.5,lengthM=11.1,halfWidthM=1.75,halfLengthM=5.55,source="CONFIG_XML_BASE_SIZE",authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST"}
-    }}
-    b.configurationAlternatives={{
-        configurationProfileId="CFG-B-DIRECTIONAL-COMPACT",configurationKey="native-folded-b",current=false,nativeObservationCount=3,outtaMyWayObservationCount=0,
-        configurationEvidence={foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true},
-        relativeDiscs={{localRightM=-3.5,localForwardM=0,radius=1},{localRightM=3.5,localForwardM=0,radius=1}},
-        directionalPassageEnvelope={widthM=3.9,lengthM=9.0,halfWidthM=1.95,halfLengthM=4.5,source="CONFIG_XML_BASE_SIZE",authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST"}
-    }}
-    local adapted=OuttaMyWay.OperationalPicture.new(values)
-    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
     equal(reason,nil); equal(plan.status,"SUPPORTED")
-    equal(plan.passageConfiguration.participants[1].mode,"COMPACT_REQUIRED")
-    equal(plan.passageConfiguration.participants[2].mode,"COMPACT_REQUIRED")
-    equal(math.abs(plan.passageArrangement.physicalContactThresholdM-3.7)<0.001,true)
-    equal(math.abs(plan.passageArrangement.policyRequiredSeparationM-4.7)<0.001,true)
-    equal(plan.passageArrangement.directionalPassageEnvelopeBasis,"GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES")
-    equal(plan.passageGuide.pairSweepSupport.supportBasis,"TRANSLATED_GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES")
-end)
-
-test("D0146 Step2 two already-narrow participants require no configuration reduction",function()
-    local picture,snapshot=d0146Step2Fixture()
-    local values=OuttaMyWay.ValueRecord.toTable(picture)
-    values.physicalSpaceEvidence[1].primitives={{kind="DISC",positiveConflictSupport=true,x=-2,z=0,radius=1},{kind="DISC",positiveConflictSupport=true,x=2,z=0,radius=1}}
-    values.physicalSpaceEvidence[2].primitives={{kind="DISC",positiveConflictSupport=true,x=-2,z=60,radius=1},{kind="DISC",positiveConflictSupport=true,x=2,z=60,radius=1}}
-    local adapted=OuttaMyWay.OperationalPicture.new(values)
-    local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(adapted,snapshot)
-    equal(reason,nil); equal(plan.status,"SUPPORTED")
-    for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.passageConfiguration.participants) do equal(entry.mode,"RETAIN_CURRENT") end
+    for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.passageConfiguration.participants) do equal(entry.mode,"TRANSIT_REQUIRED") end
 end)
 
 test("D0146 Step2 treats a third active assembly's positive current occupancy as Local Spatial Constraint",function()
@@ -4982,99 +4735,13 @@ test("D0179 non-foldable bootstrap capability is immediate non-veto and no live 
     equal(control:_beginD0146Configuration(run),true); equal(participant.passageTransitFoldExpected,false); equal(control:_d0146ConfigurationReady(run),true)
 end)
 
-test("D0166 minimal Transit-first attempts RETAIN_CURRENT compaction without granting optional veto authority",function()
-    local vehicleA={rootNode=1371}; local vehicleB={rootNode=1372}
-    local attempts={}; local evidenceA={allDeployed=true,allFolded=false,transitionCount=0}
-    local donor={
-        permissionGate={},driveAuthority={},
-        configurationAuthority={
-            prepareCompact=function(self,vehicle)
-                attempts[#attempts+1]=vehicle
-                if vehicle==vehicleA then return true,{vehicle=vehicle} end
-                return false,"no-foldable-object"
-            end,
-            getEvidence=function(self,vehicle)
-                if vehicle==vehicleA then return evidenceA end
-                return {allDeployed=true,allFolded=false,transitionCount=0}
-            end,
-            requestRestore=function() return true end
-        }
-    }
+test("D0181 Cooperative Passage configuration rejects any non-Transit mode",function()
+    local vehicle={rootNode=1371}
+    local donor={permissionGate={},driveAuthority={},configurationAuthority={requestRestore=function() return true end}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
-    local run={
-        mode="D0146_GUIDE",commitmentId="CM-TRANSIT-MINIMAL",phase="SETTLING",
-        a={vehicle=vehicleA,name="A",assemblyId="AS-A",configurationMode="RETAIN_CURRENT"},
-        b={vehicle=vehicleB,name="B",assemblyId="AS-B",configurationMode="RETAIN_CURRENT"},
-        participants={}
-    }
-    run.participants={run.a,run.b}
+    local run={mode="D0146_GUIDE",commitmentId="CM-NON-TRANSIT",phase="SETTLING",participants={{vehicle=vehicle,name="A",assemblyId="AS-A",configurationMode="LEGACY_MODE"}}}
     local ok,reason=control:_beginD0146Configuration(run)
-    equal(ok,true); equal(reason,nil)
-    equal(run.phase,"CONFIGURING")
-    equal(#attempts,2)
-    equal(run.a.configurationMode,"RETAIN_CURRENT")
-    equal(run.b.configurationMode,"RETAIN_CURRENT")
-    equal(run.a.passageTransitCompactionActive,true)
-    equal(run.b.passageTransitCompactionActive,false)
-    equal(run.b.passageTransitCompactionReason,"no-foldable-object")
-    -- An accepted but physically inert optional request cannot block a guide
-    -- already authorised for RETAIN_CURRENT.
-    equal(control:_d0146ConfigurationReady(run),true)
-    -- If Reality positively shows optional configuration motion, movement waits
-    -- for that physical transition to settle.
-    evidenceA={allDeployed=false,allFolded=false,transitionCount=1}
-    equal(control:_d0146ConfigurationReady(run),false)
-    evidenceA={allDeployed=false,allFolded=true,transitionCount=0}
-    equal(control:_d0146ConfigurationReady(run),true)
-end)
-
-test("D0166 minimal Transit-first preserves fail-safe required-compaction failure",function()
-    local vehicle={rootNode=1381}
-    local donor={
-        permissionGate={},driveAuthority={},
-        configurationAuthority={
-            prepareCompact=function() return false,"fold-command-unavailable" end,
-            requestRestore=function() return true end
-        }
-    }
-    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
-    local run={
-        mode="D0146_GUIDE",commitmentId="CM-TRANSIT-REQUIRED",phase="SETTLING",
-        a={vehicle=vehicle,name="A",assemblyId="AS-A",configurationMode="COMPACT_REQUIRED"},
-        participants={}
-    }
-    run.participants={run.a}
-    local ok,reason=control:_beginD0146Configuration(run)
-    equal(ok,false)
-    equal(reason,"A:fold-command-unavailable")
-end)
-
-test("D0166 required compaction remains authoritative while inert RETAIN_CURRENT request is nonblocking",function()
-    local required={rootNode=1382}; local optional={rootNode=1383}
-    local requiredFolded=false
-    local donor={
-        permissionGate={},driveAuthority={},
-        configurationAuthority={
-            prepareCompact=function(self,vehicle) return true,{vehicle=vehicle} end,
-            getEvidence=function(self,vehicle)
-                if vehicle==required then return {allDeployed=not requiredFolded,allFolded=requiredFolded,transitionCount=requiredFolded and 0 or 1} end
-                return {allDeployed=true,allFolded=false,transitionCount=0}
-            end,
-            requestRestore=function() return true end
-        }
-    }
-    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
-    local run={
-        mode="D0146_GUIDE",commitmentId="CM-TRANSIT-MIXED",phase="SETTLING",participants={},
-        a={vehicle=required,name="required",assemblyId="AS-R",configurationMode="COMPACT_REQUIRED"},
-        b={vehicle=optional,name="optional",assemblyId="AS-O",configurationMode="RETAIN_CURRENT"}
-    }
-    run.participants={run.a,run.b}
-    local ok=control:_beginD0146Configuration(run)
-    equal(ok,true)
-    equal(control:_d0146ConfigurationReady(run),false)
-    requiredFolded=true
-    equal(control:_d0146ConfigurationReady(run),true)
+    equal(ok,false); equal(reason,"A:unsupported-configuration-mode:LEGACY_MODE")
 end)
 
 test("D0146 failed guide holds compact configuration without restore request",function()

@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.7.0 CANONICAL CANDIDATE — D-0179 Job-Start Physical Capability Record.
+-- FS25_OuttaMyWay v0.1.8.0 CANONICAL CANDIDATE — D-0181 Legacy Authority Closure A; D-0179 Physical Capability Record retained.
 -- modDesc.xml loads only this file. Historical archived modules are never sourced.
 local modDirectory=g_currentModDirectory or ""
 local modules={
@@ -7,7 +7,7 @@ local modules={
     "scripts/identity/EpochSequence.lua","scripts/identity/IdentityRegistry.lua",
     "scripts/representation/catalogues/CondorEndurance2Donor.lua","scripts/representation/PlanViewFootprint.lua","scripts/representation/AssemblyRepresentationCache.lua","scripts/representation/PairSpecificPassageClearance.lua",
     "scripts/diagnostics/LiveInteractionDiagnostics.lua","scripts/observation/LocalIntentObservation.lua","scripts/observation/FieldBoundedFutureSpace.lua","scripts/observation/NativeFieldWorkObservation.lua","scripts/identity/FieldWorldSnapshotRegistry.lua","scripts/identity/FieldWorldEquivalenceEvaluator.lua","scripts/identity/FieldWorldEquivalenceAuthority.lua","scripts/observation/RuntimeObservationAdapter.lua","scripts/observation/LiveAIJobEvidence.lua","scripts/observation/LiveObservationSource.lua","scripts/identity/JobEpisodeAdmission.lua","scripts/identity/OperationAdmission.lua",
-    "scripts/assessment/RepresentationFitness.lua","scripts/assessment/EncounterRegistry.lua","scripts/assessment/ProgressionGeometry.lua","scripts/assessment/GuardedRecoveryThreatAssessment.lua","scripts/assessment/FollowerBoundaryDemandAssessment.lua","scripts/assessment/CooperativePassageAssessment.lua","scripts/assessment/TrajectoryConflictAssessment.lua","scripts/assessment/PassageCapabilityAssessment.lua","scripts/assessment/TerminalOccupancyAssessment.lua","scripts/assessment/SituationAssessment.lua",
+    "scripts/assessment/RepresentationFitness.lua","scripts/assessment/EncounterRegistry.lua","scripts/assessment/ProgressionGeometry.lua","scripts/assessment/GuardedRecoveryThreatAssessment.lua","scripts/assessment/FollowerBoundaryDemandAssessment.lua","scripts/assessment/TrajectoryConflictAssessment.lua","scripts/assessment/PassageCapabilityAssessment.lua","scripts/assessment/TerminalOccupancyAssessment.lua","scripts/assessment/SituationAssessment.lua",
     "scripts/commitment/CommitmentStateMachine.lua","scripts/commitment/CommitmentRegistry.lua","scripts/commitment/ObligationLedger.lua","scripts/authority/AuthorityRegistry.lua","scripts/authority/PostJobActuationAuthority.lua","scripts/authority/EffectiveActuationComposition.lua","scripts/commitment/CommitmentAdmission.lua","scripts/commitment/GoverningBasisEvaluator.lua","scripts/commitment/TerminalSettlementEvaluator.lua","scripts/commitment/DecisionCommitmentBoundary.lua","scripts/commitment/LiveTrafficCommitmentLifecycle.lua","scripts/commitment/TerminalEgressCommitmentLifecycle.lua",
     "scripts/candidates/CandidateSpace.lua","scripts/candidates/PassiveLiveCandidateSupport.lua","scripts/candidates/LocalPassagePlanner.lua","scripts/candidates/TerminalEgressCandidateSupport.lua","scripts/candidates/LiveTrafficCandidateSupport.lua","scripts/constraints/ConstraintEvidence.lua",
     "scripts/constraints/evaluators/FieldWorldContainment.lua","scripts/constraints/evaluators/TransitionClearance.lua","scripts/constraints/evaluators/RepresentationFitness.lua","scripts/constraints/evaluators/CapabilityAvailability.lua","scripts/constraints/evaluators/ContinuingIntentPriority.lua","scripts/constraints/evaluators/ProgressPreservation.lua","scripts/constraints/evaluators/ResponsibilityCompatibility.lua","scripts/constraints/evaluators/ObligationCompatibility.lua","scripts/constraints/evaluators/CommitmentPreconditions.lua","scripts/constraints/evaluators/EffectiveActuationComposition.lua","scripts/constraints/evaluators/ReleaseSafety.lua",
@@ -37,8 +37,8 @@ OuttaMyWay.prototype22CapabilityGate=OuttaMyWay.Prototype22CapabilityGate.new(Ou
 OuttaMyWay.runtime:setLiveControlCapability(OuttaMyWay.prototype22CapabilityGate)
 OuttaMyWay.nativeManoeuvreObservationSource:setCapabilityObservationSource(OuttaMyWay.prototype22CapabilityGate)
 
--- D-0143 production Control composes the already-proven P22 physical donors,
--- but owns a normal Candidate/Commitment/Authority path rather than a prototype command path.
+-- D-0181: production Cooperative Passage is D-0146 only. Historical D-0143
+-- donor modules are not sourced into the live runtime.
 OuttaMyWay.cooperativePassageControl=OuttaMyWay.CooperativePassageControl.new(OuttaMyWay.runtime,OuttaMyWay.prototype22CapabilityGate)
 OuttaMyWay.runtime.liveControlDispatcher:setCooperativePassageControl(OuttaMyWay.cooperativePassageControl)
 

@@ -1,3 +1,23 @@
+## D-0182 — Promote validated D-0181 Closure A to v0.1.8.0 canonical candidate
+
+**Status:** Accepted for canonical-candidate production; owner canonicalisation pending.
+
+**Evidence:** v0.1.7.1 completed the ordered TS016 → TS015 → TS010S → TS009 regression with all observed PASS. The combined log contains six D-0146 second whistles and six successful Cooperative Passage settlements, zero Transit Fold Settlement Exhaustion/configuration watchdog/Passage watchdog/player rescue, and one successful TS015 D-0147 Terminal Exit / Bounded Infield Retreat completion.
+
+**Decision:** freeze the tested v0.1.7.1 traffic/control behaviour and package it as v0.1.8.0 canonical candidate. Candidate preparation may change release identity, provenance and durable documentation only. Do not alter D-0181 authority closure, D-0179 Transit capability, Passage geometry, Entry, guide execution, D-0155, D-0147 or Restoration during promotion.
+
+**Authority:** Owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files) remains canonical until the exact RRS-produced v0.1.8.0 candidate fingerprint is explicitly accepted.
+
+## D-0181 — Legacy Authority Closure A: Transit-only fail-closed / D-0143 runtime retirement (v0.1.7.1 TEST)
+
+**Observation:** after D-0179 established Job-Start Physical Capability and cached `TRANSIT_BASE` as the primary Cooperative Passage representation, two superseded authority routes remained live: `LocalPassagePlanner` could fall back to configuration-conditioned `COMPACT_REQUIRED` / `RETAIN_CURRENT` planning when Transit evidence was missing, and D-0143 TS015 Passage could still be assessed/published/executed when its feature switch selected the old route.
+
+**Decision:** D-0146 is the single production Cooperative Passage architecture. Missing cached `TRANSIT_BASE` fails closed and yields no Cooperative Passage Candidate. D-0143 TS015 production Candidate/Control authority is retired; historical donor/test source remains repository evidence only and is not production-loaded.
+
+**Literal consequence:** D-0143-only admission/manoeuvre literals retire with that owner rather than being tuned. The 0.25 km/h Hold-effect threshold and 1000 ms heartbeat are proven still-live D-0146 implementation values and are re-owned without changing magnitude.
+
+**Isolation:** D-0179 Transit configuration, Entry, Guide, clearance, D-0155, D-0147 and restoration are unchanged. Bootstrap–Restoration Bypass is Closure B after field validation.
+
 ## D-0180 — Promote validated D-0179 to v0.1.7.0 canonical candidate
 
 **Status:** Accepted for canonical-candidate production; owner canonicalisation pending.

@@ -1,3 +1,42 @@
+## v0.1.8.0 canonical-candidate checkpoint — Legacy Authority Closure A
+
+D-0181 is field-supported across TS016, TS015, TS010S and TS009. The governing Cooperative Passage authority is now deliberately singular:
+
+```text
+valid cached TRANSIT_BASE
+        |
+        v
+D-0146 Cooperative Passage
+
+no valid cached TRANSIT_BASE
+        |
+        v
+no Cooperative Passage candidate
+```
+
+Configuration-conditioned Passage is not a fallback architecture. D-0143 remains historical mechanical/evidence lineage only. D-0179 continues to own bootstrap Transit capability. Restoration is a separate post-second-whistle concern and remains Closure B.
+
+v0.1.8.0 introduces no architectural or traffic-behaviour delta beyond the validated v0.1.7.1 state; this section records the checkpoint for owner canonicalisation.
+
+## v0.1.7.1 TEST amendment — D-0181 Legacy Authority Closure A
+
+Cooperative Passage now has one production architecture and one representation prerequisite:
+
+```text
+D-0146 Cooperative Passage
+        |
+valid cached TRANSIT_BASE?
+   |                 |
+  yes               no
+   |                 |
+assess/select      no Cooperative
+D-0146 Passage     Passage Candidate
+```
+
+There is no architecture-switching fallback from missing Transit evidence to configuration-conditioned Passage. `COMPACT_REQUIRED` / `RETAIN_CURRENT` are historical concepts and carry no live D-0146 authority. D-0143 TS015 Cooperative Passage remains repository lineage/mechanical donor evidence only and is not production-loaded.
+
+Closure A does not alter D-0179 configuration/restoration behavior after a valid D-0146 Passage is selected. Restoration symmetry is a separate Closure B.
+
 ## v0.1.7.0 canonical-candidate checkpoint — Job-Start Physical Capability Record
 
 D-0179 is field-supported across TS016, TS015, TS010S and TS009. The governing abstraction is now:

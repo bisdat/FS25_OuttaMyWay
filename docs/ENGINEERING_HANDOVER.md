@@ -1,3 +1,23 @@
+# Engineering handover — v0.1.8.0 CANONICAL CANDIDATE
+
+Owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files) remains canonical until explicit acceptance of this exact RRS-produced candidate fingerprint. v0.1.8.0 carries the live-validated v0.1.7.1 D-0181 behaviour unchanged.
+
+**Validated regression:** TS016 PASS, TS015 PASS, TS010S PASS, TS009 PASS in that order. Six pair completions settled successfully without hidden fallback/watchdog rescue. TS015 also completed its job and D-0147 terminal retreat/continuation successfully.
+
+**Authority checkpoint:** D-0146 alone owns production Cooperative Passage. No cached `TRANSIT_BASE` means no Cooperative Passage candidate. D-0143 remains historical donor/test evidence only. Do not restore configuration-conditioned fallback, `COMPACT_REQUIRED` / `RETAIN_CURRENT`, or a live D-0143 feature switch.
+
+**Next action after canonicalisation:** Closure B — make Restoration consume only the cached actuators actually changed by Passage — remains separate. Literal Provenance Audit continues after authority closure.
+
+# Engineering handover — v0.1.7.1 TEST — D-0181 Legacy Authority Closure A
+
+Start only from owner-declared v0.1.7.0 canonical. Closure A removes two superseded production authorities without changing normal D-0146 Passage behavior: (1) no cached `TRANSIT_BASE` means no Cooperative Passage Candidate; (2) D-0143 TS015 Cooperative Passage is historical donor/test evidence only and is not sourced/assessed/published/executed by production.
+
+**Primary regression:** TS016 → TS015 → TS010S → TS009. Expect the same successful D-0179 configuration and Passage behavior as canonical v0.1.7.0. A difference in normal Passage behavior is a regression, not an intended consequence of closure.
+
+**Bench discriminator:** a fixture without complete cached Transit geometry must return no D-0146 Passage plan; it must never produce `LEGACY_CONFIGURATION_CONDITIONED`, `COMPACT_REQUIRED` or `RETAIN_CURRENT`.
+
+**Do not widen:** post-second-whistle restoration remains inherited and is the separately agreed Closure B. Do not tune the remaining live literal families during this field validation.
+
 # Engineering handover — v0.1.7.0 CANONICAL CANDIDATE
 
 Owner-declared v0.1.6.0 remains canonical until explicit acceptance of this exact candidate fingerprint. v0.1.7.0 carries the live-validated v0.1.6.5 D-0179 behaviour unchanged.

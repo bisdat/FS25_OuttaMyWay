@@ -1,3 +1,28 @@
+## v0.1.8.0 CANONICAL CANDIDATE — D-0181 responsibility checkpoint
+
+| Concern | Owner | Candidate responsibility |
+|---|---|---|
+| Production Cooperative Passage | D-0146 | Sole live Passage architecture |
+| Transit geometry sufficiency | Representation + LocalPassagePlanner | Valid cached `TRANSIT_BASE` required; otherwise no Candidate |
+| Historical D-0143 | Repository history/tests | Mechanical/evidence donor only; no runtime authority |
+| Transit capability | D-0179 Representation bootstrap | Cached selected-runtime Physical Capability Record, unchanged |
+| Passage request/settlement | Cooperative Passage Control | D-0179 cached-actuator behavior unchanged |
+| Restoration | Existing inherited restoration path | Explicitly deferred to Closure B |
+| Canonical authority | Repository owner | v0.1.8.0 remains non-canonical until exact fingerprint acceptance |
+
+## v0.1.7.1 TEST — D-0181 authority closure
+
+| Concern | Current owner | Closure-A responsibility |
+|---|---|---|
+| Cooperative Passage representation prerequisite | `AssemblyRepresentationCache` + `LocalPassagePlanner` | Cached `TRANSIT_BASE` required; absence fails closed |
+| Cooperative Passage Candidate | D-0146 `LocalPassagePlanner` / `LiveTrafficCandidateSupport` | Single production Candidate architecture |
+| Cooperative Passage execution | `CooperativePassageControl` | D-0146 / `TRANSIT_REQUIRED` only |
+| D-0143 TS015 Passage | Historical donor/test evidence | No production load, assessment, Candidate, switch or Control authority |
+| Missing Transit evidence | Candidate boundary | No fallback architecture; no Passage Candidate |
+| Post-passage restoration | inherited configuration authority | **Unchanged in Closure A**; Bootstrap–Restoration Bypass remains Closure B |
+| D-0143 literal family | retired with runtime owner | Do not tune obsolete values |
+| D-0146 Hold/heartbeat literals | D-0146 Control | Existing 0.25 km/h / 1000 ms values retained pending Literal Audit |
+
 ## v0.1.7.0 CANONICAL CANDIDATE — D-0179 responsibility checkpoint
 
 | Concern | Owner | Candidate responsibility |

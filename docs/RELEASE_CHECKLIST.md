@@ -1,3 +1,16 @@
+## v0.1.8.0 canonical-candidate scope gate — D-0181 Legacy Authority Closure A
+
+- [x] Exact source authority is owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; Git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files).
+- [x] Behavioural source is the exact field-validated v0.1.7.1 D-0181 implementation.
+- [x] Candidate preparation changes release identity/provenance/documentation only; no traffic/control algorithm is intentionally changed.
+- [x] D-0146 is the sole production Cooperative Passage architecture; missing cached `TRANSIT_BASE` fails closed.
+- [x] D-0143 runtime authority and configuration-conditioned fallback remain retired.
+- [x] Field evidence records TS016, TS015, TS010S and TS009 all PASS; six second whistles and six successful Passage settlements; TS015 Terminal Exit also PASS.
+- [x] Restoration remains unchanged and explicitly deferred to Closure B.
+- [ ] Exact RRS candidate/evidence production passes with zero blockers and deterministic byte-identical candidate rebuild.
+- [ ] Exact candidate ZIP fingerprint reviewed and explicitly accepted by repository owner.
+- [ ] Owner records local canonical ZIP/Git provenance after acceptance.
+
 ## v0.1.7.0 canonical-candidate scope gate
 
 - [x] Source authority is owner-declared v0.1.6.0 canonical SHA-256 `dd17f654c73a0941617e49365cc58271f5d09d958e64f1faa235d6eca24141af`, Git `76eab8225bf400d5c168d8e57d6f7ad0c1dfe6a1`, 317 files.

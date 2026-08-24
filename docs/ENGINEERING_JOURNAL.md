@@ -1,3 +1,13 @@
+# v0.1.8.0 CANONICAL CANDIDATE — D-0181 validation and promotion
+
+**Observation:** owner ran v0.1.7.1 in order TS016 → TS015 → TS010S → TS009 and reported all PASS. Log review supports the observation.
+
+**Passage evidence:** six D-0146 second-whistle completions and six `COOPERATIVE_PASSAGE_SETTLED` successes; no Transit Fold Settlement Exhaustion, configuration watchdog, Passage watchdog or player-intervention rescue.
+
+**Terminal regression:** TS015 was allowed to run through job completion and D-0147 Terminal Exit / Bounded Infield Retreat completed successfully, providing useful non-Passage regression evidence.
+
+**Decision:** D-0181 Closure A is validated. Promote exact v0.1.7.1 behaviour to v0.1.8.0 canonical candidate without behavioural change; Closure B remains separate.
+
 # v0.1.7.0 CANONICAL CANDIDATE — D-0179 field validation and promotion
 
 **Observation:** the owner reported a perfect v0.1.6.5 run in order TS016 → TS015 → TS010S → TS009. Log review supports all four observations.

@@ -1,3 +1,19 @@
+# Current project state — v0.1.8.0 CANONICAL CANDIDATE
+
+Owner-declared v0.1.7.0 canonical (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files) remains canonical pending explicit owner review. v0.1.8.0 promotes the exact live-validated v0.1.7.1 D-0181 behaviour with release/provenance identity only; no further traffic/control behaviour is introduced.
+
+D-0181 closes superseded Passage authority: D-0146 is the single production architecture and fails closed without cached Transit Base geometry; D-0143 TS015 Passage is historical donor/test evidence only. D-0179 Job-Start Physical Capability Record remains unchanged.
+
+Field evidence: TS016, TS015, TS010S and TS009 all passed; six Passage commitments settled successfully with no hidden rescue. TS015 additionally completed the job and successfully exercised D-0147 Terminal Exit.
+
+---
+
+# Current project state — v0.1.7.1 TEST — D-0181 Legacy Authority Closure A
+
+Owner-declared **v0.1.7.0 is canonical** (`ab414f68c29b27a1b350c3e19480dbc69e1b3a1e97824b25db430fd270194a0c`; Git `fd3ac332f1a7ba7e501d1e19370b082728bd1fc2`; 317 files).
+
+v0.1.7.1 closes superseded Cooperative Passage authority: D-0146 now fails closed without cached Transit Base geometry, and D-0143 TS015 Passage is historical donor/test evidence only. Normal D-0179 Transit-first behavior is intended to remain byte-behaviorally equivalent for supported fixtures. Restoration is deliberately deferred to Closure B.
+
 # Current project state — v0.1.7.0 CANONICAL CANDIDATE
 
 Owner-declared v0.1.6.0 remains canonical pending explicit review. v0.1.7.0 promotes the exact live-validated v0.1.6.5 D-0179 behaviour with release/provenance identity only; no further traffic/control behaviour is introduced.

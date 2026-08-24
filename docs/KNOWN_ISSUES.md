@@ -1,3 +1,21 @@
+# v0.1.8.0 CANONICAL CANDIDATE — known issues / explicit validation boundary
+
+- No blocking D-0181 defect is known in the current four-scenario Cooperative Passage regression.
+- Configuration-conditioned Passage and D-0143 live runtime authority are retired; do not reintroduce them as fallback convenience.
+- **Bootstrap–Restoration Bypass remains open:** outbound Transit consumes cached D-0179 actuators while restoration still uses inherited generic configuration machinery. This is Closure B, not part of v0.1.8.0.
+- Transit Fold Settlement Exhaustion remains a bounded fail-safe and was not exercised in the successful v0.1.7.1 field run.
+- Literal Provenance Audit remains open for surviving live owners; D-0143-only manoeuvre literals retired with D-0143.
+- Parked work remains separate: TS010 terminal completion/locality, agronomic debt, assembly/agronomy capability expansion, restoration/orientation, and evidence-driven optimisation review.
+
+# v0.1.7.1 TEST — known issues / explicit validation boundary
+
+- Closure A is bench-valid but not yet field-validated. Regress TS016, TS015, TS010S and TS009 against v0.1.7.0 behavior.
+- Missing cached `TRANSIT_BASE` now deliberately yields **no Cooperative Passage Candidate**; no legacy configuration-conditioned rescue is permitted.
+- D-0143 TS015 runtime authority is retired. Historical source/test evidence remains and must not be re-sourced into production.
+- **Bootstrap–Restoration Bypass remains open:** outbound Transit uses cached D-0179 actuators, while restoration still uses inherited generic configuration machinery. This is explicitly Closure B, not part of v0.1.7.1.
+- Two values inherited from generic D-0143 naming remain live under D-0146 ownership without tuning: 0.25 km/h Hold-effect threshold and 1000 ms heartbeat. They remain eligible for the continuing Literal Provenance Audit.
+- Parked work remains separate: TS010 terminal completion/locality, agronomic debt, finishing orientation/straight-reverse restoration, broader assembly×agronomy capability, and remaining literals/performance review.
+
 # v0.1.7.0 CANONICAL CANDIDATE — known issues / explicit validation boundary
 
 - No blocking D-0179 defect is known in the current four-scenario Cooperative Passage regression: TS016, TS015, TS010S and TS009 passed v0.1.6.5.
