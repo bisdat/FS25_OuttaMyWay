@@ -1,3 +1,34 @@
+## v0.1.14.0 CANONICAL CANDIDATE checkpoint — validated D-0194/D-0195/D-0196
+
+D-0147 now owns finite **Double Courtesy**. First positive Terminal Occupancy may perform one centroid-directed Interior Settlement. Only positive Continuation Renewal plus a later positively attributed obstruction may authorise one Final Boundary Settlement. Stage 2 is a single outer-boundary ray away from the authorising productive occupancy; the completed compact footprint remains inside the Field World and the complete straight sweep must clear that worker's current positive physical occupancy. After the second successful courtesy the episode is exhausted for automatic relocation. There is no third move, alternate-edge search, route planner or permanent-parking claim. D-0195 defines pre-Axis-Return Assembly Axis Settlement by captured working axis/member-heading evidence, not reproduction of the Phase-5 articulation pose.
+
+## v0.1.13.3 TEST checkpoint — D-0196 Protected-Occupancy Boundary Settlement
+
+D-0194 **Double Courtesy** remains the governing terminal hypothesis, refined by D-0196. Stage 1 remains one centroid Interior Settlement under the D-0147 Courtesy Constraint Exception. After Continuation Renewal and a later positively attributed obstruction, Stage 2 is one **Protected-Away Final Boundary Settlement**: derive the fixed bearing away from the current authorising productive occupancy, intersect that ray with the outer Field World boundary, reduce progress so the completed compact footprint remains inside, and positively prove the complete straight translated compact footprint stays clear of current protected positive physical occupancy. Protected Yield Hold alone is not clearance evidence. If this one Stage-2 move is unsupported, do not search another destination; courtesy exhausts/fails closed. There is no third move.
+
+## v0.1.13.2 TEST checkpoint — D-0195 Assembly Axis Settlement
+
+D-0195 corrects the Phase-8A evidence contract without changing the D-0192 Axis Return purpose. The **captured Phase-5 axis and longitudinal execution-origin station** remain authoritative. The complete captured member pose does not: it may contain transient articulation from GIANTS native manoeuvring.
+
+**Assembly Axis Settlement:** before straight Axis Return, the participant vehicle is back on and facing along its captured working axis; observed selected physical assembly members have settled heading-parallel/anti-parallel to that axis. Fixed lateral offsets (for example side-mounted implements) are not debt and are not required to reproduce their Phase-5 translation. This is the minimum state required by the architectural promise “reverse straight on the original axis.”
+
+D-0194 Two-Stage Terminal Courtesy remains unchanged beneath this checkpoint and still awaits field validation because the first D-0194 run failed earlier in Cooperative Passage.
+
+## v0.1.13.1 TEST checkpoint — D-0194 Two-Stage Terminal Courtesy
+
+D-0194 changes only D-0147 terminal courtesy after the field-validated v0.1.13.0 Passage/Axis-Return checkpoint. Canonical TS010 proved **Courtesy Distance Saturation**: the historical 60 m inward calibration was functioning as a minimum required retreat, so a completed assembly only ~38 m from the centroid exhausted D-0147 without moving. The same field layout shows why one central move cannot be treated as permanent settlement.
+
+**Double Courtesy is now the governing TEST hypothesis:**
+
+1. **Interior Settlement:** first positive Terminal Occupancy obstruction -> supported compaction -> one fixed bearing to the immutable Field World centroid -> translate by the currently derived centroid distance. The centroid is now the first courtesy destination, not merely a directional reference. No fixed movement-distance literal and no large-field cap are introduced in this TEST.
+2. **Continuation Renewal:** unchanged. The authorising productive worker must resume positive GIANTS-owned physical progression; only a later native block positively attributed to the same completed assembly re-arms D-0147.
+3. **Final Boundary Settlement:** the second positively admitted obstruction chooses the nearest outer-boundary point from the completed assembly's current centre. Candidate derives one fixed direction and the maximum endpoint translation that keeps the current represented compact DISC footprint inside the Field World. This is a final courtesy destination, not parking search.
+4. **Courtesy Exhaustion:** successful Final Boundary Settlement exhausts automatic D-0147 relocation for that completed Job Episode. There is no third move, alternate-boundary search or safe-parking loop.
+
+Protected Yield, Player Claim, source-reactivation precedence, native-max forward translation, fixed-direction/no-point-pursuit control, actuation neutralisation and watchdog fail-safes remain. A large-field cap for Interior Settlement is explicitly deferred until Reality shows the uncapped centroid move is excessive. If implementation begins demanding route planning or parking-search machinery, D-0194 is to be parked rather than expanded.
+
+**Supersession note:** historical sections below accurately describe the evolution of Bounded Infield Retreat, 60 m calibration and centre-based Courtesy Exhaustion, but those magnitude/exhaustion semantics are superseded by D-0194 for v0.1.13.1 TEST.
+
 ## v0.1.13.0 canonical-candidate checkpoint — D-0192 Bounded Axis Return
 
 D-0192 changes **only post-Passage Recovery and handback**. The proven v0.1.12.0 D-0146 phases from Identify through the canonical Passage guide remain governing, including the historical 80 m locality and D-0155 Regulation behaviour. v0.1.12.4 field validation passed TS009, TS010S, TS015 and TS016; v0.1.13.0 promotes those exact behavioural bytes with release/documentation changes only.
@@ -314,7 +345,7 @@ For the v0.1.3.3 experiment, a bootstrap-cached GIANTS `vehicle.base.size` envel
 **Decision:** D-0147 is a deliberately exceptional, player-consented courtesy capability. Its only objective is to buy useful time while a genuinely completed assembly remains **Pending Player Reclamation**. It is not a general autonomous manoeuvre planner and is not responsible for proving final settlement.
 
 ### D-0147 Courtesy Constraint Exception
-For a D-0147 **Bounded Infield Retreat**, the generic physical Candidate requirements `FIELD_WORLD_CONTAINMENT` and `TRANSITION_CLEARANCE` are **not applicable as predictive proof obligations**. The fixed one-shot Field World centroid bearing is a crude directional heuristic; the representation does not prove the complete swept assembly stays within the polygon or clears every third-party assembly. The Candidate must therefore record an explicit exception, not synthetic PASS evidence.
+For D-0147 **Interior Settlement**, generic predictive `FIELD_WORLD_CONTAINMENT` and complete-envelope `TRANSITION_CLEARANCE` remain **not applicable as predictive proof obligations** under the Courtesy Constraint Exception. D-0196 narrows that exception for **Final Boundary Settlement** only: endpoint containment is derived for the completed compact footprint and the one deterministic straight translation must positively clear the authorising productive worker's current physical occupancy. This is current-obstruction safety, not future-demand exclusion or parking proof.
 
 This exception is narrowly scoped to player-consented bounded buy-time movement. It does **not** relax: Terminal Yield Consent; genuine Pending Player Reclamation state; positive current obstruction/admission; POST_JOB/PROGRESS authority ownership; Protected Yield of the authorising productive worker; Player Claim and source-reactivation supersession; bounded movement/Courtesy Exhaustion; Continuation Renewal before repetition; or mandatory Actuation Neutralisation before authority release.
 

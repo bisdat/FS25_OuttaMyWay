@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.1.13.0 CANONICAL CANDIDATE — field-validated D-0192 Bounded Axis Return.
+-- FS25_OuttaMyWay v0.1.14.0 CANONICAL CANDIDATE — validated D-0194/D-0195/D-0196 terminal courtesy.
 -- Situation/Decision/Commitment admission semantics remain inherited; Control magnitude is now elastic.
 -- D-0147 now implements the agreed optional Bounded Infield Retreat courtesy hypothesis while retaining the validated v4.7.120 mechanical actuator substrate.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.1.13.0"
+OuttaMyWay.VERSION = "0.1.14.0"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -208,7 +208,7 @@ OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.1.13.0 CANONICAL CANDIDATE — BOUNDED AXIS RETURN"
+OuttaMyWay.BUILD_LABEL = "0.1.14.0 CANONICAL CANDIDATE — DOUBLE COURTESY"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720
@@ -230,11 +230,14 @@ OuttaMyWay.D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0
 -- Governing architecture treats it as Terminal Yield Consent; an eventual player-facing release should
 -- require explicit opt-in/default-off because D-0147 is best-effort courtesy behaviour.
 OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS = true
--- v4.7.127 preserves the live-validated v4.7.126 D-0147 courtesy calibration unchanged. This does not claim clearance or settlement;
--- it bounds one admitted infield retreat to 60 m of realised progress toward the immutable
--- Field World centroid. Translation uses the vehicle motor's native maximum forward speed.
--- A later retreat still requires Continuation Renewal plus a later attributed native block.
-OuttaMyWay.TERMINAL_INFIELD_RETREAT_DISTANCE_M = 60.0
+-- D-0194 Two-Stage Terminal Courtesy removes the historical 60 m movement calibration.
+-- First courtesy: one fixed-direction move to the immutable Field World centroid.
+-- After Continuation Renewal and a later attributed native block, one final fixed-direction
+-- move follows the single outer-boundary ray away from the authorising productive occupancy.
+-- The compact completed footprint must stay inside the Field World and the straight translation
+-- must be clear of that productive worker's current positive physical occupancy. Unsupported
+-- Stage 2 exhausts without alternate-boundary search. No third automatic relocation exists. Large-field centre
+-- distance remains deliberately uncapped in this TEST so Reality can establish whether a cap is needed.
 OuttaMyWay.TERMINAL_EGRESS_COMPACTION_TIMEOUT_MS = 25000 -- watchdog only; not policy authority
 OuttaMyWay.TERMINAL_EGRESS_MOVE_TIMEOUT_MS = 45000 -- watchdog only; one bounded retreat
 

@@ -1,3 +1,39 @@
+# v0.1.14.0 canonical-candidate promotion — terminal Reality closure
+
+**Observe:** v0.1.13.1 exposed a latent Phase-8A articulation-baseline defect; v0.1.13.2 reached terminal completion and validated Stage 1 but bulldozed the held mower during nearest-boundary Stage 2; v0.1.13.3 used one protected-away, occupancy-clear boundary translation and completed the full Double Courtesy sequence.
+
+**Validate:** final TS010 log records two courtesy starts, Interior Settlement success, Continuation Renewal, Final Boundary Settlement success and Double Courtesy exhaustion, with no failed-held/player-escalation/runtime-error evidence. Video agrees.
+
+**Record:** promote exact v0.1.13.3 behaviour. Stop refinement here unless future Reality demonstrates a concrete defect; do not grow parking/search machinery.
+
+# v0.1.13.3 TEST — D-0196 Protected-Occupancy Boundary Settlement
+
+**Observe:** TS010 reached terminal completion. Interior Settlement worked. After Continuation Renewal, Final Boundary Settlement selected a contained nearest-edge target but physically bulldozed the held mower outside the field.
+
+**Interpret:** endpoint Field World containment solved only the completed assembly's boundary problem. Protected Yield did not prove transition clearance against the worker being protected.
+
+**Decision:** one final bounded attempt only: ray away from authorising productive occupancy, target clipped by completed-footprint containment, and continuous current protected-occupancy clearance as a hard veto. No search after veto.
+
+# v0.1.13.2 TEST — D-0195 Assembly Axis Settlement
+
+**Observe:** v0.1.13.1 TS010 did not exercise D-0194. MT665 consumed repeated Phase-8A runout and failed at the Field World boundary while trying to satisfy member lateral translation equality.
+
+**Discuss:** the implementation had conflated the Phase-5 execution pose with the desired post-Passage alignment state. A trailer may be angled at Phase 5; asking forward runout to recreate that angle is contrary to the subsequent straight-reverse requirement.
+
+**Hypothesis:** require only the physical state needed by 8B: captured-axis vehicle alignment plus whole-member heading settlement. Ignore legitimate fixed side offsets. Reuse existing tolerances; introduce no new geometry model.
+
+**Validate:** bench must reject an angled trailer, accept the same assembly once trailer heading settles while a side implement remains laterally offset, and preserve Axis-Return alignment-loss fallback. Field validation is one further TS010 run.
+
+# v0.1.13.1 TEST — D-0194 Two-Stage Terminal Courtesy
+
+**Observe:** fresh canonical TS010 log/video shows D-0147 admission and Protected Yield succeed, but no completed-worker movement occurs. The terminal spreader is ~38 m from the centroid and the 60 m retreat calibration immediately triggers `COURTESY_EXHAUSTED_AT_FIELD_CENTRE`. The remaining mower's repeated up/down work means a central relocation should be treated as temporary courtesy, not safe parking.
+
+**Discuss / decide:** do not tune 60 -> 40 or invent a safe parking search. Remove the magnitude literal. First obstruction moves once to the centroid. If continuation later renews and the same terminal assembly positively blocks the active worker again, make one final move toward the nearest outer boundary, stopping the represented compact footprint inside the polygon. Then stop helping automatically: no third chance. Large-field centre cap remains a future evidence question.
+
+**Implement:** add episode-level courtesy count, stage-specific Candidate objectives, direct polygon/compact-DISC endpoint containment for final boundary settlement, generic fixed-direction station-progress Control, and final exhaustion after stage 2. Existing D-0147 compaction, Protected Yield, Player Claim, neutralisation and watchdog ownership are retained.
+
+**Validate:** source structural 100/100 PASS; replacement-core Lua 273/273 PASS. Field Reality pending.
+
 # v0.1.13.0 CANONICAL CANDIDATE — D-0192 field closure / D-0193 Literal-Audit Reality Reconciliation
 
 **Observe:** v0.1.12.4 was run through TS009, TS010S, TS015 and TS016. Owner observed all four PASS. The supplied combined log independently records 4 successful Cooperative Passage settlements, 8/8 whole-assembly return staging admissions, 8/8 Axis Return starts/completions, 8 participant wave-ons and 4 pair-context dissolutions. No Axis-Return abort/skip/wait-exhaustion or restoration exhaustion occurred. TS016 S416 explicitly uses captured-axis-only reverse with point-seeking disabled and completes normally; TS010S shows D-0155 Regulation remains present after the canonical reset.

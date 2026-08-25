@@ -1,3 +1,15 @@
+# v0.1.14.0 current terminal terminology
+
+**Double Courtesy** — finite D-0147 lifecycle granting at most two automatic relocations to one completed Job Episode: one Interior Settlement, then after positive Continuation Renewal and a later positively attributed obstruction one Final Boundary Settlement. No third automatic relocation exists.
+
+**Interior Settlement** — first terminal courtesy: one fixed centroid-directed translation intended to remove the completed assembly from its terminal headland position and buy productive continuation. It is not permanent parking. No large-field distance cap is currently asserted.
+
+**Final Boundary Settlement** — second and final courtesy: one fixed translation to the first outer-boundary intersection on the ray away from the authorising productive occupancy, shortened so the completed compact footprint remains inside the Field World. Its complete straight sweep must clear that worker's current positive physical occupancy. No alternate boundary is searched.
+
+**Courtesy Exhaustion** — automatic D-0147 relocation authority is exhausted after the second successful courtesy, or when the single supported Stage-2 move cannot be positively established. Exhaustion does not authorise a third attempt or parking search.
+
+**Protected Yield Is Not Clearance** — a zero-speed Hold protects the productive worker's motion authority; it does not make the physical space currently occupied by that worker available to the relocating completed assembly.
+
 # v4.7.128 candidate terminology status
 
 No terminology change from the v4.7.127 audit closure. The current D-0147 glossary addendum below remains governing for this candidate.
@@ -6,7 +18,7 @@ No terminology change from the v4.7.127 audit closure. The current D-0147 glossa
 
 # v4.7.127 D-0147 current glossary addendum
 
-**D-0147 Courtesy Constraint Exception** — explicit architecture declaration that the player-consented Bounded Infield Retreat is not required to positively prove generic predictive `FIELD_WORLD_CONTAINMENT` or complete-envelope `TRANSITION_CLEARANCE`. The exception is limited to D-0147's bounded buy-time movement and does not weaken normal Candidate constraints or D-0147 consent/authority/safety/lifecycle requirements.
+**D-0147 Courtesy Constraint Exception** — explicit architecture declaration that player-consented Interior Settlement is not required to positively prove generic predictive `FIELD_WORLD_CONTAINMENT` or complete-envelope `TRANSITION_CLEARANCE`. D-0196 narrows the exception for Final Boundary Settlement: that one move must positively clear the authorising productive worker's current physical occupancy, without claiming future-demand exclusion, routing or parking safety.
 
 **Bounded Infield Retreat** — one crude forward-only post-job courtesy manoeuvre using a single Field World-centre bearing captured at admission. Current calibration is 60 m of realised inward progress at the vehicle's native maximum forward speed. The centre is a directional reference, not a refuge/destination.
 

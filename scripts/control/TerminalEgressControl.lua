@@ -1,8 +1,7 @@
--- FS25_OuttaMyWay v0.1.0.0 CANONICAL CANDIDATE — D-0147 Bounded Infield Retreat; behaviour inherited unchanged from canonical v4.7.128.
--- Legacy module naming is retained to minimise plumbing change. Control executes only
--- supported compaction OR one Candidate-supplied fixed Infield Alignment. The world
--- direction is captured once; driveInDirection() remains forward-only and receives no
--- continuous point-pursuit/course-correction updates.
+-- FS25_OuttaMyWay v0.1.14.0 CANONICAL CANDIDATE — validated D-0194/D-0195/D-0196 terminal courtesy control.
+-- Legacy module naming remains to minimise plumbing change. Each admitted courtesy move
+-- uses one Candidate-supplied fixed world direction and a derived longitudinal progress
+-- target. driveInDirection() remains forward-only with no point pursuit/course correction.
 
 OuttaMyWay.TerminalEgressControl={}
 local Control=OuttaMyWay.TerminalEgressControl
@@ -165,12 +164,11 @@ function Control:executeControlRequest(request,candidate)
             return self:_rejectBeforeStart(request,bridge,"FAILED","INFIELD_RETREAT_OBJECTIVE_UNSUPPORTED:"..tostring(bridge.objectiveReason))
         end
         if objective.courtesyExhausted==true then
-            return self:_rejectBeforeStart(request,bridge,"FAILED","COURTESY_EXHAUSTED_AT_FIELD_CENTRE")
+            return self:_rejectBeforeStart(request,bridge,"FAILED","DOUBLE_COURTESY_ALREADY_EXHAUSTED")
         end
         if not tonumber(objective.infieldDirectionX) or not tonumber(objective.infieldDirectionZ)
-            or not tonumber(objective.fieldCentreX) or not tonumber(objective.fieldCentreZ)
-            or not tonumber(objective.initialDistanceToCentreM) or not tonumber(objective.retreatDistanceM) then
-            return self:_rejectBeforeStart(request,bridge,"FAILED","INFIELD_RETREAT_OBJECTIVE_INCOMPLETE:"..tostring(bridge.objectiveReason))
+            or not tonumber(objective.targetProgressM) or not tonumber(objective.targetX) or not tonumber(objective.targetZ) then
+            return self:_rejectBeforeStart(request,bridge,"FAILED","TERMINAL_COURTESY_OBJECTIVE_INCOMPLETE:"..tostring(bridge.objectiveReason))
         end
         local position=self.postJobAuthority:position(vehicle); if position==nil then return self:_rejectBeforeStart(request,bridge,"FAILED","POST_JOB_POSE_UNAVAILABLE") end
         local activityOk,activityContext=self.postJobAuthority:acquireVehicleActivityContext(vehicle)
@@ -181,17 +179,17 @@ function Control:executeControlRequest(request,candidate)
         state.activityContext=activityContext
         logInfo("VEHICLE_ACTIVITY_CONTEXT_ACQUIRED commitment=%s episode=%s assembly=%s acquireCalls=%d previousForceIsActive=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),self.postJobAuthority:getActivityContextAcquireCallCount(),tostring(activityContext.previousForceIsActive),steeringTelemetryText(activityContext.postAcquireSteering))
         state.infieldDirectionX=objective.infieldDirectionX; state.infieldDirectionZ=objective.infieldDirectionZ
-        state.fieldCentreX=objective.fieldCentreX; state.fieldCentreZ=objective.fieldCentreZ
-        state.initialDistanceToCentreM=objective.initialDistanceToCentreM
-        state.retreatDistanceM=objective.retreatDistanceM
-        state.completionDistanceToCentreM=objective.completionDistanceToCentreM or (state.initialDistanceToCentreM-state.retreatDistanceM)
+        state.startX=position.x; state.startZ=position.z
+        state.targetX=objective.targetX; state.targetZ=objective.targetZ
+        state.targetProgressM=objective.targetProgressM; state.retreatDistanceM=objective.retreatDistanceM or objective.targetProgressM
+        state.courtesyStage=tonumber(objective.courtesyStage) or 1; state.destinationKind=objective.destinationKind; state.objectiveKind=objective.objectiveKind
         local nativeMaxSpeedKmh,nativeMaxReason=self.postJobAuthority:maximumForwardSpeedKmh(vehicle)
         if nativeMaxSpeedKmh==nil then
             return self:_rejectBeforeStart(request,bridge,"FAILED","POST_JOB_NATIVE_MAX_SPEED_UNAVAILABLE:"..tostring(nativeMaxReason))
         end
         state.speedKmh=nativeMaxSpeedKmh
-        self:_publish(state,{status="MANOEUVRE_IN_PROGRESS",infieldDirectionX=state.infieldDirectionX,infieldDirectionZ=state.infieldDirectionZ,fieldCentreX=state.fieldCentreX,fieldCentreZ=state.fieldCentreZ,initialDistanceToCentreM=state.initialDistanceToCentreM,retreatDistanceM=state.retreatDistanceM,continuousCourseCorrection=false,settlement="BOUNDED_INFIELD_PROGRESS",speedPolicy="NATIVE_MAX_FORWARD"})
-        logInfo("INFIELD_RETREAT_STARTED commitment=%s episode=%s assembly=%s fixedDirection=(%.4f,%.4f) centre=(%.2f,%.2f) initialCentreDistance=%.2fm retreatAllowance=%.2fm speed=%.2fkmh speedPolicy=NATIVE_MAX_FORWARD alignment=%s continuousCourseCorrection=false",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),tonumber(state.infieldDirectionX) or 0,tonumber(state.infieldDirectionZ) or 0,tonumber(state.fieldCentreX) or 0,tonumber(state.fieldCentreZ) or 0,tonumber(state.initialDistanceToCentreM) or 0,tonumber(state.retreatDistanceM) or 0,tonumber(state.speedKmh) or 0,tostring(objective.alignmentMode))
+        self:_publish(state,{status="MANOEUVRE_IN_PROGRESS",courtesyStage=state.courtesyStage,destinationKind=state.destinationKind,infieldDirectionX=state.infieldDirectionX,infieldDirectionZ=state.infieldDirectionZ,targetX=state.targetX,targetZ=state.targetZ,targetProgressM=state.targetProgressM,continuousCourseCorrection=false,settlement=objective.settlement,speedPolicy="NATIVE_MAX_FORWARD"})
+        logInfo("TERMINAL_COURTESY_STARTED commitment=%s episode=%s assembly=%s stage=%d destination=%s fixedDirection=(%.4f,%.4f) target=(%.2f,%.2f) targetProgress=%.2fm speed=%.2fkmh speedPolicy=NATIVE_MAX_FORWARD alignment=%s continuousCourseCorrection=false",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),state.courtesyStage,tostring(state.destinationKind),tonumber(state.infieldDirectionX) or 0,tonumber(state.infieldDirectionZ) or 0,tonumber(state.targetX) or 0,tonumber(state.targetZ) or 0,tonumber(state.targetProgressM) or 0,tonumber(state.speedKmh) or 0,tostring(objective.alignmentMode))
         logInfo("STEERING_BASELINE commitment=%s episode=%s assembly=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),steeringTelemetryText(self.postJobAuthority:steeringTelemetry(vehicle)))
         return true,"MANOEUVRE_STARTED"
     end
@@ -231,14 +229,14 @@ function Control:update(dt)
             end
         end
         local position=self.postJobAuthority:position(vehicle); if position==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="POST_JOB_POSE_LOST"}); return end
-        local centreDistance=distanceTo(position.x,position.z,state.fieldCentreX,state.fieldCentreZ)
-        if centreDistance==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="FIELD_CENTRE_DISTANCE_UNAVAILABLE"}); return end
-        local inwardProgress=state.initialDistanceToCentreM-centreDistance
-        if inwardProgress>=state.retreatDistanceM or centreDistance<=state.completionDistanceToCentreM then
-            self:_complete("MANOEUVRE_COMPLETE",{kind="D0147_BOUNDED_INFIELD_RETREAT_COMPLETE",initialDistanceToCentreM=state.initialDistanceToCentreM,finalDistanceToCentreM=centreDistance,inwardProgressM=inwardProgress,retreatDistanceM=state.retreatDistanceM,fixedDirectionX=state.infieldDirectionX,fixedDirectionZ=state.infieldDirectionZ,continuousCourseCorrection=false,directDriveCalls=self.postJobAuthority:getDirectDriveCallCount()}); return
+        local dx,dz=position.x-state.startX,position.z-state.startZ
+        local realisedProgress=dx*state.infieldDirectionX+dz*state.infieldDirectionZ
+        local targetDistance=distanceTo(position.x,position.z,state.targetX,state.targetZ)
+        if realisedProgress>=state.targetProgressM then
+            self:_complete("MANOEUVRE_COMPLETE",{kind=state.courtesyStage==2 and "D0147_FINAL_BOUNDARY_SETTLEMENT_COMPLETE" or "D0147_INTERIOR_SETTLEMENT_COMPLETE",courtesyStage=state.courtesyStage,destinationKind=state.destinationKind,targetX=state.targetX,targetZ=state.targetZ,targetProgressM=state.targetProgressM,realisedProgressM=realisedProgress,finalTargetDistanceM=targetDistance,fixedDirectionX=state.infieldDirectionX,fixedDirectionZ=state.infieldDirectionZ,continuousCourseCorrection=false,directDriveCalls=self.postJobAuthority:getDirectDriveCallCount()}); return
         end
         if elapsed>(tonumber(OuttaMyWay.TERMINAL_EGRESS_MOVE_TIMEOUT_MS) or 45000) then
-            self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="ONE_RETREAT_WATCHDOG_EXPIRED",initialDistanceToCentreM=state.initialDistanceToCentreM,currentDistanceToCentreM=centreDistance,inwardProgressM=inwardProgress}); return
+            self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="ONE_TERMINAL_COURTESY_WATCHDOG_EXPIRED",courtesyStage=state.courtesyStage,destinationKind=state.destinationKind,targetProgressM=state.targetProgressM,realisedProgressM=realisedProgress,currentTargetDistanceM=targetDistance}); return
         end
         local ok,result=self.postJobAuthority:driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)
         if not ok then
@@ -254,7 +252,7 @@ function Control:update(dt)
             logInfo("INFIELD_ALIGNMENT_ACTUATION commitment=%s episode=%s assembly=%s localDirection=(%.4f,%.4f) headingErrorDeg=%.2f steeringAngleLimitDeg=%.2f fixedWorldDirection=(%.4f,%.4f)",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),tonumber(result.localDirectionX) or 0,tonumber(result.localDirectionZ) or 0,tonumber(result.headingErrorDeg) or 0,tonumber(result.steeringAngleLimitDeg) or 0,tonumber(state.infieldDirectionX) or 0,tonumber(state.infieldDirectionZ) or 0)
             logInfo("STEERING_COMMAND_STATE commitment=%s episode=%s assembly=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),steeringTelemetryText(result.postCommandSteering))
         end
-        self:_publish(state,{status="MANOEUVRE_IN_PROGRESS",infieldDirectionX=state.infieldDirectionX,infieldDirectionZ=state.infieldDirectionZ,fieldCentreX=state.fieldCentreX,fieldCentreZ=state.fieldCentreZ,currentDistanceToCentreM=centreDistance,inwardProgressM=inwardProgress,retreatDistanceM=state.retreatDistanceM,continuousCourseCorrection=false,directDriveCalls=self.postJobAuthority:getDirectDriveCallCount(),directionEvidence=result})
+        self:_publish(state,{status="MANOEUVRE_IN_PROGRESS",courtesyStage=state.courtesyStage,destinationKind=state.destinationKind,infieldDirectionX=state.infieldDirectionX,infieldDirectionZ=state.infieldDirectionZ,targetX=state.targetX,targetZ=state.targetZ,targetProgressM=state.targetProgressM,realisedProgressM=realisedProgress,currentTargetDistanceM=targetDistance,continuousCourseCorrection=false,directDriveCalls=self.postJobAuthority:getDirectDriveCallCount(),directionEvidence=result})
     end
 end
 function Control:loadMap() self.active=nil; self.latestObservation=nil; self.configurationAuthority:clearAll() end

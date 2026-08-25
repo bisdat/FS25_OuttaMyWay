@@ -1,3 +1,46 @@
+FS25_OuttaMyWay v0.1.14.0 CANONICAL CANDIDATE — D-0194/D-0195/D-0196 DOUBLE COURTESY
+
+Validated behavioural source: v0.1.13.3 TEST
+SHA-256: 6d805f7735f54fb1a6cb79209cf4d42f415c6d0e5a0035963509d55c6353f1d4
+Files: 263
+Authoritative canonical parent: v0.1.13.0
+Canonical SHA-256: 9bfd77d6c9de44c27caa2023dd86ed146592be697c68390076e1a641252876ce
+Canonical Git: f279516c669a335fae7f0a8db2a8f8c58fd2f78b
+
+v0.1.14.0 promotes the exact field-validated v0.1.13.3 behaviour with no new traffic/control algorithm.
+
+D-0194 replaces the historical fixed 60 m terminal courtesy with finite Double Courtesy: one centroid Interior Settlement, then after positive Continuation Renewal and a later attributable obstruction one final boundary settlement, then no third automatic relocation. D-0195 defines Phase-8A Assembly Axis Settlement rather than reproduction of a captured articulated pose. D-0196 makes the final boundary move one protected-away straight translation whose compact sweep must clear the authorising productive worker's current positive occupancy; no alternate boundary or parking search exists.
+
+Final TS010 validation records both courtesy moves succeeding, positive Continuation Renewal between them, final Double Courtesy exhaustion, and no OuttaMyWay failure/player-escalation/runtime-error evidence. The video confirms the second move no longer bulldozes the protected mower outside the field.
+
+D-0192 Bounded Axis Return, D-0193 Literal-Audit Reality Reconciliation and canonical Cooperative Passage Phases 1–7 remain unchanged.
+
+Candidate validation and deterministic RRS repeat-build identity are required before canonical review.
+
+FS25_OuttaMyWay v0.1.13.3 TEST — D-0196 PROTECTED-OCCUPANCY BOUNDARY SETTLEMENT
+
+Direct continuation of v0.1.13.2 TEST over owner-declared v0.1.13.0 canonical.
+
+D-0196 changes only the second/final D-0194 terminal courtesy. After Continuation Renewal, Final Boundary Settlement takes one outer-boundary ray away from the authorising productive worker and is admitted only if the completed compact assembly's straight sweep is clear of that worker's current positive physical occupancy. If unsupported, no alternate boundary is searched and no third courtesy exists.
+
+D-0195 Assembly Axis Settlement, D-0192 Passage/Axis Return, Phases 1–7, Stage-1 centroid Interior Settlement and the existing terminal failsafes are unchanged.
+
+FS25_OuttaMyWay v0.1.13.2 TEST — D-0195 ASSEMBLY AXIS SETTLEMENT + D-0194 DOUBLE COURTESY
+
+Authoritative baseline: owner-declared v0.1.13.0 canonical, SHA-256 9bfd77d6c9de44c27caa2023dd86ed146592be697c68390076e1a641252876ce, Git f279516c669a335fae7f0a8db2a8f8c58fd2f78b. Implementation parent: v0.1.13.1 TEST SHA-256 70a7f00ba8c8667f6cfe3e2fdc082fd92a9db921bacc218ef6e237f1161aadff.
+
+D-0195 corrects Phase-8A: Recovery no longer tries to recreate the Phase-5 member-by-member articulated pose. Before straight Axis Return, the vehicle must regain the captured working axis and the complete observed assembly must settle heading-parallel/anti-parallel to that axis; fixed side offsets are permitted. Existing 0.50 m / 0.995 tolerances are reused.
+
+D-0194 remains unchanged: first terminal obstruction -> centroid Interior Settlement; renewed obstruction -> one Final Boundary Settlement; then no third automatic courtesy.
+
+FS25_OuttaMyWay v0.1.13.1 TEST — D-0194 TWO-STAGE TERMINAL COURTESY
+
+Authoritative baseline: owner-declared v0.1.13.0 canonical, SHA-256 9bfd77d6c9de44c27caa2023dd86ed146592be697c68390076e1a641252876ce, Git f279516c669a335fae7f0a8db2a8f8c58fd2f78b.
+
+D-0194 tests Double Courtesy for completed-worker Terminal Occupancy. First obstruction: centroid Interior Settlement. After Continuation Renewal and a later attributed native block: one Final Boundary Settlement to the nearest outer edge while keeping the represented compact footprint inside the Field World. Then automatic courtesy is exhausted; no third move. The old 60 m retreat literal is removed rather than retuned. No large-field cap, safe-parking search or route planner is introduced in this TEST.
+
+Cooperative Passage / D-0192 Axis Return remain the field-validated v0.1.13.0 baseline behaviour.
+
 FS25_OuttaMyWay v0.1.13.0 CANONICAL CANDIDATE — D-0192 BOUNDED AXIS RETURN
 
 Validated behavioural source: v0.1.12.4 TEST

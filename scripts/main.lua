@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.13.0 CANONICAL CANDIDATE — field-validated D-0192 Bounded Axis Return.
+-- FS25_OuttaMyWay v0.1.14.0 CANONICAL CANDIDATE — validated D-0194/D-0195/D-0196 terminal courtesy.
 -- modDesc.xml loads only this file. Retired implementation is preserved by repository history, not shipped runtime source.
 local modDirectory=g_currentModDirectory or ""
 local modules={

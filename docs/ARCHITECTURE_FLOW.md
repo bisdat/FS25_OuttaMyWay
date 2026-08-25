@@ -1,3 +1,33 @@
+# v0.1.14.0 current D-0147 Double Courtesy flow
+
+```text
+GIANTS Job Episode ends
+        ↓
+positive Terminal Occupancy + consent
+        ↓
+Stage 1 Interior Settlement → Field World centroid
+        ↓
+release Protected Yield
+        ↓
+positive Continuation Renewal?
+   ├─ no → no second courtesy authority
+   └─ yes
+        ↓
+later positively attributed obstruction?
+   ├─ no → passive
+   └─ yes
+        ↓
+Stage 2 Final Boundary Settlement
+   - one ray away from authorising productive occupancy
+   - completed compact footprint contained at endpoint
+   - complete straight sweep clear of current protected occupancy
+   - unsupported → fail/exhaust; no search
+        ↓
+DOUBLE_COURTESY_EXHAUSTED
+        ↓
+no third automatic relocation
+```
+
 # v4.7.128 candidate flow status
 
 No flow change from live-validated v4.7.127. The D-0147 courtesy flow below is carried unchanged into canonical review.
@@ -22,7 +52,7 @@ Terminal Yield Consent?
 D-0147 special-case Candidate
    - fixed one-shot Field World-centre bearing
    - FIELD_WORLD_CONTAINMENT: N/A by Courtesy Constraint Exception
-   - TRANSITION_CLEARANCE: N/A by Courtesy Constraint Exception
+   - TRANSITION_CLEARANCE: Interior Settlement N/A by Courtesy Constraint Exception; D-0196 Final Boundary Settlement PASS only for the one straight sweep against current authorising productive occupancy
    - all authority/safety/lifecycle constraints still mandatory
         ↓
 Protected Yield holds authorising productive worker

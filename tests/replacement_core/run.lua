@@ -4597,6 +4597,15 @@ test("D0147 Continuation Renewal requires post-release motion then a later attri
     equal(blockedAgain[1].obstructionPositive,true); equal(blockedAgain[1].yieldAwaitingContinuation,false); equal(blockedAgain[1].continuationRenewed,true); equal(blockedAgain[1].repeatBlockedPositive,true)
 end)
 
+test("D0194 second courtesy exhausts the completed Job Episode with no third automatic relocation",function()
+    local jobEpisodes={list=function() return {{identity="JOB-TERMINAL",status="ENDED",assemblyId="AS-TERMINAL",terminalCause=nil},{identity="JOB-ACTIVE",status="ACTIVE",assemblyId="AS-ACTIVE"}} end}
+    local assessment=OuttaMyWay.TerminalOccupancyAssessment.new(jobEpisodes)
+    assessment:markRetreatCompleted("JOB-TERMINAL",{"AS-ACTIVE"},1)
+    equal(assessment.courtesyMoveCount["JOB-TERMINAL"],1); equal(assessment.exhausted["JOB-TERMINAL"],nil)
+    assessment:markRetreatCompleted("JOB-TERMINAL",{"AS-ACTIVE"},2)
+    equal(assessment.courtesyMoveCount["JOB-TERMINAL"],2); equal(assessment.exhausted["JOB-TERMINAL"],true); equal(assessment.yieldRenewalState["JOB-TERMINAL"],nil)
+end)
+
 local function d0147TerminalPicture(runtime,configurationEvidence,options)
     options=options or {}
     local episodeId=options.terminalEpisodeId or "JOB-TERMINAL"
@@ -4612,14 +4621,52 @@ local function d0147TerminalPicture(runtime,configurationEvidence,options)
         currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},
         representationFitness={{representationId=representationId,assemblyId=assemblyId,question="D0147_TERMINAL_OCCUPANCY_AND_SINGLE_EGRESS",assessmentHorizon="CURRENT_PICTURE_ONLY",state="FIT_FOR_LIMITED_HORIZON",claimPermissions={"POSITIVE_TERMINAL_OBSTRUCTION"},coverage={complete=false},uncertainty={"NO_NEGATIVE_EXTERNAL_MARGIN_TRAVERSABILITY_AUTHORITY"},validityDependencies={},provenance={source="test"}}},
         provenance={source="test"},controlOutcomeEvidence={outcomes={}},candidateSupportEvidence={complete=false},commitmentContext=context,
-        terminalOccupancyKnowledge={{identity="terminal-occupancy:"..episodeId,terminalEpisodeId=episodeId,assemblyId=assemblyId,assemblyReferenceKey="vehicle-root:terminal",existingCommitmentId=options.existingCommitmentId,obstructionPositive=options.obstructionPositive~=false,obstructedDemandAssemblyIds={"AS-ACTIVE"},obstructionEvidence={{activeAssemblyId="AS-ACTIVE",evidence={kind="CONTINUING_ACTIVE_FUTURE_SPACE"}}},playerClaimed=options.playerClaimed==true,manoeuvreCompleted=options.manoeuvreCompleted==true,exhausted=options.exhausted==true,configurationEvidence=configurationEvidence or {},representationId=representationId,currentSpace={assemblyId=assemblyId,occupancy={x=2,z=5,headingX=options.headingX or 0,headingZ=options.headingZ or 1}},physicalSpace={assemblyId=assemblyId,configurationEvidence=configurationEvidence or {},primitives={{identity="TP-1",kind="DISC",x=2,z=5,radius=1,positiveConflictSupport=true}},provenance={source="test"}},provenance={source="test"}}}
+        terminalOccupancyKnowledge={{identity="terminal-occupancy:"..episodeId,terminalEpisodeId=episodeId,assemblyId=assemblyId,assemblyReferenceKey="vehicle-root:terminal",existingCommitmentId=options.existingCommitmentId,obstructionPositive=options.obstructionPositive~=false,obstructedDemandAssemblyIds={"AS-ACTIVE"},obstructionEvidence={{activeAssemblyId="AS-ACTIVE",evidence={kind="CONTINUING_ACTIVE_FUTURE_SPACE"}}},playerClaimed=options.playerClaimed==true,manoeuvreCompleted=options.manoeuvreCompleted==true,courtesyMoveCount=tonumber(options.courtesyMoveCount) or 0,exhausted=options.exhausted==true,configurationEvidence=configurationEvidence or {},representationId=representationId,currentSpace={assemblyId=assemblyId,occupancy={x=options.terminalX or 2,z=options.terminalZ or 5,headingX=options.headingX or 0,headingZ=options.headingZ or 1}},physicalSpace={assemblyId=assemblyId,configurationEvidence=configurationEvidence or {},primitives={{identity="TP-1",kind="DISC",x=options.terminalX or 2,z=options.terminalZ or 5,radius=options.terminalRadius or 1,positiveConflictSupport=true}},provenance={source="test"}},provenance={source="test"}}}
     })
 end
 
-local d0147SnapshotFixture=OuttaMyWay.ValueRecord.define("D0147SnapshotFixture",{"identity","fieldWorld"},{},nil)
-local function d0147Snapshot()
-    return d0147SnapshotFixture.new({identity="OS-D0147",fieldWorld={boundary={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}},geometryMetrics={centroidX=50,centroidZ=50}}})
+local d0147SnapshotFixture=OuttaMyWay.ValueRecord.define("D0147SnapshotFixture",{"identity","fieldWorld"},{"assemblies","geometry"},nil)
+local function d0147Snapshot(options)
+    options=options or {}
+    local activeX,activeZ=options.activeX or 20,options.activeZ or 50
+    local primitiveX,primitiveZ=options.activePrimitiveX or activeX,options.activePrimitiveZ or activeZ
+    return d0147SnapshotFixture.new({
+        identity="OS-D0147",
+        fieldWorld={boundary={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}},geometryMetrics={centroidX=50,centroidZ=50}},
+        assemblies={{assemblyId="AS-TERMINAL",referenceKey="vehicle-root:terminal"},{assemblyId="AS-ACTIVE",referenceKey="vehicle-root:active"}},
+        geometry={
+            currentSpaceEvidence={{assemblyReferenceKey="vehicle-root:active",occupancy={x=activeX,z=activeZ,headingX=1,headingZ=0}}},
+            shadowPlanViewEvidence={{assemblyReferenceKey="vehicle-root:active",primitives={{identity="AP-1",kind="DISC",x=primitiveX,z=primitiveZ,radius=options.activeRadius or 1,positiveConflictSupport=true}}}}
+        }
+    })
 end
+
+test("D0196 second courtesy chooses the one outer-boundary ray away from protected productive occupancy",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="BOUNDARY-STAGE",courtesyMoveCount=1,terminalX=30,terminalZ=50})
+    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot({activeX=20,activeZ=50}))
+    local candidate=supported.candidateSupportEvidence.candidateSpecifications[1]
+    local objective=candidate.evidenceBasis.terminalEgressBridge.objective
+    equal(objective.objectiveKind,"TERMINAL_FINAL_BOUNDARY_SETTLEMENT"); equal(objective.courtesyStage,2); equal(objective.destinationKind,"OUTER_BOUNDARY_AWAY_FROM_PROTECTED_DEMAND")
+    equal(objective.alignmentMode,"FIXED_INITIAL_AWAY_FROM_PROTECTED_DEMAND_BEARING"); equal(objective.boundaryContainmentSupported,true); equal(objective.protectedOccupancyTransitionClearanceSupported,true); equal(objective.continuousCourseCorrection,false)
+    equal(candidate.evidenceBasis.constraintEvidence.TRANSITION_CLEARANCE.applicable,true)
+    if math.abs(objective.infieldDirectionX-1)>0.0001 or math.abs(objective.infieldDirectionZ)>0.0001 then error("final boundary bearing did not point away from the protected worker") end
+    if objective.targetX<98.999 or objective.targetX>99.001 or math.abs(objective.targetZ-50)>0.001 then error("away-boundary settlement did not keep the one-metre DISC inside the field") end
+    if objective.targetProgressM<68.999 or objective.targetProgressM>69.001 then error("unexpected protected-away boundary progress") end
+end)
+
+test("D0196 second courtesy fails closed when the one protected-away boundary translation crosses current protected occupancy",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="BOUNDARY-BLOCKED",courtesyMoveCount=1,terminalX=30,terminalZ=50})
+    -- The protected worker's steering origin is east of the terminal assembly, so the only
+    -- authorised boundary ray points west. Its current trailed physical primitive still
+    -- occupies that westward translation, which must veto Stage 2 rather than trigger a search.
+    local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot({activeX=40,activeZ=50,activePrimitiveX=25,activePrimitiveZ=50,activeRadius=2}))
+    local bridge=supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.terminalEgressBridge
+    equal(bridge.objective,nil)
+    if not tostring(bridge.objectiveReason):find("PROTECTED_OCCUPANCY_TRANSITION_NOT_CLEAR",1,true) then error("blocked final boundary courtesy did not fail closed on current protected occupancy") end
+end)
+
 test("D0147 development config enables Automatic Terminal Egress without an artificial retreat speed cap",function()
     equal(OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS,true)
     equal(OuttaMyWay.TERMINAL_EGRESS_SPEED_KMH,nil)
@@ -4682,18 +4729,17 @@ test("D0147 supported deployed configuration selects compaction before translati
     equal(#evaluated.candidates,1); equal(evaluated.decision.selectedCandidateId,evaluated.candidates[1].identity)
 end)
 
-test("D0147 compact assembly receives one fixed initial Field World centre bearing",function()
+test("D0147 first courtesy targets the Field World centroid with one fixed bearing",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="INFIELD"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
     local bridge=spec.evidenceBasis.terminalEgressBridge; equal(bridge.phase,"INFIELD")
     local objective=bridge.objective
-    equal(objective.objectiveKind,"BOUNDED_INFIELD_RETREAT"); equal(objective.alignmentMode,"FIXED_INITIAL_CENTRE_BEARING")
-    equal(objective.fieldCentreX,50); equal(objective.fieldCentreZ,50); equal(objective.retreatDistanceM,60)
-    equal(objective.fieldCentreIsDirectionalReferenceOnly,true); equal(objective.continuousCourseCorrection,false)
-    equal(objective.settlement,"BOUNDED_INFIELD_PROGRESS")
-    equal(objective.targetX,nil); equal(objective.targetZ,nil)
+    equal(objective.objectiveKind,"TERMINAL_INTERIOR_SETTLEMENT"); equal(objective.courtesyStage,1); equal(objective.destinationKind,"FIELD_CENTROID"); equal(objective.alignmentMode,"FIXED_INITIAL_CENTRE_BEARING")
+    equal(objective.fieldCentreX,50); equal(objective.fieldCentreZ,50); equal(objective.fieldCentreIsDestination,true); equal(objective.continuousCourseCorrection,false)
+    equal(objective.settlement,"INTERIOR_SETTLEMENT"); equal(objective.targetX,50); equal(objective.targetZ,50)
+    if math.abs(objective.targetProgressM-math.sqrt(48*48+45*45))>0.0001 then error("centroid settlement did not derive full current centre distance") end
     local magnitude=math.sqrt(objective.infieldDirectionX*objective.infieldDirectionX+objective.infieldDirectionZ*objective.infieldDirectionZ)
     if math.abs(magnitude-1)>0.0001 then error("fixed Infield Alignment direction was not normalized") end
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
@@ -4729,7 +4775,7 @@ test("D0147 compacted committed assembly proceeds to infield retreat even when i
     local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
     local bridge=spec.evidenceBasis.terminalEgressBridge
     equal(spec.capability,"REPOSITION"); equal(bridge.phase,"INFIELD"); equal(bridge.terminalEvent,nil)
-    equal(bridge.objective.objectiveKind,"BOUNDED_INFIELD_RETREAT"); equal(bridge.objective.alignmentMode,"FIXED_INITIAL_CENTRE_BEARING")
+    equal(bridge.objective.objectiveKind,"TERMINAL_INTERIOR_SETTLEMENT"); equal(bridge.objective.courtesyStage,1); equal(bridge.objective.alignmentMode,"FIXED_INITIAL_CENTRE_BEARING")
 end)
 
 test("D0147 config switch disables admission rather than merely suppressing Control",function()
@@ -4742,7 +4788,7 @@ test("D0147 config switch disables admission rather than merely suppressing Cont
 end)
 
 
-test("D0147 Control completes one retreat from bounded realised inward progress",function()
+test("D0147 Control completes first courtesy from derived centroid station progress",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-INFIELD-PROGRESS"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
@@ -4764,8 +4810,8 @@ test("D0147 Control completes one retreat from bounded realised inward progress"
     control:update(16); equal(completion,nil); equal(driveCalls,1); if math.abs((commandedMaxSpeed or 0)-25)>0.0001 then error("D0147 retreat did not use native maximum forward speed") end
     px,pz=50,50
     control:update(16)
-    equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.kind,"D0147_BOUNDED_INFIELD_RETREAT_COMPLETE")
-    if completion.evidence.inwardProgressM < 60 then error("retreat completed before configured inward progress") end
+    equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.kind,"D0147_INTERIOR_SETTLEMENT_COMPLETE"); equal(completion.evidence.courtesyStage,1); equal(completion.evidence.destinationKind,"FIELD_CENTROID")
+    if completion.evidence.realisedProgressM+0.0001 < completion.evidence.targetProgressM then error("interior settlement completed before derived centroid station") end
     equal(completion.evidence.continuousCourseCorrection,false); equal(driveCalls,1)
     AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil
 end)
@@ -4944,22 +4990,28 @@ test("D0192 Axis Travel reverses on captured axis rather than pursuing a point",
     AIVehicleUtil, getWorldTranslation, worldDirectionToLocal = oldAIVehicleUtil,oldTranslation,oldWorldDirection
 end)
 
-test("D0192 Recovery Alignment waits for the complete articulated assembly",function()
+test("D0195 Recovery Alignment settles the assembly on the captured axis rather than reproducing Phase-5 articulation",function()
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local vehicle={rootNode=19011,getAISteeringNode=function(self) return self.rootNode end}
+    getWorldTranslation=function(node) return 0.1,0,12 end
+    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
     local control=OuttaMyWay.CooperativePassageControl.new({}, {permissionGate={},driveAuthority={},configurationAuthority={}})
-    local participant={alignmentBaseline={members={
-        {memberReferenceKey="tractor",lateralOffsetM=0,headingX=0,headingZ=1},
-        {memberReferenceKey="trailer",lateralOffsetM=0,headingX=0,headingZ=1}
-    }}}
+    local participant={vehicle=vehicle,referenceKey="vehicle-root:19011",startJobToken="JE",executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1}
     control._alignmentSnapshot=function() return {members={
         {memberReferenceKey="tractor",lateralOffsetM=0.1,headingX=0,headingZ=1},
-        {memberReferenceKey="trailer",lateralOffsetM=0.1,headingX=0.2,headingZ=math.sqrt(0.96)}
+        -- A side-offset member is allowed; unresolved articulation is not.
+        {memberReferenceKey="side-implement",lateralOffsetM=3.5,headingX=0,headingZ=1},
+        {memberReferenceKey="trailer",lateralOffsetM=0.8,headingX=0.2,headingZ=math.sqrt(0.96)}
     }} end
-    equal(control:_assemblyTranslationAligned(participant),false)
+    local aligned,reason=control:_assemblyAxisSettled(participant)
+    equal(aligned,false); equal(string.find(reason,"ASSEMBLY_MEMBER_AXIS_HEADING_NOT_SETTLED",1,true)~=nil,true)
     control._alignmentSnapshot=function() return {members={
         {memberReferenceKey="tractor",lateralOffsetM=0.1,headingX=0,headingZ=1},
-        {memberReferenceKey="trailer",lateralOffsetM=0.1,headingX=0.02,headingZ=math.sqrt(0.9996)}
+        {memberReferenceKey="side-implement",lateralOffsetM=3.5,headingX=0,headingZ=1},
+        {memberReferenceKey="trailer",lateralOffsetM=0.8,headingX=0.02,headingZ=math.sqrt(0.9996)}
     }} end
-    equal(control:_assemblyTranslationAligned(participant),true)
+    equal(control:_assemblyAxisSettled(participant),true)
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
 end)
 
 test("D0192 Return Staging places each Transit assembly beyond the other's return occupancy",function()
@@ -5026,7 +5078,7 @@ test("D0192 Axis Return alignment loss aborts reverse instead of steering into a
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     control.run={mode="D0146_GUIDE",commitmentId="CM-D0192-ALIGN",phase="AXIS_RETURN",phaseStartedAt=0,startedAt=0,a=participant,b=other,participants={participant,other},activeReturnParticipant=participant,returnRequiresReleasedClearance=false,failureReason=nil}
     control.nextHeartbeatMs=math.huge; control._allSameJob=function() return true,nil end; control._thirdPartySupport=function() return true,nil end
-    control._assemblyTranslationAligned=function() return false,"ASSEMBLY_MEMBER_HEADING_NOT_SETTLED:trailer" end
+    control._assemblyAxisSettled=function() return false,"ASSEMBLY_MEMBER_AXIS_HEADING_NOT_SETTLED:trailer:0.90000" end
     local restoreCalls=0; control._beginParticipantRestore=function(self,run,p) restoreCalls=restoreCalls+1; run.phase="RESTORING_PARTICIPANT"; return true,nil end
     local oldTime=g_time; g_time=1000; control:update(16)
     equal(participant.axisReturnSkipped,true); equal(restoreCalls,1); equal(control.run.phase,"RESTORING_PARTICIPANT")

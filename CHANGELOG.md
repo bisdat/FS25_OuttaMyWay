@@ -1,3 +1,65 @@
+## v0.1.14.0 CANONICAL CANDIDATE — D-0194/D-0195/D-0196 Double Courtesy validation closure
+
+**Validated source:** exact v0.1.13.3 TEST (`6d805f7735f54fb1a6cb79209cf4d42f415c6d0e5a0035963509d55c6353f1d4`; 263 files), directly descended through v0.1.13.1–v0.1.13.3 from owner-declared v0.1.13.0 canonical (`9bfd77d6c9de44c27caa2023dd86ed146592be697c68390076e1a641252876ce`; Git `f279516c669a335fae7f0a8db2a8f8c58fd2f78b`; 263 files).
+
+**Promotion rule:** v0.1.14.0 changes release identity, documentation and release assertions only. No traffic/control algorithm is intentionally changed from the field-validated v0.1.13.3 bytes.
+
+**D-0194 Double Courtesy:** the historical 60 m terminal-retreat literal is retired. A completed Job Episode may receive at most two automatic D-0147 courtesies: first one centroid-directed **Interior Settlement**; after positive Continuation Renewal and a later positively attributed obstruction, one **Final Boundary Settlement**; then `DOUBLE_COURTESY_EXHAUSTED` forbids a third automatic relocation. No parking search, route planner or permanent-clearance claim exists. A large-field cap for Stage 1 remains deliberately absent pending contrary Reality.
+
+**D-0195 Assembly Axis Settlement:** the first v0.1.13.1 field run exposed a latent D-0192 error: Phase 8A tried to reproduce the complete Phase-5 articulated pose and could consume repeated runout until Field World failure. v0.1.13.2 corrected this by requiring the vehicle and observed assembly-member headings to settle on the captured working axis while allowing fixed lateral offsets. The same existing 0.50 m / 0.995 tolerances remain; no articulation-specific model was introduced.
+
+**D-0196 Protected-Occupancy Boundary Settlement:** v0.1.13.2 proved Stage 1 and Continuation Renewal but disproved nearest-boundary Stage 2 when the completed assembly physically pushed the held mower outside the field. **Protected Yield Is Not Clearance.** Final Boundary Settlement therefore uses one deterministic outer-boundary ray away from the authorising productive occupancy, keeps the completed compact footprint inside the Field World, and requires its complete straight sweep to clear that worker's current positive physical occupancy. Unsupported means fail/exhaust this one courtesy; no alternate edge is searched.
+
+**Final TS010 field validation (v0.1.13.3):** owner judged the result good enough and supplied log/video. The log records exactly two `TERMINAL_COURTESY_STARTED` events, one `D0147_INTERIOR_SETTLEMENT_COMPLETE`, positive `CONTINUATION_RENEWED`, one `D0147_FINAL_BOUNDARY_SETTLEMENT_COMPLETE`, and one `DOUBLE_COURTESY_EXHAUSTED ... noThirdAutomaticRelocation=true`; both D-0147 settlements are `terminal=SUCCEEDED`. There are zero `FAILED_HELD`, zero `PLAYER_INTERVENTION_OR_JOB_CHANGE`, and zero runtime `Error:` entries. Video agrees that the second move travels away from the protected mower rather than forcing it out of the field.
+
+**Canonical context retained:** D-0192 Bounded Axis Return, D-0193 Literal-Audit Reality Reconciliation and v0.1.13.0 Cooperative Passage Phases 1–7 remain unchanged.
+
+**Release state:** BUILD resets to `0`. This package remains a canonical candidate until the owner explicitly declares its exact RRS-produced fingerprint canonical and records local Git/provenance.
+
+## v0.1.13.3 TEST — D-0196 Protected-Occupancy Boundary Settlement
+
+**Implementation parent:** exact v0.1.13.2 TEST (`79ed15feac4131e5337724170bb38651a956149ed487a1c74487b52d6c6e9e9a`; 263 files), itself continuing D-0194/D-0195 from owner-declared v0.1.13.0 canonical.
+
+**Observation:** TS010 validated Interior Settlement, Continuation Renewal and second-courtesy admission, but the nearest-boundary Stage-2 move drove the completed MT665/FW212 through the held mower and physically forced the mower outside the field. The terminal target itself remained contained, so endpoint containment was not the missing safety property.
+
+**Discovery — Protected Yield Is Not Clearance:** zero-speed protection removes the productive worker's motion authority; it does not make the physical space it occupies available to the relocating completed assembly. D-0194's Stage-2 nearest-boundary destination could therefore be individually field-contained while the transition itself collided with the protected worker.
+
+**D-0196 decision:** retain the finite Double Courtesy lifecycle and one deterministic Stage-2 move, but replace nearest-boundary selection with the single outer-boundary ray from the completed assembly **away from the current authorising productive occupancy**. Before Stage 2 is admitted, the completed compact DISC footprint's full straight translation must be continuously clear of the protected worker's current positive physical DISC occupancy. If the one protected-away translation is unsupported, Stage 2 fails/exhausts; no alternate-boundary search, parking search, route planner, or third courtesy is permitted.
+
+**Explicit non-change:** Interior Settlement, Continuation Renewal, Protected Yield Hold, D-0195 Assembly Axis Settlement, D-0192 Passage/Axis Return, Phases 1–7, configuration handling, Player Claim and terminal watchdogs are unchanged. No new distance literal is introduced.
+
+**Source validation:** 125/125 Python tests (including RRS), 274/274 replacement-core Lua tests, 108/108 Lua parses and XML validation PASS before RRS packaging. Exact packaged TEST must repeat these checks and deterministic repeat-build identity before field use.
+
+## v0.1.13.2 TEST — D-0195 Assembly Axis Settlement Correction
+
+**Implementation parent:** exact v0.1.13.1 TEST (`70a7f00ba8c8667f6cfe3e2fdc082fd92a9db921bacc218ef6e237f1161aadff`; 263 files), itself based directly on owner-declared v0.1.13.0 canonical (`9bfd77d6c9de44c27caa2023dd86ed146592be697c68390076e1a641252876ce`; Git `f279516c669a335fae7f0a8db2a8f8c58fd2f78b`; 263 files).
+
+**Observation:** the first D-0194 TS010 run never reached Job Episode termination, so Two-Stage Terminal Courtesy was not exercised. A later zero-deficit Cooperative Passage exposed a latent canonical D-0192 Phase-8A defect: MT665 repeatedly consumed alignment runout until the next axis target left the Field World, then failed safe to player escalation with `ASSEMBLY_MEMBER_LATERAL_TRANSLATION_NOT_SETTLED`.
+
+**Discovery — Baseline Pose Is Not Alignment:** D-0192 had frozen every member lateral offset and heading at Phase-5 execution-origin capture, then required Recovery to reproduce that complete articulated pose before straight reverse. Phase 5 may legitimately capture a trailer while still angled from native manoeuvring; reproducing that articulation is neither required nor necessarily reachable by forward runout. The captured working axis is authoritative for Axis Return; the captured articulation pose is not.
+
+**D-0195 decision — Assembly Axis Settlement:** retain the D-0192 Recovery/Axis-Return sequence, but redefine 8A completion. The participant vehicle must regain the captured axis within the existing 0.50 m tolerance and face along it within the existing 0.995 heading-dot threshold. Every observed physical assembly member must have its root heading parallel or anti-parallel to that captured axis within the same heading threshold. Member lateral offsets are deliberately not compared with Phase-5 offsets: fixed side-mounted geometry is allowed, while a trailed/articulated member must straighten before reverse. Axis Return continues to monitor the same settlement evidence and falls safely to restore/handover if it is lost.
+
+**Explicit non-change:** no Phase-1–7 Passage, Regulation, 80 m locality, D-0194 Double Courtesy, return sequencing, Axis-Station reverse, participant-specific handback, restoration or terminal policy change. No new magnitude is introduced; D-0195 reuses the existing 0.50 m / 0.995 alignment tolerances.
+
+**Field objective / stop rule:** rerun TS010 long enough to traverse repeated Passage and reach terminal completion. If Assembly Axis Settlement still requires expanding articulation-specific machinery or special cases, park the experiment rather than grow another subsystem.
+
+**Source validation:** 125/125 Python tests (including RRS), 273/273 replacement-core Lua tests and 106/106 Lua parses PASS before packaging. Exact packaged ZIP must repeat those gates, verify 262/262 manifest entries and reproduce byte-identically through an independent RRS build.
+
+## v0.1.13.1 TEST — D-0194 Two-Stage Terminal Courtesy
+
+**Authoritative baseline:** owner-declared v0.1.13.0 canonical (`9bfd77d6c9de44c27caa2023dd86ed146592be697c68390076e1a641252876ce`; Git `f279516c669a335fae7f0a8db2a8f8c58fd2f78b`; 263 files).
+
+**Observation:** canonical TS010 Terminal Completion positively admitted D-0147 but immediately rejected the move as `COURTESY_EXHAUSTED_AT_FIELD_CENTRE`: the completed spreader was only ~38 m from the Field World centroid, while the historical 60 m courtesy literal was treated as a minimum required move. Video/log evidence also shows that on the small repeated up/down work pattern, a single central relocation cannot be assumed permanently clear.
+
+**D-0194 decision — Double Courtesy:** remove the 60 m movement literal rather than retune it. The first positively admitted terminal obstruction performs one **Interior Settlement** toward the immutable Field World centroid. After the existing Continuation Renewal and a later positively attributed native block, one **Final Boundary Settlement** moves in one fixed direction toward the nearest outer boundary and derives the maximum endpoint translation that keeps the current represented compact physical footprint inside the Field World. After that second successful courtesy, the completed Job Episode is exhausted for automatic D-0147 relocation: **no third chance**.
+
+**Non-goals:** this is not safe-parking search, route planning, future-demand exclusion, repeated boundary search or a guarantee of permanent settlement. Protected Yield, player claim, configuration compaction, native-max translation speed, fixed-direction actuation, neutralisation and the existing watchdogs remain. The first centroid move is deliberately uncapped in this TEST; a large-field cap is deferred until Reality demonstrates need.
+
+**Development stop condition:** if field validation exposes local defects they may be corrected, but if D-0194 begins requiring parking search, route planning or accumulating special-case terminal manoeuvres, park the experiment rather than expand the subsystem.
+
+**Source validation:** 100/100 Python structural tests and 273/273 Lua replacement-core tests pass before release packaging. Field validation target is canonical TS010 through first Interior Settlement, Continuation Renewal, later repeat obstruction, Final Boundary Settlement and confirmation that no third automatic relocation is admitted.
+
 ## v0.1.13.0 CANONICAL CANDIDATE — D-0192 Bounded Axis Return / D-0193 Literal-Audit Reality Reconciliation
 
 **Validated source:** exact v0.1.12.4 TEST (`67d547dc1965d0942ca4e38aea74b3b539b7a4aad3930527151082c80609de4b`; 263 files), itself a direct implementation child of owner-declared v0.1.12.0 canonical (`f77a0564e747470fade97c778b29682e2a8a4614762b459b9bdd80a730c9277a`; Git `ed52e0a6762be67d3151d2620d7749ec52ab9dbd`; 263 files). v0.1.12.1–v0.1.12.3 remain discovery TESTs only and are not implementation ancestors.

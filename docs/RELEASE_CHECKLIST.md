@@ -1,3 +1,52 @@
+## v0.1.14.0 CANONICAL CANDIDATE checklist — D-0194/D-0195/D-0196
+
+- [x] Validated source fixed to exact v0.1.13.3 TEST (`6d805f7735f54fb1a6cb79209cf4d42f415c6d0e5a0035963509d55c6353f1d4`).
+- [x] Behavioural promotion only: no intentional control change from validated TEST.
+- [x] Final TS010 evidence records Stage 1, Continuation Renewal, Stage 2 and no-third-courtesy exhaustion.
+- [x] D-0195 / D-0196 failure discoveries retained as architectural knowledge.
+- [ ] Exact packaged candidate passes Python/Lua/RRS/XML/Lua-parse/manifest checks.
+- [ ] Independent RRS repeat build is byte-identical.
+- [ ] Owner reviews exact fingerprint and explicitly declares canonical.
+
+## v0.1.13.3 TEST checklist — D-0196 Protected-Occupancy Boundary Settlement
+
+- [x] Implementation parent is exact v0.1.13.2 TEST.
+- [x] D-0194 Stage 1 / Continuation Renewal / two-courtesy count unchanged.
+- [x] Stage 2 chooses one outer-boundary ray away from authorising productive occupancy; no destination search.
+- [x] Completed compact endpoint remains inside Field World.
+- [x] Stage-2 straight sweep requires continuous clearance from current protected positive physical occupancy.
+- [x] Missing/blocked protected-occupancy proof fails Stage 2 closed; no third courtesy.
+- [x] No new distance literal.
+
+- [x] Source gate: 125/125 Python, 274/274 Lua, 108/108 Lua parse, XML PASS.
+- [ ] Exact RRS package revalidation and byte-identical repeat build.
+
+## v0.1.13.2 TEST checklist — D-0195 Assembly Axis Settlement
+
+- [x] Implementation parent is exact v0.1.13.1 TEST SHA-256 `70a7f00ba8c8667f6cfe3e2fdc082fd92a9db921bacc218ef6e237f1161aadff`.
+- [x] Authoritative canonical baseline remains v0.1.13.0.
+- [x] Phase-5 member baseline pose removed as Recovery completion authority.
+- [x] Vehicle-axis lateral/heading and whole-member axis-heading settlement reuse existing 0.50 m / 0.995 tolerances.
+- [x] Fixed member lateral offsets no longer block 8A.
+- [x] Axis Return sequencing, reverse station control and fallback unchanged.
+- [x] D-0194 Double Courtesy unchanged.
+- [x] Exact packaged TEST passes all source/manifest/RRS gates.
+- [ ] Field Reality: extended TS010 passes repeated Passage and reaches D-0194 terminal experiment.
+
+## v0.1.13.1 TEST checklist — D-0194 Two-Stage Terminal Courtesy
+
+- [x] Parent is owner-declared v0.1.13.0 canonical (`9bfd77d...`).
+- [x] Version/modDesc updated to 0.1.13.1 TEST.
+- [x] Historical 60 m D-0147 movement literal removed, not retuned.
+- [x] Interior Settlement derives centroid target from current Field World/terminal pose.
+- [x] Existing Continuation Renewal gates the second courtesy.
+- [x] Final Boundary Settlement derives nearest outer-boundary direction and a compact-footprint-contained endpoint.
+- [x] Successful second courtesy exhausts the episode; no third automatic relocation.
+- [x] Protected Yield, Player Claim, neutralisation, native-max speed and watchdogs retained.
+- [x] No safe-parking search, route planner or large-field cap introduced.
+- [x] Structural and replacement-core suites green before packaging.
+- [ ] Field Reality: TS010 first + second courtesy and no third chance.
+
 ## v0.1.13.0 CANONICAL CANDIDATE checklist — D-0192 / D-0193
 
 - [x] Behavioural source is exact v0.1.12.4 TEST SHA-256 `67d547dc1965d0942ca4e38aea74b3b539b7a4aad3930527151082c80609de4`, 263 files.

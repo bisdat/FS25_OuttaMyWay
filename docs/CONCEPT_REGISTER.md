@@ -1,3 +1,32 @@
+# v0.1.14.0 canonical-candidate concepts — validated D-0194/D-0195/D-0196
+
+- **Double Courtesy** — at most two automatic D-0147 relocations for one completed Job Episode: centroid Interior Settlement, then after Continuation Renewal one Final Boundary Settlement, then exhaustion.
+- **Baseline Pose Is Not Alignment** — a captured Passage-start articulated pose is not necessarily the physically correct pose for straight Axis Return; Phase 8A owns axis/member-heading settlement instead.
+- **Protected Yield Is Not Clearance** — removing a productive worker's motion authority does not make its occupied physical space available to another assembly.
+- **Protected-Away Final Boundary Settlement** — one deterministic boundary translation away from current authorising productive occupancy, with Field World endpoint containment and current-occupancy sweep clearance; no search after veto.
+
+# v0.1.13.3 TEST concepts — D-0196
+
+- **Protected Yield Is Not Clearance** — holding an authorising productive worker at zero speed protects its motion authority but does not release its current physical occupancy to a relocating completed assembly.
+- **Protected-Away Final Boundary Settlement** — D-0194 Stage 2 keeps one deterministic move but points to the first outer-boundary intersection on the ray away from current authorising productive occupancy. The completed compact sweep must be continuously clear of that current occupancy. Unsupported means exhaust; no alternate destination is searched.
+- **Double Courtesy** — unchanged finite contract: centroid Interior Settlement, one renewed protected-away boundary attempt, then no third automatic move.
+
+# v0.1.13.2 TEST concepts — D-0195
+
+**Baseline Pose Is Not Alignment** — a Phase-5 pose may contain transient articulation; it records where Passage began, not a member-by-member pose that Recovery must reproduce.
+
+**Assembly Axis Settlement** — precondition for straight Axis Return: vehicle on/facing captured axis and selected physical member headings settled parallel/anti-parallel to that axis; fixed lateral offsets are permitted.
+
+# v0.1.13.1 TEST concepts — D-0194 Two-Stage Terminal Courtesy
+
+- **Double Courtesy** — a completed Job Episode may receive at most two automatic D-0147 relocations after positive Terminal Occupancy: first Interior Settlement, then after Continuation Renewal and a later attributed native block one Final Boundary Settlement. No third automatic move exists.
+- **Courtesy Distance Saturation** — discovered defect where a maximum buy-time calibration (60 m) became a minimum viable movement requirement and suppressed useful movement on a small field.
+- **Interior Settlement** — first courtesy: one fixed-direction translation toward the immutable Field World centroid by the currently derived centroid distance. It buys continuation; it does not claim permanent clearance.
+- **Final Boundary Settlement** — second/final courtesy: one fixed-direction translation toward the nearest outer boundary, with the endpoint translation derived so the current represented compact physical footprint remains inside the Field World. It is not a parking search or future-demand exclusion claim.
+- **Double Courtesy Exhaustion** — after successful Final Boundary Settlement, that completed Job Episode has no further automatic D-0147 relocation authority. Player responsibility remains if obstruction later recurs.
+
+**Retired for current D-0147 TEST authority:** `TERMINAL_INFIELD_RETREAT_DISTANCE_M = 60.0` and the rule that being within one 60 m allowance of the centroid constitutes Courtesy Exhaustion. Historical records remain evidence.
+
 ## D-0193 Literal Provenance Reality Reconciliation
 **Status:** Accepted architectural knowledge for v0.1.13.0; no independent runtime behaviour.
 

@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.13.0 CANONICAL CANDIDATE — D-0192 Bounded Axis Return; Phases 1–7 retain v0.1.12.0 behaviour.
+-- FS25_OuttaMyWay v0.1.14.0 CANONICAL CANDIDATE — D-0192 Passage + validated D-0195 Assembly Axis Settlement.
 --
 -- Situation/Candidate/Decision/Commitment establish the pair meaning and the
 -- bounded Passage plan before this module is invoked. Passage Selection now
@@ -15,6 +15,11 @@
 -- held until native foldMoveDirection settles to zero. D-0192 leaves Phases 1-7
 -- unchanged, strengthens final Recovery into whole-assembly axis alignment, then
 -- adds one-at-a-time straight Axis Return before participant-specific restore/handoff.
+-- D-0195 corrects one D-0192 evidence error exposed by the extended TS010
+-- run: the Phase-5 member pose is a Passage origin, not a target articulation
+-- shape.  Recovery Alignment now requires the vehicle to regain the captured
+-- axis and all observed member headings to settle parallel/anti-parallel to
+-- that axis; fixed side offsets are not treated as unsettled translation.
 -- Positive current occupancy transfers the return token; unsupported return falls
 -- back to safe restore/handoff rather than soft-locking or point-seeking in reverse.
 
@@ -465,12 +470,10 @@ function Control:_rebaseD0146Guide(run)
     otherParticipant.axisForwardX,otherParticipant.axisForwardZ=ofx,ofz
     local cache=self.runtime and self.runtime.assemblyRepresentationCache or nil
     if cache==nil or type(cache.getAssemblyAlignmentSnapshot)~="function" then return false,"ASSEMBLY_ALIGNMENT_CACHE_UNAVAILABLE" end
-    local subjectBaseline,subjectReason=cache:getAssemblyAlignmentSnapshot(subjectParticipant.referenceKey,subjectParticipant.startJobToken,subjectPose.x,subjectPose.z,sfx,sfz)
-    if subjectBaseline==nil then return false,"SUBJECT_ALIGNMENT_BASELINE:"..tostring(subjectReason) end
-    local otherBaseline,otherReason=cache:getAssemblyAlignmentSnapshot(otherParticipant.referenceKey,otherParticipant.startJobToken,otherPose.x,otherPose.z,ofx,ofz)
-    if otherBaseline==nil then return false,"OTHER_ALIGNMENT_BASELINE:"..tostring(otherReason) end
-    subjectParticipant.alignmentBaseline=subjectBaseline
-    otherParticipant.alignmentBaseline=otherBaseline
+    -- D-0195: Phase-5 pose is the Axis Return reference frame, not an
+    -- articulation pose which Recovery must reproduce.  Alignment is observed
+    -- later against this captured axis; do not freeze member lateral offsets or
+    -- member headings here as an execution target.
     run.guide=guide
     local ok,reason=self:_preflightD0146Guide(run)
     if not ok then return false,"EXECUTION_REBASE_PREFLIGHT:"..tostring(reason) end
@@ -514,25 +517,38 @@ function Control:_alignmentSnapshot(participant)
     return cache:getAssemblyAlignmentSnapshot(participant.referenceKey,participant.startJobToken,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ)
 end
 
-function Control:_assemblyTranslationAligned(participant)
-    local baseline=participant and participant.alignmentBaseline or nil
-    if baseline==nil then return false,"ASSEMBLY_ALIGNMENT_BASELINE_UNAVAILABLE" end
+function Control:_assemblyAxisSettled(participant)
+    if participant==nil then return false,"ASSEMBLY_AXIS_PARTICIPANT_UNAVAILABLE" end
     local current,reason=self:_alignmentSnapshot(participant)
     if current==nil then return false,reason end
-    local byMember={}
-    for _,m in OuttaMyWay.ValueRecord.ipairs(baseline.members or {}) do byMember[m.memberReferenceKey]=m end
+    local pp=pose(participant.vehicle)
+    if pp==nil then return false,"ASSEMBLY_AXIS_VEHICLE_POSE_UNAVAILABLE" end
+    local fx,fz=tonumber(participant.axisForwardX),tonumber(participant.axisForwardZ)
+    local ox,oz=tonumber(participant.executionOriginX),tonumber(participant.executionOriginZ)
+    if fx==nil or fz==nil or ox==nil or oz==nil then return false,"ASSEMBLY_AXIS_FRAME_UNAVAILABLE" end
+    local rightX,rightZ=fz,-fx
     local lateralTolerance=tonumber(OuttaMyWay.D0146_ASSEMBLY_ALIGNMENT_LATERAL_TOLERANCE_M) or 0.50
     local headingMinDot=tonumber(OuttaMyWay.D0146_ASSEMBLY_ALIGNMENT_HEADING_MIN_DOT) or 0.995
-    for _,m in OuttaMyWay.ValueRecord.ipairs(current.members or {}) do
-        local b=byMember[m.memberReferenceKey]
-        if b==nil then return false,"ASSEMBLY_ALIGNMENT_MEMBER_BASELINE_MISSING:"..tostring(m.memberReferenceKey) end
-        if math.abs((tonumber(m.lateralOffsetM) or 0)-(tonumber(b.lateralOffsetM) or 0))>lateralTolerance then
-            return false,"ASSEMBLY_MEMBER_LATERAL_TRANSLATION_NOT_SETTLED:"..tostring(m.memberReferenceKey)
-        end
-        local headingDot=dot(tonumber(m.headingX) or 0,tonumber(m.headingZ) or 0,tonumber(b.headingX) or 0,tonumber(b.headingZ) or 0)
-        if headingDot<headingMinDot then return false,"ASSEMBLY_MEMBER_HEADING_NOT_SETTLED:"..tostring(m.memberReferenceKey) end
+    local vehicleLateral=(pp.x-ox)*rightX+(pp.z-oz)*rightZ
+    if math.abs(vehicleLateral)>lateralTolerance then
+        return false,string.format("ASSEMBLY_VEHICLE_AXIS_LATERAL_NOT_SETTLED:%.3f",vehicleLateral)
     end
-    if OuttaMyWay.ValueRecord.length(current.members or {})~=OuttaMyWay.ValueRecord.length(baseline.members or {}) then return false,"ASSEMBLY_ALIGNMENT_MEMBER_COUNT_CHANGED" end
+    local vehicleHeadingDot=dot(pp.dx,pp.dz,fx,fz)
+    if vehicleHeadingDot<headingMinDot then
+        return false,string.format("ASSEMBLY_VEHICLE_AXIS_HEADING_NOT_SETTLED:%.5f",vehicleHeadingDot)
+    end
+    local memberCount=OuttaMyWay.ValueRecord.length(current.members or {})
+    if memberCount<1 then return false,"ASSEMBLY_AXIS_MEMBER_EVIDENCE_UNAVAILABLE" end
+    -- Member root-node +Z conventions may be reversed, so parallel or
+    -- anti-parallel is acceptable.  What matters for straight reverse is that
+    -- an articulated member is no longer materially angled across the captured
+    -- working axis.  Fixed side offsets are deliberately ignored.
+    for _,m in OuttaMyWay.ValueRecord.ipairs(current.members or {}) do
+        local memberHeadingDot=math.abs(dot(tonumber(m.headingX) or 0,tonumber(m.headingZ) or 0,fx,fz))
+        if memberHeadingDot<headingMinDot then
+            return false,string.format("ASSEMBLY_MEMBER_AXIS_HEADING_NOT_SETTLED:%s:%.5f",tostring(m.memberReferenceKey),memberHeadingDot)
+        end
+    end
     return true,nil,current
 end
 
@@ -551,7 +567,7 @@ function Control:_stagedBeyondOtherTransitReturn(participant,other)
 end
 
 function Control:_participantRunoutReady(participant,other)
-    local aligned,alignmentReason=self:_assemblyTranslationAligned(participant)
+    local aligned,alignmentReason=self:_assemblyAxisSettled(participant)
     if not aligned then return false,alignmentReason end
     local staged,stagingReason,evidence=self:_stagedBeyondOtherTransitReturn(participant,other)
     if not staged then return false,stagingReason end
@@ -581,7 +597,7 @@ function Control:_beginAlignmentRunout(run)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
         participant.runoutActive=false; participant.runoutReady=false; participant.targetX=nil; participant.targetZ=nil
     end
-    logInfo("RECOVERY_ALIGNMENT_START commitment=%s wholeAssemblyTranslationRequired=true returnStaging=TRANSIT_ENVELOPE_DERIVED",tostring(run.commitmentId))
+    logInfo("RECOVERY_ALIGNMENT_START commitment=%s wholeAssemblyAxisSettlementRequired=true returnStaging=TRANSIT_ENVELOPE_DERIVED",tostring(run.commitmentId))
     return true,nil
 end
 
@@ -617,7 +633,7 @@ function Control:_chooseReturnOrder(run)
 end
 
 function Control:_beginAxisReturn(run,participant,other,requiresReleasedClearance)
-    local aligned,alignmentReason=self:_assemblyTranslationAligned(participant)
+    local aligned,alignmentReason=self:_assemblyAxisSettled(participant)
     if not aligned then return false,"AXIS_RETURN_ALIGNMENT_REQUIRED:"..tostring(alignmentReason) end
     local pp=pose(participant.vehicle)
     if pp==nil then return false,"AXIS_RETURN_POSE_UNAVAILABLE" end
@@ -1061,7 +1077,7 @@ function Control:update(dt)
             logInfo("AXIS_RETURN_COMPLETE commitment=%s participant=%s executionOriginStation=true",tostring(run.commitmentId),participant.name)
             local ok,reason=self:_beginParticipantRestore(run,participant); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
         else
-            local aligned,alignmentReason=self:_assemblyTranslationAligned(participant)
+            local aligned,alignmentReason=self:_assemblyAxisSettled(participant)
             if not aligned then
                 self.driveAuthority:clear(participant.vehicle); participant.axisReturnSkipped=true
                 logWarning("AXIS_RETURN_ALIGNMENT_LOST commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),participant.name,tostring(alignmentReason))

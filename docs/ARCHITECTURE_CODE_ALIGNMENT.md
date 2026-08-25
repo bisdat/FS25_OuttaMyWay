@@ -1,3 +1,45 @@
+# v0.1.14.0 D-0194/D-0195/D-0196 architecture/code alignment
+
+- `TerminalEgressCandidateSupport` derives Stage-1 centroid movement and one Stage-2 protected-away boundary ray; Stage 2 proves current protected-occupancy sweep clearance and completed-footprint endpoint containment without alternate search.
+- `TerminalEgressControl` executes at most two courtesy stages and publishes completion/exhaustion; Continuation Renewal gates the second admission.
+- `CooperativePassageControl` retains D-0195 Assembly Axis Settlement before straight D-0192 Axis Return.
+- Candidate promotion changes release identity/documentation only from validated v0.1.13.3 runtime behaviour.
+
+# v0.1.13.3 D-0196 architecture/code alignment — Protected-Occupancy Boundary Settlement
+
+| Architectural concept | v0.1.13.3 implementation | Alignment |
+|---|---|---|
+| Protected Yield Is Not Clearance | `TerminalEgressCandidateSupport` obtains current authorising occupancy independently of the zero-speed Hold | TEST IMPLEMENTED |
+| Protected-away Stage 2 | one ray to first outer-boundary intersection, direction from protected occupancy toward completed assembly | TEST IMPLEMENTED |
+| Current transition clearance | complete moving compact DISC sweep checked continuously against current protected positive DISC occupancy | TEST IMPLEMENTED |
+| No parking search | failed ray/clearance returns unsupported objective; no alternate edge enumeration | TEST IMPLEMENTED |
+| Double Courtesy exhaustion | existing D-0194 maximum-two lifecycle unchanged | PRESERVED |
+
+# v0.1.13.2 D-0195 architecture/code alignment — Assembly Axis Settlement
+
+| Architectural concept | v0.1.13.2 implementation | Alignment |
+|---|---|---|
+| Phase-5 axis is return authority | `executionOrigin*` + `axisForward*` remain captured at execution-origin rebase | ALIGNED |
+| Baseline articulation is not a target | `alignmentBaseline` capture/comparison removed from `CooperativePassageControl` | ALIGNED |
+| Vehicle regains original axis | `_assemblyAxisSettled()` checks current vehicle lateral distance and heading against captured axis | ALIGNED |
+| Whole articulated assembly straightens | current member headings must be parallel/anti-parallel to captured axis | ALIGNED |
+| Fixed side offsets are legitimate | member lateral offsets are not compared with Phase-5 offsets | ALIGNED |
+| Reverse remains bounded | Axis Return continues captured-axis station control and safe restore/handover fallback | ALIGNED |
+| D-0194 unchanged | Terminal Courtesy modules retain centroid → one boundary → exhausted contract | ALIGNED |
+
+# v0.1.13.1 D-0194 architecture/code alignment — Two-Stage Terminal Courtesy TEST
+
+| Architectural concept | v0.1.13.1 implementation | Alignment |
+|---|---|---|
+| Interior Settlement | Candidate uses current terminal centre -> immutable Field World centroid; Control follows one fixed world direction until derived longitudinal station progress reaches that centroid distance | TEST IMPLEMENTED |
+| Historical 60 m literal | removed; no replacement movement-distance literal | RETIRED FOR TEST |
+| Continuation Renewal | unchanged: positive native progression, then later attributed `blocked=true` | PRESERVED |
+| Final Boundary Settlement | nearest outer-boundary point; one fixed direction; endpoint progress reduced until every current positive compact DISC remains inside outer boundary and outside islands | TEST IMPLEMENTED |
+| Double Courtesy Exhaustion | episode-level courtesy move count; successful stage 2 sets `exhausted=true`, clears renewal, and authorises no third automatic relocation | TEST IMPLEMENTED |
+| Protected Yield / Player Claim / neutralisation | unchanged | PRESERVED |
+| Safe parking / route planning | absent by design | ALIGNED |
+| Large-field centre cap | absent pending Reality | DELIBERATELY UNRESOLVED |
+
 ## v0.1.12.0 CANONICAL CANDIDATE — validated D-0188 alignment
 
 - Observation retains only the positive GIANTS source-job end proof required to distinguish real termination from generic inactivity.

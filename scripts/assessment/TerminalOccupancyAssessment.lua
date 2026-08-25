@@ -91,18 +91,27 @@ local function positiveObstruction(completedPhysical,activePhysical,activeFuture
 end
 
 function Assessment.new(jobEpisodes)
-    return setmetatable({jobEpisodes=jobEpisodes,playerClaimed={},yieldRenewalState={},exhausted={}},Assessment)
+    return setmetatable({jobEpisodes=jobEpisodes,playerClaimed={},yieldRenewalState={},courtesyMoveCount={},exhausted={}},Assessment)
 end
 function Assessment:reset()
-    self.playerClaimed={}; self.yieldRenewalState={}; self.exhausted={}
+    self.playerClaimed={}; self.yieldRenewalState={}; self.courtesyMoveCount={}; self.exhausted={}
 end
 function Assessment:markPlayerClaimed(terminalEpisodeId) if type(terminalEpisodeId)=="string" then self.playerClaimed[terminalEpisodeId]=true end end
 function Assessment:markExhausted(terminalEpisodeId) if type(terminalEpisodeId)=="string" then self.exhausted[terminalEpisodeId]=true end end
-function Assessment:markRetreatCompleted(terminalEpisodeId,authorizingDemandAssemblyIds)
+function Assessment:markRetreatCompleted(terminalEpisodeId,authorizingDemandAssemblyIds,courtesyStage)
     if type(terminalEpisodeId)~="string" then return end
     local ids={}
     for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(authorizingDemandAssemblyIds or {}) do if type(assemblyId)=="string" then ids[#ids+1]=assemblyId end end
     table.sort(ids)
+    local previous=tonumber(self.courtesyMoveCount[terminalEpisodeId]) or 0
+    local completed=math.max(previous,tonumber(courtesyStage) or (previous+1))
+    self.courtesyMoveCount[terminalEpisodeId]=completed
+    if completed>=2 then
+        self.yieldRenewalState[terminalEpisodeId]=nil
+        self.exhausted[terminalEpisodeId]=true
+        logInfo("DOUBLE_COURTESY_EXHAUSTED episode=%s completedMoves=%d noThirdAutomaticRelocation=true",tostring(terminalEpisodeId),completed)
+        return
+    end
     self.yieldRenewalState[terminalEpisodeId]={authorizingDemandAssemblyIds=ids,continuationObserved=false}
 end
 function Assessment:_consumeControlOutcomes(snapshot)
@@ -196,7 +205,7 @@ function Assessment:assess(snapshot,currentSpace,futureSpace,physicalSpaceEviden
             records[#records+1]={
                 identity="terminal-occupancy:"..episode.identity,terminalEpisodeId=episode.identity,assemblyId=episode.assemblyId,assemblyReferenceKey=refs[episode.assemblyId],fieldWorldReferenceKey=episode.fieldWorldReferenceKey,
                 existingCommitmentId=existingCommitmentId,obstructionPositive=obstructionPositive,obstructedDemandAssemblyIds=obstructed,obstructionEvidence=obstructionEvidence,
-                playerClaimed=claimed,yieldAwaitingContinuation=awaitingContinuation,continuationRenewed=continuationRenewed,repeatBlockedPositive=repeatBlockedPositive,exhausted=self.exhausted[episode.identity]==true,
+                playerClaimed=claimed,yieldAwaitingContinuation=awaitingContinuation,continuationRenewed=continuationRenewed,repeatBlockedPositive=repeatBlockedPositive,courtesyMoveCount=tonumber(self.courtesyMoveCount[episode.identity]) or 0,exhausted=self.exhausted[episode.identity]==true,
                 configurationEvidence=copy(terminalPhysical and terminalPhysical.configurationEvidence or {}),representationId=representationId,
                 currentSpace=copy(terminalCurrent),physicalSpace=copy(terminalPhysical),
                 provenance={source="TerminalOccupancyAssessment",authority="D0147_POSITIVE_TERMINAL_OCCUPANCY"}

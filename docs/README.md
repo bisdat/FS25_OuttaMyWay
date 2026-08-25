@@ -1,3 +1,19 @@
+# Current project state — v0.1.14.0 CANONICAL CANDIDATE
+
+Promotes exact field-validated v0.1.13.3 behaviour. D-0194 Double Courtesy, D-0195 Assembly Axis Settlement and D-0196 Protected-Occupancy Boundary Settlement are now the candidate terminal contract. Final TS010 confirms centroid Interior Settlement, Continuation Renewal, protected-away boundary settlement and no-third-courtesy exhaustion. No new traffic/control behaviour is introduced during promotion.
+
+# Current project state — v0.1.13.3 TEST — D-0196
+
+Direct continuation of v0.1.13.2 TEST over owner-declared v0.1.13.0 canonical. D-0196 changes only D-0194 Final Boundary Settlement: nearest-edge selection is replaced by one outer-boundary ray away from the authorising productive occupancy, and the completed compact sweep must be continuously clear of that current positive physical occupancy. Unsupported Stage 2 exhausts; there is no alternate-edge search or third courtesy. D-0195, D-0192 and Phases 1–7 are unchanged.
+
+# Current project state — v0.1.13.2 TEST — D-0195 Assembly Axis Settlement
+
+Direct continuation of v0.1.13.1 TEST over owner-declared v0.1.13.0 canonical. D-0195 changes only D-0192 Phase-8A evidence: the captured Phase-5 articulation pose is no longer a recovery target. Recovery must settle the vehicle and complete selected assembly headings on the captured working axis before straight Axis Return. D-0194 Double Courtesy is unchanged and still awaiting a run that reaches terminal completion.
+
+# Current project state — v0.1.13.1 TEST — D-0194 Two-Stage Terminal Courtesy
+
+Authoritative baseline is owner-declared v0.1.13.0 canonical. This TEST changes only D-0147 Terminal Completion. The historical 60 m inward retreat literal is removed. First positive terminal obstruction gets one centroid **Interior Settlement**. After unchanged Continuation Renewal and a later attributed native block, one **Final Boundary Settlement** moves toward the nearest outer boundary with a footprint-contained endpoint. Successful stage 2 exhausts automatic courtesy for that completed Job Episode; there is no third relocation and no safe-parking search. Large-field centroid capping is deferred until Reality.
+
 # Current project state — v0.1.13.0 CANONICAL CANDIDATE — D-0192 Bounded Axis Return
 
 Owner-declared **v0.1.12.0 remains canonical** until explicit promotion (`f77a0564e747470fade97c778b29682e2a8a4614762b459b9bdd80a730c9277a`; Git `ed52e0a6762be67d3151d2620d7749ec52ab9dbd`; 263 files). The behavioural source for this candidate is exact v0.1.12.4 TEST (`67d547dc1965d0942ca4e38aea74b3b539b7a4aad3930527151082c80609de4`; 263 files). v0.1.12.1–v0.1.12.3 are discarded discovery builds and are not ancestors.

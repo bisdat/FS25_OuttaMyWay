@@ -2,7 +2,7 @@
 
 Normal physical Candidates remain subject to the complete mandatory constraint set with evidence-backed PASS semantics.
 
-D-0147 is the sole current special case: for a player-consented **Bounded Infield Retreat**, `FIELD_WORLD_CONTAINMENT` and `TRANSITION_CLEARANCE` are explicitly **not applicable** because D-0147 does not possess predictive full-sweep containment or complete-envelope clearance authority. Candidate must carry `D0147_COURTESY_CONSTRAINT_EXCEPTION` provenance and must not represent the centroid heuristic or prior live success as positive clearance evidence.
+D-0147 remains the sole current special case. For player-consented **Interior Settlement**, `FIELD_WORLD_CONTAINMENT` and complete-envelope `TRANSITION_CLEARANCE` are explicitly **not applicable** because the centroid heuristic provides neither proof. Under D-0196, **Final Boundary Settlement** keeps the Field World predictive exception but requires applicable `TRANSITION_CLEARANCE` evidence for its one deterministic straight sweep against the authorising productive worker's current positive physical occupancy. This is not future-demand, route or parking authority.
 
 All non-spatial authority/safety constraints remain applicable and mandatory, including Representation Fitness for the evidence actually used, Control Capability Availability, Continuing Intent Priority/Protected Yield, Responsibility and Obligation Compatibility, Commitment Preconditions, Effective Actuation Composition and Safe Release/Handover.
 

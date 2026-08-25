@@ -1,3 +1,43 @@
+## v0.1.14.0 canonical-promotion checkpoint — D-0194/D-0195/D-0196 validated
+
+**Reality closure:** v0.1.13.1 exposed Baseline Pose Is Not Alignment before D-0194 could be tested; v0.1.13.2 validated Assembly Axis Settlement and the first centroid courtesy but disproved nearest-boundary Stage 2 when Protected Yield failed to provide physical clearance; v0.1.13.3 corrected Stage 2 to one protected-away, current-occupancy-clear translation. Final TS010 log/video validates both courtesies, Continuation Renewal and terminal exhaustion without failure/player escalation/runtime errors.
+
+**Decision:** promote exact v0.1.13.3 behaviour without control change. Retain the bounded stop rule: no third automatic relocation, no alternate-boundary search, no safe-parking system. Do not invent a large-field Stage-1 cap until Reality demonstrates need.
+
+## D-0196 — Protected-Occupancy Boundary Settlement (v0.1.13.3 TEST)
+
+**Observation:** D-0194 Stage 1 and Continuation Renewal worked in TS010. Stage 2 selected a footprint-contained nearest-boundary endpoint, but the completed MT665/FW212 translated through the zero-speed-held mower and pushed it outside the Field World.
+
+**Discovery — Protected Yield Is Not Clearance:** a Hold protects productive motion authority, not physical occupancy. A terminal courtesy may not treat the held assembly's occupied space as available.
+
+**Decision:** Final Boundary Settlement remains one fixed, non-searching courtesy. Its direction is the ray from completed-assembly centre away from the current centroid of the authorising productive assembly/assemblies to the first outer-boundary intersection; endpoint progress is reduced until the completed compact footprint remains inside the Field World. Stage 2 additionally requires the complete straight translated compact footprint to remain non-overlapping with all authorising productive workers' current positive physical DISC occupancy. Missing current positive occupancy evidence or a blocked sweep makes this one move unsupported; do not search another edge. Stage 1 retains the historic Courtesy Constraint Exception for Transition Clearance.
+
+**Stop rule:** this is the final bounded D-0147 test. If Reality requires alternate-destination search, routing, moving the productive worker, or another courtesy, park the feature rather than grow a parking subsystem.
+
+## D-0195 — Assembly Axis Settlement Correction (v0.1.13.2 TEST)
+
+**Evidence:** extended TS010 on v0.1.13.1 never reached D-0194 Terminal Courtesy. During a later zero-deficit Passage, MT665 repeatedly advanced in 15 m Phase-8A runout chunks and finally exhausted positive Field-World target support while still reporting `ASSEMBLY_MEMBER_LATERAL_TRANSLATION_NOT_SETTLED`. The same D-0192 code is present in canonical v0.1.13.0; D-0194 did not create the defect.
+
+**Discovery — Baseline Pose Is Not Alignment:** Phase-5 execution-origin capture is authoritative for the original working axis and return station, but a captured articulated member pose may contain transient native manoeuvre angle. Requiring Recovery to reproduce every member lateral offset/heading can demand an unreachable articulation state and consume the field indefinitely.
+
+**Decision:** replace translation-equivalence with **Assembly Axis Settlement**. The vehicle must be back on and facing along the captured axis. Complete selected physical assembly members must be heading-parallel or anti-parallel to that axis; fixed side offsets are irrelevant. Existing 0.50 m vehicle-axis tolerance and 0.995 heading-dot tolerance are reused. Straight Axis Return remains optional/bounded and continues to abort to restore/handover if settlement is lost.
+
+**Non-change / boundary:** D-0194 Double Courtesy remains unchanged and unvalidated because the failed run never reached terminal completion. No new articulation model, joint-angle taxonomy, magnitude or special-case assembly rule is introduced. If this simple axis-state evidence does not survive Reality, stop rather than broaden it speculatively.
+
+## D-0194 — Two-Stage Terminal Courtesy (v0.1.13.1 TEST)
+
+**Evidence:** canonical v0.1.13.0 TS010 Terminal Completion ended the MT665/FW212 Job Episode about 38 m from the Field World centroid. D-0147 positively admitted Terminal Occupancy and Protected Yield, but Candidate/Control treated the historical 60 m inward allowance as a minimum prerequisite and immediately exhausted courtesy without moving. Video also established the second half of the problem: on this small field the remaining mower repeats up/down work, so moving the completed spreader centrally can buy time but cannot credibly assert permanent clearance.
+
+**Discovery — Courtesy Distance Saturation:** the 60 m value originated as a maximum buy-time calibration on larger TS015 geometry, but implementation had allowed it to become a minimum viable retreat distance. A bounded allowance and a required movement distance are different concepts.
+
+**Decision — Double Courtesy:** one completed Job Episode receives at most two automatic D-0147 relocations. Courtesy 1 is **Interior Settlement**: after positive obstruction and supported compaction, take one fixed bearing to the immutable Field World centroid and translate by the currently derived centroid distance; there is no 60 m magnitude literal and no large-field cap in this TEST. Courtesy 2 becomes eligible only after the existing Continuation Renewal plus a later native `blocked=true` state positively attributed to the same completed assembly. It is **Final Boundary Settlement**: choose the nearest outer-boundary point from the current terminal centre and derive one fixed-direction maximum translation for which the represented compact DISC footprint remains inside the Field World.
+
+**Exhaustion:** successful Courtesy 2 sets episode-level Courtesy Exhaustion immediately. No third automatic move, alternate-boundary search, parking search or terminal housekeeping loop is authorised. Unsupported/failing movement remains bounded by the existing watchdog and authority-failure paths.
+
+**Preserved authority:** GIANTS Completion Acceptance remains default; positive Terminal Occupancy is still required; Protected Yield holds only the authorising continuing workers during translation; Player Claim and source reactivation supersede immediately; D-0147 continues to use forward-only fixed-world-direction actuation at the vehicle's native maximum speed with positive actuation neutralisation. Generic predictive full-sweep containment/clearance remain outside the Courtesy Constraint Exception, while the final boundary endpoint itself is positively footprint-contained because “not over the boundary” is part of the new destination contract.
+
+**Non-goal / stop rule:** D-0194 is a two-chance courtesy, not safe parking. If Reality demands route planning, parking search or a growing set of terminal special cases, park D-0147 rather than escalate complexity.
+
 ## D-0193 — Literal Provenance Audit: Reality Reconciliation (v0.1.13.0)
 
 **Status:** Accepted architectural knowledge; v0.1.12.1–v0.1.12.3 are explicitly non-ancestral discovery TESTs.

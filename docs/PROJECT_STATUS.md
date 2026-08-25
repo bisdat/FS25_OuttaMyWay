@@ -1,3 +1,41 @@
+# Current status — v0.1.14.0 CANONICAL CANDIDATE — validated Double Courtesy
+
+Validated source is exact v0.1.13.3 TEST over owner-declared v0.1.13.0 canonical. TS010 now validates the bounded D-0194/D-0195/D-0196 line: Assembly Axis Settlement permits repeated Passage to reach terminal completion; first centroid Interior Settlement succeeds; positive Continuation Renewal re-arms one later courtesy; Final Boundary Settlement travels away from protected productive occupancy and completes without the v0.1.13.2 bulldozing failure; Double Courtesy then exhausts with no third automatic move.
+
+**Current terminal contract:** at most two constructive automatic terminal relocations for one completed Job Episode. Stage 1 is centroid-directed and deliberately uncapped pending large-field Reality. Stage 2 is one protected-away outer-boundary translation with endpoint Field World containment and current protected-occupancy sweep clearance. Unsupported Stage 2 fails/exhausts without destination search.
+
+**Promotion boundary:** v0.1.14.0 changes release identity/documentation only from v0.1.13.3. D-0192 Passage/Axis Return, D-0193 literal-audit knowledge and Phases 1–7 are unchanged.
+
+# Current status — v0.1.13.3 TEST — D-0196 Protected-Occupancy Boundary Settlement
+
+Authoritative canonical remains v0.1.13.0. v0.1.13.3 continues the D-0194/D-0195 TEST line. TS010 has positively validated Stage-1 centroid Interior Settlement, Continuation Renewal, second-courtesy admission and D-0195 axis settlement. It disproved nearest-boundary Stage 2 because the completed assembly could force the held mower outside the field.
+
+**Current final hypothesis:** Stage 2 is one protected-away outer-boundary translation only. The completed compact footprint must remain field-contained at its endpoint and its entire straight sweep must be clear of the authorising productive worker's current positive occupancy. Failure exhausts Double Courtesy without parking search or third attempt.
+
+# Current status — v0.1.13.2 TEST — D-0195 Assembly Axis Settlement + D-0194 Double Courtesy
+
+**Authoritative baseline:** owner-declared v0.1.13.0 canonical (`9bfd77d6c9de44c27caa2023dd86ed146592be697c68390076e1a641252876ce`; Git `f279516c669a335fae7f0a8db2a8f8c58fd2f78b`; 263 files). Implementation parent is exact v0.1.13.1 TEST (`70a7f00b...aadff`).
+
+**Latest Reality:** v0.1.13.1 did not reach Terminal Completion. Repeated Passage exposed a latent D-0192 Recovery Alignment defect: MT665 was required to reproduce the Phase-5 member translation/articulation pose, consumed repeated forward runout and eventually failed when the next axis target left the field.
+
+**D-0195 TEST:** Recovery 8A now asks for Assembly Axis Settlement instead: vehicle on/facing the captured axis and all observed member headings parallel/anti-parallel to that axis. Fixed member lateral offsets are allowed. Existing tolerances are retained. Phases 1–7, Axis-Station return sequencing and D-0194 Double Courtesy are unchanged.
+
+**Bench state:** 125/125 Python, 273/273 replacement-core Lua and 106/106 Lua parse PASS.
+
+**Field gate:** one more TS010 run. First prove repeated Passage no longer consumes unbounded alignment runout; then, if the job reaches completion, observe D-0194 first centroid courtesy, renewed obstruction, final boundary courtesy and no third move. If either line begins demanding special-case articulation or parking/navigation machinery, park it.
+
+# Current status — v0.1.13.1 TEST — D-0194 Two-Stage Terminal Courtesy
+
+**Authoritative baseline:** owner-declared v0.1.13.0 canonical (`9bfd77d6c9de44c27caa2023dd86ed146592be697c68390076e1a641252876ce`; Git `f279516c669a335fae7f0a8db2a8f8c58fd2f78b`; 263 files).
+
+**Observed TS010 terminal defect:** D-0147 positively detected the completed MT665/FW212 obstructing continuing mower demand, applied Protected Yield, then immediately failed with `COURTESY_EXHAUSTED_AT_FIELD_CENTRE` because only ~38 m remained to the centroid while the historical 60 m allowance was treated as mandatory. No retreat actuation began. Video confirms a central move alone is unlikely to remain clear forever because the productive mower repeats the small field up/down.
+
+**TEST hypothesis:** replace the 60 m calibration with **Double Courtesy**. First obstruction performs Interior Settlement to the centroid. Existing Continuation Renewal/later attributed native block gates a second and final move. That Final Boundary Settlement heads toward the nearest outer boundary and derives a footprint-contained endpoint so the compact represented assembly is not moved over the Field World edge. After successful stage 2, automatic courtesy is exhausted; there is no third move.
+
+**Explicit non-change:** D-0146 Cooperative Passage, D-0192 Bounded Axis Return, D-0188 termination, D-0186 Regulation/Hold, Protected Yield, Player Claim, compaction, native-max D-0147 speed, fixed-direction actuation and watchdogs are unchanged. No large-field centroid cap is introduced before field evidence. No parking/refuge search or route planner is added.
+
+**Bench state:** 100/100 structural and 273/273 replacement-core Lua tests PASS. Field gate: TS010 should demonstrate first Interior Settlement, renewed productive continuation, later repeat obstruction, Final Boundary Settlement and then no third automatic relocation. If the experiment begins requiring parking-search/navigation special cases, park it.
+
 # Current status — v0.1.13.0 CANONICAL CANDIDATE — D-0192 Bounded Axis Return
 
 **Validated behavioural source:** exact v0.1.12.4 TEST (`67d547dc1965d0942ca4e38aea74b3b539b7a4aad3930527151082c80609de4b`; 263 files), directly based on owner-declared v0.1.12.0 canonical. v0.1.12.1–v0.1.12.3 remain discarded discovery TESTs and are evidence only.
