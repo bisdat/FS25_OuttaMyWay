@@ -683,6 +683,34 @@ function Cache:getTransitFoldCapability(assemblyReferenceKey,sourceJobToken)
     return record and record.transitFoldCapability or nil
 end
 
+-- D-0192 Bounded Axis Return: capture/observe the complete selected physical
+-- assembly in the Phase-5 execution frame. This is alignment evidence only;
+-- it does not create new Passage geometry or configuration authority.
+function Cache:getAssemblyAlignmentSnapshot(assemblyReferenceKey,sourceJobToken,originX,originZ,axisForwardX,axisForwardZ)
+    local record=self.records[episodeKey(assemblyReferenceKey,sourceJobToken)]
+    if record==nil then return nil,"ASSEMBLY_RECORD_UNAVAILABLE" end
+    local ox,oz,fx,fz=tonumber(originX),tonumber(originZ),tonumber(axisForwardX),tonumber(axisForwardZ)
+    if not finite(ox) or not finite(oz) or not finite(fx) or not finite(fz) then return nil,"ASSEMBLY_ALIGNMENT_FRAME_INVALID" end
+    local len=math.sqrt(fx*fx+fz*fz); if len<=0.0001 then return nil,"ASSEMBLY_ALIGNMENT_AXIS_INVALID" end
+    fx,fz=fx/len,fz/len; local rx,rz=fz,-fx
+    local getTranslation=self:_api("getWorldTranslation"); local directionToWorld=self:_api("localDirectionToWorld")
+    if getTranslation==nil or directionToWorld==nil then return nil,"ASSEMBLY_ALIGNMENT_TRANSFORM_API_UNAVAILABLE" end
+    local members={}
+    for _,member in ipairs(record.members or {}) do
+        local object=member.object; local node=object and object.rootNode or nil
+        if node==nil or node==0 then return nil,"ASSEMBLY_ALIGNMENT_MEMBER_NODE_UNAVAILABLE:"..tostring(member.referenceKey) end
+        local okPos,x,_,z=pcall(getTranslation,node)
+        local okDir,dx,_,dz=pcall(directionToWorld,node,0,0,1)
+        if not okPos or not okDir or not finite(x) or not finite(z) or not finite(dx) or not finite(dz) then return nil,"ASSEMBLY_ALIGNMENT_MEMBER_POSE_UNAVAILABLE:"..tostring(member.referenceKey) end
+        local dlen=math.sqrt(dx*dx+dz*dz); if dlen<=0.0001 then return nil,"ASSEMBLY_ALIGNMENT_MEMBER_HEADING_INVALID:"..tostring(member.referenceKey) end
+        dx,dz=dx/dlen,dz/dlen
+        local relX,relZ=x-ox,z-oz
+        members[#members+1]={memberReferenceKey=member.referenceKey,lateralOffsetM=relX*rx+relZ*rz,forwardOffsetM=relX*fx+relZ*fz,headingX=dx,headingZ=dz}
+    end
+    table.sort(members,function(a,b) return tostring(a.memberReferenceKey)<tostring(b.memberReferenceKey) end)
+    return {assemblyReferenceKey=assemblyReferenceKey,sourceJobToken=sourceJobToken,originX=ox,originZ=oz,axisForwardX=fx,axisForwardZ=fz,axisRightX=rx,axisRightZ=rz,members=members,memberCount=#members},nil
+end
+
 function Cache:_buildProfile(record,key,config,nowSeconds)
     local profile={identity=key..":configuration:"..tostring(countKeys(record.profiles)+1),configurationKey=config,firstObservedAt=nowSeconds,observations=0,nativeObservationCount=0,outtaMyWayObservationCount=0,configurationEvidence=foldConfigurationEvidence(record.members),relativeDiscs=nil,participationById={},includedPrimitiveIds={},participatingPrimitiveNames={},inactivePrimitiveNames={},unresolvedPrimitiveNames={},diagnosticPrimitiveNames={},runtimeConfirmedCount=0,donorFallbackCount=0}
     local selectors={}

@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.1.12.0 CANONICAL CANDIDATE — D-0188 Termination Evidence Collapse.
+-- FS25_OuttaMyWay v0.1.13.0 CANONICAL CANDIDATE — field-validated D-0192 Bounded Axis Return.
 -- Situation/Decision/Commitment admission semantics remain inherited; Control magnitude is now elastic.
 -- D-0147 now implements the agreed optional Bounded Infield Retreat courtesy hypothesis while retaining the validated v4.7.120 mechanical actuator substrate.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.1.12.0"
+OuttaMyWay.VERSION = "0.1.13.0"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -170,6 +170,11 @@ OuttaMyWay.D0146_STEP2_FIELD_SWEEP_SAMPLE_M = 2.0
 OuttaMyWay.D0146_STEP2_PAIR_SWEEP_SAMPLES_PER_LEG = 20
 OuttaMyWay.D0146_STEP2_MOVE_SPEED_KMH = 8.0
 OuttaMyWay.D0146_STEP2_PHASE_WATCHDOG_MS = 45000
+-- D-0192 Phase-8 alignment evidence. These are measurement tolerances around the
+-- captured Phase-5 Transit assembly pose, not Passage geometry. The values reuse
+-- the successful discarded D-0189 TEST donor and are subject to field Reality.
+OuttaMyWay.D0146_ASSEMBLY_ALIGNMENT_LATERAL_TOLERANCE_M = 0.50
+OuttaMyWay.D0146_ASSEMBLY_ALIGNMENT_HEADING_MIN_DOT = 0.995
 
 -- D-0155 Resolution-Space Progression Envelope provisional policy calibration.
 -- This is a withheld fraction of positively established usable Resolution Space,
@@ -203,7 +208,7 @@ OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Persistent neutral build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.1.12.0 CANONICAL CANDIDATE — TERMINATION EVIDENCE COLLAPSE"
+OuttaMyWay.BUILD_LABEL = "0.1.13.0 CANONICAL CANDIDATE — BOUNDED AXIS RETURN"
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
 OuttaMyWay.VERSION_HUD_Y = 0.720

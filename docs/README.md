@@ -1,3 +1,11 @@
+# Current project state — v0.1.13.0 CANONICAL CANDIDATE — D-0192 Bounded Axis Return
+
+Owner-declared **v0.1.12.0 remains canonical** until explicit promotion (`f77a0564e747470fade97c778b29682e2a8a4614762b459b9bdd80a730c9277a`; Git `ed52e0a6762be67d3151d2620d7749ec52ab9dbd`; 263 files). The behavioural source for this candidate is exact v0.1.12.4 TEST (`67d547dc1965d0942ca4e38aea74b3b539b7a4aad3930527151082c80609de4`; 263 files). v0.1.12.1–v0.1.12.3 are discarded discovery builds and are not ancestors.
+
+D-0192 leaves v0.1.12.0 Phases 1–7 untouched and adds bounded post-Passage position recovery: whole-assembly axis alignment/runout, one-at-a-time straight Axis Return by captured axis/station, participant-specific restore/handover, positive current-occupancy token transfer, and safe skip/fallback if alignment or clearance cannot be maintained. TS009, TS010S, TS015 and TS016 all field-PASS on v0.1.12.4; the combined log records four successful settlements and eight successful Axis Returns. D-0193 preserves the failed/partial Literal-Provenance experiments so future work does not repeat the 80 m/Regulation coupling mistake. Candidate preparation adds no traffic/control behaviour.
+
+---
+
 # v0.1.10.0 canonical-candidate checkpoint
 
 D-0184 Legacy Authority Closure C is field-validated and promoted without further behavioural change from v0.1.9.1. The live tree contains no in-repository v4.6.78 script archive or retired D-0143/TS015 runtime fixture machinery. Known Post-Job Regulation Contamination and termination-diagnostic ambiguity are carried forward explicitly; neither is repaired during promotion.

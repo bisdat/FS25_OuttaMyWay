@@ -1,3 +1,27 @@
+## D-0193 Literal Provenance Reality Reconciliation
+**Status:** Accepted architectural knowledge for v0.1.13.0; no independent runtime behaviour.
+
+**Coupled Literal Authority** — an empirical literal may have accumulated more than one implementation responsibility. The historical 80 m locality simultaneously constrained D-0155 Regulation admission and Passage planning/commit locality; deleting the number did not delete those responsibilities.
+
+**Encounter Lookahead is not Resolution Space** — being able to observe a possible encounter to the Field-World boundary does not make that full distance the local budget to which Resolution-Space conservation should be applied. The v0.1.12.1–v0.1.12.3 field evidence showed that conflating them can over-regulate and commit at inappropriate scale.
+
+**Validated Integrated Literal Contract** — v0.1.12.0 Phase-1–7 literals are retained because their integrated behaviour is field-proven. Retention does not assert mathematical optimality. Future Literal Provenance work should isolate one responsibility/value family at a time, preserve existing authority boundaries, and require contrary Reality before replacing a proven magnitude.
+
+## D-0192 Bounded Axis Return
+**Status:** field-validated in v0.1.12.4; promoted by v0.1.13.0 canonical candidate.
+
+**Recovery Alignment** — post-guide Phase-8 state in which the complete cached Transit assembly, including articulated/trailing members, has regained its Phase-5 relation to the captured original working axis sufficiently for deterministic straight reverse.
+
+**Return Staging / Return Clearance Runout** — bounded forward continuation after lateral Recovery used to straighten the assembly and place it beyond the other participant's Transit return occupancy before reverse authority is granted.
+
+**Axis Return** — optional bounded reverse along the captured original axis toward the Phase-5 execution-origin longitudinal station. It is axis/station control, not reverse point-seeking. Passage Position Debt exists independently of lateral burden.
+
+**Return Token / Positive Return Authority** — only one potentially conflicting Axis Return is authorised at a time. The second token is granted from positive current physical occupancy showing the first released participant has cleared the waiting participant's return space; elapsed time and predicted native continuation are non-authoritative.
+
+**Participant-Specific Release** — a participant whose return/restore obligation is complete can be restored and handed back to GIANTS while the other remains under Passage recovery authority. This prevents a pair-wide post-return hold from creating a soft lock.
+
+**Axis-Return Fallback** — loss of whole-assembly alignment, loss of released-participant clearance, or bounded clearance-wait exhaustion skips the optional return and proceeds to restore/handover.
+
 ## Legacy Authority Closure
 **Status:** Field-validated for v0.1.8.0 canonical candidate (D-0181); owner canonicalisation pending.
 

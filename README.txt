@@ -1,3 +1,24 @@
+FS25_OuttaMyWay v0.1.13.0 CANONICAL CANDIDATE — D-0192 BOUNDED AXIS RETURN
+
+Validated behavioural source: v0.1.12.4 TEST
+SHA-256: 67d547dc1965d0942ca4e38aea74b3b539b7a4aad3930527151082c80609de4b
+Files: 263
+Authoritative implementation ancestry: v0.1.12.0 canonical
+Canonical SHA-256: f77a0564e747470fade97c778b29682e2a8a4614762b459b9bdd80a730c9277a
+Canonical Git: ed52e0a6762be67d3151d2620d7749ec52ab9dbd
+
+v0.1.13.0 promotes the exact field-validated v0.1.12.4 behaviour with no new traffic/control algorithm. v0.1.12.1–v0.1.12.3 are discarded discovery TESTs and are not implementation ancestors.
+
+D-0192 leaves v0.1.12.0 Cooperative Passage Phases 1–7 intact and extends post-Passage Recovery only. 8A requires the complete Transit assembly to regain the captured Phase-5 axis/alignment and safe return staging. 8B performs one participant at a time as straight reverse Axis Return by captured axis/station, never reverse point-seeking. Participant-specific restore/handover lets positive current physical occupancy transfer the second return token; missing/lost support falls safely to restore/handover.
+
+Field validation on 25 August 2026: TS009 PASS; TS010S PASS; TS015 PASS; TS016 PASS. The supplied combined log records 4 successful Cooperative Passage settlements, 8/8 Return Staging Ready, 8/8 Axis Return Start/Complete, 8 participant wave-ons and 4 clean pair dissolutions, with no Axis-Return abort/skip/wait-exhaustion and no restoration exhaustion.
+
+D-0193 records the Literal Provenance experiment from v0.1.12.1–v0.1.12.3. The attempt to remove/derive several historical literals exposed Coupled Literal Authority around the 80 m locality, lost or over-scaled Regulation, premature Passage commitment, post-release recovery collision opportunities and reverse point-seeking circles. The surviving v0.1.12.0 Phase-1–7 literals are therefore retained as an integrated Reality-validated contract pending future isolated evidence; they are not claimed mathematically optimal.
+
+Candidate validation: 99/99 structural, 271/271 replacement-core Lua, 25/25 RRS, 107/107 Lua parse, XML/version and release-manifest checks. Exact package integrity and deterministic repeat-build are verified during final packaging. This package remains a canonical candidate until the owner explicitly declares its exact fingerprint canonical and records local Git/provenance.
+
+---
+
 FS25_OuttaMyWay v0.1.12.0 CANONICAL CANDIDATE — D-0188 TERMINATION EVIDENCE COLLAPSE
 
 Authoritative baseline until owner declaration: v0.1.11.0

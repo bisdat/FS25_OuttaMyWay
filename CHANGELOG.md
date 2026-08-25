@@ -1,3 +1,39 @@
+## v0.1.13.0 CANONICAL CANDIDATE — D-0192 Bounded Axis Return / D-0193 Literal-Audit Reality Reconciliation
+
+**Validated source:** exact v0.1.12.4 TEST (`67d547dc1965d0942ca4e38aea74b3b539b7a4aad3930527151082c80609de4b`; 263 files), itself a direct implementation child of owner-declared v0.1.12.0 canonical (`f77a0564e747470fade97c778b29682e2a8a4614762b459b9bdd80a730c9277a`; Git `ed52e0a6762be67d3151d2620d7749ec52ab9dbd`; 263 files). v0.1.12.1–v0.1.12.3 remain discovery TESTs only and are not implementation ancestors.
+
+**Promotion rule:** v0.1.13.0 changes release identity, documentation and release assertions only. No traffic/control algorithm is intentionally changed from the field-validated v0.1.12.4 bytes.
+
+**D-0192 validated capability:** canonical D-0146 Phases 1–7 remain v0.1.12.0 behaviour. Post-Passage 8A now requires whole-Transit-assembly alignment on the captured Phase-5 axis and bounded return staging. 8B then performs one-at-a-time straight Axis Return by captured axis/station; reverse point-seeking is prohibited. The first participant may restore and hand back to GIANTS so positive current physical occupancy can transfer the return token to the waiting participant. Loss/absence of alignment or clearance fails safely to existing restore/handover rather than soft-locking.
+
+**Four-scenario field validation:** owner ran TS009, TS010S, TS015 and TS016; all were observed PASS. The supplied combined log independently records four `COOPERATIVE_PASSAGE_SETTLED ... terminal=SUCCEEDED` settlements, eight `RETURN_STAGING_READY` events with whole-assembly alignment/support, eight `AXIS_RETURN_START`, eight `AXIS_RETURN_COMPLETE`, eight `PARTICIPANT_WAVE_ON`, and four `PAIR_CONTEXT_DISSOLVED`. There are zero Axis-Return abort/skip/wait-exhaustion events and zero `restorationExhausted=true` events. TS016 specifically shows S416 using `CAPTURED_AXIS_ONLY` / `pointSeeking=false` and completing its reverse instead of circling. TS010S also confirms the restored v0.1.12.0 D-0155 Regulation path remains live.
+
+**D-0193 knowledge record:** the v0.1.12.1–v0.1.12.3 Literal Provenance experiment is retained as disproved/partial evidence. Removing the historical 80 m locality exposed **Coupled Literal Authority**: that empirical value had accumulated separate Regulation-locality and Passage-planning locality responsibilities. Field-wide lookahead then coupled Early Warning to Resolution Space, causing lost/over-scaled Regulation and premature commitment. Other bundled replacements exposed post-release recovery collision and reverse point-seeking circle behaviour. The conclusion is not that the surviving literals are ideal; it is that v0.1.12.0 Phases 1–7 are the validated integrated contract. Future literal work must isolate one responsibility at a time and preserve proven phase authority unless contrary Reality requires change.
+
+**Candidate validation:** 99/99 Python structural, 271/271 Lua replacement-core and 25/25 RRS tests pass; 107/107 Lua files parse; XML/version checks pass; release manifest contains 262/262 non-manifest files in a 263-file package; ZIP integrity and deterministic repeat-build are required/verified at final packaging.
+
+**Release state:** BUILD resets to `0`. This package is a canonical candidate only until the owner explicitly declares its exact candidate fingerprint canonical and records local Git/provenance.
+
+## v0.1.12.4 TEST — D-0192 Bounded Axis Return
+
+**Authoritative parent:** owner-declared v0.1.12.0 canonical (`f77a0564e747470fade97c778b29682e2a8a4614762b459b9bdd80a730c9277a`; Git `ed52e0a6762be67d3151d2620d7749ec52ab9dbd`; 263 files). v0.1.12.1–v0.1.12.3 are discarded discovery TEST builds and are **not ancestors** of this TEST.
+
+**Decision:** preserve v0.1.12.0 Phases 1–7 byte-behavioural intent, including the 80 m locality gate, D-0155 Resolution-Space Regulation, existing Candidate sampling, Passage Selection/Approach, Entry, Transit and guide geometry. Add only a bounded post-Passage Phase-8 extension before the proven D-0183 restore/handover mechanism.
+
+**D-0192 Recovery Alignment (8A):** after the canonical final recovery guide point, keep the pair under Passage authority and continue forward on each captured Phase-5 working axis until the complete Transit assembly is sufficiently translation-aligned with its captured Phase-5 pose. Articulated/trailing members participate in the evidence; tractor-only waypoint proximity is insufficient. A bounded forward runout stages each participant beyond the other's Transit return occupancy.
+
+**D-0192 Axis Return (8B):** Passage forward displacement creates position debt for every participant, including zero-lateral-deficit Passage. One participant at a time receives reverse authority and travels **straight on the captured original axis**, using longitudinal station progress rather than reverse point-seeking, toward the captured execution-origin station. Loss of whole-assembly alignment aborts that return instead of steering into a reversing circle.
+
+**Sequencing / positive authority transfer:** after the first participant returns, its cached D-0183 restoration completes and it is handed back to GIANTS so native continuation can clear the waiting participant's return space. The second return token is granted only after positive current physical occupancy proves the released assembly clear of the waiting Transit return occupancy. If that clearance is lost during the second return, or the wait exhausts, the second return is abandoned and the participant proceeds safely to restore/handover rather than soft-lock or collide.
+
+**Participant release:** restoration/handover is participant-specific during D-0192 recovery. The historical pair second-whistle log is retired; the pair context dissolves when both participants have been released. Existing lifecycle settlement evidence names remain unchanged.
+
+**Explicit non-change:** no D-0146 Identify/Preserve/Plan/Commit, 80 m, 75%, 1 km/h D-0155 creep, Candidate geometry/sampling, Entry, Transit, Development, Crossing, D-0147, D-0179 or D-0183 magnitude/policy change.
+
+**Source validation:** 99/99 Python structural tests and 271/271 Lua replacement-core tests passed before release packaging.
+
+**Field validation (25 August 2026):** TS009, TS010S, TS015 and TS016 all PASS. Combined log records four successful settlements, eight successful Axis Returns, eight participant wave-ons and four pair dissolutions with no return abort/skip/wait-exhaustion or restoration exhaustion. This exact TEST is the validated behavioural source of v0.1.13.0.
+
 ## v0.1.12.0 CANONICAL CANDIDATE — D-0188 Termination Evidence Collapse checkpoint
 
 **Authority:** owner-declared v0.1.11.0 canonical (`944d197b09d2145b49a1502fc0e9721bf2f11a2f5c3ee86d73beaff3a88669d3`; Git `69a19cd116d6dc84286ca623dd5600f52315cae2`; 263 files) remains authoritative until the owner explicitly accepts this exact RRS-produced candidate fingerprint. v0.1.12.0 promotes the live-validated v0.1.11.2 D-0188 behaviour with **no further traffic/control behavioural change** during candidate preparation.

@@ -1,3 +1,11 @@
+## v0.1.13.0 CANONICAL CANDIDATE — D-0192 Bounded Axis Return / D-0193 Literal-Audit Reality Reconciliation
+
+Promotes the exact field-validated v0.1.12.4 D-0192 behaviour with no further traffic/control change. TS009, TS010S, TS015 and TS016 all PASS; the combined supplied log records four successful Cooperative Passage settlements, eight successful Axis Returns, eight participant wave-ons and four clean pair dissolutions with no return abort/skip/wait-exhaustion or restoration exhaustion. Phases 1–7 remain the proven v0.1.12.0 contract. D-0193 records the discarded v0.1.12.1–v0.1.12.3 Literal-Provenance experiment: removing 80 m exposed Coupled Literal Authority and regressed Regulation/commit locality; bundled recovery changes also exposed post-release collision and reverse point-seeking circles. Those TESTs remain evidence only, not ancestry. Candidate promotion changes identity/documentation only.
+
+## v0.1.12.4 TEST — D-0192 Bounded Axis Return
+
+Starts directly from owner-declared v0.1.12.0 canonical; discarded v0.1.12.1–v0.1.12.3 TEST builds are evidence only, not ancestors. Phases 1–7 remain v0.1.12.0 behaviour. D-0192 strengthens post-guide Recovery to whole-assembly axis alignment, adds one-at-a-time straight Axis Return by captured axis/station, uses participant-specific restore/handover to avoid return deadlock, transfers the second return token only from positive current-occupancy clearance, and fails safely to restore/handover if clearance/alignment cannot remain supported. The historical pair second whistle is retired. Source validation: 99/99 Python and 271/271 Lua. Field validation on 25 August 2026: TS009, TS010S, TS015 and TS016 all PASS; four successful pair settlements and eight successful Axis Returns were recorded with no Axis-Return abort/skip/wait-exhaustion or restoration exhaustion.
+
 ## v0.1.12.0 CANONICAL CANDIDATE — D-0188 Termination Evidence Collapse
 
 Promotes validated v0.1.11.2 without further behavioral change. GIANTS source-job end evidence now ends the Job Episode directly; natural completion carries no `SOURCE_INTENT_TERMINATION` terminal cause. TS015 natural Terminal Egress passed from `terminalCause=nil` with zero termination-conflict and divide-by-zero diagnostics.

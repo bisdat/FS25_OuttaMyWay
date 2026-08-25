@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.11.0 CANONICAL CANDIDATE — D-0186 Regulation–Hold Boundary.
+-- FS25_OuttaMyWay v0.1.13.0 CANONICAL CANDIDATE — D-0192 Bounded Axis Return; D-0186 Regulation–Hold Boundary retained.
 -- GIANTS-native drive-call authority for bounded Regulation.
 -- Positive Regulation preserves native permission; a zero effective cap is a Hold and revokes drive permission.
 -- Historical Reposition helpers remain non-production residue pending later naming/ownership normalisation.
@@ -105,6 +105,54 @@ function Authority:install()
             -- archived empirically successful forward-only rejoin orientation
             -- mechanism; it creates no production routing or speed policy.
             return original(vehicle, dt, 1, true, true, steerX, steerZ, cap)
+        end
+
+        if state.mode == "AXIS_TRAVEL" then
+            local node, x, _, z = position(vehicle)
+            if node == nil then
+                state.invalidReason = "axis-travel-pose-unavailable"
+                return original(vehicle, dt, 0, false, state.moveForwards ~= false, 0, 1, 0)
+            end
+            local ox,oz=tonumber(state.originX),tonumber(state.originZ)
+            local fx,fz=tonumber(state.axisForwardX),tonumber(state.axisForwardZ)
+            local targetStation=tonumber(state.targetStationM)
+            if ox==nil or oz==nil or fx==nil or fz==nil or targetStation==nil then
+                state.invalidReason = "axis-travel-frame-unavailable"
+                return original(vehicle, dt, 0, false, state.moveForwards ~= false, 0, 1, 0)
+            end
+            local axisLength=math.sqrt(fx*fx+fz*fz)
+            if axisLength<=0.0001 then
+                state.invalidReason = "axis-travel-axis-degenerate"
+                return original(vehicle, dt, 0, false, state.moveForwards ~= false, 0, 1, 0)
+            end
+            fx,fz=fx/axisLength,fz/axisLength
+            local progress=(x-ox)*fx+(z-oz)*fz
+            state.lastStationProgressM=progress
+            local tolerance=math.max(0,tonumber(state.stationToleranceM) or 0)
+            local forwards=state.moveForwards~=false
+            local reached=(forwards and progress+tolerance>=targetStation) or ((not forwards) and progress-tolerance<=targetStation)
+            if reached then
+                state.targetReached=true
+                state.lastOutputMaxSpeed=0
+                return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
+            end
+            if type(worldDirectionToLocal) ~= "function" then
+                state.invalidReason = "worldDirectionToLocal-unavailable"
+                return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
+            end
+            -- Axis Return is not point pursuit.  Steering always follows the
+            -- captured original axis; reverse changes only the travel direction.
+            local wx,wz=forwards and fx or -fx,forwards and fz or -fz
+            local localX,_,localZ=worldDirectionToLocal(node,wx,0,wz)
+            local localLength=math.sqrt(localX*localX+localZ*localZ)
+            if localLength<=0.0001 then
+                state.invalidReason = "axis-travel-direction-degenerate"
+                return original(vehicle, dt, 0, false, forwards, 0, 1, 0)
+            end
+            localX,localZ=localX/localLength,localZ/localLength
+            local cap=tonumber(state.speedKmh) or 0
+            state.lastOutputMaxSpeed=cap
+            return original(vehicle,dt,1,true,forwards,localX,localZ,cap)
         end
 
         if state.mode == "REPOSITION" then
@@ -221,6 +269,17 @@ function Authority:setRepositionOrientation(vehicle, steerX, steerZ, speedKmh)
         steerZ = steerZ,
         speedKmh = speedKmh,
         driveCalls = 0
+    }
+    return true
+end
+
+function Authority:setAxisTravel(vehicle, originX, originZ, axisForwardX, axisForwardZ, targetStationM, speedKmh, moveForwards, stationToleranceM)
+    local ok, reason = self:install()
+    if not ok then return false, reason end
+    self.states[vehicle] = {
+        mode="AXIS_TRAVEL", originX=originX, originZ=originZ, axisForwardX=axisForwardX, axisForwardZ=axisForwardZ,
+        targetStationM=targetStationM, speedKmh=speedKmh, moveForwards=moveForwards~=false,
+        stationToleranceM=stationToleranceM, targetReached=false, driveCalls=0
     }
     return true
 end

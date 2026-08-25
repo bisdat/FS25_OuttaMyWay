@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.10.0 CANONICAL CANDIDATE — D-0184 removes dead generic restore residue; D-0183 cached-actuator restoration remains authoritative.
+-- FS25_OuttaMyWay v0.1.13.0 CANONICAL CANDIDATE — D-0192 Bounded Axis Return; Phases 1–7 retain v0.1.12.0 behaviour.
 --
 -- Situation/Candidate/Decision/Commitment establish the pair meaning and the
 -- bounded Passage plan before this module is invoked. Passage Selection now
@@ -12,9 +12,11 @@
 -- still moving. D-0178 Transit Motion Settlement does not interpret allFolded,
 -- allDeployed, configuration profiles, current-vs-Transit geometry, or command return
 -- as execution authority. Inert/unsupported requests are non-veto; real folding stays
--- held until native foldMoveDirection settles to zero. The second-whistle trace marks
--- completion of the pair-dependent guide;
--- agronomic reverse restoration is explicitly not implemented here.
+-- held until native foldMoveDirection settles to zero. D-0192 leaves Phases 1-7
+-- unchanged, strengthens final Recovery into whole-assembly axis alignment, then
+-- adds one-at-a-time straight Axis Return before participant-specific restore/handoff.
+-- Positive current occupancy transfers the return token; unsupported return falls
+-- back to safe restore/handoff rather than soft-locking or point-seeking in reverse.
 
 OuttaMyWay.CooperativePassageControl={}
 local Control=OuttaMyWay.CooperativePassageControl
@@ -145,7 +147,7 @@ function Control:deleteMap()
     local run=self.run
     if run~=nil then
         for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
-            self.driveAuthority:clear(p.vehicle); self.permissionGate:release(p.vehicle)
+            self.driveAuthority:clear(p.vehicle); if p.released~=true then self.permissionGate:release(p.vehicle) end
             if self.configurationAuthority:getState(p.vehicle)~=nil then self.configurationAuthority:clear(p.vehicle) end
             self:_endRepresentationConfigurationAuthority(p)
         end
@@ -218,6 +220,7 @@ function Control:_thirdPartySupport(run,gate)
             return false,"PASSAGE_SUPPORT_LOSS_THIRD_PARTY_RESERVE_UNRESOLVED:"..tostring(constraint.assemblyId)
         end
         for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
+            if participant.released~=true then
             local participantReserve=thirdPartyParticipantReserve(constraint,participant.assemblyId)
             if participantReserve==nil or participantReserve<=0 then
                 return false,"PASSAGE_SUPPORT_LOSS_PARTICIPANT_RESERVE_UNRESOLVED:"..tostring(participant.assemblyId)
@@ -240,6 +243,7 @@ function Control:_thirdPartySupport(run,gate)
                 if target~=nil and distance(target.x,target.z,thirdPose.x,thirdPose.z)<required then
                     return false,"PASSAGE_SUPPORT_LOSS_THIRD_PARTY_GATE_TARGET:"..tostring(constraint.assemblyId)..":"..tostring(gate.index)
                 end
+            end
             end
         end
     end
@@ -266,7 +270,9 @@ function Control:_validAuthority(request)
 end
 
 function Control:_allSameJob(run)
-    for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants) do if currentJobToken(p.vehicle)~=p.startJobToken then return false,p end end
+    for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants) do
+        if p.released~=true and currentJobToken(p.vehicle)~=p.startJobToken then return false,p end
+    end
     return true,nil
 end
 function Control:_allStopped(run)
@@ -453,6 +459,18 @@ function Control:_rebaseD0146Guide(run)
         gate.subject={assemblyId=run.subjectAssemblyId,x=subjectPose.x+sfx*forward+rightX*(fraction*subjectOffset),z=subjectPose.z+sfz*forward+rightZ*(fraction*subjectOffset),radiusM=radius}
         gate.other={assemblyId=run.otherAssemblyId,x=otherPose.x+ofx*forward+rightX*(fraction*otherOffset),z=otherPose.z+ofz*forward+rightZ*(fraction*otherOffset),radiusM=radius}
     end
+    subjectParticipant.executionOriginX,subjectParticipant.executionOriginZ=subjectPose.x,subjectPose.z
+    subjectParticipant.axisForwardX,subjectParticipant.axisForwardZ=sfx,sfz
+    otherParticipant.executionOriginX,otherParticipant.executionOriginZ=otherPose.x,otherPose.z
+    otherParticipant.axisForwardX,otherParticipant.axisForwardZ=ofx,ofz
+    local cache=self.runtime and self.runtime.assemblyRepresentationCache or nil
+    if cache==nil or type(cache.getAssemblyAlignmentSnapshot)~="function" then return false,"ASSEMBLY_ALIGNMENT_CACHE_UNAVAILABLE" end
+    local subjectBaseline,subjectReason=cache:getAssemblyAlignmentSnapshot(subjectParticipant.referenceKey,subjectParticipant.startJobToken,subjectPose.x,subjectPose.z,sfx,sfz)
+    if subjectBaseline==nil then return false,"SUBJECT_ALIGNMENT_BASELINE:"..tostring(subjectReason) end
+    local otherBaseline,otherReason=cache:getAssemblyAlignmentSnapshot(otherParticipant.referenceKey,otherParticipant.startJobToken,otherPose.x,otherPose.z,ofx,ofz)
+    if otherBaseline==nil then return false,"OTHER_ALIGNMENT_BASELINE:"..tostring(otherReason) end
+    subjectParticipant.alignmentBaseline=subjectBaseline
+    otherParticipant.alignmentBaseline=otherBaseline
     run.guide=guide
     local ok,reason=self:_preflightD0146Guide(run)
     if not ok then return false,"EXECUTION_REBASE_PREFLIGHT:"..tostring(reason) end
@@ -463,6 +481,223 @@ function Control:_rebaseD0146Guide(run)
         otherParticipant and otherParticipant.name or tostring(run.otherAssemblyId),otherPose.x,otherPose.z,
         oldOther.x and string.format("%.2f",oldOther.x) or "n/a",oldOther.z and string.format("%.2f",oldOther.z) or "n/a")
     return true,nil
+end
+
+local function envelopeLength(envelope)
+    if type(envelope)~="table" then return nil end
+    local length=tonumber(envelope.lengthM)
+    if length~=nil and length>0 then return length end
+    local minF,maxF=tonumber(envelope.minForwardM),tonumber(envelope.maxForwardM)
+    if minF~=nil and maxF~=nil and maxF>minF then return maxF-minF end
+    return nil
+end
+
+local function maximumEnvelopeProjectionAlongAxis(envelope,envelopeForwardX,envelopeForwardZ,axisForwardX,axisForwardZ)
+    if type(envelope)~="table" then return nil end
+    local minR,maxR=tonumber(envelope.minRightM),tonumber(envelope.maxRightM)
+    local minF,maxF=tonumber(envelope.minForwardM),tonumber(envelope.maxForwardM)
+    if minR==nil or maxR==nil or minF==nil or maxF==nil then return nil end
+    local rightX,rightZ=envelopeForwardZ,-envelopeForwardX
+    local maximum=nil
+    for _,corner in ipairs({{minR,minF},{maxR,minF},{maxR,maxF},{minR,maxF}}) do
+        local wx=rightX*corner[1]+envelopeForwardX*corner[2]
+        local wz=rightZ*corner[1]+envelopeForwardZ*corner[2]
+        local projection=wx*axisForwardX+wz*axisForwardZ
+        maximum=maximum==nil and projection or math.max(maximum,projection)
+    end
+    return maximum
+end
+
+function Control:_alignmentSnapshot(participant)
+    local cache=self.runtime and self.runtime.assemblyRepresentationCache or nil
+    if cache==nil or type(cache.getAssemblyAlignmentSnapshot)~="function" then return nil,"ASSEMBLY_ALIGNMENT_CACHE_UNAVAILABLE" end
+    return cache:getAssemblyAlignmentSnapshot(participant.referenceKey,participant.startJobToken,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ)
+end
+
+function Control:_assemblyTranslationAligned(participant)
+    local baseline=participant and participant.alignmentBaseline or nil
+    if baseline==nil then return false,"ASSEMBLY_ALIGNMENT_BASELINE_UNAVAILABLE" end
+    local current,reason=self:_alignmentSnapshot(participant)
+    if current==nil then return false,reason end
+    local byMember={}
+    for _,m in OuttaMyWay.ValueRecord.ipairs(baseline.members or {}) do byMember[m.memberReferenceKey]=m end
+    local lateralTolerance=tonumber(OuttaMyWay.D0146_ASSEMBLY_ALIGNMENT_LATERAL_TOLERANCE_M) or 0.50
+    local headingMinDot=tonumber(OuttaMyWay.D0146_ASSEMBLY_ALIGNMENT_HEADING_MIN_DOT) or 0.995
+    for _,m in OuttaMyWay.ValueRecord.ipairs(current.members or {}) do
+        local b=byMember[m.memberReferenceKey]
+        if b==nil then return false,"ASSEMBLY_ALIGNMENT_MEMBER_BASELINE_MISSING:"..tostring(m.memberReferenceKey) end
+        if math.abs((tonumber(m.lateralOffsetM) or 0)-(tonumber(b.lateralOffsetM) or 0))>lateralTolerance then
+            return false,"ASSEMBLY_MEMBER_LATERAL_TRANSLATION_NOT_SETTLED:"..tostring(m.memberReferenceKey)
+        end
+        local headingDot=dot(tonumber(m.headingX) or 0,tonumber(m.headingZ) or 0,tonumber(b.headingX) or 0,tonumber(b.headingZ) or 0)
+        if headingDot<headingMinDot then return false,"ASSEMBLY_MEMBER_HEADING_NOT_SETTLED:"..tostring(m.memberReferenceKey) end
+    end
+    if OuttaMyWay.ValueRecord.length(current.members or {})~=OuttaMyWay.ValueRecord.length(baseline.members or {}) then return false,"ASSEMBLY_ALIGNMENT_MEMBER_COUNT_CHANGED" end
+    return true,nil,current
+end
+
+function Control:_stagedBeyondOtherTransitReturn(participant,other)
+    local pp=pose(participant.vehicle)
+    if pp==nil then return false,"RETURN_STAGING_POSE_UNAVAILABLE" end
+    local envelope=participant.transitPassageEnvelope
+    local minForward=type(envelope)=="table" and tonumber(envelope.minForwardM) or nil
+    if minForward==nil then return false,"RETURN_STAGING_TRANSIT_REAR_EXTENT_UNAVAILABLE" end
+    local otherProjection=maximumEnvelopeProjectionAlongAxis(other.transitPassageEnvelope,other.axisForwardX,other.axisForwardZ,participant.axisForwardX,participant.axisForwardZ)
+    if otherProjection==nil then return false,"RETURN_STAGING_OTHER_TRANSIT_ENVELOPE_UNAVAILABLE" end
+    local progress=(pp.x-participant.executionOriginX)*participant.axisForwardX+(pp.z-participant.executionOriginZ)*participant.axisForwardZ
+    local otherOriginProgress=(other.executionOriginX-participant.executionOriginX)*participant.axisForwardX+(other.executionOriginZ-participant.executionOriginZ)*participant.axisForwardZ
+    local limit=otherOriginProgress+otherProjection
+    return progress+minForward>=limit,nil,{progressM=progress,rearStationM=progress+minForward,otherReturnLimitM=limit}
+end
+
+function Control:_participantRunoutReady(participant,other)
+    local aligned,alignmentReason=self:_assemblyTranslationAligned(participant)
+    if not aligned then return false,alignmentReason end
+    local staged,stagingReason,evidence=self:_stagedBeyondOtherTransitReturn(participant,other)
+    if not staged then return false,stagingReason end
+    return true,nil,evidence
+end
+
+function Control:_startRunoutChunk(run,participant)
+    local pp=pose(participant.vehicle)
+    if pp==nil then return false,"ALIGNMENT_RUNOUT_POSE_UNAVAILABLE" end
+    local length=envelopeLength(participant.transitPassageEnvelope)
+    if length==nil or length<=0 then return false,"ALIGNMENT_RUNOUT_TRANSIT_LENGTH_UNAVAILABLE" end
+    local tx,tz=pp.x+participant.axisForwardX*length,pp.z+participant.axisForwardZ*length
+    local inside,fieldReason=fieldResolvedAt(tx,tz)
+    if not inside then return false,"ALIGNMENT_RUNOUT_FIELD_TARGET:"..tostring(fieldReason) end
+    local progress=(pp.x-participant.executionOriginX)*participant.axisForwardX+(pp.z-participant.executionOriginZ)*participant.axisForwardZ
+    local tolerance=tonumber(OuttaMyWay.D0146_STEP2_TRAVERSAL_GATE_RADIUS_M) or 1.0
+    local ok,reason=self.driveAuthority:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,progress+length,run.speedKmh,true,tolerance)
+    if not ok then return false,"ALIGNMENT_RUNOUT_ACTUATION:"..tostring(reason) end
+    participant.runoutActive=true
+    logInfo("ALIGNMENT_RUNOUT_START commitment=%s participant=%s chunk=%.2fm targetStation=%.2fm derivedFrom=TRANSIT_ASSEMBLY_LENGTH",tostring(run.commitmentId),participant.name,length,progress+length)
+    return true,nil
+end
+
+function Control:_beginAlignmentRunout(run)
+    self:_stopLeg(run)
+    self:_setPhase(run,"ALIGNMENT_RUNOUT",g_time or 0)
+    for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
+        participant.runoutActive=false; participant.runoutReady=false; participant.targetX=nil; participant.targetZ=nil
+    end
+    logInfo("RECOVERY_ALIGNMENT_START commitment=%s wholeAssemblyTranslationRequired=true returnStaging=TRANSIT_ENVELOPE_DERIVED",tostring(run.commitmentId))
+    return true,nil
+end
+
+function Control:_updateAlignmentRunout(run)
+    for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
+        if participant.runoutReady~=true then
+            if participant.runoutActive==true and targetReached(self.driveAuthority,participant.vehicle) then
+                self.driveAuthority:clear(participant.vehicle); participant.runoutActive=false
+            end
+            if participant.runoutActive~=true then
+                local other=participant==run.a and run.b or run.a
+                local ready,reason,evidence=self:_participantRunoutReady(participant,other)
+                if ready then
+                    participant.runoutReady=true
+                    self.permissionGate:setHold(participant.vehicle,"D0146-RETURN-STAGED")
+                    logInfo("RETURN_STAGING_READY commitment=%s participant=%s wholeAssemblyAligned=true transitReturnSpaceClear=true rearStation=%.2fm requiredStation=%.2fm",tostring(run.commitmentId),participant.name,tonumber(evidence and evidence.rearStationM) or -1,tonumber(evidence and evidence.otherReturnLimitM) or -1)
+                else
+                    local ok,startReason=self:_startRunoutChunk(run,participant)
+                    if not ok then return false,startReason..":"..tostring(reason) end
+                end
+            end
+        end
+    end
+    for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do if participant.runoutReady~=true then return false,nil end end
+    return true,"ALL_RETURN_STAGING_READY"
+end
+
+function Control:_chooseReturnOrder(run)
+    local list={run.a,run.b}
+    table.sort(list,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
+    run.returnOrder=list
+    return list
+end
+
+function Control:_beginAxisReturn(run,participant,other,requiresReleasedClearance)
+    local aligned,alignmentReason=self:_assemblyTranslationAligned(participant)
+    if not aligned then return false,"AXIS_RETURN_ALIGNMENT_REQUIRED:"..tostring(alignmentReason) end
+    local pp=pose(participant.vehicle)
+    if pp==nil then return false,"AXIS_RETURN_POSE_UNAVAILABLE" end
+    local progress=(pp.x-participant.executionOriginX)*participant.axisForwardX+(pp.z-participant.executionOriginZ)*participant.axisForwardZ
+    local tolerance=tonumber(OuttaMyWay.D0146_STEP2_TRAVERSAL_GATE_RADIUS_M) or 1.0
+    local ok,reason=self.driveAuthority:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,0,run.speedKmh,false,tolerance)
+    if not ok then return false,"AXIS_RETURN_ACTUATION:"..tostring(reason) end
+    run.activeReturnParticipant=participant; run.waitingParticipant=other; run.returnRequiresReleasedClearance=requiresReleasedClearance==true
+    self:_setPhase(run,"AXIS_RETURN",g_time or 0)
+    logInfo("AXIS_RETURN_START commitment=%s participant=%s startStation=%.2fm targetStation=0.00m reverse=true steering=CAPTURED_AXIS_ONLY pointSeeking=false",tostring(run.commitmentId),participant.name,progress)
+    return true,nil
+end
+
+function Control:_beginParticipantRestore(run,participant)
+    self.driveAuthority:clear(participant.vehicle)
+    participant.passageRestoreFoldWaitingLogged=false; participant.passageRestoreFoldSettledLogged=false; participant.passageRestoreFoldExhaustedLogged=false
+    if self.configurationAuthority:getState(participant.vehicle)==nil then
+        run.activeRestoreParticipant=participant
+        self:_setPhase(run,"RESTORING_PARTICIPANT",g_time or 0)
+        return true,"NO_CONFIGURATION_CHANGED"
+    end
+    local ok,state=self.configurationAuthority:requestCachedTransitRestore(participant.vehicle)
+    if not ok then return false,participant.name..":"..tostring(state) end
+    participant.restoreRequested=true
+    run.activeRestoreParticipant=participant
+    self:_setPhase(run,"RESTORING_PARTICIPANT",g_time or 0)
+    logInfo("PARTICIPANT_RESTORE_START commitment=%s participant=%s cachedActuators=%d",tostring(run.commitmentId),participant.name,#(state.restoreActuatorStates or {}))
+    return true,nil
+end
+
+function Control:_participantRestoreReady(participant)
+    if self.configurationAuthority:getState(participant.vehicle)==nil then return true end
+    local settlement=self.configurationAuthority:getCachedRestoreSettlement(participant.vehicle)
+    if settlement.settled~=true then return false end
+    participant.restoreSettlementExhausted=settlement.exhausted==true
+    return true
+end
+
+function Control:_releaseParticipant(run,participant)
+    if self.configurationAuthority:getState(participant.vehicle)~=nil then
+        local ok,result=self.configurationAuthority:finishCachedTransitRestore(participant.vehicle)
+        if not ok then return false,participant.name..":"..tostring(result) end
+        self:_endRepresentationConfigurationAuthority(participant)
+    end
+    self.driveAuthority:clear(participant.vehicle); self.permissionGate:release(participant.vehicle)
+    participant.wakeMethod=wakeNativeContinuation(participant.vehicle); participant.released=true; participant.releasedAt=g_time or 0
+    logInfo("PARTICIPANT_WAVE_ON commitment=%s participant=%s job=%s wake=%s axisReturn=%s restorationExhausted=%s",tostring(run.commitmentId),participant.name,tostring(participant.startJobToken),tostring(participant.wakeMethod),tostring(participant.axisReturnCompleted==true),tostring(participant.restoreSettlementExhausted==true))
+    return true,nil
+end
+
+function Control:_releasedParticipantClearedReturnSpace(released,waiting)
+    local source=self.runtime and self.runtime.liveObservationSource or nil
+    local representation=source and type(source.getTrackedRepresentation)=="function" and source:getTrackedRepresentation(released.referenceKey) or nil
+    if representation==nil then return false,"RETURN_CLEARANCE_REPRESENTATION_UNAVAILABLE",nil end
+    local waitingProjection=maximumEnvelopeProjectionAlongAxis(waiting.transitPassageEnvelope,waiting.axisForwardX,waiting.axisForwardZ,released.axisForwardX,released.axisForwardZ)
+    if waitingProjection==nil then return false,"RETURN_CLEARANCE_WAITING_TRANSIT_ENVELOPE_UNAVAILABLE",nil end
+    local waitingOriginStation=(waiting.executionOriginX-released.executionOriginX)*released.axisForwardX+(waiting.executionOriginZ-released.executionOriginZ)*released.axisForwardZ
+    local requiredStation=waitingOriginStation+waitingProjection
+    local rearStation=nil; local count=0
+    for _,primitive in OuttaMyWay.ValueRecord.ipairs(representation.worldPrimitives or {}) do
+        if primitive.kind=="DISC" and primitive.positiveConflictSupport==true then
+            local x,z,radius=tonumber(primitive.x),tonumber(primitive.z),tonumber(primitive.radius)
+            if x~=nil and z~=nil and radius~=nil and radius>0 then
+                local station=(x-released.executionOriginX)*released.axisForwardX+(z-released.executionOriginZ)*released.axisForwardZ-radius
+                rearStation=rearStation==nil and station or math.min(rearStation,station); count=count+1
+            end
+        end
+    end
+    if rearStation==nil then return false,"RETURN_CLEARANCE_CURRENT_PHYSICAL_PRIMITIVES_UNAVAILABLE",{physicalPrimitiveCount=count,requiredStationM=requiredStation} end
+    local evidence={physicalPrimitiveCount=count,rearStationM=rearStation,requiredStationM=requiredStation,clearanceM=rearStation-requiredStation}
+    if rearStation<requiredStation then return false,"RELEASED_PARTICIPANT_NOT_YET_CLEAR_OF_RETURN_SPACE",evidence end
+    return true,nil,evidence
+end
+
+function Control:_completePairContext(run)
+    local exhausted=run.a.restoreSettlementExhausted==true or run.b.restoreSettlementExhausted==true
+    self.run=nil; self.completedCount=self.completedCount+1
+    logInfo("PAIR_CONTEXT_DISSOLVED commitment=%s reason=NO_REMAINING_PASSAGE_AUTHORITY participantSpecificRelease=true",tostring(run.commitmentId))
+    local evidenceKind=exhausted and "D0146_COOPERATIVE_PASSAGE_RESTORE_EXHAUSTED_AND_HANDED_BACK" or "D0146_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
+    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,sameJobs=true,bothRestored=not exhausted,restorationExhausted=exhausted,participantSpecificRelease=true,completedAt=g_time or 0}})
 end
 
 function Control:_beginD0146Configuration(run)
@@ -748,7 +983,15 @@ function Control:update(dt)
     if not thirdOk then self:_failHeld(thirdReason); return end
 
     local timeout=OuttaMyWay.D0146_STEP2_PHASE_WATCHDOG_MS or 45000
-    if run.failureReason==nil and nowMs-(run.phaseStartedAt or nowMs)>=timeout then self:_failHeld("PHASE_WATCHDOG:"..tostring(run.phase)); return end
+    if run.failureReason==nil and nowMs-(run.phaseStartedAt or nowMs)>=timeout then
+        if run.phase=="WAIT_NATIVE_CLEARANCE" and run.waitingParticipant~=nil then
+            local waiting=run.waitingParticipant; waiting.axisReturnSkipped=true
+            logWarning("RETURN_CLEARANCE_EXHAUSTED commitment=%s waiting=%s action=SKIP_AXIS_RETURN_AND_RESTORE",tostring(run.commitmentId),waiting.name)
+            local ok,reason=self:_beginParticipantRestore(run,waiting); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
+        else
+            self:_failHeld("PHASE_WATCHDOG:"..tostring(run.phase)); return
+        end
+    end
 
     if run.phase=="PASSAGE_APPROACH" then
         local longitudinal=self:_d0146LongitudinalSeparation(run)
@@ -783,11 +1026,74 @@ function Control:update(dt)
             self:_stopLeg(run)
             logInfo("GUIDE_REACHED commitment=%s guide=%s gate=%d/%d kind=%s",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),completedIndex,OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}),tostring(gate and gate.kind or "n/a"))
             if completedIndex>=OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}) then
-                logInfo("D0146_PASSAGE_SECOND_WHISTLE commitment=%s guide=%s pairDependentCrossingComplete=true nativeAxisRecoveryPlanned=true next=SELECTIVE_RESTORE_HANDOFF",tostring(run.commitmentId),tostring(run.guide and run.guide.identity))
-                local ok,reason=self:_beginD0146Restore(run); if not ok then self:_failHeld("RESTORE_START:"..tostring(reason)) end
+                logInfo("D0146_PASSAGE_GUIDE_COMPLETE commitment=%s guide=%s next=RECOVERY_ALIGNMENT_THEN_AXIS_RETURN secondWhistle=false",tostring(run.commitmentId),tostring(run.guide and run.guide.identity))
+                local ok,reason=self:_beginAlignmentRunout(run); if not ok then self:_failHeld("ALIGNMENT_RUNOUT_START:"..tostring(reason)) end
             else
                 local ok,reason=self:_startGuideGate(run,completedIndex+1); if not ok then self:_failHeld(tostring(reason)) end
             end
+        end
+    elseif run.phase=="ALIGNMENT_RUNOUT" then
+        local ready,runoutReason=self:_updateAlignmentRunout(run)
+        if not ready and runoutReason~=nil then self:_failHeld(runoutReason); return end
+        if ready then
+            local order=self:_chooseReturnOrder(run); local first,second=order[1],order[2]
+            local ok,reason=self:_beginAxisReturn(run,first,second,false)
+            if not ok then
+                first.axisReturnSkipped=true
+                logWarning("AXIS_RETURN_SKIPPED commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),first.name,tostring(reason))
+                local restoreOk,restoreReason=self:_beginParticipantRestore(run,first); if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason)) end
+            end
+        end
+    elseif run.phase=="AXIS_RETURN" then
+        local participant=run.activeReturnParticipant
+        if participant==nil then self:_failHeld("AXIS_RETURN_PARTICIPANT_UNAVAILABLE"); return end
+        if run.returnRequiresReleasedClearance==true and run.releasedLeader~=nil then
+            local clear,clearReason,evidence=self:_releasedParticipantClearedReturnSpace(run.releasedLeader,participant)
+            if not clear then
+                self.driveAuthority:clear(participant.vehicle); participant.axisReturnSkipped=true
+                logWarning("AXIS_RETURN_CLEARANCE_LOST commitment=%s participant=%s released=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),participant.name,run.releasedLeader.name,tostring(clearReason))
+                local ok,reason=self:_beginParticipantRestore(run,participant); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
+                return
+            end
+        end
+        if targetReached(self.driveAuthority,participant.vehicle) then
+            self.driveAuthority:clear(participant.vehicle); participant.axisReturnCompleted=true
+            logInfo("AXIS_RETURN_COMPLETE commitment=%s participant=%s executionOriginStation=true",tostring(run.commitmentId),participant.name)
+            local ok,reason=self:_beginParticipantRestore(run,participant); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
+        else
+            local aligned,alignmentReason=self:_assemblyTranslationAligned(participant)
+            if not aligned then
+                self.driveAuthority:clear(participant.vehicle); participant.axisReturnSkipped=true
+                logWarning("AXIS_RETURN_ALIGNMENT_LOST commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),participant.name,tostring(alignmentReason))
+                local ok,reason=self:_beginParticipantRestore(run,participant); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
+            end
+        end
+    elseif run.phase=="RESTORING_PARTICIPANT" then
+        local participant=run.activeRestoreParticipant
+        if participant==nil then self:_failHeld("RESTORE_PARTICIPANT_UNAVAILABLE"); return end
+        if self:_participantRestoreReady(participant) then
+            local ok,reason=self:_releaseParticipant(run,participant); if not ok then self:_failHeld("PARTICIPANT_RELEASE:"..tostring(reason)); return end
+            if run.a.released==true and run.b.released==true then self:_completePairContext(run); return end
+            local waiting=run.a.released==true and run.b or run.a
+            run.releasedLeader=participant; run.waitingParticipant=waiting; run.activeRestoreParticipant=nil; run.activeReturnParticipant=nil; run.returnRequiresReleasedClearance=false
+            self:_setPhase(run,"WAIT_NATIVE_CLEARANCE",g_time or 0)
+            logInfo("RETURN_CLEARANCE_WAIT commitment=%s released=%s waiting=%s positiveCurrentOccupancyRequired=true",tostring(run.commitmentId),participant.name,waiting.name)
+        end
+    elseif run.phase=="WAIT_NATIVE_CLEARANCE" then
+        local released,waiting=run.releasedLeader,run.waitingParticipant
+        if released==nil or waiting==nil then self:_failHeld("RETURN_CLEARANCE_CONTEXT_UNAVAILABLE"); return end
+        local clear,clearReason,evidence=self:_releasedParticipantClearedReturnSpace(released,waiting)
+        if clear then
+            logInfo("RETURN_CLEARANCE commitment=%s released=%s waiting=%s rearStation=%.2fm requiredStation=%.2fm clearance=%.2fm authority=POSITIVE_CURRENT_PHYSICAL_OCCUPANCY",tostring(run.commitmentId),released.name,waiting.name,tonumber(evidence and evidence.rearStationM) or -1,tonumber(evidence and evidence.requiredStationM) or -1,tonumber(evidence and evidence.clearanceM) or -1)
+            local ok,reason=self:_beginAxisReturn(run,waiting,released,true)
+            if not ok then
+                waiting.axisReturnSkipped=true
+                logWarning("AXIS_RETURN_SKIPPED commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),waiting.name,tostring(reason))
+                local restoreOk,restoreReason=self:_beginParticipantRestore(run,waiting); if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason)) end
+            end
+        elseif nowMs>=(run.nextReturnClearDiagnosticMs or 0) then
+            run.nextReturnClearDiagnosticMs=nowMs+(OuttaMyWay.D0146_COOPERATIVE_PASSAGE_HEARTBEAT_MS or 1000)
+            logInfo("RETURN_CLEARANCE_WAIT_DETAIL commitment=%s released=%s waiting=%s reason=%s rearStation=%s requiredStation=%s",tostring(run.commitmentId),released.name,waiting.name,tostring(clearReason),evidence and evidence.rearStationM and string.format("%.2f",evidence.rearStationM) or "n/a",evidence and evidence.requiredStationM and string.format("%.2f",evidence.requiredStationM) or "n/a")
         end
     elseif run.phase=="RESTORING" then
         if self:_d0146RestoreReady(run) then

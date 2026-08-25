@@ -1,3 +1,49 @@
+## v0.1.13.0 canonical-candidate checkpoint — D-0192 Bounded Axis Return
+
+D-0192 changes **only post-Passage Recovery and handback**. The proven v0.1.12.0 D-0146 phases from Identify through the canonical Passage guide remain governing, including the historical 80 m locality and D-0155 Regulation behaviour. v0.1.12.4 field validation passed TS009, TS010S, TS015 and TS016; v0.1.13.0 promotes those exact behavioural bytes with release/documentation changes only.
+
+```text
+canonical D-0146 guide completes
+        |
+        v
+8A RECOVERY ALIGNMENT / RETURN STAGING
+   - continue on captured original axis as required
+   - whole Transit assembly must regain Phase-5 alignment
+   - stage beyond the other participant's Transit return occupancy
+        |
+        v
+8B AXIS RETURN TOKEN (one participant only)
+   - reverse straight on captured axis
+   - completion by execution-origin longitudinal station
+   - never reverse point-seek
+        |
+        v
+9 participant restore + native handback
+        |
+        v
+released current physical occupancy clears waiting return space?
+   | yes                         | no / exhaustion
+   v                             v
+transfer 8B token          skip waiting 8B
+   |                             |
+   +-------------+---------------+
+                 v
+       restore/handback remainder
+                 |
+                 v
+          pair context dissolves
+```
+
+**Recovery Alignment:** Phase-8 completion is a physical assembly state rather than tractor waypoint proximity. Each current member must remain close to its Phase-5 lateral relation and heading in the captured execution-axis frame; this allows articulated/trailing members to straighten before reverse. The implementation tolerances are measurement mechanics, not new Passage geometry.
+
+**Axis Return:** Passage Position Debt is caused by controlled forward displacement, not by lateral burden. Axis Return therefore applies to zero-deficit straight passages as well as lateral excursions. Reverse authority preserves the captured axis and uses signed station progress; loss of alignment terminates the optional return instead of producing corrective reverse steering.
+
+**Positive Return Authority:** Axis Return is a single-track resource. The second participant is authorised only after the first has returned, restored, been handed back, and its current observed physical occupancy has positively cleared the waiting participant's Transit return space. No elapsed-time prediction grants authority. The evidence is revalidated during the second return.
+
+**Fail-safe:** position recovery is opportunistic. Unsupported alignment, lost clearance or bounded waiting exhaustion may skip an Axis Return and proceed to the existing D-0183 restore/native handback. Position recovery must never soft-lock Cooperative Passage.
+
+**D-0193 Literal-Audit boundary:** the discarded v0.1.12.1–v0.1.12.3 line showed that apparently independent literals may carry coupled implementation authority. In particular, the 80 m locality had become both a Regulation-locality gate and a Passage-planning locality gate. Removing it while broadening lookahead conflated Encounter Lookahead with Resolution Space and disturbed Regulation/commit timing. Architecture therefore retains the v0.1.12.0 Phase-1–7 integrated contract until a future isolated experiment positively establishes a replacement concept. This is retention by Reality, not a claim that 80 m or the other audited magnitudes are intrinsically optimal.
+
 ## v0.1.9.1 TEST amendment — D-0184 Legacy Authority Closure C
 
 Implementation archaeology is not architecture. Retired D-0143/TS015 fixture implementations and the in-tree v4.6.78 script archive are deleted; their evidence remains in Git/history and governance records. D-0146 is the only live Cooperative Passage architecture and D-0183 cached-actuator symmetry is its only restoration path.

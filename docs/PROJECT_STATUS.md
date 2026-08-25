@@ -1,3 +1,25 @@
+# Current status — v0.1.13.0 CANONICAL CANDIDATE — D-0192 Bounded Axis Return
+
+**Validated behavioural source:** exact v0.1.12.4 TEST (`67d547dc1965d0942ca4e38aea74b3b539b7a4aad3930527151082c80609de4b`; 263 files), directly based on owner-declared v0.1.12.0 canonical. v0.1.12.1–v0.1.12.3 remain discarded discovery TESTs and are evidence only.
+
+**Behaviour:** candidate promotion introduces no new traffic/control algorithm. D-0192 preserves the complete v0.1.12.0 Identify → Preserve/Regulate → Plan/Commit → Entry → Transit → Development → Crossing behaviour and adds only the validated post-Passage Recovery extension: whole-assembly Recovery Alignment/Return Staging, one-at-a-time straight Axis Return by captured axis/station, participant-specific restore/handover, positive current-occupancy return-token transfer, and safe skip/fallback on lost support.
+
+**Field Reality:** owner ran TS009, TS010S, TS015 and TS016; all observed PASS. Combined log: 4 successful Cooperative Passage settlements; 8 whole-assembly staging admissions; 8 Axis Return starts and 8 completions; 8 participant wave-ons; 4 pair-context dissolutions; zero Axis-Return abort/skip/wait-exhaustion and zero restoration exhaustion. TS016 S416 completes `CAPTURED_AXIS_ONLY` reverse with `pointSeeking=false`. TS010S confirms D-0155 Regulation remains active under the restored v0.1.12.0 Phase-2 contract.
+
+**Literal audit carry-forward (D-0193):** v0.1.12.1–v0.1.12.3 tested a broad Literal-Provenance simplification line. Reality disproved treating Field-World Encounter Lookahead as Resolution Space and exposed **Coupled Literal Authority** in the old 80 m gate: removing one literal simultaneously disturbed Regulation locality and Passage-plan/commit locality. The same bundled line exposed post-release recovery collision and reverse point-seeking circles. Those experiments are retained as architectural knowledge, but their implementation is not ancestral to this candidate. Future literal work must be isolated and evidence-led; existing v0.1.12.0 Phase-1–7 magnitudes remain retained, not asserted optimal.
+
+**Release validation:** 99/99 structural, 271/271 replacement-core Lua and 25/25 RRS tests pass; 107/107 Lua files parse; XML/version, 262/262 manifest, 263-file package and deterministic ZIP checks form the final candidate gate.
+
+**Release state:** owner canonical declaration and local Git/provenance remain pending.
+
+## v0.1.12.4 TEST — D-0192 Bounded Axis Return
+
+**Authoritative baseline:** owner-declared v0.1.12.0 canonical (`f77a0564e747470fade97c778b29682e2a8a4614762b459b9bdd80a730c9277a`; Git `ed52e0a6762be67d3151d2620d7749ec52ab9dbd`; 263 files). v0.1.12.1–v0.1.12.3 are discarded discovery TESTs and are not implementation ancestors.
+
+**Current TEST:** D-0192 deliberately preserves all v0.1.12.0 Encounter/Regulation/Plan/Passage behaviour and adds only post-Passage position recovery. 8A requires complete Transit-assembly alignment on the captured original axis and may extend forward for safe return staging. 8B reverses one participant at a time on that axis toward the captured execution-origin station; reverse point-seeking is prohibited. The first participant then restores and returns to GIANTS so its native continuation can provide positive physical clearance for the second return token. Loss/absence of clearance or alignment skips the optional return and falls safely through to restore/handover.
+
+**Validation state:** 99/99 Python structural tests and 271/271 Lua replacement-core tests passed. Owner field validation on 25 August 2026 ran TS009, TS010S, TS015 and TS016: all PASS. The combined log records 4 successful settlements, 8/8 Axis Returns and 4 pair dissolutions with no Axis-Return abort/skip/wait-exhaustion or restoration exhaustion. v0.1.12.4 is therefore the validated behavioural source for v0.1.13.0; v0.1.12.0 remains canonical until explicit owner promotion.
+
 ## v0.1.12.0 CANONICAL CANDIDATE — current status
 
 D-0188 Termination Evidence Collapse is field-validated. TS015 produced three successful Passages, naturally ended JE-00001 with `terminalCause=nil`, admitted that ended episode to D-0147, completed Terminal Egress successfully and renewed continuation. The prior Termination Evidence Diagnostic Ambiguity is retired with the redundant Job Episode cause layer. Candidate promotion is release/provenance only over v0.1.11.2; Literal Provenance Audit and TS010 Terminal Completion remain parked next.

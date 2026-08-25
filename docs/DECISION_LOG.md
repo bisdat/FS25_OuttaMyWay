@@ -1,3 +1,35 @@
+## D-0193 — Literal Provenance Audit: Reality Reconciliation (v0.1.13.0)
+
+**Status:** Accepted architectural knowledge; v0.1.12.1–v0.1.12.3 are explicitly non-ancestral discovery TESTs.
+
+**Question investigated:** could surviving Cooperative Passage literals be replaced by more direct geometry/evidence concepts without changing architectural intent? The audit examined the 80 m locality, 75% Resolution-Space reserve, 1 km/h creep, 1.00/0.95 m clearance policy, burden fractions, 3 m Entry allowance, 0.25 km/h Hold settlement, Transit settlement bounds, 2:1/4 m Development shape, 8 km/h guide actuation, guide radii and sampled Field/pair support.
+
+**Attempted implementation line:** v0.1.12.1 broadened Identify to Field-World lookahead, introduced continuous support geometry, simplified guide waypoints and expanded post-Passage recovery. v0.1.12.2 added Return Authority Convergence plus deep diagnostics. v0.1.12.3 repaired normalized Future-Space wiring, separated provisional plan/late commit and simplified post-handover clearance evidence.
+
+**Reality findings:** (1) removing 80 m exposed **Coupled Literal Authority**: it had been constraining both Regulation locality and Passage-planning locality; (2) Field-World Encounter Lookahead is not the same quantity as local Resolution Space, and applying the 75% reserve to field-scale distance produced overly early/strong Regulation; (3) broad asymmetric early-warning could regulate relationships that were not yet a useful local opposed encounter; (4) participant-specific release without protecting the remaining recovery demand allowed a released worker's native cross-field reposition to re-enter the waiting participant's recovery space; (5) reverse point-seeking produced an S416 reversing circle; (6) D-0190 Return Authority Convergence itself was valid, but it did not justify keeping the broader experimental line.
+
+**Decision:** reset implementation ancestry to v0.1.12.0 for Phases 1–7. Retain its 80 m locality, D-0155 Regulation behaviour, Candidate sampling, Passage Approach, Entry/Transit/guide mechanics and already-audited magnitudes until contrary field evidence establishes a specific replacement. Preserve the discoveries as knowledge, not code ancestry. Carry forward only the separately reimplemented and validated D-0192 post-Passage capability.
+
+**Future rule:** a Literal Provenance Audit does not imply Literal Removal. Where a number is crude but integrated and field-proven, replacement must identify every responsibility it currently carries and validate one isolated conceptual substitution at a time.
+
+## D-0192 — Bounded Axis Return (field-validated v0.1.12.4; promoted by v0.1.13.0)
+
+**Baseline decision:** reset implementation to owner-declared v0.1.12.0 canonical. v0.1.12.1–v0.1.12.3 disproved the value of simultaneously replacing working Encounter/Regulation/Plan machinery; those TESTs remain discovery evidence only. D-0192 therefore leaves Phases 1–7 unchanged and modifies only post-Passage Recovery/Handback.
+
+**Observation:** canonical Passage can move both participants materially forward even when natural Transit geometry needs zero lateral correction. That forward displacement can leave GIANTS to reacquire productive work well ahead of the point at which OuttaMyWay intervened. A reverse point-seeking experiment also caused an articulated S416 assembly to enter a reversing circle, while keeping both participants under Passage authority through both returns creates a possible soft lock.
+
+**Decision — Recovery Alignment (8A):** the canonical Recovery guide remains the initial return shape, but completion is strengthened. Before Axis Return, the whole cached Transit assembly must be sufficiently equivalent to its Phase-5 aligned pose under translation along the captured original working axis. Forward runout may continue to straighten articulated members and establish staging beyond the other participant's Transit return occupancy.
+
+**Decision — Axis Return (8B):** every Passage participant with controlled forward displacement has a bounded return obligation independent of lateral burden. Reverse movement is axis-station travel: command the captured original axis, measure signed longitudinal station progress toward the captured execution origin, and never steer towards the origin as a point. If whole-assembly alignment is materially lost, abandon Axis Return and restore/hand back safely.
+
+**Decision — Return token / participant release:** only one potentially conflicting Axis Return is authorised at a time. The first participant returns, restores through the existing D-0183 cached-actuator contract, and is handed back to GIANTS. The waiting participant receives the return token only after positive **current physical occupancy** proves the released assembly clear of the waiting participant's Transit return space. Clearance is revalidated during the second return; loss of clearance aborts that optional return. A bounded wait exhaustion skips the second return rather than soft-locking.
+
+**Pair lifecycle:** no pair-wide second-whistle completion is required. Participant release drains Passage authority one worker at a time; the pair context is discarded when no participant remains under Passage authority. Existing lifecycle success/exhaustion evidence names are retained for compatibility.
+
+**Non-change:** D-0146 Identify, 80 m locality, D-0155 Preserve/Regulation, 75% reserve, 1 km/h creep, Candidate sampling/selection, Passage Approach, Entry, Transit, Development, Crossing, D-0147, D-0179 and D-0183 remain v0.1.12.0 behaviour.
+
+**Field evidence:** owner ran TS009, TS010S, TS015 and TS016 on v0.1.12.4 and observed all PASS. The combined log records four `COOPERATIVE_PASSAGE_SETTLED ... terminal=SUCCEEDED` outcomes, eight aligned/supported return stagings, eight Axis Return starts/completions, eight participant wave-ons and four pair dissolutions, with no return abort/skip/wait exhaustion or restoration exhaustion. TS016 specifically demonstrates the S416 reverse as captured-axis station travel rather than point-seeking.
+
 ## D-0188 — Termination Evidence Collapse (validated; v0.1.12.0 candidate)
 
 **Decision:** positive GIANTS source-job end evidence is sufficient to transition the admitted Job Episode directly to `ENDED`; natural completion does not create a second termination-cause representation. `RESTARTED` / `REPLACED` remain succession semantics, and D-0147 Player Claim remains post-completion Terminal Resolution.

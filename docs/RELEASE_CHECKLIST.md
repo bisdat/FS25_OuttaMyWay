@@ -1,3 +1,16 @@
+## v0.1.13.0 CANONICAL CANDIDATE checklist — D-0192 / D-0193
+
+- [x] Behavioural source is exact v0.1.12.4 TEST SHA-256 `67d547dc1965d0942ca4e38aea74b3b539b7a4aad3930527151082c80609de4`, 263 files.
+- [x] Implementation ancestry remains owner-declared v0.1.12.0 canonical; v0.1.12.1–v0.1.12.3 are non-ancestral evidence only.
+- [x] Field regression: TS009 PASS, TS010S PASS, TS015 PASS, TS016 PASS.
+- [x] Combined field log records 4 successful Cooperative Passage settlements, 8 Return Staging Ready, 8 Axis Return Start/Complete, 8 participant wave-ons and 4 pair dissolutions.
+- [x] No Axis-Return abort/skip/wait-exhaustion and no restoration exhaustion in the supplied four-scenario log.
+- [x] D-0193 records the v0.1.12.1–v0.1.12.3 Literal-Provenance attempt and the Coupled Literal Authority / Encounter-Lookahead-vs-Resolution-Space discoveries.
+- [x] Candidate preparation changes release identity/documentation/assertions only; no intended traffic/control algorithm delta from v0.1.12.4.
+- [x] Exact packaged candidate passes 99/99 structural, 271/271 Lua replacement-core, 25/25 RRS, 107/107 Lua parse, 262/262 manifest, XML and ZIP checks; deterministic repeat-build verified.
+- [ ] Owner reviews and explicitly declares the exact candidate fingerprint canonical.
+- [ ] Owner records local Git commit/provenance and synchronises repository independently.
+
 ## v0.1.12.0 CANONICAL CANDIDATE checklist
 
 - [x] Starts from exact owner-declared v0.1.11.0 canonical fingerprint.

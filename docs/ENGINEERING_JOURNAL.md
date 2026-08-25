@@ -1,3 +1,37 @@
+# v0.1.13.0 CANONICAL CANDIDATE — D-0192 field closure / D-0193 Literal-Audit Reality Reconciliation
+
+**Observe:** v0.1.12.4 was run through TS009, TS010S, TS015 and TS016. Owner observed all four PASS. The supplied combined log independently records 4 successful Cooperative Passage settlements, 8/8 whole-assembly return staging admissions, 8/8 Axis Return starts/completions, 8 participant wave-ons and 4 pair-context dissolutions. No Axis-Return abort/skip/wait-exhaustion or restoration exhaustion occurred. TS016 S416 explicitly uses captured-axis-only reverse with point-seeking disabled and completes normally; TS010S shows D-0155 Regulation remains present after the canonical reset.
+
+**Discuss — what the Literal Audit tried to solve:** the audit began by decomposing Passage into Identify, Preserve, Plan/Commit, Entry, Transit, Development, Crossing, Recovery and Restore/Handback, then asking what physical concept owned each surviving literal. Several values were positively retained during discussion (1.00 m/0.95 clearance, 50/25/75/0/100 burden search, 75% reserve pending contrary evidence, proven 1 km/h creep, 3 m Entry acquisition allowance, 0.25 km/h Hold settlement, Transit settlement bounds, 2:1/4 m Development shape and conservative 8 km/h guide speed). The experimental implementation nevertheless tried to remove/derive other historical mechanics such as the 80 m locality, sampled Field/pair support and intermediate guide points.
+
+**Hypotheses tested in v0.1.12.1–v0.1.12.3:** Field-World boundary lookahead could replace the 80 m locality; continuous geometry could replace sampled support; supported plans could remain provisional until late commit; physical evidence could replace some guide radii; whole-assembly Recovery plus Axis Return could remove Passage-created position debt; participant-specific release could sequence two returns.
+
+**Disproved / qualified by Reality:** removing 80 m stopped working Regulation because the value had hidden admission responsibilities in more than one module. Repairing the wiring then made the full Field-World distance feed the 75% Resolution-Space envelope, causing Regulation to collapse toward 1 km/h at field-scale separation and allowing asymmetric early-warning to regulate relationships that were not yet a useful local opposed encounter. Broad early planning also exposed premature Passage commitment. In TS015, returning/releasing one participant allowed GIANTS to turn it back across the remaining participant's recovery demand and collision followed. In TS016, reverse point-seeking made S416 circle instead of returning straight. These were not reasons to tune 80 m to 40 m or invent new margins; they showed the experimental line had changed too many coupled responsibilities at once.
+
+**Named discovery — Coupled Literal Authority:** the 80 m literal was not merely an Identify horizon. It had accumulated at least Regulation-locality and Passage-planning locality responsibilities. Removing the number without first separating those responsibilities changed architecture in practice.
+
+**Named discovery — Encounter Lookahead is not Resolution Space:** an early warning may legitimately see to the Field-World boundary, but that does not make the whole visible distance the local Resolution-Space budget. Preserve needs its own bounded meaning.
+
+**Decision:** celebrate the disproved line and reset. v0.1.12.4 was rebuilt directly from v0.1.12.0 canonical, preserving Phases 1–7 byte-behavioural intent and applying only the post-Passage lesson that survived: D-0192 whole-assembly Recovery Alignment plus sequenced straight Axis Return. That isolated capability then passed all four scenarios.
+
+**Record for future Literal Provenance work:** do not repeat v0.1.12.1–v0.1.12.3 as ancestry. Do not infer that retained literals are ideal; infer only that their integrated contract is proven. Before replacing any surviving literal, identify every live responsibility it carries, modify one concept at a time, and run prior scenarios before widening the tranche.
+
+**Promotion:** v0.1.13.0 changes release identity/documentation only over the validated v0.1.12.4 behaviour. Owner canonical declaration remains a separate provenance step.
+
+# v0.1.12.4 TEST — D-0192 Bounded Axis Return / canonical reset
+
+**Observe:** the v0.1.12.1–v0.1.12.3 Literal-Audit implementation line improved several local mechanisms but regressed a fundamental proven behaviour: Resolution-Space Regulation. Removing the historical 80 m literal revealed coupled responsibilities, and later TESTs also exposed reverse point-seeking circles and post-return collision opportunities.
+
+**Discuss:** Reality says v0.1.12.0 Phases 1–7 already form a working behavioural system despite imperfect literal provenance. The useful new discovery is narrower: Passage-created forward displacement should be repaired before native handback where Reality supports a bounded return.
+
+**Hypothesis:** retain canonical Encounter/Preserve/Plan/Entry/Transit/Guide behaviour untouched. Amend only Phase 8: after canonical Recovery, establish whole-assembly axis alignment and staging, then perform one-at-a-time straight Axis Return toward each captured Phase-5 execution-origin station. Release the first returned participant to GIANTS to avoid a two-worker return deadlock; use its current positive occupancy as the token evidence for the second return.
+
+**Implement:** `AssemblyRepresentationCache` now exposes member alignment snapshots; `Prototype22DriveAuthority` adds `AXIS_TRAVEL`, which follows a captured world axis and completes by longitudinal station rather than target-point pursuit; `CooperativePassageControl` adds Recovery Alignment/runout, sequential Axis Return, participant-specific D-0183 restore/handover, current-occupancy return clearance, clearance-loss abort and watchdog fallback.
+
+**Validate:** 99/99 structural tests and 271/271 Lua replacement-core tests pass. Targeted tests cover reverse axis travel, articulated alignment, staging, positive return-token transfer, clearance-loss abort, alignment-loss abort and participant-release deadlock prevention. Subsequent field validation on 25 August 2026 ran TS009, TS010S, TS015 and TS016: all PASS; the combined log records eight successful Axis Returns and no return abort/skip/wait-exhaustion.
+
+**Record:** v0.1.12.4 TEST is a direct child of v0.1.12.0 canonical. v0.1.12.1–v0.1.12.3 are retained only as disproven/partial hypotheses and diagnostic evidence.
+
 # v0.1.8.0 CANONICAL CANDIDATE — D-0181 validation and promotion
 
 **Observation:** owner ran v0.1.7.1 in order TS016 → TS015 → TS010S → TS009 and reported all PASS. Log review supports the observation.

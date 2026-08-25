@@ -4338,11 +4338,14 @@ test("D0146 execution-origin capture rebases short Development ahead of stopped 
     localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId=1} end
     local donor={permissionGate={},driveAuthority={},configurationAuthority={}}
-    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    local runtime={assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
+        return {members={{memberReferenceKey=tostring(referenceKey),lateralOffsetM=0,forwardOffsetM=0,headingX=fx,headingZ=fz}}}
+    end}}
+    local control=OuttaMyWay.CooperativePassageControl.new(runtime,donor)
     control.run={
         mode="D0146_GUIDE",commitmentId="CM-REBASE",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
         passageArrangement={subjectLateralOffsetM=1,otherLateralOffsetM=-1},
-        a={vehicle=vehicleA,name="A",assemblyId="AS-A"},b={vehicle=vehicleB,name="B",assemblyId="AS-B"},
+        a={vehicle=vehicleA,name="A",assemblyId="AS-A",referenceKey="REF-A",startJobToken="JOB-A"},b={vehicle=vehicleB,name="B",assemblyId="AS-B",referenceKey="REF-B",startJobToken="JOB-B"},
         participants={},
         guide={identity="PG-REBASE",entryOrigins={subject={x=0,z=0},other={x=0,z=20}},executionFrame={sharedRightX=1,sharedRightZ=0,subjectForwardX=0,subjectForwardZ=1,otherForwardX=0,otherForwardZ=-1},gates={
             {index=1,kind="DEVELOPMENT_ENTRY",forwardM=2,lateralFraction=0.5,radiusM=1,subject={assemblyId="AS-A",x=0.5,z=2,radiusM=1},other={assemblyId="AS-B",x=-0.5,z=18,radiusM=1}},
@@ -4920,5 +4923,137 @@ test("D0183 restore settlement exhaustion removes restoration veto without asser
     equal(exhausted.settled,true); equal(exhausted.exhausted,true); equal(exhausted.normal,false)
     equal(authority:finishCachedTransitRestore(vehicle),true)
 end)
+
+
+test("D0192 Axis Travel reverses on captured axis rather than pursuing a point",function()
+    local oldAIVehicleUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal
+    local z=10; local calls={}
+    AIVehicleUtil={driveToPoint=function(vehicle,dt,accel,allowed,moveForwards,lx,lz,maxSpeed)
+        calls[#calls+1]={allowed=allowed,moveForwards=moveForwards,lx=lx,lz=lz,maxSpeed=maxSpeed}; return true
+    end}
+    getWorldTranslation=function(node) return 0,0,z end
+    worldDirectionToLocal=function(node,x,y,dz) return x,y,dz end
+    local vehicle={rootNode=19001,getAISteeringNode=function(self) return self.rootNode end}
+    local authority=OuttaMyWay.Prototype22DriveAuthority.new()
+    equal(authority:setAxisTravel(vehicle,0,0,0,1,0,8,false,1),true)
+    AIVehicleUtil.driveToPoint(vehicle,16,1,true,true,0,1,25)
+    equal(calls[#calls].moveForwards,false); equal(math.abs(calls[#calls].lx)<0.0001,true); equal(math.abs(calls[#calls].lz+1)<0.0001,true)
+    equal(authority:getState(vehicle).targetReached,false)
+    z=0.5; AIVehicleUtil.driveToPoint(vehicle,16,1,true,true,0,1,25)
+    equal(authority:getState(vehicle).targetReached,true); equal(calls[#calls].allowed,false)
+    AIVehicleUtil, getWorldTranslation, worldDirectionToLocal = oldAIVehicleUtil,oldTranslation,oldWorldDirection
+end)
+
+test("D0192 Recovery Alignment waits for the complete articulated assembly",function()
+    local control=OuttaMyWay.CooperativePassageControl.new({}, {permissionGate={},driveAuthority={},configurationAuthority={}})
+    local participant={alignmentBaseline={members={
+        {memberReferenceKey="tractor",lateralOffsetM=0,headingX=0,headingZ=1},
+        {memberReferenceKey="trailer",lateralOffsetM=0,headingX=0,headingZ=1}
+    }}}
+    control._alignmentSnapshot=function() return {members={
+        {memberReferenceKey="tractor",lateralOffsetM=0.1,headingX=0,headingZ=1},
+        {memberReferenceKey="trailer",lateralOffsetM=0.1,headingX=0.2,headingZ=math.sqrt(0.96)}
+    }} end
+    equal(control:_assemblyTranslationAligned(participant),false)
+    control._alignmentSnapshot=function() return {members={
+        {memberReferenceKey="tractor",lateralOffsetM=0.1,headingX=0,headingZ=1},
+        {memberReferenceKey="trailer",lateralOffsetM=0.1,headingX=0.02,headingZ=math.sqrt(0.9996)}
+    }} end
+    equal(control:_assemblyTranslationAligned(participant),true)
+end)
+
+test("D0192 Return Staging places each Transit assembly beyond the other's return occupancy",function()
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local positions={[19101]={0,0,14},[19102]={0,0,-4}}
+    local directions={[19101]={0,1},[19102]={0,-1}}
+    getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
+    localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
+    local control=OuttaMyWay.CooperativePassageControl.new({}, {permissionGate={},driveAuthority={},configurationAuthority={}})
+    local envelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2,lengthM=4}
+    local a={vehicle={rootNode=19101,getAISteeringNode=function(self) return self.rootNode end},executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1,transitPassageEnvelope=envelope}
+    local b={vehicle={rootNode=19102,getAISteeringNode=function(self) return self.rootNode end},executionOriginX=0,executionOriginZ=10,axisForwardX=0,axisForwardZ=-1,transitPassageEnvelope=envelope}
+    local readyA,_,evA=control:_stagedBeyondOtherTransitReturn(a,b); equal(readyA,true); equal(math.abs(evA.rearStationM-12)<0.001,true)
+    local readyB,_,evB=control:_stagedBeyondOtherTransitReturn(b,a); equal(readyB,true); equal(math.abs(evB.rearStationM-12)<0.001,true)
+    positions[19101]={0,0,13.5}; equal(control:_stagedBeyondOtherTransitReturn(a,b),false)
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+end)
+
+test("D0192 Return token transfers only after released current occupancy clears waiting Transit return space",function()
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    local z=18
+    getWorldTranslation=function(node) return 0,0,z end
+    localDirectionToWorld=function(node,x,y,dz) return 0,0,1 end
+    local envelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2,lengthM=4}
+    local runtime={liveObservationSource={getTrackedRepresentation=function(self,key)
+        return {worldPrimitives={{kind="DISC",positiveConflictSupport=true,x=0,z=z,radius=2,identity="released"}}}
+    end}}
+    local control=OuttaMyWay.CooperativePassageControl.new(runtime,{permissionGate={},driveAuthority={},configurationAuthority={}})
+    local released={vehicle={rootNode=19201,getAISteeringNode=function(self) return self.rootNode end},referenceKey="REF-A",executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1,transitPassageEnvelope=envelope}
+    local waiting={executionOriginX=0,executionOriginZ=15,axisForwardX=0,axisForwardZ=-1,transitPassageEnvelope=envelope}
+    local clear,reason,evidence=control:_releasedParticipantClearedReturnSpace(released,waiting)
+    equal(clear,false); equal(reason,"RELEASED_PARTICIPANT_NOT_YET_CLEAR_OF_RETURN_SPACE"); equal(math.abs(evidence.requiredStationM-17)<0.001,true)
+    z=20; clear,reason,evidence=control:_releasedParticipantClearedReturnSpace(released,waiting)
+    equal(clear,true); equal(reason,nil); equal(math.abs(evidence.rearStationM-18)<0.001,true)
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+end)
+
+test("D0192 second Axis Return aborts safely if released clearance is lost",function()
+    local waiting={name="Waiting",vehicle={},axisReturnSkipped=false}
+    local released={name="Released",vehicle={},released=true}
+    local donor={
+        permissionGate={},
+        driveAuthority={clear=function() end,getState=function() return {targetReached=false} end},
+        configurationAuthority={}
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    control.run={mode="D0146_GUIDE",commitmentId="CM-D0192-CLEAR",phase="AXIS_RETURN",phaseStartedAt=0,startedAt=0,a=released,b=waiting,participants={released,waiting},activeReturnParticipant=waiting,releasedLeader=released,returnRequiresReleasedClearance=true,failureReason=nil}
+    control.nextHeartbeatMs=math.huge
+    control._allSameJob=function() return true,nil end
+    control._thirdPartySupport=function() return true,nil end
+    control._releasedParticipantClearedReturnSpace=function() return false,"RELEASED_PARTICIPANT_NOT_YET_CLEAR_OF_RETURN_SPACE",{} end
+    local restoreCalls=0
+    control._beginParticipantRestore=function(self,run,p) restoreCalls=restoreCalls+1; run.phase="RESTORING_PARTICIPANT"; return true,nil end
+    local oldTime=g_time; g_time=1000
+    control:update(16)
+    equal(waiting.axisReturnSkipped,true); equal(restoreCalls,1); equal(control.run.phase,"RESTORING_PARTICIPANT")
+    g_time=oldTime
+end)
+
+test("D0192 Axis Return alignment loss aborts reverse instead of steering into a circle",function()
+    local participant={name="S416",vehicle={}}
+    local other={name="Other",vehicle={}}
+    local donor={permissionGate={},driveAuthority={clear=function() end,getState=function() return {targetReached=false} end},configurationAuthority={}}
+    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    control.run={mode="D0146_GUIDE",commitmentId="CM-D0192-ALIGN",phase="AXIS_RETURN",phaseStartedAt=0,startedAt=0,a=participant,b=other,participants={participant,other},activeReturnParticipant=participant,returnRequiresReleasedClearance=false,failureReason=nil}
+    control.nextHeartbeatMs=math.huge; control._allSameJob=function() return true,nil end; control._thirdPartySupport=function() return true,nil end
+    control._assemblyTranslationAligned=function() return false,"ASSEMBLY_MEMBER_HEADING_NOT_SETTLED:trailer" end
+    local restoreCalls=0; control._beginParticipantRestore=function(self,run,p) restoreCalls=restoreCalls+1; run.phase="RESTORING_PARTICIPANT"; return true,nil end
+    local oldTime=g_time; g_time=1000; control:update(16)
+    equal(participant.axisReturnSkipped,true); equal(restoreCalls,1); equal(control.run.phase,"RESTORING_PARTICIPANT")
+    g_time=oldTime
+end)
+
+
+
+test("D0192 participant release prevents the first returned worker from soft-locking the second token",function()
+    local first={name="First",vehicle={},released=false}
+    local second={name="Second",vehicle={},released=false}
+    local donor={permissionGate={},driveAuthority={},configurationAuthority={}}
+    local control=OuttaMyWay.CooperativePassageControl.new({},donor)
+    control.run={mode="D0146_GUIDE",commitmentId="CM-D0192-TOKEN",phase="RESTORING_PARTICIPANT",phaseStartedAt=0,startedAt=0,a=first,b=second,participants={first,second},activeRestoreParticipant=first,failureReason=nil}
+    control.nextHeartbeatMs=math.huge; control._allSameJob=function() return true,nil end; control._thirdPartySupport=function() return true,nil end
+    control._participantRestoreReady=function() return true end
+    control._releaseParticipant=function(self,run,p) p.released=true; return true,nil end
+    control._releasedParticipantClearedReturnSpace=function() return true,nil,{rearStationM=22,requiredStationM=20,clearanceM=2} end
+    local beginCalls=0
+    control._beginAxisReturn=function(self,run,p,other,requiresClearance) beginCalls=beginCalls+1; equal(p,second); equal(other,first); equal(requiresClearance,true); run.activeReturnParticipant=p; run.phase="AXIS_RETURN"; return true,nil end
+    local oldTime=g_time; g_time=1000
+    control:update(16)
+    equal(first.released,true); equal(control.run.phase,"WAIT_NATIVE_CLEARANCE"); equal(control.run.waitingParticipant,second)
+    g_time=1100; control:update(16)
+    equal(beginCalls,1); equal(control.run.phase,"AXIS_RETURN")
+    g_time=oldTime
+end)
+
 print(string.format("RESULT %d passed, %d failed",passed,failed))
 if failed > 0 then os.exit(1) end
