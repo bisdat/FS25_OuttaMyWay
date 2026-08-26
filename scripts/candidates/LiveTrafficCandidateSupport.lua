@@ -55,6 +55,23 @@ local function d0146RequirementKey(plan)
     return "d0146-cooperative-passage:"..tostring(plan.conflictIdentity)
 end
 
+-- D-0200 dependency provenance is pair-specific. Situation dependencies on a
+-- Commitment may include many simultaneously visible Encounters, so terminal
+-- lifecycle authority must not infer the governing pair from that broad list.
+-- Bind the selected D-0146 pair to its exact active Encounter/Job Episodes.
+local function d0146PairDependency(pictureValues,subjectAssemblyId,otherAssemblyId,preferredEncounterId)
+    for _,encounter in OuttaMyWay.ValueRecord.ipairs(pictureValues.encounters or {}) do
+        local samePair=(encounter.subjectAssemblyId==subjectAssemblyId and encounter.otherAssemblyId==otherAssemblyId)
+            or (encounter.subjectAssemblyId==otherAssemblyId and encounter.otherAssemblyId==subjectAssemblyId)
+        if samePair and (preferredEncounterId==nil or encounter.identity==preferredEncounterId) then
+            local episodes={encounter.subjectJobEpisodeId,encounter.otherJobEpisodeId}
+            table.sort(episodes,function(a,b) return tostring(a)<tostring(b) end)
+            return encounter.identity,episodes
+        end
+    end
+    return preferredEncounterId,nil
+end
+
 local function d0146BandExhaustion(pictureId,governingRequirementKey,capability,reason)
     return {
         result="PASS",operationalPictureId=pictureId,governingRequirementKey=governingRequirementKey,
@@ -108,6 +125,7 @@ local function makeD0146PassageCandidate(pictureId,pictureValues,plan,governingR
     table.sort(compositionEntries,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
     local requirements={}
     for _,id in OuttaMyWay.ValueRecord.ipairs(plan.representationFitnessIds or {}) do requirements[#requirements+1]={representationId=id,acceptedStates={"FIT_FOR_LIMITED_HORIZON","CURRENTLY_FIT"}} end
+    local dependentEncounterId,dependentJobEpisodeIds=d0146PairDependency(pictureValues,plan.subjectAssemblyId,plan.otherAssemblyId,plan.encounterIdentity)
 
     return {
         referenceKey="d0146-cooperative-passage:"..tostring(plan.conflictIdentity),
@@ -116,7 +134,7 @@ local function makeD0146PassageCandidate(pictureId,pictureValues,plan,governingR
         expectedEffect={physicalChange=true,jointReposition=true,passageArrangementId=plan.passageArrangement and plan.passageArrangement.identity,passageGuideId=plan.passageGuide and plan.passageGuide.identity,bothParticipantsForwardThroughEncounter=true,sameJobRestorationRequired=true,postHandoffCooldown=false,king=false,refuge=false},
         evidenceBasis={
             constraintEvidence=constraints,
-            governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active},
+            governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentEncounterId=dependentEncounterId,dependentJobEpisodeIds=dependentJobEpisodeIds},
             progressActuationOwnership={assemblyIds=plan.assemblyIds},
             effectiveActuationComposition={identity="d0146-step2-composition:"..tostring(plan.conflictIdentity)..":"..pictureId,epoch=pictureValues.epoch,relevantAssemblyIds=plan.assemblyIds,entries=compositionEntries},
             trafficPolicemanPreference={primaryResolution=true,governingRequirementKey=governingRequirementKey,exhaustionEvidence={
@@ -257,6 +275,7 @@ local function makeD0146ActionSpaceCandidate(pictureId,pictureValues,item,govern
 
     local protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId
     local protectedReferenceKey=action.protectedReferenceKey or action.excursionReferenceKey
+    local dependentEncounterId,dependentJobEpisodeIds=d0146PairDependency(pictureValues,relation.subjectAssemblyId,relation.otherAssemblyId,nil)
     local composition={
         identity="d0146-action-space-composition:"..tostring(relation.identity)..":"..pictureId,epoch=pictureValues.epoch,
         relevantAssemblyIds={protectedAssemblyId,action.regulatedAssemblyId},
@@ -269,7 +288,7 @@ local function makeD0146ActionSpaceCandidate(pictureId,pictureValues,item,govern
         expectedEffect={physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,protectedParticipantUnrestricted=true,elasticProgressionEnvelope=true,zeroSpeedHoldExpression=true},
         evidenceBasis={
             constraintEvidence=constraints,
-            governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active},
+            governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentEncounterId=dependentEncounterId,dependentJobEpisodeIds=dependentJobEpisodeIds},
             maintainsExistingCommitment=existingCommitmentId~=nil,existingProgressMayContinue=true,
             progressActuationOwnership={assemblyIds={action.regulatedAssemblyId}},effectiveActuationComposition=composition,
             trafficPolicemanPreference={primaryResolution=true,governingRequirementKey=governingRequirementKey,exhaustionEvidence={

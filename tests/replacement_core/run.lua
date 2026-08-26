@@ -2620,6 +2620,37 @@ test("D-0141 aligned follower Regulation travels Situation Candidate Decision Co
     equal(requests[#requests].target.maxSpeedKmh,8)
     equal(runtime.liveControlDispatcher:getFollowerBoundaryStatus().currentCapKmh,8)
 
+    -- D-0198: unresolved current follower topology retains the semantic purpose
+    -- but quiesces its physical D-0141 actuation rather than preserving the
+    -- historical speed cap.
+    local preserveRecord=d0141Record(25,commitmentId,obligationId)
+    preserveRecord.status="UNRESOLVED"; preserveRecord.purposeState="PERSIST_UNRESOLVED"
+    preserveRecord.reason="ESTABLISHED_PURPOSE_PRESERVED_THROUGH_OPPOSED_CONTINUATION"; preserveRecord.controlMagnitude=nil
+    local preserveBase=d0141Picture(preserveRecord,commitmentId)
+    local preservePicture=runtime.liveTrafficCandidateSupport:attach(preserveBase,headOnTestSnapshot())
+    local preserveEval=runtime:evaluateSealedOperationalPicture(preservePicture)
+    local quiesced=runtime.liveControlDispatcher:dispatch(preservePicture,preserveEval)
+    equal(quiesced.status,"QUIESCENT")
+    equal(requests[#requests].target.operation,"RELEASE")
+    local qStatus=runtime.liveControlDispatcher:getFollowerBoundaryStatus()
+    equal(qStatus.active,false); equal(qStatus.retainedPurpose,true); equal(qStatus.actuationActive,false)
+    equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+    equal(runtime.authorities:ownerOf("AS-P"),nil)
+
+    -- The same retained purpose may reactivate when positive follower topology
+    -- and current magnitude support return; this is not Commitment churn.
+    local reactivateBase=d0141Picture(d0141Record(10,commitmentId,obligationId),commitmentId)
+    local reactivatePicture=runtime.liveTrafficCandidateSupport:attach(reactivateBase,headOnTestSnapshot())
+    local reactivateEval=runtime:evaluateSealedOperationalPicture(reactivatePicture)
+    local reactivated=runtime.liveControlDispatcher:dispatch(reactivatePicture,reactivateEval)
+    equal(reactivated.status,"REACTIVATED")
+    equal(requests[#requests].target.operation,"APPLY"); equal(requests[#requests].target.maxSpeedKmh,10)
+    equal(runtime.liveControlDispatcher:getFollowerBoundaryStatus().active,true)
+    equal(runtime.liveControlDispatcher:getFollowerBoundaryStatus().reactivationCount,1)
+    equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+
     local retireRecord=d0141Record(25,commitmentId,obligationId)
     retireRecord.status="RETIRE_SUPPORTED"; retireRecord.purposeState="RETIRE"; retireRecord.reason="PROGRESS_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION"; retireRecord.controlMagnitude=nil
     local retireBase=d0141Picture(retireRecord,commitmentId)
@@ -3968,7 +3999,45 @@ test("D0155 Resolution-Space Progression Envelope tightens prospectively as ordi
     equal(status.envelopeUpdateCount,1)
 end)
 
-test("D0155 active Commitment keeps magnitude elastic when currentClosing becomes unresolved",function()
+test("D0198 D0155 bare NO_CURRENT_EXCURSION does not quiesce while protected participant remains locally TURNING",function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setLiveControlCapability(capability)
+
+    local active=d0146ActionSpacePicture()
+    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    equal(admitted.status,"ACCEPTED"); equal(#requests,1)
+    local commitmentId=admitted.commitment.identity
+
+    local values=OuttaMyWay.ValueRecord.toTable(active)
+    values.identity="OP-D0198-WITNESS-ABSENCE"; values.epoch=798; values.commitmentContext={{commitmentId=commitmentId}}
+    values.currentSpace={{assemblyId="AS-A",occupancy={x=0,z=0}},{assemblyId="AS-B",occupancy={x=60,z=0}}}
+    values.motionEvidence={{assemblyId="AS-A",localIntentClassification="TURNING"},{assemblyId="AS-B",localIntentClassification="SETTLED_CONTINUATION"}}
+    local relation=values.opposedCorridorKnowledge[1]
+    relation.classification="NO_OPPOSED_CONFLICT"
+    relation.reason="ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED"
+    relation.currentClosing=nil; relation.currentClosingPositive=false; relation.currentNonClosingPositive=false
+    relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="NO_CURRENT_EXCURSION",intentRevelationQuiescenceVeto={active=true,assemblyIds={"AS-A"},separationM=60,maxSeparationM=80,reason="LOCAL_TURNING_PARTICIPANT_STILL_REVEALING_NATIVE_INTENT"}}
+    relation.resolutionSpaceRelationship={status="TRANSITIONAL_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="D0146_TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
+    local transient=OuttaMyWay.OperationalPicture.new(values)
+    local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
+    local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
+    local maintained=runtime.liveControlDispatcher:dispatch(transientSupported,transientEval)
+    equal(maintained.status=="MAINTAINED" or maintained.status=="ENVELOPE_UPDATED",true)
+    equal(#requests>=1,true)
+    equal(requests[#requests].target.operation,"APPLY")
+    local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    equal(status.active,true); equal(status.actuationActive,true); equal(status.quiescenceCount,0)
+    equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
+end)
+
+test("D0197 D0155 positive NOT_REQUIRED quiesces actuation while the relationship Commitment remains active",function()
     local runtime=autonomousHeadOnRuntime()
     local requests={}
     local capability={}
@@ -3985,7 +4054,7 @@ test("D0155 active Commitment keeps magnitude elastic when currentClosing become
     local commitmentId=admitted.commitment.identity
 
     local values=OuttaMyWay.ValueRecord.toTable(active)
-    values.identity="OP-D0155-MAGNITUDE-FREEZE"; values.epoch=799; values.commitmentContext={{commitmentId=commitmentId}}
+    values.identity="OP-D0197-QUIESCENCE"; values.epoch=799; values.commitmentContext={{commitmentId=commitmentId}}
     values.currentSpace={
         {assemblyId="AS-A",occupancy={x=0,z=0}},
         {assemblyId="AS-B",occupancy={x=60,z=0}}
@@ -3999,12 +4068,72 @@ test("D0155 active Commitment keeps magnitude elastic when currentClosing become
     local transient=OuttaMyWay.OperationalPicture.new(values)
     local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
     local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
-    local updated=runtime.liveControlDispatcher:dispatch(transientSupported,transientEval)
-    equal(updated.status,"ENVELOPE_UPDATED")
-    equal(updated.reason,"D0155_SUPPORTABLE_PROGRESSION_MAGNITUDE_UPDATED")
-    equal(#requests,2); equal(requests[2].target.maxSpeedKmh,16)
+    local quiesced=runtime.liveControlDispatcher:dispatch(transientSupported,transientEval)
+    equal(quiesced.status,"QUIESCENT")
+    equal(quiesced.reason,"D0155_CURRENT_ACTION_SPACE_NOT_REQUIRED_ACTUATION_QUIESCENT")
+    equal(#requests,2); equal(requests[2].target.operation,"RELEASE"); equal(requests[2].target.vehicleReferenceKey,"vehicle-root:201")
     local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
-    equal(status.active,true); equal(status.currentCapKmh,16); equal(status.conservativeDistanceM,60); equal(status.remainingOrdinaryM,7.5)
+    equal(status.active,true); equal(status.actuationActive,false); equal(status.currentCapKmh,nil); equal(status.effectClass,nil)
+    equal(status.quiescenceCount,1); equal(status.reactivationCount,0)
+    equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+    equal(runtime.authorities:ownerOf("AS-B"),nil)
+end)
+
+test("D0197 D0155 quiescent actuation reactivates on positive REGULATE_SUPPORTED without Commitment churn",function()
+    local runtime=autonomousHeadOnRuntime()
+    local requests={}
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setLiveControlCapability(capability)
+
+    local active=d0146ActionSpacePicture()
+    local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local commitmentId=admitted.commitment.identity
+
+    local qValues=OuttaMyWay.ValueRecord.toTable(active)
+    qValues.identity="OP-D0197-QUIESCENT-BEFORE-REACTIVATION"; qValues.epoch=800; qValues.commitmentContext={{commitmentId=commitmentId}}
+    local qRelation=qValues.opposedCorridorKnowledge[1]
+    qRelation.classification="NO_OPPOSED_CONFLICT"
+    qRelation.currentClosing=nil; qRelation.currentClosingPositive=false; qRelation.currentNonClosingPositive=false
+    qRelation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="NO_CURRENT_EXCURSION"}
+    qRelation.resolutionSpaceRelationship={status="TRANSITIONAL_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="D0146_TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
+    local qPicture=OuttaMyWay.OperationalPicture.new(qValues)
+    local qSupported=runtime.liveTrafficCandidateSupport:attach(qPicture,headOnTestSnapshot())
+    local qEval=runtime:evaluateSealedOperationalPicture(qSupported)
+    local quiesced=runtime.liveControlDispatcher:dispatch(qSupported,qEval)
+    equal(quiesced.status,"QUIESCENT"); equal(#requests,2); equal(requests[2].target.operation,"RELEASE")
+
+    local rValues=OuttaMyWay.ValueRecord.toTable(active)
+    rValues.identity="OP-D0197-REACTIVATION"; rValues.epoch=801; rValues.commitmentContext={{commitmentId=commitmentId}}
+    local rRelation=rValues.opposedCorridorKnowledge[1]
+    rRelation.classification="POTENTIAL_OPPOSED_CORRIDOR_CONFLICT"
+    rRelation.currentClosing={resolved=true,separationM=44,closingRateMps=4.0,currentDirectionDot=-0.98}
+    rRelation.currentClosingPositive=true; rRelation.currentNonClosingPositive=false
+    rRelation.resolutionSpaceRelationship={status="RELATIONSHIP_REMAINS_ACTIVE",positiveDissolution=false,reason="OPPOSED_CORRIDOR_RELATIONSHIP_REMAINS_ESTABLISHED_OR_POTENTIAL"}
+    rRelation.actionSpaceConservation={
+        status="REGULATE_SUPPORTED",supported=true,reason="CURRENT_EXCURSION_OCCUPIES_APPROACHING_STABLE_TRAJECTORY_CORRIDOR_WHILE_LOCAL_PASSAGE_ACTION_SPACE_COMPRESSES",
+        excursionAssemblyId="AS-A",excursionReferenceKey="vehicle-root:101",regulatedAssemblyId="AS-B",regulatedReferenceKey="vehicle-root:201",
+        separationM=44,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=6},currentClosing=rRelation.currentClosing,
+        nativeUnrestrictedKmh=25,governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
+    }
+    local rPicture=OuttaMyWay.OperationalPicture.new(rValues)
+    local rSupported=runtime.liveTrafficCandidateSupport:attach(rPicture,headOnTestSnapshot())
+    local rEval=runtime:evaluateSealedOperationalPicture(rSupported)
+    equal(rEval.decision.commitmentAction,"MAINTAIN")
+    local reactivated=runtime.liveControlDispatcher:dispatch(rSupported,rEval)
+    equal(reactivated.status,"REACTIVATED")
+    equal(reactivated.commitmentId,commitmentId)
+    equal(#requests,3); equal(requests[3].target.operation,"APPLY"); equal(requests[3].target.vehicleReferenceKey,"vehicle-root:201")
+    local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    equal(status.active,true); equal(status.actuationActive,true); equal(status.quiescenceCount,1); equal(status.reactivationCount,1)
+    equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+    equal(runtime.authorities:ownerOf("AS-B"),commitmentId)
 end)
 
 test("D0155 exhausted ordinary space retains 1 kmh Intent-Revelation Creep instead of Hold",function()
@@ -4124,7 +4253,7 @@ test("D0155 low admission speed seeds the envelope instead of suppressing the Re
     equal(status.currentCapKmh,5); equal(status.effectClass,"REGULATE"); equal(status.remainingOrdinaryM,7.5)
 end)
 
-test("D0146 Action-Space Regulation persists through transient reverse/non-closing evidence after admission",function()
+test("D0197 transient reverse non-closing evidence retains D0146 obligation but quiesces D0155 actuation",function()
     local runtime=autonomousHeadOnRuntime()
     local requests={}
     local capability={}
@@ -4137,7 +4266,6 @@ test("D0146 Action-Space Regulation persists through transient reverse/non-closi
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
-    equal(admitted.status,"ACCEPTED")
     local commitmentId=admitted.commitment.identity
 
     local values=OuttaMyWay.ValueRecord.toTable(active)
@@ -4151,14 +4279,16 @@ test("D0146 Action-Space Regulation persists through transient reverse/non-closi
     local transient=OuttaMyWay.OperationalPicture.new(values)
     local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
     local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
-    local maintained=runtime.liveControlDispatcher:dispatch(transientSupported,transientEval)
-    equal(maintained.status,"MAINTAINED")
-    equal(maintained.reason,"D0146_TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION")
+    local quiesced=runtime.liveControlDispatcher:dispatch(transientSupported,transientEval)
+    equal(quiesced.status,"QUIESCENT")
     equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,true)
-    equal(#requests,1)
+    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().actuationActive,false)
+    equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+    equal(#requests,2); equal(requests[2].target.operation,"RELEASE")
 end)
 
-test("D0146 Action-Space Regulation persists after excursion witness ends while Potential conflict remains",function()
+test("D0197 Potential conflict may retain D0146 obligation while current D0155 actuation is quiescent",function()
     local runtime=autonomousHeadOnRuntime()
     local requests={}
     local capability={}
@@ -4186,15 +4316,16 @@ test("D0146 Action-Space Regulation persists after excursion witness ends while 
     local potential=OuttaMyWay.OperationalPicture.new(values)
     local potentialSupported=runtime.liveTrafficCandidateSupport:attach(potential,headOnTestSnapshot())
     local potentialEval=runtime:evaluateSealedOperationalPicture(potentialSupported)
-    local maintained=runtime.liveControlDispatcher:dispatch(potentialSupported,potentialEval)
-    equal(maintained.status,"MAINTAINED")
-    equal(maintained.reason,"D0146_POTENTIAL_CONFLICT_RESOLUTION_SPACE_OBLIGATION_PERSISTS")
+    local quiesced=runtime.liveControlDispatcher:dispatch(potentialSupported,potentialEval)
+    equal(quiesced.status,"QUIESCENT")
     equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,true)
+    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().actuationActive,false)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
-    equal(#requests,1)
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+    equal(#requests,2); equal(requests[2].target.operation,"RELEASE")
 end)
 
-test("D0146 Action-Space Regulation persists while non-opposed trajectories remain Transitional Continuation",function()
+test("D0197 Transitional Continuation retains D0146 obligation but does not itself retain D0155 actuation",function()
     local runtime=autonomousHeadOnRuntime()
     local requests={}
     local capability={}
@@ -4207,7 +4338,6 @@ test("D0146 Action-Space Regulation persists while non-opposed trajectories rema
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
-    equal(admitted.status,"ACCEPTED")
     local commitmentId=admitted.commitment.identity
 
     local values=OuttaMyWay.ValueRecord.toTable(active)
@@ -4222,12 +4352,13 @@ test("D0146 Action-Space Regulation persists while non-opposed trajectories rema
     local transitional=OuttaMyWay.OperationalPicture.new(values)
     local transitionalSupported=runtime.liveTrafficCandidateSupport:attach(transitional,headOnTestSnapshot())
     local transitionalEval=runtime:evaluateSealedOperationalPicture(transitionalSupported)
-    local maintained=runtime.liveControlDispatcher:dispatch(transitionalSupported,transitionalEval)
-    equal(maintained.status,"MAINTAINED")
-    equal(maintained.reason,"D0146_TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION")
+    local quiesced=runtime.liveControlDispatcher:dispatch(transitionalSupported,transitionalEval)
+    equal(quiesced.status,"QUIESCENT")
     equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,true)
+    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().actuationActive,false)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
-    equal(#requests,1)
+    equal(#runtime.obligations:openForOwner(commitmentId),1)
+    equal(#requests,2); equal(requests[2].target.operation,"RELEASE")
 end)
 
 test("D0146 Action-Space Regulation releases only on positive settled relationship dissolution",function()
@@ -4597,6 +4728,36 @@ test("D0147 Continuation Renewal requires post-release motion then a later attri
     equal(blockedAgain[1].obstructionPositive,true); equal(blockedAgain[1].yieldAwaitingContinuation,false); equal(blockedAgain[1].continuationRenewed,true); equal(blockedAgain[1].repeatBlockedPositive,true)
 end)
 
+test("D0199 Courtesy 2 may be authorised by a different active worker after Continuation Renewal",function()
+    local episodes={
+        {identity="JOB-TERMINAL",status="ENDED",assemblyId="AS-TERMINAL",fieldWorldReferenceKey="FIELD-1"},
+        {identity="JOB-A",status="ACTIVE",assemblyId="AS-A"},
+        {identity="JOB-B",status="ACTIVE",assemblyId="AS-B"}
+    }
+    local assessment=OuttaMyWay.TerminalOccupancyAssessment.new({list=function() return episodes end})
+    assessment:markRetreatCompleted("JOB-TERMINAL",{"AS-A"},1)
+    equal(assessment.courtesyMoveCount["JOB-TERMINAL"],1)
+    local currentSpace={{assemblyId="AS-TERMINAL",occupancy={x=0,z=0,headingX=1,headingZ=0}}}
+    local physicalSpace={
+        {assemblyId="AS-TERMINAL",configurationEvidence={},primitives={{identity="TP",kind="DISC",x=0,z=0,radius=2,positiveConflictSupport=true}}},
+        {assemblyId="AS-A",configurationEvidence={},primitives={{identity="AP-A",kind="DISC",x=20,z=0,radius=2,positiveConflictSupport=true}}},
+        {assemblyId="AS-B",configurationEvidence={},primitives={{identity="AP-B",kind="DISC",x=1,z=0,radius=2,positiveConflictSupport=true}}}
+    }
+    local function snapshot(blockB)
+        return {
+            controlOutcomes={},playerControl={},
+            assemblies={{assemblyId="AS-TERMINAL",referenceKey="vehicle-root:terminal"},{assemblyId="AS-A",referenceKey="vehicle-root:a"},{assemblyId="AS-B",referenceKey="vehicle-root:b"}},
+            motion={progressionEvidence={{assemblyReferenceKey="vehicle-root:a",motionClassification="STABLE_FORWARD"},{assemblyReferenceKey="vehicle-root:b",motionClassification="STATIONARY"}}},
+            aiStates={["vehicle-root:a"]={observedActive=true,blocked=false},["vehicle-root:b"]={observedActive=true,blocked=blockB==true}}
+        }
+    end
+    local renewed=assessment:assess(snapshot(false),currentSpace,{},physicalSpace,{})
+    equal(renewed[1].continuationRenewed,true); equal(renewed[1].yieldAwaitingContinuation,true); equal(renewed[1].repeatBlockedPositive,false)
+    local differentBlocker=assessment:assess(snapshot(true),currentSpace,{},physicalSpace,{})
+    equal(differentBlocker[1].obstructionPositive,true); equal(differentBlocker[1].repeatBlockedPositive,true); equal(differentBlocker[1].yieldAwaitingContinuation,false)
+    equal(assessment.courtesyMoveCount["JOB-TERMINAL"],1)
+end)
+
 test("D0194 second courtesy exhausts the completed Job Episode with no third automatic relocation",function()
     local jobEpisodes={list=function() return {{identity="JOB-TERMINAL",status="ENDED",assemblyId="AS-TERMINAL",terminalCause=nil},{identity="JOB-ACTIVE",status="ACTIVE",assemblyId="AS-ACTIVE"}} end}
     local assessment=OuttaMyWay.TerminalOccupancyAssessment.new(jobEpisodes)
@@ -4640,6 +4801,31 @@ local function d0147Snapshot(options)
         }
     })
 end
+
+test("D0199 first courtesy reaches the centroid on small fields but caps larger-field travel at 60 m",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local configuration={foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true}
+    local smallPicture=d0147TerminalPicture(runtime,configuration,{suffix="CENTROID-SMALL",terminalX=10,terminalZ=10})
+    local smallSupported=runtime.terminalEgressCandidateSupport:attach(smallPicture,d0147Snapshot({activeX=20,activeZ=50}))
+    local smallObjective=smallSupported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.terminalEgressBridge.objective
+    equal(smallObjective.destinationKind,"FIELD_CENTROID"); equal(smallObjective.distanceCapped,false); equal(smallObjective.fieldCentreIsDestination,true)
+    if smallObjective.targetProgressM>60.0001 then error("small-field centroid settlement exceeded 60 m cap") end
+
+    local largePicture=d0147TerminalPicture(runtime,configuration,{suffix="CENTROID-CAPPED",terminalX=10,terminalZ=10})
+    local largeSnapshot=d0147SnapshotFixture.new({
+        identity="OS-D0147",
+        fieldWorld={boundary={{x=0,z=0},{x=400,z=0},{x=400,z=400},{x=0,z=400}},geometryMetrics={centroidX=200,centroidZ=200}},
+        assemblies={{assemblyId="AS-TERMINAL",referenceKey="vehicle-root:terminal"},{assemblyId="AS-ACTIVE",referenceKey="vehicle-root:active"}},
+        geometry={currentSpaceEvidence={{assemblyReferenceKey="vehicle-root:active",occupancy={x=20,z=50,headingX=1,headingZ=0}}},shadowPlanViewEvidence={{assemblyReferenceKey="vehicle-root:active",primitives={{identity="AP-1",kind="DISC",x=20,z=50,radius=1,positiveConflictSupport=true}}}}}
+    })
+    local largeSupported=runtime.terminalEgressCandidateSupport:attach(largePicture,largeSnapshot)
+    local largeObjective=largeSupported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.terminalEgressBridge.objective
+    equal(largeObjective.destinationKind,"CENTROID_BEARING_DISTANCE_CAP"); equal(largeObjective.distanceCapped,true); equal(largeObjective.fieldCentreIsDestination,false)
+    if math.abs(largeObjective.targetProgressM-60.0)>0.0001 then error("large-field centroid settlement was not capped at 60 m") end
+    if math.abs(largeObjective.maximumCourtesyDistanceM-60.0)>0.0001 then error("configured centroid courtesy cap missing from objective") end
+    local moved=math.sqrt((largeObjective.targetX-10)^2+(largeObjective.targetZ-10)^2)
+    if math.abs(moved-60.0)>0.0001 then error("capped centroid target is not 60 m from starting occupancy") end
+end)
 
 test("D0196 second courtesy chooses the one outer-boundary ray away from protected productive occupancy",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
@@ -5105,6 +5291,32 @@ test("D0192 participant release prevents the first returned worker from soft-loc
     g_time=1100; control:update(16)
     equal(beginCalls,1); equal(control.run.phase,"AXIS_RETURN")
     g_time=oldTime
+end)
+
+
+
+test("D0200 ended Job Episode collapses dependent quiescent D0146 traffic Commitment before terminal succession",function()
+    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local dependent=runtime.commitments:create({
+        objective={kind="D0146_PASSAGE_ACTION_SPACE_CONSERVATION"},
+        governingBasis={responsibilityKey="d0146-cooperative-passage:REL-ENDED",dependentEncounterId="EN-ENDED",dependentJobEpisodeIds={"JE-END","JE-KEEP"}},
+        situationDependencies={"SITUATION-1","EN-ENDED"}
+    })
+    local obligation=runtime.obligations:create({
+        origin={kind="TRAFFIC_INTERVENTION"},basis={kind="D0146_PASSAGE_ACTION_SPACE_CONSERVATION",conflictIdentity="REL-ENDED"},ownerCommitmentId=dependent.identity,
+        requiredOutcome={kind="D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"},requiredAuthority={capabilities={"REGULATE_SPEED"}},
+        evidenceContract={kind="POSITIVE_RELATIONSHIP_DISSOLUTION_OR_COOPERATIVE_PASSAGE_SUCCESSION"},ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
+    })
+    dependent=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(dependent,{obligationIds={obligation.identity},epoch=runtime.epochs:next()}))
+    local unrelated=runtime.commitments:create({objective={kind="D0146_PASSAGE_ACTION_SPACE_CONSERVATION"},governingBasis={responsibilityKey="d0146-cooperative-passage:REL-OTHER",dependentEncounterId="EN-OTHER",dependentJobEpisodeIds={"JE-OTHER-A","JE-OTHER-B"}},situationDependencies={"EN-OTHER"}})
+    local cleared=0
+    runtime.liveControlDispatcher.capability={clearRegulationLeaseByReference=function(self,referenceKey,ownerTag) cleared=cleared+1 end}
+    runtime.liveControlDispatcher.d0146ActionSpaceLease={commitmentId=dependent.identity,conflictIdentity="REL-ENDED",regulatedAssemblyId="AS-A",regulatedReferenceKey="REF-A",actuationActive=false}
+    local result=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(runtime,{endedEpisodeIds={"JE-END"},observationSnapshotId="OBS-END"},{identity="OBS-END"})
+    equal(#result,1); equal(result[1].commitmentId,dependent.identity); equal(runtime.commitments:get(dependent.identity).state,"SUCCEEDED")
+    equal(runtime.obligations:get(obligation.identity).status,"SETTLED"); equal(runtime.obligations:get(obligation.identity).settlementDisposition.mode,"BASIS_CESSATION")
+    equal(runtime.liveControlDispatcher.d0146ActionSpaceLease,nil); equal(cleared,1)
+    equal(runtime.commitments:get(unrelated.identity).state,"ACTIVE")
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

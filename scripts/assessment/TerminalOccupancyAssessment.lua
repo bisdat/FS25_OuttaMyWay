@@ -98,11 +98,15 @@ function Assessment:reset()
 end
 function Assessment:markPlayerClaimed(terminalEpisodeId) if type(terminalEpisodeId)=="string" then self.playerClaimed[terminalEpisodeId]=true end end
 function Assessment:markExhausted(terminalEpisodeId) if type(terminalEpisodeId)=="string" then self.exhausted[terminalEpisodeId]=true end end
-function Assessment:markRetreatCompleted(terminalEpisodeId,authorizingDemandAssemblyIds,courtesyStage)
+function Assessment:markRetreatCompleted(terminalEpisodeId,continuationWitnessAssemblyIds,courtesyStage)
     if type(terminalEpisodeId)~="string" then return end
     local ids={}
-    for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(authorizingDemandAssemblyIds or {}) do if type(assemblyId)=="string" then ids[#ids+1]=assemblyId end end
+    for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(continuationWitnessAssemblyIds or {}) do if type(assemblyId)=="string" then ids[#ids+1]=assemblyId end end
     table.sort(ids)
+    -- D-0199 Courtesy Budget Belongs to the Obstacle: the moved completed Job Episode
+    -- owns the finite two-move budget. The productive assembly that witnessed Courtesy 1
+    -- is retained only as positive Continuation Renewal evidence; it does not own or bind
+    -- the second courtesy.
     local previous=tonumber(self.courtesyMoveCount[terminalEpisodeId]) or 0
     local completed=math.max(previous,tonumber(courtesyStage) or (previous+1))
     self.courtesyMoveCount[terminalEpisodeId]=completed
@@ -112,7 +116,7 @@ function Assessment:markRetreatCompleted(terminalEpisodeId,authorizingDemandAsse
         logInfo("DOUBLE_COURTESY_EXHAUSTED episode=%s completedMoves=%d noThirdAutomaticRelocation=true",tostring(terminalEpisodeId),completed)
         return
     end
-    self.yieldRenewalState[terminalEpisodeId]={authorizingDemandAssemblyIds=ids,continuationObserved=false}
+    self.yieldRenewalState[terminalEpisodeId]={continuationWitnessAssemblyIds=ids,continuationObserved=false}
 end
 function Assessment:_consumeControlOutcomes(snapshot)
     for _,outcome in OuttaMyWay.ValueRecord.ipairs(snapshot.controlOutcomes or {}) do
@@ -162,17 +166,16 @@ function Assessment:assess(snapshot,currentSpace,futureSpace,physicalSpaceEviden
             table.sort(obstructed); table.sort(obstructionEvidence,function(a,b) return tostring(a.activeAssemblyId)<tostring(b.activeAssemblyId) end)
             local obstructionPositive=#obstructed>0
             -- Continuation Renewal: a completed retreat does not re-arm merely because
-            -- conservative conflict geometry flickers or remains positive. The authorising
-            -- productive assembly/assemblies must first demonstrate GIANTS-owned physical
-            -- progression after release. A repeated courtesy retreat is then admitted only
-            -- on a later blocked=true state that is still positively attributed to this
-            -- terminal assembly. This prevents immediate chained retreats while allowing
-            -- a later real encounter even when Future Space never became fully negative.
+            -- conservative conflict geometry flickers or remains positive. The productive
+            -- assembly/assemblies released by Courtesy 1 must first demonstrate GIANTS-owned
+            -- physical progression. D-0199 then lets any later active worker positively blocked
+            -- by this same completed assembly authorise Courtesy 2; the original blocker is a
+            -- renewal witness, not the owner of the moved assembly's courtesy budget.
             local renewal=self.yieldRenewalState[episode.identity]
             local awaitingContinuation=renewal~=nil
             local continuationRenewed=renewal~=nil and renewal.continuationObserved==true
             if renewal~=nil and renewal.continuationObserved~=true then
-                local required=renewal.authorizingDemandAssemblyIds or {}
+                local required=renewal.continuationWitnessAssemblyIds or {}
                 local allProgressed=OuttaMyWay.ValueRecord.length(required)>0
                 for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(required) do
                     local ref=refs[assemblyId]
@@ -180,20 +183,18 @@ function Assessment:assess(snapshot,currentSpace,futureSpace,physicalSpaceEviden
                 end
                 if allProgressed then
                     renewal.continuationObserved=true; continuationRenewed=true
-                    logInfo("CONTINUATION_RENEWED episode=%s authorisingAssemblies=%s physicalProgress=true",tostring(episode.identity),table.concat(required,","))
+                    logInfo("CONTINUATION_RENEWED episode=%s witnessAssemblies=%s physicalProgress=true",tostring(episode.identity),table.concat(required,","))
                 end
             end
             local repeatBlockedPositive=false
             if renewal~=nil and renewal.continuationObserved==true and obstructionPositive then
-                local authorizing={}
-                for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(renewal.authorizingDemandAssemblyIds or {}) do authorizing[assemblyId]=true end
                 for _,assemblyId in ipairs(obstructed) do
                     local ref=refs[assemblyId]; local aiState=ref and aiStates[ref] or nil
-                    if authorizing[assemblyId] and type(aiState)=="table" and aiState.observedActive==true and aiState.blocked==true then repeatBlockedPositive=true break end
+                    if type(aiState)=="table" and aiState.observedActive==true and aiState.blocked==true then repeatBlockedPositive=true break end
                 end
             end
             if repeatBlockedPositive then
-                logInfo("CONTINUATION_RENEWAL_REPEAT_BLOCK episode=%s blockedAttributed=true freshCourtesyAuthority=true",tostring(episode.identity))
+                logInfo("CONTINUATION_RENEWAL_REPEAT_BLOCK episode=%s blockedAttributedToMovedAssembly=true blockerIdentityUnbound=true freshCourtesyAuthority=true",tostring(episode.identity))
                 self.yieldRenewalState[episode.identity]=nil
                 renewal=nil; awaitingContinuation=false
             end

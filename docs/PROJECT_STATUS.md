@@ -1,3 +1,33 @@
+# v0.1.15.0 CANONICAL CANDIDATE status — Regulation and Terminal Authority Closure
+
+The candidate promotes the cumulative v0.1.14.1–v0.1.14.5 behaviour from the user-declared v0.1.14.0 canonical baseline. D-0197/D-0198 Regulation authority semantics are field-validated in TS009/TS016b. D-0199's 60 m maximum centroid settlement is field-validated in TS015; its different-blocker Courtesy-2 branch is structurally covered but was not reproduced in field Reality. D-0200 Job Episode Dependency Collapse is field-validated and removes stale traffic ownership before D-0147 admission.
+
+No new behavioural change is introduced by candidate preparation. The candidate intentionally carries three post-canonical investigations: (1) excessive-speed approach toward a newly stationary/completed assembly when current Regulation matures too late; (2) Field World Spatial Awareness / Shared Constraint Window as a possible supplementary conservation layer; (3) anomalous Passage lateral-side selection, parked until reproducible. HUD communication for intentional waiting/regulation remains a later UI requirement. Assembly × Agronomy remains parked because no unresolved productive consequence is observed after Axis Return and GIANTS handback.
+
+Next authority step: exact candidate review and explicit owner canonical declaration. Only after canonicalisation should the stationary-object/supplementary-spatial-awareness workstream reopen.
+
+# v0.1.14.5 TEST status — D-0200 Job Episode Dependency Collapse
+
+Current candidate retains field-validated D-0198 Regulation Authority Semantics and the as-yet-unvalidated D-0199 Courtesy Budget Ownership / Bounded Centroid Settlement. v0.1.14.4 exposed a terminal-succession blocker: a quiescent D-0155 Commitment survived one participant's natural Job Episode completion and occupied Commitment context after its Encounter had lost its active basis. D-0200 removes that stale traffic authority before Situation assessment so D-0147 can admit normally.
+
+Next field gate: repeat the completion theatre and validate D-0199 end-to-end. After the agreed test sequence succeeds, canonicalise before opening Field World Spatial Awareness. The stationary-object high-speed approach remains a separate post-canonical safety investigation.
+
+# v0.1.14.4 TEST status — D-0199 Courtesy Budget Ownership + Bounded Centroid Settlement
+
+**Parent behaviour:** v0.1.14.3 D-0198 Regulation Authority Semantics is retained unchanged after successful TS009/TS016b observation.
+
+**Current TEST:** D-0147 courtesy state belongs to the moved completed Job Episode. After Courtesy 1 and positive Continuation Renewal, a different active worker may supply the later positive blocked witness for Courtesy 2. Stage-1 Interior Settlement travels toward the immutable Field World centroid by at most 60 m; fields with less than 60 m remaining still reach the centroid. Stage 2 remains the single D-0196 protected-away boundary move and no third automatic relocation exists.
+
+**Next gate:** field-test terminal completion, then—if the cumulative Regulation + terminal line remains sound—prepare the agreed canonicalisation checkpoint before discussing the Field World Spatial Awareness overlay.
+
+## v0.1.14.3 TEST status — D-0198 Regulation Authority Semantics
+
+- Parent authority: user-declared v0.1.14.0 canonical.
+- D-0197 field result: TS009 and TS016b quiescence PASS; retained.
+- D-0198 implementation: D-0141 actuation quiescence/reactivation; D-0155 witness-absence quiescence refinement; quiescent-purpose dispatcher coexistence.
+- Validation required: TS009 + TS016b targeted Regulation episodes and normal Passage completion.
+- Parked: Condor/Patriot lateral-choice anomaly until reproducible; D-0147 courtesy-owner/60 m capped-centroid change; HUD/UI communication work; Field World Spatial Awareness overlay discussion until after successful test and canonicalisation.
+
 # Current status — v0.1.14.0 CANONICAL CANDIDATE — validated Double Courtesy
 
 Validated source is exact v0.1.13.3 TEST over owner-declared v0.1.13.0 canonical. TS010 now validates the bounded D-0194/D-0195/D-0196 line: Assembly Axis Settlement permits repeated Passage to reach terminal completion; first centroid Interior Settlement succeeds; positive Continuation Renewal re-arms one later courtesy; Final Boundary Settlement travels away from protected productive occupancy and completes without the v0.1.13.2 bulldozing failure; Double Courtesy then exhausts with no third automatic move.

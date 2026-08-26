@@ -1,3 +1,22 @@
+## v0.1.14.5 D-0200 additions
+
+**Job Episode Dependency Collapse** — a sticky traffic relationship may survive missing/uncertain trajectory evidence, but cannot survive authoritative termination of a Job Episode on which its governing Encounter depends. The dependent traffic Commitment ends by basis cessation before terminal-resolution succession.
+
+**Encounter Termination Must Collapse Dependent Traffic Authority** — terminating the Encounter alone is insufficient when a separate Commitment remains live and therefore continues to occupy authority/context.
+
+## v0.1.14.4 D-0199 additions
+
+- **Courtesy Budget Belongs to the Obstacle** — D-0147's two automatic moves are lifecycle state of the moved completed Job Episode. The worker that first proves obstruction may witness Continuation Renewal but does not own or bind the remaining courtesy.
+- **Bounded Centroid Settlement** — Stage-1 Interior Settlement uses the immutable centroid bearing and travels only to the nearer of the centroid or a 60 m maximum. A maximum allowance must never become a minimum movement prerequisite.
+
+# v0.1.14.3 TEST concepts — D-0198
+
+**Follower Purpose Is Not Follower Actuation** — an unresolved D-0141 follower obligation may remain remembered while its current speed lease is quiescent.
+
+**Witness Absence Is Not Quiescence Authority** — disappearance of the Current Excursion witness does not itself authorise D-0155 actuation quiescence while Situation positively says the protected participant is still locally revealing native intent.
+
+**Quiescent Purpose Is Not Exclusive Traffic Ownership** — a retained semantic purpose with no physical actuation cannot block an independently supported Regulation purpose from obtaining Control authority.
+
 # v0.1.14.0 canonical-candidate concepts — validated D-0194/D-0195/D-0196
 
 - **Double Courtesy** — at most two automatic D-0147 relocations for one completed Job Episode: centroid Interior Settlement, then after Continuation Renewal one Final Boundary Settlement, then exhaustion.

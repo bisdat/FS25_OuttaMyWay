@@ -1,3 +1,15 @@
+## v0.1.15.0 CANONICAL CANDIDATE continuity checkpoint
+
+- Entering authority: user-declared v0.1.14.0 canonical (`2b3b47871dfe0d6e3e5731a1f108232edb5009573dcd69932b2ebbdb7331a250`; Git `da27bc40289648e7258a157f67cf9dccd5a8e6cd`; 263 files).
+- Behaviour being promoted: cumulative v0.1.14.1–v0.1.14.5 D-0197/D-0198/D-0199/D-0200 line; candidate preparation introduces no intentional behavioural delta.
+- D-0197/D-0198 Regulation authority semantics passed TS009/TS016b field observation.
+- D-0199 60 m maximum centroid settlement is field-proven in TS015. Different-blocker Courtesy-2 ownership could not be reproduced; retain as explicit validation boundary, not a field-proven claim.
+- D-0200 exact Job Episode Dependency Collapse is field-proven and permits D-0147 eligibility after traffic basis cessation.
+- Assembly × Agronomy remains parked: no unresolved agronomic consequence after D-0192 Axis Return and GIANTS continuation.
+- After canonicalisation, first return to the safety case where an active worker approaches a newly stationary/completed assembly at excessive speed / Regulation matures too late.
+- Then discuss the proposed supplementary Field World Spatial Awareness / Shared Constraint Window layer; do not implement it before the canonical checkpoint.
+- Passage lateral-choice anomaly remains parked until reproducible. HUD communication for intentional pauses/delays remains later UI work.
+
 ## v0.1.10.0 CANONICAL CANDIDATE continuity — D-0184 Closure C
 
 - Baseline authority remains owner-declared v0.1.9.0 canonical (`3f829d3e7ed322ea6434a9034ae725664d13eea080dc25adb919cd86e84beeb2`; Git `4156e0d86363d524654d53f1e5cc5794484ffb12`; 317 files).

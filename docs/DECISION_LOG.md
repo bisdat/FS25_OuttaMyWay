@@ -1,3 +1,43 @@
+## v0.1.15.0 canonical-candidate promotion record — D-0197 through D-0200
+
+**Decision:** promote the cumulative v0.1.14.1–v0.1.14.5 implementation as the next PATCH-level canonical candidate. Candidate preparation is behaviour-neutral.
+
+**Validated:** D-0197 strong quiescence in TS009/TS016b; D-0198 follower/intent-revelation authority semantics in TS009/TS016b; D-0199 60 m maximum centroid settlement in TS015; D-0200 exact Job Episode dependency collapse and subsequent D-0147 eligibility.
+
+**Explicit validation boundary:** D-0199's later-blocker identity-unbound Courtesy-2 branch could not be recreated. The owner elected to move on rather than manufacture a fixture. It is retained with structural coverage and no contrary field evidence; canonical promotion must not be described as field proof of that exact branch.
+
+**Open after canonicalisation:** stationary/completed-assembly high-speed approach; supplementary Field World Spatial Awareness / Shared Constraint Window; anomalous Passage lateral-side choice if reproducible; eventual HUD communication of intentional delays/pauses. No timeout is promoted as traffic evidence.
+
+## D-0200 — Job Episode Dependency Collapse (v0.1.14.5 TEST)
+
+**Evidence:** v0.1.14.4 terminal run. A pre-completion D-0155 Commitment (`CM-00005`) quiesced, one participant Job Episode then ended naturally, the Encounter terminated as `JOB_EPISODE_ENDED`, but the Commitment remained non-terminal. D-0147 candidate support correctly refused terminal authority while another Commitment occupied context, so Courtesy 1 never started.
+
+**Decision:** positive Job Episode termination is positive basis-cessation evidence for traffic Commitments explicitly dependent on an Encounter containing that Episode. Collapse occurs after identity admission and before Situation publication. Open obligations settle by `BASIS_CESSATION`; the traffic Commitment terminalises through existing objective-satisfied semantics; dispatcher-local Regulation leases are cleared.
+
+**Rejected interpretation:** weakening D-0147 exclusivity to coexist with arbitrary live traffic Commitments. The stale traffic authority must be removed at its true lifecycle boundary.
+
+**Non-change:** natural completion still carries `terminalCause=nil`; do not recreate `SOURCE_INTENT_TERMINATION`.
+
+## D-0199 — Courtesy Budget Ownership + Bounded Centroid Settlement (v0.1.14.4 TEST)
+
+**Observation:** in the validated TS016b continuation, a completed Condor executed Courtesy 1 after one worker's obstruction, Continuation Renewal succeeded, and the same completed Condor later blocked S416. Courtesy 2 did not admit because the implementation required the later native block to come from the original authorising worker. Separately, the user chose a 60 m maximum Stage-1 travel to prevent excessive centroid journeys on large fields while preserving small-field centre settlement.
+
+**Discovery — Courtesy Budget Belongs to the Obstacle:** the finite courtesy budget is a property of the moved completed Job Episode. The original blocked worker is evidence for the first admission and for post-release continuation, not owner of the obstacle's remaining courtesy.
+
+**Decision — Bounded Centroid Settlement:** Stage 1 travels on its captured centroid bearing by `min(distance-to-centroid, 60 m)`. This reuses the historically proven magnitude only as a cap; it must never be interpreted as a minimum prerequisite. After positive Continuation Renewal, any later active worker positively blocked by the same completed assembly may trigger Stage 2. Stage 2 and no-third-courtesy boundaries remain unchanged.
+
+**Non-change:** no Regulation, Passage, HUD or spatial-awareness change is included.
+
+## D-0198 — Regulation Authority Semantics (v0.1.14.3 TEST)
+
+**Evidence:** v0.1.14.2 showed (a) D-0141 continuing to throttle Patriot after the current follower topology had become unresolved/opposed, (b) D-0197 release/re-admit churn when `NO_CURRENT_EXCURSION` briefly appeared while Condor was still GIANTS `TURNING`, and (c) a quiescent D-0155 context intercepting Control before a positively supported D-0141 candidate.
+
+**Decision:** preserve semantic purpose and physical actuation as separate lifetimes. D-0141 `PRESERVE` quiesces only actuation and may later reactivate under the same Commitment. D-0155 quiescence remains evidence-driven, but bare witness absence is insufficient while Situation publishes a local intent-revelation quiescence veto for the protected participant. Quiescent D-0141/D-0155 leases do not count as current physical Regulation ownership, and a quiescent D-0155 dispatch result does not block downstream supported Control.
+
+**Rejected:** traffic timeout/reset as the primary correction. The observed failures have positive semantic causes; a timer would mask authority defects and could recreate earlier chatter.
+
+**Non-change:** no Passage-side fix, D-0147 change, HUD change, or Field World Spatial Awareness implementation.
+
 ## v0.1.14.0 canonical-promotion checkpoint — D-0194/D-0195/D-0196 validated
 
 **Reality closure:** v0.1.13.1 exposed Baseline Pose Is Not Alignment before D-0194 could be tested; v0.1.13.2 validated Assembly Axis Settlement and the first centroid courtesy but disproved nearest-boundary Stage 2 when Protected Yield failed to provide physical clearance; v0.1.13.3 corrected Stage 2 to one protected-away, current-occupancy-clear translation. Final TS010 log/video validates both courtesies, Continuation Renewal and terminal exhaustion without failure/player escalation/runtime errors.

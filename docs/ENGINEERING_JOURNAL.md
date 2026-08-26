@@ -1,3 +1,31 @@
+## 2026-08-26 — v0.1.15.0 canonical-candidate consolidation
+
+The v0.1.14.x test line converged on authority-lifetime semantics rather than additional manoeuvre machinery. TS009/TS016b first exposed that sticky semantic traffic obligations were keeping physical Regulation alive long after local need disappeared; D-0197 separated relationship persistence from D-0155 actuation. Further evidence showed the inverse boundary: bare witness disappearance during a locally unresolved GIANTS turn was too weak to quiesce, and D-0141 could retain stale physical pacing or be starved by quiescent D-0155 dispatch ownership. D-0198 moved raw GIANTS intent interpretation back into Situation and established independent semantic/physical authority lifetimes.
+
+D-0199 then corrected terminal courtesy ownership: the moved completed assembly owns the finite courtesy budget, and Stage-1 centroid settlement is capped at 60 m without restoring the old minimum-distance saturation defect. TS015 positively exercised the large-field cap. The exact different-blocker Courtesy-2 branch was not reproducible and is recorded as a validation boundary rather than silently claimed.
+
+The first terminal test also revealed that a quiescent traffic Commitment could outlive natural completion of one governing Job Episode and block D-0147 entirely. D-0200 makes positive Job Episode termination collapse exactly dependent traffic authority before the next Situation context. Field evidence confirmed that succession.
+
+A separate safety observation remains open: current regulation may mature too late and allow an active worker to charge a newly stationary completed assembly. Discussion also discovered a possible future supplementary concept, Field World Spatial Awareness / Shared Constraint Window, but implementation is deliberately deferred until after canonicalisation.
+
+## 2026-08-26 — D-0200 terminal succession discovery
+
+The first D-0199 field run did not test Courtesy ownership at all. The completed MF Job Episode ended while a quiescent D-0155 Commitment remained alive; Encounter reconciliation terminated the relationship, but Commitment context still contained the obsolete traffic owner and D-0147 correctly declined admission. This separated two lifecycle responsibilities that had been assumed to coincide: Encounter terminality and Commitment terminality. D-0200 now collapses the dependent traffic Commitment before Situation publication. The separate high-speed approach of the remaining worker toward the newly stationary completed assembly is deliberately parked until after the planned canonical checkpoint.
+
+## 2026-08-26 — D-0199 terminal courtesy ownership/bounding
+
+**Observe:** D-0198 field testing was ordinary and successful. Review of the earlier terminal sequence showed Courtesy 2 failed solely because the later blocker was S416 rather than the worker that authorised Courtesy 1. The user also identified a desired large-field bound: centre or 60 m, whichever comes first.
+
+**Discuss:** preserving the original blocker as the owner of the second move is unnecessary identity coupling. The moved completed assembly is the thing consuming the finite relocation budget. Continuation Renewal still prevents immediate chaining, but after renewal the later blocker identity need not match the first.
+
+**Implement:** keep courtesy count keyed by terminal Job Episode; rename the post-Courtesy-1 identity set as continuation witnesses; remove blocker-identity matching from the Stage-2 re-arm test; cap Stage-1 target progress at 60 m while preserving the centroid bearing.
+
+**Validate:** structural/replacement tests include a different-worker Courtesy-2 re-arm and small/large-field centroid-distance cases. Field validation remains required.
+
+## 2026-08-26 — D-0198 Regulation Authority Semantics TEST
+
+The v0.1.14.2 diagnostic run changed the field sequence but still exposed authority semantics. A first implementation attempt read raw GIANTS intent inside Control; the structural conformance test rejected that abstraction leak. The correction moved interpretation back into Situation: `TrajectoryConflictAssessment` publishes a semantic pair-local quiescence veto, and `LiveControlDispatcher` consumes only that record. This preserves the established Situation → Candidate/Decision → Commitment → Control responsibility boundary.
+
 # v0.1.14.0 canonical-candidate promotion — terminal Reality closure
 
 **Observe:** v0.1.13.1 exposed a latent Phase-8A articulation-baseline defect; v0.1.13.2 reached terminal completion and validated Stage 1 but bulldozed the held mower during nearest-boundary Stage 2; v0.1.13.3 used one protected-away, occupancy-clear boundary translation and completed the full Double Courtesy sequence.

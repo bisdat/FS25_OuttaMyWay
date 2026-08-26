@@ -1,7 +1,8 @@
--- FS25_OuttaMyWay v0.1.14.0 CANONICAL CANDIDATE — validated D-0196 Protected-Occupancy Boundary Settlement.
--- D-0147 keeps D-0194 Double Courtesy: first to the Field World centroid, then (only
--- after Continuation Renewal and a later attributed native block) one final deterministic
--- boundary move. Stage 2 now travels on the single boundary ray away from the authorising
+-- FS25_OuttaMyWay v0.1.14.4 TEST — D-0199 Courtesy Budget Ownership + Bounded Centroid Settlement.
+-- D-0147 keeps D-0194 Double Courtesy with D-0199 ownership/bounding refinement: first
+-- toward the Field World centroid by at most 60 m, then (only after Continuation Renewal
+-- and a later native block positively attributed to the same moved completed assembly) one
+-- final deterministic boundary move. Stage 2 travels on the single boundary ray away from the authorising
 -- productive occupancy and is admitted only when that complete straight translation is
 -- clear of the protected worker's current positive physical occupancy. No search or third
 -- automatic relocation exists.
@@ -179,13 +180,21 @@ local function centreSettlementObjective(record,fieldWorld,occupancy,primitives)
     local distance=math.sqrt(dx*dx+dz*dz)
     local dirX,dirZ=0,0
     if distance>0.0001 then dirX,dirZ=dx/distance,dz/distance end
+    -- D-0199 Bounded Centroid Settlement: 60 m is a maximum courtesy allowance,
+    -- never a minimum prerequisite. Small fields still reach the centroid; larger
+    -- fields stop after the bounded progress on the same immutable centroid bearing.
+    local configuredCap=tonumber(OuttaMyWay.TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M) or 60.0
+    local distanceCap=math.max(0,configuredCap)
+    local targetProgress=math.min(distance,distanceCap)
+    local capped=targetProgress+0.000001<distance
+    local targetX,targetZ=occupancy.x+dirX*targetProgress,occupancy.z+dirZ*targetProgress
     return {
-        objectiveKind="TERMINAL_INTERIOR_SETTLEMENT",courtesyStage=1,destinationKind="FIELD_CENTROID",
+        objectiveKind="TERMINAL_INTERIOR_SETTLEMENT",courtesyStage=1,destinationKind=capped and "CENTROID_BEARING_DISTANCE_CAP" or "FIELD_CENTROID",
         alignmentMode="FIXED_INITIAL_CENTRE_BEARING",fieldCentreX=cx,fieldCentreZ=cz,
         initialDistanceToCentreM=distance,infieldDirectionX=dirX,infieldDirectionZ=dirZ,
-        retreatDistanceM=distance,targetProgressM=distance,targetX=cx,targetZ=cz,
-        physicalPrimitiveCount=#primitives,fieldCentreIsDestination=true,continuousCourseCorrection=false,
-        settlement="INTERIOR_SETTLEMENT"
+        retreatDistanceM=targetProgress,targetProgressM=targetProgress,targetX=targetX,targetZ=targetZ,
+        maximumCourtesyDistanceM=distanceCap,distanceCapped=capped,physicalPrimitiveCount=#primitives,
+        fieldCentreIsDestination=not capped,continuousCourseCorrection=false,settlement="INTERIOR_SETTLEMENT"
     },nil
 end
 local function boundarySettlementObjective(record,fieldWorld,occupancy,primitives,snapshot,protected)
@@ -292,7 +301,7 @@ local function physicalSpec(picture,record,phase,objective,objectiveReason,prote
     constraints.CONTINUING_INTENT_PRIORITY=packet("The completed assembly moves while the active assembly/assemblies whose conflict authorised D-0147 retain their GIANTS jobs but are temporarily held for the translational Protected Yield Interval",{terminalAssemblyId=record.assemblyId,activeDemandAssemblyIds=record.obstructedDemandAssemblyIds,protectedDemandAssemblies=protected,productiveJobsRemainGiantsOwned=true})
     constraints.PROGRESS_PRESERVATION=packet("The subject has no productive progress to preserve; the double courtesy exists only to restore current continuation without searching for permanent safe parking",{productiveJobEnded=true,parking=false,doubleCourtesy=true})
     constraints.RESPONSIBILITY_COMPATIBILITY=packet("The Terminal Occupancy obligation belongs independently to this completed assembly; unrelated completed assemblies remain constraints rather than transitive relocation authority",{terminalEpisodeId=record.terminalEpisodeId})
-    constraints.OBLIGATION_COMPATIBILITY=packet("One admitted conflict owns one courtesy Commitment. The first obstruction permits Interior Settlement; after Continuation Renewal, one later attributed native block may permit Final Boundary Settlement; no third automatic relocation exists",{oneMovePerCommitment=true,repeatRequiresContinuationRenewal=true,maximumCourtesyMovesPerEpisode=2,terminalResolutionCommitment=true})
+    constraints.OBLIGATION_COMPATIBILITY=packet("The moved completed Job Episode owns a two-move courtesy budget. The first obstruction permits Interior Settlement; after Continuation Renewal, any later active worker positively blocked by the same completed assembly may permit Final Boundary Settlement; no third automatic relocation exists",{oneMovePerCommitment=true,repeatRequiresContinuationRenewal=true,repeatBlockerIdentityBound=false,courtesyBudgetOwner="MOVED_COMPLETED_JOB_EPISODE",maximumCourtesyMovesPerEpisode=2,terminalResolutionCommitment=true})
     constraints.COMMITMENT_PRECONDITIONS=packet("Job Episode ended by authoritative source-intent termination; positive Terminal Occupancy was admitted or is already committed; consent is enabled and Player Claim is absent",{automaticTerminalEgress=OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS==true,playerClaimed=false,terminalResolutionCommitted=record.existingCommitmentId~=nil or record.obstructionPositive==true})
     constraints.EFFECTIVE_ACTUATION_COMPOSITION=packet("One D-0147 Commitment owns POST_JOB_ACTUATION for the completed assembly and bounded PROGRESS_ACTUATION only for zero-speed protection of the authorising productive assembly/assemblies",{terminalAssemblyId=record.assemblyId,postJobAuthorityClass="POST_JOB_ACTUATION",protectedDemandAssemblies=protected,progressAuthorityClass="PROGRESS_ACTUATION",effectClass="HOLD"})
     constraints.SAFE_RELEASE_HANDOVER=packet("Player Claim/source reactivation ends terminal authority immediately. Every Protected Yield exit releases its zero-speed productive hold; owned completion/failure positively neutralises terminal actuation before Vehicle Activity Context and all D-0147 authority are released",{playerClaimSticky=true,actuationNeutralisation=true,protectedYieldHoldRelease=true,maximumCourtesyMovesPerEpisode=2})

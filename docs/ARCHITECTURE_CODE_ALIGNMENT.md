@@ -1,3 +1,43 @@
+# v0.1.14.5 D-0200 architecture/code alignment — Job Episode Dependency Collapse TEST
+
+| Responsibility | Alignment |
+| --- | --- |
+| Positive Job Episode end | `Runtime.processSealedObservation()` invokes dependency collapse after Job Episode/Operation admission and before Situation assessment |
+| Dependency identity | pair-specific `dependentEncounterId` + `dependentJobEpisodeIds`, bound into the D-0146 governing basis by `LiveTrafficCandidateSupport` |
+| Scope | live D-0146 Cooperative Passage / Resolution-Space Commitments whose governing basis carries the exact pair dependency; sibling D-0141/D-0123 physical leases under that same terminalised Commitment are cleaned up only as dependent actuation |
+| Obligation terminality | all open obligations under the dependent traffic Commitment settle `BASIS_CESSATION` |
+| Commitment terminality | existing `OBJECTIVE_SATISFIED` terminal path; natural Job Episode completion does not become `SOURCE_INTENT_TERMINATION` |
+| Physical/control cleanup | dispatcher owner-tag leases for D-0155/D-0141/D-0123 under the terminalised Commitment are cleared |
+| D-0147 succession | occurs normally only after obsolete traffic Commitment is absent from Situation Commitment context |
+| D-0199 / Regulation / Passage / HUD / overlay | unchanged |
+
+# v0.1.14.4 D-0199 architecture/code alignment — terminal courtesy ownership/bounding TEST
+
+| Responsibility | Alignment |
+| --- | --- |
+| Courtesy budget owner | `TerminalOccupancyAssessment.courtesyMoveCount[terminalEpisodeId]` — moved completed Job Episode |
+| Courtesy-1 continuation witness | `yieldRenewalState.continuationWitnessAssemblyIds` records only the worker(s) released by Courtesy 1 |
+| Courtesy-2 blocker identity | unbound to Courtesy-1 witness; any currently active worker with positive obstruction + native `blocked=true` may re-arm Stage 2 after renewal |
+| Stage-1 bearing | immutable Field World centroid bearing |
+| Stage-1 magnitude | `min(distanceToCentroid, TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M)`; cap = 60 m |
+| 60 m semantics | maximum only; never a minimum prerequisite or Courtesy Exhaustion test |
+| Stage 2 | unchanged protected-away boundary translation with containment/current-occupancy clearance |
+| Third courtesy / search | absent |
+| D-0197/D-0198 / Passage / HUD / spatial overlay | unchanged |
+
+# v0.1.14.3 D-0198 architecture/code alignment — Regulation Authority Semantics TEST
+
+| Responsibility | Alignment |
+| --- | --- |
+| D-0141 semantic purpose persistence | existing Commitment/Obligation retained on `PRESERVE` |
+| D-0141 physical actuation | `_quiesceFollowerBoundaryActuation()` releases only the owner-tag speed lease/supporting authority; no purpose settlement |
+| D-0141 reactivation | later `APPLY` under the same pair/Commitment reacquires physical authority and logs `D0141_ACTUATION_REACTIVATED` |
+| D-0197 strong quiescence | existing strong `NOT_REQUIRED` reasons still quiesce D-0155 |
+| D-0198 witness-absence refinement | `TrajectoryConflictAssessment` publishes pair-local `intentRevelationQuiescenceVeto`; Dispatcher consumes that semantic record only |
+| Quiescent ownership | `_otherRegulationPurposeOwnsAuthority()` ignores quiescent D-0141/D-0155 leases; quiescent D-0155 dispatch falls through |
+| Timeout/watchdog | absent; elapsed time remains non-authoritative traffic evidence |
+| Passage / D-0147 / HUD / spatial overlay | unchanged |
+
 # v0.1.14.0 D-0194/D-0195/D-0196 architecture/code alignment
 
 - `TerminalEgressCandidateSupport` derives Stage-1 centroid movement and one Stage-2 protected-away boundary ray; Stage 2 proves current protected-occupancy sweep clearance and completed-footprint endpoint containment without alternate search.

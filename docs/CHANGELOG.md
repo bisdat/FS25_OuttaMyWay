@@ -1,3 +1,46 @@
+## v0.1.15.0 CANONICAL CANDIDATE — Regulation and Terminal Authority Closure
+
+**Authoritative baseline:** user-declared v0.1.14.0 canonical (`2b3b47871dfe0d6e3e5731a1f108232edb5009573dcd69932b2ebbdb7331a250`; Git `da27bc40289648e7258a157f67cf9dccd5a8e6cd`; 263 files).
+
+**Promotion rule:** v0.1.15.0 promotes the cumulative v0.1.14.1–v0.1.14.5 implementation with release identity/documentation changes only. No new traffic, Passage, terminal, HUD or spatial-awareness behaviour is intentionally introduced by candidate preparation.
+
+**D-0197 Regulation Quiescence Boundary:** TS009 and TS016b field evidence confirmed that a sticky D-0146 relationship may retain semantic obligation while D-0155 physical actuation quiesces on strong current `actionSpace=NOT_REQUIRED` evidence. The historical release/reacquire chatter fix remains intact; no timeout is used as traffic evidence.
+
+**D-0198 Regulation Authority Semantics:** subsequent TS009/TS016b evidence validated the separation between semantic purpose and physical actuation for D-0141/D-0155. D-0141 unresolved/opposed follower purpose may persist while its speed lease quiesces; bare `NO_CURRENT_EXCURSION` does not quiesce an active D-0155 lease while Situation positively reports local intent revelation; quiescent D-0155 context does not monopolise dispatcher ownership. The owner judged the resulting field behaviour ordinary, which is the desired outcome.
+
+**D-0199 Courtesy Budget Ownership + Bounded Centroid Settlement:** the two-courtesy budget belongs to the moved completed Job Episode. Courtesy 1 retains the first blocked worker only as Continuation-Renewal witness; after renewal, a later active worker blocked by the same completed assembly may authorise Courtesy 2. Courtesy 1 travels on the fixed centroid bearing by `min(distance-to-centroid, 60 m)`. TS015 positively validated the 60 m maximum on a large field. The identity-unbound different-blocker Courtesy-2 branch could not be reproduced in field testing; no contrary evidence was observed and the owner elected not to hold canonical promotion for an unreproducible fixture.
+
+**D-0200 Job Episode Dependency Collapse:** the v0.1.14.5 terminal run positively validated collapse of an exactly dependent D-0146 traffic Commitment at Job Episode termination (`JOB_EPISODE_DEPENDENCY_COLLAPSE` / dependent D-0155 terminalisation), allowing D-0147 Terminal Occupancy to admit immediately afterwards. Natural completion remains `terminalCause=nil`; D-0147 exclusivity is not weakened.
+
+**Open evidence intentionally carried:** an active worker can still approach a newly stationary/completed assembly at excessive speed when current Regulation matures too late; this is a separate post-canonical safety investigation. The proposed Field World Spatial Awareness / Shared Constraint Window overlay remains discussion-only until after canonicalisation. The earlier anomalous Passage lateral-side choice remains parked until reproducible. HUD communication for intentional delays/pauses remains parked for the later UI workstream. Assembly × Agronomy remains parked because Axis Return plus native GIANTS continuation leaves no observed unresolved agronomic consequence.
+
+**Release state:** BUILD resets to `0`. This exact RRS-produced package remains a canonical candidate until the repository owner explicitly accepts its fingerprint and records local canonical Git/provenance.
+
+## v0.1.14.5 TEST — D-0200 Job Episode Dependency Collapse
+
+v0.1.14.4 terminal testing exposed a retained quiescent D-0155 Commitment that survived natural completion of one participant Job Episode and therefore blocked D-0147 admission. D-0200 collapses traffic Commitments explicitly dependent on an Encounter containing an ended Job Episode before Situation publishes the next Commitment context. Obligations settle by basis cessation, owner-tag control leases are cleared, and no `SOURCE_INTENT_TERMINATION` semantic is reintroduced. D-0199 itself is unchanged and remains to be field-validated.
+
+## v0.1.14.4 TEST — D-0199 Courtesy Budget Ownership + Bounded Centroid Settlement
+
+D-0147 now treats the completed Job Episode as owner of the two-courtesy budget. Courtesy-1 blocker identity is retained only as Continuation-Renewal evidence; after renewal, a different active worker positively blocked by the same completed assembly may authorise Courtesy 2. Courtesy 1 retains the fixed centroid bearing but is capped to the nearer of the centroid or 60 m. The 60 m value is a maximum only and cannot suppress movement inside 60 m. D-0197/D-0198 Regulation, Passage, Axis Return, HUD and spatial-awareness work are unchanged.
+
+## v0.1.14.3 TEST — D-0198 Regulation Authority Semantics
+
+**Authoritative implementation baseline:** user-declared v0.1.14.0 canonical (`2b3b47871dfe0d6e3e5731a1f108232edb5009573dcd69932b2ebbdb7331a250`; Git `da27bc40289648e7258a157f67cf9dccd5a8e6cd`; 263 files). The field-validated D-0197 v0.1.14.1 behaviour is re-applied on that canonical baseline. The v0.1.14.2 diagnostic hot-path instrumentation is not carried forward.
+
+**Validated precursor — D-0197:** TS009 and TS016b proved that sticky D-0146 relationship/obligation lifetime must be independent from current D-0155 physical Regulation lifetime. Positive strong `actionSpace=NOT_REQUIRED` evidence may quiesce D-0155 actuation while the Commitment remains.
+
+**New evidence:** v0.1.14.2 exposed two authority-lifetime defects. First, an admitted D-0141 follower purpose could preserve its last physical speed cap after current follower topology became unresolved/opposed. Second, D-0197 treated bare `NO_CURRENT_EXCURSION` as sufficient quiescence authority even while the protected participant remained locally GIANTS `TURNING`; that released and later re-established Regulation, discarding conserved progression state. The diagnostic run also proved that a retained-but-quiescent D-0155 lease could intercept dispatch before an independently supported D-0141 purpose.
+
+**D-0198 decision — Regulation Authority Semantics:**
+- **Follower Purpose Is Not Follower Actuation:** D-0141 `PERSIST_UNRESOLVED` retains the semantic purpose/obligation but quiesces its physical Regulation lease. Positive later follower support may reactivate under the same Commitment; positive retirement still settles the purpose normally.
+- **Witness Absence Is Not Quiescence Authority:** Situation, not Control, interprets raw GIANTS intent evidence. Bare `NO_CURRENT_EXCURSION` carries a pair-local `intentRevelationQuiescenceVeto` while the protected participant remains locally intent-revealing inside the existing 80 m Passage Action-Space envelope. An already-active D-0155 lease therefore continues its existing progression envelope instead of quiescing merely because the excursion witness vanished. Stronger `NOT_REQUIRED` reasons still quiesce as D-0197 validated.
+- **Quiescent Purpose Is Not Exclusive Traffic Ownership:** retained D-0155 semantic context with quiescent actuation no longer terminates dispatcher processing before an independently selected D-0141 purpose can actuate. Quiescent leases are excluded from physical Regulation ownership checks.
+
+**Explicit non-change:** no timeout/watchdog is introduced; 75% Resolution-Space reserve and 1 km/h Intent-Revelation Creep are unchanged; D-0141 retirement evidence is unchanged; Cooperative Passage geometry/Phases 1-9, D-0192 Axis Return, D-0147 Double Courtesy, HUD/UI and the proposed Field World Spatial Awareness overlay are untouched. The lateral-choice anomaly remains parked until reproducible.
+
+**Field gate:** rerun TS009 and TS016b. Confirm D-0197 still quiesces on strong `NOT_REQUIRED` evidence; confirm bare `NO_CURRENT_EXCURSION` during local protected turning does not create Regulation release/re-admit churn; confirm an unresolved/opposed D-0141 follower purpose logs `D0141_ACTUATION_QUIESCENT` and native speed is restored; confirm later positive follower support can log `D0141_ACTUATION_REACTIVATED` without Commitment churn.
+
 ## v0.1.14.0 CANONICAL CANDIDATE — D-0194/D-0195/D-0196 Double Courtesy validation closure
 
 **Validated source:** exact v0.1.13.3 TEST (`6d805f7735f54fb1a6cb79209cf4d42f415c6d0e5a0035963509d55c6353f1d4`; 263 files), directly descended through v0.1.13.1–v0.1.13.3 from owner-declared v0.1.13.0 canonical (`9bfd77d6c9de44c27caa2023dd86ed146592be697c68390076e1a641252876ce`; Git `f279516c669a335fae7f0a8db2a8f8c58fd2f78b`; 263 files).

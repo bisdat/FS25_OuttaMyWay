@@ -68,8 +68,13 @@ function Runtime:processSealedObservation(raw)
     local snapshot=self:publishObservation(raw)
     local episodes=self:admitJobEpisodes(snapshot)
     local operation=self:admitOperation(snapshot,episodes)
+    -- D-0200: positive Job Episode termination collapses any traffic Commitment
+    -- whose Encounter dependency includes that episode before Situation publishes
+    -- Commitment context. This prevents dead traffic authority from blocking D-0147
+    -- terminal succession in the same sealed observation.
+    local trafficCommitmentCollapse=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(self,episodes,snapshot)
     local picture=self:assessOperationalPicture(snapshot,episodes,operation)
-    return {snapshot=snapshot,jobEpisodes=episodes,operation=operation,picture=picture}
+    return {snapshot=snapshot,jobEpisodes=episodes,operation=operation,picture=picture,trafficCommitmentCollapse=trafficCommitmentCollapse}
 end
 function Runtime:evaluateSealedOperationalPicture(picture)
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")

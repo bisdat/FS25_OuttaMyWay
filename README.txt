@@ -1,3 +1,36 @@
+FS25_OuttaMyWay v0.1.15.0 CANONICAL CANDIDATE — REGULATION AND TERMINAL AUTHORITY CLOSURE
+
+Authoritative canonical parent: user-declared v0.1.14.0 canonical
+Canonical SHA-256: 2b3b47871dfe0d6e3e5731a1f108232edb5009573dcd69932b2ebbdb7331a250
+Canonical Git: da27bc40289648e7258a157f67cf9dccd5a8e6cd
+Files entering candidate production: 263
+
+This candidate promotes the cumulative v0.1.14.1–v0.1.14.5 line: D-0197 Regulation Quiescence Boundary, D-0198 Regulation Authority Semantics, D-0199 Courtesy Budget Ownership / 60 m maximum centroid settlement, and D-0200 Job Episode Dependency Collapse. Candidate preparation changes release identity/documentation only. The unreproduced different-blocker Courtesy-2 branch remains an explicit validation boundary rather than a hidden success claim. The high-speed approach to a newly stationary completed assembly, future Field World Spatial Awareness overlay, parked Passage lateral anomaly and future HUD communication work remain outside this candidate.
+
+FS25_OuttaMyWay v0.1.14.5 TEST — D-0200 JOB EPISODE DEPENDENCY COLLAPSE
+
+Authoritative parent: user-declared v0.1.14.0 canonical
+Canonical SHA-256: 2b3b47871dfe0d6e3e5731a1f108232edb5009573dcd69932b2ebbdb7331a250
+Canonical Git: da27bc40289648e7258a157f67cf9dccd5a8e6cd
+
+This TEST retains validated D-0198 Regulation semantics and D-0199 Double Courtesy refinement, and fixes terminal succession: a live traffic Commitment cannot outlive positive termination of a Job Episode contained by its governing Encounter. Dependent obligations end by basis cessation before Situation publishes Commitment context, allowing D-0147 to become eligible. No new obstacle-avoidance, Passage, HUD or spatial-overlay behaviour is included.
+
+FS25_OuttaMyWay v0.1.14.4 TEST — D-0199 COURTESY BUDGET OWNERSHIP + BOUNDED CENTROID SETTLEMENT
+
+Authoritative canonical parent: user-declared v0.1.14.0 canonical
+Canonical SHA-256: 2b3b47871dfe0d6e3e5731a1f108232edb5009573dcd69932b2ebbdb7331a250
+Canonical Git: da27bc40289648e7258a157f67cf9dccd5a8e6cd
+
+This cumulative TEST retains validated D-0197/D-0198 Regulation semantics and changes only D-0147 terminal courtesy. The moved completed Job Episode owns its two-courtesy budget; the first blocker is only a Continuation-Renewal witness and does not bind the identity of the later blocker. Courtesy 1 travels toward the Field World centroid by the smaller of the remaining centroid distance or 60 m. Courtesy 2, exhaustion, Player Claim/source supersession and Protected Yield remain otherwise unchanged.
+
+FS25_OuttaMyWay v0.1.14.3 TEST — D-0198 REGULATION AUTHORITY SEMANTICS
+
+Authoritative parent: user-declared v0.1.14.0 canonical
+Canonical SHA-256: 2b3b47871dfe0d6e3e5731a1f108232edb5009573dcd69932b2ebbdb7331a250
+Canonical Git: da27bc40289648e7258a157f67cf9dccd5a8e6cd
+
+This TEST re-applies field-validated D-0197 and corrects two further actuation-lifetime boundaries: D-0141 unresolved purpose no longer preserves a stale physical cap, and D-0155 does not quiesce solely because `NO_CURRENT_EXCURSION` appears while the protected participant is still locally revealing GIANTS turn intent. Retained quiescent D-0155 context no longer blocks a separately supported D-0141 dispatch. No timeout, Passage, D-0147, HUD or spatial-overlay changes are included.
+
 FS25_OuttaMyWay v0.1.14.0 CANONICAL CANDIDATE — D-0194/D-0195/D-0196 DOUBLE COURTESY
 
 Validated behavioural source: v0.1.13.3 TEST

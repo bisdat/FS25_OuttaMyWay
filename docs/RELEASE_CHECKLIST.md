@@ -1,3 +1,50 @@
+# v0.1.15.0 CANONICAL CANDIDATE checklist — D-0197/D-0198/D-0199/D-0200 promotion
+
+- [x] Exact authoritative baseline is owner-declared v0.1.14.0 canonical SHA-256 `2b3b47871dfe0d6e3e5731a1f108232edb5009573dcd69932b2ebbdb7331a250`, Git `da27bc40289648e7258a157f67cf9dccd5a8e6cd`, 263 files.
+- [x] Candidate promotes the cumulative v0.1.14.1–v0.1.14.5 implementation; preparation changes identity/documentation only.
+- [x] D-0197 strong Regulation quiescence field evidence: TS009 + TS016b PASS.
+- [x] D-0198 Regulation Authority Semantics field evidence: TS009 + TS016b ordinary/expected behaviour; D-0141 quiescence and D-0155 intent-revelation persistence retained.
+- [x] D-0199 60 m maximum centroid settlement field evidence: TS015 PASS.
+- [x] D-0199 different-blocker Courtesy-2 branch explicitly recorded as not reproduced; no false field-validation claim.
+- [x] D-0200 Job Episode Dependency Collapse field evidence: dependent traffic Commitment terminalises and D-0147 becomes eligible.
+- [x] Open stationary/completed-assembly high-speed approach is carried as post-canonical safety work, not silently fixed.
+- [x] Spatial-awareness overlay, Passage lateral anomaly and HUD work remain outside candidate behaviour.
+- [ ] Exact RRS candidate/evidence production passes with zero blockers and deterministic byte-identical repeat build.
+- [ ] Exact packaged structural/RRS/XML/manifest checks pass.
+- [ ] Owner reviews exact fingerprint and explicitly declares canonical or rejects it.
+- [ ] Owner records local Git/canonical provenance after acceptance.
+
+# v0.1.14.5 D-0200 TEST gate
+
+- [ ] RRS candidate generated from exact v0.1.14.0 canonical fingerprint.
+- [ ] Structural Python suite passes on exact packaged bytes.
+- [ ] Local Lua replacement-core suite passes.
+- [ ] Repeat terminal theatre: pre-completion D-0155 relationship may quiesce normally.
+- [ ] At Job Episode end, dependent traffic Commitment logs `JOB_EPISODE_DEPENDENCY_COLLAPSE` and is terminal before D-0147 candidate context.
+- [ ] D-0147 Courtesy 1 admits and executes.
+- [ ] Continuation Renewal is observed.
+- [ ] If another active worker is later blocked by the same completed assembly, D-0199 Courtesy 2 admits regardless of first-blocker identity.
+- [ ] Double Courtesy exhausts after Courtesy 2; no third move.
+- [ ] Record separately any active-worker high-speed approach to the stationary completed assembly; do not expand this tranche to solve it.
+
+# v0.1.14.4 D-0199 TEST gate
+
+- [x] Start from user-declared v0.1.14.0 canonical through RRS; cumulative validated v0.1.14.3 behaviour is declaratively re-applied.
+- [x] D-0147 courtesy count remains keyed to the moved completed Job Episode.
+- [x] Courtesy-1 blocker identity is used only for Continuation Renewal, not to bind the Stage-2 blocker.
+- [x] Stage-1 centroid progress is capped at 60 m maximum without reintroducing historical minimum-distance exhaustion.
+- [x] D-0196 Stage-2 protected-away geometry, no-search and no-third-courtesy boundaries remain unchanged.
+- [x] D-0197/D-0198 Regulation, Passage, HUD and spatial-awareness work are unchanged.
+- [ ] Field validation completed and reviewed.
+
+## v0.1.14.3 TEST release note
+
+- [ ] Local Lua replacement-core suite executed by owner build environment.
+- [x] Python structural suite passes in build environment.
+- [x] No timeout/watchdog, HUD, Passage geometry, D-0147 or spatial-overlay behaviour added.
+- [x] v0.1.14.2 diagnostic hot-path markers removed.
+- [ ] TS009 / TS016b field gate completed.
+
 ## v0.1.14.0 CANONICAL CANDIDATE checklist — D-0194/D-0195/D-0196
 
 - [x] Validated source fixed to exact v0.1.13.3 TEST (`6d805f7735f54fb1a6cb79209cf4d42f415c6d0e5a0035963509d55c6353f1d4`).

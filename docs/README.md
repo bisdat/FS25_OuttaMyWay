@@ -1,3 +1,19 @@
+# v0.1.15.0 canonical-candidate documentation state
+
+The current candidate consolidates D-0197 through D-0200. Regulation authority lifetime is separated from semantic purpose lifetime; terminal courtesy budget ownership/capped centroid settlement and exact Job Episode dependency collapse are recorded. Open post-canonical work is the stationary/completed-assembly approach safety case, then discussion of supplementary Field World Spatial Awareness / Shared Constraint Window.
+
+# v0.1.14.5 TEST — D-0200 traffic/terminal lifecycle succession
+
+This TEST fixes one lifecycle boundary discovered during D-0199 validation: a traffic Commitment explicitly dependent on an Encounter cannot remain live after one of that Encounter's Job Episodes positively ends. The traffic obligation collapses by basis cessation before terminal occupancy is assessed. D-0199 terminal courtesy behaviour itself is unchanged.
+
+# v0.1.14.4 TEST — D-0199 terminal courtesy refinement
+
+This cumulative TEST retains v0.1.14.3 Regulation semantics and changes only D-0147. The completed Job Episode owns its maximum two automatic courtesy moves. Courtesy 1 uses a fixed centroid bearing and travels to the centroid or 60 m, whichever is nearer. After positive Continuation Renewal, any later active worker positively blocked by that same completed assembly may authorise Courtesy 2; the original blocker identity is not a Stage-2 requirement. No third move or parking/search system is introduced.
+
+# v0.1.14.3 TEST — D-0198 Regulation Authority Semantics
+
+Authoritative parent remains user-declared v0.1.14.0 canonical (`2b3b47871dfe0d6e3e5731a1f108232edb5009573dcd69932b2ebbdb7331a250`). D-0197 is re-applied as validated precursor behaviour; v0.1.14.2 diagnostic hot-path logging is withdrawn. D-0198 separates semantic purpose lifetime from physical Regulation lifetime for D-0141, refines D-0197 quiescence evidence, and allows quiescent D-0155 context to coexist with independently supported Regulation purposes.
+
 # Current project state — v0.1.14.0 CANONICAL CANDIDATE
 
 Promotes exact field-validated v0.1.13.3 behaviour. D-0194 Double Courtesy, D-0195 Assembly Axis Settlement and D-0196 Protected-Occupancy Boundary Settlement are now the candidate terminal contract. Final TS010 confirms centroid Interior Settlement, Continuation Renewal, protected-away boundary settlement and no-third-courtesy exhaustion. No new traffic/control behaviour is introduced during promotion.

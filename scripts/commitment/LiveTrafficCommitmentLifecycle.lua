@@ -439,6 +439,73 @@ function Lifecycle.settleD0146ActionSpacePurpose(runtime,commitmentId,bridge,evi
     return {commitment=record,settledObligationId=settledId,remainingObligations=remaining,terminal=terminal},nil
 end
 
+-- D-0200 Job Episode Dependency Collapse. A traffic Commitment may outlive a
+-- transient Situation witness, but it cannot outlive the exact active Job Episode
+-- pair recorded in its D-0146 governing basis. Natural Job Episode completion is
+-- positive basis cessation for that dependent traffic responsibility; it is not
+-- SOURCE_INTENT_TERMINATION.
+local function endedEpisodeSet(episodeResult)
+    local result={}
+    for _,episodeId in OuttaMyWay.ValueRecord.ipairs(episodeResult and episodeResult.endedEpisodeIds or {}) do result[episodeId]=true end
+    return result
+end
+
+local function d0146TrafficResponsibility(record)
+    local responsibility=record and record.governingBasis and record.governingBasis.responsibilityKey or nil
+    return type(responsibility)=="string" and string.sub(responsibility,1,26)=="d0146-cooperative-passage:"
+end
+
+local function endedDependency(record,ended)
+    local basis=record and record.governingBasis or nil
+    for _,episodeId in OuttaMyWay.ValueRecord.ipairs(basis and basis.dependentJobEpisodeIds or {}) do
+        if ended[episodeId] then return episodeId end
+    end
+    return nil
+end
+
+function Lifecycle.collapseEndedJobEpisodeDependencies(runtime,episodeResult,snapshot)
+    if runtime==nil or episodeResult==nil then return {} end
+    local ended=endedEpisodeSet(episodeResult)
+    if next(ended)==nil then return {} end
+
+    local collapsed={}
+    for _,record in OuttaMyWay.ValueRecord.ipairs(runtime.commitments:list()) do
+        if not OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) and record.state~="SETTLING" and d0146TrafficResponsibility(record) then
+            local endedDependentEpisodeId=endedDependency(record,ended)
+            if endedDependentEpisodeId~=nil then
+                local basis=record.governingBasis or {}
+                local settlementEvidence={
+                    kind="JOB_EPISODE_DEPENDENCY_CEASED",
+                    commitmentId=record.identity,
+                    encounterIdentity=basis.dependentEncounterId,
+                    endedJobEpisodeId=endedDependentEpisodeId,
+                    dependentJobEpisodeIds=basis.dependentJobEpisodeIds,
+                    observationSnapshotId=snapshot and snapshot.identity or episodeResult.observationSnapshotId,
+                    basisCessation=true
+                }
+                local settledIds={}
+                for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(record.identity)) do
+                    runtime.obligations:settle(obligation.identity,"BASIS_CESSATION",settlementEvidence)
+                    settledIds[#settledIds+1]=obligation.identity
+                end
+                local verdict=runtime.governingBasisEvaluator:evaluate(record,{
+                    kind="OBJECTIVE_SATISFIED",evidence=settlementEvidence,
+                    provenance={source="LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies",authority="D0200_JOB_EPISODE_DEPENDENCY_COLLAPSE"}
+                })
+                local settling=runtime.terminalSettlementEvaluator:enterSettling(record.identity,verdict)
+                local terminal=runtime.terminalSettlementEvaluator:attemptTerminal(record.identity,settlementEvidence)
+                if runtime.liveControlDispatcher~=nil and type(runtime.liveControlDispatcher.retireTrafficLeasesForCommitment)=="function" then
+                    runtime.liveControlDispatcher:retireTrafficLeasesForCommitment(record.identity,"JOB_EPISODE_DEPENDENCY_CEASED")
+                end
+                collapsed[#collapsed+1]={commitmentId=record.identity,terminalState=terminal.state,encounterIdentity=basis.dependentEncounterId,endedJobEpisodeId=endedDependentEpisodeId,settledObligationIds=settledIds,releasedAuthorityTokenIds=settling.releasedAuthorityTokenIds or {}}
+                logInfo("JOB_EPISODE_DEPENDENCY_COLLAPSE commitment=%s encounter=%s endedEpisode=%s obligations=%d releasedAuthority=%d terminal=%s",
+                    tostring(record.identity),tostring(basis.dependentEncounterId or "NONE"),tostring(endedDependentEpisodeId),#settledIds,#(settling.releasedAuthorityTokenIds or {}),tostring(terminal.state))
+            end
+        end
+    end
+    return collapsed
+end
+
 local function clearReleasedOwnership(runtime,record)
     local composition=OuttaMyWay.EffectiveActuationComposition.create({identity=runtime.identities:issue("COMPOSITION"),epoch=runtime.epochs:next(),entries={},relevantAssemblyIds={}})
     return runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(record,{

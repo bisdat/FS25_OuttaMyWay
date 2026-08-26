@@ -373,6 +373,33 @@ local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,a
     local bExcursion=bTrajectory and bTrajectory.currentExcursion==true
     if aExcursion==bExcursion then
         result.reason=aExcursion and "MULTIPLE_CURRENT_EXCURSIONS_DO_NOT_SUPPORT_UNILATERAL_CONSERVATION_ROLE" or "NO_CURRENT_EXCURSION"
+        -- D-0198: absence of the Current Excursion witness is not itself
+        -- quiescence authority while a participant is still revealing native
+        -- GIANTS turn intent inside the local Passage Action-Space envelope.
+        -- Situation publishes that semantic veto; Control does not inspect raw
+        -- GIANTS intent evidence.
+        if not aExcursion then
+            local maxSeparationM=threshold(context,"actionSpaceMaxSeparationM",80.0)
+            local aOcc=aSpace and aSpace.occupancy or nil
+            local bOcc=bSpace and bSpace.occupancy or nil
+            local ax,az=tonumber(aOcc and aOcc.x),tonumber(aOcc and aOcc.z)
+            local bx,bz=tonumber(bOcc and bOcc.x),tonumber(bOcc and bOcc.z)
+            local separation=nil
+            if finite(ax) and finite(az) and finite(bx) and finite(bz) then
+                local dx,dz=bx-ax,bz-az; separation=math.sqrt(dx*dx+dz*dz)
+            end
+            local ids={}
+            if finite(separation) and separation<=maxSeparationM then
+                if aMotion~=nil and aMotion.localIntentClassification=="TURNING" and aTrajectory~=nil then ids[#ids+1]=aTrajectory.assemblyId end
+                if bMotion~=nil and bMotion.localIntentClassification=="TURNING" and bTrajectory~=nil then ids[#ids+1]=bTrajectory.assemblyId end
+            end
+            if #ids>0 then
+                result.intentRevelationQuiescenceVeto={
+                    active=true,assemblyIds=ids,separationM=separation,maxSeparationM=maxSeparationM,
+                    reason="LOCAL_TURNING_PARTICIPANT_STILL_REVEALING_NATIVE_INTENT"
+                }
+            end
+        end
         return result
     end
 

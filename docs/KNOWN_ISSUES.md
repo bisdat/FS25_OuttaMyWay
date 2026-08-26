@@ -1,3 +1,13 @@
+## v0.1.15.0 CANONICAL CANDIDATE — known issues / explicit validation boundary
+
+- No blocking D-0197/D-0198 Regulation Authority Semantics defect is known in the latest TS009/TS016b regression. Strong quiescence and intent-revelation continuation both remain evidence-driven; no timeout is traffic authority.
+- D-0199 60 m maximum centroid settlement is field-validated in TS015. The later different-blocker Courtesy-2 branch was not reproducible in field testing and must not be represented as field-proven.
+- D-0200 exact Job Episode Dependency Collapse is field-validated; stale dependent traffic authority no longer blocks D-0147 admission after natural completion.
+- **Open safety investigation:** an active worker may continue at substantial speed toward a newly stationary/completed assembly when D-0155 discovery/reactivation occurs too late. Fresh-envelope rebase after short local quiescence is part of that future investigation.
+- **Future architecture discussion:** Field World Spatial Awareness / Shared Constraint Window may supplement existing intent-led Regulation by conserving constrained space before precise manoeuvre intent is known. No implementation exists in this candidate.
+- **Parked:** anomalous Passage lateral-side selection until reproducible; HUD communication for intentional waits/pauses until the later UI workstream.
+- Assembly × Agronomy is parked because no persistent productive defect remains after Axis Return and native continuation.
+
 ## v0.1.12.0 candidate current issue boundary
 
 - **Resolved by D-0188:** Termination Evidence Diagnostic Ambiguity; natural source-job completion now ends the Job Episode directly without `SOURCE_INTENT_TERMINATION` cause reconciliation.

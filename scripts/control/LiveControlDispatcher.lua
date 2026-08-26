@@ -59,7 +59,9 @@ function Dispatcher.new(runtime)
         d0147ProtectedYieldLeases={},
         guardedRecoveryLease=nil,guardedRecoveryApplyCount=0,guardedRecoveryReleaseCount=0,
         followerBoundaryLease=nil,followerBoundaryApplyCount=0,followerBoundaryReleaseCount=0,followerBoundaryUpdateCount=0,
-        d0146ActionSpaceLease=nil,d0146ActionSpaceApplyCount=0,d0146ActionSpaceReleaseCount=0,d0146ActionSpaceEnvelopeUpdateCount=0,d0146ActionSpaceRoleMigrationCount=0
+        d0146ActionSpaceLease=nil,d0146ActionSpaceApplyCount=0,d0146ActionSpaceReleaseCount=0,d0146ActionSpaceEnvelopeUpdateCount=0,d0146ActionSpaceRoleMigrationCount=0,
+        d0146ActionSpaceQuiescenceCount=0,d0146ActionSpaceReactivationCount=0,
+        followerBoundaryQuiescenceCount=0,followerBoundaryReactivationCount=0
     },Dispatcher)
 end
 function Dispatcher:setCapability(capability) self.capability=capability end
@@ -288,10 +290,12 @@ local function pictureContainsAssembly(picture,assemblyId)
     return false
 end
 
--- Resolution-Space Conservation is an obligation lifetime, not the lifetime of
--- the Current Excursion witness that first justified Regulation.  Control consumes
--- only Situation-owned positive relationship invalidation; it does not reinterpret
--- trajectory/current-motion evidence at this authority boundary.
+-- Resolution-Space Conservation has two independent lifetimes. The D-0146
+-- relationship/obligation remains sticky until Situation positively dissolves it,
+-- but D-0155 physical Regulation remains authoritative only while current Situation
+-- positively supports Action-Space Conservation. Control consumes Situation-owned
+-- semantic evidence only; it does not reinterpret raw trajectory/current-motion
+-- evidence at this authority boundary.
 local function d0146ActionSpaceRelationshipState(picture,lease,relation)
     if relation==nil then
         local subjectPresent=pictureContainsAssembly(picture,lease.protectedAssemblyId or lease.excursionAssemblyId)
@@ -357,6 +361,14 @@ local function d0146ActionSpaceRelation(picture,lease)
     return nil
 end
 
+local function d0146ActionSpaceActuationState(relation)
+    local action=relation and relation.actionSpaceConservation or nil
+    if type(action)~="table" then return "UNRESOLVED",nil end
+    if action.status=="REGULATE_SUPPORTED" and action.supported==true then return "SUPPORTED",action end
+    if action.status=="NOT_REQUIRED" and action.supported~=true then return "NOT_REQUIRED",action end
+    return "UNRESOLVED",action
+end
+
 local function followerBoundaryRecord(picture,lease)
     for _,record in OuttaMyWay.ValueRecord.ipairs(picture.followerBoundaryKnowledge or {}) do
         if lease==nil or record.pairKey==lease.pairKey then return record end
@@ -371,11 +383,11 @@ function Dispatcher:_otherRegulationPurposeOwnsAuthority(commitmentId,assemblyId
     end
     if excluding~="D0141" then
         local lease=self.followerBoundaryLease
-        if lease~=nil and lease.commitmentId==commitmentId and lease.followerAssemblyId==assemblyId then return true end
+        if lease~=nil and lease.actuationActive~=false and lease.commitmentId==commitmentId and lease.followerAssemblyId==assemblyId then return true end
     end
     if excluding~="D0146_ACTION_SPACE" then
         local lease=self.d0146ActionSpaceLease
-        if lease~=nil and lease.commitmentId==commitmentId and lease.regulatedAssemblyId==assemblyId then return true end
+        if lease~=nil and lease.actuationActive~=false and lease.commitmentId==commitmentId and lease.regulatedAssemblyId==assemblyId then return true end
     end
     return false
 end
@@ -410,6 +422,43 @@ function Dispatcher:_releaseFollowerBoundaryLease(picture,evaluated,candidate,br
     return {status="RELEASED",reason=reason,request=request,outcome=outcome,followerBoundary=true,commitment=commitment}
 end
 
+function Dispatcher:_quiesceFollowerBoundaryActuation(picture,evaluated,candidate,bridge)
+    local lease=self.followerBoundaryLease
+    if lease==nil then return {status="NO_DISPATCH",reason="D0141_QUIESCENCE_NO_RETAINED_PURPOSE",followerBoundary=true} end
+    if lease.actuationActive==false then
+        return {status="QUIESCENT",reason="D0141_UNRESOLVED_PURPOSE_RETAINED_ACTUATION_REMAINS_QUIESCENT",followerBoundary=true,commitmentId=lease.commitmentId}
+    end
+    local commitment=self.runtime.commitments:get(lease.commitmentId)
+    local token=nil
+    if commitment~=nil then
+        for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(commitment.identity)) do
+            if candidateToken.identity==lease.authorityTokenId and candidateToken.assemblyId==lease.followerAssemblyId and self.runtime.authorities:validate(candidateToken)==true then token=candidateToken break end
+        end
+    end
+    local request,outcome=nil,nil
+    if commitment~=nil and token~=nil and self.capability~=nil and type(self.capability.executeControlRequest)=="function" then
+        request=self:_regulationRequest(picture,evaluated,candidate,commitment,token,{followerAssemblyId=lease.followerAssemblyId,followerReferenceKey=lease.followerReferenceKey,governingPurpose=lease.governingPurpose},"RELEASE",D0141_OWNER_TAG,nil)
+        local ok,result=self.capability:executeControlRequest(request,candidate)
+        outcome=self:_outcome(request,ok and "ACCEPTED" or "REJECTED",{kind=ok and "D0141_ACTUATION_QUIESCED" or "D0141_ACTUATION_QUIESCENCE_NOT_CONFIRMED",capability="REGULATE_SPEED"},ok and nil or {reason=tostring(result)})
+        if ok~=true and type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG) end
+    elseif self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" then
+        self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
+    end
+    if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
+        local preserve=self:_otherRegulationPurposeOwnsAuthority(commitment.identity,lease.followerAssemblyId,"D0141")
+        OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,commitment.identity,lease.followerAssemblyId,{reason="D0198_D0141_CURRENT_FOLLOWER_TOPOLOGY_UNRESOLVED_ACTUATION_QUIESCENCE",preserveAuthority=preserve})
+    end
+    lease.actuationActive=false
+    lease.authorityTokenId=nil
+    lease.requestId=nil
+    lease.currentCapKmh=nil
+    lease.quiescenceReason=bridge and bridge.reason or "D0141_CURRENT_FOLLOWER_TOPOLOGY_UNRESOLVED"
+    lease.quiescenceCount=(tonumber(lease.quiescenceCount) or 0)+1
+    self.followerBoundaryQuiescenceCount=(tonumber(self.followerBoundaryQuiescenceCount) or 0)+1
+    logInfo("D0141_ACTUATION_QUIESCENT commitment=%s pair=%s follower=%s reason=%s purposeRetained=true quiescenceCount=%d",tostring(lease.commitmentId),tostring(lease.pairKey),tostring(lease.followerAssemblyId),tostring(lease.quiescenceReason),tonumber(lease.quiescenceCount) or 0)
+    return {status="QUIESCENT",reason="D0141_CURRENT_FOLLOWER_TOPOLOGY_UNRESOLVED_ACTUATION_QUIESCENT",request=request,outcome=outcome,followerBoundary=true,commitmentId=lease.commitmentId}
+end
+
 function Dispatcher:_dispatchFollowerBoundary(picture,evaluated,candidate)
     local bridge=followerBoundaryBridge(candidate)
     local current=self.followerBoundaryLease
@@ -417,14 +466,18 @@ function Dispatcher:_dispatchFollowerBoundary(picture,evaluated,candidate)
         return self:_releaseFollowerBoundaryLease(picture,evaluated,candidate,bridge,bridge.reason or "D0141_POSITIVE_RETIREMENT")
     end
     if bridge~=nil and bridge.action=="PRESERVE" then
-        return {status="NO_DISPATCH",reason="D0141_UNRESOLVED_PRESERVE_EXISTING_REGULATION",followerBoundary=true,commitmentId=bridge.existingCommitmentId}
+        return self:_quiesceFollowerBoundaryActuation(picture,evaluated,candidate,bridge)
     end
     if bridge==nil or bridge.action~="APPLY" or candidate.capability~="REGULATE_SPEED" then return nil end
     if self.capability==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",followerBoundary=true} end
     local applied,applyReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyFollowerBoundaryDecision(self.runtime,picture,evaluated)
-    if applied==nil then return {status="NO_DISPATCH",reason=applyReason,followerBoundary=true} end
+    if applied==nil then
+        return {status="NO_DISPATCH",reason=applyReason,followerBoundary=true}
+    end
     local token=applied.authorityToken
-    if token==nil or self.runtime.authorities:validate(token)~=true then return {status="NO_DISPATCH",reason="D0141_VALID_AUTHORITY_TOKEN_UNAVAILABLE",followerBoundary=true} end
+    if token==nil or self.runtime.authorities:validate(token)~=true then
+        return {status="NO_DISPATCH",reason="D0141_VALID_AUTHORITY_TOKEN_UNAVAILABLE",followerBoundary=true}
+    end
     local request=self:_regulationRequest(picture,evaluated,candidate,applied.commitment,token,bridge,"APPLY",D0141_OWNER_TAG,bridge.requestedFollowerCapKmh)
     local started,result=self.capability:executeControlRequest(request,candidate)
     if started~=true then
@@ -434,25 +487,34 @@ function Dispatcher:_dispatchFollowerBoundary(picture,evaluated,candidate)
         return {status="REJECTED",reason=tostring(result),request=request,outcome=outcome,followerBoundary=true}
     end
     local update=current~=nil and current.pairKey==bridge.pairKey
+    local reactivated=update and current.actuationActive==false
+    local priorQuiescenceCount=update and tonumber(current.quiescenceCount) or 0
+    local priorReactivationCount=update and tonumber(current.reactivationCount) or 0
     self.followerBoundaryLease={commitmentId=applied.commitment.identity,pairKey=bridge.pairKey,leaderAssemblyId=bridge.leaderAssemblyId,followerAssemblyId=bridge.followerAssemblyId,
         leaderReferenceKey=bridge.leaderReferenceKey,followerReferenceKey=bridge.followerReferenceKey,leaderName=bridge.leaderName,followerName=bridge.followerName,governingPurpose=bridge.governingPurpose,
         authorityTokenId=token.identity,requestId=request.identity,currentCapKmh=bridge.requestedFollowerCapKmh,nativeUnrestrictedFollowerKmh=bridge.nativeUnrestrictedFollowerKmh,
-        leaderRateUsedKmh=bridge.leaderRateUsedKmh,transitionPreservation=bridge.transitionPreservation==true}
+        leaderRateUsedKmh=bridge.leaderRateUsedKmh,transitionPreservation=bridge.transitionPreservation==true,actuationActive=true,quiescenceReason=nil,
+        quiescenceCount=priorQuiescenceCount or 0,reactivationCount=(priorReactivationCount or 0)+(reactivated and 1 or 0)}
     if update then self.followerBoundaryUpdateCount=self.followerBoundaryUpdateCount+1 else self.followerBoundaryApplyCount=self.followerBoundaryApplyCount+1 end
+    if reactivated then self.followerBoundaryReactivationCount=(tonumber(self.followerBoundaryReactivationCount) or 0)+1 end
     self.dispatchCount=self.dispatchCount+1
-    local outcome=self:_outcome(request,"ACCEPTED",{kind=update and "ELASTIC_REGULATION_MAGNITUDE_UPDATED" or "FOLLOWER_BOUNDARY_REGULATION_ADMITTED",capability="REGULATE_SPEED",maxSpeedKmh=bridge.requestedFollowerCapKmh},nil)
-    logInfo("D0141_%s commitment=%s pair=%s follower=%s ref=%s request=%s cap=%.2fkmh native=%.2fkmh leaderRate=%s transition=%s purpose=%s",update and "UPDATE" or "APPLY",tostring(applied.commitment.identity),tostring(bridge.pairKey),tostring(bridge.followerAssemblyId),tostring(bridge.followerReferenceKey),tostring(request.identity),tonumber(bridge.requestedFollowerCapKmh) or 0,tonumber(bridge.nativeUnrestrictedFollowerKmh) or 0,tostring(bridge.leaderRateUsedKmh or "n/a"),tostring(bridge.transitionPreservation==true),tostring(bridge.governingPurpose))
-    return {status="ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,followerBoundary=true,elasticUpdate=update}
+    local outcome=self:_outcome(request,"ACCEPTED",{kind=reactivated and "D0141_ACTUATION_REACTIVATED" or (update and "ELASTIC_REGULATION_MAGNITUDE_UPDATED" or "FOLLOWER_BOUNDARY_REGULATION_ADMITTED"),capability="REGULATE_SPEED",maxSpeedKmh=bridge.requestedFollowerCapKmh},nil)
+    if reactivated then
+        logInfo("D0141_ACTUATION_REACTIVATED commitment=%s pair=%s follower=%s cap=%.2fkmh purposeRetained=true reactivationCount=%d",tostring(applied.commitment.identity),tostring(bridge.pairKey),tostring(bridge.followerAssemblyId),tonumber(bridge.requestedFollowerCapKmh) or 0,tonumber(self.followerBoundaryLease.reactivationCount) or 0)
+    else
+        logInfo("D0141_%s commitment=%s pair=%s follower=%s ref=%s request=%s cap=%.2fkmh native=%.2fkmh leaderRate=%s transition=%s purpose=%s",update and "UPDATE" or "APPLY",tostring(applied.commitment.identity),tostring(bridge.pairKey),tostring(bridge.followerAssemblyId),tostring(bridge.followerReferenceKey),tostring(request.identity),tonumber(bridge.requestedFollowerCapKmh) or 0,tonumber(bridge.nativeUnrestrictedFollowerKmh) or 0,tostring(bridge.leaderRateUsedKmh or "n/a"),tostring(bridge.transitionPreservation==true),tostring(bridge.governingPurpose))
+    end
+    return {status=reactivated and "REACTIVATED" or "ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,followerBoundary=true,elasticUpdate=update,reactivated=reactivated}
 end
 
 function Dispatcher:getFollowerBoundaryStatus()
     local lease=self.followerBoundaryLease
-    return {active=lease~=nil,commitmentId=lease and lease.commitmentId or nil,pairKey=lease and lease.pairKey or nil,
+    return {active=lease~=nil and lease.actuationActive~=false,retainedPurpose=lease~=nil,actuationActive=lease~=nil and lease.actuationActive~=false,commitmentId=lease and lease.commitmentId or nil,pairKey=lease and lease.pairKey or nil,
         leaderName=lease and lease.leaderName or nil,followerName=lease and lease.followerName or nil,
         followerReferenceKey=lease and lease.followerReferenceKey or nil,currentCapKmh=lease and lease.currentCapKmh or nil,
         nativeUnrestrictedFollowerKmh=lease and lease.nativeUnrestrictedFollowerKmh or nil,leaderRateUsedKmh=lease and lease.leaderRateUsedKmh or nil,
-        transitionPreservation=lease and lease.transitionPreservation==true or false,applyCount=self.followerBoundaryApplyCount,
-        updateCount=self.followerBoundaryUpdateCount,releaseCount=self.followerBoundaryReleaseCount,ownerTag=D0141_OWNER_TAG}
+        transitionPreservation=lease and lease.transitionPreservation==true or false,quiescenceReason=lease and lease.quiescenceReason or nil,applyCount=self.followerBoundaryApplyCount,
+        updateCount=self.followerBoundaryUpdateCount,releaseCount=self.followerBoundaryReleaseCount,quiescenceCount=self.followerBoundaryQuiescenceCount,reactivationCount=self.followerBoundaryReactivationCount,ownerTag=D0141_OWNER_TAG}
 end
 
 function Dispatcher:_releaseD0146ActionSpaceLease(picture,evaluated,reason)
@@ -519,6 +581,101 @@ local function d0146CurrentSeparation(picture,lease,relation,bridge)
     if separation==nil then separation=d0146CurrentPoseSeparation(picture,lease) end
     if separation==nil and bridge~=nil then separation=tonumber(bridge.separationM) end
     return separation
+end
+
+-- D-0198 Witness Absence Is Not Quiescence Authority. Situation owns the
+-- interpretation of raw GIANTS intent evidence and publishes a pair-local veto
+-- naming assemblies whose native intent is still being revealed. Control only
+-- asks whether the currently protected participant is covered by that veto.
+local function d0146ActionSpaceQuiescenceSupported(picture,lease,action)
+    if type(action)~="table" or action.status~="NOT_REQUIRED" then return false,"D0155_CURRENT_ACTION_SPACE_NOT_POSITIVELY_NOT_REQUIRED" end
+    if action.reason~="NO_CURRENT_EXCURSION" then return true,action.reason end
+    local veto=action.intentRevelationQuiescenceVeto
+    local protectedId=lease and (lease.protectedAssemblyId or lease.excursionAssemblyId) or nil
+    if type(veto)=="table" and veto.active==true and protectedId~=nil then
+        for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(veto.assemblyIds or {}) do
+            if assemblyId==protectedId then return false,"D0198_NO_CURRENT_EXCURSION_PROTECTED_INTENT_REVELATION_REMAINS_LOCAL" end
+        end
+    end
+    return true,action.reason
+end
+
+function Dispatcher:_quiesceD0146ActionSpaceActuation(picture,evaluated,lease,relation,action)
+    if lease==nil then return {status="NO_DISPATCH",reason="D0155_ACTUATION_QUIESCENCE_NO_ACTIVE_RELATIONSHIP",d0146ActionSpace=true} end
+    if lease.actuationActive==false then
+        return {status="QUIESCENT",reason="D0155_CURRENT_ACTION_SPACE_NOT_REQUIRED_ACTUATION_REMAINS_QUIESCENT",d0146ActionSpace=true,commitmentId=lease.commitmentId}
+    end
+    local commitment=self.runtime.commitments:get(lease.commitmentId)
+    local token=commitment and d0146ActionSpaceToken(self,commitment,lease) or nil
+    local request,outcome=nil,nil
+    local syntheticCandidate={preconditions={},invalidationConditions={}}
+    if commitment~=nil and token~=nil and self.runtime.authorities:validate(token)==true and self.capability~=nil and type(self.capability.executeControlRequest)=="function" then
+        request=self:_regulationRequest(picture,evaluated,syntheticCandidate,commitment,token,{
+            regulatedAssemblyId=lease.regulatedAssemblyId,regulatedReferenceKey=lease.regulatedReferenceKey,governingPurpose=lease.governingPurpose
+        },"RELEASE",D0146_ACTION_SPACE_OWNER_TAG,nil)
+        local ok,result=self.capability:executeControlRequest(request,nil)
+        outcome=self:_outcome(request,ok and "ACCEPTED" or "REJECTED",{kind=ok and "D0155_ACTUATION_QUIESCED" or "D0155_ACTUATION_QUIESCENCE_NOT_CONFIRMED",capability="REGULATE_SPEED"},ok and nil or {reason=tostring(result)})
+        if ok~=true and type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG) end
+    elseif self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" then
+        self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG)
+    end
+    if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
+        local preserve=self:_otherRegulationPurposeOwnsAuthority(commitment.identity,lease.regulatedAssemblyId,"D0146_ACTION_SPACE")
+        OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,commitment.identity,lease.regulatedAssemblyId,{
+            reason="D0197_ACTION_SPACE_NOT_REQUIRED_ACTUATION_QUIESCENCE",preserveAuthority=preserve
+        })
+    end
+    lease.actuationActive=false
+    lease.authorityTokenId=nil
+    lease.requestId=nil
+    lease.currentCapKmh=nil
+    lease.progressionEnvelope=nil
+    lease.quiescenceReason=action and action.reason or "D0146_CURRENT_ACTION_SPACE_NOT_REQUIRED"
+    lease.quiescenceCount=(tonumber(lease.quiescenceCount) or 0)+1
+    self.d0146ActionSpaceQuiescenceCount=(self.d0146ActionSpaceQuiescenceCount or 0)+1
+    logInfo("D0155_ACTUATION_QUIESCENT commitment=%s conflict=%s regulated=%s protected=%s actionSpace=NOT_REQUIRED actionReason=%s relationshipRetained=true quiescenceCount=%d",
+        tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(lease.protectedAssemblyId or lease.excursionAssemblyId),tostring(lease.quiescenceReason),tonumber(lease.quiescenceCount) or 0)
+    return {status="QUIESCENT",reason="D0155_CURRENT_ACTION_SPACE_NOT_REQUIRED_ACTUATION_QUIESCENT",request=request,outcome=outcome,d0146ActionSpace=true,commitmentId=lease.commitmentId}
+end
+
+function Dispatcher:_reactivateD0146ActionSpaceActuation(picture,evaluated,candidate,lease,bridge)
+    if lease==nil or bridge==nil or bridge.conflictIdentity~=lease.conflictIdentity then
+        return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_CURRENT_SUPPORT_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease and lease.commitmentId or nil}
+    end
+    if self.capability==nil or type(self.capability.executeControlRequest)~="function" then
+        return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_CONTROL_CAPABILITY_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId}
+    end
+    local applied,applyReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyD0146ActionSpaceDecision(self.runtime,picture,evaluated)
+    if applied==nil then return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_COMMITMENT_APPLICATION_FAILED:"..tostring(applyReason),d0146ActionSpace=true,commitmentId=lease.commitmentId} end
+    if applied.commitment.identity~=lease.commitmentId then return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_COMMITMENT_ID_CHANGED",d0146ActionSpace=true,commitmentId=lease.commitmentId} end
+    local token=applied.authorityToken
+    if token==nil or self.runtime.authorities:validate(token)~=true then return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_VALID_AUTHORITY_TOKEN_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId} end
+    local envelope,envelopeReason=OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(bridge.separationM,bridge.nativeUnrestrictedKmh,OuttaMyWay.D0146_RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION or 0.75,OuttaMyWay.D0146_RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH or 1)
+    if envelope==nil then
+        if applied.authorityAcquired then OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,applied.commitment.identity,bridge.regulatedAssemblyId,{reason="D0155_ACTUATION_REACTIVATION_ENVELOPE_ESTABLISH_FAILED:"..tostring(envelopeReason),preserveAuthority=self:_otherRegulationPurposeOwnsAuthority(applied.commitment.identity,bridge.regulatedAssemblyId,"D0146_ACTION_SPACE")}) end
+        return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_ENVELOPE_ESTABLISH_FAILED:"..tostring(envelopeReason),d0146ActionSpace=true,commitmentId=lease.commitmentId}
+    end
+    local cap=tonumber(envelope.capKmh) or 0
+    local request=self:_regulationRequest(picture,evaluated,candidate,applied.commitment,token,bridge,"APPLY",D0146_ACTION_SPACE_OWNER_TAG,cap)
+    local started,result=self.capability:executeControlRequest(request,candidate)
+    if started~=true then
+        if applied.authorityAcquired then OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,applied.commitment.identity,bridge.regulatedAssemblyId,{reason="D0155_ACTUATION_REACTIVATION_CONTROL_REQUEST_REJECTED:"..tostring(result),preserveAuthority=self:_otherRegulationPurposeOwnsAuthority(applied.commitment.identity,bridge.regulatedAssemblyId,"D0146_ACTION_SPACE")}) end
+        local outcome=self:_outcome(request,"REJECTED",{kind="D0155_ACTUATION_REACTIVATION_NOT_CONFIRMED",capability="REGULATE_SPEED"},{reason=tostring(result)})
+        return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_CONTROL_REQUEST_REJECTED",request=request,outcome=outcome,d0146ActionSpace=true,commitmentId=lease.commitmentId}
+    end
+    lease.regulatedAssemblyId=bridge.regulatedAssemblyId; lease.regulatedReferenceKey=bridge.regulatedReferenceKey
+    lease.protectedAssemblyId=bridge.protectedAssemblyId or bridge.excursionAssemblyId; lease.protectedReferenceKey=bridge.protectedReferenceKey or bridge.excursionReferenceKey
+    lease.excursionAssemblyId=bridge.excursionAssemblyId; lease.excursionReferenceKey=bridge.excursionReferenceKey; lease.admissionKind=bridge.admissionKind
+    lease.governingPurpose=bridge.governingPurpose; lease.authorityTokenId=token.identity; lease.requestId=request.identity
+    lease.currentCapKmh=cap; lease.progressionEnvelope=envelope; lease.actuationActive=true; lease.quiescenceReason=nil
+    lease.nativeClosureContributionKmh=bridge.nativeClosureContributionKmh; lease.nativeMoveForwards=bridge.nativeMoveForwards
+    lease.reactivationCount=(tonumber(lease.reactivationCount) or 0)+1
+    self.d0146ActionSpaceReactivationCount=(self.d0146ActionSpaceReactivationCount or 0)+1
+    self.dispatchCount=self.dispatchCount+1
+    local outcome=self:_outcome(request,"ACCEPTED",{kind="D0155_ACTUATION_REACTIVATED",capability="REGULATE_SPEED",effectClass=envelope.effectClass,maxSpeedKmh=cap},nil)
+    logInfo("D0155_ACTUATION_REACTIVATED commitment=%s conflict=%s regulated=%s protected=%s cap=%dkmh actionSpace=REGULATE_SUPPORTED envelopeRebased=true reactivationCount=%d",
+        tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(lease.protectedAssemblyId or lease.excursionAssemblyId),cap,tonumber(lease.reactivationCount) or 0)
+    return {status="REACTIVATED",reason="D0155_CURRENT_ACTION_SPACE_REGULATION_REACTIVATED",request=request,outcome=outcome,d0146ActionSpace=true,commitmentId=lease.commitmentId}
 end
 
 function Dispatcher:_updateD0146ActionSpaceEnvelope(picture,evaluated,candidate,lease,relation,relationshipReason)
@@ -636,6 +793,23 @@ function Dispatcher:_dispatchD0146ActionSpace(picture,evaluated,candidate)
         local relation=d0146ActionSpaceRelation(picture,lease)
         local relationshipState,relationshipReason=d0146ActionSpaceRelationshipState(picture,lease,relation)
         if relationshipState=="PERSIST" then
+            local actuationState,action=d0146ActionSpaceActuationState(relation)
+            if actuationState=="NOT_REQUIRED" then
+                local quiesceSupported,quiescenceReason=d0146ActionSpaceQuiescenceSupported(picture,lease,action)
+                if quiesceSupported then
+                    return self:_quiesceD0146ActionSpaceActuation(picture,evaluated,lease,relation,action)
+                end
+                if lease.actuationActive~=false then
+                    return self:_updateD0146ActionSpaceEnvelope(picture,evaluated,candidate,lease,relation,quiescenceReason)
+                end
+                return {status="QUIESCENT",reason=quiescenceReason,d0146ActionSpace=true,commitmentId=lease.commitmentId}
+            end
+            if lease.actuationActive==false then
+                if actuationState=="SUPPORTED" and bridge~=nil then
+                    return self:_reactivateD0146ActionSpaceActuation(picture,evaluated,candidate,lease,bridge)
+                end
+                return {status="QUIESCENT",reason=relationshipReason or "D0155_RELATIONSHIP_RETAINED_CURRENT_ACTUATION_NOT_SUPPORTED",d0146ActionSpace=true,commitmentId=lease.commitmentId}
+            end
             local migrated=self:_migrateD0146ActionSpaceRole(picture,evaluated,candidate,lease,bridge)
             if migrated~=nil then return migrated end
             return self:_updateD0146ActionSpaceEnvelope(picture,evaluated,candidate,lease,relation,relationshipReason)
@@ -668,8 +842,8 @@ function Dispatcher:_dispatchD0146ActionSpace(picture,evaluated,candidate)
         regulatedAssemblyId=bridge.regulatedAssemblyId,regulatedReferenceKey=bridge.regulatedReferenceKey,
         protectedAssemblyId=bridge.protectedAssemblyId or bridge.excursionAssemblyId,protectedReferenceKey=bridge.protectedReferenceKey or bridge.excursionReferenceKey,
         excursionAssemblyId=bridge.excursionAssemblyId,excursionReferenceKey=bridge.excursionReferenceKey,admissionKind=bridge.admissionKind,
-        governingPurpose=bridge.governingPurpose,authorityTokenId=token.identity,requestId=request.identity,currentCapKmh=initialCap,progressionEnvelope=envelope,
-        nativeClosureContributionKmh=bridge.nativeClosureContributionKmh,nativeMoveForwards=bridge.nativeMoveForwards
+        governingPurpose=bridge.governingPurpose,authorityTokenId=token.identity,requestId=request.identity,currentCapKmh=initialCap,progressionEnvelope=envelope,actuationActive=true,
+        nativeClosureContributionKmh=bridge.nativeClosureContributionKmh,nativeMoveForwards=bridge.nativeMoveForwards,quiescenceCount=0,reactivationCount=0
     }
     self.d0146ActionSpaceApplyCount=self.d0146ActionSpaceApplyCount+1; self.dispatchCount=self.dispatchCount+1
     local outcome=self:_outcome(request,"ACCEPTED",{kind="D0155_RESOLUTION_SPACE_ENVELOPE_ADMITTED",capability="REGULATE_SPEED",effectClass=envelope.effectClass,maxSpeedKmh=initialCap},nil)
@@ -700,14 +874,56 @@ function Dispatcher:_supersedeD0146ActionSpaceForCooperativePassage(commitment,c
     return {settled=settled,reason=reason}
 end
 
+-- A terminalized traffic Commitment cannot leave owner-tag Control leases or
+-- dispatcher-local lease state behind. D-0200 invokes this after kernel authority
+-- has been released so terminal succession observes no stale actuation context.
+function Dispatcher:retireTrafficLeasesForCommitment(commitmentId,reason)
+    if type(commitmentId)~="string" then return {released=0} end
+    local released=0
+    local function clear(referenceKey,ownerTag)
+        if self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" and type(referenceKey)=="string" then
+            self.capability:clearRegulationLeaseByReference(referenceKey,ownerTag)
+        end
+    end
+    local actionSpace=self.d0146ActionSpaceLease
+    if actionSpace~=nil and actionSpace.commitmentId==commitmentId then
+        clear(actionSpace.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG)
+        self.d0146ActionSpaceLease=nil
+        self.d0146ActionSpaceReleaseCount=self.d0146ActionSpaceReleaseCount+1
+        released=released+1
+        logInfo("D0155_DEPENDENT_COMMITMENT_TERMINATED commitment=%s conflict=%s regulated=%s reason=%s",
+            tostring(commitmentId),tostring(actionSpace.conflictIdentity),tostring(actionSpace.regulatedAssemblyId),tostring(reason))
+    end
+    local follower=self.followerBoundaryLease
+    if follower~=nil and follower.commitmentId==commitmentId then
+        clear(follower.followerReferenceKey,D0141_OWNER_TAG)
+        self.followerBoundaryLease=nil
+        self.followerBoundaryReleaseCount=self.followerBoundaryReleaseCount+1
+        released=released+1
+        logInfo("D0141_DEPENDENT_COMMITMENT_TERMINATED commitment=%s pair=%s follower=%s reason=%s",
+            tostring(commitmentId),tostring(follower.pairKey),tostring(follower.followerAssemblyId),tostring(reason))
+    end
+    local guarded=self.guardedRecoveryLease
+    if guarded~=nil and guarded.commitmentId==commitmentId then
+        clear(guarded.progressReferenceKey,D0123_OWNER_TAG)
+        self.guardedRecoveryLease=nil
+        self.guardedRecoveryReleaseCount=self.guardedRecoveryReleaseCount+1
+        released=released+1
+        logInfo("D0123_DEPENDENT_COMMITMENT_TERMINATED commitment=%s progress=%s reason=%s",
+            tostring(commitmentId),tostring(guarded.progressAssemblyId),tostring(reason))
+    end
+    return {released=released}
+end
+
 function Dispatcher:getD0146ActionSpaceStatus()
     local lease=self.d0146ActionSpaceLease
     local envelope=lease and lease.progressionEnvelope or nil
-    return {active=lease~=nil,commitmentId=lease and lease.commitmentId or nil,conflictIdentity=lease and lease.conflictIdentity or nil,
-        regulatedReferenceKey=lease and lease.regulatedReferenceKey or nil,excursionReferenceKey=lease and lease.excursionReferenceKey or nil,currentCapKmh=lease and lease.currentCapKmh or nil,
+    return {active=lease~=nil,actuationActive=lease~=nil and lease.actuationActive~=false or false,commitmentId=lease and lease.commitmentId or nil,conflictIdentity=lease and lease.conflictIdentity or nil,
+        regulatedReferenceKey=lease and lease.regulatedReferenceKey or nil,excursionReferenceKey=lease and lease.excursionReferenceKey or nil,currentCapKmh=lease and lease.currentCapKmh or nil,quiescenceReason=lease and lease.quiescenceReason or nil,
         effectClass=envelope and envelope.effectClass or nil,initialDistanceM=envelope and envelope.initialDistanceM or nil,contingencyReserveM=envelope and envelope.contingencyReserveM or nil,
         conservativeDistanceM=envelope and envelope.conservativeDistanceM or nil,reverseCreatedReserveM=envelope and envelope.reverseCreatedReserveM or nil,remainingOrdinaryM=envelope and envelope.remainingOrdinaryM or nil,
-        roleRebaseCount=envelope and envelope.roleRebaseCount or 0,applyCount=self.d0146ActionSpaceApplyCount,releaseCount=self.d0146ActionSpaceReleaseCount,envelopeUpdateCount=self.d0146ActionSpaceEnvelopeUpdateCount,roleMigrationCount=self.d0146ActionSpaceRoleMigrationCount,ownerTag=D0146_ACTION_SPACE_OWNER_TAG}
+        roleRebaseCount=envelope and envelope.roleRebaseCount or 0,applyCount=self.d0146ActionSpaceApplyCount,releaseCount=self.d0146ActionSpaceReleaseCount,envelopeUpdateCount=self.d0146ActionSpaceEnvelopeUpdateCount,roleMigrationCount=self.d0146ActionSpaceRoleMigrationCount,
+        quiescenceCount=self.d0146ActionSpaceQuiescenceCount,reactivationCount=self.d0146ActionSpaceReactivationCount,ownerTag=D0146_ACTION_SPACE_OWNER_TAG}
 end
 
 -- Cooperative Passage may supersede a same-pair D-0141 follower strategy under
@@ -829,7 +1045,7 @@ function Dispatcher:dispatch(picture,evaluated)
     local guarded=self:_dispatchGuardedRecovery(picture,evaluated,candidate)
     if guarded~=nil then return guarded end
     local actionSpace=self:_dispatchD0146ActionSpace(picture,evaluated,candidate)
-    if actionSpace~=nil then return actionSpace end
+    if actionSpace~=nil and actionSpace.status~="QUIESCENT" then return actionSpace end
     local follower=self:_dispatchFollowerBoundary(picture,evaluated,candidate)
     if follower~=nil then return follower end
     if candidate==nil or physical[candidate.capability]~=true then return {status="NO_DISPATCH",reason="NO_SELECTED_PHYSICAL_CANDIDATE"} end

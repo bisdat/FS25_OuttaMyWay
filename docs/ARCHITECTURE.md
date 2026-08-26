@@ -1,3 +1,41 @@
+## v0.1.14.5 TEST — D-0200 Job Episode Dependency Collapse
+
+### Traffic relationship lifetime cannot exceed its Job Episode basis
+
+Traffic-purpose persistence protects against transient uncertainty, not against authoritative lifecycle change. If an Encounter depends on two active Job Episodes and either Episode positively ends, any live D-0146 traffic Commitment explicitly bound to that exact Encounter/Job-Episode pair loses its governing basis in the same sealed observation. Open obligations settle by basis cessation, authority is released, and the Commitment becomes terminal before the next Situation Commitment context is published.
+
+Natural Job Episode completion remains D-0188 `terminalCause=nil`; D-0200 does not recreate `SOURCE_INTENT_TERMINATION`. It interprets the ended Episode only as positive cessation of the dependent traffic relationship.
+
+### Terminal succession
+
+D-0147 does not bypass or coexist with stale traffic authority. Obsolete traffic authority is removed upstream first; terminal occupancy then competes in a clean Commitment context.
+
+## v0.1.14.4 TEST — D-0199 Courtesy Budget Ownership + Bounded Centroid Settlement
+
+### Courtesy Budget Belongs to the Obstacle
+
+D-0147's finite automatic-relocation budget is state of the moved completed Job Episode. Courtesy 1 may be triggered by one productive assembly, but that assembly does not own the completed obstacle's remaining courtesy. Its identity is retained only long enough to prove post-release Continuation Renewal. Once renewal is positive, any later active worker positively blocked by the same completed assembly may authorise the one remaining Courtesy 2.
+
+### Bounded Centroid Settlement
+
+Courtesy 1 remains one fixed bearing toward the immutable Field World centroid. Its realised target progress is `min(current distance to centroid, 60 m)`. The 60 m value is a maximum buy-time movement allowance, not a minimum eligibility threshold; therefore the earlier Courtesy Distance Saturation failure cannot recur merely because the completed assembly starts within 60 m of the centroid.
+
+Stage 2 remains D-0196 Protected-Away Final Boundary Settlement. No search, route planning, permanent parking claim or third courtesy is introduced.
+
+## v0.1.14.3 TEST — D-0198 Regulation Authority Semantics
+
+### Purpose persistence and actuation authority are independent
+
+A retained traffic purpose may remain semantically unresolved without retaining its previous physical Regulation lease. D-0141 therefore admits three relevant states: active purpose + active actuation; active purpose + quiescent actuation; positively retired purpose. D-0155 retains the equivalent D-0197 separation.
+
+### Witness Absence Is Not Quiescence Authority
+
+`NO_CURRENT_EXCURSION` is absence of one D-0155 witness, not automatically positive evidence that observation/conservation can end. Situation owns the raw GIANTS intent interpretation. While the protected participant remains locally intent-revealing within the existing Passage Action-Space envelope, Situation publishes `intentRevelationQuiescenceVeto`; Control continues the already-admitted progression envelope. Stronger positive `NOT_REQUIRED` reasons remain D-0197 quiescence authority.
+
+### Quiescent Purpose Is Not Exclusive Traffic Ownership
+
+A semantic context whose own physical actuation is quiescent cannot monopolise the Control dispatcher or count as current physical Regulation ownership. Independent currently supported purposes may acquire authority without dissolving the retained semantic context.
+
 ## v0.1.14.0 CANONICAL CANDIDATE checkpoint — validated D-0194/D-0195/D-0196
 
 D-0147 now owns finite **Double Courtesy**. First positive Terminal Occupancy may perform one centroid-directed Interior Settlement. Only positive Continuation Renewal plus a later positively attributed obstruction may authorise one Final Boundary Settlement. Stage 2 is a single outer-boundary ray away from the authorising productive occupancy; the completed compact footprint remains inside the Field World and the complete straight sweep must clear that worker's current positive physical occupancy. After the second successful courtesy the episode is exhausted for automatic relocation. There is no third move, alternate-edge search, route planner or permanent-parking claim. D-0195 defines pre-Axis-Return Assembly Axis Settlement by captured working axis/member-heading evidence, not reproduction of the Phase-5 articulation pose.
