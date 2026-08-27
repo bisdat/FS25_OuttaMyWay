@@ -1,3 +1,17 @@
+# v0.2.0.0 CANONICAL CANDIDATE — Spatial Negotiation Discovery Checkpoint
+
+**Authoritative baseline:** owner-declared v0.1.15.0 canonical (`dcc19334551faba0ee123888b4b62bed6e7fe23264672482875be417c3a7fc18`; Git `b14048c80163d7ef545f152ef072c77861cfbfb0`; 263 files).
+
+**Version rationale:** this is a significant architecture milestone and therefore advances MINOR under the recorded `0.MINOR.PATCH.BUILD` policy. Runtime traffic behaviour is intentionally unchanged from v0.1.15.0.
+
+**Architecture discovery checkpoint:** add `docs/SPATIAL_NEGOTIATION_DISCOVERY_CHARTER.md`, consolidating the evidence-led Spatial Negotiation model: Traffic Parties, Spatial Claims, provisional Interaction Bubbles, Bubble Protection, Resolution Epoch, Last-Handoff Dissolution, and the distinction between GIANTS navigation and OuttaMyWay negotiation. TS017 is retained as Bubble-plus-individual evidence; the bookended-S416 case is explicitly identified as owner recollection / hostile thought experiment rather than log-verified evidence.
+
+**D-0201 — Supported Traffic Envelope:** support and validate at most three simultaneously active AI worker assemblies per Operation, aimed at different agronomic roles. Player-controlled vehicles do not count. More than three AI workers or same-agronomy multi-worker coordination are outside the supported design/validation obligation; Courseplay already owns the latter product domain.
+
+**D-0202 — 1 km/h Is Bullet Time:** during a future Resolution Epoch, independent external AI Traffic Parties are architecturally fixed at the existing 1 km/h Intent-Revelation Creep while the active Bubble resolves. The literal is intentional and is not a throughput-tuning target. This checkpoint records the decision only; no Bubble/Bullet-Time runtime implementation is included.
+
+**Non-change:** D-0197/D-0198 Regulation Authority Semantics, D-0199 Terminal Courtesy, D-0200 Job Episode Dependency Collapse, Cooperative Passage geometry/Phases 1-9, HUD and all other runtime behaviour remain byte-equivalent apart from release/version identity comments and labels.
+
 ## v0.1.15.0 CANONICAL CANDIDATE — Regulation and Terminal Authority Closure
 
 **Authoritative baseline:** user-declared v0.1.14.0 canonical (`2b3b47871dfe0d6e3e5731a1f108232edb5009573dcd69932b2ebbdb7331a250`; Git `da27bc40289648e7258a157f67cf9dccd5a8e6cd`; 263 files).

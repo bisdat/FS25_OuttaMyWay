@@ -1,3 +1,17 @@
+## D-0202 — 1 km/h Is Bullet Time (v0.2.0.0 architecture checkpoint)
+
+**Decision:** during a future Resolution Epoch, every independent external AI Traffic Party is regulated to the existing fixed **1 km/h Intent-Revelation Creep** while the active Interaction Bubble executes normally. This is an architectural constant, not a throughput-tuning parameter. Do not replace it with variable speed or adaptive regulation cadence merely for optimisation.
+
+**Purpose:** preserve unresolved Bubble Resolution Space, slow external claim consumption, and continue GIANTS intent revelation rather than freezing Reality. Whole-Operation conservatism is explicitly accepted at this discovery stage.
+
+**Implementation boundary:** v0.2.0.0 records the decision only. No Bubble, Resolution Epoch or Bullet-Time runtime code is introduced.
+
+## D-0201 — Supported Traffic Envelope (v0.2.0.0 architecture checkpoint)
+
+**Decision:** support and validate a maximum of **three simultaneously active AI worker assemblies within one Operation**, aimed at workers performing **different agronomic roles**. Player-controlled vehicles do not count toward the cap. More than three AI workers and same-agronomy multi-worker coordination may work incidentally but are outside the supported design/validation obligation.
+
+**Rationale:** three is sufficient to exercise composition (individual + pair, Bubble + individual, competing developing binary relationships) and aligns with the intended mixed-agronomy problem domain. Courseplay already serves multiple workers performing the same agronomy; OuttaMyWay must not expand into overlapping fleet-coordination responsibility. Out-of-envelope failures do not justify special-case architecture unless the same defect is demonstrated inside the supported envelope.
+
 ## v0.1.15.0 canonical-candidate promotion record — D-0197 through D-0200
 
 **Decision:** promote the cumulative v0.1.14.1–v0.1.14.5 implementation as the next PATCH-level canonical candidate. Candidate preparation is behaviour-neutral.

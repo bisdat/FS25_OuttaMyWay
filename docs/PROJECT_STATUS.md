@@ -1,3 +1,17 @@
+# v0.2.0.0 CANONICAL CANDIDATE status — Spatial Negotiation Discovery Checkpoint
+
+**Baseline:** owner-declared v0.1.15.0 canonical; Git `b14048c80163d7ef545f152ef072c77861cfbfb0`; SHA-256 `dcc19334551faba0ee123888b4b62bed6e7fe23264672482875be417c3a7fc18`; 263 files.
+
+**Runtime:** intentionally unchanged from v0.1.15.0. This MINOR candidate records a significant architecture-discovery milestone only.
+
+**New canonical knowledge candidate:** `SPATIAL_NEGOTIATION_DISCOVERY_CHARTER.md`; D-0201 Supported Traffic Envelope; D-0202 fixed 1 km/h Bullet Time; provisional Interaction Bubble / Bubble Protection / Resolution Epoch / Last-Handoff model.
+
+**Supported envelope:** maximum three simultaneously active AI worker assemblies per Operation, different-agronomy target; player-controlled vehicles excluded. Same-agronomy multi-worker and >3-worker cases are outside supported validation obligation.
+
+**Unresolved:** occupied-at-Bubble-formation edge case; minimum external Bubble spatial representation; architecture/code mapping; first falsifiable implementation tranche. Do not implement until these are explicitly discussed.
+
+**Next:** owner review/canonicalisation of this exact documentation checkpoint, then continue Spatial Negotiation architecture discovery in a new chat from that canonical provenance.
+
 # v0.1.15.0 CANONICAL CANDIDATE status — Regulation and Terminal Authority Closure
 
 The candidate promotes the cumulative v0.1.14.1–v0.1.14.5 behaviour from the user-declared v0.1.14.0 canonical baseline. D-0197/D-0198 Regulation authority semantics are field-validated in TS009/TS016b. D-0199's 60 m maximum centroid settlement is field-validated in TS015; its different-blocker Courtesy-2 branch is structurally covered but was not reproduced in field Reality. D-0200 Job Episode Dependency Collapse is field-validated and removes stale traffic ownership before D-0147 admission.

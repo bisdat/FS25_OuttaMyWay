@@ -1,3 +1,12 @@
+## v0.2.0.0 next architecture programme — Spatial Negotiation Discovery
+
+1. Canonicalise the documentation-only Spatial Negotiation checkpoint if accepted.
+2. In the next chat, review `SPATIAL_NEGOTIATION_DISCOVERY_CHARTER.md` before proposing code.
+3. Map provisional Traffic Party / Spatial Claim / Interaction Bubble / Resolution Epoch responsibilities onto existing authority layers.
+4. Examine the occupied-at-formation edge case and minimum external Bubble representation.
+5. Agree one smallest falsifiable implementation tranche.
+6. Validate inside D-0201 Supported Traffic Envelope only; do not expand into same-agronomy fleet coordination or >3 AI workers.
+
 # v0.1.8.0 immediate roadmap — Closure A canonical review boundary
 
 1. Review the exact RRS-produced v0.1.8.0 candidate and evidence fingerprints; no behavioural work belongs in candidate preparation.

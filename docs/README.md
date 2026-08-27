@@ -1,3 +1,7 @@
+# v0.2.0.0 documentation checkpoint — Spatial Negotiation Discovery
+
+Start architecture-discovery continuation with `SPATIAL_NEGOTIATION_DISCOVERY_CHARTER.md`. It is a hypothesis/decision charter, not an implementation specification. Existing runtime architecture remains unchanged from v0.1.15.0.
+
 # v0.1.15.0 canonical-candidate documentation state
 
 The current candidate consolidates D-0197 through D-0200. Regulation authority lifetime is separated from semantic purpose lifetime; terminal courtesy budget ownership/capped centroid settlement and exact Job Episode dependency collapse are recorded. Open post-canonical work is the stationary/completed-assembly approach safety case, then discussion of supplementary Field World Spatial Awareness / Shared Constraint Window.

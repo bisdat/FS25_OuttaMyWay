@@ -1,3 +1,11 @@
+FS25_OuttaMyWay v0.2.0.0 CANONICAL CANDIDATE — SPATIAL NEGOTIATION DISCOVERY CHECKPOINT
+
+Authoritative parent: user-declared v0.1.15.0 canonical
+Canonical SHA-256: dcc19334551faba0ee123888b4b62bed6e7fe23264672482875be417c3a7fc18
+Canonical Git: b14048c80163d7ef545f152ef072c77861cfbfb0
+
+This MINOR checkpoint records the Spatial Negotiation Discovery Charter, D-0201 Supported Traffic Envelope and D-0202 fixed 1 km/h Bullet Time. No Spatial Negotiation/Bubble runtime behaviour is implemented; traffic behaviour remains that of v0.1.15.0.
+
 FS25_OuttaMyWay v0.1.15.0 CANONICAL CANDIDATE — REGULATION AND TERMINAL AUTHORITY CLOSURE
 
 Authoritative canonical parent: user-declared v0.1.14.0 canonical

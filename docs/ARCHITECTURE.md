@@ -1,3 +1,9 @@
+## v0.2.0.0 architecture-discovery checkpoint — Spatial Negotiation
+
+A new evidence-led discovery programme is recorded in `SPATIAL_NEGOTIATION_DISCOVERY_CHARTER.md`. It investigates whether multi-worker traffic is better represented as negotiation over temporary spatial claims than as pair-first trajectory handling. The provisional model includes Traffic Parties, Spatial Claims, Interaction Bubbles for committed coupled resolution, Bubble Protection, Resolution Epoch and Last-Handoff Dissolution.
+
+This material is **not yet runtime architecture authority** except for the explicit D-0201 supported-scope decision and D-0202 fixed 1 km/h Bullet-Time policy. Existing v0.1.15.0 runtime responsibilities remain authoritative until a later implementation tranche is explicitly agreed and validated.
+
 ## v0.1.14.5 TEST — D-0200 Job Episode Dependency Collapse
 
 ### Traffic relationship lifetime cannot exceed its Job Episode basis

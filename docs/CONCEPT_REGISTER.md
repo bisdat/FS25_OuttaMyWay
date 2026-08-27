@@ -1,3 +1,27 @@
+## v0.2.0.0 Spatial Negotiation discovery concepts
+
+**Spatial Negotiation Discovery** — architecture-discovery programme testing the lens: traffic parties negotiate temporary spatial claims subject to environmental feasibility; GIANTS remains responsible for navigation.
+
+**Traffic Party** *(provisional)* — controllable participant exposing current occupancy/progression demand. Individual AI assemblies qualify; stationary completed assemblies may remain parties because their occupancy can be negotiated through bounded movement.
+
+**Spatial Claim** *(provisional)* — umbrella for Occupancy Demand, Progression Demand, Prospective Demand and Committed Resolution Demand. Productive work is evidence about likely continuation, not itself a claim or generic yield authority.
+
+**Interaction Bubble** *(provisional)* — external abstraction for parties in a committed coupled resolution with jointly dependent persistent obligations. Cooperative Passage is the motivating example. Internal member identity/geometry remains visible.
+
+**Bubble Protection** *(provisional requirement)* — unresolved Bubble Resolution Space must not be consumed by unrelated external traffic while the coupled resolution remains active.
+
+**Resolution Epoch** *(provisional)* — interval from Bubble formation at committed coupled resolution until Last-Handoff Dissolution.
+
+**Last-Handoff Dissolution** *(working boundary)* — Bubble bursts immediately when the final coupled participant is returned to GIANTS AI; no settlement tail is desired.
+
+**Bullet Time** *(D-0202 decision)* — fixed 1 km/h Intent-Revelation Creep for all independent external AI Traffic Parties during a future Resolution Epoch.
+
+**Supported Traffic Envelope** *(D-0201 decision)* — maximum three simultaneously active AI worker assemblies per Operation for supported validation, aimed at different agronomic roles; player-controlled vehicles excluded from the count; same-agronomy and >3-worker coordination outside supported obligation.
+
+**Member Relationship Is Not Bubble Relationship** *(TS017 interpretation)* — member-level external evidence may be real while the externally negotiable party is the active Bubble as a whole.
+
+**Regulation Is an Actuator, Not a Negotiation Type** *(hypothesis)* — longitudinal reserve, future Passage conservation and oblique reserve conflict may all use Regulation for different reasons; common effect is control of spatial-claim consumption.
+
 ## v0.1.14.5 D-0200 additions
 
 **Job Episode Dependency Collapse** — a sticky traffic relationship may survive missing/uncertain trajectory evidence, but cannot survive authoritative termination of a Job Episode on which its governing Encounter depends. The dependent traffic Commitment ends by basis cessation before terminal-resolution succession.

@@ -1,3 +1,13 @@
+## v0.2.0.0 canonical-candidate continuity — Spatial Negotiation Discovery
+
+Continue only from owner-declared v0.1.15.0 canonical (`dcc19334551faba0ee123888b4b62bed6e7fe23264672482875be417c3a7fc18`; Git `b14048c80163d7ef545f152ef072c77861cfbfb0`; 263 files) until the owner explicitly canonicalises v0.2.0.0. v0.2.0.0 is a significant architecture/documentation checkpoint; runtime traffic behaviour is unchanged.
+
+Primary carry-forward is `docs/SPATIAL_NEGOTIATION_DISCOVERY_CHARTER.md`. Preserve the Fact / Interpretation / Hypothesis / Decision separation. Do not treat Interaction Bubble, Resolution Epoch, Last-Handoff Dissolution or constrained-space overlay as implemented. Explicit decisions already made are D-0201 Supported Traffic Envelope and D-0202 **1 km/h is Bullet Time**.
+
+Supported validation scope is capped at three simultaneously active AI worker assemblies per Operation, aimed at different agronomic roles; player-controlled vehicles do not count. Same-agronomy multi-worker coordination and >3 workers may work incidentally but are out of scope; Courseplay owns the same-agronomy multi-worker coordination domain.
+
+Next-chat sequence after canonicalisation: review the charter; map the provisional Spatial Negotiation model onto existing Representation -> Field World -> Situation -> Candidate -> Decision -> Commitment -> Control responsibilities; challenge the occupied-at-formation edge case; then agree the smallest falsifiable implementation tranche before editing runtime code.
+
 ## v0.1.15.0 CANONICAL CANDIDATE continuity checkpoint
 
 - Entering authority: user-declared v0.1.14.0 canonical (`2b3b47871dfe0d6e3e5731a1f108232edb5009573dcd69932b2ebbdb7331a250`; Git `da27bc40289648e7258a157f67cf9dccd5a8e6cd`; 263 files).

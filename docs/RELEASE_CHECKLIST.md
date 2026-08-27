@@ -1,3 +1,16 @@
+# v0.2.0.0 CANONICAL CANDIDATE checklist — Spatial Negotiation Discovery Checkpoint
+
+- [x] Baseline is exact owner-declared v0.1.15.0 canonical fingerprint.
+- [x] MINOR increment follows significant architecture-milestone policy.
+- [x] Runtime traffic behaviour intentionally unchanged.
+- [x] Spatial Negotiation Discovery Charter added.
+- [x] D-0201 Supported Traffic Envelope recorded: max three active AI workers, different-agronomy target, player excluded.
+- [x] D-0202 fixed 1 km/h Bullet Time recorded; no adaptive literal/cadence optimisation.
+- [x] Bubble/Resolution-Epoch model explicitly marked provisional/not implemented.
+- [x] TS017 evidence distinguished from owner-recollection bookended thought experiment.
+- [x] Occupied-at-formation edge case remains unresolved rather than silently solved.
+- [x] No GitHub state used as authority.
+
 # v0.1.15.0 CANONICAL CANDIDATE checklist — D-0197/D-0198/D-0199/D-0200 promotion
 
 - [x] Exact authoritative baseline is owner-declared v0.1.14.0 canonical SHA-256 `2b3b47871dfe0d6e3e5731a1f108232edb5009573dcd69932b2ebbdb7331a250`, Git `da27bc40289648e7258a157f67cf9dccd5a8e6cd`, 263 files.

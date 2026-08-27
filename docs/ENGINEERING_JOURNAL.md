@@ -1,3 +1,13 @@
+# 2026-08-27 — Spatial Negotiation Discovery checkpoint
+
+Post-v0.1.15.0 discussion reframed the recurring three-worker fragility. TS017 showed successful binary mechanisms failing compositionally when a third worker consumed Resolution Space still required by an established Passage recovery. The owner then reconstructed the prior "bookended S416" theatre as Patriot follower -> S416 leader while S416/Condor were opposed Passage candidates. This suggested a serial binary interpretation rather than a three-worker manoeuvre.
+
+The discovery programme separates motion vector from agronomic quality: productive work is useful because GIANTS productive continuation is comparatively constrained, but it must not automatically imply yield authority. Regulation is provisionally understood as controlling spatial-claim consumption. Cooperative Passage is the motivating case for Interaction Bubble contraction; Terminal Courtesy is a negative Bubble test because negotiated displacement does not create jointly dependent obligations.
+
+Owner agreements: D-0201 hard scope cap of three active AI worker assemblies per Operation, different-agronomy supported target, player excluded; Courseplay defines the non-overlap boundary for same-agronomy multi-worker coordination. D-0202: **1 km/h is Bullet Time** during future Resolution Epochs, deliberately simple and whole-Operation conservative.
+
+No implementation is authorised by this checkpoint. Next chat should start from the owner-declared canonicalised v0.2.0.0 package if accepted, review the charter, then perform architecture/code responsibility mapping before any runtime change.
+
 ## 2026-08-26 — v0.1.15.0 canonical-candidate consolidation
 
 The v0.1.14.x test line converged on authority-lifetime semantics rather than additional manoeuvre machinery. TS009/TS016b first exposed that sticky semantic traffic obligations were keeping physical Regulation alive long after local need disappeared; D-0197 separated relationship persistence from D-0155 actuation. Further evidence showed the inverse boundary: bare witness disappearance during a locally unresolved GIANTS turn was too weak to quiesce, and D-0141 could retain stale physical pacing or be starved by quiescent D-0155 dispatch ownership. D-0198 moved raw GIANTS intent interpretation back into Situation and established independent semantic/physical authority lifetimes.

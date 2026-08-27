@@ -1,3 +1,9 @@
+# v0.2.0.0 CANONICAL CANDIDATE — Spatial Negotiation Discovery Checkpoint
+
+**Baseline:** owner-declared v0.1.15.0 canonical (`dcc19334551faba0ee123888b4b62bed6e7fe23264672482875be417c3a7fc18`; Git `b14048c80163d7ef545f152ef072c77861cfbfb0`; 263 files). Significant architecture checkpoint; MINOR increment; no runtime traffic behaviour change.
+
+Added `SPATIAL_NEGOTIATION_DISCOVERY_CHARTER.md`. Recorded D-0201 Supported Traffic Envelope (maximum three active AI worker assemblies per Operation; different-agronomy supported target; player excluded; same-agronomy and >3 outside validation obligation) and D-0202 fixed 1 km/h Bullet Time during future Resolution Epochs. Bubble formation/dissolution, external claim representation and constrained-space overlay remain hypotheses pending an explicitly agreed implementation tranche.
+
 ## v0.1.15.0 CANONICAL CANDIDATE — Regulation and Terminal Authority Closure
 
 **Authoritative baseline:** user-declared v0.1.14.0 canonical (`2b3b47871dfe0d6e3e5731a1f108232edb5009573dcd69932b2ebbdb7331a250`; Git `da27bc40289648e7258a157f67cf9dccd5a8e6cd`; 263 files).
