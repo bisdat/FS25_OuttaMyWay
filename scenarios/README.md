@@ -113,7 +113,9 @@ This is not a two-worker passing test. It validates or disproves compatibility b
 
 See `docs/prototypes/PROTOTYPE_15_UNILATERAL_SIDESTEP.md`.
 
-Detailed runtime baselines, evidence contracts and bounded conclusions are in `docs/SCOPE_OVERLAY_TEST_CALIBRATION.md`.
+Detailed historical runtime baselines, evidence contracts and bounded conclusions
+are in
+`docs/archive/reconciliation/stale-authority-surface/SCOPE_OVERLAY_TEST_CALIBRATION.md`.
 
 ## TS014 — Retreating Unilateral Sidestep Pace and Folding-Overlap Probe
 

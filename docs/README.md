@@ -22,6 +22,10 @@ Where is engineering now?
 
 → [Continuation State](CONTINUATION_STATE.md)
 
+Historical and transitional documentation with no current authority:
+
+→ [Archive transition](archive/README.md)
+
 ## Documentation currently being reconciled
 
 The existing documentation corpus is undergoing semantic reconciliation.
