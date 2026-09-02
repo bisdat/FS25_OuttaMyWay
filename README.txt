@@ -1,4 +1,4 @@
-OUTTAMYWAY
+OuttaMyWay
 ===========
 
 WORK IN PROGRESS — UNFINISHED
