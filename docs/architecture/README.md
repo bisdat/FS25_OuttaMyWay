@@ -9,7 +9,8 @@ tests assumptions against runtime reality.
 
 Start with the [Spatial Negotiation Model](../SPATIAL_NEGOTIATION_MODEL.md).
 It is the v0.3.0.0 Spatial Negotiation architectural checkpoint and current
-clean-sheet operating model.
+clean-sheet operating model. Its current high-level responsibilities are
+**GIANTS AI**, **Regulation**, and **Resolution Commitment**.
 
 Architecture may describe intended behaviour that is not yet implemented. Read
 it as the system's direction and responsibility model, not as a complete account
