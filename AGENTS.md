@@ -40,7 +40,7 @@ A failed hypothesis or test is evidence, not wasted work. Record what was learne
 
 ## Current architectural authority
 
-Before changing runtime behaviour, start with `docs/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`, then read specialised architecture such as `docs/SPATIAL_NEGOTIATION_MODEL.md` and applicable current decision/status material. Treat historical documents as evidence/provenance where they conflict with current accepted architecture.
+Before changing runtime behaviour, start with `docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`, then read specialised architecture such as `docs/architecture/SPATIAL_NEGOTIATION_MODEL.md` and applicable current decision/status material. Treat historical documents as evidence/provenance where they conflict with current accepted architecture.
 
 Preserve these standing constraints unless an explicit architectural decision changes them:
 

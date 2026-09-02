@@ -173,7 +173,7 @@ Every enduring item has one authoritative home; other documents link rather than
 | Responsibility | Primary record |
 |---|---|
 | Engineering governance | `ENGINEERING_ARCHITECTURE.md` |
-| Runtime architecture | `RUNTIME_RESPONSIBILITY_ARCHITECTURE.md` and specialised architecture breadcrumbs |
+| Runtime architecture | `architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md` and specialised architecture breadcrumbs |
 | Existing status and handover material | `PROJECT_STATUS.md` and `ENGINEERING_HANDOVER.md` (under semantic reconciliation) |
 | Current concept state | `CONCEPT_REGISTER.md` |
 | Significant choices and rationale | `DECISION_LOG.md` and ADRs |
