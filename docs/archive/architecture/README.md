@@ -2,7 +2,7 @@
 
 These files preserve the active architecture-facing documents exactly as they stood in owner-declared canonical v4.6.71.
 
-They are historical evidence only. Current architectural authority resides in the root `docs/ARCHITECTURE.md`, `docs/ARCHITECTURE_FLOW.md`, `docs/DESIGN.md`, `docs/KNOWN_ISSUES.md` and accepted ADRs.
+They are historical evidence only. Current accepted system architecture is routed through [`docs/architecture/README.md`](../../architecture/README.md).
 
 - `ARCHITECTURE_v4.6.71.md`
 - `ARCHITECTURE_FLOW_v4.6.71.md`

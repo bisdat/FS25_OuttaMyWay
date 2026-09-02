@@ -2454,3 +2454,22 @@ A failed unprotected run is not wasted. It will quantify the boundary at which E
 **Validation:** negative fixtures reject incomplete Action Space evidence, Follower Owns Closure violations, inadequate Representation Fitness, incomplete Bounded Observation Contracts and invalid Effective Actuation Composition. Comparison cost is applied only after mandatory admissibility.
 
 **Behaviour:** no GIANTS listener and no Control authority.
+
+## 2026-09-02 — Replacement-core documentation lineage archived
+
+**Transitional Architecture Container:** A formerly coherent architecture
+document can become a mixed historical container after its responsibilities
+migrate elsewhere.
+
+**Architectural Supersession with Implementation Persistence:** An
+architectural concept may cease to define intended behaviour while its old
+implementation remains live. Implementation persistence does not preserve
+documentation authority.
+
+**Mutual Staleness Lock:** Obsolete implementation and obsolete documentation
+do not validate each other merely because they remain mutually consistent.
+
+**Archive Is a Transition, Not a Cemetery:** Archive is temporary
+reconciliation staging. Once useful knowledge and dependency/reference needs
+are exhausted, delete the archived file from the working tree; Git preserves
+permanent history.
