@@ -14,6 +14,10 @@ How is OuttaMyWay currently implemented?
 
 → [Code and implementation](code/README.md)
 
+How is OuttaMyWay engineered?
+
+→ [Engineering governance](ENGINEERING_ARCHITECTURE.md)
+
 ## Documentation currently being reconciled
 
 The existing documentation corpus is undergoing semantic reconciliation.

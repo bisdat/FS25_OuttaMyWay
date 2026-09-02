@@ -1,228 +1,234 @@
 # Engineering Architecture
 
-## v4.6.78 driving-system authority boundary
-
-Engineering governance in this document remains authoritative. Normative driving-system architecture now resides in `ARCHITECTURE.md`, `ARCHITECTURE_FLOW.md`, `DESIGN.md`, ADR-0019 and ADR-0021.
-
-Implementation must treat architecture, implementation and testing as separate activities. The first replacement-core implementation is passive lifecycle, Obligation and authority tracing; physical Control follows only after deterministic contract tests.
-
 ## Purpose
 
-This document defines how FS25_OuttaMyWay is engineered.
+This document defines how FS25_OuttaMyWay is engineered and how reviewed repository work becomes accepted or, at deliberately selected checkpoints, canonical.
 
-The immediate purpose of the development repository is to operate as a self-sustaining engineering knowledge system: sufficient current understanding, evidence, decisions and continuation guidance must survive independently of any chat, engineer, AI system or platform.
-
-The longer-term purpose is to make the project understandable to intelligent contributors who did not participate in its discovery. These purposes are compatible: continuity requires explicit knowledge, and explicit knowledge is also what makes contribution possible.
+The repository is a self-sustaining engineering knowledge system. Current understanding, evidence, decisions and continuation guidance must survive independently of any chat, engineer, AI system or platform and remain understandable to contributors who did not participate in discovery.
 
 ## Scope
 
 This architecture governs:
 
 - separation of architecture, implementation and validation;
-- the evidence-led development cycle;
+- the evidence-led engineering lifecycle;
+- repository acceptance and release canonicalisation;
 - ownership and promotion of architectural concepts;
-- repository knowledge responsibilities;
-- canonical development releases;
-- the relationship between architecture and tooling.
+- repository knowledge and document responsibilities;
+- runtime evidence governance; and
+- the boundary between repository authority, tooling and publication.
 
-## Non-scope
-
-This document does not define:
-
-- vehicle-control algorithms;
-- Lua implementation details;
-- tuning values;
-- test results;
-- release history;
-- the future public repository's final editorial scope.
-
-Those belong in their own authoritative records.
+It does not define vehicle-control algorithms, Lua implementation, tuning values, individual test results, release history or external publication requirements. Those belong in their own responsible records.
 
 ## Principles
 
-1. **Reality is the final architect.** When evidence contradicts the architecture, update the architecture.
-2. **Architecture defines what the system should achieve.** Implementation discovers how it can be achieved. Validation supports or disproves the assumptions. Repository Review then tests whether the released knowledge system remains navigable, predictable and complete enough to continue.
-3. **Optimise for understanding before behaviour.** Invest effort where it permanently reduces uncertainty or future complexity.
-4. **Discover concepts; do not invent layers for implementation convenience.** A concept enters the architecture only when repeated observation shows that it explains behaviour better than existing concepts.
-5. **Protect abstraction levels.** Architecture speaks in enduring concepts and responsibilities; implementation details must not silently redefine it.
-6. **Name durable discoveries.** A stable name makes a recurring phenomenon available to the architecture.
-7. **Celebrate disproven hypotheses.** A failed test is evidence that improves the model.
-8. **Prefer ownership over special cases.** Repeated implementation difficulty may indicate a missing responsibility or concept.
+1. **Reality is the final architect.** When evidence contradicts architecture, update the architecture deliberately.
+2. **Architecture, implementation and validation are distinct.** Architecture defines what the system should achieve. Implementation discovers how it may be realised. Validation supports or disproves the assumptions.
+3. **Optimise for understanding before behaviour.** Invest where work permanently reduces uncertainty or future complexity.
+4. **Discover concepts; do not invent layers for implementation convenience.** A concept enters architecture only when evidence shows that it explains responsibility better than existing concepts.
+5. **Protect abstraction levels.** Implementation detail must not silently redefine architecture.
+6. **Name durable discoveries.** Stable names make recurring phenomena available to engineering.
+7. **Celebrate disproven hypotheses.** Failed validation is evidence that improves the model.
+8. **Prefer ownership over special cases.** Repeated implementation difficulty may reveal a missing responsibility.
 9. **Preserve autonomous continuity through the least disruptive justified intervention.**
-10. **The repository is the source of project knowledge, not the source of reality.** It records the project's current understanding and must change when reality disproves it.
+10. **The repository records project knowledge; it does not create Reality.**
 
-## Vocabulary
+## Engineering vocabulary
 
 ### Observation
+
 A fact read from the repository, game, logs, measurements, video or test environment without interpreting what should be done.
 
 ### Interpretation
-A proposed explanation of one or more observations. Interpretations remain uncertain until supported by evidence.
+
+A proposed explanation of observations. It remains uncertain until supported by evidence.
 
 ### Hypothesis
+
 A testable interpretation used to guide a bounded implementation or experiment.
 
 ### Decision
+
 A deliberate project choice. A decision may govern process or implementation without becoming an architectural concept.
 
 ### Architectural Discovery
-An evidence-supported understanding that changes the project's model of responsibilities, concepts or boundaries.
 
-### Commitment
-A persistent intention to perform an action. It owns creation, maintenance, completion and cancellation. Continuing Situation Assessment may test its validity but should not continuously rewrite it.
+Evidence-supported understanding that changes the model of responsibilities, concepts or boundaries.
 
-### Canonical Development Release
-A complete, validated repository package that records current project knowledge and becomes the sole baseline for subsequent work.
+### Engineering Increment
 
-### Document Authority
-The role a document plays in the knowledge system: Canonical, Reference, Historical, Compatibility or Archive.
+A bounded unit of engineering purpose whose implementation and effects can be reviewed and attributed. Chat boundaries and version numbers do not define it.
 
-### Document Currency
-The release in which a document was last reviewed for continued accuracy. Document currency is distinct from repository version and from the historical period a document describes.
+### Accepted Repository State
 
-### Engineering Continuity Test
-A release challenge that asks whether a competent engineer can continue the project correctly using only the candidate repository.
+**Accepted Repository State** is the exact current `main` commit after reviewed Engineering Increments have been merged. It is the normal baseline for subsequent engineering.
 
-### Architectural Review
-The explicit review of Accepted, Deferred and Rejected concepts performed before every canonical development release.
+Accepted `main` may be newer than the latest canonical release. This is normal. A pull-request merge advances accepted repository state but does not, by itself, declare a canonical release.
 
-## Engineering Cycle
+## Engineering lifecycle
 
 ```text
-Observe → Discuss → Hypothesise → Decide → Implement → Validate → Engineering Consolidation → Repository Transition → Repeat
+Observe
+  ↓
+Discuss
+  ↓
+Hypothesise
+  ↓
+define bounded Engineering Increment
+  ↓
+branch from clean/current main
+  ↓
+Implement
+  ↓
+Validate
+  ↓
+Record
+  ↓
+PR Review
+  ↓
+repository owner accepts by merge
+  ↓
+Accepted Repository State (main)
+  ↓
+Repeat
 ```
 
 - **Observe:** collect facts before proposing change.
-- **Discuss:** separate facts, interpretations, decisions and implementation ideas.
+- **Discuss:** separate observations, interpretations, hypotheses and implementation ideas.
 - **Hypothesise:** state what is expected and what evidence could disprove it.
-- **Decide:** make the deliberate project choice that authorises a bounded transformation.
-- **Implement:** make the smallest isolated change that can test the hypothesis while preserving architectural intent.
-- **Validate:** compare expected and observed outcomes.
-- **Engineering Consolidation:** promote durable architectural, implementation and operational knowledge into its authoritative repository homes, then review that promotion for completeness.
-- **Repository Transition:** express the approved change as fingerprint-bound Engineering Intent, then use the local Repository Release System to transform the exact Canonical Repository Snapshot into a validated Release Candidate; independent review and explicit Canonicalisation remain human decisions.
+- **Define:** bound the increment so intentional effects are attributable.
+- **Implement:** make the smallest constructive change that tests the hypothesis while preserving architectural intent.
+- **Validate:** compare expected and observed outcomes at the appropriate implementation and Reality levels.
+- **Record:** promote durable architecture, implementation knowledge, evidence and decisions into their responsible repository homes.
+- **Review:** inspect the complete increment through a pull request.
+- **Accept:** the repository owner's merge makes the result part of accepted `main`.
 
-Skipping directly from observation to implementation is discouraged because it allows implementation convenience to choose the architecture.
+Failed validation returns work to the engineering loop. It does not invoke release or canonicalisation machinery.
 
-## Repository Knowledge Model
+## Repository workflow and provenance
 
-The development repository is intentionally richer than a future public distribution repository.
+Ordinary Engineering Increments begin from clean, current `main`, proceed on a short-lived branch and are reviewed by pull request. The repository owner accepts an increment by merging it. Git branch, commit and pull-request history provides repository provenance.
 
-| Responsibility | Authoritative record |
+Normal engineering does not require a canonical ZIP, package fingerprint, candidate-production transform or new release version. It does not pause merely because accepted `main` is newer than the last named release.
+
+## Canonical release governance
+
+### Canonical Is a Release Property, Not a Document Property
+
+**Canonical** is reserved for a deliberately selected, named, immutable release checkpoint represented by one exact Git commit.
+
+Canonical does not mean a current document, current architecture truth, an accepted PR, current `main`, file freshness or the mandatory starting point for ordinary engineering. Repository responsibility and breadcrumbs identify current architecture authority; accepted `main` supplies its exact content.
+
+The latest owner-declared canonical release remains v0.3.0.0. Current accepted engineering after that checkpoint does not silently create another release.
+
+### Canonical Merge
+
+**A Canonical Merge is the repository owner's intentional merge of an explicitly designated Release Declaration PR. That merge declares the resulting exact `main` commit to be the canonical repository checkpoint for the named version.**
+
+```text
+Accepted Repository State
+       ↓
+owner and engineering collaborator agree a named release is warranted
+       ↓
+Release Declaration Engineering Increment
+       ↓
+release branch and explicitly designated PR
+       ↓
+release-specific review and validation
+       ↓
+OWNER MERGES THE RELEASE DECLARATION PR
+       ↓
+resulting exact main commit
+= canonical named release
+```
+
+Not every merge is canonical. Only a PR explicitly designated in advance as a **Release Declaration PR** carries this authority. Its body must state unambiguously, in substance:
+
+> If the repository owner merges this PR, that merge constitutes the explicit declaration that the resulting `main` commit is canonical `<version>`.
+
+The owner's merge is the declaration; no second declaration is required. A later Git tag or GitHub Release may record or reference the checkpoint but does not create authority or change repository bytes.
+
+### Release Declaration PR responsibility
+
+A Release Declaration PR should be intentionally boring. Substantive architecture, implementation and validation normally enter accepted `main` through preceding Engineering Increments.
+
+The declaration increment changes only material genuinely required to express release identity, such as runtime version metadata, `CHANGELOG.md`, or another first-class release record whose responsibility requires it. It does not stamp every engineering document with the release version or proliferate package fingerprints and candidate/canonical headers.
+
+The exact files and validation required are determined when a release is prepared.
+
+### Canonicalisation Is a Reference Operation, Not a Content Transformation
+
+Canonicalisation identifies the exact merge commit produced by the Canonical Merge as a named immutable checkpoint. It does not transform accepted repository content into a different canonical repository.
+
+The repository does not require ordinary changes to pass through a separate candidate repository, Authority Transformation, package-to-Git synchronisation or canonical-package baseline. A canonical release remains immutable as a referenced Git checkpoint while accepted `main` continues to evolve.
+
+## Git Owns Document Chronology
+
+Git owns when a file changed, what it contained at a commit, its authorship and history, comparisons between accepted and release states, and the exact source associated with a release checkpoint.
+
+Ordinary current first-class documents do not maintain parallel rolling metadata such as `Currency`, `Canonical baseline`, `Last reviewed for canonical release` or `Candidate fingerprint` unless release identity is substantive to that document's responsibility. Historical documents retain versions and release identity when those facts are part of their subject. `CHANGELOG.md` owns externally meaningful release chronology.
+
+## Repository knowledge model
+
+Every enduring item has one authoritative home; other documents link rather than create competing definitions.
+
+| Responsibility | Primary record |
 |---|---|
-| Engineering constitution | `ENGINEERING_ARCHITECTURE.md` |
-| Current project snapshot and continuation point | `PROJECT_STATUS.md` and `ENGINEERING_HANDOVER.md` |
+| Engineering governance | `ENGINEERING_ARCHITECTURE.md` |
+| Runtime architecture | `RUNTIME_RESPONSIBILITY_ARCHITECTURE.md` and specialised architecture breadcrumbs |
+| Current project continuation | `PROJECT_STATUS.md` and `ENGINEERING_HANDOVER.md` |
 | Current concept state | `CONCEPT_REGISTER.md` |
-| Significant project choices and rationale | `DECISION_LOG.md` and ADRs |
-| Evolving evidence and discoveries | `ENGINEERING_JOURNAL.md`, test records and design history |
-| Driving-system architecture | `ARCHITECTURE.md`, `DESIGN.md` and the handbook |
-| Release history | root and documentation changelogs |
-| Repository transformation and evidence | `REPOSITORY_RELEASE_SYSTEM.md` and `rrs/` |
+| Significant choices and rationale | `DECISION_LOG.md` and ADRs |
+| Evidence and discoveries | `ENGINEERING_JOURNAL.md`, test records and research |
+| Implementation responsibilities | code maps and implementation documentation |
+| Release history | `CHANGELOG.md` |
 
-Every enduring item should have one authoritative home. Other documents may reference it, but should not create competing definitions.
+The development repository may be richer than an external publication package. It preserves knowledge needed for continuation, architectural evolution, disproven hypotheses, validation evidence, implementation and diagnostics.
 
-### Development Repository
+## Document governance
 
-The development repository preserves:
+Every first-class document has a focused responsibility and a discoverable breadcrumb. Current architecture documents express present responsibility without claiming per-file canonical status. Historical records preserve provenance; compatibility documents preserve routes; archived material preserves knowledge without current authority.
 
-- current knowledge required for seamless continuation;
-- why the architecture evolved;
-- disproven hypotheses and validation evidence;
-- internal handovers and release machinery;
-- implementation and diagnostics.
+Document lifecycle and authority should be visible through responsibility and navigation, not a rolling version header in every file. Git provides chronology. Removing development history for an external publication is a publication choice, not a reason to erase it from the engineering repository.
 
-### Future Public Repository
+## Concept governance
 
-A future GitHub or ModHub-facing repository may present a narrower, contributor-oriented view. Removing development history is a publication decision, not a reason to omit knowledge from the canonical development repository now.
-
-
-## Document Governance
-
-Every first-class document must have one purpose, one authority classification, one lifecycle state and a discoverable route from `docs/README.md`.
-
-| Authority | Meaning | Version treatment |
-|---|---|---|
-| Canonical | Current project truth within a named responsibility | Current-state fields must match the release where specified |
-| Reference | Enduring knowledge used by current engineering | No rolling repository version; record last-reviewed currency where useful |
-| Historical | Accurate evidence for the period described | Preserve historical version or period |
-| Compatibility | Old path retained only to redirect readers | No independent authority or release version |
-| Archive | Preserved knowledge that is no longer authoritative | Preserve provenance and archive date |
-
-Current-state documents must identify the active canonical version. Enduring references must not imply that their content version equals the package version. A `Last reviewed for canonical release` field records currency without rewriting history.
-
-Documents move through an explicit lifecycle: Active → Superseded → Compatibility or Archive. Archiving preserves knowledge; compatibility preserves a route. They are not synonyms.
-
-The documentation map must classify every first-class Markdown document. The reader journey is part of the architecture: each breadcrumb should answer the next natural question rather than require prior conversational knowledge.
-
-## Architectural Governance
-
-Concepts are governed through three registers:
+Concepts are governed as:
 
 - **Accepted:** evidence supports an independent concept, responsibility or lifecycle.
-- **Deferred:** potentially useful, but evidence is insufficient to justify architectural status.
-- **Rejected:** considered and deliberately excluded, with reason and reconsideration conditions recorded.
+- **Deferred:** potentially useful, but evidence is insufficient for architectural status.
+- **Rejected:** deliberately excluded, with reason and reconsideration conditions recorded.
 
-At every canonical release:
+Significant evidence triggers review of affected concepts and dependent architecture. Release preparation may perform a broader readiness review, but ordinary concept correction does not wait for a release. Architecture remains provisional against Reality.
 
-1. review all three registers;
-2. compare them with new observations and validation results;
-3. promote, defer or reject only with recorded evidence;
-4. update dependent architecture documents;
-5. record the review outcome even when no concept changes.
+## Runtime evidence governance
 
-Architecture is not defended because it already exists. It remains provisional against reality.
+Durable empirical evidence identifies the runtime baseline on which it was observed: FS25 version/build when available, OuttaMyWay version or commit, date, map/fixture and relevant configuration.
 
-## Runtime Evidence Governance
+A game update does not automatically invalidate evidence. Evidence may be current, version-bound, a revalidation candidate or invalidated by contrary Reality. Patch-impact review targets affected assumptions and sentinel scenarios; the full portfolio is rerun only when evidence justifies it.
 
-Empirical evidence is part of the repository knowledge model and remains bound to the runtime baseline on which it was observed. Every durable test record identifies the FS25 version, build and revision when available, OuttaMyWay version, date, map/fixture and exact configuration.
+Published notes, runtime logs and tests are evidence inputs. They do not outsource architectural judgement.
 
-A game update does not automatically invalidate earlier evidence. Evidence is classified as:
+## Canonical Source ≠ Publication Package
 
-- **Current** — observed on the active runtime baseline;
-- **Version-bound** — valid for an earlier baseline with no known contradiction;
-- **Revalidation candidate** — a relevant change may affect the claim;
-- **Invalidated** — later evidence directly disproves continued applicability.
+The canonical release object is the exact Git commit produced by Canonical Merge. Packaging is a separate downstream operational concern.
 
-Patch Impact Watch reviews GIANTS releases for changes to categories, AI admission/routing/manoeuvring/completion/parking, attachment/folding/collision/physics, SDK/API evidence, crop-system eligibility or any other recorded assumption. A small Patch Sentinel Set supports targeted revalidation. The complete portfolio is not rerun after every patch unless evidence shows that broader confidence has decreased.
+Canonical source authority requires no ZIP, ZIP SHA-256, deterministic package, ModHub submission package or copying of package contents back into Git. A local FS25 test ZIP is a developer convenience artefact. External packages follow the requirements of their target environment.
 
-This process does not outsource architectural judgement to patch notes. Published notes, runtime logs and sentinel observations are evidence inputs; the repository records the resulting impact decision.
+### Publication Validation Is External Authority
 
-## Canonical Release Contract
+Repository completeness and publication-package completeness are different responsibilities. Valid engineering material may be inappropriate for a publication package; a publication or test runner may impose requirements irrelevant to repository authority.
 
-A canonical development release must satisfy all of the following:
+Publication acceptance neither creates nor revokes canonical source authority. Packaging, GIANTS/ModHub validation and submission occur only when explicitly requested and under their own requirements.
 
-1. Current status and handover describe the same version and continuation point.
-2. `modDesc.xml`, `scripts/config.lua` and `PROJECT_STATUS.md` contain the target version.
-3. Both changelogs contain a target-version release heading.
-4. The concept register has been reviewed for the release.
-5. Significant discoveries and decisions have been recorded in their authoritative homes.
-6. The repository verifier passes.
-7. The SHA-256 manifest is regenerated from the final repository contents.
-8. The release pipeline passes.
-9. The ZIP contains the complete repository with `modDesc.xml` at its root.
-10. The resulting ZIP becomes the only canonical baseline for subsequent work.
-11. The Engineering Continuity Test passes from the repository alone.
-12. Every first-class document is classified and discoverable through the documentation map.
-13. The packaged ZIP passes an independent Repository Identity Check.
-14. Repository Review findings are recorded as evidence for the next architecture cycle.
-15. After explicit Canonicalisation, the local Git repository is synchronised to the exact accepted package, committed, pushed and confirmed clean before further engineering begins.
+## Tooling boundary
 
-Any modification to the repository shall begin with the current canonical repository being supplied as the implementation baseline. Any change to code, documentation, tooling or package content requires a new version and a complete canonical package. Canonical releases are immutable once issued.
+Tooling enforces selected properties; it does not define architecture or confer repository authority. A passing tool cannot prove that an architecture is correct, and a check that is not automated remains an engineering obligation.
 
-## Tooling Boundary
+The Repository Release System authority architecture is retired. Its implementation remains as legacy tooling pending an independent KEEP/MERGE/EXTRACT/DELETE audit. It is not used for normal Engineering Increments or Canonical Merge, and no RRS run can declare canonical authority.
 
-Tooling enforces selected properties of this architecture; it does not define them.
+## Human review and traceability
 
-A check that is not automated remains an engineering obligation. A passing tool cannot prove that the architecture is correct; it can only prove that specified repository invariants were satisfied.
+Authorship does not confer acceptance. Review considers intended purpose, complete diff, validation evidence, architectural fit, affected prior scenarios and repository navigability. Owner merge accepts an ordinary increment; only owner merge of an explicitly designated Release Declaration PR performs Canonical Merge.
 
-
-## Repository Release Governance
-
-An **Engineering Increment** is the bounded unit of engineering purpose. It closes at a coherent breakpoint established by engineering judgement; time, chat boundaries and version numbering do not define completion.
-
-After an increment closes, Engineering Consolidation promotes its durable knowledge. The resulting approved change is expressed as declarative **Engineering Intent** rather than direct repository modification by the consolidation author. Repository Transition then begins only from the exact **Canonical Repository Snapshot** identified by integrity fingerprint. The Repository Release System governs three distinct authority states: Working, Release Candidate and Canonical. Version identity and Git working state do not themselves confer authority.
-
-Candidate Production is the Engineering Transformation that applies the fingerprint-bound Engineering Intent to the Canonical Repository Snapshot. Review acceptance and Canonicalisation are separate human decisions. Candidate-to-canonical processing is an Authority Transformation and must not alter approved substantive engineering content. Only the repository owner may declare the exact reviewed candidate canonical.
-
-The RRS is the execution boundary that makes repository evolution independent of the consolidation author's file-editing environment. It produces provenance, declared and observed change, repository findings and validation evidence so that review can concentrate on engineering judgement.
-
-For the same exact Canonical Repository Snapshot and fingerprint-bound Engineering Intent, Candidate Production must emit one byte-identical candidate package across supported execution platforms. Evidence packages retain execution provenance and may differ in non-substantive run metadata, but must identify the same candidate and agree on substantive findings. Authorship does not confer approval, and authority states may be entered only through their defined gates. The detailed state model, roles, gates and findings are owned by `REPOSITORY_RELEASE_SYSTEM.md`; the executable candidate-production boundary is owned by `rrs/`.
+The repository must remain understandable to a fallible human engineer. Explicit ownership, call paths, breadcrumbs, recorded discoveries and bounded increments are engineering requirements, not optional editorial polish.

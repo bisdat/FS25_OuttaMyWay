@@ -1,6 +1,8 @@
 # Repository Release System Architecture
 
-> **Authority:** Canonical repository-release architecture
+> **Current status — retired authority architecture:** The RRS authority model described below is retired. It was built for the earlier package-exchange and canonical-ZIP transformation workflow. Current accepted engineering evolves clean/current `main` through short-lived branches, pull-request review and repository-owner merge; canonicalisation occurs only through the owner's Canonical Merge of an explicitly designated Release Declaration PR. The historical body is preserved for provenance and a later independent tooling audit. It must not be used as current repository governance authority; current governance lives in [Engineering Architecture](ENGINEERING_ARCHITECTURE.md).
+>
+> **Historical authority (retired):** Canonical repository-release architecture
 >
 > **Currency:** Reviewed for candidate release v4.6.1
 >

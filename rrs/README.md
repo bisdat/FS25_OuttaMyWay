@@ -1,79 +1,54 @@
-# Repository Release System
+# Repository Release System — Legacy Tooling
 
-This directory contains the repository-owned implementation of the OuttaMyWay Repository Release System.
+> **Status:** The implementation in this directory is legacy tooling retained pending an independent tooling audit. Its package-transform workflow is no longer the project's engineering or canonicalisation process. Current governance lives in [Engineering Architecture](../docs/ENGINEERING_ARCHITECTURE.md).
 
-The RRS creates a complete candidate from an exact Canonical Repository Snapshot and a declarative JSON Engineering Intent handoff. It records the baseline fingerprint, applies controlled transformations, regenerates the release manifest, compares declared intent with observed effect, classifies repository findings relative to the baseline, and produces a byte-deterministic candidate ZIP plus a provenance-bearing evidence ZIP.
+Do not use `rrs evolve` or `rrs build` for normal Engineering Increments or Canonical Merge. Current engineering evolves clean/current `main` through short-lived branches and reviewed pull requests. Only the repository owner's merge of an explicitly designated Release Declaration PR can declare a named canonical Git checkpoint; no RRS run can confer that authority.
 
-## Local workflow
+The commands and implementation notes below document the existing tool and support explicit legacy-tool investigation only. They do not define a replacement packaging workflow. A later audit will determine whether individual capabilities should be kept, merged, extracted or deleted.
 
-Use the repository evolution command for normal local operation:
+## Existing commands
+
+The legacy repository-evolution command accepts a canonical ZIP baseline and declarative JSON handoff:
 
 ```text
 python -m rrs evolve --baseline CANONICAL.zip --handoff release-plan.json --output out
 ```
 
-This single command verifies the supplied baseline fingerprint, applies the declared transition, regenerates the manifest, validates the candidate, and produces candidate and evidence packages. The handoff is valid only for that exact baseline. The command does not alter Git state or declare a candidate canonical; those remain explicit engineer-owned actions.
-
-The lower-level `build` command remains available for direct candidate construction and compatibility:
+The lower-level compatibility command builds directly from a plan:
 
 ```text
 python -m rrs build --baseline CANONICAL.zip --plan release-plan.json --output out
 ```
 
-A build is blocked when:
+These commands verify their declared baseline, apply controlled transformations, regenerate the legacy release manifest, compare declared intent with observed effects, classify findings and produce candidate/evidence packages. Those behaviours describe the retained implementation; they are not current repository governance.
 
-- the supplied canonical fingerprint does not match the declared baseline;
-- a declared change is missing;
-- an undeclared change appears;
-- the candidate introduces a repository violation;
-- the release manifest is invalid;
-- the resulting version does not match the target version.
+The tool blocks a build when its baseline fingerprint does not match, a declared change is missing, an undeclared change appears, a candidate violates its encoded repository rules, its release manifest is invalid, or the resulting version does not match its target.
 
-The evidence package contains the release plan, baseline and candidate inventories, observed delta, classified findings, validation report, package fingerprints, and the exact RRS source used for the build.
+## Existing determinism model
 
-## Candidate determinism
-
-For the same exact baseline ZIP and handoff JSON, supported execution platforms must produce the same candidate SHA-256. The implementation enforces this with:
+For the same baseline ZIP and handoff JSON, the implementation attempts to emit the same candidate SHA-256 across supported platforms through:
 
 - relative POSIX-path ordering shared by inventory, manifest and ZIP packaging;
 - fixed timestamps and explicit UNIX-origin ZIP metadata;
-- fixed regular-file permissions;
-- stored ZIP entries rather than platform-dependent compression output.
+- fixed regular-file permissions; and
+- stored ZIP entries rather than platform-dependent compression.
 
-Evidence ZIPs preserve run provenance and are not required to be byte-identical, but must name the same candidate fingerprint and agree on substantive findings.
+Evidence ZIPs retain run provenance and need not be byte-identical, but the implementation expects them to name the same candidate fingerprint and substantive findings.
 
-### Updating Candidate Production itself
+These package properties do not create or identify current canonical source authority.
 
-A running RRS process cannot use code changes that exist only in the candidate it is currently packaging. For an increment that changes `rrs/rrs.py`, run the proposed implementation from a separate fingerprinted bootstrap package. Keep the canonical Git repository unchanged, use the same canonical baseline ZIP and handoff, and retain the exact runner source in the evidence package. After accepted review, the candidate promotes that implementation into the repository normally.
+## Existing workspace lifecycle
 
-## Evidence and workspace lifecycle
-
-Every run creates a controlled workspace named `rrs_workspace` beneath the output directory.
+Each run creates `rrs_workspace` beneath its output directory.
 
 - PASS: candidate and evidence packages are written, then the workspace is removed.
 - Validation block: evidence is packaged and the workspace is retained for diagnosis.
 - Execution failure: failure evidence is packaged and the workspace is retained for diagnosis.
 
-A retained workspace is never overwritten implicitly. Resolve, move, or remove it before repeating the workflow in the same output directory.
+A retained workspace is not overwritten implicitly. Repository text is processed as strict UTF-8; invalid encoding is recorded as execution failure.
 
-Repository text is read and written as strict UTF-8. Invalid text encoding is treated as an execution failure and recorded in the evidence package rather than silently replaced.
+## Audit boundary
 
+Do not modify or invoke this tooling merely because a normal Engineering Increment or release declaration is underway. Use it only when an explicit task is investigating the legacy implementation itself.
 
-## Current implementation boundary
-
-The recovered implementation owns Candidate Production only. It accepts the exact canonical ZIP and a declarative planning handoff, applies controlled operations, validates declared against observed change, classifies repository findings, regenerates the manifest and emits a byte-deterministic candidate package plus a provenance-bearing evidence package.
-
-It does not yet perform Authority Transformation, enforce the complete ordered authority-state sequence, prove candidate-to-canonical substantive purity, accept review, or declare Canonicalisation. Those remain human-governed or future implementation responsibilities.
-
-
-## After accepted review
-
-After the repository owner explicitly declares the exact reviewed candidate canonical:
-
-1. retain the candidate and evidence packages as release provenance;
-2. synchronise the accepted candidate contents into the local Git repository;
-3. inspect `git status` and the staged delta;
-4. commit and push the canonical repository state;
-5. confirm that the branch is up to date and the working tree is clean before beginning the next Engineering Increment.
-
-Local uncommitted files are not silently incorporated into Candidate Production: the declared ZIP snapshot is the baseline. A future usability enhancement should report a dirty Git working tree before execution so this separation is visible without changing the baseline gate.
+The future tooling audit may classify capabilities as KEEP, MERGE, EXTRACT or DELETE. This README does not prejudge that outcome and no code or tests are changed by the governance retirement.
