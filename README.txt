@@ -33,4 +33,4 @@ not be read as a claim of current runtime capability.
 
 Development / engineering documentation:
 
-    https://github.com/bisdat/FS25_OuttaMyWay/blob/main/docs/README.md
+    docs/README.md
