@@ -8,11 +8,11 @@ tests assumptions against runtime reality.
 ## Current architecture breadcrumb
 
 Start with the
-[Runtime Responsibility Architecture](../RUNTIME_RESPONSIBILITY_ARCHITECTURE.md)
+[Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md)
 for the end-to-end lifecycle and responsibility model. Follow its breadcrumb to
-the [Spatial Negotiation Model](../SPATIAL_NEGOTIATION_MODEL.md) for active
+the [Spatial Negotiation Model](SPATIAL_NEGOTIATION_MODEL.md) for active
 spatial-coordination policy, or to the
-[Physical Representation Architecture](../PHYSICAL_REPRESENTATION_ARCHITECTURE.md)
+[Physical Representation Architecture](PHYSICAL_REPRESENTATION_ARCHITECTURE.md)
 for representation detail.
 
 Architecture may describe intended behaviour that is not yet implemented. Read

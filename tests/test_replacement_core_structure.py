@@ -673,7 +673,7 @@ def test_v4733_speed_ordering_evidence_asymmetry_and_configuration_footprint_aut
     glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
-    physical=(ROOT/"docs"/"PHYSICAL_REPRESENTATION_ARCHITECTURE.md").read_text(encoding="utf-8")
+    physical=(ROOT/"docs"/"architecture"/"PHYSICAL_REPRESENTATION_ARCHITECTURE.md").read_text(encoding="utf-8")
     adr23=(ROOT/"docs"/"adr"/"ADR-0023-traffic-policeman-movement-priority.md").read_text(encoding="utf-8")
     protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")

@@ -21,8 +21,9 @@ How is OuttaMyWay engineered?
 ## Documentation currently being reconciled
 
 The existing documentation corpus is undergoing semantic reconciliation.
-Filenames do not automatically establish current authority, and historical and
-current concepts may coexist in the flat `docs/` tree. Later engineering
+Filenames do not automatically establish current authority. The current accepted
+architecture set resides in `docs/architecture/`; historical and current concepts
+may otherwise coexist in the flat `docs/` tree. Later engineering
 increments will reconcile architecture, evidence, research, decisions, history,
 and development-state material. This navigation root does not pre-empt that
 work.
