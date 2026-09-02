@@ -31,7 +31,7 @@ These sources and older chapters that describe Negotiation Manager, Permission
 Gate or controller-specific lifecycle ownership are historical explanation, not
 current architectural authority.
 
-The current core is organised around Situation Assessment, Decision, Commitment, explicit Obligation ownership, bounded Control and observed terminal settlement.
+The replacement-core implementation was organised around Situation Assessment, Decision, Commitment, explicit Obligation ownership, bounded Control and observed terminal settlement.
 
 ## v4.6.50 architecture recovery note
 
