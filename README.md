@@ -33,4 +33,4 @@ not be read as a claim of current runtime capability.
 
 Development / engineering documentation:
 
-    docs/README.md
+[docs/README.md](docs/README.md)
