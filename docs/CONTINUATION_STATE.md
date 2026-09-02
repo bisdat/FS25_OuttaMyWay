@@ -45,42 +45,33 @@ Semantic reconciliation of the documentation corpus by knowledge responsibility.
   current status, and linked architecture continues to own full semantics.
 - **Concept State Is Not Concept History:** a current-state register replaces a
   concept's status rather than appending successive historical states.
+- Physical Representation Architecture reconciliation is complete. The live
+  document now expresses current-state architecture rather than mixed
+  architecture and history; versioned implementation notes, prototype chronology
+  and fixture/test narrative were removed after their durable rules were
+  harvested.
+- All Accepted and Deferred Physical Representation concept meanings remain
+  represented. This reconciliation changed no runtime behaviour, and runtime
+  implementation reconstruction remains subsequent engineering work.
 
 ## Current boundary
 
-Current accepted architecture is ahead of the inherited v0.3 runtime by design.
-The inherited runtime is donor evidence, not architectural authority. Reconstruct
-current implementation responsibilities from code Reality before attempting any
-repair; do not close these gaps piecemeal.
+The Physical Representation Architecture is reconciled as a present-tense
+account of collision-relevant plan-view occupancy, representation evidence and
+claim permissions. It preserves multidimensional physical state, coverage and
+inventory distinctions, asymmetric directional extents, evidence-absence rules,
+and the observational boundary with Runtime Responsibility.
 
-Likely donor mechanisms to verify directly against live code are:
-
-- the nine-phase Cooperative Passage lifecycle;
-- Transit-first Reality verification;
-- Development/Crossing separation;
-- Alignment Runout / Axis Return and participant handback;
-- empirical Passage Entry-space construction and approximately 1 m clearance;
-- the 1 km/h Regulation actuator; and
-- Field World and represented assembly geometry.
-
-Current implementation-gap hypotheses to verify directly against code are:
-
-- the historical 80 m locality proxy may combine multiple responsibilities;
-- TURN/transient trajectory evidence may mature into Passage more strongly than
-  current A8 permits;
-- stale early Passage guide geometry may survive changed Reality; and
-- Category-1/2 zone evidence, bounded Region-B authority lifetime, time-aware
-  capture margin, Bubble external composition and Resolution-Epoch Bullet Time
-  may be absent.
+Current accepted architecture may remain ahead of runtime implementation. No
+runtime conformance claim or reconstruction plan follows from this documentation
+increment.
 
 ## Next boundary
 
-Reconcile `docs/architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md` in place
-by knowledge responsibility. Preserve its live present-tense representation
-architecture while reconciling versioned implementation notes, fixture chronology,
-prototype strata and the old version-bound `Current Boundary`. Runtime
-implementation reconstruction remains subsequent work; do not begin it as part of
-the documentation reconciliation.
+Review the reconciled Physical Representation architecture against current
+runtime and code-map evidence before defining any runtime reconstruction
+increment. Stop at that architectural-review boundary; do not predefine
+implementation changes.
 
 ## Not currently active
 
