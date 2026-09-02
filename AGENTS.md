@@ -3,9 +3,12 @@
 ## Repository authority and workflow
 
 - Treat `main` as the last accepted and tested repository state.
+- Use clean, current `main` as the normal baseline for ordinary Engineering Increments, even when it is newer than the latest canonical release.
 - Do not commit directly to `main`. Work on a short-lived branch and open a pull request for review.
 - Do not merge pull requests automatically unless the repository owner explicitly instructs you to do so.
-- A GitHub commit, branch, pull request, or merge does not by itself declare an OuttaMyWay version canonical. Canonicalisation is an explicit repository-owner decision after review and validation.
+- An ordinary pull-request merge advances Accepted Repository State; it is not canonicalisation.
+- Only a pull request explicitly designated in advance as a **Release Declaration PR** can become canonical. The repository owner's merge of that PR is the **Canonical Merge** and declares the resulting exact `main` commit canonical for its named version.
+- A Git tag, GitHub Release, package or RRS run may record or process release material but does not create canonical authority.
 - Do not change the mod version, canonical labels, release identity, or release manifests unless the task explicitly requires it.
 - Do not infer that a newer branch is more authoritative than the latest owner-accepted state.
 
@@ -37,7 +40,7 @@ A failed hypothesis or test is evidence, not wasted work. Record what was learne
 
 ## Current architectural authority
 
-Before changing traffic behaviour, read `docs/SPATIAL_NEGOTIATION_MODEL.md` and the current decision/status material it references. Treat historical documents as evidence/provenance where they conflict with the current accepted architecture.
+Before changing runtime behaviour, start with `docs/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`, then read specialised architecture such as `docs/SPATIAL_NEGOTIATION_MODEL.md` and applicable current decision/status material. Treat historical documents as evidence/provenance where they conflict with current accepted architecture.
 
 Preserve these standing constraints unless an explicit architectural decision changes them:
 
@@ -85,7 +88,9 @@ Before completing a change:
 
 Do not claim Farming Simulator field/runtime validation unless it was actually performed and the evidence is available. Agent-side syntax/unit/static validation and in-game Reality validation are separate claims.
 
-Use the Repository Release System only when the task is explicitly producing/reviewing a release candidate. Follow `rrs/README.md`; do not let candidate production silently alter Git authority or declare Canonicalisation.
+Do not use the Repository Release System for normal Engineering Increments or canonicalisation. Treat `rrs/` as legacy tooling pending an explicit independent audit, and invoke or modify it only when a task specifically concerns that tooling.
+
+Do not perform test-package production, release packaging, publication validation or external submission unless explicitly requested. Packaging is separate from accepted/canonical source authority.
 
 ## Licensing
 
