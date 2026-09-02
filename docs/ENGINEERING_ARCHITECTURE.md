@@ -253,6 +253,20 @@ Concepts are governed as:
 
 Significant evidence triggers review of affected concepts and dependent architecture. Release preparation may perform a broader readiness review, but ordinary concept correction does not wait for a release. Architecture remains provisional against Reality.
 
+### Concept State Is Not Concept History
+
+The Concept Register is a replace-in-place current-state record. Each concept
+appears once in its current state, and a status change replaces the prior
+register state rather than appending another version section. Concept rationale
+and history belong in the Decision Log, ADRs and Git; empirical discovery
+history belongs in the Engineering Journal, tests and research evidence.
+
+Each current entry links to the architecture document that owns its full
+semantics. A rejected concept remains in the register only while its present
+rejection materially helps prevent accidental reintroduction. Version headings,
+candidate fingerprints, validation chronology and historical implementation
+status do not belong in the current Concept Register.
+
 ## Runtime evidence governance
 
 Durable empirical evidence identifies the runtime baseline on which it was observed: FS25 version/build when available, OuttaMyWay version or commit, date, map/fixture and relevant configuration.
