@@ -170,6 +170,19 @@ Canonicalisation identifies the exact merge commit produced by the Canonical Mer
 
 The repository does not require ordinary changes to pass through a separate candidate repository, Authority Transformation, package-to-Git synchronisation or canonical-package baseline. A canonical release remains immutable as a referenced Git checkpoint while accepted `main` continues to evolve.
 
+### Pre-1.0 Versioning Policy
+
+Before the first public release, release identity uses `0.MINOR.PATCH.BUILD`.
+Canonical named releases use `BUILD=0`, while non-canonical TEST iterations
+increment `BUILD`. An accepted compatible correction increments `PATCH` and
+resets `BUILD`; a significant architecture or capability milestone increments
+`MINOR` and resets both `PATCH` and `BUILD`. The first public release is reserved
+for `1.0.0.0`.
+
+Historical `4.7.x` identities remain immutable provenance and are not
+renumbered. Version identity does not itself establish accepted or canonical
+authority.
+
 ## Git Owns Document Chronology
 
 Git owns when a file changed, what it contained at a commit, its authorship and history, comparisons between accepted and release states, and the exact source associated with a release checkpoint.
@@ -196,6 +209,13 @@ The development repository may be richer than an external publication package. I
 ## Document governance
 
 Every first-class document has a focused responsibility and a discoverable breadcrumb. Current architecture documents express present responsibility without claiming per-file canonical status. Historical records preserve provenance; compatibility documents preserve routes; archived material preserves knowledge without current authority.
+
+### Predictable Knowledge Placement
+
+**Navigation** means an engineer can find the relevant record. **Prediction**
+means an engineer can predict which responsible record should contain that
+class of knowledge. Repository responsibility is stronger when both are true; a
+breadcrumb alone is insufficient when responsibility remains ambiguous.
 
 **Archive Is a Transition, Not a Cemetery.** A current document retains a
 present-tense responsibility. Once superseded, it may be archived temporarily
