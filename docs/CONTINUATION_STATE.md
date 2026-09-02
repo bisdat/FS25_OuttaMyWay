@@ -15,7 +15,9 @@ Semantic reconciliation of the documentation corpus by knowledge responsibility.
 - `docs/code/README.md` is the implementation-navigation route.
 - Ordinary engineering proceeds from clean, current accepted `main` through bounded branch and pull-request increments.
 - Canonicalisation is a separate, deliberate Release Declaration process.
-- `docs/PROJECT_STATUS.md` and `docs/ENGINEERING_HANDOVER.md` are historical ledgers, not current continuation authority.
+- The archived `archive/reconciliation/stale-authority-surface/PROJECT_STATUS.md`
+  and `archive/reconciliation/stale-authority-surface/ENGINEERING_HANDOVER.md`
+  are historical ledgers, not current continuation authority.
 - This documentation-reconciliation work has selected no runtime behaviour change.
 - `DESIGN.md` and the identified replacement-core contract family have been
   semantically classified as historical lineage and moved into transitional
@@ -28,13 +30,35 @@ Semantic reconciliation of the documentation corpus by knowledge responsibility.
 
 ## Current boundary
 
-Continue semantic classification of the unreconciled documentation corpus. Determine which knowledge remains current, which is evidence or history, which belongs in another authoritative home, and which can eventually be retired. Do not classify documents from filenames alone. No runtime behaviour change is active.
+Current accepted architecture is ahead of the inherited v0.3 runtime by design.
+The inherited runtime is donor evidence, not architectural authority. Reconstruct
+current implementation responsibilities from code Reality before attempting any
+repair; do not close these gaps piecemeal.
+
+Likely donor mechanisms to verify directly against live code are:
+
+- the nine-phase Cooperative Passage lifecycle;
+- Transit-first Reality verification;
+- Development/Crossing separation;
+- Alignment Runout / Axis Return and participant handback;
+- empirical Passage Entry-space construction and approximately 1 m clearance;
+- the 1 km/h Regulation actuator; and
+- Field World and represented assembly geometry.
+
+Current implementation-gap hypotheses to verify directly against code are:
+
+- the historical 80 m locality proxy may combine multiple responsibilities;
+- TURN/transient trajectory evidence may mature into Passage more strongly than
+  current A8 permits;
+- stale early Passage guide geometry may survive changed Reality; and
+- Category-1/2 zone evidence, bounded Region-B authority lifetime, time-aware
+  capture margin, Bubble external composition and Resolution-Epoch Bullet Time
+  may be absent.
 
 ## Next boundary
 
-The next semantic boundary is `docs/ARCHITECTURE_CODE_ALIGNMENT.md`. Audit it
-to harvest genuinely current v0.3 architecture-versus-implementation-gap
-knowledge before classifying its accumulated historical alignment ledger.
+Verify the inherited runtime's responsibilities and donor mechanisms directly
+against live code Reality before selecting a bounded implementation increment.
 
 ## Not currently active
 

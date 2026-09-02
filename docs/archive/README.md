@@ -13,3 +13,7 @@ reconciliation state, not a permanent historical cemetery.
 
 Once those reconciliation needs are exhausted, remove the archived file from
 the working tree. Git history is the permanent historical record.
+
+Current transitional reconciliation staging:
+
+→ [Stale authority surface](reconciliation/stale-authority-surface/README.md)

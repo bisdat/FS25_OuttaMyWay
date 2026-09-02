@@ -69,7 +69,7 @@ Accepted `main` may be newer than the latest canonical release. This is normal. 
 
 **Continuation State is the compact, replace-in-place description of the project's present engineering boundary: what workstream is active, what is currently understood, what remains unresolved, and what bounded question should be addressed next.**
 
-`CONTINUATION_STATE.md` owns this responsibility. Accepted engineering replaces its contents in place; current state must not become an appended historical ledger. Git owns the chronology of previous Continuation States. The historical snapshots in `PROJECT_STATUS.md` and instructions in `ENGINEERING_HANDOVER.md` remain evidence but do not establish current authority.
+`CONTINUATION_STATE.md` owns this responsibility. Accepted engineering replaces its contents in place; current state must not become an appended historical ledger. Git owns the chronology of previous Continuation States. The archived historical snapshots in `archive/reconciliation/stale-authority-surface/PROJECT_STATUS.md` and instructions in `archive/reconciliation/stale-authority-surface/ENGINEERING_HANDOVER.md` remain evidence but do not establish current authority.
 
 GitHub Issues may own a substantial bounded prospective question or piece of work where useful; trivial increments do not require an Issue. An Issue describes work being undertaken, but it does not establish accepted architecture or implementation authority. Accepted repository state still changes through reviewed pull-request merge.
 
@@ -160,7 +160,7 @@ The owner's merge is the declaration; no second declaration is required. A later
 
 A Release Declaration PR should be intentionally boring. Substantive architecture, implementation and validation normally enter accepted `main` through preceding Engineering Increments.
 
-The declaration increment changes only material genuinely required to express release identity, such as runtime version metadata, `CHANGELOG.md`, or another first-class release record whose responsibility requires it. It does not stamp every engineering document with the release version or proliferate package fingerprints and candidate/canonical headers.
+The declaration increment changes only material genuinely required to express release identity, such as runtime version metadata, the root `../CHANGELOG.md`, or another first-class release record whose responsibility requires it. It does not stamp every engineering document with the release version or proliferate package fingerprints and candidate/canonical headers.
 
 The exact files and validation required are determined when a release is prepared.
 
@@ -174,7 +174,7 @@ The repository does not require ordinary changes to pass through a separate cand
 
 Git owns when a file changed, what it contained at a commit, its authorship and history, comparisons between accepted and release states, and the exact source associated with a release checkpoint.
 
-Ordinary current first-class documents do not maintain parallel rolling metadata such as `Currency`, `Canonical baseline`, `Last reviewed for canonical release` or `Candidate fingerprint` unless release identity is substantive to that document's responsibility. Historical documents retain versions and release identity when those facts are part of their subject. `CHANGELOG.md` owns externally meaningful release chronology.
+Ordinary current first-class documents do not maintain parallel rolling metadata such as `Currency`, `Canonical baseline`, `Last reviewed for canonical release` or `Candidate fingerprint` unless release identity is substantive to that document's responsibility. Historical documents retain versions and release identity when those facts are part of their subject. The root `../CHANGELOG.md` owns externally meaningful release chronology.
 
 ## Repository knowledge model
 
@@ -189,7 +189,7 @@ Every enduring item has one authoritative home; other documents link rather than
 | Significant choices and rationale | `DECISION_LOG.md` and ADRs |
 | Evidence and discoveries | `ENGINEERING_JOURNAL.md`, test records and research |
 | Implementation responsibilities | code maps and implementation documentation |
-| Release history | `CHANGELOG.md` |
+| Release history | root `../CHANGELOG.md` |
 
 The development repository may be richer than an external publication package. It preserves knowledge needed for continuation, architectural evolution, disproven hypotheses, validation evidence, implementation and diagnostics.
 
@@ -203,6 +203,23 @@ only while knowledge reconciliation, dependency closure or reference repair
 still requires the file itself. After those purposes are exhausted, remove the
 file from the working tree; Git retains its history. The archive is not a
 permanent retention requirement.
+
+### Stale Responsibility Surface
+
+A document may remain visible among current engineering documentation after the
+responsibility that once justified it has moved elsewhere, expired or been
+superseded. Its presence can falsely imply current authority.
+
+> **Stale responsibility → archive. Live responsibility + stale content → reconcile in place.**
+
+File age or version is a risk signal, not itself the decision criterion.
+`CONCEPT_REGISTER.md` remains active because this architecture assigns it the
+live responsibility of current concept state, despite its accumulated historical
+content. `DECISION_LOG.md`, `ENGINEERING_JOURNAL.md` and the root
+`../CHANGELOG.md` remain active because historical chronology is intrinsic to
+their live responsibilities. Documents such as the archived `ARCHITECTURE.md`,
+`KNOWN_ISSUES.md` and `ROADMAP.md` lose active-surface status because their
+present-tense responsibilities have moved elsewhere.
 
 Document lifecycle and authority should be visible through responsibility and navigation, not a rolling version header in every file. Git provides chronology. Removing development history for an external publication is a publication choice, not a reason to erase it from the engineering repository.
 
