@@ -109,6 +109,8 @@ Regulation is **bounded, reversible temporal adjustment**. It changes timing, no
 
 Regulation does not own the eventual resolution or create a persistent Resolution Commitment. It must have an explicit current temporal purpose and carries no authority after that purpose ends. Reality may reveal enough information for Regulation to be extremely brief.
 
+One Regulation allocation has a bounded uninterrupted authority lifetime. If that bound expires before its purpose is otherwise discharged, the allocation ends and fresh Situation Assessment is required. Expiry is not evidence of safety, failure or Resolution Commitment, and persistent uncertainty alone cannot justify indefinite Regulation.
+
 Regulation is admissible when developing spatial competition is relevant, uncertainty or preserved theatre still has material value, and continued native progression is consuming the opportunity to wait safely for better evidence or execution space.
 
 One defensible party is regulated while useful native movement by another continues. The regulated party is not a permanent loser. Prefer an allocation that preserves more Resolution Space and useful revelation time; when several choices are adequately viable, use a deterministic tie-break rather than expensive optimisation.
