@@ -190,4 +190,4 @@ Earlier left-side 15 km/h TS015 evidence also ended with a later headland conver
 ### TS016
 
 The manoeuvre-aware first encounter and later rearmed straight-head-on encounter both complete. A subsequent conflict remains when Condor finishes work and becomes a static obstacle. Field World preserves relevance, but the active-worker pair ends and Patriot receives no obstacle-navigation Control. This Completion-Transition Control Gap is separate from TS015 dual-manoeuvre cooperation.
-"
+
