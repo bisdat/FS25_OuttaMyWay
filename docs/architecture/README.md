@@ -7,10 +7,13 @@ tests assumptions against runtime reality.
 
 ## Current architecture breadcrumb
 
-Start with the [Spatial Negotiation Model](../SPATIAL_NEGOTIATION_MODEL.md).
-It is the v0.3.0.0 Spatial Negotiation architectural checkpoint and current
-clean-sheet operating model. Its current high-level responsibilities are
-**GIANTS AI**, **Regulation**, and **Resolution Commitment**.
+Start with the
+[Runtime Responsibility Architecture](../RUNTIME_RESPONSIBILITY_ARCHITECTURE.md)
+for the end-to-end lifecycle and responsibility model. Follow its breadcrumb to
+the [Spatial Negotiation Model](../SPATIAL_NEGOTIATION_MODEL.md) for active
+spatial-coordination policy, or to the
+[Physical Representation Architecture](../PHYSICAL_REPRESENTATION_ARCHITECTURE.md)
+for representation detail.
 
 Architecture may describe intended behaviour that is not yet implemented. Read
 it as the system's direction and responsibility model, not as a complete account
