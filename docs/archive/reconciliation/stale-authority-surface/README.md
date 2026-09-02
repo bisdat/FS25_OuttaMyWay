@@ -33,3 +33,10 @@ these files may be removed from the working tree.
 - `CONTRIBUTING.md`
 - `DOCUMENTATION_STANDARD.md`
 - `CHANGELOG.md`
+
+## Retired process, handbook and release-governance surface
+
+- `ENGINEERING_HANDBOOK.md`
+- `RELEASE_CHECKLIST.md`
+- `REPOSITORY_RELEASE_SYSTEM.md`
+- `REPOSITORY_REVIEW.md`

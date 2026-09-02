@@ -27,6 +27,15 @@ Semantic reconciliation of the documentation corpus by knowledge responsibility.
   validation.
 - Archived files remain candidates for deletion after knowledge harvesting and
   reference/dependency closure; Git is the permanent historical record.
+- A second stale-surface wave archived obsolete handbook, release and
+  repository-review authority.
+- Replacement-core experiment and removal provenance now resides under the
+  existing replacement-core archive.
+- `PROJECT_VISION.md` and `LOCALISATION.md` remain live product-policy documents.
+- Evidence and research records remain evidence rather than current
+  architectural authority.
+- `REPOSITORY_POLICY.json` and `RELEASE_MANIFEST_SHA256.txt` remain in place
+  because legacy RRS paths depend on them, pending the explicit tooling audit.
 
 ## Current boundary
 
@@ -57,12 +66,12 @@ Current implementation-gap hypotheses to verify directly against code are:
 
 ## Next boundary
 
-Continue responsibility triage of the remaining unreconciled documentation
-surface. Archive documents whose present-tense responsibility is stale; reconcile
-live responsibilities with stale accumulated content in place; and classify
-evidence, history and tooling material separately by their actual knowledge
-responsibility. Runtime implementation reconstruction from code Reality remains
-subsequent work, not the current engineering increment.
+Reconcile `docs/CONCEPT_REGISTER.md` in place against current accepted
+architecture. Its responsibility remains live — current concept state — but its
+accumulated versioned ledger mixes current, provisional, superseded and historical
+concepts. Preserve decision/evidence provenance elsewhere; make the register
+describe the concepts that are current now. Runtime implementation reconstruction
+remains subsequent work.
 
 ## Not currently active
 

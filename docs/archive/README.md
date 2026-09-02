@@ -17,3 +17,5 @@ the working tree. Git history is the permanent historical record.
 Current transitional reconciliation staging:
 
 → [Stale authority surface](reconciliation/stale-authority-surface/README.md)
+
+→ [Replacement-core lineage](replacement-core/README.md)
