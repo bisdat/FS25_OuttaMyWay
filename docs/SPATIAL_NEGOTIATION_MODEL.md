@@ -52,6 +52,8 @@ Within the parent's generic Regulation responsibility, spatially supported purpo
 - protecting prospective Passage theatre; and
 - managing an independent third worker where applicable.
 
+Spatial Regulation is admissible when developing spatial competition is relevant, uncertainty or preserved theatre still has material value, and continued native progression is consuming the opportunity to wait safely for better evidence or execution space.
+
 Regulation changes timing, not productive routes. Prefer an allocation that preserves more Resolution Space and useful revelation time; if several choices are adequately viable, use a deterministic tie-break rather than expensive optimisation. The regulated party is not a permanent loser.
 
 Intent-Revelation Creep and third-worker Bullet Time retain the exact **1 km/h** architectural policy where applicable. This is fixed policy for those responsibilities, not a general tuning parameter.
@@ -76,7 +78,7 @@ Choose the provisional allocation that preserves more Resolution Margin and inte
 
 ### Both workers inside Category 1
 
-This is a degraded-entry condition the normal architecture should prevent. Preserve a worker positively creating space and regulate the other. If no clearly safe space-creating action exists, fail safe and allow player escalation rather than inventing heroic choreography.
+This is a degraded-entry condition the normal architecture should try to prevent. Preserve a worker positively creating space and regulate the other. If no clearly safe space-creating action exists, fail safe and allow player escalation rather than inventing heroic choreography.
 
 Spatial precedence is temporary and evidence-based.
 
@@ -109,7 +111,7 @@ The validated nine-phase Passage architecture remains the mechanical donor. Reta
 - `2 x Development` longitudinal space; and
 - the coarse **3 m Passage Entry Control Allowance**.
 
-This is a control-acquisition/spatial reserve, not a GIANTS braking model. Do not add longitudinal Transit prediction or sophisticated articulation modelling. Existing represented geometry and the approximately **1 m nominal Passage-clearance policy** remain sufficient until field Reality demonstrates otherwise.
+This is a control-acquisition/spatial reserve, not a GIANTS braking model. Do not add longitudinal Transit prediction or sophisticated articulation modelling. Existing represented geometry and the approximately **1 m nominal Passage-clearance policy** remain sufficient until field Reality demonstrates otherwise. If longer assemblies later demonstrate insufficient clearance, adjust the clearance policy before introducing a dynamics model.
 
 For foreseeable Passage, distinguish the **required Passage reserve** remaining after capture from the **disposable native approach margin** above it. Current closing speed determines how rapidly disposable margin is consumed. Commitment becomes due before independent approach consumes the space/time needed to acquire and settle both workers while retaining the reserve.
 
