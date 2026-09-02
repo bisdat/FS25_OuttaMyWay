@@ -94,7 +94,7 @@ Repeat
 ```
 
 - **Observe:** collect facts before proposing change.
-- **Discuss:** separate observations, interpretations, hypotheses and implementation ideas.
+- **Discuss:** separate facts/observations, interpretations, hypotheses, decisions and implementation ideas.
 - **Hypothesise:** state what is expected and what evidence could disprove it.
 - **Define:** bound the increment so intentional effects are attributable.
 - **Implement:** make the smallest constructive change that tests the hypothesis while preserving architectural intent.
@@ -118,8 +118,6 @@ Normal engineering does not require a canonical ZIP, package fingerprint, candid
 **Canonical** is reserved for a deliberately selected, named, immutable release checkpoint represented by one exact Git commit.
 
 Canonical does not mean a current document, current architecture truth, an accepted PR, current `main`, file freshness or the mandatory starting point for ordinary engineering. Repository responsibility and breadcrumbs identify current architecture authority; accepted `main` supplies its exact content.
-
-The latest owner-declared canonical release remains v0.3.0.0. Current accepted engineering after that checkpoint does not silently create another release.
 
 ### Canonical Merge
 
@@ -176,7 +174,7 @@ Every enduring item has one authoritative home; other documents link rather than
 |---|---|
 | Engineering governance | `ENGINEERING_ARCHITECTURE.md` |
 | Runtime architecture | `RUNTIME_RESPONSIBILITY_ARCHITECTURE.md` and specialised architecture breadcrumbs |
-| Current project continuation | `PROJECT_STATUS.md` and `ENGINEERING_HANDOVER.md` |
+| Existing status and handover material | `PROJECT_STATUS.md` and `ENGINEERING_HANDOVER.md` (under semantic reconciliation) |
 | Current concept state | `CONCEPT_REGISTER.md` |
 | Significant choices and rationale | `DECISION_LOG.md` and ADRs |
 | Evidence and discoveries | `ENGINEERING_JOURNAL.md`, test records and research |
