@@ -18,6 +18,10 @@ How is OuttaMyWay engineered?
 
 → [Engineering governance](ENGINEERING_ARCHITECTURE.md)
 
+What concepts are current?
+
+→ [Current Concept Register](CONCEPT_REGISTER.md)
+
 Where is engineering now?
 
 → [Continuation State](CONTINUATION_STATE.md)

@@ -36,6 +36,12 @@ Semantic reconciliation of the documentation corpus by knowledge responsibility.
   architectural authority.
 - `REPOSITORY_POLICY.json` and `RELEASE_MANIFEST_SHA256.txt` remain in place
   because legacy RRS paths depend on them, pending the explicit tooling audit.
+- The Concept Register is now a replace-in-place current-state index rather than
+  a versioned historical ledger. Concept chronology remains in Git, the Decision
+  Log, ADRs and evidence records; obsolete presence no longer establishes
+  current status, and linked architecture continues to own full semantics.
+- **Concept State Is Not Concept History:** a current-state register replaces a
+  concept's status rather than appending successive historical states.
 
 ## Current boundary
 
@@ -66,12 +72,13 @@ Current implementation-gap hypotheses to verify directly against code are:
 
 ## Next boundary
 
-Reconcile `docs/CONCEPT_REGISTER.md` in place against current accepted
-architecture. Its responsibility remains live — current concept state — but its
-accumulated versioned ledger mixes current, provisional, superseded and historical
-concepts. Preserve decision/evidence provenance elsewhere; make the register
-describe the concepts that are current now. Runtime implementation reconstruction
-remains subsequent work.
+Reconcile `docs/architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md` in place.
+Its architectural responsibility remains live, but the document still contains
+versioned implementation notes, fixture chronology and an old version-bound
+`Current Boundary` mixed with the present-tense representation model. Preserve
+the current representation architecture while relocating or removing historical
+strata according to knowledge responsibility. Runtime implementation
+reconstruction remains subsequent work.
 
 ## Not currently active
 
