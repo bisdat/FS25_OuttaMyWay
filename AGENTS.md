@@ -8,7 +8,7 @@
 - Do not merge pull requests automatically unless the repository owner explicitly instructs you to do so.
 - An ordinary pull-request merge advances Accepted Repository State; it is not canonicalisation.
 - Only a pull request explicitly designated in advance as a **Release Declaration PR** can become canonical. The repository owner's merge of that PR is the **Canonical Merge** and declares the resulting exact `main` commit canonical for its named version.
-- A Git tag, GitHub Release, package or RRS run may record or process release material but does not create canonical authority.
+- A Git tag, GitHub Release or package may record or process release material but does not create canonical authority.
 - Do not change the mod version, canonical labels, release identity, or release manifests unless the task explicitly requires it.
 - Do not infer that a newer branch is more authoritative than the latest owner-accepted state.
 
@@ -84,11 +84,12 @@ Before completing a change:
 - run the repository tests relevant to the changed responsibility;
 - run `git diff --check`;
 - inspect `git status` and the final diff;
-- do not leave temporary files, logs, generated ZIPs, test artefacts, RRS workspaces, or OS/editor files in the repository.
+- do not leave temporary files, logs, generated ZIPs, test artefacts or OS/editor files in the repository.
 
 Do not claim Farming Simulator field/runtime validation unless it was actually performed and the evidence is available. Agent-side syntax/unit/static validation and in-game Reality validation are separate claims.
 
-Do not use the Repository Release System for normal Engineering Increments or canonicalisation. Treat `rrs/` as legacy tooling pending an explicit independent audit, and invoke or modify it only when a task specifically concerns that tooling.
+The Repository Release System is retired and absent from the current working tree.
+Do not reconstruct or reintroduce it without a new explicit engineering decision.
 
 Do not perform test-package production, release packaging, publication validation or external submission unless explicitly requested. Packaging is separate from accepted/canonical source authority.
 
