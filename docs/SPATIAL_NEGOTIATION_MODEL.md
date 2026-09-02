@@ -21,8 +21,8 @@ OuttaMyWay negotiates temporary competition for space. It does not become a rout
 5. **Time consumes options.** Waiting for certainty is not free if native progression is rapidly consuming Resolution Space.
 6. **Actuation is limited.** The architecture must work with the actual controls available: native progression, Regulation/Hold, supported configuration, bounded Passage displacement/recovery and terminal movement.
 7. **Performance is a hard engineering constraint.** Do not require continuous field painting, dense future-route simulation, Successor Rooks or sophisticated articulated swept-volume prediction.
-8. **Existing obligations remain real until discharged.** Physical displacement, configuration and coupled recovery debt cannot be forgotten because the initiating relationship changes.
-9. **The supported concurrency limit is three AI workers.** Bubble-versus-Bubble and arbitrary fleet coordination do not drive the design.
+8. **Existing obligations remain real until discharged.** Physical displacement, configuration and coupled recovery debt cannot be forgotten because initiating geometry changes.
+9. **The supported concurrency limit is three AI workers.** Concurrent coupled resolutions and arbitrary fleet coordination do not drive the design.
 
 ## 3. Assumptions and evidence hierarchy
 
@@ -34,45 +34,94 @@ A worker's **productive-certainty horizon** is the remaining forward interval ov
 
 ### TURNING uncertainty boundary
 
-`TURNING` is primarily an intent-revelation state. Transient turning vectors may support spatial concern or Regulation, but do not by themselves establish Cooperative Passage. Once the worker returns to `isWorking`, A8 certainty is reacquired from the new Reality.
+`TURNING` is primarily an intent-revelation state. Transient turning vectors may support spatial concern or Regulation, but do not by themselves establish Cooperative Passage. Once the worker returns to `isWorking`, A8 certainty is reacquired from the new Reality. Passage foreseeability is not remembered across this productive-certainty boundary.
 
 ### Evidence precedence
 
 Fresh positive Reality outranks historical inference. Sparse demonstrated agronomic progression may adjust confidence if already cheaply available, but the retired Rook/Productive-History machinery is not restored and no reconstructed future route gains governing authority.
 
-## 4. Region A — Native GIANTS operation
+## 4. Three-State Responsibility Model
 
-Region A is the normal and preferred state. Native GIANTS operation continues whenever adequate cooperative futures remain.
+Spatial Negotiation has three high-level responsibilities:
 
-A is an **attractor, not a cooldown**. Every intervention should relinquish to A as soon as its purpose ends, even if A lasts only briefly before fresh Reality independently justifies another intervention.
+```text
+GIANTS AI
+   ↕
+Regulation
+   ↓
+Resolution Commitment
+   ↓
+GIANTS AI
+```
 
-Healthy sequences include `B -> A -> B`, `B -> A -> Passage`, and `Bubble -> A -> new negotiation`.
+The diagram is explanatory, not a mandatory route through a state machine. Fresh Situation Assessment governs each responsibility transition. Direct admission from GIANTS AI to Resolution Commitment is valid when current Reality already supplies the required evidence.
 
-## 5. Region B — Bounded Temporal Regulation
+The responsibilities differ by the authority they hold:
 
-Region B is a **bounded, reversible temporal allocation**. Its purpose is to preserve Resolution Margin and useful intent-revelation time while the parties remain independent.
+- **GIANTS AI** is the default and attractor. OuttaMyWay has no active traffic responsibility merely because workers share an Operation.
+- **Regulation** has weak persistence. It is provisional temporal adjustment and survives only while its explicit current purpose remains justified.
+- **Resolution Commitment** has strong persistence. It survives changing execution evidence while legitimate obligations created or accepted by intervention remain open.
 
-B is admissible when:
+Responsibility stability comes from continuing evidence or obligation, not elapsed-time stickiness. No minimum duration, cooldown, remembered pair relationship or recent-subject rule is architectural authority. Rapid movement from GIANTS AI to Regulation, back to GIANTS AI and then independently to Regulation again is legitimate when each transition is supported by fresh Reality.
 
-- a developing spatial competition is relevant;
-- uncertainty still has material value; and
-- continued native progression is consuming the opportunity to wait safely for better evidence.
+## 5. Continuous Situation Assessment and episodic transition
 
-B controls **time**, not routes. One defensible party is regulated while useful native movement by another party continues. The regulated party is not a permanent loser and B never owns the eventual answer.
+Situation Assessment is continuous. Fresh Reality continually establishes:
 
-### Regulation target selection
+- current worker and Operation relevance;
+- productive certainty and spatial scarcity;
+- current physical state;
+- whether a Regulation purpose remains valid;
+- whether committed obligations remain supportable or have been discharged; and
+- whether authority evidence or hard-safety conditions have changed.
 
-The system does not need a globally optimal yielder. Prefer a temporary allocation that preserves more Resolution Space and useful revelation time. If several choices are adequately viable, use a deterministic tie-break rather than expensive optimisation.
+Responsibility transition is episodic. A strategic responsibility decision occurs when OuttaMyWay acquires or relinquishes Regulation, replaces one Regulation purpose with another, admits or releases Resolution Commitment, or is superseded or escalates. Continuous assessment does not continuously re-decide an existing Resolution Commitment.
 
-Fresh evidence may switch which party should be regulated. Architecturally this is `B1 -> A -> B2`; implementation need not create an artificial native-speed pulse if material new Reality independently justifies the new B in the same assessment cycle.
+### GIANTS AI to and from Regulation
 
-### B authority lifetime
+Regulation may be admitted when current Reality supports bounded temporal adjustment to preserve a relevant time/space opportunity. Supported purposes include allowing native intent to reveal, preserving Resolution Margin, allowing occupied constrained space to reveal or vacate, protecting prospective Passage theatre, and managing an independent third worker where applicable. Spatial scarcity is evidence, not an automatic slowdown trigger.
 
-One provisional temporal allocation has a **bounded uninterrupted authority lifetime**. This is not a solution timeout and expiry does not prove safety, failure or Passage. Expiry ends that actuation and returns authority to A for fresh native sampling. Persistent uncertainty alone cannot justify indefinite Regulation.
+Regulation ends when its temporal purpose is discharged, invalidated or replaced by a fresh responsibility decision. It has no cooldown or residual claim. Intent revelation is a common discharge condition, not the only possible purpose.
 
-Repeated `B -> A -> B` is preferable to a soft lock. Repeated B does not force Passage merely to escape oscillation.
+One Regulation purpose must not silently mutate into another. The old Regulation ends, fresh Situation Assessment occurs, and a newly justified Regulation is admitted independently. This can happen effectively immediately and need not create an artificial native-speed pulse.
 
-## 6. Spatial constraint overlay
+### Admission of Resolution Commitment
+
+Regulation does not mutate into Resolution Commitment. At Regulation's decision point, provisional authority is relinquished; fresh Situation Assessment must then independently admit Resolution Commitment. For Cooperative Passage, fresh Passage and capture evidence must still satisfy the commitment conditions below.
+
+Regulation is not a mandatory precursor. Fresh Reality may justify direct admission from GIANTS AI to Resolution Commitment.
+
+### Release of Resolution Commitment
+
+Resolution Commitment is not downgraded to Regulation merely because observations or execution geometry change. It completes with adapted bounded execution, continues, fails, is superseded, loses its governing basis, or escalates. Only after it legitimately ends may fresh Situation Assessment admit Regulation again.
+
+When all required obligations are discharged and temporary responsibility is relinquished, assessment returns immediately to GIANTS AI. For Cooperative Passage this is Last-Handoff Dissolution; physical crossing alone is not completion.
+
+## 6. GIANTS AI responsibility
+
+GIANTS AI is normal operation, needs no special justification, and retains ownership of AI jobs, productive routing/navigation, native turning, productive work and ordinary worker continuation.
+
+Every OuttaMyWay intervention relinquishes to fresh GIANTS AI assessment as soon as its responsibility ends, even if native responsibility lasts only briefly before new evidence supports another intervention.
+
+## 7. Regulation responsibility
+
+Regulation is **bounded, reversible temporal adjustment**. It changes timing, not productive routes. Its purpose is to preserve useful time/space, Resolution Margin, intent-revelation opportunity or future resolution theatre while workers remain independent.
+
+Regulation does not own the eventual resolution or create a persistent Resolution Commitment. It must have an explicit current temporal purpose and carries no authority after that purpose ends. Reality may reveal enough information for Regulation to be extremely brief.
+
+Regulation is admissible when developing spatial competition is relevant, uncertainty or preserved theatre still has material value, and continued native progression is consuming the opportunity to wait safely for better evidence or execution space.
+
+One defensible party is regulated while useful native movement by another continues. The regulated party is not a permanent loser. Prefer an allocation that preserves more Resolution Space and useful revelation time; when several choices are adequately viable, use a deterministic tie-break rather than expensive optimisation.
+
+Intent-Revelation Creep and third-worker Bullet Time retain the exact **1 km/h** architectural policy where applicable. This literal is fixed policy for those responsibilities, not a general tuning parameter.
+
+## 8. Persistence by responsibility
+
+State may persist only because a real architectural responsibility survives the current observation. Legitimate persistent state includes Operation identity, Job Episode identity, Physical Assembly identity and explicitly stable cached capability/representation knowledge, current Regulation allocation for its bounded temporal lifetime, Resolution Commitment, Bubble membership while Cooperative Passage commitment exists, and restoration/recovery/handback debt created by intervention.
+
+Transient `TURNING` geometry, stale prospective Passage or guide geometry, historical pair relationship, a prior Regulation subject and Passage foreseeability beyond its productive-certainty boundary gain no persistent authority merely because they were once observed. This rule does not require a generic persistent knowledge object.
+
+## 9. Spatial constraint overlay
 
 The Field World supplies environmental evidence about local option-space scarcity.
 
@@ -80,15 +129,15 @@ The Field World supplies environmental evidence about local option-space scarcit
 - **Category 2 — headland/boundary:** materially constrained, but less severe than a corner.
 - **Open field:** comparatively generous Resolution Space.
 
-Entering a zone does **not** itself trigger Regulation.
+Entering a zone does not itself trigger Regulation.
 
 ### One worker inside, one outside
 
-Constrained-space occupancy creates an **evacuation preference**. If worker A occupies a constrained zone and relevant worker B remains in less-constrained space, preserve A's native opportunity to reveal intent and vacate; regulate B where necessary. Do not immobilise the party that must move to free scarce space when another party can cheaply wait outside it.
+Constrained-space occupancy creates an **evacuation preference**. If one worker occupies a constrained zone and a relevant worker remains in less-constrained space, preserve the occupant's native opportunity to reveal intent and vacate; regulate the outside worker where necessary. Do not immobilise the party that must move to free scarce space when another party can cheaply wait outside it.
 
 ### Neither worker inside, both approaching
 
-Choose the provisional allocation that preserves more Resolution Margin and intent-revelation time. Do not reduce this to "more in-field", agronomy, leader/follower identity or nearest-to-corner priority.
+Choose the provisional allocation that preserves more Resolution Margin and intent-revelation time. Do not reduce this to in-field position, agronomy, leader/follower identity or nearest-to-corner priority.
 
 ### Both workers already inside Category 1
 
@@ -96,127 +145,128 @@ This is a degraded-entry condition the normal architecture should try to prevent
 
 Spatial precedence is temporary and evidence-based.
 
-## 7. Phase 1 Cooperative Passage identification
+## 10. Cooperative Passage foreseeability
 
-Passage remains a separate lifecycle from Region B. Many Regulation episodes never require coupling; many straightforward head-on Passages require no prior B.
+Cooperative Passage is a Resolution Commitment, distinct from Regulation. Many Regulation episodes never require coupling, and many straightforward head-on Passages require no prior Regulation.
 
-Phase 1 may identify **foreseeable Passage** at large separation when all of the following are positively supported:
+Passage may be identified as **foreseeable** at large separation when all of the following are positively supported:
 
 1. both workers are A8-valid (`isWorking`);
 2. their productive directions are substantially opposed;
 3. their represented productive corridors genuinely compete rather than merely being adjacent; and
 4. the prospective encounter occurs before either worker's productive-certainty horizon expires.
 
-If one worker must reach a headland/transition first, current A8 evidence does not predict Passage through that future turn. When TURNING begins, uncertainty reasoning and Region B become the appropriate tools if Resolution Margin is being consumed.
+If one worker must reach a headland or transition first, current A8 evidence does not predict Passage through that future turn. When `TURNING` begins, uncertainty reasoning and Regulation are appropriate only if a current temporal purpose exists, such as Resolution Margin being consumed.
 
-Phase 1 is an assessment conclusion, not an obligation. It may disappear immediately when fresh Reality invalidates any of its evidence.
+Foreseeability is an assessment conclusion, not an obligation. It disappears when fresh Reality invalidates its evidence and is not remembered across a productive-certainty boundary.
 
-## 8. Tactical Region B for a foreseeable Passage
+### Tactical Regulation for foreseeable Passage
 
-A foreseeable Passage may be identified long before commitment. Region B may independently shape its timing when the natural encounter would occur in a poor execution theatre.
+Regulation may independently shape a foreseeable Passage's timing when the natural encounter would occur in poor execution theatre. Suitable theatre must support the **complete downstream Passage lifecycle**, including post-crossing Alignment Runout, Axis Settlement/Return where required, restoration and GIANTS handback.
 
-The target is not a prettier crossing point. A suitable Passage theatre must support the **complete downstream Passage lifecycle**, including post-crossing Alignment Runout, Axis Settlement/Return where required, restoration and GIANTS handback.
+For an opposed A8 pair, changing one worker's progression changes the prospective encounter position. Regulation may move it into a viable encounter interval where both participants retain sufficient downstream space. Stop shaping once Passage is sufficiently viable; least intervention wins.
 
-For an opposed A8 pair, changing one worker's progression changes the prospective encounter position. Tactical B may therefore move the encounter into a **viable encounter interval** where both participants retain enough downstream space. Stop shaping once the Passage is sufficiently viable; least intervention wins.
+If shaping moves the encounter beyond either productive-certainty horizon, the forecast legitimately disappears and fresh Situation Assessment takes over. Regulation is never obliged to preserve Passage.
 
-If tactical B moves the encounter beyond either productive-certainty horizon, the current Passage forecast legitimately disappears. The worker reaches TURNING uncertainty and fresh Situation Assessment takes over. B is never obliged to preserve Passage.
+## 11. Passage reserve and commitment
 
-## 9. Passage reserve and time-aware Bubble commitment
+The existing nine-phase Passage architecture remains a strong mechanical donor. Retain the empirical Entry-space construction unless Reality disproves it. Current implementation approximately reserves represented forward physical extents, `2 x Development` longitudinal space, and the existing coarse **3 m Passage Entry Control Allowance**.
 
-The existing nine-phase Passage architecture remains a strong donor. In particular, retain the empirical Entry-space construction unless Reality disproves it. Current implementation approximately reserves:
+This is a control-acquisition/spatial reserve, not a GIANTS braking model. Do not add longitudinal Transit prediction or sophisticated articulation modelling. Existing represented geometry plus the approximately 1 m nominal Passage-clearance policy remains sufficient until field Reality demonstrates otherwise. If longer assemblies later need more clearance, adjust clearance policy before introducing a dynamics model.
 
-- represented forward physical extents;
-- `2 x Development` longitudinal space; and
-- the existing coarse **3 m Passage Entry Control Allowance**.
-
-This is a control-acquisition/spatial reserve, not a GIANTS braking model.
-
-Do not add longitudinal Transit prediction or sophisticated articulation modelling. Existing represented geometry plus the approximately 1 m nominal Passage-clearance policy remains sufficient until field Reality demonstrates otherwise. If longer assemblies later need more clearance, the clearance policy may be adjusted before introducing a dynamics model.
-
-### Capture margin
-
-For a foreseeable Passage, distinguish:
-
-- the **required Passage reserve** that must remain after capture so the known Passage mechanism can execute; and
-- the **disposable native approach margin** above that reserve.
-
-Time replaces the old universal-distance intuition. Current closing speed determines how rapidly the disposable margin is being consumed. Bubble commitment becomes due before continued native approach would consume the space/time needed to acquire and settle both workers while leaving the Passage reserve intact.
+For foreseeable Passage, distinguish the **required Passage reserve** that must remain after capture from the **disposable native approach margin** above it. Current closing speed determines how rapidly disposable margin is consumed. Commitment becomes due before independent approach consumes the space/time required to acquire and settle both workers while retaining the Passage reserve.
 
 Configuration **duration** is not part of pre-commit lead time because closing progression is controlled after capture. Realised Transit **geometry** may affect Development and downstream Passage geometry after capture.
 
-The historical 80 m locality literal is not an architectural commitment rule. It remains retained implementation baggage pending the later implementation tranche.
+The historical 80 m locality literal is not an architectural commitment rule. It remains retained implementation baggage pending the later implementation tranche and must not be replaced by another universal distance literal.
 
-## 10. Bubble Formation and Resolution Epoch
+## 12. Resolution Commitment
 
-A Bubble forms only at **committed Cooperative Passage**, not at initial foreseeability and not because Region B exists.
+Resolution Commitment begins when OuttaMyWay accepts a durable obligation to complete a resolution. Its generic lifecycle is obligation-led:
 
-At commitment:
+```text
+admission
+→ obligations created
+→ bounded execution + fresh observation
+→ obligations progressively discharged
+→ responsibility relinquished
+```
 
-- fresh Phase-1 evidence still supports Passage;
-- the required Passage reserve remains viable;
-- continued independent approach is approaching the latest safe capture point; and
-- the pair accepts jointly dependent persistent Passage obligations.
+It persists while legitimate obligations remain open, owns obligations created by intervention, and may adapt execution to fresh Reality. It does not preserve a forecast or geometry merely because that evidence justified admission.
+
+Legitimate ends are completion (obligations positively discharged), failure (no longer safely or legitimately dischargeable within supported authority), supersession (higher-authority responsibility takes ownership), governing-basis cessation (for example Operation or Job Episode termination), or escalation to the player when autonomous supported resolution is exhausted.
+
+Stale original geometry, an invalid original guide or the existence of a preferable manoeuvre is not by itself failure or supersession. Legitimate player takeover or authoritative source-intent replacement may supersede commitment; escalation is distinct from player supersession. The architecture does not require a generic controller-phase or terminal enum to express this lifecycle.
+
+### Commitment remembers obligations, not predictions
+
+Admission evidence may establish commitment, but its predictions do not automatically gain persistent authority. For Cooperative Passage, the Passage obligation is sticky while realised execution geometry remains adaptive. Stale early guides have no independent authority; execution reacts to fresh Reality until local physical-leg commitment makes a particular action physically authoritative. Hard safety remains authoritative throughout.
+
+### Intervention debt
+
+A Resolution Commitment owns restoration, recovery or handback debt only when OuttaMyWay's intervention created that debt. This may include configuration restoration, controlled displacement recovery, Axis Return where applicable, and authority handback. It does not require OuttaMyWay to reconstruct every pre-existing imperfection or articulation state in Reality.
+
+## 13. Cooperative Passage commitment and Bubble
+
+Resolution Commitment is broader than Bubble:
+
+```text
+Resolution Commitment
+    |
+    +-- Cooperative Passage
+    |       |
+    |       +-- Bubble
+    |
+    +-- Terminal Resolution
+            |
+            +-- no Bubble required
+```
+
+A **Bubble** is specifically the coupled pairwise context created by a Cooperative Passage Resolution Commitment. It forms only at committed Passage, not at initial foreseeability or because Regulation exists.
+
+At commitment, fresh Passage evidence must still support Passage, the required Passage reserve must remain viable, continued independent approach must be approaching the latest safe capture point, and the pair must accept jointly dependent persistent Passage obligations.
 
 The Resolution Epoch begins at Bubble Formation.
 
-## 11. Committed Passage: persistent obligation, adaptive geometry
+Bubble owns only what the committed coupled resolution requires: Passage participants, coupled obligations, Resolution Epoch and third-party protection scope, and Last-Handoff Dissolution. It is not permanent pair history, future-route ownership, permanent right-of-way or a relationship surviving dissolution.
 
-Once the Bubble commits, the **full Cooperative Passage obligation persists through completion** unless fresh physical evidence makes safe continuation unsupported.
+## 14. Committed Passage execution
 
-The obligation is sticky; the geometry is not.
+The full Cooperative Passage obligation persists through completion unless fresh physical evidence makes safe continuation unsupported. The obligation is sticky; the geometry is not.
 
-Persist through the Bubble:
+Persist through the Bubble: coupled membership and joint Passage responsibility, required Bubble Protection, configuration/restoration debt actually created by Passage, and safe completion through final-participant handback.
 
-- coupled membership and joint Passage responsibility;
-- required Bubble Protection;
-- configuration/restoration debt actually created by Passage;
-- safe completion through final participant handback.
+Remain Reality-sensitive: realised Transit width and natural separation, actual clearance deficit, Development burden, execution origin, exact guide geometry and lateral allocation until the relevant physical leg begins, and recovery debt derived from the manoeuvre actually executed.
 
-Remain Reality-sensitive:
+The existing Phase-5 Transit/settlement boundary is the natural donor for reality-verified execution geometry. A stale preliminary guide must not survive contrary realised geometry. Once a physical leg begins, its local execution choice should normally remain stable to avoid unsafe oscillation.
 
-- realised Transit width and natural separation;
-- actual clearance deficit;
-- Development burden;
-- execution origin;
-- exact guide geometry and lateral allocation until the relevant physical leg begins;
-- recovery debt derived from the manoeuvre actually executed.
+Passage recovery remains part of the coupled obligation. Physical crossing alone is not settlement or completion.
 
-The existing Phase-5 Transit/settlement boundary is the natural donor for reality-verified execution geometry. A stale preliminary guide must not survive contrary realised geometry. Once a physical leg begins, its local execution choice should normally remain stable to avoid oscillation.
+## 15. Third-worker serialization and Bullet Time
 
-Passage recovery remains part of the coupled obligation. Physical crossing alone is not settlement.
+Before Cooperative Passage commitment all three workers remain independent. If an independent third worker is consuming foreseeable Passage theatre, Regulation may manage it before commitment. If it already materially occupies spatial demand essential to a proposed coupled resolution, commitment is not admissible; independent ordering must first make that space available.
 
-## 12. Third-worker composition and Bullet Time
+At Bubble Formation, any independent third active AI Traffic Party immediately enters the fixed **1 km/h Bullet Time** defined by D-0202. No external worker means no actuation; an independent external worker means exactly 1 km/h for the Resolution Epoch.
 
-Before Bubble Formation all three workers remain independent. If a third worker L is consuming the foreseeable J/K Passage theatre, ordinary Region B may regulate L before commitment. If L already materially occupies spatial demand essential to J/K's proposed coupled resolution, J/K Bubble Formation is not yet admissible; independent ordering must first make that space available.
+During the Resolution Epoch, the third worker remains physically and semantically independent, its Reality continues to be observed, developing relationships with either Bubble participant are deferred rather than independently negotiated, and the Bubble owns the decision horizon until its committed resolution is discharged. Unexpected hard-safety evidence remains authoritative.
 
-At Bubble Formation, any independent third active AI Traffic Party immediately enters the fixed **1 km/h Bullet Time** defined by D-0202.
+Bullet Time does not solve the third worker. It prevents concurrent relationship negotiation from forcing another resolution while the Bubble completes.
 
-The speed literal is fixed. What adapts is applicability: no external worker means no actuation; an independent external worker means 1 km/h for the Resolution Epoch.
+## 16. Last-Handoff Dissolution and GIANTS handback
 
-During the Resolution Epoch:
+The Bubble dissolves immediately after the **last participant is handed back to GIANTS AI**. There is no distance tail, arbitrary timeout, relationship-settlement delay, cooldown or surviving Bubble memory.
 
-- the third worker remains physically and semantically independent;
-- its Reality continues to be observed;
-- developing J/L or K/L relationships are **deferred**, not independently negotiated;
-- the active Bubble owns the decision horizon until its committed resolution is discharged.
+Fresh GIANTS AI assessment then determines any subsequent responsibility involving former Bubble participants and the third worker. Native responsibility may be transient.
 
-Bullet Time does not solve the third worker. It prevents the third worker from forcing concurrent resolution while the Bubble completes.
+## 17. Terminal Resolution
 
-Unexpected hard safety evidence still outranks persistence; fail safe rather than permit physical contact.
+Existing bounded Terminal Courtesy/egress is a separate possible Resolution Commitment. Completed or stationary assemblies have real Occupancy Demand but do not automatically create a Bubble because they do not acquire Cooperative Passage's coupled pairwise obligations.
 
-## 13. Bubble dissolution
-
-The Bubble dissolves immediately after the **last participant is handed back to GIANTS AI**. There is no distance tail, arbitrary timeout, relationship-settlement delay or cooldown.
-
-Fresh Region A assessment then determines any subsequent B or Passage relationship involving the former Bubble members and the third worker. A may be transient.
-
-## 14. Terminal occupancy
-
-Existing bounded Terminal Courtesy/egress remains a separate responsibility. Completed/stationary assemblies have real Occupancy Demand but do not automatically create a Bubble because they do not acquire the jointly dependent persistent Passage obligations described above.
+Mechanical or physical completion conditions such as folding, unfolding, settling, restoration or movement completion belong to their resolution/control responsibilities. A commitment simply remains open until its required obligations are discharged. Intent revelation instead belongs to Regulation when temporary adjustment is required to expose useful native intent. Neither concern requires a generic architectural waiting lifecycle.
 
 Player intervention remains the final supported escalation when no safe bounded terminal or traffic resolution exists.
 
-## 15. Evidence that shaped this model
+## 18. Evidence that shaped this model
 
 ### TS004 repeatable two-worker laboratory
 
@@ -236,22 +286,28 @@ TS016 visually showed Condor and Patriot both vectoring at high speed toward the
 
 These observations support option-space preservation rather than collision prediction.
 
-## 16. Explicit non-goals / retained boundaries
+## 19. Explicit non-goals and retained boundaries
 
 Do not, without new evidence:
 
 - replace 80 m with another universal distance literal;
 - create a numeric collision-probability engine;
 - restore continuous Productive History, Successor Rooks or dense geometry sampling;
-- promote transient TURNING vectors into Passage authority;
-- make Region B a mandatory Passage precursor;
-- plan immutable Passage geometry in Region B;
+- promote transient `TURNING` vectors into Passage authority;
+- make Regulation a mandatory Passage precursor;
+- plan immutable Passage geometry during Regulation;
 - search for a globally optimal Regulation winner when multiple viable allocations exist;
-- vary the 1 km/h Bullet-Time literal or optimise its cadence;
-- design Bubble-versus-Bubble behaviour for the three-worker supported envelope;
+- vary the 1 km/h Intent-Revelation Creep/Bullet-Time literal or optimise its cadence;
+- establish Traffic Policeman, Operational Picture Knowledge, Candidate Action Space or Mandatory Constraints as required named subsystems;
+- make Encounter a persistent relationship;
+- restore King, King Reserve or Refuge concepts;
+- suppress evidence-supported responsibility changes with arbitrary anti-oscillation stickiness;
+- design concurrent coupled resolutions for the three-worker supported envelope; or
 - expand into same-agronomy fleet coordination or more than three simultaneous AI workers.
 
-## 17. Implementation gate
+Absence of a named subsystem does not remove underlying safety or admissibility constraints.
+
+## 20. Implementation gate
 
 No runtime implementation is authorised by this candidate. After owner canonicalisation and the proposed workflow discussion, the next engineering activity should map this operating model against the existing v0.2.0.0 code responsibilities and select the smallest falsifiable tranche.
 
