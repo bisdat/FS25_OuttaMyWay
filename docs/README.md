@@ -18,6 +18,10 @@ How is OuttaMyWay engineered?
 
 → [Engineering governance](ENGINEERING_ARCHITECTURE.md)
 
+Where is engineering now?
+
+→ [Continuation State](CONTINUATION_STATE.md)
+
 ## Documentation currently being reconciled
 
 The existing documentation corpus is undergoing semantic reconciliation.
