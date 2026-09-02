@@ -57,8 +57,12 @@ Current implementation-gap hypotheses to verify directly against code are:
 
 ## Next boundary
 
-Verify the inherited runtime's responsibilities and donor mechanisms directly
-against live code Reality before selecting a bounded implementation increment.
+Continue responsibility triage of the remaining unreconciled documentation
+surface. Archive documents whose present-tense responsibility is stale; reconcile
+live responsibilities with stale accumulated content in place; and classify
+evidence, history and tooling material separately by their actual knowledge
+responsibility. Runtime implementation reconstruction from code Reality remains
+subsequent work, not the current engineering increment.
 
 ## Not currently active
 
