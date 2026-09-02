@@ -291,7 +291,22 @@ Publication acceptance neither creates nor revokes canonical source authority. P
 
 Tooling enforces selected properties; it does not define architecture or confer repository authority. A passing tool cannot prove that an architecture is correct, and a check that is not automated remains an engineering obligation.
 
-The Repository Release System authority architecture is retired. Its implementation remains as legacy tooling pending an independent KEEP/MERGE/EXTRACT/DELETE audit. It is not used for normal Engineering Increments or Canonical Merge, and no RRS run can declare canonical authority.
+The Repository Release System authority architecture is retired. By owner decision,
+the RRS implementation and its repository-specific policy and manifest have been
+removed from the current working tree. Ordinary Engineering Increments and
+Canonical Merge do not depend on RRS. Git history retains the historical mechanism
+and artefacts; no historical RRS record can confer current repository authority.
+
+### Retired Tooling Dependency Does Not Preserve Artefact Responsibility
+
+Tooling that no longer has current operational responsibility cannot force obsolete
+repository artefacts to remain merely because it references their paths. Once the
+tool itself is retired, its implementation, generated artefacts and
+repository-specific policy inputs may be removed when they have no independent
+current responsibility. Git owns the historical implementation and historical input
+state, and historical records may continue to mention RRS without creating current
+tooling authority. Retired tooling must not be silently reconstructed or
+reintroduced into ordinary engineering without a new explicit engineering decision.
 
 ## Human review and traceability
 

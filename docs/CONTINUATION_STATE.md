@@ -34,11 +34,11 @@ Semantic reconciliation of the documentation corpus by knowledge responsibility.
 - `PROJECT_VISION.md` and `LOCALISATION.md` remain live product-policy documents.
 - Evidence and research records remain evidence rather than current
   architectural authority.
-- `REPOSITORY_POLICY.json` and `RELEASE_MANIFEST_SHA256.txt` remain physically
-  present in this repository state, but the owner has selected them for
-  retirement in the next separate bounded increment. Legacy RRS path dependency
-  no longer grants them continuing repository responsibility; the retained RRS
-  implementation and its tooling audit remain separate.
+- Owner-selected RRS retirement is complete. `rrs/`,
+  `docs/REPOSITORY_POLICY.json` and `docs/RELEASE_MANIFEST_SHA256.txt` are absent
+  from the working tree; Git retains their historical state. Legacy RRS path
+  coupling no longer exists as a live repository constraint, and no RRS audit
+  remains pending.
 - The Concept Register is now a replace-in-place current-state index rather than
   a versioned historical ledger. Concept chronology remains in Git, the Decision
   Log, ADRs and evidence records; obsolete presence no longer establishes
@@ -75,19 +75,16 @@ Current implementation-gap hypotheses to verify directly against code are:
 
 ## Next boundary
 
-Retire `docs/RELEASE_MANIFEST_SHA256.txt` and
-`docs/REPOSITORY_POLICY.json` from the working tree in one isolated increment.
-The repository owner has explicitly withdrawn their continuing repository
-responsibility; legacy RRS path dependency does not preserve that responsibility.
-Keep the retained RRS implementation and its independent tooling audit separate.
-After that bounded cleanup, resume documentation reconciliation with
-`docs/architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md`. Runtime
-implementation reconstruction remains subsequent work.
+Reconcile `docs/architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md` in place
+by knowledge responsibility. Preserve its live present-tense representation
+architecture while reconciling versioned implementation notes, fixture chronology,
+prototype strata and the old version-bound `Current Boundary`. Runtime
+implementation reconstruction remains subsequent work; do not begin it as part of
+the documentation reconciliation.
 
 ## Not currently active
 
 - Runtime implementation changes.
 - Release preparation or canonicalisation.
 - Final historical placement or disposition of the old status and handover ledgers.
-- RRS tooling audit.
 - Broad documentation filesystem reorganisation.

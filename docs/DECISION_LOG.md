@@ -1,3 +1,15 @@
+## D-0209 — Retire the Repository Release System
+
+**Status:** Accepted owner disposition.
+
+**Decision:** The owner selected DELETE for the legacy Repository Release System.
+Remove `rrs/`, `docs/REPOSITORY_POLICY.json` and
+`docs/RELEASE_MANIFEST_SHA256.txt` from the current working tree without
+archiving them. Git retains their historical implementation, inputs and provenance.
+Current engineering and canonicalisation remain governed by Git, pull-request review
+and Canonical Merge rather than RRS. Archived and historical RRS references remain
+history, not authority.
+
 ## D-0208 — Third-Party Serialization Across Bubble Formation (v0.3.0.0 candidate)
 
 **Status:** Accepted for canonical-candidate consolidation; runtime not implemented.
