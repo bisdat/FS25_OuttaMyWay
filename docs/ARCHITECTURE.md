@@ -2092,16 +2092,19 @@ Implementation must proceed separately from architecture and should begin with:
 
 Numerical thresholds, Native Continuation Speed estimation, Reverse Actuation Discovery and exact capability adapters remain implementation or empirical discoveries. They may refine implementation without altering the ownership and lifecycle model unless Reality disproves it.
 
-## 21. Normative companion contracts
+## 21. Historical companion contracts
 
-Implementation must also conform to:
+The replacement-core implementation was developed against:
 
-- `ARCHITECTURE_CONFORMANCE_MATRIX.md`;
-- `COMMITMENT_STATE_MACHINE.md`;
-- `CANDIDATE_ACTION_CONTRACT.md`;
-- `RESPONSIBILITY_MAP.md`;
-- `REPLAY_VALIDATION_SPECIFICATION.md`;
+- [`ARCHITECTURE_CONFORMANCE_MATRIX.md`](archive/replacement-core/ARCHITECTURE_CONFORMANCE_MATRIX.md);
+- [`COMMITMENT_STATE_MACHINE.md`](archive/replacement-core/COMMITMENT_STATE_MACHINE.md);
+- [`CANDIDATE_ACTION_CONTRACT.md`](archive/replacement-core/CANDIDATE_ACTION_CONTRACT.md);
+- [`RESPONSIBILITY_MAP.md`](archive/replacement-core/RESPONSIBILITY_MAP.md);
+- [`REPLAY_VALIDATION_SPECIFICATION.md`](archive/replacement-core/REPLAY_VALIDATION_SPECIFICATION.md);
 - `MIGRATION_PLAN.md`;
 - `REMOVAL_REGISTER.md`.
 
-These documents refine implementation proof and migration discipline. They do not introduce another architectural subsystem.
+The archived documents preserve historical lineage rather than current
+architectural authority. The remaining migration documents refine
+implementation proof and migration discipline; they do not introduce another
+architectural subsystem.

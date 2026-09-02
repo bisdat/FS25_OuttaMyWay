@@ -197,6 +197,13 @@ The development repository may be richer than an external publication package. I
 
 Every first-class document has a focused responsibility and a discoverable breadcrumb. Current architecture documents express present responsibility without claiming per-file canonical status. Historical records preserve provenance; compatibility documents preserve routes; archived material preserves knowledge without current authority.
 
+**Archive Is a Transition, Not a Cemetery.** A current document retains a
+present-tense responsibility. Once superseded, it may be archived temporarily
+only while knowledge reconciliation, dependency closure or reference repair
+still requires the file itself. After those purposes are exhausted, remove the
+file from the working tree; Git retains its history. The archive is not a
+permanent retention requirement.
+
 Document lifecycle and authority should be visible through responsibility and navigation, not a rolling version header in every file. Git provides chronology. Removing development history for an external publication is a publication choice, not a reason to erase it from the engineering repository.
 
 ## Concept governance

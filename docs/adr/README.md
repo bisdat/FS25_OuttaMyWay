@@ -19,9 +19,9 @@ Architectural Decision Records preserve why significant choices were made. Statu
 - [ADR-0016 — Settled-Pose Transition Frame Closure](ADR-0016-settled-pose-transition-frame.md) — Accepted and runtime-supported
 - [ADR-0017 — Manoeuvre-Leg Orientation and Counterfactual Hold Release](ADR-0017-manoeuvre-leg-orientation-counterfactual-hold-release.md) — Orientation accepted; final speed/release implementation rejected
 - [ADR-0018 — Architecture Consolidation and Experimental Reset](ADR-0018-architecture-consolidation-experimental-reset.md) — Accepted; canonical v4.6.71 consolidation authority
-- [ADR-0019 — Replacement-Core Commitment Lifecycle and Obligation Continuity](ADR-0019-replacement-core-commitment-lifecycle.md) — Accepted; owner-declared canonical in v4.6.78
+- [ADR-0019 — Replacement-Core Commitment Lifecycle and Obligation Continuity](ADR-0019-replacement-core-commitment-lifecycle.md) — Historical accepted decision provenance; owner-declared canonical in v4.6.78, not current architectural authority
 
-- [ADR-0020 — Replacement-Core Implementation Series](ADR-0020-replacement-core-implementation-series.md) — Accepted; implemented by v4.7.0 bootstrap
+- [ADR-0020 — Replacement-Core Implementation Series](ADR-0020-replacement-core-implementation-series.md) — Historical accepted decision provenance; implemented by v4.7.0 bootstrap, not current architectural authority
 - [ADR-0021 — Field World Equivalence Authority](ADR-0021-field-world-equivalence-authority.md) — Accepted architecture; implementation pending
 - [ADR-0022 — Bounded Native Intent Revelation](ADR-0022-bounded-native-intent-revelation.md) — Accepted architecture; live-supported for Condor by v4.7.26 evidence; production implementation pending
 - [ADR-0023 — Traffic Policeman and Encounter-Relative Movement Priority](ADR-0023-traffic-policeman-movement-priority.md) — Accepted architectural concept/refinement; documentation-only; production implementation absent

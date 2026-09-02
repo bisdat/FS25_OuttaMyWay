@@ -4,23 +4,32 @@ From the owner-declared v4.7.128 canonical baseline onward, release identity use
 
 This versioning policy is release governance only and does not alter architecture or runtime behaviour.
 
-## v4.7.0 replacement-core implementation authority
+## v4.7.0 replacement-core implementation lineage
 
-Canonical v4.6.78 remains the closed replacement-core foundation. Later architecture may change only through an explicit evidence-backed owner decision and ADR; ADR-0021 is the sole bounded extension currently accepted. Active v4.7.x code implements the resulting architecture directly. Archived v4.6.78 scripts have empirical and historical value only and may not be sourced by the active runtime. Implementation difficulty is classified as implementation defect, adapter gap, evidence gap, unsupported capability or apparent architecture contradiction; only the last category stops for explicit owner review.
+Canonical v4.6.78 established the closed replacement-core foundation. Active
+v4.7.x code inherited implementation from that lineage, but its persistence does
+not preserve the superseded documentation's architectural authority. Archived
+v4.6.78 scripts have empirical and historical value only and may not be sourced
+by the active runtime.
 
 # Engineering Handbook
 
-## v4.6.78 replacement-core authority note
+## v4.6.78 replacement-core lineage note
 
-The Handbook preserves accumulated engineering history and explanatory material. Current normative driving-system authority resides in:
+The Handbook preserves accumulated engineering history and explanatory material. Current accepted system architecture is routed through
+[`docs/architecture/README.md`](architecture/README.md).
 
-- `ARCHITECTURE.md`;
-- `ARCHITECTURE_FLOW.md`;
-- `DESIGN.md`;
-- ADR-0019;
-- ADR-0021 for Field World Equivalence Authority.
+The historical v4.6.78 replacement-core lineage comprised:
 
-Where older chapters describe Negotiation Manager, Permission Gate or controller-specific lifecycle ownership, treat those sections as historical explanation rather than the current replacement-core contract.
+- [`ARCHITECTURE.md`](ARCHITECTURE.md);
+- [`ARCHITECTURE_FLOW.md`](archive/replacement-core/ARCHITECTURE_FLOW.md);
+- [`DESIGN.md`](archive/replacement-core/DESIGN.md);
+- [ADR-0019](adr/ADR-0019-replacement-core-commitment-lifecycle.md);
+- [ADR-0021](adr/ADR-0021-field-world-equivalence-authority.md) for Field World Equivalence Authority.
+
+These sources and older chapters that describe Negotiation Manager, Permission
+Gate or controller-specific lifecycle ownership are historical explanation, not
+current architectural authority.
 
 The current core is organised around Situation Assessment, Decision, Commitment, explicit Obligation ownership, bounded Control and observed terminal settlement.
 

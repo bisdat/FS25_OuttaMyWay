@@ -17,14 +17,24 @@ Semantic reconciliation of the documentation corpus by knowledge responsibility.
 - Canonicalisation is a separate, deliberate Release Declaration process.
 - `docs/PROJECT_STATUS.md` and `docs/ENGINEERING_HANDOVER.md` are historical ledgers, not current continuation authority.
 - This documentation-reconciliation work has selected no runtime behaviour change.
+- `DESIGN.md` and the identified replacement-core contract family have been
+  semantically classified as historical lineage and moved into transitional
+  archive staging.
+- Obsolete live implementation does not preserve superseded documentation's
+  architectural authority. Mutual consistency between the two is not current
+  validation.
+- Archived files remain candidates for deletion after knowledge harvesting and
+  reference/dependency closure; Git is the permanent historical record.
 
 ## Current boundary
 
-Continue semantic classification of the unreconciled documentation corpus. Determine which knowledge remains current, which is evidence or history, which belongs in another authoritative home, and which can eventually be retired. Do not classify documents from filenames alone.
+Continue semantic classification of the unreconciled documentation corpus. Determine which knowledge remains current, which is evidence or history, which belongs in another authoritative home, and which can eventually be retired. Do not classify documents from filenames alone. No runtime behaviour change is active.
 
 ## Next boundary
 
-The next planned semantic investigation is `docs/DESIGN.md`: harvest any durable contracts or knowledge first, then determine whether the file still owns a unique present-tense responsibility. This Continuation State does not pre-decide its disposition.
+The next semantic boundary is `docs/ARCHITECTURE_CODE_ALIGNMENT.md`. Audit it
+to harvest genuinely current v0.3 architecture-versus-implementation-gap
+knowledge before classifying its accumulated historical alignment ledger.
 
 ## Not currently active
 
