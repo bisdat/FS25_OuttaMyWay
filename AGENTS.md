@@ -40,7 +40,7 @@ A failed hypothesis or test is evidence, not wasted work. Record what was learne
 
 ## Current architectural authority
 
-Before changing runtime behaviour, start with `docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`, then read specialised architecture such as `docs/architecture/SPATIAL_NEGOTIATION_MODEL.md` and applicable current decision/status material. Treat historical documents as evidence/provenance where they conflict with current accepted architecture.
+Before changing runtime behaviour, start with `docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`, then read specialised architecture such as `docs/architecture/SPATIAL_NEGOTIATION_MODEL.md`, `docs/CONTINUATION_STATE.md` and applicable current decision material. Treat historical documents as evidence/provenance where they conflict with current accepted architecture.
 
 Preserve these standing constraints unless an explicit architectural decision changes them:
 
@@ -69,7 +69,7 @@ Protect document responsibilities so documentation does not become another chang
 - architecture documents: current system responsibilities and concepts;
 - decision records/log: durable decisions and rationale;
 - engineering journal/research: observations, discoveries, failed hypotheses and evolution;
-- project status/handover: current continuation point;
+- `docs/CONTINUATION_STATE.md`: current, replace-in-place engineering continuation point;
 - changelog: release history and externally meaningful change chronology.
 
 Prefer one authoritative home for each piece of architectural knowledge. Link to that authority rather than copying the same explanation into multiple documents that can drift independently.

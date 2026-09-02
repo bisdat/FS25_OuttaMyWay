@@ -1,3 +1,5 @@
+> **Historical continuation-instruction ledger:** This file preserves superseded handovers and bounded test instructions. It does not establish current engineering continuation; current continuation lives in [`CONTINUATION_STATE.md`](CONTINUATION_STATE.md). Do not append new current handovers here. Its final historical location or disposition remains pending semantic reconciliation.
+
 ## v0.1.12.0 CANONICAL CANDIDATE handover
 
 - Baseline authority remains owner-declared v0.1.11.0 (`944d197b09d2145b49a1502fc0e9721bf2f11a2f5c3ee86d73beaff3a88669d3`, Git `69a19cd116d6dc84286ca623dd5600f52315cae2`, 263 files) until candidate acceptance.

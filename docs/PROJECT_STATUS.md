@@ -1,3 +1,5 @@
+> **Historical development-state ledger:** This file preserves superseded TEST, candidate and status snapshots. It does not establish current engineering state; current engineering continuation lives in [`CONTINUATION_STATE.md`](CONTINUATION_STATE.md). Do not append new current-status snapshots here. Its final historical location or disposition remains pending semantic reconciliation.
+
 # v0.3.0.0 CANONICAL CANDIDATE status — Spatial Negotiation Operating Model
 
 **Baseline:** owner-declared v0.2.0.0 canonical; Git `d1a1f3fd5276a92088701c7a1256b90b35ad8153`; SHA-256 `e0263f562749215d44906f71b5edf65bda4c207283ac4407556f524004326c12`; 264 files.

@@ -1,3 +1,15 @@
+## 2026-09-02 — Continuation State / status-ledger responsibility discovery
+
+**Observe:** `PROJECT_STATUS.md` is an accumulated sequence of historical TEST and candidate state snapshots. `ENGINEERING_HANDOVER.md` is an accumulated sequence of historical continuation instructions. Neither reliably answers the present-tense questions "where are we?" or "what is the next bounded engineering boundary?"
+
+**Interpret:** retaining previous current state in the current file duplicates chronology already owned by Git. Handover instructions have a different lifetime from durable project knowledge.
+
+**Named discovery — Status Ledger Masquerading as Current State:** successive useful snapshots turned `PROJECT_STATUS.md` into historical engineering evidence rather than present state.
+
+**Named discovery — Continuation Instructions Are Ephemeral:** instructions useful at one engineering boundary became historical evidence after that boundary was crossed; appending later handovers created another ledger rather than preserving a current handover.
+
+**Decision:** establish one replace-in-place **Continuation State** and use Git history for its previous states. Use GitHub Issues where useful for substantial bounded prospective work. Treat chat carry-forwards as non-authoritative **Context Transfer Artifacts**: disposable reconstruction aids that establish no architecture, engineering state, decision or implementation authority. Retain the two old ledgers untouched apart from authority banners until later semantic classification determines their final historical disposition.
+
 ## 2026-09-02 — v0.3.0.0 Spatial Negotiation Operating Model consolidation
 
 The architecture discussion deliberately reset to a clean-sheet OuttaMyWay problem: cooperate with at most three GIANTS AI workers of different agronomy while preserving GIANTS job/navigation ownership. The resulting model is consolidated in `SPATIAL_NEGOTIATION_MODEL.md`; no runtime change is authorised.
