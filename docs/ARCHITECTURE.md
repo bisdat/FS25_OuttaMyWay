@@ -1,3 +1,23 @@
+## v0.3.0.0 architecture candidate — Spatial Negotiation Operating Model
+
+The v0.3.0.0 candidate consolidates the clean-sheet operating model in `SPATIAL_NEGOTIATION_MODEL.md`. Runtime remains unchanged.
+
+**Normality:** Region A is native GIANTS operation and is the attractor after every intervention.
+
+**Independent negotiation:** Region B is bounded reversible temporal Regulation. It preserves decision time/Resolution Margin under uncertainty and never owns the eventual resolution.
+
+**Spatial evidence:** Category 1 corners and Category 2 headland/boundary regions describe option-space scarcity. Constrained occupancy creates a preference to let the occupant reveal/vacate while a relevant external party waits where feasible.
+
+**Certainty boundary:** positive GIANTS `isWorking` provides A8 forward/straight productive certainty only to the productive-certainty horizon. TURNING remains uncertainty and does not independently establish Passage.
+
+**Passage:** Phase 1 may identify genuine opposed productive corridors at large separation. Tactical B may move the prospective Passage into a viable encounter interval supporting the complete lifecycle. Bubble commitment occurs only when fresh Passage evidence remains positive and disposable approach time is approaching the retained Passage capture reserve. The existing nine-phase Passage remains the preferred mechanical donor.
+
+**Committed coupling:** after Bubble Formation the Passage obligation persists through last handback; realised execution geometry remains Reality-sensitive until local physical-leg commitment.
+
+**Composition:** an independent third worker may be Region-B regulated before formation if it threatens the future theatre. During the Resolution Epoch it receives D-0202 fixed 1 km/h Bullet Time, remains observed but is not independently negotiated. Last-Handoff Dissolution returns immediately to fresh Region A assessment.
+
+This model replaces no validated runtime mechanics in this candidate. Historical literals and pair-first implementation assumptions remain implementation evidence, not architectural authority where they conflict with the model.
+
 ## v0.2.0.0 architecture-discovery checkpoint — Spatial Negotiation
 
 A new evidence-led discovery programme is recorded in `SPATIAL_NEGOTIATION_DISCOVERY_CHARTER.md`. It investigates whether multi-worker traffic is better represented as negotiation over temporary spatial claims than as pair-first trajectory handling. The provisional model includes Traffic Parties, Spatial Claims, Interaction Bubbles for committed coupled resolution, Bubble Protection, Resolution Epoch and Last-Handoff Dissolution.

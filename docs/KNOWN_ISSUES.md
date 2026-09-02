@@ -1,3 +1,7 @@
+## v0.3.0.0 candidate — known runtime/architecture gap
+
+The architecture in `SPATIAL_NEGOTIATION_MODEL.md` is not implemented. The owner-supplied TS004 evidence shows repeatable fragility under new binary variables: Regulation can mature too late near constrained space, transient TURN geometry can promote unnecessary Passage, and stale Passage geometry can remain authoritative after benign adjacent-lane Reality emerges. These are implementation evidence for the next mapping phase, not fixes in this documentation-only candidate.
+
 ## v0.1.15.0 CANONICAL CANDIDATE — known issues / explicit validation boundary
 
 - No blocking D-0197/D-0198 Regulation Authority Semantics defect is known in the latest TS009/TS016b regression. Strong quiescence and intent-revelation continuation both remain evidence-driven; no timeout is traffic authority.

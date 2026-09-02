@@ -1,3 +1,13 @@
+## v0.3.0.0 next programme — canonical review, workflow, then implementation mapping
+
+1. Review the exact documentation-only v0.3.0.0 candidate against `SPATIAL_NEGOTIATION_MODEL.md`.
+2. If accepted, owner explicitly declares the exact candidate fingerprint canonical and records local Git/provenance; GitHub remains out of scope unless explicitly requested.
+3. Before a new implementation tranche, discuss and record the owner's proposed development workflow.
+4. Prepare a new-chat carry-forward from the canonicalised v0.3.0.0 baseline.
+5. In the new chat, map Region A/B, spatial zones, A8 Phase-1 Passage evidence, capture-margin commitment, Bubble Protection and adaptive Passage geometry onto existing code responsibilities.
+6. Select the smallest falsifiable mechanics tranche. Do not tune TS004 or replace 80 m with another universal literal.
+7. Preserve the nine-phase Passage donor unless specific evidence contradicts an individual responsibility.
+
 ## v0.2.0.0 next architecture programme — Spatial Negotiation Discovery
 
 1. Canonicalise the documentation-only Spatial Negotiation checkpoint if accepted.

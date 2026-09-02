@@ -1,3 +1,17 @@
+# v0.3.0.0 CANONICAL CANDIDATE status — Spatial Negotiation Operating Model
+
+**Baseline:** owner-declared v0.2.0.0 canonical; Git `d1a1f3fd5276a92088701c7a1256b90b35ad8153`; SHA-256 `e0263f562749215d44906f71b5edf65bda4c207283ac4407556f524004326c12`; 264 files.
+
+**Runtime:** intentionally unchanged. This MINOR candidate consolidates architecture discovered through TS004/TS016 evidence and hostile thought experiments.
+
+**Primary candidate knowledge:** `SPATIAL_NEGOTIATION_MODEL.md`.
+
+**Current architecture:** Region A is native GIANTS operation; Region B is bounded reversible temporal Regulation; spatial zones provide scarcity/evacuation evidence; `isWorking` supplies A8 productive-forward certainty while TURNING remains uncertainty; Passage Phase 1 may identify genuine opposed productive continuations at large separation; tactical B may shift the viable Passage theatre; Bubble Formation occurs at committed Passage before capture reserve is consumed; committed Passage obligation persists while execution geometry remains Reality-sensitive; external third AI traffic is serialized at fixed 1 km/h during the Resolution Epoch; Bubble dissolves at last GIANTS handback.
+
+**Implementation state:** none of the v0.3.0.0 architecture is implemented. Existing runtime still contains historical literal/locality and Passage-plan behaviour, including the retained 80 m family and the TS004-observed false/stale Passage vulnerability.
+
+**Next boundary:** owner review/canonicalisation of this documentation-only candidate, then discussion of the proposed development workflow before a new-chat carry-forward. No implementation tranche is selected by this candidate.
+
 # v0.2.0.0 CANONICAL CANDIDATE status — Spatial Negotiation Discovery Checkpoint
 
 **Baseline:** owner-declared v0.1.15.0 canonical; Git `b14048c80163d7ef545f152ef072c77861cfbfb0`; SHA-256 `dcc19334551faba0ee123888b4b62bed6e7fe23264672482875be417c3a7fc18`; 263 files.

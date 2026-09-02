@@ -1,3 +1,51 @@
+## D-0208 — Third-Party Serialization Across Bubble Formation (v0.3.0.0 candidate)
+
+**Status:** Accepted for canonical-candidate consolidation; runtime not implemented.
+
+**Decision:** Before Bubble Formation all workers remain independent and ordinary Region B may regulate a third worker whose progression consumes a foreseeable Passage theatre. Material third-party occupancy of required coupled Resolution Space blocks Bubble admission until independent ordering makes that space available. During the Resolution Epoch an independent third AI Traffic Party remains at exactly 1 km/h, is observed but not independently negotiated, and is reconsidered after Last-Handoff Dissolution. Hard safety evidence still forces fail-safe handling.
+
+**Reason:** Bullet Time is intended to serialize complexity, not solve the third worker concurrently.
+
+## D-0207 — Persistent Passage Obligation / Adaptive Execution Geometry (v0.3.0.0 candidate)
+
+**Status:** Accepted for canonical-candidate consolidation; runtime not implemented.
+
+**Decision:** Once Bubble commitment occurs, the complete Cooperative Passage obligation persists through final participant handback. Preliminary execution geometry does not gain equal persistence: realised Transit geometry, clearance deficit, Development burden, execution origin and recovery debt remain Reality-sensitive until the relevant physical leg becomes locally committed.
+
+**Reason:** TS004 reproduced a case where stale turn-derived Passage geometry forced unnecessary lateral motion and difficult Axis recovery after Reality had already become benign.
+
+## D-0206 — Productive Passage Foreseeability and Time-Aware Bubble Commitment (v0.3.0.0 candidate)
+
+**Status:** Accepted for canonical-candidate consolidation; runtime not implemented.
+
+**Decision:** Phase 1 Passage may be identified at large separation when both workers have A8-valid opposed productive continuations, their represented productive corridors genuinely compete, and the encounter occurs inside both productive-certainty horizons. Foreseeability creates no Bubble. Bubble Formation occurs only at committed Passage before continued native approach consumes the empirical Passage capture/Entry reserve. Commitment timing is governed by disposable spatial/time margin rather than a universal locality distance. The existing Entry-space donor remains retained unless disproved.
+
+**Reason:** The old 80 m family proxied for multiple unrelated responsibilities and can become either premature or late under changed speed/spatial context.
+
+## D-0205 — Constrained-Space Evacuation Preference (v0.3.0.0 candidate)
+
+**Status:** Accepted for canonical-candidate consolidation; runtime not implemented.
+
+**Decision:** Category 1 corners and Category 2 headland/boundary regions are environmental evidence of reduced option space, not automatic Regulation triggers. A worker occupying constrained space should normally retain native opportunity to reveal/vacate while another relevant worker in less-constrained space is regulated. If neither is inside, choose the viable temporary allocation that best preserves Resolution Margin/revelation time. Shared Category-1 occupancy is degraded-entry recovery and may require player escalation.
+
+**Reason:** TS004/TS016 show that delayed certainty near constrained space can spend the very options needed for a later clean resolution.
+
+## D-0204 — Productive Forward-Line Certainty / TURNING Uncertainty Boundary (v0.3.0.0 candidate)
+
+**Status:** Accepted governing assumption for canonical-candidate consolidation; subject to contrary field Reality.
+
+**Decision:** While GIANTS AI is positively `isWorking`, immediate productive continuation is treated as forward and straight along the current productive axis up to the productive-certainty horizon. `TURNING` is primarily an intent-revelation state and cannot by itself establish Passage authority.
+
+**Reason:** This uses strong native productive evidence without resurrecting retired route prediction, Rooks or continuous Productive History.
+
+## D-0203 — Region A Attractor / Region B Bounded Temporal Regulation (v0.3.0.0 candidate)
+
+**Status:** Accepted for canonical-candidate consolidation; runtime not implemented.
+
+**Decision:** Region A is native GIANTS operation and is always the preferred state, however transient. Region B is bounded reversible temporal Regulation used while independent native progression is consuming Resolution Margin faster than useful uncertainty can safely resolve. One provisional B allocation has a bounded uninterrupted authority lifetime; expiry returns to A and does not prove safety, failure or Passage. Fresh Reality may independently justify a different B allocation immediately.
+
+**Reason:** TS004 manual holds showed that more than one early temporal ordering can preserve viable futures; a unique permanent yielder is neither required nor robust.
+
 ## D-0202 — 1 km/h Is Bullet Time (v0.2.0.0 architecture checkpoint)
 
 **Decision:** during a future Resolution Epoch, every independent external AI Traffic Party is regulated to the existing fixed **1 km/h Intent-Revelation Creep** while the active Interaction Bubble executes normally. This is an architectural constant, not a throughput-tuning parameter. Do not replace it with variable speed or adaptive regulation cadence merely for optimisation.

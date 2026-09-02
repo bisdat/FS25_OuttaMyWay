@@ -1,3 +1,7 @@
+## v0.3.0.0 evolution note
+
+This v0.2.0.0 discovery charter remains the provenance record for the Spatial Negotiation reset. Its provisional Bubble/Bullet-Time questions were subsequently developed through TS004/TS016 evidence and clean-sheet thought experiments. The consolidated current candidate model is `SPATIAL_NEGOTIATION_MODEL.md`. Where the model intentionally resolves a question left open here (notably occupied-at-formation, Region B, spatial zones, A8 Passage evidence and third-party serialization), use the newer candidate document after owner canonicalisation.
+
 # Spatial Negotiation Discovery Charter
 
 ## Status

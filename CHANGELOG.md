@@ -1,3 +1,29 @@
+# v0.3.0.0 CANONICAL CANDIDATE — Spatial Negotiation Operating Model
+
+**Authoritative baseline:** owner-declared v0.2.0.0 canonical (`e0263f562749215d44906f71b5edf65bda4c207283ac4407556f524004326c12`; Git `d1a1f3fd5276a92088701c7a1256b90b35ad8153`; 264 files).
+
+**Version rationale:** significant architecture milestone; advance MINOR under `0.MINOR.PATCH.BUILD`. Runtime behaviour is intentionally unchanged from v0.2.0.0/v0.1.15.0.
+
+**Architecture consolidation:** add `docs/SPATIAL_NEGOTIATION_MODEL.md`. The clean-sheet model defines Region A native GIANTS operation; bounded reversible Region B temporal Regulation; Category-1 corner and Category-2 headland/boundary spatial-scarcity evidence; A8 Productive Forward-Line Certainty and the TURNING uncertainty boundary; early Passage foreseeability from opposed productive continuations; tactical B Passage-theatre shaping; time-aware Bubble commitment using the retained Passage Entry-space donor; persistent coupled obligation with Reality-sensitive execution geometry; Last-Handoff Dissolution; and third-party serialization through pre-formation Region B plus fixed 1 km/h Bullet Time during the Resolution Epoch.
+
+**D-0203 — Region A / Region B:** A is the native attractor, however transient. B is bounded reversible temporal Regulation; it preserves Resolution Margin/intent-revelation time, has a bounded uninterrupted authority lifetime, never owns the eventual answer and may switch provisional allocation only from fresh independent evidence.
+
+**D-0204 — Productive Certainty Boundary:** while positively `isWorking`, GIANTS productive motion is treated as forward/straight along the known productive axis until the productive-certainty horizon. `TURNING` is an uncertainty/revelation state and does not by itself establish Passage.
+
+**D-0205 — Constrained-Space Evacuation Preference:** Category 1 corners and Category 2 headland/boundary regions supply spatial-scarcity evidence, not automatic Regulation triggers. Preserve the zone occupant's native opportunity to reveal/vacate where another relevant worker can cheaply wait outside. Shared Category-1 occupancy is a degraded condition, not a normal target state.
+
+**D-0206 — Passage Foreseeability / Bubble Commitment:** Phase 1 Passage may be identified at large separation from opposed A8-valid productive corridors whose encounter lies inside both productive-certainty horizons. Tactical B may move the prospective encounter into a viable interval supporting the complete Passage lifecycle. Bubble Formation occurs only at committed Passage, before native approach consumes the retained empirical Entry-space/capture reserve. The historical 80 m locality literal is not an architectural commitment rule.
+
+**D-0207 — Persistent Resolution / Adaptive Geometry:** after Bubble commitment, the full Passage obligation persists through last handback, while realised Transit/Development/execution/recovery geometry remains Reality-sensitive until locally committed physical legs begin. Stale early guide geometry has no independent authority.
+
+**D-0208 — Third-Party Serialization:** before Bubble Formation an independent third worker may be Region-B regulated if it consumes the future Passage theatre; existing third-party occupancy can block Bubble admission. During the Resolution Epoch an independent third AI worker remains at exactly 1 km/h, is observed but not independently negotiated, and is reconsidered only after Last-Handoff Dissolution unless hard safety evidence forces fail-safe handling.
+
+**Evidence:** repeatable TS004 showed early spatial intervention can transform the same theatre into either a benign adjacent-lane pass or a simple safe Passage, disproving the need for one uniquely correct yielder. TS004 also reproduced historic false/stale Passage behaviour under transient TURN geometry. TS016 corroborates early shared constrained-zone awareness. No TS-specific behavioural fix is included.
+
+**Retained mechanics:** existing nine-phase Cooperative Passage responsibilities remain the preferred implementation donor. The current Entry-space construction (physical extents + Development reserve + coarse 3 m Control allowance), no sophisticated longitudinal Transit/articulation model, and approximately 1 m nominal Passage clearance remain retained until Reality disproves them.
+
+**Non-change:** no Bubble, spatial-zone, time-aware Regulation, Phase-1 rewrite or Bullet-Time runtime implementation is introduced. Existing D-0197 through D-0202 behaviour, Terminal Courtesy, Passage mechanics and HUD remain unchanged.
+
 # v0.2.0.0 CANONICAL CANDIDATE — Spatial Negotiation Discovery Checkpoint
 
 **Authoritative baseline:** owner-declared v0.1.15.0 canonical (`dcc19334551faba0ee123888b4b62bed6e7fe23264672482875be417c3a7fc18`; Git `b14048c80163d7ef545f152ef072c77861cfbfb0`; 263 files).

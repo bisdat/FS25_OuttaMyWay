@@ -1,3 +1,18 @@
+# v0.3.0.0 CANONICAL CANDIDATE checklist — Spatial Negotiation Operating Model
+
+- [x] Baseline fixed to exact owner-declared v0.2.0.0 canonical SHA-256/Git provenance.
+- [x] MINOR increment justified by significant architecture milestone.
+- [x] Runtime behaviour intentionally unchanged.
+- [x] `SPATIAL_NEGOTIATION_MODEL.md` added and routed from documentation/status/continuity records.
+- [x] Region A/B, A8, Category-1/2 spatial zones, Phase-1 Passage evidence, tactical B, capture-margin commitment, Bubble persistence/adaptive geometry and third-party serialization consolidated.
+- [x] Existing nine-phase Passage/Entry-space/~1 m-clearance donors retained unless future Reality disproves them.
+- [x] 80 m explicitly not replaced by another universal distance literal.
+- [x] Retired Rook/Productive-History performance landmine remains closed.
+- [x] TS004/TS016 evidence recorded without introducing a fixture-specific behavioural repair.
+- [x] No GitHub state used as authority.
+- [ ] Owner reviews exact candidate fingerprint and explicitly canonicalises or rejects it.
+- [ ] Owner records local Git/canonical provenance after acceptance.
+
 # v0.2.0.0 CANONICAL CANDIDATE checklist — Spatial Negotiation Discovery Checkpoint
 
 - [x] Baseline is exact owner-declared v0.1.15.0 canonical fingerprint.

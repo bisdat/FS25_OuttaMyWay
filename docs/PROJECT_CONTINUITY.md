@@ -1,3 +1,25 @@
+## v0.3.0.0 canonical-candidate continuity — Spatial Negotiation Operating Model
+
+Continue from owner-declared **v0.2.0.0 canonical** until the owner explicitly canonicalises the exact v0.3.0.0 candidate fingerprint. Runtime is unchanged; v0.3.0.0 consolidates architecture only.
+
+Read `SPATIAL_NEGOTIATION_MODEL.md` first. Preserve these boundaries:
+
+- A is native GIANTS operation and the preferred attractor, however transient.
+- B is bounded reversible temporal Regulation; expiry returns to A and does not manufacture a semantic conclusion.
+- Category 1/2 zones supply spatial-scarcity evidence. A zone occupant normally gets the opportunity to reveal/vacate while a relevant external worker is regulated.
+- A8: positive `isWorking` gives forward/straight productive certainty only to the productive-certainty horizon. TURNING does not establish Passage.
+- Passage Phase 1 can identify opposed productive corridors at large separation when the encounter lies inside both A8 horizons.
+- Tactical B may shape a foreseeable Passage into a viable encounter interval supporting the complete Passage lifecycle, particularly post-crossing recovery space.
+- Bubble Formation occurs at committed Passage when capture margin/time says native approach can no longer safely spend the retained Passage Entry reserve.
+- Keep the existing nine-phase Passage architecture as the preferred donor; retain the empirical Entry-space construction, no sophisticated longitudinal Transit/articulation model and ~1 m nominal clearance unless Reality disproves them.
+- After commitment the Passage obligation is sticky but execution geometry is Reality-sensitive; stale preliminary guide geometry has no independent authority.
+- Before formation, third-party competition remains Region B. Existing third-party occupancy can block formation. During the Resolution Epoch the independent third AI worker remains at exactly 1 km/h and is observed/deferred until Bubble dissolution.
+- Bubble dissolves at the last GIANTS handback and fresh A assessment follows immediately.
+
+TS004 is the primary repeatable two-worker discovery theatre; do not tune TS004. Use it as evidence that early temporal separation can produce multiple viable outcomes and that historic Passage admission/plan stickiness is fragile under new variables. TS016 corroborates shared constrained-zone evidence.
+
+Before code, discuss and record the owner's proposed workflow. Then create a new-chat carry-forward from the canonicalised baseline. Do not access GitHub unless explicitly requested.
+
 ## v0.2.0.0 canonical-candidate continuity — Spatial Negotiation Discovery
 
 Continue only from owner-declared v0.1.15.0 canonical (`dcc19334551faba0ee123888b4b62bed6e7fe23264672482875be417c3a7fc18`; Git `b14048c80163d7ef545f152ef072c77861cfbfb0`; 263 files) until the owner explicitly canonicalises v0.2.0.0. v0.2.0.0 is a significant architecture/documentation checkpoint; runtime traffic behaviour is unchanged.

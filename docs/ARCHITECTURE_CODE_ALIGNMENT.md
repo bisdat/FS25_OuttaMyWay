@@ -1,3 +1,25 @@
+## v0.3.0.0 architecture/code alignment — operating-model checkpoint
+
+**Status:** architecture ahead of implementation by design. No v0.3.0.0 behaviour is implemented.
+
+The existing v0.2.0.0 runtime remains valuable donor evidence but is not authoritative where implementation convenience conflicts with `SPATIAL_NEGOTIATION_MODEL.md`.
+
+Current expected donors:
+
+- existing nine-phase Cooperative Passage mechanical lifecycle, including Transit-first reality verification, Development/Crossing separation, Alignment Runout/Axis Return and participant-specific handback;
+- existing empirical Passage Entry-space construction and ~1 m clearance policy;
+- existing 1 km/h Regulation actuator;
+- current Field World geometry and represented assembly geometry.
+
+Known implementation mismatches to revisit only after canonicalisation/workflow agreement:
+
+- historical 80 m locality is used to proxy multiple responsibilities and is not the new commitment authority;
+- current TURN/transient trajectory evidence can mature into Passage more strongly than A8 permits;
+- existing Passage approach can retain stale early guide geometry after Reality changes;
+- current runtime does not implement Category-1/2 spatial-zone Situation evidence, Region-B bounded authority lifetime, time-aware capture margin, Bubble external composition or Resolution-Epoch Bullet Time.
+
+Do not repair these piecemeal in the candidate. Map responsibilities first, then select a falsifiable implementation tranche.
+
 # v0.1.14.5 D-0200 architecture/code alignment — Job Episode Dependency Collapse TEST
 
 | Responsibility | Alignment |

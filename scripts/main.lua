@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.2.0.0 CANONICAL CANDIDATE — Spatial Negotiation Discovery Checkpoint.
+-- FS25_OuttaMyWay v0.3.0.0 CANONICAL CANDIDATE — Spatial Negotiation Operating Model.
 -- modDesc.xml loads only this file. Retired implementation is preserved by repository history, not shipped runtime source.
 local modDirectory=g_currentModDirectory or ""
 local modules={

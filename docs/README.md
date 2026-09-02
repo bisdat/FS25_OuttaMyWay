@@ -1,3 +1,7 @@
+# v0.3.0.0 documentation checkpoint — Spatial Negotiation Operating Model
+
+Start with `SPATIAL_NEGOTIATION_MODEL.md`. `SPATIAL_NEGOTIATION_DISCOVERY_CHARTER.md` remains the v0.2.0.0 provenance/working-hypothesis predecessor. Runtime remains unchanged from v0.2.0.0.
+
 # v0.2.0.0 documentation checkpoint — Spatial Negotiation Discovery
 
 Start architecture-discovery continuation with `SPATIAL_NEGOTIATION_DISCOVERY_CHARTER.md`. It is a hypothesis/decision charter, not an implementation specification. Existing runtime architecture remains unchanged from v0.1.15.0.

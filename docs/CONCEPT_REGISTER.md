@@ -1,3 +1,29 @@
+## v0.3.0.0 Spatial Negotiation operating concepts
+
+**Region A:** native GIANTS operation; normal/attractor state, with no minimum residency requirement.
+
+**Region B:** bounded reversible temporal Regulation while parties remain independent. Purpose: preserve Resolution Margin and/or useful intent-revelation time. B never owns the eventual answer.
+
+**A8 Productive Forward-Line Certainty:** while positively `isWorking`, immediate productive continuation is forward and straight along the current productive axis.
+
+**Productive-Certainty Horizon:** the remaining interval over which A8 may legitimately support the current productive continuation before Field World geometry requires a transition.
+
+**Category 1 / Category 2 Spatial Zones:** environmental evidence of severe (corner) or material (headland/boundary) option-space scarcity. Zone occupancy creates an evacuation preference, not an automatic slowdown trigger.
+
+**Resolution Margin:** conceptual remaining space/time freedom from which at least one safe GIANTS-compatible resolution remains available. Architecture may reason about its direction/rate without requiring one exact scalar implementation.
+
+**Foreseeable Passage:** Phase-1 conclusion that two A8-valid opposed productive corridors genuinely compete and meet inside both productive-certainty horizons. It is not a Bubble or persistent obligation.
+
+**Viable Passage Interval:** range of encounter positions where both participants can discharge the complete Passage lifecycle, including post-crossing recovery/handback obligations.
+
+**Capture Margin:** disposable native approach space/time above the empirical Passage Entry reserve. Bubble commitment is due before native progression consumes the reserve required to acquire/settle the pair and begin a viable Passage.
+
+**Interaction Bubble:** external composition of two parties after committed Cooperative Passage creates jointly dependent persistent obligations. Internal physical identity remains distinct.
+
+**Resolution Epoch:** Bubble Formation through Last-Handoff Dissolution.
+
+**Bubble Protection / Bullet Time:** during the Resolution Epoch each independent external AI Traffic Party is held at exactly 1 km/h. It is observed but its developing relationships are deferred until the Bubble completes.
+
 ## v0.2.0.0 Spatial Negotiation discovery concepts
 
 **Spatial Negotiation Discovery** — architecture-discovery programme testing the lens: traffic parties negotiate temporary spatial claims subject to environmental feasibility; GIANTS remains responsible for navigation.
