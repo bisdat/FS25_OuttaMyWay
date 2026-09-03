@@ -22,7 +22,7 @@ This summary does not duplicate detailed admission, lifecycle, representation, c
 
 ## 4. Environmental and platform boundary
 
-The reviewed semantic evidence baseline is the unmodified FS25 base game. Paid DLC and modded vehicle definitions remain Deferred until deliberately incorporated into the reviewed corpus and validation obligation. Runtime evidence must identify its relevant FS25 build, OuttaMyWay revision, map/fixture and configuration as required by [Engineering Architecture](ENGINEERING_ARCHITECTURE.md#runtime-evidence-governance).
+The reviewed vehicle/implement semantic corpus currently covers FS25 base-game definitions. Paid DLC and modded vehicle definitions remain Deferred until deliberately incorporated into the reviewed corpus and validation obligation. This corpus boundary does not establish a broader platform, map, field or terrain exclusion: OuttaMyWay already uses custom maps, custom merged fields and custom terrain as valid Reality fixtures. It does not claim universal support for every custom map or terrain implementation. Runtime evidence must identify its relevant FS25 build, OuttaMyWay revision, map/fixture and configuration as required by [Engineering Architecture](ENGINEERING_ARCHITECTURE.md#runtime-evidence-governance).
 
 ## 5. Governing assumptions
 
