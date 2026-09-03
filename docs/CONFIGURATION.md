@@ -145,13 +145,10 @@ default.
 
 ## Configuration and authority
 
-Configuration supplies consent or preference to the runtime responsibility loop:
+Reality is independent of player Configuration. The normal runtime responsibility
+path remains:
 
 ```text
-Configuration
-    |
-    | consent / preference only
-    v
 Reality
     |
 Observation
@@ -165,12 +162,35 @@ Current Responsibility
 Bounded Authority
     |
 Control
+    |
+Reality
 ```
 
-Configuration may prohibit or permit a class of optional behaviour within
-architectural bounds. It does not:
+Configuration applies only as an external constraint or input at the boundary
+relevant to each setting:
+
+```text
+Configuration
+    |-- intervention consent
+    |      -> may prohibit acquisition of an otherwise-supported optional
+    |         intervention; never supplies its governing basis or authority
+    |
+    `-- HUD / Logging / Debug
+           -> presentation and instrumentation only
+```
+
+Configuration does not establish Reality, Observation evidence or Situation
+meaning. Consent settings may constrain whether an optional intervention already
+supported by independent evidence can be acquired. HUD, Logging and Debug
+settings affect presentation or instrumentation, not Responsibility Transition.
+Configuration never enlarges responsibility or Bounded Authority.
+
+Configuration may prohibit a class of optional behaviour within architectural
+bounds. Absence of a prohibition is not a grant of authority. Configuration does
+not:
 
 - prove Reality;
+- establish Observation evidence;
 - create Situation meaning;
 - establish Responsibility Transition;
 - create Current Responsibility;
@@ -241,7 +261,7 @@ evidence does not establish a responsible owner.
 | Likely kind | Representative current values or families | Boundary indicated by current evidence |
 | --- | --- | --- |
 | PLAYER CONFIGURATION CANDIDATE | `AUTOMATIC_TERMINAL_EGRESS` | Candidate only for completed-obstruction assistance consent semantics. Its development value is not a release default. The other initial concepts have no equivalent unified setting in this file. |
-| RELEASE / BUILD IDENTITY | `MOD_NAME`, `VERSION`, `ARCHITECTURE_VERSION`, `BUILD_LABEL` | Release/build responsibility, not player choice. `ARCHITECTURE_VERSION` and historical candidate wording also show vocabulary lag. |
+| SYSTEM / RELEASE IDENTITY | `MOD_NAME`; `VERSION`, `BUILD_LABEL` | `MOD_NAME` identifies the system/mod. `VERSION` and `BUILD_LABEL` carry release/build identity. None is player Configuration. |
 | ARCHITECTURAL / RESPONSIBILITY POLICY | `D0146_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M`, `D0146_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO`, `D0146_RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION`, exact `D0146_RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH` | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
 | IMPLEMENTATION CALIBRATION | representation coherence/root-alias tolerances; follower alignment, retention and clearance factors; trajectory sampling/coherence/supersession values; Passage development and gate geometry; Control effect-speed calibration | Empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
 | SAFETY / RESOURCE BOUND | representation member/hierarchy budgets and revalidation cadence; `LIVE_RUNTIME_CONTROL_INTERVAL_MS`; Passage sweep sample count and phase watchdog; fold-settlement bounds; completed-obstruction movement distance and watchdogs; Field World generation/comparison/resolution budgets | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
@@ -249,7 +269,7 @@ evidence does not establish a responsible owner.
 | VALIDATION / EXPERIMENTAL | `CONTROL_AUTHORITY_ENABLED`; follower maturation test controls; `D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED`; `PROTOTYPE_22_CAPABILITY_GATE_ENABLED`; `PROTOTYPE_22_*` regulation/release controls | Current gates and test/prototype values are implementation or validation evidence. They do not define the master enabled setting and grant no production authority by location. |
 | HUD IMPLEMENTATION | `TRANSITION_HUD_*`, `VERSION_HUD_*`, `FOLLOWER_PACING_HUD_*`, `PROTOTYPE_22_HUD_*` | Coordinates, sizes, rows and diagnostic display flags belong to HUD/diagnostic implementation, not Configuration architecture. |
 | HISTORICAL RESIDUE | disabled Demonstrated Productive Coverage, Productive Coverage Residual and Refuge Qualification values; retained historical follower-shadow values; obsolete headers and donor comments | Retained forensic/replay values and historical vocabulary have no current production or Configuration authority. This inventory neither authorises deletion nor continued retention. |
-| UNRESOLVED | `RUNTIME_MODE`; `FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED`; some D-0146 development/traversal/reacquisition and hold/heartbeat values; `FIELD_WORLD_FINGERPRINT_VERSION` | Current placement and comments do not establish whether each is identity, policy, calibration, compatibility or residue. Later bounded investigation should resolve ownership without assuming that common location or numeric equality supplies it. |
+| UNRESOLVED | `ARCHITECTURE_VERSION`; `RUNTIME_MODE`; `FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED`; some D-0146 development/traversal/reacquisition and hold/heartbeat values; `FIELD_WORLD_FINGERPRINT_VERSION` | Current placement and comments do not establish whether each is identity, policy, calibration, compatibility or residue. Later bounded investigation should resolve ownership without assuming that common location or numeric equality supplies it. |
 
 Field World fingerprint/equivalence calibration, including quantisation, sampling,
 area/perimeter/centroid/bounds/boundary/Jaccard tolerances and comparison limits,
