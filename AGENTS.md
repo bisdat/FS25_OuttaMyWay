@@ -78,15 +78,21 @@ After a significant discovery, decision, behavioural change, or structural chang
 
 ## Validation
 
-Before completing a change:
+**Validation Execution Separation:** GitHub Actions owns execution of the repository offline validation suites under `/tests` for ordinary Engineering Increments. The implementation agent owns inexpensive implementation-local sanity checks and interpretation of the resulting CI evidence; it does not duplicate CI execution.
 
-- run Lua syntax checks for every changed Lua file, and preferably all Lua files when practical;
-- run the repository tests relevant to the changed responsibility;
+During an ordinary Engineering Increment:
+
+- do **not** run `pytest`, `tests/replacement_core/run.lua`, or equivalent repository test suites locally unless the repository owner explicitly requests it or the increment is specifically investigating validation machinery;
+- tests may be read as executable contract evidence and may be changed when the accepted contract genuinely changes, but must not be weakened or rewritten merely to obtain green CI;
+- run Lua syntax checks for changed Lua files;
 - run `git diff --check`;
 - inspect `git status` and the final diff;
-- do not leave temporary files, logs, generated ZIPs, test artefacts or OS/editor files in the repository.
+- do not leave temporary files, logs, generated ZIPs, test artefacts or OS/editor files in the repository;
+- after pushing the branch, use GitHub Actions as the independent execution authority for repository/offline validation.
 
-Do not claim Farming Simulator field/runtime validation unless it was actually performed and the evidence is available. Agent-side syntax/unit/static validation and in-game Reality validation are separate claims.
+`Structural contracts` is the required blocking check on `main`. `Lua offline observation (non-blocking)` remains observational while its existing failures are being reconciled.
+
+Do not claim Farming Simulator field/runtime validation unless it was actually performed and the evidence is available. Implementation-local checks, CI offline validation and in-game Reality validation are separate claims.
 
 The Repository Release System is retired and absent from the current working tree.
 Do not reconstruct or reintroduce it without a new explicit engineering decision.
