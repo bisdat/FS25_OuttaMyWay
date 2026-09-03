@@ -1,3 +1,12 @@
+## D-0210 — Purpose-Scoped Geometry Authority for Cooperative Passage
+
+**Status:** Accepted.
+
+**Decision:** Geometry authority is purpose-scoped. Current/working geometry owns current occupancy and corridor/Passage recognition. After Transit becomes the required and positively realised Passage state, cached directional Transit dimensions for the complete Physical Assembly own Passage arrangement and crossing geometry. Generic negative-clearance authority is not a prerequisite for that separately scoped Transit Passage conclusion, while complete assembly membership remains required for complete-assembly Transit authority. Sophisticated articulated, animation-swept-volume and longitudinal-arc modelling is not a current Passage requirement. This decision selects no change to existing runtime behaviour.
+
+**Reason:** The post-PR-#17 architecture↔runtime review initially hypothesised a Negative-Clearance Permission Bypass because Passage uses represented geometry carrying incomplete generic coverage and no generic negative-clearance authority. Geometry-history reconstruction and current-code review disproved that hypothesis: it conflated generic collision authority with the narrower Transit Passage authority. Earlier test and fix evolution left prototype/test vocabulary and mixed generic/purpose-specific authority encoding after the simpler Transit Passage contract became operational. Reality had already demonstrated coarse Transit dimensions sufficient for Passage, while current working geometry remained necessary for recognition. The disproven hypothesis is retained as useful architectural learning, not recorded as a runtime defect.
+
+
 ## D-0209 — Retire the Repository Release System
 
 **Status:** Accepted owner disposition.

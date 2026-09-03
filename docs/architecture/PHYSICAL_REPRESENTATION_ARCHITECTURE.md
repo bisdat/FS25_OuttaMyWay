@@ -69,6 +69,12 @@ Evidence Quality records:
 
 Evidence Quality controls conclusions. Confidence cannot transform working-width metadata, an origin, or internally complete geometry for known members into complete collision occupancy.
 
+### Purpose-Scoped Geometry Authority
+
+**Purpose-Scoped Geometry Authority** means that representation authority belongs to a declared claim scope, not merely to a geometry object. That scope identifies the subject, physical state or configuration, geometric question or purpose, horizon, coverage basis, validity dependencies and permitted conclusions. A Representation Passport must distinguish purposes equivalent to generic current collision occupancy, current working or productive corridor geometry, Transit Passage geometry, deployment-transition geometry and manoeuvre-sweep geometry; implementations need not encode these as literal universal enumerations.
+
+Authority for one purpose does not silently transfer to another. In particular, a representation may have no generic negative-clearance authority while independently possessing purpose-specific Transit Passage geometry authority. That narrower authority establishes only the stated Transit Passage conclusion; it does not claim that the same geometry completely represents current-working collision occupancy.
+
 ## Job-Scoped Representation Catalogue
 
 A **Job-Scoped Representation Catalogue** is constructed at the start of a GIANTS AI Job Episode and expires when that Episode ends. It describes equipment selection, purchased configuration, assembly structure and the representation templates justified for that scope. A later Episode receives a new catalogue.
@@ -162,17 +168,19 @@ Manoeuvre Sweep must not assume midpoint pivoting. **Steering-Mode Sweep Depende
 
 **Detailed Manoeuvre Sweep Construction is Deferred.** Turning centre, radius, articulation and steering-kinematics construction remain evidence questions; no universal construction or implementation is authorised.
 
+Deployment Sweep and Manoeuvre Sweep remain accepted concepts for assessments that genuinely require them. Cooperative Passage does not currently require sophisticated articulated Manoeuvre Sweep, animation swept-volume closure or longitudinal-arc reconstruction when its accepted purpose-specific Transit Passage contract supplies the crossing geometry. This does not reject or resolve Deferred Detailed Manoeuvre Sweep Construction, and Passage must not make that Deferred construction a prerequisite.
+
 ## Coverage Closure
 
 **Inventory Closure** means all collision-relevant components for the stated subject and state are known. Geometry completeness for known or discovered members is not Inventory Closure and does not imply that the Physical Assembly is complete.
 
-**Coverage Closure** means all collision-relevant plan-view occupancy is represented for a stated subject and physical state. It may be established by:
+**Coverage Closure** means the relevant plan-view occupancy is represented for a stated subject, physical state and intended conclusion. It may be established by:
 
 - **Enumerative Closure** — authoritative inventory plus representation and pose for every relevant active component;
 - **Enclosing Closure** — independently proven conservative geometry containing the complete subject; or
 - **Hybrid Closure** — precise representations plus smallest-scope fallback covering the unresolved remainder.
 
-The **Known-Coverage Trap** is the error of treating representation of every discovered member as proof that none remain undiscovered. A purpose-specific geometry representation inherits unresolved assembly-membership uncertainty. Negative-clearance authority requires relevant Coverage Closure for the stated subject and state; local or discovered-member geometry completeness cannot supply it.
+The **Known-Coverage Trap** is the error of treating representation of every discovered member as proof that none remain undiscovered. Complete generic collision geometry is not required for every geometric question: an independently justified enclosing or parametric representation may establish conclusion-relative closure for its declared purpose while remaining insufficient for other purposes. This does not weaken the Known-Coverage Trap. A purpose-specific geometry representation inherits unresolved assembly-membership uncertainty, and any purpose claiming complete-assembly geometry still requires complete Physical Assembly membership. Generic negative-clearance authority requires relevant generic collision Coverage Closure; local or discovered-member geometry completeness cannot supply it.
 
 ### Structural and Realised Coverage Closure
 
@@ -251,6 +259,8 @@ Sufficiency is conclusion-relative. Known overlap may suffice for Conflict Suppo
 Every downstream representation carries a **Representation Passport** describing physical scope and ownership, evidence authority and provenance, validity dependencies, directional reference and pose validity, coverage and underestimation risk, observation and refresh time, cost profile and permitted conclusions.
 
 These explicit **Representation Claim Permissions** prevent evidence absence, cheap approximation or discovery provenance from silently gaining clearance authority.
+
+For Cooperative Passage, current working-configuration geometry and directional extents support current occupancy, productive-corridor competition and Passage recognition. After Cooperative Passage selects, requires and positively realises Transit configuration, cached directional Transit dimensions for the complete Physical Assembly support facing extents, Passage arrangement, clearance and crossing. Generic DISC/component geometry remains useful for current obstacle and boundary reasoning. Transit geometry does not supersede current working geometry or make a deployed assembly artificially narrow before Transit is relevant; greater detail in current working geometry likewise does not turn it into the Transit Passage envelope. Directional asymmetry remains authoritative and must not be recentered without evidence. [Spatial Negotiation owns the specialised lifecycle contract](SPATIAL_NEGOTIATION_MODEL.md#passage-geometry-contract).
 
 ### Representation Cost Profile
 

@@ -95,6 +95,14 @@ Passage may be **foreseeable** at large separation only while current evidence p
 
 If either worker must first reach a headland or transition, A8 does not predict Passage through that future turn. Foreseeability is an assessment conclusion, not an obligation, and disappears when fresh Reality invalidates its evidence.
 
+### Passage Geometry Contract
+
+Passage recognition geometry is not Passage execution geometry. Before Passage selection, assessment uses each complete Physical Assembly's actual current productive or working configuration: current directional working extents and represented productive corridors must establish genuine corridor competition. Transit dimensions must not shrink a deployed working corridor before Transit becomes the relevant configuration.
+
+After Cooperative Passage has been selected and Transit configuration is required and positively realised, cached directional Transit geometry for the complete Physical Assembly owns the simple Passage arrangement and crossing questions: facing extents, Passage clearance, Development burden and crossing-window physical extents. Complete assembly membership remains mandatory; internally complete Transit dimensions for only discovered members are insufficient. Directional offsets and asymmetric extents remain valid and must not be recentered without evidence.
+
+This purpose-specific Transit Passage contract does not claim generic current collision-shape Coverage Closure or generic negative-clearance authority. Current evidence supports its coarse parametric geometry without sophisticated articulated Passage sweep, animation swept-volume solving or longitudinal arc/dynamics reconstruction. Reality determines whether that remains sufficient. Do not promote Deferred Detailed Manoeuvre Sweep Construction into a Passage prerequisite; generic Deployment Sweep and Manoeuvre Sweep remain available to other assessments that genuinely require them.
+
 ### Tactical Regulation
 
 Regulation may shape foreseeable Passage timing when the natural encounter would occur in poor execution theatre. Suitable theatre must support the **complete downstream Passage lifecycle**, including post-crossing Alignment Runout, Axis Settlement/Return where required, restoration and GIANTS handback.

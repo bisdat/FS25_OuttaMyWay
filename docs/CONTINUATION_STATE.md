@@ -6,7 +6,7 @@ This document is the current engineering continuation authority. Replace its sta
 
 ## Current engineering concern
 
-Semantic reconciliation of the documentation corpus by knowledge responsibility.
+Review and knowledge placement following the Physical Representation↔runtime Passage-geometry reconciliation.
 
 ## Established
 
@@ -53,25 +53,40 @@ Semantic reconciliation of the documentation corpus by knowledge responsibility.
 - All Accepted and Deferred Physical Representation concept meanings remain
   represented. This reconciliation changed no runtime behaviour, and runtime
   implementation reconstruction remains subsequent engineering work.
+- The Physical Representation↔runtime review is complete for the Passage
+  geometry question. Its initial Negative-Clearance Permission Bypass
+  hypothesis was disproved rather than confirmed as a defect.
+- **Purpose-Scoped Geometry Authority** is the accepted interpretation:
+  current/working geometry supports current occupancy and corridor/Passage
+  recognition, while cached complete-assembly Transit geometry supports Passage
+  arrangement and crossing only after Transit is required and realised.
+- Current Passage runtime behaviour is not selected for change. Historical and
+  prototype naming, plus mixed generic/purpose-specific authority fields, may
+  need later implementation-contract catch-up after an independent discrepancy
+  is established.
+- The surviving historical 80 m implementation remains an evidence and
+  reconstruction concern. It must not be changed piecemeal or treated as
+  architectural commitment authority.
 
 ## Current boundary
 
-The Physical Representation Architecture is reconciled as a present-tense
-account of collision-relevant plan-view occupancy, representation evidence and
-claim permissions. It preserves multidimensional physical state, coverage and
-inventory distinctions, asymmetric directional extents, evidence-absence rules,
-and the observational boundary with Runtime Responsibility.
+The Passage geometry question now distinguishes generic collision-shape closure
+from independently justified purpose-specific authority. Complete Physical
+Assembly membership remains required for complete-assembly Transit geometry;
+the Known-Coverage Trap remains intact. Generic Deployment Sweep and Manoeuvre
+Sweep remain accepted, and Detailed Manoeuvre Sweep Construction remains
+Deferred rather than becoming a Cooperative Passage prerequisite.
 
-Current accepted architecture may remain ahead of runtime implementation. No
-runtime conformance claim or reconstruction plan follows from this documentation
-increment.
+The current runtime evidence is consistent with this recovered geometry
+lifecycle. This conclusion selects no runtime change and makes no broader
+runtime-conformance claim.
 
 ## Next boundary
 
-Review the reconciled Physical Representation architecture against current
-runtime and code-map evidence before defining any runtime reconstruction
-increment. Stop at that architectural-review boundary; do not predefine
-implementation changes.
+Review the remaining live documentation/code-map surfaces for stale
+responsibility or implementation-vocabulary lag, using the newly clarified
+purpose-scoped authority model; do not select runtime changes until a bounded
+architecture-to-code discrepancy is independently established.
 
 ## Not currently active
 
