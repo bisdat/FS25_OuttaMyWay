@@ -99,6 +99,25 @@ initial route clearance.
 
 **Evidence:** Condor/Patriot field-course observations.
 
+### Field-course settings are opportunistic declared-plan evidence
+
+**Finding:** when a `FieldCourseSettings` object was materialised,
+`workHeadlands=false` declared that the productive plan excluded headland work,
+while `true` included a productive headland phase. With headland work enabled,
+`headlandsFirst` exposed headlands-first versus up/down-first productive phase
+order. A normal active default-start field job was also observed with the
+settings object unavailable; opening or changing the AI settings UI caused it
+to become readable and stable.
+
+**Safe use:** treat available settings as positive evidence of the declared
+productive phase set and order for that job.
+
+**Do not infer:** absent settings encode defaults, mean work is inactive, or
+require player UI interaction for safe operation. Excluding productive headland
+work does not mean the headland or boundary area has no manoeuvring demand.
+
+**Evidence:** live `FieldCourseSettings` observation during active field jobs.
+
 ### Productive and transitional evidence is asymmetric
 
 **Finding:** an active work line combined with coherent implement/work state
