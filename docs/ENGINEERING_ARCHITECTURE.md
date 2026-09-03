@@ -294,6 +294,8 @@ present-tense responsibilities have moved elsewhere.
 
 **Diagnostic Documentation Generation Drift** occurs when a documentation surface claims current diagnostic responsibility while substantially describing an earlier runtime generation. Such a surface is not a trustworthy current-runtime reference and must undergo the Stranded Live Knowledge check rather than persist through its current-sounding label.
 
+**Speculative Container Persistence** occurs when a repository container remains reserved for a possible future responsibility despite containing no current artefact or dependency that requires it. Repository structure follows demonstrated responsibility rather than reserving empty topology in advance. If a future responsibility needs a container, create its appropriate location when that need exists.
+
 Document lifecycle and authority should be visible through responsibility and navigation, not a rolling version header in every file. Git provides chronology. Removing development history for an external publication is a publication choice, not a reason to erase it from the engineering repository.
 
 ## Concept governance
@@ -319,6 +321,16 @@ semantics. A rejected concept remains in the register only while its present
 rejection materially helps prevent accidental reintroduction. Version headings,
 candidate fingerprints, validation chronology and historical implementation
 status do not belong in the current Concept Register.
+
+## Structural-test governance
+
+> **Tests protect current contracts, not historical repository topology.**
+
+**Historical Test Responsibility Persistence** occurs when a test created to certify a historical architecture or document constellation remains active after those surfaces have lost current responsibility. A test must not preserve a retired repository or document responsibility merely because it historically asserted it; Git retains the deleted assertion and its provenance.
+
+**First-Failure Masking** occurs when one structural test has several obsolete dependencies but execution reports only the first missing file. When a structural test fails on a missing repository surface, review the complete test body and dependency class instead of repairing only the first failing read.
+
+A test may consume retained historical evidence when that evidence legitimately participates in a current validation contract. Such use does not grant the evidence current architectural authority. Current implementation may also remain regression-protected while architectural reconciliation is pending, provided the test does not present implementation persistence as current architectural authority.
 
 ## Runtime evidence governance
 

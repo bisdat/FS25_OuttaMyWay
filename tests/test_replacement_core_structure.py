@@ -553,73 +553,6 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
             assert forbidden not in text
 
 
-def test_v4728_traffic_policeman_architecture_is_documented_without_production_control():
-    architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
-    adr=(ROOT/"docs"/"adr"/"ADR-0023-traffic-policeman-movement-priority.md").read_text(encoding="utf-8")
-    glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
-    concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.0"' in config
-    for token in ("Traffic Policeman","Demonstrated Traversability","Revelation Oscillation"):
-        assert token in adr
-        assert token in glossary
-        assert token in concepts
-    assert "Encounter-relative" in adr
-    assert "Static-object recovery/avoidance is deliberately parked" in adr
-    assert "Traffic Policeman" in architecture
-    assert "Control authority disabled" in runtime
-    assert "decisionCommitmentBoundary:apply" not in runtime
-
-
-def test_v4729_staged_recovery_architecture_is_documented_without_production_control():
-    adr23=(ROOT/"docs"/"adr"/"ADR-0023-traffic-policeman-movement-priority.md").read_text(encoding="utf-8")
-    adr22=(ROOT/"docs"/"adr"/"ADR-0022-bounded-native-intent-revelation.md").read_text(encoding="utf-8")
-    adr9=(ROOT/"docs"/"adr"/"ADR-0009-native-handover-envelope.md").read_text(encoding="utf-8")
-    architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
-    glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.0"' in config
-    for token in (
-        "Progress priority is not exclusive movement authority",
-        "positively available recovery corridor",
-        "Protect the recovery obligation, not the clock",
-        "Obligation retirement defines progress",
-    ):
-        assert token in adr23
-    assert "stage evidence versus operational authority" in adr22
-    assert "BNIR evidence lifetime across restoration" in adr9
-    assert "entitlement to unrestricted speed" in architecture
-    assert "Purpose-bound supporting speed — refined" in glossary
-    assert "Control authority disabled" in runtime
-    assert "decisionCommitmentBoundary:apply" not in runtime
-
-
-def test_v4730_encounter_maturation_architecture_is_documented_without_production_control():
-    adr23=(ROOT/"docs"/"adr"/"ADR-0023-traffic-policeman-movement-priority.md").read_text(encoding="utf-8")
-    adr6=(ROOT/"docs"/"adr"/"ADR-0006-future-space-safe-release.md").read_text(encoding="utf-8")
-    adr19=(ROOT/"docs"/"adr"/"ADR-0019-replacement-core-commitment-lifecycle.md").read_text(encoding="utf-8")
-    architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
-    glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
-    concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.0"' in config
-    for token in ("Encounter Maturation","Action-Space Compression"):
-        assert token in adr23
-        assert token in architecture
-        assert token in glossary
-        assert token in concepts
-    assert "Bounded Observation Contract" in adr23
-    assert "Action-Space Compression" in adr6
-    assert "Preference-Band Exhaustion" in adr23
-    assert "must not deliberately wait" in architecture
-    assert "Continuing Intent Priority" in adr19
-    assert "Control authority disabled" in runtime
-    assert "decisionCommitmentBoundary:apply" not in runtime
-
-
 def test_v4731_productive_continuation_probe_is_passive_and_speed_non_authoritative():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"ProductiveContinuationProbe.lua").read_text(encoding="utf-8")
@@ -637,130 +570,12 @@ def test_v4731_productive_continuation_probe_is_passive_and_speed_non_authoritat
 
 
 
-def test_v4732_productive_continuation_preference_is_documented_without_production_control():
-    architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
-    adr23=(ROOT/"docs"/"adr"/"ADR-0023-traffic-policeman-movement-priority.md").read_text(encoding="utf-8")
-    adr6=(ROOT/"docs"/"adr"/"ADR-0006-future-space-safe-release.md").read_text(encoding="utf-8")
-    glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
-    concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
-    decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    protocol=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.0"' in config
-    for token in (
-        "Productive Continuation Preference",
-        "Productive-Line Cross-Assembly Replication",
-        "GIANTS Turn-Segment Breadth",
-        "Apparent Departure Reversal",
-    ):
-        assert token in glossary
-        assert token in concepts
-    assert "otherwise-roomy" in adr23
-    assert "Absolute speed" in adr23
-    assert "tie" in adr23.lower()
-    assert "Apparent Departure Reversal" in adr6
-    assert "D-0113" in decision
-    assert "LIVE EVIDENCE GATE PASSED" in protocol
-    assert "10 km/h" in protocol and "18 km/h" in protocol and "25 km/h" in protocol
-    assert "Productive Continuation Preference" in architecture
-    assert "Control authority disabled" in runtime
-    assert "decisionCommitmentBoundary:apply" not in runtime
-
-
-def test_v4733_speed_ordering_evidence_asymmetry_and_configuration_footprint_authority():
-    concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
-    glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
-    decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
-    physical=(ROOT/"docs"/"architecture"/"PHYSICAL_REPRESENTATION_ARCHITECTURE.md").read_text(encoding="utf-8")
-    adr23=(ROOT/"docs"/"adr"/"ADR-0023-traffic-policeman-movement-priority.md").read_text(encoding="utf-8")
-    protocol=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.0"' in config
-    for token in (
-        "Native Speed-Ordering Variability",
-        "Productive-State Evidence Asymmetry",
-        "Alternating Working-Side Configuration",
-        "Configuration Footprint Authority",
-    ):
-        assert token in concepts
-        assert token in glossary
-    assert "D-0114" in decision
-    assert "line=INACTIVE" in decision or "line `INACTIVE`" in decision
-    assert "~12.2 km/h" in decision and "~15 km/h" in decision
-    assert "provenance only" in physical
-    assert "realised component footprint" in physical
-    assert "materially equivalent footprint domain" in physical
-    assert "inactive line state alone" in adr23
-    assert "supportable interruption state" in adr23
-    assert "P21-F" in protocol
-    assert "12.2 km/h" in protocol and "15 km/h" in protocol
-    assert "Control authority disabled" in runtime
-    assert "decisionCommitmentBoundary:apply" not in runtime
-
-
-def test_v4740_guarded_recovery_architecture_consolidation_preserves_non_production_boundary():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
-    glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
-    decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    handover=(ROOT/"docs"/"ENGINEERING_HANDOVER.md").read_text(encoding="utf-8")
-    protocol=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
-
-    assert 'OuttaMyWay.VERSION = "0.3.0.0"' in config
-    assert 'CONTROL_AUTHORITY_ENABLED = false' in config
-    for token in (
-        "Native Continuation Restoration",
-        "Rejoin Anchor",
-        "Guarded Recovery",
-        "Protected Progress Alternation",
-        "Expedient Manoeuvre Execution",
-    ):
-        assert token in architecture
-        assert token in glossary
-        assert token in decision
-    assert "D-0122" in decision
-    assert "greatest speed positively supportable" in decision
-    assert "Precision Farming is not part of the standard OuttaMyWay test environment" in decision
-    assert "standard testing remains DLC-free" in handover
-    assert "does **not** implement Guarded Recovery" in protocol
-    assert "Situation Assessment evidence contract" in handover
-
-
-def test_v4741_guarded_recovery_observe_exhaustion_contract_is_documented_without_production_control():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
-    glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
-    concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
-    decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    roadmap=(ROOT/"docs"/"ROADMAP.md").read_text(encoding="utf-8")
-
-    assert 'OuttaMyWay.VERSION = "0.3.0.0"' in config
-    assert 'CONTROL_AUTHORITY_ENABLED = false' in config
-    assert "D-0123" in decision
-    for token in ("Vulnerable Space", "Convergent Projection"):
-        assert token in architecture
-        assert token in glossary
-        assert token in concepts
-        assert token in decision
-    assert "CONTINUE_OBSERVATION` is exhausted" in decision
-    assert "REGULATE_SPEED" in decision and "HOLD_AT_SAFE_POINT" in decision
-    assert "fully reacquired native authority" in decision
-    assert "not traffic settlement" in decision.lower()
-    assert "no permanent exclusion zone" in decision.lower()
-    assert "fixed-distance" in decision.lower() and "TCPA/DCPA" in decision
-    assert "passively" in roadmap.lower() and "validate" in roadmap.lower()
-
-
-def test_v4742_traffic_policeman_decision_policy_is_implemented_without_unresolved_live_authority():
+def test_v4742_traffic_policeman_decision_policy_current_implementation_contract():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     selector=(ROOT/"scripts"/"decision"/"DecisionSelector.lua").read_text(encoding="utf-8")
     policy=(ROOT/"scripts"/"decision"/"TrafficPolicemanDecisionPolicy.lua").read_text(encoding="utf-8")
     passive=(ROOT/"scripts"/"candidates"/"PassiveLiveCandidateSupport.lua").read_text(encoding="utf-8")
-    roadmap=(ROOT/"docs"/"ROADMAP.md").read_text(encoding="utf-8")
 
     assert 'OuttaMyWay.VERSION = "0.3.0.0"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
@@ -775,8 +590,6 @@ def test_v4742_traffic_policeman_decision_policy_is_implemented_without_unresolv
     assert 'WAIT_FOR_PREFERENCE_EXHAUSTION_EVIDENCE' in selector
     assert 'TrafficPolicemanDecisionPolicy:select' in selector
     assert 'PASSIVE_LIVE_ZERO_CONTROL' in passive
-    assert 'Vulnerable Space' in roadmap and 'Convergent Projection' in roadmap
-    assert 'unimplemented' in roadmap.lower() or 'unresolved' in roadmap.lower()
 
 
 
@@ -1502,29 +1315,6 @@ def test_v47120_d0147_exit_alignment_is_direction_locked_and_positive_exit_termi
 
 
 
-def test_v47121_terminal_yield_canonical_candidate_contract():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
-    status=(ROOT/"docs"/"PROJECT_STATUS.md").read_text(encoding="utf-8")
-    concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.0"' in config
-    assert 'OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"' in config
-    assert 'OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS = true' in config
-    for term in [
-        "Pending Player Reclamation",
-        "Terminal Yield Consent",
-        "Continuity, Not Settlement",
-        "Reactive Terminal Yield",
-        "No Final Settlement Requirement",
-        "Egress Externality Constraint",
-    ]:
-        assert term in architecture
-        assert term in concepts
-    assert "Bounded Infield Retreat" in status
-    assert "Continuation Renewal" in status
-    assert "Courtesy Exhaustion" in status
-
-
 def test_v47122_d0147_bounded_infield_retreat_is_one_shot_and_reactive():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
@@ -1657,16 +1447,13 @@ def test_v47125_d0147_continuation_renewal_requires_progress_then_later_block():
     assert 'continuationRenewalRequired=true' in dispatcher
 
 
-def test_v47127_d0147_courtesy_constraint_exception_and_audit_alignment():
+def test_v47127_d0147_courtesy_constraint_and_valuerecord_regression_contract():
     candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
     boundary=(ROOT/"scripts"/"commitment"/"DecisionCommitmentBoundary.lua").read_text(encoding="utf-8")
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     passage_control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     capability_assessment=(ROOT/"scripts"/"assessment"/"PassageCapabilityAssessment.lua").read_text(encoding="utf-8")
-    architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
-    alignment=(ROOT/"docs"/"ARCHITECTURE_CODE_ALIGNMENT.md").read_text(encoding="utf-8")
-    core_contract=(ROOT/"docs"/"CORE_REPLACEMENT_IMPLEMENTATION_CONTRACT.md").read_text(encoding="utf-8")
 
     # Courtesy Evidence Gap is resolved by an explicit D-0147-only N/A contract,
     # not by inventing geometry evidence or weakening mandatory constraints globally.
@@ -1680,10 +1467,6 @@ def test_v47127_d0147_courtesy_constraint_exception_and_audit_alignment():
     assert 'constraints.TRANSITION_CLEARANCE=courtesyExemption' in candidate
     assert 'constraints.TRANSITION_CLEARANCE=packet' in candidate
     assert 'constraints.FIELD_WORLD_CONTAINMENT=packet' not in candidate
-    assert 'D-0147 Courtesy Constraint Exception' in architecture
-    assert 'Normal physical Candidates retain their mandatory positive containment/clearance contracts' in architecture
-    assert 'not applicable to D-0147 under explicit Courtesy Constraint Exception' in alignment
-    assert 'D-0147 explicit architecture exception' in core_contract
 
     # Standing-order audit: proven sealed ValueRecord collections use explicit length accessors.
     assert 'OuttaMyWay.ValueRecord.length(contexts)==0' in candidate
@@ -1729,14 +1512,15 @@ def test_v0100_pre_1_0_versioning_epoch_contract():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     moddesc=(ROOT/"modDesc.xml").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    roadmap=(ROOT/"docs"/"ROADMAP.md").read_text(encoding="utf-8")
+    engineering=(ROOT/"docs"/"ENGINEERING_ARCHITECTURE.md").read_text(encoding="utf-8")
     assert 'OuttaMyWay.VERSION = "0.3.0.0"' in config
     assert 'OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"' in config
     assert '<version value="0.3.0.0">0.3.0.0</version>' in moddesc
     for token in ('0.MINOR.PATCH.BUILD','canonical releases use `BUILD=0`','TEST iterations increment BUILD','first public release is `1.0.0.0`'):
         assert token in decision
-    assert '0.1.0.1' in roadmap
-    assert 'Do not renumber historical 4.7.x artifacts' in roadmap
+    for token in ('0.MINOR.PATCH.BUILD','Canonical named releases use `BUILD=0`','non-canonical TEST iterations','first public release is reserved'):
+        assert token in engineering
+    assert 'Historical `4.7.x` identities remain immutable provenance and are not renumbered.' in " ".join(engineering.split())
 
 
 def test_v0107_d0146_transit_first_preserves_native_blocked_as_observation_not_passage_abort_authority():

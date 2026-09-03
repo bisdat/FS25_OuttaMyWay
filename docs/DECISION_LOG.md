@@ -1,3 +1,11 @@
+## D-0214 — Structural Test Responsibility Reconciliation
+
+**Status:** Accepted owner decision.
+
+**Decision:** Tests protect current contracts rather than retired documentation topology. Delete the eight identified historical documentation-conformance tests; retain and reframe the current implementation portions of v4742 and v47127; and re-anchor the pre-1.0 versioning test to Engineering Architecture. Audit the complete active test tree for further retired-document dependencies so First-Failure Masking does not leave hidden stale authority. Retained Research evidence may remain a legitimate live test dependency where a current test actually consumes it. Remove the unused `docs/assets/` speculative container. No runtime behaviour changes.
+
+**Reason:** The documentation responsibility model is stable enough to identify stale test authority. Most remaining failures certified superseded documentation compositions rather than current contracts. Some mixed tests still protect real implementation invariants and should be reduced rather than deleted wholesale; version governance has a clear successor owner; and `docs/assets/` has no realised responsibility. Removed assertions are not lost evidence because Git retains their history.
+
 ## D-0213 — Knowledge Root Consolidation and Deferred Configuration/GUI Responsibility
 
 **Status:** Accepted owner decision.

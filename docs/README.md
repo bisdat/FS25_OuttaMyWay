@@ -26,7 +26,6 @@ intentionally absent under the Archive Navigation Exemption.
 - [Configuration](CONFIGURATION.md) — Deferred, unreconciled Configuration architecture responsibility.
 - [GUI](GUI.md) — Deferred, unreconciled player-facing interface and communication architecture responsibility.
 
-`assets/` contains documentation assets rather than a documentation subtree.
 The live root does not link `archive/`; archived material has no current
 authority and remains bounded recovery/harvesting material until deletion is
 safe.
