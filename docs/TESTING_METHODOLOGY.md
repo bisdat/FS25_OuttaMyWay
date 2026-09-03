@@ -58,6 +58,20 @@ Look for hidden authority, duplicated responsibility, stale implementation gener
 
 The current mechanisms are Python structural/source-contract tests and Lua offline behavioural/conformance tests, documented in [`/tests`](../tests/README.md). Their claim is bounded to: given repository/source structure or simulated/stubbed evidence, the implementation satisfies the asserted contract. They cannot prove GIANTS supplies equivalent evidence or reacts equivalently in-game.
 
+### Continuous Integration Execution Boundary
+
+GitHub Actions may execute repeatable repository and offline validation against pull-request and `main` commits. CI owns execution and reporting of those checks, not interpretation, architecture, or acceptance. A green CI result supports only the claim made by the tests it ran and cannot replace in-game Reality where the claim depends on GIANTS behaviour.
+
+A known-failing suite may be run observationally without becoming a merge gate while its failures are being reconciled. Such a workflow must preserve the raw failure outcome and must not encode the current failure count as an accepted threshold merely to manufacture green status.
+
+### Validation Runtime Contract
+
+Repeatable offline evidence depends on materially relevant execution semantics as well as repository bytes and test inputs. Interpreter name or source version alone is insufficient when build-time semantic options affect the contracts exercised by the suite.
+
+PR #24 demonstrated this for the sealed-collection harness. Stock Ubuntu LuaJIT at upstream commit `c525bcb9024510cad9e170e12b6209aedb330f83` did not honour `__pairs` and did not expose `rawlen()`, producing **239 passed / 40 failed**. Rebuilding the same source revision with `LUAJIT_ENABLE_LUA52COMPAT` changed only those interpreter semantics and restored **266 passed / 13 failed**, exactly matching the local Fedora result.
+
+For this harness, the validation runtime therefore requires a semantic profile in which `pairs()` honours `__pairs` and `rawlen()` is available. CI should make that profile observable rather than silently assuming that any executable labelled LuaJIT is equivalent.
+
 ### Level 5 — Targeted In-Game Reality Test
 
 Define a bounded question before spending an in-game tranche. Capture where applicable:
