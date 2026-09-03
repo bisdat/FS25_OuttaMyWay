@@ -2237,7 +2237,7 @@ The resulting discovery is **Document Governance**: project knowledge must have 
 
 Failures in repository review are treated as evidence. They improve the knowledge system rather than diminishing the release that exposed them.
 
-This journal records durable engineering discoveries. It is not the current-status record and does not replace detailed test evidence or ADRs.
+This journal records durable engineering discoveries. It is not the current-status record and does not replace detailed test evidence or the Decision Log.
 
 ## v4.5.0 — The repository is a knowledge system
 

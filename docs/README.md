@@ -16,7 +16,6 @@ intentionally absent under the Archive Navigation Exemption.
 - [Decision Log](DECISION_LOG.md) — chronological accepted decisions and their rationale.
 - [Engineering Journal](ENGINEERING_JOURNAL.md) — observations, investigations, failed hypotheses, validation evidence, and engineering evolution.
 - [Localisation Policy](LOCALISATION.md) — live user-facing language and localisation rules.
-- [Architectural Decision Records](adr/README.md) — focused durable decision records and their current-status boundaries.
 - [Research](research/README.md) — bounded studies, audits, corpus work, and historical investigative evidence.
 - [Prototypes](prototypes/README.md) — bounded experimental questions and retained validation evidence.
 - [Diagnostics documentation](diagnostics/README.md) — diagnostic observation surfaces and interpretation boundaries.

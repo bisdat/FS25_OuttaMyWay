@@ -7,38 +7,36 @@ is not a changelog, release ledger, or canonical-release record.
 ## Current engineering concern
 
 Continue reviewing the remaining live documentation responsibility surfaces
-after establishing breadcrumb governance and reusable engine knowledge.
+after completing the ADR-corpus responsibility review.
 
 ## Established
 
-- The **Live Breadcrumb Invariant** is accepted: every live documentation folder README links each direct intentionally retained live document and each immediate live documentation subfolder. Direct-child navigation is sufficient. A missing link is an Orphan Signal requiring responsibility review, not automatic deletion.
-- The **Archive Navigation Exemption** is accepted. `docs/archive/` is outside the live breadcrumb tree, has no current authority, and is not a primary route from `docs/README.md`. It remains temporary recovery/harvesting material, not permanent storage.
-- `docs/50_Research/` has been renamed to `docs/research/`; its README owns the direct research breadcrumbs. Research remains evidence and does not establish current architectural authority.
-- `docs/engine/` now owns reusable GIANTS/FS25 runtime behaviour and observed or inspected API/surface knowledge. Engine facts do not define OuttaMyWay architecture or grant runtime authority.
-- The durable engine content formerly mixed into `AI_DISCOVERIES.md` and `GIANTS_AI_NOTES.md` has been harvested by subject into Runtime Knowledge and API Surfaces. Architecture, decisions, implementation defects, fixture evidence, and chronology remain owned by architecture, the Concept Register, Decision Log, Journal, research, prototypes, code, and Git; the two overlapping source files have no remaining live responsibility.
-- `LOCALISATION.md` remains live policy. The detailed readable-source and 567-key runtime experiment remains in the Vehicle Definition Corpus research record and is linked as evidence rather than duplicated into policy.
-- ADR, diagnostics, prototypes, representation evidence, architecture, code, engine, and research folders have local breadcrumb owners.
-- **Structure-Test Responsibility Drift:** structural tests retain assertions for repository artefacts whose live responsibilities have already been retired, including `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, and `docs/GLOSSARY.md`; the tests themselves therefore encode stale repository authority. This drift existed on PR #19's accepted-main base and is not a PR #19 regression. PR #19 does not modify tests. Test-governance reconciliation remains a separate future Engineering Increment, which is not defined or prepared here. Retired documents must not be restored merely to satisfy stale tests.
-- This engineering increment changes documentation only. No Lua, XML, test, fixture, release, or runtime behaviour is changed, and no in-game validation is claimed.
+- The ADR corpus exhibited **Decision Record Authority Drift**: historically useful rationale and provenance coexisted with normative/status language that no longer represented current architecture.
+- **Decision Responsibility Succession** is accepted. `DECISION_LOG.md` owns the live record of significant project decisions and rationale; current architecture owns present normative meaning; the Concept Register owns current concept state.
+- The **Stranded Live Knowledge** check was performed across ADR-0001 through ADR-0023 before retirement. Field World Equivalence Authority, Demonstrated Traversability, and GIANTS field-worker permission semantics were the remaining current items requiring fuller live homes; other current meanings already reside in architecture, the Concept Register, Decision Log, Engine Knowledge, engineering/process documentation, code knowledge, Journal/research, or Git history.
+- **Field World Equivalence Authority** is now defined in Runtime Responsibility Architecture and indexed in the Concept Register.
+- **Demonstrated Traversability** is now defined in Physical Representation Architecture and indexed in the Concept Register.
+- GIANTS field-worker continuation permission and its Constraint Semantics Mismatch are now recorded in Engine Knowledge.
+- The ADR corpus was removed after coverage and live-reference repair. It was not copied to archive. Git owns the exact historical ADR records and chronology; plain ADR identifiers may remain as provenance.
+- No runtime behaviour or tests changed.
+- **Structure-Test Responsibility Drift** remains separate: structural tests retain assertions for retired live documents. The pre-existing result remains 93 passing and 11 failing tests; ADR retirement exposes `ADR-0023` as a further stale dependency in two tests within that same failing set. This drift is not repaired here and remains a future test-governance concern. Retired ADRs or other documents must not be restored merely to satisfy stale tests.
 
 ## Current boundary
 
-Breadcrumb completeness establishes intentional discoverability, not semantic
-authority and not proof that every retained document is correctly placed.
-Archive remains exempt. Engine observations are reusable evidence with explicit
-safe-use and non-inference limits, separate from OuttaMyWay's current
-architecture.
+Decision history, current architecture, current concept state, and Git history
+now have distinct owners. Removing the harvested ADR container does not erase
+historical provenance or revive superseded Situation, Encounter, Refuge,
+Future-Space, waiting, or settling architecture.
 
 ## Next boundary
 
 Review remaining live documentation responsibility surfaces for stale,
-overlapping, or weakly placed knowledge. Reconcile one bounded responsibility
-at a time; do not select runtime implementation changes unless a separate
-architecture-to-code discrepancy is established.
+overlapping, or weakly placed knowledge, one bounded responsibility at a time.
+Do not define a runtime-reconstruction or test-governance increment here.
 
 ## Not currently active
 
-- Runtime implementation changes.
+- Runtime implementation or test changes.
 - Release preparation, packaging, publication, or canonicalisation.
-- Declaring the entire documentation corpus reconciled.
-- Reorganising or treating `docs/archive/` as permanent storage.
+- Restoring retired documents to satisfy stale references.
+- Reorganising `docs/archive/`.

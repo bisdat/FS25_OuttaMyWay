@@ -199,7 +199,7 @@ Every enduring item has one authoritative home; other documents link rather than
 | Runtime architecture | `architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md` and specialised architecture breadcrumbs |
 | Current engineering continuation | `CONTINUATION_STATE.md` |
 | Current concept state | `CONCEPT_REGISTER.md` |
-| Significant choices and rationale | `DECISION_LOG.md` and ADRs |
+| Significant choices and rationale | `DECISION_LOG.md` |
 | Evidence and discoveries | `ENGINEERING_JOURNAL.md`, test records and research |
 | Implementation responsibilities | code maps and implementation documentation |
 | Release history | root `../CHANGELOG.md` |
@@ -253,6 +253,26 @@ superseded. Its presence can falsely imply current authority.
 
 > **Stale responsibility → archive. Live responsibility + stale content → reconcile in place.**
 
+**Decision Record Authority Drift** occurs when a historical decision record
+retains useful rationale or provenance while its original normative or status
+language presents superseded meaning as current authority. Current architecture
+owns present normative architectural meaning; the Concept Register owns current
+concept state; the Decision Log is the live repository record for significant
+choices and rationale.
+
+**Decision Responsibility Succession** means that when a later record assumes
+the live responsibility of an earlier decision-document class, the earlier
+class does not remain live merely to preserve history after unique knowledge
+and references have been reconciled. Git owns exact historical text and
+chronology, and historical identifiers may remain as provenance without a live
+source file.
+
+Before retiring such a container, apply the **Stranded Live Knowledge** check:
+identify any still-current meaning whose only complete home is the stale
+container and harvest it into its present responsible home. A fully harvested
+container with no transitional responsibility may then be removed; Git retains
+its history.
+
 File age or version is a risk signal, not itself the decision criterion.
 `CONCEPT_REGISTER.md` remains active because this architecture assigns it the
 live responsibility of current concept state, despite its accumulated historical
@@ -279,7 +299,7 @@ Significant evidence triggers review of affected concepts and dependent architec
 The Concept Register is a replace-in-place current-state record. Each concept
 appears once in its current state, and a status change replaces the prior
 register state rather than appending another version section. Concept rationale
-and history belong in the Decision Log, ADRs and Git; empirical discovery
+and history belong in the Decision Log and Git; empirical discovery
 history belongs in the Engineering Journal, tests and research evidence.
 
 Each current entry links to the architecture document that owns its full

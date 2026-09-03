@@ -1,6 +1,6 @@
 # Current Concept Register
 
-This file records current concept state. It is a thin index, not the owner of detailed semantics; linked architecture owns each full definition and boundary. Historical status changes are recovered from Git, Decision Log/ADRs and evidence records. Each concept appears once in its present state, never repeatedly under old release/version headings.
+This file records current concept state. It is a thin index, not the owner of detailed semantics; linked architecture owns each full definition and boundary. Historical status changes are recovered from Git, the Decision Log and evidence records. Each concept appears once in its present state, never repeatedly under old release/version headings.
 
 ## Status model
 
@@ -20,6 +20,7 @@ This file records current concept state. It is a thin index, not the owner of de
 |---|---|---|---|
 | Global OuttaMyWay Runtime | Accepted | Hosts independent field-bounded Operations without cross-field coordination. | [Runtime §1](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#1-global-runtime-and-local-operations) |
 | Local Operation | Accepted | Ephemeral lifecycle for one Field World and one to three active supported AI assemblies; not a controller or traffic state. | [Runtime §1](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#1-global-runtime-and-local-operations) |
+| Field World Equivalence Authority | Accepted | Resolves immutable Job-Seeded Field World Snapshots as `SAME_FIELD_WORLD`, `DIFFERENT_FIELD_WORLD`, or `UNRESOLVED` from coherent positive evidence; unresolved evidence grants no Operation authority. | [Field World equivalence](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#field-world-equivalence-authority) |
 | Job Episode Bootstrap | Accepted | Job-scoped stable-knowledge cache opportunity that grants no traffic responsibility or frozen dynamic intent. | [Runtime §3](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#3-job-episode-bootstrap) |
 | active participant | Accepted | Supported assembly with a current qualifying GIANTS AI Job Episode in the Operation. | [Runtime §6](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#6-active-participation-and-physical-relevance) |
 | physically relevant entity | Accepted | Entity able to affect active work without being an active cooperative worker. | [Runtime §6](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#6-active-participation-and-physical-relevance) |
@@ -139,6 +140,7 @@ This file records current concept state. It is a thin index, not the owner of de
 | Conclusion-Relative Sufficiency | Accepted | Sufficiency depends on the conclusion sought. | [Assessment portfolio](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#assessment-representation-portfolio) |
 | Representation Passport | Accepted | Self-describes scope, provenance, dependencies, coverage, age, cost and permissions. | [Passport](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#representation-passport-and-self-description) |
 | Representation Claim Permission | Accepted | Makes downstream-use authority explicit. | [Passport](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#representation-passport-and-self-description) |
+| Demonstrated Traversability | Accepted | Actual assembly occupation/traversal may support bounded local accommodation conclusions only within a materially equivalent subject, configuration, environment, domain and movement basis. | [Demonstrated Traversability](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#demonstrated-traversability) |
 | Representation Cost Profile | Accepted | Keeps acquisition, refresh, projection, invalidation and delay costs separate from fitness. | [Cost](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#representation-cost-profile) |
 | Admissibility Before Optimisation | Accepted | Unsupported cheap geometry cannot defeat defensible evidence. | [Cost](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#representation-cost-profile) |
 | Situation Assessment as Representation-Fitness Arbiter | Accepted | Assessment decides fitness for current question, futures and horizon. | [Fitness](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#situation-assessment-as-representation-fitness-arbiter) |
