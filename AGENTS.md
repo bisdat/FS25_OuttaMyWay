@@ -60,6 +60,19 @@ The repository must remain understandable to a fallible human engineer, not only
 - Behaviour-preserving restructuring and behavioural implementation should normally be separate pull requests.
 - Update navigation/code-map documentation whenever structural changes would otherwise make the execution path harder to follow.
 
+## Naming authority
+
+`docs/NAMING_CONVENTIONS.md` is the authoritative repository naming convention.
+Read and follow it before creating or renaming files, modules, functions, types,
+identifiers, configuration keys or durable architectural terminology. Existing
+non-conforming source is transitional implementation debt and must not be copied
+as precedent.
+
+Do not perform unrelated repository-wide renaming merely to achieve conformity.
+Reconcile existing naming only within an explicitly bounded Engineering
+Increment or where changed responsibility makes the existing name materially
+misleading.
+
 ## Documentation roles
 
 Protect document responsibilities so documentation does not become another changelog surface:
