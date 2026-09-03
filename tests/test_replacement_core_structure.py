@@ -192,7 +192,7 @@ def test_v474_replay_modules_are_active_and_offline_only():
 
 
 def test_replay_corpus_names_all_required_historical_families():
-    text=(ROOT/"scenarios"/"replay"/"HistoricalFixtures.lua").read_text(encoding="utf-8")
+    text=(ROOT/"tests"/"replay"/"HistoricalFixtures.lua").read_text(encoding="utf-8")
     for token in ("V4649","V4657","V4664","V4670","V4677","TS016","NO-MOD","LOADED-NO-ENCOUNTER"):
         assert token in text
 

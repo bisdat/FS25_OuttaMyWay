@@ -10,6 +10,8 @@ intentionally absent under the Archive Navigation Exemption.
 - [Engineering Architecture](ENGINEERING_ARCHITECTURE.md) — engineering method, repository authority, knowledge governance, and canonicalisation.
 - [Current Concept Register](CONCEPT_REGISTER.md) — thin index of accepted, deferred, and rejected current concepts.
 - [Continuation State](CONTINUATION_STATE.md) — replace-in-place current concern, established understanding, and next engineering boundary.
+- [Scope and Validation Envelope](SCOPE_AND_VALIDATION_ENVELOPE.md) — supported, boundary-characterisation, and no-claim boundaries and their validation obligations.
+- [Testing Methodology](TESTING_METHODOLOGY.md) — how claims are challenged and evidence strength increases.
 
 ## Decisions, evidence, and policy
 

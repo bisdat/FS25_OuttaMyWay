@@ -6,45 +6,43 @@ is not a changelog, release ledger, or canonical-release record.
 
 ## Current engineering concern
 
-Close the repository/documentation-governance reconstruction after reconciling
-structural tests with the stable live documentation responsibility model.
+Complete the root responsibility and validation-governance review before a
+separate diagnostic/probe implementation investigation.
 
 ## Established
 
-- **Evidence Responsibility Fragmentation** is reconciled: Research now owns bounded prototype and focused representation investigation evidence beneath `research/prototypes/` and `research/representation/`.
-- **Evidence Record ≠ Instrument Record** separates durable questions, methods, findings and limits from temporary logging, HUD, probe and sampling mechanics.
-- **Probe Lifetime Follows Question Lifetime** is established as knowledge governance: closed questions preserve their durable result in its responsible home, not permanent documentation authority for the probe. Actual probe or diagnostic implementation sediment remains a future implementation observation/reconstruction question and is not selected here.
-- **Diagnostic Documentation Generation Drift** was confirmed in the retired v4.7-era interaction diagnostics. Its final harvest found no additional uniquely current durable discovery.
-- **Lifecycle Evidence Asymmetry** is Accepted in Runtime Responsibility Architecture and the Concept Register: positive or complete evidence may establish lifecycle change, while absence under incomplete observation cannot establish termination, supersession or membership loss.
-- Root `IMPLEMENTATION_MAP.md` replaces the former `docs/code/` hierarchy and maps accepted architecture to principal current source placement without granting architectural authority to implementation vocabulary.
-- **Configuration Architecture** and **GUI Architecture** are explicit Deferred responsibility placeholders. Current `config.lua` and diagnostic/test HUDs remain unreconciled implementation evidence, not accepted architecture.
-- **Live Evidence Relocation Dependency** remains valid: tests may legitimately consume retained Research evidence when it participates in a current validation contract. The active Prototype 32/33 dependencies remain anchored under `docs/research/prototypes/` without gaining architectural authority.
-- **Structure-Test Responsibility Drift** is reconciled. Tests now protect current contracts rather than retired repository topology; no active test requires retired architecture, Roadmap, Glossary, status/handover, alignment/contract, or ADR documents to exist.
-- **Historical Test Responsibility Persistence** explained why historical documentation-conformance tests continued to assert retired responsibility surfaces. Those obsolete tests were removed; Git retains their history.
-- **First-Failure Masking** required complete affected-test and dependency-surface review rather than one missing-file repair at a time.
-- Mixed structural tests retain current implementation regression protection without presenting implementation persistence as current architectural authority. The pre-1.0 versioning test now follows its live policy owner in Engineering Architecture.
-- The direct structure-test harness now passes all **96 tests with zero failures**.
-- `docs/assets/` was removed under **Speculative Container Persistence** because its empty placeholder had no realised artefact or dependency. Future structure will be created only when demonstrated responsibility requires it.
-- The root documentation topology review is complete unless new contrary evidence appears.
+- Accepted root responsibilities are now explicit: `/tests` owns executable offline validation machinery and replay fixtures; `docs/research/` owns bounded human evidence; root implementation containers exist only for demonstrated implementation responsibility.
+- Root `/gui` was retired under **Unreferenced Asset Persistence**. Its orphan HUD background had no current runtime, XML, GUI-architecture or repository dependency. Deferred GUI architecture remains in `docs/GUI.md` without speculative implementation topology.
+- Root `/scenarios` was retired by responsibility succession under **Scenario Responsibility Conflation**. The reconciled Research Scenario Library owns human Repeatable Reality Fixture knowledge, while executable historical replay data is now under `tests/replay/`.
+- A Scenario is reproducible starting Reality; a Test is a question asked using it. Scenario identity follows materially stable starting Reality, and fixture repeatability strengthens attribution rather than claim breadth.
+- `/tests` now documents its Python structural suite, stubbed Lua offline conformance harness and replay-fixture responsibilities. Offline PASS remains distinct from GIANTS field Reality.
+- The Python structural suite passes **96/96**. The available LuaJIT offline harness reports **266 passed / 13 failed**, identical to exact starting `main`; replay relocation created no new failure. That pre-existing behavioural-harness baseline is evidence for later responsibility review, not authority for an unrelated fix here.
+- `TESTING_METHODOLOGY.md` owns progressive validation, claim/assumption traceability, Repeatable Reality Fixtures, regression selection and Failure-Driven Fixture Promotion.
+- `SCOPE_AND_VALIDATION_ENVELOPE.md` owns the Supported, Boundary Characterisation and Excluded/No-Claim index and resulting validation obligation.
+- Current validation remains depth-first while concepts and implementation are evolving. Level 7 systematic supported-envelope coverage, Scope Overlay and a mature validation matrix remain future work.
+- **Test-Sustained Implementation Persistence** remains an observation for the later diagnostic/probe investigation; no diagnostic or probe implementation was pruned.
+- The root documentation and repository responsibility review is complete unless contrary evidence appears.
 - No runtime behaviour changed.
 
 ## Current boundary
 
-Repository knowledge, evidence, implementation mapping and test contracts now
-have explicit live owners. Historical implementation vocabulary and retained
-evidence may remain regression inputs without reviving retired architecture or
-documentation topology.
+Repository knowledge, scope, methodology, fixtures and executable validation
+now have distinct owners. Broader validation can grow from explicit claim
+boundaries without treating every successful coverage case as a permanent saved
+fixture.
 
 ## Next boundary
 
-The repository/documentation-governance reconstruction is closed enough to
-begin a separate observation-led investigation of diagnostic/probe
-implementation persistence.
+Begin observation-led diagnostic/probe implementation persistence
+investigation, including Test-Sustained Implementation Persistence, now that
+root/document/test responsibilities are explicit.
 
 ## Not currently active
 
 - Runtime implementation changes.
-- Defining the future probe/diagnostic reconstruction increment.
+- Diagnostic/probe pruning or defining its implementation increment.
+- Test-suite modularisation.
+- Scope Overlay or mature supported-envelope validation-matrix construction.
 - Release preparation, packaging, publication, or canonicalisation.
 - Restoring retired documents to satisfy stale references.
 - Reorganising `docs/archive/`.
