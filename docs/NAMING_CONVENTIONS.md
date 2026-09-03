@@ -197,8 +197,8 @@ value belongs to the responsibility or subsystem that gives it meaning. Only
 truly system-wide identity and invariants belong on the root `OuttaMyWay`
 namespace. Do not create generic global-variable dumping grounds.
 
-These conventions do not redesign `scripts/config.lua` or decide deferred
-Configuration architecture.
+These conventions do not redesign `scripts/config.lua` or duplicate the
+[Configuration architecture](CONFIGURATION.md).
 
 ## Historical provenance
 

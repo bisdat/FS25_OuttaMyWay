@@ -26,7 +26,7 @@ intentionally absent under the Archive Navigation Exemption.
 - [Architecture](architecture/README.md) — what the system should achieve and which responsibilities and concepts exist.
 - [Implementation Map](IMPLEMENTATION_MAP.md) — where accepted architectural responsibilities presently appear in source and where placement or vocabulary lags.
 - [Engine Knowledge](engine/README.md) — reusable observed FS25/GIANTS runtime behaviour, API surfaces, and semantic limits.
-- [Configuration](CONFIGURATION.md) — Deferred, unreconciled Configuration architecture responsibility.
+- [Configuration](CONFIGURATION.md) — supported player-choice and consent surface, admission rules, defaults, persistence, and authority boundaries.
 - [GUI](GUI.md) — Deferred, unreconciled player-facing interface and communication architecture responsibility.
 
 The live root does not link `archive/`; archived material has no current

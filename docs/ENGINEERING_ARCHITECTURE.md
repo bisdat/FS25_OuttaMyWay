@@ -217,7 +217,7 @@ Every enduring item has one authoritative home; other documents link rather than
 | Significant choices and rationale | `DECISION_LOG.md` |
 | Evidence and discoveries | `ENGINEERING_JOURNAL.md`, test records and `research/` |
 | Implementation placement / architecture-to-code mapping | `IMPLEMENTATION_MAP.md` |
-| Configuration architecture | `CONFIGURATION.md` (Deferred placeholder) |
+| Configuration architecture | `CONFIGURATION.md` |
 | GUI architecture | `GUI.md` (Deferred placeholder) |
 | Release history | root `../CHANGELOG.md` |
 
