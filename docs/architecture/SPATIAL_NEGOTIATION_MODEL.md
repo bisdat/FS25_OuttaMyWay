@@ -97,9 +97,21 @@ If either worker must first reach a headland or transition, A8 does not predict 
 
 ### Passage Geometry Contract
 
-Passage recognition geometry is not Passage execution geometry. Before Passage selection, assessment uses each complete Physical Assembly's actual current productive or working configuration: current directional working extents and represented productive corridors must establish genuine corridor competition. Transit dimensions must not shrink a deployed working corridor before Transit becomes the relevant configuration.
+Passage recognition geometry is not Passage planning geometry, and geometry knowledge is not physical-state realisation. Before Passage selection, assessment uses each complete Physical Assembly's actual current productive or working configuration: current directional working extents and represented productive corridors must establish genuine corridor competition. Transit dimensions must not shrink a deployed working corridor before Passage selects Transit as its required geometry basis.
 
-After Cooperative Passage has been selected and Transit configuration is required and positively realised, cached directional Transit geometry for the complete Physical Assembly owns the simple Passage arrangement and crossing questions: facing extents, Passage clearance, Development burden and crossing-window physical extents. Complete assembly membership remains mandatory; internally complete Transit dimensions for only discovered members are insufficient. Directional offsets and asymmetric extents remain valid and must not be recentered without evidence.
+Once Cooperative Passage selects Transit as that basis, cached directional Transit geometry for the complete Physical Assembly may plan the simple Passage arrangement: facing extents, Passage clearance construction, Development burden and crossing-window physical extents. Physical Transit realisation is not a prerequisite for this planning authority. Complete assembly membership remains mandatory; internally complete Transit dimensions for only discovered members are insufficient. Directional offsets and asymmetric extents remain valid and must not be recentered without evidence.
+
+```text
+current working geometry
+    → Passage recognition
+    → Passage selection chooses Transit geometry basis
+    → cached complete-assembly Transit geometry plans Passage
+    → capture / Hold / configuration settlement
+    → fresh execution-origin / Reality verification
+    → physical Passage
+```
+
+Physical guide movement relying on the Transit-conditioned plan must wait until the existing supported Transit configuration/settlement boundary has resolved. At that boundary fresh Reality may validate or adapt execution geometry and origins. This is not a universal requirement that folding succeed: existing handling for non-foldable or unsupported assemblies and bounded settlement exhaustion remains part of the validated lifecycle.
 
 This purpose-specific Transit Passage contract does not claim generic current collision-shape Coverage Closure or generic negative-clearance authority. Current evidence supports its coarse parametric geometry without sophisticated articulated Passage sweep, animation swept-volume solving or longitudinal arc/dynamics reconstruction. Reality determines whether that remains sufficient. Do not promote Deferred Detailed Manoeuvre Sweep Construction into a Passage prerequisite; generic Deployment Sweep and Manoeuvre Sweep remain available to other assessments that genuinely require them.
 
@@ -123,7 +135,7 @@ This is a control-acquisition/spatial reserve, not a GIANTS braking model. Do no
 
 For foreseeable Passage, distinguish the **required Passage reserve** remaining after capture from the **disposable native approach margin** above it. Current closing speed determines how rapidly disposable margin is consumed. Commitment becomes due before independent approach consumes the space/time needed to acquire and settle both workers while retaining the reserve.
 
-Configuration **duration** is not part of pre-commit lead time because capture controls closing progression. Realised Transit **geometry** may affect Development and downstream Passage geometry after capture.
+Configuration **duration** is not part of pre-commit lead time because capture controls closing progression. Selected cached Transit **geometry** supports Development and downstream Passage planning; physical movement waits for configuration settlement and fresh execution-boundary verification.
 
 The historical 80 m locality literal is not a commitment rule and must not be replaced by another universal distance literal.
 
@@ -155,7 +167,7 @@ Remain Reality-sensitive:
 - exact guide geometry and lateral allocation until the relevant physical leg begins; and
 - recovery debt derived from the manoeuvre actually executed.
 
-Stale early guides have no independent authority. The existing Phase-5 Transit/settlement boundary is the donor for reality-verified execution geometry. Once a physical leg begins, its locally authorised execution choice should normally remain stable to avoid unsafe oscillation. Hard safety remains authoritative.
+Stale early guides have no independent authority. The existing Phase-5 Transit/settlement boundary is the donor for reality-verified execution geometry and origin rebasing before physical guide movement. It resolves the supported configuration handling without universally asserting successful folding. Once a physical leg begins, its locally authorised execution choice should normally remain stable to avoid unsafe oscillation. Hard safety remains authoritative.
 
 Passage owns only intervention-created debt. It does not reconstruct pre-existing imperfections or articulation. Physical crossing alone is not completion; required recovery, restoration and handback remain coupled obligations.
 
