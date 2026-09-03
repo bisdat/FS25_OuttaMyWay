@@ -38,6 +38,7 @@ This file records current concept state. It is a thin index, not the owner of de
 | Resolution Commitment | Accepted | Durable accepted obligation persisting while legitimate obligations remain open. | [Runtime §13](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#resolution-commitment) |
 | Operation Context / Relationship Responsibility | Accepted | Operation owns common context; temporary interactions/subjects own active responsibility. | [Runtime §14](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#14-operation-context-relationship-responsibility) |
 | Pairwise Resolution Exclusivity | Accepted | At most one coupled commitment per Operation, with exactly two active AI participants. | [Runtime §15](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#15-pairwise-resolution-exclusivity) |
+| Lifecycle Evidence Asymmetry | Accepted | Positive or complete evidence may establish lifecycle change; absence under incomplete observation cannot establish termination, supersession or membership loss. | [Lifecycle Evidence Asymmetry](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#lifecycle-evidence-asymmetry) |
 | Bounded Authority | Accepted | Determines permitted action from responsibility and Reality without enlarging purpose. | [Runtime §16](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#16-bounded-authority) |
 | Control | Accepted | Realises authorised requests through GIANTS mechanisms and reports outcomes. | [Runtime §17](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#17-control) |
 | Downstream Authority Monotonicity | Accepted | Downstream may narrow/refuse authority, never enlarge upstream strategy. | [Runtime §18](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md#18-downstream-authority-monotonicity) |
@@ -160,6 +161,8 @@ This file records current concept state. It is a thin index, not the owner of de
 | Detailed Manoeuvre Sweep Construction | Deferred | Turning centre/radius, articulation and steering-kinematics construction remain evidence questions. | [Sweeps](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#deployment-sweep-and-manoeuvre-sweep) |
 | Deferred Post-Job Configuration Normalisation | Deferred | In-place footprint reduction may be examined later; no behaviour is authorised. | [Completion](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#deferred-post-job-configuration-normalisation) |
 | Parked Assessment Deadline Escalation | Deferred | Future Decision work may examine failsafe response to unrefreshable knowledge; no policy selected. | [Deadline](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#parked-assessment-deadline-escalation) |
+| Configuration Architecture | Deferred | Recognised system responsibility with reserved authority in `CONFIGURATION.md`; current `config.lua` mixes policy, calibration, diagnostics and implementation constants and is not yet accepted as the architectural model. | [Configuration](CONFIGURATION.md) |
+| GUI Architecture | Deferred | Recognised player-facing interface/communication responsibility with reserved authority in `GUI.md`; current diagnostic/test HUDs are not accepted product GUI architecture. | [GUI](GUI.md) |
 
 ## Current rejected / excluded concepts
 

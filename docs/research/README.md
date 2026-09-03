@@ -1,8 +1,9 @@
 # Research
 
-Research owns bounded evidence gathering, corpus studies, compliance/audit
-products and historical investigative material that may inform architecture
-but does not itself establish current architectural authority.
+Research owns bounded studies, experiments, prototypes, audits, corpus work,
+representation investigations and historical investigative evidence that may
+inform architecture but do not themselves establish current architectural
+authority.
 
 ## Breadcrumbs
 
@@ -11,3 +12,5 @@ but does not itself establish current architectural authority.
 - [Canonical Knowledge and Constraint Recovery](CANONICAL_KNOWLEDGE_CONSTRAINT_RECOVERY.md) — recovery matrix and investigative conclusions.
 - [Design History](DESIGN_HISTORY.md) — compact project-design evolution milestones.
 - [Vehicle Definition Corpus and Semantic Review](VEHICLE_DEFINITION_CORPUS.md) — base-game corpus, localisation, and semantic-review evidence.
+- [Prototype evidence](prototypes/README.md) — bounded experimental questions, methods, fixtures, outcomes, and limits.
+- [Representation evidence](representation/README.md) — focused historical representation investigations and their evidence limits.

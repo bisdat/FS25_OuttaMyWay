@@ -1,8 +1,8 @@
 # Prototype evidence
 
-Prototype records own bounded experimental questions, methods, observations,
-and validation limits. They may inform later architecture but do not establish
-current architectural authority merely by being retained.
+Prototype records are bounded experimental evidence: questions, methods,
+fixtures, observations, validation/disproof and limits. They may inform
+architecture but do not establish current architectural authority.
 
 ## Breadcrumbs
 

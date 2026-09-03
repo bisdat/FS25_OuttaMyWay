@@ -200,8 +200,10 @@ Every enduring item has one authoritative home; other documents link rather than
 | Current engineering continuation | `CONTINUATION_STATE.md` |
 | Current concept state | `CONCEPT_REGISTER.md` |
 | Significant choices and rationale | `DECISION_LOG.md` |
-| Evidence and discoveries | `ENGINEERING_JOURNAL.md`, test records and research |
-| Implementation responsibilities | code maps and implementation documentation |
+| Evidence and discoveries | `ENGINEERING_JOURNAL.md`, test records and `research/` |
+| Implementation placement / architecture-to-code mapping | `IMPLEMENTATION_MAP.md` |
+| Configuration architecture | `CONFIGURATION.md` (Deferred placeholder) |
+| GUI architecture | `GUI.md` (Deferred placeholder) |
 | Release history | root `../CHANGELOG.md` |
 
 The development repository may be richer than an external publication package. It preserves knowledge needed for continuation, architectural evolution, disproven hypotheses, validation evidence, implementation and diagnostics.
@@ -281,6 +283,16 @@ content. `DECISION_LOG.md`, `ENGINEERING_JOURNAL.md` and the root
 their live responsibilities. Documents such as the archived `ARCHITECTURE.md`,
 `KNOWN_ISSUES.md` and `ROADMAP.md` lose active-surface status because their
 present-tense responsibilities have moved elsewhere.
+
+### Evidence responsibility and instrument lifetime
+
+**Evidence Responsibility Fragmentation** occurs when records belonging to one evidence lifecycle are spread across peer documentation roots, making placement unpredictable. Research owns bounded experimental and investigative evidence, including prototypes and focused representation investigations, without granting those records current architectural authority.
+
+**Evidence Record ≠ Instrument Record.** A durable evidence record preserves the engineering question, method, observations, result and limitations. An instrument record primarily preserves temporary logging, HUD or probe configuration, labels, or sampling mechanics. Instrumentation history does not automatically justify a permanent live documentation responsibility after its durable findings have been harvested.
+
+**Probe Lifetime Follows Question Lifetime.** A diagnostic probe is justified by a bounded engineering question. When the question closes, its durable evidence or discovery moves to the knowledge store that owns it; the probe and its instrumentation gain no permanent documentation authority merely because code or logs once existed. This governance rule does not itself authorise pruning diagnostic implementation.
+
+**Diagnostic Documentation Generation Drift** occurs when a documentation surface claims current diagnostic responsibility while substantially describing an earlier runtime generation. Such a surface is not a trustworthy current-runtime reference and must undergo the Stranded Live Knowledge check rather than persist through its current-sounding label.
 
 Document lifecycle and authority should be visible through responsibility and navigation, not a rolling version header in every file. Git provides chronology. Removing development history for an external publication is a publication choice, not a reason to erase it from the engineering repository.
 

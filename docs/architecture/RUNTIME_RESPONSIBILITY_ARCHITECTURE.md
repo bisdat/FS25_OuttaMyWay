@@ -132,6 +132,14 @@ membership:
 
 These are membership changes within one Local Operation, not separate Operations. A restarted or replacement GIANTS job is a new Job Episode and must be independently admitted even when it uses the same Physical Assembly. Prior interaction creates no persistent pair history.
 
+### Lifecycle Evidence Asymmetry
+
+**Positive or complete lifecycle evidence may establish admission, succession, completion or membership removal. Absence under incomplete observation does not itself establish termination, supersession or membership loss.**
+
+Evidence disappearance is not itself a lifecycle event. An incomplete observation may positively establish newly observed membership, but incomplete evidence cannot prove removal of already admitted membership. Job Episode termination requires positive governing evidence, such as authoritative source-job completion or supported succession/replacement evidence. Local Operation membership removal requires sufficiently complete evidence. Temporary observation gaps therefore do not manufacture lifecycle transitions.
+
+This is an evidence-authority rule, not a timeout, grace period, cooldown or persistent Encounter mechanism. Current positive contradiction may still end a responsibility where its governing basis is explicitly disproved, and the rule must not preserve stale responsibility indefinitely when complete or positive termination evidence exists.
+
 ## 6. Active participation and physical relevance
 
 An **active participant** is a supported Physical Assembly with a current qualifying GIANTS AI Job Episode participating in the Local Operation.

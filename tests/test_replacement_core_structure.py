@@ -644,7 +644,7 @@ def test_v4732_productive_continuation_preference_is_documented_without_producti
     glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
     concepts=(ROOT/"docs"/"CONCEPT_REGISTER.md").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
+    protocol=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     assert 'OuttaMyWay.VERSION = "0.3.0.0"' in config
@@ -675,7 +675,7 @@ def test_v4733_speed_ordering_evidence_asymmetry_and_configuration_footprint_aut
     architecture=(ROOT/"docs"/"ARCHITECTURE.md").read_text(encoding="utf-8")
     physical=(ROOT/"docs"/"architecture"/"PHYSICAL_REPRESENTATION_ARCHITECTURE.md").read_text(encoding="utf-8")
     adr23=(ROOT/"docs"/"adr"/"ADR-0023-traffic-policeman-movement-priority.md").read_text(encoding="utf-8")
-    protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
+    protocol=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_21_PRODUCTIVE_CONTINUATION_EVIDENCE.md").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     assert 'OuttaMyWay.VERSION = "0.3.0.0"' in config
@@ -707,7 +707,7 @@ def test_v4740_guarded_recovery_architecture_consolidation_preserves_non_product
     glossary=(ROOT/"docs"/"GLOSSARY.md").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     handover=(ROOT/"docs"/"ENGINEERING_HANDOVER.md").read_text(encoding="utf-8")
-    protocol=(ROOT/"docs"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
+    protocol=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md").read_text(encoding="utf-8")
 
     assert 'OuttaMyWay.VERSION = "0.3.0.0"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
@@ -960,8 +960,8 @@ def test_v4767_d0138_native_field_worker_drive_command_probe_is_passive_and_sdk_
     refuge=(ROOT/"scripts"/"diagnostics"/"RefugeQualificationShadowProbe.lua").read_text(encoding="utf-8")
     residual=(ROOT/"scripts"/"diagnostics"/"ProductiveCoverageResidualProbe.lua").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    d0137=(ROOT/"docs"/"prototypes"/"PROTOTYPE_32_NATIVE_AI_DRIVE_SIGNAL_SHADOW.md").read_text(encoding="utf-8")
-    d0138=(ROOT/"docs"/"prototypes"/"PROTOTYPE_33_NATIVE_FIELD_WORKER_DRIVE_COMMAND_SHADOW.md").read_text(encoding="utf-8")
+    d0137=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_32_NATIVE_AI_DRIVE_SIGNAL_SHADOW.md").read_text(encoding="utf-8")
+    d0138=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_33_NATIVE_FIELD_WORKER_DRIVE_COMMAND_SHADOW.md").read_text(encoding="utf-8")
     assert 'OuttaMyWay.VERSION = "0.3.0.0"' in config
     assert 'NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_ENABLED = true' in config
     assert 'scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua' in main
