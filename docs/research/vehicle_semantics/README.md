@@ -63,7 +63,7 @@ The catalogue is based on Raw Definition Evidence plus Selected-Field Inheritanc
 ## Reproduce the consolidation
 
 ```text
-python research/vehicle_semantics/consolidate_review.py   --output /temporary/output
+python docs/research/vehicle_semantics/consolidate_review.py   --output /temporary/output
 ```
 
 The generated catalogue and summary should match the repository-bundled outputs byte for byte.

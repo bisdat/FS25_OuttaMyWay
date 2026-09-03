@@ -125,7 +125,7 @@ Do not rerun every historical scenario ceremonially when the change cannot affec
 
 ### Level 7 — Mature Supported-Envelope Validation
 
-Once conceptual stability is sufficient, validation should broaden systematically across the Supported Envelope using a scope-filtered agronomy/assembly/configuration/spatial coverage model derived from the reviewed game corpus. The [Vehicle Definition Corpus](research/VEHICLE_DEFINITION_CORPUS.md) records 606 reviewed base-game definitions, 90 used primary roles and 42 used capabilities; the machine-readable corpus is under [`../research/vehicle_semantics/`](../research/vehicle_semantics/). Scope Overlay, paid DLC and modded definitions remain Deferred.
+Once conceptual stability is sufficient, validation should broaden systematically across the Supported Envelope using a scope-filtered agronomy/assembly/configuration/spatial coverage model derived from the reviewed game corpus. The [Vehicle Definition Corpus](research/VEHICLE_DEFINITION_CORPUS.md) records 606 reviewed base-game definitions, 90 used primary roles and 42 used capabilities; the machine-readable corpus is under [`research/vehicle_semantics/`](research/vehicle_semantics/README.md). Scope Overlay, paid DLC and modded definitions remain Deferred.
 
 This does not require every Cartesian combination of 606 definitions and creates neither a Scope Overlay nor a validation matrix. **No current comprehensive validation matrix is implied or required by this section.**
 
