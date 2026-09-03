@@ -1,3 +1,12 @@
+## D-0210 — Purpose-Scoped Geometry Authority for Cooperative Passage
+
+**Status:** Accepted.
+
+**Decision:** Geometry authority is purpose-scoped. Current/working geometry owns current occupancy and corridor/Passage recognition. When a prospective Passage Candidate requires Transit as its geometry basis, cached directional Transit dimensions for the complete Physical Assembly may construct and test Passage arrangement, facing extents, clearance, Development burden and crossing-window geometry during Candidate evaluation, before Decision or Resolution Commitment. Selection and commitment require a supported Candidate and Transit-conditioned arrangement. Physical movement relying on the selected plan waits for the existing supported Transit configuration/settlement boundary and fresh Reality verification or adaptation of execution geometry and origins. That boundary preserves validated non-foldable, unsupported and settlement-exhausted handling; successful folding is not a universal prerequisite. Generic negative-clearance authority is not a prerequisite for the separately scoped Transit Passage conclusion, while complete assembly membership remains required for complete-assembly Transit authority. Sophisticated articulated, animation-swept-volume and longitudinal-arc modelling is not a current Passage requirement. This decision selects no change to existing runtime behaviour.
+
+**Reason:** The post-PR-#17 architecture↔runtime review initially hypothesised a Negative-Clearance Permission Bypass because Passage uses represented geometry carrying incomplete generic coverage and no generic negative-clearance authority. Geometry-history reconstruction and current-code review disproved that hypothesis: it conflated generic collision authority with the narrower Transit Passage authority. Earlier test and fix evolution left prototype/test vocabulary and mixed generic/purpose-specific authority encoding after the simpler Transit Passage contract became operational. Reality had already demonstrated coarse Transit dimensions sufficient for Passage, while current working geometry remained necessary for recognition. The disproven hypothesis is retained as useful architectural learning, not recorded as a runtime defect.
+
+
 ## D-0209 — Retire the Repository Release System
 
 **Status:** Accepted owner disposition.
