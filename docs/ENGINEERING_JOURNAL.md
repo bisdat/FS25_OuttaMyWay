@@ -2473,3 +2473,38 @@ do not validate each other merely because they remain mutually consistent.
 reconciliation staging. Once useful knowledge and dependency/reference needs
 are exhausted, delete the archived file from the working tree; Git preserves
 permanent history.
+
+## 2026-09-03 — Independent validation execution became accepted governance
+
+Initial execution of the offline Lua harness with stock Ubuntu LuaJIT produced
+**239 passed / 40 failed**. Semantic probes reported
+`pairs_metamethod_count=0` and `rawlen_available=false`. A controlled experiment
+held Ubuntu and the exact LuaJIT source revision
+`c525bcb9024510cad9e170e12b6209aedb330f83` fixed, then rebuilt it with
+`LUAJIT_ENABLE_LUA52COMPAT`. The resulting profile reported
+`pairs_metamethod_count=1` and `rawlen_available=true`, and the harness exactly
+reproduced the established local baseline: **266 passed / 13 failed**.
+
+This demonstrated a **Validation Runtime Contract**, not an OuttaMyWay
+application/runtime defect: repeatable offline evidence depends on materially
+relevant execution semantics, including build options, as well as interpreter
+identity, repository bytes, and inputs. The experiment establishes the offline
+harness runtime contract; it does **not** prove that GIANTS' embedded Lua runtime
+has identical semantics.
+
+PR #24 established independent CI execution. The `Structural contracts` job was
+subsequently made a required `main` protection check with enforcement for
+administrators. Required-check strictness remained false, so the rule does not
+by itself require a pull request to be updated to latest `main`. `Lua offline
+observation (non-blocking)` retained the raw known-failure evidence without
+turning 13 into an accepted threshold. PR #25 then established **Validation
+Execution Separation**: `/tests` stayed in place as the source-controlled owner
+of executable validation assets, while ordinary repository-suite execution
+moved out of implementation-agent work and into GitHub Actions.
+
+The milestone also named **Test Visibility Is Not Test Execution
+Responsibility** and **Independent Execution Preserves Validation
+Independence**. Tests remain readable contract evidence and may change when an
+accepted contract changes; CI executes and reports, Engineering interprets,
+the owner accepts by merge, and GIANTS Reality remains necessary for
+runtime-dependent claims.

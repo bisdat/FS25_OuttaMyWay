@@ -90,7 +90,13 @@ branch from clean/current main
   ↓
 Implement
   ↓
-Validate
+implementation-local sanity checks
+  ↓
+GitHub Actions executes/reports repository offline suites
+  ↓
+Engineering interprets CI evidence
+  ↓
+in-game Reality validation where the claim requires it
   ↓
 Record
   ↓
@@ -108,12 +114,18 @@ Repeat
 - **Hypothesise:** state what is expected and what evidence could disprove it.
 - **Define:** bound the increment so intentional effects are attributable.
 - **Implement:** make the smallest constructive change that tests the hypothesis while preserving architectural intent.
-- **Validate:** compare expected and observed outcomes at the appropriate implementation and Reality levels.
+- **Validate:** the implementation agent performs inexpensive implementation-local sanity checks. GitHub Actions ordinarily executes and reports the repository offline suites; `Structural contracts` is the required blocking check on protected `main`, while the Lua harness remains non-blocking observational evidence. Engineering interprets CI evidence. Appropriately scoped in-game Reality validation remains separate and is required for claims that depend on GIANTS runtime behaviour.
 - **Record:** promote durable architecture, implementation knowledge, evidence and decisions into their responsible repository homes.
 - **Review:** inspect the complete increment through a pull request.
 - **Accept:** the repository owner's merge makes the result part of accepted `main`.
 
 Failed validation returns work to the engineering loop. It does not invoke release or canonicalisation machinery.
+
+This execution boundary does not transfer engineering authority to automation.
+CI executes and reports repeatable checks; Engineering determines what that
+evidence means; and only the repository owner's merge accepts the increment into
+`main`. Green structural CI establishes only the structural/source contract
+asserted by that suite.
 
 ## Repository workflow and provenance
 
