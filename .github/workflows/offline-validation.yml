@@ -1,0 +1,66 @@
+name: Offline Validation
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: offline-validation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  structural:
+    name: Structural contracts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Install pytest
+        run: python -m pip install pytest
+
+      - name: Run structural/source-contract suite
+        run: python -m pytest -q tests/test_replacement_core_structure.py
+
+  lua-observation:
+    name: Lua offline observation (non-blocking)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Install LuaJIT
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes luajit
+          luajit -v
+
+      - name: Run Lua offline harness
+        id: lua
+        continue-on-error: true
+        run: luajit tests/replacement_core/run.lua
+
+      - name: Record Lua observation
+        if: always()
+        run: |
+          {
+            echo "## Lua offline observation"
+            echo
+            echo "- Harness step outcome: \`${{ steps.lua.outcome }}\`"
+            echo "- This job is intentionally non-blocking while the existing Lua harness failures are being reconciled."
+            echo "- No failure-count threshold is encoded as an accepted contract."
+            echo "- See the job log for the full harness output."
+          } >> "$GITHUB_STEP_SUMMARY"

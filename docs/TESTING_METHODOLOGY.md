@@ -58,6 +58,12 @@ Look for hidden authority, duplicated responsibility, stale implementation gener
 
 The current mechanisms are Python structural/source-contract tests and Lua offline behavioural/conformance tests, documented in [`/tests`](../tests/README.md). Their claim is bounded to: given repository/source structure or simulated/stubbed evidence, the implementation satisfies the asserted contract. They cannot prove GIANTS supplies equivalent evidence or reacts equivalently in-game.
 
+### Continuous Integration Execution Boundary
+
+GitHub Actions may execute repeatable repository and offline validation against pull-request and `main` commits. CI owns execution and reporting of those checks, not interpretation, architecture, or acceptance. A green CI result supports only the claim made by the tests it ran and cannot replace in-game Reality where the claim depends on GIANTS behaviour.
+
+A known-failing suite may be run observationally without becoming a merge gate while its failures are being reconciled. Such a workflow must preserve the raw failure outcome and must not encode the current failure count as an accepted threshold merely to manufacture green status.
+
 ### Level 5 — Targeted In-Game Reality Test
 
 Define a bounded question before spending an in-game tranche. Capture where applicable:
