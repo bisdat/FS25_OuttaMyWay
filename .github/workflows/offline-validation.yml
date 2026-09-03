@@ -69,7 +69,8 @@ jobs:
       - name: Run Lua offline harness
         id: lua
         continue-on-error: true
-        run: "$LUAJIT_BIN" tests/replacement_core/run.lua
+        run: |
+          "$LUAJIT_BIN" tests/replacement_core/run.lua
 
       - name: Record Lua observation
         if: always()
