@@ -70,12 +70,12 @@ function's actual semantic effect:
 | `select` | Choose among supported alternatives. |
 | `admit` | Accept a subject into a defined lifecycle or eligibility boundary. |
 | `transition` | Apply an already-justified change of responsibility or state. |
-| `authorize` | Grant bounded permission for an action; it does not perform that action. |
+| `authorize` | Grant bounded permission within an already-established purpose or responsibility. It may narrow or refuse permitted action but must not invent strategic purpose. |
 | `execute` | Perform an already-authorised action. |
 | `dispatch` | Route already-authorised work to the responsible executor. |
 | `release` | End a held responsibility, resource or bounded claim through its defined lifecycle. |
 | `neutralize` | Put controlled actuation into its safe neutral condition. |
-| `settle` | Establish that a defined physical or lifecycle condition has become stable or complete. |
+| `settle` | Discharge a defined obligation or procedure using the evidence required by its governing contract. Name what is being settled where ambiguity exists. |
 
 Avoid broad public verbs such as `process`, `handle`, `attach`, `run` and generic
 `update` when a more precise architectural verb is available. External or GIANTS
@@ -99,7 +99,7 @@ corresponding role:
 | Assessment | An interpretation of evidence for a stated question and scope. |
 | Evaluator | Answers a bounded question according to stated evidence and rules. |
 | Authority | Owns the accepted determination or permission for its declared boundary. |
-| Registry | Maintains authoritative lookup or membership for a defined population. |
+| Registry | Maintains identity-indexed records, lookup or membership representation for a defined population. Storage and lookup do not create semantic authority; that belongs to the responsibility establishing the record or lifecycle fact. |
 | Ledger | Records durable facts or transitions with their provenance; it is not automatically the decision owner. |
 | Policy | Defines rules for choosing or permitting action, separate from performing it. |
 | Planner | Develops candidate future action without granting authority or executing it. |
@@ -129,8 +129,10 @@ Keep the path from Reality to action explicit:
   question.
 - A **Classification** assigns a subject to a defined semantic category.
 - A **Verdict** is a bounded conclusion answering a specified question.
-- A **Decision** selects an authorised course or responsibility from supported
-  alternatives.
+- A **Decision** selects or establishes a supported course or responsibility
+  from supported alternatives. It does not imply that physical actuation
+  authority already exists; Bounded Authority remains downstream of Current
+  Responsibility.
 - A **Request** asks an authority or executor to perform bounded work; it does
   not prove acceptance or completion.
 - An **Outcome** reports what actually resulted, including failure, partial
