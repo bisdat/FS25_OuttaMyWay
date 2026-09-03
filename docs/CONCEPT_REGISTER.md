@@ -153,6 +153,12 @@ This file records current concept state. It is a thin index, not the owner of de
 | Role-State Invalidation | Accepted | Completion invalidates active role/motion expectation, preserving identity/geometry. | [Completion](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#giants-completion-acceptance-boundary) |
 | Persistent Completed-Worker Obstacle | Accepted | Completed nonmember occupancy remains while it can affect active work. | [Completion](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#giants-completion-acceptance-boundary) |
 
+## Configuration concepts
+
+| Concept | Status | Current meaning / boundary | Authority |
+|---|---|---|---|
+| Configuration / Configuration as Consent Surface | Accepted | Supported player-choice surface expressing consent and preference without creating strategic or physical authority. | [Configuration](CONFIGURATION.md) |
+
 ## Deferred concepts
 
 | Concept | Status | Current meaning / boundary | Authority |
@@ -161,7 +167,6 @@ This file records current concept state. It is a thin index, not the owner of de
 | Detailed Manoeuvre Sweep Construction | Deferred | Turning centre/radius, articulation and steering-kinematics construction remain evidence questions. | [Sweeps](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#deployment-sweep-and-manoeuvre-sweep) |
 | Deferred Post-Job Configuration Normalisation | Deferred | In-place footprint reduction may be examined later; no behaviour is authorised. | [Completion](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#deferred-post-job-configuration-normalisation) |
 | Parked Assessment Deadline Escalation | Deferred | Future Decision work may examine failsafe response to unrefreshable knowledge; no policy selected. | [Deadline](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md#parked-assessment-deadline-escalation) |
-| Configuration Architecture | Deferred | Recognised system responsibility with reserved authority in `CONFIGURATION.md`; current `config.lua` mixes policy, calibration, diagnostics and implementation constants and is not yet accepted as the architectural model. | [Configuration](CONFIGURATION.md) |
 | GUI Architecture | Deferred | Recognised player-facing interface/communication responsibility with reserved authority in `GUI.md`; current diagnostic/test HUDs are not accepted product GUI architecture. | [GUI](GUI.md) |
 
 ## Current rejected / excluded concepts

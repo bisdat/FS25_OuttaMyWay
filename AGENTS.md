@@ -73,6 +73,12 @@ Reconcile existing naming only within an explicitly bounded Engineering
 Increment or where changed responsibility makes the existing name materially
 misleading.
 
+## Configuration authority
+
+`docs/CONFIGURATION.md` is the authoritative Configuration architecture. Read
+and follow it before changing player Configuration or the mixed runtime constants
+surface currently implemented in `scripts/config.lua`.
+
 ## Documentation roles
 
 Protect document responsibilities so documentation does not become another changelog surface:
