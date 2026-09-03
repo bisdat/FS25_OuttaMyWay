@@ -94,7 +94,10 @@ Frequent reassessment may be normal. Frequent intervention is not automatically 
 | K-35 | Native Motion Envelope | Accepted from prototype evidence | Situation Assessment capability knowledge / Control capability | Decision and Control | ALREADY_ESTABLISHED / IMPLEMENTATION_POLICY_GAP |
 | K-36 | Local Intent Horizon, Intent Expiry, Encounter Chain, Safe Release Point and Continuation Safety Horizon | Deferred but explicitly recorded | Situation Assessment | Decision Engine / Commitment lifecycle | EXISTING_DEFERRED_CONCEPTS_STRONGLY_REINFORCED |
 
-The complete CSV preserves definitions, inputs, outputs, source locations, implementation state and reconciliation notes.
+The detailed CSV inventory used during the recovery exercise preserved
+definitions, inputs, outputs, source locations, implementation state and
+reconciliation notes. That exact historical evidence remains recoverable
+through Git history rather than as a current working-tree responsibility.
 
 ## Canonical constraint inventory
 

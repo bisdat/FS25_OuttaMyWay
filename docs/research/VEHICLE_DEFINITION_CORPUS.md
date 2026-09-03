@@ -128,7 +128,8 @@ The final catalogue contains:
 - 42 used capabilities;
 - 0 unresolved semantic profiles.
 
-The machine-readable files and exact provenance are stored in `research/vehicle_semantics/`.
+The machine-readable files and exact provenance are stored in the
+[vehicle-semantic evidence corpus](vehicle_semantics/README.md).
 
 ## Architectural boundary
 
