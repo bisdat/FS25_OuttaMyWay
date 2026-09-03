@@ -1,5 +1,7 @@
 # Plan-View Representation and Positive Encounter Admission
 
+> This is retained experimental evidence from the stated v4.7-era implementation. Current architecture is owned by the [Physical Representation Architecture](../../architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md); historical Encounter/Future-Space language below is not current normative authority.
+
 > **Implementation:** v4.7.24 candidate (current-overlap support only; future interaction supplied by field-bounded Future Space)  
 > **Canonical baseline:** v4.7.23  
 > **Authority:** positive current interaction support only

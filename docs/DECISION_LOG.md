@@ -1,3 +1,13 @@
+## D-0213 — Knowledge Root Consolidation and Deferred Configuration/GUI Responsibility
+
+**Status:** Accepted owner decision.
+
+**Decision:** `docs/research/` is the live root for bounded experimental and investigative evidence. Prototype evidence moves under `docs/research/prototypes/`, and focused Representation investigations move under `docs/research/representation/`. The single architecture-to-source map in `docs/code/` has no independent hierarchy responsibility and is replaced by root `docs/IMPLEMENTATION_MAP.md`. After harvesting Lifecycle Evidence Asymmetry, `docs/diagnostics/` has no remaining live documentation responsibility and is deleted; Git retains exact instrumentation history. Diagnostic and probe code is explicitly not pruned by this decision.
+
+Configuration and GUI are recognised system-architecture responsibilities. `docs/CONFIGURATION.md` and `docs/GUI.md` reserve them as Deferred placeholders. Current `config.lua` and current HUD/probe implementation do not become architecture by persistence. Lifecycle Evidence Asymmetry is Accepted: positive or complete evidence may establish lifecycle transitions, while absence under incomplete observation cannot establish termination, supersession or membership loss. No runtime or test behaviour changes.
+
+**Reason:** Breadcrumbing exposed overlapping evidence roots. Prototype and representation records are durable evidence rather than disposable chronology, while diagnostics documentation mainly preserved historical instrumentation rather than a stable current subsystem contract. The code root contained one architecture-to-source map and should be named for that responsibility rather than expanded into a code manual. Configuration and GUI should not remain implicit merely because their current implementations need reconciliation.
+
 ## D-0212 — ADR Decision Responsibility Succession and Retirement
 
 **Status:** Accepted owner decision.

@@ -1016,7 +1016,7 @@ Observed v4.7.72: D-0141 cap tracked Condor down to ~3.6 km/h, then released at 
 
 **Implement:** v4.7.35candidate adds three isolated Prototype 22 modules and the `otmP22` manual console surface. No automatic Decision/Commitment path is connected. The probe requires two active workers, controls one subject at a time, monitors Job Episode identity, refuses reverse authority, and monitors independent same-Job continuation after release.
 
-**Validate:** offline repository/RRS validation precedes packaging; live GIANTS validation remains required and is defined in `docs/prototypes/PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md`.
+**Validate:** offline repository/RRS validation precedes packaging; live GIANTS validation remains required and is defined in `docs/research/prototypes/PROTOTYPE_22_TRAFFIC_POLICEMAN_CAPABILITY_GATE.md`.
 
 **Record:** D-0116 records the implementation gate; no architecture change is claimed.
 

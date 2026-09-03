@@ -16,16 +16,15 @@ intentionally absent under the Archive Navigation Exemption.
 - [Decision Log](DECISION_LOG.md) — chronological accepted decisions and their rationale.
 - [Engineering Journal](ENGINEERING_JOURNAL.md) — observations, investigations, failed hypotheses, validation evidence, and engineering evolution.
 - [Localisation Policy](LOCALISATION.md) — live user-facing language and localisation rules.
-- [Research](research/README.md) — bounded studies, audits, corpus work, and historical investigative evidence.
-- [Prototypes](prototypes/README.md) — bounded experimental questions and retained validation evidence.
-- [Diagnostics documentation](diagnostics/README.md) — diagnostic observation surfaces and interpretation boundaries.
-- [Representation evidence](representation/README.md) — focused representation investigations outside current architecture authority.
+- [Research](research/README.md) — bounded studies, experiments, prototypes, audits, corpus work, representation investigations, and historical investigative evidence.
 
 ## System knowledge
 
 - [Architecture](architecture/README.md) — what the system should achieve and which responsibilities and concepts exist.
-- [Code and implementation](code/README.md) — how the current implementation is constructed and where its primary paths live.
+- [Implementation Map](IMPLEMENTATION_MAP.md) — where accepted architectural responsibilities presently appear in source and where placement or vocabulary lags.
 - [Engine Knowledge](engine/README.md) — reusable observed FS25/GIANTS runtime behaviour, API surfaces, and semantic limits.
+- [Configuration](CONFIGURATION.md) — Deferred, unreconciled Configuration architecture responsibility.
+- [GUI](GUI.md) — Deferred, unreconciled player-facing interface and communication architecture responsibility.
 
 `assets/` contains documentation assets rather than a documentation subtree.
 The live root does not link `archive/`; archived material has no current
