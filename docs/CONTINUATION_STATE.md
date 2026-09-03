@@ -59,9 +59,12 @@ Review and knowledge placement following the Physical Representation↔runtime P
 - **Purpose-Scoped Geometry Authority** is the accepted interpretation:
   current/working geometry supports current occupancy and corridor/Passage
   recognition, while cached complete-assembly Transit geometry supports Passage
-  planning once Passage selects Transit as its required geometry basis. Physical
-  Transit realisation is not required to plan; physical guide movement waits for
-  the established configuration/settlement boundary and fresh execution-origin
+  arrangement construction and testing when a prospective Passage Candidate
+  requires Transit as its geometry basis. This authority precedes Candidate
+  selection and Resolution Commitment; both require a supported Candidate and
+  arrangement. Physical Transit realisation is not required for Candidate
+  planning, while physical guide movement under the selected plan waits for the
+  established configuration/settlement boundary and fresh execution-origin
   verification. That boundary preserves non-foldable, unsupported and bounded
   settlement-exhaustion handling rather than universally requiring successful
   folding.
