@@ -1,3 +1,27 @@
+## D-0212 — ADR Decision Responsibility Succession and Retirement
+
+**Status:** Accepted owner decision.
+
+**Decision:** `DECISION_LOG.md` is the live repository home for significant
+project decisions and rationale. Current architecture owns present normative
+meaning, and the Concept Register owns current concept state. The ADR corpus
+exhibits Decision Record Authority Drift and no longer has independent live
+responsibility.
+
+Before retirement, harvest Field World Equivalence Authority into Runtime
+Architecture and the Concept Register, Demonstrated Traversability into
+Physical Representation Architecture and the Concept Register, and GIANTS
+field-worker permission semantics into Engine Knowledge. After successful
+coverage and reference repair, delete `docs/adr/` rather than moving it to
+archive. Git retains exact historical ADR content and chronology. Historical
+ADR identifiers may remain in decision/history prose as provenance without live
+links. This decision changes no runtime behaviour.
+
+**Reason:** Breadcrumbing exposed rather than cured the ADR corpus's stale
+responsibility. The harvest review demonstrated that retirement must follow the
+Stranded Live Knowledge check and reconciliation, not precede it; once those
+three items have current homes, the corpus has no remaining live responsibility.
+
 ## D-0211 — Live Breadcrumb Governance and Archive Navigation Exemption
 
 **Status:** Accepted owner decision.

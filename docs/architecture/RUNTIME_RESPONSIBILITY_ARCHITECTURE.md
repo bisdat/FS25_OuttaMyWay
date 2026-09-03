@@ -32,6 +32,36 @@ A **Local Operation** is one ephemeral OuttaMyWay cooperative lifecycle within o
 
 Local Operation is lifecycle context, not a controller or traffic state.
 
+### Field World Equivalence Authority
+
+A Job Episode may capture an immutable **Job-Seeded Field World Snapshot** of
+the contiguous agronomic workspace experienced at admission or bootstrap.
+Snapshot representation identity and resolved Field World identity are
+distinct. Each snapshot retains its polygon, exact fingerprint, capture
+provenance and locators when equivalence is recognised; recognition does not
+rewrite, merge or discard that evidence.
+
+**Field World Equivalence Authority** produces exactly one conclusion:
+
+- `SAME_FIELD_WORLD` requires coherent positive evidence that snapshots represent materially the same contiguous agronomic workspace;
+- `DIFFERENT_FIELD_WORLD` requires positive separation or incompatibility evidence;
+- `UNRESOLVED` records insufficient, contradictory or only partial evidence and grants no Local Operation admission or extension of cooperative authority.
+
+Failure to prove `SAME_FIELD_WORLD` does not manufacture
+`DIFFERENT_FIELD_WORLD`, and failure to prove `DIFFERENT_FIELD_WORLD` does not
+manufacture `SAME_FIELD_WORLD`. Exact polygon equality may be sufficient
+positive same-world evidence. An exact fingerprint is compact representation
+provenance, not universal Field World identity authority. Player-facing field
+number, farmland identity, seed position and any one scalar geometry metric
+cannot independently establish identity.
+
+A snapshot may join an established Field World only when coherent with the
+accepted evidence for that Field World as a whole. Pairwise tolerance chaining
+must not manufacture an incoherent equivalence class. A restarted or replacement
+Job Episode captures and independently resolves against current Reality.
+Evaluator tolerances and calibration remain implementation evidence, not
+architecture.
+
 ## 2. Sparse intervention
 
 The Local Operation lifecycle exists independently of whether OuttaMyWay ever acquires Regulation or Resolution Commitment. A complete successful lifecycle may be entirely GIANTS-owned:

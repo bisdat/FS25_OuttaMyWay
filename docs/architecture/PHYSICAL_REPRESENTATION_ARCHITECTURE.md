@@ -260,6 +260,31 @@ Every downstream representation carries a **Representation Passport** describing
 
 These explicit **Representation Claim Permissions** prevent evidence absence, cheap approximation or discovery provenance from silently gaining clearance authority.
 
+### Demonstrated Traversability
+
+**Demonstrated Traversability** is Reality-derived positive local evidence:
+actual successful occupation or traversal by the real Physical Assembly may
+show that the local space physically accommodated that assembly under the
+materially relevant configuration, environment and movement conditions
+actually experienced.
+
+Its permission is subject-, state-, purpose- and domain-specific. Transfer to a
+proposed conclusion requires a materially equivalent Physical Assembly and
+configuration, a materially compatible local Field World/environment, and a
+proposed local spatial domain contained within the demonstrated domain.
+Materially different articulation, configuration sweep, steering or kinematic
+demand, or movement direction may invalidate transfer. New dynamic occupancy
+and claims are assessed independently. This preserves Configuration Footprint
+Authority and equivalent-footprint-domain limits.
+
+Demonstrated Traversability establishes neither universal Inventory Closure nor
+Coverage Closure, exact collision-shape identity, arbitrary reverse
+feasibility, arbitrary turns or future manoeuvres, permanent release of space,
+nor current availability against another participant. It contributes only to
+conclusions for which the bounded evidence is fit, under the same
+Purpose-Scoped Geometry Authority and Conclusion-Relative Sufficiency rules as
+other representation evidence.
+
 For Cooperative Passage, current working-configuration geometry and directional extents support current occupancy, productive-corridor competition and Passage recognition. When a prospective Passage Candidate requires Transit as its geometry basis, cached directional Transit dimensions for the complete Physical Assembly may construct and test facing extents, Passage arrangement, clearance, Development burden and crossing-window geometry before Candidate selection or Resolution Commitment. Selection and commitment require a supported Candidate and Transit-conditioned arrangement. Physical movement relying on the selected plan waits for the existing supported configuration/settlement boundary, where fresh Reality may validate or adapt execution geometry and origins. Crossing that boundary does not universally require successful folding: the established handling of non-foldable, unsupported and settlement-exhausted cases remains authoritative. Generic DISC/component geometry remains useful for current obstacle and boundary reasoning. Transit geometry does not supersede current working geometry or make a deployed assembly artificially narrow for Passage recognition; greater detail in current working geometry likewise does not turn it into the Transit Passage envelope. Directional asymmetry remains authoritative and must not be recentered without evidence. [Spatial Negotiation owns the specialised lifecycle contract](SPATIAL_NEGOTIATION_MODEL.md#passage-geometry-contract).
 
 ### Representation Cost Profile

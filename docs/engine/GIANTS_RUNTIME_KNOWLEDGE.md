@@ -167,6 +167,26 @@ rerouting, or authority to keep relocating an obstacle.
 
 **Evidence:** Condor/Patriot blocked and permission-gate observations.
 
+### Field-worker permission is broader than translation
+
+**Finding:** denying the GIANTS field-worker continuation permission through
+`getCanAIFieldWorkerContinueWork` stopped the vehicle but also prevented broader
+native field-worker progression, including GIANTS-owned configuration
+restoration. This is a **Constraint Semantics Mismatch** with the historical
+description of the interception as a translation-only gate.
+
+**Safe use:** treat the permission as governing broader field-worker progression
+semantics. Current code still wraps the surface for bounded Hold and preserves
+pre-existing GIANTS or mod refusals; that is implementation evidence, not
+architectural ownership.
+
+**Do not infer:** vehicle stillness proves a translation-only capability, or the
+rejected zero-speed Translation Authority Lease and delegated-restoration
+architecture should be restored.
+
+**Evidence:** historical live restoration failure and current permission-gate
+source inspection.
+
 ### Powered-vehicle trajectory differs from working envelope
 
 **Finding:** GIANTS displaced a tractor path so a right-offset mower followed
