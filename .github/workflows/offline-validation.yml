@@ -42,15 +42,19 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
-      - name: Install LuaJIT
+      - name: Build validation LuaJIT
         run: |
           sudo apt-get update
-          sudo apt-get install --yes luajit
-          luajit -v
+          sudo apt-get install --yes build-essential
+          git clone --quiet https://github.com/LuaJIT/LuaJIT.git "$RUNNER_TEMP/luajit"
+          git -C "$RUNNER_TEMP/luajit" checkout --quiet c525bcb9024510cad9e170e12b6209aedb330f83
+          make -C "$RUNNER_TEMP/luajit" -j2 XCFLAGS=-DLUAJIT_ENABLE_LUA52COMPAT
+          echo "LUAJIT_BIN=$RUNNER_TEMP/luajit/src/luajit" >> "$GITHUB_ENV"
+          "$RUNNER_TEMP/luajit/src/luajit" -v
 
       - name: Report LuaJIT semantic profile
         run: |
-          luajit -e '
+          "$LUAJIT_BIN" -e '
           local proxy = setmetatable({}, {
             __pairs = function()
               return next, {visible = 1}, nil
@@ -65,7 +69,7 @@ jobs:
       - name: Run Lua offline harness
         id: lua
         continue-on-error: true
-        run: luajit tests/replacement_core/run.lua
+        run: "$LUAJIT_BIN" tests/replacement_core/run.lua
 
       - name: Record Lua observation
         if: always()
