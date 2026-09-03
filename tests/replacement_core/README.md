@@ -1,20 +1,11 @@
-# Replacement-Core Conformance Tests
+# Replacement-Core Offline Conformance Harness
 
-v4.7.23 carries forward canonical v4.7.21 Future Space and the live-passed v4.7.22 termination-precedence correction. The suite now proves:
+`run.lua` loads a broad implementation surface into a stubbed, non-game Lua environment and exercises contracts, lifecycle, authority, assessment, candidate, decision, control, and selected behavioural relationships. It is executable offline implementation validation; it cannot prove that GIANTS supplies equivalent evidence or behaves equivalently in-game.
 
-- positive field-bounded Future Space may emit interaction evidence and admit an Encounter without any fixed-horizon future predictor;
-- that admission can occur while the historical ten-second future probe remains negative;
-- legacy future convergence alone is shadow evidence and cannot admit an Encounter;
-- positive Current Space interaction still admits an Encounter immediately;
-- incomplete Operation-membership evidence cannot remove previously admitted members;
-- later authoritative Job Episode terminal evidence closes the Encounter as `JOB_EPISODE_ENDED`;
-- restart/non-resurrection and the Future-Space lifecycle HUD remain covered;
-- no negative-clearance authority is introduced;
-- Decision, Commitment application and Control remain passive.
+Run from the repository root with the locally validated LuaJIT interpreter:
 
-Run from the repository root:
-
-```text
-texlua tests/replacement_core/run.lua
-pytest -q
+```bash
+luajit tests/replacement_core/run.lua
 ```
+
+The harness is currently a monolithic file of approximately 407 KB. This increment documents its responsibility and does not modularise it. Git retains earlier version-specific suite claims and chronology.

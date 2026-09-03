@@ -196,6 +196,9 @@ Every enduring item has one authoritative home; other documents link rather than
 | Responsibility | Primary record |
 |---|---|
 | Engineering governance | `ENGINEERING_ARCHITECTURE.md` |
+| Scope / Supported Validation Envelope | `SCOPE_AND_VALIDATION_ENVELOPE.md` |
+| Testing methodology / evidence-strength process | `TESTING_METHODOLOGY.md` |
+| Executable offline validation mechanisms and fixtures | root `../tests/` and its `README.md` |
 | Runtime architecture | `architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md` and specialised architecture breadcrumbs |
 | Current engineering continuation | `CONTINUATION_STATE.md` |
 | Current concept state | `CONCEPT_REGISTER.md` |
@@ -296,6 +299,10 @@ present-tense responsibilities have moved elsewhere.
 
 **Speculative Container Persistence** occurs when a repository container remains reserved for a possible future responsibility despite containing no current artefact or dependency that requires it. Repository structure follows demonstrated responsibility rather than reserving empty topology in advance. If a future responsibility needs a container, create its appropriate location when that need exists.
 
+**Unreferenced Asset Persistence** occurs when an artefact remains after no current implementation or declared responsibility depends on it. File presence does not establish responsibility; an unreferenced artefact with no independent purpose may be removed, with Git retaining its history.
+
+**Scenario Responsibility Conflation** occurs when human-readable in-game fixture knowledge and executable replay fixture data share one repository container despite belonging to Research and test machinery respectively. A Scenario describes reproducible starting Reality; a Test asks a question of Reality using that Scenario. Repeatability improves attribution but does not expand claim breadth.
+
 Document lifecycle and authority should be visible through responsibility and navigation, not a rolling version header in every file. Git provides chronology. Removing development history for an external publication is a publication choice, not a reason to erase it from the engineering repository.
 
 ## Concept governance
@@ -331,6 +338,12 @@ status do not belong in the current Concept Register.
 **First-Failure Masking** occurs when one structural test has several obsolete dependencies but execution reports only the first missing file. When a structural test fails on a missing repository surface, review the complete test body and dependency class instead of repairing only the first failing read.
 
 A test may consume retained historical evidence when that evidence legitimately participates in a current validation contract. Such use does not grant the evidence current architectural authority. Current implementation may also remain regression-protected while architectural reconciliation is pending, provided the test does not present implementation persistence as current architectural authority.
+
+Root `/tests` owns executable offline validation mechanisms and replay fixtures. [Testing Methodology](TESTING_METHODOLOGY.md) separately owns how claims are challenged and evidence strength increases; tests do not define architecture.
+
+**Test-Sustained Implementation Persistence** is the observation that implementation which has lost production-runtime responsibility may remain executable because tests still load and validate it. This is evidence for later diagnostic/probe investigation, not authority to delete that implementation here.
+
+Validation strength must match claim breadth. Validation depth should remain high while conceptual stability is low; systematic breadth follows later stability. Material assumptions and supported claims should be human-traceable through their [scope and validation obligation](SCOPE_AND_VALIDATION_ENVELOPE.md), architectural and implementation owners, and applicable offline and field evidence.
 
 ## Runtime evidence governance
 

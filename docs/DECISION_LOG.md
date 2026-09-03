@@ -1,3 +1,13 @@
+## D-0215 — Root Validation Responsibility and Scenario Succession
+
+**Status:** Accepted owner decision.
+
+**Decision:** Root `/gui` has no demonstrated current implementation responsibility and is deleted. Root `/scenarios` conflates human Research fixture knowledge with executable replay fixtures and is retired by succession: human fixture knowledge moves to `docs/research/SCENARIO_LIBRARY.md`, while executable historical replay data moves to `tests/replay/`. Root `/tests` owns executable offline validation mechanisms and fixtures and gains a responsibility README. `TESTING_METHODOLOGY.md` owns how claims are challenged and evidence strength increases; `SCOPE_AND_VALIDATION_ENVELOPE.md` owns the current supported, boundary-characterisation and no-claim boundaries and resulting validation obligation.
+
+Scenarios are Repeatable Reality Fixtures, distinct from Tests. Repeatability strengthens attribution, not claim breadth. Future broad coverage uses Failure-Driven Fixture Promotion rather than retaining every successful case. This decision changes no runtime behaviour, prunes no diagnostic/probe implementation, does not modularise the Lua suite, and creates neither a mature coverage matrix nor Scope Overlay.
+
+**Reason:** Root responsibility review exposed an orphan GUI asset and Scenario Responsibility Conflation. Scenario review established controlled saved-state repeatability as the durable value. Testing practice needs explicit methodology separate from executable machinery, and testers need a claim-boundary index for scope, assumptions and constraints now distributed among authoritative architecture and decisions. Establishing validation semantics before broader implementation reduces ambiguity and future regression cost.
+
 ## D-0214 — Structural Test Responsibility Reconciliation
 
 **Status:** Accepted owner decision.

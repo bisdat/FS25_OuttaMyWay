@@ -950,7 +950,7 @@ end)
 
 
 
-local fixtureModule=dofile(root .. "/scenarios/replay/HistoricalFixtures.lua")
+local fixtureModule=dofile(root .. "/tests/replay/HistoricalFixtures.lua")
 
 test("ReplayFixture rejects duplicate aliases",function()
     expectError(function() OuttaMyWay.ReplayFixture.new({identity="RF-X",title="x",sourceEvidence={{source="x"}},steps={{kind="NO_ACTIVITY",alias="a"},{kind="NO_ACTIVITY",alias="a"}},expected={},provenance={}}) end)
