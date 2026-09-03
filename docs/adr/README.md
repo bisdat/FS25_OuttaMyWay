@@ -1,6 +1,13 @@
 # Architectural Decision Records
 
-Architectural Decision Records preserve why significant choices were made. Status describes architectural authority, not merely whether code once existed.
+Architectural Decision Records preserve durable architectural or engineering
+choices where a focused decision record remains useful. The
+[Decision Log](../DECISION_LOG.md) provides broader chronological decision
+history. An ADR does not override current architecture merely because it is
+present: current meaning follows present architecture, the
+[Concept Register](../CONCEPT_REGISTER.md), and later accepted decisions where
+they supersede it. Status describes architectural authority, not merely whether
+code once existed.
 
 - [ADR-0001 — Respect the Native AI](ADR-0001-respect-the-native-ai.md) — Accepted
 - [ADR-0003 — Situation Assessment](ADR-0003_Situation_Assessment.md) — Accepted

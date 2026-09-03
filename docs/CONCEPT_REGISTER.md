@@ -8,6 +8,12 @@ This file records current concept state. It is a thin index, not the owner of de
 - **Deferred** — current architecture names a potentially useful concept or question without full architectural authority.
 - **Rejected** — current architecture deliberately excludes it; retained only where the exclusion prevents regression.
 
+## Engineering knowledge concepts
+
+| Concept | Status | Current meaning / boundary | Authority |
+|---|---|---|---|
+| Breadcrumb Completeness | Accepted | Live knowledge is intentionally discoverable through direct-child README navigation. A missing link is an Orphan Signal requiring responsibility review, not automatic proof of staleness or deletion. | [Engineering Architecture](ENGINEERING_ARCHITECTURE.md#predictable-knowledge-placement) |
+
 ## Runtime responsibility concepts
 
 | Concept | Status | Current meaning / boundary | Authority |

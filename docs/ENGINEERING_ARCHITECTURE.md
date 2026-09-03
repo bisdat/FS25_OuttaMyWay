@@ -217,6 +217,27 @@ means an engineer can predict which responsible record should contain that
 class of knowledge. Repository responsibility is stronger when both are true; a
 breadcrumb alone is insufficient when responsibility remains ambiguous.
 
+**Live Breadcrumb Invariant.** Every live documentation folder's `README.md`
+links each direct intentionally retained live document other than itself and
+each direct live documentation subfolder through that child's `README.md`.
+Direct-child navigation is sufficient; a parent need not duplicate a complete
+descendant tree. A breadcrumb asserts intentional discoverability, not semantic
+authority by itself.
+
+A missing breadcrumb is an **Orphan Signal** requiring review of the child's
+current responsibility. It is neither proof of staleness nor an automatic
+deletion rule. Conversely, adding a link must not preserve a stale document
+whose responsibility no longer exists. Predictable Knowledge Placement
+therefore asks two complementary questions: **Navigation** — can the knowledge
+be reached through the README tree? **Prediction** — would an engineer know
+where responsibility-specific knowledge should live?
+
+**Archive Navigation Exemption.** `archive/` and its descendants are outside
+the live breadcrumb tree. Archive material has no current authority and exists
+primarily for bounded recovery or harvesting until deletion is safe. The live
+`docs/README.md` does not present it as a primary route. This exemption does not
+turn archive into permanent storage.
+
 **Archive Is a Transition, Not a Cemetery.** A current document retains a
 present-tense responsibility. Once superseded, it may be archived temporarily
 only while knowledge reconciliation, dependency closure or reference repair

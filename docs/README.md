@@ -1,41 +1,34 @@
 # Engineering documentation — Start here
 
-This directory is the entrance to OuttaMyWay's engineering knowledge. The
-documentation is separated by responsibility so that intended behaviour and
-current implementation remain distinct.
+This directory is the live entrance to OuttaMyWay's engineering knowledge.
+Each route below states the responsibility of a direct child. The archive is
+intentionally absent under the Archive Navigation Exemption.
 
-## Primary routes
+## Project direction and engineering state
 
-How should OuttaMyWay behave?
+- [Project Vision](PROJECT_VISION.md) — mission, Trust Test, Autonomous Continuity, scope, and product-level direction.
+- [Engineering Architecture](ENGINEERING_ARCHITECTURE.md) — engineering method, repository authority, knowledge governance, and canonicalisation.
+- [Current Concept Register](CONCEPT_REGISTER.md) — thin index of accepted, deferred, and rejected current concepts.
+- [Continuation State](CONTINUATION_STATE.md) — replace-in-place current concern, established understanding, and next engineering boundary.
 
-→ [Architecture](architecture/README.md)
+## Decisions, evidence, and policy
 
-How is OuttaMyWay currently implemented?
+- [Decision Log](DECISION_LOG.md) — chronological accepted decisions and their rationale.
+- [Engineering Journal](ENGINEERING_JOURNAL.md) — observations, investigations, failed hypotheses, validation evidence, and engineering evolution.
+- [Localisation Policy](LOCALISATION.md) — live user-facing language and localisation rules.
+- [Architectural Decision Records](adr/README.md) — focused durable decision records and their current-status boundaries.
+- [Research](research/README.md) — bounded studies, audits, corpus work, and historical investigative evidence.
+- [Prototypes](prototypes/README.md) — bounded experimental questions and retained validation evidence.
+- [Diagnostics documentation](diagnostics/README.md) — diagnostic observation surfaces and interpretation boundaries.
+- [Representation evidence](representation/README.md) — focused representation investigations outside current architecture authority.
 
-→ [Code and implementation](code/README.md)
+## System knowledge
 
-How is OuttaMyWay engineered?
+- [Architecture](architecture/README.md) — what the system should achieve and which responsibilities and concepts exist.
+- [Code and implementation](code/README.md) — how the current implementation is constructed and where its primary paths live.
+- [Engine Knowledge](engine/README.md) — reusable observed FS25/GIANTS runtime behaviour, API surfaces, and semantic limits.
 
-→ [Engineering governance](ENGINEERING_ARCHITECTURE.md)
-
-What concepts are current?
-
-→ [Current Concept Register](CONCEPT_REGISTER.md)
-
-Where is engineering now?
-
-→ [Continuation State](CONTINUATION_STATE.md)
-
-Historical and transitional documentation with no current authority:
-
-→ [Archive transition](archive/README.md)
-
-## Documentation currently being reconciled
-
-The existing documentation corpus is undergoing semantic reconciliation.
-Filenames do not automatically establish current authority. The current accepted
-architecture set resides in `docs/architecture/`; historical and current concepts
-may otherwise coexist in the flat `docs/` tree. Later engineering
-increments will reconcile architecture, evidence, research, decisions, history,
-and development-state material. This navigation root does not pre-empt that
-work.
+`assets/` contains documentation assets rather than a documentation subtree.
+The live root does not link `archive/`; archived material has no current
+authority and remains bounded recovery/harvesting material until deletion is
+safe.
