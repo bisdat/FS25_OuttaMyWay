@@ -1,3 +1,26 @@
+## D-0211 — Live Breadcrumb Governance and Archive Navigation Exemption
+
+**Status:** Accepted owner decision.
+
+**Decision:** Adopt the Live Breadcrumb Invariant: every live documentation
+folder README links every direct intentionally retained live document and each
+direct live documentation subfolder through its README. Direct-child
+breadcrumbs are sufficient. A breadcrumb asserts intentional discoverability,
+not semantic authority. A missing breadcrumb is an Orphan Signal that triggers
+responsibility review; it is not automatic proof of staleness or deletion, and
+a stale file must not be preserved merely by linking it.
+
+`docs/archive/` and its descendants receive an Archive Navigation Exemption.
+They are recovery and harvesting material outside the live breadcrumb tree,
+have no current authority, and must not visually compete with live knowledge as
+a primary route from `docs/README.md`. The exemption does not establish archive
+as permanent storage.
+
+**Reason:** Unlinked live-looking documents make responsibility and importance
+ambiguous. Breadcrumb gaps proved useful signals for locating stale and
+overlapping responsibility surfaces. Archive has a different recovery purpose
+and should not be presented as live knowledge.
+
 ## D-0210 — Purpose-Scoped Geometry Authority for Cooperative Passage
 
 **Status:** Accepted.

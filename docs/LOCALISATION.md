@@ -24,8 +24,12 @@ FS25 supports more languages, but all 26 are not required for the first release 
 
 ## Research localisation authority
 
-The base-game semantic research used runtime localisation only as evidence for GIANTS' displayed English category, type and function text. A bounded readable-source search found no authoritative definitions for the required base-game keys, while the observed runtime resolved all 567 through `g_i18n:getText`.
+Runtime-resolved GIANTS text may be used as evidence for displayed category,
+type, and function meaning in the captured environment. It does not change the
+five-language policy above, authorise copying GIANTS text into mod localisation,
+or prove hidden storage provenance. Missing-key diagnostics must not be mistaken
+for successful resolution merely because they are non-empty.
 
-This establishes Runtime Localisation Authority for the captured research environment. It does not copy GIANTS localisation data into mod-facing localisation files, change the five-language release policy above or prove hidden storage provenance.
-
-A missing key may return a readable diagnostic such as `Missing '...' in l10n_en.xml`; non-empty text alone is therefore insufficient evidence of successful resolution.
+The bounded readable-source search, 567-key runtime experiment, missing-key
+control, and their evidence limits are preserved in
+[Vehicle Definition Corpus and Semantic Review](research/VEHICLE_DEFINITION_CORPUS.md#stage-2b--runtime-localisation).

@@ -1,104 +1,44 @@
 # Continuation State
 
-Continuation State is the compact, replace-in-place description of the project's present engineering boundary: what workstream is active, what is currently understood, what remains unresolved, and what bounded question should be addressed next.
-
-This document is the current engineering continuation authority. Replace its state in place as accepted engineering changes; do not append earlier current states. Git history preserves its prior forms. Continuation State is not a changelog, release record, test ledger or canonical-release record.
+Continuation State is the compact, replace-in-place description of the
+project's present engineering boundary. Git history preserves prior states; this
+is not a changelog, release ledger, or canonical-release record.
 
 ## Current engineering concern
 
-Review and knowledge placement following the Physical Representation↔runtime Passage-geometry reconciliation.
+Continue reviewing the remaining live documentation responsibility surfaces
+after establishing breadcrumb governance and reusable engine knowledge.
 
 ## Established
 
-- `docs/architecture/` owns the current accepted system and runtime architecture set.
-- `docs/ENGINEERING_ARCHITECTURE.md` owns engineering governance.
-- `docs/code/README.md` is the implementation-navigation route.
-- Ordinary engineering proceeds from clean, current accepted `main` through bounded branch and pull-request increments.
-- Canonicalisation is a separate, deliberate Release Declaration process.
-- The archived `archive/reconciliation/stale-authority-surface/PROJECT_STATUS.md`
-  and `archive/reconciliation/stale-authority-surface/ENGINEERING_HANDOVER.md`
-  are historical ledgers, not current continuation authority.
-- This documentation-reconciliation work has selected no runtime behaviour change.
-- `DESIGN.md` and the identified replacement-core contract family have been
-  semantically classified as historical lineage and moved into transitional
-  archive staging.
-- Obsolete live implementation does not preserve superseded documentation's
-  architectural authority. Mutual consistency between the two is not current
-  validation.
-- Archived files remain candidates for deletion after knowledge harvesting and
-  reference/dependency closure; Git is the permanent historical record.
-- A second stale-surface wave archived obsolete handbook, release and
-  repository-review authority.
-- Replacement-core experiment and removal provenance now resides under the
-  existing replacement-core archive.
-- `PROJECT_VISION.md` and `LOCALISATION.md` remain live product-policy documents.
-- Evidence and research records remain evidence rather than current
-  architectural authority.
-- Owner-selected RRS retirement is complete. `rrs/`,
-  `docs/REPOSITORY_POLICY.json` and `docs/RELEASE_MANIFEST_SHA256.txt` are absent
-  from the working tree; Git retains their historical state. Legacy RRS path
-  coupling no longer exists as a live repository constraint, and no RRS audit
-  remains pending.
-- The Concept Register is now a replace-in-place current-state index rather than
-  a versioned historical ledger. Concept chronology remains in Git, the Decision
-  Log, ADRs and evidence records; obsolete presence no longer establishes
-  current status, and linked architecture continues to own full semantics.
-- **Concept State Is Not Concept History:** a current-state register replaces a
-  concept's status rather than appending successive historical states.
-- Physical Representation Architecture reconciliation is complete. The live
-  document now expresses current-state architecture rather than mixed
-  architecture and history; versioned implementation notes, prototype chronology
-  and fixture/test narrative were removed after their durable rules were
-  harvested.
-- All Accepted and Deferred Physical Representation concept meanings remain
-  represented. This reconciliation changed no runtime behaviour, and runtime
-  implementation reconstruction remains subsequent engineering work.
-- The Physical Representation↔runtime review is complete for the Passage
-  geometry question. Its initial Negative-Clearance Permission Bypass
-  hypothesis was disproved rather than confirmed as a defect.
-- **Purpose-Scoped Geometry Authority** is the accepted interpretation:
-  current/working geometry supports current occupancy and corridor/Passage
-  recognition, while cached complete-assembly Transit geometry supports Passage
-  arrangement construction and testing when a prospective Passage Candidate
-  requires Transit as its geometry basis. This authority precedes Candidate
-  selection and Resolution Commitment; both require a supported Candidate and
-  arrangement. Physical Transit realisation is not required for Candidate
-  planning, while physical guide movement under the selected plan waits for the
-  established configuration/settlement boundary and fresh execution-origin
-  verification. That boundary preserves non-foldable, unsupported and bounded
-  settlement-exhaustion handling rather than universally requiring successful
-  folding.
-- Current Passage runtime behaviour is not selected for change. Historical and
-  prototype naming, plus mixed generic/purpose-specific authority fields, may
-  need later implementation-contract catch-up after an independent discrepancy
-  is established.
-- The surviving historical 80 m implementation remains an evidence and
-  reconstruction concern. It must not be changed piecemeal or treated as
-  architectural commitment authority.
+- The **Live Breadcrumb Invariant** is accepted: every live documentation folder README links each direct intentionally retained live document and each immediate live documentation subfolder. Direct-child navigation is sufficient. A missing link is an Orphan Signal requiring responsibility review, not automatic deletion.
+- The **Archive Navigation Exemption** is accepted. `docs/archive/` is outside the live breadcrumb tree, has no current authority, and is not a primary route from `docs/README.md`. It remains temporary recovery/harvesting material, not permanent storage.
+- `docs/50_Research/` has been renamed to `docs/research/`; its README owns the direct research breadcrumbs. Research remains evidence and does not establish current architectural authority.
+- `docs/engine/` now owns reusable GIANTS/FS25 runtime behaviour and observed or inspected API/surface knowledge. Engine facts do not define OuttaMyWay architecture or grant runtime authority.
+- The durable engine content formerly mixed into `AI_DISCOVERIES.md` and `GIANTS_AI_NOTES.md` has been harvested by subject into Runtime Knowledge and API Surfaces. Architecture, decisions, implementation defects, fixture evidence, and chronology remain owned by architecture, the Concept Register, Decision Log, Journal, research, prototypes, code, and Git; the two overlapping source files have no remaining live responsibility.
+- `LOCALISATION.md` remains live policy. The detailed readable-source and 567-key runtime experiment remains in the Vehicle Definition Corpus research record and is linked as evidence rather than duplicated into policy.
+- ADR, diagnostics, prototypes, representation evidence, architecture, code, engine, and research folders have local breadcrumb owners.
+- **Structure-Test Responsibility Drift:** structural tests retain assertions for repository artefacts whose live responsibilities have already been retired, including `docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, and `docs/GLOSSARY.md`; the tests themselves therefore encode stale repository authority. This drift existed on PR #19's accepted-main base and is not a PR #19 regression. PR #19 does not modify tests. Test-governance reconciliation remains a separate future Engineering Increment, which is not defined or prepared here. Retired documents must not be restored merely to satisfy stale tests.
+- This engineering increment changes documentation only. No Lua, XML, test, fixture, release, or runtime behaviour is changed, and no in-game validation is claimed.
 
 ## Current boundary
 
-The Passage geometry question now distinguishes generic collision-shape closure
-from independently justified purpose-specific authority. Complete Physical
-Assembly membership remains required for complete-assembly Transit geometry;
-the Known-Coverage Trap remains intact. Generic Deployment Sweep and Manoeuvre
-Sweep remain accepted, and Detailed Manoeuvre Sweep Construction remains
-Deferred rather than becoming a Cooperative Passage prerequisite.
-
-The current runtime evidence is consistent with this recovered geometry
-lifecycle. This conclusion selects no runtime change and makes no broader
-runtime-conformance claim.
+Breadcrumb completeness establishes intentional discoverability, not semantic
+authority and not proof that every retained document is correctly placed.
+Archive remains exempt. Engine observations are reusable evidence with explicit
+safe-use and non-inference limits, separate from OuttaMyWay's current
+architecture.
 
 ## Next boundary
 
-Review the remaining live documentation/code-map surfaces for stale
-responsibility or implementation-vocabulary lag, using the newly clarified
-purpose-scoped authority model; do not select runtime changes until a bounded
-architecture-to-code discrepancy is independently established.
+Review remaining live documentation responsibility surfaces for stale,
+overlapping, or weakly placed knowledge. Reconcile one bounded responsibility
+at a time; do not select runtime implementation changes unless a separate
+architecture-to-code discrepancy is established.
 
 ## Not currently active
 
 - Runtime implementation changes.
-- Release preparation or canonicalisation.
-- Final historical placement or disposition of the old status and handover ledgers.
-- Broad documentation filesystem reorganisation.
+- Release preparation, packaging, publication, or canonicalisation.
+- Declaring the entire documentation corpus reconciled.
+- Reorganising or treating `docs/archive/` as permanent storage.
