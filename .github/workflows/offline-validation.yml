@@ -48,6 +48,20 @@ jobs:
           sudo apt-get install --yes luajit
           luajit -v
 
+      - name: Report LuaJIT semantic profile
+        run: |
+          luajit -e '
+          local proxy = setmetatable({}, {
+            __pairs = function()
+              return next, {visible = 1}, nil
+            end
+          })
+          local n = 0
+          for _ in pairs(proxy) do n = n + 1 end
+          print("pairs_metamethod_count=" .. n)
+          print("rawlen_available=" .. tostring(type(rawlen) == "function"))
+          '
+
       - name: Run Lua offline harness
         id: lua
         continue-on-error: true
