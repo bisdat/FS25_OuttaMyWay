@@ -27,6 +27,8 @@ tests/
 
 The harness currently contains pre-existing failures. GitHub Actions therefore runs it as an explicitly **non-blocking observation**: the raw harness outcome remains visible, but CI does not encode the current failure count as an accepted threshold. Once those failures are reconciled, the harness can become a blocking contract.
 
+The harness also has a demonstrated **Validation Runtime Contract** for sealed collections: `pairs()` must honour `__pairs`, and `rawlen()` must be available. PR #24 isolated this from operating-system and LuaJIT source-version differences: stock Ubuntu LuaJIT from upstream commit `c525bcb9024510cad9e170e12b6209aedb330f83` produced **239 passed / 40 failed**, while the same source revision built with `LUAJIT_ENABLE_LUA52COMPAT` produced **266 passed / 13 failed**, matching the local Fedora baseline. CI therefore builds that pinned revision with Lua 5.2 compatibility enabled and reports the semantic profile before running the harness.
+
 ## Replay fixtures
 
 [`replay/HistoricalFixtures.lua`](replay/HistoricalFixtures.lua) contains executable historical reconstruction inputs for ReplayRunner and conformance testing. They are current test evidence. Their historical provenance does not grant them current architectural authority.
