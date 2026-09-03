@@ -60,9 +60,27 @@ The current mechanisms are Python structural/source-contract tests and Lua offli
 
 ### Continuous Integration Execution Boundary
 
-GitHub Actions may execute repeatable repository and offline validation against pull-request and `main` commits. CI owns execution and reporting of those checks, not interpretation, architecture, or acceptance. A green CI result supports only the claim made by the tests it ran and cannot replace in-game Reality where the claim depends on GIANTS behaviour.
+GitHub Actions owns ordinary execution and reporting of the repository offline
+validation suites against pull-request and `main` commits. Implementation
+agents retain responsibility for inexpensive implementation-local sanity checks
+and ordinarily do not duplicate repository-suite execution. Tests remain
+readable executable contract evidence for implementation work: **Test
+Visibility Is Not Test Execution Responsibility**.
 
-A known-failing suite may be run observationally without becoming a merge gate while its failures are being reconciled. Such a workflow must preserve the raw failure outcome and must not encode the current failure count as an accepted threshold merely to manufacture green status.
+`Structural contracts` is the required blocking check on protected `main`. A
+green result proves only the structural/source contract asserted by that suite;
+CI does not interpret the evidence, define architecture, or create owner
+acceptance. Engineering owns interpretation, and the repository owner's merge
+accepts an Engineering Increment. CI cannot replace appropriately scoped
+in-game Reality validation where a claim depends on GIANTS behaviour.
+
+The `Lua offline observation (non-blocking)` job remains observational while its
+known failures are being reconciled. It must preserve the raw failure outcome;
+the current count must not be encoded as an accepted threshold merely to
+manufacture green status. **Validation Execution Separation** and **Independent
+Execution Preserves Validation Independence** distinguish implementation-local
+checks, independent CI execution, engineering interpretation, owner acceptance,
+and in-game Reality evidence without weakening any test to obtain green CI.
 
 ### Validation Runtime Contract
 

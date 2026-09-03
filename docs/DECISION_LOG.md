@@ -1,3 +1,39 @@
+## D-0216 — Validation Execution Separation
+
+**Status:** Accepted owner decision.
+
+**Decision:** Root `/tests` owns the source-controlled executable offline
+validation assets and fixtures. GitHub Actions owns ordinary execution and
+reporting of those repository suites. The Python job named exactly `Structural
+contracts` is the required blocking check on protected `main`. Required-check
+strictness is false, so protection does not require a pull request to be updated
+to latest `main` solely to satisfy that rule, and protection is enforced for
+repository administrators. The `Lua offline observation (non-blocking)` job
+remains observational while its existing failures are unreconciled.
+Implementation agents inspect tests as readable
+executable contract evidence and may change them when an accepted contract
+changes, but ordinarily do not execute `pytest`,
+`tests/replacement_core/run.lua`, or equivalent repository suites. Tests must
+not be weakened merely to obtain green CI.
+
+CI owns execution and reporting only. Engineering owns interpretation of its
+evidence, the repository owner accepts an Engineering Increment by merge, and
+GIANTS Reality remains authoritative where a claim depends on actual Farming
+Simulator runtime behaviour. This decision changes no runtime behaviour or test
+behaviour and creates no release, version, or canonical status.
+
+**Reason:** Repeated implementation-agent execution duplicated independently
+repeatable validation and consumed resources better used for implementation and
+interpretation. The repository now has a demonstrated Validation Runtime
+Contract and a protected structural merge gate, so **Validation Execution
+Separation** preserves validation independence without transferring
+interpretation, architecture, or acceptance authority to CI. **Test Visibility
+Is Not Test Execution Responsibility:** tests remain visible evidence for
+implementation work. **Independent Execution Preserves Validation
+Independence:** independent CI execution supplies the repeatable evidence while
+keeping implementation, interpretation, Reality validation, and owner
+acceptance distinct.
+
 ## D-0215 — Root Validation Responsibility and Scenario Succession
 
 **Status:** Accepted owner decision.
