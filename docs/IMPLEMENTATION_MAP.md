@@ -614,10 +614,82 @@ Responsibility Transition.
 No explicit or generic Regulation representation, registry or lifecycle is
 introduced. D-0146 Action-Space Regulation remains the required second
 standalone exemplar before comparing common Regulation semantics. **Second
-Exemplar Before Generalisation** therefore continues to apply. GIANTS Reality
-validation of this D-0141 seam is pending; the implementation does not address
-Quiescent Regulation Deadlock, corner behaviour, Same-Commitment Responsibility
-Fusion, Bounded Authority or issue #33.
+Exemplar Before Generalisation** therefore continues to apply. The
+implementation does not address Quiescent Regulation Deadlock, corner
+behaviour, Same-Commitment Responsibility Fusion, Bounded Authority or issue
+#33.
+
+## D-0141 GIANTS Reality validation
+
+The `0.3.0.4` Reality episode naturally established Patriot 4450 as leader and
+Condor Endurance II as follower. Initial lifecycle application produced
+`AP-00001`, `CM-00001` and `OB-00001` for pair
+`AS-00002|AS-00001`. The architecture-facing marker then reported:
+
+```text
+FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM
+commitment=CM-00001
+leader=AS-00002
+follower=AS-00001
+legacyAction=CREATE
+responsibilityDisposition=ESTABLISHED
+beforePhysicalDispatch=true
+```
+
+Downstream `D0141_APPLY` followed for the same `CM-00001` and follower at
+`5.15 km/h`. This positively validates responsibility application upstream of
+physical Regulation.
+
+The episode then naturally exercised retained purpose and elastic Control. An
+observed `legacyAction=MAINTAIN`, `responsibilityDisposition=REVALIDATED` marker
+for `CM-00001` preceded `D0141_UPDATE` at `6.21 km/h`, with repeated further
+updates. Approximate episode counts were one established marker, 44 revalidated
+markers, one physical APPLY, 43 physical updates, two quiescence events and one
+reactivation. All retained `CM-00001`.
+
+Quiescence released temporary authority for `AS-00001` while logging
+`purposeRetained=true`. Reactivation later acquired `AU-00002`, revalidated the
+same `CM-00001` / `OB-00001`, and applied `11.40 km/h` through
+`D0141_ACTUATION_REACTIVATED`. This validates responsibility persistence
+independently of temporary Bounded Authority, along with elastic magnitude,
+quiescence, reactivation and **Maintenance Is Not Transition**. No contrary
+evidence of changed GIANTS productive routing or steering ownership was
+observed.
+
+Positive D-0141 retirement was **not observed / not required for this tranche**.
+That is not a validation failure. Retirement/termination remains deliberately
+downstream and unchanged. The observed D-0141 strangler seam passed; standalone
+Regulation reconciliation remains incomplete.
+
+## Regulation naming governance
+
+D-number runtime vocabulary such as `D0141_APPLY`, `D0141_UPDATE`,
+`D0141_ACTUATION_QUIESCENT`, `D0146_ACTION_SPACE_DECISION_APPLIED` and
+`D0155_ENVELOPE_UPDATE` is transitional implementation debt, not accepted
+Regulation terminology. Under the [Naming Conventions](NAMING_CONVENTIONS.md),
+Decision identifiers record provenance and must not become primary module or
+architectural names.
+
+The extracted architecture-facing seam already uses
+`FollowerBoundaryResponsibilityTransition`,
+`FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED`,
+`FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM` and `continueFollowerBoundary()`.
+Retained downstream `D0141_*` vocabulary remains unchanged solely to isolate
+behaviour in this tranche. Do not infer accepted terminology from it or create a
+naming-cleanup increment here.
+
+Remaining Regulation semantic runtime names should be graduated only after
+D-0141 and D-0146 have both been extracted and validated, their exemplars have
+been compared, and the explicit Regulation representation is stable. Historical
+D-identifiers may remain as genuine provenance, including tests that clearly
+document historical decision contracts.
+
+## Follower HUD Glyph Compatibility Leak
+
+GIANTS texture-font Reality reported missing character `8226` because retained
+follower-regulation HUD text still uses `•`. This is separate UI implementation
+debt, not Regulation architecture or PR #35 acceptance evidence. It is not fixed
+in this tranche and should use ASCII-safe punctuation when later addressed.
 
 # Intermediate Programme Steps
 
@@ -629,7 +701,7 @@ Fusion, Bounded Authority or issue #33.
 6. **Compare the two migrated Resolution exemplars and determine the smallest truthful explicit Resolution Commitment representation — COMPLETE for the read-only adapter/view hypothesis.**
 7. **Expose Resolution Commitment explicitly only where the two exemplars support it — COMPLETE and GIANTS Reality-validated for the observed direct Cooperative Passage `CREATE` and completed-obstruction `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` exemplars.**
 8. **Reconcile standalone Regulation — IN PROGRESS.**
-   - **8a. Extract D-0141 follower-boundary Regulation application/revalidation upstream — IMPLEMENTED; GitHub and GIANTS Reality validation pending.**
+   - **8a. Extract D-0141 follower-boundary Regulation application/revalidation upstream — COMPLETE and GIANTS Reality-validated for the observed establishment, same-responsibility revalidation, elastic update, quiescence and reactivation episode. Positive retirement was not observed and was not required.**
    - **8b. Extract and validate D-0146 Action-Space Regulation as the second standalone exemplar — PLANNED.**
    - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — DEFERRED pending 8a/8b evidence.**
 9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion.**

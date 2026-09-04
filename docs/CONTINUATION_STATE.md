@@ -6,11 +6,11 @@ is not a changelog, release ledger, or canonical-release record.
 
 ## Current engineering concern
 
-The first standalone Regulation strangler hypothesis is implemented: D-0141
-follower-boundary `APPLY` responsibility application/revalidation is upstream
-of physical Control. The immediate concern is independent GitHub validation and
-then bounded GIANTS Reality validation of that ownership seam without changing
-follower selection, elastic Regulation, quiescence, reactivation or retirement.
+The first standalone Regulation strangler seam is implemented and GIANTS
+Reality-validated: follower-boundary responsibility application/revalidation is
+upstream of physical Control. The immediate concern returns to **Observe /
+Discuss** the evidence and bound D-0146 Action-Space Regulation as the required
+second standalone Regulation exemplar before any general representation.
 
 ## Established
 
@@ -55,6 +55,13 @@ follower selection, elastic Regulation, quiescence, reactivation or retirement.
 - Revalidated retained follower purpose is distinguished from initial application in upstream diagnostics; repeated `APPLY` is not asserted to be a new architectural Responsibility Transition.
 - D-0141 RETIRE/termination deliberately remains downstream, including retirement application, physical lease release, purpose-bound authority release and follower-obligation settlement.
 - D-0146 Action-Space Regulation remains untouched as the required second standalone Regulation exemplar. No generic Regulation representation, registry or lifecycle has been introduced.
+- GIANTS Reality validated initial follower-boundary responsibility establishment upstream for Patriot 4450 leading Condor Endurance II: application `AP-00001` established `CM-00001` / `OB-00001`, then `FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM` reported `legacyAction=CREATE`, `responsibilityDisposition=ESTABLISHED` and `beforePhysicalDispatch=true` before downstream `D0141_APPLY` at `5.15 km/h`.
+- The same run repeatedly revalidated `CM-00001` without responsibility churn. Approximately one `ESTABLISHED` and 44 `REVALIDATED` upstream markers accompanied one physical APPLY and 43 elastic updates; an observed update raised the current cap to `6.21 km/h` while retaining the same Commitment and obligation identity.
+- Two observed quiescence events released temporary Regulation authority while the follower purpose remained. Later reactivation acquired `AU-00002` and applied `11.40 km/h` under the same `CM-00001`, with `responsibilityDisposition=REVALIDATED` and one `D0141_ACTUATION_REACTIVATED`.
+- The episode supports **Maintenance Is Not Transition** for follower Regulation and demonstrates Current Responsibility persistence independently of temporary Bounded Authority. No contrary evidence of changed GIANTS productive routing or steering ownership was observed.
+- Positive D-0141 retirement was **not observed / not required for this tranche**. It is not a failed validation; retirement and termination remain intentionally downstream and unchanged.
+- D-number runtime vocabulary such as `D0141_APPLY` and `D0141_ACTUATION_QUIESCENT` is transitional implementation debt, not accepted Regulation terminology. The architecture-facing seam uses current responsibility names; retained downstream names remain only for behavioural isolation during strangler recomposition.
+- A separate **Follower HUD Glyph Compatibility Leak** was observed: follower-regulation HUD text still uses the unsupported `•` texture-font glyph. It is unrelated to Regulation responsibility or PR #35 acceptance and remains deferred UI implementation debt.
 
 ## Current boundary
 
@@ -76,26 +83,31 @@ The saved-state corner failure is pre-existing A/B evidence and not a Resolution
 representation regression. It does not itself establish a Regulation design or
 authorise changes to Situation Assessment, D-0146, corner modelling or Control.
 
-The D-0141 intermediate asymmetry is explicit: acquisition/revalidation is
-upstream, while PRESERVE/quiescence mechanics and RETIRE/termination remain on
-their downstream legacy ownership. Physical follower behaviour is intended to
-be unchanged. GitHub and GIANTS Reality validation of the extracted seam remain
-pending.
+The D-0141 intermediate asymmetry is explicit and now validated for the observed
+episode: acquisition/revalidation is upstream, while PRESERVE/quiescence
+mechanics and RETIRE/termination remain on their downstream legacy ownership.
+Elastic magnitude updates, quiescence and reactivation behaved normally under
+one responsibility identity. Retirement was not naturally observed and remains
+outside the required evidence for this tranche.
+
+This does not complete standalone Regulation reconciliation or justify a
+generic Regulation representation from one exemplar. D-number vocabulary is
+not promoted to architecture, and neither Quiescent Regulation Deadlock nor the
+Follower HUD glyph leak is addressed here.
 
 ## Next boundary
 
-Validate D-0141 first. GitHub Actions owns Structural contracts and Lua offline
-observation. After review, GIANTS Reality should exercise a known follower-
-boundary scenario with initial admission, the upstream marker before physical
-`APPLY`, normal elastic Regulation, a retained-purpose magnitude update if it
-arises naturally, unchanged GIANTS steering/routing, and positive retirement if
-the scenario naturally reaches it.
+Return to **Observe / Discuss** before authorising the D-0146 Action-Space
+Regulation extraction. D-0146 remains the second exemplar required before the
+two standalone Regulation purposes can be compared and any explicit generic
+Regulation representation considered.
 
-After D-0141 validation, return to **Observe / Discuss** before authorising the
-D-0146 Action-Space Regulation extraction. D-0146 remains the second exemplar
-required before any generic Regulation representation is considered. The
-Quiescent Regulation Deadlock and opposed-corridor/corner distinction remain
-evidence for later reconciliation, not work in this tranche.
+The later comparison must distinguish responsibility persistence from temporary
+authority and actuation, and should determine stable semantic vocabulary before
+retiring or renaming remaining D-number runtime terms. Historical D-identifiers
+may remain where they truthfully record decision provenance. The Quiescent
+Regulation Deadlock and opposed-corridor/corner distinction remain evidence for
+later reconciliation, not current implementation work.
 
 Same-Commitment Responsibility Fusion and Bounded Authority remain deferred.
 Issue #33 remains a separate cold-start non-active obstruction-recognition
@@ -112,4 +124,5 @@ investigation and must not absorb the corner evidence.
 - Prototype22 migration or renaming.
 - Diagnostic or probe pruning.
 - Broad GUI/HUD work.
+- Follower HUD glyph correction.
 - Release preparation, packaging, publication or canonicalisation.
