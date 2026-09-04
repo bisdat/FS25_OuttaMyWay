@@ -22,30 +22,56 @@ function Authority.new(runtime)
     return setmetatable({runtime=runtime,currentActionSpaceRegulation=nil},Authority)
 end
 
--- INITIAL establishes the semantic responsibility. REACTIVATION and
--- ROLE_MIGRATION preserve it; neither mutable actuation event is a transition.
-function Authority:establishOrPreserveActionSpaceRegulation(evaluated,readiness,applied)
+function Authority:preflightActionSpaceRegulation(picture,evaluated,readiness)
     local bridge=selectedBridge(evaluated,"d0146ActionSpaceRegulationBridge")
-    local commitment=applied and applied.commitment or nil
-    if bridge==nil or commitment==nil then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTEXT_MISSING" end
     local context=readiness and readiness.applicationContext or nil
     local current=self.currentActionSpaceRegulation
+    if bridge==nil or readiness==nil or bridge.conflictIdentity~=readiness.conflictIdentity then
+        return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_PREFLIGHT_CONTEXT_MISMATCH"
+    end
+    if context=="INITIAL" then
+        if current~=nil and current.provenance.conflictIdentity~=bridge.conflictIdentity then
+            return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_ALREADY_CURRENT"
+        end
+        if current~=nil then
+            local targeted=false
+            for _,item in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
+                if item.commitmentId==current.provenance.retainedCommitmentId then targeted=true break end
+            end
+            if targeted~=true then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTINUITY_NOT_TARGETED" end
+        end
+        return {context=context,current=current,conflictIdentity=bridge.conflictIdentity},nil
+    end
+    if context~="REACTIVATION" and context~="ROLE_MIGRATION" then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTEXT_UNSUPPORTED" end
+    if current==nil or current.kind~="REGULATION" or current.provenance.conflictIdentity~=bridge.conflictIdentity
+        or current.provenance.retainedCommitmentId~=readiness.commitmentId then
+        return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTINUITY_MISMATCH"
+    end
+    return {context=context,current=current,conflictIdentity=bridge.conflictIdentity,commitmentId=readiness.commitmentId},nil
+end
+
+-- INITIAL establishes the semantic responsibility. REACTIVATION and
+-- ROLE_MIGRATION preserve it; neither mutable actuation event is a transition.
+function Authority:establishOrPreserveActionSpaceRegulation(preflight,applied)
+    local commitment=applied and applied.commitment or nil
+    if preflight==nil or commitment==nil then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTEXT_MISSING" end
+    local context=preflight.context
+    local current=preflight.current
     if context=="INITIAL" then
         if current~=nil then
-            if current.provenance.conflictIdentity==bridge.conflictIdentity and current.provenance.retainedCommitmentId==commitment.identity then return current,nil end
+            if current.provenance.conflictIdentity==preflight.conflictIdentity and current.provenance.retainedCommitmentId==commitment.identity then return current,nil end
             return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_ALREADY_CURRENT"
         end
         current=OuttaMyWay.Regulation.new({
             identity=self.runtime.identities:issue("RESPONSIBILITY"),kind="REGULATION",
             governingBasis=commitment.governingBasis,
-            provenance={source="ActionSpaceRegulationResponsibilityTransition",conflictIdentity=bridge.conflictIdentity,retainedCommitmentId=commitment.identity}
+            provenance={source="ActionSpaceRegulationResponsibilityTransition",conflictIdentity=preflight.conflictIdentity,retainedCommitmentId=commitment.identity}
         })
         self.currentActionSpaceRegulation=current
         return current,nil
     end
     if context~="REACTIVATION" and context~="ROLE_MIGRATION" then return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTEXT_UNSUPPORTED" end
-    if current==nil or current.kind~="REGULATION" or current.provenance.conflictIdentity~=bridge.conflictIdentity
-        or current.provenance.retainedCommitmentId~=commitment.identity then
+    if current==nil or current.provenance.retainedCommitmentId~=commitment.identity then
         return nil,"ACTION_SPACE_REGULATION_RESPONSIBILITY_CONTINUITY_MISMATCH"
     end
     return current,nil
@@ -61,10 +87,22 @@ function Authority:replaceActionSpaceRegulationWithCooperativePassage(picture,ev
         or current.provenance.conflictIdentity~=bridge.conflictIdentity then
         return nil,"ACTION_SPACE_PASSAGE_RESPONSIBILITY_PREDECESSOR_MISMATCH"
     end
+    local preflight,preflightReason=dispatcher:preflightActionSpaceRegulationForCooperativePassage(evaluated,readiness)
+    if preflight==nil then return nil,preflightReason end
+    if preflight.commitmentId~=current.provenance.retainedCommitmentId or preflight.conflictIdentity~=current.provenance.conflictIdentity then
+        return nil,"ACTION_SPACE_PASSAGE_RESPONSIBILITY_SUBSTRATE_MISMATCH"
+    end
+    local targeted=false
+    for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
+        if context.commitmentId==preflight.commitmentId then targeted=true break end
+    end
+    if targeted~=true or evaluated.decision.commitmentAction~="REVISE" then
+        return nil,"ACTION_SPACE_PASSAGE_RESPONSIBILITY_SUCCESSION_NOT_TARGETED"
+    end
     local successorIdentity=self.runtime.identities:issue("RESPONSIBILITY")
     local applied,reason=passageTransition:transition(picture,evaluated,readiness,{responsibilityIdentity=successorIdentity,deferResponsibilityExposureLog=true})
     if applied==nil then return nil,reason end
-    if applied.commitment.identity~=current.provenance.retainedCommitmentId then
+    if applied.commitment.identity~=preflight.commitmentId then
         return nil,"ACTION_SPACE_PASSAGE_RETAINED_COMMITMENT_CHANGED"
     end
     local retired,retireReason=dispatcher:supersedeActionSpaceRegulationForCooperativePassage(applied.commitment,evaluated)

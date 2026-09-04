@@ -42,13 +42,15 @@ function Transition:transition(picture,evaluated,readiness)
         or (context~="INITIAL" and context~="REACTIVATION" and context~="ROLE_MIGRATION") then
         return nil,"ACTION_SPACE_REGULATION_TRANSITION_CONTEXT_MISMATCH"
     end
+    local preflight,preflightReason=self.runtime.responsibilityTransitionAuthority:preflightActionSpaceRegulation(picture,evaluated,readiness)
+    if preflight==nil then return nil,preflightReason end
     local applied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyD0146ActionSpaceDecision(self.runtime,picture,evaluated)
     if applied==nil then
         logWarning("ACTION_SPACE_REGULATION_TRANSITION_REFUSED decision=%s candidate=%s conflict=%s context=%s reason=%s",
             tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.conflictIdentity),tostring(context),tostring(reason))
         return nil,reason
     end
-    local currentResponsibility,responsibilityReason=self.runtime.responsibilityTransitionAuthority:establishOrPreserveActionSpaceRegulation(evaluated,readiness,applied)
+    local currentResponsibility,responsibilityReason=self.runtime.responsibilityTransitionAuthority:establishOrPreserveActionSpaceRegulation(preflight,applied)
     if currentResponsibility==nil then return nil,responsibilityReason end
     applied.currentResponsibility=currentResponsibility
     local disposition=evaluated.decision.commitmentAction=="CREATE" and "ESTABLISHED" or "REVALIDATED"

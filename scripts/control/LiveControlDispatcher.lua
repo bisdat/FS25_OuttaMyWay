@@ -932,6 +932,28 @@ function Dispatcher:supersedeActionSpaceRegulationForCooperativePassage(commitme
     return self:_supersedeD0146ActionSpaceForCooperativePassage(commitment,selectedCandidate(evaluated))
 end
 
+function Dispatcher:preflightActionSpaceRegulationForCooperativePassage(evaluated,readiness)
+    local candidate=selectedCandidate(evaluated)
+    local bridge=cooperativePassageBridge(candidate)
+    local lease=self.d0146ActionSpaceLease
+    if candidate==nil or readiness==nil or candidate.identity~=readiness.candidateId or bridge==nil or bridge.architecture~="D0146_STEP2"
+        or lease==nil or bridge.conflictIdentity~=lease.conflictIdentity then
+        return nil,"ACTION_SPACE_PASSAGE_PREFLIGHT_CONTEXT_MISMATCH"
+    end
+    local obligationId=nil
+    for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.runtime.obligations:openForOwner(lease.commitmentId)) do
+        local basis=obligation.basis
+        local outcome=obligation.requiredOutcome
+        if type(basis)=="table" and basis.kind=="D0146_PASSAGE_ACTION_SPACE_CONSERVATION" and basis.conflictIdentity==lease.conflictIdentity
+            and type(outcome)=="table" and outcome.kind=="D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" then
+            obligationId=obligation.identity
+            break
+        end
+    end
+    if obligationId==nil then return nil,"ACTION_SPACE_PASSAGE_PREFLIGHT_OPEN_PREDECESSOR_OBLIGATION_UNAVAILABLE" end
+    return {commitmentId=lease.commitmentId,conflictIdentity=lease.conflictIdentity,obligationId=obligationId},nil
+end
+
 -- A terminalized traffic Commitment cannot leave owner-tag Control leases or
 -- dispatcher-local lease state behind. D-0200 invokes this after kernel authority
 -- has been released so terminal succession observes no stale actuation context.

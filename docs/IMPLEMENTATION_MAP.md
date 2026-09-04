@@ -911,6 +911,17 @@ Operation-wide responsibility cardinality remain outside this seam. Generic
 Commitment, Obligation and AuthorityToken behaviour remains retained substrate;
 AuthorityToken reuse is not redesigned before programme step 10.
 
+PR review exposed **Replacement Precondition Lag**: the first implementation
+validated retained-Commitment continuity and predecessor cleanup eligibility
+only after the Passage `REVISE`. The corrected seam now validates the complete
+known boundary before successor mutation: selected Candidate/readiness,
+`D0146_STEP2` bridge and conflict, current Regulation identity and retained
+Commitment, matching dispatcher lease, open Action-Space obligation, and the
+picture's targeted same-Commitment `REVISE`. Action-Space INITIAL,
+REACTIVATION and ROLE_MIGRATION likewise preflight semantic compatibility before
+their retained lifecycle application. Preflight is read-only and performs no
+Control or retained lifecycle mutation.
+
 ## Regulation naming governance
 
 D-number runtime vocabulary such as `D0141_APPLY`, `D0141_UPDATE`,

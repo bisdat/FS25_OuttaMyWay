@@ -16,7 +16,10 @@ concern: **Responsibility Transition Authority**, the missing sole architectural
 owner of responsibility establishment, termination and atomic replacement.
 The current step-9 increment implements its first bounded exemplar: Action-Space
 Regulation → same-Commitment Cooperative Passage replacement upstream of
-physical Passage Control. GitHub and GIANTS Reality validation remain pending.
+physical Passage Control. GitHub Structural contracts passed; the actual
+non-blocking Lua harness profile is `268 passed / 13 failed`. Focused replacement,
+preflight-failure safety, responsibility-identity preservation and role-migration
+observations passed. GIANTS Reality validation remains pending and required.
 
 ## Established
 
@@ -98,6 +101,8 @@ physical Passage Control. GitHub and GIANTS Reality validation remain pending.
 - Predecessor D-0146 settlement and physical lease cleanup are invoked as subordinate replacement work before `continueCooperativePassage()` can begin Passage Control. Replacement failure prevents physical Passage continuation.
 - `ResolutionCommitmentAdapter` accepts an authority-established identity for this migrated succession while preserving its accepted retained-Commitment fallback for direct Passage and completed-obstruction paths.
 - Generic Commitment, Obligation and AuthorityToken machinery remains retained substrate. AuthorityToken reuse and Bounded Authority semantics were not redesigned.
+- **Replacement Precondition Lag** was corrected: Candidate/readiness, bridge/conflict, current responsibility, retained Commitment target, dispatcher lease and open predecessor obligation are now read-only preconditions before Passage `REVISE` or successor representation construction.
+- Focused reactivation identity preservation passed at the responsibility-authority boundary. The historically failing full D0197 quiescence/reactivation observation remains within the 13-failure observational profile and is not claimed green.
 - GIANTS Reality validated initial follower-boundary responsibility establishment upstream for Patriot 4450 leading Condor Endurance II: application `AP-00001` established `CM-00001` / `OB-00001`, then `FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM` reported `legacyAction=CREATE`, `responsibilityDisposition=ESTABLISHED` and `beforePhysicalDispatch=true` before downstream `D0141_APPLY` at `5.15 km/h`.
 - The same run repeatedly revalidated `CM-00001` without responsibility churn. Approximately one `ESTABLISHED` and 44 `REVALIDATED` upstream markers accompanied one physical APPLY and 43 elastic updates; an observed update raised the current cap to `6.21 km/h` while retaining the same Commitment and obligation identity.
 - Two observed quiescence events released temporary Regulation authority while the follower purpose remained. Later reactivation acquired `AU-00002` and applied `11.40 km/h` under the same `CM-00001`, with `responsibilityDisposition=REVALIDATED` and one `D0141_ACTUATION_REACTIVATED`.

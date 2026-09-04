@@ -1998,12 +1998,15 @@ def test_responsibility_transition_authority_owns_action_space_passage_replaceme
     assert "self.currentActionSpaceRegulation=nil" in authority
     assert "RESPONSIBILITY_REPLACED" in authority and "beforePhysicalDispatch=true" in authority
     replacement=authority[authority.index("function Authority:replaceActionSpaceRegulationWithCooperativePassage"):authority.index("function Authority:matchesActionSpacePassage")]
+    assert replacement.index("preflightActionSpaceRegulationForCooperativePassage") < replacement.index("passageTransition:transition")
     assert replacement.index("supersedeActionSpaceRegulationForCooperativePassage") < replacement.index("self.currentActionSpaceRegulation=nil")
     assert replacement.index("self.currentActionSpaceRegulation=nil") < replacement.index("return applied,nil")
     assert "executeControlRequest" not in authority and "executeJointRequests" not in authority
     assert "CommitmentRegistry" not in authority and "ObligationLedger" not in authority and "AuthorityRegistry" not in authority
     assert "speed" not in regulation.lower() and "authorityToken" not in regulation
     assert "genericCommitmentIdentity" in adapter
+    action_transition=(ROOT/"scripts"/"responsibility"/"ActionSpaceRegulationResponsibilityTransition.lua").read_text(encoding="utf-8")
+    assert action_transition.index("preflightActionSpaceRegulation") < action_transition.index("applyD0146ActionSpaceDecision")
     continuation=dispatcher[dispatcher.index("function Dispatcher:continueCooperativePassage"):dispatcher.index("function Dispatcher:getDispatchCount")]
     assert "_supersedeD0146ActionSpaceForCooperativePassage" not in continuation
     assert "executeJointRequests" in continuation
