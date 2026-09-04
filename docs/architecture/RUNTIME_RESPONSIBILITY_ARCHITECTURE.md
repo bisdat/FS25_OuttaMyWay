@@ -222,9 +222,15 @@ Observation
    |
 Situation Assessment
    |
-   +-- no responsibility transition
+   +-- same responsibility remains justified
+   |          |
+   |   Current Responsibility persists
+   |   with no transition
    |
-   +-- Responsibility Transition when justified
+   +-- lifecycle change justified
+              |
+       Responsibility Transition Authority
+       establishes / terminates / atomically replaces
               |
        Current Responsibility
        |
@@ -239,7 +245,15 @@ Situation Assessment
               Reality
 ```
 
-Situation Assessment is continuous; Responsibility Transition is episodic. Current Responsibility explains why intervention may persist. Bounded Authority specifies what physical action is permitted now. Control realises an already-authorised request through available mechanisms.
+Situation Assessment is continuous; Responsibility Transition is episodic.
+Situation Assessment owns the semantic justification for what responsibility is
+appropriate now. **Responsibility Transition Authority** exclusively makes an
+establishment, termination or replacement authoritative. When the same
+responsibility remains justified, its Current Responsibility instance simply
+persists and no Responsibility Transition occurs. Current Responsibility
+explains why intervention may persist. Bounded Authority specifies what physical
+action is permitted now. Control realises an already-authorised request through
+available mechanisms.
 
 ## 11. Reality, Observation and Situation Assessment
 
@@ -259,7 +273,12 @@ It samples current Reality and records provenance, timestamp, source, uncertaint
 
 Situation Assessment answers: **What does current evidence mean for this Local Operation now?**
 
-It interprets participation, physical relevance, productive certainty, constrained-space relationships, obstruction cause, current uncertainty, continuing Regulation purpose, and whether Resolution Commitment obligations remain open, discharged or supportable.
+It interprets participation, physical relevance, productive certainty,
+constrained-space relationships, obstruction cause, current uncertainty,
+continuing Regulation purpose, and whether Resolution Commitment obligations
+remain open, discharged or supportable. From that evidence it determines
+whether the same Current Responsibility remains justified or an establishment,
+termination or replacement is justified.
 
 Situation Assessment does not acquire or release responsibility, actuate, or preserve stale predictions merely because they were once true.
 
@@ -267,15 +286,41 @@ Situation Assessment does not acquire or release responsibility, actuate, or pre
 
 ## 12. Responsibility Transition
 
-**Responsibility Transition** is an episodic change in OuttaMyWay responsibility justified by fresh Situation Assessment. It establishes the purpose and governing basis of a new responsibility but does not actuate vehicles.
+**Responsibility Transition** is the semantic lifecycle boundary between Current
+Responsibility instances. A transition is an episodic change justified by fresh
+Situation Assessment, not ordinary continuation.
+
+**Responsibility Transition Authority** is the sole architectural authority
+permitted to establish a new Current Responsibility, terminate an existing
+Current Responsibility, or atomically replace one Current Responsibility with
+another. Situation Assessment supplies the assessed semantic conclusion;
+Responsibility Transition Authority makes the resulting lifecycle change
+authoritative. It also establishes the semantic identity of each newly
+established responsibility instance.
+
+Responsibility Transition Authority does not reinterpret Reality, redo Situation
+Assessment, choose spatial strategy, select a regulated subject or speed
+magnitude, select productive routing, construct Control actions, own retained
+Commitment or Obligation lifecycle, decide Bounded Authority, or guarantee a
+successor.
+
+If fresh Situation Assessment continues to support the same Current
+Responsibility, that instance and its identity persist without a transition.
+**Maintenance Is Not Transition**: there is no `CONTINUE` transition event merely
+for symmetry. The authority acts only at these boundaries:
+
+```text
+no responsibility       -> new responsibility
+existing responsibility -> no responsibility
+existing responsibility -> different responsibility
+```
 
 ```text
 GIANTS AI -> Regulation
 Regulation -> GIANTS AI
 
-Regulation purpose ends
-fresh assessment
-GIANTS AI -> Resolution Commitment
+Regulation -> Resolution Commitment
+when fresh assessment justifies atomic replacement
 
 GIANTS AI -> Resolution Commitment directly
 
@@ -283,6 +328,26 @@ Resolution Commitment -> GIANTS AI
 ```
 
 Regulation is not a mandatory precursor to Resolution Commitment. It cannot silently mutate into another Regulation purpose or into Resolution Commitment; the current responsibility first ends, and fresh assessment independently justifies any successor.
+
+**Semantic Discontinuity Can Be Atomic.** Fresh Situation Assessment may justify
+direct replacement of Regulation by Resolution Commitment without an artificial
+GIANTS-AI tick, uncontrolled physical interval or mandatory intermediate Current
+Responsibility:
+
+```text
+REGULATION R1
+    |
+Responsibility Transition Authority
+    |-- ends R1
+    `-- establishes R2
+    |
+RESOLUTION_COMMITMENT R2
+```
+
+The notation illustrates distinct semantic identities, not a prescribed
+identifier format. Regulation does not mutate into Resolution Commitment, and
+this architecture does not decide whether retained AuthorityTokens may be reused
+across replacement.
 
 ## 13. Current Responsibility
 
@@ -300,6 +365,45 @@ GIANTS AI
 ```
 
 This is explanatory, not a mandatory state-machine route.
+
+### Responsibility-instance identity
+
+**Responsibility Identity Belongs to Responsibility, Not Its Substrate.** When
+Responsibility Transition Authority establishes a new Current Responsibility,
+it establishes that responsibility instance's semantic identity. Architecture
+does not prescribe how the opaque identity is generated, stored or represented.
+
+Identity remains stable while the same responsibility persists. Changing
+Situation evidence, governing basis, Bounded Authority, Control, actuation role,
+or authority quiescence/reactivation does not churn it. Genuine termination ends
+that identity; replacement establishes a distinct identity for the successor.
+
+**Evidence Succession ≠ Responsibility Succession**, and **Substrate Continuity
+≠ Responsibility Continuity**. A retained generic Commitment may remain
+continuous across a responsibility replacement without becoming Current
+Responsibility identity authority. Likewise, **Commitment `REVISE` ≠
+Responsibility Continuation** and **Obligation Settlement ≠ Responsibility
+Transition**: those substrate operations may participate in implementation but
+do not own or prove the semantic boundary.
+
+The known Regulation-to-Cooperative-Passage path is the motivating exemplar:
+
+```text
+retained generic Commitment CM-00001
+    |-- Regulation responsibility R1
+    |-- retained Commitment REVISE
+    `-- Resolution Commitment responsibility R2
+
+R1 != R2
+```
+
+The identity labels are illustrative only. The direct Resolution exemplars
+validated the existing `ResolutionCommitmentAdapter` mapping where retained
+Commitment lifetime and observed Resolution lifetime coincided. **Coincident
+Identity ≠ Identity Equivalence**: that accepted transitional mapping is not
+retrospectively invalid, but it requires reconciliation when Responsibility
+Transition Authority is implemented because generic Commitment identity is not
+the universal Current Responsibility identity domain.
 
 ### GIANTS AI
 
@@ -321,7 +425,8 @@ Situation Assessment → why temporal coordination is currently justified
 Regulation           → bounded responsibility to alter relative timing
 Bounded Authority    → which subject may be regulated and by how much now
 Control              → physical realisation of the authorised adjustment
-fresh assessment     → continuation, termination and any successor
+fresh assessment     → justification for continuation or lifecycle change
+Transition Authority → authoritative establishment / termination / replacement
 ```
 
 This is **Many Situations, One Regulation Capability**. Intent revelation,
