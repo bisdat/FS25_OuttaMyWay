@@ -740,6 +740,53 @@ divergence is not claimed here. The saved-corner fixture is no longer a reliable
 PR #36 seam-validation fixture until that gap is addressed or another fixture
 reliably selects Action-Space Regulation.
 
+## Regulation exemplar comparison — programme step 8c
+
+Comparison of the extracted follower-boundary and Action-Space seams disproved
+the emerging assumption that their Situation-specific forms should become
+separate architectural Regulation types. The architectural result is **Many
+Situations, One Regulation Capability: Temporal Coordination**. Regulation
+remains one Current Responsibility whose invariant capability is bounded,
+reversible alteration of relative timing while GIANTS retains productive route
+and progression ownership.
+
+The comparison establishes this allocation:
+
+```text
+Situation Assessment → why temporal coordination is currently useful
+Regulation           → bounded temporal responsibility
+Bounded Authority    → which subject and permissible magnitude now
+Control              → physical timing adjustment
+fresh assessment     → continuation, termination and successor
+```
+
+Follower/leader interaction, uncertain intent, constrained option-space
+competition, poor prospective Passage theatre and third-worker Bubble
+protection are Situation distinctions and benefits, not Regulation subtypes.
+This also records **Regulation Cause ≠ Regulation Capability** and preserves
+**Responsibility Roles ≠ Regulation Actuation Roles**: follower, leader,
+regulated/protected participant, cap, authority token, progression envelope,
+quiescence/reactivation and Action-Space role migration do not define generic
+Regulation identity.
+
+**Spatial Strategy / Temporal Regulation** permits Situation Assessment to use
+positive spatial foreseeability strategically, including moving a highly
+probable encounter toward better Passage theatre by changing timing. Regulation
+does not thereby acquire routing or Passage authority. **Successor-Agnostic ≠
+Future-Blind**: Regulation neither reserves nor guarantees a successor, but
+Situation Assessment need not ignore a strongly supported future interaction.
+Fresh assessment independently justifies any later Resolution Commitment.
+
+The two purpose-specific transition modules remain legitimate implementation
+seams and provenance; their names do not establish architectural subclasses.
+Follower-boundary and Action-Space obligations remain retained substrate that
+currently encodes Situation-specific provenance and persistence. Neither those
+obligation identities nor generic Commitment identity is promoted here as the
+final architectural Regulation identity. The smallest truthful explicit,
+read-only Regulation representation remains to be determined after review of
+this Record; no runtime representation, registry, adapter or lifecycle is
+introduced in this tranche.
+
 ## Regulation naming governance
 
 D-number runtime vocabulary such as `D0141_APPLY`, `D0141_UPDATE`,
@@ -782,7 +829,7 @@ in this tranche and should use ASCII-safe punctuation when later addressed.
 8. **Reconcile standalone Regulation — IN PROGRESS.**
    - **8a. Extract D-0141 follower-boundary Regulation application/revalidation upstream — COMPLETE and GIANTS Reality-validated for the observed establishment, same-responsibility revalidation, elastic update, quiescence and reactivation episode. Positive retirement was not observed and was not required.**
    - **8b. Extract D-0146 Action-Space Regulation as the second standalone exemplar — IMPLEMENTED and offline-validated; GIANTS Reality attempt inconclusive because the saved-corner Situation bypassed Action-Space Regulation upstream of the extracted seam.**
-   - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — DEFERRED pending 8a/8b evidence.**
+   - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — COMPARISON COMPLETE at the architectural level: both are manifestations of one temporal Regulation responsibility; explicit runtime representation remains deferred pending review of this Record.**
 9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion.**
 10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**
 11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities.**

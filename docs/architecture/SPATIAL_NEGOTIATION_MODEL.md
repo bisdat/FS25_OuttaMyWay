@@ -42,9 +42,10 @@ The **productive-certainty horizon** is the remaining forward interval over whic
 
 Fresh positive Reality outranks historical inference. Sparse demonstrated agronomic progression may adjust confidence when already cheaply available, but Productive History/Rook machinery is not restored and no reconstructed future route gains governing authority.
 
-## 4. Spatial purposes for Regulation
+## 4. Spatial reasons for temporal Regulation
 
-Within the parent's generic Regulation responsibility, spatially supported purposes include:
+Spatial Situation Assessment may justify the parent's single Regulation
+responsibility for reasons including:
 
 - allowing native intent to reveal;
 - preserving Resolution Margin;
@@ -52,7 +53,15 @@ Within the parent's generic Regulation responsibility, spatially supported purpo
 - protecting prospective Passage theatre; and
 - managing an independent third worker where applicable.
 
-Spatial Regulation is admissible when developing spatial competition is relevant, uncertainty or preserved theatre still has material value, and continued native progression is consuming the opportunity to wait safely for better evidence or execution space.
+These are Situation reasons and strategic benefits, not distinct architectural
+Regulation types. **Many Situations, One Regulation Capability** applies:
+Regulation supplies bounded temporal coordination while Situation Assessment
+owns why that coordination is useful now.
+
+Regulation is admissible when developing spatial competition is relevant,
+uncertainty or preserved theatre still has material value, and continued native
+progression is consuming the opportunity to wait safely for better evidence or
+execution space.
 
 Regulation changes timing, not productive routes. Prefer an allocation that preserves more Resolution Space and useful revelation time; if several choices are adequately viable, use a deterministic tie-break rather than expensive optimisation. The regulated party is not a permanent loser.
 
@@ -67,6 +76,13 @@ The Field World supplies evidence about local option-space scarcity:
 - **Open field:** comparatively generous Resolution Space.
 
 Entering a zone does not itself trigger Regulation.
+
+The overlay supplies Situation evidence about local option-space scarcity. It
+may influence whether temporal coordination is justified, which party can most
+cheaply give time, and when constrained-space occupancy should be allowed to
+reveal or vacate. Category 1, Category 2 and Open field are not Regulation
+types; future implementation of this overlay belongs upstream in Situation
+Assessment and does not require another Current Responsibility kind.
 
 ### One worker inside, one outside
 
@@ -119,7 +135,19 @@ This purpose-specific Transit Passage contract does not claim generic current co
 
 ### Tactical Regulation
 
-Regulation may shape foreseeable Passage timing when the natural encounter would occur in poor execution theatre. Suitable theatre must support the **complete downstream Passage lifecycle**, including post-crossing Alignment Runout, Axis Settlement/Return where required, restoration and GIANTS handback.
+**Spatial Strategy / Temporal Regulation** permits Situation Assessment to use
+high-confidence Passage foreseeability, poor natural encounter theatre and the
+availability of useful temporal adjustment to select Regulation. Regulation
+then changes relative timing only. It does not decide to create Passage or
+acquire spatial-routing authority. This is **Successor-Agnostic ≠
+Future-Blind**: likely future interaction may justify action now without being
+reserved or guaranteed as the successor.
+
+Regulation may therefore shape foreseeable Passage timing when the natural
+encounter would occur in poor execution theatre. Suitable theatre must support
+the **complete downstream Passage lifecycle**, including post-crossing
+Alignment Runout, Axis Settlement/Return where required, restoration and GIANTS
+handback.
 
 Changing progression for an opposed A8 pair changes its prospective encounter position. Regulation may move that position into a viable interval where both participants retain sufficient downstream space. Stop shaping once Passage is sufficiently viable; least intervention wins.
 
@@ -186,6 +214,12 @@ At Bubble Formation, an independent third active AI Traffic Party immediately en
 - unexpected hard-safety evidence remains authoritative.
 
 The third worker never joins the pairwise commitment. Bullet Time serializes it; it does not solve it or create a general claim that all Regulation is globally exclusive.
+
+Bullet Time is a bounded expression of the same Regulation Current
+Responsibility, selected because the active Resolution Epoch supplies the
+current Situation reason for temporal coordination. It is not a separate
+third-worker Regulation subtype, and its exact `1 km/h` policy does not become
+the universal magnitude for Regulation.
 
 ## 11. Last-Handoff Dissolution
 

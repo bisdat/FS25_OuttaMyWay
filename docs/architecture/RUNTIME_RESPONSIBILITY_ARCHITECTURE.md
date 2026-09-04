@@ -307,9 +307,39 @@ GIANTS AI is the default and attractor. GIANTS owns jobs, productive routing and
 
 ### Regulation
 
-Regulation is bounded reversible temporal adjustment. It changes timing, not productive routes, and has weak persistence. An explicit current purpose is required, and Regulation ends immediately when that purpose is discharged, invalidated or replaced.
+Regulation is the one Current Responsibility for bounded temporal coordination
+of otherwise GIANTS-owned progression. It is bounded and reversible, changes
+timing rather than productive routes, and has weak persistence. An explicit
+current positive justification is required, and Regulation ends immediately
+when that justification is discharged, invalidated or replaced. Different
+Situation reasons do not create architectural Regulation subtypes.
 
-Regulation is **successor-agnostic**. It exists only because the current Situation justifies temporary intervention and has no preferred successor. Fresh Situation Assessment independently determines whether GIANTS AI, another Regulation purpose or Resolution Commitment follows. Action-Space Regulation preserves current optionality and usable action space; it does not predict, reserve or guarantee Cooperative Passage.
+The responsibility split is:
+
+```text
+Situation Assessment → why temporal coordination is currently justified
+Regulation           → bounded responsibility to alter relative timing
+Bounded Authority    → which subject may be regulated and by how much now
+Control              → physical realisation of the authorised adjustment
+fresh assessment     → continuation, termination and any successor
+```
+
+This is **Many Situations, One Regulation Capability**. Intent revelation,
+preserved option space, improved ordering, improved prospective Passage theatre
+and Bubble protection may be Situation-dependent benefits or strategic
+objectives. Regulation's invariant capability remains temporal coordination.
+The current participant roles, speed magnitude, authority token, progression
+envelope and quiescence/reactivation condition belong downstream and do not
+define generic Regulation identity.
+
+Regulation is **successor-agnostic**, not future-blind. It does not own, reserve,
+guarantee or force its successor. Situation Assessment may nevertheless use
+positive foreseeability of a likely future interaction—for example, a highly
+probable Cooperative Passage whose natural meeting theatre is poor—to justify
+temporal coordination now. Regulation may then alter relative timing so the
+probable encounter moves toward better theatre, without acquiring route-planning
+or Passage authority. Fresh Situation Assessment must still independently
+determine whether GIANTS AI, Regulation or Resolution Commitment follows.
 
 Regulation has no cooldown, pair memory or sticky recent-subject rule. One allocation has a bounded uninterrupted authority lifetime; expiry requires fresh assessment and provides no inference of safety, failure or commitment.
 
