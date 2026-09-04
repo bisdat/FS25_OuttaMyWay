@@ -6,54 +6,60 @@ is not a changelog, release ledger, or canonical-release record.
 
 ## Current engineering concern
 
-The first Cooperative Passage Responsibility Transition strangler seam has been
-implemented and Reality-validated for one observed direct `CREATE` Passage
-episode.
-
-The immediate concern is to assess the evidence from the first seam and
-determine the next bounded strangler tranche.
+Two distinct Resolution responsibility acquisition seams have been strangled
+upstream and Reality-validated. The immediate concern is to compare those two
+exemplars and determine what explicit Resolution Commitment representation is
+actually justified.
 
 ## Established
 
 - The accepted [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Strangler Transition Map](IMPLEMENTATION_MAP.md#detailed-strangler-transition-map) remain authoritative for architecture and programme direction respectively.
-- The first strangler seam is implemented: Cooperative Passage transition acquisition moved upstream of Control.
-- [`CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) is the sole live owner of Cooperative Passage Decision-to-Commitment application.
-- **No Dual Transition Authority** is structurally protected; `LiveControlDispatcher` no longer applies Cooperative Passage responsibility.
-- Existing pre-transition refusal, pre-emption and readiness ordering remains in the dispatcher before its non-mutating readiness handoff.
-- Runtime applies the upstream transition and passes already-established responsibility to the dispatcher continuation.
-- The generic Commitment, Obligation and Authority substrate is intentionally retained.
-- Non-migrated Regulation and completed-obstruction paths retain their legacy lifecycle ownership.
-- GitHub `Structural contracts` and `Lua offline observation (non-blocking)` jobs completed successfully on the tested PR head.
-- GIANTS Reality validated one direct Cooperative Passage `CREATE` episode: exactly one upstream transition preceded normal physical Passage, Axis Return, restoration and GIANTS handoff; the pair context dissolved, the Commitment succeeded and authority was released.
-- No duplicate transition, Commitment-application failure, Cooperative Passage rejection or observable behavioural regression was identified in that episode.
-- Development build identity `0.3.0.1 TEST — COOPERATIVE PASSAGE RESPONSIBILITY TRANSITION` was visible and attributable, and GIANTS listed the mod as version `0.3.0.1`.
-- This resolves the Validation Identity Defect that previously left development artifacts visibly indistinguishable from canonical `0.3.0.0`.
-- GIANTS texture-font Reality exposed an unsupported `•` Version HUD separator; the implementation now uses ASCII-safe `|` without changing build identity or HUD behaviour otherwise.
+- Cooperative Passage upstream transition remains accepted and Reality-validated for one direct `CREATE` episode.
+- Completed-obstruction physical responsibility application now occurs upstream of Protected Yield and Control.
+- [`CompletedObstructionResponsibilityTransition.lua`](../scripts/responsibility/CompletedObstructionResponsibilityTransition.lua) is the sole live physical owner of `TerminalEgressCommitmentLifecycle.applyDecision()`.
+- **No Dual Completed-Obstruction Transition Authority** is structurally protected; `LiveControlDispatcher` no longer applies physical completed-obstruction responsibility.
+- Terminal settlement deliberately remains downstream in the existing dispatcher/lifecycle path.
+- Protected Yield deliberately remains downstream as Regulation actuation supporting an established Resolution responsibility.
+- The retained generic Commitment, Obligation and Authority substrate remains authoritative implementation machinery for both migrated paths.
+- GitHub `Structural contracts` and `Lua offline observation (non-blocking)` completed successfully on the tested `0.3.0.2` PR head.
+- GIANTS Reality validated one in-session completed-obstruction episode: `CREATE CM-00005` → `COMPACT` → fresh Situation Assessment → `MAINTAIN CM-00005` → Protected Yield → `INFIELD` → settlement `SUCCEEDED` → authority release → Continuation Renewal.
+- The same `CM-00005` persisted across both upstream application events; the `MAINTAIN` event was not a duplicate responsibility acquisition.
+- The existing stage-1, fixed-initial-centroid-bearing courtesy remained bounded to `60.00 m` with no continuous course correction.
+- No application failure, physical rejection, Player Claim, Protected Yield rejection, altered courtesy geometry or observable regression was identified in the successful episode.
+- **Resolution Persistence Across Control Phases** is observed: one Resolution responsibility persisted while permitted physical Control changed from compaction to protected movement.
+- **Maintenance Is Not Transition** is observed: fresh Situation Assessment preserving an existing responsibility is architecturally persistence, although the compatibility seam currently delegates the generic `MAINTAIN` action through a transition-shaped module.
+- **Transition–Execution Readiness Coupling** now has two independent Resolution exemplars: Cooperative Passage and completed obstruction both retain readiness checks before semantic application.
+- **Second Exemplar Before Generalisation** provides evidence from pairwise active-worker Resolution and active-beneficiary/completed-subject Resolution before a common representation is selected.
+- A **Cold-Start Physical Relevance Gap** was observed: without current-runtime active-to-ended Job Episode provenance, the cold-loaded completed assembly did not establish Terminal Occupancy or reach the PR #32 seam.
+- Cold-start blocked completed obstruction remains supported intent and in scope, but **Cold-Start Completed-Obstruction Provenance** remains unresolved under [issue #33](https://github.com/bisdat/FS25_OuttaMyWay/issues/33). Stationarity alone is insufficient provenance.
 
 ## Current boundary
 
-The first strangler pattern is demonstrated: one semantic transition can be
-moved upstream while preserving legacy mechanics downstream.
+There are now two migrated Resolution exemplars but no final explicit Current
+Responsibility or Resolution Commitment runtime representation. Similar module
+shape alone does not justify a generic abstraction.
 
-The evidence is deliberately bounded. It does not validate every Cooperative
-Passage admission or succession path, establish that the same extraction should
-be copied mechanically to Regulation, resolve Same-Commitment Responsibility
-Fusion, or establish the final Current Responsibility representation. In
-particular, the Regulation-to-Passage `REVISE` path has not been independently
-validated in GIANTS Reality by this tranche.
+The retained generic Commitment substrate remains authoritative implementation
+machinery for the migrated paths. `CREATE` / `MAINTAIN` / `REVISE` remain legacy
+generic lifecycle vocabulary whose mapping to architectural Responsibility
+Transition and persistence is not yet fully reconciled.
 
 ## Next boundary
 
-Return to **Observe / Discuss** the first-tranche results and select the next
-bounded seam. No further runtime change is authorised by this Continuation State.
+Return to **Observe / Discuss**. No new runtime tranche is authorised by this
+Continuation State.
 
-The next discussion should ask:
+Compare Cooperative Passage with completed obstruction and ask:
 
-- What did the first extraction reveal about the appropriate representation of Resolution Commitment?
-- Should completed-obstruction Resolution be migrated next, as currently hypothesised?
-- Does the retained generic Commitment substrate expose a clear safe seam for explicit Current Responsibility?
+- Which data and semantics are genuinely common because both are Resolution Commitments?
+- Which purpose-specific semantics must remain outside any common representation?
+- How should Current Responsibility distinguish acquisition from persistence?
+- What should `MAINTAIN` mean once Responsibility Transition and Current Responsibility are explicit?
+- Does Resolution responsibility need its own explicit record now, or could an adapter/view over retained Commitment truthfully represent it first?
+- Which aspects of Bounded Authority can be derived from the two exemplars without redesigning Control?
 - What evidence is needed before touching standalone Regulation?
-- Should a Regulation-to-Passage `REVISE` Reality episode be characterised before modifying Same-Commitment Responsibility Fusion?
+- When should the Regulation-to-Passage `REVISE` Reality path be characterised?
+- Separately for issue #33, what cold-start provenance evidence is available?
 
 ## Not currently active
 
@@ -62,6 +68,7 @@ The next discussion should ask:
 - Same-Commitment Responsibility Fusion correction.
 - Bounded Authority redesign.
 - Candidate/Constraint/Decision simplification.
+- Issue #33 implementation.
 - Prototype22 migration or renaming.
 - Diagnostic or probe pruning.
 - Broad GUI/HUD work.

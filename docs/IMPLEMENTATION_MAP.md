@@ -268,8 +268,8 @@ justifying a new Resolution Commitment. This increment records but does not fix 
 
 ### Responsibility Acquisition at the Control Edge
 
-`LiveControlDispatcher` currently performs or invokes semantic lifecycle work
-immediately before Control, including combinations of Commitment admission or
+`LiveControlDispatcher` still performs or invokes semantic lifecycle work for
+non-migrated paths immediately before Control, including combinations of Commitment admission or
 revision, obligation creation or settlement, authority-token acquisition or
 release, responsibility succession, Control request construction, physical
 dispatch and lifecycle settlement after Control outcomes. The target establishes
@@ -351,23 +351,128 @@ This **No Dual Transition Authority** invariant is structurally protected. The
 tranche did not remove generic Commitment semantics or resolve Same-Commitment
 Responsibility Fusion.
 
+# Second Strangler Seam
+
+> **Completed-Obstruction Resolution Responsibility Transition extraction**
+
+The physical acquisition seam is implemented and Reality-validated for one
+in-session completed-obstruction episode. The topology is:
+
+```text
+Terminal physical Decision
+    ↓
+LiveControlDispatcher readiness checks
+    ↓
+non-mutating readiness handoff
+    ↓
+Runtime
+    ↓
+CompletedObstructionResponsibilityTransition
+    ↓
+existing TerminalEgressCommitmentLifecycle.applyDecision()
+    ↓
+responsibility already established
+    ↓
+LiveControlDispatcher continuation
+    ↓
+existing Protected Yield where required
+    ↓
+existing TerminalEgress ControlRequest / Control
+    ↓
+existing downstream settlement
+```
+
+[`CompletedObstructionResponsibilityTransition.lua`](../scripts/responsibility/CompletedObstructionResponsibilityTransition.lua)
+is the sole live physical owner of `TerminalEgressCommitmentLifecycle.applyDecision()`;
+`LiveControlDispatcher` no longer applies physical completed-obstruction
+responsibility. Terminal settlement and Protected Yield deliberately remain
+downstream. The generic Commitment, Obligation and Authority machinery remains
+in use, and no generic Resolution Commitment abstraction was introduced.
+
+The `0.3.0.2` Reality episode produced two upstream application logs for the
+same `CM-00005`, not two responsibility acquisitions. `CREATE` established the
+Commitment before `COMPACT`; compaction completed and required fresh Situation
+Assessment; `MAINTAIN` then preserved the same Commitment before Protected Yield
+and `INFIELD`. The existing stage-1 centroid-bearing, fixed-initial-bearing,
+no-course-correction movement remained bounded to `60.00 m`. Protected Yield
+released on manoeuvre completion, terminal settlement reached `SUCCEEDED`, two
+authority tokens were released, and productive Continuation Renewal was observed.
+There was no application failure, physical rejection, Player Claim, Protected
+Yield rejection, new Commitment identity, altered courtesy geometry or
+observable regression in this episode.
+
+## Resolution Persistence Across Control Phases
+
+One Resolution responsibility may legitimately persist while the currently
+permitted physical Control phase changes. `CM-00005` persisted from compaction
+through fresh Situation Assessment into protected bounded movement, while
+physical authority changed and settlement waited for the continuation-restoring
+movement. This supports the architectural distinction between Current
+Responsibility (why intervention persists) and Bounded Authority (what action is
+permitted now), but one run does not establish the final Bounded Authority representation.
+
+## Maintenance Is Not Transition
+
+The second call through the compatibility transition seam reported `MAINTAIN`.
+Architecturally, fresh Situation Assessment positively preserving an existing
+Resolution responsibility is not a new Responsibility Transition. The module
+still delegates legacy `CREATE` / `MAINTAIN` / `REVISE` vocabulary through one
+transition-shaped seam. This semantic mismatch is observed but not corrected here.
+
+## Transition–Execution Readiness Coupling
+
+Both Cooperative Passage and completed-obstruction Resolution now provide
+independent evidence that physical/readiness checks occur before the upstream
+semantic application seam. This is cross-cutting architectural debt rather than
+a Passage-specific accident; this tranche records but does not resolve it.
+
+## Second Exemplar Before Generalisation
+
+The programme deliberately migrated a materially different second Resolution
+exemplar before introducing a generic explicit Resolution Commitment. Cooperative
+Passage couples two active workers with progress-plus-progress actuation and has
+direct `CREATE` evidence. Completed obstruction couples an active beneficiary to
+a completed controlled subject with progress-plus-post-job actuation,
+player-consented capability, and `CREATE` → `MAINTAIN` evidence across Control
+phases. Comparing them now offers a stronger empirical basis for identifying
+genuinely common Resolution semantics without presupposing an abstraction.
+
+## Cold-Start Physical Relevance Gap
+
+Two cold-loaded-save attempts did not exercise this seam. The completed Condor
+was stationary Reality but was not a current active-job vehicle, had no retained
+runtime track and had no observed positive active-to-ended Job Episode transition.
+Consequently no Terminal Occupancy, D-0147 Candidate or upstream transition was
+established. Stationarity alone is insufficient completed-worker provenance.
+
+Cold-start blocked completed obstruction remains in scope as a separate
+Observation/provenance problem named **Cold-Start Completed-Obstruction
+Provenance**. [Issue #33](https://github.com/bisdat/FS25_OuttaMyWay/issues/33)
+owns its unresolved investigation; it is not a PR #32 transition regression or fix.
+
 # Intermediate Programme Steps
 
 1. **Record the transition map — COMPLETE.**
 2. **Extract Cooperative Passage Responsibility Transition before Control — COMPLETE.**
 3. **Validate the first strangler seam and behavioural equivalence — COMPLETE for the observed direct Cooperative Passage `CREATE` path.**
-4. **Expose Resolution Commitment explicitly through migrated paths.**
-5. **Migrate completed-obstruction Resolution responsibility.**
-6. **Reconcile standalone Regulation.**
-7. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion.**
-8. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**
-9. **Reduce `LiveControlDispatcher` to dispatch/execution responsibilities.**
-10. **Retire superseded generic Commitment/orchestration machinery.**
-11. **Simplify Candidate/Constraint/Decision only where later evidence proves duplication or ceremony.**
-12. **Graduate Prototype/diagnostic production mechanics and naming when their current responsibility is established.**
-13. **Perform whole-system validation and another architecture-to-runtime review.**
+4. **Extract completed-obstruction physical Resolution responsibility — COMPLETE.**
+5. **Validate the second Resolution exemplar — COMPLETE for the observed in-session `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` episode.**
+6. **Compare the two migrated Resolution exemplars and determine the smallest truthful explicit Resolution Commitment representation.**
+7. **Expose Resolution Commitment explicitly only where the two exemplars support it.**
+8. **Reconcile standalone Regulation.**
+9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion.**
+10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**
+11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities.**
+12. **Retire superseded generic Commitment/orchestration only when no supported path relies on it.**
+13. **Simplify Candidate/Constraint/Decision only where evidence proves duplication.**
+14. **Graduate Prototype/diagnostic production mechanics and naming.**
+15. **Perform whole-system validation and another architecture-to-runtime review.**
 
 > This sequence is a plan, not a promise. Update it after each strangler tranche when implementation or validation evidence changes the safest or most truthful route.
+
+The order evolved through **Second Exemplar Before Generalisation**: Reality
+evidence from two distinct Resolution purposes now precedes any attempt to define
+their common explicit representation.
 
 The High-Level Strangler Plan is the human-readable programme dashboard and
 should be refreshed after each accepted tranche.
@@ -387,7 +492,7 @@ should be refreshed after each accepted tranche.
 | Physical Representation | [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua), [`scripts/representation/PlanViewFootprint.lua`](../scripts/representation/PlanViewFootprint.lua), [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) |
 | Passage capability and planning | [`scripts/assessment/PassageCapabilityAssessment.lua`](../scripts/assessment/PassageCapabilityAssessment.lua), [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) |
 | Control dispatch and Cooperative Passage | [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua), [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) |
-| Completed-obstruction and terminal control | [`scripts/assessment/TerminalOccupancyAssessment.lua`](../scripts/assessment/TerminalOccupancyAssessment.lua), [`scripts/candidates/TerminalEgressCandidateSupport.lua`](../scripts/candidates/TerminalEgressCandidateSupport.lua), [`scripts/commitment/TerminalEgressCommitmentLifecycle.lua`](../scripts/commitment/TerminalEgressCommitmentLifecycle.lua), [`scripts/control/TerminalEgressControl.lua`](../scripts/control/TerminalEgressControl.lua) |
+| Completed-obstruction transition, settlement and Control | [`scripts/responsibility/CompletedObstructionResponsibilityTransition.lua`](../scripts/responsibility/CompletedObstructionResponsibilityTransition.lua), [`scripts/assessment/TerminalOccupancyAssessment.lua`](../scripts/assessment/TerminalOccupancyAssessment.lua), [`scripts/candidates/TerminalEgressCandidateSupport.lua`](../scripts/candidates/TerminalEgressCandidateSupport.lua), [`scripts/commitment/TerminalEgressCommitmentLifecycle.lua`](../scripts/commitment/TerminalEgressCommitmentLifecycle.lua), [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua), [`scripts/control/TerminalEgressControl.lua`](../scripts/control/TerminalEgressControl.lua) |
 
 ## Implementation-alignment observations
 
