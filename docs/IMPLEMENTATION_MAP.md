@@ -445,10 +445,48 @@ runtime track and had no observed positive active-to-ended Job Episode transitio
 Consequently no Terminal Occupancy, D-0147 Candidate or upstream transition was
 established. Stationarity alone is insufficient completed-worker provenance.
 
-Cold-start blocked completed obstruction remains in scope as a separate
-Observation/provenance problem named **Cold-Start Completed-Obstruction
-Provenance**. [Issue #33](https://github.com/bisdat/FS25_OuttaMyWay/issues/33)
+Cold-start non-active obstruction recognition remains in scope as a separate
+Observation/provenance problem. [Issue #33 — Cold-Start Non-Active Obstruction
+Recognition](https://github.com/bisdat/FS25_OuttaMyWay/issues/33)
 owns its unresolved investigation; it is not a PR #32 transition regression or fix.
+
+# Explicit Resolution Commitment Representation
+
+The two migrated Resolution seams now materialize an explicit, read-only
+[`ResolutionCommitment`](../scripts/contracts/ResolutionCommitment.lua) through
+[`ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua)
+after the retained generic lifecycle application succeeds. The representation
+uses the existing generic Commitment identity and exposes purpose, governing
+basis, explicit beneficiary and controlled-subject roles, the open
+purpose-specific Resolution obligations, and diagnostic provenance.
+
+This is a semantic view over the retained substrate, not another lifecycle.
+`CommitmentRegistry`, `ObligationLedger`, admission, authority allocation and
+settlement remain singular and authoritative. Neither Control nor Bounded
+Authority consumes the view in this tranche. **No Dual Responsibility Record
+Authority** is therefore preserved.
+
+Roles are supplied from semantic context at each Responsibility Transition:
+
+- Cooperative Passage validates exactly two distinct coupled participant
+  assemblies and represents both as beneficiaries and controlled subjects.
+- Completed obstruction represents the authorising active demand assemblies as
+  beneficiaries and the completed terminal assembly as the controlled subject.
+
+Authority ownership, authority tokens and Effective Actuation Composition are
+not used to infer these roles. Candidate identity, Control phase, capability,
+authority tokens and legacy lifecycle action are not part of Resolution
+identity. `CREATE` and `REVISE` expose an established Resolution view;
+completed-obstruction `MAINTAIN` re-exposes the same identity as persistence of
+Current Responsibility, not a new architectural transition. The legacy action
+is retained only as diagnostic provenance.
+
+The implementation hypothesis is now available for review and offline
+validation. GIANTS Reality validation remains pending for direct Cooperative
+Passage `CREATE` and the same-session completed-obstruction `CREATE` →
+`MAINTAIN`, `COMPACT` → `INFIELD` exemplars. Standalone Regulation,
+Same-Commitment Regulation-to-Passage fusion, Bounded Authority and issue #33
+remain outside this tranche.
 
 # Intermediate Programme Steps
 
@@ -457,8 +495,8 @@ owns its unresolved investigation; it is not a PR #32 transition regression or f
 3. **Validate the first strangler seam and behavioural equivalence — COMPLETE for the observed direct Cooperative Passage `CREATE` path.**
 4. **Extract completed-obstruction physical Resolution responsibility — COMPLETE.**
 5. **Validate the second Resolution exemplar — COMPLETE for the observed in-session `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` episode.**
-6. **Compare the two migrated Resolution exemplars and determine the smallest truthful explicit Resolution Commitment representation.**
-7. **Expose Resolution Commitment explicitly only where the two exemplars support it.**
+6. **Compare the two migrated Resolution exemplars and determine the smallest truthful explicit Resolution Commitment representation — COMPLETE for the read-only adapter/view hypothesis.**
+7. **Expose Resolution Commitment explicitly only where the two exemplars support it — IMPLEMENTED; offline and GIANTS Reality validation pending.**
 8. **Reconcile standalone Regulation.**
 9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion.**
 10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**
@@ -489,6 +527,7 @@ should be refreshed after each accepted tranche.
 | Situation Assessment | [`scripts/assessment/SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua) and focused collaborators in [`scripts/assessment/`](../scripts/assessment/) |
 | Candidate, Constraint and Decision boundary | [`scripts/candidates/`](../scripts/candidates/), [`scripts/constraints/`](../scripts/constraints/), [`scripts/decision/`](../scripts/decision/), and [`scripts/commitment/DecisionCommitmentBoundary.lua`](../scripts/commitment/DecisionCommitmentBoundary.lua) |
 | Commitment, Obligation and Bounded Authority | [`scripts/commitment/`](../scripts/commitment/) and [`scripts/authority/`](../scripts/authority/) |
+| Explicit Resolution Commitment view | [`scripts/contracts/ResolutionCommitment.lua`](../scripts/contracts/ResolutionCommitment.lua), [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua), and the two purpose-specific transition modules in [`scripts/responsibility/`](../scripts/responsibility/) |
 | Physical Representation | [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua), [`scripts/representation/PlanViewFootprint.lua`](../scripts/representation/PlanViewFootprint.lua), [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) |
 | Passage capability and planning | [`scripts/assessment/PassageCapabilityAssessment.lua`](../scripts/assessment/PassageCapabilityAssessment.lua), [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) |
 | Control dispatch and Cooperative Passage | [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua), [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) |

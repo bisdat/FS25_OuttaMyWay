@@ -93,14 +93,18 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         if applied==nil then
             return {status="NO_DISPATCH",reason="COMMITMENT_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId}
         end
-        return self.liveControlDispatcher:continueCooperativePassage(picture,evaluated,applied)
+        local continued=self.liveControlDispatcher:continueCooperativePassage(picture,evaluated,applied)
+        continued.currentResponsibility=applied.currentResponsibility
+        return continued
     end
     if dispatch.status=="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED" then
         local applied,reason=self.completedObstructionResponsibilityTransition:transition(picture,evaluated,dispatch)
         if applied==nil then
             return {status="NO_DISPATCH",reason="D0147_COMMITMENT_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId,terminalEgress=true}
         end
-        return self.liveControlDispatcher:continueCompletedObstruction(picture,evaluated,applied)
+        local continued=self.liveControlDispatcher:continueCompletedObstruction(picture,evaluated,applied)
+        continued.currentResponsibility=applied.currentResponsibility
+        return continued
     end
     return dispatch
 end
