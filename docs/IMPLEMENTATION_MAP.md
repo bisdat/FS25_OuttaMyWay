@@ -922,6 +922,43 @@ REACTIVATION and ROLE_MIGRATION likewise preflight semantic compatibility before
 their retained lifecycle application. Preflight is read-only and performs no
 Control or retained lifecycle mutation.
 
+### PR #41 GIANTS Reality observation
+
+The `2026-09-04` `0.3.0.6` run produced exactly one upstream Action-Space
+Regulation establishment at `19:25:53.205`: decision `DE-01249`, Candidate
+`CA-01249`, conflict `d0146-opposed:OR-00001:AS-00001:AS-00002`, retained
+Commitment `CM-00003`, Regulation responsibility `RS-00001`, regulated assembly
+`AS-00001` and protected assembly `AS-00002`. It reported `CREATE`,
+`ESTABLISHED`, `INITIAL` and `beforePhysicalDispatch=true`.
+
+Existing D0155 Control then admitted `25 km/h` and tightened under the same
+`CM-00003` through `21`, `16`, `10` and `1 km/h`, ending in unchanged
+`INTENT_REVELATION_CREEP`. At approximately `19:25:55.200`, actuation quiesced
+when the excursion pair was no longer positively closing while the relationship
+remained retained. This validates explicit `RS-*` Regulation establishment
+distinct from retained `CM-*`, establishment before physical dispatch, existing
+elastic magnitude policy, and responsibility persistence while current physical
+actuation disappears.
+
+The worker subsequently accelerated and turned; Condor was reported blocked at
+approximately `19:26:02.456`, Patriot at `19:26:02.953`, and both were stationary
+and blocked by approximately `19:26:05`. **Spatial Risk Outlives Closing
+Evidence**: current Situation evidence ceased requesting temporal actuation when
+instantaneous positive closing disappeared even though constrained-corner risk
+remained. Regulation behaved according to supplied Situation evidence. This is
+consistent with, but does not solve or fully specify, the [Spatial Constraint
+Overlay implementation gap in issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37).
+
+The log contained zero `RESPONSIBILITY_REPLACED` and zero
+`COOPERATIVE_PASSAGE_REVISE` events. Other Passage events did not constitute the
+target same-Commitment succession. Therefore the PR #41 replacement seam,
+distinct predecessor/successor `RS-*` identities, and live replacement ordering
+before `COOPERATIVE_ACCEPTED` remain **not GIANTS Reality-validated**. The
+fixture ceased requesting Regulation before the constrained interaction was
+safely resolved, so this attempt neither validates nor disproves the replacement
+implementation. Further use of this corner fixture is confounded by the upstream
+Situation/Spatial Constraint Overlay gap.
+
 ## Regulation naming governance
 
 D-number runtime vocabulary such as `D0141_APPLY`, `D0141_UPDATE`,

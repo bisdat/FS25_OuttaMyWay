@@ -19,7 +19,9 @@ Regulation → same-Commitment Cooperative Passage replacement upstream of
 physical Passage Control. GitHub Structural contracts passed; the actual
 non-blocking Lua harness profile is `268 passed / 13 failed`. Focused replacement,
 preflight-failure safety, responsibility-identity preservation and role-migration
-observations passed. GIANTS Reality validation remains pending and required.
+observations passed. GIANTS Reality has now validated the Action-Space Regulation
+establishment side; the same-Commitment replacement itself remains unexercised,
+pending and required.
 
 ## Established
 
@@ -103,6 +105,11 @@ observations passed. GIANTS Reality validation remains pending and required.
 - Generic Commitment, Obligation and AuthorityToken machinery remains retained substrate. AuthorityToken reuse and Bounded Authority semantics were not redesigned.
 - **Replacement Precondition Lag** was corrected: Candidate/readiness, bridge/conflict, current responsibility, retained Commitment target, dispatcher lease and open predecessor obligation are now read-only preconditions before Passage `REVISE` or successor representation construction.
 - Focused reactivation identity preservation passed at the responsibility-authority boundary. The historically failing full D0197 quiescence/reactivation observation remains within the 13-failure observational profile and is not claimed green.
+- The `2026-09-04` `0.3.0.6` GIANTS run produced exactly one `ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM` at `19:25:53.205`: `DE-01249` / `CA-01249`, conflict `d0146-opposed:OR-00001:AS-00001:AS-00002`, retained `CM-00003`, distinct responsibility `RS-00001`, regulated `AS-00001`, protected `AS-00002`, `CREATE`, `ESTABLISHED`, `INITIAL`, `beforePhysicalDispatch=true`.
+- D0155 then admitted `25 km/h` and tightened under `CM-00003` through `21`, `16`, `10` and `1 km/h` Intent-Revelation Creep. Reality therefore supports explicit Regulation identity upstream of unchanged elastic physical Regulation.
+- At approximately `19:25:55.200`, actuation quiesced when the excursion pair was no longer positively closing while the relationship remained retained. This is live evidence that Current Responsibility may persist while temporary Bounded Authority/physical actuation disappears.
+- **Spatial Risk Outlives Closing Evidence**: after quiescence the worker accelerated and turned; Condor was reported blocked at approximately `19:26:02.456`, Patriot at `19:26:02.953`, and both were stationary and blocked by approximately `19:26:05`. The Situation path lost temporal-actuation support while constrained-corner risk remained.
+- The same log contained zero `RESPONSIBILITY_REPLACED` and zero `COOPERATIVE_PASSAGE_REVISE`. Other Passage events were not the target same-Commitment succession. PR #41 replacement identity separation and live ordering before `COOPERATIVE_ACCEPTED` remain **not GIANTS Reality-validated**.
 - GIANTS Reality validated initial follower-boundary responsibility establishment upstream for Patriot 4450 leading Condor Endurance II: application `AP-00001` established `CM-00001` / `OB-00001`, then `FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM` reported `legacyAction=CREATE`, `responsibilityDisposition=ESTABLISHED` and `beforePhysicalDispatch=true` before downstream `D0141_APPLY` at `5.15 km/h`.
 - The same run repeatedly revalidated `CM-00001` without responsibility churn. Approximately one `ESTABLISHED` and 44 `REVALIDATED` upstream markers accompanied one physical APPLY and 43 elastic updates; an observed update raised the current cap to `6.21 km/h` while retaining the same Commitment and obligation identity.
 - Two observed quiescence events released temporary Regulation authority while the follower purpose remained. Later reactivation acquired `AU-00002` and applied `11.40 km/h` under the same `CM-00001`, with `responsibilityDisposition=REVALIDATED` and one `D0141_ACTUATION_REACTIVATED`.
@@ -161,14 +168,23 @@ generic Commitment remains continuous. Direct Resolution paths retain their
 accepted transitional identity mapping. Wider transition ownership and
 Bounded Authority reconciliation remain unresolved.
 
+Reality has validated Action-Space Regulation `RS-00001` establishment before
+physical D0155 dispatch and quiescence with the relationship retained. It did
+not reach the replacement seam: current Situation selection stopped requesting
+Regulation actuation before the corner interaction was safely resolved. This is
+consistent with issue #37's upstream Spatial Constraint Overlay gap, not evidence
+that PR #41 replacement failed.
+
 ## Next boundary
 
 Validate the bounded replacement seam independently. GitHub Structural
 contracts must pass and the actual Lua observational profile must be inspected;
-GIANTS Reality should exercise initial Action-Space Regulation followed by the
-same-Commitment Cooperative Passage succession and confirm replacement occurs
-before Passage Control. Do not infer general transition coverage from that
-episode.
+GIANTS Reality must still exercise initial Action-Space Regulation followed by
+the same-Commitment Cooperative Passage succession and confirm distinct
+predecessor/successor responsibility identities plus `RESPONSIBILITY_REPLACED`
+before Passage Control. Repeating the corner fixture is currently confounded by
+the upstream Situation/Spatial Constraint Overlay gap. Do not infer general
+transition coverage from any eventual episode.
 
 Issue #37 remains a future upstream Situation Assessment capability; it is not
 implemented here. The Quiescent Regulation Deadlock and opposed-corridor/corner
