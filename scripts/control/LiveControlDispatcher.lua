@@ -657,15 +657,7 @@ function Dispatcher:_quiesceD0146ActionSpaceActuation(picture,evaluated,lease,re
     return {status="QUIESCENT",reason="D0155_CURRENT_ACTION_SPACE_NOT_REQUIRED_ACTUATION_QUIESCENT",request=request,outcome=outcome,d0146ActionSpace=true,commitmentId=lease.commitmentId}
 end
 
-function Dispatcher:_reactivateD0146ActionSpaceActuation(picture,evaluated,candidate,lease,bridge)
-    if lease==nil or bridge==nil or bridge.conflictIdentity~=lease.conflictIdentity then
-        return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_CURRENT_SUPPORT_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease and lease.commitmentId or nil}
-    end
-    if self.capability==nil or type(self.capability.executeControlRequest)~="function" then
-        return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_CONTROL_CAPABILITY_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId}
-    end
-    local applied,applyReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyD0146ActionSpaceDecision(self.runtime,picture,evaluated)
-    if applied==nil then return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_COMMITMENT_APPLICATION_FAILED:"..tostring(applyReason),d0146ActionSpace=true,commitmentId=lease.commitmentId} end
+function Dispatcher:_continueD0146ActionSpaceReactivation(picture,evaluated,candidate,lease,bridge,applied)
     if applied.commitment.identity~=lease.commitmentId then return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_COMMITMENT_ID_CHANGED",d0146ActionSpace=true,commitmentId=lease.commitmentId} end
     local token=applied.authorityToken
     if token==nil or self.runtime.authorities:validate(token)~=true then return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_VALID_AUTHORITY_TOKEN_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId} end
@@ -745,14 +737,8 @@ function Dispatcher:_updateD0146ActionSpaceEnvelope(picture,evaluated,candidate,
     return {status="ENVELOPE_UPDATED",reason=envelope.effectClass=="INTENT_REVELATION_CREEP" and "D0155_INTENT_REVELATION_CREEP_APPLIED" or "D0155_SUPPORTABLE_PROGRESSION_MAGNITUDE_UPDATED",request=request,outcome=outcome,d0146ActionSpace=true,commitmentId=commitment.identity}
 end
 
-function Dispatcher:_migrateD0146ActionSpaceRole(picture,evaluated,candidate,lease,bridge)
+function Dispatcher:_continueD0146ActionSpaceRoleMigration(picture,evaluated,candidate,lease,bridge,applied)
     if lease==nil or bridge==nil or bridge.conflictIdentity~=lease.conflictIdentity or bridge.regulatedAssemblyId==lease.regulatedAssemblyId then return nil end
-    if self.capability==nil or type(self.capability.executeControlRequest)~="function" then
-        return {status="MAINTAINED",reason="D0146_ROLE_MIGRATION_CONTROL_CAPABILITY_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId}
-    end
-
-    local applied,applyReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyD0146ActionSpaceDecision(self.runtime,picture,evaluated)
-    if applied==nil then return {status="MAINTAINED",reason="D0146_ROLE_MIGRATION_COMMITMENT_APPLICATION_FAILED:"..tostring(applyReason),d0146ActionSpace=true,commitmentId=lease.commitmentId} end
     if applied.commitment.identity~=lease.commitmentId then return {status="MAINTAINED",reason="D0146_ROLE_MIGRATION_COMMITMENT_ID_CHANGED",d0146ActionSpace=true,commitmentId=lease.commitmentId} end
     local newToken=applied.authorityToken
     if newToken==nil or self.runtime.authorities:validate(newToken)~=true then return {status="MAINTAINED",reason="D0146_ROLE_MIGRATION_NEW_AUTHORITY_TOKEN_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId} end
@@ -825,12 +811,24 @@ function Dispatcher:_dispatchD0146ActionSpace(picture,evaluated,candidate)
             end
             if lease.actuationActive==false then
                 if actuationState=="SUPPORTED" and bridge~=nil then
-                    return self:_reactivateD0146ActionSpaceActuation(picture,evaluated,candidate,lease,bridge)
+                    if bridge.conflictIdentity~=lease.conflictIdentity then
+                        return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_CURRENT_SUPPORT_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId}
+                    end
+                    if self.capability==nil or type(self.capability.executeControlRequest)~="function" then
+                        return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_CONTROL_CAPABILITY_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId}
+                    end
+                    return {status="ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED",applicationContext="REACTIVATION",candidateId=candidate.identity,
+                        conflictIdentity=bridge.conflictIdentity,regulatedAssemblyId=bridge.regulatedAssemblyId,commitmentId=lease.commitmentId,d0146ActionSpace=true}
                 end
                 return {status="QUIESCENT",reason=relationshipReason or "D0155_RELATIONSHIP_RETAINED_CURRENT_ACTUATION_NOT_SUPPORTED",d0146ActionSpace=true,commitmentId=lease.commitmentId}
             end
-            local migrated=self:_migrateD0146ActionSpaceRole(picture,evaluated,candidate,lease,bridge)
-            if migrated~=nil then return migrated end
+            if bridge~=nil and bridge.conflictIdentity==lease.conflictIdentity and bridge.regulatedAssemblyId~=lease.regulatedAssemblyId then
+                if self.capability==nil or type(self.capability.executeControlRequest)~="function" then
+                    return {status="MAINTAINED",reason="D0146_ROLE_MIGRATION_CONTROL_CAPABILITY_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId}
+                end
+                return {status="ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED",applicationContext="ROLE_MIGRATION",candidateId=candidate.identity,
+                    conflictIdentity=bridge.conflictIdentity,regulatedAssemblyId=bridge.regulatedAssemblyId,commitmentId=lease.commitmentId,d0146ActionSpace=true}
+            end
             return self:_updateD0146ActionSpaceEnvelope(picture,evaluated,candidate,lease,relation,relationshipReason)
         end
         return self:_releaseD0146ActionSpaceLease(picture,evaluated,relationshipReason)
@@ -838,8 +836,11 @@ function Dispatcher:_dispatchD0146ActionSpace(picture,evaluated,candidate)
 
     if bridge==nil or candidate.capability~="REGULATE_SPEED" then return nil end
     if self.capability==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",d0146ActionSpace=true} end
-    local applied,applyReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyD0146ActionSpaceDecision(self.runtime,picture,evaluated)
-    if applied==nil then return {status="NO_DISPATCH",reason=applyReason,d0146ActionSpace=true} end
+    return {status="ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED",applicationContext="INITIAL",candidateId=candidate.identity,
+        conflictIdentity=bridge.conflictIdentity,regulatedAssemblyId=bridge.regulatedAssemblyId,d0146ActionSpace=true}
+end
+
+function Dispatcher:_continueD0146ActionSpaceInitial(picture,evaluated,candidate,bridge,applied)
     local token=applied.authorityToken
     if token==nil or self.runtime.authorities:validate(token)~=true then return {status="NO_DISPATCH",reason="D0146_ACTION_SPACE_VALID_AUTHORITY_TOKEN_UNAVAILABLE",d0146ActionSpace=true} end
 
@@ -870,6 +871,39 @@ function Dispatcher:_dispatchD0146ActionSpace(picture,evaluated,candidate)
         tostring(applied.commitment.identity),tostring(bridge.conflictIdentity),tostring(bridge.admissionKind or "CURRENT_EXCURSION"),tostring(bridge.regulatedAssemblyId),tostring(bridge.regulatedReferenceKey),tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),initialCap,
         tonumber(envelope.rawCapKmh) or 0,tonumber(bridge.nativeUnrestrictedKmh) or 0,tonumber(envelope.initialDistanceM) or 0,tonumber(envelope.contingencyReserveM) or 0,tonumber(envelope.ordinaryInitialM) or 0,tonumber(envelope.reserveFraction) or 0,tostring(bridge.governingPurpose))
     return {status="ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,d0146ActionSpace=true}
+end
+
+function Dispatcher:actionSpaceRegulationTransitionFailed(readiness,reason)
+    if readiness.applicationContext=="REACTIVATION" then
+        return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_COMMITMENT_APPLICATION_FAILED:"..tostring(reason),d0146ActionSpace=true,commitmentId=readiness.commitmentId}
+    end
+    if readiness.applicationContext=="ROLE_MIGRATION" then
+        return {status="MAINTAINED",reason="D0146_ROLE_MIGRATION_COMMITMENT_APPLICATION_FAILED:"..tostring(reason),d0146ActionSpace=true,commitmentId=readiness.commitmentId}
+    end
+    return {status="NO_DISPATCH",reason=reason,d0146ActionSpace=true}
+end
+
+function Dispatcher:continueActionSpaceRegulation(picture,evaluated,applied,readiness)
+    local candidate=selectedCandidate(evaluated)
+    local bridge=d0146ActionSpaceBridge(candidate)
+    if candidate==nil or bridge==nil or candidate.identity~=readiness.candidateId or bridge.conflictIdentity~=readiness.conflictIdentity
+        or bridge.regulatedAssemblyId~=readiness.regulatedAssemblyId then
+        return {status="NO_DISPATCH",reason="ACTION_SPACE_REGULATION_CONTINUATION_CONTEXT_MISMATCH",d0146ActionSpace=true}
+    end
+    if readiness.applicationContext=="INITIAL" then
+        return self:_continueD0146ActionSpaceInitial(picture,evaluated,candidate,bridge,applied)
+    end
+    local lease=self.d0146ActionSpaceLease
+    if lease==nil or lease.commitmentId~=readiness.commitmentId or lease.conflictIdentity~=readiness.conflictIdentity then
+        return {status="NO_DISPATCH",reason="ACTION_SPACE_REGULATION_CONTINUATION_LEASE_MISMATCH",d0146ActionSpace=true}
+    end
+    if readiness.applicationContext=="REACTIVATION" then
+        return self:_continueD0146ActionSpaceReactivation(picture,evaluated,candidate,lease,bridge,applied)
+    end
+    if readiness.applicationContext=="ROLE_MIGRATION" then
+        return self:_continueD0146ActionSpaceRoleMigration(picture,evaluated,candidate,lease,bridge,applied)
+    end
+    return {status="NO_DISPATCH",reason="ACTION_SPACE_REGULATION_CONTINUATION_CONTEXT_UNSUPPORTED",d0146ActionSpace=true}
 end
 
 function Dispatcher:_supersedeD0146ActionSpaceForCooperativePassage(commitment,candidate)

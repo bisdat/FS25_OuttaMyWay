@@ -309,6 +309,8 @@ GIANTS AI is the default and attractor. GIANTS owns jobs, productive routing and
 
 Regulation is bounded reversible temporal adjustment. It changes timing, not productive routes, and has weak persistence. An explicit current purpose is required, and Regulation ends immediately when that purpose is discharged, invalidated or replaced.
 
+Regulation is **successor-agnostic**. It exists only because the current Situation justifies temporary intervention and has no preferred successor. Fresh Situation Assessment independently determines whether GIANTS AI, another Regulation purpose or Resolution Commitment follows. Action-Space Regulation preserves current optionality and usable action space; it does not predict, reserve or guarantee Cooperative Passage.
+
 Regulation has no cooldown, pair memory or sticky recent-subject rule. One allocation has a bounded uninterrupted authority lifetime; expiry requires fresh assessment and provides no inference of safety, failure or commitment.
 
 ### Resolution Commitment
