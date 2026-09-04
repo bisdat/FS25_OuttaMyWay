@@ -23,8 +23,8 @@ local function openResolutionObligationIds(runtime,commitmentId,outcomeKinds)
     return sortedDistinct(identities)
 end
 
--- This adapter materializes a read-only architectural view. The retained
--- Commitment and Obligation stores remain the only lifecycle authorities.
+-- This adapter materializes a read-only architectural view. It owns no
+-- responsibility or retained Commitment/Obligation lifecycle authority.
 function Adapter.build(runtime,applied,semantics)
     local commitment=applied and applied.commitment or nil
     local application=applied and applied.application or nil
@@ -37,14 +37,16 @@ function Adapter.build(runtime,applied,semantics)
     local obligationIds,obligationReason=openResolutionObligationIds(runtime,commitment.identity,semantics.resolutionOutcomeKinds)
     if obligationIds==nil then return nil,obligationReason end
     if #beneficiaries==0 or #subjects==0 or #obligationIds==0 then return nil,"INCOMPLETE_RESOLUTION_SEMANTICS" end
+    local responsibilityIdentity=semantics.responsibilityIdentity or commitment.identity
+    if type(responsibilityIdentity)~="string" or responsibilityIdentity=="" then return nil,"INVALID_RESOLUTION_RESPONSIBILITY_IDENTITY" end
     return OuttaMyWay.ResolutionCommitment.new({
-        identity=commitment.identity,
+        identity=responsibilityIdentity,
         kind="RESOLUTION_COMMITMENT",
         purpose=semantics.purpose,
         governingBasis=commitment.governingBasis,
         beneficiaryAssemblyIds=beneficiaries,
         controlledSubjectAssemblyIds=subjects,
         openResolutionObligationIds=obligationIds,
-        provenance={source=semantics.source,legacyApplicationAction=application.action,genericCommitmentRevision=commitment.revision}
+        provenance={source=semantics.source,legacyApplicationAction=application.action,genericCommitmentIdentity=commitment.identity,genericCommitmentRevision=commitment.revision}
     }),nil
 end

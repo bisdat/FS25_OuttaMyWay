@@ -48,9 +48,12 @@ function Transition:transition(picture,evaluated,readiness)
             tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.conflictIdentity),tostring(context),tostring(reason))
         return nil,reason
     end
+    local currentResponsibility,responsibilityReason=self.runtime.responsibilityTransitionAuthority:establishOrPreserveActionSpaceRegulation(evaluated,readiness,applied)
+    if currentResponsibility==nil then return nil,responsibilityReason end
+    applied.currentResponsibility=currentResponsibility
     local disposition=evaluated.decision.commitmentAction=="CREATE" and "ESTABLISHED" or "REVALIDATED"
-    logInfo("ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM decision=%s candidate=%s conflict=%s commitment=%s regulated=%s protected=%s legacyAction=%s responsibilityDisposition=%s applicationContext=%s beforePhysicalDispatch=true",
+    logInfo("ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM decision=%s candidate=%s conflict=%s commitment=%s responsibility=%s regulated=%s protected=%s legacyAction=%s responsibilityDisposition=%s applicationContext=%s beforePhysicalDispatch=true",
         tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.conflictIdentity),tostring(applied.commitment and applied.commitment.identity or "NONE"),
-        tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),tostring(evaluated.decision.commitmentAction),disposition,tostring(context))
+        tostring(currentResponsibility.identity),tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),tostring(evaluated.decision.commitmentAction),disposition,tostring(context))
     return applied,nil
 end

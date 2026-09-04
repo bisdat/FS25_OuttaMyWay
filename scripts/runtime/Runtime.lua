@@ -36,6 +36,7 @@ function Runtime.new()
     runtime.liveTrafficCandidateSupport=OuttaMyWay.LiveTrafficCandidateSupport.new(identities,epochs,runtime.passiveCandidateSupport)
     runtime.liveControlDispatcher=OuttaMyWay.LiveControlDispatcher.new(runtime)
     runtime.decisionCommitmentBoundary=OuttaMyWay.DecisionCommitmentBoundary.new(identities,epochs,admission,commitments,obligations,authorities,governingBasis,terminalSettlement)
+    runtime.responsibilityTransitionAuthority=OuttaMyWay.ResponsibilityTransitionAuthority.new(runtime)
     runtime.followerBoundaryResponsibilityTransition=OuttaMyWay.FollowerBoundaryResponsibilityTransition.new(runtime)
     runtime.actionSpaceRegulationResponsibilityTransition=OuttaMyWay.ActionSpaceRegulationResponsibilityTransition.new(runtime)
     runtime.cooperativePassageResponsibilityTransition=OuttaMyWay.CooperativePassageResponsibilityTransition.new(runtime)
@@ -100,10 +101,18 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
     if dispatch.status=="ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED" then
         local applied,reason=self.actionSpaceRegulationResponsibilityTransition:transition(picture,evaluated,dispatch)
         if applied==nil then return self.liveControlDispatcher:actionSpaceRegulationTransitionFailed(dispatch,reason) end
-        return self.liveControlDispatcher:continueActionSpaceRegulation(picture,evaluated,applied,dispatch)
+        local continued=self.liveControlDispatcher:continueActionSpaceRegulation(picture,evaluated,applied,dispatch)
+        continued.currentResponsibility=applied.currentResponsibility
+        return continued
     end
     if dispatch.status=="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED" then
-        local applied,reason=self.cooperativePassageResponsibilityTransition:transition(picture,evaluated,dispatch)
+        local applied,reason=nil,nil
+        if self.responsibilityTransitionAuthority:matchesActionSpacePassage(evaluated) then
+            applied,reason=self.responsibilityTransitionAuthority:replaceActionSpaceRegulationWithCooperativePassage(
+                picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition,self.liveControlDispatcher)
+        else
+            applied,reason=self.cooperativePassageResponsibilityTransition:transition(picture,evaluated,dispatch)
+        end
         if applied==nil then
             return {status="NO_DISPATCH",reason="COMMITMENT_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId}
         end
