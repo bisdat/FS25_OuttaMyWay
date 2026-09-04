@@ -661,6 +661,68 @@ That is not a validation failure. Retirement/termination remains deliberately
 downstream and unchanged. The observed D-0141 strangler seam passed; standalone
 Regulation reconciliation remains incomplete.
 
+# Second Regulation Strangler Seam
+
+> **Action-Space Regulation Responsibility Transition extraction**
+
+Programme step 8b moves all three live Action-Space responsibility application
+contexts upstream while retaining their execution envelope downstream:
+
+```text
+selected Action-Space Decision
+    ↓
+LiveControlDispatcher routing / readiness
+    ↓
+non-mutating transition-required handoff
+    ↓
+Runtime
+    ↓
+ActionSpaceRegulationResponsibilityTransition
+    ↓
+existing LiveTrafficCommitmentLifecycle.applyD0146ActionSpaceDecision()
+    ↓
+responsibility established / revalidated
+    ↓
+LiveControlDispatcher continuation
+    ↓
+existing progression envelope / elastic Regulation / Control
+```
+
+[`ActionSpaceRegulationResponsibilityTransition.lua`](../scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua)
+is the sole production caller of the retained application function. The three
+covered contexts are initial/current application, reactivation after quiescence
+and regulated-role migration. Dispatcher readiness still proves the selected
+bridge, `REGULATE_SPEED` capability, Control availability and applicable
+retained lease context before the handoff.
+
+The unresolved interaction plus current action-space-preservation purpose is
+the durable responsibility core. The regulated participant, protected
+participant, supporting authority, speed ceiling, progression envelope,
+quiescence/reactivation condition and role migration are its mutable execution
+envelope. **Responsibility Roles ≠ Regulation Actuation Roles**: changing the
+regulated assembly does not establish a new responsibility identity.
+
+The deliberate intermediate asymmetry is:
+
+```text
+Action-Space acquisition / revalidation → upstream
+Action-Space purpose settlement         → retained downstream legacy
+```
+
+Progression-envelope mechanics, physical Regulation, quiescence and settlement
+remain downstream. No generic Regulation representation is introduced.
+
+**Successor-Agnostic Regulation** remains authoritative: Action-Space
+Regulation exists because the current unresolved interaction justifies
+preserving usable action space. It does not predict or reserve Cooperative
+Passage; fresh Situation Assessment independently determines any successor.
+
+The saved-corner Quiescent Regulation Deadlock remains a preferred Reality
+regression fixture, not a target for repair. Reproducing that pre-existing
+outcome is compatible with acceptance of this ownership extraction when the
+upstream seam and downstream behavior remain materially equivalent. GIANTS
+Reality validation is pending.
+
 ## Regulation naming governance
 
 D-number runtime vocabulary such as `D0141_APPLY`, `D0141_UPDATE`,
@@ -702,7 +764,7 @@ in this tranche and should use ASCII-safe punctuation when later addressed.
 7. **Expose Resolution Commitment explicitly only where the two exemplars support it — COMPLETE and GIANTS Reality-validated for the observed direct Cooperative Passage `CREATE` and completed-obstruction `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` exemplars.**
 8. **Reconcile standalone Regulation — IN PROGRESS.**
    - **8a. Extract D-0141 follower-boundary Regulation application/revalidation upstream — COMPLETE and GIANTS Reality-validated for the observed establishment, same-responsibility revalidation, elastic update, quiescence and reactivation episode. Positive retirement was not observed and was not required.**
-   - **8b. Extract and validate D-0146 Action-Space Regulation as the second standalone exemplar — PLANNED.**
+   - **8b. Extract D-0146 Action-Space Regulation as the second standalone exemplar — IMPLEMENTED; GitHub and GIANTS Reality validation pending.**
    - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — DEFERRED pending 8a/8b evidence.**
 9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion.**
 10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**
@@ -735,6 +797,7 @@ should be refreshed after each accepted tranche.
 | Commitment, Obligation and Bounded Authority | [`scripts/commitment/`](../scripts/commitment/) and [`scripts/authority/`](../scripts/authority/) |
 | Explicit Resolution Commitment view | [`scripts/contracts/ResolutionCommitment.lua`](../scripts/contracts/ResolutionCommitment.lua), [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua), and the two purpose-specific transition modules in [`scripts/responsibility/`](../scripts/responsibility/) |
 | D-0141 follower-boundary Regulation transition and downstream Control | [`scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua`](../scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua), [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua), and [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua) |
+| Action-Space Regulation transition and downstream Control | [`scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua`](../scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua), [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua), and [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua) |
 | Physical Representation | [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua), [`scripts/representation/PlanViewFootprint.lua`](../scripts/representation/PlanViewFootprint.lua), [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) |
 | Passage capability and planning | [`scripts/assessment/PassageCapabilityAssessment.lua`](../scripts/assessment/PassageCapabilityAssessment.lua), [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) |
 | Control dispatch and Cooperative Passage | [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua), [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) |

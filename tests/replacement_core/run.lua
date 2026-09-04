@@ -3879,7 +3879,7 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"D0146_RESOLUTION_SPACE_REGULATION")
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     equal(evaluated.decision.commitmentAction,"CREATE")
-    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED"); equal(admitted.d0146ActionSpace,true)
     equal(regulationRequests[#regulationRequests].target.ownerTag,"D0146_ACTION_SPACE_CONSERVATION")
     equal(regulationRequests[#regulationRequests].target.maxSpeedKmh,25)
@@ -3930,7 +3930,7 @@ test("D0146 Resolution-Space role migration moves actuation under the same Commi
     local initial=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(initial,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED")
     local commitmentId=admitted.commitment.identity
     equal(runtime.authorities:ownerOf("AS-B"),commitmentId)
@@ -3959,7 +3959,7 @@ test("D0146 Resolution-Space role migration moves actuation under the same Commi
     local changedSupported=runtime.liveTrafficCandidateSupport:attach(changed,headOnTestSnapshot())
     local changedEval=runtime:evaluateSealedOperationalPicture(changedSupported)
     equal(changedEval.decision.commitmentAction,"MAINTAIN")
-    local migrated=runtime.liveControlDispatcher:dispatch(changedSupported,changedEval)
+    local migrated=runtime:dispatchEvaluatedOperationalPicture(changedSupported,changedEval)
     equal(migrated.status,"ROLE_MIGRATED")
     equal(migrated.commitmentId,commitmentId)
     equal(#runtime.obligations:openForOwner(commitmentId),1)
@@ -3989,7 +3989,7 @@ test("D0155 Resolution-Space Progression Envelope tightens prospectively as ordi
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED"); equal(#requests,1); equal(requests[1].target.maxSpeedKmh,25)
     local commitmentId=admitted.commitment.identity
 
@@ -4002,7 +4002,7 @@ test("D0155 Resolution-Space Progression Envelope tightens prospectively as ordi
     local closing=OuttaMyWay.OperationalPicture.new(values)
     local closingSupported=runtime.liveTrafficCandidateSupport:attach(closing,headOnTestSnapshot())
     local closingEval=runtime:evaluateSealedOperationalPicture(closingSupported)
-    local updated=runtime.liveControlDispatcher:dispatch(closingSupported,closingEval)
+    local updated=runtime:dispatchEvaluatedOperationalPicture(closingSupported,closingEval)
     equal(updated.status,"ENVELOPE_UPDATED")
     equal(updated.reason,"D0155_SUPPORTABLE_PROGRESSION_MAGNITUDE_UPDATED")
     equal(#requests,2); equal(requests[2].target.maxSpeedKmh,21)
@@ -4024,7 +4024,7 @@ test("D0198 D0155 bare NO_CURRENT_EXCURSION does not quiesce while protected par
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED"); equal(#requests,1)
     local commitmentId=admitted.commitment.identity
 
@@ -4041,7 +4041,7 @@ test("D0198 D0155 bare NO_CURRENT_EXCURSION does not quiesce while protected par
     local transient=OuttaMyWay.OperationalPicture.new(values)
     local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
     local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
-    local maintained=runtime.liveControlDispatcher:dispatch(transientSupported,transientEval)
+    local maintained=runtime:dispatchEvaluatedOperationalPicture(transientSupported,transientEval)
     equal(maintained.status=="MAINTAINED" or maintained.status=="ENVELOPE_UPDATED",true)
     equal(#requests>=1,true)
     equal(requests[#requests].target.operation,"APPLY")
@@ -4062,7 +4062,7 @@ test("D0197 D0155 positive NOT_REQUIRED quiesces actuation while the relationshi
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED"); equal(#requests,1); equal(requests[1].target.maxSpeedKmh,25)
     local commitmentId=admitted.commitment.identity
 
@@ -4081,7 +4081,7 @@ test("D0197 D0155 positive NOT_REQUIRED quiesces actuation while the relationshi
     local transient=OuttaMyWay.OperationalPicture.new(values)
     local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
     local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
-    local quiesced=runtime.liveControlDispatcher:dispatch(transientSupported,transientEval)
+    local quiesced=runtime:dispatchEvaluatedOperationalPicture(transientSupported,transientEval)
     equal(quiesced.status,"QUIESCENT")
     equal(quiesced.reason,"D0155_CURRENT_ACTION_SPACE_NOT_REQUIRED_ACTUATION_QUIESCENT")
     equal(#requests,2); equal(requests[2].target.operation,"RELEASE"); equal(requests[2].target.vehicleReferenceKey,"vehicle-root:201")
@@ -4105,7 +4105,7 @@ test("D0197 D0155 quiescent actuation reactivates on positive REGULATE_SUPPORTED
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     local commitmentId=admitted.commitment.identity
 
     local qValues=OuttaMyWay.ValueRecord.toTable(active)
@@ -4118,7 +4118,7 @@ test("D0197 D0155 quiescent actuation reactivates on positive REGULATE_SUPPORTED
     local qPicture=OuttaMyWay.OperationalPicture.new(qValues)
     local qSupported=runtime.liveTrafficCandidateSupport:attach(qPicture,headOnTestSnapshot())
     local qEval=runtime:evaluateSealedOperationalPicture(qSupported)
-    local quiesced=runtime.liveControlDispatcher:dispatch(qSupported,qEval)
+    local quiesced=runtime:dispatchEvaluatedOperationalPicture(qSupported,qEval)
     equal(quiesced.status,"QUIESCENT"); equal(#requests,2); equal(requests[2].target.operation,"RELEASE")
 
     local rValues=OuttaMyWay.ValueRecord.toTable(active)
@@ -4138,7 +4138,7 @@ test("D0197 D0155 quiescent actuation reactivates on positive REGULATE_SUPPORTED
     local rSupported=runtime.liveTrafficCandidateSupport:attach(rPicture,headOnTestSnapshot())
     local rEval=runtime:evaluateSealedOperationalPicture(rSupported)
     equal(rEval.decision.commitmentAction,"MAINTAIN")
-    local reactivated=runtime.liveControlDispatcher:dispatch(rSupported,rEval)
+    local reactivated=runtime:dispatchEvaluatedOperationalPicture(rSupported,rEval)
     equal(reactivated.status,"REACTIVATED")
     equal(reactivated.commitmentId,commitmentId)
     equal(#requests,3); equal(requests[3].target.operation,"APPLY"); equal(requests[3].target.vehicleReferenceKey,"vehicle-root:201")
@@ -4161,7 +4161,7 @@ test("D0155 exhausted ordinary space retains 1 kmh Intent-Revelation Creep inste
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     local commitmentId=admitted.commitment.identity
     equal(#requests,1); equal(requests[1].target.maxSpeedKmh,25)
 
@@ -4178,7 +4178,7 @@ test("D0155 exhausted ordinary space retains 1 kmh Intent-Revelation Creep inste
     local closing=OuttaMyWay.OperationalPicture.new(values)
     local closingSupported=runtime.liveTrafficCandidateSupport:attach(closing,headOnTestSnapshot())
     local closingEval=runtime:evaluateSealedOperationalPicture(closingSupported)
-    local updated=runtime.liveControlDispatcher:dispatch(closingSupported,closingEval)
+    local updated=runtime:dispatchEvaluatedOperationalPicture(closingSupported,closingEval)
     equal(updated.status,"ENVELOPE_UPDATED")
     equal(#requests,2); equal(requests[2].target.maxSpeedKmh,1)
     equal(updated.reason,"D0155_INTENT_REVELATION_CREEP_APPLIED")
@@ -4199,7 +4199,7 @@ test("D0155 Reverse-Created Resolution Reserve is not immediately spendable ordi
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     local commitmentId=admitted.commitment.identity
 
     local function dispatchAt(source,identity,epoch,separation)
@@ -4212,7 +4212,7 @@ test("D0155 Reverse-Created Resolution Reserve is not immediately spendable ordi
         local picture=OuttaMyWay.OperationalPicture.new(values)
         local supportedPicture=runtime.liveTrafficCandidateSupport:attach(picture,headOnTestSnapshot())
         local evaluatedPicture=runtime:evaluateSealedOperationalPicture(supportedPicture)
-        return picture,runtime.liveControlDispatcher:dispatch(supportedPicture,evaluatedPicture)
+        return picture,runtime:dispatchEvaluatedOperationalPicture(supportedPicture,evaluatedPicture)
     end
 
     local consumed,first=dispatchAt(active,"OP-D0155-ENVELOPE-60",797,60)
@@ -4247,7 +4247,7 @@ test("D0155 low admission speed seeds the envelope instead of suppressing the Re
     local active=OuttaMyWay.OperationalPicture.new(values)
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED"); equal(#requests,1); equal(requests[1].target.maxSpeedKmh,8)
     local commitmentId=admitted.commitment.identity
 
@@ -4260,7 +4260,7 @@ test("D0155 low admission speed seeds the envelope instead of suppressing the Re
     local closing=OuttaMyWay.OperationalPicture.new(values)
     local closingSupported=runtime.liveTrafficCandidateSupport:attach(closing,headOnTestSnapshot())
     local closingEval=runtime:evaluateSealedOperationalPicture(closingSupported)
-    local updated=runtime.liveControlDispatcher:dispatch(closingSupported,closingEval)
+    local updated=runtime:dispatchEvaluatedOperationalPicture(closingSupported,closingEval)
     equal(updated.status,"ENVELOPE_UPDATED"); equal(#requests,2); equal(requests[2].target.maxSpeedKmh,5)
     local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
     equal(status.currentCapKmh,5); equal(status.effectClass,"REGULATE"); equal(status.remainingOrdinaryM,7.5)
@@ -4278,7 +4278,7 @@ test("D0197 transient reverse non-closing evidence retains D0146 obligation but 
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     local commitmentId=admitted.commitment.identity
 
     local values=OuttaMyWay.ValueRecord.toTable(active)
@@ -4292,7 +4292,7 @@ test("D0197 transient reverse non-closing evidence retains D0146 obligation but 
     local transient=OuttaMyWay.OperationalPicture.new(values)
     local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
     local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
-    local quiesced=runtime.liveControlDispatcher:dispatch(transientSupported,transientEval)
+    local quiesced=runtime:dispatchEvaluatedOperationalPicture(transientSupported,transientEval)
     equal(quiesced.status,"QUIESCENT")
     equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,true)
     equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().actuationActive,false)
@@ -4313,7 +4313,7 @@ test("D0197 Potential conflict may retain D0146 obligation while current D0155 a
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     local commitmentId=admitted.commitment.identity
 
     local values=OuttaMyWay.ValueRecord.toTable(active)
@@ -4329,7 +4329,7 @@ test("D0197 Potential conflict may retain D0146 obligation while current D0155 a
     local potential=OuttaMyWay.OperationalPicture.new(values)
     local potentialSupported=runtime.liveTrafficCandidateSupport:attach(potential,headOnTestSnapshot())
     local potentialEval=runtime:evaluateSealedOperationalPicture(potentialSupported)
-    local quiesced=runtime.liveControlDispatcher:dispatch(potentialSupported,potentialEval)
+    local quiesced=runtime:dispatchEvaluatedOperationalPicture(potentialSupported,potentialEval)
     equal(quiesced.status,"QUIESCENT")
     equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,true)
     equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().actuationActive,false)
@@ -4350,7 +4350,7 @@ test("D0197 Transitional Continuation retains D0146 obligation but does not itse
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     local commitmentId=admitted.commitment.identity
 
     local values=OuttaMyWay.ValueRecord.toTable(active)
@@ -4365,7 +4365,7 @@ test("D0197 Transitional Continuation retains D0146 obligation but does not itse
     local transitional=OuttaMyWay.OperationalPicture.new(values)
     local transitionalSupported=runtime.liveTrafficCandidateSupport:attach(transitional,headOnTestSnapshot())
     local transitionalEval=runtime:evaluateSealedOperationalPicture(transitionalSupported)
-    local quiesced=runtime.liveControlDispatcher:dispatch(transitionalSupported,transitionalEval)
+    local quiesced=runtime:dispatchEvaluatedOperationalPicture(transitionalSupported,transitionalEval)
     equal(quiesced.status,"QUIESCENT")
     equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,true)
     equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().actuationActive,false)
@@ -4386,7 +4386,7 @@ test("D0146 Action-Space Regulation releases only on positive settled relationsh
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted=runtime.liveControlDispatcher:dispatch(supported,evaluated)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED")
     local commitmentId=admitted.commitment.identity
 
@@ -4401,7 +4401,7 @@ test("D0146 Action-Space Regulation releases only on positive settled relationsh
     local dissolved=OuttaMyWay.OperationalPicture.new(values)
     local dissolvedSupported=runtime.liveTrafficCandidateSupport:attach(dissolved,headOnTestSnapshot())
     local dissolvedEval=runtime:evaluateSealedOperationalPicture(dissolvedSupported)
-    local released=runtime.liveControlDispatcher:dispatch(dissolvedSupported,dissolvedEval)
+    local released=runtime:dispatchEvaluatedOperationalPicture(dissolvedSupported,dissolvedEval)
     equal(released.status,"RELEASED")
     equal(released.reason,"D0146_POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION")
     equal(requests[#requests].target.operation,"RELEASE")
