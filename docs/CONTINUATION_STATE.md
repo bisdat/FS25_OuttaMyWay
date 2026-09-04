@@ -6,59 +6,63 @@ is not a changelog, release ledger, or canonical-release record.
 
 ## Current engineering concern
 
-Begin the first implementation tranche of the accepted strangler transition:
-**Cooperative Passage Responsibility Transition extraction**.
+The first Cooperative Passage Responsibility Transition strangler seam has been
+implemented and Reality-validated for one observed direct `CREATE` Passage
+episode.
 
-This documentation increment records the transition map. Once accepted, the
-next activity is the bounded implementation tranche.
+The immediate concern is to assess the evidence from the first seam and
+determine the next bounded strangler tranche.
 
 ## Established
 
-- The accepted [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) exists.
-- Systematic live-runtime review is complete, and Option B architectural extraction / strangler recomposition is selected.
-- Trusted upstream Reality acquisition, Observation, Field World and Representation evidence and downstream physical Control capability are to be preserved while the semantic and orchestration path is reconciled.
-- [Naming Conventions](NAMING_CONVENTIONS.md) are authoritative.
-- The [Configuration architecture](CONFIGURATION.md) is authoritative; [`scripts/config.lua`](../scripts/config.lua) remains a Mixed Runtime Constants Surface to be reconciled incrementally, not by mass cleanup.
-- The [Strangler Transition Map](IMPLEMENTATION_MAP.md#detailed-strangler-transition-map), including its human-readable programme dashboard, is recorded.
-- **Responsibility Acquisition at the Control Edge** is observed: `LiveControlDispatcher` currently invokes semantic lifecycle work immediately before physical Control.
-- **Regulation Responsibility ≠ Regulation Actuation**: use of a Regulation actuator does not by itself identify the Current Responsibility.
-- **Same-Commitment Responsibility Fusion** is observed where Regulation may be succeeded by Cooperative Passage through revision of one generic Commitment.
-- **Dual Transition Authority** is the principal migration hazard; each migrated semantic responsibility must have exactly one authoritative owner.
-- The first planned seam is Cooperative Passage Responsibility Transition extraction.
-- No runtime behaviour changed in this documentation tranche.
+- The accepted [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Strangler Transition Map](IMPLEMENTATION_MAP.md#detailed-strangler-transition-map) remain authoritative for architecture and programme direction respectively.
+- The first strangler seam is implemented: Cooperative Passage transition acquisition moved upstream of Control.
+- [`CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua) is the sole live owner of Cooperative Passage Decision-to-Commitment application.
+- **No Dual Transition Authority** is structurally protected; `LiveControlDispatcher` no longer applies Cooperative Passage responsibility.
+- Existing pre-transition refusal, pre-emption and readiness ordering remains in the dispatcher before its non-mutating readiness handoff.
+- Runtime applies the upstream transition and passes already-established responsibility to the dispatcher continuation.
+- The generic Commitment, Obligation and Authority substrate is intentionally retained.
+- Non-migrated Regulation and completed-obstruction paths retain their legacy lifecycle ownership.
+- GitHub `Structural contracts` and `Lua offline observation (non-blocking)` jobs completed successfully on the tested PR head.
+- GIANTS Reality validated one direct Cooperative Passage `CREATE` episode: exactly one upstream transition preceded normal physical Passage, Axis Return, restoration and GIANTS handoff; the pair context dissolved, the Commitment succeeded and authority was released.
+- No duplicate transition, Commitment-application failure, Cooperative Passage rejection or observable behavioural regression was identified in that episode.
+- Development build identity `0.3.0.1 TEST — COOPERATIVE PASSAGE RESPONSIBILITY TRANSITION` was visible and attributable, and GIANTS listed the mod as version `0.3.0.1`.
+- This resolves the Validation Identity Defect that previously left development artifacts visibly indistinguishable from canonical `0.3.0.0`.
+- GIANTS texture-font Reality exposed an unsupported `•` Version HUD separator; the implementation now uses ASCII-safe `|` without changing build identity or HUD behaviour otherwise.
 
 ## Current boundary
 
-Architecture and migration intent are sufficiently established to begin bounded
-runtime strangling. The next work is implementation, not another architecture
-prerequisite. Implementation remains evidence-led: if the first extraction
-exposes an architectural contradiction, update architecture deliberately rather
-than forcing implementation into it.
+The first strangler pattern is demonstrated: one semantic transition can be
+moved upstream while preserving legacy mechanics downstream.
+
+The evidence is deliberately bounded. It does not validate every Cooperative
+Passage admission or succession path, establish that the same extraction should
+be copied mechanically to Regulation, resolve Same-Commitment Responsibility
+Fusion, or establish the final Current Responsibility representation. In
+particular, the Regulation-to-Passage `REVISE` path has not been independently
+validated in GIANTS Reality by this tranche.
 
 ## Next boundary
 
-The first code tranche should, at a high level:
+Return to **Observe / Discuss** the first-tranche results and select the next
+bounded seam. No further runtime change is authorised by this Continuation State.
 
-- trace and retain current Cooperative Passage candidate and decision inputs;
-- establish Cooperative Passage responsibility before Control dispatch;
-- initially reuse current Commitment, Obligation and Authority machinery;
-- make the new upstream transition path the sole transition authority for Cooperative Passage;
-- make the dispatcher consume already-established responsibility for that migrated path;
-- preserve every non-migrated purpose on its existing path;
-- preserve physical Passage mechanics and policy;
-- validate behavioural equivalence; and
-- record findings before selecting the next tranche.
+The next discussion should ask:
 
-Exact code edits remain for investigation within that implementation tranche.
+- What did the first extraction reveal about the appropriate representation of Resolution Commitment?
+- Should completed-obstruction Resolution be migrated next, as currently hypothesised?
+- Does the retained generic Commitment substrate expose a clear safe seam for explicit Current Responsibility?
+- What evidence is needed before touching standalone Regulation?
+- Should a Regulation-to-Passage `REVISE` Reality episode be characterised before modifying Same-Commitment Responsibility Fusion?
 
 ## Not currently active
 
-- Generic Commitment redesign or removal.
+- Generic Commitment removal.
 - Standalone Regulation redesign.
-- Bounded Authority kernel redesign.
+- Same-Commitment Responsibility Fusion correction.
+- Bounded Authority redesign.
 - Candidate/Constraint/Decision simplification.
-- Mass `config.lua` redistribution.
-- Prototype22 renaming or migration.
+- Prototype22 migration or renaming.
 - Diagnostic or probe pruning.
-- GUI/HUD implementation.
+- Broad GUI/HUD work.
 - Release preparation, packaging, publication or canonicalisation.

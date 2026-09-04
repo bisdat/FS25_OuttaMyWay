@@ -285,37 +285,40 @@ settlement, Authority-token exclusivity, Effective Actuation Composition,
 and proven physical Control mechanisms. The primary problem is semantic
 ownership, composition and order, not absence of all required machinery.
 
-# First Planned Strangler Seam
+### Validation Identity Defect
+
+Development builds inherited the visible `0.3.0.0` canonical identity, so HUD
+observation alone could not prove which ZIP was under test. Test builds now use
+the existing BUILD component of the four-part
+[Pre-1.0 Versioning Policy](ENGINEERING_ARCHITECTURE.md#pre-10-versioning-policy).
+The first strangler test build is `0.3.0.1`; canonical `0.3.0.0` remains unchanged.
+
+### HUD Glyph Compatibility
+
+GIANTS texture-font Reality does not support the `•` separator previously used
+by `VersionHud`. Diagnostic build identity therefore uses the ASCII-safe `|`
+separator. This is an implementation observation, not GUI architecture.
+
+# First Strangler Seam
 
 > **Cooperative Passage Responsibility Transition extraction**
 
-This is planned, not implemented. Cooperative Passage maps cleanly to accepted
-Resolution Commitment semantics; its durable obligation and completion
-semantics are already strong; and its principal mismatch is responsibility
-establishment at the Control edge. Starting with standalone Regulation would
-prematurely force deeper redesign of weak Regulation persistence and obligations
-before the strangler mechanism itself is proven.
+This seam is implemented and Reality-validated for one observed direct `CREATE`
+Cooperative Passage episode. [`CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua)
+is the sole live owner that invokes `applyCooperativePassageDecision()`.
 
-Current:
+The implemented handoff is:
 
 ```text
 Decision
    ↓
-LiveControlDispatcher
+LiveControlDispatcher readiness / pre-emption checks
    ↓
-applyCooperativePassageDecision()
+non-mutating readiness handoff
    ↓
-generic Commitment / obligation / authority
+Runtime
    ↓
-ControlRequest
-```
-
-First strangler target:
-
-```text
-Decision
-   ↓
-upstream Responsibility Transition stage
+CooperativePassageResponsibilityTransition
    ↓
 existing Cooperative Passage lifecycle machinery
    ↓
@@ -323,25 +326,36 @@ responsibility already established
    ↓
 LiveControlDispatcher
    ↓
-existing ControlRequest / Control
+existing ControlRequest / CooperativePassageControl
 ```
 
-Initially reuse existing Commitment/Obligation/Authority machinery. Do not in
-that tranche redesign the generic Commitment kernel; change Passage geometry,
-Situation Assessment, `LocalPassagePlanner` or `CooperativePassageControl`
-mechanics; or change Candidate/Constraint/Decision contracts unless later
-implementation evidence strictly requires it. The first code tranche proves the
-seam and ownership order, not the entire programme.
+`LiveControlDispatcher` retains the existing pre-transition readiness and
+pre-emption checks, then returns the non-mutating readiness handoff. Runtime
+invokes the upstream transition and passes its already-established Commitment
+result to the dedicated dispatcher continuation. Physical Passage Control and
+existing completion settlement are preserved. Non-migrated intervention paths
+remain on their legacy lifecycle ownership.
 
-> Once Cooperative Passage transition is handled upstream, `LiveControlDispatcher` must not independently apply that same transition.
+The observed `0.3.0.1` episode logged exactly one
+`COOPERATIVE_PASSAGE_TRANSITION_UPSTREAM` with `action=CREATE` and
+`beforePhysicalDispatch=true`, followed by `COOPERATIVE_ACCEPTED`, normal
+physical Passage, Axis Return and GIANTS handoff, pair-context dissolution,
+Commitment success and authority release. No duplicate transition,
+`COMMITMENT_APPLICATION_FAILED`, `COOPERATIVE_REJECTED` or observable regression
+was identified in that episode. This evidence does not independently validate
+the Regulation-to-Passage `REVISE` succession path or the full supported envelope.
 
-This is the Dual Transition Authority guard.
+> `LiveControlDispatcher` must not independently apply the Cooperative Passage transition.
+
+This **No Dual Transition Authority** invariant is structurally protected. The
+tranche did not remove generic Commitment semantics or resolve Same-Commitment
+Responsibility Fusion.
 
 # Intermediate Programme Steps
 
-1. **Record the transition map** — this documentation tranche.
-2. **Extract Cooperative Passage Responsibility Transition before Control.**
-3. **Validate the first strangler seam and behavioural equivalence.**
+1. **Record the transition map — COMPLETE.**
+2. **Extract Cooperative Passage Responsibility Transition before Control — COMPLETE.**
+3. **Validate the first strangler seam and behavioural equivalence — COMPLETE for the observed direct Cooperative Passage `CREATE` path.**
 4. **Expose Resolution Commitment explicitly through migrated paths.**
 5. **Migrate completed-obstruction Resolution responsibility.**
 6. **Reconcile standalone Regulation.**
