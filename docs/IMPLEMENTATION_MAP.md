@@ -481,12 +481,82 @@ completed-obstruction `MAINTAIN` re-exposes the same identity as persistence of
 Current Responsibility, not a new architectural transition. The legacy action
 is retained only as diagnostic provenance.
 
-The implementation hypothesis is now available for review and offline
-validation. GIANTS Reality validation remains pending for direct Cooperative
-Passage `CREATE` and the same-session completed-obstruction `CREATE` →
-`MAINTAIN`, `COMPACT` → `INFIELD` exemplars. Standalone Regulation,
+GitHub Structural contracts and Lua offline observation completed successfully.
+GIANTS Reality then validated both required `0.3.0.3` exemplars. Direct
+Cooperative Passage logged `RESOLUTION_COMMITMENT_ESTABLISHED` with
+`legacyAction=CREATE`, the retained generic Commitment identity, and both
+coupled workers explicitly represented as beneficiaries and controlled
+subjects; existing Passage Control and participant-handoff settlement completed
+successfully. Completed obstruction logged
+`RESOLUTION_COMMITMENT_ESTABLISHED` with `legacyAction=CREATE`, then after
+`COMPACT` and fresh Situation Assessment logged
+`RESOLUTION_COMMITMENT_PERSISTED` with the same identity and
+`legacyAction=MAINTAIN`, followed by Protected Yield, `INFIELD`, terminal
+`SUCCEEDED`, authority release and Continuation Renewal.
+
+This positively validates the explicit representation, identity reuse, role
+separation, Resolution Persistence Across Control Phases and Maintenance Is Not
+Transition in the observed run. Downstream Passage and completed-obstruction
+mechanics remained consistent with their retained behaviour. It does not claim
+full supported-envelope regression coverage. Standalone Regulation,
 Same-Commitment Regulation-to-Passage fusion, Bounded Authority and issue #33
 remain outside this tranche.
+
+## A/B behavioural-equivalence evidence
+
+The `0.3.0.3` run later encountered a corner sequence in a different location
+from the original uninterrupted `0.3.0.2` run: D-0146 Action-Space Regulation
+progressively regulated the Condor, Regulation actuation became quiescent, both
+workers became physically blocked, and player intervention was required.
+
+The same saved-game fixture was rerun on accepted `0.3.0.2` at
+`2aa47fda4d6c0e75f24c9e5f2200c8c1c2eae921`. It reproduced a closely comparable
+ordering and timing: Cooperative Passage, later D-0146 Action-Space Regulation,
+Regulation quiescence, mutual corner blockage and required player intervention.
+Therefore **PR #34 regression suspicion is cleared** for this failure. The
+corner outcome predates the explicit Resolution Commitment representation.
+
+### Saved-State Test Fixture Divergence
+
+A saved game created during an uninterrupted GIANTS AI run is not necessarily a
+behaviourally identical continuation fixture after reload, even when visible
+vehicle and field state appears equivalent. The original uninterrupted
+`0.3.0.2` run completed successfully, while later reloads reconstructed enough
+different GIANTS continuation or path state for subsequent encounters to occur
+elsewhere. This is primarily a test-fixture and reproducibility finding, not a
+new OuttaMyWay architectural defect. The saved fixture remains a useful
+repeatable corner/deadlock scenario; the historical scenario is not claimed to
+be deterministic across save/reload.
+
+### Quiescent Regulation Deadlock
+
+The saved-state A/B runs provide an unresolved working observation:
+
+```text
+unresolved Regulation responsibility
+    ↓
+preventative actuation quiesces
+    ↓
+physical corner / pinch conflict persists or worsens
+    ↓
+both workers become blocked
+    ↓
+no autonomous resolution follows
+    ↓
+player intervention required
+```
+
+Positive native forward-rate evidence became unavailable while the relationship
+remained unresolved, causing Regulation actuation to become quiescent. Later
+trajectory interpretation no longer supported an opposed-corridor conflict even
+though the physical corner conflict remained. This supports the narrower
+working distinction **Opposed-Corridor Conflict ≠ Corner Conflict**.
+
+These are Reality observations for the later standalone Regulation
+reconciliation, not accepted architecture or an implementation proposal. PR #34
+does not authorise or implement a fix to Regulation, Situation Assessment,
+D-0146, corner modelling or Control. The evidence is unrelated to issue #33's
+separate cold-start non-active obstruction-recognition investigation.
 
 # Intermediate Programme Steps
 
@@ -496,7 +566,7 @@ remain outside this tranche.
 4. **Extract completed-obstruction physical Resolution responsibility — COMPLETE.**
 5. **Validate the second Resolution exemplar — COMPLETE for the observed in-session `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` episode.**
 6. **Compare the two migrated Resolution exemplars and determine the smallest truthful explicit Resolution Commitment representation — COMPLETE for the read-only adapter/view hypothesis.**
-7. **Expose Resolution Commitment explicitly only where the two exemplars support it — IMPLEMENTED; offline and GIANTS Reality validation pending.**
+7. **Expose Resolution Commitment explicitly only where the two exemplars support it — COMPLETE and GIANTS Reality-validated for the observed direct Cooperative Passage `CREATE` and completed-obstruction `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` exemplars.**
 8. **Reconcile standalone Regulation.**
 9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion.**
 10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**
