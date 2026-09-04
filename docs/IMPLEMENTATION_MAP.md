@@ -787,6 +787,45 @@ read-only Regulation representation remains to be determined after review of
 this Record; no runtime representation, registry, adapter or lifecycle is
 introduced in this tranche.
 
+### Discovery gate: Responsibility Instance Identity Gap
+
+Implementation inspection found no existing truthful witness for one Regulation
+responsibility instance across all continuity permitted by the architecture.
+The read-only representation hypothesis is therefore blocked rather than
+materialised.
+
+**Evidence Succession ≠ Responsibility Succession** governs this result. A
+Regulation instance may remain continuous while current Situation evidence and
+governing basis evolve, so an evidence identity cannot substitute for the
+responsibility instance that persists through that change.
+
+The retained identities fail for distinct reasons:
+
+- generic Commitment identity survives follower revalidation and Action-Space
+  role migration, but is broader than Current Responsibility and currently may
+  continue across the known Regulation-to-Passage responsibility discontinuity;
+- follower-boundary and Action-Space Obligation identities are distinct,
+  Situation-specific records keyed through pair or conflict provenance. They
+  can witness their own retained obligation, but cannot identify one Regulation
+  instance when its governing evidence evolves without turning those causes
+  into architectural subtypes;
+- authority tokens can be released during quiescence, reacquired during
+  reactivation and changed with the regulated actuation role;
+- Candidate and Decision identities are assessment/application episodes, while
+  pair keys, conflict identities, participant tuples and current Situation
+  reasons identify evidence or context rather than Regulation responsibility.
+
+No remaining registry or record explicitly witnesses the interval from
+Regulation acquisition to genuine Regulation termination independently of both
+Situation cause and generic Commitment lifecycle. Deriving an identity from
+those fields, issuing a new counter or adding a parallel registry would create
+new lifecycle authority rather than expose retained truth. No fake identity or
+parallel Regulation lifecycle was introduced.
+
+This **Responsibility Instance Identity Gap** is the next dependency for the
+smallest explicit read-only Regulation representation. It must be reconciled
+without pre-empting step 9's Same-Commitment Responsibility Fusion work.
+
 ## Regulation naming governance
 
 D-number runtime vocabulary such as `D0141_APPLY`, `D0141_UPDATE`,
@@ -829,7 +868,7 @@ in this tranche and should use ASCII-safe punctuation when later addressed.
 8. **Reconcile standalone Regulation — IN PROGRESS.**
    - **8a. Extract D-0141 follower-boundary Regulation application/revalidation upstream — COMPLETE and GIANTS Reality-validated for the observed establishment, same-responsibility revalidation, elastic update, quiescence and reactivation episode. Positive retirement was not observed and was not required.**
    - **8b. Extract D-0146 Action-Space Regulation as the second standalone exemplar — IMPLEMENTED and offline-validated; GIANTS Reality attempt inconclusive because the saved-corner Situation bypassed Action-Space Regulation upstream of the extracted seam.**
-   - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — COMPARISON COMPLETE at the architectural level: both are manifestations of one temporal Regulation responsibility; explicit runtime representation remains deferred pending review of this Record.**
+   - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — ARCHITECTURAL COMPARISON COMPLETE; implementation discovery found no truthful retained Regulation instance identity witness, so explicit representation is blocked by the Responsibility Instance Identity Gap.**
 9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion.**
 10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**
 11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities.**
