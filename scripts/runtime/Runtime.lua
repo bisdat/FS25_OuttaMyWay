@@ -36,6 +36,7 @@ function Runtime.new()
     runtime.liveTrafficCandidateSupport=OuttaMyWay.LiveTrafficCandidateSupport.new(identities,epochs,runtime.passiveCandidateSupport)
     runtime.liveControlDispatcher=OuttaMyWay.LiveControlDispatcher.new(runtime)
     runtime.decisionCommitmentBoundary=OuttaMyWay.DecisionCommitmentBoundary.new(identities,epochs,admission,commitments,obligations,authorities,governingBasis,terminalSettlement)
+    runtime.followerBoundaryResponsibilityTransition=OuttaMyWay.FollowerBoundaryResponsibilityTransition.new(runtime)
     runtime.cooperativePassageResponsibilityTransition=OuttaMyWay.CooperativePassageResponsibilityTransition.new(runtime)
     runtime.completedObstructionResponsibilityTransition=OuttaMyWay.CompletedObstructionResponsibilityTransition.new(runtime)
     runtime.replayRunner=OuttaMyWay.ReplayRunner.new(runtime)
@@ -88,6 +89,13 @@ end
 
 function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
     local dispatch=self.liveControlDispatcher:dispatch(picture,evaluated)
+    if dispatch.status=="FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED" then
+        local applied,reason=self.followerBoundaryResponsibilityTransition:transition(picture,evaluated,dispatch)
+        if applied==nil then
+            return {status="NO_DISPATCH",reason="FOLLOWER_BOUNDARY_RESPONSIBILITY_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId,followerBoundary=true}
+        end
+        return self.liveControlDispatcher:continueFollowerBoundary(picture,evaluated,applied)
+    end
     if dispatch.status=="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED" then
         local applied,reason=self.cooperativePassageResponsibilityTransition:transition(picture,evaluated,dispatch)
         if applied==nil then

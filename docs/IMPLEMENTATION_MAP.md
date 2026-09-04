@@ -558,6 +558,139 @@ does not authorise or implement a fix to Regulation, Situation Assessment,
 D-0146, corner modelling or Control. The evidence is unrelated to issue #33's
 separate cold-start non-active obstruction-recognition investigation.
 
+# First Regulation Strangler Seam
+
+> **D-0141 Follower-Boundary Regulation Responsibility Transition extraction**
+
+The first standalone Regulation implementation hypothesis moves only D-0141
+`APPLY` responsibility application and revalidation upstream of physical
+Control:
+
+```text
+selected follower-boundary Decision
+    ↓
+LiveControlDispatcher APPLY routing / readiness checks
+    ↓
+non-mutating transition-required handoff
+    ↓
+Runtime
+    ↓
+FollowerBoundaryResponsibilityTransition
+    ↓
+existing LiveTrafficCommitmentLifecycle.applyFollowerBoundaryDecision()
+    ↓
+responsibility application / revalidation established
+    ↓
+LiveControlDispatcher continuation
+    ↓
+existing elastic Regulation request / lease / Control
+```
+
+[`FollowerBoundaryResponsibilityTransition.lua`](../scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua)
+is the sole production caller of `applyFollowerBoundaryDecision()`. The
+dispatcher first confirms the selected semantic bridge is D-0141 `APPLY`, the
+Candidate capability is `REGULATE_SPEED`, and the existing Control capability
+is available. Runtime then invokes the purpose-specific transition and returns
+the already-applied result to `continueFollowerBoundary()`. Authority-token
+validation, `ControlRequest` construction, requested elastic cap, owner tag,
+lease application/update, quiescence/reactivation bookkeeping, outcomes,
+rejection rollback and physical Control remain downstream and unchanged in
+intent.
+
+This is a deliberately incomplete Regulation strangler boundary:
+
+```text
+D-0141 acquisition / revalidation → upstream
+D-0141 retirement / termination   → retained downstream legacy
+```
+
+Positive RETIRE application, physical lease release, purpose-bound authority
+release and follower-obligation settlement remain in the dispatcher/lifecycle
+path. PRESERVE and quiescent/reactivated physical actuation bookkeeping also
+remain downstream. Repeated `APPLY` for an already-live purpose is logged as
+retained/revalidated responsibility rather than claimed as a new architectural
+Responsibility Transition.
+
+No explicit or generic Regulation representation, registry or lifecycle is
+introduced. D-0146 Action-Space Regulation remains the required second
+standalone exemplar before comparing common Regulation semantics. **Second
+Exemplar Before Generalisation** therefore continues to apply. The
+implementation does not address Quiescent Regulation Deadlock, corner
+behaviour, Same-Commitment Responsibility Fusion, Bounded Authority or issue
+#33.
+
+## D-0141 GIANTS Reality validation
+
+The `0.3.0.4` Reality episode naturally established Patriot 4450 as leader and
+Condor Endurance II as follower. Initial lifecycle application produced
+`AP-00001`, `CM-00001` and `OB-00001` for pair
+`AS-00002|AS-00001`. The architecture-facing marker then reported:
+
+```text
+FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM
+commitment=CM-00001
+leader=AS-00002
+follower=AS-00001
+legacyAction=CREATE
+responsibilityDisposition=ESTABLISHED
+beforePhysicalDispatch=true
+```
+
+Downstream `D0141_APPLY` followed for the same `CM-00001` and follower at
+`5.15 km/h`. This positively validates responsibility application upstream of
+physical Regulation.
+
+The episode then naturally exercised retained purpose and elastic Control. An
+observed `legacyAction=MAINTAIN`, `responsibilityDisposition=REVALIDATED` marker
+for `CM-00001` preceded `D0141_UPDATE` at `6.21 km/h`, with repeated further
+updates. Approximate episode counts were one established marker, 44 revalidated
+markers, one physical APPLY, 43 physical updates, two quiescence events and one
+reactivation. All retained `CM-00001`.
+
+Quiescence released temporary authority for `AS-00001` while logging
+`purposeRetained=true`. Reactivation later acquired `AU-00002`, revalidated the
+same `CM-00001` / `OB-00001`, and applied `11.40 km/h` through
+`D0141_ACTUATION_REACTIVATED`. This validates responsibility persistence
+independently of temporary Bounded Authority, along with elastic magnitude,
+quiescence, reactivation and **Maintenance Is Not Transition**. No contrary
+evidence of changed GIANTS productive routing or steering ownership was
+observed.
+
+Positive D-0141 retirement was **not observed / not required for this tranche**.
+That is not a validation failure. Retirement/termination remains deliberately
+downstream and unchanged. The observed D-0141 strangler seam passed; standalone
+Regulation reconciliation remains incomplete.
+
+## Regulation naming governance
+
+D-number runtime vocabulary such as `D0141_APPLY`, `D0141_UPDATE`,
+`D0141_ACTUATION_QUIESCENT`, `D0146_ACTION_SPACE_DECISION_APPLIED` and
+`D0155_ENVELOPE_UPDATE` is transitional implementation debt, not accepted
+Regulation terminology. Under the [Naming Conventions](NAMING_CONVENTIONS.md),
+Decision identifiers record provenance and must not become primary module or
+architectural names.
+
+The extracted architecture-facing seam already uses
+`FollowerBoundaryResponsibilityTransition`,
+`FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED`,
+`FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM` and `continueFollowerBoundary()`.
+Retained downstream `D0141_*` vocabulary remains unchanged solely to isolate
+behaviour in this tranche. Do not infer accepted terminology from it or create a
+naming-cleanup increment here.
+
+Remaining Regulation semantic runtime names should be graduated only after
+D-0141 and D-0146 have both been extracted and validated, their exemplars have
+been compared, and the explicit Regulation representation is stable. Historical
+D-identifiers may remain as genuine provenance, including tests that clearly
+document historical decision contracts.
+
+## Follower HUD Glyph Compatibility Leak
+
+GIANTS texture-font Reality reported missing character `8226` because retained
+follower-regulation HUD text still uses `•`. This is separate UI implementation
+debt, not Regulation architecture or PR #35 acceptance evidence. It is not fixed
+in this tranche and should use ASCII-safe punctuation when later addressed.
+
 # Intermediate Programme Steps
 
 1. **Record the transition map — COMPLETE.**
@@ -567,7 +700,10 @@ separate cold-start non-active obstruction-recognition investigation.
 5. **Validate the second Resolution exemplar — COMPLETE for the observed in-session `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` episode.**
 6. **Compare the two migrated Resolution exemplars and determine the smallest truthful explicit Resolution Commitment representation — COMPLETE for the read-only adapter/view hypothesis.**
 7. **Expose Resolution Commitment explicitly only where the two exemplars support it — COMPLETE and GIANTS Reality-validated for the observed direct Cooperative Passage `CREATE` and completed-obstruction `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` exemplars.**
-8. **Reconcile standalone Regulation.**
+8. **Reconcile standalone Regulation — IN PROGRESS.**
+   - **8a. Extract D-0141 follower-boundary Regulation application/revalidation upstream — COMPLETE and GIANTS Reality-validated for the observed establishment, same-responsibility revalidation, elastic update, quiescence and reactivation episode. Positive retirement was not observed and was not required.**
+   - **8b. Extract and validate D-0146 Action-Space Regulation as the second standalone exemplar — PLANNED.**
+   - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — DEFERRED pending 8a/8b evidence.**
 9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion.**
 10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**
 11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities.**
@@ -598,6 +734,7 @@ should be refreshed after each accepted tranche.
 | Candidate, Constraint and Decision boundary | [`scripts/candidates/`](../scripts/candidates/), [`scripts/constraints/`](../scripts/constraints/), [`scripts/decision/`](../scripts/decision/), and [`scripts/commitment/DecisionCommitmentBoundary.lua`](../scripts/commitment/DecisionCommitmentBoundary.lua) |
 | Commitment, Obligation and Bounded Authority | [`scripts/commitment/`](../scripts/commitment/) and [`scripts/authority/`](../scripts/authority/) |
 | Explicit Resolution Commitment view | [`scripts/contracts/ResolutionCommitment.lua`](../scripts/contracts/ResolutionCommitment.lua), [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua), and the two purpose-specific transition modules in [`scripts/responsibility/`](../scripts/responsibility/) |
+| D-0141 follower-boundary Regulation transition and downstream Control | [`scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua`](../scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua), [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua), and [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua) |
 | Physical Representation | [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua), [`scripts/representation/PlanViewFootprint.lua`](../scripts/representation/PlanViewFootprint.lua), [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) |
 | Passage capability and planning | [`scripts/assessment/PassageCapabilityAssessment.lua`](../scripts/assessment/PassageCapabilityAssessment.lua), [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) |
 | Control dispatch and Cooperative Passage | [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua), [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) |

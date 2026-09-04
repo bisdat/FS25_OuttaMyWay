@@ -471,7 +471,6 @@ end
 
 function Dispatcher:_dispatchFollowerBoundary(picture,evaluated,candidate)
     local bridge=followerBoundaryBridge(candidate)
-    local current=self.followerBoundaryLease
     if bridge~=nil and bridge.action=="RETIRE" then
         return self:_releaseFollowerBoundaryLease(picture,evaluated,candidate,bridge,bridge.reason or "D0141_POSITIVE_RETIREMENT")
     end
@@ -480,10 +479,20 @@ function Dispatcher:_dispatchFollowerBoundary(picture,evaluated,candidate)
     end
     if bridge==nil or bridge.action~="APPLY" or candidate.capability~="REGULATE_SPEED" then return nil end
     if self.capability==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",followerBoundary=true} end
-    local applied,applyReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyFollowerBoundaryDecision(self.runtime,picture,evaluated)
-    if applied==nil then
-        return {status="NO_DISPATCH",reason=applyReason,followerBoundary=true}
+    return {status="FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,pairKey=bridge.pairKey,followerAssemblyId=bridge.followerAssemblyId,followerBoundary=true}
+end
+
+function Dispatcher:continueFollowerBoundary(picture,evaluated,applied)
+    if picture==nil or evaluated==nil or evaluated.decision==nil or type(applied)~="table" or applied.commitment==nil then
+        return {status="NO_DISPATCH",reason="FOLLOWER_BOUNDARY_ESTABLISHED_RESPONSIBILITY_REQUIRED",followerBoundary=true}
     end
+    local candidate=selectedCandidate(evaluated)
+    local bridge=followerBoundaryBridge(candidate)
+    if candidate==nil or bridge==nil or bridge.action~="APPLY" or candidate.capability~="REGULATE_SPEED" then
+        return {status="NO_DISPATCH",reason="FOLLOWER_BOUNDARY_ESTABLISHED_RESPONSIBILITY_MISMATCH",followerBoundary=true}
+    end
+    if self.capability==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",followerBoundary=true} end
+    local current=self.followerBoundaryLease
     local token=applied.authorityToken
     if token==nil or self.runtime.authorities:validate(token)~=true then
         return {status="NO_DISPATCH",reason="D0141_VALID_AUTHORITY_TOKEN_UNAVAILABLE",followerBoundary=true}

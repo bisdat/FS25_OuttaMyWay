@@ -6,12 +6,11 @@ is not a changelog, release ledger, or canonical-release record.
 
 ## Current engineering concern
 
-The explicit, read-only Resolution Commitment representation has now been
-Reality-validated for both migrated Resolution exemplars. The immediate concern
-returns to **Observe / Discuss**: use the established representation and new
-Reality evidence to bound the later standalone Regulation reconciliation
-without importing a corner failure or save-fixture assumption into accepted
-architecture prematurely.
+The first standalone Regulation strangler seam is implemented and GIANTS
+Reality-validated: follower-boundary responsibility application/revalidation is
+upstream of physical Control. The immediate concern returns to **Observe /
+Discuss** the evidence and bound D-0146 Action-Space Regulation as the required
+second standalone Regulation exemplar before any general representation.
 
 ## Established
 
@@ -50,13 +49,27 @@ architecture prematurely.
 - **Saved-State Test Fixture Divergence** is observed: reloading a save created during an uninterrupted GIANTS AI run does not guarantee behaviourally identical continuation, even when visible vehicle and field state appears equivalent. The repeatable saved fixture remains useful evidence, not proof of deterministic continuation.
 - **Quiescent Regulation Deadlock** is a working Reality observation for later Regulation reconciliation: unresolved Regulation responsibility may outlive preventative actuation after positive native forward-rate evidence disappears, while a corner or pinch conflict persists and ultimately requires player intervention.
 - **Opposed-Corridor Conflict ≠ Corner Conflict** is a narrower working observation from the same episode. Neither observation is promoted to accepted architecture or resolved in PR #34.
+- [`FollowerBoundaryResponsibilityTransition.lua`](../scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua) is the sole production owner invoking `LiveTrafficCommitmentLifecycle.applyFollowerBoundaryDecision()` for D-0141 `APPLY`.
+- `LiveControlDispatcher` retains existing APPLY routing/readiness checks, then returns a non-mutating handoff to Runtime; Runtime invokes the transition and calls the dedicated dispatcher continuation with already-applied responsibility.
+- D-0141 authority-token validation, elastic speed request construction, owner-tag lease mechanics, physical Control, update counting, quiescence, reactivation, outcomes and rejection rollback remain downstream and are intended to behave unchanged.
+- Revalidated retained follower purpose is distinguished from initial application in upstream diagnostics; repeated `APPLY` is not asserted to be a new architectural Responsibility Transition.
+- D-0141 RETIRE/termination deliberately remains downstream, including retirement application, physical lease release, purpose-bound authority release and follower-obligation settlement.
+- D-0146 Action-Space Regulation remains untouched as the required second standalone Regulation exemplar. No generic Regulation representation, registry or lifecycle has been introduced.
+- GIANTS Reality validated initial follower-boundary responsibility establishment upstream for Patriot 4450 leading Condor Endurance II: application `AP-00001` established `CM-00001` / `OB-00001`, then `FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM` reported `legacyAction=CREATE`, `responsibilityDisposition=ESTABLISHED` and `beforePhysicalDispatch=true` before downstream `D0141_APPLY` at `5.15 km/h`.
+- The same run repeatedly revalidated `CM-00001` without responsibility churn. Approximately one `ESTABLISHED` and 44 `REVALIDATED` upstream markers accompanied one physical APPLY and 43 elastic updates; an observed update raised the current cap to `6.21 km/h` while retaining the same Commitment and obligation identity.
+- Two observed quiescence events released temporary Regulation authority while the follower purpose remained. Later reactivation acquired `AU-00002` and applied `11.40 km/h` under the same `CM-00001`, with `responsibilityDisposition=REVALIDATED` and one `D0141_ACTUATION_REACTIVATED`.
+- The episode supports **Maintenance Is Not Transition** for follower Regulation and demonstrates Current Responsibility persistence independently of temporary Bounded Authority. No contrary evidence of changed GIANTS productive routing or steering ownership was observed.
+- Positive D-0141 retirement was **not observed / not required for this tranche**. It is not a failed validation; retirement and termination remain intentionally downstream and unchanged.
+- D-number runtime vocabulary such as `D0141_APPLY` and `D0141_ACTUATION_QUIESCENT` is transitional implementation debt, not accepted Regulation terminology. The architecture-facing seam uses current responsibility names; retained downstream names remain only for behavioural isolation during strangler recomposition.
+- A separate **Follower HUD Glyph Compatibility Leak** was observed: follower-regulation HUD text still uses the unsupported `•` texture-font glyph. It is unrelated to Regulation responsibility or PR #35 acceptance and remains deferred UI implementation debt.
 
 ## Current boundary
 
-There are two migrated Resolution exemplars and one explicit Resolution
-Commitment view, but still no second or replacement lifecycle authority. The
-retained generic Commitment substrate remains authoritative implementation
-machinery for both paths.
+There are two migrated and Reality-validated Resolution exemplars plus one
+implemented standalone Regulation acquisition/revalidation seam. The retained
+generic Commitment, Obligation and Authority substrate remains authoritative
+implementation machinery; no second Regulation lifecycle or explicit generic
+Regulation representation exists.
 
 The view represents why Resolution persists; it does not represent current
 capability, Control phase, authority tokens or actuation composition. The two
@@ -70,14 +83,31 @@ The saved-state corner failure is pre-existing A/B evidence and not a Resolution
 representation regression. It does not itself establish a Regulation design or
 authorise changes to Situation Assessment, D-0146, corner modelling or Control.
 
+The D-0141 intermediate asymmetry is explicit and now validated for the observed
+episode: acquisition/revalidation is upstream, while PRESERVE/quiescence
+mechanics and RETIRE/termination remain on their downstream legacy ownership.
+Elastic magnitude updates, quiescence and reactivation behaved normally under
+one responsibility identity. Retirement was not naturally observed and remains
+outside the required evidence for this tranche.
+
+This does not complete standalone Regulation reconciliation or justify a
+generic Regulation representation from one exemplar. D-number vocabulary is
+not promoted to architecture, and neither Quiescent Regulation Deadlock nor the
+Follower HUD glyph leak is addressed here.
+
 ## Next boundary
 
-Return to **Observe / Discuss** before authorising another runtime tranche. The
-next planned architectural reconciliation area is standalone Regulation. That
-discussion should include the existing lifecycle and actuation boundary, the
-new Quiescent Regulation Deadlock evidence, the distinction between
-opposed-corridor and corner conflict, and when to characterise
-Regulation-to-Passage `REVISE`; it must not assume a fix from this one incident.
+Return to **Observe / Discuss** before authorising the D-0146 Action-Space
+Regulation extraction. D-0146 remains the second exemplar required before the
+two standalone Regulation purposes can be compared and any explicit generic
+Regulation representation considered.
+
+The later comparison must distinguish responsibility persistence from temporary
+authority and actuation, and should determine stable semantic vocabulary before
+retiring or renaming remaining D-number runtime terms. Historical D-identifiers
+may remain where they truthfully record decision provenance. The Quiescent
+Regulation Deadlock and opposed-corridor/corner distinction remain evidence for
+later reconciliation, not current implementation work.
 
 Same-Commitment Responsibility Fusion and Bounded Authority remain deferred.
 Issue #33 remains a separate cold-start non-active obstruction-recognition
@@ -94,4 +124,5 @@ investigation and must not absorb the corner evidence.
 - Prototype22 migration or renaming.
 - Diagnostic or probe pruning.
 - Broad GUI/HUD work.
+- Follower HUD glyph correction.
 - Release preparation, packaging, publication or canonicalisation.
