@@ -445,10 +445,118 @@ runtime track and had no observed positive active-to-ended Job Episode transitio
 Consequently no Terminal Occupancy, D-0147 Candidate or upstream transition was
 established. Stationarity alone is insufficient completed-worker provenance.
 
-Cold-start blocked completed obstruction remains in scope as a separate
-Observation/provenance problem named **Cold-Start Completed-Obstruction
-Provenance**. [Issue #33](https://github.com/bisdat/FS25_OuttaMyWay/issues/33)
+Cold-start non-active obstruction recognition remains in scope as a separate
+Observation/provenance problem. [Issue #33 — Cold-Start Non-Active Obstruction
+Recognition](https://github.com/bisdat/FS25_OuttaMyWay/issues/33)
 owns its unresolved investigation; it is not a PR #32 transition regression or fix.
+
+# Explicit Resolution Commitment Representation
+
+The two migrated Resolution seams now materialize an explicit, read-only
+[`ResolutionCommitment`](../scripts/contracts/ResolutionCommitment.lua) through
+[`ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua)
+after the retained generic lifecycle application succeeds. The representation
+uses the existing generic Commitment identity and exposes purpose, governing
+basis, explicit beneficiary and controlled-subject roles, the open
+purpose-specific Resolution obligations, and diagnostic provenance.
+
+This is a semantic view over the retained substrate, not another lifecycle.
+`CommitmentRegistry`, `ObligationLedger`, admission, authority allocation and
+settlement remain singular and authoritative. Neither Control nor Bounded
+Authority consumes the view in this tranche. **No Dual Responsibility Record
+Authority** is therefore preserved.
+
+Roles are supplied from semantic context at each Responsibility Transition:
+
+- Cooperative Passage validates exactly two distinct coupled participant
+  assemblies and represents both as beneficiaries and controlled subjects.
+- Completed obstruction represents the authorising active demand assemblies as
+  beneficiaries and the completed terminal assembly as the controlled subject.
+
+Authority ownership, authority tokens and Effective Actuation Composition are
+not used to infer these roles. Candidate identity, Control phase, capability,
+authority tokens and legacy lifecycle action are not part of Resolution
+identity. `CREATE` and `REVISE` expose an established Resolution view;
+completed-obstruction `MAINTAIN` re-exposes the same identity as persistence of
+Current Responsibility, not a new architectural transition. The legacy action
+is retained only as diagnostic provenance.
+
+GitHub Structural contracts and Lua offline observation completed successfully.
+GIANTS Reality then validated both required `0.3.0.3` exemplars. Direct
+Cooperative Passage logged `RESOLUTION_COMMITMENT_ESTABLISHED` with
+`legacyAction=CREATE`, the retained generic Commitment identity, and both
+coupled workers explicitly represented as beneficiaries and controlled
+subjects; existing Passage Control and participant-handoff settlement completed
+successfully. Completed obstruction logged
+`RESOLUTION_COMMITMENT_ESTABLISHED` with `legacyAction=CREATE`, then after
+`COMPACT` and fresh Situation Assessment logged
+`RESOLUTION_COMMITMENT_PERSISTED` with the same identity and
+`legacyAction=MAINTAIN`, followed by Protected Yield, `INFIELD`, terminal
+`SUCCEEDED`, authority release and Continuation Renewal.
+
+This positively validates the explicit representation, identity reuse, role
+separation, Resolution Persistence Across Control Phases and Maintenance Is Not
+Transition in the observed run. Downstream Passage and completed-obstruction
+mechanics remained consistent with their retained behaviour. It does not claim
+full supported-envelope regression coverage. Standalone Regulation,
+Same-Commitment Regulation-to-Passage fusion, Bounded Authority and issue #33
+remain outside this tranche.
+
+## A/B behavioural-equivalence evidence
+
+The `0.3.0.3` run later encountered a corner sequence in a different location
+from the original uninterrupted `0.3.0.2` run: D-0146 Action-Space Regulation
+progressively regulated the Condor, Regulation actuation became quiescent, both
+workers became physically blocked, and player intervention was required.
+
+The same saved-game fixture was rerun on accepted `0.3.0.2` at
+`2aa47fda4d6c0e75f24c9e5f2200c8c1c2eae921`. It reproduced a closely comparable
+ordering and timing: Cooperative Passage, later D-0146 Action-Space Regulation,
+Regulation quiescence, mutual corner blockage and required player intervention.
+Therefore **PR #34 regression suspicion is cleared** for this failure. The
+corner outcome predates the explicit Resolution Commitment representation.
+
+### Saved-State Test Fixture Divergence
+
+A saved game created during an uninterrupted GIANTS AI run is not necessarily a
+behaviourally identical continuation fixture after reload, even when visible
+vehicle and field state appears equivalent. The original uninterrupted
+`0.3.0.2` run completed successfully, while later reloads reconstructed enough
+different GIANTS continuation or path state for subsequent encounters to occur
+elsewhere. This is primarily a test-fixture and reproducibility finding, not a
+new OuttaMyWay architectural defect. The saved fixture remains a useful
+repeatable corner/deadlock scenario; the historical scenario is not claimed to
+be deterministic across save/reload.
+
+### Quiescent Regulation Deadlock
+
+The saved-state A/B runs provide an unresolved working observation:
+
+```text
+unresolved Regulation responsibility
+    ↓
+preventative actuation quiesces
+    ↓
+physical corner / pinch conflict persists or worsens
+    ↓
+both workers become blocked
+    ↓
+no autonomous resolution follows
+    ↓
+player intervention required
+```
+
+Positive native forward-rate evidence became unavailable while the relationship
+remained unresolved, causing Regulation actuation to become quiescent. Later
+trajectory interpretation no longer supported an opposed-corridor conflict even
+though the physical corner conflict remained. This supports the narrower
+working distinction **Opposed-Corridor Conflict ≠ Corner Conflict**.
+
+These are Reality observations for the later standalone Regulation
+reconciliation, not accepted architecture or an implementation proposal. PR #34
+does not authorise or implement a fix to Regulation, Situation Assessment,
+D-0146, corner modelling or Control. The evidence is unrelated to issue #33's
+separate cold-start non-active obstruction-recognition investigation.
 
 # Intermediate Programme Steps
 
@@ -457,8 +565,8 @@ owns its unresolved investigation; it is not a PR #32 transition regression or f
 3. **Validate the first strangler seam and behavioural equivalence — COMPLETE for the observed direct Cooperative Passage `CREATE` path.**
 4. **Extract completed-obstruction physical Resolution responsibility — COMPLETE.**
 5. **Validate the second Resolution exemplar — COMPLETE for the observed in-session `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` episode.**
-6. **Compare the two migrated Resolution exemplars and determine the smallest truthful explicit Resolution Commitment representation.**
-7. **Expose Resolution Commitment explicitly only where the two exemplars support it.**
+6. **Compare the two migrated Resolution exemplars and determine the smallest truthful explicit Resolution Commitment representation — COMPLETE for the read-only adapter/view hypothesis.**
+7. **Expose Resolution Commitment explicitly only where the two exemplars support it — COMPLETE and GIANTS Reality-validated for the observed direct Cooperative Passage `CREATE` and completed-obstruction `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` exemplars.**
 8. **Reconcile standalone Regulation.**
 9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion.**
 10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**
@@ -489,6 +597,7 @@ should be refreshed after each accepted tranche.
 | Situation Assessment | [`scripts/assessment/SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua) and focused collaborators in [`scripts/assessment/`](../scripts/assessment/) |
 | Candidate, Constraint and Decision boundary | [`scripts/candidates/`](../scripts/candidates/), [`scripts/constraints/`](../scripts/constraints/), [`scripts/decision/`](../scripts/decision/), and [`scripts/commitment/DecisionCommitmentBoundary.lua`](../scripts/commitment/DecisionCommitmentBoundary.lua) |
 | Commitment, Obligation and Bounded Authority | [`scripts/commitment/`](../scripts/commitment/) and [`scripts/authority/`](../scripts/authority/) |
+| Explicit Resolution Commitment view | [`scripts/contracts/ResolutionCommitment.lua`](../scripts/contracts/ResolutionCommitment.lua), [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua), and the two purpose-specific transition modules in [`scripts/responsibility/`](../scripts/responsibility/) |
 | Physical Representation | [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua), [`scripts/representation/PlanViewFootprint.lua`](../scripts/representation/PlanViewFootprint.lua), [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) |
 | Passage capability and planning | [`scripts/assessment/PassageCapabilityAssessment.lua`](../scripts/assessment/PassageCapabilityAssessment.lua), [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) |
 | Control dispatch and Cooperative Passage | [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua), [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) |

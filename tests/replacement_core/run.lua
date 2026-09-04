@@ -21,6 +21,7 @@ load("scripts/contracts/ReplayFixture.lua")
 load("scripts/contracts/ReplayRunResult.lua")
 load("scripts/contracts/GoverningBasisVerdict.lua")
 load("scripts/contracts/CommitmentApplicationRecord.lua")
+load("scripts/contracts/ResolutionCommitment.lua")
 load("scripts/contracts/PassiveLiveTraceRecord.lua")
 load("scripts/identity/EpochSequence.lua")
 load("scripts/representation/catalogues/CondorEndurance2Donor.lua")
@@ -104,6 +105,7 @@ load("scripts/prototypes/Prototype22CapabilityGate.lua")
 load("scripts/control/CooperativePassageControl.lua")
 load("scripts/control/TerminalEgressControl.lua")
 load("scripts/control/ResolutionSpaceProgressionEnvelope.lua")
+load("scripts/responsibility/ResolutionCommitmentAdapter.lua")
 load("scripts/responsibility/CooperativePassageResponsibilityTransition.lua")
 load("scripts/responsibility/CompletedObstructionResponsibilityTransition.lua")
 load("scripts/control/LiveControlDispatcher.lua")
@@ -3900,6 +3902,9 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     equal(passageEval.decision.commitmentAction,"REVISE")
     local dispatched=runtime:dispatchEvaluatedOperationalPicture(passageSupported,passageEval)
     equal(dispatched.status,"ACCEPTED"); equal(dispatched.commitment.identity,commitmentId)
+    equal(dispatched.currentResponsibility.identity,commitmentId)
+    equal(dispatched.currentResponsibility.kind,"RESOLUTION_COMMITMENT")
+    equal(OuttaMyWay.ValueRecord.length(dispatched.currentResponsibility.openResolutionObligationIds),1)
     equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,false)
     equal(#cleared,1); equal(cleared[1].referenceKey,"vehicle-root:201"); equal(cleared[1].ownerTag,"D0146_ACTION_SPACE_CONSERVATION")
     equal(runtime.obligations:get(actionObligation.identity).status,"SETTLED")
@@ -4414,6 +4419,10 @@ test("D0146 Step2 Established Conflict crosses Candidate Decision Commitment and
     runtime.liveControlDispatcher:setCooperativePassageControl(control)
     local dispatched=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(dispatched.status,"ACCEPTED"); equal(#accepted,3); equal(#dispatched.requests,2)
+    equal(dispatched.currentResponsibility.identity,dispatched.commitment.identity)
+    equal(dispatched.currentResponsibility.kind,"RESOLUTION_COMMITMENT")
+    equal(OuttaMyWay.ValueRecord.length(dispatched.currentResponsibility.beneficiaryAssemblyIds),2)
+    equal(OuttaMyWay.ValueRecord.length(dispatched.currentResponsibility.controlledSubjectAssemblyIds),2)
     equal(dispatched.requests[1].target.kind,"D0146_COOPERATIVE_PASSAGE"); equal(dispatched.requests[2].target.kind,"D0146_COOPERATIVE_PASSAGE")
     equal(dispatched.candidate.evidenceBasis.cooperativePassageBridge.architecture,"D0146_STEP2")
 end)
@@ -5055,15 +5064,21 @@ test("D0147 Player Claim relinquishes Vehicle Activity Context without post-clai
     AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil
 end)
 
-test("D0147 compaction-to-infield revision preserves one Commitment with post-job plus protected progress authority",function()
+test("D0147 compaction-to-infield persistence exposes one Resolution Commitment with post-job plus protected progress authority",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
     local compactPicture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=1,transitionCount=0,foldedCount=0,unknownCount=0,allDeployed=true,allFolded=false,retainCurrent=false,compactionSupported=true},{suffix="LIFECYCLE-COMPACT"})
     local compactSupported=runtime.terminalEgressCandidateSupport:attach(compactPicture,d0147Snapshot())
     local compactEvaluated=runtime:evaluateSealedOperationalPicture(compactSupported)
     equal(compactEvaluated.decision.commitmentAction,"CREATE")
-    local admitted,admitReason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,compactSupported,compactEvaluated)
+    local compactCandidate=compactEvaluated.candidates[1]
+    local compactBridge=compactCandidate.evidenceBasis.terminalEgressBridge
+    local admitted,admitReason=runtime.completedObstructionResponsibilityTransition:transition(compactSupported,compactEvaluated,{status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=compactCandidate.identity,terminalEpisodeId=compactBridge.terminalEpisodeId})
     if admitted==nil then error(tostring(admitReason)) end
     local commitmentId=admitted.commitment.identity; local tokenId=admitted.authorityToken.identity
+    equal(admitted.currentResponsibility.identity,commitmentId)
+    equal(admitted.currentResponsibility.kind,"RESOLUTION_COMMITMENT")
+    equal(admitted.currentResponsibility.beneficiaryAssemblyIds[1],"AS-ACTIVE")
+    equal(admitted.currentResponsibility.controlledSubjectAssemblyIds[1],"AS-TERMINAL")
     equal(admitted.authorityToken.authorityClass,"POST_JOB_ACTUATION")
     equal(#runtime.obligations:openForOwner(commitmentId),1)
 
@@ -5071,9 +5086,13 @@ test("D0147 compaction-to-infield revision preserves one Commitment with post-jo
     local egressSupported=runtime.terminalEgressCandidateSupport:attach(egressPicture,d0147Snapshot())
     local egressEvaluated=runtime:evaluateSealedOperationalPicture(egressSupported)
     equal(egressEvaluated.decision.commitmentAction,"MAINTAIN")
-    local revised,reviseReason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,egressSupported,egressEvaluated)
+    local egressCandidate=egressEvaluated.candidates[1]
+    local egressBridge=egressCandidate.evidenceBasis.terminalEgressBridge
+    local revised,reviseReason=runtime.completedObstructionResponsibilityTransition:transition(egressSupported,egressEvaluated,{status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=egressCandidate.identity,terminalEpisodeId=egressBridge.terminalEpisodeId})
     if revised==nil then error(tostring(reviseReason)) end
     equal(revised.commitment.identity,commitmentId); equal(revised.authorityToken.identity,tokenId)
+    equal(revised.application.action,"MAINTAIN")
+    equal(revised.currentResponsibility.identity,admitted.currentResponsibility.identity)
     equal(revised.commitment.strategy.expectedEffect.phase,"INFIELD")
     local tokens=runtime.authorities:tokensForCommitment(commitmentId); equal(#tokens,2)
     local sawPost,sawProgress=false,false
