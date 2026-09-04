@@ -7,17 +7,16 @@ is not a changelog, release ledger, or canonical-release record.
 ## Current engineering concern
 
 Accepted Repository State is
-`80773c4ebc5cab075beb383475e2414643c25064`. PR #36 is merged: Action-Space
+`534385ab34ee38ba664a85534f9c2cfb28619831`. PR #36 is merged: Action-Space
 Regulation application/revalidation is implemented upstream and offline
 validated, while its GIANTS Reality attempt remains inconclusive because
 Action-Space Regulation was bypassed upstream.
 
-Programme step 8c's architectural comparison is complete: the two extracted
-standalone exemplars do not justify separate architectural Regulation kinds.
-Implementation discovery now establishes that the retained substrate has no
-truthful stable witness for one Regulation responsibility instance. The current
-concern is the **Responsibility Instance Identity Gap**, which blocks an explicit
-read-only Regulation representation without authorising a second lifecycle.
+PR #39 is merged, and its Outcome B is accepted implementation evidence: the
+retained substrate has no truthful stable witness for one Regulation
+responsibility instance. Subsequent step-9 discussion exposed the deeper current
+concern: **Responsibility Transition Authority**, the missing sole architectural
+owner of responsibility establishment, termination and atomic replacement.
 
 ## Established
 
@@ -84,6 +83,14 @@ read-only Regulation representation without authorising a second lifecycle.
 - Individual follower-boundary and Action-Space Obligation identities are rejected as generic Regulation identity because they encode distinct Situation-specific pair/conflict provenance and cannot witness continuity through evolving governing evidence without creating architectural subtypes.
 - Authority tokens, regulated/protected roles, speed magnitude and progression-envelope state are rejected because they change or disappear through quiescence, reactivation and role migration. Candidate, Decision, pair and conflict identities witness episodes or context rather than Regulation responsibility.
 - No Regulation record, adapter, registry, lifecycle, identity generator or derived composite identity was introduced. The architecture remains authoritative despite the implementation gap.
+- **Responsibility Transition Authority Gap** is now explicit. Situation Assessment owns justification; Responsibility Transition Authority alone makes establishment, termination or replacement authoritative and establishes the new responsibility instance's semantic identity.
+- Ordinary continuation is not a transition. Situation Assessment remains continuous, but when it continues to support the same Current Responsibility, that instance and identity persist unchanged. **Maintenance Is Not Transition** and no synthetic `CONTINUE` transition is introduced.
+- **Responsibility Identity Belongs to Responsibility, Not Its Substrate**. Evidence, Bounded Authority, Control, quiescence/reactivation and actuation-role changes do not churn identity; genuine termination ends it and replacement establishes a distinct successor identity.
+- **Substrate Continuity ≠ Responsibility Continuity**. The same generic Commitment may implement Regulation R1, retained `REVISE`, then Resolution Commitment R2 while `R1 != R2` architecturally.
+- **Commitment `REVISE` ≠ Responsibility Continuation** and **Obligation Settlement ≠ Responsibility Transition**. Retained lifecycle operations cannot decide or identify the architectural boundary.
+- **Semantic Discontinuity Can Be Atomic**: Regulation R1 may end and Resolution Commitment R2 begin through one authoritative replacement without an intermediate GIANTS-AI tick or uncontrolled interval. Regulation does not mutate into Resolution.
+- **Coincident Identity ≠ Identity Equivalence**. The accepted `ResolutionCommitmentAdapter` remains valid transitional implementation for observed direct Resolution lifetimes that coincided with retained Commitment lifetime, but that mapping requires later reconciliation.
+- No decision is made about AuthorityToken reuse across responsibility replacement; Bounded Authority remains programme step 10.
 - GIANTS Reality validated initial follower-boundary responsibility establishment upstream for Patriot 4450 leading Condor Endurance II: application `AP-00001` established `CM-00001` / `OB-00001`, then `FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM` reported `legacyAction=CREATE`, `responsibilityDisposition=ESTABLISHED` and `beforePhysicalDispatch=true` before downstream `D0141_APPLY` at `5.15 km/h`.
 - The same run repeatedly revalidated `CM-00001` without responsibility churn. Approximately one `ESTABLISHED` and 44 `REVALIDATED` upstream markers accompanied one physical APPLY and 43 elastic updates; an observed update raised the current cap to `6.21 km/h` while retaining the same Commitment and obligation identity.
 - Two observed quiescence events released temporary Regulation authority while the follower purpose remained. Later reactivation acquired `AU-00002` and applied `11.40 km/h` under the same `CM-00001`, with `responsibilityDisposition=REVALIDATED` and one `D0141_ACTUATION_REACTIVATED`.
@@ -136,14 +143,20 @@ at responsibility succession. D-number vocabulary is not promoted to
 architecture, and neither Quiescent Regulation Deadlock nor the Follower HUD
 glyph leak is addressed here.
 
+The identity gap is not solved by inventing a Regulation ID. Responsibility
+Transition Authority is the architectural owner that must eventually establish
+semantic responsibility-instance identity at actual lifecycle boundaries. The
+current purpose-specific transition modules remain implementation seams rather
+than a unified owner of that authority.
+
 ## Next boundary
 
-Return to **Observe / Discuss** the Responsibility Instance Identity Gap. The
-next dependency is to determine how exact Regulation acquisition, continuity
-through changing evidence, and genuine termination can be witnessed without a
-parallel lifecycle and without using generic Commitment identity across a
-responsibility discontinuity. No runtime implementation is authorised by this
-Continuation State, and step 9 is not implemented or silently absorbed here.
+Return to **Observe** and inspect current Candidate, Decision, purpose-specific
+Responsibility Transition, generic Commitment application, Obligation and
+dispatcher ownership. The next question is where Responsibility Transition
+Authority is currently fragmented and what smallest truthful runtime seam could
+own establishment, termination and atomic replacement. This is not yet a
+runtime implementation plan or authorisation.
 
 Issue #37 remains a future upstream Situation Assessment capability; it is not
 implemented here. The Quiescent Regulation Deadlock and opposed-corridor/corner

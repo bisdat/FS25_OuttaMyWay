@@ -826,6 +826,49 @@ This **Responsibility Instance Identity Gap** is the next dependency for the
 smallest explicit read-only Regulation representation. It must be reconciled
 without pre-empting step 9's Same-Commitment Responsibility Fusion work.
 
+### Responsibility Transition Authority Gap
+
+The failed representation hypothesis exposed the deeper architectural
+dependency: current implementation has no explicit sole **Responsibility
+Transition Authority** that owns establishment, termination and atomic
+replacement of Current Responsibility. **Responsibility Transition Is the
+Semantic Boundary**; continuous Situation Assessment may preserve the same
+responsibility without invoking that boundary, while a genuine lifecycle change
+requires one authoritative transition.
+
+Responsibility-instance identity belongs to the Current Responsibility
+established at that boundary, not to retained substrate. It remains stable
+through changing evidence and actuation but ends at genuine termination or
+replacement. This preserves **Evidence Succession ≠ Responsibility Succession**
+and adds **Substrate Continuity ≠ Responsibility Continuity**.
+
+The Regulation-to-Cooperative-Passage `REVISE` path is the primary step-9
+exemplar. The retained generic Commitment may remain continuous while
+architectural responsibility changes from Regulation R1 to Resolution
+Commitment R2. Therefore **Commitment `REVISE` ≠ Responsibility Continuation**.
+Likewise, **Obligation Settlement ≠ Responsibility Transition**: obligation
+creation or settlement may support a handoff but cannot own its semantic
+authority.
+
+**Semantic Discontinuity Can Be Atomic.** Responsibility Transition Authority
+may end Regulation R1 and establish Resolution Commitment R2 as one semantic
+replacement without a mandatory intermediate GIANTS-AI tick or uncontrolled
+interval. Regulation does not mutate into Resolution. Bounded Authority and any
+AuthorityToken reuse remain deferred to programme step 10.
+
+The existing purpose-specific transition modules are valuable strangler seams,
+not a unified Responsibility Transition Authority. Responsibility application,
+generic Commitment revision, obligation settlement and downstream completion
+remain fragmented across current Candidate, Decision, transition, lifecycle and
+dispatcher surfaces. This is evidence to inspect, not a runtime design decision;
+no current module is declared to own the new architectural authority.
+
+The accepted `ResolutionCommitmentAdapter` remains valid transitional
+implementation for direct exemplars whose observed Resolution and retained
+Commitment lifetimes coincided. **Coincident Identity ≠ Identity Equivalence**:
+the same-Commitment succession evidence means that mapping must later be
+reconciled, not retrospectively rejected.
+
 ## Regulation naming governance
 
 D-number runtime vocabulary such as `D0141_APPLY`, `D0141_UPDATE`,
@@ -865,11 +908,11 @@ in this tranche and should use ASCII-safe punctuation when later addressed.
 5. **Validate the second Resolution exemplar — COMPLETE for the observed in-session `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` episode.**
 6. **Compare the two migrated Resolution exemplars and determine the smallest truthful explicit Resolution Commitment representation — COMPLETE for the read-only adapter/view hypothesis.**
 7. **Expose Resolution Commitment explicitly only where the two exemplars support it — COMPLETE and GIANTS Reality-validated for the observed direct Cooperative Passage `CREATE` and completed-obstruction `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` exemplars.**
-8. **Reconcile standalone Regulation — IN PROGRESS.**
+8. **Reconcile standalone Regulation — IN PROGRESS; explicit identity representation is blocked until Responsibility Transition Authority is reconciled.**
    - **8a. Extract D-0141 follower-boundary Regulation application/revalidation upstream — COMPLETE and GIANTS Reality-validated for the observed establishment, same-responsibility revalidation, elastic update, quiescence and reactivation episode. Positive retirement was not observed and was not required.**
    - **8b. Extract D-0146 Action-Space Regulation as the second standalone exemplar — IMPLEMENTED and offline-validated; GIANTS Reality attempt inconclusive because the saved-corner Situation bypassed Action-Space Regulation upstream of the extracted seam.**
    - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — ARCHITECTURAL COMPARISON COMPLETE; implementation discovery found no truthful retained Regulation instance identity witness, so explicit representation is blocked by the Responsibility Instance Identity Gap.**
-9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion.**
+9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion — IN PROGRESS AT THE ARCHITECTURE LEVEL; Responsibility Transition Authority owns establish / terminate / replace, and generic Commitment continuity does not determine responsibility continuity. Runtime implementation is not yet authorised.**
 10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**
 11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities.**
 12. **Retire superseded generic Commitment/orchestration only when no supported path relies on it.**
