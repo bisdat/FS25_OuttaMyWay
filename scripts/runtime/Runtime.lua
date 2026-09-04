@@ -37,6 +37,7 @@ function Runtime.new()
     runtime.liveControlDispatcher=OuttaMyWay.LiveControlDispatcher.new(runtime)
     runtime.decisionCommitmentBoundary=OuttaMyWay.DecisionCommitmentBoundary.new(identities,epochs,admission,commitments,obligations,authorities,governingBasis,terminalSettlement)
     runtime.cooperativePassageResponsibilityTransition=OuttaMyWay.CooperativePassageResponsibilityTransition.new(runtime)
+    runtime.completedObstructionResponsibilityTransition=OuttaMyWay.CompletedObstructionResponsibilityTransition.new(runtime)
     runtime.replayRunner=OuttaMyWay.ReplayRunner.new(runtime)
     runtime.passiveLiveValidator=OuttaMyWay.PassiveLiveValidator.new(runtime)
     return runtime
@@ -87,12 +88,21 @@ end
 
 function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
     local dispatch=self.liveControlDispatcher:dispatch(picture,evaluated)
-    if dispatch.status~="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED" then return dispatch end
-    local applied,reason=self.cooperativePassageResponsibilityTransition:transition(picture,evaluated,dispatch)
-    if applied==nil then
-        return {status="NO_DISPATCH",reason="COMMITMENT_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId}
+    if dispatch.status=="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED" then
+        local applied,reason=self.cooperativePassageResponsibilityTransition:transition(picture,evaluated,dispatch)
+        if applied==nil then
+            return {status="NO_DISPATCH",reason="COMMITMENT_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId}
+        end
+        return self.liveControlDispatcher:continueCooperativePassage(picture,evaluated,applied)
     end
-    return self.liveControlDispatcher:continueCooperativePassage(picture,evaluated,applied)
+    if dispatch.status=="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED" then
+        local applied,reason=self.completedObstructionResponsibilityTransition:transition(picture,evaluated,dispatch)
+        if applied==nil then
+            return {status="NO_DISPATCH",reason="D0147_COMMITMENT_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId,terminalEgress=true}
+        end
+        return self.liveControlDispatcher:continueCompletedObstruction(picture,evaluated,applied)
+    end
+    return dispatch
 end
 
 function Runtime:processLiveObservation(raw)

@@ -219,8 +219,18 @@ function Dispatcher:_dispatchTerminalEgress(picture,evaluated,candidate)
     if candidate.capability~="REPOSITION" then return {status="NO_DISPATCH",reason="D0147_NON_REPOSITION_PHYSICAL_CANDIDATE",terminalEgress=true} end
     if self.terminalEgressControl==nil then return {status="NO_DISPATCH",reason="D0147_CONTROL_UNAVAILABLE",terminalEgress=true} end
     if type(self.terminalEgressControl.isActive)=="function" and self.terminalEgressControl:isActive() then return {status="NO_DISPATCH",reason="D0147_CONTROL_ALREADY_ACTIVE",terminalEgress=true} end
-    local applied,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(self.runtime,picture,evaluated)
-    if applied==nil then return {status="NO_DISPATCH",reason="D0147_COMMITMENT_APPLICATION_FAILED",detail=reason,terminalEgress=true} end
+    return {status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,terminalEpisodeId=bridge.terminalEpisodeId,terminalEgress=true}
+end
+
+function Dispatcher:continueCompletedObstruction(picture,evaluated,applied)
+    if picture==nil or evaluated==nil or evaluated.decision==nil or type(applied)~="table" or applied.commitment==nil or applied.authorityToken==nil then
+        return {status="NO_DISPATCH",reason="COMPLETED_OBSTRUCTION_ESTABLISHED_RESPONSIBILITY_REQUIRED",terminalEgress=true}
+    end
+    local candidate=selectedCandidate(evaluated)
+    local bridge=terminalEgressBridge(candidate)
+    if bridge==nil or bridge.terminalEvent~=nil or candidate.capability~="REPOSITION" then
+        return {status="NO_DISPATCH",reason="COMPLETED_OBSTRUCTION_ESTABLISHED_RESPONSIBILITY_MISMATCH",terminalEgress=true}
+    end
     if bridge.phase=="INFIELD" then
         local protected,protectedReason=self:_applyD0147ProtectedYield(picture,evaluated,candidate,applied.commitment,bridge)
         if protected~=true then
