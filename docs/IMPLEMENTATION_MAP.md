@@ -869,6 +869,96 @@ Commitment lifetimes coincided. **Coincident Identity ≠ Identity Equivalence**
 the same-Commitment succession evidence means that mapping must later be
 reconciled, not retrospectively rejected.
 
+### First Responsibility Replacement Seam
+
+The Action-Space Regulation → same-Commitment Cooperative Passage exemplar now
+has one explicit semantic replacement seam upstream of physical Passage
+Control. Runtime composes `ResponsibilityTransitionAuthority`, which owns only
+this migrated lifecycle boundary:
+
+```text
+Action-Space Regulation R1 / retained CM-*
+    -> fresh Passage Decision
+    -> retained Commitment REVISE
+    -> predecessor D-0146 purpose settlement and lease cleanup
+    -> authoritative replacement by Resolution Commitment R2
+    -> Passage Control continuation
+```
+
+`IdentityRegistry` issues opaque `RS-*` responsibility identities. Initial
+Action-Space Regulation establishes R1; revalidation, authority quiescence and
+reactivation, and regulated-role migration preserve that same identity. These
+execution-envelope changes are not transitions. The selected conflict remains
+validation provenance and is not used as responsibility identity.
+
+For the migrated same-Commitment succession, the authority establishes a fresh
+R2 identity and supplies it to the accepted `ResolutionCommitmentAdapter`. The
+retained generic Commitment identity remains unchanged, while `R1 != R2` and
+neither responsibility identity equals the Commitment identity. Direct Passage
+and completed-obstruction Resolution retain their existing transitional
+identity mapping in this tranche.
+
+The existing dispatcher helper still performs proven D-0146 physical lease and
+obligation cleanup, but Responsibility Transition Authority invokes it as a
+subordinate part of replacement before `continueCooperativePassage()` may begin
+physical Control. Failed application, Commitment-continuity validation or
+predecessor settlement produces no Passage continuation and does not make both
+semantic responsibilities current.
+
+This is not general Responsibility Transition Authority coverage. Follower
+Regulation, completed obstruction, direct Passage, other termination paths and
+Operation-wide responsibility cardinality remain outside this seam. Generic
+Commitment, Obligation and AuthorityToken behaviour remains retained substrate;
+AuthorityToken reuse is not redesigned before programme step 10.
+
+PR review exposed **Replacement Precondition Lag**: the first implementation
+validated retained-Commitment continuity and predecessor cleanup eligibility
+only after the Passage `REVISE`. The corrected seam now validates the complete
+known boundary before successor mutation: selected Candidate/readiness,
+`D0146_STEP2` bridge and conflict, current Regulation identity and retained
+Commitment, matching dispatcher lease, open Action-Space obligation, and the
+picture's targeted same-Commitment `REVISE`. Action-Space INITIAL,
+REACTIVATION and ROLE_MIGRATION likewise preflight semantic compatibility before
+their retained lifecycle application. Preflight is read-only and performs no
+Control or retained lifecycle mutation.
+
+### PR #41 GIANTS Reality observation
+
+The `2026-09-04` `0.3.0.6` run produced exactly one upstream Action-Space
+Regulation establishment at `19:25:53.205`: decision `DE-01249`, Candidate
+`CA-01249`, conflict `d0146-opposed:OR-00001:AS-00001:AS-00002`, retained
+Commitment `CM-00003`, Regulation responsibility `RS-00001`, regulated assembly
+`AS-00001` and protected assembly `AS-00002`. It reported `CREATE`,
+`ESTABLISHED`, `INITIAL` and `beforePhysicalDispatch=true`.
+
+Existing D0155 Control then admitted `25 km/h` and tightened under the same
+`CM-00003` through `21`, `16`, `10` and `1 km/h`, ending in unchanged
+`INTENT_REVELATION_CREEP`. At approximately `19:25:55.200`, actuation quiesced
+when the excursion pair was no longer positively closing while the relationship
+remained retained. This validates explicit `RS-*` Regulation establishment
+distinct from retained `CM-*`, establishment before physical dispatch, existing
+elastic magnitude policy, and responsibility persistence while current physical
+actuation disappears.
+
+The worker subsequently accelerated and turned; Condor was reported blocked at
+approximately `19:26:02.456`, Patriot at `19:26:02.953`, and both were stationary
+and blocked by approximately `19:26:05`. **Spatial Risk Outlives Closing
+Evidence**: current Situation evidence ceased requesting temporal actuation when
+instantaneous positive closing disappeared even though constrained-corner risk
+remained. Regulation behaved according to supplied Situation evidence. This is
+consistent with, but does not solve or fully specify, the [Spatial Constraint
+Overlay implementation gap in issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37).
+
+The log contained zero `RESPONSIBILITY_REPLACED` and zero
+`COOPERATIVE_PASSAGE_REVISE` events. Other Passage events did not constitute the
+target same-Commitment succession. Therefore the PR #41 replacement seam,
+distinct predecessor/successor `RS-*` identities, and live replacement ordering
+before `COOPERATIVE_ACCEPTED` remain **not GIANTS Reality-validated**. The
+fixture ceased requesting Regulation before the constrained interaction was
+safely resolved, so this attempt neither validates nor disproves the replacement
+implementation. Further use of this corner fixture is confounded by the upstream
+Situation/Spatial Constraint Overlay gap.
+
 ## Regulation naming governance
 
 D-number runtime vocabulary such as `D0141_APPLY`, `D0141_UPDATE`,
@@ -908,11 +998,11 @@ in this tranche and should use ASCII-safe punctuation when later addressed.
 5. **Validate the second Resolution exemplar — COMPLETE for the observed in-session `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` episode.**
 6. **Compare the two migrated Resolution exemplars and determine the smallest truthful explicit Resolution Commitment representation — COMPLETE for the read-only adapter/view hypothesis.**
 7. **Expose Resolution Commitment explicitly only where the two exemplars support it — COMPLETE and GIANTS Reality-validated for the observed direct Cooperative Passage `CREATE` and completed-obstruction `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` exemplars.**
-8. **Reconcile standalone Regulation — IN PROGRESS; explicit identity representation is blocked until Responsibility Transition Authority is reconciled.**
+8. **Reconcile standalone Regulation — IN PROGRESS; the Action-Space exemplar now has explicit identity under the first bounded Responsibility Transition Authority seam, without generalising Regulation lifecycle coverage.**
    - **8a. Extract D-0141 follower-boundary Regulation application/revalidation upstream — COMPLETE and GIANTS Reality-validated for the observed establishment, same-responsibility revalidation, elastic update, quiescence and reactivation episode. Positive retirement was not observed and was not required.**
    - **8b. Extract D-0146 Action-Space Regulation as the second standalone exemplar — IMPLEMENTED and offline-validated; GIANTS Reality attempt inconclusive because the saved-corner Situation bypassed Action-Space Regulation upstream of the extracted seam.**
    - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — ARCHITECTURAL COMPARISON COMPLETE; implementation discovery found no truthful retained Regulation instance identity witness, so explicit representation is blocked by the Responsibility Instance Identity Gap.**
-9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion — IN PROGRESS AT THE ARCHITECTURE LEVEL; Responsibility Transition Authority owns establish / terminate / replace, and generic Commitment continuity does not determine responsibility continuity. Runtime implementation is not yet authorised.**
+9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion — IN PROGRESS; the Action-Space Regulation → same-Commitment Cooperative Passage exemplar now performs explicit atomic responsibility replacement upstream of Passage Control. Other succession paths and general authority coverage remain unresolved.**
 10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**
 11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities.**
 12. **Retire superseded generic Commitment/orchestration only when no supported path relies on it.**

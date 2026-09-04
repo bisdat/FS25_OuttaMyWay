@@ -14,7 +14,7 @@ OuttaMyWay.ResolutionCommitment = OuttaMyWay.ValueRecord.register(
         {"identity","kind","purpose","governingBasis","beneficiaryAssemblyIds","controlledSubjectAssemblyIds","openResolutionObligationIds","provenance"},
         {},
         function(values)
-            if type(values.identity)~="string" or values.identity=="" then error("ResolutionCommitment requires retained Commitment identity",3) end
+            if type(values.identity)~="string" or values.identity=="" then error("ResolutionCommitment requires responsibility identity",3) end
             if values.kind~="RESOLUTION_COMMITMENT" then error("ResolutionCommitment has invalid kind",3) end
             if type(values.purpose)~="table" or type(values.governingBasis)~="table" or type(values.provenance)~="table" then
                 error("ResolutionCommitment requires semantic purpose, governing basis and provenance",3)

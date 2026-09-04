@@ -563,6 +563,7 @@ function Dispatcher:_releaseD0146ActionSpaceLease(picture,evaluated,reason)
     end
     self.d0146ActionSpaceReleaseCount=self.d0146ActionSpaceReleaseCount+1
     self.d0146ActionSpaceLease=nil
+    self.runtime.responsibilityTransitionAuthority:terminateActionSpaceRegulation(lease.commitmentId,lease.conflictIdentity)
     logInfo("D0146_ACTION_SPACE_RELEASE commitment=%s conflict=%s regulated=%s ref=%s reason=%s",tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(lease.regulatedReferenceKey),tostring(reason))
     return {status="RELEASED",reason=reason,request=request,outcome=outcome,d0146ActionSpace=true}
 end
@@ -927,6 +928,32 @@ function Dispatcher:_supersedeD0146ActionSpaceForCooperativePassage(commitment,c
     return {settled=settled,reason=reason}
 end
 
+function Dispatcher:supersedeActionSpaceRegulationForCooperativePassage(commitment,evaluated)
+    return self:_supersedeD0146ActionSpaceForCooperativePassage(commitment,selectedCandidate(evaluated))
+end
+
+function Dispatcher:preflightActionSpaceRegulationForCooperativePassage(evaluated,readiness)
+    local candidate=selectedCandidate(evaluated)
+    local bridge=cooperativePassageBridge(candidate)
+    local lease=self.d0146ActionSpaceLease
+    if candidate==nil or readiness==nil or candidate.identity~=readiness.candidateId or bridge==nil or bridge.architecture~="D0146_STEP2"
+        or lease==nil or bridge.conflictIdentity~=lease.conflictIdentity then
+        return nil,"ACTION_SPACE_PASSAGE_PREFLIGHT_CONTEXT_MISMATCH"
+    end
+    local obligationId=nil
+    for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.runtime.obligations:openForOwner(lease.commitmentId)) do
+        local basis=obligation.basis
+        local outcome=obligation.requiredOutcome
+        if type(basis)=="table" and basis.kind=="D0146_PASSAGE_ACTION_SPACE_CONSERVATION" and basis.conflictIdentity==lease.conflictIdentity
+            and type(outcome)=="table" and outcome.kind=="D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" then
+            obligationId=obligation.identity
+            break
+        end
+    end
+    if obligationId==nil then return nil,"ACTION_SPACE_PASSAGE_PREFLIGHT_OPEN_PREDECESSOR_OBLIGATION_UNAVAILABLE" end
+    return {commitmentId=lease.commitmentId,conflictIdentity=lease.conflictIdentity,obligationId=obligationId},nil
+end
+
 -- A terminalized traffic Commitment cannot leave owner-tag Control leases or
 -- dispatcher-local lease state behind. D-0200 invokes this after kernel authority
 -- has been released so terminal succession observes no stale actuation context.
@@ -941,6 +968,7 @@ function Dispatcher:retireTrafficLeasesForCommitment(commitmentId,reason)
     local actionSpace=self.d0146ActionSpaceLease
     if actionSpace~=nil and actionSpace.commitmentId==commitmentId then
         clear(actionSpace.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG)
+        self.runtime.responsibilityTransitionAuthority:terminateActionSpaceRegulation(actionSpace.commitmentId,actionSpace.conflictIdentity)
         self.d0146ActionSpaceLease=nil
         self.d0146ActionSpaceReleaseCount=self.d0146ActionSpaceReleaseCount+1
         released=released+1
@@ -1129,7 +1157,8 @@ function Dispatcher:continueCooperativePassage(picture,evaluated,applied)
     end
     local commitment=applied.commitment
     self:_supersedeFollowerBoundaryForCooperativePassage(commitment,candidate)
-    self:_supersedeD0146ActionSpaceForCooperativePassage(commitment,candidate)
+    -- Action-Space semantic supersession is completed by Responsibility
+    -- Transition Authority before this physical Passage continuation.
 
     local requests,requestReason=self:_jointCooperativeRequests(picture,evaluated,candidate,commitment,bridge)
     if requests==nil then

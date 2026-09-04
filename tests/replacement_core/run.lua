@@ -15,6 +15,7 @@ load("scripts/contracts/ConstraintVerdictSet.lua")
 load("scripts/contracts/DecisionRecord.lua")
 load("scripts/contracts/CommitmentRecord.lua")
 load("scripts/contracts/ObligationRecord.lua")
+load("scripts/contracts/Regulation.lua")
 load("scripts/contracts/ControlRequest.lua")
 load("scripts/contracts/ControlOutcome.lua")
 load("scripts/contracts/ReplayFixture.lua")
@@ -106,6 +107,7 @@ load("scripts/control/CooperativePassageControl.lua")
 load("scripts/control/TerminalEgressControl.lua")
 load("scripts/control/ResolutionSpaceProgressionEnvelope.lua")
 load("scripts/responsibility/ResolutionCommitmentAdapter.lua")
+load("scripts/responsibility/ResponsibilityTransitionAuthority.lua")
 load("scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua")
 load("scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua")
 load("scripts/responsibility/CooperativePassageResponsibilityTransition.lua")
@@ -3882,9 +3884,12 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     equal(evaluated.decision.commitmentAction,"CREATE")
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED"); equal(admitted.d0146ActionSpace,true)
+    equal(admitted.currentResponsibility.kind,"REGULATION")
     equal(regulationRequests[#regulationRequests].target.ownerTag,"D0146_ACTION_SPACE_CONSERVATION")
     equal(regulationRequests[#regulationRequests].target.maxSpeedKmh,25)
     local commitmentId=admitted.commitment.identity
+    local regulationResponsibilityId=admitted.currentResponsibility.identity
+    equal(regulationResponsibilityId~=commitmentId,true)
     equal(runtime.authorities:ownerOf("AS-B"),commitmentId)
     local envelopeStatus=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
     equal(envelopeStatus.active,true); equal(envelopeStatus.currentCapKmh,25); equal(envelopeStatus.effectClass,"REGULATE")
@@ -3900,7 +3905,11 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     local cooperativeControl={}
     function cooperativeControl:setCompletionHandler(fn) end
     function cooperativeControl:isActive() return false end
-    function cooperativeControl:executeJointRequests(a,b,candidate) accepted={a,b,candidate}; return true,"D0146_COOPERATIVE_PASSAGE_STARTED" end
+    function cooperativeControl:executeJointRequests(a,b,candidate)
+        equal(#cleared,1)
+        equal(runtime.obligations:get(actionObligation.identity).status,"SETTLED")
+        accepted={a,b,candidate}; return true,"D0146_COOPERATIVE_PASSAGE_STARTED"
+    end
     runtime.liveControlDispatcher:setCooperativePassageControl(cooperativeControl)
     local passageSupported=runtime.liveTrafficCandidateSupport:attach(passagePicture,passageSnapshot)
     equal(passageSupported.candidateSupportEvidence.supportBoundary.mode,"D0146_COOPERATIVE_PASSAGE_STEP2_TEST")
@@ -3909,7 +3918,9 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     equal(passageEval.decision.commitmentAction,"REVISE")
     local dispatched=runtime:dispatchEvaluatedOperationalPicture(passageSupported,passageEval)
     equal(dispatched.status,"ACCEPTED"); equal(dispatched.commitment.identity,commitmentId)
-    equal(dispatched.currentResponsibility.identity,commitmentId)
+    equal(dispatched.currentResponsibility.identity~=commitmentId,true)
+    equal(dispatched.currentResponsibility.identity~=regulationResponsibilityId,true)
+    equal(dispatched.currentResponsibility.provenance.genericCommitmentIdentity,commitmentId)
     equal(dispatched.currentResponsibility.kind,"RESOLUTION_COMMITMENT")
     equal(OuttaMyWay.ValueRecord.length(dispatched.currentResponsibility.openResolutionObligationIds),1)
     equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,false)
@@ -3917,6 +3928,84 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     equal(runtime.obligations:get(actionObligation.identity).status,"SETTLED")
     equal(#runtime.authorities:tokensForCommitment(commitmentId),2)
     equal(#accepted,3)
+end)
+
+test("Action-Space responsibility replacement preflight refusal leaves retained substrate unchanged",function()
+    local runtime=autonomousHeadOnRuntime()
+    local capability={}
+    function capability:executeControlRequest(request,candidate) return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setLiveControlCapability(capability)
+    local base=d0146ActionSpacePicture()
+    local supported=runtime.liveTrafficCandidateSupport:attach(base,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
+    equal(admitted.currentResponsibility.kind,"REGULATION")
+    local commitmentId=admitted.commitment.identity
+    local responsibilityId=admitted.currentResponsibility.identity
+    local commitmentBefore=runtime.commitments:get(commitmentId)
+    local revisionBefore=commitmentBefore.revision
+    local stateBefore=commitmentBefore.state
+    local obligationsBefore=runtime.obligations:openForOwner(commitmentId)
+    equal(#obligationsBefore,1)
+    local actionObligationId=obligationsBefore[1].identity
+    local leaseBefore=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    local passagePicture,passageSnapshot=d0146Step2Fixture(nil,nil,60)
+    local values=OuttaMyWay.ValueRecord.toTable(passagePicture)
+    values.identity="OP-RESPONSIBILITY-REPLACEMENT-FAILURE"; values.epoch=803; values.commitmentContext={{commitmentId=commitmentId}}
+    passagePicture=OuttaMyWay.OperationalPicture.new(values)
+    local starts=0
+    local cooperativeControl={}
+    function cooperativeControl:setCompletionHandler(fn) end
+    function cooperativeControl:isActive() return false end
+    function cooperativeControl:executeJointRequests(a,b,candidate) starts=starts+1; return true,"UNEXPECTED" end
+    runtime.liveControlDispatcher:setCooperativePassageControl(cooperativeControl)
+    local passageSupported=runtime.liveTrafficCandidateSupport:attach(passagePicture,passageSnapshot)
+    local passageEval=runtime:evaluateSealedOperationalPicture(passageSupported)
+    local refusedValues=OuttaMyWay.ValueRecord.toTable(passageSupported)
+    refusedValues.commitmentContext={}
+    local refusedPicture=OuttaMyWay.OperationalPicture.new(refusedValues)
+    local dispatched=runtime:dispatchEvaluatedOperationalPicture(refusedPicture,passageEval)
+    equal(dispatched.status,"NO_DISPATCH")
+    equal(dispatched.detail,"ACTION_SPACE_PASSAGE_RESPONSIBILITY_SUCCESSION_NOT_TARGETED")
+    equal(starts,0)
+    equal(runtime.responsibilityTransitionAuthority:getCurrentActionSpaceRegulation().identity,responsibilityId)
+    local commitmentAfter=runtime.commitments:get(commitmentId)
+    equal(commitmentAfter.identity,commitmentId)
+    equal(commitmentAfter.revision,revisionBefore)
+    equal(commitmentAfter.state,stateBefore)
+    local obligationsAfter=runtime.obligations:openForOwner(commitmentId)
+    equal(#obligationsAfter,1)
+    equal(obligationsAfter[1].identity,actionObligationId)
+    equal(runtime.obligations:get(actionObligationId).status,"OPEN")
+    local leaseAfter=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    equal(leaseAfter.active,true)
+    equal(leaseAfter.commitmentId,leaseBefore.commitmentId)
+    equal(leaseAfter.conflictIdentity,leaseBefore.conflictIdentity)
+    equal(leaseAfter.regulatedReferenceKey,leaseBefore.regulatedReferenceKey)
+end)
+
+test("Action-Space responsibility authority preserves identity for reactivation revalidation",function()
+    local runtime=autonomousHeadOnRuntime()
+    local capability={}
+    function capability:executeControlRequest(request,candidate) return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setLiveControlCapability(capability)
+    local picture=d0146ActionSpacePicture()
+    local supported=runtime.liveTrafficCandidateSupport:attach(picture,headOnTestSnapshot())
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
+    local initial=admitted.currentResponsibility
+    local preflight,preflightReason=runtime.responsibilityTransitionAuthority:preflightActionSpaceRegulation(picture,evaluated,{
+        applicationContext="REACTIVATION",conflictIdentity="OC-D0146",commitmentId=admitted.commitment.identity
+    })
+    equal(preflightReason,nil)
+    local preserved,reason=runtime.responsibilityTransitionAuthority:establishOrPreserveActionSpaceRegulation(preflight,{commitment=admitted.commitment})
+    equal(reason,nil)
+    equal(preserved.identity,initial.identity)
+    equal(preserved.kind,"REGULATION")
 end)
 
 test("D0146 Resolution-Space role migration moves actuation under the same Commitment when Situation reassigns roles",function()
@@ -3934,6 +4023,7 @@ test("D0146 Resolution-Space role migration moves actuation under the same Commi
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED")
     local commitmentId=admitted.commitment.identity
+    local responsibilityId=admitted.currentResponsibility.identity
     equal(runtime.authorities:ownerOf("AS-B"),commitmentId)
     equal(#runtime.obligations:openForOwner(commitmentId),1)
 
@@ -3962,6 +4052,7 @@ test("D0146 Resolution-Space role migration moves actuation under the same Commi
     equal(changedEval.decision.commitmentAction,"MAINTAIN")
     local migrated=runtime:dispatchEvaluatedOperationalPicture(changedSupported,changedEval)
     equal(migrated.status,"ROLE_MIGRATED")
+    equal(migrated.currentResponsibility.identity,responsibilityId)
     equal(migrated.commitmentId,commitmentId)
     equal(#runtime.obligations:openForOwner(commitmentId),1)
     equal(runtime.authorities:ownerOf("AS-A"),commitmentId)
@@ -4108,6 +4199,7 @@ test("D0197 D0155 quiescent actuation reactivates on positive REGULATE_SUPPORTED
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     local commitmentId=admitted.commitment.identity
+    local responsibilityId=admitted.currentResponsibility.identity
 
     local qValues=OuttaMyWay.ValueRecord.toTable(active)
     qValues.identity="OP-D0197-QUIESCENT-BEFORE-REACTIVATION"; qValues.epoch=800; qValues.commitmentContext={{commitmentId=commitmentId}}
@@ -4121,6 +4213,7 @@ test("D0197 D0155 quiescent actuation reactivates on positive REGULATE_SUPPORTED
     local qEval=runtime:evaluateSealedOperationalPicture(qSupported)
     local quiesced=runtime:dispatchEvaluatedOperationalPicture(qSupported,qEval)
     equal(quiesced.status,"QUIESCENT"); equal(#requests,2); equal(requests[2].target.operation,"RELEASE")
+    equal(runtime.responsibilityTransitionAuthority:getCurrentActionSpaceRegulation().identity,responsibilityId)
 
     local rValues=OuttaMyWay.ValueRecord.toTable(active)
     rValues.identity="OP-D0197-REACTIVATION"; rValues.epoch=801; rValues.commitmentContext={{commitmentId=commitmentId}}
@@ -4141,6 +4234,7 @@ test("D0197 D0155 quiescent actuation reactivates on positive REGULATE_SUPPORTED
     equal(rEval.decision.commitmentAction,"MAINTAIN")
     local reactivated=runtime:dispatchEvaluatedOperationalPicture(rSupported,rEval)
     equal(reactivated.status,"REACTIVATED")
+    equal(reactivated.currentResponsibility.identity,responsibilityId)
     equal(reactivated.commitmentId,commitmentId)
     equal(#requests,3); equal(requests[3].target.operation,"APPLY"); equal(requests[3].target.vehicleReferenceKey,"vehicle-root:201")
     local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()

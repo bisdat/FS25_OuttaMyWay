@@ -36,7 +36,7 @@ function Transition.new(runtime)
     return setmetatable({runtime=runtime},Transition)
 end
 
-function Transition:transition(picture,evaluated,readiness)
+function Transition:transition(picture,evaluated,readiness,semantics)
     if type(readiness)~="table" or readiness.status~="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED" then
         return nil,"COOPERATIVE_PASSAGE_TRANSITION_NOT_READY"
     end
@@ -55,14 +55,17 @@ function Transition:transition(picture,evaluated,readiness)
     local currentResponsibility,responsibilityReason=OuttaMyWay.ResolutionCommitmentAdapter.build(self.runtime,applied,{
         source="CooperativePassageResponsibilityTransition",purpose=candidate.purpose,
         beneficiaryAssemblyIds=participantIds,controlledSubjectAssemblyIds=participantIds,
-        resolutionOutcomeKinds={"COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"}
+        resolutionOutcomeKinds={"COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"},
+        responsibilityIdentity=semantics and semantics.responsibilityIdentity or nil
     })
     if currentResponsibility==nil then return nil,responsibilityReason end
     applied.currentResponsibility=currentResponsibility
-    local exposure=applied.application.action=="MAINTAIN" and "RESOLUTION_COMMITMENT_PERSISTED" or "RESOLUTION_COMMITMENT_ESTABLISHED"
-    logInfo("%s commitment=%s kind=%s beneficiaries=%s controlledSubjects=%s legacyAction=%s",
-        exposure,tostring(currentResponsibility.identity),tostring(currentResponsibility.kind),
-        table.concat(participantIds,","),table.concat(participantIds,","),tostring(applied.application.action))
+    if not (semantics and semantics.deferResponsibilityExposureLog==true) then
+        local exposure=applied.application.action=="MAINTAIN" and "RESOLUTION_COMMITMENT_PERSISTED" or "RESOLUTION_COMMITMENT_ESTABLISHED"
+        logInfo("%s commitment=%s kind=%s beneficiaries=%s controlledSubjects=%s legacyAction=%s",
+            exposure,tostring(currentResponsibility.identity),tostring(currentResponsibility.kind),
+            table.concat(participantIds,","),table.concat(participantIds,","),tostring(applied.application.action))
+    end
     logInfo("COOPERATIVE_PASSAGE_TRANSITION_UPSTREAM decision=%s candidate=%s commitment=%s action=%s beforePhysicalDispatch=true",
         tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(applied.commitment and applied.commitment.identity or "NONE"),
         tostring(applied.application and applied.application.action or evaluated.decision.commitmentAction))

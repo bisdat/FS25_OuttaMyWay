@@ -42,15 +42,20 @@ function Transition:transition(picture,evaluated,readiness)
         or (context~="INITIAL" and context~="REACTIVATION" and context~="ROLE_MIGRATION") then
         return nil,"ACTION_SPACE_REGULATION_TRANSITION_CONTEXT_MISMATCH"
     end
+    local preflight,preflightReason=self.runtime.responsibilityTransitionAuthority:preflightActionSpaceRegulation(picture,evaluated,readiness)
+    if preflight==nil then return nil,preflightReason end
     local applied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyD0146ActionSpaceDecision(self.runtime,picture,evaluated)
     if applied==nil then
         logWarning("ACTION_SPACE_REGULATION_TRANSITION_REFUSED decision=%s candidate=%s conflict=%s context=%s reason=%s",
             tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.conflictIdentity),tostring(context),tostring(reason))
         return nil,reason
     end
+    local currentResponsibility,responsibilityReason=self.runtime.responsibilityTransitionAuthority:establishOrPreserveActionSpaceRegulation(preflight,applied)
+    if currentResponsibility==nil then return nil,responsibilityReason end
+    applied.currentResponsibility=currentResponsibility
     local disposition=evaluated.decision.commitmentAction=="CREATE" and "ESTABLISHED" or "REVALIDATED"
-    logInfo("ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM decision=%s candidate=%s conflict=%s commitment=%s regulated=%s protected=%s legacyAction=%s responsibilityDisposition=%s applicationContext=%s beforePhysicalDispatch=true",
+    logInfo("ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM decision=%s candidate=%s conflict=%s commitment=%s responsibility=%s regulated=%s protected=%s legacyAction=%s responsibilityDisposition=%s applicationContext=%s beforePhysicalDispatch=true",
         tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.conflictIdentity),tostring(applied.commitment and applied.commitment.identity or "NONE"),
-        tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),tostring(evaluated.decision.commitmentAction),disposition,tostring(context))
+        tostring(currentResponsibility.identity),tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),tostring(evaluated.decision.commitmentAction),disposition,tostring(context))
     return applied,nil
 end

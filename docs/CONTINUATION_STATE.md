@@ -7,16 +7,21 @@ is not a changelog, release ledger, or canonical-release record.
 ## Current engineering concern
 
 Accepted Repository State is
-`534385ab34ee38ba664a85534f9c2cfb28619831`. PR #36 is merged: Action-Space
-Regulation application/revalidation is implemented upstream and offline
-validated, while its GIANTS Reality attempt remains inconclusive because
-Action-Space Regulation was bypassed upstream.
+`0a9c7fd15fa4888e774821d9ca41368b98b7a17b`.
 
 PR #39 is merged, and its Outcome B is accepted implementation evidence: the
 retained substrate has no truthful stable witness for one Regulation
 responsibility instance. Subsequent step-9 discussion exposed the deeper current
 concern: **Responsibility Transition Authority**, the missing sole architectural
 owner of responsibility establishment, termination and atomic replacement.
+The current step-9 increment implements its first bounded exemplar: Action-Space
+Regulation → same-Commitment Cooperative Passage replacement upstream of
+physical Passage Control. GitHub Structural contracts passed; the actual
+non-blocking Lua harness profile is `268 passed / 13 failed`. Focused replacement,
+preflight-failure safety, responsibility-identity preservation and role-migration
+observations passed. GIANTS Reality has now validated the Action-Space Regulation
+establishment side; the same-Commitment replacement itself remains unexercised,
+pending and required.
 
 ## Established
 
@@ -28,7 +33,7 @@ owner of responsibility establishment, termination and atomic replacement.
 - Terminal settlement deliberately remains downstream in the existing dispatcher/lifecycle path.
 - Protected Yield deliberately remains downstream as Regulation actuation supporting an established Resolution responsibility.
 - The retained generic Commitment, Obligation and Authority substrate remains authoritative implementation machinery for both migrated paths.
-- [`ResolutionCommitment.lua`](../scripts/contracts/ResolutionCommitment.lua) is a sealed semantic representation whose identity is the retained generic Commitment identity.
+- [`ResolutionCommitment.lua`](../scripts/contracts/ResolutionCommitment.lua) is a sealed semantic representation. Direct Resolution exemplars retain the transitional generic-Commitment identity mapping; the migrated replacement accepts a distinct authority-established responsibility identity.
 - [`ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua) is read-only: it introduces no registry, lifecycle, admission, settlement, authority-allocation or Control power.
 - **No Dual Responsibility Record Authority** is preserved; generic Commitment and Obligation machinery remains the sole lifecycle substrate and record authority.
 - Both migrated Responsibility Transition owners construct the view only after successful generic lifecycle application and carry it alongside the unchanged application result.
@@ -67,7 +72,7 @@ owner of responsibility establishment, termination and atomic replacement.
 - Progression-envelope establishment/update, current subject selection, elastic speed magnitude, supporting authority, quiescence/reactivation mechanics, role migration, leases, outcomes and physical Control remain downstream and are intended unchanged.
 - Action-Space acquisition/revalidation is upstream while purpose settlement/termination remains deliberately downstream legacy ownership.
 - Regulation is **Successor-Agnostic**: current Situation and purpose justify it; fresh Situation Assessment independently determines any successor. Action-Space Regulation preserves current usable action space and does not predict Cooperative Passage.
-- No generic Regulation representation, registry or lifecycle has been introduced. D-0146 is now the implemented second standalone exemplar. GitHub Structural contracts passed and the Lua harness returned to its expected observational profile of `266 passed / 13 failed` after its composition correction.
+- Before step 9, no generic Regulation representation, registry or lifecycle existed. D-0146 was the implemented second standalone exemplar; GitHub Structural contracts passed and the Lua harness returned to its expected observational profile of `266 passed / 13 failed` after its composition correction.
 - The saved-corner GIANTS Reality attempt was **inconclusive for the Action-Space transition seam**: no Action-Space Regulation responsibility was selected, no `ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM` marker or D0155 progression-envelope Regulation occurred, and Cooperative Passage was admitted directly. The changed seam was bypassed upstream, so the attempt supplies no contrary evidence of the extraction and does not demonstrate a PR #36 regression.
 - **Incidental Regulation ≠ Spatial Regulation**: earlier incidental capture of the saved-corner interaction by opposed-corridor machinery did not prove that the architecture's Category-1 spatial Regulation existed.
 - The broader **Spatial Constraint Overlay Implementation Gap**, including Category-1 corner and Category-2 headland/boundary manifestations, is tracked separately in [issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37). Existing boundary, Future Space, opposed-corridor and follower-boundary mechanisms are not equivalent to the architecture's explicit overlay.
@@ -91,6 +96,20 @@ owner of responsibility establishment, termination and atomic replacement.
 - **Semantic Discontinuity Can Be Atomic**: Regulation R1 may end and Resolution Commitment R2 begin through one authoritative replacement without an intermediate GIANTS-AI tick or uncontrolled interval. Regulation does not mutate into Resolution.
 - **Coincident Identity ≠ Identity Equivalence**. The accepted `ResolutionCommitmentAdapter` remains valid transitional implementation for observed direct Resolution lifetimes that coincided with retained Commitment lifetime, but that mapping requires later reconciliation.
 - No decision is made about AuthorityToken reuse across responsibility replacement; Bounded Authority remains programme step 10.
+- [`ResponsibilityTransitionAuthority.lua`](../scripts/responsibility/ResponsibilityTransitionAuthority.lua) is Runtime-composed and owns only the migrated Action-Space Regulation → Cooperative Passage replacement boundary; it is not an Operation-wide responsibility manager.
+- Initial Action-Space Regulation now receives an opaque `RS-*` identity issued through the existing `IdentityRegistry`. The retained conflict and generic Commitment remain provenance/substrate, not responsibility identity.
+- Action-Space revalidation, quiescence/reactivation and regulated-role migration preserve the same Regulation identity. No new identity is issued for these non-transition events.
+- On the known same-Commitment Passage `REVISE`, predecessor Regulation and successor Resolution receive distinct responsibility identities while the retained generic Commitment identity remains unchanged.
+- Predecessor D-0146 settlement and physical lease cleanup are invoked as subordinate replacement work before `continueCooperativePassage()` can begin Passage Control. Replacement failure prevents physical Passage continuation.
+- `ResolutionCommitmentAdapter` accepts an authority-established identity for this migrated succession while preserving its accepted retained-Commitment fallback for direct Passage and completed-obstruction paths.
+- Generic Commitment, Obligation and AuthorityToken machinery remains retained substrate. AuthorityToken reuse and Bounded Authority semantics were not redesigned.
+- **Replacement Precondition Lag** was corrected: Candidate/readiness, bridge/conflict, current responsibility, retained Commitment target, dispatcher lease and open predecessor obligation are now read-only preconditions before Passage `REVISE` or successor representation construction.
+- Focused reactivation identity preservation passed at the responsibility-authority boundary. The historically failing full D0197 quiescence/reactivation observation remains within the 13-failure observational profile and is not claimed green.
+- The `2026-09-04` `0.3.0.6` GIANTS run produced exactly one `ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM` at `19:25:53.205`: `DE-01249` / `CA-01249`, conflict `d0146-opposed:OR-00001:AS-00001:AS-00002`, retained `CM-00003`, distinct responsibility `RS-00001`, regulated `AS-00001`, protected `AS-00002`, `CREATE`, `ESTABLISHED`, `INITIAL`, `beforePhysicalDispatch=true`.
+- D0155 then admitted `25 km/h` and tightened under `CM-00003` through `21`, `16`, `10` and `1 km/h` Intent-Revelation Creep. Reality therefore supports explicit Regulation identity upstream of unchanged elastic physical Regulation.
+- At approximately `19:25:55.200`, actuation quiesced when the excursion pair was no longer positively closing while the relationship remained retained. This is live evidence that Current Responsibility may persist while temporary Bounded Authority/physical actuation disappears.
+- **Spatial Risk Outlives Closing Evidence**: after quiescence the worker accelerated and turned; Condor was reported blocked at approximately `19:26:02.456`, Patriot at `19:26:02.953`, and both were stationary and blocked by approximately `19:26:05`. The Situation path lost temporal-actuation support while constrained-corner risk remained.
+- The same log contained zero `RESPONSIBILITY_REPLACED` and zero `COOPERATIVE_PASSAGE_REVISE`. Other Passage events were not the target same-Commitment succession. PR #41 replacement identity separation and live ordering before `COOPERATIVE_ACCEPTED` remain **not GIANTS Reality-validated**.
 - GIANTS Reality validated initial follower-boundary responsibility establishment upstream for Patriot 4450 leading Condor Endurance II: application `AP-00001` established `CM-00001` / `OB-00001`, then `FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM` reported `legacyAction=CREATE`, `responsibilityDisposition=ESTABLISHED` and `beforePhysicalDispatch=true` before downstream `D0141_APPLY` at `5.15 km/h`.
 - The same run repeatedly revalidated `CM-00001` without responsibility churn. Approximately one `ESTABLISHED` and 44 `REVALIDATED` upstream markers accompanied one physical APPLY and 43 elastic updates; an observed update raised the current cap to `6.21 km/h` while retaining the same Commitment and obligation identity.
 - Two observed quiescence events released temporary Regulation authority while the follower purpose remained. Later reactivation acquired `AU-00002` and applied `11.40 km/h` under the same `CM-00001`, with `responsibilityDisposition=REVALIDATED` and one `D0141_ACTUATION_REACTIVATED`.
@@ -135,28 +154,37 @@ responsibility identity. Physical behaviour is intended unchanged. Offline
 validation completed, but the GIANTS Reality attempt was inconclusive because
 upstream selection bypassed Action-Space Regulation entirely.
 
-The architectural comparison is complete, but standalone Regulation
-reconciliation is still in progress. The current substrate cannot materialise
-the smallest truthful read-only Regulation representation because no record
-owns exact Regulation instance identity across evidence succession while ending
-at responsibility succession. D-number vocabulary is not promoted to
-architecture, and neither Quiescent Regulation Deadlock nor the Follower HUD
-glyph leak is addressed here.
+Standalone Regulation reconciliation remains in progress. The new read-only
+Regulation representation and private lifecycle state are truthful only for the
+migrated Action-Space exemplar. No claim is made about follower-boundary
+Regulation continuity, Operation-wide cardinality or general Current
+Responsibility storage. D-number vocabulary is not promoted to architecture,
+and neither Quiescent Regulation Deadlock nor the Follower HUD glyph leak is
+addressed here.
 
-The identity gap is not solved by inventing a Regulation ID. Responsibility
-Transition Authority is the architectural owner that must eventually establish
-semantic responsibility-instance identity at actual lifecycle boundaries. The
-current purpose-specific transition modules remain implementation seams rather
-than a unified owner of that authority.
+The known same-Commitment fusion is now separated at the semantic responsibility
+level for one path: R1 ends and R2 begins before Passage Control although the
+generic Commitment remains continuous. Direct Resolution paths retain their
+accepted transitional identity mapping. Wider transition ownership and
+Bounded Authority reconciliation remain unresolved.
+
+Reality has validated Action-Space Regulation `RS-00001` establishment before
+physical D0155 dispatch and quiescence with the relationship retained. It did
+not reach the replacement seam: current Situation selection stopped requesting
+Regulation actuation before the corner interaction was safely resolved. This is
+consistent with issue #37's upstream Spatial Constraint Overlay gap, not evidence
+that PR #41 replacement failed.
 
 ## Next boundary
 
-Return to **Observe** and inspect current Candidate, Decision, purpose-specific
-Responsibility Transition, generic Commitment application, Obligation and
-dispatcher ownership. The next question is where Responsibility Transition
-Authority is currently fragmented and what smallest truthful runtime seam could
-own establishment, termination and atomic replacement. This is not yet a
-runtime implementation plan or authorisation.
+Validate the bounded replacement seam independently. GitHub Structural
+contracts must pass and the actual Lua observational profile must be inspected;
+GIANTS Reality must still exercise initial Action-Space Regulation followed by
+the same-Commitment Cooperative Passage succession and confirm distinct
+predecessor/successor responsibility identities plus `RESPONSIBILITY_REPLACED`
+before Passage Control. Repeating the corner fixture is currently confounded by
+the upstream Situation/Spatial Constraint Overlay gap. Do not infer general
+transition coverage from any eventual episode.
 
 Issue #37 remains a future upstream Situation Assessment capability; it is not
 implemented here. The Quiescent Regulation Deadlock and opposed-corridor/corner
