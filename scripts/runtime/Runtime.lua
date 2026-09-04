@@ -36,6 +36,7 @@ function Runtime.new()
     runtime.liveTrafficCandidateSupport=OuttaMyWay.LiveTrafficCandidateSupport.new(identities,epochs,runtime.passiveCandidateSupport)
     runtime.liveControlDispatcher=OuttaMyWay.LiveControlDispatcher.new(runtime)
     runtime.decisionCommitmentBoundary=OuttaMyWay.DecisionCommitmentBoundary.new(identities,epochs,admission,commitments,obligations,authorities,governingBasis,terminalSettlement)
+    runtime.cooperativePassageResponsibilityTransition=OuttaMyWay.CooperativePassageResponsibilityTransition.new(runtime)
     runtime.replayRunner=OuttaMyWay.ReplayRunner.new(runtime)
     runtime.passiveLiveValidator=OuttaMyWay.PassiveLiveValidator.new(runtime)
     return runtime
@@ -84,6 +85,16 @@ function Runtime:evaluateSealedOperationalPicture(picture)
     return {picture=picture,candidateInventory=candidates.inventory,candidates=candidates.candidates,verdictSet=verdicts.set,verdicts=verdicts.verdicts,decision=decision}
 end
 
+function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
+    local dispatch=self.liveControlDispatcher:dispatch(picture,evaluated)
+    if dispatch.status~="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED" then return dispatch end
+    local applied,reason=self.cooperativePassageResponsibilityTransition:transition(picture,evaluated,dispatch)
+    if applied==nil then
+        return {status="NO_DISPATCH",reason="COMMITMENT_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId}
+    end
+    return self.liveControlDispatcher:continueCooperativePassage(picture,evaluated,applied)
+end
+
 function Runtime:processLiveObservation(raw)
     local processed=self:processSealedObservation(raw)
     local supported=self.terminalEgressCandidateSupport:attach(processed.picture,processed.snapshot)
@@ -108,7 +119,7 @@ function Runtime:processLiveObservation(raw)
     else
         self.cooperativeVerdictTraceKey=nil
     end
-    local dispatch=self.liveControlDispatcher:dispatch(supported,evaluated)
+    local dispatch=self:dispatchEvaluatedOperationalPicture(supported,evaluated)
     return {
         snapshot=processed.snapshot,jobEpisodes=processed.jobEpisodes,operation=processed.operation,picture=supported,
         candidateInventory=evaluated.candidateInventory,candidates=evaluated.candidates,verdictSet=evaluated.verdictSet,verdicts=evaluated.verdicts,decision=evaluated.decision,
