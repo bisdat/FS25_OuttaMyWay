@@ -717,11 +717,28 @@ Regulation exists because the current unresolved interaction justifies
 preserving usable action space. It does not predict or reserve Cooperative
 Passage; fresh Situation Assessment independently determines any successor.
 
-The saved-corner Quiescent Regulation Deadlock remains a preferred Reality
-regression fixture, not a target for repair. Reproducing that pre-existing
-outcome is compatible with acceptance of this ownership extraction when the
-upstream seam and downstream behavior remain materially equivalent. GIANTS
-Reality validation is pending.
+The saved-corner Reality attempt did not exercise this seam. No Action-Space
+Regulation was selected, no `ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM` or
+D0155 progression-envelope Regulation occurred, and existing Situation and
+selection machinery admitted Cooperative Passage directly. The attempt
+therefore neither validates nor disproves the ownership extraction; no PR #36
+runtime regression is inferred from a seam bypassed upstream.
+
+This exposed the broader **Spatial Constraint Overlay Implementation Gap**.
+The architecture's Category-1 corner and Category-2 headland/boundary overlay
+and allocation policy are not yet implemented as a production Situation
+concept. Existing boundary, Future Space, opposed-corridor and follower-boundary
+mechanisms do not constitute that overlay. The gap is tracked in
+[issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37).
+
+**Incidental Regulation ≠ Spatial Regulation**: earlier saved-corner runs that
+received Action-Space Regulation through opposed-corridor machinery do not
+prove that Category-1 spatial Regulation existed. Without the explicit overlay,
+other heuristics may incidentally capture a constrained-space interaction or a
+different responsibility may mature first. The exact cause of run-to-run
+divergence is not claimed here. The saved-corner fixture is no longer a reliable
+PR #36 seam-validation fixture until that gap is addressed or another fixture
+reliably selects Action-Space Regulation.
 
 ## Regulation naming governance
 
@@ -764,7 +781,7 @@ in this tranche and should use ASCII-safe punctuation when later addressed.
 7. **Expose Resolution Commitment explicitly only where the two exemplars support it — COMPLETE and GIANTS Reality-validated for the observed direct Cooperative Passage `CREATE` and completed-obstruction `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` exemplars.**
 8. **Reconcile standalone Regulation — IN PROGRESS.**
    - **8a. Extract D-0141 follower-boundary Regulation application/revalidation upstream — COMPLETE and GIANTS Reality-validated for the observed establishment, same-responsibility revalidation, elastic update, quiescence and reactivation episode. Positive retirement was not observed and was not required.**
-   - **8b. Extract D-0146 Action-Space Regulation as the second standalone exemplar — IMPLEMENTED; GitHub and GIANTS Reality validation pending.**
+   - **8b. Extract D-0146 Action-Space Regulation as the second standalone exemplar — IMPLEMENTED and offline-validated; GIANTS Reality attempt inconclusive because the saved-corner Situation bypassed Action-Space Regulation upstream of the extracted seam.**
    - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — DEFERRED pending 8a/8b evidence.**
 9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion.**
 10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**

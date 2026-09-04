@@ -62,7 +62,10 @@ Regulation exemplars are compared.
 - Progression-envelope establishment/update, current subject selection, elastic speed magnitude, supporting authority, quiescence/reactivation mechanics, role migration, leases, outcomes and physical Control remain downstream and are intended unchanged.
 - Action-Space acquisition/revalidation is upstream while purpose settlement/termination remains deliberately downstream legacy ownership.
 - Regulation is **Successor-Agnostic**: current Situation and purpose justify it; fresh Situation Assessment independently determines any successor. Action-Space Regulation preserves current usable action space and does not predict Cooperative Passage.
-- No generic Regulation representation, registry or lifecycle has been introduced. D-0146 is now the implemented second standalone exemplar, with GitHub and GIANTS Reality validation pending.
+- No generic Regulation representation, registry or lifecycle has been introduced. D-0146 is now the implemented second standalone exemplar. GitHub Structural contracts passed and the Lua harness returned to its expected observational profile of `266 passed / 13 failed` after its composition correction.
+- The saved-corner GIANTS Reality attempt was **inconclusive for the Action-Space transition seam**: no Action-Space Regulation responsibility was selected, no `ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM` marker or D0155 progression-envelope Regulation occurred, and Cooperative Passage was admitted directly. The changed seam was bypassed upstream, so the attempt supplies no contrary evidence of the extraction and does not demonstrate a PR #36 regression.
+- **Incidental Regulation ≠ Spatial Regulation**: earlier incidental capture of the saved-corner interaction by opposed-corridor machinery did not prove that the architecture's Category-1 spatial Regulation existed.
+- The broader **Spatial Constraint Overlay Implementation Gap**, including Category-1 corner and Category-2 headland/boundary manifestations, is tracked separately in [issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37). Existing boundary, Future Space, opposed-corridor and follower-boundary mechanisms are not equivalent to the architecture's explicit overlay.
 - GIANTS Reality validated initial follower-boundary responsibility establishment upstream for Patriot 4450 leading Condor Endurance II: application `AP-00001` established `CM-00001` / `OB-00001`, then `FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM` reported `legacyAction=CREATE`, `responsibilityDisposition=ESTABLISHED` and `beforePhysicalDispatch=true` before downstream `D0141_APPLY` at `5.15 km/h`.
 - The same run repeatedly revalidated `CM-00001` without responsibility churn. Approximately one `ESTABLISHED` and 44 `REVALIDATED` upstream markers accompanied one physical APPLY and 43 elastic updates; an observed update raised the current cap to `6.21 km/h` while retaining the same Commitment and obligation identity.
 - Two observed quiescence events released temporary Regulation authority while the follower purpose remained. Later reactivation acquired `AU-00002` and applied `11.40 km/h` under the same `CM-00001`, with `responsibilityDisposition=REVALIDATED` and one `D0141_ACTUATION_REACTIVATED`.
@@ -102,8 +105,9 @@ The Action-Space intermediate asymmetry is also explicit: application and
 revalidation are upstream across initial, reactivation and role-migration
 contexts, while the mutable execution envelope and purpose settlement remain
 downstream. Role migration changes the current actuation role, not Regulation
-responsibility identity. Physical behaviour is intended unchanged and GIANTS
-Reality validation is pending.
+responsibility identity. Physical behaviour is intended unchanged. Offline
+validation completed, but the GIANTS Reality attempt was inconclusive because
+upstream selection bypassed Action-Space Regulation entirely.
 
 This does not complete standalone Regulation reconciliation or yet justify a
 generic Regulation representation. D-number vocabulary is
@@ -114,10 +118,10 @@ Follower HUD glyph leak is addressed here.
 
 Validate the D-0146 Action-Space ownership seam before returning to **Observe /
 Discuss** to compare the two standalone Regulation exemplars. The saved-corner
-fixture is the preferred GIANTS Reality regression fixture. Reproduction of its
-pre-existing quiescent deadlock is compatible with a PASS when upstream
-application/revalidation, participant selection, progression-envelope and
-physical Regulation behaviour remain materially equivalent.
+fixture is no longer a reliable seam-validation fixture until the Spatial
+Constraint Overlay gap is addressed or another fixture reliably selects
+Action-Space Regulation. The observed direct Cooperative Passage path neither
+validates nor disproves the ownership extraction.
 
 The later comparison must distinguish responsibility persistence from temporary
 authority and actuation, and should determine stable semantic vocabulary before
@@ -128,7 +132,8 @@ later reconciliation, not current implementation work.
 
 Same-Commitment Responsibility Fusion and Bounded Authority remain deferred.
 Issue #33 remains a separate cold-start non-active obstruction-recognition
-investigation and must not absorb the corner evidence.
+investigation and must not absorb the corner evidence. Quiescent Regulation
+Deadlock and the Follower HUD Glyph Compatibility Leak also remain separate.
 
 ## Not currently active
 
