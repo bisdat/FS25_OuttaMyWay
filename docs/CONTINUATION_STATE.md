@@ -6,12 +6,16 @@ is not a changelog, release ledger, or canonical-release record.
 
 ## Current engineering concern
 
-The second standalone Regulation strangler seam is implemented for review.
-Action-Space Regulation responsibility application/revalidation now occurs
-upstream of physical Control for initial application, reactivation and
-regulated-role migration. The immediate concern is independent GitHub and
-GIANTS Reality validation of that ownership extraction before the two
-Regulation exemplars are compared.
+Accepted Repository State is
+`ae77c4b10380f7a278db9cb4522d903280de8dee`. PR #36 is merged: Action-Space
+Regulation application/revalidation is implemented upstream and offline
+validated, while its GIANTS Reality attempt remains inconclusive because
+Action-Space Regulation was bypassed upstream.
+
+The current concern is programme step 8c architectural reconciliation. The two
+extracted standalone exemplars do not justify separate architectural Regulation
+kinds. Regulation remains one Current Responsibility whose invariant capability
+is bounded temporal coordination of otherwise GIANTS-owned progression.
 
 ## Established
 
@@ -66,6 +70,12 @@ Regulation exemplars are compared.
 - The saved-corner GIANTS Reality attempt was **inconclusive for the Action-Space transition seam**: no Action-Space Regulation responsibility was selected, no `ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM` marker or D0155 progression-envelope Regulation occurred, and Cooperative Passage was admitted directly. The changed seam was bypassed upstream, so the attempt supplies no contrary evidence of the extraction and does not demonstrate a PR #36 regression.
 - **Incidental Regulation ≠ Spatial Regulation**: earlier incidental capture of the saved-corner interaction by opposed-corridor machinery did not prove that the architecture's Category-1 spatial Regulation existed.
 - The broader **Spatial Constraint Overlay Implementation Gap**, including Category-1 corner and Category-2 headland/boundary manifestations, is tracked separately in [issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37). Existing boundary, Future Space, opposed-corridor and follower-boundary mechanisms are not equivalent to the architecture's explicit overlay.
+- Programme step 8c comparison establishes **Many Situations, One Regulation Capability: Temporal Coordination**. Follower-boundary and Action-Space Regulation are implementation exemplars with distinct Situation provenance, not architectural Regulation subclasses.
+- **Regulation Cause ≠ Regulation Capability**: intent revelation, option-space preservation, ordering, improved prospective Passage theatre and Bubble protection explain why temporal coordination may be useful; Regulation's generic capability remains bounded alteration of relative timing.
+- **Spatial Strategy / Temporal Regulation** permits explicitly spatial Situation reasoning to select temporal intervention without giving Regulation route-planning or spatial-resolution authority.
+- **Successor-Agnostic ≠ Future-Blind**: Situation Assessment may use positive foreseeability of a probable future interaction, but Regulation neither reserves nor guarantees its successor and fresh assessment must independently justify any Resolution Commitment.
+- The responsibility allocation is: Situation Assessment owns why; Regulation owns the bounded temporal responsibility; Bounded Authority owns who and how much now; Control owns physical realisation; fresh Situation Assessment owns continuation, termination and what follows.
+- Follower-boundary and Action-Space obligations remain retained implementation substrate for Situation-specific provenance and persistence. Neither their identities nor generic Commitment identity is yet promoted as final architectural Regulation identity.
 - GIANTS Reality validated initial follower-boundary responsibility establishment upstream for Patriot 4450 leading Condor Endurance II: application `AP-00001` established `CM-00001` / `OB-00001`, then `FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM` reported `legacyAction=CREATE`, `responsibilityDisposition=ESTABLISHED` and `beforePhysicalDispatch=true` before downstream `D0141_APPLY` at `5.15 km/h`.
 - The same run repeatedly revalidated `CM-00001` without responsibility churn. Approximately one `ESTABLISHED` and 44 `REVALIDATED` upstream markers accompanied one physical APPLY and 43 elastic updates; an observed update raised the current cap to `6.21 km/h` while retaining the same Commitment and obligation identity.
 - Two observed quiescence events released temporary Regulation authority while the follower purpose remained. Later reactivation acquired `AU-00002` and applied `11.40 km/h` under the same `CM-00001`, with `responsibilityDisposition=REVALIDATED` and one `D0141_ACTUATION_REACTIVATED`.
@@ -77,10 +87,11 @@ Regulation exemplars are compared.
 ## Current boundary
 
 There are two migrated and Reality-validated Resolution exemplars plus two
-implemented standalone Regulation acquisition/revalidation seams. The retained
-generic Commitment, Obligation and Authority substrate remains authoritative
-implementation machinery; no second Regulation lifecycle or explicit generic
-Regulation representation exists.
+implemented standalone Regulation acquisition/revalidation seams. Their
+comparison establishes one architectural Regulation Current Responsibility,
+not two subtypes. The retained generic Commitment, Obligation and Authority
+substrate remains authoritative implementation machinery; no second Regulation
+lifecycle or explicit generic Regulation representation exists.
 
 The view represents why Resolution persists; it does not represent current
 capability, Control phase, authority tokens or actuation composition. The two
@@ -109,26 +120,24 @@ responsibility identity. Physical behaviour is intended unchanged. Offline
 validation completed, but the GIANTS Reality attempt was inconclusive because
 upstream selection bypassed Action-Space Regulation entirely.
 
-This does not complete standalone Regulation reconciliation or yet justify a
-generic Regulation representation. D-number vocabulary is
-not promoted to architecture, and neither Quiescent Regulation Deadlock nor the
-Follower HUD glyph leak is addressed here.
+The architectural comparison is complete, but standalone Regulation
+reconciliation is still in progress. It does not yet establish the smallest
+truthful read-only Regulation representation or its final identity mapping.
+D-number vocabulary is not promoted to architecture, and neither Quiescent
+Regulation Deadlock nor the Follower HUD glyph leak is addressed here.
 
 ## Next boundary
 
-Validate the D-0146 Action-Space ownership seam before returning to **Observe /
-Discuss** to compare the two standalone Regulation exemplars. The saved-corner
-fixture is no longer a reliable seam-validation fixture until the Spatial
-Constraint Overlay gap is addressed or another fixture reliably selects
-Action-Space Regulation. The observed direct Cooperative Passage path neither
-validates nor disproves the ownership extraction.
+Review this architecture Record, then determine the smallest truthful explicit,
+read-only Regulation representation. No runtime implementation is authorised by
+this Continuation State. The representation discussion must preserve one
+Regulation Current Responsibility while keeping Situation causes and mutable
+actuation roles outside generic responsibility identity.
 
-The later comparison must distinguish responsibility persistence from temporary
-authority and actuation, and should determine stable semantic vocabulary before
-retiring or renaming remaining D-number runtime terms. Historical D-identifiers
-may remain where they truthfully record decision provenance. The Quiescent
-Regulation Deadlock and opposed-corridor/corner distinction remain evidence for
-later reconciliation, not current implementation work.
+Issue #37 remains a future upstream Situation Assessment capability; it is not
+implemented here. The Quiescent Regulation Deadlock and opposed-corridor/corner
+distinction remain separate evidence. Stable semantic boundaries should precede
+any retirement or renaming of retained D-number runtime terms.
 
 Same-Commitment Responsibility Fusion and Bounded Authority remain deferred.
 Issue #33 remains a separate cold-start non-active obstruction-recognition
