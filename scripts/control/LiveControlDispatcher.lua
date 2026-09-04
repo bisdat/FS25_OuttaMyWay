@@ -1,8 +1,8 @@
 -- FS25_OuttaMyWay v0.1.10.0 CANONICAL CANDIDATE — D-0184 names the retained D-0123 Native Handover Creep; traffic behavior unchanged.
 -- FS25_OuttaMyWay v0.1.0.0 CANONICAL CANDIDATE — D-0147 Continuation Renewal dispatcher; behaviour inherited unchanged from canonical v4.7.128.
 --
--- This module is the only automatic bridge from a sealed live Decision /
--- Commitment application into physical Control. D-0146 Step-2 adds an active
+-- This module routes sealed live Decisions and already-established Cooperative
+-- Passage responsibility into physical Control. D-0146 Step-2 adds an active
 -- Candidate-supplied Passage Guide path while retaining existing D-0141/D-0123
 -- Regulation paths. D-0143 remains historical donor evidence only. The dispatcher does
 -- not invent traffic meaning or passage geometry.
@@ -1062,10 +1062,17 @@ function Dispatcher:dispatch(picture,evaluated)
         return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_CONTROL_ALREADY_ACTIVE",candidateId=candidate.identity}
     end
 
-    local applied,applyReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision(self.runtime,picture,evaluated)
-    if applied==nil then
-        logWarning("COOPERATIVE_REFUSED decision=%s candidate=%s reason=COMMITMENT_APPLICATION_FAILED detail=%s",tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(applyReason))
-        return {status="NO_DISPATCH",reason="COMMITMENT_APPLICATION_FAILED",detail=applyReason,candidateId=candidate.identity}
+    return {status="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity}
+end
+
+function Dispatcher:continueCooperativePassage(picture,evaluated,applied)
+    if picture==nil or evaluated==nil or evaluated.decision==nil or type(applied)~="table" or applied.commitment==nil then
+        return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_ESTABLISHED_RESPONSIBILITY_REQUIRED"}
+    end
+    local candidate=selectedCandidate(evaluated)
+    local bridge=cooperativePassageBridge(candidate)
+    if candidate==nil or candidate.capability~="REPOSITION" or bridge==nil then
+        return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_ESTABLISHED_RESPONSIBILITY_MISMATCH"}
     end
     local commitment=applied.commitment
     self:_supersedeFollowerBoundaryForCooperativePassage(commitment,candidate)
@@ -1095,7 +1102,6 @@ function Dispatcher:dispatch(picture,evaluated)
         tostring(bridge.architecture),tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(commitment.identity),tostring(requests[1].identity),tostring(requests[2].identity),
         tostring(bridge.subjectReferenceKey),tostring(bridge.otherReferenceKey),tostring(result))
     return {status="ACCEPTED",requests=requests,outcomes=outcomes,commitment=commitment,candidate=candidate,result=result}
-
 end
 function Dispatcher:getDispatchCount() return self.dispatchCount end
 function Dispatcher:getRequests() local out={}; for _,v in OuttaMyWay.ValueRecord.ipairs(self.requests) do out[#out+1]=v end; return out end

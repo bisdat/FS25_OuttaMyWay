@@ -1851,3 +1851,24 @@ def test_v01145_d0200_job_episode_dependency_collapse_precedes_terminal_candidat
     assert 'function Dispatcher:retireTrafficLeasesForCommitment' in dispatcher
     for token in ('D0155_DEPENDENT_COMMITMENT_TERMINATED','D0141_DEPENDENT_COMMITMENT_TERMINATED','D0123_DEPENDENT_COMMITMENT_TERMINATED'):
         assert token in dispatcher
+
+
+def test_cooperative_passage_responsibility_transition_is_upstream_and_singular():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    transition_path=ROOT/"scripts"/"responsibility"/"CooperativePassageResponsibilityTransition.lua"
+    transition=transition_path.read_text(encoding="utf-8")
+
+    assert transition_path.is_file()
+    assert "scripts/responsibility/CooperativePassageResponsibilityTransition.lua" in main
+    assert "CooperativePassageResponsibilityTransition.new(runtime)" in runtime
+    orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
+    assert orchestration.index("liveControlDispatcher:dispatch") < orchestration.index("cooperativePassageResponsibilityTransition:transition")
+    assert orchestration.index("cooperativePassageResponsibilityTransition:transition") < orchestration.index("liveControlDispatcher:continueCooperativePassage")
+    assert 'status="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED"' in dispatcher
+    assert "function Dispatcher:continueCooperativePassage" in dispatcher
+    assert "LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision" not in dispatcher
+    assert transition.count("LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision") == 1
+    for legacy_transition in ("applyD0146ActionSpaceDecision", "acquireSupportingRegulationAuthority", "TerminalEgressCommitmentLifecycle.applyDecision"):
+        assert legacy_transition in dispatcher
