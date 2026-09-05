@@ -863,11 +863,7 @@ remain fragmented across current Candidate, Decision, transition, lifecycle and
 dispatcher surfaces. This is evidence to inspect, not a runtime design decision;
 no current module is declared to own the new architectural authority.
 
-The accepted `ResolutionCommitmentAdapter` remains valid transitional
-implementation for direct exemplars whose observed Resolution and retained
-Commitment lifetimes coincided. **Coincident Identity ≠ Identity Equivalence**:
-the same-Commitment succession evidence means that mapping must later be
-reconciled, not retrospectively rejected.
+Earlier direct Resolution exemplars used a transitional mapping in which observed Resolution and retained Commitment lifetimes coincided. Coincident Identity ≠ Identity Equivalence remained the governing architectural conclusion. Phase 9 now reconciles that mapping by requiring explicit authority-issued RS-* identity for direct Resolution responsibilities while retaining CM-* only as implementation substrate and provenance.
 
 ### Phase 9 Responsibility Reconciliation
 
@@ -1139,7 +1135,7 @@ replacement is again the downstream validation/reconciliation boundary.
    - **8a. Extract D-0141 follower-boundary Regulation application/revalidation upstream — COMPLETE and GIANTS Reality-validated for the observed establishment, same-responsibility revalidation, elastic update, quiescence and reactivation episode. Positive retirement was not observed and was not required.**
    - **8b. Extract D-0146 Action-Space Regulation as the second standalone exemplar — IMPLEMENTED and offline-validated; GIANTS Reality attempt inconclusive because the saved-corner Situation bypassed Action-Space Regulation upstream of the extracted seam.**
    - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — ARCHITECTURAL COMPARISON COMPLETE; implementation discovery found no truthful retained Regulation instance identity witness, so the Responsibility Instance Identity Gap required explicit Action-Space and follower Regulation identities during Phase 9.**
-9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion — IMPLEMENTED IN PR #44 SUBJECT TO REVIEW. Phase 9 covers Action-Space Regulation identity, follower Regulation identity, both same-Commitment Passage replacement paths, direct Cooperative Passage `CREATE` Resolution identity, completed-obstruction Resolution identity and semantic cleanup on existing terminal paths.**
+9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion — COMPLETE IN PR #44 PENDING OWNER MERGE/ACCEPTANCE. Phase 9 covers Action-Space Regulation identity, follower Regulation identity, both same-Commitment Passage replacement paths, direct Cooperative Passage CREATE Resolution identity, completed-obstruction Resolution identity and semantic cleanup on existing terminal paths.**
 10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**
 11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities.**
 12. **Retire superseded generic Commitment/orchestration only when no supported path relies on it.**
