@@ -7,23 +7,25 @@ is not a changelog, release ledger, or canonical-release record.
 ## Current engineering concern
 
 Accepted Repository State is
-`0a9c7fd15fa4888e774821d9ca41368b98b7a17b`.
+`ed1571be90577600b5a96003e06b27dd62fbe4c7`.
 
-PR #39 is merged, and its Outcome B is accepted implementation evidence: the
-retained substrate has no truthful stable witness for one Regulation
-responsibility instance. Subsequent step-9 discussion exposed the deeper current
-concern: **Responsibility Transition Authority**, the missing sole architectural
-owner of responsibility establishment, termination and atomic replacement.
-The current step-9 increment implements its first bounded exemplar: Action-Space
-Regulation → same-Commitment Cooperative Passage replacement upstream of
-physical Passage Control. GitHub Structural contracts passed; the actual
-non-blocking Lua harness profile is `268 passed / 13 failed`. Focused replacement,
-preflight-failure safety, responsibility-identity preservation and role-migration
-observations passed. GIANTS Reality has now validated the Action-Space Regulation
-establishment side; the same-Commitment replacement itself remains unexercised,
-pending and required.
+[Issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37) is the current
+blocking prerequisite before the strangler programme resumes. This increment
+implements its first representation-only tranche: Situation Assessment now
+publishes falsifiable prospective constrained-space knowledge without connecting
+that knowledge to Candidate, Decision, Responsibility Transition, Bounded
+Authority or Control. GIANTS Reality must now validate or disprove the provisional
+Category-1 and Category-2 classifications before behavioural authority is added.
 
 ## Established
+
+- [`SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) composes existing field-bounded projection, immutable Field World ring topology and raw GIANTS working-width evidence into per-worker boundary-transition projections and same-Operation pair knowledge.
+- The provisional **Category-1 prospective candidate** requires distinct terminating boundary edges sharing an actual topology vertex, with each projected contact no farther along its edge from that vertex than that worker's own half-working-width evidence seed.
+- The provisional **Category-2 prospective candidate** requires one worker's projected boundary contact to lie ahead within the other worker's current field-bounded projected progression band. The relation is evaluated symmetrically and is suppressed when the stronger Category-1 hypothesis is positive.
+- Working width remains `PROVISIONAL_DEMAND_SEED_INPUT_ONLY`; it is not Physical Assembly footprint or negative-clearance authority. Missing width or projection evidence produces `UNRESOLVED`, not a fallback distance.
+- The representation assigns no yielder, progressing or regulated participant, Candidate preference, Regulation magnitude or responsibility identity. It has explicit `decisionAuthority=false` and `controlAuthority=false` limits.
+- `SPATIAL_CONSTRAINT_ASSESSED` diagnostics are emitted only when a pair classification materially changes and expose contacts, edge/vertex topology, widths, half-width seeds, Category-1 distances, Category-2 relative coordinates, boundary distances and available time-to-transition evidence.
+- No universal corner radius or other policy-distance constant was introduced. Category classification is an implementation hypothesis pending GIANTS Reality evidence, not accepted implementation truth.
 
 - The accepted [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Strangler Transition Map](IMPLEMENTATION_MAP.md#detailed-strangler-transition-map) remain authoritative for architecture and programme direction respectively.
 - Cooperative Passage upstream transition remains accepted and Reality-validated for one direct `CREATE` episode.
@@ -177,19 +179,19 @@ that PR #41 replacement failed.
 
 ## Next boundary
 
-Validate the bounded replacement seam independently. GitHub Structural
-contracts must pass and the actual Lua observational profile must be inspected;
-GIANTS Reality must still exercise initial Action-Space Regulation followed by
-the same-Commitment Cooperative Passage succession and confirm distinct
-predecessor/successor responsibility identities plus `RESPONSIBILITY_REPLACED`
-before Passage Control. Repeating the corner fixture is currently confounded by
-the upstream Situation/Spatial Constraint Overlay gap. Do not infer general
-transition coverage from any eventual episode.
+Validate the representation against GIANTS Reality before authorising any
+Regulation consumer. Category 1 needs an early shared-corner approach observation;
+Category 2 needs a materially distinct headland/boundary progression-band
+observation; negative cases must show that shared topology and boundary proximity
+alone do not become positive. Exact measured diagnostic values should determine
+whether the representation-relative working-width hypotheses survive.
 
-Issue #37 remains a future upstream Situation Assessment capability; it is not
-implemented here. The Quiescent Regulation Deadlock and opposed-corridor/corner
-distinction remain separate evidence. Stable semantic boundaries should precede
-any retirement or renaming of retained D-number runtime terms.
+Issue #37 remains open and blocking until the Situation representation and its
+eventual behavioural use are Reality-validated. The accepted PR #41
+Action-Space Regulation → same-Commitment Cooperative Passage replacement remains
+pending GIANTS Reality validation, but it is not the active tranche and should
+not resume ahead of the upstream Spatial Constraint work. Quiescent Regulation
+Deadlock and the opposed-corridor/corner distinction remain separate evidence.
 
 Same-Commitment Responsibility Fusion and Bounded Authority remain deferred.
 Issue #33 remains a separate cold-start non-active obstruction-recognition

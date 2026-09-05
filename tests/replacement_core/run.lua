@@ -50,6 +50,7 @@ load("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
 load("scripts/assessment/TrajectoryConflictAssessment.lua")
 load("scripts/assessment/PassageCapabilityAssessment.lua")
 load("scripts/assessment/TerminalOccupancyAssessment.lua")
+load("scripts/assessment/SpatialConstraintAssessment.lua")
 load("scripts/assessment/SituationAssessment.lua")
 load("scripts/commitment/CommitmentStateMachine.lua")
 load("scripts/commitment/CommitmentRegistry.lua")
@@ -5439,6 +5440,82 @@ test("D0200 ended Job Episode collapses dependent quiescent D0146 traffic Commit
     equal(runtime.obligations:get(obligation.identity).status,"SETTLED"); equal(runtime.obligations:get(obligation.identity).settlementDisposition.mode,"BASIS_CESSATION")
     equal(runtime.liveControlDispatcher.d0146ActionSpaceLease,nil); equal(cleared,1)
     equal(runtime.commitments:get(unrelated.identity).state,"ACTIVE")
+end)
+
+
+local function spatialFuture(assemblyId,startX,startZ,endX,endZ,headingX,headingZ,boundaryDistance)
+    return {
+        identity="future:"..assemblyId,assemblyId=assemblyId,
+        alternatives={{kind="FIELD_WORLD_BOUNDED_LOCAL_CONTINUATION",startX=startX,startZ=startZ,endX=endX,endZ=endZ,
+            headingX=headingX,headingZ=headingZ,boundaryDistance=boundaryDistance,boundarySource="FIELD_WORLD_OUTER_BOUNDARY"}},
+        provenance={source="SYNTHETIC_FIELD_BOUNDED_FUTURE_SPACE"}
+    }
+end
+
+local function spatialMotion(assemblyId,widthM,speedMps)
+    local workingWidth
+    if widthM~=nil then workingWidth={available=true,widthMetres=widthM,source="GIANTS_WORKING_WIDTH_ACCESSOR",authority="PROVISIONAL_DEMAND_SEED_INPUT_ONLY"} end
+    return {assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,reportedSpeedMps=speedMps,
+        nativeFieldWork={workingWidth=workingWidth}}
+end
+
+local function spatialNear(actual,expected,tolerance)
+    if math.abs(actual-expected)>(tolerance or 0.000001) then error("expected "..tostring(actual).." near "..tostring(expected),2) end
+end
+
+local function assessSpatial(futureA,futureB,motionA,motionB)
+    return OuttaMyWay.SpatialConstraintAssessment.new():assess({
+        operationId="OR-SPATIAL",assemblyIds={"AS-A","AS-B"},fieldWorldReferenceKey="FW-SPATIAL",
+        fieldWorld={boundary={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}},islands={}},
+        futureSpace={futureA,futureB},motionEvidence={motionA,motionB}
+    })
+end
+
+test("Spatial Constraint Category 1 candidate uses shared vertex and representation-relative widths without pair closing",function()
+    local knowledge=assessSpatial(
+        spatialFuture("AS-A",95,50,95,0,0,-1,50),spatialFuture("AS-B",50,5,100,5,1,0,50),
+        spatialMotion("AS-A",12,5),spatialMotion("AS-B",12,4))
+    local relation=knowledge.pairRelationships[1]
+    equal(relation.classification,"CATEGORY_1_PROSPECTIVE_CANDIDATE")
+    equal(relation.sharedVertex.identity,"OUTER_BOUNDARY:1:VERTEX:2")
+    spatialNear(relation.subjectContactToSharedVertexM,5,0.0001)
+    spatialNear(relation.otherContactToSharedVertexM,5,0.0001)
+    equal(relation.decisionAuthority,false); equal(relation.controlAuthority,false)
+end)
+
+test("Spatial Constraint shared polygon vertex outside a worker seed is not Category 1",function()
+    local knowledge=assessSpatial(
+        spatialFuture("AS-A",90,50,90,0,0,-1,50),spatialFuture("AS-B",50,5,100,5,1,0,50),
+        spatialMotion("AS-A",12,5),spatialMotion("AS-B",12,4))
+    local relation=knowledge.pairRelationships[1]
+    equal(relation.classification=="CATEGORY_1_PROSPECTIVE_CANDIDATE",false)
+    equal(relation.category1Evidence.subjectWithinSeed,false)
+end)
+
+test("Spatial Constraint Category 2 candidate uses another worker projected progression band",function()
+    local knowledge=assessSpatial(
+        spatialFuture("AS-A",50,50,50,0,0,-1,50),spatialFuture("AS-B",20,2,100,2,1,0,80),
+        spatialMotion("AS-A",6,5),spatialMotion("AS-B",6,4))
+    local relation=knowledge.pairRelationships[1]
+    equal(relation.classification,"CATEGORY_2_PROSPECTIVE_CANDIDATE")
+    spatialNear(relation.category2Evidence.otherProgressionBandContainsSubjectContact.longitudinalM,30,0.0001)
+    spatialNear(relation.category2Evidence.otherProgressionBandContainsSubjectContact.lateralM,-2,0.0001)
+end)
+
+test("Spatial Constraint unrelated boundary contact outside progression band is not Category 2",function()
+    local knowledge=assessSpatial(
+        spatialFuture("AS-A",50,50,50,0,0,-1,50),spatialFuture("AS-B",20,20,100,20,1,0,80),
+        spatialMotion("AS-A",6,5),spatialMotion("AS-B",6,4))
+    equal(knowledge.pairRelationships[1].classification,"NO_POSITIVE_CANDIDATE")
+end)
+
+test("Spatial Constraint missing working width remains unresolved without a fallback distance",function()
+    local knowledge=assessSpatial(
+        spatialFuture("AS-A",95,50,95,0,0,-1,50),spatialFuture("AS-B",50,5,100,5,1,0,50),
+        spatialMotion("AS-A",nil,5),spatialMotion("AS-B",12,4))
+    equal(knowledge.boundaryTransitionProjections[1].status,"UNRESOLVED")
+    equal(knowledge.boundaryTransitionProjections[1].reason,"PROVISIONAL_WORKING_WIDTH_UNAVAILABLE")
+    equal(knowledge.pairRelationships[1].classification,"UNRESOLVED")
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

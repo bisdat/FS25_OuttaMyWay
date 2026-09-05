@@ -246,6 +246,7 @@ function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations
     self.commitments = commitments
     self.obligations = obligations
     self.terminalOccupancyAssessment=terminalOccupancyAssessment
+    self.spatialConstraintAssessment=OuttaMyWay.SpatialConstraintAssessment.new()
     self.publishedCount = 0
     self.latestProductiveContinuationByReference={}
     self.latestGuardedRecoveryKnowledge={}
@@ -332,6 +333,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             relevantAssemblyIds = {},
             futureSpaceRelationships = {},
             opposedCorridorRelationships = {},
+            spatialConstraintKnowledge = nil,
             provenance = { observationSnapshotId=snapshot.identity, operationRevision=operation.revision }
         }
         situations[#situations+1]=situation
@@ -651,6 +653,20 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         if situation~=nil then situation.opposedCorridorRelationships[#situation.opposedCorridorRelationships+1]=copyValue(relation) end
     end
 
+    local spatialConstraintKnowledge={}
+    for _,operationId in OuttaMyWay.ValueRecord.ipairs(activeOperationIds) do
+        local situation=situationByOperation[operationId]
+        if situation~=nil then
+            local knowledge=self.spatialConstraintAssessment:assess({
+                operationId=operationId,assemblyIds=situation.memberAssemblyIds,
+                fieldWorld=snapshot.fieldWorld,fieldWorldReferenceKey=self.operations:get(operationId).fieldWorldReferenceKey,
+                futureSpace=futureSpace,motionEvidence=motionEvidence
+            })
+            situation.spatialConstraintKnowledge=knowledge
+            spatialConstraintKnowledge[#spatialConstraintKnowledge+1]=knowledge
+        end
+    end
+
     -- D-0141 follower-purpose reassessment consumes the stronger D-0146
     -- trajectory relationship witness.  This ordering is intentional: stale
     -- follower Regulation must retire before Candidate selection when current
@@ -741,6 +757,7 @@ function Assessment:resetSituationKnowledge()
     self.trajectoryTracks={}
     self.latestProductiveContinuationByReference={}
     self.latestGuardedRecoveryKnowledge={}
+    if self.spatialConstraintAssessment~=nil then self.spatialConstraintAssessment:reset() end
     if self.terminalOccupancyAssessment and type(self.terminalOccupancyAssessment.reset)=="function" then self.terminalOccupancyAssessment:reset() end
 end
 

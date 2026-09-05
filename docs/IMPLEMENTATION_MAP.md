@@ -989,6 +989,47 @@ follower-regulation HUD text still uses `•`. This is separate UI implementatio
 debt, not Regulation architecture or PR #35 acceptance evidence. It is not fixed
 in this tranche and should use ASCII-safe punctuation when later addressed.
 
+## Spatial Constraint representation tranche
+
+[Issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37) is the blocking
+upstream prerequisite before the strangler sequence resumes. Its first production
+tranche is deliberately representation-only:
+
+```text
+Field-bounded local continuation
+        +
+immutable Field World boundary topology
+        +
+raw GIANTS working-width evidence seed
+        ↓
+SpatialConstraintAssessment
+        ↓
+Boundary-transition projections
+        +
+same-Operation prospective pair knowledge
+        ↓
+Operational Picture / change-suppressed diagnostics only
+```
+
+The provisional Category-1 hypothesis relates distinct terminating edges only
+when they share an actual ring vertex and both contacts fall within their own
+worker-relative half-working-width seeds. The provisional Category-2 hypothesis
+relates a boundary contact only when it lies ahead inside the other worker's
+field-bounded projected progression band. Missing width or projection evidence
+is `UNRESOLVED`; there is no universal corner radius or boundary-distance policy.
+
+[`SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua)
+owns only Situation interpretation. Its records explicitly deny Decision and
+Control authority. No Candidate, Decision, Current Responsibility, Bounded
+Authority or Control path consumes this knowledge, and no Regulation behaviour
+is authorised. `SPATIAL_CONSTRAINT_ASSESSED` exposes the measured topology,
+working-width, relative-projection and time evidence when classification changes.
+
+Both classifications remain falsifiable implementation hypotheses pending
+GIANTS Reality validation. Issue #37 is not resolved by representation alone.
+The PR #41 Regulation-to-Passage replacement remains pending live validation but
+is not the active tranche while this upstream Situation knowledge is examined.
+
 # Intermediate Programme Steps
 
 1. **Record the transition map — COMPLETE.**
@@ -1028,7 +1069,7 @@ should be refreshed after each accepted tranche.
 | Job Episode admission | [`scripts/identity/JobEpisodeAdmission.lua`](../scripts/identity/JobEpisodeAdmission.lua) |
 | Field World Snapshot, Equivalence and Operation admission | [`scripts/identity/FieldWorldSnapshotRegistry.lua`](../scripts/identity/FieldWorldSnapshotRegistry.lua), [`scripts/identity/FieldWorldEquivalenceAuthority.lua`](../scripts/identity/FieldWorldEquivalenceAuthority.lua), [`scripts/identity/FieldWorldEquivalenceEvaluator.lua`](../scripts/identity/FieldWorldEquivalenceEvaluator.lua), [`scripts/identity/OperationAdmission.lua`](../scripts/identity/OperationAdmission.lua) |
 | Observation | [`scripts/observation/`](../scripts/observation/) and [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) |
-| Situation Assessment | [`scripts/assessment/SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua) and focused collaborators in [`scripts/assessment/`](../scripts/assessment/) |
+| Situation Assessment | [`scripts/assessment/SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua) and focused collaborators in [`scripts/assessment/`](../scripts/assessment/), including representation-only prospective constraint knowledge in [`scripts/assessment/SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) |
 | Candidate, Constraint and Decision boundary | [`scripts/candidates/`](../scripts/candidates/), [`scripts/constraints/`](../scripts/constraints/), [`scripts/decision/`](../scripts/decision/), and [`scripts/commitment/DecisionCommitmentBoundary.lua`](../scripts/commitment/DecisionCommitmentBoundary.lua) |
 | Commitment, Obligation and Bounded Authority | [`scripts/commitment/`](../scripts/commitment/) and [`scripts/authority/`](../scripts/authority/) |
 | Explicit Resolution Commitment view | [`scripts/contracts/ResolutionCommitment.lua`](../scripts/contracts/ResolutionCommitment.lua), [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua), and the two purpose-specific transition modules in [`scripts/responsibility/`](../scripts/responsibility/) |
