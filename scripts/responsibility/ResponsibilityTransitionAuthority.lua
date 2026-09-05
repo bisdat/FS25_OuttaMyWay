@@ -284,9 +284,9 @@ function Authority:matchesFollowerPassage(picture,evaluated)
     local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
     local ids={}
     for _,id in OuttaMyWay.ValueRecord.ipairs(bridge.assemblyIds or {}) do ids[id]=true end
-    local lease=self.runtime.liveControlDispatcher.followerBoundaryLease
-    return lease~=nil and self:getCurrentRegulation(lease.commitmentId)~=nil
-        and ids[lease.followerAssemblyId]==true and ids[lease.leaderAssemblyId]==true
+    local predecessor=self.runtime.regulationBoundedAuthority and self.runtime.regulationBoundedAuthority:getFollowerBoundaryPredecessor() or nil
+    return predecessor~=nil and self:getCurrentRegulation(predecessor.commitmentId)~=nil
+        and ids[predecessor.followerAssemblyId]==true and ids[predecessor.leaderAssemblyId]==true
 end
 
 function Authority:replaceFollowerRegulationWithCooperativePassage(picture,evaluated,readiness,passageTransition,dispatcher)

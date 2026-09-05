@@ -6,16 +6,18 @@ is not a changelog, release ledger, or canonical-release record.
 
 ## Current engineering concern
 
-Accepted Repository State is
-`18224beba598019b9f82c8898f770efff6aa4be6` (the exact `main` base for this increment).
+Accepted Repository State at the start of Phase 11 is
+`a92e9a60917aeb79bfa684b425fa01643a551998`.
 
 Issue #37 remains open as non-blocking validation debt. The successful Category-1 Reality exemplar is sufficient to treat Strangler Phase 8 as **ASSUMED COMPLETE FOR PROGRAMME PROGRESSION** without waiting for a Category-2 fixture. Category-2 Reality validation remains required for Issue #37 closure. Materially contrary later evidence must reopen the affected architectural assumptions.
 
-The active strangler boundary is **Phase 10 — Reconcile Bounded Authority**.
-This PR implements the bounded-authority seam for the four fixed exemplars
-subject to review; it is not a release declaration or canonicalisation. See the
-[Phase 10 implementation record](IMPLEMENTATION_MAP.md#phase-10-bounded-authority-reconciliation)
-for call paths, scope and deferred items.
+Phase 10 — Reconcile Bounded Authority — COMPLETE. It is the accepted baseline
+for Phase 11 and did not change canonical release authority.
+
+The active strangler boundary is **Phase 11 — Reduce LiveControlDispatcher to
+Authorised Control Routing**. This increment moves migrated-path physical
+authority state and request materialisation out of `LiveControlDispatcher` so
+dispatch receives already-authorised `ControlRequest` work.
 
 ## Established
 
@@ -40,6 +42,22 @@ for call paths, scope and deferred items.
 - Terminal settlement releases BA before mechanical `AU-*` release and before semantic responsibility termination. Responsibility termination defensively releases remaining grants.
 - Guarded Recovery Regulation remains an explicitly unmigrated legacy ControlRequest path in this increment because it is outside the four fixed Phase-10 exemplars.
 - Bubble Bullet Time is not implemented; issue #45 remains the separate owner of that gap.
+- Phase 11 reduces [`LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua)
+  to authorised Control routing and outcome recording for already-materialized
+  `ControlRequest` values.
+- [`RegulationBoundedAuthority.lua`](../scripts/authority/RegulationBoundedAuthority.lua)
+  owns migrated Regulation physical-authority state, including follower
+  Regulation, Action-Space/Forward Intersection Regulation and D-0147
+  protected-demand holds. The HUD reads follower diagnostic status from this
+  authority source.
+- [`ResolutionSpaceProgressionEnvelope.lua`](../scripts/authority/ResolutionSpaceProgressionEnvelope.lua)
+  is Bounded-Authority magnitude policy. D-0155 literals and algorithm are
+  intended unchanged; only ownership wording and placement changed.
+- [`CurrentResponsibilityAssessment.lua`](../scripts/assessment/CurrentResponsibilityAssessment.lua)
+  is an implementation component under Situation Assessment for the existing
+  Current Responsibility reassessment question; it is not a new lifecycle.
+- [`GuardedRecoveryCompatibility.lua`](../scripts/control/GuardedRecoveryCompatibility.lua)
+  isolates D-0123 Guarded Recovery as explicitly unmigrated legacy behaviour.
 
 - The accepted [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Strangler Transition Map](IMPLEMENTATION_MAP.md#detailed-strangler-transition-map) remain authoritative for architecture and programme direction respectively.
 - Cooperative Passage upstream transition remains accepted and Reality-validated for one direct `CREATE` episode.
@@ -175,7 +193,11 @@ The `0.3.0.8` Category-1 Forward Intersection GIANTS Reality exemplar is accepte
 
 Strangler Phase 8 is **ASSUMED COMPLETE FOR PROGRAMME PROGRESSION**. Issue #37 remains open as non-blocking Category-2 Reality validation debt. Category-2 Reality validation is still required for Issue #37 closure; materially contrary Category-2 evidence must reopen the affected Forward Intersection assumptions and dependent conclusions.
 
-Phase 10 — Reconcile Bounded Authority — is implemented in this PR subject to review. Physical behaviour is intended unchanged. No GIANTS Reality validation is claimed; GitHub Actions remains the offline validation authority after the branch is pushed.
+Phase 10 — Reconcile Bounded Authority — COMPLETE. Phase 11 now owns the
+remaining dispatch-boundary inversion: `LiveControlDispatcher` routes
+already-authorised physical work to Control, while Regulation Bounded Authority
+owns migrated Regulation permission state and Guarded Recovery remains isolated
+as legacy compatibility.
 
 Open-field Forward Intersection remains admitted to the same bounded fixed `1 km/h` Regulation. Category 1, Category 2 and open field are environmental annotations on the generic Forward Intersection relationship rather than admission gates.
 

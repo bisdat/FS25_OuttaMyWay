@@ -52,6 +52,7 @@ load("scripts/assessment/TrajectoryConflictAssessment.lua")
 load("scripts/assessment/PassageCapabilityAssessment.lua")
 load("scripts/assessment/TerminalOccupancyAssessment.lua")
 load("scripts/assessment/SpatialConstraintAssessment.lua")
+load("scripts/assessment/CurrentResponsibilityAssessment.lua")
 load("scripts/assessment/SituationAssessment.lua")
 load("scripts/commitment/CommitmentStateMachine.lua")
 load("scripts/commitment/CommitmentRegistry.lua")
@@ -108,7 +109,9 @@ load("scripts/prototypes/Prototype22ConfigurationAuthority.lua")
 load("scripts/prototypes/Prototype22CapabilityGate.lua")
 load("scripts/control/CooperativePassageControl.lua")
 load("scripts/control/TerminalEgressControl.lua")
-load("scripts/control/ResolutionSpaceProgressionEnvelope.lua")
+load("scripts/authority/ResolutionSpaceProgressionEnvelope.lua")
+load("scripts/authority/RegulationBoundedAuthority.lua")
+load("scripts/control/GuardedRecoveryCompatibility.lua")
 load("scripts/responsibility/ResolutionCommitmentAdapter.lua")
 load("scripts/responsibility/ResponsibilityTransitionAuthority.lua")
 load("scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua")
@@ -792,7 +795,7 @@ end)
 
 test("Rejected fresh Bounded Authority grant is released before return",function()
     local runtime,commitment,token,current=boundedAuthorityRegulationFixture()
-    local dispatcher=runtime.liveControlDispatcher
+    local dispatcher=runtime.regulationBoundedAuthority
     local rejectedGrantId=nil
     dispatcher.capability={executeControlRequest=function(self,request,candidate)
         rejectedGrantId=request.boundedAuthorityId
@@ -817,7 +820,7 @@ test("Rejected Bounded Authority update removes successor while predecessor rema
         protectedAssemblyId="AS-BA-B",protectedReferenceKey="ref:ba-b",governingPurpose="BA_TEST_REGULATION",authorityTokenId=token.identity,
         boundedAuthorityId=oldGrant.identity,currentCapKmh=20,progressionEnvelope=envelope,actuationActive=true}
     local rejectedGrantId=nil
-    local dispatcher=runtime.liveControlDispatcher
+    local dispatcher=runtime.regulationBoundedAuthority
     dispatcher.capability={executeControlRequest=function(self,request,candidate)
         rejectedGrantId=request.boundedAuthorityId
         return false,"TEST_REJECTED"
@@ -840,7 +843,7 @@ test("Accepted Bounded Authority update retires predecessor only after successor
         protectedAssemblyId="AS-BA-B",protectedReferenceKey="ref:ba-b",governingPurpose="BA_TEST_REGULATION",authorityTokenId=token.identity,
         boundedAuthorityId=oldGrant.identity,currentCapKmh=20,progressionEnvelope=envelope,actuationActive=true}
     local acceptedGrantId=nil
-    local dispatcher=runtime.liveControlDispatcher
+    local dispatcher=runtime.regulationBoundedAuthority
     dispatcher.capability={executeControlRequest=function(self,request,candidate)
         equal(runtime.boundedAuthority:isCurrent(oldGrant.identity),true)
         acceptedGrantId=request.boundedAuthorityId
@@ -2778,7 +2781,7 @@ test("D-0141 aligned follower Regulation travels Situation Candidate Decision Co
     equal(updated.currentResponsibility.identity,responsibilityId)
     equal(#runtime.obligations:openForOwner(commitmentId),1)
     equal(requests[#requests].target.maxSpeedKmh,20)
-    equal(runtime.liveControlDispatcher:getFollowerBoundaryStatus().currentCapKmh,20)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().currentCapKmh,20)
 
     -- The same purpose must also tighten again when the current sealed picture
     -- requires it; elasticity is bidirectional rather than relaxation-only.
@@ -2792,7 +2795,7 @@ test("D-0141 aligned follower Regulation travels Situation Candidate Decision Co
     equal(tightened.currentResponsibility.identity,responsibilityId)
     equal(#runtime.obligations:openForOwner(commitmentId),1)
     equal(requests[#requests].target.maxSpeedKmh,8)
-    equal(runtime.liveControlDispatcher:getFollowerBoundaryStatus().currentCapKmh,8)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().currentCapKmh,8)
 
     -- D-0198: unresolved current follower topology retains the semantic purpose
     -- but quiesces its physical D-0141 actuation rather than preserving the
@@ -2807,7 +2810,7 @@ test("D-0141 aligned follower Regulation travels Situation Candidate Decision Co
     equal(quiesced.status,"QUIESCENT")
     equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitmentId).identity,responsibilityId)
     equal(requests[#requests].target.operation,"RELEASE")
-    local qStatus=runtime.liveControlDispatcher:getFollowerBoundaryStatus()
+    local qStatus=runtime.regulationBoundedAuthority:getFollowerBoundaryStatus()
     equal(qStatus.active,false); equal(qStatus.retainedPurpose,true); equal(qStatus.actuationActive,false)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
     equal(#runtime.obligations:openForOwner(commitmentId),1)
@@ -2823,8 +2826,8 @@ test("D-0141 aligned follower Regulation travels Situation Candidate Decision Co
     equal(reactivated.commitment.identity,commitmentId)
     equal(reactivated.currentResponsibility.identity,responsibilityId)
     equal(requests[#requests].target.operation,"APPLY"); equal(requests[#requests].target.maxSpeedKmh,10)
-    equal(runtime.liveControlDispatcher:getFollowerBoundaryStatus().active,true)
-    equal(runtime.liveControlDispatcher:getFollowerBoundaryStatus().reactivationCount,1)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().active,true)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().reactivationCount,1)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
     equal(#runtime.obligations:openForOwner(commitmentId),1)
 
@@ -2838,7 +2841,7 @@ test("D-0141 aligned follower Regulation travels Situation Candidate Decision Co
     equal(released.status,"RELEASED")
     equal(requests[#requests].target.operation,"RELEASE")
     equal(requests[#requests].target.ownerTag,"D0141_FOLLOWER_BOUNDARY")
-    equal(runtime.liveControlDispatcher:getFollowerBoundaryStatus().active,false)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().active,false)
     equal(runtime.authorities:ownerOf("AS-P"),nil)
     equal(runtime.obligations:get(obligationId).status,"SETTLED")
     equal(runtime.commitments:get(commitmentId).state,"SUCCEEDED")
@@ -2877,19 +2880,19 @@ test("D-0141 follower and D-0123 Guarded-Recovery Regulation purposes share auth
     local guardPositive=runtime.liveTrafficCandidateSupport:attach(guardPicture("POSITIVE"),headOnTestSnapshot())
     equal(guardPositive.candidateSupportEvidence.supportBoundary.mode,"GUARDED_RECOVERY_D0123")
     local guardPositiveEval=runtime:evaluateSealedOperationalPicture(guardPositive)
-    local guarded=runtime.liveControlDispatcher:dispatch(guardPositive,guardPositiveEval)
+    local guarded=runtime.regulationBoundedAuthority:dispatch(guardPositive,guardPositiveEval)
     equal(guarded.status,"ACCEPTED")
     equal(requests[#requests].target.ownerTag,"D0123_GUARDED_RECOVERY")
     equal(runtime.authorities:ownerOf("AS-P"),commitmentId)
-    equal(runtime.liveControlDispatcher:getFollowerBoundaryStatus().active,true)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().active,true)
 
     local guardNegative=runtime.liveTrafficCandidateSupport:attach(guardPicture("NEGATIVE"),headOnTestSnapshot())
     local guardNegativeEval=runtime:evaluateSealedOperationalPicture(guardNegative)
-    local released=runtime.liveControlDispatcher:dispatch(guardNegative,guardNegativeEval)
+    local released=runtime.regulationBoundedAuthority:dispatch(guardNegative,guardNegativeEval)
     equal(released.status,"RELEASED")
     equal(requests[#requests].target.ownerTag,"D0123_GUARDED_RECOVERY")
     equal(runtime.authorities:ownerOf("AS-P"),commitmentId)
-    equal(runtime.liveControlDispatcher:getFollowerBoundaryStatus().active,true)
+    equal(runtime.regulationBoundedAuthority:getFollowerBoundaryStatus().active,true)
 end)
 
 test("D-0124 follower shadow derives a lower cap when unrestricted demand would be consumed", function()
@@ -3143,7 +3146,7 @@ test("architecture alignment routes D-0123 through Situation Candidate Decision 
     local positiveCandidate=nil
     for _,candidate in OuttaMyWay.ValueRecord.ipairs(positiveEval.candidates) do if candidate.identity==positiveEval.decision.selectedCandidateId then positiveCandidate=candidate end end
     equal(positiveCandidate.capability,"REGULATE_SPEED")
-    local dispatched=runtime.liveControlDispatcher:dispatch(positive,positiveEval)
+    local dispatched=runtime.regulationBoundedAuthority:dispatch(positive,positiveEval)
     equal(dispatched.status,"ACCEPTED")
     equal(requests[#requests].target.operation,"APPLY")
     equal(requests[#requests].target.maxSpeedKmh,OuttaMyWay.D0123_NATIVE_HANDOVER_CREEP_KMH)
@@ -3156,7 +3159,7 @@ test("architecture alignment routes D-0123 through Situation Candidate Decision 
     local unresolvedEval=runtime:evaluateSealedOperationalPicture(unresolved)
     equal(unresolvedEval.decision.commitmentAction,"MAINTAIN")
     local before=#requests
-    local maintained=runtime.liveControlDispatcher:dispatch(unresolved,unresolvedEval)
+    local maintained=runtime.regulationBoundedAuthority:dispatch(unresolved,unresolvedEval)
     equal(maintained.reason,"D0123_UNRESOLVED_PRESERVE_EXISTING_REGULATION")
     equal(#requests,before)
     equal(runtime.authorities:ownerOf(progressAssemblyId),commitmentId)
@@ -3164,7 +3167,7 @@ test("architecture alignment routes D-0123 through Situation Candidate Decision 
     local negative=runtime.liveTrafficCandidateSupport:attach(guardPicture("NEGATIVE","POSITIVE_CURRENT_HEADING_CLEAR_OF_VULNERABLE_SPACE"),headOnTestSnapshot())
     local negativeEval=runtime:evaluateSealedOperationalPicture(negative)
     equal(negativeEval.decision.commitmentAction,"MAINTAIN")
-    local released=runtime.liveControlDispatcher:dispatch(negative,negativeEval)
+    local released=runtime.regulationBoundedAuthority:dispatch(negative,negativeEval)
     equal(released.status,"RELEASED")
     equal(requests[#requests].target.operation,"RELEASE")
     equal(runtime.authorities:ownerOf(progressAssemblyId),nil)
@@ -4006,14 +4009,14 @@ test("Forward Intersection applies fixed one kilometre per hour and releases on 
     equal(admitted.status,"ACCEPTED"); equal(admitted.forwardIntersection,true)
     equal(requests[#requests].target.maxSpeedKmh,1)
     local responsibilityId=admitted.currentResponsibility.identity
-    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().currentCapKmh,1)
+    equal(runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus().currentCapKmh,1)
 
     local dissolved=forwardIntersectionPicture(false)
     local passive=runtime.liveTrafficCandidateSupport:attach(dissolved,headOnTestSnapshot())
     local reevaluated=runtime:evaluateSealedOperationalPicture(passive)
     local released=runtime:dispatchEvaluatedOperationalPicture(passive,reevaluated)
     equal(released.status,"RELEASED")
-    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,false)
+    equal(runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus().active,false)
     equal(runtime.responsibilityTransitionAuthority:getCurrentActionSpaceRegulation(),nil)
     equal(requests[#requests].target.operation,"RELEASE"); equal(type(responsibilityId),"string")
 end)
@@ -4099,7 +4102,7 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     local regulationResponsibilityId=admitted.currentResponsibility.identity
     equal(regulationResponsibilityId~=commitmentId,true)
     equal(runtime.authorities:ownerOf("AS-B"),commitmentId)
-    local envelopeStatus=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    local envelopeStatus=runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus()
     equal(envelopeStatus.active,true); equal(envelopeStatus.currentCapKmh,25); equal(envelopeStatus.effectClass,"REGULATE")
     equal(envelopeStatus.initialDistanceM,70); equal(envelopeStatus.contingencyReserveM,52.5); equal(envelopeStatus.remainingOrdinaryM,17.5)
     local actionObligation=runtime.obligations:openForOwner(commitmentId)[1]
@@ -4118,7 +4121,7 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
         equal(runtime.obligations:get(actionObligation.identity).status,"SETTLED")
         accepted={a,b,candidate}; return true,"D0146_COOPERATIVE_PASSAGE_STARTED"
     end
-    runtime.liveControlDispatcher:setCooperativePassageControl(cooperativeControl)
+    runtime.regulationBoundedAuthority:setCooperativePassageControl(cooperativeControl)
     local passageSupported=runtime.liveTrafficCandidateSupport:attach(passagePicture,passageSnapshot)
     equal(passageSupported.candidateSupportEvidence.supportBoundary.mode,"D0146_COOPERATIVE_PASSAGE_STEP2_TEST")
     equal(passageSupported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.passageEntry.ready,false)
@@ -4131,7 +4134,7 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     equal(dispatched.currentResponsibility.provenance.genericCommitmentIdentity,commitmentId)
     equal(dispatched.currentResponsibility.kind,"RESOLUTION_COMMITMENT")
     equal(OuttaMyWay.ValueRecord.length(dispatched.currentResponsibility.openResolutionObligationIds),1)
-    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,false)
+    equal(runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus().active,false)
     equal(#cleared,1); equal(cleared[1].referenceKey,"vehicle-root:201"); equal(cleared[1].ownerTag,"D0146_ACTION_SPACE_CONSERVATION")
     equal(runtime.obligations:get(actionObligation.identity).status,"SETTLED")
     equal(#runtime.authorities:tokensForCommitment(commitmentId),2)
@@ -4175,7 +4178,7 @@ local function followerPassageFixture(runtime,admitted,events)
         events[#events+1]="PASSAGE"
         return true,"ACCEPTED"
     end
-    runtime.liveControlDispatcher:setCooperativePassageControl(control)
+    runtime.regulationBoundedAuthority:setCooperativePassageControl(control)
     local supported=runtime.liveTrafficCandidateSupport:attach(picture,snapshot)
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     equal(evaluated.decision.commitmentAction,"REVISE")
@@ -4206,7 +4209,7 @@ for _,failure in ipairs({"TARGET","LEASE","OBLIGATION","PARTICIPANTS","SUCCESSOR
         if failure=="TARGET" then
             local values=OuttaMyWay.ValueRecord.toTable(picture); values.commitmentContext={}
             picture=OuttaMyWay.OperationalPicture.new(values)
-        elseif failure=="LEASE" then runtime.liveControlDispatcher.followerBoundaryLease=nil
+        elseif failure=="LEASE" then runtime.regulationBoundedAuthority.followerBoundaryLease=nil
         elseif failure=="OBLIGATION" then
             local obligation=runtime.obligations:openForOwner(commitmentId)[1]
             runtime.obligations:settle(obligation.identity,"BASIS_CESSATION",{kind="TEST_PREFLIGHT_ABSENT_OBLIGATION"})
@@ -4224,9 +4227,9 @@ for _,failure in ipairs({"TARGET","LEASE","OBLIGATION","PARTICIPANTS","SUCCESSOR
         elseif failure=="REVISION" then
             runtime.decisionCommitmentBoundary.apply=function() return nil end
         elseif failure=="PHYSICAL_CLEANUP" then
-            runtime.liveControlDispatcher.capability.clearRegulationLeaseByReference=function() return false,"INJECTED_PHYSICAL_CLEANUP_REFUSAL" end
+            runtime.regulationBoundedAuthority.capability.clearRegulationLeaseByReference=function() return false,"INJECTED_PHYSICAL_CLEANUP_REFUSAL" end
         elseif failure=="CLEANUP" then
-            runtime.liveControlDispatcher.supersedeFollowerRegulationForCooperativePassage=function() return {settled=nil,reason="INJECTED_CLEANUP_REFUSAL"} end
+            runtime.regulationBoundedAuthority.supersedeFollowerRegulationForCooperativePassage=function() return {settled=nil,reason="INJECTED_CLEANUP_REFUSAL"} end
         end
         local result=runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         equal(result.status,"NO_DISPATCH")
@@ -4240,7 +4243,7 @@ end
 test("Follower terminal settlement removes semantic Regulation even without a physical lease",function()
     local runtime,admitted=followerResponsibilityFixture()
     local id=admitted.commitment.identity
-    runtime.liveControlDispatcher.followerBoundaryLease=nil
+    runtime.regulationBoundedAuthority.followerBoundaryLease=nil
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(id)) do
         runtime.obligations:settle(obligation.identity,"BASIS_CESSATION",{kind="TEST_DEPENDENCY_COLLAPSE"})
     end
@@ -4260,12 +4263,12 @@ test("Job Episode dependency collapse ends follower Regulation on eligible retai
     values.governingBasis={responsibilityKey="d0146-cooperative-passage:DEPENDENT",dependentJobEpisodeIds={"JE-END","JE-KEEP"}}
     values.revision=values.revision+1; values.epoch=runtime.epochs:next()
     runtime.commitments:save(OuttaMyWay.CommitmentRecord.new(values))
-    runtime.liveControlDispatcher.followerBoundaryLease.actuationActive=false
+    runtime.regulationBoundedAuthority.followerBoundaryLease.actuationActive=false
     local collapsed=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(runtime,{endedEpisodeIds={"JE-END"}},{identity="OBS-END"})
     equal(#collapsed,1)
     equal(runtime.commitments:get(id).state,"SUCCEEDED")
     equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(id),nil)
-    equal(runtime.liveControlDispatcher.followerBoundaryLease,nil)
+    equal(runtime.regulationBoundedAuthority.followerBoundaryLease,nil)
     equal(events[1],"CLEAR")
 end)
 
@@ -4327,7 +4330,7 @@ test("Action-Space responsibility replacement preflight refusal leaves retained 
     local obligationsBefore=runtime.obligations:openForOwner(commitmentId)
     equal(#obligationsBefore,1)
     local actionObligationId=obligationsBefore[1].identity
-    local leaseBefore=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    local leaseBefore=runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus()
     local passagePicture,passageSnapshot=d0146Step2Fixture(nil,nil,60)
     local values=OuttaMyWay.ValueRecord.toTable(passagePicture)
     values.identity="OP-RESPONSIBILITY-REPLACEMENT-FAILURE"; values.epoch=803; values.commitmentContext={{commitmentId=commitmentId}}
@@ -4337,7 +4340,7 @@ test("Action-Space responsibility replacement preflight refusal leaves retained 
     function cooperativeControl:setCompletionHandler(fn) end
     function cooperativeControl:isActive() return false end
     function cooperativeControl:executeJointRequests(a,b,candidate) starts=starts+1; return true,"UNEXPECTED" end
-    runtime.liveControlDispatcher:setCooperativePassageControl(cooperativeControl)
+    runtime.regulationBoundedAuthority:setCooperativePassageControl(cooperativeControl)
     local passageSupported=runtime.liveTrafficCandidateSupport:attach(passagePicture,passageSnapshot)
     local passageEval=runtime:evaluateSealedOperationalPicture(passageSupported)
     local refusedValues=OuttaMyWay.ValueRecord.toTable(passageSupported)
@@ -4356,7 +4359,7 @@ test("Action-Space responsibility replacement preflight refusal leaves retained 
     equal(#obligationsAfter,1)
     equal(obligationsAfter[1].identity,actionObligationId)
     equal(runtime.obligations:get(actionObligationId).status,"OPEN")
-    local leaseAfter=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    local leaseAfter=runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus()
     equal(leaseAfter.active,true)
     equal(leaseAfter.commitmentId,leaseBefore.commitmentId)
     equal(leaseAfter.conflictIdentity,leaseBefore.conflictIdentity)
@@ -4452,7 +4455,7 @@ test("D0146 Resolution-Space role migration moves actuation under the same Commi
     equal(requests[1].target.operation,"APPLY"); equal(requests[1].target.vehicleReferenceKey,"vehicle-root:201")
     equal(requests[2].target.operation,"APPLY"); equal(requests[2].target.vehicleReferenceKey,"vehicle-root:101"); equal(requests[2].target.maxSpeedKmh,1)
     equal(requests[3].target.operation,"RELEASE"); equal(requests[3].target.vehicleReferenceKey,"vehicle-root:201")
-    local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    local status=runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus()
     equal(status.active,true); equal(status.commitmentId,commitmentId); equal(status.regulatedReferenceKey,"vehicle-root:101")
     equal(status.effectClass,"INTENT_REVELATION_CREEP"); equal(status.currentCapKmh,1); equal(status.remainingOrdinaryM,0); equal(status.roleRebaseCount,1); equal(status.roleMigrationCount,1)
 end)
@@ -4489,7 +4492,7 @@ test("D0155 Resolution-Space Progression Envelope tightens prospectively as ordi
     equal(updated.status,"ENVELOPE_UPDATED")
     equal(updated.reason,"D0155_SUPPORTABLE_PROGRESSION_MAGNITUDE_UPDATED")
     equal(#requests,2); equal(requests[2].target.maxSpeedKmh,21)
-    local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    local status=runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus()
     equal(status.currentCapKmh,21); equal(status.effectClass,"REGULATE")
     equal(status.conservativeDistanceM,65); equal(status.contingencyReserveM,52.5); equal(status.remainingOrdinaryM,12.5)
     equal(status.envelopeUpdateCount,1)
@@ -4528,7 +4531,7 @@ test("D0198 D0155 bare NO_CURRENT_EXCURSION does not quiesce while protected par
     equal(maintained.status=="MAINTAINED" or maintained.status=="ENVELOPE_UPDATED",true)
     equal(#requests>=1,true)
     equal(requests[#requests].target.operation,"APPLY")
-    local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    local status=runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus()
     equal(status.active,true); equal(status.actuationActive,true); equal(status.quiescenceCount,0)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
 end)
@@ -4568,7 +4571,7 @@ test("D0197 D0155 positive NOT_REQUIRED quiesces actuation while the relationshi
     equal(quiesced.status,"QUIESCENT")
     equal(quiesced.reason,"D0155_CURRENT_ACTION_SPACE_NOT_REQUIRED_ACTUATION_QUIESCENT")
     equal(#requests,2); equal(requests[2].target.operation,"RELEASE"); equal(requests[2].target.vehicleReferenceKey,"vehicle-root:201")
-    local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    local status=runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus()
     equal(status.active,true); equal(status.actuationActive,false); equal(status.currentCapKmh,nil); equal(status.effectClass,nil)
     equal(status.quiescenceCount,1); equal(status.reactivationCount,0)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
@@ -4628,7 +4631,7 @@ test("D0197 D0155 quiescent actuation reactivates on positive REGULATE_SUPPORTED
     equal(reactivated.currentResponsibility.identity,responsibilityId)
     equal(reactivated.commitmentId,commitmentId)
     equal(#requests,3); equal(requests[3].target.operation,"APPLY"); equal(requests[3].target.vehicleReferenceKey,"vehicle-root:201")
-    local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    local status=runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus()
     equal(status.active,true); equal(status.actuationActive,true); equal(status.quiescenceCount,1); equal(status.reactivationCount,1)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
     equal(#runtime.obligations:openForOwner(commitmentId),1)
@@ -4668,7 +4671,7 @@ test("D0155 exhausted ordinary space retains 1 kmh Intent-Revelation Creep inste
     equal(updated.status,"ENVELOPE_UPDATED")
     equal(#requests,2); equal(requests[2].target.maxSpeedKmh,1)
     equal(updated.reason,"D0155_INTENT_REVELATION_CREEP_APPLIED")
-    local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    local status=runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus()
     equal(status.active,true); equal(status.effectClass,"INTENT_REVELATION_CREEP"); equal(status.currentCapKmh,1); equal(status.remainingOrdinaryM,0)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
 end)
@@ -4703,17 +4706,17 @@ test("D0155 Reverse-Created Resolution Reserve is not immediately spendable ordi
 
     local consumed,first=dispatchAt(active,"OP-D0155-ENVELOPE-60",797,60)
     equal(first.status,"ENVELOPE_UPDATED"); equal(#requests,2); equal(requests[2].target.maxSpeedKmh,16)
-    local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    local status=runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus()
     equal(status.conservativeDistanceM,60); equal(status.reverseCreatedReserveM,0); equal(status.remainingOrdinaryM,7.5)
 
     local reversed,second=dispatchAt(consumed,"OP-D0155-ENVELOPE-REVERSE-68",798,68)
     equal(second.status,"MAINTAINED"); equal(#requests,2)
-    status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    status=runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus()
     equal(status.currentCapKmh,16); equal(status.conservativeDistanceM,60); equal(status.reverseCreatedReserveM,8); equal(status.remainingOrdinaryM,7.5)
 
     local _,third=dispatchAt(reversed,"OP-D0155-ENVELOPE-FORWARD-59",799,59)
     equal(third.status,"ENVELOPE_UPDATED"); equal(#requests,3); equal(requests[3].target.maxSpeedKmh,15)
-    status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    status=runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus()
     equal(status.conservativeDistanceM,59); equal(status.reverseCreatedReserveM,0); equal(status.remainingOrdinaryM,6.5)
 end)
 
@@ -4748,7 +4751,7 @@ test("D0155 low admission speed seeds the envelope instead of suppressing the Re
     local closingEval=runtime:evaluateSealedOperationalPicture(closingSupported)
     local updated=runtime:dispatchEvaluatedOperationalPicture(closingSupported,closingEval)
     equal(updated.status,"ENVELOPE_UPDATED"); equal(#requests,2); equal(requests[2].target.maxSpeedKmh,5)
-    local status=runtime.liveControlDispatcher:getD0146ActionSpaceStatus()
+    local status=runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus()
     equal(status.currentCapKmh,5); equal(status.effectClass,"REGULATE"); equal(status.remainingOrdinaryM,7.5)
 end)
 
@@ -4780,8 +4783,8 @@ test("D0197 transient reverse non-closing evidence retains D0146 obligation but 
     local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
     local quiesced=runtime:dispatchEvaluatedOperationalPicture(transientSupported,transientEval)
     equal(quiesced.status,"QUIESCENT")
-    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,true)
-    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().actuationActive,false)
+    equal(runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus().active,true)
+    equal(runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus().actuationActive,false)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
     equal(#runtime.obligations:openForOwner(commitmentId),1)
     equal(#requests,2); equal(requests[2].target.operation,"RELEASE")
@@ -4817,8 +4820,8 @@ test("D0197 Potential conflict may retain D0146 obligation while current D0155 a
     local potentialEval=runtime:evaluateSealedOperationalPicture(potentialSupported)
     local quiesced=runtime:dispatchEvaluatedOperationalPicture(potentialSupported,potentialEval)
     equal(quiesced.status,"QUIESCENT")
-    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,true)
-    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().actuationActive,false)
+    equal(runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus().active,true)
+    equal(runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus().actuationActive,false)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
     equal(#runtime.obligations:openForOwner(commitmentId),1)
     equal(#requests,2); equal(requests[2].target.operation,"RELEASE")
@@ -4853,8 +4856,8 @@ test("D0197 Transitional Continuation retains D0146 obligation but does not itse
     local transitionalEval=runtime:evaluateSealedOperationalPicture(transitionalSupported)
     local quiesced=runtime:dispatchEvaluatedOperationalPicture(transitionalSupported,transitionalEval)
     equal(quiesced.status,"QUIESCENT")
-    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,true)
-    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().actuationActive,false)
+    equal(runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus().active,true)
+    equal(runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus().actuationActive,false)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
     equal(#runtime.obligations:openForOwner(commitmentId),1)
     equal(#requests,2); equal(requests[2].target.operation,"RELEASE")
@@ -4891,7 +4894,7 @@ test("D0146 Action-Space Regulation releases only on positive settled relationsh
     equal(released.status,"RELEASED")
     equal(released.reason,"D0146_POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION")
     equal(requests[#requests].target.operation,"RELEASE")
-    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,false)
+    equal(runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus().active,false)
     equal(runtime.authorities:ownerOf("AS-B"),nil)
     equal(runtime.commitments:get(commitmentId).state,"SUCCEEDED")
 end)
@@ -4908,7 +4911,7 @@ test("D0146 Step2 Established Conflict crosses Candidate Decision Commitment and
     function control:setCompletionHandler(fn) self.handler=fn end
     function control:isActive() return false end
     function control:executeJointRequests(a,b,candidate) accepted={a,b,candidate}; return true,"D0146_COOPERATIVE_PASSAGE_STARTED" end
-    runtime.liveControlDispatcher:setCooperativePassageControl(control)
+    runtime.regulationBoundedAuthority:setCooperativePassageControl(control)
     local dispatched=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(dispatched.status,"ACCEPTED"); equal(#accepted,3); equal(#dispatched.requests,2)
     equal(string.sub(dispatched.currentResponsibility.identity,1,3),"RS-")
@@ -4938,7 +4941,7 @@ test("D0146 direct Cooperative Passage failure removes semantic Resolution Commi
     function control:setCompletionHandler(fn) self.handler=fn end
     function control:isActive() return false end
     function control:executeJointRequests(a,b,candidate) return false,"TEST_REJECTED" end
-    runtime.liveControlDispatcher:setCooperativePassageControl(control)
+    runtime.regulationBoundedAuthority:setCooperativePassageControl(control)
     local dispatched=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(dispatched.status,"REJECTED")
     equal(runtime.commitments:get(dispatched.commitment.identity).state,"FAILED")
@@ -5920,12 +5923,12 @@ test("D0200 ended Job Episode collapses dependent quiescent D0146 traffic Commit
     dependent=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(dependent,{obligationIds={obligation.identity},epoch=runtime.epochs:next()}))
     local unrelated=runtime.commitments:create({objective={kind="D0146_PASSAGE_ACTION_SPACE_CONSERVATION"},governingBasis={responsibilityKey="d0146-cooperative-passage:REL-OTHER",dependentEncounterId="EN-OTHER",dependentJobEpisodeIds={"JE-OTHER-A","JE-OTHER-B"}},situationDependencies={"EN-OTHER"}})
     local cleared=0
-    runtime.liveControlDispatcher.capability={clearRegulationLeaseByReference=function(self,referenceKey,ownerTag) cleared=cleared+1 end}
-    runtime.liveControlDispatcher.d0146ActionSpaceLease={commitmentId=dependent.identity,conflictIdentity="REL-ENDED",regulatedAssemblyId="AS-A",regulatedReferenceKey="REF-A",actuationActive=false}
+    runtime.regulationBoundedAuthority.capability={clearRegulationLeaseByReference=function(self,referenceKey,ownerTag) cleared=cleared+1 end}
+    runtime.regulationBoundedAuthority.d0146ActionSpaceLease={commitmentId=dependent.identity,conflictIdentity="REL-ENDED",regulatedAssemblyId="AS-A",regulatedReferenceKey="REF-A",actuationActive=false}
     local result=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(runtime,{endedEpisodeIds={"JE-END"},observationSnapshotId="OBS-END"},{identity="OBS-END"})
     equal(#result,1); equal(result[1].commitmentId,dependent.identity); equal(runtime.commitments:get(dependent.identity).state,"SUCCEEDED")
     equal(runtime.obligations:get(obligation.identity).status,"SETTLED"); equal(runtime.obligations:get(obligation.identity).settlementDisposition.mode,"BASIS_CESSATION")
-    equal(runtime.liveControlDispatcher.d0146ActionSpaceLease,nil); equal(cleared,1)
+    equal(runtime.regulationBoundedAuthority.d0146ActionSpaceLease,nil); equal(cleared,1)
     equal(runtime.commitments:get(unrelated.identity).state,"ACTIVE")
 end)
 

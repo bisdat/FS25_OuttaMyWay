@@ -444,7 +444,7 @@ end
 
 function Probe:_statusText()
     if self.run == nil and self.releasedMonitor == nil then
-        local regulationStatus=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getGuardedRecoveryStatus() or nil
+        local regulationStatus=self.runtime and self.runtime.guardedRecoveryCompatibility and self.runtime.guardedRecoveryCompatibility:getGuardedRecoveryStatus() or nil
         return string.format("P22 idle; boundedControlDonor=true d0123Regulation=%s",regulationStatus and tostring(regulationStatus.active) or "n/a")
     end
     if self.run ~= nil then

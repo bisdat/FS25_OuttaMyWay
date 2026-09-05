@@ -643,7 +643,7 @@ The 1.0 km/h D-0123 Regulation value is **not** retired with the test bridges. I
 
 ---
 
-## D-0156 — Implement D-0155 with Control-owned magnitude and a provisional 75% contingency reserve (v0.1.2.1 TEST)
+## D-0156 — Implement D-0155 with Bounded-Authority-owned magnitude and a provisional 75% contingency reserve (v0.1.2.1 TEST)
 
 **Decision:** implement the smallest Resolution-Space Progression Envelope against owner-declared canonical v0.1.2.0. Use a provisional 75% Resolution Contingency Reserve for this TEST tranche; retain the 80 m Situation locality ceiling separately.
 

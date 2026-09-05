@@ -408,7 +408,7 @@ function Lifecycle.applyD0146ActionSpaceDecision(runtime,picture,evaluated)
         record=result.commitment; token=result.authorityToken; acquired=true
     end
     if token==nil or runtime.authorities:validate(token)~=true then return nil,"D0146_ACTION_SPACE_VALID_AUTHORITY_TOKEN_UNAVAILABLE" end
-    logInfo("D0146_ACTION_SPACE_DECISION_APPLIED decision=%s commitment=%s conflict=%s admission=%s regulated=%s protected=%s obligation=%s token=%s acquired=%s magnitudeAuthority=CONTROL",
+    logInfo("D0146_ACTION_SPACE_DECISION_APPLIED decision=%s commitment=%s conflict=%s admission=%s regulated=%s protected=%s obligation=%s token=%s acquired=%s magnitudeAuthority=BOUNDED_AUTHORITY",
         tostring(evaluated.decision.identity),tostring(record.identity),tostring(bridge.conflictIdentity),tostring(bridge.admissionKind or "CURRENT_EXCURSION"),tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),
         tostring(obligation.identity),tostring(token.identity),tostring(acquired))
     return {application=applied,commitment=record,obligation=obligation,authorityToken=token,authorityAcquired=acquired,bridge=bridge},nil
@@ -494,11 +494,11 @@ function Lifecycle.collapseEndedJobEpisodeDependencies(runtime,episodeResult,sna
                     kind="OBJECTIVE_SATISFIED",evidence=settlementEvidence,
                     provenance={source="LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies",authority="D0200_JOB_EPISODE_DEPENDENCY_COLLAPSE"}
                 })
+                if runtime.regulationBoundedAuthority~=nil and type(runtime.regulationBoundedAuthority.retireTrafficLeasesForCommitment)=="function" then
+                    runtime.regulationBoundedAuthority:retireTrafficLeasesForCommitment(record.identity,"JOB_EPISODE_DEPENDENCY_CEASED")
+                end
                 local settling=runtime.terminalSettlementEvaluator:enterSettling(record.identity,verdict)
                 local terminal=runtime.terminalSettlementEvaluator:attemptTerminal(record.identity,settlementEvidence)
-                if runtime.liveControlDispatcher~=nil and type(runtime.liveControlDispatcher.retireTrafficLeasesForCommitment)=="function" then
-                    runtime.liveControlDispatcher:retireTrafficLeasesForCommitment(record.identity,"JOB_EPISODE_DEPENDENCY_CEASED")
-                end
                 collapsed[#collapsed+1]={commitmentId=record.identity,terminalState=terminal.state,encounterIdentity=basis.dependentEncounterId,endedJobEpisodeId=endedDependentEpisodeId,settledObligationIds=settledIds,releasedAuthorityTokenIds=settling.releasedAuthorityTokenIds or {}}
                 logInfo("JOB_EPISODE_DEPENDENCY_COLLAPSE commitment=%s encounter=%s endedEpisode=%s obligations=%d releasedAuthority=%d terminal=%s",
                     tostring(record.identity),tostring(basis.dependentEncounterId or "NONE"),tostring(endedDependentEpisodeId),#settledIds,#(settling.releasedAuthorityTokenIds or {}),tostring(terminal.state))

@@ -30,7 +30,7 @@ def test_d0184_retired_passage_and_fixture_implementation_is_deleted_not_archive
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     gate=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
 
@@ -89,7 +89,7 @@ def test_decision_is_present_but_control_remains_absent():
     assert "DecisionSelector" not in control
     assert "SituationAssessment" not in control
     assert "executeControlRequest" in control
-    assert "ControlRequest.new" in control
+    assert "ControlRequest.new" not in control
 
 
 
@@ -164,7 +164,7 @@ def test_constraint_engine_declares_all_canonical_mandatory_families():
 def test_d0143_adds_one_bounded_control_module_beside_the_central_dispatcher():
     control_dir = ROOT / "scripts" / "control"
     assert control_dir.is_dir()
-    assert sorted(p.name for p in control_dir.glob("*.lua")) == ["CooperativePassageControl.lua", "LiveControlDispatcher.lua", "ResolutionSpaceProgressionEnvelope.lua", "TerminalEgressControl.lua"]
+    assert sorted(p.name for p in control_dir.glob("*.lua")) == ["CooperativePassageControl.lua", "GuardedRecoveryCompatibility.lua", "LiveControlDispatcher.lua", "TerminalEgressControl.lua"]
     dispatcher = (control_dir / "LiveControlDispatcher.lua").read_text(encoding="utf-8")
     for token in ("g_currentMission", "AIVehicleUtil.driveToPoint", "getCanAIFieldWorkerContinueWork"):
         assert token not in dispatcher
@@ -608,7 +608,7 @@ def test_v4745_guarded_recovery_convergence_probe_is_parallel_shadow_only():
 
 def test_v4746_d0123_regulation_bridge_is_bounded_test_authority_only():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     candidate=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     assert "scripts/prototypes/GuardedRecoveryRegulationTestBridge.lua" not in main
     assert "D0123_GUARDED_RECOVERY" in control
@@ -667,7 +667,7 @@ def test_v4756_deferred_native_sweep_closure_is_fail_closed_and_freezes_measurem
 def test_d0181_d0143_runtime_literals_and_resurrection_switch_are_retired():
     config=(ROOT/"scripts/config.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts/candidates/LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts/control/LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts/authority/RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     for token in (
         "COOPERATIVE_PASSAGE_TS015_ENABLED",
         "COOPERATIVE_PASSAGE_TS015_MIN_START_SEPARATION_M",
@@ -818,7 +818,7 @@ def test_v4768_d0136_settlement_future_space_uses_explicit_observation_adapter()
 def test_v4769_d0139_refuge_progress_passage_succeeds_old_follower_compression_purpose():
     gate=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
     follower=(ROOT/"scripts"/"diagnostics"/"FollowerMaturationCompressionProbe.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     assert "progressPassageContextForRun" not in gate
     assert "setPurposeSuccessionSource" not in follower
     assert "_retireForProgressPassage" not in follower
@@ -891,7 +891,7 @@ def test_d0141_aligned_follower_boundary_regulation_uses_current_knowledge_and_c
     situation=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     operational=(ROOT/"scripts"/"contracts"/"OperationalPicture.lua").read_text(encoding="utf-8")
     coordinator=(ROOT/"scripts"/"runtime"/"LiveRuntimeCoordinator.lua").read_text(encoding="utf-8")
 
@@ -938,7 +938,7 @@ def test_d0141_aligned_follower_boundary_regulation_uses_current_knowledge_and_c
     assert 'FollowerMaturationCompressionProbe' not in control
     assert 'Follower regulation ALIGNED' in hud
     assert 'legacy follower SHADOW' in hud
-    assert 'FollowerPacingHud.new(OuttaMyWay.runtime.liveControlDispatcher,OuttaMyWay.followerMaturationCompressionProbe)' in main
+    assert 'FollowerPacingHud.new(OuttaMyWay.runtime.regulationBoundedAuthority,OuttaMyWay.followerMaturationCompressionProbe)' in main
 
 
 def test_v47100_d0146_step1_remains_situation_owned_knowledge_under_step2_consumption():
@@ -978,7 +978,7 @@ def test_v47101_d0146_step2_is_active_candidate_owned_and_control_executes_only_
     fitness=(ROOT/"scripts"/"assessment"/"PassageCapabilityAssessment.lua").read_text(encoding="utf-8")
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
 
@@ -1076,8 +1076,8 @@ def test_v47106_d0146_current_excursion_conserves_action_space_before_establishe
     assessment=(ROOT/"scripts"/"assessment"/"TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
-    envelope=(ROOT/"scripts"/"control"/"ResolutionSpaceProgressionEnvelope.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    envelope=(ROOT/"scripts"/"authority"/"ResolutionSpaceProgressionEnvelope.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
 
     assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
@@ -1139,19 +1139,19 @@ def test_v47106_d0146_current_excursion_conserves_action_space_before_establishe
     assert '_escalateD0146ActionSpaceToHold' not in dispatcher
     assert '_deescalateD0146ActionSpaceHold' not in dispatcher
     assert 'd0146RegulationRealised' not in dispatcher
-    dispatch_body=dispatcher[dispatcher.index("function Dispatcher:dispatch"):dispatcher.index("function Dispatcher:getRequests")]
+    dispatch_body=dispatcher[dispatcher.index("function Authority:dispatch"):dispatcher.index("function Authority:getRequests")]
     assert dispatch_body.index("_dispatchD0146ActionSpace") < dispatch_body.index("local follower=self:_dispatchFollowerBoundary")
     assert "trajectoryKnowledge" not in dispatcher
     assert "currentExcursion" not in dispatcher and "nativeFieldWork" not in dispatcher
     assert "currentCorridorOverlapOnAxis" not in dispatcher
-    assert "actionSpace=%s" in validator and "actionNative=%s" in validator and "magnitudeAuthority=CONTROL" in validator
+    assert "actionSpace=%s" in validator and "actionNative=%s" in validator and "magnitudeAuthority=BOUNDED_AUTHORITY" in validator
 
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     assert "for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.participants)" in control
     assert "for index,gate in OuttaMyWay.ValueRecord.ipairs(run.guide.gates)" in control
 
 def test_v01141_d0197_obligation_persistence_is_not_actuation_persistence():
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
 
     assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
@@ -1169,12 +1169,12 @@ def test_v01141_d0197_obligation_persistence_is_not_actuation_persistence():
     ):
         assert token in dispatcher
 
-    quiesce=dispatcher[dispatcher.index("function Dispatcher:_quiesceD0146ActionSpaceActuation"):dispatcher.index("function Dispatcher:_continueD0146ActionSpaceReactivation")]
+    quiesce=dispatcher[dispatcher.index("function Authority:_quiesceD0146ActionSpaceActuation"):dispatcher.index("function Authority:_continueD0146ActionSpaceReactivation")]
     assert "releaseSupportingRegulationAuthority" in quiesce
     assert "settleD0146ActionSpacePurpose" not in quiesce
     assert "g_time" not in quiesce and "timeout" not in quiesce.lower() and "hysteresis" not in quiesce.lower()
 
-    reactivate=dispatcher[dispatcher.index("function Dispatcher:_continueD0146ActionSpaceReactivation"):dispatcher.index("function Dispatcher:_updateD0146ActionSpaceEnvelope")]
+    reactivate=dispatcher[dispatcher.index("function Authority:_continueD0146ActionSpaceReactivation"):dispatcher.index("function Authority:_updateD0146ActionSpaceEnvelope")]
     assert "ResolutionSpaceProgressionEnvelope.establish" in reactivate
     assert "applyD0146ActionSpaceDecision" not in reactivate
     assert "settleD0146ActionSpacePurpose" not in reactivate
@@ -1182,7 +1182,7 @@ def test_v01141_d0197_obligation_persistence_is_not_actuation_persistence():
 
 def test_v47108_settled_relationship_dissolution_requires_positive_non_turn_continuation():
     assessment=(ROOT/"scripts"/"assessment"/"TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
 
     for token in (
@@ -1321,7 +1321,7 @@ def test_v47122_d0147_bounded_infield_retreat_is_one_shot_and_reactive():
     assessment=(ROOT/"scripts"/"assessment"/"TerminalOccupancyAssessment.lua").read_text(encoding="utf-8")
     candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"TerminalEgressControl.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
 
     assert 'TERMINAL_INFIELD_RETREAT_DISTANCE_M' not in config
     assert 'TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M = 60.0' in config
@@ -1357,7 +1357,7 @@ def test_v01131_d0194_two_stage_terminal_courtesy_is_bounded_and_geometry_derive
     assessment=(ROOT/"scripts"/"assessment"/"TerminalOccupancyAssessment.lua").read_text(encoding="utf-8")
     candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"TerminalEgressControl.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     assert 'TERMINAL_INFIELD_RETREAT_DISTANCE_M' not in config
     assert 'TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M = 60.0' in config
     for token in ('TERMINAL_INTERIOR_SETTLEMENT','FIELD_CENTROID','CENTROID_BEARING_DISTANCE_CAP','TERMINAL_FINAL_BOUNDARY_SETTLEMENT','OUTER_BOUNDARY_AWAY_FROM_PROTECTED_DEMAND','forwardBoundaryPoint','maximumContainedProgress','protectedOccupancyTransitionClearanceSupported=true'):
@@ -1389,7 +1389,7 @@ def test_v01144_d0199_courtesy_budget_belongs_to_moved_obstacle_and_centroid_is_
 
 def test_v47124_d0147_protected_yield_interval_uses_valuerecord_traversal_and_sequences_productive_hold():
     candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     boundary=(ROOT/"scripts"/"commitment"/"DecisionCommitmentBoundary.lua").read_text(encoding="utf-8")
     drive=(ROOT/"scripts"/"prototypes"/"Prototype22DriveAuthority.lua").read_text(encoding="utf-8")
 
@@ -1428,7 +1428,7 @@ def test_v47124_d0147_protected_yield_interval_uses_valuerecord_traversal_and_se
 def test_v47125_d0147_continuation_renewal_requires_progress_then_later_block():
     assessment=(ROOT/"scripts"/"assessment"/"TerminalOccupancyAssessment.lua").read_text(encoding="utf-8")
     candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     for token in (
         "yieldRenewalState",
         "continuationWitnessAssemblyIds",
@@ -1800,7 +1800,7 @@ def test_v01124_d0192_bounded_axis_return_is_isolated_after_canonical_passage_gu
 
 
 def test_v01143_d0198_regulation_authority_semantics():
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     for token in (
@@ -1816,12 +1816,12 @@ def test_v01143_d0198_regulation_authority_semantics():
     ):
         assert token in dispatcher
     # Quiescence is an authority-lifetime change, not semantic purpose settlement.
-    q=dispatcher[dispatcher.index("function Dispatcher:_quiesceFollowerBoundaryActuation"):dispatcher.index("function Dispatcher:_dispatchFollowerBoundary")]
+    q=dispatcher[dispatcher.index("function Authority:_quiesceFollowerBoundaryActuation"):dispatcher.index("function Authority:_dispatchFollowerBoundary")]
     assert "releaseSupportingRegulationAuthority" in q
     assert "settleFollowerBoundaryPurpose" not in q
     assert "g_time" not in q and "timeout" not in q.lower() and "hysteresis" not in q.lower()
     # Quiescent D0155 must not monopolise dispatch before D0141.
-    dispatch=dispatcher[dispatcher.index("function Dispatcher:dispatch"):]
+    dispatch=dispatcher[dispatcher.index("function Authority:dispatch"):]
     assert 'if actionSpace~=nil and actionSpace.status~="QUIESCENT" then return actionSpace end' in dispatch
     assert 'local follower=self:_dispatchFollowerBoundary(picture,evaluated,candidate)' in dispatch
     # Diagnostic-only 0.1.14.2 hot-path instrumentation is withdrawn.
@@ -1832,7 +1832,7 @@ def test_v01143_d0198_regulation_authority_semantics():
 def test_v01145_d0200_job_episode_dependency_collapse_precedes_terminal_candidate_context():
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     assert 'function Lifecycle.collapseEndedJobEpisodeDependencies' in lifecycle
@@ -1849,7 +1849,7 @@ def test_v01145_d0200_job_episode_dependency_collapse_precedes_terminal_candidat
     process=runtime[runtime.index('function Runtime:processSealedObservation'):runtime.index('function Runtime:evaluateSealedOperationalPicture')]
     assert process.index('collapseEndedJobEpisodeDependencies') < process.index('assessOperationalPicture')
     assert 'trafficCommitmentCollapse=trafficCommitmentCollapse' in process
-    assert 'function Dispatcher:retireTrafficLeasesForCommitment' in dispatcher
+    assert 'function Authority:retireTrafficLeasesForCommitment' in dispatcher
     for token in ('D0155_DEPENDENT_COMMITMENT_TERMINATED','D0141_DEPENDENT_COMMITMENT_TERMINATED','D0123_DEPENDENT_COMMITMENT_TERMINATED'):
         assert token in dispatcher
 
@@ -1857,7 +1857,7 @@ def test_v01145_d0200_job_episode_dependency_collapse_precedes_terminal_candidat
 def test_cooperative_passage_responsibility_transition_is_upstream_and_singular():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     transition_path=ROOT/"scripts"/"responsibility"/"CooperativePassageResponsibilityTransition.lua"
     transition=transition_path.read_text(encoding="utf-8")
 
@@ -1865,10 +1865,10 @@ def test_cooperative_passage_responsibility_transition_is_upstream_and_singular(
     assert "scripts/responsibility/CooperativePassageResponsibilityTransition.lua" in main
     assert "CooperativePassageResponsibilityTransition.new(runtime)" in runtime
     orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
-    assert orchestration.index("liveControlDispatcher:dispatch") < orchestration.index("transitionCooperativePassageResolution")
-    assert orchestration.index("transitionCooperativePassageResolution") < orchestration.index("liveControlDispatcher:continueCooperativePassage")
+    assert orchestration.index("regulationBoundedAuthority:dispatch") < orchestration.index("transitionCooperativePassageResolution")
+    assert orchestration.index("transitionCooperativePassageResolution") < orchestration.index("regulationBoundedAuthority:continueCooperativePassage")
     assert 'status="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED"' in dispatcher
-    assert "function Dispatcher:continueCooperativePassage" in dispatcher
+    assert "function Authority:continueCooperativePassage" in dispatcher
     assert "LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision" not in dispatcher
     assert transition.count("LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision") == 1
     assert "applyD0146ActionSpaceDecision" not in dispatcher
@@ -1878,7 +1878,7 @@ def test_cooperative_passage_responsibility_transition_is_upstream_and_singular(
 def test_completed_obstruction_responsibility_transition_is_upstream_and_singular():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     transition_path=ROOT/"scripts"/"responsibility"/"CompletedObstructionResponsibilityTransition.lua"
     transition=transition_path.read_text(encoding="utf-8")
 
@@ -1886,9 +1886,9 @@ def test_completed_obstruction_responsibility_transition_is_upstream_and_singula
     assert "scripts/responsibility/CompletedObstructionResponsibilityTransition.lua" in main
     assert "CompletedObstructionResponsibilityTransition.new(runtime)" in runtime
     orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
-    assert orchestration.index("liveControlDispatcher:dispatch") < orchestration.index("transitionCompletedObstructionResolution")
-    assert orchestration.index("transitionCompletedObstructionResolution") < orchestration.index("liveControlDispatcher:continueCompletedObstruction")
-    readiness=dispatcher[dispatcher.index("function Dispatcher:_dispatchTerminalEgress"):dispatcher.index("function Dispatcher:continueCompletedObstruction")]
+    assert orchestration.index("regulationBoundedAuthority:dispatch") < orchestration.index("transitionCompletedObstructionResolution")
+    assert orchestration.index("transitionCompletedObstructionResolution") < orchestration.index("regulationBoundedAuthority:continueCompletedObstruction")
+    readiness=dispatcher[dispatcher.index("function Authority:_dispatchTerminalEgress"):dispatcher.index("function Authority:continueCompletedObstruction")]
     assert readiness.index('boundary.mode~="D0147_BOUNDED_TERMINAL_EGRESS"') < readiness.index('bridge.terminalEvent~=nil')
     assert readiness.index('bridge.terminalEvent~=nil') < readiness.index('candidate.capability~="REPOSITION"')
     assert readiness.index('candidate.capability~="REPOSITION"') < readiness.index('self.terminalEgressControl==nil')
@@ -1896,9 +1896,9 @@ def test_completed_obstruction_responsibility_transition_is_upstream_and_singula
     assert readiness.index('self.terminalEgressControl:isActive()') < readiness.index('status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED"')
     assert "TerminalEgressCommitmentLifecycle.applyDecision" not in dispatcher
     assert transition.count("TerminalEgressCommitmentLifecycle.applyDecision") == 1
-    continuation=dispatcher[dispatcher.index("function Dispatcher:continueCompletedObstruction"):dispatcher.index("function Dispatcher:_onCooperativePassageCompletion")]
+    continuation=dispatcher[dispatcher.index("function Authority:continueCompletedObstruction"):dispatcher.index("function Authority:_onCooperativePassageCompletion")]
     assert continuation.index("_applyD0147ProtectedYield") < continuation.index("_requestFromGrant")
-    assert continuation.index("_requestFromGrant") < continuation.index("terminalEgressControl:executeControlRequest")
+    assert continuation.index("_requestFromGrant") < continuation.index("self.runtime.liveControlDispatcher:dispatch")
     assert "TerminalEgressCommitmentLifecycle.settle" in continuation
     assert "TerminalEgressCommitmentLifecycle.settle" in dispatcher
     assert "LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision" not in dispatcher
@@ -1913,7 +1913,7 @@ def test_explicit_resolution_commitment_is_a_read_only_view_at_both_transition_b
     authority=(ROOT/"scripts"/"responsibility"/"ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
     cooperative=(ROOT/"scripts"/"responsibility"/"CooperativePassageResponsibilityTransition.lua").read_text(encoding="utf-8")
     completed=(ROOT/"scripts"/"responsibility"/"CompletedObstructionResponsibilityTransition.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
 
     assert "scripts/contracts/ResolutionCommitment.lua" in main
     assert "scripts/responsibility/ResolutionCommitmentAdapter.lua" in main
@@ -1947,7 +1947,7 @@ def test_explicit_resolution_commitment_is_a_read_only_view_at_both_transition_b
 def test_follower_boundary_regulation_application_is_upstream_and_singular():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
     transition_path=ROOT/"scripts"/"responsibility"/"FollowerBoundaryResponsibilityTransition.lua"
     transition=transition_path.read_text(encoding="utf-8")
@@ -1956,19 +1956,19 @@ def test_follower_boundary_regulation_application_is_upstream_and_singular():
     assert "scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua" in main
     assert "FollowerBoundaryResponsibilityTransition.new(runtime)" in runtime
     orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
-    assert orchestration.index("liveControlDispatcher:dispatch") < orchestration.index("followerBoundaryResponsibilityTransition:transition")
-    assert orchestration.index("followerBoundaryResponsibilityTransition:transition") < orchestration.index("liveControlDispatcher:continueFollowerBoundary")
-    readiness=dispatcher[dispatcher.index("function Dispatcher:_dispatchFollowerBoundary"):dispatcher.index("function Dispatcher:continueFollowerBoundary")]
+    assert orchestration.index("regulationBoundedAuthority:dispatch") < orchestration.index("followerBoundaryResponsibilityTransition:transition")
+    assert orchestration.index("followerBoundaryResponsibilityTransition:transition") < orchestration.index("regulationBoundedAuthority:continueFollowerBoundary")
+    readiness=dispatcher[dispatcher.index("function Authority:_dispatchFollowerBoundary"):dispatcher.index("function Authority:continueFollowerBoundary")]
     assert readiness.index('bridge.action=="RETIRE"') < readiness.index('bridge.action=="PRESERVE"')
     assert readiness.index('bridge.action=="PRESERVE"') < readiness.index('bridge.action~="APPLY"')
     assert readiness.index('candidate.capability~="REGULATE_SPEED"') < readiness.index('self.capability==nil')
     assert readiness.index('self.capability==nil') < readiness.index('status="FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED"')
     assert "LiveTrafficCommitmentLifecycle.applyFollowerBoundaryDecision" not in dispatcher
     assert transition.count("LiveTrafficCommitmentLifecycle.applyFollowerBoundaryDecision") == 1
-    assert "function Dispatcher:continueFollowerBoundary" in dispatcher
-    continuation=dispatcher[dispatcher.index("function Dispatcher:continueFollowerBoundary"):dispatcher.index("function Dispatcher:getFollowerBoundaryStatus")]
+    assert "function Authority:continueFollowerBoundary" in dispatcher
+    continuation=dispatcher[dispatcher.index("function Authority:continueFollowerBoundary"):dispatcher.index("function Authority:getFollowerBoundaryStatus")]
     assert continuation.index("authorities:validate") < continuation.index("_regulationRequest")
-    assert continuation.index("_regulationRequest") < continuation.index("capability:executeControlRequest")
+    assert continuation.index("_regulationRequest") < continuation.index("self.runtime.liveControlDispatcher:dispatch")
     assert 'ownerTag=D0141_OWNER_TAG' not in continuation  # owner tag is supplied as the existing request argument
     assert "D0141_OWNER_TAG" in continuation and "requestedFollowerCapKmh" in continuation
     assert "applyFollowerBoundaryRetirementDecision" in dispatcher
@@ -1987,7 +1987,7 @@ def test_responsibility_transition_authority_owns_action_space_passage_replaceme
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     authority=(ROOT/"scripts"/"responsibility"/"ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     regulation=(ROOT/"scripts"/"contracts"/"Regulation.lua").read_text(encoding="utf-8")
     adapter=(ROOT/"scripts"/"responsibility"/"ResolutionCommitmentAdapter.lua").read_text(encoding="utf-8")
 
@@ -2014,15 +2014,15 @@ def test_responsibility_transition_authority_owns_action_space_passage_replaceme
     assert "genericCommitmentIdentity" in adapter
     action_transition=(ROOT/"scripts"/"responsibility"/"ActionSpaceRegulationResponsibilityTransition.lua").read_text(encoding="utf-8")
     assert action_transition.index("preflightActionSpaceRegulation") < action_transition.index("applyD0146ActionSpaceDecision")
-    continuation=dispatcher[dispatcher.index("function Dispatcher:continueCooperativePassage"):dispatcher.index("function Dispatcher:getDispatchCount")]
+    continuation=dispatcher[dispatcher.index("function Authority:continueCooperativePassage"):dispatcher.index("function Authority:getDispatchCount")]
     assert "_supersedeD0146ActionSpaceForCooperativePassage" not in continuation
-    assert "executeJointRequests" in continuation
+    assert "self.runtime.liveControlDispatcher:dispatchJoint" in continuation
 
 
 def test_action_space_regulation_application_is_upstream_and_singular():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
     transition_path=ROOT/"scripts"/"responsibility"/"ActionSpaceRegulationResponsibilityTransition.lua"
     transition=transition_path.read_text(encoding="utf-8")
@@ -2031,14 +2031,14 @@ def test_action_space_regulation_application_is_upstream_and_singular():
     assert "scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua" in main
     assert "ActionSpaceRegulationResponsibilityTransition.new(runtime)" in runtime
     orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
-    assert orchestration.index("liveControlDispatcher:dispatch") < orchestration.index("actionSpaceRegulationResponsibilityTransition:transition")
-    assert orchestration.index("actionSpaceRegulationResponsibilityTransition:transition") < orchestration.index("liveControlDispatcher:continueActionSpaceRegulation")
+    assert orchestration.index("regulationBoundedAuthority:dispatch") < orchestration.index("actionSpaceRegulationResponsibilityTransition:transition")
+    assert orchestration.index("actionSpaceRegulationResponsibilityTransition:transition") < orchestration.index("regulationBoundedAuthority:continueActionSpaceRegulation")
     assert "LiveTrafficCommitmentLifecycle.applyD0146ActionSpaceDecision" not in dispatcher
     assert transition.count("LiveTrafficCommitmentLifecycle.applyD0146ActionSpaceDecision") == 1
     assert 'status="ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED"' in dispatcher
     for context in ('applicationContext="INITIAL"', 'applicationContext="REACTIVATION"', 'applicationContext="ROLE_MIGRATION"'):
         assert context in dispatcher
-    continuation=dispatcher[dispatcher.index("function Dispatcher:continueActionSpaceRegulation"):dispatcher.index("function Dispatcher:_supersedeD0146ActionSpaceForCooperativePassage")]
+    continuation=dispatcher[dispatcher.index("function Authority:continueActionSpaceRegulation"):dispatcher.index("function Authority:_supersedeD0146ActionSpaceForCooperativePassage")]
     assert "ResolutionSpaceProgressionEnvelope" in dispatcher
     assert "_quiesceD0146ActionSpaceActuation" in dispatcher
     assert "settleD0146ActionSpacePurpose" in dispatcher
@@ -2061,7 +2061,7 @@ def test_forward_intersection_is_situation_owned_and_consumed_without_geometry_r
     assessment=(ROOT/"scripts"/"assessment"/"SpatialConstraintAssessment.lua").read_text(encoding="utf-8")
     situation=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
     candidates=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     harness=(ROOT/"tests"/"replacement_core"/"run.lua").read_text(encoding="utf-8")
 
     assert 'scripts/assessment/SpatialConstraintAssessment.lua' in main
@@ -2094,7 +2094,7 @@ def test_follower_regulation_uses_semantic_authority_before_control_and_terminal
     runtime=(ROOT/"scripts/runtime/Runtime.lua").read_text(encoding="utf-8")
     transition=(ROOT/"scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua").read_text(encoding="utf-8")
     authority=(ROOT/"scripts/responsibility/ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts/control/LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts/authority/RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     terminal=(ROOT/"scripts/commitment/TerminalSettlementEvaluator.lua").read_text(encoding="utf-8")
     assert transition.index("preflightFollowerRegulation") < transition.index("applyFollowerBoundaryDecision")
     assert transition.index("applyFollowerBoundaryDecision") < transition.index("establishOrPreserveFollowerRegulation")
@@ -2103,7 +2103,7 @@ def test_follower_regulation_uses_semantic_authority_before_control_and_terminal
     assert runtime.index("replaceFollowerRegulationWithCooperativePassage") < runtime.index("continueCooperativePassage")
     replacement=authority[authority.index("function Authority:replaceFollowerRegulationWithCooperativePassage"):]
     assert replacement.index("preflightFollowerRegulationForCooperativePassage") < replacement.index("replaceRegulationWithCooperativePassage")
-    continuation=dispatcher[dispatcher.index("function Dispatcher:continueCooperativePassage"):dispatcher.index("function Dispatcher:getDispatchCount")]
+    continuation=dispatcher[dispatcher.index("function Authority:continueCooperativePassage"):dispatcher.index("function Authority:getDispatchCount")]
     assert "_supersedeFollowerBoundaryForCooperativePassage" not in continuation
     assert "terminalSettlement.responsibilityTransitionAuthority=runtime.responsibilityTransitionAuthority" in runtime
     assert terminal.index("self.commitments:save(terminal)") < terminal.index("terminateSemanticResponsibilitiesForTerminalCommitment")
@@ -2140,7 +2140,7 @@ def test_phase10_bounded_authority_contract_and_identity_are_distinct():
 
 
 def test_phase10_migrated_control_requests_require_bounded_authority():
-    dispatcher=(ROOT/"scripts/control/LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts/authority/RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     p22=(ROOT/"scripts/prototypes/Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
     cooperative=(ROOT/"scripts/control/CooperativePassageControl.lua").read_text(encoding="utf-8")
     terminal=(ROOT/"scripts/control/TerminalEgressControl.lua").read_text(encoding="utf-8")
@@ -2151,26 +2151,26 @@ def test_phase10_migrated_control_requests_require_bounded_authority():
     assert "currentResponsibility.identity" in dispatcher
     assert "applied.currentResponsibility" in dispatcher
 
-    follower=dispatcher[dispatcher.index("function Dispatcher:continueFollowerBoundary"):dispatcher.index("function Dispatcher:getFollowerBoundaryStatus")]
-    assert follower.index("_regulationRequest") < follower.index("capability:executeControlRequest")
+    follower=dispatcher[dispatcher.index("function Authority:continueFollowerBoundary"):dispatcher.index("function Authority:getFollowerBoundaryStatus")]
+    assert follower.index("_regulationRequest") < follower.index("self.runtime.liveControlDispatcher:dispatch")
     assert "applied.currentResponsibility" in follower
     assert "boundedAuthorityId=request.boundedAuthorityId" in follower
     assert "D0141_GRANT_REPLACED_BY_CURRENT_MAGNITUDE" in follower
 
-    action=dispatcher[dispatcher.index("function Dispatcher:_continueD0146ActionSpaceInitial"):dispatcher.index("function Dispatcher:actionSpaceRegulationTransitionFailed")]
+    action=dispatcher[dispatcher.index("function Authority:_continueD0146ActionSpaceInitial"):dispatcher.index("function Authority:actionSpaceRegulationTransitionFailed")]
     assert "applied.currentResponsibility" in action
     assert "boundedAuthorityId=request.boundedAuthorityId" in action
     assert "FORWARD_INTERSECTION_REGULATION_SPEED_KMH" in action
 
-    passage=dispatcher[dispatcher.index("function Dispatcher:_jointCooperativeRequests"):dispatcher.index("local function d0147TokenFor")]
+    passage=dispatcher[dispatcher.index("function Authority:_jointCooperativeRequests"):dispatcher.index("local function d0147TokenFor")]
     assert 'capability="REPOSITION"' in passage
     assert 'exemplar="COOPERATIVE_PASSAGE"' in passage
     assert "_authorizeBoundedAuthority(currentResponsibility" in passage
 
-    completed=dispatcher[dispatcher.index("function Dispatcher:continueCompletedObstruction"):dispatcher.index("function Dispatcher:_onCooperativePassageCompletion")]
+    completed=dispatcher[dispatcher.index("function Authority:continueCompletedObstruction"):dispatcher.index("function Authority:_onCooperativePassageCompletion")]
     assert completed.index("_applyD0147ProtectedYield") < completed.index("_authorizeBoundedAuthority")
     assert 'exemplar="COMPLETED_OBSTRUCTION"' in completed
-    assert "terminalEgressControl:executeControlRequest" in completed
+    assert "self.runtime.liveControlDispatcher:dispatch" in completed
 
     assert "boundedAuthority:validateRequest(request)" in p22
     assert "migratedBoundedAuthorityOwnerTags" in p22
@@ -2182,15 +2182,15 @@ def test_phase10_migrated_control_requests_require_bounded_authority():
 
 
 def test_phase10_bounded_authority_cleanup_precedes_terminal_or_successor_control():
-    dispatcher=(ROOT/"scripts/control/LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts/authority/RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     transition=(ROOT/"scripts/responsibility/ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
     settlement=(ROOT/"scripts/commitment/TerminalSettlementEvaluator.lua").read_text(encoding="utf-8")
 
-    action_supersede=dispatcher[dispatcher.index("function Dispatcher:_supersedeD0146ActionSpaceForCooperativePassage"):dispatcher.index("function Dispatcher:supersedeActionSpaceRegulationForCooperativePassage")]
+    action_supersede=dispatcher[dispatcher.index("function Authority:_supersedeD0146ActionSpaceForCooperativePassage"):dispatcher.index("function Authority:supersedeActionSpaceRegulationForCooperativePassage")]
     assert "COOPERATIVE_PASSAGE_SUPERSEDES_D0146_ACTION_SPACE_REGULATION" in action_supersede
     assert action_supersede.index("_releaseBoundedAuthority") < action_supersede.index("self.d0146ActionSpaceLease=nil")
 
-    follower_supersede=dispatcher[dispatcher.index("function Dispatcher:_supersedeFollowerBoundaryForCooperativePassage"):dispatcher.index("function Dispatcher:_releaseGuardedRecoveryLease")]
+    follower_supersede=dispatcher[dispatcher.index("function Authority:_supersedeFollowerBoundaryForCooperativePassage"):dispatcher.index("function Authority:_releaseGuardedRecoveryLease")]
     assert "COOPERATIVE_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION" in follower_supersede
     assert follower_supersede.index("_releaseBoundedAuthority") < follower_supersede.index("self.followerBoundaryLease=nil")
 
@@ -2205,9 +2205,58 @@ def test_phase10_bounded_authority_cleanup_precedes_terminal_or_successor_contro
 
 
 def test_phase10_guarded_recovery_regulation_remains_intentionally_unmigrated():
-    dispatcher=(ROOT/"scripts/control/LiveControlDispatcher.lua").read_text(encoding="utf-8")
-    guarded=dispatcher[dispatcher.index("function Dispatcher:_dispatchGuardedRecovery"):dispatcher.index("function Dispatcher:getGuardedRecoveryStatus")]
+    dispatcher=(ROOT/"scripts/authority/RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
+    compatibility=(ROOT/"scripts/control/GuardedRecoveryCompatibility.lua").read_text(encoding="utf-8")
+    guarded=dispatcher[dispatcher.index("function Authority:_dispatchGuardedRecovery"):dispatcher.index("function Authority:getGuardedRecoveryStatus")]
     assert 'bridge,"APPLY")' in guarded
     assert "acquireSupportingRegulationAuthority" in guarded
     assert "applied.currentResponsibility" not in guarded
     assert "boundedAuthorityId" not in guarded
+    assert "GuardedRecoveryCompatibility" in compatibility
+    assert "_dispatchGuardedRecovery" in compatibility
+
+
+def test_phase11_live_control_dispatcher_is_authorised_routing_only():
+    main=(ROOT/"scripts/main.lua").read_text(encoding="utf-8")
+    runtime=(ROOT/"scripts/runtime/Runtime.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts/control/LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    authority=(ROOT/"scripts/authority/RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
+    bounded=(ROOT/"scripts/authority/BoundedAuthority.lua").read_text(encoding="utf-8")
+    envelope=(ROOT/"scripts/authority/ResolutionSpaceProgressionEnvelope.lua").read_text(encoding="utf-8")
+    p22=(ROOT/"scripts/prototypes/Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
+
+    assert "scripts/assessment/CurrentResponsibilityAssessment.lua" in main
+    assert "scripts/authority/RegulationBoundedAuthority.lua" in main
+    assert "scripts/authority/ResolutionSpaceProgressionEnvelope.lua" in main
+    assert "scripts/control/GuardedRecoveryCompatibility.lua" in main
+    assert main.index("scripts/authority/ResolutionSpaceProgressionEnvelope.lua") < main.index("scripts/authority/RegulationBoundedAuthority.lua")
+    assert main.index("scripts/authority/RegulationBoundedAuthority.lua") < main.index("scripts/control/LiveControlDispatcher.lua")
+
+    assert "RegulationBoundedAuthority.new(runtime)" in runtime
+    assert "GuardedRecoveryCompatibility.new(runtime,runtime.regulationBoundedAuthority)" in runtime
+    orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
+    assert "regulationBoundedAuthority:dispatch(picture,evaluated)" in orchestration
+    assert "regulationBoundedAuthority:continueFollowerBoundary" in orchestration
+    assert "regulationBoundedAuthority:continueActionSpaceRegulation" in orchestration
+    assert "regulationBoundedAuthority:continueCooperativePassage" in orchestration
+    assert "regulationBoundedAuthority:continueCompletedObstruction" in orchestration
+
+    for forbidden in (
+        "followerBoundaryLease","d0146ActionSpaceLease","d0147ProtectedYieldLeases",
+        "_authorizeBoundedAuthority","boundedAuthority:authorize","ResolutionSpaceProgressionEnvelope",
+        "terminateRegulation","terminateActionSpaceRegulation",
+        "settleFollowerBoundaryPurpose","settleD0146ActionSpacePurpose",
+        "TerminalEgressCommitmentLifecycle.settle","completeCooperativePassage",
+    ):
+        assert forbidden not in dispatcher
+    for required in ("function Dispatcher:dispatch(request,candidate)", "function Dispatcher:dispatchJoint", "executeControlRequest", "executeJointRequests", "recordOutcome"):
+        assert required in dispatcher
+
+    assert "function Authority:materializeRequest" in bounded
+    assert "targetMatchesGrant" in bounded
+    assert "RegulationBoundedAuthority" in authority
+    assert "boundedAuthority:materializeRequest" in authority
+    assert "self.runtime.liveControlDispatcher:dispatch(request,candidate)" in authority
+    assert "self.runtime.liveControlDispatcher:dispatchJoint" in authority
+    assert "Bounded-Authority magnitude policy" in envelope
+    assert "magnitudeAuthority=CONTROL" not in p22

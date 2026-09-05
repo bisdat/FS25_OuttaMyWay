@@ -25,7 +25,7 @@ function Runtime.new()
     local terminalOccupancyAssessment=OuttaMyWay.TerminalOccupancyAssessment.new(jobEpisodes)
     local runtime=setmetatable({
         identities=identities,epochs=epochs,observationAdapter=OuttaMyWay.RuntimeObservationAdapter.new(identities,epochs),jobEpisodes=jobEpisodes,operations=operations,
-        commitments=commitments,obligations=obligations,authorities=authorities,boundedAuthority=nil,commitmentAdmission=admission,governingBasisEvaluator=governingBasis,terminalSettlementEvaluator=terminalSettlement,terminalOccupancyAssessment=terminalOccupancyAssessment,
+        commitments=commitments,obligations=obligations,authorities=authorities,boundedAuthority=nil,commitmentAdmission=admission,governingBasisEvaluator=governingBasis,terminalSettlementEvaluator=terminalSettlement,terminalOccupancyAssessment=terminalOccupancyAssessment,currentResponsibilityAssessment=OuttaMyWay.CurrentResponsibilityAssessment.new(),
         encounters=encounters,situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,encounters,commitments,obligations,terminalOccupancyAssessment),
         candidateSpace=OuttaMyWay.CandidateSpace.new(identities,epochs),constraintEngine=OuttaMyWay.ConstraintEngine.new(identities,epochs),decisionSelector=OuttaMyWay.DecisionSelector.new(identities,epochs),
         targetedFieldIdentityProbe=OuttaMyWay.TargetedFieldIdentityProbe.new(),fieldWorldSnapshots=fieldWorldSnapshots,fieldWorldEquivalenceEvaluator=fieldWorldEquivalenceEvaluator,fieldWorldEquivalenceAuthority=fieldWorldEquivalenceAuthority,assemblyRepresentationCache=assemblyRepresentationCache,passiveCandidateSupport=OuttaMyWay.PassiveLiveCandidateSupport.new(identities,epochs),
@@ -37,6 +37,8 @@ function Runtime.new()
     runtime.terminalEgressCandidateSupport=OuttaMyWay.TerminalEgressCandidateSupport.new(identities,epochs)
     runtime.liveTrafficCandidateSupport=OuttaMyWay.LiveTrafficCandidateSupport.new(identities,epochs,runtime.passiveCandidateSupport)
     runtime.liveControlDispatcher=OuttaMyWay.LiveControlDispatcher.new(runtime)
+    runtime.regulationBoundedAuthority=OuttaMyWay.RegulationBoundedAuthority.new(runtime)
+    runtime.guardedRecoveryCompatibility=OuttaMyWay.GuardedRecoveryCompatibility.new(runtime,runtime.regulationBoundedAuthority)
     runtime.decisionCommitmentBoundary=OuttaMyWay.DecisionCommitmentBoundary.new(identities,epochs,admission,commitments,obligations,authorities,governingBasis,terminalSettlement)
     runtime.responsibilityTransitionAuthority=OuttaMyWay.ResponsibilityTransitionAuthority.new(runtime)
     terminalSettlement.responsibilityTransitionAuthority=runtime.responsibilityTransitionAuthority
@@ -58,6 +60,7 @@ end
 
 function Runtime:setLiveControlCapability(capability)
     self.liveControlDispatcher:setCapability(capability)
+    if self.regulationBoundedAuthority~=nil then self.regulationBoundedAuthority:setCapability(capability) end
 end
 function Runtime:markAutonomousHeadOnDispatched(governingRequirementKey)
     self.liveTrafficCandidateSupport:markAutonomousHeadOnDispatched(governingRequirementKey)
@@ -93,20 +96,20 @@ function Runtime:evaluateSealedOperationalPicture(picture)
 end
 
 function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
-    local dispatch=self.liveControlDispatcher:dispatch(picture,evaluated)
+    local dispatch=self.regulationBoundedAuthority:dispatch(picture,evaluated)
     if dispatch.status=="FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED" then
         local applied,reason=self.followerBoundaryResponsibilityTransition:transition(picture,evaluated,dispatch)
         if applied==nil then
             return {status="NO_DISPATCH",reason="FOLLOWER_BOUNDARY_RESPONSIBILITY_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId,followerBoundary=true}
         end
-        local continued=self.liveControlDispatcher:continueFollowerBoundary(picture,evaluated,applied)
+        local continued=self.regulationBoundedAuthority:continueFollowerBoundary(picture,evaluated,applied)
         continued.currentResponsibility=applied.currentResponsibility
         return continued
     end
     if dispatch.status=="ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED" then
         local applied,reason=self.actionSpaceRegulationResponsibilityTransition:transition(picture,evaluated,dispatch)
-        if applied==nil then return self.liveControlDispatcher:actionSpaceRegulationTransitionFailed(dispatch,reason) end
-        local continued=self.liveControlDispatcher:continueActionSpaceRegulation(picture,evaluated,applied,dispatch)
+        if applied==nil then return self.regulationBoundedAuthority:actionSpaceRegulationTransitionFailed(dispatch,reason) end
+        local continued=self.regulationBoundedAuthority:continueActionSpaceRegulation(picture,evaluated,applied,dispatch)
         continued.currentResponsibility=applied.currentResponsibility
         return continued
     end
@@ -114,10 +117,10 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         local applied,reason=nil,nil
         if self.responsibilityTransitionAuthority:matchesActionSpacePassage(evaluated) then
             applied,reason=self.responsibilityTransitionAuthority:replaceActionSpaceRegulationWithCooperativePassage(
-                picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition,self.liveControlDispatcher)
+                picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition,self.regulationBoundedAuthority)
         elseif self.responsibilityTransitionAuthority:matchesFollowerPassage(picture,evaluated) then
             applied,reason=self.responsibilityTransitionAuthority:replaceFollowerRegulationWithCooperativePassage(
-                picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition,self.liveControlDispatcher)
+                picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition,self.regulationBoundedAuthority)
         else
             applied,reason=self.responsibilityTransitionAuthority:transitionCooperativePassageResolution(
                 picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition)
@@ -125,7 +128,7 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         if applied==nil then
             return {status="NO_DISPATCH",reason="COMMITMENT_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId}
         end
-        local continued=self.liveControlDispatcher:continueCooperativePassage(picture,evaluated,applied)
+        local continued=self.regulationBoundedAuthority:continueCooperativePassage(picture,evaluated,applied)
         continued.currentResponsibility=applied.currentResponsibility
         return continued
     end
@@ -135,7 +138,7 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         if applied==nil then
             return {status="NO_DISPATCH",reason="D0147_COMMITMENT_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId,terminalEgress=true}
         end
-        local continued=self.liveControlDispatcher:continueCompletedObstruction(picture,evaluated,applied)
+        local continued=self.regulationBoundedAuthority:continueCompletedObstruction(picture,evaluated,applied)
         continued.currentResponsibility=applied.currentResponsibility
         return continued
     end
@@ -177,5 +180,5 @@ end
 function Runtime:runReplay(fixture) return self.replayRunner:run(fixture) end
 function Runtime:getStatus()
     return {initialized=self.initialized,runtimeMode=self.runtimeMode,controlAuthorityEnabled=self.controlAuthorityEnabled,
-        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),replayRunCount=self.replayRunner:getRunCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportCount=self.liveTrafficCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportStatus=self.liveTrafficCandidateSupport:getLastStatus(),terminalEgressCandidateSupportStatus=self.terminalEgressCandidateSupport:getLastStatus(),terminalEgressCandidateSupportCount=self.terminalEgressCandidateSupport:getPublishedCount(),liveControlDispatchCount=self.liveControlDispatcher:getDispatchCount(),cooperativePassageControlStatus=(self.liveControlDispatcher.cooperativePassageControl and self.liveControlDispatcher.cooperativePassageControl:getStatus() or nil),terminalEgressControlStatus=(self.liveControlDispatcher.terminalEgressControl and self.liveControlDispatcher.terminalEgressControl:getStatus() or nil),liveRuntimeCoordinatorCycleCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getCycleCount() or 0,liveRuntimeCoordinatorErrorCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getErrorCount() or 0,passiveTraceCount=#self.passiveLiveValidator:getRecords(),passiveErrorCount=self.passiveLiveValidator:getErrorCount(),fieldIdentityProbeSampleCount=self.targetedFieldIdentityProbe:getSampleCount(),fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),representationCacheRetiredCount=self.assemblyRepresentationCache.retiredCount or 0,activeOperationCount=#self.operations:listActive(),encounterCount=#self.encounters:list(),activeEncounterCount=#self.encounters:listActive(),commitmentCount=#self.commitments:list(),traceCount=self.trace:count()}
+        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),replayRunCount=self.replayRunner:getRunCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportCount=self.liveTrafficCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportStatus=self.liveTrafficCandidateSupport:getLastStatus(),terminalEgressCandidateSupportStatus=self.terminalEgressCandidateSupport:getLastStatus(),terminalEgressCandidateSupportCount=self.terminalEgressCandidateSupport:getPublishedCount(),liveControlDispatchCount=self.liveControlDispatcher:getDispatchCount(),regulationAuthorityDispatchCount=self.regulationBoundedAuthority and self.regulationBoundedAuthority:getDispatchCount() or 0,cooperativePassageControlStatus=(self.liveControlDispatcher.cooperativePassageControl and self.liveControlDispatcher.cooperativePassageControl:getStatus() or nil),terminalEgressControlStatus=(self.liveControlDispatcher.terminalEgressControl and self.liveControlDispatcher.terminalEgressControl:getStatus() or nil),liveRuntimeCoordinatorCycleCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getCycleCount() or 0,liveRuntimeCoordinatorErrorCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getErrorCount() or 0,passiveTraceCount=#self.passiveLiveValidator:getRecords(),passiveErrorCount=self.passiveLiveValidator:getErrorCount(),fieldIdentityProbeSampleCount=self.targetedFieldIdentityProbe:getSampleCount(),fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),representationCacheRetiredCount=self.assemblyRepresentationCache.retiredCount or 0,activeOperationCount=#self.operations:listActive(),encounterCount=#self.encounters:list(),activeEncounterCount=#self.encounters:listActive(),commitmentCount=#self.commitments:list(),traceCount=self.trace:count()}
 end

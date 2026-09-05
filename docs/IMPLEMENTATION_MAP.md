@@ -905,7 +905,7 @@ AuthorityToken reuse is not redesigned before Phase 10.
 
 ### Phase 10 Bounded Authority Reconciliation
 
-**Phase 10 — Reconcile Bounded Authority — IMPLEMENTED IN THIS PR SUBJECT TO REVIEW.**
+**Phase 10 — Reconcile Bounded Authority — COMPLETE.**
 
 Phase 10 addresses the **Responsibility-to-Control Traceability Gap**: migrated
 physical requests previously carried retained `CM-*`, mechanical `AU-*`,
@@ -947,7 +947,7 @@ Control validates BA-* before physical execution
 Follower Regulation, Action-Space/Forward Intersection Regulation, Cooperative
 Passage and completed-obstruction Resolution requests are created through
 `BoundedAuthority` before Control. Guarded Recovery Regulation remains an
-intentionally unmigrated legacy `ControlRequest` path in this increment because
+intentionally unmigrated legacy `ControlRequest` path because
 it is outside the four fixed Phase-10 exemplars except for completed-obstruction
 protected-demand actuation, which is migrated.
 
@@ -1014,6 +1014,79 @@ picture's targeted same-Commitment `REVISE`. Action-Space INITIAL,
 REACTIVATION and ROLE_MIGRATION likewise preflight semantic compatibility before
 their retained lifecycle application. Preflight is read-only and performs no
 Control or retained lifecycle mutation.
+
+### Phase 11 Authorised Control Routing
+
+Phase 11 addresses the **Dispatch Boundary Inversion**: migrated production
+paths previously entered `LiveControlDispatcher` before their current physical
+permission was fully materialized. The accepted routing chain is now explicit:
+
+```text
+Current Responsibility RS-*
+        ↓
+Bounded Authority Grant BA-*
+        ↓
+ControlRequest CR-*
+        ↓
+LiveControlDispatcher
+        ↓
+Control
+```
+
+[`LiveControlDispatcher`](../scripts/control/LiveControlDispatcher.lua) is now
+the routing boundary. It owns executor availability checks, routing
+already-authorised `ControlRequest` values to the Regulation capability,
+Cooperative Passage Control or Terminal Egress Control, recording Control
+outcomes and dispatch diagnostics. It does not create Bounded Authority, choose
+Regulation magnitude, interpret persistence, own migrated lease state or settle
+semantic responsibilities.
+
+[`RegulationBoundedAuthority`](../scripts/authority/RegulationBoundedAuthority.lua)
+now owns migrated Regulation physical-authority state for follower Regulation,
+Action-Space/Forward Intersection Regulation and completed-obstruction
+protected-demand holds. It keeps the existing physical policies and literals,
+including follower elastic caps, D-0155, fixed Forward Intersection `1 km/h`,
+D-0147 protected demand, quiescence/reactivation and role migration. The
+progression envelope is rehomed as
+[`ResolutionSpaceProgressionEnvelope`](../scripts/authority/ResolutionSpaceProgressionEnvelope.lua)
+because it is Bounded-Authority magnitude policy: Situation owns purpose and
+role evidence; Bounded Authority owns the current permitted cap; Control
+realises the authorised cap.
+
+[`BoundedAuthority.materializeRequest()`](../scripts/authority/BoundedAuthority.lua)
+is the narrow CR materialisation operation. It requires an existing current
+`BA-*` grant and refuses target broadening; it does not create strategic
+authority.
+
+[`CurrentResponsibilityAssessment`](../scripts/assessment/CurrentResponsibilityAssessment.lua)
+is an implementation component inside Situation Assessment. It records the
+bounded reassessment question "does this existing RS-* remain positively
+justified now?" and does not introduce a new lifecycle or Responsibility
+Authority.
+
+[`GuardedRecoveryCompatibility`](../scripts/control/GuardedRecoveryCompatibility.lua)
+isolates the D-0123 Guarded Recovery legacy path. Guarded Recovery remains
+explicitly unmigrated and must not be used as precedent for migrated Bounded
+Authority paths.
+
+The Phase-11 discoveries are recorded as implementation placement constraints:
+
+- **Authority-Dispatcher Dependency Cycle**: Responsibility Transition Authority
+  no longer depends on dispatcher-owned predecessor state; predecessor cleanup
+  is sequenced through the authority owner.
+- **Authority Shadow State**: `followerBoundaryLease`,
+  `d0146ActionSpaceLease` and `d0147ProtectedYieldLeases` leave
+  `LiveControlDispatcher`.
+- **Current Responsibility Reassessment Gap**: reassessment is documented as
+  Situation Assessment implementation work, not dispatch work.
+- **Predecessor Neutralisation Must Precede Substrate Rebinding**: predecessor
+  physical Regulation is neutralised and predecessor BA ended before successor
+  Control can execute; retained `AU-*` reuse is mechanical continuity only.
+- **Terminal Lease Cleanup Lag**: D-0200 cleanup now clears migrated physical
+  Regulation effects before terminal settlement attempts final semantic
+  teardown.
+- **Control-Owned Magnitude Wording Was False**: source-adjacent wording now
+  describes D-0155 as Bounded-Authority-owned magnitude policy.
 
 `0.3.0.10 TEST — CURRENT RESPONSIBILITY RECONCILIATION` completes the remaining
 Phase 9 responsibility coverage in PR #44. Follower-boundary is the second
@@ -1233,8 +1306,8 @@ replacement is again the downstream validation/reconciliation boundary.
    - **8b. Extract D-0146 Action-Space Regulation as the second standalone exemplar — IMPLEMENTED and offline-validated; GIANTS Reality attempt inconclusive because the saved-corner Situation bypassed Action-Space Regulation upstream of the extracted seam.**
    - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — ARCHITECTURAL COMPARISON COMPLETE; implementation discovery found no truthful retained Regulation instance identity witness, so the Responsibility Instance Identity Gap required explicit Action-Space and follower Regulation identities during Phase 9.**
 9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion — COMPLETE IN PR #44 PENDING OWNER MERGE/ACCEPTANCE. Phase 9 covers Action-Space Regulation identity, follower Regulation identity, both same-Commitment Passage replacement paths, direct Cooperative Passage CREATE Resolution identity, completed-obstruction Resolution identity and semantic cleanup on existing terminal paths.**
-10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility — IMPLEMENTED IN THIS PR SUBJECT TO REVIEW.**
-11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities.**
+10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility — COMPLETE.**
+11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities — ACTIVE.**
 12. **Retire superseded generic Commitment/orchestration only when no supported path relies on it.**
 13. **Simplify Candidate/Constraint/Decision only where evidence proves duplication.**
 14. **Graduate Prototype/diagnostic production mechanics and naming.**

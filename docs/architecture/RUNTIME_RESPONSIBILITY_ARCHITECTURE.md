@@ -536,6 +536,13 @@ Control reports physical feasibility and outcomes. It does not invent strategic 
 
 > Control may discover physical feasibility; it may not invent strategic purpose.
 
+The live dispatch boundary belongs between Bounded Authority and Control. A
+dispatcher may select the appropriate Control executor, route an already
+authorised `ControlRequest`, fail closed when no executor exists, and forward
+Control outcomes. It does not create Bounded Authority, choose Regulation
+magnitude, decide responsibility persistence or settlement, or mirror semantic
+authority state.
+
 ## 18. Downstream Authority Monotonicity
 
 A downstream responsibility may narrow, refuse, stop or terminate an authorised action when current safety or feasibility evidence no longer supports it. It may never enlarge strategic authority granted upstream.

@@ -114,6 +114,29 @@ function Authority:validateRequest(request,expectedResponsibilityId)
     return true,nil,grant
 end
 
+function Authority:materializeRequest(values)
+    if type(values)~="table" then return nil,"CONTROL_REQUEST_CONTEXT_REQUIRED" end
+    local grant=self:get(values.boundedAuthorityId)
+    if grant==nil then return nil,"BOUNDED_AUTHORITY_GRANT_NOT_CURRENT" end
+    local target=values.target or grant.target
+    local ok,reason=targetMatchesGrant(target,grant.target,grant.capability)
+    if not ok then return nil,reason end
+    return OuttaMyWay.ControlRequest.new({
+        identity=self.runtime.identities:issue("CONTROL_REQUEST"),
+        commitmentId=grant.commitmentId,
+        assemblyId=grant.assemblyId,
+        capability=grant.capability,
+        target=copyValue(target),
+        authorityToken=grant.authorityToken,
+        operationalPictureEpoch=values.operationalPictureEpoch or grant.operationalPictureEpoch,
+        evidenceEpoch=values.evidenceEpoch or grant.evidenceEpoch,
+        effectiveActuationCompositionId=grant.effectiveActuationCompositionId,
+        preconditions=copyValue(values.preconditions or grant.preconditions or {}),
+        invalidationConditions=copyValue(values.invalidationConditions or grant.invalidationConditions or {}),
+        boundedAuthorityId=grant.identity
+    }),nil
+end
+
 function Authority:release(grantId,reason)
     local grant=self.grantsById[grantId]
     if grant==nil then return false,"BOUNDED_AUTHORITY_GRANT_NOT_CURRENT" end
