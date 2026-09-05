@@ -738,6 +738,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         followerBoundaryKnowledge=followerBoundaryKnowledge,
         trajectoryKnowledge=trajectoryKnowledge,
         opposedCorridorKnowledge=opposedCorridorKnowledge,
+        spatialConstraintKnowledge=spatialConstraintKnowledge,
         cooperativePassageKnowledge=cooperativePassageKnowledge,
         terminalOccupancyKnowledge=terminalOccupancyKnowledge,
         uncertainty=uncertainty,
