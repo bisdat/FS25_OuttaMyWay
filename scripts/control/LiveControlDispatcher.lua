@@ -579,6 +579,10 @@ function Dispatcher:_releaseD0146ActionSpaceLease(picture,evaluated,reason)
     self.d0146ActionSpaceReleaseCount=self.d0146ActionSpaceReleaseCount+1
     self.d0146ActionSpaceLease=nil
     self.runtime.responsibilityTransitionAuthority:terminateActionSpaceRegulation(lease.commitmentId,lease.conflictIdentity)
+    if lease.admissionKind=="FORWARD_INTERSECTION" then
+        logInfo("FORWARD_INTERSECTION_REGULATION_RELEASED commitment=%s relationship=%s yielder=%s reason=%s freshReality=true",
+            tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(reason))
+    end
     logInfo("D0146_ACTION_SPACE_RELEASE commitment=%s conflict=%s regulated=%s ref=%s reason=%s",tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(lease.regulatedReferenceKey),tostring(reason))
     return {status="RELEASED",reason=reason,request=request,outcome=outcome,d0146ActionSpace=true}
 end
