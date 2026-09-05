@@ -126,7 +126,7 @@ local function pairRecord(operationId,a,b,followerKnowledge)
     r.spatialOverlay,r.sharedVertex=overlay(a,b,x); r.classification="FORWARD_INTERSECTION"; r.relationshipStatus="POSITIVE"
     r.incumbentRelationship=incumbent(a,b,followerKnowledge)
     if r.incumbentRelationship then r.actionable=false; r.reason="FORWARD_INTERSECTION_SUPPRESSED_BY_ESTABLISHED_RELATIONSHIP_PRECEDENCE"; return r end
-    if r.spatialOverlay=="OPEN_FIELD" then r.actionable=false; r.reason="OPEN_FIELD_FORWARD_INTERSECTION_REMAINS_DIAGNOSTIC_FOR_EXISTING_PASSAGE_POLICY"; return r end
+    
     if not a.progressRateMps or not b.progressRateMps then r.temporalAllocationStatus="UNRESOLVED"; r.actionable=false; r.reason="POSITIVE_FORWARD_INTERSECTION_WITH_TIMING_UNRESOLVED"; return r end
     r.subjectTimeToIntersectionSec=x.subjectForwardDistanceM/a.progressRateMps; r.otherTimeToIntersectionSec=x.otherForwardDistanceM/b.progressRateMps
     if r.subjectTimeToIntersectionSec==r.otherTimeToIntersectionSec then r.temporalAllocationStatus="UNRESOLVED"; r.actionable=false; r.reason="EQUAL_TIME_TO_INTERSECTION_HAS_NO_AUTHORISED_TIE_BREAK"; return r end
