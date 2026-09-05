@@ -39,7 +39,7 @@ for call paths, terminal inventory and validation scope.
 - Terminal settlement deliberately remains downstream in the existing dispatcher/lifecycle path.
 - Protected Yield deliberately remains downstream as Regulation actuation supporting an established Resolution responsibility.
 - The retained generic Commitment, Obligation and Authority substrate remains authoritative implementation machinery for both migrated paths.
-- [`ResolutionCommitment.lua`](../scripts/contracts/ResolutionCommitment.lua) is a sealed semantic representation. Direct Resolution exemplars retain the transitional generic-Commitment identity mapping; the migrated replacement accepts a distinct authority-established responsibility identity.
+- [`ResolutionCommitment.lua`](../scripts/contracts/ResolutionCommitment.lua) is a sealed semantic representation. All migrated Resolution exemplars now use explicit authority-established RS-* responsibility identity distinct from retained generic CM-* substrate identity.
 - [`ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua) is read-only: it introduces no registry, lifecycle, admission, settlement, authority-allocation or Control power.
 - **No Dual Responsibility Record Authority** is preserved; generic Commitment and Obligation machinery remains the sole lifecycle substrate and record authority.
 - Both migrated Responsibility Transition owners construct the view only after successful generic lifecycle application and carry it alongside the unchanged application result.
@@ -107,7 +107,7 @@ for call paths, terminal inventory and validation scope.
 - Action-Space revalidation, quiescence/reactivation and regulated-role migration preserve the same Regulation identity. No new identity is issued for these non-transition events.
 - On the known same-Commitment Passage `REVISE`, predecessor Regulation and successor Resolution receive distinct responsibility identities while the retained generic Commitment identity remains unchanged.
 - Predecessor D-0146 settlement and physical lease cleanup are invoked as subordinate replacement work before `continueCooperativePassage()` can begin Passage Control. Replacement failure prevents physical Passage continuation.
-- `ResolutionCommitmentAdapter now requires an authority-established semantic responsibility identity for all Resolution paths. It no longer falls back to retained generic Commitment identity.
+- ResolutionCommitmentAdapter.lua now requires an authority-established semantic responsibility identity for all Resolution paths. It no longer falls back to retained generic Commitment identity.
 - Generic Commitment, Obligation and AuthorityToken machinery remains retained substrate. AuthorityToken reuse and Bounded Authority semantics were not redesigned.
 - **Replacement Precondition Lag** was corrected: Candidate/readiness, bridge/conflict, current responsibility, retained Commitment target, dispatcher lease and open predecessor obligation are now read-only preconditions before Passage `REVISE` or successor representation construction.
 - Focused reactivation identity preservation passed at the responsibility-authority boundary. The historically failing full D0197 quiescence/reactivation observation remains within the 13-failure observational profile and is not claimed green.
