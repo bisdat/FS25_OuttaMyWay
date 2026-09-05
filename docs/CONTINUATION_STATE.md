@@ -9,23 +9,25 @@ is not a changelog, release ledger, or canonical-release record.
 Accepted Repository State is
 `ed1571be90577600b5a96003e06b27dd62fbe4c7`.
 
-[Issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37) is the current
-blocking prerequisite before the strangler programme resumes. This increment
-implements its first representation-only tranche: Situation Assessment now
-publishes falsifiable prospective constrained-space knowledge without connecting
-that knowledge to Candidate, Decision, Responsibility Transition, Bounded
-Authority or Control. GIANTS Reality must now validate or disprove the provisional
-Category-1 and Category-2 classifications before behavioural authority is added.
+[Issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37) remains the
+blocking prerequisite before the strangler programme resumes. GIANTS Reality
+falsified the first representation hypothesis: a projected contact's distance
+from a shared vertex relative to half working width did not truthfully witness
+temporal conflict. The active tranche replaces that gate with generic **Forward
+Intersection** knowledge and connects its supported temporal allocation to
+bounded 1 km/h Regulation for Reality validation.
 
 ## Established
 
-- [`SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) composes existing field-bounded projection, immutable Field World ring topology and raw GIANTS working-width evidence into per-worker boundary-transition projections and same-Operation pair knowledge.
-- The provisional **Category-1 prospective candidate** requires distinct terminating boundary edges sharing an actual topology vertex, with each projected contact no farther along its edge from that vertex than that worker's own half-working-width evidence seed.
-- The provisional **Category-2 prospective candidate** requires one worker's projected boundary contact to lie ahead within the other worker's current field-bounded projected progression band. The relation is evaluated symmetrically and is suppressed when the stronger Category-1 hypothesis is positive.
-- Working width remains `PROVISIONAL_DEMAND_SEED_INPUT_ONLY`; it is not Physical Assembly footprint or negative-clearance authority. Missing width or projection evidence produces `UNRESOLVED`, not a fallback distance.
-- The representation assigns no yielder, progressing or regulated participant, Candidate preference, Regulation magnitude or responsibility identity. It has explicit `decisionAuthority=false` and `controlAuthority=false` limits.
-- `SPATIAL_CONSTRAINT_ASSESSED` diagnostics are emitted only when a pair classification materially changes and expose contacts, edge/vertex topology, widths, half-width seeds, Category-1 distances, Category-2 relative coordinates, boundary distances and available time-to-transition evidence.
-- No universal corner radius or other policy-distance constant was introduced. Category classification is an implementation hypothesis pending GIANTS Reality evidence, not accepted implementation truth.
+- **Spatial Width Is Not Temporal Conflict Evidence**: the half-working-width Category-1 admission hypothesis was falsified when the intended corner relationship missed admission by centimetres despite clear topology and temporal convergence. Working width remains observable provisional evidence but no longer gates Forward Intersection.
+- [`SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) now intersects the two finite, positively supported Field-World-bounded forward centrelines. The common point must be forward of both parties and within both supported extents; no pair-closing, current occupancy, turn prediction, route extension or policy-distance literal is used.
+- Positive progress rates produce per-party time-to-intersection. The greater-time party is the normal temporal yielder; exact equal time and missing positive rate remain `UNRESOLVED` rather than receiving fabricated ordering.
+- Category 1 corner, Category 2 headland/boundary and open field are annotations on a generic Forward Intersection. They are not separate pair-discovery mechanisms. Category-2 Reality validation remains outstanding.
+- A supported independent relationship now enters the retained Regulation application seam before Passage planning and applies fixed `1 km/h` Intent-Revelation Creep. Fresh loss of positive Forward Intersection dissolves the purpose and releases its lease promptly.
+- **Aggressive admission paired with aggressive release** accepts cheap false positives because the intervention is bounded, reversible and re-assessed from fresh Reality.
+- **Established Relationship Precedence** suppresses Forward Intersection actuation when a valid leader/follower relationship already owns the pair. Leader/follower Regulation remains variable-speed; Bubble Bullet Time remains a separate fixed-1-km/h purpose.
+- `FORWARD_INTERSECTION_ASSESSED` change-suppressed diagnostics expose the intersection, distances, rate sources, times, yielder, continuing participant, overlay, incumbent ownership and reason. `FORWARD_INTERSECTION_REGULATION_APPLIED` confirms downstream fixed-speed actuation.
+- Offline observation is `274 passed / 13 failed`, preserving the established 13 historical failures. GIANTS Reality validation is required; issue #37 remains open.
 
 - The accepted [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Strangler Transition Map](IMPLEMENTATION_MAP.md#detailed-strangler-transition-map) remain authoritative for architecture and programme direction respectively.
 - Cooperative Passage upstream transition remains accepted and Reality-validated for one direct `CREATE` episode.

@@ -192,6 +192,24 @@ local function d0146ActionSpaceRecord(picture)
     return actionable[1],nil
 end
 
+-- Forward Intersection geometry and temporal allocation are owned by Situation.
+-- Candidate support only publishes the already-assessed bounded Regulation.
+local function forwardIntersectionRecord(picture)
+    local actionable={}
+    for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
+        for _,relation in OuttaMyWay.ValueRecord.ipairs(knowledge.pairRelationships or {}) do
+            if relation.classification=="FORWARD_INTERSECTION" and relation.actionable==true
+                and relation.incumbentRelationship==nil and type(relation.actionSpaceConservation)=="table" then
+                actionable[#actionable+1]={relation=relation,action=relation.actionSpaceConservation}
+            end
+        end
+    end
+    table.sort(actionable,function(a,b) return tostring(a.relation.identity)<tostring(b.relation.identity) end)
+    if #actionable==0 then return nil,nil end
+    if #actionable>1 then return nil,"MULTIPLE_FORWARD_INTERSECTION_CONTEXTS" end
+    return actionable[1],nil
+end
+
 local function d0146ExistingCommitmentForRequirement(pictureValues,requirement)
     local contexts=pictureValues.commitmentContext or {}
     local match=nil
@@ -222,14 +240,14 @@ local function d0146ActionSpaceRepresentation(values,pictureId,item)
     values.representationFitness[#values.representationFitness+1]={
         representationId=representationId,
         assemblyId=action.regulatedAssemblyId,
-        question="D0146_RESOLUTION_SPACE_CONSERVATION",
-        assessmentHorizon=action.admissionKind=="ESTABLISHED_CONFLICT" and "ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE" or "CURRENT_EXCURSION_PLUS_CURRENT_POSITIVE_CORRIDOR_CLOSURE_INSIDE_LOCAL_PASSAGE_ENVELOPE",
+        question=action.admissionKind=="FORWARD_INTERSECTION" and "FORWARD_INTERSECTION_TEMPORAL_REGULATION" or "D0146_RESOLUTION_SPACE_CONSERVATION",
+        assessmentHorizon=action.admissionKind=="FORWARD_INTERSECTION" and "CURRENT_POSITIVELY_SUPPORTED_FIELD_BOUNDED_FORWARD_CONTINUATIONS" or (action.admissionKind=="ESTABLISHED_CONFLICT" and "ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE" or "CURRENT_EXCURSION_PLUS_CURRENT_POSITIVE_CORRIDOR_CLOSURE_INSIDE_LOCAL_PASSAGE_ENVELOPE"),
         state="USABLE_WITH_UNCERTAINTY",
         claimPermissions={"REGULATE_SPEED_TO_PRESERVE_LOCAL_PASSAGE_ACTION_SPACE","ESCALATE_REALIZED_INSUFFICIENT_REGULATION_TO_ZERO_SPEED_HOLD"},
         coverage={complete=false,conservative=false},
         uncertainty={"RELATIONSHIP_MAY_CHANGE_BEFORE_PASSAGE_SUPPORT","NO_EVENTUAL_ROUTE_OR_PASSAGE_GEOMETRY_AUTHORITY","REGULATION_RATE_IS_TEST_CALIBRATION"},
-        validityDependencies={"ACTIVE_OPPOSED_CORRIDOR_RELATIONSHIP","POSITIVE_CURRENT_CORRIDOR_SUPPORT","POSITIVE_CURRENT_CLOSURE","CURRENT_NATIVE_PROGRESS_RATE","LOCAL_PASSAGE_ENVELOPE"},
-        provenance={source="TrajectoryConflictAssessment",layer="SITUATION_KNOWLEDGE",authority="D0146_RESOLUTION_SPACE_CONSERVATION",negativeClearanceAuthority=false}
+        validityDependencies=action.admissionKind=="FORWARD_INTERSECTION" and {"CURRENT_FIELD_BOUNDED_FORWARD_CONTINUATIONS","POSITIVE_FORWARD_INTERSECTION","POSITIVE_PROGRESS_RATES"} or {"ACTIVE_OPPOSED_CORRIDOR_RELATIONSHIP","POSITIVE_CURRENT_CORRIDOR_SUPPORT","POSITIVE_CURRENT_CLOSURE","CURRENT_NATIVE_PROGRESS_RATE","LOCAL_PASSAGE_ENVELOPE"},
+        provenance={source=action.admissionKind=="FORWARD_INTERSECTION" and "SpatialConstraintAssessment" or "TrajectoryConflictAssessment",layer="SITUATION_KNOWLEDGE",authority="REGULATION_CANDIDATE_SUPPORT",negativeClearanceAuthority=false}
     }
     return representationId
 end
@@ -237,6 +255,7 @@ end
 local function makeD0146ActionSpaceCandidate(pictureId,pictureValues,item,governingRequirementKey,existingCommitmentId,representationId)
     local relation=item.relation
     local action=item.action
+    local forward=action.admissionKind=="FORWARD_INTERSECTION"
     local constraints={}
     for _,id in ipairs(mandatory) do constraints[id]=d0146ActionSpacePacket("D-0146 Resolution-Space Conservation constraint",{conflictIdentity=relation.identity,relationshipClassification=relation.classification}) end
     constraints.FIELD_WORLD_CONTAINMENT=d0146ActionSpacePacket(
@@ -246,7 +265,7 @@ local function makeD0146ActionSpaceCandidate(pictureId,pictureValues,item,govern
         "No displacement transition is commanded; Regulation only bounds one participant's GIANTS-native progression while the active opposed relationship retains passage Action Space",
         {protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId,regulatedAssemblyId=action.regulatedAssemblyId,routeAuthority=false,admissionKind=action.admissionKind})
     constraints.REPRESENTATION_FITNESS=d0146ActionSpacePacket(
-        "Situation positively supports an active opposed relationship, current physical corridor coupling, positive closure and bounded local-passage proximity",
+        forward and "Situation positively supports one Forward Intersection within both Field-World-bounded continuations and positive timing evidence" or "Situation positively supports an active opposed relationship, current physical corridor coupling, positive closure and bounded local-passage proximity",
         {currentCorridorOverlap=action.currentCorridorOverlap,separationM=action.separationM,maxSeparationM=action.maxSeparationM,negativeClearanceAuthority=false,admissionKind=action.admissionKind})
     constraints.CONTROL_CAPABILITY_AVAILABILITY=d0146ActionSpacePacket(
         "The existing P22 Regulation lease can express the Control-owned Resolution-Space Progression Envelope while GIANTS retains route, steering and direction; a zero integer cap is Hold as the terminal magnitude of the same envelope",
@@ -255,7 +274,7 @@ local function makeD0146ActionSpaceCandidate(pictureId,pictureValues,item,govern
         "The protected participant remains GIANTS-native; an active pre-productive entrant is protected as unresolved native intent rather than folded/repositioned. Only the current Operation member selected by Situation is temporarily regulated, and that actuation role may migrate under the same unresolved obligation when Situation changes",
         {protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId,regulatedAssemblyId=action.regulatedAssemblyId,roleBasis=action.roleBasis,roleAssignmentMutable=true,protectedProductiveCommencementPending=(action.protectedAssemblyId==relation.subjectAssemblyId and relation.subjectProductiveCommencementPending==true) or (action.protectedAssemblyId==relation.otherAssemblyId and relation.otherProductiveCommencementPending==true)})
     constraints.PROGRESS_PRESERVATION=d0146ActionSpacePacket(
-        "Supportable Progression is the greatest present conflict-consuming progression that preserves the required next resolution opportunity; Control owns its elastic integer magnitude and withholds Reverse-Created Resolution Reserve from ordinary progression",
+        forward and "Fixed 1 km/h Intent-Revelation Creep maximises practical revelation time while fresh Situation owns prompt release" or "Supportable Progression is the greatest present conflict-consuming progression that preserves the required next resolution opportunity; Control owns its elastic integer magnitude and withholds Reverse-Created Resolution Reserve from ordinary progression",
         {nativeUnrestrictedKmh=action.nativeUnrestrictedKmh,progressionEnvelope="ZERO_TERMINAL_POLICY_TRAJECTORY",reverseCreatedReserveSpendable=false,reposition=false})
     constraints.RESPONSIBILITY_COMPATIBILITY=d0146ActionSpacePacket(
         "The bounded Regulation and any later Established-conflict Passage share one pair-scoped D-0146 governing requirement",
@@ -282,10 +301,11 @@ local function makeD0146ActionSpaceCandidate(pictureId,pictureValues,item,govern
         entries={{assemblyId=action.regulatedAssemblyId,commitmentId=existingCommitmentId or "$NEW_COMMITMENT",capability="REGULATE_SPEED",effectClass="SPEED_LIMIT_OR_HOLD",progressActuation=true}}
     }
     return {
-        referenceKey="d0146-action-space-regulation:"..tostring(relation.identity),
-        purpose={kind="D0146_PASSAGE_ACTION_SPACE_CONSERVATION",result="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"},
+        referenceKey=(forward and "forward-intersection-regulation:" or "d0146-action-space-regulation:")..tostring(relation.identity),
+        purpose=forward and {kind="FORWARD_INTERSECTION_INTENT_REVELATION",result="PRESERVE_INTENT_REVELATION_TIME_UNTIL_FORWARD_INTERSECTION_DISSOLVES"} or {kind="D0146_PASSAGE_ACTION_SPACE_CONSERVATION",result="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"},
         subject={assemblyId=action.regulatedAssemblyId,assemblyIds={action.regulatedAssemblyId}},capability="REGULATE_SPEED",
-        expectedEffect={physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,protectedParticipantUnrestricted=true,elasticProgressionEnvelope=true,zeroSpeedHoldExpression=true},
+        expectedEffect={physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,protectedParticipantUnrestricted=true,
+            elasticProgressionEnvelope=not forward,fixedIntentRevelationCreep=forward,zeroSpeedHoldExpression=not forward},
         evidenceBasis={
             constraintEvidence=constraints,
             governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentEncounterId=dependentEncounterId,dependentJobEpisodeIds=dependentJobEpisodeIds},
@@ -315,11 +335,11 @@ local function makeD0146ActionSpaceCandidate(pictureId,pictureValues,item,govern
         invalidationConditions={{kind="POSITIVE_RELATIONSHIP_DISSOLUTION"},{kind="COOPERATIVE_PASSAGE_SUCCESSION"},{kind="JOB_EPISODE_CHANGE"}},
         reversibility={physicalEffect=true,releaseOnPurposeExpiry=true},
         obligationsCreated={{
-            origin={kind="TRAFFIC_INTERVENTION",decision="D-0146",conflictIdentity=relation.identity},
-            basis={kind="D0146_PASSAGE_ACTION_SPACE_CONSERVATION",conflictIdentity=relation.identity,admissionKind=action.admissionKind,roleAssignmentMutable=true},
-            requiredOutcome={kind="D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES",conflictIdentity=relation.identity},
+            origin={kind="TRAFFIC_INTERVENTION",decision=forward and "FORWARD_INTERSECTION" or "D-0146",conflictIdentity=relation.identity},
+            basis={kind=forward and "FORWARD_INTERSECTION_INTENT_REVELATION" or "D0146_PASSAGE_ACTION_SPACE_CONSERVATION",conflictIdentity=relation.identity,admissionKind=action.admissionKind,roleAssignmentMutable=not forward},
+            requiredOutcome={kind=forward and "FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED" or "D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES",conflictIdentity=relation.identity},
             requiredAuthority={capabilities={"REGULATE_SPEED"},trafficPoliceman=true},
-            evidenceContract={kind="POSITIVE_RELATIONSHIP_DISSOLUTION_OR_COOPERATIVE_PASSAGE_SUCCESSION",absenceDoesNotRetire=true},
+            evidenceContract={kind=forward and "FRESH_FORWARD_INTERSECTION_POSITIVE_OR_DISSOLVED" or "POSITIVE_RELATIONSHIP_DISSOLUTION_OR_COOPERATIVE_PASSAGE_SUCCESSION",absenceDoesNotRetire=not forward},
             ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
         }},
         releaseImplications={releaseOnlyPurposeBoundRegulation=true,trafficSettlement=false,sameCommitmentPassageSuccession=true,currentRoleMayMigrateWithoutSettlingObligation=true},
@@ -331,7 +351,7 @@ local function attachD0146ActionSpace(self,picture,snapshot,item)
     local values=OuttaMyWay.ValueRecord.toTable(picture)
     local pictureId=self.identities:issue("PICTURE")
     values.identity=pictureId; values.epoch=self.epochs:next()
-    local requirement="d0146-cooperative-passage:"..tostring(item.relation.identity)
+    local requirement=(item.action.admissionKind=="FORWARD_INTERSECTION" and "forward-intersection-regulation:" or "d0146-cooperative-passage:")..tostring(item.relation.identity)
     local existing,existingReason=d0146ExistingCommitmentForRequirement(values,requirement)
     if existingReason~=nil then self.lastStatus=existingReason; return self.passiveSupport:attach(picture,snapshot) end
     values.provenance={source="LiveTrafficCandidateSupport",parentOperationalPictureId=picture.identity,observationSnapshotId=snapshot.identity,authority="D0146_RESOLUTION_SPACE_CONSERVATION"}
@@ -785,6 +805,14 @@ function Support:attach(picture,snapshot)
     local guard,guardReason=activeGuardedRecovery(picture)
     if guard~=nil then return attachGuardedRecovery(self,picture,snapshot,guard) end
     if guardReason~=nil then self.lastStatus=guardReason; return self.passiveSupport:attach(picture,snapshot) end
+
+    -- An established follower purpose has precedence. Otherwise the earliest
+    -- supported Forward Intersection is considered before Passage planning.
+    if follower==nil then
+        local forward,forwardReason=forwardIntersectionRecord(picture)
+        if forward~=nil then return attachD0146ActionSpace(self,picture,snapshot,forward) end
+        if forwardReason~=nil then self.lastStatus=forwardReason; return self.passiveSupport:attach(picture,snapshot) end
+    end
 
     -- D-0181: D-0146 is the single production Cooperative Passage authority.
     -- There is no feature switch or D-0143 fallback path to resurrect.

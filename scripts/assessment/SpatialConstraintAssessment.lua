@@ -1,273 +1,167 @@
--- Situation Assessment for prospective competition at Field World boundary
--- transitions. This representation is diagnostic knowledge only: it grants no
--- Candidate, Decision, responsibility, authority or Control permission.
+-- Situation-owned prospective Forward Intersection knowledge. The represented
+-- continuations end at Field World boundaries; no route is predicted beyond
+-- that positive evidence.
 
-OuttaMyWay.SpatialConstraintAssessment = {}
+OuttaMyWay.SpatialConstraintAssessment={}
 local Assessment=OuttaMyWay.SpatialConstraintAssessment
 Assessment.__index=Assessment
+local EPSILON_M=0.00001
 
-local GEOMETRY_EPSILON_M=0.00001
-
-local function finite(value)
-    return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
-end
-
-local function point(value)
-    if type(value)~="table" then return nil end
-    local x=tonumber(value.x or value[1])
-    local z=tonumber(value.z or value[2] or value[3])
+local function finite(v) return type(v)=="number" and v==v and v~=math.huge and v~=-math.huge end
+local function point(v)
+    if type(v)~="table" then return nil end
+    local x,z=tonumber(v.x or v[1]),tonumber(v.z or v[2] or v[3])
     if not finite(x) or not finite(z) then return nil end
     return {x=x,z=z}
 end
-
-local function distance(a,b)
-    local dx,dz=a.x-b.x,a.z-b.z
-    return math.sqrt(dx*dx+dz*dz)
-end
-
+local function distance(a,b) local x,z=a.x-b.x,a.z-b.z; return math.sqrt(x*x+z*z) end
 local function pointSegmentDistance(p,a,b)
-    local dx,dz=b.x-a.x,b.z-a.z
-    local lengthSquared=dx*dx+dz*dz
-    if lengthSquared<=GEOMETRY_EPSILON_M*GEOMETRY_EPSILON_M then return distance(p,a) end
-    local t=((p.x-a.x)*dx+(p.z-a.z)*dz)/lengthSquared
+    local x,z=b.x-a.x,b.z-a.z; local squared=x*x+z*z
+    if squared<=EPSILON_M*EPSILON_M then return distance(p,a) end
+    local t=((p.x-a.x)*x+(p.z-a.z)*z)/squared
     if t<0 then t=0 elseif t>1 then t=1 end
-    return distance(p,{x=a.x+t*dx,z=a.z+t*dz})
+    return distance(p,{x=a.x+t*x,z=a.z+t*z})
 end
-
-local function collectRings(fieldWorld)
-    local rings={}
-    local boundary=fieldWorld and fieldWorld.boundary or {}
-    if OuttaMyWay.ValueRecord.length(boundary)>=2 then
-        rings[#rings+1]={kind="OUTER_BOUNDARY",index=1,points=boundary}
+local function collectRings(world)
+    local result={}; local boundary=world and world.boundary or {}
+    if OuttaMyWay.ValueRecord.length(boundary)>=2 then result[#result+1]={kind="OUTER_BOUNDARY",index=1,points=boundary} end
+    for index,island in OuttaMyWay.ValueRecord.ipairs(world and world.islands or {}) do
+        if OuttaMyWay.ValueRecord.length(island)>=2 then result[#result+1]={kind="ISLAND_BOUNDARY",index=index,points=island} end
     end
-    for index,island in OuttaMyWay.ValueRecord.ipairs(fieldWorld and fieldWorld.islands or {}) do
-        if OuttaMyWay.ValueRecord.length(island)>=2 then
-            rings[#rings+1]={kind="ISLAND_BOUNDARY",index=index,points=island}
-        end
-    end
-    return rings
+    return result
 end
-
-local function vertexKey(ring,index)
-    return string.format("%s:%d:VERTEX:%d",ring.kind,ring.index,index)
-end
-
-local function edgeForContact(fieldWorld,contact,boundarySource)
+local function vertexKey(ring,index) return string.format("%s:%d:VERTEX:%d",ring.kind,ring.index,index) end
+local function edgeForContact(world,contact,source)
     local matches={}
-    for _,ring in OuttaMyWay.ValueRecord.ipairs(collectRings(fieldWorld)) do
-        local sourceMatches=(boundarySource=="FIELD_WORLD_OUTER_BOUNDARY" and ring.kind=="OUTER_BOUNDARY")
-            or (boundarySource=="FIELD_WORLD_ISLAND_BOUNDARY" and ring.kind=="ISLAND_BOUNDARY")
+    for _,ring in OuttaMyWay.ValueRecord.ipairs(collectRings(world)) do
+        local sourceMatches=(source=="FIELD_WORLD_OUTER_BOUNDARY" and ring.kind=="OUTER_BOUNDARY") or (source=="FIELD_WORLD_ISLAND_BOUNDARY" and ring.kind=="ISLAND_BOUNDARY")
         if sourceMatches then
             local count=OuttaMyWay.ValueRecord.length(ring.points)
             for index=1,count do
-                local nextIndex=(index % count)+1
-                local a,b=point(ring.points[index]),point(ring.points[nextIndex])
-                if a~=nil and b~=nil and pointSegmentDistance(contact,a,b)<=GEOMETRY_EPSILON_M then
-                    matches[#matches+1]={
-                        ringKind=ring.kind,ringIndex=ring.index,edgeIndex=index,
-                        edgeKey=string.format("%s:%d:EDGE:%d",ring.kind,ring.index,index),
-                        startVertex={identity=vertexKey(ring,index),index=index,x=a.x,z=a.z},
-                        endVertex={identity=vertexKey(ring,nextIndex),index=nextIndex,x=b.x,z=b.z},
-                        startX=a.x,startZ=a.z,endX=b.x,endZ=b.z
-                    }
+                local nextIndex=(index%count)+1; local a,b=point(ring.points[index]),point(ring.points[nextIndex])
+                if a and b and pointSegmentDistance(contact,a,b)<=EPSILON_M then
+                    matches[#matches+1]={ringKind=ring.kind,ringIndex=ring.index,edgeIndex=index,edgeKey=string.format("%s:%d:EDGE:%d",ring.kind,ring.index,index),
+                        startVertex={identity=vertexKey(ring,index),index=index,x=a.x,z=a.z},endVertex={identity=vertexKey(ring,nextIndex),index=nextIndex,x=b.x,z=b.z}}
                 end
             end
         end
     end
-    if OuttaMyWay.ValueRecord.length(matches)==1 then return matches[1],nil end
-    if OuttaMyWay.ValueRecord.length(matches)==0 then return nil,"TERMINATING_BOUNDARY_EDGE_UNRESOLVED" end
-    return nil,"TERMINATING_BOUNDARY_EDGE_AMBIGUOUS_AT_VERTEX"
+    if OuttaMyWay.ValueRecord.length(matches)==1 then return matches[1] end
+    return nil,OuttaMyWay.ValueRecord.length(matches)==0 and "TERMINATING_BOUNDARY_EDGE_UNRESOLVED" or "TERMINATING_BOUNDARY_EDGE_AMBIGUOUS_AT_VERTEX"
 end
-
 local function byAssembly(values)
-    local result={}
-    for _,item in OuttaMyWay.ValueRecord.ipairs(values or {}) do result[item.assemblyId]=item end
-    return result
+    local result={}; for _,v in OuttaMyWay.ValueRecord.ipairs(values or {}) do result[v.assemblyId]=v end; return result
 end
-
-local function firstContinuation(future)
-    for _,alternative in OuttaMyWay.ValueRecord.ipairs(future and future.alternatives or {}) do
-        if alternative.kind=="FIELD_WORLD_BOUNDED_LOCAL_CONTINUATION" then return alternative end
-    end
-    return nil
+local function continuation(future)
+    for _,v in OuttaMyWay.ValueRecord.ipairs(future and future.alternatives or {}) do if v.kind=="FIELD_WORLD_BOUNDED_LOCAL_CONTINUATION" then return v end end
 end
-
-local function positiveProgressRate(motion)
-    if motion~=nil and finite(motion.positionDerivedSpeedMps) and motion.positionDerivedSpeedMps>0 then
-        return motion.positionDerivedSpeedMps,"POSITION_DERIVED_PROGRESS_RATE"
-    end
-    if motion~=nil and finite(motion.reportedSpeedMps) and motion.reportedSpeedMps>0 then
-        return motion.reportedSpeedMps,"GIANTS_REPORTED_PROGRESS_RATE"
-    end
+local function positiveRate(motion)
+    if motion and finite(motion.positionDerivedSpeedMps) and motion.positionDerivedSpeedMps>0 then return motion.positionDerivedSpeedMps,"POSITION_DERIVED_PROGRESS_RATE" end
+    if motion and finite(motion.reportedSpeedMps) and motion.reportedSpeedMps>0 then return motion.reportedSpeedMps,"GIANTS_REPORTED_PROGRESS_RATE" end
     return nil,"POSITIVE_PROGRESS_RATE_UNAVAILABLE"
 end
-
-local function projection(fieldWorld,fieldWorldReferenceKey,assemblyId,future,motion)
-    local alternative=firstContinuation(future)
-    local width=motion and motion.nativeFieldWork and motion.nativeFieldWork.workingWidth or nil
-    local base={
-        assemblyId=assemblyId,assemblyReferenceKey=motion and motion.assemblyReferenceKey or nil,
-        fieldWorldReferenceKey=fieldWorldReferenceKey,
-        fieldWorldSnapshotReferenceKey=fieldWorld and fieldWorld.representativeSnapshotReferenceKey or nil,
-        futureSpaceIdentity=future and future.identity or nil,
-        futureSpaceBasis=alternative and alternative.kind or nil,
-        status="UNRESOLVED",reason=nil,decisionAuthority=false,controlAuthority=false,
-        positiveOnly=true,authority="SITUATION_KNOWLEDGE_ONLY_NO_NEGATIVE_CLEARANCE_AUTHORITY",
-        provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT",futureSpaceSource=future and future.provenance and future.provenance.source or nil}
-    }
-    if alternative==nil then base.reason="FIELD_BOUNDED_PROJECTION_UNAVAILABLE"; return base end
-    local start={x=tonumber(alternative.startX),z=tonumber(alternative.startZ)}
-    local contact={x=tonumber(alternative.endX),z=tonumber(alternative.endZ)}
-    local hx,hz=tonumber(alternative.headingX),tonumber(alternative.headingZ)
-    local boundaryDistance=tonumber(alternative.boundaryDistance)
-    if not finite(start.x) or not finite(start.z) or not finite(contact.x) or not finite(contact.z)
-        or not finite(hx) or not finite(hz) or not finite(boundaryDistance) then
-        base.reason="FIELD_BOUNDED_PROJECTION_INVALID"; return base
-    end
-    local headingLength=math.sqrt(hx*hx+hz*hz)
-    if headingLength<=GEOMETRY_EPSILON_M then base.reason="PROJECTED_HEADING_INVALID"; return base end
-    local edge,edgeReason=edgeForContact(fieldWorld,contact,alternative.boundarySource)
-    if edge==nil then base.reason=edgeReason; return base end
-    base.currentX=start.x; base.currentZ=start.z
-    base.headingX=hx/headingLength; base.headingZ=hz/headingLength
-    base.contactX=contact.x; base.contactZ=contact.z
-    base.boundaryDistanceM=boundaryDistance;base.boundarySource=alternative.boundarySource
-    base.boundaryRingKind=edge.ringKind;base.boundaryRingIndex=edge.ringIndex
-    base.terminatingBoundaryEdge=edge
-    base.incidentVertices={edge.startVertex,edge.endVertex}
-    base.workingWidthM=width and tonumber(width.widthMetres) or nil
-    base.workingWidthSource=width and width.source or "UNAVAILABLE"
-    base.workingWidthAuthority=width and width.authority or "PROVISIONAL_DEMAND_SEED_INPUT_ONLY"
-    if width==nil or width.available~=true or not finite(base.workingWidthM) or base.workingWidthM<=0 then
-        base.reason="PROVISIONAL_WORKING_WIDTH_UNAVAILABLE"; return base
-    end
-    base.provisionalHalfWidthM=base.workingWidthM/2
-    local rate,rateSource=positiveProgressRate(motion)
-    base.progressRateMps=rate;base.progressRateSource=rateSource
-    if rate~=nil then base.provisionalTimeToBoundarySec=boundaryDistance/rate end
-    base.status="SUPPORTED";base.reason="FIELD_BOUNDARY_TRANSITION_PROJECTION_SUPPORTED"
-    return base
+local function projection(world,worldKey,id,future,motion)
+    local path=continuation(future); local width=motion and motion.nativeFieldWork and motion.nativeFieldWork.workingWidth
+    local result={assemblyId=id,assemblyReferenceKey=motion and motion.assemblyReferenceKey,fieldWorldReferenceKey=worldKey,
+        fieldWorldSnapshotReferenceKey=world and world.representativeSnapshotReferenceKey,futureSpaceIdentity=future and future.identity,
+        futureSpaceBasis=path and path.kind,status="UNRESOLVED",decisionAuthority=false,controlAuthority=false,positiveOnly=true,
+        authority="SITUATION_KNOWLEDGE_ONLY",provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT"}}
+    if not path then result.reason="FIELD_BOUNDED_PROJECTION_UNAVAILABLE"; return result end
+    local x,z,ex,ez=tonumber(path.startX),tonumber(path.startZ),tonumber(path.endX),tonumber(path.endZ)
+    local hx,hz,boundaryDistance=tonumber(path.headingX),tonumber(path.headingZ),tonumber(path.boundaryDistance)
+    if not finite(x) or not finite(z) or not finite(ex) or not finite(ez) or not finite(hx) or not finite(hz) or not finite(boundaryDistance) then result.reason="FIELD_BOUNDED_PROJECTION_INVALID"; return result end
+    local length=math.sqrt(hx*hx+hz*hz); if length<=EPSILON_M then result.reason="PROJECTED_HEADING_INVALID"; return result end
+    local edge,reason=edgeForContact(world,{x=ex,z=ez},path.boundarySource); if not edge then result.reason=reason; return result end
+    result.currentX=x; result.currentZ=z; result.headingX=hx/length; result.headingZ=hz/length
+    result.contactX=ex; result.contactZ=ez; result.boundaryDistanceM=boundaryDistance; result.boundarySource=path.boundarySource
+    result.boundaryRingKind=edge.ringKind; result.boundaryRingIndex=edge.ringIndex; result.terminatingBoundaryEdge=edge
+    result.incidentVertices={edge.startVertex,edge.endVertex}
+    result.workingWidthM=width and tonumber(width.widthMetres); result.workingWidthSource=width and width.source or "UNAVAILABLE"
+    result.workingWidthAuthority=width and width.authority or "PROVISIONAL_DEMAND_SEED_INPUT_ONLY"
+    if width and width.available==true and finite(result.workingWidthM) and result.workingWidthM>0 then result.provisionalHalfWidthM=result.workingWidthM/2 end
+    result.progressRateMps,result.progressRateSource=positiveRate(motion)
+    if result.progressRateMps then result.provisionalTimeToBoundarySec=boundaryDistance/result.progressRateMps end
+    result.status="SUPPORTED"; result.reason="FIELD_BOUNDARY_TRANSITION_PROJECTION_SUPPORTED"; return result
 end
-
 local function sharedVertex(a,b)
-    local ae,be=a.terminatingBoundaryEdge,b.terminatingBoundaryEdge
-    if ae==nil or be==nil or ae.edgeKey==be.edgeKey then return nil end
+    if a.terminatingBoundaryEdge.edgeKey==b.terminatingBoundaryEdge.edgeKey then return nil end
     for _,av in OuttaMyWay.ValueRecord.ipairs(a.incidentVertices or {}) do
-        for _,bv in OuttaMyWay.ValueRecord.ipairs(b.incidentVertices or {}) do
-            if av.identity==bv.identity then return av end
+        for _,bv in OuttaMyWay.ValueRecord.ipairs(b.incidentVertices or {}) do if av.identity==bv.identity then return av end end
+    end
+end
+local function intersect(a,b)
+    local rx,rz,sx,sz=a.headingX,a.headingZ,b.headingX,b.headingZ
+    local qx,qz=b.currentX-a.currentX,b.currentZ-a.currentZ; local denominator=rx*sz-rz*sx
+    if math.abs(denominator)<=EPSILON_M then return nil,"FORWARD_CONTINUATIONS_PARALLEL_OR_COLLINEAR" end
+    local ad=(qx*sz-qz*sx)/denominator; local bd=(qx*rz-qz*rx)/denominator
+    if ad<-EPSILON_M or bd<-EPSILON_M then return nil,"INTERSECTION_NOT_FORWARD_OF_BOTH_PARTICIPANTS" end
+    if ad>a.boundaryDistanceM+EPSILON_M or bd>b.boundaryDistanceM+EPSILON_M then return nil,"INTERSECTION_OUTSIDE_SUPPORTED_FORWARD_EXTENT" end
+    ad=math.max(0,ad); bd=math.max(0,bd)
+    return {x=a.currentX+ad*rx,z=a.currentZ+ad*rz,subjectForwardDistanceM=ad,otherForwardDistanceM=bd}
+end
+local function incumbent(a,b,knowledge)
+    for _,r in OuttaMyWay.ValueRecord.ipairs(knowledge or {}) do
+        local same=(r.leaderAssemblyId==a.assemblyId and r.followerAssemblyId==b.assemblyId) or (r.leaderAssemblyId==b.assemblyId and r.followerAssemblyId==a.assemblyId)
+        if same and (r.status=="REGULATE_SUPPORTED" or (type(r.existingCommitmentId)=="string" and r.status~="RETIRE_SUPPORTED")) then
+            return {kind="FOLLOWER_BOUNDARY",pairKey=r.pairKey,commitmentId=r.existingCommitmentId,status=r.status,reason="ESTABLISHED_RELATIONSHIP_PRECEDENCE"}
         end
     end
-    return nil
 end
-
-local function relativeContact(source,target)
-    local dx,dz=target.contactX-source.currentX,target.contactZ-source.currentZ
-    local longitudinal=dx*source.headingX+dz*source.headingZ
-    local lateral=dx*(-source.headingZ)+dz*source.headingX
-    local positive=longitudinal>=-GEOMETRY_EPSILON_M
-        and longitudinal<=source.boundaryDistanceM+GEOMETRY_EPSILON_M
-        and math.abs(lateral)<=source.provisionalHalfWidthM+GEOMETRY_EPSILON_M
-    return {sourceAssemblyId=source.assemblyId,targetAssemblyId=target.assemblyId,longitudinalM=longitudinal,lateralM=lateral,
-        sourceBoundaryDistanceM=source.boundaryDistanceM,sourceProvisionalHalfWidthM=source.provisionalHalfWidthM,positive=positive}
+local function overlay(a,b,x)
+    local vertex=sharedVertex(a,b); if vertex then return "CATEGORY_1_CORNER",vertex end
+    if math.abs(x.subjectForwardDistanceM-a.boundaryDistanceM)<=EPSILON_M or math.abs(x.otherForwardDistanceM-b.boundaryDistanceM)<=EPSILON_M then return "CATEGORY_2_HEADLAND_BOUNDARY" end
+    return "OPEN_FIELD"
 end
-
-local function pairKnowledge(operationId,a,b)
-    local record={
-        operationId=operationId,subjectAssemblyId=a.assemblyId,otherAssemblyId=b.assemblyId,
-        subjectProjection=a,otherProjection=b,classification="UNRESOLVED",reason=nil,
-        decisionAuthority=false,controlAuthority=false,positiveOnly=true,
-        authority="SITUATION_KNOWLEDGE_ONLY_NO_CANDIDATE_OR_CONTROL_AUTHORITY",
-        provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT",hypothesis="PROSPECTIVE_CONSTRAINED_SPACE_REPRESENTATION"}
-    }
-    if a.status~="SUPPORTED" or b.status~="SUPPORTED" then
-        record.reason="BOUNDARY_TRANSITION_PROJECTION_UNRESOLVED"
-        return record
-    end
-    local vertex=sharedVertex(a,b)
-    if vertex~=nil then
-        local vertexPoint={x=vertex.x,z=vertex.z}
-        local ad=distance({x=a.contactX,z=a.contactZ},vertexPoint)
-        local bd=distance({x=b.contactX,z=b.contactZ},vertexPoint)
-        record.sharedVertex=vertex
-        record.subjectContactToSharedVertexM=ad
-        record.otherContactToSharedVertexM=bd
-        record.category1Evidence={
-            distinctTerminatingEdges=true,sharedVertexIdentity=vertex.identity,
-            subjectContactToSharedVertexM=ad,otherContactToSharedVertexM=bd,
-            subjectProvisionalHalfWidthM=a.provisionalHalfWidthM,otherProvisionalHalfWidthM=b.provisionalHalfWidthM,
-            subjectWithinSeed=ad<=a.provisionalHalfWidthM+GEOMETRY_EPSILON_M,
-            otherWithinSeed=bd<=b.provisionalHalfWidthM+GEOMETRY_EPSILON_M
-        }
-        if record.category1Evidence.subjectWithinSeed and record.category1Evidence.otherWithinSeed then
-            record.classification="CATEGORY_1_PROSPECTIVE_CANDIDATE"
-            record.reason="DISTINCT_BOUNDARY_EDGES_SHARE_VERTEX_WITHIN_REPRESENTATION_RELATIVE_SEEDS"
-            return record
-        end
-    end
-    local subjectBand=relativeContact(a,b)
-    local otherBand=relativeContact(b,a)
-    record.category2Evidence={subjectProgressionBandContainsOtherContact=subjectBand,otherProgressionBandContainsSubjectContact=otherBand}
-    if subjectBand.positive or otherBand.positive then
-        record.classification="CATEGORY_2_PROSPECTIVE_CANDIDATE"
-        record.reason="BOUNDARY_TRANSITION_CONTACT_WITHIN_OTHER_PROJECTED_PROGRESSION_BAND"
-    else
-        record.classification="NO_POSITIVE_CANDIDATE"
-        record.reason=vertex~=nil and "SHARED_VERTEX_OUTSIDE_REPRESENTATION_RELATIVE_SEED_AND_NO_BAND_COUPLING" or "NO_POSITIVE_PROSPECTIVE_CONSTRAINED_SPACE_COUPLING"
-    end
-    return record
+local function pairRecord(operationId,a,b,followerKnowledge)
+    local r={identity="forward-intersection:"..tostring(operationId)..":"..tostring(a.assemblyId)..":"..tostring(b.assemblyId),operationId=operationId,
+        subjectAssemblyId=a.assemblyId,otherAssemblyId=b.assemblyId,subjectReferenceKey=a.assemblyReferenceKey,otherReferenceKey=b.assemblyReferenceKey,
+        subjectProjection=a,otherProjection=b,classification="UNRESOLVED",relationshipStatus="UNRESOLVED",decisionAuthority=false,controlAuthority=false,
+        positiveOnly=true,provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT",hypothesis="FORWARD_INTERSECTION"}}
+    if a.status~="SUPPORTED" or b.status~="SUPPORTED" then r.reason="FORWARD_CONTINUATION_UNRESOLVED"; return r end
+    local x,reason=intersect(a,b)
+    if not x then r.classification="NO_FORWARD_INTERSECTION"; r.relationshipStatus="NEGATIVE"; r.reason=reason; return r end
+    r.intersection=x; r.subjectForwardDistanceToIntersectionM=x.subjectForwardDistanceM; r.otherForwardDistanceToIntersectionM=x.otherForwardDistanceM
+    r.subjectProgressRateMps=a.progressRateMps; r.otherProgressRateMps=b.progressRateMps
+    r.subjectProgressRateSource=a.progressRateSource; r.otherProgressRateSource=b.progressRateSource
+    r.spatialOverlay,r.sharedVertex=overlay(a,b,x); r.classification="FORWARD_INTERSECTION"; r.relationshipStatus="POSITIVE"
+    r.incumbentRelationship=incumbent(a,b,followerKnowledge)
+    if r.incumbentRelationship then r.actionable=false; r.reason="FORWARD_INTERSECTION_SUPPRESSED_BY_ESTABLISHED_RELATIONSHIP_PRECEDENCE"; return r end
+    if not a.progressRateMps or not b.progressRateMps then r.temporalAllocationStatus="UNRESOLVED"; r.actionable=false; r.reason="POSITIVE_FORWARD_INTERSECTION_WITH_TIMING_UNRESOLVED"; return r end
+    r.subjectTimeToIntersectionSec=x.subjectForwardDistanceM/a.progressRateMps; r.otherTimeToIntersectionSec=x.otherForwardDistanceM/b.progressRateMps
+    if r.subjectTimeToIntersectionSec==r.otherTimeToIntersectionSec then r.temporalAllocationStatus="UNRESOLVED"; r.actionable=false; r.reason="EQUAL_TIME_TO_INTERSECTION_HAS_NO_AUTHORISED_TIE_BREAK"; return r end
+    local subjectYields=r.subjectTimeToIntersectionSec>r.otherTimeToIntersectionSec
+    r.temporalAllocationStatus="SUPPORTED"; r.actionable=true
+    r.temporalYielderAssemblyId=subjectYields and a.assemblyId or b.assemblyId; r.temporalYielderReferenceKey=subjectYields and a.assemblyReferenceKey or b.assemblyReferenceKey
+    r.continuingAssemblyId=subjectYields and b.assemblyId or a.assemblyId; r.continuingReferenceKey=subjectYields and b.assemblyReferenceKey or a.assemblyReferenceKey
+    r.regulationSpeedKmh=OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH or 1
+    r.actionSpaceConservation={status="REGULATE_SUPPORTED",supported=true,admissionKind="FORWARD_INTERSECTION",
+        regulatedAssemblyId=r.temporalYielderAssemblyId,regulatedReferenceKey=r.temporalYielderReferenceKey,
+        protectedAssemblyId=r.continuingAssemblyId,protectedReferenceKey=r.continuingReferenceKey,
+        governingPurpose="MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME",separationM=x.subjectForwardDistanceM+x.otherForwardDistanceM,
+        nativeUnrestrictedKmh=r.regulationSpeedKmh,nativeClosureContributionKmh=0,nativeSignedClosureContributionKmh=0,nativeMoveForwards=true,
+        fixedRegulationSpeedKmh=r.regulationSpeedKmh,reason="GREATER_TIME_TO_FORWARD_INTERSECTION_YIELDS_FOR_INTENT_REVELATION"}
+    r.reason=r.actionSpaceConservation.reason; return r
 end
-
-local function numberText(value)
-    if value==nil then return "UNRESOLVED" end
-    return string.format("%.3f",value)
-end
-
+local function numberText(v) return v==nil and "UNRESOLVED" or string.format("%.3f",v) end
 local function logInfo(message)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][SPATIAL-CONSTRAINT] %s",message)
-    else print("[FS25_OuttaMyWay][SPATIAL-CONSTRAINT] "..message) end
+    if Logging and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][FORWARD-INTERSECTION] %s",message) else print("[FS25_OuttaMyWay][FORWARD-INTERSECTION] "..message) end
 end
-
-function Assessment.new()
-    return setmetatable({lastSignatures={}},Assessment)
-end
-
-function Assessment:reset()
-    self.lastSignatures={}
-end
-
+function Assessment.new() return setmetatable({lastSignatures={}},Assessment) end
+function Assessment:reset() self.lastSignatures={} end
 function Assessment:assess(input)
-    local futures=byAssembly(input.futureSpace)
-    local motions=byAssembly(input.motionEvidence)
-    local projections={}
-    for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(input.assemblyIds or {}) do
-        projections[#projections+1]=projection(input.fieldWorld,input.fieldWorldReferenceKey,assemblyId,futures[assemblyId],motions[assemblyId])
-    end
+    local futures,motions=byAssembly(input.futureSpace),byAssembly(input.motionEvidence); local projections={}
+    for _,id in OuttaMyWay.ValueRecord.ipairs(input.assemblyIds or {}) do projections[#projections+1]=projection(input.fieldWorld,input.fieldWorldReferenceKey,id,futures[id],motions[id]) end
     table.sort(projections,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
-    local pairs={}
-    for first=1,OuttaMyWay.ValueRecord.length(projections)-1 do
-        for second=first+1,OuttaMyWay.ValueRecord.length(projections) do
-            local record=pairKnowledge(input.operationId,projections[first],projections[second])
-            pairs[#pairs+1]=record
-            local pairKey=tostring(input.operationId).."|"..tostring(record.subjectAssemblyId).."|"..tostring(record.otherAssemblyId)
-            local signature=table.concat({record.classification,record.reason,
-                record.subjectProjection.terminatingBoundaryEdge and record.subjectProjection.terminatingBoundaryEdge.edgeKey or "UNRESOLVED",
-                record.otherProjection.terminatingBoundaryEdge and record.otherProjection.terminatingBoundaryEdge.edgeKey or "UNRESOLVED"},"|")
-            if self.lastSignatures[pairKey]~=signature then
-                self.lastSignatures[pairKey]=signature
-                local c1=record.category1Evidence or {}
-                local c2=record.category2Evidence or {}
-                local ab=c2.subjectProgressionBandContainsOtherContact or {}
-                local ba=c2.otherProgressionBandContainsSubjectContact or {}
-                logInfo(string.format("SPATIAL_CONSTRAINT_ASSESSED operation=%s pair=%s|%s classification=%s subjectContact=(%s,%s) otherContact=(%s,%s) subjectEdge=%s otherEdge=%s sharedVertex=%s widths=%s|%s halfWidths=%s|%s vertexDistances=%s|%s category2Longitudinal=%s|%s category2Lateral=%s|%s boundaryDistances=%s|%s timeToTransition=%s|%s reason=%s decisionAuthority=false controlAuthority=false",
-                    tostring(input.operationId),tostring(record.subjectAssemblyId),tostring(record.otherAssemblyId),record.classification,
-                    numberText(record.subjectProjection.contactX),numberText(record.subjectProjection.contactZ),numberText(record.otherProjection.contactX),numberText(record.otherProjection.contactZ),
-                    tostring(record.subjectProjection.terminatingBoundaryEdge and record.subjectProjection.terminatingBoundaryEdge.edgeKey or "UNRESOLVED"),tostring(record.otherProjection.terminatingBoundaryEdge and record.otherProjection.terminatingBoundaryEdge.edgeKey or "UNRESOLVED"),
-                    tostring(record.sharedVertex and record.sharedVertex.identity or "none"),numberText(record.subjectProjection.workingWidthM),numberText(record.otherProjection.workingWidthM),numberText(record.subjectProjection.provisionalHalfWidthM),numberText(record.otherProjection.provisionalHalfWidthM),
-                    numberText(c1.subjectContactToSharedVertexM),numberText(c1.otherContactToSharedVertexM),numberText(ab.longitudinalM),numberText(ba.longitudinalM),numberText(ab.lateralM),numberText(ba.lateralM),
-                    numberText(record.subjectProjection.boundaryDistanceM),numberText(record.otherProjection.boundaryDistanceM),numberText(record.subjectProjection.provisionalTimeToBoundarySec),numberText(record.otherProjection.provisionalTimeToBoundarySec),tostring(record.reason)))
-            end
-        end
-    end
-    return {operationId=input.operationId,boundaryTransitionProjections=projections,pairRelationships=pairs,
-        decisionAuthority=false,controlAuthority=false,provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT",representationOnly=true}}
+    local relationships={}
+    for i=1,OuttaMyWay.ValueRecord.length(projections)-1 do for j=i+1,OuttaMyWay.ValueRecord.length(projections) do
+        local r=pairRecord(input.operationId,projections[i],projections[j],input.followerBoundaryKnowledge); relationships[#relationships+1]=r
+        local signature=table.concat({r.classification,r.reason,tostring(r.temporalYielderAssemblyId),tostring(r.spatialOverlay)},"|")
+        if self.lastSignatures[r.identity]~=signature then self.lastSignatures[r.identity]=signature; local x=r.intersection or {}
+            logInfo(string.format("FORWARD_INTERSECTION_ASSESSED relationship=%s pair=%s|%s state=%s intersection=(%s,%s) distances=%s|%s rates=%s|%s rateSources=%s|%s times=%s|%s yielder=%s continuing=%s overlay=%s regulation=%s incumbent=%s reason=%s",
+                r.identity,tostring(r.subjectAssemblyId),tostring(r.otherAssemblyId),r.relationshipStatus,numberText(x.x),numberText(x.z),numberText(r.subjectForwardDistanceToIntersectionM),numberText(r.otherForwardDistanceToIntersectionM),
+                numberText(r.subjectProgressRateMps),numberText(r.otherProgressRateMps),tostring(r.subjectProgressRateSource),tostring(r.otherProgressRateSource),numberText(r.subjectTimeToIntersectionSec),numberText(r.otherTimeToIntersectionSec),
+                tostring(r.temporalYielderAssemblyId or "UNRESOLVED"),tostring(r.continuingAssemblyId or "UNRESOLVED"),tostring(r.spatialOverlay or "UNRESOLVED"),numberText(r.regulationSpeedKmh),tostring(r.incumbentRelationship and r.incumbentRelationship.kind or "none"),tostring(r.reason))) end
+    end end
+    return {operationId=input.operationId,boundaryTransitionProjections=projections,pairRelationships=relationships,decisionAuthority=false,controlAuthority=false,
+        provenance={source="SpatialConstraintAssessment",layer="SITUATION_ASSESSMENT",forwardIntersection=true}}
 end

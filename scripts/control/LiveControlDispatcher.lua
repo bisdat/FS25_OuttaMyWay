@@ -280,6 +280,7 @@ end
 local D0123_OWNER_TAG="D0123_GUARDED_RECOVERY"
 local D0141_OWNER_TAG="D0141_FOLLOWER_BOUNDARY"
 local D0146_ACTION_SPACE_OWNER_TAG="D0146_ACTION_SPACE_CONSERVATION"
+local FORWARD_INTERSECTION_OWNER_TAG="FORWARD_INTERSECTION_INTENT_REVELATION"
 
 local function guardedRecoveryBridge(candidate)
     local basis=candidate and candidate.evidenceBasis or nil
@@ -308,12 +309,21 @@ end
 -- evidence at this authority boundary.
 local function d0146ActionSpaceRelationshipState(picture,lease,relation)
     if relation==nil then
+        if lease.admissionKind=="FORWARD_INTERSECTION" then
+            return "DISSOLVED","FORWARD_INTERSECTION_NO_LONGER_POSITIVELY_SUPPORTED"
+        end
         local subjectPresent=pictureContainsAssembly(picture,lease.protectedAssemblyId or lease.excursionAssemblyId)
         local regulatedPresent=pictureContainsAssembly(picture,lease.regulatedAssemblyId)
         if subjectPresent and regulatedPresent then
             return "PERSIST","D0146_RELATIONSHIP_TEMPORARILY_UNRESOLVED_ACTION_SPACE_OBLIGATION_RETAINED"
         end
         return "DISSOLVED","D0146_RELATIONSHIP_PARTICIPANT_NO_LONGER_ACTIVE"
+    end
+    if lease.admissionKind=="FORWARD_INTERSECTION" then
+        if relation.classification=="FORWARD_INTERSECTION" and relation.actionable==true and relation.incumbentRelationship==nil then
+            return "PERSIST","FORWARD_INTERSECTION_REMAINS_POSITIVELY_SUPPORTED"
+        end
+        return "DISSOLVED",relation.reason or "FORWARD_INTERSECTION_DISSOLVED_OR_SUPERSEDED"
     end
     local relationship=relation.resolutionSpaceRelationship
     if type(relationship)=="table" and relationship.positiveDissolution==true then
@@ -367,6 +377,11 @@ local function d0146ActionSpaceRelation(picture,lease)
     if lease==nil then return nil end
     for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.opposedCorridorKnowledge or {}) do
         if relation.identity==lease.conflictIdentity then return relation end
+    end
+    for _,knowledge in OuttaMyWay.ValueRecord.ipairs(picture.spatialConstraintKnowledge or {}) do
+        for _,relation in OuttaMyWay.ValueRecord.ipairs(knowledge.pairRelationships or {}) do
+            if relation.identity==lease.conflictIdentity then return relation end
+        end
     end
     return nil
 end
@@ -549,12 +564,12 @@ function Dispatcher:_releaseD0146ActionSpaceLease(picture,evaluated,reason)
     if commitment~=nil and token~=nil and self.runtime.authorities:validate(token)==true and self.capability~=nil and type(self.capability.executeControlRequest)=="function" then
         request=self:_regulationRequest(picture,evaluated,syntheticCandidate,commitment,token,{
             regulatedAssemblyId=lease.regulatedAssemblyId,regulatedReferenceKey=lease.regulatedReferenceKey,governingPurpose=lease.governingPurpose
-        },"RELEASE",D0146_ACTION_SPACE_OWNER_TAG,nil)
+        },"RELEASE",lease.ownerTag or D0146_ACTION_SPACE_OWNER_TAG,nil)
         local ok,result=self.capability:executeControlRequest(request,nil)
         outcome=self:_outcome(request,ok and "ACCEPTED" or "REJECTED",{kind=ok and "REGULATION_LEASE_RELEASED" or "REGULATION_RELEASE_NOT_CONFIRMED",capability="REGULATE_SPEED"},ok and nil or {reason=tostring(result)})
-        if ok~=true and type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG) end
+        if ok~=true and type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,lease.ownerTag or D0146_ACTION_SPACE_OWNER_TAG) end
     elseif self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" then
-        self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG)
+        self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,lease.ownerTag or D0146_ACTION_SPACE_OWNER_TAG)
     end
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
         local preserve=self:_otherRegulationPurposeOwnsAuthority(commitment.identity,lease.regulatedAssemblyId,"D0146_ACTION_SPACE")
@@ -691,6 +706,9 @@ function Dispatcher:_continueD0146ActionSpaceReactivation(picture,evaluated,cand
 end
 
 function Dispatcher:_updateD0146ActionSpaceEnvelope(picture,evaluated,candidate,lease,relation,relationshipReason)
+    if lease.admissionKind=="FORWARD_INTERSECTION" then
+        return {status="MAINTAINED",reason=relationshipReason or "FORWARD_INTERSECTION_FIXED_CREEP_REMAINS_ACTIVE",d0146ActionSpace=true,forwardIntersection=true,commitmentId=lease.commitmentId}
+    end
     local separation=d0146CurrentSeparation(picture,lease,relation,nil)
     if separation==nil then
         return {status="MAINTAINED",reason=relationshipReason or "D0155_RESOLUTION_SPACE_CURRENT_DISTANCE_UNAVAILABLE_OBLIGATION_RETAINED",d0146ActionSpace=true,commitmentId=lease.commitmentId}
@@ -845,13 +863,18 @@ function Dispatcher:_continueD0146ActionSpaceInitial(picture,evaluated,candidate
     local token=applied.authorityToken
     if token==nil or self.runtime.authorities:validate(token)~=true then return {status="NO_DISPATCH",reason="D0146_ACTION_SPACE_VALID_AUTHORITY_TOKEN_UNAVAILABLE",d0146ActionSpace=true} end
 
-    local envelope,envelopeReason=OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(bridge.separationM,bridge.nativeUnrestrictedKmh,OuttaMyWay.D0146_RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION or 0.75,OuttaMyWay.D0146_RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH or 1)
-    if envelope==nil then
+    local fixedForwardIntersection=bridge.admissionKind=="FORWARD_INTERSECTION"
+    local envelope,envelopeReason=nil,nil
+    if not fixedForwardIntersection then
+        envelope,envelopeReason=OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(bridge.separationM,bridge.nativeUnrestrictedKmh,OuttaMyWay.D0146_RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION or 0.75,OuttaMyWay.D0146_RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH or 1)
+    end
+    if not fixedForwardIntersection and envelope==nil then
         if applied.authorityAcquired then OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,applied.commitment.identity,bridge.regulatedAssemblyId,{reason="D0155_ENVELOPE_ESTABLISH_FAILED:"..tostring(envelopeReason),preserveAuthority=self:_otherRegulationPurposeOwnsAuthority(applied.commitment.identity,bridge.regulatedAssemblyId,"D0146_ACTION_SPACE")}) end
         return {status="NO_DISPATCH",reason="D0155_ENVELOPE_ESTABLISH_FAILED:"..tostring(envelopeReason),d0146ActionSpace=true}
     end
-    local initialCap=tonumber(envelope.capKmh) or 0
-    local request=self:_regulationRequest(picture,evaluated,candidate,applied.commitment,token,bridge,"APPLY",D0146_ACTION_SPACE_OWNER_TAG,initialCap)
+    local initialCap=fixedForwardIntersection and (OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH or 1) or (tonumber(envelope.capKmh) or 0)
+    local ownerTag=fixedForwardIntersection and FORWARD_INTERSECTION_OWNER_TAG or D0146_ACTION_SPACE_OWNER_TAG
+    local request=self:_regulationRequest(picture,evaluated,candidate,applied.commitment,token,bridge,"APPLY",ownerTag,initialCap)
     local started,result=self.capability:executeControlRequest(request,candidate)
     if started~=true then
         if applied.authorityAcquired then OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,applied.commitment.identity,bridge.regulatedAssemblyId,{reason="D0146_ACTION_SPACE_CONTROL_REQUEST_REJECTED:"..tostring(result),preserveAuthority=self:_otherRegulationPurposeOwnsAuthority(applied.commitment.identity,bridge.regulatedAssemblyId,"D0146_ACTION_SPACE")}) end
@@ -863,11 +886,16 @@ function Dispatcher:_continueD0146ActionSpaceInitial(picture,evaluated,candidate
         regulatedAssemblyId=bridge.regulatedAssemblyId,regulatedReferenceKey=bridge.regulatedReferenceKey,
         protectedAssemblyId=bridge.protectedAssemblyId or bridge.excursionAssemblyId,protectedReferenceKey=bridge.protectedReferenceKey or bridge.excursionReferenceKey,
         excursionAssemblyId=bridge.excursionAssemblyId,excursionReferenceKey=bridge.excursionReferenceKey,admissionKind=bridge.admissionKind,
-        governingPurpose=bridge.governingPurpose,authorityTokenId=token.identity,requestId=request.identity,currentCapKmh=initialCap,progressionEnvelope=envelope,actuationActive=true,
+        governingPurpose=bridge.governingPurpose,ownerTag=ownerTag,authorityTokenId=token.identity,requestId=request.identity,currentCapKmh=initialCap,progressionEnvelope=envelope,actuationActive=true,fixedForwardIntersection=fixedForwardIntersection,
         nativeClosureContributionKmh=bridge.nativeClosureContributionKmh,nativeMoveForwards=bridge.nativeMoveForwards,quiescenceCount=0,reactivationCount=0
     }
     self.d0146ActionSpaceApplyCount=self.d0146ActionSpaceApplyCount+1; self.dispatchCount=self.dispatchCount+1
-    local outcome=self:_outcome(request,"ACCEPTED",{kind="D0155_RESOLUTION_SPACE_ENVELOPE_ADMITTED",capability="REGULATE_SPEED",effectClass=envelope.effectClass,maxSpeedKmh=initialCap},nil)
+    local outcome=self:_outcome(request,"ACCEPTED",{kind=fixedForwardIntersection and "FORWARD_INTERSECTION_REGULATION_ADMITTED" or "D0155_RESOLUTION_SPACE_ENVELOPE_ADMITTED",capability="REGULATE_SPEED",effectClass=fixedForwardIntersection and "INTENT_REVELATION_CREEP" or envelope.effectClass,maxSpeedKmh=initialCap},nil)
+    if fixedForwardIntersection then
+        logInfo("FORWARD_INTERSECTION_REGULATION_APPLIED commitment=%s relationship=%s yielder=%s continuing=%s cap=1kmh purpose=%s",
+            tostring(applied.commitment.identity),tostring(bridge.conflictIdentity),tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId),tostring(bridge.governingPurpose))
+        return {status="ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,d0146ActionSpace=true,forwardIntersection=true}
+    end
     logInfo("D0155_ENVELOPE_ADMIT commitment=%s conflict=%s admission=%s regulated=%s ref=%s protected=%s cap=%dkmh raw=%.2fkmh native=%.2fkmh D0=%.2fm contingency=%.2fm ordinary=%.2fm reserveFraction=%.2f purpose=%s",
         tostring(applied.commitment.identity),tostring(bridge.conflictIdentity),tostring(bridge.admissionKind or "CURRENT_EXCURSION"),tostring(bridge.regulatedAssemblyId),tostring(bridge.regulatedReferenceKey),tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),initialCap,
         tonumber(envelope.rawCapKmh) or 0,tonumber(bridge.nativeUnrestrictedKmh) or 0,tonumber(envelope.initialDistanceM) or 0,tonumber(envelope.contingencyReserveM) or 0,tonumber(envelope.ordinaryInitialM) or 0,tonumber(envelope.reserveFraction) or 0,tostring(bridge.governingPurpose))

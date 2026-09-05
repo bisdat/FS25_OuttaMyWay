@@ -2049,10 +2049,12 @@ def test_action_space_regulation_application_is_upstream_and_singular():
         assert forbidden not in main
 
 
-def test_spatial_constraint_representation_is_situation_only_and_explicitly_composed():
+def test_forward_intersection_is_situation_owned_and_consumed_without_geometry_rederivation():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"SpatialConstraintAssessment.lua").read_text(encoding="utf-8")
     situation=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
+    candidates=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
     harness=(ROOT/"tests"/"replacement_core"/"run.lua").read_text(encoding="utf-8")
 
     assert 'scripts/assessment/SpatialConstraintAssessment.lua' in main
@@ -2061,20 +2063,21 @@ def test_spatial_constraint_representation_is_situation_only_and_explicitly_comp
     assert harness.index('load("scripts/assessment/SpatialConstraintAssessment.lua")') < harness.index('load("scripts/assessment/SituationAssessment.lua")')
     assert "SpatialConstraintAssessment.new()" in situation
     assert "spatialConstraintKnowledge=spatialConstraintKnowledge" in situation.replace(" ", "")
-    assert 'classification="CATEGORY_1_PROSPECTIVE_CANDIDATE"' in assessment
-    assert 'classification="CATEGORY_2_PROSPECTIVE_CANDIDATE"' in assessment
-    assert "provisionalHalfWidthM=base.workingWidthM/2" in assessment
+    assert 'classification="FORWARD_INTERSECTION"' in assessment
+    assert "subjectTimeToIntersectionSec" in assessment
+    assert "temporalYielderAssemblyId" in assessment
+    assert "subjectTimeToIntersectionSec>r.otherTimeToIntersectionSec" in assessment
+    assert "provisionalHalfWidthM" in assessment  # retained evidence, never admission authority
+    assert "provisionalHalfWidthM+" not in assessment
     assert "decisionAuthority=false" in assessment
     assert "controlAuthority=false" in assessment
-    assert "REGULATE_SPEED" not in assessment
     assert "ControlRequest" not in assessment
     assert "CandidateAction" not in assessment
-    for path in (
-        ROOT/"scripts"/"candidates"/"CandidateSpace.lua",
-        ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua",
-        ROOT/"scripts"/"decision"/"TrafficPolicemanDecisionPolicy.lua",
-        ROOT/"scripts"/"decision"/"DecisionSelector.lua",
-        ROOT/"scripts"/"responsibility"/"ResponsibilityTransitionAuthority.lua",
-        ROOT/"scripts"/"control"/"LiveControlDispatcher.lua",
-    ):
+    assert "picture.spatialConstraintKnowledge" in candidates
+    assert "subjectForwardDistanceToIntersectionM" not in candidates
+    assert "FORWARD_INTERSECTION_REGULATION_SPEED_KMH" in dispatcher
+    assert "FORWARD_INTERSECTION_REGULATION_ADMITTED" in dispatcher
+    assert "pointSegmentDistance" not in candidates
+    assert "pointSegmentDistance" not in dispatcher
+    for path in (ROOT/"scripts"/"decision"/"TrafficPolicemanDecisionPolicy.lua",ROOT/"scripts"/"decision"/"DecisionSelector.lua"):
         assert "spatialConstraintKnowledge" not in path.read_text(encoding="utf-8")

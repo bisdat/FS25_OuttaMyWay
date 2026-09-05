@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.3.0.7 TEST — SPATIAL CONSTRAINT REPRESENTATION.
+-- FS25_OuttaMyWay v0.3.0.8 TEST — FORWARD INTERSECTION REGULATION.
 -- modDesc.xml loads only this file. Retired implementation is preserved by repository history, not shipped runtime source.
 local modDirectory=g_currentModDirectory or ""
 local modules={

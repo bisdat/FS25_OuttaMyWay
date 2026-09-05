@@ -653,20 +653,6 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         if situation~=nil then situation.opposedCorridorRelationships[#situation.opposedCorridorRelationships+1]=copyValue(relation) end
     end
 
-    local spatialConstraintKnowledge={}
-    for _,operationId in OuttaMyWay.ValueRecord.ipairs(activeOperationIds) do
-        local situation=situationByOperation[operationId]
-        if situation~=nil then
-            local knowledge=self.spatialConstraintAssessment:assess({
-                operationId=operationId,assemblyIds=situation.memberAssemblyIds,
-                fieldWorld=snapshot.fieldWorld,fieldWorldReferenceKey=self.operations:get(operationId).fieldWorldReferenceKey,
-                futureSpace=futureSpace,motionEvidence=motionEvidence
-            })
-            situation.spatialConstraintKnowledge=knowledge
-            spatialConstraintKnowledge[#spatialConstraintKnowledge+1]=knowledge
-        end
-    end
-
     -- D-0141 follower-purpose reassessment consumes the stronger D-0146
     -- trajectory relationship witness.  This ordering is intentional: stale
     -- follower Regulation must retire before Candidate selection when current
@@ -684,6 +670,22 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         establishedOpposedSuccessionMaxDot=OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_OPPOSED_SUCCESSION_MAX_DOT or -0.95,
         clearanceFactor=OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR or 0.90
     })
+
+    -- Established follower relationships are assessed first. Prospective
+    -- geometry remains visible, but cannot displace that incumbent ownership.
+    local spatialConstraintKnowledge={}
+    for _,operationId in OuttaMyWay.ValueRecord.ipairs(activeOperationIds) do
+        local situation=situationByOperation[operationId]
+        if situation~=nil then
+            local knowledge=self.spatialConstraintAssessment:assess({
+                operationId=operationId,assemblyIds=situation.memberAssemblyIds,
+                fieldWorld=snapshot.fieldWorld,fieldWorldReferenceKey=self.operations:get(operationId).fieldWorldReferenceKey,
+                futureSpace=futureSpace,motionEvidence=motionEvidence,followerBoundaryKnowledge=followerBoundaryKnowledge
+            })
+            situation.spatialConstraintKnowledge=knowledge
+            spatialConstraintKnowledge[#spatialConstraintKnowledge+1]=knowledge
+        end
+    end
 
     -- D-0146 Step 2: Situation owns only purpose-specific mechanical
     -- Representation Fitness. Candidate responsibility later searches Local

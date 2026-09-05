@@ -989,44 +989,47 @@ follower-regulation HUD text still uses `•`. This is separate UI implementatio
 debt, not Regulation architecture or PR #35 acceptance evidence. It is not fixed
 in this tranche and should use ASCII-safe punctuation when later addressed.
 
-## Spatial Constraint representation tranche
+## Forward Intersection tranche for Spatial Constraint
 
 [Issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37) is the blocking
-upstream prerequisite before the strangler sequence resumes. Its first production
-tranche is deliberately representation-only:
+upstream prerequisite before the strangler sequence resumes. GIANTS Reality
+falsified the first representation hypothesis. **Spatial Width Is Not Temporal
+Conflict Evidence**: half working width cannot decide whether supported future
+trajectories intersect.
 
 ```text
-Field-bounded local continuation
-        +
-immutable Field World boundary topology
-        +
-raw GIANTS working-width evidence seed
+two finite, positively supported Field-bounded continuations
         ↓
-SpatialConstraintAssessment
+common Forward Intersection within both extents
         ↓
-Boundary-transition projections
-        +
-same-Operation prospective pair knowledge
+positive time-to-intersection evidence
         ↓
-Operational Picture / change-suppressed diagnostics only
+greater-time participant yields at fixed 1 km/h
+        ↓
+fresh Reality maintains or promptly releases Regulation
 ```
 
-The provisional Category-1 hypothesis relates distinct terminating edges only
-when they share an actual ring vertex and both contacts fall within their own
-worker-relative half-working-width seeds. The provisional Category-2 hypothesis
-relates a boundary contact only when it lies ahead inside the other worker's
-field-bounded projected progression band. Missing width or projection evidence
-is `UNRESOLVED`; there is no universal corner radius or boundary-distance policy.
+`SpatialConstraintAssessment` owns centreline intersection and timing. Candidate,
+responsibility and Control consume that Situation knowledge rather than deriving
+geometry again. Category 1, Category 2 and open field annotate the future theatre
+after the generic relationship is established; they are not separate discovery
+mechanisms. No corner radius, width gate, pair-closing requirement or replacement
+for the retired 80 m literal exists.
 
-[`SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua)
-owns only Situation interpretation. Its records explicitly deny Decision and
-Control authority. No Candidate, Decision, Current Responsibility, Bounded
-Authority or Control path consumes this knowledge, and no Regulation behaviour
-is authorised. `SPATIAL_CONSTRAINT_ASSESSED` exposes the measured topology,
-working-width, relative-projection and time evidence when classification changes.
+Where both positive rates support ordering, the greater-time party is selected
+as temporal yielder and the retained Regulation substrate applies fixed 1 km/h
+Intent-Revelation Creep. Missing rate or exact equal time is unresolved. Fresh
+loss of the intersection dissolves the purpose and releases its lease.
 
-Both classifications remain falsifiable implementation hypotheses pending
-GIANTS Reality validation. Issue #37 is not resolved by representation alone.
+**Established Relationship Precedence** prevents this prospective geometry from
+displacing a valid follower relationship. Follower Regulation remains variable
+speed, including reversing-leader handling. Bubble Bullet Time remains a separate
+fixed-1-km/h purpose despite sharing the magnitude.
+
+`FORWARD_INTERSECTION_ASSESSED` and
+`FORWARD_INTERSECTION_REGULATION_APPLIED` provide the next Reality evidence.
+Category-1 behaviour and release, established precedence, and Category-2
+classification remain pending GIANTS validation. Issue #37 remains open.
 The PR #41 Regulation-to-Passage replacement remains pending live validation but
 is not the active tranche while this upstream Situation knowledge is examined.
 
