@@ -5554,6 +5554,15 @@ test("Forward Intersection established follower ownership has precedence",functi
     equal(relation.incumbentRelationship.kind,"FOLLOWER_BOUNDARY")
 end)
 
+test("Open-field Forward Intersection remains diagnostic for existing Passage policy",function()
+    local knowledge=assessSpatial(
+        spatialFuture("AS-A",10,60,100,60,1,0,90),spatialFuture("AS-B",90,90,0,45,-0.89442719,-0.44721360,100.62305899),
+        spatialMotion("AS-A",6,5),spatialMotion("AS-B",6,4))
+    local relation=knowledge.pairRelationships[1]
+    equal(relation.classification,"FORWARD_INTERSECTION"); equal(relation.spatialOverlay,"OPEN_FIELD")
+    equal(relation.actionable,false); equal(relation.actionSpaceConservation,nil)
+end)
+
 test("Forward Intersection missing motion leaves temporal allocation unresolved but width does not",function()
     local knowledge=assessSpatial(
         spatialFuture("AS-A",95,50,95,0,0,-1,50),spatialFuture("AS-B",50,5,100,5,1,0,50),

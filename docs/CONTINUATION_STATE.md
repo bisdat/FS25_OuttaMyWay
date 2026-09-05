@@ -27,7 +27,7 @@ bounded 1 km/h Regulation for Reality validation.
 - **Aggressive admission paired with aggressive release** accepts cheap false positives because the intervention is bounded, reversible and re-assessed from fresh Reality.
 - **Established Relationship Precedence** suppresses Forward Intersection actuation when a valid leader/follower relationship already owns the pair. Leader/follower Regulation remains variable-speed; Bubble Bullet Time remains a separate fixed-1-km/h purpose.
 - `FORWARD_INTERSECTION_ASSESSED` change-suppressed diagnostics expose the intersection, distances, rate sources, times, yielder, continuing participant, overlay, incumbent ownership and reason. `FORWARD_INTERSECTION_REGULATION_APPLIED` confirms downstream fixed-speed actuation.
-- Offline observation is `274 passed / 13 failed`, preserving the established 13 historical failures. GIANTS Reality validation is required; issue #37 remains open.
+- Offline observation is `275 passed / 13 failed`, preserving the established 13 historical failures. GIANTS Reality validation is required; issue #37 remains open.
 
 - The accepted [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Strangler Transition Map](IMPLEMENTATION_MAP.md#detailed-strangler-transition-map) remain authoritative for architecture and programme direction respectively.
 - Cooperative Passage upstream transition remains accepted and Reality-validated for one direct `CREATE` episode.
