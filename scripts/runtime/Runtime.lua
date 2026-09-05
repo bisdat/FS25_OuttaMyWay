@@ -37,6 +37,7 @@ function Runtime.new()
     runtime.liveControlDispatcher=OuttaMyWay.LiveControlDispatcher.new(runtime)
     runtime.decisionCommitmentBoundary=OuttaMyWay.DecisionCommitmentBoundary.new(identities,epochs,admission,commitments,obligations,authorities,governingBasis,terminalSettlement)
     runtime.responsibilityTransitionAuthority=OuttaMyWay.ResponsibilityTransitionAuthority.new(runtime)
+    terminalSettlement.responsibilityTransitionAuthority=runtime.responsibilityTransitionAuthority
     runtime.followerBoundaryResponsibilityTransition=OuttaMyWay.FollowerBoundaryResponsibilityTransition.new(runtime)
     runtime.actionSpaceRegulationResponsibilityTransition=OuttaMyWay.ActionSpaceRegulationResponsibilityTransition.new(runtime)
     runtime.cooperativePassageResponsibilityTransition=OuttaMyWay.CooperativePassageResponsibilityTransition.new(runtime)
@@ -96,7 +97,9 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         if applied==nil then
             return {status="NO_DISPATCH",reason="FOLLOWER_BOUNDARY_RESPONSIBILITY_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId,followerBoundary=true}
         end
-        return self.liveControlDispatcher:continueFollowerBoundary(picture,evaluated,applied)
+        local continued=self.liveControlDispatcher:continueFollowerBoundary(picture,evaluated,applied)
+        continued.currentResponsibility=applied.currentResponsibility
+        return continued
     end
     if dispatch.status=="ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED" then
         local applied,reason=self.actionSpaceRegulationResponsibilityTransition:transition(picture,evaluated,dispatch)
@@ -109,6 +112,9 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         local applied,reason=nil,nil
         if self.responsibilityTransitionAuthority:matchesActionSpacePassage(evaluated) then
             applied,reason=self.responsibilityTransitionAuthority:replaceActionSpaceRegulationWithCooperativePassage(
+                picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition,self.liveControlDispatcher)
+        elseif self.responsibilityTransitionAuthority:matchesFollowerPassage(picture,evaluated) then
+            applied,reason=self.responsibilityTransitionAuthority:replaceFollowerRegulationWithCooperativePassage(
                 picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition,self.liveControlDispatcher)
         else
             applied,reason=self.cooperativePassageResponsibilityTransition:transition(picture,evaluated,dispatch)

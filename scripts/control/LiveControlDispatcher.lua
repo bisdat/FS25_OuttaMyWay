@@ -439,8 +439,10 @@ function Dispatcher:_releaseFollowerBoundaryLease(picture,evaluated,candidate,br
     local preserve=self:_otherRegulationPurposeOwnsAuthority(commitment.identity,lease.followerAssemblyId,"D0141")
     if not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
         OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,commitment.identity,lease.followerAssemblyId,{reason=reason,preserveAuthority=preserve})
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.settleFollowerBoundaryPurpose(self.runtime,commitment.identity,bridge or lease,{kind="D0141_POSITIVE_RETIREMENT",reason=reason,pairKey=lease.pairKey})
+        local settled,settleReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleFollowerBoundaryPurpose(self.runtime,commitment.identity,bridge or lease,{kind="D0141_POSITIVE_RETIREMENT",reason=reason,pairKey=lease.pairKey})
+        if settled==nil then return {status="NO_DISPATCH",reason=settleReason,followerBoundary=true} end
     end
+    self.runtime.responsibilityTransitionAuthority:terminateRegulation(commitment.identity)
     self.followerBoundaryReleaseCount=self.followerBoundaryReleaseCount+1
     self.followerBoundaryLease=nil
     logInfo("D0141_RELEASE commitment=%s pair=%s follower=%s ref=%s preserveAuthority=%s reason=%s",tostring(commitment.identity),tostring(lease.pairKey),tostring(lease.followerAssemblyId),tostring(lease.followerReferenceKey),tostring(preserve),tostring(reason))
@@ -1025,6 +1027,7 @@ function Dispatcher:retireTrafficLeasesForCommitment(commitmentId,reason)
         logInfo("D0123_DEPENDENT_COMMITMENT_TERMINATED commitment=%s progress=%s reason=%s",
             tostring(commitmentId),tostring(guarded.progressAssemblyId),tostring(reason))
     end
+    self.runtime.responsibilityTransitionAuthority:terminateFollowerRegulationForTerminalCommitment(commitmentId)
     return {released=released}
 end
 
@@ -1039,12 +1042,68 @@ function Dispatcher:getD0146ActionSpaceStatus()
         quiescenceCount=self.d0146ActionSpaceQuiescenceCount,reactivationCount=self.d0146ActionSpaceReactivationCount,ownerTag=D0146_ACTION_SPACE_OWNER_TAG}
 end
 
+-- Read-only eligibility for the existing follower cleanup after Passage REVISE.
+function Dispatcher:preflightFollowerRegulationForCooperativePassage(evaluated,readiness)
+    local candidate=selectedCandidate(evaluated)
+    local bridge=cooperativePassageBridge(candidate)
+    local lease=self.followerBoundaryLease
+    if candidate==nil or candidate.capability~="REPOSITION" or readiness==nil
+        or readiness.status~="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED"
+        or candidate.identity~=readiness.candidateId or bridge==nil or lease==nil then
+        return nil,"FOLLOWER_PASSAGE_PREFLIGHT_CONTEXT_MISMATCH"
+    end
+    if self.capability==nil or type(self.capability.clearRegulationLeaseByReference)~="function" then
+        return nil,"FOLLOWER_PASSAGE_PREFLIGHT_PHYSICAL_CLEANUP_UNAVAILABLE"
+    end
+    local ids=ownershipAssemblyIds(candidate)
+    local participants={}
+    for _,id in OuttaMyWay.ValueRecord.ipairs(bridge.assemblyIds or {}) do
+        if type(id)~="string" or participants[id] then return nil,"FOLLOWER_PASSAGE_PREFLIGHT_PARTICIPANTS_INVALID" end
+        participants[id]=true
+    end
+    if #ids~=2 or ids[1]==ids[2] or not participants[ids[1]] or not participants[ids[2]]
+        or OuttaMyWay.ValueRecord.length(bridge.assemblyIds or {})~=2
+        or not participants[lease.followerAssemblyId] or not participants[lease.leaderAssemblyId] then
+        return nil,"FOLLOWER_PASSAGE_PREFLIGHT_PARTICIPANTS_MISMATCH"
+    end
+    local commitment=self.runtime.commitments:get(lease.commitmentId)
+    if commitment==nil or commitment.state~="ACTIVE" then return nil,"FOLLOWER_PASSAGE_PREFLIGHT_COMMITMENT_NOT_ACTIVE" end
+    for _,id in ipairs(ids) do
+        local owner=self.runtime.authorities:ownerOf(id)
+        if owner~=nil then
+            if owner~=lease.commitmentId then return nil,"FOLLOWER_PASSAGE_PREFLIGHT_AUTHORITY_CONFLICT" end
+            local valid=false
+            for _,token in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(owner)) do
+                if token.assemblyId==id and self.runtime.authorities:validate(token)==true then valid=true break end
+            end
+            if not valid then return nil,"FOLLOWER_PASSAGE_PREFLIGHT_AUTHORITY_INVALID" end
+        end
+    end
+    local successorObligation=(candidate.obligationsCreated or {})[1]
+    if successorObligation==nil or successorObligation.requiredOutcome==nil
+        or successorObligation.requiredOutcome.kind~="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK" then
+        return nil,"FOLLOWER_PASSAGE_PREFLIGHT_SUCCESSOR_OBLIGATION_UNAVAILABLE"
+    end
+    for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.runtime.obligations:openForOwner(lease.commitmentId)) do
+        local basis,outcome=obligation.basis,obligation.requiredOutcome
+        if basis and basis.kind=="FOLLOWER_BOUNDARY_PROTECTION" and basis.pairKey==lease.pairKey
+            and outcome and outcome.kind=="FOLLOWER_BOUNDARY_ORDERING_PRESERVED_UNTIL_POSITIVE_RETIREMENT" then
+            return {commitmentId=lease.commitmentId,pairKey=lease.pairKey,obligationId=obligation.identity},nil
+        end
+    end
+    return nil,"FOLLOWER_PASSAGE_PREFLIGHT_OPEN_PREDECESSOR_OBLIGATION_UNAVAILABLE"
+end
+
+function Dispatcher:supersedeFollowerRegulationForCooperativePassage(commitment,evaluated)
+    return self:_supersedeFollowerBoundaryForCooperativePassage(commitment,selectedCandidate(evaluated))
+end
+
 -- Cooperative Passage may supersede a same-pair D-0141 follower strategy under
 -- the existing Commitment. Once the Cooperative Passage REVISE Decision has been
 -- applied, that D-0141 speed lease is no longer compatible with the worker's
 -- new role.  Clear only the D-0141 physical lease and settle its follower
 -- obligation; the generic same-Commitment AuthorityToken is deliberately kept
--- live and has already been rebound by applyHeadOnDecision to REPOSITION.
+-- live and has already been rebound by applyCooperativePassageDecision to REPOSITION.
 function Dispatcher:_supersedeFollowerBoundaryForCooperativePassage(commitment,candidate)
     local lease=self.followerBoundaryLease
     if lease==nil or commitment==nil or candidate==nil then return nil end
@@ -1052,9 +1111,8 @@ function Dispatcher:_supersedeFollowerBoundaryForCooperativePassage(commitment,c
     for _,id in ipairs(ownershipAssemblyIds(candidate)) do ids[id]=true end
     if lease.commitmentId~=commitment.identity or ids[lease.followerAssemblyId]~=true or ids[lease.leaderAssemblyId]~=true then return nil end
 
-    if self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" then
-        self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
-    end
+    local cleared,clearReason=self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
+    if cleared~=true then return nil,clearReason or "FOLLOWER_PASSAGE_PHYSICAL_CLEANUP_FAILED" end
     local settled,settleReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleFollowerBoundaryPurpose(self.runtime,commitment.identity,{
         pairKey=lease.pairKey,reason="COOPERATIVE_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION"
     },{kind="D0146_COOPERATIVE_PASSAGE_ROLE_SUCCESSION",pairKey=lease.pairKey,assemblyIds=ownershipAssemblyIds(candidate)})
@@ -1188,8 +1246,7 @@ function Dispatcher:continueCooperativePassage(picture,evaluated,applied)
         return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_ESTABLISHED_RESPONSIBILITY_MISMATCH"}
     end
     local commitment=applied.commitment
-    self:_supersedeFollowerBoundaryForCooperativePassage(commitment,candidate)
-    -- Action-Space semantic supersession is completed by Responsibility
+    -- Regulation semantic supersession is completed by Responsibility
     -- Transition Authority before this physical Passage continuation.
 
     local requests,requestReason=self:_jointCooperativeRequests(picture,evaluated,candidate,commitment,bridge)

@@ -40,15 +40,20 @@ function Transition:transition(picture,evaluated,readiness)
         or bridge.followerAssemblyId~=readiness.followerAssemblyId or bridge.action~="APPLY" or candidate.capability~="REGULATE_SPEED" then
         return nil,"FOLLOWER_BOUNDARY_TRANSITION_CONTEXT_MISMATCH"
     end
+    local preflight,preflightReason=self.runtime.responsibilityTransitionAuthority:preflightFollowerRegulation(picture,evaluated)
+    if preflight==nil then return nil,preflightReason end
     local applied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyFollowerBoundaryDecision(self.runtime,picture,evaluated)
     if applied==nil then
         logWarning("FOLLOWER_BOUNDARY_TRANSITION_REFUSED decision=%s candidate=%s pair=%s reason=%s",
             tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.pairKey),tostring(reason))
         return nil,reason
     end
-    local disposition=applied.application~=nil and "ESTABLISHED" or "REVALIDATED"
-    logInfo("FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM decision=%s candidate=%s pair=%s commitment=%s leader=%s follower=%s legacyAction=%s responsibilityDisposition=%s beforePhysicalDispatch=true",
+    local currentResponsibility,responsibilityReason=self.runtime.responsibilityTransitionAuthority:establishOrPreserveFollowerRegulation(preflight,applied)
+    if currentResponsibility==nil then return nil,responsibilityReason end
+    applied.currentResponsibility=currentResponsibility
+    local disposition=preflight.current==nil and "ESTABLISHED" or "REVALIDATED"
+    logInfo("FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM decision=%s candidate=%s pair=%s commitment=%s responsibility=%s leader=%s follower=%s legacyAction=%s responsibilityDisposition=%s beforePhysicalDispatch=true",
         tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.pairKey),tostring(applied.commitment and applied.commitment.identity or "NONE"),
-        tostring(bridge.leaderAssemblyId),tostring(bridge.followerAssemblyId),tostring(evaluated.decision.commitmentAction),disposition)
+        tostring(currentResponsibility.identity),tostring(bridge.leaderAssemblyId),tostring(bridge.followerAssemblyId),tostring(evaluated.decision.commitmentAction),disposition)
     return applied,nil
 end
