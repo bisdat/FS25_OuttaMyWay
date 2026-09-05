@@ -177,26 +177,15 @@ that PR #41 replacement failed.
 
 ## Next boundary
 
+The `0.3.0.8` Category-1 Forward Intersection GIANTS Reality exemplar is accepted. It demonstrated prospective recognition, greater-time temporal yielding, fixed `1 km/h` Intent-Revelation Regulation, fresh-evidence release, and successful successor Cooperative Passage.
 
-GIANTS Reality has falsified the provisional Category-1 working-width admission hypothesis. **Spatial Width Is Not Temporal Conflict Evidence**: working width no longer determines whether prospective temporal competition exists.
+Strangler Phase 8 is **ASSUMED COMPLETE FOR PROGRAMME PROGRESSION**. Issue #37 remains open as non-blocking Category-2 Reality validation debt. Category-2 Reality validation is still required for Issue #37 closure; materially contrary Category-2 evidence must reopen the affected Forward Intersection assumptions and dependent conclusions.
 
-The active `0.3.0.8 TEST — FORWARD INTERSECTION REGULATION` tranche now represents generic **Forward Intersection** knowledge and consumes supported independent intersections through bounded fixed `1 km/h` Intent-Revelation Regulation.
+Active strangler work returns to **Phase 9 — Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion**. The accepted PR #41 Action-Space Regulation → same-Commitment Cooperative Passage replacement is again the active downstream validation/reconciliation boundary.
 
-The next Reality validation should remain Category 1 first. It must establish:
-
-* the earliest positively supported Forward Intersection while useful Resolution Margin still exists;
-* the greater-time-to-intersection participant selected as temporal yielder;
-* fixed `1 km/h` Regulation applied before native turn revelation;
-* fresh Situation reassessment maintaining or promptly releasing Regulation as the intersection persists or dissolves.
-
-Category 2 remains unvalidated and requires a materially distinct later headland/boundary Reality case.
-
-Open-field Forward Intersection is not excluded from the same bounded temporal Regulation. Category 1, Category 2 and open field are environmental annotations on the generic Forward Intersection relationship rather than admission gates.
+Open-field Forward Intersection remains admitted to the same bounded fixed `1 km/h` Regulation. Category 1, Category 2 and open field are environmental annotations on the generic Forward Intersection relationship rather than admission gates.
 
 Established leader/follower ownership remains separate and retains precedence for its pair, including the validated reversing-leader / forward-follower case. Leader/follower Regulation remains variable-speed. Bubble Bullet Time remains a distinct fixed-`1 km/h` Regulation purpose.
-
-Issue #37 remains open and blocking until the Forward Intersection Situation and its behavioural use are GIANTS Reality-validated. The accepted PR #41 Action-Space Regulation → same-Commitment Cooperative Passage replacement remains pending GIANTS Reality validation, but it is not the active tranche and should not resume until Issue #37 is resolved.
-
 
 ## Not currently active
 

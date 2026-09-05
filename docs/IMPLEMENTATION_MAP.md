@@ -991,9 +991,11 @@ in this tranche and should use ASCII-safe punctuation when later addressed.
 
 ## Forward Intersection tranche for Spatial Constraint
 
-[Issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37) is the blocking
-upstream prerequisite before the strangler sequence resumes. GIANTS Reality
-falsified the first representation hypothesis. **Spatial Width Is Not Temporal
+[Issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37) remains open as
+non-blocking Category-2 Reality validation debt. GIANTS Reality first
+falsified the half-working-width representation hypothesis; subsequent
+`0.3.0.8` Reality validated the replacement Category-1 Forward Intersection
+behaviour. **Spatial Width Is Not Temporal
 Conflict Evidence**: half working width cannot decide whether supported future
 trajectories intersect.
 
@@ -1012,7 +1014,7 @@ fresh Reality maintains or promptly releases Regulation
 `SpatialConstraintAssessment` owns centreline intersection and timing. Candidate,
 responsibility and Control consume that Situation knowledge rather than deriving
 geometry again. Category 1, Category 2 and open field annotate the future theatre
-after the generic relationship is established; they are not separate discovery
+after the generic relationship is established; they are annotations, not admission
 mechanisms. No corner radius, width gate, pair-closing requirement or replacement
 for the retired 80 m literal exists.
 
@@ -1026,12 +1028,19 @@ displacing a valid follower relationship. Follower Regulation remains variable
 speed, including reversing-leader handling. Bubble Bullet Time remains a separate
 fixed-1-km/h purpose despite sharing the magnitude.
 
-`FORWARD_INTERSECTION_ASSESSED` and
-`FORWARD_INTERSECTION_REGULATION_APPLIED` provide the next Reality evidence.
-Category-1 behaviour and release, established precedence, and Category-2
-classification remain pending GIANTS validation. Issue #37 remains open.
-The PR #41 Regulation-to-Passage replacement remains pending live validation but
-is not the active tranche while this upstream Situation knowledge is examined.
+The successful `0.3.0.8` GIANTS Reality run validated Category-1 prospective
+recognition, greater-time temporal yielding, fixed 1 km/h actuation, fresh-evidence
+release and downstream Cooperative Passage succession. The run also supplied
+positive open-field admission/release evidence. It did not revalidate established
+leader/follower precedence or Bubble Bullet Time.
+
+Category-2 Reality validation remains outstanding for Issue #37 closure, but no
+longer blocks programme progression. Phase 8 is **ASSUMED COMPLETE FOR PROGRAMME
+PROGRESSION**. Materially contrary Category-2 evidence must reopen the affected
+Forward Intersection assumptions and dependent conclusions. **Phase 9 — Resolve
+Regulation-to-Passage succession and Same-Commitment Responsibility Fusion** is
+active; the PR #41 Action-Space Regulation → same-Commitment Cooperative Passage
+replacement is again the downstream validation/reconciliation boundary.
 
 # Intermediate Programme Steps
 
