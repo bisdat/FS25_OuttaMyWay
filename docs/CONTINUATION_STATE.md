@@ -9,13 +9,9 @@ is not a changelog, release ledger, or canonical-release record.
 Accepted Repository State is
 `ed1571be90577600b5a96003e06b27dd62fbe4c7`.
 
-[Issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37) remains the
-blocking prerequisite before the strangler programme resumes. GIANTS Reality
-falsified the first representation hypothesis: a projected contact's distance
-from a shared vertex relative to half working width did not truthfully witness
-temporal conflict. The active tranche replaces that gate with generic **Forward
-Intersection** knowledge and connects its supported temporal allocation to
-bounded 1 km/h Regulation for Reality validation.
+Issue #37 remains open as non-blocking validation debt. The successful Category-1 Reality exemplar is sufficient to treat Strangler Phase 8 as **ASSUMED COMPLETE FOR PROGRAMME PROGRESSION** without waiting for a Category-2 fixture. Category-2 Reality validation remains required for Issue #37 closure. Materially contrary later evidence must reopen the affected architectural assumptions.
+
+The active strangler boundary therefore returns to **Phase 9 — Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion**.
 
 ## Established
 
