@@ -246,6 +246,7 @@ function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations
     self.commitments = commitments
     self.obligations = obligations
     self.terminalOccupancyAssessment=terminalOccupancyAssessment
+    self.spatialConstraintAssessment=OuttaMyWay.SpatialConstraintAssessment.new()
     self.publishedCount = 0
     self.latestProductiveContinuationByReference={}
     self.latestGuardedRecoveryKnowledge={}
@@ -332,6 +333,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             relevantAssemblyIds = {},
             futureSpaceRelationships = {},
             opposedCorridorRelationships = {},
+            spatialConstraintKnowledge = nil,
             provenance = { observationSnapshotId=snapshot.identity, operationRevision=operation.revision }
         }
         situations[#situations+1]=situation
@@ -669,6 +671,22 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         clearanceFactor=OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR or 0.90
     })
 
+    -- Established follower relationships are assessed first. Prospective
+    -- geometry remains visible, but cannot displace that incumbent ownership.
+    local spatialConstraintKnowledge={}
+    for _,operationId in OuttaMyWay.ValueRecord.ipairs(activeOperationIds) do
+        local situation=situationByOperation[operationId]
+        if situation~=nil then
+            local knowledge=self.spatialConstraintAssessment:assess({
+                operationId=operationId,assemblyIds=situation.memberAssemblyIds,
+                fieldWorld=snapshot.fieldWorld,fieldWorldReferenceKey=self.operations:get(operationId).fieldWorldReferenceKey,
+                futureSpace=futureSpace,motionEvidence=motionEvidence,followerBoundaryKnowledge=followerBoundaryKnowledge
+            })
+            situation.spatialConstraintKnowledge=knowledge
+            spatialConstraintKnowledge[#spatialConstraintKnowledge+1]=knowledge
+        end
+    end
+
     -- D-0146 Step 2: Situation owns only purpose-specific mechanical
     -- Representation Fitness. Candidate responsibility later searches Local
     -- Passage Space and chooses the sufficient Arrangement/Guide.
@@ -722,6 +740,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         followerBoundaryKnowledge=followerBoundaryKnowledge,
         trajectoryKnowledge=trajectoryKnowledge,
         opposedCorridorKnowledge=opposedCorridorKnowledge,
+        spatialConstraintKnowledge=spatialConstraintKnowledge,
         cooperativePassageKnowledge=cooperativePassageKnowledge,
         terminalOccupancyKnowledge=terminalOccupancyKnowledge,
         uncertainty=uncertainty,
@@ -741,6 +760,7 @@ function Assessment:resetSituationKnowledge()
     self.trajectoryTracks={}
     self.latestProductiveContinuationByReference={}
     self.latestGuardedRecoveryKnowledge={}
+    if self.spatialConstraintAssessment~=nil then self.spatialConstraintAssessment:reset() end
     if self.terminalOccupancyAssessment and type(self.terminalOccupancyAssessment.reset)=="function" then self.terminalOccupancyAssessment:reset() end
 end
 

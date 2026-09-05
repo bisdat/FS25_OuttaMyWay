@@ -989,6 +989,59 @@ follower-regulation HUD text still uses `•`. This is separate UI implementatio
 debt, not Regulation architecture or PR #35 acceptance evidence. It is not fixed
 in this tranche and should use ASCII-safe punctuation when later addressed.
 
+## Forward Intersection tranche for Spatial Constraint
+
+[Issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37) remains open as
+non-blocking Category-2 Reality validation debt. GIANTS Reality first
+falsified the half-working-width representation hypothesis; subsequent
+`0.3.0.8` Reality validated the replacement Category-1 Forward Intersection
+behaviour. **Spatial Width Is Not Temporal
+Conflict Evidence**: half working width cannot decide whether supported future
+trajectories intersect.
+
+```text
+two finite, positively supported Field-bounded continuations
+        ↓
+common Forward Intersection within both extents
+        ↓
+positive time-to-intersection evidence
+        ↓
+greater-time participant yields at fixed 1 km/h
+        ↓
+fresh Reality maintains or promptly releases Regulation
+```
+
+`SpatialConstraintAssessment` owns centreline intersection and timing. Candidate,
+responsibility and Control consume that Situation knowledge rather than deriving
+geometry again. Category 1, Category 2 and open field annotate the future theatre
+after the generic relationship is established; they are annotations, not admission
+mechanisms. No corner radius, width gate, pair-closing requirement or replacement
+for the retired 80 m literal exists.
+
+Where both positive rates support ordering, the greater-time party is selected
+as temporal yielder and the retained Regulation substrate applies fixed 1 km/h
+Intent-Revelation Creep. Missing rate or exact equal time is unresolved. Fresh
+loss of the intersection dissolves the purpose and releases its lease.
+
+**Established Relationship Precedence** prevents this prospective geometry from
+displacing a valid follower relationship. Follower Regulation remains variable
+speed, including reversing-leader handling. Bubble Bullet Time remains a separate
+fixed-1-km/h purpose despite sharing the magnitude.
+
+The successful `0.3.0.8` GIANTS Reality run validated Category-1 prospective
+recognition, greater-time temporal yielding, fixed 1 km/h actuation, fresh-evidence
+release and downstream Cooperative Passage succession. The run also supplied
+positive open-field admission/release evidence. It did not revalidate established
+leader/follower precedence or Bubble Bullet Time.
+
+Category-2 Reality validation remains outstanding for Issue #37 closure, but no
+longer blocks programme progression. Phase 8 is **ASSUMED COMPLETE FOR PROGRAMME
+PROGRESSION**. Materially contrary Category-2 evidence must reopen the affected
+Forward Intersection assumptions and dependent conclusions. **Phase 9 — Resolve
+Regulation-to-Passage succession and Same-Commitment Responsibility Fusion** is
+active; the PR #41 Action-Space Regulation → same-Commitment Cooperative Passage
+replacement is again the downstream validation/reconciliation boundary.
+
 # Intermediate Programme Steps
 
 1. **Record the transition map — COMPLETE.**
@@ -998,7 +1051,7 @@ in this tranche and should use ASCII-safe punctuation when later addressed.
 5. **Validate the second Resolution exemplar — COMPLETE for the observed in-session `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` episode.**
 6. **Compare the two migrated Resolution exemplars and determine the smallest truthful explicit Resolution Commitment representation — COMPLETE for the read-only adapter/view hypothesis.**
 7. **Expose Resolution Commitment explicitly only where the two exemplars support it — COMPLETE and GIANTS Reality-validated for the observed direct Cooperative Passage `CREATE` and completed-obstruction `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` exemplars.**
-8. **Reconcile standalone Regulation — IN PROGRESS; the Action-Space exemplar now has explicit identity under the first bounded Responsibility Transition Authority seam, without generalising Regulation lifecycle coverage.**
+8. **Reconcile standalone Regulation — ASSUMED COMPLETE FOR PROGRAMME PROGRESSION.** The follower-boundary and Action-Space exemplars, subsequent explicit Regulation identity/replacement work, and successful Category-1 Forward Intersection Reality exemplar provide sufficient evidence to continue the strangler. Issue #37 remains open for non-blocking Category-2 Reality validation; materially contrary later evidence reopens this assumption.
    - **8a. Extract D-0141 follower-boundary Regulation application/revalidation upstream — COMPLETE and GIANTS Reality-validated for the observed establishment, same-responsibility revalidation, elastic update, quiescence and reactivation episode. Positive retirement was not observed and was not required.**
    - **8b. Extract D-0146 Action-Space Regulation as the second standalone exemplar — IMPLEMENTED and offline-validated; GIANTS Reality attempt inconclusive because the saved-corner Situation bypassed Action-Space Regulation upstream of the extracted seam.**
    - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — ARCHITECTURAL COMPARISON COMPLETE; implementation discovery found no truthful retained Regulation instance identity witness, so explicit representation is blocked by the Responsibility Instance Identity Gap.**
@@ -1028,7 +1081,7 @@ should be refreshed after each accepted tranche.
 | Job Episode admission | [`scripts/identity/JobEpisodeAdmission.lua`](../scripts/identity/JobEpisodeAdmission.lua) |
 | Field World Snapshot, Equivalence and Operation admission | [`scripts/identity/FieldWorldSnapshotRegistry.lua`](../scripts/identity/FieldWorldSnapshotRegistry.lua), [`scripts/identity/FieldWorldEquivalenceAuthority.lua`](../scripts/identity/FieldWorldEquivalenceAuthority.lua), [`scripts/identity/FieldWorldEquivalenceEvaluator.lua`](../scripts/identity/FieldWorldEquivalenceEvaluator.lua), [`scripts/identity/OperationAdmission.lua`](../scripts/identity/OperationAdmission.lua) |
 | Observation | [`scripts/observation/`](../scripts/observation/) and [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) |
-| Situation Assessment | [`scripts/assessment/SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua) and focused collaborators in [`scripts/assessment/`](../scripts/assessment/) |
+| Situation Assessment | [`scripts/assessment/SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua) and focused collaborators in [`scripts/assessment/`](../scripts/assessment/), including representation-only prospective constraint knowledge in [`scripts/assessment/SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) |
 | Candidate, Constraint and Decision boundary | [`scripts/candidates/`](../scripts/candidates/), [`scripts/constraints/`](../scripts/constraints/), [`scripts/decision/`](../scripts/decision/), and [`scripts/commitment/DecisionCommitmentBoundary.lua`](../scripts/commitment/DecisionCommitmentBoundary.lua) |
 | Commitment, Obligation and Bounded Authority | [`scripts/commitment/`](../scripts/commitment/) and [`scripts/authority/`](../scripts/authority/) |
 | Explicit Resolution Commitment view | [`scripts/contracts/ResolutionCommitment.lua`](../scripts/contracts/ResolutionCommitment.lua), [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua), and the two purpose-specific transition modules in [`scripts/responsibility/`](../scripts/responsibility/) |

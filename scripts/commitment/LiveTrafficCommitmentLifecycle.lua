@@ -348,8 +348,9 @@ local function findD0146ActionSpaceObligation(runtime,commitmentId,conflictIdent
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
         local basis=obligation.basis
         local outcome=obligation.requiredOutcome
-        if type(basis)=="table" and basis.kind=="D0146_PASSAGE_ACTION_SPACE_CONSERVATION" and basis.conflictIdentity==conflictIdentity
-            and type(outcome)=="table" and outcome.kind=="D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" then
+        local supportedBasis=type(basis)=="table" and (basis.kind=="D0146_PASSAGE_ACTION_SPACE_CONSERVATION" or basis.kind=="FORWARD_INTERSECTION_INTENT_REVELATION")
+        local supportedOutcome=type(outcome)=="table" and (outcome.kind=="D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or outcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED")
+        if supportedBasis and basis.conflictIdentity==conflictIdentity and supportedOutcome then
             return obligation
         end
     end
@@ -383,7 +384,7 @@ function Lifecycle.applyD0146ActionSpaceDecision(runtime,picture,evaluated)
     if obligation==nil then
         local specification=nil
         for _,item in OuttaMyWay.ValueRecord.ipairs(candidate.obligationsCreated or {}) do
-            if type(item.requiredOutcome)=="table" and item.requiredOutcome.kind=="D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" then specification=item break end
+            if type(item.requiredOutcome)=="table" and (item.requiredOutcome.kind=="D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or item.requiredOutcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED") then specification=item break end
         end
         if specification==nil then return nil,"D0146_ACTION_SPACE_OBLIGATION_SPECIFICATION_UNAVAILABLE" end
         obligation=runtime.obligations:create({
@@ -428,7 +429,8 @@ function Lifecycle.settleD0146ActionSpacePurpose(runtime,commitmentId,bridge,evi
     record=runtime.commitments:get(commitmentId)
     local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
     local terminal=nil
-    if #remaining==0 and type(responsibility)=="string" and string.sub(responsibility,1,26)=="d0146-cooperative-passage:" then
+    local ownedTrafficPurpose=type(responsibility)=="string" and (string.sub(responsibility,1,26)=="d0146-cooperative-passage:" or string.sub(responsibility,1,32)=="forward-intersection-regulation:")
+    if #remaining==0 and ownedTrafficPurpose then
         local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {kind="D0146_ACTION_SPACE_PURPOSE_EXPIRED"},provenance={source="LiveTrafficCommitmentLifecycle.settleD0146ActionSpacePurpose"}})
         runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
         terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{kind="D0146_ACTION_SPACE_RELATIONSHIP_POSITIVELY_DISSOLVED",conflictIdentity=bridge.conflictIdentity,reason=bridge.reason})
@@ -452,7 +454,7 @@ end
 
 local function d0146TrafficResponsibility(record)
     local responsibility=record and record.governingBasis and record.governingBasis.responsibilityKey or nil
-    return type(responsibility)=="string" and string.sub(responsibility,1,26)=="d0146-cooperative-passage:"
+    return type(responsibility)=="string" and (string.sub(responsibility,1,26)=="d0146-cooperative-passage:" or string.sub(responsibility,1,32)=="forward-intersection-regulation:")
 end
 
 local function endedDependency(record,ended)

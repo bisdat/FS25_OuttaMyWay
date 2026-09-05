@@ -58,7 +58,7 @@ OuttaMyWay.OperationalPicture = OuttaMyWay.ValueRecord.register(
     OuttaMyWay.ValueRecord.define(
         "OperationalPicture",
         {"identity", "epoch", "observationSnapshotId", "situations", "encounters", "identities", "currentSpace", "futureSpace", "demand", "responsibilityRelations", "uncertainty", "representationFitness", "provenance", "controlOutcomeEvidence", "candidateSupportEvidence", "commitmentContext"},
-        {"diagnostics", "motionEvidence", "physicalSpaceEvidence", "productiveContinuationKnowledge", "guardedRecoveryKnowledge", "followerBoundaryKnowledge", "trajectoryKnowledge", "opposedCorridorKnowledge", "cooperativePassageKnowledge", "terminalOccupancyKnowledge"},
+        {"diagnostics", "motionEvidence", "physicalSpaceEvidence", "productiveContinuationKnowledge", "guardedRecoveryKnowledge", "followerBoundaryKnowledge", "trajectoryKnowledge", "opposedCorridorKnowledge", "spatialConstraintKnowledge", "cooperativePassageKnowledge", "terminalOccupancyKnowledge"},
         validate
     )
 )

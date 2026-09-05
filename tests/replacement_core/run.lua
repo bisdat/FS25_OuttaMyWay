@@ -50,6 +50,7 @@ load("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
 load("scripts/assessment/TrajectoryConflictAssessment.lua")
 load("scripts/assessment/PassageCapabilityAssessment.lua")
 load("scripts/assessment/TerminalOccupancyAssessment.lua")
+load("scripts/assessment/SpatialConstraintAssessment.lua")
 load("scripts/assessment/SituationAssessment.lua")
 load("scripts/commitment/CommitmentStateMachine.lua")
 load("scripts/commitment/CommitmentRegistry.lua")
@@ -3810,6 +3811,49 @@ local function d0146ActionSpacePicture()
     })
 end
 
+local function forwardIntersectionPicture(positive)
+    local values=OuttaMyWay.ValueRecord.toTable(d0146ActionSpacePicture())
+    values.identity=positive and "OP-FORWARD-INTERSECTION" or "OP-FORWARD-INTERSECTION-DISSOLVED"
+    values.opposedCorridorKnowledge={}
+    local relation={identity="forward-intersection:OR-1:AS-A:AS-B",operationId="OR-1",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",
+        subjectReferenceKey="vehicle-root:101",otherReferenceKey="vehicle-root:201",classification=positive and "FORWARD_INTERSECTION" or "NO_FORWARD_INTERSECTION",
+        relationshipStatus=positive and "POSITIVE" or "NEGATIVE",actionable=positive,reason=positive and "GREATER_TIME_TO_FORWARD_INTERSECTION_YIELDS_FOR_INTENT_REVELATION" or "INTERSECTION_NOT_FORWARD_OF_BOTH_PARTICIPANTS"}
+    if positive then relation.actionSpaceConservation={status="REGULATE_SUPPORTED",supported=true,admissionKind="FORWARD_INTERSECTION",
+        regulatedAssemblyId="AS-B",regulatedReferenceKey="vehicle-root:201",protectedAssemblyId="AS-A",protectedReferenceKey="vehicle-root:101",
+        separationM=90,nativeUnrestrictedKmh=1,nativeClosureContributionKmh=0,nativeSignedClosureContributionKmh=0,nativeMoveForwards=true,
+        fixedRegulationSpeedKmh=1,governingPurpose="MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME",reason=relation.reason} end
+    values.spatialConstraintKnowledge={{operationId="OR-1",pairRelationships={relation}}}
+    return OuttaMyWay.OperationalPicture.new(values)
+end
+
+test("Forward Intersection applies fixed one kilometre per hour and releases on fresh dissolution",function()
+    local runtime=autonomousHeadOnRuntime(); local requests={}; local cleared=0
+    local capability={}
+    function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) cleared=cleared+1; return true end
+    function capability:getControlExecutionObservation() return nil end
+    runtime:setLiveControlCapability(capability)
+    local picture=forwardIntersectionPicture(true)
+    local supported=runtime.liveTrafficCandidateSupport:attach(picture,headOnTestSnapshot())
+    local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
+    equal(specification.evidenceBasis.d0146ActionSpaceRegulationBridge.admissionKind,"FORWARD_INTERSECTION")
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
+    equal(admitted.status,"ACCEPTED"); equal(admitted.forwardIntersection,true)
+    equal(requests[#requests].target.maxSpeedKmh,1)
+    local responsibilityId=admitted.currentResponsibility.identity
+    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().currentCapKmh,1)
+
+    local dissolved=forwardIntersectionPicture(false)
+    local passive=runtime.liveTrafficCandidateSupport:attach(dissolved,headOnTestSnapshot())
+    local reevaluated=runtime:evaluateSealedOperationalPicture(passive)
+    local released=runtime:dispatchEvaluatedOperationalPicture(passive,reevaluated)
+    equal(released.status,"RELEASED")
+    equal(runtime.liveControlDispatcher:getD0146ActionSpaceStatus().active,false)
+    equal(runtime.responsibilityTransitionAuthority:getCurrentActionSpaceRegulation(),nil)
+    equal(requests[#requests].target.operation,"RELEASE"); equal(type(responsibilityId),"string")
+end)
+
 test("D0146 pre-productive intent relevance crosses Candidate as Regulation only and cannot become Cooperative Passage",function()
     local runtime=autonomousHeadOnRuntime()
     local values=OuttaMyWay.ValueRecord.toTable(d0146ActionSpacePicture())
@@ -5439,6 +5483,97 @@ test("D0200 ended Job Episode collapses dependent quiescent D0146 traffic Commit
     equal(runtime.obligations:get(obligation.identity).status,"SETTLED"); equal(runtime.obligations:get(obligation.identity).settlementDisposition.mode,"BASIS_CESSATION")
     equal(runtime.liveControlDispatcher.d0146ActionSpaceLease,nil); equal(cleared,1)
     equal(runtime.commitments:get(unrelated.identity).state,"ACTIVE")
+end)
+
+
+local function spatialFuture(assemblyId,startX,startZ,endX,endZ,headingX,headingZ,boundaryDistance)
+    return {
+        identity="future:"..assemblyId,assemblyId=assemblyId,
+        alternatives={{kind="FIELD_WORLD_BOUNDED_LOCAL_CONTINUATION",startX=startX,startZ=startZ,endX=endX,endZ=endZ,
+            headingX=headingX,headingZ=headingZ,boundaryDistance=boundaryDistance,boundarySource="FIELD_WORLD_OUTER_BOUNDARY"}},
+        provenance={source="SYNTHETIC_FIELD_BOUNDED_FUTURE_SPACE"}
+    }
+end
+
+local function spatialMotion(assemblyId,widthM,speedMps)
+    local workingWidth
+    if widthM~=nil then workingWidth={available=true,widthMetres=widthM,source="GIANTS_WORKING_WIDTH_ACCESSOR",authority="PROVISIONAL_DEMAND_SEED_INPUT_ONLY"} end
+    return {assemblyId=assemblyId,assemblyReferenceKey="ref:"..assemblyId,reportedSpeedMps=speedMps,
+        nativeFieldWork={workingWidth=workingWidth}}
+end
+
+local function spatialNear(actual,expected,tolerance)
+    if math.abs(actual-expected)>(tolerance or 0.000001) then error("expected "..tostring(actual).." near "..tostring(expected),2) end
+end
+
+local function assessSpatial(futureA,futureB,motionA,motionB,followerKnowledge)
+    return OuttaMyWay.SpatialConstraintAssessment.new():assess({
+        operationId="OR-SPATIAL",assemblyIds={"AS-A","AS-B"},fieldWorldReferenceKey="FW-SPATIAL",
+        fieldWorld={boundary={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}},islands={}},
+        futureSpace={futureA,futureB},motionEvidence={motionA,motionB},followerBoundaryKnowledge=followerKnowledge or {}
+    })
+end
+
+test("Forward Intersection is admitted by supported centrelines independent of working width and pair closing",function()
+    local knowledge=assessSpatial(
+        spatialFuture("AS-A",95,50,95,0,0,-1,50),spatialFuture("AS-B",50,5,100,5,1,0,50),
+        spatialMotion("AS-A",3,5),spatialMotion("AS-B",36,4))
+    local relation=knowledge.pairRelationships[1]
+    equal(relation.classification,"FORWARD_INTERSECTION")
+    spatialNear(relation.intersection.x,95,0.0001); spatialNear(relation.intersection.z,5,0.0001)
+    equal(relation.sharedVertex.identity,"OUTER_BOUNDARY:1:VERTEX:2")
+    equal(relation.spatialOverlay,"CATEGORY_1_CORNER")
+    equal(relation.temporalYielderAssemblyId,"AS-B")
+    equal(relation.regulationSpeedKmh,1)
+end)
+
+test("Forward Intersection does not admit an intersection beyond supported bounded continuation",function()
+    local knowledge=assessSpatial(
+        spatialFuture("AS-A",90,50,90,0,0,-1,50),spatialFuture("AS-B",95,5,100,5,1,0,5),
+        spatialMotion("AS-A",12,5),spatialMotion("AS-B",12,4))
+    local relation=knowledge.pairRelationships[1]
+    equal(relation.classification,"NO_FORWARD_INTERSECTION")
+    equal(relation.reason,"INTERSECTION_NOT_FORWARD_OF_BOTH_PARTICIPANTS")
+end)
+
+test("Forward Intersection annotates boundary theatre as Category 2 without a width-band gate",function()
+    local knowledge=assessSpatial(
+        spatialFuture("AS-A",50,50,50,0,0,-1,50),spatialFuture("AS-B",20,30,50,0,0.70710678,-0.70710678,42.42640687),
+        spatialMotion("AS-A",6,5),spatialMotion("AS-B",6,4))
+    local relation=knowledge.pairRelationships[1]
+    equal(relation.classification,"FORWARD_INTERSECTION")
+    equal(relation.spatialOverlay,"CATEGORY_2_HEADLAND_BOUNDARY")
+end)
+
+test("Forward Intersection established follower ownership has precedence",function()
+    local knowledge=assessSpatial(
+        spatialFuture("AS-A",95,50,95,0,0,-1,50),spatialFuture("AS-B",50,5,100,5,1,0,50),
+        spatialMotion("AS-A",6,5),spatialMotion("AS-B",6,4),{{leaderAssemblyId="AS-A",followerAssemblyId="AS-B",pairKey="AS-A|AS-B",status="REGULATE_SUPPORTED",existingCommitmentId="CM-FOLLOW"}})
+    local relation=knowledge.pairRelationships[1]
+    equal(relation.classification,"FORWARD_INTERSECTION"); equal(relation.actionable,false)
+    equal(relation.incumbentRelationship.kind,"FOLLOWER_BOUNDARY")
+end)
+
+test("Open-field Forward Intersection is actionable with fixed one kilometre per hour Regulation",function()
+    local knowledge=assessSpatial(
+        spatialFuture("AS-A",10,60,100,60,1,0,90),spatialFuture("AS-B",90,90,0,45,-0.89442719,-0.44721360,100.62305899),
+        spatialMotion("AS-A",6,5),spatialMotion("AS-B",6,4))
+    local relation=knowledge.pairRelationships[1]
+    equal(relation.classification,"FORWARD_INTERSECTION"); equal(relation.spatialOverlay,"OPEN_FIELD")
+    equal(relation.actionable,true)
+    equal(relation.temporalYielderAssemblyId,"AS-B")
+    equal(relation.regulationSpeedKmh,1)
+    equal(relation.actionSpaceConservation.admissionKind,"FORWARD_INTERSECTION")
+    equal(relation.actionSpaceConservation.fixedRegulationSpeedKmh,1)
+end)
+
+test("Forward Intersection missing motion leaves temporal allocation unresolved but width does not",function()
+    local knowledge=assessSpatial(
+        spatialFuture("AS-A",95,50,95,0,0,-1,50),spatialFuture("AS-B",50,5,100,5,1,0,50),
+        spatialMotion("AS-A",nil,nil),spatialMotion("AS-B",12,4))
+    equal(knowledge.boundaryTransitionProjections[1].status,"SUPPORTED")
+    equal(knowledge.pairRelationships[1].classification,"FORWARD_INTERSECTION")
+    equal(knowledge.pairRelationships[1].temporalAllocationStatus,"UNRESOLVED")
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

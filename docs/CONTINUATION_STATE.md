@@ -7,23 +7,23 @@ is not a changelog, release ledger, or canonical-release record.
 ## Current engineering concern
 
 Accepted Repository State is
-`0a9c7fd15fa4888e774821d9ca41368b98b7a17b`.
+`ed1571be90577600b5a96003e06b27dd62fbe4c7`.
 
-PR #39 is merged, and its Outcome B is accepted implementation evidence: the
-retained substrate has no truthful stable witness for one Regulation
-responsibility instance. Subsequent step-9 discussion exposed the deeper current
-concern: **Responsibility Transition Authority**, the missing sole architectural
-owner of responsibility establishment, termination and atomic replacement.
-The current step-9 increment implements its first bounded exemplar: Action-Space
-Regulation → same-Commitment Cooperative Passage replacement upstream of
-physical Passage Control. GitHub Structural contracts passed; the actual
-non-blocking Lua harness profile is `268 passed / 13 failed`. Focused replacement,
-preflight-failure safety, responsibility-identity preservation and role-migration
-observations passed. GIANTS Reality has now validated the Action-Space Regulation
-establishment side; the same-Commitment replacement itself remains unexercised,
-pending and required.
+Issue #37 remains open as non-blocking validation debt. The successful Category-1 Reality exemplar is sufficient to treat Strangler Phase 8 as **ASSUMED COMPLETE FOR PROGRAMME PROGRESSION** without waiting for a Category-2 fixture. Category-2 Reality validation remains required for Issue #37 closure. Materially contrary later evidence must reopen the affected architectural assumptions.
+
+The active strangler boundary therefore returns to **Phase 9 — Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion**.
 
 ## Established
+
+- **Spatial Width Is Not Temporal Conflict Evidence**: the half-working-width Category-1 admission hypothesis was falsified when the intended corner relationship missed admission by centimetres despite clear topology and temporal convergence. Working width remains observable provisional evidence but no longer gates Forward Intersection.
+- [`SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) now intersects the two finite, positively supported Field-World-bounded forward centrelines. The common point must be forward of both parties and within both supported extents; no pair-closing, current occupancy, turn prediction, route extension or policy-distance literal is used.
+- Positive progress rates produce per-party time-to-intersection. The greater-time party is the normal temporal yielder; exact equal time and missing positive rate remain `UNRESOLVED` rather than receiving fabricated ordering.
+- Category 1 corner, Category 2 headland/boundary and open field are annotations on a generic Forward Intersection. They are not separate pair-discovery mechanisms. Category-2 Reality validation remains outstanding.
+- A supported independent relationship now enters the retained Regulation application seam before Passage planning and applies fixed `1 km/h` Intent-Revelation Creep. Fresh loss of positive Forward Intersection dissolves the purpose and releases its lease promptly.
+- **Aggressive admission paired with aggressive release** accepts cheap false positives because the intervention is bounded, reversible and re-assessed from fresh Reality.
+- **Established Relationship Precedence** suppresses Forward Intersection actuation when a valid leader/follower relationship already owns the pair. Leader/follower Regulation remains variable-speed; Bubble Bullet Time remains a separate fixed-1-km/h purpose.
+- `FORWARD_INTERSECTION_ASSESSED` change-suppressed diagnostics expose the intersection, distances, rate sources, times, yielder, continuing participant, overlay, incumbent ownership and reason. `FORWARD_INTERSECTION_REGULATION_APPLIED` confirms downstream fixed-speed actuation.
+- Offline observation is `275 passed / 13 failed`, preserving the established 13 historical failures. GIANTS Reality validation is required; issue #37 remains open.
 
 - The accepted [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Strangler Transition Map](IMPLEMENTATION_MAP.md#detailed-strangler-transition-map) remain authoritative for architecture and programme direction respectively.
 - Cooperative Passage upstream transition remains accepted and Reality-validated for one direct `CREATE` episode.
@@ -177,24 +177,15 @@ that PR #41 replacement failed.
 
 ## Next boundary
 
-Validate the bounded replacement seam independently. GitHub Structural
-contracts must pass and the actual Lua observational profile must be inspected;
-GIANTS Reality must still exercise initial Action-Space Regulation followed by
-the same-Commitment Cooperative Passage succession and confirm distinct
-predecessor/successor responsibility identities plus `RESPONSIBILITY_REPLACED`
-before Passage Control. Repeating the corner fixture is currently confounded by
-the upstream Situation/Spatial Constraint Overlay gap. Do not infer general
-transition coverage from any eventual episode.
+The `0.3.0.8` Category-1 Forward Intersection GIANTS Reality exemplar is accepted. It demonstrated prospective recognition, greater-time temporal yielding, fixed `1 km/h` Intent-Revelation Regulation, fresh-evidence release, and successful successor Cooperative Passage.
 
-Issue #37 remains a future upstream Situation Assessment capability; it is not
-implemented here. The Quiescent Regulation Deadlock and opposed-corridor/corner
-distinction remain separate evidence. Stable semantic boundaries should precede
-any retirement or renaming of retained D-number runtime terms.
+Strangler Phase 8 is **ASSUMED COMPLETE FOR PROGRAMME PROGRESSION**. Issue #37 remains open as non-blocking Category-2 Reality validation debt. Category-2 Reality validation is still required for Issue #37 closure; materially contrary Category-2 evidence must reopen the affected Forward Intersection assumptions and dependent conclusions.
 
-Same-Commitment Responsibility Fusion and Bounded Authority remain deferred.
-Issue #33 remains a separate cold-start non-active obstruction-recognition
-investigation and must not absorb the corner evidence. Quiescent Regulation
-Deadlock and the Follower HUD Glyph Compatibility Leak also remain separate.
+Active strangler work returns to **Phase 9 — Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion**. The accepted PR #41 Action-Space Regulation → same-Commitment Cooperative Passage replacement is again the active downstream validation/reconciliation boundary.
+
+Open-field Forward Intersection remains admitted to the same bounded fixed `1 km/h` Regulation. Category 1, Category 2 and open field are environmental annotations on the generic Forward Intersection relationship rather than admission gates.
+
+Established leader/follower ownership remains separate and retains precedence for its pair, including the validated reversing-leader / forward-follower case. Leader/follower Regulation remains variable-speed. Bubble Bullet Time remains a distinct fixed-`1 km/h` Regulation purpose.
 
 ## Not currently active
 
