@@ -1113,7 +1113,7 @@ def test_v47106_d0146_current_excursion_conserves_action_space_before_establishe
         "d0146ActionSpaceRepresentation", "D0146_RESOLUTION_SPACE_REGULATION",
         "d0146ActionSpaceRegulationBridge", "D0146_PASSAGE_ACTION_SPACE_CONSERVATION",
         "D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES",
-        '"d0146-cooperative-passage:"..tostring(item.relation.identity)',
+            '"d0146-cooperative-passage:")..tostring(item.relation.identity)',
         'controlAuthority="D0155_RESOLUTION_SPACE_PROGRESSION_ENVELOPE"',
     ):
         assert token in support
