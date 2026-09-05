@@ -181,24 +181,26 @@ that PR #41 replacement failed.
 
 ## Next boundary
 
-Validate the representation against GIANTS Reality before authorising any
-Regulation consumer. Category 1 needs an early shared-corner approach observation;
-Category 2 needs a materially distinct headland/boundary progression-band
-observation; negative cases must show that shared topology and boundary proximity
-alone do not become positive. Exact measured diagnostic values should determine
-whether the representation-relative working-width hypotheses survive.
 
-Issue #37 remains open and blocking until the Situation representation and its
-eventual behavioural use are Reality-validated. The accepted PR #41
-Action-Space Regulation → same-Commitment Cooperative Passage replacement remains
-pending GIANTS Reality validation, but it is not the active tranche and should
-not resume ahead of the upstream Spatial Constraint work. Quiescent Regulation
-Deadlock and the opposed-corridor/corner distinction remain separate evidence.
+GIANTS Reality has falsified the provisional Category-1 working-width admission hypothesis. **Spatial Width Is Not Temporal Conflict Evidence**: working width no longer determines whether prospective temporal competition exists.
 
-Same-Commitment Responsibility Fusion and Bounded Authority remain deferred.
-Issue #33 remains a separate cold-start non-active obstruction-recognition
-investigation and must not absorb the corner evidence. Quiescent Regulation
-Deadlock and the Follower HUD Glyph Compatibility Leak also remain separate.
+The active `0.3.0.8 TEST — FORWARD INTERSECTION REGULATION` tranche now represents generic **Forward Intersection** knowledge and consumes supported independent intersections through bounded fixed `1 km/h` Intent-Revelation Regulation.
+
+The next Reality validation should remain Category 1 first. It must establish:
+
+* the earliest positively supported Forward Intersection while useful Resolution Margin still exists;
+* the greater-time-to-intersection participant selected as temporal yielder;
+* fixed `1 km/h` Regulation applied before native turn revelation;
+* fresh Situation reassessment maintaining or promptly releasing Regulation as the intersection persists or dissolves.
+
+Category 2 remains unvalidated and requires a materially distinct later headland/boundary Reality case.
+
+Open-field Forward Intersection is not excluded from the same bounded temporal Regulation. Category 1, Category 2 and open field are environmental annotations on the generic Forward Intersection relationship rather than admission gates.
+
+Established leader/follower ownership remains separate and retains precedence for its pair, including the validated reversing-leader / forward-follower case. Leader/follower Regulation remains variable-speed. Bubble Bullet Time remains a distinct fixed-`1 km/h` Regulation purpose.
+
+Issue #37 remains open and blocking until the Forward Intersection Situation and its behavioural use are GIANTS Reality-validated. The accepted PR #41 Action-Space Regulation → same-Commitment Cooperative Passage replacement remains pending GIANTS Reality validation, but it is not the active tranche and should not resume until Issue #37 is resolved.
+
 
 ## Not currently active
 
