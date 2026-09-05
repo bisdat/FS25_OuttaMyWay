@@ -1897,8 +1897,8 @@ def test_completed_obstruction_responsibility_transition_is_upstream_and_singula
     assert "TerminalEgressCommitmentLifecycle.applyDecision" not in dispatcher
     assert transition.count("TerminalEgressCommitmentLifecycle.applyDecision") == 1
     continuation=dispatcher[dispatcher.index("function Dispatcher:continueCompletedObstruction"):dispatcher.index("function Dispatcher:_onCooperativePassageCompletion")]
-    assert continuation.index("_applyD0147ProtectedYield") < continuation.index("ControlRequest.new")
-    assert continuation.index("ControlRequest.new") < continuation.index("terminalEgressControl:executeControlRequest")
+    assert continuation.index("_applyD0147ProtectedYield") < continuation.index("_requestFromGrant")
+    assert continuation.index("_requestFromGrant") < continuation.index("terminalEgressControl:executeControlRequest")
     assert "TerminalEgressCommitmentLifecycle.settle" in continuation
     assert "TerminalEgressCommitmentLifecycle.settle" in dispatcher
     assert "LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision" not in dispatcher
@@ -2107,3 +2107,107 @@ def test_follower_regulation_uses_semantic_authority_before_control_and_terminal
     assert "_supersedeFollowerBoundaryForCooperativePassage" not in continuation
     assert "terminalSettlement.responsibilityTransitionAuthority=runtime.responsibilityTransitionAuthority" in runtime
     assert terminal.index("self.commitments:save(terminal)") < terminal.index("terminateSemanticResponsibilitiesForTerminalCommitment")
+
+
+def test_phase10_bounded_authority_contract_and_identity_are_distinct():
+    main=(ROOT/"scripts/main.lua").read_text(encoding="utf-8")
+    identities=(ROOT/"scripts/identity/IdentityRegistry.lua").read_text(encoding="utf-8")
+    grant=(ROOT/"scripts/contracts/BoundedAuthorityGrant.lua").read_text(encoding="utf-8")
+    request=(ROOT/"scripts/contracts/ControlRequest.lua").read_text(encoding="utf-8")
+    authority=(ROOT/"scripts/authority/BoundedAuthority.lua").read_text(encoding="utf-8")
+    runtime=(ROOT/"scripts/runtime/Runtime.lua").read_text(encoding="utf-8")
+
+    assert "scripts/contracts/BoundedAuthorityGrant.lua" in main
+    assert "scripts/authority/BoundedAuthority.lua" in main
+    assert main.index("scripts/contracts/BoundedAuthorityGrant.lua") < main.index("scripts/contracts/ControlRequest.lua")
+    assert main.index("scripts/authority/AuthorityRegistry.lua") < main.index("scripts/authority/BoundedAuthority.lua")
+    assert 'BOUNDED_AUTHORITY = "BA"' in identities
+    assert 'identity","responsibilityId","commitmentId"' in grant
+    assert 'requireIdentity("responsibilityId",values.responsibilityId,"RS")' in grant
+    assert 'requireIdentity("commitmentId",values.commitmentId,"CM")' in grant
+    assert 'requireIdentity("authorityToken",values.authorityToken,"AU")' in grant
+    assert 'requireIdentity("effectiveActuationCompositionId",values.effectiveActuationCompositionId)' in grant
+    assert 'requireIdentity("effectiveActuationCompositionId",values.effectiveActuationCompositionId,"EC")' not in grant
+    assert 'boundedAuthorityId' in request
+    assert 'identity=self.runtime.identities:issue("BOUNDED_AUTHORITY")' in authority
+    assert "currentFor(self.runtime,responsibilityId,commitmentId)" in authority
+    assert "targetMatchesGrant" in authority
+    assert "BOUNDED_AUTHORITY_REGULATION_MAGNITUDE_BROADENED" in authority
+    assert "BOUNDED_AUTHORITY_REPOSITION_TARGET_BROADENED" in authority
+    assert "AuthorityRegistry.new" not in authority and "CommitmentRegistry.new" not in authority
+    assert "executeControlRequest" not in authority and "executeJointRequests" not in authority
+    assert "runtime.boundedAuthority=OuttaMyWay.BoundedAuthority.new(runtime)" in runtime
+
+
+def test_phase10_migrated_control_requests_require_bounded_authority():
+    dispatcher=(ROOT/"scripts/control/LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    p22=(ROOT/"scripts/prototypes/Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
+    cooperative=(ROOT/"scripts/control/CooperativePassageControl.lua").read_text(encoding="utf-8")
+    terminal=(ROOT/"scripts/control/TerminalEgressControl.lua").read_text(encoding="utf-8")
+
+    assert "_authorizeBoundedAuthority" in dispatcher
+    assert "_requestFromGrant" in dispatcher
+    assert "boundedAuthorityId=grant.identity" in dispatcher
+    assert "currentResponsibility.identity" in dispatcher
+    assert "applied.currentResponsibility" in dispatcher
+
+    follower=dispatcher[dispatcher.index("function Dispatcher:continueFollowerBoundary"):dispatcher.index("function Dispatcher:getFollowerBoundaryStatus")]
+    assert follower.index("_regulationRequest") < follower.index("capability:executeControlRequest")
+    assert "applied.currentResponsibility" in follower
+    assert "boundedAuthorityId=request.boundedAuthorityId" in follower
+    assert "D0141_GRANT_REPLACED_BY_CURRENT_MAGNITUDE" in follower
+
+    action=dispatcher[dispatcher.index("function Dispatcher:_continueD0146ActionSpaceInitial"):dispatcher.index("function Dispatcher:actionSpaceRegulationTransitionFailed")]
+    assert "applied.currentResponsibility" in action
+    assert "boundedAuthorityId=request.boundedAuthorityId" in action
+    assert "FORWARD_INTERSECTION_REGULATION_SPEED_KMH" in action
+
+    passage=dispatcher[dispatcher.index("function Dispatcher:_jointCooperativeRequests"):dispatcher.index("local function d0147TokenFor")]
+    assert 'capability="REPOSITION"' in passage
+    assert 'exemplar="COOPERATIVE_PASSAGE"' in passage
+    assert "_authorizeBoundedAuthority(currentResponsibility" in passage
+
+    completed=dispatcher[dispatcher.index("function Dispatcher:continueCompletedObstruction"):dispatcher.index("function Dispatcher:_onCooperativePassageCompletion")]
+    assert completed.index("_applyD0147ProtectedYield") < completed.index("_authorizeBoundedAuthority")
+    assert 'exemplar="COMPLETED_OBSTRUCTION"' in completed
+    assert "terminalEgressControl:executeControlRequest" in completed
+
+    assert "boundedAuthority:validateRequest(request)" in p22
+    assert "migratedBoundedAuthorityOwnerTags" in p22
+    assert "BOUNDED_AUTHORITY_GRANT_REQUIRED" in p22
+    assert "boundedAuthority:validateRequest(request)" in cooperative
+    assert "boundedAuthority:validateRequest(request)" in terminal
+    assert "BOUNDED_AUTHORITY_LOST" in cooperative
+    assert "BOUNDED_AUTHORITY_LOST" in terminal
+
+
+def test_phase10_bounded_authority_cleanup_precedes_terminal_or_successor_control():
+    dispatcher=(ROOT/"scripts/control/LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    transition=(ROOT/"scripts/responsibility/ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
+    settlement=(ROOT/"scripts/commitment/TerminalSettlementEvaluator.lua").read_text(encoding="utf-8")
+
+    action_supersede=dispatcher[dispatcher.index("function Dispatcher:_supersedeD0146ActionSpaceForCooperativePassage"):dispatcher.index("function Dispatcher:supersedeActionSpaceRegulationForCooperativePassage")]
+    assert "COOPERATIVE_PASSAGE_SUPERSEDES_D0146_ACTION_SPACE_REGULATION" in action_supersede
+    assert action_supersede.index("_releaseBoundedAuthority") < action_supersede.index("self.d0146ActionSpaceLease=nil")
+
+    follower_supersede=dispatcher[dispatcher.index("function Dispatcher:_supersedeFollowerBoundaryForCooperativePassage"):dispatcher.index("function Dispatcher:_releaseGuardedRecoveryLease")]
+    assert "COOPERATIVE_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION" in follower_supersede
+    assert follower_supersede.index("_releaseBoundedAuthority") < follower_supersede.index("self.followerBoundaryLease=nil")
+
+    replacement=transition[transition.index("function Authority:replaceRegulationWithCooperativePassage"):transition.index("function Authority:matchesActionSpacePassage")]
+    assert replacement.index("cleanupMethod") < replacement.index("self.regulationsByCommitmentId[preflight.commitmentId]=nil")
+    assert replacement.index("self.resolutionsByCommitmentId[preflight.commitmentId]=applied.currentResponsibility") < replacement.index("return applied,nil")
+
+    assert settlement.index("releasedBoundedAuthority") < settlement.index("self.authorities:releaseForCommitment")
+    assert "releasedBoundedAuthorityGrantIds" in settlement
+    assert "releaseForResponsibility" in transition
+    assert "releaseForCommitment" in settlement
+
+
+def test_phase10_guarded_recovery_regulation_remains_intentionally_unmigrated():
+    dispatcher=(ROOT/"scripts/control/LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    guarded=dispatcher[dispatcher.index("function Dispatcher:_dispatchGuardedRecovery"):dispatcher.index("function Dispatcher:getGuardedRecoveryStatus")]
+    assert 'bridge,"APPLY")' in guarded
+    assert "acquireSupportingRegulationAuthority" in guarded
+    assert "applied.currentResponsibility" not in guarded
+    assert "boundedAuthorityId" not in guarded

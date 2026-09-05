@@ -16,13 +16,14 @@ load("scripts/contracts/DecisionRecord.lua")
 load("scripts/contracts/CommitmentRecord.lua")
 load("scripts/contracts/ObligationRecord.lua")
 load("scripts/contracts/Regulation.lua")
+load("scripts/contracts/ResolutionCommitment.lua")
+load("scripts/contracts/BoundedAuthorityGrant.lua")
 load("scripts/contracts/ControlRequest.lua")
 load("scripts/contracts/ControlOutcome.lua")
 load("scripts/contracts/ReplayFixture.lua")
 load("scripts/contracts/ReplayRunResult.lua")
 load("scripts/contracts/GoverningBasisVerdict.lua")
 load("scripts/contracts/CommitmentApplicationRecord.lua")
-load("scripts/contracts/ResolutionCommitment.lua")
 load("scripts/contracts/PassiveLiveTraceRecord.lua")
 load("scripts/identity/EpochSequence.lua")
 load("scripts/representation/catalogues/CondorEndurance2Donor.lua")
@@ -58,6 +59,7 @@ load("scripts/commitment/ObligationLedger.lua")
 load("scripts/authority/AuthorityRegistry.lua")
 load("scripts/authority/PostJobActuationAuthority.lua")
 load("scripts/authority/EffectiveActuationComposition.lua")
+load("scripts/authority/BoundedAuthority.lua")
 load("scripts/commitment/CommitmentAdmission.lua")
 load("scripts/commitment/GoverningBasisEvaluator.lua")
 load("scripts/commitment/TerminalSettlementEvaluator.lua")
@@ -681,6 +683,72 @@ local function newDecisionRuntime()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); return runtime
 end
 
+local function boundedAuthorityRegulationFixture(options)
+    options=options or {}
+    local runtime=newDecisionRuntime()
+    local admitted=runtime.commitmentAdmission:admit({
+        objective={kind="BA_REGULATION_FIXTURE"},
+        governingBasis={responsibilityKey=options.responsibilityKey or "ba-regulation-fixture"},
+        progressAssemblyIds={options.assemblyId or "AS-BA-A"}
+    })
+    local compositionId=options.compositionId or "candidate-composition:ba-fixture"
+    local commitment=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(admitted.commitment,{
+        effectiveActuationCompositionId=compositionId,
+        epoch=runtime.epochs:next()
+    }))
+    local current=OuttaMyWay.Regulation.new({
+        identity=runtime.identities:issue("RESPONSIBILITY"),
+        kind="REGULATION",
+        governingBasis=commitment.governingBasis,
+        provenance={source="test",retainedCommitmentId=commitment.identity,conflictIdentity=options.conflictIdentity or "REL-BA"}
+    })
+    runtime.responsibilityTransitionAuthority.regulationsByCommitmentId[commitment.identity]=current
+    local token=runtime.authorities:tokensForCommitment(commitment.identity)[1]
+    return runtime,commitment,token,current
+end
+
+local function boundedAuthorityCandidate(identity)
+    return {identity=identity or "CA-BA",preconditions={},invalidationConditions={}}
+end
+
+local function boundedAuthorityEvaluated(candidate)
+    return {decision={identity="DE-BA",epoch=230,selectedCandidateId=candidate.identity},candidates={candidate}}
+end
+
+local function actionSpaceBridge(options)
+    options=options or {}
+    return {
+        conflictIdentity=options.conflictIdentity or "REL-BA",
+        operationId="OR-BA",
+        regulatedAssemblyId=options.regulatedAssemblyId or "AS-BA-A",
+        regulatedReferenceKey=options.regulatedReferenceKey or "ref:ba-a",
+        protectedAssemblyId=options.protectedAssemblyId or "AS-BA-B",
+        protectedReferenceKey=options.protectedReferenceKey or "ref:ba-b",
+        governingPurpose=options.governingPurpose or "BA_TEST_REGULATION",
+        separationM=options.separationM or 100,
+        nativeUnrestrictedKmh=options.nativeUnrestrictedKmh or 20
+    }
+end
+
+local function activeGrant(runtime,current,commitment,token,target)
+    local grant,reason=runtime.boundedAuthority:authorize({
+        responsibilityId=current.identity,
+        commitmentId=commitment.identity,
+        assemblyId=token.assemblyId,
+        capability="REGULATE_SPEED",
+        target=target,
+        authorityToken=token.identity,
+        operationalPictureEpoch=220,
+        evidenceEpoch=230,
+        effectiveActuationCompositionId=commitment.effectiveActuationCompositionId,
+        preconditions={},
+        invalidationConditions={},
+        provenance={source="test"}
+    })
+    if grant==nil then error(tostring(reason)) end
+    return grant
+end
+
 local function findVerdict(result,candidateId,constraintId)
     for _,verdict in ipairs(result.verdicts) do
         if verdict.candidateId==candidateId and verdict.constraintId==constraintId then return verdict end
@@ -699,6 +767,92 @@ test("Candidate Action Space requires explicit complete support boundary",functi
     local incomplete=OuttaMyWay.OperationalPicture.new(values)
     local runtime=newDecisionRuntime()
     expectError(function() runtime:evaluateSealedOperationalPicture(incomplete) end)
+end)
+
+test("Bounded Authority accepts Candidate-supplied composition identity without EC convention",function()
+    local runtime,commitment,token,current=boundedAuthorityRegulationFixture({compositionId="candidate-composition:truthful-link"})
+    local grant=activeGrant(runtime,current,commitment,token,{kind="P22_REGULATION_LEASE",vehicleReferenceKey="ref:ba-a",ownerTag="D0146_ACTION_SPACE_CONSERVATION",maxSpeedKmh=5,governingPurpose="BA_TEST_REGULATION"})
+    equal(grant.effectiveActuationCompositionId,"candidate-composition:truthful-link")
+    local request=OuttaMyWay.ControlRequest.new({
+        identity="CR-BA-COMPOSITION",
+        commitmentId=commitment.identity,
+        assemblyId=token.assemblyId,
+        capability="REGULATE_SPEED",
+        target={kind="P22_REGULATION_LEASE",operation="APPLY",vehicleReferenceKey="ref:ba-a",ownerTag="D0146_ACTION_SPACE_CONSERVATION",maxSpeedKmh=5,governingPurpose="BA_TEST_REGULATION"},
+        authorityToken=token.identity,
+        boundedAuthorityId=grant.identity,
+        operationalPictureEpoch=220,
+        evidenceEpoch=230,
+        effectiveActuationCompositionId="candidate-composition:truthful-link",
+        preconditions={},
+        invalidationConditions={}
+    })
+    equal(runtime.boundedAuthority:validateRequest(request,current.identity),true)
+end)
+
+test("Rejected fresh Bounded Authority grant is released before return",function()
+    local runtime,commitment,token,current=boundedAuthorityRegulationFixture()
+    local dispatcher=runtime.liveControlDispatcher
+    local rejectedGrantId=nil
+    dispatcher.capability={executeControlRequest=function(self,request,candidate)
+        rejectedGrantId=request.boundedAuthorityId
+        equal(runtime.boundedAuthority:isCurrent(rejectedGrantId),true)
+        return false,"TEST_REJECTED"
+    end}
+    local candidate=boundedAuthorityCandidate("CA-BA-INITIAL")
+    local result=dispatcher:_continueD0146ActionSpaceInitial({epoch=220},boundedAuthorityEvaluated(candidate),candidate,actionSpaceBridge(),{
+        commitment=commitment,authorityToken=token,authorityAcquired=true,currentResponsibility=current
+    })
+    equal(result.status,"REJECTED")
+    equal(runtime.boundedAuthority:isCurrent(rejectedGrantId),false)
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitment.identity).identity,current.identity)
+    equal(dispatcher.d0146ActionSpaceLease,nil)
+end)
+
+test("Rejected Bounded Authority update removes successor while predecessor remains current",function()
+    local runtime,commitment,token,current=boundedAuthorityRegulationFixture()
+    local oldGrant=activeGrant(runtime,current,commitment,token,{kind="P22_REGULATION_LEASE",vehicleReferenceKey="ref:ba-a",ownerTag="D0146_ACTION_SPACE_CONSERVATION",maxSpeedKmh=20,governingPurpose="BA_TEST_REGULATION"})
+    local envelope=OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(100,20,0.75,1)
+    local lease={commitmentId=commitment.identity,conflictIdentity="REL-BA",regulatedAssemblyId=token.assemblyId,regulatedReferenceKey="ref:ba-a",
+        protectedAssemblyId="AS-BA-B",protectedReferenceKey="ref:ba-b",governingPurpose="BA_TEST_REGULATION",authorityTokenId=token.identity,
+        boundedAuthorityId=oldGrant.identity,currentCapKmh=20,progressionEnvelope=envelope,actuationActive=true}
+    local rejectedGrantId=nil
+    local dispatcher=runtime.liveControlDispatcher
+    dispatcher.capability={executeControlRequest=function(self,request,candidate)
+        rejectedGrantId=request.boundedAuthorityId
+        return false,"TEST_REJECTED"
+    end}
+    local candidate=boundedAuthorityCandidate("CA-BA-UPDATE")
+    local beforeResponsibilityId=current.identity
+    local result=dispatcher:_updateD0146ActionSpaceEnvelope({epoch=220},boundedAuthorityEvaluated(candidate),candidate,lease,{currentClosing={separationM=80}},"RELATIONSHIP_REMAINS")
+    equal(result.status,"MAINTAINED")
+    equal(runtime.boundedAuthority:isCurrent(rejectedGrantId),false)
+    equal(runtime.boundedAuthority:isCurrent(oldGrant.identity),true)
+    equal(lease.boundedAuthorityId,oldGrant.identity)
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitment.identity).identity,beforeResponsibilityId)
+end)
+
+test("Accepted Bounded Authority update retires predecessor only after successor Control acceptance",function()
+    local runtime,commitment,token,current=boundedAuthorityRegulationFixture()
+    local oldGrant=activeGrant(runtime,current,commitment,token,{kind="P22_REGULATION_LEASE",vehicleReferenceKey="ref:ba-a",ownerTag="D0146_ACTION_SPACE_CONSERVATION",maxSpeedKmh=20,governingPurpose="BA_TEST_REGULATION"})
+    local envelope=OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(100,20,0.75,1)
+    local lease={commitmentId=commitment.identity,conflictIdentity="REL-BA",regulatedAssemblyId=token.assemblyId,regulatedReferenceKey="ref:ba-a",
+        protectedAssemblyId="AS-BA-B",protectedReferenceKey="ref:ba-b",governingPurpose="BA_TEST_REGULATION",authorityTokenId=token.identity,
+        boundedAuthorityId=oldGrant.identity,currentCapKmh=20,progressionEnvelope=envelope,actuationActive=true}
+    local acceptedGrantId=nil
+    local dispatcher=runtime.liveControlDispatcher
+    dispatcher.capability={executeControlRequest=function(self,request,candidate)
+        equal(runtime.boundedAuthority:isCurrent(oldGrant.identity),true)
+        acceptedGrantId=request.boundedAuthorityId
+        return true,"ACCEPTED"
+    end}
+    local candidate=boundedAuthorityCandidate("CA-BA-ACCEPTED-UPDATE")
+    local result=dispatcher:_updateD0146ActionSpaceEnvelope({epoch=220},boundedAuthorityEvaluated(candidate),candidate,lease,{currentClosing={separationM=80}},"RELATIONSHIP_REMAINS")
+    equal(result.status,"ENVELOPE_UPDATED")
+    equal(runtime.boundedAuthority:isCurrent(oldGrant.identity),false)
+    equal(runtime.boundedAuthority:isCurrent(acceptedGrantId),true)
+    equal(lease.boundedAuthorityId,acceptedGrantId)
+    equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(commitment.identity).identity,current.identity)
 end)
 
 test("Candidate generator publishes all supportable alternatives without selection",function()
@@ -5177,6 +5331,51 @@ local function d0147Snapshot(options)
     })
 end
 
+local function d0147TransitionForControl(runtime,supported,evaluated)
+    local candidate=evaluated.candidates[1]
+    local bridge=candidate.evidenceBasis.terminalEgressBridge
+    local admitted,reason=runtime.responsibilityTransitionAuthority:transitionCompletedObstructionResolution(supported,evaluated,{
+        status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",
+        candidateId=candidate.identity,
+        terminalEpisodeId=bridge.terminalEpisodeId
+    },runtime.completedObstructionResponsibilityTransition)
+    if admitted==nil then error(tostring(reason)) end
+    return admitted,candidate,bridge
+end
+
+local function d0147BoundedControlRequest(runtime,identity,admitted,supported,evaluated,candidate,bridge)
+    local target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="INFIELD"}
+    local grant,reason=runtime.boundedAuthority:authorize({
+        responsibilityId=admitted.currentResponsibility.identity,
+        commitmentId=admitted.commitment.identity,
+        assemblyId=bridge.assemblyId,
+        capability="REPOSITION",
+        target=target,
+        authorityToken=admitted.authorityToken.identity,
+        operationalPictureEpoch=supported.epoch,
+        evidenceEpoch=evaluated.decision.epoch,
+        effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,
+        preconditions=candidate.preconditions or {},
+        invalidationConditions=candidate.invalidationConditions or {},
+        provenance={source="test",phase="D0147_DIRECT_CONTROL"}
+    })
+    if grant==nil then error(tostring(reason)) end
+    return OuttaMyWay.ControlRequest.new({
+        identity=identity,
+        commitmentId=admitted.commitment.identity,
+        assemblyId=bridge.assemblyId,
+        capability="REPOSITION",
+        target=target,
+        authorityToken=admitted.authorityToken.identity,
+        boundedAuthorityId=grant.identity,
+        operationalPictureEpoch=supported.epoch,
+        evidenceEpoch=evaluated.decision.epoch,
+        effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,
+        preconditions={},
+        invalidationConditions={}
+    })
+end
+
 test("D0199 first courtesy reaches the centroid on small fields but caps larger-field travel at 60 m",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
     local configuration={foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true}
@@ -5354,8 +5553,7 @@ test("D0147 Control completes first courtesy from derived centroid station progr
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-INFIELD-PROGRESS"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,supported,evaluated); if admitted==nil then error(tostring(reason)) end
-    local candidate=evaluated.candidates[1]; local bridge=candidate.evidenceBasis.terminalEgressBridge
+    local admitted,candidate,bridge=d0147TransitionForControl(runtime,supported,evaluated)
     local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil
     local driveCalls=0; local commandedMaxSpeed=nil; local px,pz=2,5; local motor={setSpeedLimit=function() end,getMaximumForwardSpeed=function() return 25/3.6 end}
     local vehicle={rootNode=1,rotatedTime=0,minRotTime=-1,maxRotTime=1,isActive=false,forceIsActive=false,finishedFirstUpdate=true,lastSpeedReal=0,movingDirection=1,
@@ -5366,7 +5564,7 @@ test("D0147 Control completes first courtesy from derived centroid station progr
     getWorldTranslation=function() return px,0,pz end; worldDirectionToLocal=function(node,x,y,z) return x,y,z end
     local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="INFIELD-1",kind="DISC",x=px,z=pz,radius=1,positiveConflictSupport=true}}} end}
     local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
-    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-INFIELD",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="INFIELD"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
+    local request=d0147BoundedControlRequest(runtime,"CR-D0147-INFIELD",admitted,supported,evaluated,candidate,bridge)
     local started,startReason=control:executeControlRequest(request,candidate); equal(started,true); equal(startReason,"MANOEUVRE_STARTED")
     control:update(16); equal(completion,nil); equal(driveCalls,1); if math.abs((commandedMaxSpeed or 0)-25)>0.0001 then error("D0147 retreat did not use native maximum forward speed") end
     px,pz=50,50
@@ -5382,8 +5580,7 @@ test("D0147 owned Infield Alignment actuation failure positively neutralizes pro
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-NEUTRALIZE"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,supported,evaluated); if admitted==nil then error(tostring(reason)) end
-    local candidate=evaluated.candidates[1]; local bridge=candidate.evidenceBasis.terminalEgressBridge
+    local admitted,candidate,bridge=d0147TransitionForControl(runtime,supported,evaluated)
     local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil
     local driveCalls=0; local neutralizeCalls=0; local neutralizedWhileActive=nil; local failDrive=false; local motor={setSpeedLimit=function() end,getMaximumForwardSpeed=function() return 25/3.6 end}
     local vehicle={rootNode=1,rotatedTime=0,minRotTime=-1,maxRotTime=1,isActive=false,forceIsActive=false,finishedFirstUpdate=true,lastSpeedReal=0,movingDirection=1,
@@ -5394,7 +5591,7 @@ test("D0147 owned Infield Alignment actuation failure positively neutralizes pro
     getWorldTranslation=function(node) return 2,0,5 end; worldDirectionToLocal=function(node,x,y,z) return x,y,z end
     local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="NEUTRALIZE-1",kind="DISC",x=2,z=5,radius=1,positiveConflictSupport=true}}} end}
     local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
-    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-NEUTRALIZE",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="INFIELD"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
+    local request=d0147BoundedControlRequest(runtime,"CR-D0147-NEUTRALIZE",admitted,supported,evaluated,candidate,bridge)
     local started=control:executeControlRequest(request,candidate); equal(started,true); equal(vehicle.forceIsActive,true); equal(control.postJobAuthority:getActivityContextAcquireCallCount(),1)
     control:update(16); equal(driveCalls,1); equal(vehicle.rotatedTime,-0.2); equal(completion,nil)
     failDrive=true
@@ -5409,8 +5606,7 @@ test("D0147 Player Claim relinquishes Vehicle Activity Context without post-clai
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-CLAIM-ACTIVITY"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
-    local admitted,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.applyDecision(runtime,supported,evaluated); if admitted==nil then error(tostring(reason)) end
-    local candidate=evaluated.candidates[1]; local bridge=candidate.evidenceBasis.terminalEgressBridge
+    local admitted,candidate,bridge=d0147TransitionForControl(runtime,supported,evaluated)
     local entered=false; local driveCalls=0; local neutralizeCalls=0
     local oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil=AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil
     local motor={setSpeedLimit=function() end,getMaximumForwardSpeed=function() return 25/3.6 end}
@@ -5420,7 +5616,7 @@ test("D0147 Player Claim relinquishes Vehicle Activity Context without post-clai
     getWorldTranslation=function() return 2,0,5 end; worldDirectionToLocal=function(node,x,y,z) return x,y,z end
     local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="CLAIM-ACTIVITY-1",kind="DISC",x=2,z=5,radius=1,positiveConflictSupport=true}}} end}
     local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
-    local request=OuttaMyWay.ControlRequest.new({identity="CR-D0147-CLAIM-ACTIVITY",commitmentId=admitted.commitment.identity,assemblyId=bridge.assemblyId,capability="REPOSITION",target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="INFIELD"},authorityToken=admitted.authorityToken.identity,operationalPictureEpoch=supported.epoch,evidenceEpoch=evaluated.decision.epoch,effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,preconditions={},invalidationConditions={}})
+    local request=d0147BoundedControlRequest(runtime,"CR-D0147-CLAIM-ACTIVITY",admitted,supported,evaluated,candidate,bridge)
     local started=control:executeControlRequest(request,candidate); equal(started,true); equal(vehicle.forceIsActive,true)
     entered=true
     control:update(16)

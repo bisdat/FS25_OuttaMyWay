@@ -498,6 +498,34 @@ It may apply a specific Regulation limit, request supported compaction, perform 
 
 Bounded Authority does not invent strategic purpose, broaden itself because another manoeuvre is convenient, preserve stale geometry as authority, or create a new Regulation or Resolution Commitment.
 
+A Bounded Authority grant is distinct from both Current Responsibility identity
+and mechanical actuation exclusivity. A grant traces a physical permission back
+to its `RS-*` Current Responsibility, records the retained `CM-*` substrate and
+`AU-*` AuthorityToken provenance, identifies the controlled assembly and
+capability, and carries the current bounded target or magnitude plus the
+validity envelope supplied by accepted Situation/Candidate evidence.
+
+Mechanical exclusivity is not semantic permission. An `AU-*` AuthorityToken can
+show that OuttaMyWay owns actuation exclusivity for an assembly under a retained
+Commitment, but it does not by itself answer which physical action is permitted
+now. Likewise, retaining or reusing an `AU-*` across an accepted lifecycle path
+does not continue old Bounded Authority. Predecessor Bounded Authority ends
+before successor physical Control becomes executable.
+
+Responsibility continuity allows authority discontinuity. The same `RS-*`
+Regulation may persist while a speed cap changes, current actuation becomes
+quiescent, the controlled subject migrates under accepted evidence, or a fresh
+grant is later acquired. A single `RS-*` Resolution Commitment may also
+authorize multiple simultaneous bounded effects where its accepted obligation
+requires them, for example one Cooperative Passage reposition permission per
+participant or protected-demand Regulation plus completed-subject movement
+during completed-obstruction resolution.
+
+Relinquishment does not require a new grant. A release or quiescence request
+references the active grant whose physical effect is being narrowed or ended;
+after the physical effect is removed, the grant is released. A grant must not
+outlive its Current Responsibility.
+
 ## 17. Control
 
 Control answers: **How is this already-authorised physical request realised through available GIANTS mechanisms?**

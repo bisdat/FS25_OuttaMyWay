@@ -16,12 +16,13 @@ function Evaluator:enterSettling(commitmentId,governingBasisVerdict)
         if record.terminalCause ~= governingBasisVerdict.terminalCause then
             error("first authoritative invalidation already fixed terminal cause",2)
         end
+        local releasedBoundedAuthority = self.boundedAuthority and self.boundedAuthority:releaseForCommitment(commitmentId,"TERMINAL_SETTLEMENT_ENTER_SETTLING") or {}
         local released = self.authorities:releaseForCommitment(commitmentId)
         if #released > 0 then
             record = OuttaMyWay.CommitmentStateMachine.revise(record,{progressActuationOwnership={},postJobActuationOwnership={},epoch=self.epochs:next()})
             record = self.commitments:save(record)
         end
-        return {commitment=record,releasedAuthorityTokenIds=released}
+        return {commitment=record,releasedAuthorityTokenIds=released,releasedBoundedAuthorityGrantIds=releasedBoundedAuthority}
     end
     if OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then error("terminal Commitment cannot re-enter SETTLING",2) end
     local updated = OuttaMyWay.CommitmentStateMachine.transition(record,"SETTLING",{
@@ -30,12 +31,13 @@ function Evaluator:enterSettling(commitmentId,governingBasisVerdict)
         terminalCause=governingBasisVerdict.terminalCause
     },self.obligations)
     updated = self.commitments:save(updated)
+    local releasedBoundedAuthority = self.boundedAuthority and self.boundedAuthority:releaseForCommitment(commitmentId,"TERMINAL_SETTLEMENT_ENTER_SETTLING") or {}
     local released = self.authorities:releaseForCommitment(commitmentId)
     if #released > 0 then
         updated = OuttaMyWay.CommitmentStateMachine.revise(updated,{progressActuationOwnership={},postJobActuationOwnership={},epoch=self.epochs:next()})
         updated = self.commitments:save(updated)
     end
-    return {commitment=updated,releasedAuthorityTokenIds=released}
+    return {commitment=updated,releasedAuthorityTokenIds=released,releasedBoundedAuthorityGrantIds=releasedBoundedAuthority}
 end
 
 function Evaluator:attemptTerminal(commitmentId,terminalSettlementEvidence)

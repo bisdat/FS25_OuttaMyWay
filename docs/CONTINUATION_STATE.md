@@ -7,17 +7,15 @@ is not a changelog, release ledger, or canonical-release record.
 ## Current engineering concern
 
 Accepted Repository State is
-`04fe2bebb4a1181127ff71385df5bf29e5a03c3e` (the exact base for this increment).
+`18224beba598019b9f82c8898f770efff6aa4be6` (the exact `main` base for this increment).
 
 Issue #37 remains open as non-blocking validation debt. The successful Category-1 Reality exemplar is sufficient to treat Strangler Phase 8 as **ASSUMED COMPLETE FOR PROGRAMME PROGRESSION** without waiting for a Category-2 fixture. Category-2 Reality validation remains required for Issue #37 closure. Materially contrary later evidence must reopen the affected architectural assumptions.
 
-The active strangler boundary is **Phase 9 — Resolve Regulation-to-Passage
-succession and Same-Commitment Responsibility Fusion**. PR #44 now implements
-the remaining Phase 9 responsibility coverage as `0.3.0.10 TEST — CURRENT
-RESPONSIBILITY RECONCILIATION`; this is proposed Engineering Increment state,
-not a canonical declaration. See the
-[Phase 9 implementation record](IMPLEMENTATION_MAP.md#phase-9-responsibility-reconciliation)
-for call paths, terminal inventory and validation scope.
+The active strangler boundary is **Phase 10 — Reconcile Bounded Authority**.
+This PR implements the bounded-authority seam for the four fixed exemplars
+subject to review; it is not a release declaration or canonicalisation. See the
+[Phase 10 implementation record](IMPLEMENTATION_MAP.md#phase-10-bounded-authority-reconciliation)
+for call paths, scope and deferred items.
 
 ## Established
 
@@ -29,7 +27,19 @@ for call paths, terminal inventory and validation scope.
 - **Aggressive admission paired with aggressive release** accepts cheap false positives because the intervention is bounded, reversible and re-assessed from fresh Reality.
 - **Established Relationship Precedence** suppresses Forward Intersection actuation when a valid leader/follower relationship already owns the pair. Leader/follower Regulation remains variable-speed; Bubble Bullet Time remains a separate fixed-1-km/h purpose.
 - `FORWARD_INTERSECTION_ASSESSED` change-suppressed diagnostics expose the intersection, distances, rate sources, times, yielder, continuing participant, overlay, incumbent ownership and reason. `FORWARD_INTERSECTION_REGULATION_APPLIED` confirms downstream fixed-speed actuation.
-- Phase 9 offline observation is `292 passed / 13 failed`, preserving the same historical 13 failures while adding focused green coverage for direct Resolution identity and cleanup; structural/source contracts are `104 passed`. No Phase 9 amendment GIANTS Reality validation is claimed; issue #37 remains open.
+- Phase 9 offline observation was `292 passed / 13 failed`, preserving the same historical 13 failures while adding focused green coverage for direct Resolution identity and cleanup; structural/source contracts were `104 passed`. No Phase 9 amendment GIANTS Reality validation is claimed; issue #37 remains open.
+- Phase 10 introduces explicit `BA-*` Bounded Authority grants for migrated physical actions in follower Regulation, Action-Space/Forward Intersection Regulation, Cooperative Passage and completed-obstruction Resolution.
+- [`BoundedAuthorityGrant.lua`](../scripts/contracts/BoundedAuthorityGrant.lua) is the sealed permission record. It traces `CR-* -> BA-* -> RS-*` while retaining `CM-*`, `AU-*` and Effective Actuation Composition only as substrate/provenance.
+- [`BoundedAuthority.lua`](../scripts/authority/BoundedAuthority.lua) authorizes and validates permissions against the actual Current Responsibility, live retained Commitment, valid AuthorityToken, assembly, capability, target/magnitude and validity envelope. It does not assess Situation, choose roles/geometry or execute Control.
+- **Representation Convention != Identity Authority**: Effective Actuation Composition identity is Candidate-supplied representation provenance. Phase 10 requires exact equality between retained Commitment, BA grant, ControlRequest and relevant composition rather than imposing an `EC-*` convention.
+- **Rejected Permission Must Not Persist**: freshly authorised BA rejected by Control before acceptance is released before return. Rejected update/reactivation/role-migration grants do not replace their predecessor BA or physical lease; accepted updates retire the predecessor only after successor Control acceptance.
+- Follower and Action-Space magnitude changes acquire fresh BA under the same continuing Regulation `RS-*`; quiescence/release references the active BA and then releases it. Reactivation creates a fresh BA without responsibility churn.
+- Forward Intersection keeps the exact fixed `1 km/h` Intent-Revelation Creep policy and only materializes that current cap as BA before Control.
+- Cooperative Passage creates one `REPOSITION` BA per participant under one Resolution `RS-*`; completed-obstruction Resolution creates a completed-subject `REPOSITION` BA and separate protected-demand `REGULATE_SPEED` BA where applicable.
+- Regulation-to-Passage replacement releases predecessor BA during predecessor cleanup before successor Passage requests can be authorized. AuthorityToken reuse remains mechanical continuity only, not Bounded Authority continuity.
+- Terminal settlement releases BA before mechanical `AU-*` release and before semantic responsibility termination. Responsibility termination defensively releases remaining grants.
+- Guarded Recovery Regulation remains an explicitly unmigrated legacy ControlRequest path in this increment because it is outside the four fixed Phase-10 exemplars.
+- Bubble Bullet Time is not implemented; issue #45 remains the separate owner of that gap.
 
 - The accepted [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Strangler Transition Map](IMPLEMENTATION_MAP.md#detailed-strangler-transition-map) remain authoritative for architecture and programme direction respectively.
 - Cooperative Passage upstream transition remains accepted and Reality-validated for one direct `CREATE` episode.
@@ -151,13 +161,13 @@ GIANTS observations validate those observed behaviours, not the new Phase 9
 semantic implementation. Phase 9 has offline implementation evidence only.
 
 Generic Commitment, Obligation and AuthorityToken remain retained substrate.
-Direct Cooperative Passage `CREATE` and completed-obstruction Resolution now
-receive fresh semantic `RS-*` Resolution Commitment identities from
-Responsibility Transition Authority, distinct from retained `CM-*` substrate
-identity. Completion, failure and supersession settlement paths terminate those
-semantic responsibilities when the retained substrate terminalises. Bounded
-Authority remains inactive until Phase 10 is explicitly started after PR #44
-review.
+Direct Cooperative Passage `CREATE` and completed-obstruction Resolution receive
+fresh semantic `RS-*` Resolution Commitment identities from Responsibility
+Transition Authority, distinct from retained `CM-*` substrate identity.
+Completion, failure and supersession settlement paths terminate those semantic
+responsibilities when the retained substrate terminalises. Phase 10 now
+materializes the bounded physical permissions downstream of those Current
+Responsibilities as explicit `BA-*` grants.
 
 ## Next review focus
 
@@ -165,7 +175,7 @@ The `0.3.0.8` Category-1 Forward Intersection GIANTS Reality exemplar is accepte
 
 Strangler Phase 8 is **ASSUMED COMPLETE FOR PROGRAMME PROGRESSION**. Issue #37 remains open as non-blocking Category-2 Reality validation debt. Category-2 Reality validation is still required for Issue #37 closure; materially contrary Category-2 evidence must reopen the affected Forward Intersection assumptions and dependent conclusions.
 
-Phase 9 — Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion — is COMPLETE IN PR #44 pending owner merge/acceptance. The fixed Phase 9 completion conditions have been reviewed as satisfied. No GIANTS Reality validation is claimed for this amendment; later Reality regression should repeat established follower behaviour and observe follower → Passage only if a natural fixture produces it. Do not force such a succession merely to exercise the seam.
+Phase 10 — Reconcile Bounded Authority — is implemented in this PR subject to review. Physical behaviour is intended unchanged. No GIANTS Reality validation is claimed; GitHub Actions remains the offline validation authority after the branch is pushed.
 
 Open-field Forward Intersection remains admitted to the same bounded fixed `1 km/h` Regulation. Category 1, Category 2 and open field are environmental annotations on the generic Forward Intersection relationship rather than admission gates.
 
@@ -175,7 +185,7 @@ Established leader/follower ownership remains separate and retains precedence fo
 
 - Generic Commitment removal.
 - Standalone Regulation redesign.
-- Bounded Authority redesign.
+- Further Bounded Authority redesign outside the four fixed Phase-10 exemplars.
 - Candidate/Constraint/Decision simplification.
 - Issue #33 implementation.
 - Prototype22 migration or renaming.
