@@ -903,6 +903,107 @@ This is not general Responsibility Transition Authority coverage. Generic
 Commitment, Obligation and AuthorityToken behaviour remains retained substrate;
 AuthorityToken reuse is not redesigned before Phase 10.
 
+### Phase 10 Bounded Authority Reconciliation
+
+**Phase 10 — Reconcile Bounded Authority — IMPLEMENTED IN THIS PR SUBJECT TO REVIEW.**
+
+Phase 10 addresses the **Responsibility-to-Control Traceability Gap**: migrated
+physical requests previously carried retained `CM-*`, mechanical `AU-*`,
+Candidate evidence and Control machinery, but did not directly trace through a
+semantic Bounded Authority permission to the `RS-*` Current Responsibility that
+justified the action.
+
+The new [`BoundedAuthorityGrant`](../scripts/contracts/BoundedAuthorityGrant.lua)
+sealed contract introduces distinct `BA-*` identity. It records semantic
+`responsibilityId`, retained `commitmentId`, controlled `assemblyId`,
+`capability`, bounded target/magnitude, mechanical `authorityToken`, relevant
+epochs, effective composition, preconditions, invalidation conditions and
+provenance. `CM-*` and `AU-*` remain substrate/provenance only; neither can
+substitute for `RS-*` or `BA-*`.
+
+[`BoundedAuthority`](../scripts/authority/BoundedAuthority.lua) is the focused
+production authority for this boundary. It authorizes only from an already
+current Regulation or Resolution Commitment and an already-selected physical
+envelope. It validates live retained Commitment state, current `RS-*`, valid
+`AU-*`, matching assembly/capability/composition and non-broadened target.
+Effective Actuation Composition identity remains Candidate-supplied provenance
+and is linked by exact equality, not by an imposed prefix convention. It does
+not assess Reality, select roles or geometry, create responsibilities, manage
+generic Commitment lifecycle, own obligations or execute Control.
+
+The migrated request chain is now:
+
+```text
+Current Responsibility RS-*
+        ↓
+BoundedAuthorityGrant BA-*
+        ↓
+ControlRequest CR-* references BA-*
+        ↓
+Control validates BA-* before physical execution
+```
+
+`ControlRequest` now has optional `boundedAuthorityId` for migrated paths.
+Follower Regulation, Action-Space/Forward Intersection Regulation, Cooperative
+Passage and completed-obstruction Resolution requests are created through
+`BoundedAuthority` before Control. Guarded Recovery Regulation remains an
+intentionally unmigrated legacy `ControlRequest` path in this increment because
+it is outside the four fixed Phase-10 exemplars except for completed-obstruction
+protected-demand actuation, which is migrated.
+
+Follower Regulation preserves one continuing `RS-*` while each current elastic
+cap is represented as a fresh bounded `REGULATE_SPEED` grant. Quiescence and
+positive release reference the active grant to remove the physical lease, then
+release the grant. Reactivation acquires a fresh grant under the same
+responsibility when Situation evidence again supports actuation.
+
+Action-Space Regulation and Forward Intersection use the same D-0146 downstream
+path. The existing progression envelope and the fixed Forward Intersection
+`1 km/h` Intent-Revelation Creep still decide magnitude upstream/downstream as
+before; Phase 10 materializes that already-decided cap as Bounded Authority
+before `REGULATE_SPEED` Control. Role migration and reactivation preserve the
+same `RS-*` and acquire fresh grants for the current subject/envelope.
+
+Cooperative Passage materializes one `REPOSITION` grant per participant under
+one Resolution Commitment `RS-*`; both requests may share the retained
+Effective Actuation Composition. `CooperativePassageControl` validates each
+grant before starting and checks that the active grants remain current during
+execution. It still halts on support loss rather than broadening the Candidate
+Guide.
+
+Completed-obstruction Resolution materializes a `REPOSITION` grant for the
+completed controlled subject. Existing protected-demand holds now receive
+separate `REGULATE_SPEED` grants under the same Resolution `RS-*` where the
+current D-0147 phase requires them. The two-stage courtesy policy, 60 m maximum,
+fixed-direction movement, centroid/boundary objective rules, Player Claim,
+source reactivation, speed policy and terminal geometry are intended unchanged.
+
+Regulation-to-Cooperative-Passage replacement now preserves the Phase 9
+semantic replacement boundary and adds grant cleanup: predecessor Regulation BA
+is released during subordinate predecessor cleanup before successor Passage
+requests can be authorized and executed. The retained `AU-*` may still be reused
+where the existing lifecycle legitimately permits it; `AU-*` reuse is not BA
+continuity.
+
+Terminal settlement now releases Bounded Authority for the retained Commitment
+before releasing mechanical AuthorityTokens and before terminalising the
+Current Responsibility. Responsibility termination also defensively releases
+any remaining grants for that `RS-*`.
+
+Key discoveries recorded for this increment:
+
+- **Responsibility-to-Control Traceability Gap**: physical execution lacked an explicit `RS-*` permission chain.
+- **Implicit Authority Assembly**: dispatcher code assembled permission-like facts from `CM-*`, `AU-*`, Candidate target and Control request shape without one truthful authority record.
+- **Exclusivity != Permission**: `AuthorityRegistry` remains mechanical exclusivity substrate only.
+- **Responsibility Continuity Allows Authority Discontinuity**: cap changes, quiescence, subject migration and reactivation can change BA without changing `RS-*`.
+- **Exclusivity Continuity != Authority Continuity**: retained `AU-*` reuse does not continue predecessor BA.
+- **One Responsibility May Authorise Multiple Bounded Effects**: one Resolution `RS-*` can authorize paired Passage grants or D-0147 movement plus protected-demand holds.
+- **Representation Convention != Identity Authority**: Phase 10 requires truthful Effective Actuation Composition linkage, not invention of a new `EC-*` identity convention.
+- **Rejected Permission Must Not Persist**: a fresh BA grant rejected before becoming the accepted physical effect is released immediately. For attempted updates, the rejected successor BA is removed while the predecessor BA and existing physical lease remain current until successor Control acceptance.
+
+Bubble Bullet Time is not implemented here. It remains explicitly outside Phase
+10 and is tracked separately in issue #45.
+
 PR review exposed **Replacement Precondition Lag**: the first implementation
 validated retained-Commitment continuity and predecessor cleanup eligibility
 only after the Passage `REVISE`. The corrected seam now validates the complete
@@ -1132,7 +1233,7 @@ replacement is again the downstream validation/reconciliation boundary.
    - **8b. Extract D-0146 Action-Space Regulation as the second standalone exemplar — IMPLEMENTED and offline-validated; GIANTS Reality attempt inconclusive because the saved-corner Situation bypassed Action-Space Regulation upstream of the extracted seam.**
    - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — ARCHITECTURAL COMPARISON COMPLETE; implementation discovery found no truthful retained Regulation instance identity witness, so the Responsibility Instance Identity Gap required explicit Action-Space and follower Regulation identities during Phase 9.**
 9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion — COMPLETE IN PR #44 PENDING OWNER MERGE/ACCEPTANCE. Phase 9 covers Action-Space Regulation identity, follower Regulation identity, both same-Commitment Passage replacement paths, direct Cooperative Passage CREATE Resolution identity, completed-obstruction Resolution identity and semantic cleanup on existing terminal paths.**
-10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**
+10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility — IMPLEMENTED IN THIS PR SUBJECT TO REVIEW.**
 11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities.**
 12. **Retire superseded generic Commitment/orchestration only when no supported path relies on it.**
 13. **Simplify Candidate/Constraint/Decision only where evidence proves duplication.**
@@ -1159,7 +1260,9 @@ should be refreshed after each accepted tranche.
 | Observation | [`scripts/observation/`](../scripts/observation/) and [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) |
 | Situation Assessment | [`scripts/assessment/SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua) and focused collaborators in [`scripts/assessment/`](../scripts/assessment/), including representation-only prospective constraint knowledge in [`scripts/assessment/SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) |
 | Candidate, Constraint and Decision boundary | [`scripts/candidates/`](../scripts/candidates/), [`scripts/constraints/`](../scripts/constraints/), [`scripts/decision/`](../scripts/decision/), and [`scripts/commitment/DecisionCommitmentBoundary.lua`](../scripts/commitment/DecisionCommitmentBoundary.lua) |
-| Commitment, Obligation and Bounded Authority | [`scripts/commitment/`](../scripts/commitment/) and [`scripts/authority/`](../scripts/authority/) |
+| Commitment and Obligation substrate | [`scripts/commitment/`](../scripts/commitment/) |
+| Mechanical actuation exclusivity | [`scripts/authority/AuthorityRegistry.lua`](../scripts/authority/AuthorityRegistry.lua) |
+| Bounded Authority grants and validation | [`scripts/contracts/BoundedAuthorityGrant.lua`](../scripts/contracts/BoundedAuthorityGrant.lua), [`scripts/authority/BoundedAuthority.lua`](../scripts/authority/BoundedAuthority.lua), and migrated request construction in [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua) |
 | Regulation identity, preservation, termination and same-Commitment Passage replacement | [`scripts/responsibility/ResponsibilityTransitionAuthority.lua`](../scripts/responsibility/ResponsibilityTransitionAuthority.lua), [`scripts/contracts/Regulation.lua`](../scripts/contracts/Regulation.lua); Runtime connects terminal settlement to follower semantic cleanup |
 | Explicit Resolution Commitment view | [`scripts/contracts/ResolutionCommitment.lua`](../scripts/contracts/ResolutionCommitment.lua), [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua), and the two purpose-specific transition modules in [`scripts/responsibility/`](../scripts/responsibility/) |
 | D-0141 follower-boundary Regulation transition and downstream Control | [`scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua`](../scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua), [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua), and [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua) |

@@ -80,6 +80,13 @@ local function lower(value)
     return string.lower(tostring(value or ""))
 end
 
+local migratedBoundedAuthorityOwnerTags = {
+    D0141_FOLLOWER_BOUNDARY=true,
+    D0146_ACTION_SPACE_CONSERVATION=true,
+    FORWARD_INTERSECTION_INTENT_REVELATION=true,
+    D0147_PROTECTED_YIELD=true
+}
+
 function Probe.new(runtime)
     return setmetatable({
         runtime = runtime,
@@ -401,6 +408,11 @@ function Probe:executeControlRequest(request,candidate)
     local target=request.target or {}
 
     if request.capability=="REGULATE_SPEED" then
+        if migratedBoundedAuthorityOwnerTags[tostring(target.ownerTag)]==true and request.boundedAuthorityId==nil then return false,"BOUNDED_AUTHORITY_GRANT_REQUIRED" end
+        if request.boundedAuthorityId~=nil then
+            local ok,reason=self.runtime.boundedAuthority:validateRequest(request)
+            if ok~=true then return false,reason end
+        end
         if target.kind~="P22_REGULATION_LEASE" or type(target.vehicleReferenceKey)~="string" or type(target.ownerTag)~="string" then return false,"CONTROL_REQUEST_TARGET_UNSUPPORTED" end
         local vehicle=self:_vehicleForReferenceKey(target.vehicleReferenceKey)
         if vehicle==nil then return false,"CONTROL_REQUEST_VEHICLE_UNAVAILABLE" end

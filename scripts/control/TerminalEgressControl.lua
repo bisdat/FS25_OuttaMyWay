@@ -119,10 +119,10 @@ function Control:_complete(status,evidence)
     for k,v in OuttaMyWay.ValueRecord.pairs(completionEvidence) do observation[k]=v end
     self:_publish(state,observation)
     if status=="FAILED" then self.failedCount=self.failedCount+1 else self.completedCount=self.completedCount+1 end
-    if type(self.completionHandler)=="function" then self.completionHandler({status=status,commitmentId=state.commitmentId,terminalEpisodeId=state.terminalEpisodeId,assemblyId=state.assemblyId,assemblyReferenceKey=state.assemblyReferenceKey,evidence=completionEvidence}) end
+    if type(self.completionHandler)=="function" then self.completionHandler({status=status,commitmentId=state.commitmentId,terminalEpisodeId=state.terminalEpisodeId,assemblyId=state.assemblyId,assemblyReferenceKey=state.assemblyReferenceKey,boundedAuthorityId=state.boundedAuthorityId,evidence=completionEvidence}) end
 end
 function Control:_rejectBeforeStart(request,bridge,status,reason)
-    local pseudo={commitmentId=request.commitmentId,terminalEpisodeId=bridge.terminalEpisodeId,assemblyId=request.assemblyId,assemblyReferenceKey=bridge.assemblyReferenceKey,phase=bridge.phase}
+    local pseudo={commitmentId=request.commitmentId,terminalEpisodeId=bridge.terminalEpisodeId,assemblyId=request.assemblyId,assemblyReferenceKey=bridge.assemblyReferenceKey,phase=bridge.phase,boundedAuthorityId=request.boundedAuthorityId}
     self.active=pseudo; self:_complete(status,{kind="D0147_CONTROL_START_REJECTED",reason=reason})
     return false,reason
 end
@@ -131,11 +131,13 @@ function Control:executeControlRequest(request,candidate)
     local bridge=bridgeFor(candidate); if bridge==nil then return false,"D0147_BRIDGE_UNAVAILABLE" end
     if self.active~=nil then return false,"D0147_CONTROL_ALREADY_ACTIVE" end
     if tokenFor(self.runtime,request)==nil then return false,"D0147_VALID_POST_JOB_AUTHORITY_TOKEN_UNAVAILABLE" end
+    local grantOk,grantReason=self.runtime.boundedAuthority:validateRequest(request)
+    if grantOk~=true then return false,grantReason end
     local vehicle=self:_vehicle(bridge.assemblyReferenceKey); if vehicle==nil then return self:_rejectBeforeStart(request,bridge,"FAILED","COMPLETED_ASSEMBLY_RUNTIME_OBJECT_UNAVAILABLE") end
     if self.postJobAuthority:isPlayerClaimed(vehicle) then return self:_rejectBeforeStart(request,bridge,"PLAYER_CLAIM","PLAYER_CLAIM_AT_CONTROL_BOUNDARY") end
     if self.postJobAuthority:isSourceReactivated(vehicle) then return self:_rejectBeforeStart(request,bridge,"SUPERSEDED","SOURCE_INTENT_REACTIVATED_AT_CONTROL_BOUNDARY") end
     local now=tonumber(g_time) or 0
-    local state={commitmentId=request.commitmentId,terminalEpisodeId=bridge.terminalEpisodeId,assemblyId=request.assemblyId,assemblyReferenceKey=bridge.assemblyReferenceKey,phase=bridge.phase,requestId=request.identity,authorityToken=request.authorityToken,startedAt=now,vehicle=vehicle,objective=bridge.objective,configurationOwned=false}
+    local state={commitmentId=request.commitmentId,terminalEpisodeId=bridge.terminalEpisodeId,assemblyId=request.assemblyId,assemblyReferenceKey=bridge.assemblyReferenceKey,phase=bridge.phase,requestId=request.identity,boundedAuthorityId=request.boundedAuthorityId,authorityToken=request.authorityToken,startedAt=now,vehicle=vehicle,objective=bridge.objective,configurationOwned=false}
     self.active=state; self.startedCount=self.startedCount+1
     if bridge.phase=="COMPACT" then
         local evidence=self.configurationAuthority:getEvidence(vehicle)
@@ -198,6 +200,7 @@ end
 function Control:update(dt)
     local state=self.active; if state==nil then return end
     state.lastDt=dt
+    if self.runtime.boundedAuthority:isCurrent(state.boundedAuthorityId)~=true then self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="BOUNDED_AUTHORITY_LOST"}); return end
     if tokenFor(self.runtime,state)==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="POST_JOB_AUTHORITY_LOST"}); return end
     local vehicle=self:_vehicle(state.assemblyReferenceKey); if vehicle==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="COMPLETED_ASSEMBLY_RUNTIME_OBJECT_LOST"}); return end
     if self.postJobAuthority:isPlayerClaimed(vehicle) then self:_complete("PLAYER_CLAIM",{kind="D0147_PLAYER_CLAIM",directDriveCallsAtClaim=self.postJobAuthority:getDirectDriveCallCount()}); return end

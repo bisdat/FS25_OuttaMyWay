@@ -26,6 +26,7 @@ local defaultPrefixes = {
     GOVERNING_BASIS_VERDICT = "BV",
     COMMITMENT_APPLICATION = "AP",
     RESPONSIBILITY = "RS",
+    BOUNDED_AUTHORITY = "BA",
     REPLAY_RUN = "RR",
     PASSIVE_LIVE_TRACE = "LT"
 }

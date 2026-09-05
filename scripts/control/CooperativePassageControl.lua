@@ -268,6 +268,8 @@ function Control:_participant(vehicle,assemblyId,request,sideSign)
 end
 
 function Control:_validAuthority(request)
+    local grantOk=self.runtime.boundedAuthority:validateRequest(request)
+    if grantOk~=true then return false end
     for _,token in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(request.commitmentId)) do
         if token.identity==request.authorityToken and token.assemblyId==request.assemblyId and self.runtime.authorities:validate(token)==true then return true end
     end
@@ -713,7 +715,7 @@ function Control:_completePairContext(run)
     self.run=nil; self.completedCount=self.completedCount+1
     logInfo("PAIR_CONTEXT_DISSOLVED commitment=%s reason=NO_REMAINING_PASSAGE_AUTHORITY participantSpecificRelease=true",tostring(run.commitmentId))
     local evidenceKind=exhausted and "D0146_COOPERATIVE_PASSAGE_RESTORE_EXHAUSTED_AND_HANDED_BACK" or "D0146_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
-    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,sameJobs=true,bothRestored=not exhausted,restorationExhausted=exhausted,participantSpecificRelease=true,completedAt=g_time or 0}})
+    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},boundedAuthorityIds={run.a.request.boundedAuthorityId,run.b.request.boundedAuthorityId},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,sameJobs=true,bothRestored=not exhausted,restorationExhausted=exhausted,participantSpecificRelease=true,completedAt=g_time or 0}})
 end
 
 function Control:_beginD0146Configuration(run)
@@ -882,7 +884,7 @@ function Control:_complete(run)
         pa and pb and string.format("%.2fm",distance(pa.x,pa.z,pb.x,pb.z)) or "n/a")
     self.run=nil; self.completedCount=self.completedCount+1
     local evidenceKind=run.restorationExhausted==true and "D0146_COOPERATIVE_PASSAGE_RESTORE_EXHAUSTED_AND_HANDED_BACK" or "D0146_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
-    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,sameJobs=true,bothRestored=run.restorationExhausted~=true,restorationExhausted=run.restorationExhausted==true,cooldown=false,completedAt=g_time or 0}})
+    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},boundedAuthorityIds={run.a.request.boundedAuthorityId,run.b.request.boundedAuthorityId},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,sameJobs=true,bothRestored=run.restorationExhausted~=true,restorationExhausted=run.restorationExhausted==true,cooldown=false,completedAt=g_time or 0}})
 end
 
 function Control:_failHeld(reason)
@@ -906,7 +908,7 @@ function Control:_abandonAfterJobChange(run,changed)
     for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants) do self.driveAuthority:clear(p.vehicle); self.permissionGate:release(p.vehicle); self.configurationAuthority:clear(p.vehicle); self:_endRepresentationConfigurationAuthority(p) end
     self.run=nil
     logWarning("ABORT commitment=%s reason=JOB_EPISODE_CHANGED participant=%s physicalAuthorityCleared=true",tostring(run.commitmentId),changed and changed.name or "unknown")
-    self:_notify({status="FAILED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind="COOPERATIVE_PASSAGE_JOB_EPISODE_CHANGED",participant=changed and changed.name or nil}})
+    self:_notify({status="FAILED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},boundedAuthorityIds={run.a.request.boundedAuthorityId,run.b.request.boundedAuthorityId},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind="COOPERATIVE_PASSAGE_JOB_EPISODE_CHANGED",participant=changed and changed.name or nil}})
 end
 
 function Control:_executeD0146JointRequests(requestA,requestB,candidate,bridge)
@@ -991,6 +993,9 @@ function Control:update(dt)
     local run=self.run
     if run==nil then return end
     if run.mode~="D0146_GUIDE" then self:_failHeld("NON_D0146_RUNTIME_MODE_REJECTED"); return end
+    local boundedAuthority=self.runtime and self.runtime.boundedAuthority or nil
+    if boundedAuthority~=nil and run.a.request~=nil and run.b.request~=nil
+        and (boundedAuthority:isCurrent(run.a.request.boundedAuthorityId)~=true or boundedAuthority:isCurrent(run.b.request.boundedAuthorityId)~=true) then self:_failHeld("BOUNDED_AUTHORITY_LOST"); return end
     if OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED~=true then self:_failHeld("D0146_STEP2_DISABLED_DURING_ACTIVE_COMMITMENT"); return end
     local nowMs=g_time or 0
     local sameJob,changed=self:_allSameJob(run)

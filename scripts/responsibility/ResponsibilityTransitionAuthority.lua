@@ -147,16 +147,26 @@ function Authority:getCurrentResolutionCommitment(commitmentId)
 end
 
 function Authority:terminateRegulation(commitmentId)
+    local current=self.regulationsByCommitmentId[commitmentId]
+    if current~=nil and self.runtime.boundedAuthority~=nil then self.runtime.boundedAuthority:releaseForResponsibility(current.identity,"REGULATION_RESPONSIBILITY_TERMINATED") end
     self.regulationsByCommitmentId[commitmentId]=nil
     return true
 end
 
 function Authority:terminateResolutionCommitment(commitmentId)
+    local current=self.resolutionsByCommitmentId[commitmentId]
+    if current~=nil and self.runtime.boundedAuthority~=nil then self.runtime.boundedAuthority:releaseForResponsibility(current.identity,"RESOLUTION_RESPONSIBILITY_TERMINATED") end
     self.resolutionsByCommitmentId[commitmentId]=nil
     return true
 end
 
 function Authority:terminateSemanticResponsibilitiesForTerminalCommitment(commitmentId)
+    local regulation=self.regulationsByCommitmentId[commitmentId]
+    local resolution=self.resolutionsByCommitmentId[commitmentId]
+    if self.runtime.boundedAuthority~=nil then
+        if regulation~=nil then self.runtime.boundedAuthority:releaseForResponsibility(regulation.identity,"TERMINAL_COMMITMENT_RESPONSIBILITY_TERMINATED") end
+        if resolution~=nil then self.runtime.boundedAuthority:releaseForResponsibility(resolution.identity,"TERMINAL_COMMITMENT_RESPONSIBILITY_TERMINATED") end
+    end
     self.regulationsByCommitmentId[commitmentId]=nil
     self.resolutionsByCommitmentId[commitmentId]=nil
     return true
