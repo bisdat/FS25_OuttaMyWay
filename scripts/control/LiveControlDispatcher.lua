@@ -1027,7 +1027,7 @@ function Dispatcher:retireTrafficLeasesForCommitment(commitmentId,reason)
         logInfo("D0123_DEPENDENT_COMMITMENT_TERMINATED commitment=%s progress=%s reason=%s",
             tostring(commitmentId),tostring(guarded.progressAssemblyId),tostring(reason))
     end
-    self.runtime.responsibilityTransitionAuthority:terminateFollowerRegulationForTerminalCommitment(commitmentId)
+    self.runtime.responsibilityTransitionAuthority:terminateSemanticResponsibilitiesForTerminalCommitment(commitmentId)
     return {released=released}
 end
 

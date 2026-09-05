@@ -4012,7 +4012,7 @@ local function followerPassageFixture(runtime,admitted,events)
     picture=OuttaMyWay.OperationalPicture.new(values)
     local obligationId=runtime.obligations:openForOwner(admitted.commitment.identity)[1].identity
     local control={}
-    function control:setCompletionHandler(fn) end
+    function control:setCompletionHandler(fn) self.handler=fn end
     function control:isActive() return false end
     function control:executeJointRequests(a,b,candidate)
         equal(events[1],"CLEAR")
@@ -4757,12 +4757,38 @@ test("D0146 Step2 Established Conflict crosses Candidate Decision Commitment and
     runtime.liveControlDispatcher:setCooperativePassageControl(control)
     local dispatched=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(dispatched.status,"ACCEPTED"); equal(#accepted,3); equal(#dispatched.requests,2)
-    equal(dispatched.currentResponsibility.identity,dispatched.commitment.identity)
+    equal(string.sub(dispatched.currentResponsibility.identity,1,3),"RS-")
+    equal(dispatched.currentResponsibility.identity~=dispatched.commitment.identity,true)
     equal(dispatched.currentResponsibility.kind,"RESOLUTION_COMMITMENT")
+    equal(dispatched.currentResponsibility.provenance.genericCommitmentIdentity,dispatched.commitment.identity)
     equal(OuttaMyWay.ValueRecord.length(dispatched.currentResponsibility.beneficiaryAssemblyIds),2)
     equal(OuttaMyWay.ValueRecord.length(dispatched.currentResponsibility.controlledSubjectAssemblyIds),2)
+    equal(dispatched.currentResponsibility.beneficiaryAssemblyIds[1],"AS-A")
+    equal(dispatched.currentResponsibility.beneficiaryAssemblyIds[2],"AS-B")
+    equal(dispatched.currentResponsibility.controlledSubjectAssemblyIds[1],"AS-A")
+    equal(dispatched.currentResponsibility.controlledSubjectAssemblyIds[2],"AS-B")
+    equal(runtime.responsibilityTransitionAuthority:getCurrentResolutionCommitment(dispatched.commitment.identity).identity,dispatched.currentResponsibility.identity)
     equal(dispatched.requests[1].target.kind,"D0146_COOPERATIVE_PASSAGE"); equal(dispatched.requests[2].target.kind,"D0146_COOPERATIVE_PASSAGE")
     equal(dispatched.candidate.evidenceBasis.cooperativePassageBridge.architecture,"D0146_STEP2")
+    control.handler({status="SUCCEEDED",commitmentId=dispatched.commitment.identity,evidence={kind="TEST_PASSAGE_COMPLETION"}})
+    equal(runtime.commitments:get(dispatched.commitment.identity).state,"SUCCEEDED")
+    equal(runtime.responsibilityTransitionAuthority:getCurrentResolutionCommitment(dispatched.commitment.identity),nil)
+end)
+
+test("D0146 direct Cooperative Passage failure removes semantic Resolution Commitment",function()
+    local runtime=autonomousHeadOnRuntime()
+    local picture,snapshot=d0146Step2Fixture(nil,nil,18)
+    local supported=runtime.liveTrafficCandidateSupport:attach(picture,snapshot)
+    local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+    local control={}
+    function control:setCompletionHandler(fn) self.handler=fn end
+    function control:isActive() return false end
+    function control:executeJointRequests(a,b,candidate) return false,"TEST_REJECTED" end
+    runtime.liveControlDispatcher:setCooperativePassageControl(control)
+    local dispatched=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
+    equal(dispatched.status,"REJECTED")
+    equal(runtime.commitments:get(dispatched.commitment.identity).state,"FAILED")
+    equal(runtime.responsibilityTransitionAuthority:getCurrentResolutionCommitment(dispatched.commitment.identity),nil)
 end)
 
 
@@ -5410,13 +5436,16 @@ test("D0147 compaction-to-infield persistence exposes one Resolution Commitment 
     equal(compactEvaluated.decision.commitmentAction,"CREATE")
     local compactCandidate=compactEvaluated.candidates[1]
     local compactBridge=compactCandidate.evidenceBasis.terminalEgressBridge
-    local admitted,admitReason=runtime.completedObstructionResponsibilityTransition:transition(compactSupported,compactEvaluated,{status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=compactCandidate.identity,terminalEpisodeId=compactBridge.terminalEpisodeId})
+    local admitted,admitReason=runtime.responsibilityTransitionAuthority:transitionCompletedObstructionResolution(compactSupported,compactEvaluated,{status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=compactCandidate.identity,terminalEpisodeId=compactBridge.terminalEpisodeId},runtime.completedObstructionResponsibilityTransition)
     if admitted==nil then error(tostring(admitReason)) end
     local commitmentId=admitted.commitment.identity; local tokenId=admitted.authorityToken.identity
-    equal(admitted.currentResponsibility.identity,commitmentId)
+    equal(string.sub(admitted.currentResponsibility.identity,1,3),"RS-")
+    equal(admitted.currentResponsibility.identity~=commitmentId,true)
     equal(admitted.currentResponsibility.kind,"RESOLUTION_COMMITMENT")
+    equal(admitted.currentResponsibility.provenance.genericCommitmentIdentity,commitmentId)
     equal(admitted.currentResponsibility.beneficiaryAssemblyIds[1],"AS-ACTIVE")
     equal(admitted.currentResponsibility.controlledSubjectAssemblyIds[1],"AS-TERMINAL")
+    equal(runtime.responsibilityTransitionAuthority:getCurrentResolutionCommitment(commitmentId).identity,admitted.currentResponsibility.identity)
     equal(admitted.authorityToken.authorityClass,"POST_JOB_ACTUATION")
     equal(#runtime.obligations:openForOwner(commitmentId),1)
 
@@ -5426,7 +5455,7 @@ test("D0147 compaction-to-infield persistence exposes one Resolution Commitment 
     equal(egressEvaluated.decision.commitmentAction,"MAINTAIN")
     local egressCandidate=egressEvaluated.candidates[1]
     local egressBridge=egressCandidate.evidenceBasis.terminalEgressBridge
-    local revised,reviseReason=runtime.completedObstructionResponsibilityTransition:transition(egressSupported,egressEvaluated,{status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=egressCandidate.identity,terminalEpisodeId=egressBridge.terminalEpisodeId})
+    local revised,reviseReason=runtime.responsibilityTransitionAuthority:transitionCompletedObstructionResolution(egressSupported,egressEvaluated,{status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=egressCandidate.identity,terminalEpisodeId=egressBridge.terminalEpisodeId},runtime.completedObstructionResponsibilityTransition)
     if revised==nil then error(tostring(reviseReason)) end
     equal(revised.commitment.identity,commitmentId); equal(revised.authorityToken.identity,tokenId)
     equal(revised.application.action,"MAINTAIN")
@@ -5443,6 +5472,32 @@ test("D0147 compaction-to-infield persistence exposes one Resolution Commitment 
     local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(runtime,commitmentId,"OBJECTIVE_SATISFIED",{kind="TEST_COMPACTION_OR_EGRESS_CLEARANCE"},"JOB-TERMINAL")
     if terminal==nil then error(tostring(reason)) end
     equal(terminal.state,"SUCCEEDED"); equal(runtime.authorities:ownerOf("AS-TERMINAL"),nil); equal(#runtime.obligations:openForOwner(commitmentId),0)
+    equal(runtime.responsibilityTransitionAuthority:getCurrentResolutionCommitment(commitmentId),nil)
+end)
+
+test("D0147 completed-obstruction terminal failure and supersession remove semantic Resolution Commitment",function()
+    local function admit(suffix)
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix=suffix})
+        local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
+        local evaluated=runtime:evaluateSealedOperationalPicture(supported)
+        local candidate=evaluated.candidates[1]
+        local bridge=candidate.evidenceBasis.terminalEgressBridge
+        local applied,reason=runtime.responsibilityTransitionAuthority:transitionCompletedObstructionResolution(supported,evaluated,{status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,terminalEpisodeId=bridge.terminalEpisodeId},runtime.completedObstructionResponsibilityTransition)
+        if applied==nil then error(tostring(reason)) end
+        return runtime,applied
+    end
+    local failedRuntime,failed=admit("FAILURE-SETTLEMENT")
+    local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(failedRuntime,failed.commitment.identity,"OBJECTIVE_FAILED",{kind="TEST_TERMINAL_FAILURE"},"JOB-TERMINAL")
+    if terminal==nil then error(tostring(reason)) end
+    equal(terminal.state,"FAILED")
+    equal(failedRuntime.responsibilityTransitionAuthority:getCurrentResolutionCommitment(failed.commitment.identity),nil)
+
+    local supersededRuntime,superseded=admit("SUPERSESSION-SETTLEMENT")
+    terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(supersededRuntime,superseded.commitment.identity,"NEW_AUTHORITATIVE_INTENT",{kind="TEST_TERMINAL_SUPERSESSION"},"JOB-TERMINAL")
+    if terminal==nil then error(tostring(reason)) end
+    equal(terminal.state,"SUPERSEDED_BY_NEW_INTENT")
+    equal(supersededRuntime.responsibilityTransitionAuthority:getCurrentResolutionCommitment(superseded.commitment.identity),nil)
 end)
 
 

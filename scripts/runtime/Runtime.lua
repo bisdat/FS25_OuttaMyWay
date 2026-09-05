@@ -117,7 +117,8 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
             applied,reason=self.responsibilityTransitionAuthority:replaceFollowerRegulationWithCooperativePassage(
                 picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition,self.liveControlDispatcher)
         else
-            applied,reason=self.cooperativePassageResponsibilityTransition:transition(picture,evaluated,dispatch)
+            applied,reason=self.responsibilityTransitionAuthority:transitionCooperativePassageResolution(
+                picture,evaluated,dispatch,self.cooperativePassageResponsibilityTransition)
         end
         if applied==nil then
             return {status="NO_DISPATCH",reason="COMMITMENT_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId}
@@ -127,7 +128,8 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         return continued
     end
     if dispatch.status=="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED" then
-        local applied,reason=self.completedObstructionResponsibilityTransition:transition(picture,evaluated,dispatch)
+        local applied,reason=self.responsibilityTransitionAuthority:transitionCompletedObstructionResolution(
+            picture,evaluated,dispatch,self.completedObstructionResponsibilityTransition)
         if applied==nil then
             return {status="NO_DISPATCH",reason="D0147_COMMITMENT_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId,terminalEgress=true}
         end

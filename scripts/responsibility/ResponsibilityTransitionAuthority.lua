@@ -19,7 +19,7 @@ local function selectedBridge(evaluated,name)
 end
 
 function Authority.new(runtime)
-    return setmetatable({runtime=runtime,regulationsByCommitmentId={}},Authority)
+    return setmetatable({runtime=runtime,regulationsByCommitmentId={},resolutionsByCommitmentId={}},Authority)
 end
 
 function Authority:preflightActionSpaceRegulation(picture,evaluated,readiness)
@@ -116,6 +116,7 @@ function Authority:replaceRegulationWithCooperativePassage(current,preflight,pic
     local retired,retireReason=cleanupMethod(dispatcher,applied.commitment,evaluated)
     if retired==nil or retired.settled==nil then return nil,retireReason or (retired and retired.reason) or "REGULATION_PREDECESSOR_CLEANUP_FAILED" end
     self.regulationsByCommitmentId[preflight.commitmentId]=nil
+    self.resolutionsByCommitmentId[preflight.commitmentId]=applied.currentResponsibility
     logInfo("RESPONSIBILITY_REPLACED predecessor=%s predecessorKind=REGULATION successor=%s successorKind=RESOLUTION_COMMITMENT commitment=%s atomic=true beforePhysicalDispatch=true",
         tostring(current.identity),tostring(applied.currentResponsibility.identity),tostring(applied.commitment.identity))
     return applied,nil
@@ -141,9 +142,69 @@ function Authority:getCurrentRegulation(commitmentId)
     return self.regulationsByCommitmentId[commitmentId]
 end
 
+function Authority:getCurrentResolutionCommitment(commitmentId)
+    return self.resolutionsByCommitmentId[commitmentId]
+end
+
 function Authority:terminateRegulation(commitmentId)
     self.regulationsByCommitmentId[commitmentId]=nil
     return true
+end
+
+function Authority:terminateResolutionCommitment(commitmentId)
+    self.resolutionsByCommitmentId[commitmentId]=nil
+    return true
+end
+
+function Authority:terminateSemanticResponsibilitiesForTerminalCommitment(commitmentId)
+    self.regulationsByCommitmentId[commitmentId]=nil
+    self.resolutionsByCommitmentId[commitmentId]=nil
+    return true
+end
+
+function Authority:resolutionIdentityForCommitment(commitmentId,action)
+    local current=self:getCurrentResolutionCommitment(commitmentId)
+    if current~=nil then return current.identity,nil end
+    if action=="MAINTAIN" or action=="REVISE" then return nil,"RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING" end
+    return self.runtime.identities:issue("RESPONSIBILITY"),nil
+end
+
+function Authority:transitionCooperativePassageResolution(picture,evaluated,readiness,passageTransition)
+    local commitmentId=nil
+    for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
+        if type(context.commitmentId)=="string" then commitmentId=context.commitmentId break end
+    end
+    local identity=nil
+    if type(commitmentId)=="string" then
+        local reason=nil
+        identity,reason=self:resolutionIdentityForCommitment(commitmentId,evaluated and evaluated.decision and evaluated.decision.commitmentAction)
+        if identity==nil then return nil,reason end
+    else
+        identity=self.runtime.identities:issue("RESPONSIBILITY")
+    end
+    local applied,reason=passageTransition:transition(picture,evaluated,readiness,{responsibilityIdentity=identity})
+    if applied==nil then return nil,reason end
+    self.resolutionsByCommitmentId[applied.commitment.identity]=applied.currentResponsibility
+    return applied,nil
+end
+
+function Authority:transitionCompletedObstructionResolution(picture,evaluated,readiness,completedTransition)
+    local commitmentId=nil
+    for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
+        if type(context.commitmentId)=="string" then commitmentId=context.commitmentId break end
+    end
+    local identity=nil
+    if type(commitmentId)=="string" then
+        local reason=nil
+        identity,reason=self:resolutionIdentityForCommitment(commitmentId,evaluated and evaluated.decision and evaluated.decision.commitmentAction)
+        if identity==nil then return nil,reason end
+    else
+        identity=self.runtime.identities:issue("RESPONSIBILITY")
+    end
+    local applied,reason=completedTransition:transition(picture,evaluated,readiness,{responsibilityIdentity=identity})
+    if applied==nil then return nil,reason end
+    self.resolutionsByCommitmentId[applied.commitment.identity]=applied.currentResponsibility
+    return applied,nil
 end
 
 function Authority:terminateActionSpaceRegulation(commitmentId,conflictIdentity)
@@ -230,15 +291,4 @@ function Authority:replaceFollowerRegulationWithCooperativePassage(picture,evalu
     if not targeted or OuttaMyWay.ValueRecord.length(picture.commitmentContext)~=1 or evaluated.decision.commitmentAction~="REVISE" then return nil,"FOLLOWER_PASSAGE_SUCCESSION_NOT_TARGETED" end
     return self:replaceRegulationWithCooperativePassage(current,preflight,picture,evaluated,readiness,passageTransition,dispatcher,
         dispatcher.supersedeFollowerRegulationForCooperativePassage)
-end
-
--- Terminal substrate cannot support this migrated follower responsibility, even
--- if Control rejected acquisition or its lease has already disappeared.
-function Authority:terminateFollowerRegulationForTerminalCommitment(commitmentId)
-    local current=self:getCurrentRegulation(commitmentId)
-    local commitment=self.runtime.commitments:get(commitmentId)
-    if current~=nil and current.provenance.pairKey~=nil and commitment~=nil
-        and OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
-        self:terminateRegulation(commitmentId)
-    end
 end

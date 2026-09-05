@@ -48,7 +48,7 @@ function Evaluator:attemptTerminal(commitmentId,terminalSettlementEvidence)
     },self.obligations)
     terminal=self.commitments:save(terminal)
     if self.responsibilityTransitionAuthority~=nil then
-        self.responsibilityTransitionAuthority:terminateFollowerRegulationForTerminalCommitment(commitmentId)
+        self.responsibilityTransitionAuthority:terminateSemanticResponsibilitiesForTerminalCommitment(commitmentId)
     end
     return terminal
 end

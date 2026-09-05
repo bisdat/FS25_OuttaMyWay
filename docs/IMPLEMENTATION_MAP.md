@@ -869,12 +869,16 @@ Commitment lifetimes coincided. **Coincident Identity ≠ Identity Equivalence**
 the same-Commitment succession evidence means that mapping must later be
 reconciled, not retrospectively rejected.
 
-### First Responsibility Replacement Seam
+### Phase 9 Responsibility Reconciliation
 
-The Action-Space Regulation → same-Commitment Cooperative Passage exemplar now
-has one explicit semantic replacement seam upstream of physical Passage
-Control. This was the first explicit Regulation identity exemplar. Runtime
-composes `ResponsibilityTransitionAuthority`; [Phase 9a](#phase-9a--second-regulation-identity-exemplar) extends this donor lifecycle to follower-boundary:
+Phase 9 resolves Regulation-to-Passage succession and Same-Commitment
+Responsibility Fusion in one programme boundary. The Action-Space Regulation →
+same-Commitment Cooperative Passage exemplar supplies the donor replacement
+seam upstream of physical Passage Control; follower-boundary uses the same
+semantic replacement commit point. Direct Cooperative Passage `CREATE` and
+completed-obstruction Resolution now use the same authority-issued
+responsibility identity rule instead of coinciding with retained generic
+Commitment identity.
 
 ```text
 Action-Space Regulation R1 / retained CM-*
@@ -894,9 +898,7 @@ validation provenance and is not used as responsibility identity.
 For the migrated same-Commitment succession, the authority establishes a fresh
 R2 identity and supplies it to the accepted `ResolutionCommitmentAdapter`. The
 retained generic Commitment identity remains unchanged, while `R1 != R2` and
-neither responsibility identity equals the Commitment identity. Direct Passage
-and completed-obstruction Resolution retain their existing transitional
-identity mapping in this tranche.
+neither responsibility identity equals the Commitment identity.
 
 The existing dispatcher helper still performs proven D-0146 physical lease and
 obligation cleanup, but Responsibility Transition Authority invokes it as a
@@ -905,11 +907,9 @@ physical Control. Failed application, Commitment-continuity validation or
 predecessor settlement produces no Passage continuation and does not make both
 semantic responsibilities current.
 
-This is not general Responsibility Transition Authority coverage. Phase 9a adds
-follower Regulation and its same-Commitment succession; completed obstruction,
-direct Passage and wider responsibility reconciliation remain deferred. Generic
+This is not general Responsibility Transition Authority coverage. Generic
 Commitment, Obligation and AuthorityToken behaviour remains retained substrate;
-AuthorityToken reuse is not redesigned before programme step 10.
+AuthorityToken reuse is not redesigned before Phase 10.
 
 PR review exposed **Replacement Precondition Lag**: the first implementation
 validated retained-Commitment continuity and predecessor cleanup eligibility
@@ -922,16 +922,15 @@ REACTIVATION and ROLE_MIGRATION likewise preflight semantic compatibility before
 their retained lifecycle application. Preflight is read-only and performs no
 Control or retained lifecycle mutation.
 
-### Phase 9a — Second Regulation identity exemplar
-
-`0.3.0.9 TEST — REGULATION RESPONSIBILITY GENERALISATION` makes follower-boundary
-the second explicit Regulation identity exemplar after Action-Space. Both use
-one architectural `Regulation` contract and opaque `RS-*` identity. Purpose,
-pair and conflict data are provenance only. The authority's private map uses
-retained `CM-*` as an implementation lookup key, so an independent Commitment's
-Regulation cannot overwrite another. This adds no worker context, relationship
-object or Operation-scoped responsibility container, and does not repair the
-remaining Global-to-Local singleton Control state.
+`0.3.0.10 TEST — CURRENT RESPONSIBILITY RECONCILIATION` completes the remaining
+Phase 9 responsibility coverage in PR #44. Follower-boundary is the second
+Regulation exemplar after Action-Space. Both use one architectural `Regulation`
+contract and opaque `RS-*` identity. Purpose, pair and conflict data are
+provenance only. The authority's private map uses retained `CM-*` as an
+implementation lookup key, so an independent Commitment's Regulation cannot
+overwrite another. This adds no worker context, relationship object or
+Operation-scoped responsibility container, and does not repair the remaining
+Global-to-Local singleton Control state.
 
 Follower application now follows read-only semantic preflight → existing
 `applyFollowerBoundaryDecision()` → authority establishment/preservation →
@@ -951,9 +950,28 @@ There is no GIANTS-AI tick between responsibilities. Failed preflight performs n
 revision; failed revision or cleanup exposes no successor and starts no Passage.
 A failed cleanup after revision does not roll back retained substrate; it leaves
 only R1 semantically current and refuses physical continuation, as at the donor
-boundary. Direct Resolution `CREATE` and completed-obstruction Resolution
-identity remain transitional and are the next Phase-9 boundary. Bounded Authority
-remains Phase 10.
+boundary.
+
+Direct Cooperative Passage `CREATE` now asks Responsibility Transition
+Authority for a fresh `RS-*` Resolution Commitment identity before physical
+Passage Control. The retained generic `CM-*` Commitment still owns the
+implementation substrate, obligations, AuthorityTokens, Candidate, Decision and
+Control requests. The `ResolutionCommitment` view records the generic
+Commitment identity only as provenance, and `RS-* != CM-*`.
+
+Completed-obstruction Resolution follows the same rule. Establishment retains
+the existing generic Commitment lifecycle, beneficiary semantics and
+controlled-subject semantics, while Responsibility Transition Authority issues
+and preserves a distinct `RS-*` identity for the Resolution Commitment view.
+Physical terminal-egress behaviour, courtesy policy, Protected Yield and
+settlement policy remain unchanged.
+
+`TerminalSettlementEvaluator.attemptTerminal()` now terminates all tracked
+semantic responsibilities for the terminalised retained Commitment. Cooperative
+Passage completion, Cooperative Passage failure during Control start,
+completed-obstruction successful settlement, completed-obstruction failure and
+completed-obstruction supersession therefore cannot leave a semantic Resolution
+responsibility current after the substrate terminalises.
 
 Positive follower retirement keeps physical lease release, supporting authority
 release and obligation settlement in the dispatcher/lifecycle, then terminates
@@ -966,9 +984,9 @@ semantic Regulation through the authority. Terminal-path inventory found:
   a rejected Control acquisition or absent lease.
 - Job Episode dependency collapse already terminalises eligible D0146/Forward
   Intersection substrate, then invokes `retireTrafficLeasesForCommitment()`.
-  Both paths now clear corresponding follower semantic state. The existing
-  collapse eligibility does not include ordinary follower-only substrate; this
-  tranche does not broaden that dependency policy.
+  Both paths now clear corresponding semantic state. The existing collapse
+  eligibility does not include ordinary follower-only substrate; Phase 9 does
+  not broaden that dependency policy.
 - Terminal traffic lease retirement also invokes the hook independently of
   whether the follower lease is still present. Quiescence never invokes it.
 
@@ -978,14 +996,14 @@ positive retirement mechanics remain the regression boundary. Action-Space,
 Forward Intersection's fixed `1 km/h`, D-0146 magnitude and Issue #37 policy are
 unchanged. Failure gating prevents Passage before successful cleanup.
 
-Offline evidence: structural/source contracts **104 passed**; Lua replacement
-harness **290 passed / 13 failed**, adding 15 passing cases and preserving the
-same historical failure profile. Existing follower end-to-end assertions now
-also check semantic identity through magnitude, quiescence/reactivation and
-retirement. New tests cover replacement ordering/refusals, terminal settlement,
-eligible dependency collapse and independent semantic storage. Lua syntax and
-`git diff --check` pass. No GIANTS Reality validation is claimed for Phase 9a.
-Later Reality regression should repeat the proven follower behaviour and observe
+Offline evidence after this amendment: structural/source contracts **104
+passed**; Lua replacement harness **292 passed / 13 failed**, preserving the
+same historical failure profile while adding focused green coverage for direct
+Cooperative Passage identity, completed-obstruction identity, semantic
+persistence, completion, failure and supersession cleanup, and the existing
+Action-Space/follower replacement seams. Lua syntax and `git diff --check`
+pass. No GIANTS Reality validation is claimed for this Phase 9 amendment. Later
+Reality regression should repeat the proven follower behaviour and observe
 follower → Passage only if a natural fixture produces it; no policy forces it.
 
 ### PR #41 GIANTS Reality observation
@@ -1120,8 +1138,8 @@ replacement is again the downstream validation/reconciliation boundary.
 8. **Reconcile standalone Regulation — ASSUMED COMPLETE FOR PROGRAMME PROGRESSION.** The follower-boundary and Action-Space exemplars, subsequent explicit Regulation identity/replacement work, and successful Category-1 Forward Intersection Reality exemplar provide sufficient evidence to continue the strangler. Issue #37 remains open for non-blocking Category-2 Reality validation; materially contrary later evidence reopens this assumption.
    - **8a. Extract D-0141 follower-boundary Regulation application/revalidation upstream — COMPLETE and GIANTS Reality-validated for the observed establishment, same-responsibility revalidation, elastic update, quiescence and reactivation episode. Positive retirement was not observed and was not required.**
    - **8b. Extract D-0146 Action-Space Regulation as the second standalone exemplar — IMPLEMENTED and offline-validated; GIANTS Reality attempt inconclusive because the saved-corner Situation bypassed Action-Space Regulation upstream of the extracted seam.**
-   - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — ARCHITECTURAL COMPARISON COMPLETE; implementation discovery found no truthful retained Regulation instance identity witness, so the Responsibility Instance Identity Gap required the later explicit Action-Space identity seam and Phase 9a follower generalisation.**
-9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion — IN PROGRESS. Phase 9a implements follower-boundary as the second explicit Regulation identity exemplar, sharing the Action-Space concept and same-Commitment Passage replacement boundary. Direct Resolution `CREATE` and completed-obstruction identity remain the next boundary.**
+   - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — ARCHITECTURAL COMPARISON COMPLETE; implementation discovery found no truthful retained Regulation instance identity witness, so the Responsibility Instance Identity Gap required explicit Action-Space and follower Regulation identities during Phase 9.**
+9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion — IMPLEMENTED IN PR #44 SUBJECT TO REVIEW. Phase 9 covers Action-Space Regulation identity, follower Regulation identity, both same-Commitment Passage replacement paths, direct Cooperative Passage `CREATE` Resolution identity, completed-obstruction Resolution identity and semantic cleanup on existing terminal paths.**
 10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility.**
 11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities.**
 12. **Retire superseded generic Commitment/orchestration only when no supported path relies on it.**

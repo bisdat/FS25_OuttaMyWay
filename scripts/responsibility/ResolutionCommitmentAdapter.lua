@@ -37,7 +37,7 @@ function Adapter.build(runtime,applied,semantics)
     local obligationIds,obligationReason=openResolutionObligationIds(runtime,commitment.identity,semantics.resolutionOutcomeKinds)
     if obligationIds==nil then return nil,obligationReason end
     if #beneficiaries==0 or #subjects==0 or #obligationIds==0 then return nil,"INCOMPLETE_RESOLUTION_SEMANTICS" end
-    local responsibilityIdentity=semantics.responsibilityIdentity or commitment.identity
+    local responsibilityIdentity=semantics.responsibilityIdentity
     if type(responsibilityIdentity)~="string" or responsibilityIdentity=="" then return nil,"INVALID_RESOLUTION_RESPONSIBILITY_IDENTITY" end
     return OuttaMyWay.ResolutionCommitment.new({
         identity=responsibilityIdentity,

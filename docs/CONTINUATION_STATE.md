@@ -12,10 +12,11 @@ Accepted Repository State is
 Issue #37 remains open as non-blocking validation debt. The successful Category-1 Reality exemplar is sufficient to treat Strangler Phase 8 as **ASSUMED COMPLETE FOR PROGRAMME PROGRESSION** without waiting for a Category-2 fixture. Category-2 Reality validation remains required for Issue #37 closure. Materially contrary later evidence must reopen the affected architectural assumptions.
 
 The active strangler boundary is **Phase 9 — Resolve Regulation-to-Passage
-succession and Same-Commitment Responsibility Fusion**. Phase 9a implements
-`0.3.0.9 TEST — REGULATION RESPONSIBILITY GENERALISATION`; this is proposed
-Engineering Increment state, not a canonical declaration. See the
-[Phase 9a implementation record](IMPLEMENTATION_MAP.md#phase-9a--second-regulation-identity-exemplar)
+succession and Same-Commitment Responsibility Fusion**. PR #44 now implements
+the remaining Phase 9 responsibility coverage as `0.3.0.10 TEST — CURRENT
+RESPONSIBILITY RECONCILIATION`; this is proposed Engineering Increment state,
+not a canonical declaration. See the
+[Phase 9 implementation record](IMPLEMENTATION_MAP.md#phase-9-responsibility-reconciliation)
 for call paths, terminal inventory and validation scope.
 
 ## Established
@@ -28,7 +29,7 @@ for call paths, terminal inventory and validation scope.
 - **Aggressive admission paired with aggressive release** accepts cheap false positives because the intervention is bounded, reversible and re-assessed from fresh Reality.
 - **Established Relationship Precedence** suppresses Forward Intersection actuation when a valid leader/follower relationship already owns the pair. Leader/follower Regulation remains variable-speed; Bubble Bullet Time remains a separate fixed-1-km/h purpose.
 - `FORWARD_INTERSECTION_ASSESSED` change-suppressed diagnostics expose the intersection, distances, rate sources, times, yielder, continuing participant, overlay, incumbent ownership and reason. `FORWARD_INTERSECTION_REGULATION_APPLIED` confirms downstream fixed-speed actuation.
-- Phase 9a offline observation is `290 passed / 13 failed`, preserving the same historical 13 failures; structural/source contracts are `104 passed`. No Phase 9a GIANTS Reality validation is claimed; issue #37 remains open.
+- Phase 9 offline observation is `292 passed / 13 failed`, preserving the same historical 13 failures while adding focused green coverage for direct Resolution identity and cleanup; structural/source contracts are `104 passed`. No Phase 9 amendment GIANTS Reality validation is claimed; issue #37 remains open.
 
 - The accepted [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Strangler Transition Map](IMPLEMENTATION_MAP.md#detailed-strangler-transition-map) remain authoritative for architecture and programme direction respectively.
 - Cooperative Passage upstream transition remains accepted and Reality-validated for one direct `CREATE` episode.
@@ -69,7 +70,7 @@ for call paths, terminal inventory and validation scope.
 - `LiveControlDispatcher` retains existing APPLY routing/readiness checks, then returns a non-mutating handoff to Runtime; Runtime invokes the transition and calls the dedicated dispatcher continuation with already-applied responsibility.
 - D-0141 authority-token validation, elastic speed request construction, owner-tag lease mechanics, physical Control, update counting, quiescence, reactivation, outcomes and rejection rollback remain downstream and are intended to behave unchanged.
 - Revalidated retained follower purpose is distinguished from initial application in upstream diagnostics; repeated `APPLY` is not asserted to be a new architectural Responsibility Transition.
-- D-0141 retirement application, physical lease release, purpose-bound authority release and follower-obligation settlement remain downstream. Phase 9a adds authoritative semantic termination after cleanup.
+- D-0141 retirement application, physical lease release, purpose-bound authority release and follower-obligation settlement remain downstream. Phase 9 adds authoritative semantic termination after cleanup.
 - [`ActionSpaceRegulationResponsibilityTransition.lua`](../scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua) is the sole production owner invoking `LiveTrafficCommitmentLifecycle.applyD0146ActionSpaceDecision()` for initial/current application, quiescent reactivation and regulated-role migration.
 - `LiveControlDispatcher` retains Action-Space bridge and Control readiness checks and returns a non-mutating handoff to Runtime before application/revalidation. Runtime invokes the purpose-specific transition and supplies its result to the dedicated continuation.
 - Initial establishment and retained revalidation are distinguished in architecture-facing diagnostics. Reactivation and role migration preserve the retained responsibility identity; they are not claimed as new architectural transitions.
@@ -92,7 +93,7 @@ for call paths, terminal inventory and validation scope.
 - Generic Commitment identity is rejected because it is broader than Current Responsibility and may survive the known Regulation-to-Passage discontinuity. Promoting it would pre-empt Same-Commitment Responsibility Fusion rather than represent Regulation truthfully.
 - Individual follower-boundary and Action-Space Obligation identities are rejected as generic Regulation identity because they encode distinct Situation-specific pair/conflict provenance and cannot witness continuity through evolving governing evidence without creating architectural subtypes.
 - Authority tokens, regulated/protected roles, speed magnitude and progression-envelope state are rejected because they change or disappear through quiescence, reactivation and role migration. Candidate, Decision, pair and conflict identities witness episodes or context rather than Regulation responsibility.
-- That discovery gate introduced no Regulation record or identity generator. The subsequent Action-Space seam and Phase 9a close the explicit Regulation identity gap without promoting retained substrate identity.
+- That discovery gate introduced no Regulation record or identity generator. The subsequent Action-Space and follower seams close the explicit Regulation identity gap without promoting retained substrate identity.
 - **Responsibility Transition Authority Gap** is now explicit. Situation Assessment owns justification; Responsibility Transition Authority alone makes establishment, termination or replacement authoritative and establishes the new responsibility instance's semantic identity.
 - Ordinary continuation is not a transition. Situation Assessment remains continuous, but when it continues to support the same Current Responsibility, that instance and identity persist unchanged. **Maintenance Is Not Transition** and no synthetic `CONTINUE` transition is introduced.
 - **Responsibility Identity Belongs to Responsibility, Not Its Substrate**. Evidence, Bounded Authority, Control, quiescence/reactivation and actuation-role changes do not churn identity; genuine termination ends it and replacement establishes a distinct successor identity.
@@ -119,7 +120,7 @@ for call paths, terminal inventory and validation scope.
 - The same run repeatedly revalidated `CM-00001` without responsibility churn. Approximately one `ESTABLISHED` and 44 `REVALIDATED` upstream markers accompanied one physical APPLY and 43 elastic updates; an observed update raised the current cap to `6.21 km/h` while retaining the same Commitment and obligation identity.
 - Two observed quiescence events released temporary Regulation authority while the follower purpose remained. Later reactivation acquired `AU-00002` and applied `11.40 km/h` under the same `CM-00001`, with `responsibilityDisposition=REVALIDATED` and one `D0141_ACTUATION_REACTIVATED`.
 - The episode supports **Maintenance Is Not Transition** for follower Regulation and demonstrates Current Responsibility persistence independently of temporary Bounded Authority. No contrary evidence of changed GIANTS productive routing or steering ownership was observed.
-- Positive D-0141 retirement was **not observed / not required for that earlier Reality tranche**. Phase 9a adds offline semantic-retirement evidence while retaining downstream physical mechanics.
+- Positive D-0141 retirement was **not observed / not required for that earlier Reality evidence set**. Phase 9 adds offline semantic-retirement evidence while retaining downstream physical mechanics.
 - D-number runtime vocabulary such as `D0141_APPLY` and `D0141_ACTUATION_QUIESCENT` is transitional implementation debt, not accepted Regulation terminology. The architecture-facing seam uses current responsibility names; retained downstream names remain only for behavioural isolation during strangler recomposition.
 - A separate **Follower HUD Glyph Compatibility Leak** was observed: follower-regulation HUD text still uses the unsupported `•` texture-font glyph. It is unrelated to Regulation responsibility or PR #35 acceptance and remains deferred UI implementation debt.
 
@@ -146,21 +147,25 @@ Passage. No artificial GIANTS-AI tick occurs.
 Physical follower behaviour is intended unchanged, including reversing-leader
 handling. Action-Space magnitude, quiescence/reactivation, role migration,
 Forward Intersection and Issue #37 remain regression boundaries. The prior
-GIANTS observations validate those observed behaviours, not the new Phase 9a
-semantic implementation. Phase 9a has offline implementation evidence only.
+GIANTS observations validate those observed behaviours, not the new Phase 9
+semantic implementation. Phase 9 has offline implementation evidence only.
 
 Generic Commitment, Obligation and AuthorityToken remain retained substrate.
-Direct Resolution `CREATE` and completed-obstruction Resolution identity still
-use the transitional mapping and are the next Phase-9 reconciliation boundary.
-Bounded Authority remains Phase 10.
+Direct Cooperative Passage `CREATE` and completed-obstruction Resolution now
+receive fresh semantic `RS-*` Resolution Commitment identities from
+Responsibility Transition Authority, distinct from retained `CM-*` substrate
+identity. Completion, failure and supersession settlement paths terminate those
+semantic responsibilities when the retained substrate terminalises. Bounded
+Authority remains inactive until Phase 10 is explicitly started after PR #44
+review.
 
-## Next boundary
+## Next review focus
 
 The `0.3.0.8` Category-1 Forward Intersection GIANTS Reality exemplar is accepted. It demonstrated prospective recognition, greater-time temporal yielding, fixed `1 km/h` Intent-Revelation Regulation, fresh-evidence release, and successful successor Cooperative Passage.
 
 Strangler Phase 8 is **ASSUMED COMPLETE FOR PROGRAMME PROGRESSION**. Issue #37 remains open as non-blocking Category-2 Reality validation debt. Category-2 Reality validation is still required for Issue #37 closure; materially contrary Category-2 evidence must reopen the affected Forward Intersection assumptions and dependent conclusions.
 
-Active strangler work returns to **Phase 9 — Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion**. Phase 9a extends the accepted PR #41 Action-Space donor to follower Regulation. Next reconcile direct Resolution `CREATE` and completed-obstruction identity; do not widen this increment into Bounded Authority or general retirement. Later Reality regression should repeat established follower behaviour and observe follower → Passage if a natural fixture produces it.
+PR #44 review should verify **Phase 9 — Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion** as a whole. Do not widen this increment into Bounded Authority or general retirement. Later Reality regression should repeat established follower behaviour and observe follower → Passage if a natural fixture produces it.
 
 Open-field Forward Intersection remains admitted to the same bounded fixed `1 km/h` Regulation. Category 1, Category 2 and open field are environmental annotations on the generic Forward Intersection relationship rather than admission gates.
 
