@@ -46,5 +46,9 @@ function Evaluator:attemptTerminal(commitmentId,terminalSettlementEvidence)
     local terminal = OuttaMyWay.CommitmentStateMachine.transition(record,record.intendedTerminalDisposition,{
         epoch=self.epochs:next(),terminalSettlementEvidence=terminalSettlementEvidence
     },self.obligations)
-    return self.commitments:save(terminal)
+    terminal=self.commitments:save(terminal)
+    if self.responsibilityTransitionAuthority~=nil then
+        self.responsibilityTransitionAuthority:terminateSemanticResponsibilitiesForTerminalCommitment(commitmentId)
+    end
+    return terminal
 end

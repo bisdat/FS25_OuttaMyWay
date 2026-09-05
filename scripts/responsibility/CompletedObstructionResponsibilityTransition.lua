@@ -42,7 +42,7 @@ function Transition.new(runtime)
     return setmetatable({runtime=runtime},Transition)
 end
 
-function Transition:transition(picture,evaluated,readiness)
+function Transition:transition(picture,evaluated,readiness,semantics)
     if type(readiness)~="table" or readiness.status~="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED" then
         return nil,"COMPLETED_OBSTRUCTION_TRANSITION_NOT_READY"
     end
@@ -63,7 +63,8 @@ function Transition:transition(picture,evaluated,readiness)
     local currentResponsibility,responsibilityReason=OuttaMyWay.ResolutionCommitmentAdapter.build(self.runtime,applied,{
         source="CompletedObstructionResponsibilityTransition",purpose=candidate.purpose,
         beneficiaryAssemblyIds=beneficiaryIds,controlledSubjectAssemblyIds={bridge.assemblyId},
-        resolutionOutcomeKinds={"CURRENT_TERMINAL_CONFLICT_YIELDED_OR_ESCALATED"}
+        resolutionOutcomeKinds={"CURRENT_TERMINAL_CONFLICT_YIELDED_OR_ESCALATED"},
+        responsibilityIdentity=semantics and semantics.responsibilityIdentity or nil
     })
     if currentResponsibility==nil then return nil,responsibilityReason end
     applied.currentResponsibility=currentResponsibility

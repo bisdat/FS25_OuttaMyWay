@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.8 TEST — Forward Intersection Regulation.
+-- FS25_OuttaMyWay v0.3.0.10 TEST — Current responsibility reconciliation.
 -- Situation/Decision/Commitment admission semantics remain inherited; Control magnitude is now elastic.
 -- D-0147 now implements the agreed optional Bounded Infield Retreat courtesy hypothesis while retaining the validated v4.7.120 mechanical actuator substrate.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.8"
+OuttaMyWay.VERSION = "0.3.0.10"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -208,7 +208,7 @@ OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.8 TEST — FORWARD INTERSECTION REGULATION"
+OuttaMyWay.BUILD_LABEL = "0.3.0.10 TEST — CURRENT RESPONSIBILITY RECONCILIATION"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985

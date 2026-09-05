@@ -511,7 +511,7 @@ def test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidenc
     operation=(ROOT/"scripts"/"identity"/"OperationAdmission.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
     assert "MEMBERSHIP_UPDATED_INCOMPLETE" in operation
     assert "removalDeferred=true" in operation
@@ -534,7 +534,7 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
     assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" not in config
     for forbidden in ("predictPair(", "evaluateShadowPair(", "composePositiveEvidence(", "legacyShadowPositive", "legacyTCPA", "legacyDCPA"):
@@ -577,7 +577,7 @@ def test_v4742_traffic_policeman_decision_policy_current_implementation_contract
     policy=(ROOT/"scripts"/"decision"/"TrafficPolicemanDecisionPolicy.lua").read_text(encoding="utf-8")
     passive=(ROOT/"scripts"/"candidates"/"PassiveLiveCandidateSupport.lua").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert 'TrafficPolicemanDecisionPolicy.lua' in main
     assert main.index('TrafficPolicemanDecisionPolicy.lua') < main.index('DecisionSelector.lua')
@@ -691,7 +691,7 @@ def test_v4758_progression_preservation_probe_is_passive_and_knowledge_backed():
     op=(ROOT/"scripts"/"contracts"/"OperationalPicture.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"ProgressionPreservationProbe.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     assert 'PROGRESSION_PRESERVATION_PROBE_ENABLED = true' in config
     assert 'scripts/diagnostics/ProgressionPreservationProbe.lua' in main
     assert 'progressionEvidence = {}' in source
@@ -725,7 +725,7 @@ def test_v4765_d0136_productive_coverage_residual_settlement_is_intent_based_and
     residual=(ROOT/"scripts"/"diagnostics"/"ProductiveCoverageResidualProbe.lua").read_text(encoding="utf-8")
     coverage=(ROOT/"scripts"/"diagnostics"/"DemonstratedProductiveCoverageProbe.lua").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     assert 'PRODUCTIVE_COVERAGE_RESIDUAL_PROBE_ENABLED = false' in config
     assert 'scripts/diagnostics/ProductiveCoverageResidualProbe.lua' not in main
     assert 'addModEventListener(OuttaMyWay.productiveCoverageResidualProbe)' not in main
@@ -775,7 +775,7 @@ def test_v4767_d0138_native_field_worker_drive_command_probe_is_passive_and_sdk_
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     d0137=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_32_NATIVE_AI_DRIVE_SIGNAL_SHADOW.md").read_text(encoding="utf-8")
     d0138=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_33_NATIVE_FIELD_WORKER_DRIVE_COMMAND_SHADOW.md").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     assert 'NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_ENABLED = true' in config
     assert 'scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua' in main
     assert 'addModEventListener(OuttaMyWay.nativeFieldWorkerDriveCommandProbe)' in main
@@ -800,7 +800,7 @@ def test_v4768_d0136_settlement_future_space_uses_explicit_observation_adapter()
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     residual=(ROOT/"scripts"/"diagnostics"/"ProductiveCoverageResidualProbe.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     assert 'futureSpaceWorkerFromTrack' in residual
     assert 'activeObserved=Probe.trackIsActive(track)' in residual
     assert 'local settlingWorker=Probe.futureSpaceWorkerFromTrack(settlingTrack)' in residual
@@ -952,7 +952,7 @@ def test_v47100_d0146_step1_remains_situation_owned_knowledge_under_step2_consum
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     assert "scripts/assessment/TrajectoryConflictAssessment.lua" in main
     assert main.index("scripts/assessment/TrajectoryConflictAssessment.lua") < main.index("scripts/assessment/SituationAssessment.lua")
     for token in ("updateTrajectories","classifyPairs","ESTABLISHED_TRAJECTORY","CURRENT_EXCURSION","POTENTIAL_OPPOSED_CORRIDOR_CONFLICT","ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT","D0146_SITUATION_KNOWLEDGE"):
@@ -1080,7 +1080,7 @@ def test_v47106_d0146_current_excursion_conserves_action_space_before_establishe
     dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     assert 'D0146_RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION = 0.75' in config
     assert 'D0146_RESOLUTION_SPACE_REGULATION_KMH' not in config
     assert 'actionSpaceMaxSeparationM=OuttaMyWay.D0146_STEP2_LOCAL_PASSAGE_MAX_ENTRY_SEPARATION_M' in situation
@@ -1154,7 +1154,7 @@ def test_v01141_d0197_obligation_persistence_is_not_actuation_persistence():
     dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     for token in (
         "d0146ActionSpaceActuationState",
         "_quiesceD0146ActionSpaceActuation",
@@ -1487,7 +1487,7 @@ def test_v47127_d0147_courtesy_constraint_and_valuerecord_regression_contract():
     # The live-validated courtesy calibration remains frozen in this audit tranche.
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"TerminalEgressControl.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     assert 'TERMINAL_INFIELD_RETREAT_DISTANCE_M' not in config
     assert 'driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)' in control
     assert 'continuousCourseCorrection=false' in control
@@ -1513,10 +1513,10 @@ def test_v0100_pre_1_0_versioning_epoch_contract():
     moddesc=(ROOT/"modDesc.xml").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     engineering=(ROOT/"docs"/"ENGINEERING_ARCHITECTURE.md").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     assert 'OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"' in config
-    assert '<version value="0.3.0.8">0.3.0.8</version>' in moddesc
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.8 TEST — FORWARD INTERSECTION REGULATION"' in config
+    assert '<version value="0.3.0.10">0.3.0.10</version>' in moddesc
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.10 TEST — CURRENT RESPONSIBILITY RECONCILIATION"' in config
     for token in ('0.MINOR.PATCH.BUILD','canonical releases use `BUILD=0`','TEST iterations increment BUILD','first public release is `1.0.0.0`'):
         assert token in decision
     for token in ('0.MINOR.PATCH.BUILD','Canonical named releases use `BUILD=0`','non-canonical TEST iterations','first public release is reserved'):
@@ -1768,7 +1768,7 @@ def test_v01124_d0192_bounded_axis_return_is_isolated_after_canonical_passage_gu
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     situation=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     # Phases 1-7 retain the v0.1.12.0 locality/regulation/planner behaviour.
     assert 'D0146_STEP2_LOCAL_PASSAGE_MAX_ENTRY_SEPARATION_M = 80.0' in config
     assert 'PASSAGE_APPROACH' in control and 'D0146_PASSAGE_APPROACH_START' in control
@@ -1802,7 +1802,7 @@ def test_v01124_d0192_bounded_axis_return_is_isolated_after_canonical_passage_gu
 def test_v01143_d0198_regulation_authority_semantics():
     dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     for token in (
         "_quiesceFollowerBoundaryActuation",
         "D0141_ACTUATION_QUIESCENT",
@@ -1834,7 +1834,7 @@ def test_v01145_d0200_job_episode_dependency_collapse_precedes_terminal_candidat
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.VERSION = "0.3.0.8"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.10"' in config
     assert 'function Lifecycle.collapseEndedJobEpisodeDependencies' in lifecycle
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     assert 'dependentJobEpisodeIds' in lifecycle
@@ -1865,8 +1865,8 @@ def test_cooperative_passage_responsibility_transition_is_upstream_and_singular(
     assert "scripts/responsibility/CooperativePassageResponsibilityTransition.lua" in main
     assert "CooperativePassageResponsibilityTransition.new(runtime)" in runtime
     orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
-    assert orchestration.index("liveControlDispatcher:dispatch") < orchestration.index("cooperativePassageResponsibilityTransition:transition")
-    assert orchestration.index("cooperativePassageResponsibilityTransition:transition") < orchestration.index("liveControlDispatcher:continueCooperativePassage")
+    assert orchestration.index("liveControlDispatcher:dispatch") < orchestration.index("transitionCooperativePassageResolution")
+    assert orchestration.index("transitionCooperativePassageResolution") < orchestration.index("liveControlDispatcher:continueCooperativePassage")
     assert 'status="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED"' in dispatcher
     assert "function Dispatcher:continueCooperativePassage" in dispatcher
     assert "LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision" not in dispatcher
@@ -1886,8 +1886,8 @@ def test_completed_obstruction_responsibility_transition_is_upstream_and_singula
     assert "scripts/responsibility/CompletedObstructionResponsibilityTransition.lua" in main
     assert "CompletedObstructionResponsibilityTransition.new(runtime)" in runtime
     orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
-    assert orchestration.index("liveControlDispatcher:dispatch") < orchestration.index("completedObstructionResponsibilityTransition:transition")
-    assert orchestration.index("completedObstructionResponsibilityTransition:transition") < orchestration.index("liveControlDispatcher:continueCompletedObstruction")
+    assert orchestration.index("liveControlDispatcher:dispatch") < orchestration.index("transitionCompletedObstructionResolution")
+    assert orchestration.index("transitionCompletedObstructionResolution") < orchestration.index("liveControlDispatcher:continueCompletedObstruction")
     readiness=dispatcher[dispatcher.index("function Dispatcher:_dispatchTerminalEgress"):dispatcher.index("function Dispatcher:continueCompletedObstruction")]
     assert readiness.index('boundary.mode~="D0147_BOUNDED_TERMINAL_EGRESS"') < readiness.index('bridge.terminalEvent~=nil')
     assert readiness.index('bridge.terminalEvent~=nil') < readiness.index('candidate.capability~="REPOSITION"')
@@ -1910,6 +1910,7 @@ def test_explicit_resolution_commitment_is_a_read_only_view_at_both_transition_b
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     contract=(ROOT/"scripts"/"contracts"/"ResolutionCommitment.lua").read_text(encoding="utf-8")
     adapter=(ROOT/"scripts"/"responsibility"/"ResolutionCommitmentAdapter.lua").read_text(encoding="utf-8")
+    authority=(ROOT/"scripts"/"responsibility"/"ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
     cooperative=(ROOT/"scripts"/"responsibility"/"CooperativePassageResponsibilityTransition.lua").read_text(encoding="utf-8")
     completed=(ROOT/"scripts"/"responsibility"/"CompletedObstructionResponsibilityTransition.lua").read_text(encoding="utf-8")
     dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
@@ -1918,7 +1919,13 @@ def test_explicit_resolution_commitment_is_a_read_only_view_at_both_transition_b
     assert "scripts/responsibility/ResolutionCommitmentAdapter.lua" in main
     assert main.index("scripts/contracts/ResolutionCommitment.lua") < main.index("scripts/responsibility/ResolutionCommitmentAdapter.lua")
     assert 'kind="RESOLUTION_COMMITMENT"' in adapter
-    assert "semantics.responsibilityIdentity or commitment.identity" in adapter
+    assert "local responsibilityIdentity=semantics.responsibilityIdentity" in adapter
+    assert "semantics.responsibilityIdentity or commitment.identity" not in adapter
+    assert "resolutionsByCommitmentId" in authority
+    assert 'identities:issue("RESPONSIBILITY")' in authority
+    assert "transitionCooperativePassageResolution" in authority
+    assert "transitionCompletedObstructionResolution" in authority
+    assert "terminateSemanticResponsibilitiesForTerminalCommitment" in authority
     assert "application.commitmentId~=commitment.identity" in adapter
     assert "openResolutionObligationIds" in contract and "openForOwner" in adapter
     for forbidden in ("CommitmentRegistry.new", "ObligationLedger.new", "AuthorityRegistry.new", "function Adapter.admit", "function Adapter.settle", "function Adapter.authorize", "function Adapter.execute"):
@@ -1994,13 +2001,13 @@ def test_responsibility_transition_authority_owns_action_space_passage_replaceme
     assert 'identities:issue("RESPONSIBILITY")' in authority
     assert "retainedCommitmentId" in authority
     assert "REACTIVATION" in authority and "ROLE_MIGRATION" in authority
-    assert "currentActionSpaceRegulation=current" in authority
-    assert "self.currentActionSpaceRegulation=nil" in authority
+    assert "regulationsByCommitmentId[commitment.identity]=current" in authority
+    assert "self.regulationsByCommitmentId[preflight.commitmentId]=nil" in authority
     assert "RESPONSIBILITY_REPLACED" in authority and "beforePhysicalDispatch=true" in authority
     replacement=authority[authority.index("function Authority:replaceActionSpaceRegulationWithCooperativePassage"):authority.index("function Authority:matchesActionSpacePassage")]
     assert replacement.index("preflightActionSpaceRegulationForCooperativePassage") < replacement.index("passageTransition:transition")
-    assert replacement.index("supersedeActionSpaceRegulationForCooperativePassage") < replacement.index("self.currentActionSpaceRegulation=nil")
-    assert replacement.index("self.currentActionSpaceRegulation=nil") < replacement.index("return applied,nil")
+    assert replacement.index("supersedeActionSpaceRegulationForCooperativePassage") < replacement.index("self.regulationsByCommitmentId[preflight.commitmentId]=nil")
+    assert replacement.index("self.regulationsByCommitmentId[preflight.commitmentId]=nil") < replacement.index("return applied,nil")
     assert "executeControlRequest" not in authority and "executeJointRequests" not in authority
     assert "CommitmentRegistry" not in authority and "ObligationLedger" not in authority and "AuthorityRegistry" not in authority
     assert "speed" not in regulation.lower() and "authorityToken" not in regulation
@@ -2081,3 +2088,22 @@ def test_forward_intersection_is_situation_owned_and_consumed_without_geometry_r
     assert "pointSegmentDistance" not in dispatcher
     for path in (ROOT/"scripts"/"decision"/"TrafficPolicemanDecisionPolicy.lua",ROOT/"scripts"/"decision"/"DecisionSelector.lua"):
         assert "spatialConstraintKnowledge" not in path.read_text(encoding="utf-8")
+
+
+def test_follower_regulation_uses_semantic_authority_before_control_and_terminal_cleanup():
+    runtime=(ROOT/"scripts/runtime/Runtime.lua").read_text(encoding="utf-8")
+    transition=(ROOT/"scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua").read_text(encoding="utf-8")
+    authority=(ROOT/"scripts/responsibility/ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
+    dispatcher=(ROOT/"scripts/control/LiveControlDispatcher.lua").read_text(encoding="utf-8")
+    terminal=(ROOT/"scripts/commitment/TerminalSettlementEvaluator.lua").read_text(encoding="utf-8")
+    assert transition.index("preflightFollowerRegulation") < transition.index("applyFollowerBoundaryDecision")
+    assert transition.index("applyFollowerBoundaryDecision") < transition.index("establishOrPreserveFollowerRegulation")
+    assert "applied.currentResponsibility=currentResponsibility" in transition
+    assert "commitment=%s responsibility=%s" in transition
+    assert runtime.index("replaceFollowerRegulationWithCooperativePassage") < runtime.index("continueCooperativePassage")
+    replacement=authority[authority.index("function Authority:replaceFollowerRegulationWithCooperativePassage"):]
+    assert replacement.index("preflightFollowerRegulationForCooperativePassage") < replacement.index("replaceRegulationWithCooperativePassage")
+    continuation=dispatcher[dispatcher.index("function Dispatcher:continueCooperativePassage"):dispatcher.index("function Dispatcher:getDispatchCount")]
+    assert "_supersedeFollowerBoundaryForCooperativePassage" not in continuation
+    assert "terminalSettlement.responsibilityTransitionAuthority=runtime.responsibilityTransitionAuthority" in runtime
+    assert terminal.index("self.commitments:save(terminal)") < terminal.index("terminateSemanticResponsibilitiesForTerminalCommitment")
