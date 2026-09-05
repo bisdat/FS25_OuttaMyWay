@@ -260,11 +260,7 @@ during completed-obstruction resolution. Migration must not proceed by capabilit
 
 ### Same-Commitment Responsibility Fusion
 
-This is a current implementation divergence. D-0146 Action-Space Regulation may
-currently be succeeded by Cooperative Passage by revising the same generic
-Commitment and reusing authority. Accepted architecture instead distinguishes
-Regulation responsibility ending from fresh Situation Assessment independently
-justifying a new Resolution Commitment. This increment records but does not fix it.
+Same-Commitment Responsibility Fusion was a current implementation divergence: D-0146 Action-Space Regulation could be succeeded by Cooperative Passage by revising the same generic Commitment and reusing authority. Phase 9 reconciles that divergence by explicitly replacing Regulation responsibility R1 with Resolution Commitment R2 while the retained generic Commitment may remain continuous. R1 != R2, and neither semantic responsibility identity equals retained CM-*.
 
 ### Responsibility Acquisition at the Control Edge
 
