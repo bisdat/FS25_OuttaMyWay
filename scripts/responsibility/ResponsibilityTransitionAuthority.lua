@@ -324,7 +324,7 @@ function Authority:preflightActionSpaceRegulationForCooperativePassage(picture,e
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
         if context.commitmentId==current.provenance.retainedCommitmentId then targeted=true break end
     end
-    if targeted~=true then return nil,"ACTION_SPACE_PASSAGE_PREFLIGHT_CURRENT_RESPONSIBILITY_NOT_TARGETED" end
+    if targeted~=true then return nil,"ACTION_SPACE_PASSAGE_RESPONSIBILITY_SUCCESSION_NOT_TARGETED" end
     local obligationId=nil
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.runtime.obligations:openForOwner(current.provenance.retainedCommitmentId)) do
         local basis=obligation.basis
