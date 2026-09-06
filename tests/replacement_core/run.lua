@@ -4238,7 +4238,15 @@ for _,failure in ipairs({"TARGET","LEASE","OBLIGATION","PARTICIPANTS","SUCCESSOR
         elseif failure=="REVISION" then
             runtime.decisionCommitmentBoundary.apply=function() return nil end
         elseif failure=="PHYSICAL_CLEANUP" then
-            runtime.regulationBoundedAuthority.capability.clearRegulationLeaseByReference=function() return false,"INJECTED_PHYSICAL_CLEANUP_REFUSAL" end
+            runtime.regulationBoundedAuthority.capability.executeControlRequest=function(self,request,candidate)
+                if request.target~=nil and request.target.operation=="RELEASE" then
+                    return false,"INJECTED_PHYSICAL_CLEANUP_RELEASE_REFUSAL"
+                end
+                return true,"ACCEPTED"
+            end
+            runtime.regulationBoundedAuthority.capability.clearRegulationLeaseByReference=function()
+                return false,"INJECTED_PHYSICAL_CLEANUP_FALLBACK_REFUSAL"
+            end
         elseif failure=="CLEANUP" then
             runtime.regulationBoundedAuthority.supersedeFollowerRegulationForCooperativePassage=function() return {settled=nil,reason="INJECTED_CLEANUP_REFUSAL"} end
         end

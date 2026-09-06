@@ -291,14 +291,27 @@ function Authority:neutralizeFollowerBoundaryPhysical(picture,evaluated,candidat
         end
     end
     local request,outcome=nil,nil
+    local released=false
+    local releaseReason=nil
     if token~=nil and self.runtime.authorities:validate(token)==true and self.capability~=nil and type(self.capability.executeControlRequest)=="function" then
         request=self:_regulationRequest(picture,evaluated,candidate,commitment,token,{followerAssemblyId=lease.followerAssemblyId,followerReferenceKey=lease.followerReferenceKey,governingPurpose=lease.governingPurpose},"RELEASE",D0141_OWNER_TAG,nil,nil,lease.boundedAuthorityId)
         if request==nil then return {status="NO_DISPATCH",reason="D0141_RELEASE_BOUNDED_AUTHORITY_UNAVAILABLE",followerBoundary=true} end
         local ok,result=self.runtime.liveControlDispatcher:dispatch(request,candidate)
         outcome=self:_outcome(request,ok and "ACCEPTED" or "REJECTED",{kind=ok and "REGULATION_LEASE_RELEASED" or "REGULATION_RELEASE_NOT_CONFIRMED",capability="REGULATE_SPEED"},ok and nil or {reason=tostring(result)})
-        if ok~=true and type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG) end
+        released=ok==true
+        releaseReason=result
+        if released~=true and type(self.capability.clearRegulationLeaseByReference)=="function" then
+            local cleared,clearReason=self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
+            released=cleared==true
+            if released~=true then releaseReason=clearReason or result end
+        end
     elseif self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" then
-        self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
+        local cleared,clearReason=self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
+        released=cleared==true
+        releaseReason=clearReason
+    end
+    if released~=true then
+        return {status="NO_DISPATCH",reason=releaseReason or "D0141_PHYSICAL_RELEASE_NOT_CONFIRMED",request=request,outcome=outcome,followerBoundary=true}
     end
     self:_releaseBoundedAuthority(lease.boundedAuthorityId,reason)
     self.followerBoundaryReleaseCount=self.followerBoundaryReleaseCount+1
