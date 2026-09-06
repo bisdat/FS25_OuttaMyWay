@@ -380,14 +380,32 @@ function Source:capture(mission, nowSeconds)
             -- Missing object/root/pose alone is unavailable evidence, not deletion.
             local removed=track.object~=nil and track.object.isDeleted==true
             local removalEvidence=removed and {observed=true,kind="POSITIVE_VEHICLE_RUNTIME_REMOVAL",source="retainedVehicle.isDeleted"} or nil
+
+            -- Evidence-Bearing Removal Snapshot != Current Physical Occupancy.
+            -- A positive removal sample still carries the identity/lifecycle fact
+            -- needed downstream, but it must not republish the last physical pose
+            -- or representation as current Reality. Use explicit assignment rather
+            -- than `removed and nil or retained`, because Lua cannot encode nil in
+            -- that conditional idiom.
+            local retainedPose=track.pose
+            local retainedPoseDiagnostic=track.poseDiagnostic
+            local retainedMotionDiagnostic=track.motionDiagnostic
+            local retainedShadowRepresentation=track.shadowRepresentation
+            if removed then
+                retainedPose=nil
+                retainedPoseDiagnostic=nil
+                retainedMotionDiagnostic=nil
+                retainedShadowRepresentation=nil
+            end
+
             addToGroup(groups, {
                 runtimeRemovalEvidence=removalEvidence,
                 object = nil, referenceKey = ref, name = track.name or "AI vehicle",
-                pose = removed and nil or track.pose, poseDiagnostic=removed and nil or track.poseDiagnostic, motionDiagnostic=removed and nil or track.motionDiagnostic, fieldId = track.fieldId or 0,
+                pose = retainedPose, poseDiagnostic=retainedPoseDiagnostic, motionDiagnostic=retainedMotionDiagnostic, fieldId = track.fieldId or 0,
                 fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence, fieldActive = false, aiActive = false,
                 hasFieldWorker = true, activeObserved = false, playerControlled = false, unresolvedTermination = not removed, objectUnavailable = not removed,
                 blocked = false, speedMps = 0, radius = track.radius, width = track.width, length = track.length,
-                sourceJobToken = track.sourceJobToken, components = track.components or {}, shadowRepresentation=removed and nil or track.shadowRepresentation,
+                sourceJobToken = track.sourceJobToken, components = track.components or {}, shadowRepresentation=retainedShadowRepresentation,
                 localIntent={classification="UNRESOLVED",intentEpoch=track.localIntentEpoch or 0,intentValid=false,reason=removed and "RUNTIME_OBJECT_REMOVED" or "RUNTIME_OBJECT_UNAVAILABLE",source="RETAINED_TRACK"},
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource

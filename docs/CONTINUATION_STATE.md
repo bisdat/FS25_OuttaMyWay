@@ -101,21 +101,37 @@ last-observed occupancy.
 when no open Passage Leg/shared obligation remains, at which point the existing
 terminal settlement path ends the parent Commitment and semantic Resolution.
 
-PR #54 GitHub Actions run #111 is now independent failure evidence. Structural
-contracts reported **97 passed / 15 failed**; every observed structural failure
-stopped first at a stale `v0.3.0.10` identity assertion after the intentional
-`v0.3.0.11 TEST` build advance. The Lua harness reported **300 passed / 32
-failed**. **Failure Multiplicity != Defect Multiplicity:** review grouped the new
-failures around four implementation roots: false active-player-control
-inference, Candidate `terminalDisposition` contamination of Operational Picture,
-D-0200 Passage classification by semantic key rather than Passage-Leg topology,
-and Lua `and nil or` mixed-terminal evidence.
+PR #54 GitHub Actions run #111 first exposed the implementation regressions:
+Structural contracts reported **97 passed / 15 failed** and the Lua harness
+reported **300 passed / 32 failed**. **Failure Multiplicity != Defect
+Multiplicity:** review grouped those failures around four implementation roots:
+false active-player-control inference, Candidate `terminalDisposition`
+contamination of Operational Picture, D-0200 Passage classification by semantic
+key rather than Passage-Leg topology, and Lua `and nil or` mixed-terminal
+evidence.
 
-The bounded correction removes those roots while preserving the D-0217 two-leg
-architecture. Local validation remains Lua/Python syntax checks, `git diff
---check`, status and diff inspection; the repository suites are not run locally.
-A fresh GitHub Actions result is required before any targeted Farming Simulator
-Reality validation. Issue #51 remains open.
+The bounded correction at `e954950` was independently re-run as GitHub Actions
+run #112. Structural contracts improved to **111 passed / 1 failed**. The sole
+blocking failure is the accepted incomplete-membership contract looking for
+explicit `removalDeferred=true`; runtime currently hides that invariant inside
+`removalDeferred=not positivePlayerRemoval`. The Lua harness improved to **322
+passed / 10 failed**: nine are exactly the established accepted-state
+observational failures, and the sole new D-0217 failure establishes that a
+positive runtime-removal snapshot still republishes stale current occupancy.
+
+**Evidence-Bearing Removal Snapshot != Current Physical Occupancy:** the removal
+failure is caused by Lua's `removed and nil or track.pose` idiom, which evaluates
+to the retained pose even when `removed` is true. The correction therefore
+makes removal-state pose/diagnostic/representation fields explicitly nil while
+retaining the positive removal lifecycle evidence. Operation admission is also
+split so ordinary incomplete evidence explicitly retains
+`removalDeferred=true`, while authoritative positive player control remains a
+separate exception rather than weakening the accepted incomplete-evidence rule.
+
+Local validation remains Lua syntax checks, `git diff --check`, status and diff
+inspection; repository suites are not run locally. A fresh GitHub Actions result
+is required before any targeted Farming Simulator Reality validation. Issue #51
+remains open.
 Candidate-Embedded
 Verdict Authority and generic multi-context application cardinality remain
 Phase-13 work after this correction.

@@ -1,3 +1,45 @@
+## 2026-09-06 — PR #54 Run #112: explicit deferral and removal occupancy
+
+**Observe:** the first root-defect correction reduced PR #54 GitHub Actions from
+97/112 to **111/112 Structural contracts** and from 300/332 to **322/332 Lua
+observations**. Nine Lua failures are the established accepted-state identities.
+The sole new Lua failure is the D-0217 positive-runtime-removal contract: the
+Passage leg vacates and survivor authority refreshes correctly, but the same
+evidence-bearing raw snapshot still reports the removed assembly in
+`currentSpaceEvidence`.
+
+The sole Structural failure expects the accepted incomplete-membership invariant
+to remain explicit as `removalDeferred=true`. Current code instead writes
+`removalDeferred=not positivePlayerRemoval`, combining the normal incomplete
+case with the separate positive-player-control exception.
+
+**Discuss / discover:** **Evidence-Bearing Removal Snapshot != Current Physical
+Occupancy.** A snapshot may need to carry positive removal as lifecycle evidence
+without retaining the removed subject as current physical Reality. The source
+attempted this with `removed and nil or track.pose`, but Lua's boolean-expression
+idiom cannot represent an intentional nil true-branch: the fallback retained
+pose wins. The same defect affected retained pose diagnostics, motion diagnostics
+and shadow representation.
+
+**Deferred Removal Must Remain Explicit.** Authoritative positive player control
+is an exception to ordinary incomplete-membership uncertainty, not a reason to
+make the ordinary rule conditional or opaque. The blocking Structural contract
+is therefore not weakened. Operation admission separates the positive-control
+path from the ordinary incomplete path, where `removalDeferred=true` is restored
+as the explicit accepted invariant.
+
+**Implement:** positive runtime removal now explicitly clears current pose,
+pose/motion diagnostics and retained shadow representation while preserving
+`POSITIVE_VEHICLE_RUNTIME_REMOVAL` evidence for Job Episode / Passage lifecycle
+consumers. Operation admission retains the positive-player-control membership
+exception, but ordinary incomplete evidence may only merge positive additions
+and cannot remove previously admitted members.
+
+**Validate:** only LuaJIT compile-only checks for the changed Lua files plus
+`git diff --check`, changed-file scope and diff inspection are performed locally.
+Per root and `/tests` `AGENTS.md`, the repository offline suites remain GitHub
+Actions responsibility. No Farming Simulator Reality validation is claimed.
+
 ## 2026-09-06 — PR #54 CI root-defect convergence
 
 **Observe:** GitHub Actions run #111 reported 97/112 Structural contracts and
