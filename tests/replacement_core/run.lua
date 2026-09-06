@@ -4150,8 +4150,13 @@ local function followerResponsibilityFixture()
     local runtime=autonomousHeadOnRuntime()
     local events={}
     local capability={}
-    function capability:executeControlRequest(request,candidate) return true,"ACCEPTED" end
-    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) events[#events+1]="CLEAR"; return true end
+    function capability:executeControlRequest(request,candidate)
+    if request.target~=nil and request.target.operation=="RELEASE" then
+        events[#events+1]="CLEAR"
+    end
+    return true,"ACCEPTED"
+    end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
     runtime:setLiveControlCapability(capability)
     local record=d0141Record(12,nil,nil)
