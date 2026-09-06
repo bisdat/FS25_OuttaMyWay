@@ -892,12 +892,14 @@ R2 identity and supplies it to the accepted `ResolutionCommitmentAdapter`. The
 retained generic Commitment identity remains unchanged, while `R1 != R2` and
 neither responsibility identity equals the Commitment identity.
 
-The existing dispatcher helper still performs proven D-0146 physical lease and
-obligation cleanup, but Responsibility Transition Authority invokes it as a
-subordinate part of replacement before `continueCooperativePassage()` may begin
-physical Control. Failed application, Commitment-continuity validation or
-predecessor settlement produces no Passage continuation and does not make both
-semantic responsibilities current.
+Responsibility Transition Authority owns the semantic predecessor preflight and
+replacement boundary. It uses Current Responsibility and retained
+Commitment/Obligation evidence rather than Bounded Authority lease state as
+semantic truth, and asks Regulation Bounded Authority only to neutralise the
+already-known predecessor speed effect before Runtime materialises successor
+Passage `REPOSITION` requests. Failed application, Commitment-continuity
+validation, predecessor settlement or physical neutralisation produces no
+Passage continuation and does not make both semantic responsibilities current.
 
 This is not general Responsibility Transition Authority coverage. Generic
 Commitment, Obligation and AuthorityToken behaviour remains retained substrate;
@@ -1042,16 +1044,28 @@ Regulation magnitude, interpret persistence, own migrated lease state or settle
 semantic responsibilities.
 
 [`RegulationBoundedAuthority`](../scripts/authority/RegulationBoundedAuthority.lua)
-now owns migrated Regulation physical-authority state for follower Regulation,
-Action-Space/Forward Intersection Regulation and completed-obstruction
-protected-demand holds. It keeps the existing physical policies and literals,
-including follower elastic caps, D-0155, fixed Forward Intersection `1 km/h`,
-D-0147 protected demand, quiescence/reactivation and role migration. The
-progression envelope is rehomed as
+now owns only migrated Regulation physical-authority state for follower
+Regulation, Action-Space/Forward Intersection Regulation and
+completed-obstruction protected-demand `REGULATE_SPEED` holds. It keeps the
+existing physical policies and literals, including follower elastic caps,
+D-0155, fixed Forward Intersection `1 km/h`, D-0147 protected demand,
+quiescence/reactivation and role migration. It does not own Candidate/exemplar
+selection, semantic persistence/termination, Passage or completed-subject
+`REPOSITION`, semantic completion/settlement or Guarded Recovery compatibility
+internals. The progression envelope is rehomed as
 [`ResolutionSpaceProgressionEnvelope`](../scripts/authority/ResolutionSpaceProgressionEnvelope.lua)
 because it is Bounded-Authority magnitude policy: Situation owns purpose and
 role evidence; Bounded Authority owns the current permitted cap; Control
 realises the authorised cap.
+
+Runtime explicitly sequences the Phase-11 collaborators. It selects the
+evaluated production path, invokes
+[`CurrentResponsibilityAssessment`](../scripts/assessment/CurrentResponsibilityAssessment.lua)
+for existing Regulation responsibilities, calls Responsibility Transition
+Authority when termination or replacement is justified, asks the appropriate
+Bounded Authority for physical permission, materialises `BA-*` into `CR-*`
+through generic `BoundedAuthority.materializeRequest()`, and then enters
+`LiveControlDispatcher`.
 
 [`BoundedAuthority.materializeRequest()`](../scripts/authority/BoundedAuthority.lua)
 is the narrow CR materialisation operation. It requires an existing current
@@ -1061,13 +1075,21 @@ authority.
 [`CurrentResponsibilityAssessment`](../scripts/assessment/CurrentResponsibilityAssessment.lua)
 is an implementation component inside Situation Assessment. It records the
 bounded reassessment question "does this existing RS-* remain positively
-justified now?" and does not introduce a new lifecycle or Responsibility
-Authority.
+justified now?" Runtime now wires that answer into production before asking
+Regulation Bounded Authority to update current physical permission. It does not
+introduce a new lifecycle or Responsibility Authority.
 
 [`GuardedRecoveryCompatibility`](../scripts/control/GuardedRecoveryCompatibility.lua)
-isolates the D-0123 Guarded Recovery legacy path. Guarded Recovery remains
-explicitly unmigrated and must not be used as precedent for migrated Bounded
-Authority paths.
+owns the D-0123 Guarded Recovery legacy path, including its private legacy lease,
+legacy supporting `AU-*` acquisition/release, intentionally non-BA
+ControlRequest, apply/release, status and terminal dependency cleanup. Guarded
+Recovery remains explicitly unmigrated and must not be used as precedent for
+migrated Bounded Authority paths.
+
+The Phase-11 amendment records three review discoveries:
+**Responsibility Displacement != Responsibility Separation**,
+**Unwired Reassessment Authority** and
+**Compatibility Facade != Compatibility Isolation**.
 
 The Phase-11 discoveries are recorded as implementation placement constraints:
 

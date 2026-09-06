@@ -39,14 +39,12 @@ OuttaMyWay.nativeManoeuvreObservationSource:setCapabilityObservationSource(Outta
 -- D-0181: production Cooperative Passage is D-0146 only. Historical D-0143
 -- donor modules are not sourced into the live runtime.
 OuttaMyWay.cooperativePassageControl=OuttaMyWay.CooperativePassageControl.new(OuttaMyWay.runtime,OuttaMyWay.prototype22CapabilityGate)
-OuttaMyWay.runtime.liveControlDispatcher:setCooperativePassageControl(OuttaMyWay.cooperativePassageControl)
-OuttaMyWay.runtime.regulationBoundedAuthority:setCooperativePassageControl(OuttaMyWay.cooperativePassageControl)
+OuttaMyWay.runtime:setCooperativePassageControl(OuttaMyWay.cooperativePassageControl)
 
 -- D-0147 production attempt: direct post-job control is separately bounded by
 -- POST_JOB_ACTUATION authority and the config.lua Automatic Terminal Egress switch.
 OuttaMyWay.terminalEgressControl=OuttaMyWay.TerminalEgressControl.new(OuttaMyWay.runtime,OuttaMyWay.runtime.liveObservationSource)
-OuttaMyWay.runtime.liveControlDispatcher:setTerminalEgressControl(OuttaMyWay.terminalEgressControl)
-OuttaMyWay.runtime.regulationBoundedAuthority:setTerminalEgressControl(OuttaMyWay.terminalEgressControl)
+OuttaMyWay.runtime:setTerminalEgressControl(OuttaMyWay.terminalEgressControl)
 
 OuttaMyWay.liveRuntimeCoordinator=OuttaMyWay.LiveRuntimeCoordinator.new(OuttaMyWay.runtime,OuttaMyWay.runtime.liveObservationSource,OuttaMyWay.runtime.targetedFieldIdentityProbe,OuttaMyWay.runtime.fieldWorldSnapshots,OuttaMyWay.runtime.passiveLiveValidator)
 OuttaMyWay.runtime.liveRuntimeCoordinator=OuttaMyWay.liveRuntimeCoordinator

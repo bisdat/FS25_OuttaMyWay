@@ -36,7 +36,7 @@ end
 function Dispatcher:dispatch(request,candidate)
     if request==nil then return false,"CONTROL_REQUEST_REQUIRED" end
     if request.capability=="REGULATE_SPEED" then
-        local capability=self.capability or (self.runtime and self.runtime.regulationBoundedAuthority and self.runtime.regulationBoundedAuthority.capability) or nil
+        local capability=self.capability
         if capability==nil or type(capability.executeControlRequest)~="function" then return false,"REGULATION_CONTROL_CAPABILITY_UNAVAILABLE" end
         local started,result=capability:executeControlRequest(request,candidate)
         if started==true then self.dispatchCount=self.dispatchCount+1 end
@@ -45,7 +45,7 @@ function Dispatcher:dispatch(request,candidate)
     if request.capability=="REPOSITION" then
         local target=request.target or {}
         if target.kind=="D0147_BOUNDED_TERMINAL_EGRESS" then
-            local control=self.terminalEgressControl or (self.runtime and self.runtime.regulationBoundedAuthority and self.runtime.regulationBoundedAuthority.terminalEgressControl) or nil
+            local control=self.terminalEgressControl
             if control==nil or type(control.executeControlRequest)~="function" then return false,"TERMINAL_EGRESS_CONTROL_UNAVAILABLE" end
             local started,result=control:executeControlRequest(request,candidate)
             if started==true then self.dispatchCount=self.dispatchCount+1 end
@@ -58,7 +58,7 @@ end
 
 function Dispatcher:dispatchJoint(requestA,requestB,candidate)
     if requestA==nil or requestB==nil then return false,"JOINT_CONTROL_REQUESTS_REQUIRED" end
-    local control=self.cooperativePassageControl or (self.runtime and self.runtime.regulationBoundedAuthority and self.runtime.regulationBoundedAuthority.cooperativePassageControl) or nil
+    local control=self.cooperativePassageControl
     if control==nil or type(control.executeJointRequests)~="function" then return false,"COOPERATIVE_PASSAGE_CONTROL_UNAVAILABLE" end
     local started,result=control:executeJointRequests(requestA,requestB,candidate)
     if started==true then self.dispatchCount=self.dispatchCount+1 end

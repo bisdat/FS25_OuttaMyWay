@@ -46,18 +46,27 @@ dispatch receives already-authorised `ControlRequest` work.
   to authorised Control routing and outcome recording for already-materialized
   `ControlRequest` values.
 - [`RegulationBoundedAuthority.lua`](../scripts/authority/RegulationBoundedAuthority.lua)
-  owns migrated Regulation physical-authority state, including follower
-  Regulation, Action-Space/Forward Intersection Regulation and D-0147
-  protected-demand holds. The HUD reads follower diagnostic status from this
-  authority source.
+  owns only migrated Regulation physical-authority state: follower Regulation,
+  Action-Space/Forward Intersection Regulation, D-0155 progression-envelope
+  state, current bounded speed magnitude, quiescence/reactivation, role rebase
+  and D-0147 protected-demand `REGULATE_SPEED` holds. It does not own
+  Current Responsibility persistence, Passage or completed-subject
+  `REPOSITION`, semantic completion, settlement or Guarded Recovery.
 - [`ResolutionSpaceProgressionEnvelope.lua`](../scripts/authority/ResolutionSpaceProgressionEnvelope.lua)
   is Bounded-Authority magnitude policy. D-0155 literals and algorithm are
   intended unchanged; only ownership wording and placement changed.
 - [`CurrentResponsibilityAssessment.lua`](../scripts/assessment/CurrentResponsibilityAssessment.lua)
   is an implementation component under Situation Assessment for the existing
-  Current Responsibility reassessment question; it is not a new lifecycle.
+  Current Responsibility reassessment question; Runtime invokes it before
+  asking Regulation Bounded Authority for current physical permission. It is not
+  a new lifecycle.
 - [`GuardedRecoveryCompatibility.lua`](../scripts/control/GuardedRecoveryCompatibility.lua)
-  isolates D-0123 Guarded Recovery as explicitly unmigrated legacy behaviour.
+  owns D-0123 Guarded Recovery as explicitly unmigrated legacy behaviour,
+  including the legacy lease, non-BA ControlRequest, apply/release and status.
+- Phase-11 review recorded three placement discoveries:
+  **Responsibility Displacement != Responsibility Separation**,
+  **Unwired Reassessment Authority** and
+  **Compatibility Facade != Compatibility Isolation**.
 
 - The accepted [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Strangler Transition Map](IMPLEMENTATION_MAP.md#detailed-strangler-transition-map) remain authoritative for architecture and programme direction respectively.
 - Cooperative Passage upstream transition remains accepted and Reality-validated for one direct `CREATE` episode.
@@ -134,7 +143,10 @@ dispatch receives already-authorised `ControlRequest` work.
 - Initial Action-Space Regulation now receives an opaque `RS-*` identity issued through the existing `IdentityRegistry`. The retained conflict and generic Commitment remain provenance/substrate, not responsibility identity.
 - Action-Space revalidation, quiescence/reactivation and regulated-role migration preserve the same Regulation identity. No new identity is issued for these non-transition events.
 - On the known same-Commitment Passage `REVISE`, predecessor Regulation and successor Resolution receive distinct responsibility identities while the retained generic Commitment identity remains unchanged.
-- Predecessor D-0146 settlement and physical lease cleanup are invoked as subordinate replacement work before `continueCooperativePassage()` can begin Passage Control. Replacement failure prevents physical Passage continuation.
+- Predecessor D-0146 settlement and physical lease cleanup are invoked as
+  subordinate replacement work before Runtime materialises Cooperative Passage
+  `REPOSITION` requests. Replacement failure prevents physical Passage
+  continuation.
 - ResolutionCommitmentAdapter.lua now requires an authority-established semantic responsibility identity for all Resolution paths. It no longer falls back to retained generic Commitment identity.
 - Generic Commitment, Obligation and AuthorityToken machinery remains retained substrate. AuthorityToken reuse and Bounded Authority semantics were not redesigned.
 - **Replacement Precondition Lag** was corrected: Candidate/readiness, bridge/conflict, current responsibility, retained Commitment target, dispatcher lease and open predecessor obligation are now read-only preconditions before Passage `REVISE` or successor representation construction.

@@ -1,12 +1,11 @@
--- Bounded Authority specialisation for live Regulation and migrated production
--- physical permissions. It preserves the proven Regulation policies and request
--- shapes while LiveControlDispatcher routes only already-authorised requests.
+-- Bounded Authority specialisation for live Regulation physical permissions.
+-- It preserves the proven Regulation policies and request shapes while
+-- LiveControlDispatcher routes only already-authorised requests.
 
 OuttaMyWay.RegulationBoundedAuthority = {}
 local Authority = OuttaMyWay.RegulationBoundedAuthority
 Authority.__index = Authority
 
-local physical = {REGULATE_SPEED=true,HOLD=true,REPOSITION=true}
 local D0147_PROTECTED_YIELD_OWNER_TAG="D0147_PROTECTED_YIELD"
 
 local function logInfo(formatText,...)
@@ -24,35 +23,10 @@ local function selectedCandidate(evaluated)
     for _,candidate in OuttaMyWay.ValueRecord.ipairs(evaluated.candidates or {}) do if candidate.identity==selectedId then return candidate end end
     return nil
 end
-local function cooperativePassageBridge(candidate)
-    local evidence=candidate and candidate.evidenceBasis or nil
-    local bridge=evidence and evidence.cooperativePassageBridge or nil
-    if type(bridge)~="table" then return nil end
-    if bridge.architecture~="D0146_STEP2" then return nil end
-    if type(bridge.subjectReferenceKey)=="string" and type(bridge.otherReferenceKey)=="string" and type(bridge.passageGuide)=="table" then return bridge end
-    return nil
-end
-
-local function terminalEgressBridge(candidate)
-    local evidence=candidate and candidate.evidenceBasis or nil
-    local bridge=evidence and evidence.terminalEgressBridge or nil
-    if type(bridge)=="table" and bridge.architecture=="D0147" and type(bridge.terminalEpisodeId)=="string" then return bridge end
-    return nil
-end
-
-local function ownershipAssemblyIds(candidate)
-    local ownership=candidate and candidate.evidenceBasis and candidate.evidenceBasis.progressActuationOwnership or nil
-    local ids={}
-    for _,id in OuttaMyWay.ValueRecord.ipairs(ownership and ownership.assemblyIds or {}) do ids[#ids+1]=id end
-    table.sort(ids)
-    return ids
-end
-
 function Authority.new(runtime)
     return setmetatable({
-        runtime=runtime,capability=nil,cooperativePassageControl=nil,terminalEgressControl=nil,requests={},outcomes={},dispatchCount=0,
+        runtime=runtime,capability=nil,requests={},outcomes={},dispatchCount=0,
         d0147ProtectedYieldLeases={},
-        guardedRecoveryLease=nil,guardedRecoveryApplyCount=0,guardedRecoveryReleaseCount=0,
         followerBoundaryLease=nil,followerBoundaryApplyCount=0,followerBoundaryReleaseCount=0,followerBoundaryUpdateCount=0,
         d0146ActionSpaceLease=nil,d0146ActionSpaceApplyCount=0,d0146ActionSpaceReleaseCount=0,d0146ActionSpaceEnvelopeUpdateCount=0,d0146ActionSpaceRoleMigrationCount=0,
         d0146ActionSpaceQuiescenceCount=0,d0146ActionSpaceReactivationCount=0,
@@ -65,26 +39,7 @@ function Authority:setCapability(capability)
         self.runtime.liveControlDispatcher:setCapability(capability)
     end
 end
-function Authority:setCooperativePassageControl(control)
-    self.cooperativePassageControl=control
-    if self.runtime~=nil and self.runtime.liveControlDispatcher~=nil and type(self.runtime.liveControlDispatcher.setCooperativePassageControl)=="function" then
-        self.runtime.liveControlDispatcher:setCooperativePassageControl(control)
-    end
-    if control~=nil and type(control.setCompletionHandler)=="function" then
-        control:setCompletionHandler(function(result) self:_onCooperativePassageCompletion(result) end)
-    end
-end
-function Authority:setTerminalEgressControl(control)
-    self.terminalEgressControl=control
-    if self.runtime~=nil and self.runtime.liveControlDispatcher~=nil and type(self.runtime.liveControlDispatcher.setTerminalEgressControl)=="function" then
-        self.runtime.liveControlDispatcher:setTerminalEgressControl(control)
-    end
-    if control~=nil and type(control.setCompletionHandler)=="function" then control:setCompletionHandler(function(result) self:_onTerminalEgressCompletion(result) end) end
-end
-function Authority:getTerminalEgressObservation()
-    if self.terminalEgressControl~=nil and type(self.terminalEgressControl.getControlExecutionObservation)=="function" then return self.terminalEgressControl:getControlExecutionObservation() end
-    return nil
-end
+
 function Authority:getCapabilityObservation()
     if self.capability~=nil and type(self.capability.getControlExecutionObservation)=="function" then return self.capability:getControlExecutionObservation() end
     return nil
@@ -125,34 +80,6 @@ function Authority:_requestFromGrant(picture,evaluated,candidate,grant,target)
     return request
 end
 
-function Authority:_jointCooperativeRequests(picture,evaluated,candidate,commitment,currentResponsibility,bridge)
-    local ids=ownershipAssemblyIds(candidate)
-    if #ids~=2 then return nil,"COOPERATIVE_PASSAGE_REQUIRES_EXACTLY_TWO_PROGRESS_ACTUATION_ASSEMBLIES" end
-    local requests={}
-    local function releaseCreated(reason)
-        for _,request in ipairs(requests) do self:_releaseBoundedAuthority(request.boundedAuthorityId,reason) end
-    end
-    for _,assemblyId in ipairs(ids) do
-        local token=nil
-        for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(commitment.identity)) do
-            if candidateToken.assemblyId==assemblyId then token=candidateToken break end
-        end
-        if token==nil or self.runtime.authorities:validate(token)~=true then releaseCreated("COOPERATIVE_PASSAGE_REQUEST_CREATION_FAILED"); return nil,"VALID_JOINT_COMMITMENT_AUTHORITY_TOKEN_UNAVAILABLE" end
-        local target={kind="D0146_COOPERATIVE_PASSAGE",conflictIdentity=bridge.conflictIdentity,encounterIdentity=bridge.encounterIdentity,governingRequirementKey=bridge.governingRequirementKey,
-            subjectReferenceKey=bridge.subjectReferenceKey,otherReferenceKey=bridge.otherReferenceKey,passageGuideId=bridge.passageGuide and bridge.passageGuide.identity,controlProfile=bridge.controlProfile}
-        local grant,grantReason=self:_authorizeBoundedAuthority(currentResponsibility,commitment,token,{
-            assemblyId=assemblyId,capability="REPOSITION",target=target,operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,
-            preconditions=candidate.preconditions or {},invalidationConditions=candidate.invalidationConditions or {},
-            provenance={source="RegulationBoundedAuthority",exemplar="COOPERATIVE_PASSAGE",candidateId=candidate.identity}
-        })
-        if grant==nil then releaseCreated("COOPERATIVE_PASSAGE_REQUEST_CREATION_FAILED"); return nil,grantReason end
-        local request,requestReason=self:_requestFromGrant(picture,evaluated,candidate,grant,target)
-        if request==nil then releaseCreated("COOPERATIVE_PASSAGE_REQUEST_CREATION_FAILED"); return nil,requestReason end
-        requests[#requests+1]=request
-    end
-    return requests,nil
-end
-
 local function d0147TokenFor(runtime,commitmentId,assemblyId,authorityClass)
     for _,token in OuttaMyWay.ValueRecord.ipairs(runtime.authorities:tokensForCommitment(commitmentId)) do
         if token.assemblyId==assemblyId and token.authorityClass==authorityClass and runtime.authorities:validate(token)==true then return token end
@@ -174,6 +101,15 @@ function Authority:_releaseD0147ProtectedYield(commitmentId,reason)
     self.d0147ProtectedYieldLeases[commitmentId]=nil
     logInfo("D0147_PROTECTED_YIELD_RELEASE commitment=%s released=%d reason=%s",tostring(commitmentId),released,tostring(reason))
     return released
+end
+
+function Authority:d0147ProtectedYieldAssemblyIds(commitmentId)
+    local ids={}
+    for _,lease in ipairs(self.d0147ProtectedYieldLeases[commitmentId] or {}) do
+        if type(lease.assemblyId)=="string" then ids[#ids+1]=lease.assemblyId end
+    end
+    table.sort(ids)
+    return ids
 end
 
 function Authority:_applyD0147ProtectedYield(picture,evaluated,candidate,commitment,currentResponsibility,bridge)
@@ -221,193 +157,14 @@ function Authority:_applyD0147ProtectedYield(picture,evaluated,candidate,commitm
     return true,"PROTECTED_YIELD_HOLD_APPLIED"
 end
 
-function Authority:_onTerminalEgressCompletion(result)
-    if type(result)~="table" or type(result.commitmentId)~="string" then return end
-    if result.status=="COMPACTION_COMPLETE" then
-        self:_releaseBoundedAuthority(result.boundedAuthorityId,"D0147_COMPACTION_COMPLETE")
-        logInfo("D0147_COMPACTION_COMPLETE commitment=%s episode=%s freshSituationRequired=true",tostring(result.commitmentId),tostring(result.terminalEpisodeId))
-        return
-    end
-    local protectedDemandAssemblyIds={}
-    for _,lease in ipairs(self.d0147ProtectedYieldLeases[result.commitmentId] or {}) do
-        if type(lease.assemblyId)=="string" then protectedDemandAssemblyIds[#protectedDemandAssemblyIds+1]=lease.assemblyId end
-    end
-    table.sort(protectedDemandAssemblyIds)
-    self:_releaseD0147ProtectedYield(result.commitmentId,"TERMINAL_CONTROL_"..tostring(result.status))
-    self:_releaseBoundedAuthority(result.boundedAuthorityId,"TERMINAL_CONTROL_"..tostring(result.status))
-    if result.status=="MANOEUVRE_COMPLETE" then
-        local courtesyStage=result.evidence and tonumber(result.evidence.courtesyStage) or nil
-        if self.runtime.terminalOccupancyAssessment~=nil then self.runtime.terminalOccupancyAssessment:markRetreatCompleted(result.terminalEpisodeId,protectedDemandAssemblyIds,courtesyStage) end
-        local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self.runtime,result.commitmentId,"OBJECTIVE_SATISFIED",result.evidence,result.terminalEpisodeId)
-        if terminal==nil then
-            logWarning("D0147_INFIELD_RETREAT_SETTLEMENT_FAILED commitment=%s episode=%s reason=%s",tostring(result.commitmentId),tostring(result.terminalEpisodeId),tostring(reason))
-        else
-            if courtesyStage==2 then
-                logInfo("D0147_FINAL_BOUNDARY_SETTLEMENT_COMPLETE commitment=%s episode=%s doubleCourtesyExhausted=true noThirdAutomaticRelocation=true",tostring(result.commitmentId),tostring(result.terminalEpisodeId))
-            else
-                logInfo("D0147_INTERIOR_SETTLEMENT_COMPLETE commitment=%s episode=%s continuationRenewalRequired=true freshSituationRequired=true",tostring(result.commitmentId),tostring(result.terminalEpisodeId))
-            end
-        end
-        return
-    end
-    local eventKind=nil
-    if result.status=="FAILED" then eventKind="OBJECTIVE_FAILED"
-    elseif result.status=="PLAYER_CLAIM" then eventKind="PLAYER_CLAIM"
-    elseif result.status=="SUPERSEDED" then eventKind="NEW_AUTHORITATIVE_INTENT" end
-    if eventKind~=nil then
-        local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self.runtime,result.commitmentId,eventKind,result.evidence,result.terminalEpisodeId)
-        if terminal==nil then logWarning("D0147_COMPLETION_SETTLEMENT_FAILED commitment=%s event=%s reason=%s",tostring(result.commitmentId),tostring(eventKind),tostring(reason)) end
-    end
-end
-
-function Authority:_dispatchTerminalEgress(picture,evaluated,candidate)
-    local bridge=terminalEgressBridge(candidate); if bridge==nil then return nil end
-    local boundary=evaluated.candidateInventory and evaluated.candidateInventory.supportBoundary or nil
-    if type(boundary)~="table" or boundary.mode~="D0147_BOUNDED_TERMINAL_EGRESS" then return {status="NO_DISPATCH",reason="D0147_SUPPORT_BOUNDARY_MISMATCH"} end
-    if bridge.terminalEvent~=nil then
-        local commitmentId=bridge.existingCommitmentId
-        if type(commitmentId)~="string" then return {status="NO_DISPATCH",reason="D0147_SETTLEMENT_WITHOUT_LIVE_COMMITMENT"} end
-        self:_releaseD0147ProtectedYield(commitmentId,"SITUATION_SETTLEMENT_"..tostring(bridge.terminalEvent))
-        local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self.runtime,commitmentId,bridge.terminalEvent,{kind="D0147_SITUATION_SETTLEMENT",terminalEpisodeId=bridge.terminalEpisodeId,playerEscalationRequired=bridge.terminalEvent=="OBJECTIVE_FAILED"},bridge.terminalEpisodeId)
-        return {status=terminal and "SETTLED" or "NO_DISPATCH",reason=reason,terminalEgress=true,terminalEvent=bridge.terminalEvent,commitment=terminal}
-    end
-    if candidate.capability~="REPOSITION" then return {status="NO_DISPATCH",reason="D0147_NON_REPOSITION_PHYSICAL_CANDIDATE",terminalEgress=true} end
-    if self.terminalEgressControl==nil then return {status="NO_DISPATCH",reason="D0147_CONTROL_UNAVAILABLE",terminalEgress=true} end
-    if type(self.terminalEgressControl.isActive)=="function" and self.terminalEgressControl:isActive() then return {status="NO_DISPATCH",reason="D0147_CONTROL_ALREADY_ACTIVE",terminalEgress=true} end
-    return {status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,terminalEpisodeId=bridge.terminalEpisodeId,terminalEgress=true}
-end
-
-function Authority:continueCompletedObstruction(picture,evaluated,applied)
-    if picture==nil or evaluated==nil or evaluated.decision==nil or type(applied)~="table" or applied.commitment==nil or applied.authorityToken==nil then
-        return {status="NO_DISPATCH",reason="COMPLETED_OBSTRUCTION_ESTABLISHED_RESPONSIBILITY_REQUIRED",terminalEgress=true}
-    end
-    local candidate=selectedCandidate(evaluated)
-    local bridge=terminalEgressBridge(candidate)
-    if bridge==nil or bridge.terminalEvent~=nil or candidate.capability~="REPOSITION" then
-        return {status="NO_DISPATCH",reason="COMPLETED_OBSTRUCTION_ESTABLISHED_RESPONSIBILITY_MISMATCH",terminalEgress=true}
-    end
-    if bridge.phase=="INFIELD" then
-        local protected,protectedReason=self:_applyD0147ProtectedYield(picture,evaluated,candidate,applied.commitment,applied.currentResponsibility,bridge)
-        if protected~=true then
-            self:_releaseD0147ProtectedYield(applied.commitment.identity,"PROTECTED_YIELD_START_FAILED")
-            local terminal,settleReason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self.runtime,applied.commitment.identity,"OBJECTIVE_FAILED",{kind="D0147_PROTECTED_YIELD_START_FAILED",reason=protectedReason},bridge.terminalEpisodeId)
-            logWarning("D0147_PROTECTED_YIELD_REJECTED commitment=%s episode=%s reason=%s settlement=%s",tostring(applied.commitment.identity),tostring(bridge.terminalEpisodeId),tostring(protectedReason),tostring(settleReason))
-            return {status="REJECTED",reason=protectedReason,terminalEgress=true,commitment=terminal or applied.commitment}
-        end
-    end
-    local target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase=bridge.phase,terminalEpisodeId=bridge.terminalEpisodeId,objective=bridge.objective}
-    local grant,grantReason=self:_authorizeBoundedAuthority(applied.currentResponsibility,applied.commitment,applied.authorityToken,{
-        assemblyId=bridge.assemblyId,capability="REPOSITION",target=target,operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,
-        preconditions=candidate.preconditions or {},invalidationConditions=candidate.invalidationConditions or {},
-        provenance={source="RegulationBoundedAuthority",exemplar="COMPLETED_OBSTRUCTION",candidateId=candidate.identity,phase=bridge.phase}
-    })
-    if grant==nil then return {status="NO_DISPATCH",reason=grantReason,terminalEgress=true,commitment=applied.commitment} end
-    local request=self:_requestFromGrant(picture,evaluated,candidate,grant,target)
-    local started,result=self.runtime.liveControlDispatcher:dispatch(request,candidate)
-    local outcome=self:_outcome(request,started and "ACCEPTED" or "REJECTED",{kind=started and "D0147_POST_JOB_CONTROL_ACCEPTED" or "NO_PHYSICAL_EFFECT_CONFIRMED",phase=bridge.phase,postJobActuation=true},started and nil or {reason=tostring(result)})
-    if started then self.dispatchCount=self.dispatchCount+1; logInfo("D0147_ACCEPTED commitment=%s episode=%s assembly=%s phase=%s request=%s result=%s",tostring(applied.commitment.identity),tostring(bridge.terminalEpisodeId),tostring(bridge.assemblyReferenceKey),tostring(bridge.phase),tostring(request.identity),tostring(result))
-    else self:_releaseBoundedAuthority(request.boundedAuthorityId,"D0147_TERMINAL_START_REJECTED"); logWarning("D0147_REJECTED commitment=%s episode=%s phase=%s reason=%s",tostring(applied.commitment.identity),tostring(bridge.terminalEpisodeId),tostring(bridge.phase),tostring(result)) end
-    return {status=started and "ACCEPTED" or "REJECTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,terminalEgress=true}
-end
-
-function Authority:_onCooperativePassageCompletion(result)
-    if type(result)~="table" or type(result.commitmentId)~="string" then return end
-    for _,grantId in OuttaMyWay.ValueRecord.ipairs(result.boundedAuthorityIds or {}) do self:_releaseBoundedAuthority(grantId,"COOPERATIVE_PASSAGE_"..tostring(result.status)) end
-    if result.status=="SUCCEEDED" then
-        local settled,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.completeCooperativePassage(self.runtime,result.commitmentId,result.evidence)
-        if settled==nil then
-            logWarning("COOPERATIVE_COMPLETION_UNRESOLVED commitment=%s reason=%s",tostring(result.commitmentId),tostring(reason))
-        else
-            logInfo("COOPERATIVE_COMPLETION commitment=%s terminal=%s authorityReleased=true cooldown=false",tostring(result.commitmentId),tostring(settled.commitment and settled.commitment.state or "n/a"))
-        end
-    elseif result.status=="FAILED" then
-        local record=self.runtime.commitments:get(result.commitmentId)
-        if record~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then
-            for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.runtime.obligations:openForOwner(result.commitmentId)) do
-                local outcome=obligation.requiredOutcome
-                if type(outcome)=="table" and outcome.kind=="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK" then
-                    self.runtime.obligations:settle(obligation.identity,"BASIS_CESSATION",result.evidence or {kind="COOPERATIVE_PASSAGE_FAILED"})
-                end
-            end
-            local verdict=self.runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_FAILED",evidence=result.evidence or {},provenance={source="RegulationBoundedAuthority"}})
-            local settling=self.runtime.terminalSettlementEvaluator:enterSettling(result.commitmentId,verdict)
-            if not self.runtime.obligations:hasOpenObligations(result.commitmentId) then
-                self.runtime.terminalSettlementEvaluator:attemptTerminal(result.commitmentId,result.evidence or {kind="COOPERATIVE_PASSAGE_FAILED"})
-            end
-            logWarning("COOPERATIVE_ABORT_SETTLEMENT commitment=%s releasedAuthority=%d",tostring(result.commitmentId),#(settling.releasedAuthorityTokenIds or {}))
-        end
-    end
-end
-
-local D0123_OWNER_TAG="D0123_GUARDED_RECOVERY"
 local D0141_OWNER_TAG="D0141_FOLLOWER_BOUNDARY"
 local D0146_ACTION_SPACE_OWNER_TAG="D0146_ACTION_SPACE_CONSERVATION"
 local FORWARD_INTERSECTION_OWNER_TAG="FORWARD_INTERSECTION_INTENT_REVELATION"
 
-local function guardedRecoveryBridge(candidate)
-    local basis=candidate and candidate.evidenceBasis or nil
-    local bridge=basis and basis.guardedRecoveryBridge or nil
-    if type(bridge)=="table" and type(bridge.commitmentId)=="string" and type(bridge.progressAssemblyId)=="string" then return bridge end
-    return nil
-end
-
-local function guardedRecoveryRecord(picture,lease)
-    for _,record in OuttaMyWay.ValueRecord.ipairs(picture.guardedRecoveryKnowledge or {}) do
-        if lease==nil or (record.commitmentId==lease.commitmentId and record.progressAssemblyId==lease.progressAssemblyId) then return record end
-    end
-    return nil
-end
-
-local function pictureContainsAssembly(picture,assemblyId)
-    for _,id in OuttaMyWay.ValueRecord.ipairs(picture.identities and picture.identities.assemblies or {}) do if id==assemblyId then return true end end
-    return false
-end
-
--- Resolution-Space Conservation has two independent lifetimes. The D-0146
--- relationship/obligation remains sticky until Situation positively dissolves it,
--- but D-0155 physical Regulation remains authoritative only while current Situation
--- positively supports Action-Space Conservation. Control consumes Situation-owned
--- semantic evidence only; it does not reinterpret raw trajectory/current-motion
--- evidence at this authority boundary.
-local function d0146ActionSpaceRelationshipState(picture,lease,relation)
-    if relation==nil then
-        if lease.admissionKind=="FORWARD_INTERSECTION" then
-            return "DISSOLVED","FORWARD_INTERSECTION_NO_LONGER_POSITIVELY_SUPPORTED"
-        end
-        local subjectPresent=pictureContainsAssembly(picture,lease.protectedAssemblyId or lease.excursionAssemblyId)
-        local regulatedPresent=pictureContainsAssembly(picture,lease.regulatedAssemblyId)
-        if subjectPresent and regulatedPresent then
-            return "PERSIST","D0146_RELATIONSHIP_TEMPORARILY_UNRESOLVED_ACTION_SPACE_OBLIGATION_RETAINED"
-        end
-        return "DISSOLVED","D0146_RELATIONSHIP_PARTICIPANT_NO_LONGER_ACTIVE"
-    end
-    if lease.admissionKind=="FORWARD_INTERSECTION" then
-        if relation.classification=="FORWARD_INTERSECTION" and relation.actionable==true and relation.incumbentRelationship==nil then
-            return "PERSIST","FORWARD_INTERSECTION_REMAINS_POSITIVELY_SUPPORTED"
-        end
-        return "DISSOLVED",relation.reason or "FORWARD_INTERSECTION_DISSOLVED_OR_SUPERSEDED"
-    end
-    local relationship=relation.resolutionSpaceRelationship
-    if type(relationship)=="table" and relationship.positiveDissolution==true then
-        return "DISSOLVED",relationship.reason or "D0146_POSITIVE_RELATIONSHIP_DISSOLUTION"
-    end
-    if relation.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" then
-        return "PERSIST","D0146_ESTABLISHED_CONFLICT_AWAITS_SUPPORTED_PASSAGE_WITH_ACTION_SPACE_REGULATION_RETAINED"
-    end
-    if relation.classification=="POTENTIAL_OPPOSED_CORRIDOR_CONFLICT" then
-        return "PERSIST","D0146_POTENTIAL_CONFLICT_RESOLUTION_SPACE_OBLIGATION_PERSISTS"
-    end
-    if type(relationship)=="table" and type(relationship.reason)=="string" then
-        return "PERSIST",relationship.reason
-    end
-    return "PERSIST","D0146_RELATIONSHIP_DISSOLUTION_NOT_POSITIVELY_ESTABLISHED"
-end
-
-
 function Authority:_regulationRequest(picture,evaluated,candidate,commitment,token,bridge,operation,ownerTag,maxSpeedKmh,currentResponsibility,existingBoundedAuthorityId)
-    ownerTag=ownerTag or D0123_OWNER_TAG
+    if type(ownerTag)~="string" then return nil,"REGULATION_OWNER_TAG_REQUIRED" end
     local speed=maxSpeedKmh
-    if operation=="APPLY" and speed==nil then speed=OuttaMyWay.D0123_NATIVE_HANDOVER_CREEP_KMH or 1.0 end
+    if operation=="APPLY" and speed==nil then speed=1.0 end
     local assemblyId=bridge.progressAssemblyId or bridge.followerAssemblyId or bridge.regulatedAssemblyId
     local referenceKey=bridge.progressReferenceKey or bridge.followerReferenceKey or bridge.regulatedReferenceKey
     local target={kind="P22_REGULATION_LEASE",operation=operation,vehicleReferenceKey=referenceKey,ownerTag=ownerTag,
@@ -492,10 +249,6 @@ local function followerBoundaryRecord(picture,lease)
 end
 
 function Authority:_otherRegulationPurposeOwnsAuthority(commitmentId,assemblyId,excluding)
-    if excluding~="D0123" then
-        local lease=self.guardedRecoveryLease
-        if lease~=nil and lease.commitmentId==commitmentId and lease.progressAssemblyId==assemblyId then return true end
-    end
     if excluding~="D0141" then
         local lease=self.followerBoundaryLease
         if lease~=nil and lease.actuationActive~=false and lease.commitmentId==commitmentId and lease.followerAssemblyId==assemblyId then return true end
@@ -507,15 +260,19 @@ function Authority:_otherRegulationPurposeOwnsAuthority(commitmentId,assemblyId,
     return false
 end
 
-function Authority:_releaseFollowerBoundaryLease(picture,evaluated,candidate,bridge,reason)
+function Authority:hasActiveRegulationForAssembly(commitmentId,assemblyId,excluding)
+    return self:_otherRegulationPurposeOwnsAuthority(commitmentId,assemblyId,excluding)
+end
+
+function Authority:neutralizeFollowerBoundaryPhysical(picture,evaluated,candidate,reason)
     local lease=self.followerBoundaryLease
     if lease==nil then return {status="NO_DISPATCH",reason="D0141_NO_ACTIVE_LEASE_TO_RETIRE",followerBoundary=true} end
-    local applied,applyReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyFollowerBoundaryRetirementDecision(self.runtime,picture,evaluated)
-    if applied==nil then return {status="NO_DISPATCH",reason=applyReason,followerBoundary=true} end
-    local commitment=applied.commitment
+    local commitment=self.runtime.commitments:get(lease.commitmentId)
     local token=nil
-    for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(commitment.identity)) do
-        if candidateToken.assemblyId==lease.followerAssemblyId then token=candidateToken break end
+    if commitment~=nil then
+        for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(commitment.identity)) do
+            if candidateToken.assemblyId==lease.followerAssemblyId then token=candidateToken break end
+        end
     end
     local request,outcome=nil,nil
     if token~=nil and self.runtime.authorities:validate(token)==true and self.capability~=nil and type(self.capability.executeControlRequest)=="function" then
@@ -527,17 +284,10 @@ function Authority:_releaseFollowerBoundaryLease(picture,evaluated,candidate,bri
     elseif self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" then
         self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
     end
-    local preserve=self:_otherRegulationPurposeOwnsAuthority(commitment.identity,lease.followerAssemblyId,"D0141")
-    if not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,commitment.identity,lease.followerAssemblyId,{reason=reason,preserveAuthority=preserve})
-        local settled,settleReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleFollowerBoundaryPurpose(self.runtime,commitment.identity,bridge or lease,{kind="D0141_POSITIVE_RETIREMENT",reason=reason,pairKey=lease.pairKey})
-        if settled==nil then return {status="NO_DISPATCH",reason=settleReason,followerBoundary=true} end
-    end
-    self.runtime.responsibilityTransitionAuthority:terminateRegulation(commitment.identity)
     self:_releaseBoundedAuthority(lease.boundedAuthorityId,reason)
     self.followerBoundaryReleaseCount=self.followerBoundaryReleaseCount+1
     self.followerBoundaryLease=nil
-    logInfo("D0141_RELEASE commitment=%s pair=%s follower=%s ref=%s preserveAuthority=%s reason=%s",tostring(commitment.identity),tostring(lease.pairKey),tostring(lease.followerAssemblyId),tostring(lease.followerReferenceKey),tostring(preserve),tostring(reason))
+    logInfo("D0141_RELEASE commitment=%s pair=%s follower=%s ref=%s reason=%s",tostring(lease.commitmentId),tostring(lease.pairKey),tostring(lease.followerAssemblyId),tostring(lease.followerReferenceKey),tostring(reason))
     return {status="RELEASED",reason=reason,request=request,outcome=outcome,followerBoundary=true,commitment=commitment}
 end
 
@@ -581,11 +331,9 @@ function Authority:_quiesceFollowerBoundaryActuation(picture,evaluated,candidate
     return {status="QUIESCENT",reason="D0141_CURRENT_FOLLOWER_TOPOLOGY_UNRESOLVED_ACTUATION_QUIESCENT",request=request,outcome=outcome,followerBoundary=true,commitmentId=lease.commitmentId}
 end
 
-function Authority:_dispatchFollowerBoundary(picture,evaluated,candidate)
+function Authority:assessFollowerBoundaryPermission(picture,evaluated,candidate,semanticAssessment)
     local bridge=followerBoundaryBridge(candidate)
-    if bridge~=nil and bridge.action=="RETIRE" then
-        return self:_releaseFollowerBoundaryLease(picture,evaluated,candidate,bridge,bridge.reason or "D0141_POSITIVE_RETIREMENT")
-    end
+    if semanticAssessment~=nil and semanticAssessment.disposition=="TERMINATE" then return nil end
     if bridge~=nil and bridge.action=="PRESERVE" then
         return self:_quiesceFollowerBoundaryActuation(picture,evaluated,candidate,bridge)
     end
@@ -652,13 +400,7 @@ function Authority:getFollowerBoundaryStatus()
         updateCount=self.followerBoundaryUpdateCount,releaseCount=self.followerBoundaryReleaseCount,quiescenceCount=self.followerBoundaryQuiescenceCount,reactivationCount=self.followerBoundaryReactivationCount,ownerTag=D0141_OWNER_TAG}
 end
 
-function Authority:getFollowerBoundaryPredecessor()
-    local lease=self.followerBoundaryLease
-    if lease==nil then return nil end
-    return {commitmentId=lease.commitmentId,pairKey=lease.pairKey,leaderAssemblyId=lease.leaderAssemblyId,followerAssemblyId=lease.followerAssemblyId}
-end
-
-function Authority:_releaseD0146ActionSpaceLease(picture,evaluated,reason)
+function Authority:neutralizeActionSpaceRegulationPhysical(picture,evaluated,reason)
     local lease=self.d0146ActionSpaceLease
     if lease==nil then return {status="NO_DISPATCH",reason="D0146_ACTION_SPACE_NO_ACTIVE_LEASE"} end
     local commitment=self.runtime.commitments:get(lease.commitmentId)
@@ -679,15 +421,9 @@ function Authority:_releaseD0146ActionSpaceLease(picture,evaluated,reason)
     elseif self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" then
         self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,lease.ownerTag or D0146_ACTION_SPACE_OWNER_TAG)
     end
-    if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
-        local preserve=self:_otherRegulationPurposeOwnsAuthority(commitment.identity,lease.regulatedAssemblyId,"D0146_ACTION_SPACE")
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,commitment.identity,lease.regulatedAssemblyId,{reason=reason,preserveAuthority=preserve})
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.settleD0146ActionSpacePurpose(self.runtime,commitment.identity,{conflictIdentity=lease.conflictIdentity,reason=reason},{kind="D0146_ACTION_SPACE_POSITIVE_PURPOSE_EXPIRY",reason=reason,conflictIdentity=lease.conflictIdentity})
-    end
     self.d0146ActionSpaceReleaseCount=self.d0146ActionSpaceReleaseCount+1
     self:_releaseBoundedAuthority(lease.boundedAuthorityId,reason)
     self.d0146ActionSpaceLease=nil
-    self.runtime.responsibilityTransitionAuthority:terminateActionSpaceRegulation(lease.commitmentId,lease.conflictIdentity)
     if lease.admissionKind=="FORWARD_INTERSECTION" then
         logInfo("FORWARD_INTERSECTION_REGULATION_RELEASED commitment=%s relationship=%s yielder=%s reason=%s freshReality=true",
             tostring(lease.commitmentId),tostring(lease.conflictIdentity),tostring(lease.regulatedAssemblyId),tostring(reason))
@@ -935,15 +671,13 @@ function Authority:_continueD0146ActionSpaceRoleMigration(picture,evaluated,cand
     return {status="ROLE_MIGRATED",reason="D0155_CURRENT_SITUATION_REASSIGNED_ROLES_WITH_MAGNITUDE_REBASE",request=newRequest,releaseRequest=oldRequest,outcome=outcome,d0146ActionSpace=true,commitmentId=lease.commitmentId}
 end
 
-function Authority:_dispatchD0146ActionSpace(picture,evaluated,candidate)
+function Authority:assessActionSpaceRegulationPermission(picture,evaluated,candidate,semanticAssessment)
     local bridge=d0146ActionSpaceBridge(candidate)
     local lease=self.d0146ActionSpaceLease
     if lease~=nil then
-        local passage=cooperativePassageBridge(candidate)
-        if passage~=nil and passage.architecture=="D0146_STEP2" and passage.conflictIdentity==lease.conflictIdentity then return nil end
         local relation=d0146ActionSpaceRelation(picture,lease)
-        local relationshipState,relationshipReason=d0146ActionSpaceRelationshipState(picture,lease,relation)
-        if relationshipState=="PERSIST" then
+        local relationshipReason=semanticAssessment and semanticAssessment.reason or nil
+        if semanticAssessment==nil or semanticAssessment.disposition=="PERSIST" then
             local actuationState,action=d0146ActionSpaceActuationState(relation)
             if actuationState=="NOT_REQUIRED" then
                 local quiesceSupported,quiescenceReason=d0146ActionSpaceQuiescenceSupported(picture,lease,action)
@@ -977,7 +711,7 @@ function Authority:_dispatchD0146ActionSpace(picture,evaluated,candidate)
             end
             return self:_updateD0146ActionSpaceEnvelope(picture,evaluated,candidate,lease,relation,relationshipReason)
         end
-        return self:_releaseD0146ActionSpaceLease(picture,evaluated,relationshipReason)
+        return nil
     end
 
     if bridge==nil or candidate.capability~="REGULATE_SPEED" then return nil end
@@ -1064,54 +798,6 @@ function Authority:continueActionSpaceRegulation(picture,evaluated,applied,readi
     return {status="NO_DISPATCH",reason="ACTION_SPACE_REGULATION_CONTINUATION_CONTEXT_UNSUPPORTED",d0146ActionSpace=true}
 end
 
-function Authority:_supersedeD0146ActionSpaceForCooperativePassage(commitment,candidate)
-    local lease=self.d0146ActionSpaceLease
-    if lease==nil or commitment==nil or candidate==nil then return nil end
-    local bridge=cooperativePassageBridge(candidate)
-    if bridge==nil or bridge.architecture~="D0146_STEP2" or bridge.conflictIdentity~=lease.conflictIdentity or lease.commitmentId~=commitment.identity then return nil end
-    if self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" then
-        self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG)
-    end
-    self:_releaseBoundedAuthority(lease.boundedAuthorityId,"COOPERATIVE_PASSAGE_SUPERSEDES_D0146_ACTION_SPACE_REGULATION")
-    local settled,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleD0146ActionSpacePurpose(self.runtime,commitment.identity,{
-        conflictIdentity=lease.conflictIdentity,reason="COOPERATIVE_PASSAGE_SUPERSEDES_D0146_ACTION_SPACE_REGULATION"
-    },{kind="D0146_ESTABLISHED_CONFLICT_PASSAGE_SUCCESSION",conflictIdentity=lease.conflictIdentity,regulatedAssemblyId=lease.regulatedAssemblyId})
-    if settled==nil then
-        logWarning("D0146_ACTION_SPACE_PASSAGE_SUPERSESSION commitment=%s conflict=%s physicalLeaseCleared=true obligationSettlement=%s",tostring(commitment.identity),tostring(lease.conflictIdentity),tostring(reason))
-    else
-        logInfo("D0146_ACTION_SPACE_PASSAGE_SUPERSESSION commitment=%s conflict=%s physicalLeaseCleared=true obligation=%s authorityTokenReused=true",tostring(commitment.identity),tostring(lease.conflictIdentity),tostring(settled.settledObligationId or "NONE"))
-    end
-    self.d0146ActionSpaceReleaseCount=self.d0146ActionSpaceReleaseCount+1
-    self.d0146ActionSpaceLease=nil
-    return {settled=settled,reason=reason}
-end
-
-function Authority:supersedeActionSpaceRegulationForCooperativePassage(commitment,evaluated)
-    return self:_supersedeD0146ActionSpaceForCooperativePassage(commitment,selectedCandidate(evaluated))
-end
-
-function Authority:preflightActionSpaceRegulationForCooperativePassage(evaluated,readiness)
-    local candidate=selectedCandidate(evaluated)
-    local bridge=cooperativePassageBridge(candidate)
-    local lease=self.d0146ActionSpaceLease
-    if candidate==nil or readiness==nil or candidate.identity~=readiness.candidateId or bridge==nil or bridge.architecture~="D0146_STEP2"
-        or lease==nil or bridge.conflictIdentity~=lease.conflictIdentity then
-        return nil,"ACTION_SPACE_PASSAGE_PREFLIGHT_CONTEXT_MISMATCH"
-    end
-    local obligationId=nil
-    for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.runtime.obligations:openForOwner(lease.commitmentId)) do
-        local basis=obligation.basis
-        local outcome=obligation.requiredOutcome
-        if type(basis)=="table" and basis.kind=="D0146_PASSAGE_ACTION_SPACE_CONSERVATION" and basis.conflictIdentity==lease.conflictIdentity
-            and type(outcome)=="table" and outcome.kind=="D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" then
-            obligationId=obligation.identity
-            break
-        end
-    end
-    if obligationId==nil then return nil,"ACTION_SPACE_PASSAGE_PREFLIGHT_OPEN_PREDECESSOR_OBLIGATION_UNAVAILABLE" end
-    return {commitmentId=lease.commitmentId,conflictIdentity=lease.conflictIdentity,obligationId=obligationId},nil
-end
-
 -- A terminalizing traffic Commitment cannot leave owner-tag Control leases or
 -- Regulation authority state behind. D-0200 invokes this before terminal
 -- settlement so terminal succession observes no stale actuation context.
@@ -1141,15 +827,6 @@ function Authority:retireTrafficLeasesForCommitment(commitmentId,reason)
         logInfo("D0141_DEPENDENT_COMMITMENT_TERMINATED commitment=%s pair=%s follower=%s reason=%s",
             tostring(commitmentId),tostring(follower.pairKey),tostring(follower.followerAssemblyId),tostring(reason))
     end
-    local guarded=self.guardedRecoveryLease
-    if guarded~=nil and guarded.commitmentId==commitmentId then
-        clear(guarded.progressReferenceKey,D0123_OWNER_TAG)
-        self.guardedRecoveryLease=nil
-        self.guardedRecoveryReleaseCount=self.guardedRecoveryReleaseCount+1
-        released=released+1
-        logInfo("D0123_DEPENDENT_COMMITMENT_TERMINATED commitment=%s progress=%s reason=%s",
-            tostring(commitmentId),tostring(guarded.progressAssemblyId),tostring(reason))
-    end
     return {released=released}
 end
 
@@ -1157,248 +834,13 @@ function Authority:getD0146ActionSpaceStatus()
     local lease=self.d0146ActionSpaceLease
     local envelope=lease and lease.progressionEnvelope or nil
     return {active=lease~=nil,actuationActive=lease~=nil and lease.actuationActive~=false or false,commitmentId=lease and lease.commitmentId or nil,conflictIdentity=lease and lease.conflictIdentity or nil,
-        regulatedReferenceKey=lease and lease.regulatedReferenceKey or nil,excursionReferenceKey=lease and lease.excursionReferenceKey or nil,currentCapKmh=lease and lease.currentCapKmh or nil,quiescenceReason=lease and lease.quiescenceReason or nil,
+        regulatedAssemblyId=lease and lease.regulatedAssemblyId or nil,regulatedReferenceKey=lease and lease.regulatedReferenceKey or nil,excursionReferenceKey=lease and lease.excursionReferenceKey or nil,currentCapKmh=lease and lease.currentCapKmh or nil,quiescenceReason=lease and lease.quiescenceReason or nil,
         effectClass=envelope and envelope.effectClass or nil,initialDistanceM=envelope and envelope.initialDistanceM or nil,contingencyReserveM=envelope and envelope.contingencyReserveM or nil,
         conservativeDistanceM=envelope and envelope.conservativeDistanceM or nil,reverseCreatedReserveM=envelope and envelope.reverseCreatedReserveM or nil,remainingOrdinaryM=envelope and envelope.remainingOrdinaryM or nil,
         roleRebaseCount=envelope and envelope.roleRebaseCount or 0,applyCount=self.d0146ActionSpaceApplyCount,releaseCount=self.d0146ActionSpaceReleaseCount,envelopeUpdateCount=self.d0146ActionSpaceEnvelopeUpdateCount,roleMigrationCount=self.d0146ActionSpaceRoleMigrationCount,
         quiescenceCount=self.d0146ActionSpaceQuiescenceCount,reactivationCount=self.d0146ActionSpaceReactivationCount,ownerTag=D0146_ACTION_SPACE_OWNER_TAG}
 end
 
--- Read-only eligibility for the existing follower cleanup after Passage REVISE.
-function Authority:preflightFollowerRegulationForCooperativePassage(evaluated,readiness)
-    local candidate=selectedCandidate(evaluated)
-    local bridge=cooperativePassageBridge(candidate)
-    local lease=self.followerBoundaryLease
-    if candidate==nil or candidate.capability~="REPOSITION" or readiness==nil
-        or readiness.status~="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED"
-        or candidate.identity~=readiness.candidateId or bridge==nil or lease==nil then
-        return nil,"FOLLOWER_PASSAGE_PREFLIGHT_CONTEXT_MISMATCH"
-    end
-    if self.capability==nil or type(self.capability.clearRegulationLeaseByReference)~="function" then
-        return nil,"FOLLOWER_PASSAGE_PREFLIGHT_PHYSICAL_CLEANUP_UNAVAILABLE"
-    end
-    local ids=ownershipAssemblyIds(candidate)
-    local participants={}
-    for _,id in OuttaMyWay.ValueRecord.ipairs(bridge.assemblyIds or {}) do
-        if type(id)~="string" or participants[id] then return nil,"FOLLOWER_PASSAGE_PREFLIGHT_PARTICIPANTS_INVALID" end
-        participants[id]=true
-    end
-    if #ids~=2 or ids[1]==ids[2] or not participants[ids[1]] or not participants[ids[2]]
-        or OuttaMyWay.ValueRecord.length(bridge.assemblyIds or {})~=2
-        or not participants[lease.followerAssemblyId] or not participants[lease.leaderAssemblyId] then
-        return nil,"FOLLOWER_PASSAGE_PREFLIGHT_PARTICIPANTS_MISMATCH"
-    end
-    local commitment=self.runtime.commitments:get(lease.commitmentId)
-    if commitment==nil or commitment.state~="ACTIVE" then return nil,"FOLLOWER_PASSAGE_PREFLIGHT_COMMITMENT_NOT_ACTIVE" end
-    for _,id in ipairs(ids) do
-        local owner=self.runtime.authorities:ownerOf(id)
-        if owner~=nil then
-            if owner~=lease.commitmentId then return nil,"FOLLOWER_PASSAGE_PREFLIGHT_AUTHORITY_CONFLICT" end
-            local valid=false
-            for _,token in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(owner)) do
-                if token.assemblyId==id and self.runtime.authorities:validate(token)==true then valid=true break end
-            end
-            if not valid then return nil,"FOLLOWER_PASSAGE_PREFLIGHT_AUTHORITY_INVALID" end
-        end
-    end
-    local successorObligation=(candidate.obligationsCreated or {})[1]
-    if successorObligation==nil or successorObligation.requiredOutcome==nil
-        or successorObligation.requiredOutcome.kind~="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK" then
-        return nil,"FOLLOWER_PASSAGE_PREFLIGHT_SUCCESSOR_OBLIGATION_UNAVAILABLE"
-    end
-    for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.runtime.obligations:openForOwner(lease.commitmentId)) do
-        local basis,outcome=obligation.basis,obligation.requiredOutcome
-        if basis and basis.kind=="FOLLOWER_BOUNDARY_PROTECTION" and basis.pairKey==lease.pairKey
-            and outcome and outcome.kind=="FOLLOWER_BOUNDARY_ORDERING_PRESERVED_UNTIL_POSITIVE_RETIREMENT" then
-            return {commitmentId=lease.commitmentId,pairKey=lease.pairKey,obligationId=obligation.identity},nil
-        end
-    end
-    return nil,"FOLLOWER_PASSAGE_PREFLIGHT_OPEN_PREDECESSOR_OBLIGATION_UNAVAILABLE"
-end
-
-function Authority:supersedeFollowerRegulationForCooperativePassage(commitment,evaluated)
-    return self:_supersedeFollowerBoundaryForCooperativePassage(commitment,selectedCandidate(evaluated))
-end
-
--- Cooperative Passage may supersede a same-pair D-0141 follower strategy under
--- the existing Commitment. Once the Cooperative Passage REVISE Decision has been
--- applied, that D-0141 speed lease is no longer compatible with the worker's
--- new role.  Clear only the D-0141 physical lease and settle its follower
--- obligation; the generic same-Commitment AuthorityToken is deliberately kept
--- live and has already been rebound by applyCooperativePassageDecision to REPOSITION.
-function Authority:_supersedeFollowerBoundaryForCooperativePassage(commitment,candidate)
-    local lease=self.followerBoundaryLease
-    if lease==nil or commitment==nil or candidate==nil then return nil end
-    local ids={}
-    for _,id in ipairs(ownershipAssemblyIds(candidate)) do ids[id]=true end
-    if lease.commitmentId~=commitment.identity or ids[lease.followerAssemblyId]~=true or ids[lease.leaderAssemblyId]~=true then return nil end
-
-    local cleared,clearReason=self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
-    if cleared~=true then return nil,clearReason or "FOLLOWER_PASSAGE_PHYSICAL_CLEANUP_FAILED" end
-    self:_releaseBoundedAuthority(lease.boundedAuthorityId,"COOPERATIVE_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION")
-    local settled,settleReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleFollowerBoundaryPurpose(self.runtime,commitment.identity,{
-        pairKey=lease.pairKey,reason="COOPERATIVE_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION"
-    },{kind="D0146_COOPERATIVE_PASSAGE_ROLE_SUCCESSION",pairKey=lease.pairKey,assemblyIds=ownershipAssemblyIds(candidate)})
-    if settled==nil then
-        logWarning("D0141_COOPERATIVE_SUPERSESSION commitment=%s pair=%s physicalLeaseCleared=true obligationSettlement=%s",
-            tostring(commitment.identity),tostring(lease.pairKey),tostring(settleReason))
-    else
-        logInfo("D0141_COOPERATIVE_SUPERSESSION commitment=%s pair=%s physicalLeaseCleared=true obligation=%s",
-            tostring(commitment.identity),tostring(lease.pairKey),tostring(settled.settledObligationId or "NONE"))
-    end
-    self.followerBoundaryReleaseCount=self.followerBoundaryReleaseCount+1
-    self.followerBoundaryLease=nil
-    return {settled=settled,reason=settleReason}
-end
-
-function Authority:_releaseGuardedRecoveryLease(picture,evaluated,reason)
-    local lease=self.guardedRecoveryLease
-    if lease==nil then return nil end
-    local commitment=self.runtime.commitments:get(lease.commitmentId)
-    local token=nil
-    for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(lease.commitmentId)) do
-        if candidateToken.assemblyId==lease.progressAssemblyId then token=candidateToken break end
-    end
-    local request,outcome=nil,nil
-    if commitment~=nil and token~=nil and self.runtime.authorities:validate(token)==true and self.capability~=nil and type(self.capability.executeControlRequest)=="function" then
-        local syntheticCandidate={preconditions={},invalidationConditions={}}
-        request=self:_regulationRequest(picture,evaluated,syntheticCandidate,commitment,token,{
-            progressAssemblyId=lease.progressAssemblyId,progressReferenceKey=lease.progressReferenceKey,governingPurpose=lease.governingPurpose
-        },"RELEASE")
-        local ok,result=self.runtime.liveControlDispatcher:dispatch(request,nil)
-        outcome=self:_outcome(request,ok and "ACCEPTED" or "REJECTED",{kind=ok and "REGULATION_LEASE_RELEASED" or "REGULATION_RELEASE_NOT_CONFIRMED",capability="REGULATE_SPEED"},ok and nil or {reason=tostring(result)})
-        if ok~=true and type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.progressReferenceKey,D0123_OWNER_TAG) end
-    elseif self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" then
-        self.capability:clearRegulationLeaseByReference(lease.progressReferenceKey,D0123_OWNER_TAG)
-    end
-    if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,lease.commitmentId,lease.progressAssemblyId,{reason=reason,preserveAuthority=self:_otherRegulationPurposeOwnsAuthority(lease.commitmentId,lease.progressAssemblyId,"D0123")})
-    end
-    self.guardedRecoveryReleaseCount=self.guardedRecoveryReleaseCount+1
-    logInfo("D0123_RELEASE commitment=%s progress=%s ref=%s reason=%s",tostring(lease.commitmentId),tostring(lease.progressAssemblyId),tostring(lease.progressReferenceKey),tostring(reason))
-    self.guardedRecoveryLease=nil
-    return {status="RELEASED",reason=reason,request=request,outcome=outcome}
-end
-
-function Authority:_dispatchGuardedRecovery(picture,evaluated,candidate)
-    local currentLease=self.guardedRecoveryLease
-    local record=guardedRecoveryRecord(picture,currentLease)
-    if currentLease~=nil then
-        if record~=nil then
-            if record.signalStatus=="NEGATIVE" or record.signalStatus=="INVALIDATED" or record.signalStatus=="EXPIRED" then
-                return self:_releaseGuardedRecoveryLease(picture,evaluated,record.reason or record.signalStatus)
-            elseif record.signalStatus=="UNRESOLVED" then
-                return {status="NO_DISPATCH",reason="D0123_UNRESOLVED_PRESERVE_EXISTING_REGULATION",guardedRecovery=true}
-            end
-        elseif pictureContainsAssembly(picture,currentLease.progressAssemblyId) and pictureContainsAssembly(picture,currentLease.yieldAssemblyId) then
-            return self:_releaseGuardedRecoveryLease(picture,evaluated,"GUARDED_RECOVERY_CONTEXT_NOT_OBSERVED")
-        end
-    end
-
-    local bridge=guardedRecoveryBridge(candidate)
-    if bridge==nil then return nil end
-    if bridge.signalStatus~="POSITIVE" or candidate.capability~="REGULATE_SPEED" then
-        return {status="NO_DISPATCH",reason="D0123_OBSERVE_REMAINS_PRIMARY",guardedRecovery=true,signalStatus=bridge.signalStatus}
-    end
-    if currentLease~=nil and currentLease.commitmentId==bridge.commitmentId and currentLease.progressAssemblyId==bridge.progressAssemblyId then
-        return {status="MAINTAINED",reason="D0123_POSITIVE_PURPOSE_PERSISTS",guardedRecovery=true,commitmentId=bridge.commitmentId}
-    end
-    if currentLease~=nil then self:_releaseGuardedRecoveryLease(picture,evaluated,"GUARDED_RECOVERY_CONTEXT_CHANGED") end
-    if self.capability==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",guardedRecovery=true} end
-
-    local acquired,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.acquireSupportingRegulationAuthority(self.runtime,bridge.commitmentId,bridge.progressAssemblyId,{governingPurpose=bridge.governingPurpose})
-    if acquired==nil then return {status="NO_DISPATCH",reason=reason,guardedRecovery=true,commitmentId=bridge.commitmentId} end
-    local request=self:_regulationRequest(picture,evaluated,candidate,acquired.commitment,acquired.authorityToken,bridge,"APPLY")
-    local started,result=self.runtime.liveControlDispatcher:dispatch(request,candidate)
-    if started~=true then
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,bridge.commitmentId,bridge.progressAssemblyId,{reason="D0123_CONTROL_REQUEST_REJECTED:"..tostring(result),preserveAuthority=self:_otherRegulationPurposeOwnsAuthority(bridge.commitmentId,bridge.progressAssemblyId,"D0123")})
-        local outcome=self:_outcome(request,"REJECTED",{kind="NO_PHYSICAL_EFFECT_OBSERVED"},{reason=tostring(result)})
-        return {status="REJECTED",reason=tostring(result),request=request,outcome=outcome,guardedRecovery=true}
-    end
-    self.guardedRecoveryLease={commitmentId=bridge.commitmentId,yieldAssemblyId=bridge.yieldAssemblyId,progressAssemblyId=bridge.progressAssemblyId,progressReferenceKey=bridge.progressReferenceKey,governingPurpose=bridge.governingPurpose,authorityTokenId=acquired.authorityToken.identity,requestId=request.identity}
-    self.guardedRecoveryApplyCount=self.guardedRecoveryApplyCount+1; self.dispatchCount=self.dispatchCount+1
-    local outcome=self:_outcome(request,"ACCEPTED",{kind="BOUNDED_REGULATION_DISPATCH_ACCEPTED",capability="REGULATE_SPEED"},nil)
-    logInfo("D0123_APPLY commitment=%s progress=%s ref=%s request=%s speedLiteral=%.2fkmh purpose=%s",tostring(bridge.commitmentId),tostring(bridge.progressAssemblyId),tostring(bridge.progressReferenceKey),tostring(request.identity),tonumber(request.target.maxSpeedKmh) or 0,tostring(bridge.governingPurpose))
-    return {status="ACCEPTED",request=request,outcome=outcome,commitment=acquired.commitment,candidate=candidate,result=result,guardedRecovery=true}
-end
-
-function Authority:getGuardedRecoveryStatus()
-    local lease=self.guardedRecoveryLease
-    return {active=lease~=nil,commitmentId=lease and lease.commitmentId or nil,progressReferenceKey=lease and lease.progressReferenceKey or nil,applyCount=self.guardedRecoveryApplyCount,releaseCount=self.guardedRecoveryReleaseCount,ownerTag=D0123_OWNER_TAG}
-end
-
-function Authority:dispatch(picture,evaluated)
-    if picture==nil or evaluated==nil or evaluated.decision==nil then return {status="NO_DISPATCH",reason="MISSING_SEALED_DECISION"} end
-    local candidate=selectedCandidate(evaluated)
-    local terminal=self:_dispatchTerminalEgress(picture,evaluated,candidate)
-    if terminal~=nil then return terminal end
-    local followerBridge=followerBoundaryBridge(candidate)
-    if followerBridge~=nil and followerBridge.action=="RETIRE" then
-        return self:_dispatchFollowerBoundary(picture,evaluated,candidate)
-    end
-    local guarded=self.runtime.guardedRecoveryCompatibility and self.runtime.guardedRecoveryCompatibility:dispatch(picture,evaluated,candidate) or nil
-    if guarded~=nil then return guarded end
-    local actionSpace=self:_dispatchD0146ActionSpace(picture,evaluated,candidate)
-    if actionSpace~=nil and actionSpace.status~="QUIESCENT" then return actionSpace end
-    local follower=self:_dispatchFollowerBoundary(picture,evaluated,candidate)
-    if follower~=nil then return follower end
-    if candidate==nil or physical[candidate.capability]~=true then return {status="NO_DISPATCH",reason="NO_SELECTED_PHYSICAL_CANDIDATE"} end
-    local bridge=cooperativePassageBridge(candidate)
-    if candidate.capability~="REPOSITION" or bridge==nil then return {status="NO_DISPATCH",reason="PHYSICAL_CANDIDATE_NOT_ALIGNED_FOR_LIVE_CONTROL",candidateId=candidate.identity} end
-    if self.cooperativePassageControl==nil then return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_CONTROL_UNAVAILABLE",candidateId=candidate.identity} end
-    local inventory=evaluated.candidateInventory
-    local boundary=inventory and inventory.supportBoundary or nil
-    local expectedBoundary="D0146_COOPERATIVE_PASSAGE_STEP2_TEST"
-    if type(boundary)~="table" or boundary.mode~=expectedBoundary then
-        return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_SUPPORT_BOUNDARY_MISMATCH",candidateId=candidate.identity}
-    end
-    if type(self.cooperativePassageControl.isActive)=="function" and self.cooperativePassageControl:isActive() then
-        return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_CONTROL_ALREADY_ACTIVE",candidateId=candidate.identity}
-    end
-
-    return {status="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity}
-end
-
-function Authority:continueCooperativePassage(picture,evaluated,applied)
-    if picture==nil or evaluated==nil or evaluated.decision==nil or type(applied)~="table" or applied.commitment==nil then
-        return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_ESTABLISHED_RESPONSIBILITY_REQUIRED"}
-    end
-    local candidate=selectedCandidate(evaluated)
-    local bridge=cooperativePassageBridge(candidate)
-    if candidate==nil or candidate.capability~="REPOSITION" or bridge==nil then
-        return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_ESTABLISHED_RESPONSIBILITY_MISMATCH"}
-    end
-    local commitment=applied.commitment
-    -- Regulation semantic supersession is completed by Responsibility
-    -- Transition Authority before this physical Passage continuation.
-
-    local requests,requestReason=self:_jointCooperativeRequests(picture,evaluated,candidate,commitment,applied.currentResponsibility,bridge)
-    if requests==nil then
-        self:_onCooperativePassageCompletion({status="FAILED",commitmentId=commitment.identity,evidence={kind="D0146_JOINT_CONTROL_REQUEST_CREATION_FAILED",reason=requestReason}})
-        return {status="NO_DISPATCH",reason=requestReason,candidateId=candidate.identity,commitmentId=commitment.identity}
-    end
-    local started,result=self.runtime.liveControlDispatcher:dispatchJoint(requests[1],requests[2],candidate)
-    if started~=true then
-        self:_releaseBoundedAuthority(requests[1].boundedAuthorityId,"COOPERATIVE_PASSAGE_START_REJECTED")
-        self:_releaseBoundedAuthority(requests[2].boundedAuthorityId,"COOPERATIVE_PASSAGE_START_REJECTED")
-        self:_onCooperativePassageCompletion({status="FAILED",commitmentId=commitment.identity,evidence={kind="D0146_COOPERATIVE_CONTROL_START_REJECTED",reason=tostring(result)}})
-        local outcomes={
-            self:_outcome(requests[1],"REJECTED",{kind="NO_PHYSICAL_EFFECT_OBSERVED"},{reason=tostring(result)}),
-            self:_outcome(requests[2],"REJECTED",{kind="NO_PHYSICAL_EFFECT_OBSERVED"},{reason=tostring(result)})
-        }
-        logWarning("COOPERATIVE_REJECTED commitment=%s candidate=%s detail=%s",tostring(commitment.identity),tostring(candidate.identity),tostring(result))
-        return {status="REJECTED",reason=tostring(result),requests=requests,outcomes=outcomes,commitment=commitment,candidate=candidate}
-    end
-    self.dispatchCount=self.dispatchCount+1
-    local outcomes={
-        self:_outcome(requests[1],"ACCEPTED",{kind="D0146_JOINT_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"},nil),
-        self:_outcome(requests[2],"ACCEPTED",{kind="D0146_JOINT_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"},nil)
-    }
-    logInfo("COOPERATIVE_ACCEPTED architecture=%s decision=%s candidate=%s commitment=%s requestA=%s requestB=%s subject=%s other=%s result=%s",
-        tostring(bridge.architecture),tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(commitment.identity),tostring(requests[1].identity),tostring(requests[2].identity),
-        tostring(bridge.subjectReferenceKey),tostring(bridge.otherReferenceKey),tostring(result))
-    return {status="ACCEPTED",requests=requests,outcomes=outcomes,commitment=commitment,candidate=candidate,result=result}
-end
 function Authority:getDispatchCount() return self.dispatchCount end
 function Authority:getRequests() local out={}; for _,v in OuttaMyWay.ValueRecord.ipairs(self.requests) do out[#out+1]=v end; return out end
 function Authority:getOutcomes() local out={}; for _,v in OuttaMyWay.ValueRecord.ipairs(self.outcomes) do out[#out+1]=v end; return out end

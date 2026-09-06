@@ -2880,7 +2880,7 @@ test("D-0141 follower and D-0123 Guarded-Recovery Regulation purposes share auth
     local guardPositive=runtime.liveTrafficCandidateSupport:attach(guardPicture("POSITIVE"),headOnTestSnapshot())
     equal(guardPositive.candidateSupportEvidence.supportBoundary.mode,"GUARDED_RECOVERY_D0123")
     local guardPositiveEval=runtime:evaluateSealedOperationalPicture(guardPositive)
-    local guarded=runtime.regulationBoundedAuthority:dispatch(guardPositive,guardPositiveEval)
+    local guarded=runtime:dispatchEvaluatedOperationalPicture(guardPositive,guardPositiveEval)
     equal(guarded.status,"ACCEPTED")
     equal(requests[#requests].target.ownerTag,"D0123_GUARDED_RECOVERY")
     equal(runtime.authorities:ownerOf("AS-P"),commitmentId)
@@ -2888,7 +2888,7 @@ test("D-0141 follower and D-0123 Guarded-Recovery Regulation purposes share auth
 
     local guardNegative=runtime.liveTrafficCandidateSupport:attach(guardPicture("NEGATIVE"),headOnTestSnapshot())
     local guardNegativeEval=runtime:evaluateSealedOperationalPicture(guardNegative)
-    local released=runtime.regulationBoundedAuthority:dispatch(guardNegative,guardNegativeEval)
+    local released=runtime:dispatchEvaluatedOperationalPicture(guardNegative,guardNegativeEval)
     equal(released.status,"RELEASED")
     equal(requests[#requests].target.ownerTag,"D0123_GUARDED_RECOVERY")
     equal(runtime.authorities:ownerOf("AS-P"),commitmentId)
@@ -3146,7 +3146,7 @@ test("architecture alignment routes D-0123 through Situation Candidate Decision 
     local positiveCandidate=nil
     for _,candidate in OuttaMyWay.ValueRecord.ipairs(positiveEval.candidates) do if candidate.identity==positiveEval.decision.selectedCandidateId then positiveCandidate=candidate end end
     equal(positiveCandidate.capability,"REGULATE_SPEED")
-    local dispatched=runtime.regulationBoundedAuthority:dispatch(positive,positiveEval)
+    local dispatched=runtime:dispatchEvaluatedOperationalPicture(positive,positiveEval)
     equal(dispatched.status,"ACCEPTED")
     equal(requests[#requests].target.operation,"APPLY")
     equal(requests[#requests].target.maxSpeedKmh,OuttaMyWay.D0123_NATIVE_HANDOVER_CREEP_KMH)
@@ -3159,7 +3159,7 @@ test("architecture alignment routes D-0123 through Situation Candidate Decision 
     local unresolvedEval=runtime:evaluateSealedOperationalPicture(unresolved)
     equal(unresolvedEval.decision.commitmentAction,"MAINTAIN")
     local before=#requests
-    local maintained=runtime.regulationBoundedAuthority:dispatch(unresolved,unresolvedEval)
+    local maintained=runtime:dispatchEvaluatedOperationalPicture(unresolved,unresolvedEval)
     equal(maintained.reason,"D0123_UNRESOLVED_PRESERVE_EXISTING_REGULATION")
     equal(#requests,before)
     equal(runtime.authorities:ownerOf(progressAssemblyId),commitmentId)
@@ -3167,7 +3167,7 @@ test("architecture alignment routes D-0123 through Situation Candidate Decision 
     local negative=runtime.liveTrafficCandidateSupport:attach(guardPicture("NEGATIVE","POSITIVE_CURRENT_HEADING_CLEAR_OF_VULNERABLE_SPACE"),headOnTestSnapshot())
     local negativeEval=runtime:evaluateSealedOperationalPicture(negative)
     equal(negativeEval.decision.commitmentAction,"MAINTAIN")
-    local released=runtime.regulationBoundedAuthority:dispatch(negative,negativeEval)
+    local released=runtime:dispatchEvaluatedOperationalPicture(negative,negativeEval)
     equal(released.status,"RELEASED")
     equal(requests[#requests].target.operation,"RELEASE")
     equal(runtime.authorities:ownerOf(progressAssemblyId),nil)
@@ -3623,7 +3623,7 @@ test("D0146 Current Excursion Action-Space Conservation fails closed outside loc
     equal(lateral.actionSpaceConservation.reason,"CURRENT_EXCURSION_NOT_IN_STABLE_PARTICIPANT_SUPPORTED_CORRIDOR")
 end)
 
-test("D0146 Resolution-Space obligation remains supported at 8 kmh because Control owns magnitude",function()
+test("D0146 Resolution-Space obligation remains supported at 8 kmh because Bounded Authority owns magnitude",function()
     local tracks={}
     local spaces={d0146Space("AS-A",0,0),d0146Space("AS-B",0,60)}
     local physical={d0146Physical("AS-A",0,0,3),d0146Physical("AS-B",0,60,3)}
@@ -4121,7 +4121,7 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
         equal(runtime.obligations:get(actionObligation.identity).status,"SETTLED")
         accepted={a,b,candidate}; return true,"D0146_COOPERATIVE_PASSAGE_STARTED"
     end
-    runtime.regulationBoundedAuthority:setCooperativePassageControl(cooperativeControl)
+    runtime:setCooperativePassageControl(cooperativeControl)
     local passageSupported=runtime.liveTrafficCandidateSupport:attach(passagePicture,passageSnapshot)
     equal(passageSupported.candidateSupportEvidence.supportBoundary.mode,"D0146_COOPERATIVE_PASSAGE_STEP2_TEST")
     equal(passageSupported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.passageEntry.ready,false)
@@ -4178,7 +4178,7 @@ local function followerPassageFixture(runtime,admitted,events)
         events[#events+1]="PASSAGE"
         return true,"ACCEPTED"
     end
-    runtime.regulationBoundedAuthority:setCooperativePassageControl(control)
+    runtime:setCooperativePassageControl(control)
     local supported=runtime.liveTrafficCandidateSupport:attach(picture,snapshot)
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     equal(evaluated.decision.commitmentAction,"REVISE")
@@ -4340,7 +4340,7 @@ test("Action-Space responsibility replacement preflight refusal leaves retained 
     function cooperativeControl:setCompletionHandler(fn) end
     function cooperativeControl:isActive() return false end
     function cooperativeControl:executeJointRequests(a,b,candidate) starts=starts+1; return true,"UNEXPECTED" end
-    runtime.regulationBoundedAuthority:setCooperativePassageControl(cooperativeControl)
+    runtime:setCooperativePassageControl(cooperativeControl)
     local passageSupported=runtime.liveTrafficCandidateSupport:attach(passagePicture,passageSnapshot)
     local passageEval=runtime:evaluateSealedOperationalPicture(passageSupported)
     local refusedValues=OuttaMyWay.ValueRecord.toTable(passageSupported)
@@ -4911,7 +4911,7 @@ test("D0146 Step2 Established Conflict crosses Candidate Decision Commitment and
     function control:setCompletionHandler(fn) self.handler=fn end
     function control:isActive() return false end
     function control:executeJointRequests(a,b,candidate) accepted={a,b,candidate}; return true,"D0146_COOPERATIVE_PASSAGE_STARTED" end
-    runtime.regulationBoundedAuthority:setCooperativePassageControl(control)
+    runtime:setCooperativePassageControl(control)
     local dispatched=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(dispatched.status,"ACCEPTED"); equal(#accepted,3); equal(#dispatched.requests,2)
     equal(string.sub(dispatched.currentResponsibility.identity,1,3),"RS-")
@@ -4941,7 +4941,7 @@ test("D0146 direct Cooperative Passage failure removes semantic Resolution Commi
     function control:setCompletionHandler(fn) self.handler=fn end
     function control:isActive() return false end
     function control:executeJointRequests(a,b,candidate) return false,"TEST_REJECTED" end
-    runtime.regulationBoundedAuthority:setCooperativePassageControl(control)
+    runtime:setCooperativePassageControl(control)
     local dispatched=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(dispatched.status,"REJECTED")
     equal(runtime.commitments:get(dispatched.commitment.identity).state,"FAILED")
