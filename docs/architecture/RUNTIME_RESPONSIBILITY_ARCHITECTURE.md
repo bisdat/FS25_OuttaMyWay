@@ -180,6 +180,18 @@ different post-job authority event: the human has claimed the physical vehicle,
 so post-job Control must relinquish immediately. That D-0147 Player Claim does
 not redefine active Job Episode lifecycle.
 
+**Pre-Semantic Contradiction != Resolution Failure.** Control may observe a raw
+native Job-token contradiction before Observation and lifecycle authority have
+established what happened to the exact Job Episode. That contradiction is
+evidence, not Responsibility Transition authority. Control must issue no new
+procedural phase or target progression while the contradiction remains
+unreconciled; already-authorised bounded actuation may settle against its
+current target. Control must not terminalise the Resolution or demand player
+intervention solely from the raw contradiction. If semantic lifecycle later
+establishes Job Episode termination, the affected Job-founded responsibility is
+reconciled through its normal basis-loss path. If the contradiction disappears
+without semantic termination, the existing responsibility may continue.
+
 Nothing automatically moves the completed assembly. A harmless completed assembly remains where GIANTS left it. Completion creates no terminal lifecycle, terminal succession, completed-worker queue, parking duty, tidying duty or automatic settlement responsibility.
 
 ## 8. Beneficiary and controlled subject

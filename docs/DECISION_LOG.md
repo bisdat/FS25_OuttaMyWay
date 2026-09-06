@@ -21,6 +21,15 @@ responsibility or survivor mode; it continues the same already-committed
 Passage, runout, Axis recovery/return, restoration and GIANTS handoff
 choreography. Incomplete observation cannot establish vacatur.
 
+**Pre-Semantic Contradiction != Resolution Failure.** A raw native Job-token
+contradiction observed inside Passage Control may precede authoritative Job
+Episode lifecycle evidence. Control may withhold new procedural progression
+while existing bounded actuation settles to its current target, but it may not
+convert that contradiction into `SAFE_ABANDON_ESCALATE`, `FAILED_HELD`,
+Passage cancellation or player intervention. Semantic lifecycle remains the
+authority that establishes exact Job Episode termination and therefore
+Passage-Leg vacatur.
+
 Vacatur removes the former participant as a choreography dependency, not as
 physical Reality. A still-present player-controlled, completed or stationary
 assembly remains current occupancy and hard-safety evidence. No replacement

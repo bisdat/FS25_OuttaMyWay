@@ -5402,6 +5402,91 @@ test("D0217 transient unavailable raw Job token does not vacate a live Passage L
     OuttaMyWay.LiveAIJobEvidence.currentJob,OuttaMyWay.LiveAIJobEvidence.jobToken=oldCurrentJob,oldJobToken
 end)
 
+
+test("D0217 raw Job contradiction waits for semantic lifecycle instead of fail-held",function()
+    local oldCurrentJob=OuttaMyWay.LiveAIJobEvidence.currentJob
+    local oldJobToken=OuttaMyWay.LiveAIJobEvidence.jobToken
+    local ok,err=pcall(function()
+        local vehicleA,vehicleB={},{}
+        local jobs={
+            [vehicleA]={token="JOB-A-CHANGED"},
+            [vehicleB]={token="JOB-B"}
+        }
+        OuttaMyWay.LiveAIJobEvidence.currentJob=function(vehicle) return jobs[vehicle] end
+        OuttaMyWay.LiveAIJobEvidence.jobToken=function(job) return job and job.token or nil end
+
+        local holds={}
+        local driveStates={
+            [vehicleA]={mode="REPOSITION"},
+            [vehicleB]={mode="REPOSITION"}
+        }
+        local donor={
+            permissionGate={
+                setHold=function(self,vehicle) holds[vehicle]=true; return true end,
+                release=function(self,vehicle) holds[vehicle]=nil; return true end,
+                isHolding=function(self,vehicle) return holds[vehicle]~=nil end
+            },
+            driveAuthority={
+                clear=function(self,vehicle) driveStates[vehicle]=nil end,
+                getState=function(self,vehicle) return driveStates[vehicle] end
+            },
+            configurationAuthority={
+                clear=function() end,
+                getState=function() return nil end
+            }
+        }
+        local runtime={
+            boundedAuthority={
+                isCurrent=function() return true end
+            }
+        }
+        local control=OuttaMyWay.CooperativePassageControl.new(runtime,donor)
+        local a={
+            vehicle=vehicleA,assemblyId="AS-A",startJobToken="JOB-A",name="A",
+            request={boundedAuthorityId="BA-A"}
+        }
+        local b={
+            vehicle=vehicleB,assemblyId="AS-B",startJobToken="JOB-B",name="B",
+            request={boundedAuthorityId="BA-B"}
+        }
+        control.run={
+            mode="D0146_GUIDE",commitmentId="CM-SEMANTIC-PENDING",
+            phase="CONFIGURING",phaseStartedAt=0,startedAt=0,
+            a=a,b=b,participants={a,b}
+        }
+
+        control:update(16)
+
+        equal(control.run.failureReason,nil)
+        equal(control.run.phase,"CONFIGURING")
+        equal(control.failedCount,0)
+        equal(control.run.semanticLifecyclePendingAssemblyId,"AS-A")
+        equal(driveStates[vehicleA].mode,"REPOSITION")
+        equal(driveStates[vehicleB].mode,"REPOSITION")
+
+        local continued=0
+        control._continueAfterParticipantVacatur=function() continued=continued+1 end
+        local result,reason=control:vacateParticipant(
+            "CM-SEMANTIC-PENDING","AS-A",
+            {kind="JOB_EPISODE_DEPENDENCY_CEASED",endedJobEpisodeId="JE-A"}
+        )
+        equal(reason,nil)
+        equal(result.disposition,"VACATED")
+        equal(driveStates[vehicleA],nil)
+        equal(driveStates[vehicleB].mode,"REPOSITION")
+
+        control:continueAfterParticipantVacatur("CM-SEMANTIC-PENDING","AS-A")
+
+        equal(continued,1)
+        equal(control.run.semanticLifecyclePendingAssemblyId,nil)
+        equal(control.run.failureReason,nil)
+        equal(control:currentParticipantRequest("CM-SEMANTIC-PENDING","AS-B").boundedAuthorityId,"BA-B")
+    end)
+    OuttaMyWay.LiveAIJobEvidence.currentJob=oldCurrentJob
+    OuttaMyWay.LiveAIJobEvidence.jobToken=oldJobToken
+    if not ok then error(err) end
+end)
+
 test("D0146 direct Cooperative Passage failure removes semantic Resolution Commitment",function()
     local runtime=autonomousHeadOnRuntime()
     local picture,snapshot=d0146Step2Fixture(nil,nil,18)

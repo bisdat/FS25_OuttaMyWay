@@ -1,3 +1,49 @@
+## 2026-09-06 — v0.3.0.12 two-run Reality: pre-semantic contradiction poisoned Passage
+
+**Observe:** owner-supplied `v0.3.0.12 TEST` evidence contains two runs with the
+same loaded mod hash `4b5134445a9fa592bf2929ee60dd7c7c`. The first run
+passes the original Issue #51 timing: Condor's `CM-00005` Passage Leg is
+`HANDED_BACK` at 17:06:52.580, Condor's Job Episode later ends, and Patriot
+continues to its own `HANDED_BACK` / parent success at 17:07:26.623.
+
+The second run deliberately stops Condor's GIANTS job and moves the vehicle away
+during a live two-leg Passage. At 17:10:09.603, Control sees
+`COOPERATIVE_PASSAGE_PARTICIPANT_JOB_EPISODE_CONTRADICTION_PENDING_SEMANTIC_LIFECYCLE_EVIDENCE`
+and immediately executes `SAFE_ABANDON_ESCALATE`, enters `FAILED_HELD`, and
+emits `PLAYER_INTERVENTION_OR_JOB_CHANGE`. At 17:10:09.763, only about 160 ms
+later, the semantic lifecycle correctly vacates Condor's Passage Leg as
+`JOB_EPISODE_DEPENDENCY_CEASED`, retains one open obligation and preserves
+Patriot survivor Bounded Authority as `BA-00084`.
+
+**Discuss / discover:** **Pre-Semantic Contradiction != Resolution Failure.**
+`CooperativePassageControl:_allSameJob()` observes a raw runtime contradiction;
+it does not own Job Episode lifecycle or Responsibility Transition. The semantic
+D-0217 path was correct, but Control made an irreversible terminal decision
+before that authority could act. **Semantic Change != Control Failure:** Job
+Episode change leaves `SAFE_ABANDON_ESCALATE` entirely. Human escalation remains
+valid only for genuine Control execution failures where the already-authorised
+physical choreography cannot truthfully continue.
+
+**Implement:** when `_allSameJob()` reports a contradiction, Passage Control
+returns before any phase-specific progression and records
+`SEMANTIC_LIFECYCLE_PENDING`. It deliberately does not clear the current Drive
+Authority target: already-authorised bounded actuation may settle to that target,
+but no new phase or target is issued while the semantic fact is unresolved.
+Authoritative Passage-Leg vacatur clears the pending diagnostic and continues
+the survivor under the existing D-0217 permission-rebinding path. If the raw
+contradiction disappears without Job Episode termination, the existing
+responsibility may continue. `_failHeld()` remains the genuine Control-failure
+fail-safe, but its player-facing action is narrowed from
+`PLAYER_INTERVENTION_OR_JOB_CHANGE` to `PLAYER_INTERVENTION_REQUIRED`.
+
+**Validate:** add a focused Lua contract reproducing the observed ordering:
+raw Job contradiction first must leave the Passage non-terminal and current
+bounded targets intact; subsequent semantic vacatur of the affected leg must
+still reach survivor continuation without a prior fail-held poison. Repository
+test suites remain GitHub Actions execution responsibility. The next playable
+identity is `v0.3.0.13 TEST`; no in-game claim is made until that executable is
+actually run.
+
 ## 2026-09-06 — Reality PASS and active-job Player Claim boundary
 
 **Observe:** GitHub Actions run #114 at `d994f62` reached 112/112 Structural

@@ -1047,13 +1047,14 @@ function Control:_failHeld(reason)
     end
     run.failureReason=tostring(reason or "UNRESOLVED")
 
-    -- D-0146 failure is still an unresolved spatial situation. Preserve the
-    -- current (possibly compact) configuration rather than enlarging an assembly
-    -- inside that unresolved conflict.
+    -- Genuine Control execution failure remains an unresolved spatial/physical
+    -- situation. Preserve the current (possibly compact) configuration rather
+    -- than enlarging an assembly inside that unresolved conflict. Semantic Job
+    -- lifecycle change is reconciled upstream and must not enter this path.
     self:_setPhase(run,"FAILED_HELD",g_time or 0)
     self.failedCount=self.failedCount+1
     logWarning("PASSAGE_REASSESSMENT commitment=%s guide=%s cause=%s outcome=SAFE_ABANDON_ESCALATE controlBroadening=false bothHeld=true configurationPreserved=true",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),run.failureReason)
-    logWarning("HALT commitment=%s reason=%s phase=%s bothHeld=true noBlindRelease=true configurationPreserved=true action=PLAYER_INTERVENTION_OR_JOB_CHANGE",tostring(run.commitmentId),run.failureReason,run.phase)
+    logWarning("HALT commitment=%s reason=%s phase=%s bothHeld=true noBlindRelease=true configurationPreserved=true action=PLAYER_INTERVENTION_REQUIRED",tostring(run.commitmentId),run.failureReason,run.phase)
 end
 
 function Control:vacateParticipant(commitmentId,assemblyId,evidence)
@@ -1100,6 +1101,11 @@ end
 function Control:continueAfterParticipantVacatur(commitmentId,assemblyId)
     local run=self.run
     if run==nil or run.commitmentId~=commitmentId or run.failureReason~=nil then return end
+    if run.semanticLifecyclePendingAssemblyId==assemblyId then
+        logInfo("SEMANTIC_LIFECYCLE_RECONCILED commitment=%s assembly=%s outcome=PASSAGE_LEG_VACATED terminalDecisionOwner=SEMANTIC_LIFECYCLE",
+            tostring(run.commitmentId),tostring(assemblyId))
+        run.semanticLifecyclePendingAssemblyId=nil
+    end
     for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants) do
         if participant.assemblyId==assemblyId and participant.vacated==true then
             self:_continueAfterParticipantVacatur(run,participant)
@@ -1263,7 +1269,20 @@ function Control:update(dt)
     if OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED~=true then self:_failHeld("D0146_STEP2_DISABLED_DURING_ACTIVE_COMMITMENT"); return end
     local nowMs=g_time or 0
     local sameJob,changed=self:_allSameJob(run)
-    if not sameJob then self:_failHeld("COOPERATIVE_PASSAGE_PARTICIPANT_JOB_EPISODE_CONTRADICTION_PENDING_SEMANTIC_LIFECYCLE_EVIDENCE"); return end
+    if not sameJob then
+        local changedAssemblyId=changed and changed.assemblyId or nil
+        if run.semanticLifecyclePendingAssemblyId~=changedAssemblyId then
+            logInfo("SEMANTIC_LIFECYCLE_PENDING commitment=%s participant=%s assembly=%s phase=%s evidence=RAW_JOB_EPISODE_CONTRADICTION action=NO_NEW_CONTROL_PROGRESSION currentBoundedActuationMaySettle=true terminalDecision=false",
+                tostring(run.commitmentId),tostring(changed and changed.name or "unresolved"),tostring(changedAssemblyId),tostring(run.phase))
+        end
+        run.semanticLifecyclePendingAssemblyId=changedAssemblyId
+        return
+    end
+    if run.semanticLifecyclePendingAssemblyId~=nil then
+        logInfo("SEMANTIC_LIFECYCLE_PENDING_CLEARED commitment=%s assembly=%s phase=%s outcome=RAW_CONTRADICTION_NO_LONGER_APPLIES terminalDecision=false",
+            tostring(run.commitmentId),tostring(run.semanticLifecyclePendingAssemblyId),tostring(run.phase))
+        run.semanticLifecyclePendingAssemblyId=nil
+    end
     local thirdOk,thirdReason=self:_thirdPartySupport(run,nil)
     if not thirdOk then self:_failHeld(thirdReason); return end
 

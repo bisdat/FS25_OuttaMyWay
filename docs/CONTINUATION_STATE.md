@@ -61,8 +61,13 @@ Job Episode termination; positive runtime removal matters because it can
 establish `RUNTIME_SUBJECT_REMOVED` termination and physical disappearance.
 Player-control evidence alone cannot vacate an active Passage Leg. Control
 neutralises the affected physical effect first; survivor continuation is
-deferred until the retained
-Commitment, Current Resolution view and survivor BA/ControlRequest are truthful.
+deferred until the retained Commitment, Current Resolution view and survivor
+BA/ControlRequest are truthful. **Pre-Semantic Contradiction != Resolution
+Failure:** a raw native Job-token contradiction can appear inside Control before
+semantic Job Episode termination is sealed. Control therefore issues no new
+procedural phase/target progression while that evidence is unreconciled, but
+does not enter fail-held or request player intervention. Existing bounded
+actuation may settle only to its already-authorised current target.
 A player-taken-over former participant remains current hard-safety occupancy,
 whereas positive runtime-subject removal is physical disappearance and therefore
 does not retain former-participant occupancy. Unexpected
@@ -156,11 +161,34 @@ the parent Commitment succeeded at 16:26:45.133. The run contains no
 `JOB_EPISODE_DEPENDENCY_COLLAPSE` evidence for that Passage.
 
 The same `0.3.0.11` label had already been used by materially different failing
-PR #54 bytes, so the PASS remains truthfully recorded as the executable that
-identified itself as `0.3.0.11`, while the next playable identity advances to
-**v0.3.0.12 TEST**. This is a build-identity correction, not canonicalisation.
-Issue #51 remains open until the accepted repository state contains the
-validated implementation.
+PR #54 bytes, so the PASS remains truthfully recorded under the executable
+identity it actually emitted.
+
+Owner-supplied **v0.3.0.12 TEST** two-run Reality evidence (loaded mod hash
+`4b5134445a9fa592bf2929ee60dd7c7c`) then separated two cases. Run 1 is a clean
+PASS of the original Issue #51 timing: in `CM-00005`, Condor's `OB-00006`
+settled `HANDED_BACK` at 17:06:52.580; Condor's Job Episode ended afterwards and
+the Encounter reported `JOB_EPISODE_ENDED` at 17:07:13.809; Patriot's surviving
+`OB-00007` then settled `HANDED_BACK` and the parent Passage succeeded at
+17:07:26.623.
+
+Run 2 deliberately stopped Condor's GIANTS job and moved the vehicle away while
+both Passage Legs were still live. At 17:10:09.603, before semantic Job Episode
+termination was reconciled, `CooperativePassageControl` converted its raw
+current-Job-token contradiction into `SAFE_ABANDON_ESCALATE`,
+`FAILED_HELD` and `PLAYER_INTERVENTION_OR_JOB_CHANGE`. At 17:10:09.763 the
+semantic D-0217 path then correctly vacated only Condor's leg as
+`JOB_EPISODE_DEPENDENCY_CEASED`, retained one open Passage obligation and
+preserved Patriot survivor authority as `BA-00084`. **The semantic transition
+was correct but arrived after Control had already poisoned the Passage.**
+
+This establishes **Pre-Semantic Contradiction != Resolution Failure**. Raw
+Control evidence must wait for the semantic lifecycle authority instead of
+making a terminal decision. The next playable identity advances to
+**v0.3.0.13 TEST — Passage Leg Lifecycle Reconciliation**. This remains a
+test-build identity only; canonical authority is still **v0.3.0.0**. Issue #51
+and PR #54 remain open pending CI and targeted Reality validation of this
+ordering correction.
 Candidate-Embedded
 Verdict Authority and generic multi-context application cardinality remain
 Phase-13 work after this correction.
@@ -171,9 +199,9 @@ by Issue #45.
 
 This Engineering Increment changes runtime, focused offline validation
 contracts, architecture/decision knowledge, and the playable **test-build
-identity** only. The next executable is **v0.3.0.12 TEST — Passage Leg Lifecycle
-Reconciliation** because materially different PR #54 executables were
-accidentally tested under the same `v0.3.0.11` identity. This is not a release
+identity** only. The next executable is **v0.3.0.13 TEST — Passage Leg Lifecycle
+Reconciliation**. It isolates the Reality-proven pre-semantic contradiction
+ordering correction from the `v0.3.0.12` two-run evidence. This is not a release
 or canonical declaration; canonical authority remains **v0.3.0.0**.
 
 ## Established

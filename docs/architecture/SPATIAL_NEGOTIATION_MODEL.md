@@ -222,6 +222,15 @@ lifecycle effect. An already `HANDED_BACK` or `VACATED` leg remains terminal;
 later participant lifecycle change has no Passage effect. Incomplete observation
 or mere absence cannot establish vacatur under Lifecycle Evidence Asymmetry.
 
+**Pre-Semantic Contradiction != Resolution Failure.** During committed Passage,
+Control can encounter a raw current-Job-token contradiction before the exact Job
+Episode has been authoritatively terminalised. The contradiction may suspend
+new procedural progression, but it cannot itself produce `FAILED_HELD`, cancel
+the Bubble, vacate a leg or request player intervention. Existing bounded
+actuation may settle only to its already-authorised current target while
+semantic lifecycle catches up. Once authoritative Job Episode termination is
+established, normal Passage-Leg vacatur and Survivor Invariance apply.
+
 Vacatur settles only the obligations and physical authority belonging to that
 Passage Leg. It admits no replacement participant and creates no new Candidate,
 Resolution Commitment, cleanup responsibility or survivor mode for the other
