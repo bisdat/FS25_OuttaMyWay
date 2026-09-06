@@ -4081,10 +4081,9 @@ end)
 
 test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Control and succeeds into same-Commitment Passage",function()
     local runtime=autonomousHeadOnRuntime()
-    local regulationRequests={}; local cleared={}
+    local regulationRequests={}
     local capability={}
     function capability:executeControlRequest(request,candidate) regulationRequests[#regulationRequests+1]=request; return true,"ACCEPTED" end
-    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) cleared[#cleared+1]={referenceKey=referenceKey,ownerTag=ownerTag}; return true end
     function capability:getControlExecutionObservation() return nil end
     runtime:setLiveControlCapability(capability)
 
@@ -4117,7 +4116,8 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     function cooperativeControl:setCompletionHandler(fn) end
     function cooperativeControl:isActive() return false end
     function cooperativeControl:executeJointRequests(a,b,candidate)
-        equal(#cleared,1)
+        equal(#regulationRequests,2)
+        equal(regulationRequests[2].target.operation,"RELEASE")
         equal(runtime.obligations:get(actionObligation.identity).status,"SETTLED")
         accepted={a,b,candidate}; return true,"D0146_COOPERATIVE_PASSAGE_STARTED"
     end
@@ -4135,7 +4135,10 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     equal(dispatched.currentResponsibility.kind,"RESOLUTION_COMMITMENT")
     equal(OuttaMyWay.ValueRecord.length(dispatched.currentResponsibility.openResolutionObligationIds),1)
     equal(runtime.regulationBoundedAuthority:getD0146ActionSpaceStatus().active,false)
-    equal(#cleared,1); equal(cleared[1].referenceKey,"vehicle-root:201"); equal(cleared[1].ownerTag,"D0146_ACTION_SPACE_CONSERVATION")
+    equal(#regulationRequests,2)
+    equal(regulationRequests[2].target.operation,"RELEASE")
+    equal(regulationRequests[2].target.vehicleReferenceKey,"vehicle-root:201")
+    equal(regulationRequests[2].target.ownerTag,"D0146_ACTION_SPACE_CONSERVATION")
     equal(runtime.obligations:get(actionObligation.identity).status,"SETTLED")
     equal(#runtime.authorities:tokensForCommitment(commitmentId),2)
     equal(#accepted,3)
