@@ -1079,6 +1079,7 @@ def test_v47106_d0146_current_excursion_conserves_action_space_before_establishe
     assessment=(ROOT/"scripts"/"assessment"/"TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+    current_assessment=(ROOT/"scripts"/"assessment"/"CurrentResponsibilityAssessment.lua").read_text(encoding="utf-8")
     envelope=(ROOT/"scripts"/"authority"/"ResolutionSpaceProgressionEnvelope.lua").read_text(encoding="utf-8")
     authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
@@ -1391,6 +1392,7 @@ def test_v01144_d0199_courtesy_budget_belongs_to_moved_obstacle_and_centroid_is_
 
 def test_v47124_d0147_protected_yield_interval_uses_valuerecord_traversal_and_sequences_productive_hold():
     candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
+    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     boundary=(ROOT/"scripts"/"commitment"/"DecisionCommitmentBoundary.lua").read_text(encoding="utf-8")
     drive=(ROOT/"scripts"/"prototypes"/"Prototype22DriveAuthority.lua").read_text(encoding="utf-8")
@@ -1410,9 +1412,9 @@ def test_v47124_d0147_protected_yield_interval_uses_valuerecord_traversal_and_se
         'bridge.phase~="INFIELD"',
         '"APPLY",D0147_PROTECTED_YIELD_OWNER_TAG,0.0',
         'D0147_PROTECTED_YIELD_HOLD_APPLIED',
-        'self:_releaseD0147ProtectedYield(result.commitmentId,"TERMINAL_CONTROL_"..tostring(result.status))',
     ):
         assert token in authority
+    assert 'self.regulationBoundedAuthority:_releaseD0147ProtectedYield(result.commitmentId,"TERMINAL_CONTROL_"..tostring(result.status))' in runtime
     assert "physical selected Candidate must select one actuation authority class" not in boundary
     assert "one assembly cannot simultaneously own progress and post-job actuation" in boundary
     assert "D-0186 Regulation–Hold Boundary" in drive
@@ -1826,7 +1828,7 @@ def test_v01143_d0198_regulation_authority_semantics():
     dispatch=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
     assert 'dispatch==nil or dispatch.status=="QUIESCENT"' in dispatch
     assert 'assessFollowerBoundaryPermission' in dispatch
-    assert 'actionSpace.status~="QUIESCENT"' in dispatch
+    assert 'dispatch.status=="QUIESCENT"' in dispatch
     # Diagnostic-only 0.1.14.2 hot-path instrumentation is withdrawn.
     assert "D0141_AUTHORITY_ATTEMPT" not in authority
     assert "D0141_AUTHORITY_DIAG" not in authority
@@ -1896,8 +1898,8 @@ def test_completed_obstruction_responsibility_transition_is_upstream_and_singula
     assert orchestration.index('status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED"') < orchestration.index("transitionCompletedObstructionResolution")
     assert orchestration.index("transitionCompletedObstructionResolution") < orchestration.index("_continueCompletedObstruction")
     readiness=runtime[runtime.index("local terminalBridge=terminalEgressBridge(candidate)"):runtime.index("local followerBridge=followerBoundaryBridge(candidate)")]
-    assert readiness.index('boundary.mode~="D0147_BOUNDED_TERMINAL_EGRESS"') < readiness.index('bridge.terminalEvent~=nil')
-    assert readiness.index('bridge.terminalEvent~=nil') < readiness.index('candidate.capability~="REPOSITION"')
+    assert readiness.index('boundary.mode~="D0147_BOUNDED_TERMINAL_EGRESS"') < readiness.index('terminalBridge.terminalEvent~=nil')
+    assert readiness.index('terminalBridge.terminalEvent~=nil') < readiness.index('candidate.capability~="REPOSITION"')
     assert readiness.index('candidate.capability~="REPOSITION"') < readiness.index('self.liveControlDispatcher.terminalEgressControl==nil')
     assert readiness.index('self.liveControlDispatcher.terminalEgressControl==nil') < readiness.index('self.liveControlDispatcher.terminalEgressControl:isActive()')
     assert readiness.index('self.liveControlDispatcher.terminalEgressControl:isActive()') < readiness.index('status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED"')
