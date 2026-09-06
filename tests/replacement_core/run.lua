@@ -4156,7 +4156,10 @@ local function followerResponsibilityFixture()
     end
     return true,"ACCEPTED"
     end
-    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
+    function capability:clearRegulationLeaseByReference(referenceKey,ownerTag)
+        events[#events+1]="FALLBACK_CLEAR"
+        return true
+    end
     function capability:getControlExecutionObservation() return nil end
     runtime:setLiveControlCapability(capability)
     local record=d0141Record(12,nil,nil)
@@ -4277,7 +4280,7 @@ test("Job Episode dependency collapse ends follower Regulation on eligible retai
     equal(runtime.commitments:get(id).state,"SUCCEEDED")
     equal(runtime.responsibilityTransitionAuthority:getCurrentRegulation(id),nil)
     equal(runtime.regulationBoundedAuthority.followerBoundaryLease,nil)
-    equal(events[1],"CLEAR")
+    equal(events[1],"FALLBACK_CLEAR")
 end)
 
 test("Follower ordinary revalidation preserves explicit semantic identity at unchanged magnitude",function()
