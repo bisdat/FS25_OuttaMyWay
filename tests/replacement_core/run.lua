@@ -6095,6 +6095,23 @@ test("Phase13 direct Cooperative Passage substrate targeting is purpose and Job-
     equal(targeted.commitmentId,retained.identity)
     equal(targeted.currentResolution.identity,"RS-DIRECT-TARGET")
 
+    -- The Passage substrate is semantically targetable, but the retained
+    -- generic Commitment application boundary cannot yet consume more than
+    -- one live context.
+    local multiple,multipleReason=authority:evaluateDirectCooperativePassageSubstrate(
+        {commitmentContext={
+            {
+                commitmentId=retained.identity,
+                governingBasis=retained.governingBasis
+            },
+            {
+                commitmentId="CM-INDEPENDENT",
+                governingBasis={responsibilityKey="independent-regulation"}
+            }
+        }},evaluated)
+    equal(multiple,nil)
+    equal(multipleReason,"COOPERATIVE_PASSAGE_MULTI_CONTEXT_APPLICATION_UNSUPPORTED")
+
     activeByAssembly["AS-A"]=episodes["JE-A2"]
     bridge.subjectJobToken="JOB-A2"
     local stale,staleReason=authority:evaluateDirectCooperativePassageSubstrate(

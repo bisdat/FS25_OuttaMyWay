@@ -209,8 +209,13 @@ local function cooperativePassageTargetContext(picture,bridge)
         end
         return nil,nil
     end
+    -- Semantic targeting may already be unambiguous even when another
+    -- independent retained context exists. The current generic Commitment
+    -- application boundary nevertheless accepts only one context, so fail
+    -- closed without misclassifying that implementation limit as semantic
+    -- target ambiguity.
     if OuttaMyWay.ValueRecord.length(contexts)~=1 then
-        return nil,"COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_CONTEXT_AMBIGUOUS"
+        return nil,"COOPERATIVE_PASSAGE_MULTI_CONTEXT_APPLICATION_UNSUPPORTED"
     end
     return match,nil
 end

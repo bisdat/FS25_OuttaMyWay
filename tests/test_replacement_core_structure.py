@@ -2383,6 +2383,7 @@ def test_phase13_direct_cooperative_passage_targets_substrate_by_purpose_and_job
         "dependentJobEpisodeIds",
         "getActiveForAssembly",
         "COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_NOT_TARGETED",
+        "COOPERATIVE_PASSAGE_MULTI_CONTEXT_APPLICATION_UNSUPPORTED",
         "COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_JOB_EPISODE_MISMATCH",
         "COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_DEPENDENCY_MISMATCH",
         "RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING",
@@ -2397,6 +2398,7 @@ def test_phase13_direct_cooperative_passage_targets_substrate_by_purpose_and_job
     assert "COOPERATIVE_PASSAGE_RETAINED_COMMITMENT_CHANGED" in direct
     assert "resolutionIdentityForCommitment" not in direct
     assert "commitmentAction" not in direct
+    assert "COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_CONTEXT_AMBIGUOUS" not in authority
 
     # D0147 is intentionally outside this increment. Its unresolved direct
     # Resolution continuity guard remains on the retained generic action until
