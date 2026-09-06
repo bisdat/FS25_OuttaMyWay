@@ -264,6 +264,22 @@ function Authority:hasActiveRegulationForAssembly(commitmentId,assemblyId,exclud
     return self:_otherRegulationPurposeOwnsAuthority(commitmentId,assemblyId,excluding)
 end
 
+function Authority:preflightFollowerBoundaryNeutralization(commitmentId,pairKey)
+    local lease=self.followerBoundaryLease
+    if lease==nil or lease.commitmentId~=commitmentId or lease.pairKey~=pairKey then
+        return nil,"FOLLOWER_PASSAGE_PREFLIGHT_CONTEXT_MISMATCH"
+    end
+    return {commitmentId=lease.commitmentId,pairKey=lease.pairKey},nil
+end
+
+function Authority:preflightActionSpaceNeutralization(commitmentId,conflictIdentity)
+    local lease=self.d0146ActionSpaceLease
+    if lease==nil or lease.commitmentId~=commitmentId or lease.conflictIdentity~=conflictIdentity then
+        return nil,"ACTION_SPACE_PASSAGE_PREFLIGHT_CONTEXT_MISMATCH"
+    end
+    return {commitmentId=lease.commitmentId,conflictIdentity=lease.conflictIdentity},nil
+end
+
 function Authority:neutralizeFollowerBoundaryPhysical(picture,evaluated,candidate,reason)
     local lease=self.followerBoundaryLease
     if lease==nil then return {status="NO_DISPATCH",reason="D0141_NO_ACTIVE_LEASE_TO_RETIRE",followerBoundary=true} end

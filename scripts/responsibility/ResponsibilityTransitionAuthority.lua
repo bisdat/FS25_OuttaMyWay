@@ -109,6 +109,11 @@ function Authority:replaceActionSpaceRegulationWithCooperativePassage(picture,ev
     if preflight.commitmentId~=current.provenance.retainedCommitmentId or preflight.conflictIdentity~=current.provenance.conflictIdentity then
         return nil,"ACTION_SPACE_PASSAGE_RESPONSIBILITY_SUBSTRATE_MISMATCH"
     end
+    if regulationAuthority==nil or type(regulationAuthority.preflightActionSpaceNeutralization)~="function" then
+        return nil,"ACTION_SPACE_PASSAGE_PREFLIGHT_CONTEXT_MISMATCH"
+    end
+    local physicalPreflight,physicalReason=regulationAuthority:preflightActionSpaceNeutralization(preflight.commitmentId,preflight.conflictIdentity)
+    if physicalPreflight==nil then return nil,physicalReason end
     local targeted=false
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
         if context.commitmentId==preflight.commitmentId then targeted=true break end
@@ -304,6 +309,11 @@ function Authority:replaceFollowerRegulationWithCooperativePassage(picture,evalu
     if preflight==nil then return nil,reason end
     local current=self:getCurrentRegulation(preflight.commitmentId)
     if current==nil or current.provenance.pairKey~=preflight.pairKey then return nil,"FOLLOWER_PASSAGE_PREDECESSOR_MISMATCH" end
+    if regulationAuthority==nil or type(regulationAuthority.preflightFollowerBoundaryNeutralization)~="function" then
+        return nil,"FOLLOWER_PASSAGE_PREFLIGHT_CONTEXT_MISMATCH"
+    end
+    local physicalPreflight,physicalReason=regulationAuthority:preflightFollowerBoundaryNeutralization(preflight.commitmentId,preflight.pairKey)
+    if physicalPreflight==nil then return nil,physicalReason end
     local targeted=false
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
         if context.commitmentId==preflight.commitmentId then targeted=true break end
@@ -344,7 +354,7 @@ function Authority:supersedeActionSpaceRegulationForCooperativePassage(commitmen
     local current=self:findRegulation("conflictIdentity",bridge and bridge.conflictIdentity)
     if current==nil or bridge==nil or current.provenance.conflictIdentity~=bridge.conflictIdentity then return nil,"ACTION_SPACE_PASSAGE_PREDECESSOR_MISMATCH" end
     local neutralized=regulationAuthority and regulationAuthority:neutralizeActionSpaceRegulationPhysical(picture,evaluated,"COOPERATIVE_PASSAGE_SUPERSEDES_D0146_ACTION_SPACE_REGULATION") or nil
-    if neutralized==nil then return nil,"ACTION_SPACE_PASSAGE_PHYSICAL_CLEANUP_FAILED" end
+    if neutralized==nil or neutralized.status~="RELEASED" then return nil,"ACTION_SPACE_PASSAGE_PHYSICAL_CLEANUP_FAILED" end
     local settled,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleD0146ActionSpacePurpose(self.runtime,commitment.identity,{
         conflictIdentity=current.provenance.conflictIdentity,reason="COOPERATIVE_PASSAGE_SUPERSEDES_D0146_ACTION_SPACE_REGULATION"
     },{kind="D0146_ESTABLISHED_CONFLICT_PASSAGE_SUCCESSION",conflictIdentity=current.provenance.conflictIdentity})
@@ -404,7 +414,7 @@ function Authority:supersedeFollowerRegulationForCooperativePassage(commitment,e
     local current=self:getCurrentRegulation(commitment and commitment.identity)
     if current==nil or current.provenance.pairKey==nil then return nil,"FOLLOWER_PASSAGE_PREDECESSOR_MISMATCH" end
     local neutralized=regulationAuthority and regulationAuthority:neutralizeFollowerBoundaryPhysical(picture,evaluated,selectedCandidate(evaluated),"COOPERATIVE_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION") or nil
-    if neutralized==nil then return nil,"FOLLOWER_PASSAGE_PHYSICAL_CLEANUP_FAILED" end
+    if neutralized==nil or neutralized.status~="RELEASED" then return nil,"FOLLOWER_PASSAGE_PHYSICAL_CLEANUP_FAILED" end
     local settled,settleReason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleFollowerBoundaryPurpose(self.runtime,commitment.identity,{
         pairKey=current.provenance.pairKey,reason="COOPERATIVE_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION"
     },{kind="D0146_COOPERATIVE_PASSAGE_ROLE_SUCCESSION",pairKey=current.provenance.pairKey,assemblyIds=ownershipAssemblyIds(selectedCandidate(evaluated))})
