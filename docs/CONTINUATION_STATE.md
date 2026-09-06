@@ -17,11 +17,32 @@ direct v4.7.47 API tests were retired. Generic Commitment machinery still used
 by supported D-0141, D-0146, D-0147, D-0200 and Guarded Recovery paths remains
 intentionally retained.
 
-The next strangler boundary is **Phase 13 — Simplify
-Candidate/Constraint/Decision only where evidence proves duplication**. This is
-an evidence-led simplification pass, not a requirement to collapse layers that
-still express distinct responsibilities. A valid Phase-13 result may therefore
-be that little or no simplification is justified.
+Phase 13 — Simplify Candidate/Constraint/Decision only where evidence proves
+duplication — is **IN PROGRESS**. The first bounded tranche established
+**Commitment Operation != Responsibility Transition**: generic Commitment
+`CREATE` / `MAINTAIN` / `REVISE` remains retained orchestration substrate, but
+where independent semantic evidence already exists it no longer acts as Current
+Responsibility transition authority.
+
+The validated tranche removes redundant `REVISE` succession checks from the two
+Regulation-to-Cooperative-Passage semantic replacement paths, derives
+Action-Space Regulation establishment/revalidation from RTA preflight Current
+Responsibility state, and derives Resolution exposure diagnostics from explicit
+RTA semantic continuity. Generic Commitment lifecycle behaviour remains
+otherwise unchanged.
+
+The broader hypothesis that all semantic use of `decision.commitmentAction`
+could now be removed was disproved. Direct Resolution continuity still lacks an
+independent Situation-owned witness when a retained `CM-*` context exists but
+no matching Resolution `RS-*` is current. Its fail-safe
+`RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING` guard therefore remains
+intentionally retained.
+
+The next Phase-13 question is whether Situation Assessment should expose a
+truthful independent Resolution-continuity witness. The separate
+**Candidate-Embedded Verdict Authority** observation — nominal Constraint
+verdicts already authored inside some Candidate support paths — remains a later
+Phase-13 ownership question rather than an authorised simplification.
 
 Issue #37 remains open as non-blocking Category-2 Reality-validation debt.
 Materially contrary later evidence must reopen the affected assumptions.
@@ -91,6 +112,22 @@ This ordinary Engineering Increment does not change canonical release authority.
   textually on retired implementation details and were rebound to the surviving
   contract boundary, with a Phase-12 backsliding guard added for the retired
   API.
+
+- Phase 13 establishes **Commitment Operation != Responsibility Transition**:
+  retained generic Commitment operation is not semantic Current Responsibility
+  establishment, persistence or replacement authority.
+- Regulation-to-Cooperative-Passage replacement now relies on its explicit
+  predecessor responsibility, targeted retained substrate, successor Candidate
+  and preflight obligation/participant evidence rather than additionally
+  requiring generic Commitment `REVISE`.
+- The direct Resolution continuity guard remains intentionally coupled to
+  `MAINTAIN` / `REVISE` because no independent Situation-owned continuity
+  witness currently exists. Removing that fail-safe without replacement
+  evidence is not authorised by Phase 13.
+- GitHub Actions Run #102 validated this first Phase-13 tranche with
+  `111 passed` blocking Structural contracts and `298 passed / 9 failed` in the
+  Lua observational harness, preserving exactly the same nine known failure
+  identities with no new failure.
 
 - The accepted [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Strangler Transition Map](IMPLEMENTATION_MAP.md#detailed-strangler-transition-map) remain authoritative for architecture and programme direction respectively.
 - Cooperative Passage upstream transition remains accepted and Reality-validated for one direct `CREATE` episode.

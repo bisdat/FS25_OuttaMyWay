@@ -1945,7 +1945,8 @@ def test_explicit_resolution_commitment_is_a_read_only_view_at_both_transition_b
     assert "progressActuationOwnership" not in cooperative
     assert "authorizingDemandAssemblyIds" in completed
     assert "progressActuationOwnership" not in completed and "postJobActuationOwnership" not in completed
-    assert 'applied.application.action=="MAINTAIN"' in completed
+    assert "responsibilityAlreadyCurrent" in completed
+    assert 'applied.application.action=="MAINTAIN"' not in completed
     assert "RESOLUTION_COMMITMENT_PERSISTED" in completed
     assert "LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision" not in regulation_authority
     assert "TerminalEgressCommitmentLifecycle.applyDecision" not in regulation_authority
@@ -2318,3 +2319,53 @@ def test_phase12_superseded_pre_d0146_recovery_lifecycle_remains_retired():
         "markNativeReacquisition",
     ):
         assert retired not in lifecycle
+
+def test_phase13_responsibility_semantics_remove_only_proven_commitment_action_duplication():
+    authority=(ROOT/"scripts"/"responsibility"/"ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
+    action_transition=(ROOT/"scripts"/"responsibility"/"ActionSpaceRegulationResponsibilityTransition.lua").read_text(encoding="utf-8")
+    cooperative=(ROOT/"scripts"/"responsibility"/"CooperativePassageResponsibilityTransition.lua").read_text(encoding="utf-8")
+    completed=(ROOT/"scripts"/"responsibility"/"CompletedObstructionResponsibilityTransition.lua").read_text(encoding="utf-8")
+    selector=(ROOT/"scripts"/"decision"/"DecisionSelector.lua").read_text(encoding="utf-8")
+    boundary=(ROOT/"scripts"/"commitment"/"DecisionCommitmentBoundary.lua").read_text(encoding="utf-8")
+    lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+
+    # Phase 13 does not remove retained generic Commitment orchestration.
+    assert "commitmentAction" in selector
+    assert "decision.commitmentAction" in boundary
+    assert "decision.commitmentAction" in lifecycle
+
+    # Regulation -> Passage semantic replacement is already positively
+    # witnessed by explicit predecessor, targeted substrate and preflight
+    # obligation/participant evidence. CM REVISE is not transition authority.
+    action_replacement=authority[
+        authority.index("function Authority:replaceActionSpaceRegulationWithCooperativePassage"):
+        authority.index("function Authority:replaceRegulationWithCooperativePassage")
+    ]
+    follower_replacement=authority[
+        authority.index("function Authority:replaceFollowerRegulationWithCooperativePassage"):
+        authority.index("function Authority:preflightActionSpaceRegulationForCooperativePassage")
+    ]
+    assert "commitmentAction" not in action_replacement
+    assert "commitmentAction" not in follower_replacement
+
+    # Action-Space establishment/revalidation is owned by RTA preflight
+    # Current Responsibility evidence, not by CREATE versus MAINTAIN.
+    assert 'preflight.current==nil and "ESTABLISHED" or "REVALIDATED"' in action_transition
+    assert 'evaluated.decision.commitmentAction=="CREATE"' not in action_transition
+
+    # Resolution exposure diagnostics consume semantic continuity supplied
+    # by RTA; retained CM application action remains provenance only.
+    assert "responsibilityAlreadyCurrent" in cooperative
+    assert "responsibilityAlreadyCurrent" in completed
+    assert 'applied.application.action=="MAINTAIN"' not in cooperative
+    assert 'applied.application.action=="MAINTAIN"' not in completed
+
+    # Direct Resolution continuity still lacks a separate Situation-owned
+    # witness when a retained CM exists but no RS-* is visible. Preserve
+    # that fail-safe guard until a later Phase-13 discovery replaces it.
+    identity_section=authority[
+        authority.index("function Authority:resolutionIdentityForCommitment"):
+        authority.index("function Authority:transitionCooperativePassageResolution")
+    ]
+    assert 'action=="MAINTAIN" or action=="REVISE"' in identity_section
+    assert "RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING" in identity_section

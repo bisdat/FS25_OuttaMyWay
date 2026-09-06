@@ -68,7 +68,7 @@ function Transition:transition(picture,evaluated,readiness,semantics)
     })
     if currentResponsibility==nil then return nil,responsibilityReason end
     applied.currentResponsibility=currentResponsibility
-    local exposure=applied.application.action=="MAINTAIN" and "RESOLUTION_COMMITMENT_PERSISTED" or "RESOLUTION_COMMITMENT_ESTABLISHED"
+    local exposure=semantics and semantics.responsibilityAlreadyCurrent==true and "RESOLUTION_COMMITMENT_PERSISTED" or "RESOLUTION_COMMITMENT_ESTABLISHED"
     logInfo("%s commitment=%s kind=%s beneficiaries=%s controlledSubjects=%s legacyAction=%s",
         exposure,tostring(currentResponsibility.identity),tostring(currentResponsibility.kind),
         table.concat(beneficiaryIds,","),tostring(bridge.assemblyId),tostring(applied.application.action))
