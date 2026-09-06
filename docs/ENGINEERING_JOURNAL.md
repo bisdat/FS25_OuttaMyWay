@@ -1,3 +1,45 @@
+## 2026-09-06 — PR #54 CI root-defect convergence
+
+**Observe:** GitHub Actions run #111 reported 97/112 Structural contracts and
+300/332 Lua observations. The raw Lua count initially looked like a broad
+regression, but many Passage tests stopped at the same
+`OperationalPicture ... requiredOutcome.terminalDisposition` rejection. A
+separate source contract also showed that an AI-active vehicle with player
+presence was being published as player-controlled, and D-0200 no longer
+collapsed retained non-Passage traffic obligations whose semantic key happened
+to look Passage-like.
+
+**Discuss / discover:** **Failure Multiplicity != Defect Multiplicity.** The CI
+surface reduced to four root defects rather than a reason to discard the
+accepted D-0217 two-leg model. **Player Presence != Player Control:** while the
+assembly remains a GIANTS `activeJobVehicles` member, `getIsEntered()` or
+`mission.controlledVehicle` can establish presence but not a Passage takeover.
+**Required Outcome != Terminal Disposition:** Candidate may require eventual
+GIANTS handback, but `HANDED_BACK` versus `VACATED` is established by later
+obligation settlement. Existing **Key Match Is Not Lifecycle Match** also
+applies to D-0200: an open `COOPERATIVE_PASSAGE_LEG` obligation, not the
+responsibility-key prefix, identifies Passage lifecycle. Finally, Lua
+`condition and nil or value` cannot encode an intentional nil evidence field.
+
+**Implement:** active AI Observation now publishes player presence separately
+while leaving `playerControlled=false`; the post-job D-0147 Player Claim path is
+unchanged. Passage Candidate obligations no longer predeclare a terminal
+disposition. D-0217 participant-loss routing selects Commitments by open Passage
+Leg topology, while D-0200 continues to collapse eligible non-Passage traffic
+dependencies even when their semantic key shares D-0146 provenance. Mixed
+`VACATED + HANDED_BACK` completion evidence now assigns `sameJobs` and
+`bothRestored` explicitly. Production contracts retain positive runtime removal
+and unresolved absence; player takeover remains a valid downstream D-0217 input
+only when supplied as an explicit authoritative fact rather than manufactured
+from tabbing/entry. Structural contracts now assert the intentional
+`v0.3.0.11 TEST — PASSAGE LEG LIFECYCLE RECONCILIATION` identity.
+
+**Validate:** this repair performs implementation-local LuaJIT bytecode
+compilation, Python syntax compilation, `git diff --check`, status and diff
+inspection only. Per root and `/tests` `AGENTS.md`, pytest and
+`tests/replacement_core/run.lua` are not executed locally. The pushed commit
+must be judged by a fresh GitHub Actions run before an in-game Reality test.
+
 ## 2026-09-06 — Test build identity advanced to v0.3.0.11
 
 **Observe:** the completed Passage Leg lifecycle branch still identified itself

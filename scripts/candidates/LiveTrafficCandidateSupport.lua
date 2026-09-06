@@ -138,7 +138,7 @@ local function makeD0146PassageCandidate(pictureId,pictureValues,plan,governingR
         passageLegObligations[#passageLegObligations+1]={
             origin={kind="OTM_MATERIAL_DISPLACEMENT",decision="D-0146",conflictIdentity=plan.conflictIdentity,passageLegAssemblyId=assemblyId},
             basis={kind="COOPERATIVE_PASSAGE_LEG",assemblyId=assemblyId,originalAssemblyIds=plan.assemblyIds,jobEpisodeId=jobEpisodeId,jobToken=jobToken},
-            requiredOutcome={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",assemblyId=assemblyId,terminalDisposition="HANDED_BACK"},
+            requiredOutcome={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",assemblyId=assemblyId},
             requiredAuthority={capabilities={"REPOSITION","RESTORE_CONFIGURATION","HANDOVER_TO_GIANTS"}},
             evidenceContract={kind="PARTICIPANT_PASSAGE_DEBT_DISCHARGED_THEN_GIANTS_HANDOFF_OR_POSITIVE_BASIS_CESSATION"},
             ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true

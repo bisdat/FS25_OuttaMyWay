@@ -367,11 +367,6 @@ local function d0146TrafficResponsibility(record)
     return type(responsibility)=="string" and (string.sub(responsibility,1,26)=="d0146-cooperative-passage:" or string.sub(responsibility,1,32)=="forward-intersection-regulation:")
 end
 
-local function cooperativePassageResponsibility(record)
-    local responsibility=record and record.governingBasis and record.governingBasis.responsibilityKey or nil
-    return type(responsibility)=="string" and string.sub(responsibility,1,26)=="d0146-cooperative-passage:"
-end
-
 local function endedDependency(record,ended)
     local basis=record and record.governingBasis or nil
     for _,episodeId in OuttaMyWay.ValueRecord.ipairs(basis and basis.dependentJobEpisodeIds or {}) do
@@ -449,7 +444,8 @@ function Lifecycle.applyCooperativePassageParticipantLosses(runtime,episodeResul
 
     local outcomes={}
     for _,record in OuttaMyWay.ValueRecord.ipairs(runtime.commitments:list()) do
-        if not OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) and record.state~="SETTLING" and cooperativePassageResponsibility(record) then
+        if not OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) and record.state~="SETTLING"
+            and hasCooperativePassageLegObligations(runtime,record.identity) then
             local losses={}
             for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(record.identity)) do
                 if isCooperativePassageLegObligation~=nil and isCooperativePassageLegObligation(obligation) then
@@ -561,7 +557,8 @@ function Lifecycle.collapseEndedJobEpisodeDependencies(runtime,episodeResult,sna
     local collapsed={}
     for _,record in OuttaMyWay.ValueRecord.ipairs(runtime.commitments:list()) do
         if not OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) and record.state~="SETTLING"
-            and d0146TrafficResponsibility(record) and not cooperativePassageResponsibility(record) then
+            and d0146TrafficResponsibility(record)
+            and not hasCooperativePassageLegObligations(runtime,record.identity) then
             local endedDependentEpisodeId=endedDependency(record,ended)
             if endedDependentEpisodeId~=nil then
                 local basis=record.governingBasis or {}

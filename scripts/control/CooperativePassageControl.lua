@@ -805,11 +805,27 @@ end
 function Control:_completePairContext(run)
     local mixed=(run.a.vacated==true or run.b.vacated==true)
     local exhausted=run.a.restoreSettlementExhausted==true or run.b.restoreSettlementExhausted==true
+    local sameJobs=nil
+    local bothRestored=nil
+    if not mixed then
+        sameJobs=true
+        bothRestored=not exhausted
+    end
     self.run=nil; self.completedCount=self.completedCount+1
     logInfo("PAIR_CONTEXT_DISSOLVED commitment=%s reason=NO_REMAINING_PASSAGE_AUTHORITY participantSpecificRelease=true",tostring(run.commitmentId))
     local evidenceKind=exhausted and "D0146_COOPERATIVE_PASSAGE_RESTORE_EXHAUSTED_AND_HANDED_BACK" or "D0146_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
     if mixed then evidenceKind="D0146_COOPERATIVE_PASSAGE_LAST_LEG_DISSOLVED_AFTER_BASIS_CESSATION" end
-    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},boundedAuthorityIds={},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,sameJobs=mixed and nil or true,bothRestored=mixed and nil or not exhausted,mixedPassageLegDispositions=mixed,restorationExhausted=exhausted,participantSpecificRelease=true,completedAt=g_time or 0}})
+    self:_notify({
+        status="SUCCEEDED",commitmentId=run.commitmentId,
+        requestIds={run.a.request.identity,run.b.request.identity},boundedAuthorityIds={},
+        assemblyIds={run.a.assemblyId,run.b.assemblyId},
+        evidence={
+            kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,
+            sameJobs=sameJobs,bothRestored=bothRestored,
+            mixedPassageLegDispositions=mixed,restorationExhausted=exhausted,
+            participantSpecificRelease=true,completedAt=g_time or 0
+        }
+    })
 end
 
 function Control:_beginD0146Configuration(run)
@@ -972,17 +988,54 @@ function Control:_complete(run)
         self.permissionGate:release(p.vehicle)
         p.wakeMethod=wakeNativeContinuation(p.vehicle)
         p.released=true
-        self:_notify({status="PARTICIPANT_HANDED_BACK",commitmentId=run.commitmentId,requestIds={p.request.identity},boundedAuthorityIds={p.request.boundedAuthorityId},assemblyId=p.assemblyId,assemblyIds={p.assemblyId},evidence={kind="D0146_COOPERATIVE_PASSAGE_LEG_HANDED_BACK",passageLegDisposition="HANDED_BACK",assemblyId=p.assemblyId,passageGuideId=run.guide and run.guide.identity or nil,sameJob=true,completedAt=g_time or 0}})
+        self:_notify({
+            status="PARTICIPANT_HANDED_BACK",commitmentId=run.commitmentId,
+            requestIds={p.request.identity},boundedAuthorityIds={p.request.boundedAuthorityId},
+            assemblyId=p.assemblyId,assemblyIds={p.assemblyId},
+            evidence={
+                kind="D0146_COOPERATIVE_PASSAGE_LEG_HANDED_BACK",
+                passageLegDisposition="HANDED_BACK",assemblyId=p.assemblyId,
+                passageGuideId=run.guide and run.guide.identity or nil,
+                sameJob=true,completedAt=g_time or 0
+            }
+        })
     end
-    local pa,pb=pose(run.a.vehicle),pose(run.b.vehicle)
-    logInfo("HANDOFF commitment=%s A=%s job=%s wake=%s B=%s job=%s wake=%s separation=%s sameJobs=true authorityRelease=IMMEDIATE cooldown=false",
-        tostring(run.commitmentId),run.a.name,tostring(run.a.startJobToken),tostring(run.a.wakeMethod),run.b.name,tostring(run.b.startJobToken),tostring(run.b.wakeMethod),
-        pa and pb and string.format("%.2fm",distance(pa.x,pa.z,pb.x,pb.z)) or "n/a")
-    self.run=nil; self.completedCount=self.completedCount+1
+
     local mixed=(run.a.vacated==true or run.b.vacated==true)
-    local evidenceKind=run.restorationExhausted==true and "D0146_COOPERATIVE_PASSAGE_RESTORE_EXHAUSTED_AND_HANDED_BACK" or "D0146_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
+    local sameJobs=nil
+    local bothRestored=nil
+    if not mixed then
+        sameJobs=true
+        bothRestored=run.restorationExhausted~=true
+    end
+
+    local pa,pb=pose(run.a.vehicle),pose(run.b.vehicle)
+    logInfo("HANDOFF commitment=%s A=%s job=%s wake=%s B=%s job=%s wake=%s separation=%s sameJobs=%s authorityRelease=IMMEDIATE cooldown=false",
+        tostring(run.commitmentId),run.a.name,tostring(run.a.startJobToken),tostring(run.a.wakeMethod),
+        run.b.name,tostring(run.b.startJobToken),tostring(run.b.wakeMethod),
+        pa and pb and string.format("%.2fm",distance(pa.x,pa.z,pb.x,pb.z)) or "n/a",
+        tostring(sameJobs))
+
+    self.run=nil
+    self.completedCount=self.completedCount+1
+
+    local evidenceKind=run.restorationExhausted==true
+        and "D0146_COOPERATIVE_PASSAGE_RESTORE_EXHAUSTED_AND_HANDED_BACK"
+        or "D0146_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
     if mixed then evidenceKind="D0146_COOPERATIVE_PASSAGE_LAST_LEG_DISSOLVED_AFTER_BASIS_CESSATION" end
-    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},boundedAuthorityIds={},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,sameJobs=mixed and nil or true,bothRestored=mixed and nil or run.restorationExhausted~=true,mixedPassageLegDispositions=mixed,restorationExhausted=run.restorationExhausted==true,cooldown=false,completedAt=g_time or 0}})
+
+    self:_notify({
+        status="SUCCEEDED",commitmentId=run.commitmentId,
+        requestIds={run.a.request.identity,run.b.request.identity},boundedAuthorityIds={},
+        assemblyIds={run.a.assemblyId,run.b.assemblyId},
+        evidence={
+            kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,
+            sameJobs=sameJobs,bothRestored=bothRestored,
+            mixedPassageLegDispositions=mixed,
+            restorationExhausted=run.restorationExhausted==true,
+            cooldown=false,completedAt=g_time or 0
+        }
+    })
 end
 
 function Control:_failHeld(reason)

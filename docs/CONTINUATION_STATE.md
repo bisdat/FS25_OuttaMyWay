@@ -35,8 +35,11 @@ to identify a leg.
 Cooperative Passage participant loss is now reconciled at Passage-Leg scope
 before D-0200. One sealed observation first establishes the complete set of
 still-open legs whose original AI Passage subject is positively no longer
-executable: either its exact Job Episode ended or current positive player
-control displaced it as an AI subject. Active OMW physical effects for the
+executable. Authoritative exact Job Episode termination, including positive
+runtime-subject removal, is a current production source. The lifecycle can also
+consume an explicit authoritative positive player-control fact, but production
+Observation does **not** infer that fact merely from player presence/entry in an
+AI-active GIANTS worker. Active OMW physical effects for the
 whole sealed loss set are neutralised before any affected BA/AU is released.
 Only after that complete loss set is settled may an unaffected survivor receive
 truthful survivor-only BA/ControlRequest provenance and continue its existing
@@ -53,9 +56,12 @@ remains hard-safety evidence where observed. Vacatur before execution-origin
 capture requires pose only from still-live legs and preserves the vacated
 participant's existing Candidate-supplied guide fields rather than inventing
 replacement geometry. Raw unavailable native Job tokens do not establish
-`VACATED`. Positive participant loss comes from authoritative exact Job Episode
-termination or positive current player control. Control neutralises the affected
-physical effect first; survivor continuation is deferred until the retained
+`VACATED`. Current production participant-loss evidence comes from
+authoritative exact Job Episode termination or positive runtime removal; an
+explicit authoritative player-control fact remains a valid downstream D-0217
+input if such a source is available. Player presence alone is not that fact.
+Control neutralises the affected physical effect first; survivor continuation is
+deferred until the retained
 Commitment, Current Resolution view and survivor BA/ControlRequest are truthful.
 A player-taken-over former participant remains current hard-safety occupancy,
 whereas positive runtime-subject removal is physical disappearance and therefore
@@ -76,10 +82,14 @@ permission is fail-closed and retires stale BA only for the still-open survivor
 Passage Leg rather than releasing unrelated Commitment authority.
 
 **Implementation discovery — Passage Subject Executability != Job Episode
-Lifecycle; Participation Loss != Job Episode Termination:** positive player
-takeover immediately removes that assembly from GIANTS-AI Local Operation
-participation and vacates any still-live Passage Leg, but it does not fabricate
-Job Episode termination. The Job Episode remains until its own authoritative
+Lifecycle; Participation Loss != Job Episode Termination:** an authoritative
+positive player takeover would immediately remove that assembly from GIANTS-AI
+Local Operation participation and vacate any still-live Passage Leg without
+fabricating Job Episode termination. **Player Presence != Player Control:** an
+AI-active vehicle remaining in `activeJobVehicles` is not positively taken over
+merely because the player enters/tabs into it; `getIsEntered()` and
+`mission.controlledVehicle` are presence evidence in that state, not Passage
+vacatur authority. The Job Episode remains until its own authoritative
 completion, succession/restart, or positive runtime-subject removal evidence.
 Conversely, explicit retained-object deletion is positive
 `RUNTIME_SUBJECT_REMOVED` Job Episode evidence and emits no retained current
@@ -91,11 +101,21 @@ last-observed occupancy.
 when no open Passage Leg/shared obligation remains, at which point the existing
 terminal settlement path ends the parent Commitment and semantic Resolution.
 
-This increment has only implementation-local validation so far:
-LuaJIT bytecode compilation of changed Lua/test files and diff inspection.
-Repository offline validation remains owned by GitHub Actions, and no Farming
-Simulator Reality validation is claimed yet. Issue #51 remains open until the
-**v0.3.0.11 TEST** playable build receives targeted in-game validation.
+PR #54 GitHub Actions run #111 is now independent failure evidence. Structural
+contracts reported **97 passed / 15 failed**; every observed structural failure
+stopped first at a stale `v0.3.0.10` identity assertion after the intentional
+`v0.3.0.11 TEST` build advance. The Lua harness reported **300 passed / 32
+failed**. **Failure Multiplicity != Defect Multiplicity:** review grouped the new
+failures around four implementation roots: false active-player-control
+inference, Candidate `terminalDisposition` contamination of Operational Picture,
+D-0200 Passage classification by semantic key rather than Passage-Leg topology,
+and Lua `and nil or` mixed-terminal evidence.
+
+The bounded correction removes those roots while preserving the D-0217 two-leg
+architecture. Local validation remains Lua/Python syntax checks, `git diff
+--check`, status and diff inspection; the repository suites are not run locally.
+A fresh GitHub Actions result is required before any targeted Farming Simulator
+Reality validation. Issue #51 remains open.
 Candidate-Embedded
 Verdict Authority and generic multi-context application cardinality remain
 Phase-13 work after this correction.

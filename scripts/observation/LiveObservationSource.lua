@@ -315,13 +315,13 @@ function Source:capture(mission, nowSeconds)
             track.fieldActive = fieldActive; track.aiActive = aiActive; track.hasFieldWorker = hasFieldWorker
             track.nativeJob = job; track.nativeJobSource = jobSource; track.nativeJobToken = nativeToken; track.sourceJobToken = sourceToken
             local okEnteredActive,enteredActive=safeCall(object,"getIsEntered")
-            local activePlayerControlled=(mission.controlledVehicle==object) or (okEnteredActive and enteredActive==true)
+            local activePlayerPresent=(mission.controlledVehicle==object) or (okEnteredActive and enteredActive==true)
             addToGroup(groups, {
                 object = object, referenceKey = ref, name = track.name, pose = pose, poseDiagnostic=poseDiagnostic, motionDiagnostic=motionDiagnostic,
                 fieldId = track.fieldId, fieldResolved = track.fieldResolved, fieldEvidence = field,
                 fieldActive = fieldActive, aiActive = aiActive, hasFieldWorker = hasFieldWorker, activeObserved = true,
                 restartObserved = reactivated and not replacementObserved, replacementObserved = replacementObserved,
-                playerPresent = activePlayerControlled, playerControlled = activePlayerControlled, blocked = blockedState(object),
+                playerPresent = activePlayerPresent, playerControlled = false, blocked = blockedState(object),
                 speedMps = speedMps, radius = radius, width = width, length = length,
                 sourceJobToken = sourceToken, nativeJobToken = nativeToken, nativeJobTokenSource = jobSource, components = track.components, shadowRepresentation=track.shadowRepresentation, localIntent=track.localIntent,
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
