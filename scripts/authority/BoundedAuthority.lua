@@ -167,3 +167,14 @@ function Authority:releaseForCommitment(commitmentId,reason)
     table.sort(released)
     return released
 end
+
+function Authority:releaseForCommitmentAssembly(commitmentId,assemblyId,reason)
+    local ids=self.grantIdsByCommitmentId[commitmentId]
+    local released={}
+    for grantId,_ in pairs(ids or {}) do
+        local grant=self.grantsById[grantId]
+        if grant~=nil and grant.assemblyId==assemblyId and self:release(grantId,reason)==true then released[#released+1]=grantId end
+    end
+    table.sort(released)
+    return released
+end

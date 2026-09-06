@@ -143,6 +143,7 @@ function Admission:_end(record, cause, evidence, snapshot)
             observationSnapshotId = snapshot.identity,
             sourceJobToken = evidence.sourceJobToken,
             sourceJobEndEvidence = evidence.sourceJobEndEvidence,
+            runtimeRemovalEvidence = evidence.runtimeRemovalEvidence,
             provenance = evidence.provenance
         },
         revision = record.revision + 1
@@ -162,6 +163,10 @@ function Admission:observe(snapshot)
         local currentId = self.activeByAssembly[evidence.assemblyId]
         local current = currentId and self.records[currentId] or nil
         local cause = successionCause(evidence, current)
+        local removed=type(evidence.runtimeRemovalEvidence)=="table" and evidence.runtimeRemovalEvidence.observed==true
+            and evidence.runtimeRemovalEvidence.kind=="POSITIVE_VEHICLE_RUNTIME_REMOVAL"
+            and current~=nil and current.sourceJobToken==evidence.sourceJobToken
+        if removed then cause="RUNTIME_SUBJECT_REMOVED" end
         local endedBySourceJob = sourceJobEnded(evidence)
         if current ~= nil and cause == nil and not endedBySourceJob then
             local bound, changed = self:_bindFieldWorld(current,evidence,snapshot)
@@ -182,7 +187,7 @@ function Admission:observe(snapshot)
         end
 
         local shouldAdmit = current == nil and canAdmit(evidence)
-        if endedBySourceJob and cause == nil then shouldAdmit = false end
+        if removed or (endedBySourceJob and cause == nil) then shouldAdmit = false end
         if shouldAdmit then
             local record = self:_admit(evidence, snapshot)
             admitted[#admitted + 1] = record.identity

@@ -1,3 +1,424 @@
+## 2026-09-06 — v0.3.0.13 final Reality: both targeted Passage runs PASS
+
+**Observe:** owner-supplied Farming Simulator evidence for
+`v0.3.0.13 TEST — PASSAGE LEG LIFECYCLE RECONCILIATION` records mod hash
+`36dc8f1f16fc1331a5e32abec852d22c`. The same two targeted runs used for `v0.3.0.12` were repeated
+against PR #54 head `ff9c961e54bc1a675bededb2e130bed09cd2d9b8`; both pass.
+
+Run 1 validates normal Cooperative Passage and the original Issue #51 terminal
+timing. `CM-00002` hands Condor back at 17:41:14.042, hands Patriot back at
+17:41:48.294, then records `PAIR_CONTEXT_DISSOLVED` and
+`COOPERATIVE_COMPLETION`. A second normal Passage, `CM-00005`, also completes
+cleanly at 17:45:43.581. This also provides direct Reality evidence that the
+intermediate Issue #55 `v0.3.0.11` Regulation/Passage smoke regression is no
+longer present.
+
+Run 2 deliberately stops Condor's GIANTS job and moves Condor away while both
+Passage Legs are live. At 17:48:39.380, Control records
+`SEMANTIC_LIFECYCLE_PENDING` with
+`evidence=RAW_JOB_EPISODE_CONTRADICTION`,
+`action=NO_NEW_CONTROL_PROGRESSION`,
+`currentBoundedActuationMaySettle=true`, and `terminalDecision=false`. At
+17:48:39.603 semantic lifecycle vacates only Condor's leg as
+`JOB_EPISODE_DEPENDENCY_CEASED`; the same evidence records
+`terminal=NO survivorAuthority=BA-00067`. Patriot remains in the existing
+Passage responsibility, is handed back at 17:49:29.603, and Last-Leg
+Dissolution / `COOPERATIVE_COMPLETION` follows immediately.
+
+**Validate:** the Reality run therefore confirms both sides of D-0217:
+already-terminal participant lifecycle change does not disturb a survivor, and
+live-leg Job Episode termination is reconciled semantically without premature
+Control failure. No manufactured `SAFE_ABANDON_ESCALATE`, `FAILED_HELD`, or
+`PLAYER_INTERVENTION_REQUIRED` occurs in the tested Job-termination path.
+
+Independent offline evidence is GitHub Actions run #116 at the same PR head:
+Structural contracts **112 / 112 passed**; Lua observation **324 passed / 9
+failed**, with exactly the established nine accepted-state observational
+failure identities and the new pre-semantic contradiction regression contract
+green.
+
+**Record / decision:** Issues #51 and #55 are resolved by evidence on PR #54
+head `ff9c961e54bc1a675bededb2e130bed09cd2d9b8`. They may be closed as resolved while PR #54 remains open pending
+repository-owner acceptance/merge. No runtime, architecture, version, release or
+canonical change is introduced by this documentation-only record.
+
+## 2026-09-06 — v0.3.0.12 two-run Reality: pre-semantic contradiction poisoned Passage
+
+**Observe:** owner-supplied `v0.3.0.12 TEST` evidence contains two runs with the
+same loaded mod hash `4b5134445a9fa592bf2929ee60dd7c7c`. The first run
+passes the original Issue #51 timing: Condor's `CM-00005` Passage Leg is
+`HANDED_BACK` at 17:06:52.580, Condor's Job Episode later ends, and Patriot
+continues to its own `HANDED_BACK` / parent success at 17:07:26.623.
+
+The second run deliberately stops Condor's GIANTS job and moves the vehicle away
+during a live two-leg Passage. At 17:10:09.603, Control sees
+`COOPERATIVE_PASSAGE_PARTICIPANT_JOB_EPISODE_CONTRADICTION_PENDING_SEMANTIC_LIFECYCLE_EVIDENCE`
+and immediately executes `SAFE_ABANDON_ESCALATE`, enters `FAILED_HELD`, and
+emits `PLAYER_INTERVENTION_OR_JOB_CHANGE`. At 17:10:09.763, only about 160 ms
+later, the semantic lifecycle correctly vacates Condor's Passage Leg as
+`JOB_EPISODE_DEPENDENCY_CEASED`, retains one open obligation and preserves
+Patriot survivor Bounded Authority as `BA-00084`.
+
+**Discuss / discover:** **Pre-Semantic Contradiction != Resolution Failure.**
+`CooperativePassageControl:_allSameJob()` observes a raw runtime contradiction;
+it does not own Job Episode lifecycle or Responsibility Transition. The semantic
+D-0217 path was correct, but Control made an irreversible terminal decision
+before that authority could act. **Semantic Change != Control Failure:** Job
+Episode change leaves `SAFE_ABANDON_ESCALATE` entirely. Human escalation remains
+valid only for genuine Control execution failures where the already-authorised
+physical choreography cannot truthfully continue.
+
+**Implement:** when `_allSameJob()` reports a contradiction, Passage Control
+returns before any phase-specific progression and records
+`SEMANTIC_LIFECYCLE_PENDING`. It deliberately does not clear the current Drive
+Authority target: already-authorised bounded actuation may settle to that target,
+but no new phase or target is issued while the semantic fact is unresolved.
+Authoritative Passage-Leg vacatur clears the pending diagnostic and continues
+the survivor under the existing D-0217 permission-rebinding path. If the raw
+contradiction disappears without Job Episode termination, the existing
+responsibility may continue. `_failHeld()` remains the genuine Control-failure
+fail-safe, but its player-facing action is narrowed from
+`PLAYER_INTERVENTION_OR_JOB_CHANGE` to `PLAYER_INTERVENTION_REQUIRED`.
+
+**Validate:** add a focused Lua contract reproducing the observed ordering:
+raw Job contradiction first must leave the Passage non-terminal and current
+bounded targets intact; subsequent semantic vacatur of the affected leg must
+still reach survivor continuation without a prior fail-held poison. Repository
+test suites remain GitHub Actions execution responsibility. The next playable
+identity is `v0.3.0.13 TEST`; no in-game claim is made until that executable is
+actually run.
+
+## 2026-09-06 — Reality PASS and active-job Player Claim boundary
+
+**Observe:** GitHub Actions run #114 at `d994f62` reached 112/112 Structural
+contracts and 323/332 Lua observations, preserving exactly the accepted nine
+non-blocking failure identities. The owner then supplied a targeted Farming
+Simulator log from the final PR #54 implementation. The executable identified
+itself as `0.3.0.11 TEST — PASSAGE LEG LIFECYCLE RECONCILIATION` with mod hash
+`e755f22801be3866ca3708128b10e529`.
+
+The decisive Reality sequence is `CM-00005`: Condor's `OB-00006` settles
+`HANDED_BACK` at 16:26:11.176 with Patriot still live; Condor's Job Episode ends
+at 16:26:32.326; Patriot remains in the same Passage responsibility and
+continues restoration; Patriot's `OB-00007` settles `HANDED_BACK` and the parent
+Commitment succeeds at 16:26:45.133. No `BOUNDED_AUTHORITY_LOST`,
+`PLAYER_INTERVENTION`, or `JOB_EPISODE_DEPENDENCY_COLLAPSE` occurs. This is a
+targeted Reality PASS for Issue #51 and D-0217 survivor continuity.
+
+**Discuss / discover:** the earlier PR implementation still retained an
+unnecessary theoretical active-Passage `PLAYER_TAKEOVER` path. Reality and GIANTS
+interaction semantics make the boundary simpler: a player cannot take over an
+AI worker without first ending the GIANTS job. **Job Termination Owns
+Active-Participant Loss.** While the exact Job Episode remains active, player
+entry/presence has no Operation or Passage lifecycle authority. If the player
+stops the helper, the resulting authoritative Job Episode termination is the
+fact downstream lifecycle consumes, just as for natural completion, GIANTS
+abort/supersession/restart, or positive runtime-subject removal.
+
+**Player Claim Exists Only After Job Termination.** D-0147 is the sole current
+special case. Once the Job Episode has ended, OuttaMyWay may hold bounded
+post-job physical authority over the completed assembly; the validated
+`vehicle:getIsEntered()` witness then means the human has claimed that physical
+vehicle and D-0147 must relinquish immediately. This does not create an
+active-job player-takeover lifecycle.
+
+**Implement:** remove player-control as an independent Passage-loss and Operation
+membership-removal authority; active Passage vacatur is sourced only from
+authoritative exact Job Episode termination. Preserve active player-presence
+observation as factual diagnostics and preserve D-0147
+`PostJobActuationAuthority:isPlayerClaimed()` unchanged. Rebind D-0217 tests so
+player-control-looking evidence alone is explicitly lifecycle-neutral while Job
+Episode termination remains authoritative even when such evidence is also
+present.
+
+**Build identity discovery:** materially different PR #54 executables were
+accidentally tested under `0.3.0.11`. The successful Reality run is recorded
+truthfully under the identity it actually emitted; the next playable executable
+advances to `0.3.0.12 TEST`. Canonical authority remains `v0.3.0.0`.
+
+**Validate:** changed Lua/test files receive compile-only syntax checks and
+`git diff --check` locally. Repository suites remain GitHub Actions execution
+responsibility. No additional in-game claim is made for the `0.3.0.12` identity
+until that executable is actually run.
+
+## 2026-09-06 — PR #54 Run #113: runtime profile restored; one lexical Structural guard remains
+
+**Observe:** GitHub Actions run #113 at `c705309` reports **323 passed / 9
+failed** in the non-blocking Lua observational harness. The nine failures are
+exactly the established accepted-state identities; every D-0217-focused
+observation added by PR #54 is green, including positive runtime removal without
+ghost current occupancy.
+
+The blocking Structural job reports **111 passed / 1 failed**. Its sole failure
+is `test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidence`,
+which requires the source expression
+`mergedUnique(active.memberAssemblyIds, memberAssemblyIds)`. The runtime path
+already performs the same retained-member merge as
+`mergedUnique(active.memberAssemblyIds,memberAssemblyIds)` and explicitly records
+`removalDeferred=true`.
+
+**Interpret:** this is not evidence of a behavioural Operation-membership
+regression. It is a lexical source-contract mismatch introduced by compact
+formatting in the bounded repair. The Structural guard is retained unchanged
+because it continues to name the accepted incomplete-evidence invariant.
+
+**Implement:** restore the accepted source expression verbatim by adding the
+single space after the comma. No runtime branch, data flow, state transition,
+authority, lifecycle, test, version, release or canonical behaviour changes.
+
+**Validate:** LuaJIT compile-only for `OperationAdmission.lua`, `git diff
+--check`, changed-file scope and diff inspection locally. GitHub Actions remains
+the independent authority for Structural and Lua repository suites.
+
+## 2026-09-06 — PR #54 Run #112: explicit deferral and removal occupancy
+
+**Observe:** the first root-defect correction reduced PR #54 GitHub Actions from
+97/112 to **111/112 Structural contracts** and from 300/332 to **322/332 Lua
+observations**. Nine Lua failures are the established accepted-state identities.
+The sole new Lua failure is the D-0217 positive-runtime-removal contract: the
+Passage leg vacates and survivor authority refreshes correctly, but the same
+evidence-bearing raw snapshot still reports the removed assembly in
+`currentSpaceEvidence`.
+
+The sole Structural failure expects the accepted incomplete-membership invariant
+to remain explicit as `removalDeferred=true`. Current code instead writes
+`removalDeferred=not positivePlayerRemoval`, combining the normal incomplete
+case with the separate positive-player-control exception.
+
+**Discuss / discover:** **Evidence-Bearing Removal Snapshot != Current Physical
+Occupancy.** A snapshot may need to carry positive removal as lifecycle evidence
+without retaining the removed subject as current physical Reality. The source
+attempted this with `removed and nil or track.pose`, but Lua's boolean-expression
+idiom cannot represent an intentional nil true-branch: the fallback retained
+pose wins. The same defect affected retained pose diagnostics, motion diagnostics
+and shadow representation.
+
+**Deferred Removal Must Remain Explicit.** Authoritative positive player control
+is an exception to ordinary incomplete-membership uncertainty, not a reason to
+make the ordinary rule conditional or opaque. The blocking Structural contract
+is therefore not weakened. Operation admission separates the positive-control
+path from the ordinary incomplete path, where `removalDeferred=true` is restored
+as the explicit accepted invariant.
+
+**Implement:** positive runtime removal now explicitly clears current pose,
+pose/motion diagnostics and retained shadow representation while preserving
+`POSITIVE_VEHICLE_RUNTIME_REMOVAL` evidence for Job Episode / Passage lifecycle
+consumers. Operation admission retains the positive-player-control membership
+exception, but ordinary incomplete evidence may only merge positive additions
+and cannot remove previously admitted members.
+
+**Validate:** only LuaJIT compile-only checks for the changed Lua files plus
+`git diff --check`, changed-file scope and diff inspection are performed locally.
+Per root and `/tests` `AGENTS.md`, the repository offline suites remain GitHub
+Actions responsibility. No Farming Simulator Reality validation is claimed.
+
+## 2026-09-06 — PR #54 CI root-defect convergence
+
+**Observe:** GitHub Actions run #111 reported 97/112 Structural contracts and
+300/332 Lua observations. The raw Lua count initially looked like a broad
+regression, but many Passage tests stopped at the same
+`OperationalPicture ... requiredOutcome.terminalDisposition` rejection. A
+separate source contract also showed that an AI-active vehicle with player
+presence was being published as player-controlled, and D-0200 no longer
+collapsed retained non-Passage traffic obligations whose semantic key happened
+to look Passage-like.
+
+**Discuss / discover:** **Failure Multiplicity != Defect Multiplicity.** The CI
+surface reduced to four root defects rather than a reason to discard the
+accepted D-0217 two-leg model. **Player Presence != Player Control:** while the
+assembly remains a GIANTS `activeJobVehicles` member, `getIsEntered()` or
+`mission.controlledVehicle` can establish presence but not a Passage takeover.
+**Required Outcome != Terminal Disposition:** Candidate may require eventual
+GIANTS handback, but `HANDED_BACK` versus `VACATED` is established by later
+obligation settlement. Existing **Key Match Is Not Lifecycle Match** also
+applies to D-0200: an open `COOPERATIVE_PASSAGE_LEG` obligation, not the
+responsibility-key prefix, identifies Passage lifecycle. Finally, Lua
+`condition and nil or value` cannot encode an intentional nil evidence field.
+
+**Implement:** active AI Observation now publishes player presence separately
+while leaving `playerControlled=false`; the post-job D-0147 Player Claim path is
+unchanged. Passage Candidate obligations no longer predeclare a terminal
+disposition. D-0217 participant-loss routing selects Commitments by open Passage
+Leg topology, while D-0200 continues to collapse eligible non-Passage traffic
+dependencies even when their semantic key shares D-0146 provenance. Mixed
+`VACATED + HANDED_BACK` completion evidence now assigns `sameJobs` and
+`bothRestored` explicitly. Production contracts retain positive runtime removal
+and unresolved absence; player takeover remains a valid downstream D-0217 input
+only when supplied as an explicit authoritative fact rather than manufactured
+from tabbing/entry. Structural contracts now assert the intentional
+`v0.3.0.11 TEST — PASSAGE LEG LIFECYCLE RECONCILIATION` identity.
+
+**Validate:** this repair performs implementation-local LuaJIT bytecode
+compilation, Python syntax compilation, `git diff --check`, status and diff
+inspection only. Per root and `/tests` `AGENTS.md`, pytest and
+`tests/replacement_core/run.lua` are not executed locally. The pushed commit
+must be judged by a fresh GitHub Actions run before an in-game Reality test.
+
+## 2026-09-06 — Test build identity advanced to v0.3.0.11
+
+**Observe:** the completed Passage Leg lifecycle branch still identified itself
+as `v0.3.0.10 TEST`, but that identity already belongs to the Issue #51 failing
+Reality build. Reusing it for materially different runtime behaviour would make
+subsequent logs, HUD evidence and Build Reality evidence ambiguous.
+
+**Decision / record:** advance only the playable test-build identity to
+**v0.3.0.11 TEST**. `modDesc.xml`, `OuttaMyWay.VERSION` and
+`OuttaMyWay.BUILD_LABEL` now agree on the v0.3.0.11 test identity. This does not
+declare a release, does not advance canonical authority, and does not alter the
+current canonical **v0.3.0.0**.
+
+**Validate:** version-surface agreement, XML parse, LuaJIT syntax compilation,
+`git diff --check`, changed-file scope and final status are checked locally.
+Repository offline suites remain owned by GitHub Actions; no in-game Reality
+validation is claimed by this identity change.
+
+## 2026-09-06 — Interrupted Codex recovery: Passage loss evidence and authority ordering
+
+**Observe:** the final Codex repair stopped mid-edit after credits were exhausted.
+The pushed branch remained at `608f6f3`; eight unstaged files contained a
+recoverable partial implementation. Review found useful work on physical
+neutralisation-before-release, survivor permission failure and positive runtime
+removal, but also three remaining mismatches: Observation had begun assigning a
+semantic `participantLossEvidence`, same-observation dual loss could transiently
+rebind one already-doomed survivor, and the no-Control failure path released
+Bounded Authority at whole-Commitment scope.
+
+**Discuss / discover:** D-0217 does not require every Passage vacatur cause to be
+a Job Episode terminal event. **Passage Subject Executability != Job Episode
+Lifecycle** and **Participation Loss != Job Episode Termination**. Positive
+player control is sufficient to remove a Physical Assembly from GIANTS-AI Local
+Operation participation and from a still-live Passage choreography while the
+underlying Job Episode remains unresolved/active until its own lifecycle
+authority establishes completion, succession/restart or positive runtime
+removal. Observation therefore reports factual player control only; Passage
+lifecycle interprets that evidence downstream. Explicit retained-object
+`isDeleted` is positive runtime removal, while mere absence remains unresolved.
+
+**Implement:** Cooperative Passage now collects the complete sealed participant
+loss set before mutation. Active OMW physical effects for every affected
+still-live leg are neutralised first. Only after the whole set is physically
+quiescent are those legs settled by `BASIS_CESSATION`, their participant BA/AU
+released and retained composition revised. Survivor BA/ControlRequest refresh
+and choreography continuation happen once, after the complete loss set, so two
+legs lost in one sealed observation cannot transiently restart either one.
+D-0200 is restored to whole-purpose collapse for non-Passage D-0146 traffic.
+
+Responsibility Transition Authority now owns a Passage-specific refresh of the
+same `RS-*` read-only Resolution view. Survivor rebind failure is fail-closed
+and retires stale BA only for still-open Passage Legs, preserving unrelated
+Commitment authority and the surviving mechanical `AU-*`. Positive player
+control removes Local Operation participation without fabricating Job Episode
+termination. Positive runtime deletion ends the Job Episode as
+`RUNTIME_SUBJECT_REMOVED`, emits no ghost current occupancy and drops the dead
+retained track after its evidence-bearing snapshot; mere object absence remains
+unresolved with conservative retained occupancy. Cooperative Passage hard-safety
+uses the same distinction: player takeover vacates choreography but preserves
+former-participant physical occupancy, while positive runtime removal removes
+that former participant from occupancy checks.
+
+**Validate:** this recovery script performs LuaJIT compile-only checks for
+changed Lua/test files plus `git diff --check`, status and diff inspection. Per
+root and `/tests` `AGENTS.md`, it does not run pytest,
+`tests/replacement_core/run.lua` or other repository offline suites locally.
+GitHub Actions remains the independent offline validation authority and no
+Farming Simulator Reality validation is claimed.
+
+## 2026-09-06 — Passage Leg survivor-continuity review correction
+
+**Observe:** review of the initial D-0217 implementation found nine concrete
+gaps: execution-origin rebase still dereferenced a vacated participant pose,
+vacatur during procedural return/restore phases could leave invalid active
+participant slots, raw native Job-token mismatch could manufacture `VACATED`,
+D-0200 processed only one ended dependency per sealed observation, an already
+terminal leg's later Job end was still reported as vacatur, production leg
+basis lacked exact Job Episode identity, survivor BA/ControlRequest provenance
+could remain tied to the stale two-participant composition, the read-only
+Resolution view could retain stale open obligations, and mixed
+`VACATED + HANDED_BACK` completion evidence could still claim normal
+two-handback facts.
+
+**Implement:** D-0146 Candidate support now records exact participant-scoped
+Job Episode identity from the selected Encounter on each
+`COOPERATIVE_PASSAGE_LEG`. The old positional dependency/source-intent fallback
+is not used to derive an assembly identity.
+
+D-0200 now iterates all ended dependent Job Episodes from one sealed
+observation for Cooperative Passage leg obligations. It settles only open
+matching live legs, treats already-terminal legs as truthful no-op observations,
+and still preserves the existing whole-collapse path for non-Passage D-0146
+traffic responsibilities.
+
+`CooperativePassageControl` now requires execution-origin pose only from
+still-live legs during guide rebase and preserves the Candidate-supplied fields
+for a vacated former participant. Vacatur continuation removes a vacated
+participant from active return/restore/wait slots and advances the survivor to
+the next valid point in the existing choreography without creating a Candidate,
+Resolution, strategy or survivor mode. Raw unavailable Job-token observation no
+longer terminalises a leg; raw contradiction fails held pending semantic
+lifecycle evidence rather than manufacturing basis cessation.
+
+**Implementation discovery — Responsibility Continuity Allows Authority
+Discontinuity in Passage Survivorship:** after a leg settles, the retained
+Commitment's Effective Actuation Composition truthfully becomes survivor-only.
+The survivor's predecessor BA/ControlRequest cannot remain current because it
+refers to the old two-participant composition. Runtime now refreshes the
+read-only Current Resolution view under the same `RS-*` so its open obligation
+and current beneficiary/controlled-subject fields match the surviving leg,
+authorizes a successor survivor BA under the same `RS-*`, same retained
+`CM-*`, same surviving `AU-*`, same capability and same already-authorised
+Passage target, asks active Passage Control to accept the successor request,
+and only then retires the predecessor survivor BA. Failure remains fail-closed.
+
+**Validate:** changed Lua files bytecode-compiled with LuaJIT. Per
+AGENTS/D-0216, the repository Lua offline suite and structural contracts were
+not run locally; GitHub Actions remains the independent execution authority. No
+Farming Simulator Reality validation is claimed.
+
+## 2026-09-06 — Runtime reconciliation of participant-scoped Passage Legs
+
+**Observe:** implementation review confirmed the D-0217 mismatch at three
+runtime boundaries: D-0146 Candidate support emitted one joint
+restoration/handoff obligation, D-0200 collapsed any ended dependent Job
+Episode as whole-Commitment basis cessation, and Runtime completion treated
+normal participant handback as only a whole-pair success event. Passage Control
+already contained participant-specific restore/handoff mechanics, but its live
+phase gates and Bounded Authority guard still assumed both original requests
+remained live.
+
+**Implement:** D-0146 Candidate support now emits two
+`COOPERATIVE_PASSAGE_LEG` obligations beneath the same retained `CM-*` and
+`RS-*`. Each leg records its original assembly and required
+`COOPERATIVE_PASSAGE_LEG_HANDED_BACK` outcome. `HANDED_BACK` is represented by
+settling that leg with `SATISFACTION`; `VACATED` is represented by settling
+that leg with `BASIS_CESSATION` and positive participant-loss evidence.
+
+`LiveTrafficCommitmentLifecycle.settleCooperativePassageLeg()` is the scoped
+settlement point. It releases the participant's BA grant and mechanical `AU-*`
+authority, revises retained progress ownership / Effective Actuation
+Composition, and invokes terminal settlement only after no open obligations
+remain. D-0200 now routes ended Job Episode evidence to that leg path when a
+live Cooperative Passage leg exists; otherwise the existing whole-collapse path
+for non-leg D-0146 responsibilities is preserved.
+
+`CooperativePassageControl` now separates immutable original participants from
+still-live executable legs. Vacated or handed-back legs are removed from guide,
+runout, return, restore and handback gates. The survivor receives no Candidate,
+Resolution, strategy or mode; it continues the existing Candidate-supplied
+choreography. Positive participant vacatur clears physical effect before the
+grant is released, while unexplained BA loss on a still-live leg remains a
+fail-closed `BOUNDED_AUTHORITY_LOST`.
+
+**Decision:** leave `TerminalSettlementEvaluator` unchanged. The upstream
+obligation/dependency scope now makes its whole-Commitment semantics apply only
+at Last-Leg Dissolution.
+
+**Validate:** implementation-local validation was limited to LuaJIT bytecode
+compilation of changed Lua/test files and static diff inspection. Per
+AGENTS/D-0216, the repository Lua offline suite and structural contracts were
+not executed locally; GitHub Actions owns those runs. No Farming Simulator
+runtime validation, package build, release, version or canonical authority
+change is claimed.
+
 ## 2026-09-06 — Issue #51 Passage Leg vacatur architecture discovery
 
 **Observe:** Issue #51 recorded `0.3.0.10 TEST` completing the physical

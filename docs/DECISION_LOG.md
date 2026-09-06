@@ -9,13 +9,26 @@ has a participant-scoped **Passage Leg** containing that participant's already
 accepted Passage execution and intervention-created debt.
 
 **Participant Loss Vacates a Passage Leg; It Does Not Cancel the Passage.**
-Positive Job Episode completion/stoppage/supersession, player takeover, or
-positive physical/runtime removal terminalises only an affected still-live Passage
-Leg as `VACATED`. An already `HANDED_BACK` or `VACATED` leg remains terminal and
-is not reclassified by later participant lifecycle change. The other Passage Leg receives no new Candidate, Resolution,
-strategy, cleanup responsibility or survivor mode; it continues the same
-already-committed Passage, runout, Axis recovery/return, restoration and GIANTS
-handoff choreography. Incomplete observation cannot establish vacatur.
+Authoritative termination of the affected leg's exact original GIANTS Job
+Episode terminalises only that still-live Passage Leg as `VACATED`. Natural
+completion, player-stopped work, GIANTS abort/supersession/restart and positive
+runtime-subject removal may establish or explain Job Episode termination, but
+player entry/presence while the Job Episode remains active is not a separate
+Passage-loss authority. An already `HANDED_BACK` or `VACATED` leg remains
+terminal and is not reclassified by later participant lifecycle change. The
+other Passage Leg receives no new Candidate, Resolution, strategy, cleanup
+responsibility or survivor mode; it continues the same already-committed
+Passage, runout, Axis recovery/return, restoration and GIANTS handoff
+choreography. Incomplete observation cannot establish vacatur.
+
+**Pre-Semantic Contradiction != Resolution Failure.** A raw native Job-token
+contradiction observed inside Passage Control may precede authoritative Job
+Episode lifecycle evidence. Control may withhold new procedural progression
+while existing bounded actuation settles to its current target, but it may not
+convert that contradiction into `SAFE_ABANDON_ESCALATE`, `FAILED_HELD`,
+Passage cancellation or player intervention. Semantic lifecycle remains the
+authority that establishes exact Job Episode termination and therefore
+Passage-Leg vacatur.
 
 Vacatur removes the former participant as a choreography dependency, not as
 physical Reality. A still-present player-controlled, completed or stationary

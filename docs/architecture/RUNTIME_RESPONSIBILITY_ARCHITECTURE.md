@@ -166,6 +166,32 @@ responsibilities founded on that Job Episode lose their basis as applicable
 Physical Assembly remains Reality
 ```
 
+**Job Termination Owns Active-Participant Loss.** While a qualifying GIANTS AI
+Job Episode remains active, player entry/presence does not independently end
+Local Operation participation or Job-founded responsibility. If the player
+stops the helper, GIANTS aborts, the job is superseded/restarted, or positive
+runtime removal establishes termination, the authoritative lifecycle fact is
+the exact Job Episode ending. Downstream responsibilities consume that terminal
+fact rather than inferring a parallel player-takeover lifecycle.
+
+**Player Claim Exists Only After Job Termination.** When OuttaMyWay later holds
+bounded physical authority over a completed assembly, player entry is a
+different post-job authority event: the human has claimed the physical vehicle,
+so post-job Control must relinquish immediately. That D-0147 Player Claim does
+not redefine active Job Episode lifecycle.
+
+**Pre-Semantic Contradiction != Resolution Failure.** Control may observe a raw
+native Job-token contradiction before Observation and lifecycle authority have
+established what happened to the exact Job Episode. That contradiction is
+evidence, not Responsibility Transition authority. Control must issue no new
+procedural phase or target progression while the contradiction remains
+unreconciled; already-authorised bounded actuation may settle against its
+current target. Control must not terminalise the Resolution or demand player
+intervention solely from the raw contradiction. If semantic lifecycle later
+establishes Job Episode termination, the affected Job-founded responsibility is
+reconciled through its normal basis-loss path. If the contradiction disappears
+without semantic termination, the existing responsibility may continue.
+
 Nothing automatically moves the completed assembly. A harmless completed assembly remains where GIANTS left it. Completion creates no terminal lifecycle, terminal succession, completed-worker queue, parking duty, tidying duty or automatic settlement responsibility.
 
 ## 8. Beneficiary and controlled subject

@@ -55,7 +55,7 @@ function Transition:transition(picture,evaluated,readiness,semantics)
     local currentResponsibility,responsibilityReason=OuttaMyWay.ResolutionCommitmentAdapter.build(self.runtime,applied,{
         source="CooperativePassageResponsibilityTransition",purpose=candidate.purpose,
         beneficiaryAssemblyIds=participantIds,controlledSubjectAssemblyIds=participantIds,
-        resolutionOutcomeKinds={"COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"},
+        resolutionOutcomeKinds={"COOPERATIVE_PASSAGE_LEG_HANDED_BACK","COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"},
         responsibilityIdentity=semantics and semantics.responsibilityIdentity or nil
     })
     if currentResponsibility==nil then return nil,responsibilityReason end

@@ -167,6 +167,35 @@ function Authority:getCurrentResolutionCommitment(commitmentId)
     return self.resolutionsByCommitmentId[commitmentId]
 end
 
+-- Maintenance of the same Cooperative Passage semantic view, without a
+-- Responsibility Transition or RS-* identity churn.
+function Authority:refreshCooperativePassageResolutionCommitment(commitmentId)
+    local current=self:getCurrentResolutionCommitment(commitmentId)
+    if current==nil then return nil,"COOPERATIVE_PASSAGE_RESOLUTION_NOT_CURRENT" end
+    local responsibility=current.governingBasis and current.governingBasis.responsibilityKey or nil
+    if type(responsibility)~="string" or string.sub(responsibility,1,26)~="d0146-cooperative-passage:" then
+        return nil,"COOPERATIVE_PASSAGE_RESOLUTION_CONTEXT_MISMATCH"
+    end
+    local obligationIds,assemblyIds,seenAssemblies={},{},{}
+    for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.runtime.obligations:openForOwner(commitmentId)) do
+        obligationIds[#obligationIds+1]=obligation.identity
+        local basis=obligation.basis or {}
+        if basis.kind=="COOPERATIVE_PASSAGE_LEG" and type(basis.assemblyId)=="string" and seenAssemblies[basis.assemblyId]~=true then
+            seenAssemblies[basis.assemblyId]=true
+            assemblyIds[#assemblyIds+1]=basis.assemblyId
+        end
+    end
+    table.sort(obligationIds)
+    table.sort(assemblyIds)
+    local refreshed=OuttaMyWay.ResolutionCommitment.new({
+        identity=current.identity,kind=current.kind,purpose=current.purpose,governingBasis=current.governingBasis,
+        beneficiaryAssemblyIds=assemblyIds,controlledSubjectAssemblyIds=assemblyIds,
+        openResolutionObligationIds=obligationIds,provenance=current.provenance
+    })
+    self.resolutionsByCommitmentId[commitmentId]=refreshed
+    return refreshed,nil
+end
+
 function Authority:terminateRegulation(commitmentId)
     local current=self.regulationsByCommitmentId[commitmentId]
     if current~=nil and self.runtime.boundedAuthority~=nil then self.runtime.boundedAuthority:releaseForResponsibility(current.identity,"REGULATION_RESPONSIBILITY_TERMINATED") end
@@ -569,7 +598,7 @@ function Authority:preflightFollowerRegulationForCooperativePassage(picture,eval
     end
     local successorObligation=(candidate.obligationsCreated or {})[1]
     if successorObligation==nil or successorObligation.requiredOutcome==nil
-        or successorObligation.requiredOutcome.kind~="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK" then
+        or (successorObligation.requiredOutcome.kind~="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK" and successorObligation.requiredOutcome.kind~="COOPERATIVE_PASSAGE_LEG_HANDED_BACK") then
         return nil,"FOLLOWER_PASSAGE_PREFLIGHT_SUCCESSOR_OBLIGATION_UNAVAILABLE"
     end
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.runtime.obligations:openForOwner(commitment.identity)) do
