@@ -4248,7 +4248,7 @@ for _,failure in ipairs({"TARGET","LEASE","OBLIGATION","PARTICIPANTS","SUCCESSOR
                 return false,"INJECTED_PHYSICAL_CLEANUP_FALLBACK_REFUSAL"
             end
         elseif failure=="CLEANUP" then
-            runtime.regulationBoundedAuthority.supersedeFollowerRegulationForCooperativePassage=function() return {settled=nil,reason="INJECTED_CLEANUP_REFUSAL"} end
+            runtime.responsibilityTransitionAuthority.supersedeFollowerRegulationForCooperativePassage=function() return {settled=nil,reason="INJECTED_CLEANUP_REFUSAL"} end
         end
         local result=runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         equal(result.status,"NO_DISPATCH")
