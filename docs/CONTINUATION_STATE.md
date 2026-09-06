@@ -18,63 +18,40 @@ established `Commitment Operation != Responsibility Transition`, explicit
 direct-Passage substrate targeting, `Key Match Is Not Lifecycle Match`, and
 `Semantic Targetability != Application Cardinality`.
 
-Fresh GIANTS Reality from Issue #51 has interrupted further Phase-13
-simplification with a more fundamental Cooperative Passage lifecycle discovery.
-In `0.3.0.10 TEST`, Condor had already been handed back to GIANTS while Patriot
-was still restoring. Condor's natural Job Episode completion caused D-0200 to
-settle every Passage obligation and terminalise the retained Commitment;
-Phase-10 Bounded Authority enforcement then exposed
-`BOUNDED_AUTHORITY_LOST` and Player Intervention.
+Issue #51 interrupted Phase-13 simplification with the accepted D-0217
+Cooperative Passage lifecycle correction. Runtime now represents Cooperative
+Passage as two participant-scoped `COOPERATIVE_PASSAGE_LEG` obligations under
+one retained parent Commitment / one Resolution responsibility. A leg settles
+by `SATISFACTION` with `passageLegDisposition="HANDED_BACK"` after participant
+restore and GIANTS handback, or by `BASIS_CESSATION` with
+`passageLegDisposition="VACATED"` after positive participant loss.
 
-A/B comparison with the last in-game `0.3.0.8 TEST` run demonstrated the same
-dependency-collapse timing while Patriot was still restoring. The older build
-appeared successful only because Passage Control continued physical restoration
-after authority had already been released.
+D-0200 dependency collapse now distinguishes active Cooperative Passage leg
+obligations from whole D-0146 traffic responsibility collapse. An ended Job
+Episode that maps to an already terminal leg has no further Passage effect. An
+ended live leg vacates only that leg, releases only that participant's Bounded
+Authority and mechanical `AU-*` authority, revises retained ownership /
+Effective Actuation Composition, and leaves the survivor's existing
+choreography and authority current. Non-leg D-0146 traffic paths retain the
+existing whole-collapse behaviour.
 
-The owner has accepted:
+`CooperativePassageControl` now treats original participants and live executable
+Passage Legs separately. Terminal legs no longer gate guide completion, runout,
+return ordering, restoration or handback, while current physical occupancy
+remains hard-safety evidence where observed. Unexpected `BOUNDED_AUTHORITY_LOST`
+on a still-live leg remains fail-closed.
 
-- **Participant Loss Vacates a Passage Leg; It Does Not Cancel the Passage.**
-- **Coupled Admission != Coupled Execution Persistence.**
-- **Pairwise Resolution != Symmetric Progress Requirement.**
-- **Survivor Invariance.**
-- **Choreography Vacatur != Physical Disappearance.**
-- **Partial Basis Cessation != Responsibility Termination.**
-- **Last-Leg Dissolution.**
+`TerminalSettlementEvaluator` remains unchanged. Last-Leg Dissolution is reached
+when no open Passage Leg/shared obligation remains, at which point the existing
+terminal settlement path ends the parent Commitment and semantic Resolution.
 
-Cooperative Passage requires two active AI workers at Bubble Formation, but
-after commitment each original participant has a participant-scoped Passage
-Leg. Positive Job Episode completion/stoppage/supersession, player takeover or
-positive vehicle/runtime removal vacates only an affected still-live leg; an
-already handed-back or vacated leg remains terminal. No replacement
-joins the Bubble. The parent Resolution, Bubble Protection and Resolution Epoch
-persist while another Passage Leg or shared coupled obligation remains
-legitimate.
-
-Current runtime diverges at the retained substrate boundary. D-0146 Candidate
-support creates one joint restoration/handoff obligation for both assemblies,
-and D-0200 currently treats any ended dependent Job Episode as whole-Commitment
-basis cessation, settling every open obligation and entering terminal
-settlement. Passage Control itself already supports procedural asymmetry by
-handing one participant back while the other continues clearance wait, Axis
-Return or restoration.
-
-**Next Engineering Increment:** implement the smallest generic reconciliation
-that makes Cooperative Passage dependency/obligation scope participant-aware:
-vacate/release only the lost leg, preserve the survivor's existing Passage
-choreography and authority, and permit whole-Commitment terminal settlement only
-after no legitimate Passage Leg/shared Bubble obligation remains. Do not
-pre-judge `TerminalSettlementEvaluator` as needing redesign.
-
-Regression evidence must distinguish expected participant loss from unexpected
-authority loss: expected participant loss must not manufacture Player
-Intervention, while genuinely unexplained Bounded Authority loss during a
-still-live leg remains fail-closed. Cover natural Job completion, player
-takeover and positive vehicle removal without fixture-specific branching.
-
-Issue #51 remains open as the failing Reality record until a later
-implementation build receives in-game validation. Candidate-Embedded Verdict
-Authority and generic multi-context application cardinality remain Phase-13 work
-but are paused behind this Reality-driven correction.
+This increment has only implementation-local validation so far:
+LuaJIT bytecode compilation of changed Lua/test files and diff inspection.
+Repository offline validation remains owned by GitHub Actions, and no Farming
+Simulator Reality validation is claimed yet. Issue #51 remains open until a
+later implementation build receives in-game validation. Candidate-Embedded
+Verdict Authority and generic multi-context application cardinality remain
+Phase-13 work after this correction.
 
 Issue #37 remains open as non-blocking Category-2 Reality-validation debt.
 Bubble Bullet Time remains accepted but unimplemented and is tracked separately

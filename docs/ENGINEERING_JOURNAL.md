@@ -1,3 +1,48 @@
+## 2026-09-06 — Runtime reconciliation of participant-scoped Passage Legs
+
+**Observe:** implementation review confirmed the D-0217 mismatch at three
+runtime boundaries: D-0146 Candidate support emitted one joint
+restoration/handoff obligation, D-0200 collapsed any ended dependent Job
+Episode as whole-Commitment basis cessation, and Runtime completion treated
+normal participant handback as only a whole-pair success event. Passage Control
+already contained participant-specific restore/handoff mechanics, but its live
+phase gates and Bounded Authority guard still assumed both original requests
+remained live.
+
+**Implement:** D-0146 Candidate support now emits two
+`COOPERATIVE_PASSAGE_LEG` obligations beneath the same retained `CM-*` and
+`RS-*`. Each leg records its original assembly and required
+`COOPERATIVE_PASSAGE_LEG_HANDED_BACK` outcome. `HANDED_BACK` is represented by
+settling that leg with `SATISFACTION`; `VACATED` is represented by settling
+that leg with `BASIS_CESSATION` and positive participant-loss evidence.
+
+`LiveTrafficCommitmentLifecycle.settleCooperativePassageLeg()` is the scoped
+settlement point. It releases the participant's BA grant and mechanical `AU-*`
+authority, revises retained progress ownership / Effective Actuation
+Composition, and invokes terminal settlement only after no open obligations
+remain. D-0200 now routes ended Job Episode evidence to that leg path when a
+live Cooperative Passage leg exists; otherwise the existing whole-collapse path
+for non-leg D-0146 responsibilities is preserved.
+
+`CooperativePassageControl` now separates immutable original participants from
+still-live executable legs. Vacated or handed-back legs are removed from guide,
+runout, return, restore and handback gates. The survivor receives no Candidate,
+Resolution, strategy or mode; it continues the existing Candidate-supplied
+choreography. Positive participant vacatur clears physical effect before the
+grant is released, while unexplained BA loss on a still-live leg remains a
+fail-closed `BOUNDED_AUTHORITY_LOST`.
+
+**Decision:** leave `TerminalSettlementEvaluator` unchanged. The upstream
+obligation/dependency scope now makes its whole-Commitment semantics apply only
+at Last-Leg Dissolution.
+
+**Validate:** implementation-local validation was limited to LuaJIT bytecode
+compilation of changed Lua/test files and static diff inspection. Per
+AGENTS/D-0216, the repository Lua offline suite and structural contracts were
+not executed locally; GitHub Actions owns those runs. No Farming Simulator
+runtime validation, package build, release, version or canonical authority
+change is claimed.
+
 ## 2026-09-06 — Issue #51 Passage Leg vacatur architecture discovery
 
 **Observe:** Issue #51 recorded `0.3.0.10 TEST` completing the physical

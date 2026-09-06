@@ -106,7 +106,7 @@ local function makeD0146PassageCandidate(pictureId,pictureValues,plan,governingR
         "One pair-scoped Cooperative Passage Commitment resolves the Established Opposed Corridor Conflict while other active Operation assemblies remain Local Spatial Constraints rather than hidden passage participants",
         {conflictIdentity=plan.conflictIdentity,assemblyIds=plan.assemblyIds,thirdPartyConstraintCount=plan.localPassageSpace and plan.localPassageSpace.thirdPartyConstraintCount or 0})
     constraints.OBLIGATION_COMPATIBILITY=d0146Packet(
-        "Material displacement creates the existing restoration-and-GIANTS-handoff terminal obligation for both assemblies",
+        "Material displacement creates one restoration-and-GIANTS-handoff Passage Leg obligation per original participant",
         {sameJobRestoration=true,postHandoffCooldown=false})
     constraints.COMMITMENT_PRECONDITIONS=d0146Packet(
         "Actuation starts only after this same-picture D-0146 Candidate passes mandatory Constraints and normal Commitment admission/revision",
@@ -126,6 +126,18 @@ local function makeD0146PassageCandidate(pictureId,pictureValues,plan,governingR
     local requirements={}
     for _,id in OuttaMyWay.ValueRecord.ipairs(plan.representationFitnessIds or {}) do requirements[#requirements+1]={representationId=id,acceptedStates={"FIT_FOR_LIMITED_HORIZON","CURRENTLY_FIT"}} end
     local dependentEncounterId,dependentJobEpisodeIds=d0146PairDependency(pictureValues,plan.subjectAssemblyId,plan.otherAssemblyId,plan.encounterIdentity)
+    local passageLegObligations={}
+    for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(plan.assemblyIds or {}) do
+        local jobToken=assemblyId==plan.subjectAssemblyId and plan.subjectJobToken or plan.otherJobToken
+        passageLegObligations[#passageLegObligations+1]={
+            origin={kind="OTM_MATERIAL_DISPLACEMENT",decision="D-0146",conflictIdentity=plan.conflictIdentity,passageLegAssemblyId=assemblyId},
+            basis={kind="COOPERATIVE_PASSAGE_LEG",assemblyId=assemblyId,originalAssemblyIds=plan.assemblyIds,jobToken=jobToken},
+            requiredOutcome={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",assemblyId=assemblyId,terminalDisposition="HANDED_BACK"},
+            requiredAuthority={capabilities={"REPOSITION","RESTORE_CONFIGURATION","HANDOVER_TO_GIANTS"}},
+            evidenceContract={kind="PARTICIPANT_PASSAGE_DEBT_DISCHARGED_THEN_GIANTS_HANDOFF_OR_POSITIVE_BASIS_CESSATION"},
+            ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true
+        }
+    end
 
     return {
         referenceKey="d0146-cooperative-passage:"..tostring(plan.conflictIdentity),
@@ -159,9 +171,9 @@ local function makeD0146PassageCandidate(pictureId,pictureValues,plan,governingR
         representationFitness={requirements=requirements},
         preconditions={evidenceContracts={},operatorCommandRequired=false,sameJobEpisodes=true,establishedOpposedCorridorConflict=true,sufficientLocalPassageArrangement=true,controlProfile=plan.controlProfile},
         invalidationConditions={{kind="JOB_EPISODE_CHANGE"},{kind="ESTABLISHED_CONFLICT_CHANGE"},{kind="PASSAGE_SUPPORT_LOSS"},{kind="CURRENT_PHYSICAL_INTERACTION"}},
-        reversibility={physicalEffect=true,restoreBothBeforeRelease=true,passageReassessment=true},
-        obligationsCreated={{origin={kind="OTM_MATERIAL_DISPLACEMENT",decision="D-0146",conflictIdentity=plan.conflictIdentity},basis={kind="COOPERATIVE_PASSAGE_RESTORATION_AND_HANDOFF",assemblyIds=plan.assemblyIds},requiredOutcome={kind="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK",assemblyIds=plan.assemblyIds},requiredAuthority={capabilities={"REPOSITION","RESTORE_CONFIGURATION","HANDOVER_TO_GIANTS"}},evidenceContract={kind="BOTH_SAME_JOB_BOTH_RESTORED_THEN_GIANTS_HANDOFF"},ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true}},
-        releaseImplications={releaseBothProgressAuthoritiesAfterPositiveHandoff=true,postHandoffObservationAuthority=false,cooldown=false},
+        reversibility={physicalEffect=true,restoreParticipantBeforeLegRelease=true,passageReassessment=true},
+        obligationsCreated=passageLegObligations,
+        releaseImplications={releaseParticipantProgressAuthorityAfterLegTerminal=true,postHandoffObservationAuthority=false,cooldown=false},
         uncertainty={"GENERIC_NEGATIVE_CLEARANCE_AUTHORITY_NOT_CLAIMED","BOUNDARY_ENCROACHMENT_NOT_REQUIRED_BY_SELECTED_EXPRESSION","STATIC_OBSTACLE_EXCLUSION_BEYOND_ACTIVE_ASSEMBLIES_NOT_CLAIMED"},
         comparisonCost=plan.passageArrangement and tonumber(plan.passageArrangement.combinedLateralBurdenM) or 0
     }

@@ -323,8 +323,24 @@ end
 
 function Runtime:onCooperativePassageCompletion(result)
     if type(result)~="table" or type(result.commitmentId)~="string" then return end
+    if result.status=="PARTICIPANT_HANDED_BACK" or result.status=="PARTICIPANT_VACATED" then
+        local disposition=result.status=="PARTICIPANT_HANDED_BACK" and "HANDED_BACK" or "VACATED"
+        local assemblyId=result.assemblyId or (result.assemblyIds and result.assemblyIds[1])
+        local settled,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleCooperativePassageLeg(self,result.commitmentId,assemblyId,disposition,result.evidence)
+        if settled==nil then
+            runtimeLogWarning("COOPERATIVE_PASSAGE_LEG_SETTLEMENT_UNRESOLVED commitment=%s assembly=%s disposition=%s reason=%s",tostring(result.commitmentId),tostring(assemblyId),tostring(disposition),tostring(reason))
+        else
+            cooperativeLog("COOPERATIVE_PASSAGE_LEG_TERMINAL commitment=%s assembly=%s disposition=%s terminal=%s survivorAuthorityPreserved=%s",
+                tostring(result.commitmentId),tostring(assemblyId),tostring(disposition),tostring(settled.terminal and settled.terminal.state or "NO"),tostring((settled.remainingObligations and #settled.remainingObligations>0) or false))
+        end
+        return
+    end
     for _,grantId in OuttaMyWay.ValueRecord.ipairs(result.boundedAuthorityIds or {}) do self.boundedAuthority:release(grantId,"COOPERATIVE_PASSAGE_"..tostring(result.status)) end
     if result.status=="SUCCEEDED" then
+        if not self.obligations:hasOpenObligations(result.commitmentId) then
+            cooperativeLog("COOPERATIVE_COMPLETION commitment=%s terminalAlreadySettledByPassageLegs=true cooldown=false",tostring(result.commitmentId))
+            return
+        end
         local settled,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.completeCooperativePassage(self,result.commitmentId,result.evidence)
         if settled==nil then
             runtimeLogWarning("COOPERATIVE_COMPLETION_UNRESOLVED commitment=%s reason=%s",tostring(result.commitmentId),tostring(reason))
@@ -336,7 +352,7 @@ function Runtime:onCooperativePassageCompletion(result)
         if record~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then
             for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.obligations:openForOwner(result.commitmentId)) do
                 local outcome=obligation.requiredOutcome
-                if type(outcome)=="table" and outcome.kind=="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK" then
+                if type(outcome)=="table" and (outcome.kind=="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK" or outcome.kind=="COOPERATIVE_PASSAGE_LEG_HANDED_BACK") then
                     self.obligations:settle(obligation.identity,"BASIS_CESSATION",result.evidence or {kind="COOPERATIVE_PASSAGE_FAILED"})
                 end
             end

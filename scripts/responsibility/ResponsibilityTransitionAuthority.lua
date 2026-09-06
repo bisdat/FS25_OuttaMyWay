@@ -569,7 +569,7 @@ function Authority:preflightFollowerRegulationForCooperativePassage(picture,eval
     end
     local successorObligation=(candidate.obligationsCreated or {})[1]
     if successorObligation==nil or successorObligation.requiredOutcome==nil
-        or successorObligation.requiredOutcome.kind~="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK" then
+        or (successorObligation.requiredOutcome.kind~="COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK" and successorObligation.requiredOutcome.kind~="COOPERATIVE_PASSAGE_LEG_HANDED_BACK") then
         return nil,"FOLLOWER_PASSAGE_PREFLIGHT_SUCCESSOR_OBLIGATION_UNAVAILABLE"
     end
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.runtime.obligations:openForOwner(commitment.identity)) do
