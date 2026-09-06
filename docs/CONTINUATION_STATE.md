@@ -186,9 +186,30 @@ This establishes **Pre-Semantic Contradiction != Resolution Failure**. Raw
 Control evidence must wait for the semantic lifecycle authority instead of
 making a terminal decision. The next playable identity advances to
 **v0.3.0.13 TEST — Passage Leg Lifecycle Reconciliation**. This remains a
-test-build identity only; canonical authority is still **v0.3.0.0**. Issue #51
-and PR #54 remain open pending CI and targeted Reality validation of this
-ordering correction.
+test-build identity only; canonical authority is still **v0.3.0.0**. GitHub Actions run #116 and owner-supplied `v0.3.0.13 TEST` two-run Farming Simulator Reality evidence now validate this ordering correction. Issues #51 and #55 are resolved on PR #54 head `ff9c961e54bc1a675bededb2e130bed09cd2d9b8`; PR #54 remains open only pending repository-owner acceptance/merge.
+### PR #54 final validation — v0.3.0.13
+
+Final PR #54 implementation head `ff9c961e54bc1a675bededb2e130bed09cd2d9b8` is independently validated both
+offline and in Farming Simulator Reality.
+
+- GitHub Actions run #116: Structural **112 / 112 passed**; Lua observation
+  **324 passed / 9 failed**, with exactly the established nine accepted-state
+  observational failure identities.
+- Reality evidence uses mod hash `36dc8f1f16fc1331a5e32abec852d22c`.
+- Normal Passage: Condor and Patriot both reach `HANDED_BACK`, followed by
+  Last-Leg Dissolution / `COOPERATIVE_COMPLETION`; two normal Passages complete
+  in the first session.
+- Live-leg Job termination: raw contradiction first records
+  `SEMANTIC_LIFECYCLE_PENDING`; semantic Job Episode termination then vacates
+  Condor only, preserves survivor authority `BA-00067`, and Patriot completes
+  the same Passage normally.
+- No manufactured `SAFE_ABANDON_ESCALATE`, `FAILED_HELD`, or
+  `PLAYER_INTERVENTION_REQUIRED` occurs in that tested lifecycle path.
+
+This closes the validation debt that interrupted Phase 13. Issues #51 and #55
+are resolved by evidence on this PR head. PR #54 remains pending only
+repository-owner acceptance/merge; canonical authority remains `v0.3.0.0`.
+
 Candidate-Embedded
 Verdict Authority and generic multi-context application cardinality remain
 Phase-13 work after this correction.
@@ -199,8 +220,7 @@ by Issue #45.
 
 This Engineering Increment changes runtime, focused offline validation
 contracts, architecture/decision knowledge, and the playable **test-build
-identity** only. The next executable is **v0.3.0.13 TEST — Passage Leg Lifecycle
-Reconciliation**. It isolates the Reality-proven pre-semantic contradiction
+identity** only. The validated executable is **v0.3.0.13 TEST — Passage Leg Lifecycle Reconciliation**. It isolates the Reality-proven pre-semantic contradiction
 ordering correction from the `v0.3.0.12` two-run evidence. This is not a release
 or canonical declaration; canonical authority remains **v0.3.0.0**.
 

@@ -1,3 +1,47 @@
+## 2026-09-06 — v0.3.0.13 final Reality: both targeted Passage runs PASS
+
+**Observe:** owner-supplied Farming Simulator evidence for
+`v0.3.0.13 TEST — PASSAGE LEG LIFECYCLE RECONCILIATION` records mod hash
+`36dc8f1f16fc1331a5e32abec852d22c`. The same two targeted runs used for `v0.3.0.12` were repeated
+against PR #54 head `ff9c961e54bc1a675bededb2e130bed09cd2d9b8`; both pass.
+
+Run 1 validates normal Cooperative Passage and the original Issue #51 terminal
+timing. `CM-00002` hands Condor back at 17:41:14.042, hands Patriot back at
+17:41:48.294, then records `PAIR_CONTEXT_DISSOLVED` and
+`COOPERATIVE_COMPLETION`. A second normal Passage, `CM-00005`, also completes
+cleanly at 17:45:43.581. This also provides direct Reality evidence that the
+intermediate Issue #55 `v0.3.0.11` Regulation/Passage smoke regression is no
+longer present.
+
+Run 2 deliberately stops Condor's GIANTS job and moves Condor away while both
+Passage Legs are live. At 17:48:39.380, Control records
+`SEMANTIC_LIFECYCLE_PENDING` with
+`evidence=RAW_JOB_EPISODE_CONTRADICTION`,
+`action=NO_NEW_CONTROL_PROGRESSION`,
+`currentBoundedActuationMaySettle=true`, and `terminalDecision=false`. At
+17:48:39.603 semantic lifecycle vacates only Condor's leg as
+`JOB_EPISODE_DEPENDENCY_CEASED`; the same evidence records
+`terminal=NO survivorAuthority=BA-00067`. Patriot remains in the existing
+Passage responsibility, is handed back at 17:49:29.603, and Last-Leg
+Dissolution / `COOPERATIVE_COMPLETION` follows immediately.
+
+**Validate:** the Reality run therefore confirms both sides of D-0217:
+already-terminal participant lifecycle change does not disturb a survivor, and
+live-leg Job Episode termination is reconciled semantically without premature
+Control failure. No manufactured `SAFE_ABANDON_ESCALATE`, `FAILED_HELD`, or
+`PLAYER_INTERVENTION_REQUIRED` occurs in the tested Job-termination path.
+
+Independent offline evidence is GitHub Actions run #116 at the same PR head:
+Structural contracts **112 / 112 passed**; Lua observation **324 passed / 9
+failed**, with exactly the established nine accepted-state observational
+failure identities and the new pre-semantic contradiction regression contract
+green.
+
+**Record / decision:** Issues #51 and #55 are resolved by evidence on PR #54
+head `ff9c961e54bc1a675bededb2e130bed09cd2d9b8`. They may be closed as resolved while PR #54 remains open pending
+repository-owner acceptance/merge. No runtime, architecture, version, release or
+canonical change is introduced by this documentation-only record.
+
 ## 2026-09-06 — v0.3.0.12 two-run Reality: pre-semantic contradiction poisoned Passage
 
 **Observe:** owner-supplied `v0.3.0.12 TEST` evidence contains two runs with the
