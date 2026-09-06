@@ -341,7 +341,8 @@ end
 
 function Control:_allSameJob(run)
     for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants) do
-        if legLive(p) and currentJobToken(p.vehicle)~=p.startJobToken then return false,p end
+        local token=currentJobToken(p.vehicle)
+        if legLive(p) and token~=nil and token~=p.startJobToken then return false,p end
     end
     return true,nil
 end
@@ -535,7 +536,11 @@ function Control:_rebaseD0146Guide(run)
     if legLive(subjectParticipant) and subjectPose==nil then return false,"PASSAGE_EXECUTION_ORIGIN_ASSEMBLY_BINDING_UNAVAILABLE:"..tostring(run.subjectAssemblyId) end
     if legLive(otherParticipant) and otherPose==nil then return false,"PASSAGE_EXECUTION_ORIGIN_ASSEMBLY_BINDING_UNAVAILABLE:"..tostring(run.otherAssemblyId) end
     local oldOrigins=guide.entryOrigins or {}
-    guide.entryOrigins={subject={x=subjectPose.x,z=subjectPose.z},other={x=otherPose.x,z=otherPose.z}}
+    guide.entryOrigins={}
+    if subjectPose~=nil then guide.entryOrigins.subject={x=subjectPose.x,z=subjectPose.z}
+    elseif type(oldOrigins.subject)=="table" then guide.entryOrigins.subject=copyValue(oldOrigins.subject) end
+    if otherPose~=nil then guide.entryOrigins.other={x=otherPose.x,z=otherPose.z}
+    elseif type(oldOrigins.other)=="table" then guide.entryOrigins.other=copyValue(oldOrigins.other) end
     for index,gate in ipairs(guide.gates or {}) do
         local forward=tonumber(gate.forwardM) or 0
         local fraction=tonumber(gate.lateralFraction) or 0
@@ -795,11 +800,13 @@ function Control:_releasedParticipantClearedReturnSpace(released,waiting)
 end
 
 function Control:_completePairContext(run)
+    local mixed=(run.a.vacated==true or run.b.vacated==true)
     local exhausted=run.a.restoreSettlementExhausted==true or run.b.restoreSettlementExhausted==true
     self.run=nil; self.completedCount=self.completedCount+1
     logInfo("PAIR_CONTEXT_DISSOLVED commitment=%s reason=NO_REMAINING_PASSAGE_AUTHORITY participantSpecificRelease=true",tostring(run.commitmentId))
     local evidenceKind=exhausted and "D0146_COOPERATIVE_PASSAGE_RESTORE_EXHAUSTED_AND_HANDED_BACK" or "D0146_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
-    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},boundedAuthorityIds={},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,sameJobs=true,bothRestored=not exhausted,restorationExhausted=exhausted,participantSpecificRelease=true,completedAt=g_time or 0}})
+    if mixed then evidenceKind="D0146_COOPERATIVE_PASSAGE_LAST_LEG_DISSOLVED_AFTER_BASIS_CESSATION" end
+    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},boundedAuthorityIds={},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,sameJobs=mixed and nil or true,bothRestored=mixed and nil or not exhausted,mixedPassageLegDispositions=mixed,restorationExhausted=exhausted,participantSpecificRelease=true,completedAt=g_time or 0}})
 end
 
 function Control:_beginD0146Configuration(run)
@@ -969,8 +976,10 @@ function Control:_complete(run)
         tostring(run.commitmentId),run.a.name,tostring(run.a.startJobToken),tostring(run.a.wakeMethod),run.b.name,tostring(run.b.startJobToken),tostring(run.b.wakeMethod),
         pa and pb and string.format("%.2fm",distance(pa.x,pa.z,pb.x,pb.z)) or "n/a")
     self.run=nil; self.completedCount=self.completedCount+1
+    local mixed=(run.a.vacated==true or run.b.vacated==true)
     local evidenceKind=run.restorationExhausted==true and "D0146_COOPERATIVE_PASSAGE_RESTORE_EXHAUSTED_AND_HANDED_BACK" or "D0146_COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
-    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},boundedAuthorityIds={},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,sameJobs=true,bothRestored=run.restorationExhausted~=true,restorationExhausted=run.restorationExhausted==true,cooldown=false,completedAt=g_time or 0}})
+    if mixed then evidenceKind="D0146_COOPERATIVE_PASSAGE_LAST_LEG_DISSOLVED_AFTER_BASIS_CESSATION" end
+    self:_notify({status="SUCCEEDED",commitmentId=run.commitmentId,requestIds={run.a.request.identity,run.b.request.identity},boundedAuthorityIds={},assemblyIds={run.a.assemblyId,run.b.assemblyId},evidence={kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,sameJobs=mixed and nil or true,bothRestored=mixed and nil or run.restorationExhausted~=true,mixedPassageLegDispositions=mixed,restorationExhausted=run.restorationExhausted==true,cooldown=false,completedAt=g_time or 0}})
 end
 
 function Control:_failHeld(reason)
@@ -1014,18 +1023,74 @@ function Control:vacateParticipant(commitmentId,assemblyId,evidence)
     if allPassageLegsTerminal(run) then
         self.run=nil
         logInfo("PAIR_CONTEXT_DISSOLVED commitment=%s reason=LAST_PASSAGE_LEG_VACATED participantSpecificRelease=true",tostring(run.commitmentId))
-    elseif run.phase=="WAIT_NATIVE_CLEARANCE" and run.waitingParticipant==nil then
-        local remaining=liveParticipants(run)[1]
-        if remaining~=nil then
-            local ok,reason=self:_beginAxisReturn(run,remaining,participant,false)
-            if not ok then
-                remaining.axisReturnSkipped=true
-                local restoreOk,restoreReason=self:_beginParticipantRestore(run,remaining)
-                if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason or reason)) end
-            end
-        end
+    else
+        self:_continueAfterParticipantVacatur(run,participant)
     end
     return {disposition="VACATED",assemblyId=assemblyId}
+end
+
+function Control:currentParticipantRequest(commitmentId,assemblyId)
+    local run=self.run
+    if run==nil or run.commitmentId~=commitmentId or type(assemblyId)~="string" then return nil end
+    for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
+        if participant.assemblyId==assemblyId and legLive(participant) then return participant.request end
+    end
+    return nil
+end
+
+function Control:acceptSurvivorPermission(commitmentId,assemblyId,request)
+    if self.run==nil or self.run.commitmentId~=commitmentId or type(request)~="table" or request.assemblyId~=assemblyId or request.commitmentId~=commitmentId then
+        return false,"SURVIVOR_PERMISSION_CONTEXT_MISMATCH"
+    end
+    for _,participant in OuttaMyWay.ValueRecord.ipairs(self.run.participants or {}) do
+        if participant.assemblyId==assemblyId and legLive(participant) then
+            participant.request=request
+            return true,nil
+        end
+    end
+    return false,"SURVIVOR_PERMISSION_PARTICIPANT_NOT_LIVE"
+end
+
+function Control:_continueAfterParticipantVacatur(run,vacated)
+    local remaining=liveParticipants(run)[1]
+    run.releasedLeader=run.releasedLeader~=vacated and run.releasedLeader or nil
+    if remaining==nil then return end
+    local function continueReturnOrRestore()
+        if remaining.axisReturnCompleted==true or remaining.axisReturnSkipped==true then
+            local restoreOk,restoreReason=self:_beginParticipantRestore(run,remaining)
+            if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason)) end
+            return
+        end
+        local ok,reason=self:_beginAxisReturn(run,remaining,vacated,false)
+        if not ok then
+            remaining.axisReturnSkipped=true
+            local restoreOk,restoreReason=self:_beginParticipantRestore(run,remaining)
+            if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason or reason)) end
+        end
+    end
+    local phase=tostring(run.phase)
+    if phase=="PASSAGE_APPROACH" then return end
+    if phase=="SETTLING" then return end
+    if phase=="CONFIGURING" then return end
+    if string.sub(phase,1,6)=="GUIDE_" then return end
+    if phase=="ALIGNMENT_RUNOUT" then return end
+    if phase=="AXIS_RETURN" and run.activeReturnParticipant==nil then
+        continueReturnOrRestore()
+        return
+    end
+    if phase=="RESTORING_PARTICIPANT" and run.activeRestoreParticipant==nil then
+        if remaining.released==true then return end
+        continueReturnOrRestore()
+        return
+    end
+    if phase=="WAIT_NATIVE_CLEARANCE" and run.waitingParticipant==nil then
+        local ok,reason=self:_beginAxisReturn(run,remaining,vacated,false)
+        if not ok then
+            remaining.axisReturnSkipped=true
+            local restoreOk,restoreReason=self:_beginParticipantRestore(run,remaining)
+            if not restoreOk then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(restoreReason or reason)) end
+        end
+    end
 end
 
 function Control:_executeD0146JointRequests(requestA,requestB,candidate,bridge)
@@ -1119,11 +1184,7 @@ function Control:update(dt)
     if OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED~=true then self:_failHeld("D0146_STEP2_DISABLED_DURING_ACTIVE_COMMITMENT"); return end
     local nowMs=g_time or 0
     local sameJob,changed=self:_allSameJob(run)
-    if not sameJob then
-        self:vacateParticipant(run.commitmentId,changed and changed.assemblyId or nil,{kind="COOPERATIVE_PASSAGE_PARTICIPANT_JOB_EPISODE_CHANGED",passageLegDisposition="VACATED",participant=changed and changed.name or nil})
-        self:_notify({status="PARTICIPANT_VACATED",commitmentId=run.commitmentId,requestIds={changed and changed.request and changed.request.identity or nil},boundedAuthorityIds={changed and changed.request and changed.request.boundedAuthorityId or nil},assemblyId=changed and changed.assemblyId or nil,assemblyIds={changed and changed.assemblyId or nil},evidence={kind="COOPERATIVE_PASSAGE_PARTICIPANT_JOB_EPISODE_CHANGED",passageLegDisposition="VACATED",assemblyId=changed and changed.assemblyId or nil}})
-        return
-    end
+    if not sameJob then self:_failHeld("COOPERATIVE_PASSAGE_PARTICIPANT_JOB_EPISODE_CONTRADICTION_PENDING_SEMANTIC_LIFECYCLE_EVIDENCE"); return end
     local thirdOk,thirdReason=self:_thirdPartySupport(run,nil)
     if not thirdOk then self:_failHeld(thirdReason); return end
 
@@ -1219,6 +1280,7 @@ function Control:update(dt)
         if participant==nil then self:_failHeld("RESTORE_PARTICIPANT_UNAVAILABLE"); return end
         if self:_participantRestoreReady(participant) then
             local ok,reason=self:_releaseParticipant(run,participant); if not ok then self:_failHeld("PARTICIPANT_RELEASE:"..tostring(reason)); return end
+            if run.failureReason~=nil then return end
             if allPassageLegsTerminal(run) then self:_completePairContext(run); return end
             local waiting=liveParticipants(run)[1]
             if waiting==nil then self:_completePairContext(run); return end

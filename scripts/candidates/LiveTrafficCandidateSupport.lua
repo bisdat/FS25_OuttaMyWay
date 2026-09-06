@@ -64,12 +64,17 @@ local function d0146PairDependency(pictureValues,subjectAssemblyId,otherAssembly
         local samePair=(encounter.subjectAssemblyId==subjectAssemblyId and encounter.otherAssemblyId==otherAssemblyId)
             or (encounter.subjectAssemblyId==otherAssemblyId and encounter.otherAssemblyId==subjectAssemblyId)
         if samePair and (preferredEncounterId==nil or encounter.identity==preferredEncounterId) then
+            if type(encounter.subjectJobEpisodeId)~="string" or type(encounter.otherJobEpisodeId)~="string" then return encounter.identity,nil,nil end
             local episodes={encounter.subjectJobEpisodeId,encounter.otherJobEpisodeId}
             table.sort(episodes,function(a,b) return tostring(a)<tostring(b) end)
-            return encounter.identity,episodes
+            local byAssembly={
+                [encounter.subjectAssemblyId]=encounter.subjectJobEpisodeId,
+                [encounter.otherAssemblyId]=encounter.otherJobEpisodeId
+            }
+            return encounter.identity,episodes,byAssembly
         end
     end
-    return preferredEncounterId,nil
+    return preferredEncounterId,nil,nil
 end
 
 local function d0146BandExhaustion(pictureId,governingRequirementKey,capability,reason)
@@ -125,13 +130,14 @@ local function makeD0146PassageCandidate(pictureId,pictureValues,plan,governingR
     table.sort(compositionEntries,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
     local requirements={}
     for _,id in OuttaMyWay.ValueRecord.ipairs(plan.representationFitnessIds or {}) do requirements[#requirements+1]={representationId=id,acceptedStates={"FIT_FOR_LIMITED_HORIZON","CURRENTLY_FIT"}} end
-    local dependentEncounterId,dependentJobEpisodeIds=d0146PairDependency(pictureValues,plan.subjectAssemblyId,plan.otherAssemblyId,plan.encounterIdentity)
+    local dependentEncounterId,dependentJobEpisodeIds,dependentJobEpisodeIdByAssembly=d0146PairDependency(pictureValues,plan.subjectAssemblyId,plan.otherAssemblyId,plan.encounterIdentity)
     local passageLegObligations={}
     for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(plan.assemblyIds or {}) do
         local jobToken=assemblyId==plan.subjectAssemblyId and plan.subjectJobToken or plan.otherJobToken
+        local jobEpisodeId=dependentJobEpisodeIdByAssembly and dependentJobEpisodeIdByAssembly[assemblyId] or nil
         passageLegObligations[#passageLegObligations+1]={
             origin={kind="OTM_MATERIAL_DISPLACEMENT",decision="D-0146",conflictIdentity=plan.conflictIdentity,passageLegAssemblyId=assemblyId},
-            basis={kind="COOPERATIVE_PASSAGE_LEG",assemblyId=assemblyId,originalAssemblyIds=plan.assemblyIds,jobToken=jobToken},
+            basis={kind="COOPERATIVE_PASSAGE_LEG",assemblyId=assemblyId,originalAssemblyIds=plan.assemblyIds,jobEpisodeId=jobEpisodeId,jobToken=jobToken},
             requiredOutcome={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",assemblyId=assemblyId,terminalDisposition="HANDED_BACK"},
             requiredAuthority={capabilities={"REPOSITION","RESTORE_CONFIGURATION","HANDOVER_TO_GIANTS"}},
             evidenceContract={kind="PARTICIPANT_PASSAGE_DEBT_DISCHARGED_THEN_GIANTS_HANDOFF_OR_POSITIVE_BASIS_CESSATION"},

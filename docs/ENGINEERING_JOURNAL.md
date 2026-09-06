@@ -1,3 +1,54 @@
+## 2026-09-06 — Passage Leg survivor-continuity review correction
+
+**Observe:** review of the initial D-0217 implementation found nine concrete
+gaps: execution-origin rebase still dereferenced a vacated participant pose,
+vacatur during procedural return/restore phases could leave invalid active
+participant slots, raw native Job-token mismatch could manufacture `VACATED`,
+D-0200 processed only one ended dependency per sealed observation, an already
+terminal leg's later Job end was still reported as vacatur, production leg
+basis lacked exact Job Episode identity, survivor BA/ControlRequest provenance
+could remain tied to the stale two-participant composition, the read-only
+Resolution view could retain stale open obligations, and mixed
+`VACATED + HANDED_BACK` completion evidence could still claim normal
+two-handback facts.
+
+**Implement:** D-0146 Candidate support now records exact participant-scoped
+Job Episode identity from the selected Encounter on each
+`COOPERATIVE_PASSAGE_LEG`. The old positional dependency/source-intent fallback
+is not used to derive an assembly identity.
+
+D-0200 now iterates all ended dependent Job Episodes from one sealed
+observation for Cooperative Passage leg obligations. It settles only open
+matching live legs, treats already-terminal legs as truthful no-op observations,
+and still preserves the existing whole-collapse path for non-Passage D-0146
+traffic responsibilities.
+
+`CooperativePassageControl` now requires execution-origin pose only from
+still-live legs during guide rebase and preserves the Candidate-supplied fields
+for a vacated former participant. Vacatur continuation removes a vacated
+participant from active return/restore/wait slots and advances the survivor to
+the next valid point in the existing choreography without creating a Candidate,
+Resolution, strategy or survivor mode. Raw unavailable Job-token observation no
+longer terminalises a leg; raw contradiction fails held pending semantic
+lifecycle evidence rather than manufacturing basis cessation.
+
+**Implementation discovery — Responsibility Continuity Allows Authority
+Discontinuity in Passage Survivorship:** after a leg settles, the retained
+Commitment's Effective Actuation Composition truthfully becomes survivor-only.
+The survivor's predecessor BA/ControlRequest cannot remain current because it
+refers to the old two-participant composition. Runtime now refreshes the
+read-only Current Resolution view under the same `RS-*` so its open obligation
+and current beneficiary/controlled-subject fields match the surviving leg,
+authorizes a successor survivor BA under the same `RS-*`, same retained
+`CM-*`, same surviving `AU-*`, same capability and same already-authorised
+Passage target, asks active Passage Control to accept the successor request,
+and only then retires the predecessor survivor BA. Failure remains fail-closed.
+
+**Validate:** changed Lua files bytecode-compiled with LuaJIT. Per
+AGENTS/D-0216, the repository Lua offline suite and structural contracts were
+not run locally; GitHub Actions remains the independent execution authority. No
+Farming Simulator Reality validation is claimed.
+
 ## 2026-09-06 — Runtime reconciliation of participant-scoped Passage Legs
 
 **Observe:** implementation review confirmed the D-0217 mismatch at three

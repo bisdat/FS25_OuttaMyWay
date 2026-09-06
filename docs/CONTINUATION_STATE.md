@@ -26,20 +26,46 @@ by `SATISFACTION` with `passageLegDisposition="HANDED_BACK"` after participant
 restore and GIANTS handback, or by `BASIS_CESSATION` with
 `passageLegDisposition="VACATED"` after positive participant loss.
 
+D-0146 production Candidate support now binds each Passage Leg to the exact
+Job Episode identity supplied by the selected Encounter, as well as to the
+participant assembly and native Job token provenance. It no longer relies on
+positional correlation between broad `sourceIntentIds` and pair dependencies
+to identify a leg.
+
 D-0200 dependency collapse now distinguishes active Cooperative Passage leg
-obligations from whole D-0146 traffic responsibility collapse. An ended Job
-Episode that maps to an already terminal leg has no further Passage effect. An
-ended live leg vacates only that leg, releases only that participant's Bounded
-Authority and mechanical `AU-*` authority, revises retained ownership /
-Effective Actuation Composition, and leaves the survivor's existing
-choreography and authority current. Non-leg D-0146 traffic paths retain the
-existing whole-collapse behaviour.
+obligations from whole D-0146 traffic responsibility collapse. Every ended Job
+Episode in a sealed observation that maps to an original live Passage Leg is
+processed in that cycle. An ended Job Episode that maps only to an already
+terminal leg has no Passage lifecycle effect and produces no new vacatur or
+partial basis-cessation report. An ended live leg vacates only that leg,
+releases only that participant's Bounded Authority and mechanical `AU-*`
+authority, revises retained ownership / Effective Actuation Composition, and
+continues through Last-Leg Dissolution when the final open leg settles. Non-leg
+D-0146 traffic paths retain the existing whole-collapse behaviour.
 
 `CooperativePassageControl` now treats original participants and live executable
 Passage Legs separately. Terminal legs no longer gate guide completion, runout,
 return ordering, restoration or handback, while current physical occupancy
-remains hard-safety evidence where observed. Unexpected `BOUNDED_AUTHORITY_LOST`
-on a still-live leg remains fail-closed.
+remains hard-safety evidence where observed. Vacatur before execution-origin
+capture requires pose only from still-live legs and preserves the vacated
+participant's existing Candidate-supplied guide fields rather than inventing
+replacement geometry. Raw unavailable native Job tokens do not establish
+`VACATED`; positive Job Episode lifecycle evidence remains the semantic
+vacatur path. Unexpected `BOUNDED_AUTHORITY_LOST` on a still-live leg remains
+fail-closed.
+
+When one Passage Leg settles and a survivor remains executable, retained
+Commitment ownership and Effective Actuation Composition are revised to the
+truthful survivor-only composition. The surviving participant then receives a
+fresh BA grant and ControlRequest under the same continuing `RS-*`, same
+retained `CM-*`, same surviving `AU-*`, same capability and already-authorised
+Passage target. Active Passage Control rebinds to that successor permission
+without restarting choreography; only after acceptance is the predecessor
+survivor BA retired. Failure to establish or accept the successor permission
+remains fail-closed. The semantic `RS-*` identity persists, and the stored
+read-only `ResolutionCommitment` view is refreshed under that same identity so
+its open obligation and beneficiary/controlled-subject fields describe the
+currently open Passage Leg semantics.
 
 `TerminalSettlementEvaluator` remains unchanged. Last-Leg Dissolution is reached
 when no open Passage Leg/shared obligation remains, at which point the existing
@@ -57,8 +83,9 @@ Issue #37 remains open as non-blocking Category-2 Reality-validation debt.
 Bubble Bullet Time remains accepted but unimplemented and is tracked separately
 by Issue #45.
 
-This documentation-only Engineering Increment changes no runtime, tests, mod
-version, release identity or canonical authority.
+This Engineering Increment changes runtime and focused offline validation
+contracts only. It changes no mod version, release identity or canonical
+authority.
 
 ## Established
 

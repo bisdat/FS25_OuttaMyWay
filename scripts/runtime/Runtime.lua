@@ -212,6 +212,61 @@ function Runtime:_jointCooperativePassageRequests(picture,evaluated,candidate,co
     return requests,nil
 end
 
+function Runtime:refreshCooperativePassageSurvivorAuthority(commitmentId,settled)
+    local current=self.responsibilityTransitionAuthority:getCurrentResolutionCommitment(commitmentId)
+    local commitment=self.commitments:get(commitmentId)
+    if current==nil or commitment==nil or commitment.state~="ACTIVE" then return nil,"SURVIVOR_RESPONSIBILITY_NOT_CURRENT" end
+    local survivorAssemblyId=nil
+    local openObligationIds={}
+    local openLegAssemblyIds={}
+    for _,obligation in OuttaMyWay.ValueRecord.ipairs(settled and settled.remainingObligations or self.obligations:openForOwner(commitmentId)) do
+        openObligationIds[#openObligationIds]=obligation.identity
+        local basis=obligation.basis or {}
+        if basis.kind=="COOPERATIVE_PASSAGE_LEG" and type(basis.assemblyId)=="string" then
+            if survivorAssemblyId~=nil then return nil,"MULTIPLE_SURVIVOR_PASSAGE_LEGS_UNSUPPORTED" end
+            survivorAssemblyId=basis.assemblyId
+            openLegAssemblyIds[#openLegAssemblyIds]=basis.assemblyId
+        end
+    end
+    table.sort(openObligationIds)
+    table.sort(openLegAssemblyIds)
+    if survivorAssemblyId==nil then return nil,"SURVIVOR_PASSAGE_LEG_UNAVAILABLE" end
+    self.responsibilityTransitionAuthority.resolutionsByCommitmentId[commitmentId]=OuttaMyWay.ResolutionCommitment.new({
+        identity=current.identity,kind=current.kind,purpose=current.purpose,governingBasis=current.governingBasis,
+        beneficiaryAssemblyIds=openLegAssemblyIds,controlledSubjectAssemblyIds=openLegAssemblyIds,
+        openResolutionObligationIds=openObligationIds,provenance=current.provenance
+    })
+    current=self.responsibilityTransitionAuthority:getCurrentResolutionCommitment(commitmentId)
+    local control=self.liveControlDispatcher and self.liveControlDispatcher.cooperativePassageControl or nil
+    if control==nil or type(control.currentParticipantRequest)~="function" or type(control.acceptSurvivorPermission)~="function" then
+        return nil,"SURVIVOR_CONTROL_REBIND_UNAVAILABLE"
+    end
+    local predecessorRequest=control:currentParticipantRequest(commitmentId,survivorAssemblyId)
+    if predecessorRequest==nil then return nil,"SURVIVOR_CONTROL_REQUEST_UNAVAILABLE" end
+    local token=nil
+    for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(self.authorities:tokensForCommitment(commitmentId)) do
+        if candidateToken.assemblyId==survivorAssemblyId then token=candidateToken break end
+    end
+    if token==nil or self.authorities:validate(token)~=true then return nil,"SURVIVOR_AUTHORITY_TOKEN_UNAVAILABLE" end
+    local grant,grantReason=self:_authorizeBoundedAuthority(current,commitment,token,{
+        assemblyId=survivorAssemblyId,capability=predecessorRequest.capability,target=predecessorRequest.target,
+        operationalPictureEpoch=predecessorRequest.operationalPictureEpoch,evidenceEpoch=predecessorRequest.evidenceEpoch,
+        preconditions=predecessorRequest.preconditions or {},invalidationConditions=predecessorRequest.invalidationConditions or {},
+        provenance={source="Runtime.refreshCooperativePassageSurvivorAuthority",predecessorBoundedAuthorityId=predecessorRequest.boundedAuthorityId}
+    })
+    if grant==nil then return nil,grantReason end
+    local request,requestReason=self.boundedAuthority:materializeRequest({
+        boundedAuthorityId=grant.identity,target=predecessorRequest.target,
+        operationalPictureEpoch=predecessorRequest.operationalPictureEpoch,evidenceEpoch=predecessorRequest.evidenceEpoch,
+        preconditions=predecessorRequest.preconditions or {},invalidationConditions=predecessorRequest.invalidationConditions or {}
+    })
+    if request==nil then self.boundedAuthority:release(grant.identity,"SURVIVOR_REQUEST_MATERIALIZATION_FAILED"); return nil,requestReason end
+    local accepted,acceptReason=control:acceptSurvivorPermission(commitmentId,survivorAssemblyId,request)
+    if accepted~=true then self.boundedAuthority:release(grant.identity,"SURVIVOR_CONTROL_REBIND_REJECTED"); return nil,acceptReason end
+    if predecessorRequest.boundedAuthorityId~=nil then self.boundedAuthority:release(predecessorRequest.boundedAuthorityId,"COOPERATIVE_PASSAGE_SURVIVOR_AUTHORITY_REPLACED") end
+    return {assemblyId=survivorAssemblyId,boundedAuthorityId=grant.identity,controlRequestId=request.identity,effectiveActuationCompositionId=request.effectiveActuationCompositionId,responsibilityId=current.identity},nil
+end
+
 function Runtime:_continueCooperativePassage(picture,evaluated,applied)
     local candidate=selectedCandidate(evaluated)
     local bridge=cooperativePassageBridge(candidate)
@@ -330,6 +385,12 @@ function Runtime:onCooperativePassageCompletion(result)
         if settled==nil then
             runtimeLogWarning("COOPERATIVE_PASSAGE_LEG_SETTLEMENT_UNRESOLVED commitment=%s assembly=%s disposition=%s reason=%s",tostring(result.commitmentId),tostring(assemblyId),tostring(disposition),tostring(reason))
         else
+            if settled.terminal==nil and settled.alreadyTerminal~=true then
+                local refreshed,refreshReason=self:refreshCooperativePassageSurvivorAuthority(result.commitmentId,settled)
+                if refreshed==nil and self.liveControlDispatcher and self.liveControlDispatcher.cooperativePassageControl and type(self.liveControlDispatcher.cooperativePassageControl._failHeld)=="function" then
+                    self.liveControlDispatcher.cooperativePassageControl:_failHeld("SURVIVOR_AUTHORITY_REBIND_FAILED:"..tostring(refreshReason))
+                end
+            end
             cooperativeLog("COOPERATIVE_PASSAGE_LEG_TERMINAL commitment=%s assembly=%s disposition=%s terminal=%s survivorAuthorityPreserved=%s",
                 tostring(result.commitmentId),tostring(assemblyId),tostring(disposition),tostring(settled.terminal and settled.terminal.state or "NO"),tostring((settled.remainingObligations and #settled.remainingObligations>0) or false))
         end
