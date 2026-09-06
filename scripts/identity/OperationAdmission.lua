@@ -222,7 +222,7 @@ function Admission:observe(snapshot, episodeResult)
             end
             active=self:_update(
                 active,
-                mergedUnique(active.memberAssemblyIds,memberAssemblyIds),
+                mergedUnique(active.memberAssemblyIds, memberAssemblyIds),
                 mergedUnique(retainedEpisodeIds,memberEpisodeIds),
                 mergedUnique(active.memberFieldWorldSnapshotReferenceKeys,snapshotReferences),
                 mergedUnique(active.memberFieldPolygonReferenceKeys,polygonReferences),

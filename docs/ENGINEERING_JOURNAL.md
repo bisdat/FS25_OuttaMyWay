@@ -1,3 +1,32 @@
+## 2026-09-06 — PR #54 Run #113: runtime profile restored; one lexical Structural guard remains
+
+**Observe:** GitHub Actions run #113 at `c705309` reports **323 passed / 9
+failed** in the non-blocking Lua observational harness. The nine failures are
+exactly the established accepted-state identities; every D-0217-focused
+observation added by PR #54 is green, including positive runtime removal without
+ghost current occupancy.
+
+The blocking Structural job reports **111 passed / 1 failed**. Its sole failure
+is `test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidence`,
+which requires the source expression
+`mergedUnique(active.memberAssemblyIds, memberAssemblyIds)`. The runtime path
+already performs the same retained-member merge as
+`mergedUnique(active.memberAssemblyIds,memberAssemblyIds)` and explicitly records
+`removalDeferred=true`.
+
+**Interpret:** this is not evidence of a behavioural Operation-membership
+regression. It is a lexical source-contract mismatch introduced by compact
+formatting in the bounded repair. The Structural guard is retained unchanged
+because it continues to name the accepted incomplete-evidence invariant.
+
+**Implement:** restore the accepted source expression verbatim by adding the
+single space after the comma. No runtime branch, data flow, state transition,
+authority, lifecycle, test, version, release or canonical behaviour changes.
+
+**Validate:** LuaJIT compile-only for `OperationAdmission.lua`, `git diff
+--check`, changed-file scope and diff inspection locally. GitHub Actions remains
+the independent authority for Structural and Lua repository suites.
+
 ## 2026-09-06 — PR #54 Run #112: explicit deferral and removal occupancy
 
 **Observe:** the first root-defect correction reduced PR #54 GitHub Actions from

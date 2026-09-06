@@ -128,10 +128,22 @@ split so ordinary incomplete evidence explicitly retains
 `removalDeferred=true`, while authoritative positive player control remains a
 separate exception rather than weakening the accepted incomplete-evidence rule.
 
-Local validation remains Lua syntax checks, `git diff --check`, status and diff
-inspection; repository suites are not run locally. A fresh GitHub Actions result
-is required before any targeted Farming Simulator Reality validation. Issue #51
-remains open.
+GitHub Actions run #113 at `c705309` restored the Lua observational harness to
+**323 passed / 9 failed**. All D-0217 additions are green, including production
+positive runtime removal with no ghost current occupancy; the nine remaining
+failures are exactly the established accepted-state observational identities.
+The sole blocking Structural failure is non-behavioural: **111 passed / 1
+failed**, with the remaining source contract requiring the accepted retained
+membership expression `mergedUnique(active.memberAssemblyIds, memberAssemblyIds)`.
+Runtime already performs that exact merge semantically, but the compact spelling
+without the space does not satisfy the lexical Structural guard.
+
+The correction therefore restores the accepted source-contract spelling rather
+than weakening the test or changing Operation behaviour. Local validation
+remains Lua syntax checks, `git diff --check`, status and diff inspection;
+repository suites are not run locally. A fresh GitHub Actions result is required
+before any targeted Farming Simulator Reality validation. Issue #51 remains
+open.
 Candidate-Embedded
 Verdict Authority and generic multi-context application cardinality remain
 Phase-13 work after this correction.
