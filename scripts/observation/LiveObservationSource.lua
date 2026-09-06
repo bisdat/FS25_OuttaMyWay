@@ -314,12 +314,14 @@ function Source:capture(mission, nowSeconds)
             track.name = objectName(object); track.components = components; track.radius = radius; track.width = width; track.length = length
             track.fieldActive = fieldActive; track.aiActive = aiActive; track.hasFieldWorker = hasFieldWorker
             track.nativeJob = job; track.nativeJobSource = jobSource; track.nativeJobToken = nativeToken; track.sourceJobToken = sourceToken
+            local okEnteredActive,enteredActive=safeCall(object,"getIsEntered")
+            local activePlayerControlled=(mission.controlledVehicle==object) or (okEnteredActive and enteredActive==true)
             addToGroup(groups, {
                 object = object, referenceKey = ref, name = track.name, pose = pose, poseDiagnostic=poseDiagnostic, motionDiagnostic=motionDiagnostic,
                 fieldId = track.fieldId, fieldResolved = track.fieldResolved, fieldEvidence = field,
                 fieldActive = fieldActive, aiActive = aiActive, hasFieldWorker = hasFieldWorker, activeObserved = true,
                 restartObserved = reactivated and not replacementObserved, replacementObserved = replacementObserved,
-                playerPresent = mission.controlledVehicle == object, playerControlled = false, blocked = blockedState(object),
+                playerPresent = activePlayerControlled, playerControlled = activePlayerControlled, blocked = blockedState(object),
                 speedMps = speedMps, radius = radius, width = width, length = length,
                 sourceJobToken = sourceToken, nativeJobToken = nativeToken, nativeJobTokenSource = jobSource, components = track.components, shadowRepresentation=track.shadowRepresentation, localIntent=track.localIntent,
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
@@ -364,7 +366,7 @@ function Source:capture(mission, nowSeconds)
             -- D-0147: genuine source completion ends Operation membership but not
             -- physical observability. Retain the completed assembly until Player
             -- Claim or a fresh GIANTS activation supersedes this terminal episode.
-            if playerEntered then removeAfterCapture[ref] = true end
+            if playerEntered and sourceJobEndEvidence.observed==true then removeAfterCapture[ref] = true end
         end
     end
 
@@ -374,15 +376,23 @@ function Source:capture(mission, nowSeconds)
             if track.fieldWorldSnapshot ~= nil and self.fieldWorldEquivalenceAuthority ~= nil then
                 track.fieldWorldResolution = self.fieldWorldEquivalenceAuthority:resolve(track.fieldWorldSnapshot)
             end
+            -- Only the retained object's explicit deletion flag is positive removal.
+            -- Missing object/root/pose alone is unavailable evidence, not deletion.
+            local removed=track.object~=nil and track.object.isDeleted==true
+            local removalEvidence=removed and {observed=true,kind="POSITIVE_VEHICLE_RUNTIME_REMOVAL",source="retainedVehicle.isDeleted"} or nil
             addToGroup(groups, {
-                object = nil, referenceKey = ref, name = track.name or "AI vehicle", pose = track.pose, poseDiagnostic=track.poseDiagnostic, motionDiagnostic=track.motionDiagnostic, fieldId = track.fieldId or 0,
+                runtimeRemovalEvidence=removalEvidence,
+                object = nil, referenceKey = ref, name = track.name or "AI vehicle",
+                pose = removed and nil or track.pose, poseDiagnostic=removed and nil or track.poseDiagnostic, motionDiagnostic=removed and nil or track.motionDiagnostic, fieldId = track.fieldId or 0,
                 fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence, fieldActive = false, aiActive = false,
-                hasFieldWorker = true, activeObserved = false, playerControlled = false, unresolvedTermination = true, objectUnavailable = true,
+                hasFieldWorker = true, activeObserved = false, playerControlled = false, unresolvedTermination = not removed, objectUnavailable = not removed,
                 blocked = false, speedMps = 0, radius = track.radius, width = track.width, length = track.length,
-                sourceJobToken = track.sourceJobToken, components = track.components or {}, shadowRepresentation=track.shadowRepresentation, localIntent={classification="UNRESOLVED",intentEpoch=track.localIntentEpoch or 0,intentValid=false,reason="RUNTIME_OBJECT_UNAVAILABLE",source="RETAINED_TRACK"},
+                sourceJobToken = track.sourceJobToken, components = track.components or {}, shadowRepresentation=removed and nil or track.shadowRepresentation,
+                localIntent={classification="UNRESOLVED",intentEpoch=track.localIntentEpoch or 0,intentValid=false,reason=removed and "RUNTIME_OBJECT_REMOVED" or "RUNTIME_OBJECT_UNAVAILABLE",source="RETAINED_TRACK"},
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
+            if removed then removeAfterCapture[ref]=true end
         end
     end
 
@@ -509,6 +519,7 @@ function Source:capture(mission, nowSeconds)
                 jobPresent = worker.activeObserved == true, aiControlled = worker.activeObserved == true,
                 aiActive = worker.aiActive == true, blocked = worker.blocked == true, outtaMyWayHold = false,
                 temporarilyInactive = worker.activeObserved ~= true,
+                runtimeRemovalEvidence = worker.runtimeRemovalEvidence,
                 sourceJobEndEvidence = worker.sourceJobEndEvidence, restartObserved = worker.restartObserved == true,
                 replacementObserved = worker.replacementObserved == true,
                 provenance = {

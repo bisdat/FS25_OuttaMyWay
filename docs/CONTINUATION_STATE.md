@@ -32,16 +32,19 @@ participant assembly and native Job token provenance. It no longer relies on
 positional correlation between broad `sourceIntentIds` and pair dependencies
 to identify a leg.
 
-D-0200 dependency collapse now distinguishes active Cooperative Passage leg
-obligations from whole D-0146 traffic responsibility collapse. Every ended Job
-Episode in a sealed observation that maps to an original live Passage Leg is
-processed in that cycle. An ended Job Episode that maps only to an already
-terminal leg has no Passage lifecycle effect and produces no new vacatur or
-partial basis-cessation report. An ended live leg vacates only that leg,
-releases only that participant's Bounded Authority and mechanical `AU-*`
-authority, revises retained ownership / Effective Actuation Composition, and
-continues through Last-Leg Dissolution when the final open leg settles. Non-leg
-D-0146 traffic paths retain the existing whole-collapse behaviour.
+Cooperative Passage participant loss is now reconciled at Passage-Leg scope
+before D-0200. One sealed observation first establishes the complete set of
+still-open legs whose original AI Passage subject is positively no longer
+executable: either its exact Job Episode ended or current positive player
+control displaced it as an AI subject. Active OMW physical effects for the
+whole sealed loss set are neutralised before any affected BA/AU is released.
+Only after that complete loss set is settled may an unaffected survivor receive
+truthful survivor-only BA/ControlRequest provenance and continue its existing
+choreography. Simultaneous two-leg loss therefore cannot transiently restart a
+doomed survivor. Already-terminal legs are absent from the open loss set and a
+later Job Episode end has no Passage effect. D-0200 remains the whole-purpose
+Job Episode dependency-collapse path for non-Passage D-0146 traffic
+responsibilities.
 
 `CooperativePassageControl` now treats original participants and live executable
 Passage Legs separately. Terminal legs no longer gate guide completion, runout,
@@ -50,22 +53,39 @@ remains hard-safety evidence where observed. Vacatur before execution-origin
 capture requires pose only from still-live legs and preserves the vacated
 participant's existing Candidate-supplied guide fields rather than inventing
 replacement geometry. Raw unavailable native Job tokens do not establish
-`VACATED`; positive Job Episode lifecycle evidence remains the semantic
-vacatur path. Unexpected `BOUNDED_AUTHORITY_LOST` on a still-live leg remains
-fail-closed.
+`VACATED`. Positive participant loss comes from authoritative exact Job Episode
+termination or positive current player control. Control neutralises the affected
+physical effect first; survivor continuation is deferred until the retained
+Commitment, Current Resolution view and survivor BA/ControlRequest are truthful.
+A player-taken-over former participant remains current hard-safety occupancy,
+whereas positive runtime-subject removal is physical disappearance and therefore
+does not retain former-participant occupancy. Unexpected
+`BOUNDED_AUTHORITY_LOST` on a still-live leg remains fail-closed.
 
 When one Passage Leg settles and a survivor remains executable, retained
 Commitment ownership and Effective Actuation Composition are revised to the
-truthful survivor-only composition. The surviving participant then receives a
-fresh BA grant and ControlRequest under the same continuing `RS-*`, same
-retained `CM-*`, same surviving `AU-*`, same capability and already-authorised
-Passage target. Active Passage Control rebinds to that successor permission
-without restarting choreography; only after acceptance is the predecessor
-survivor BA retired. Failure to establish or accept the successor permission
-remains fail-closed. The semantic `RS-*` identity persists, and the stored
-read-only `ResolutionCommitment` view is refreshed under that same identity so
-its open obligation and beneficiary/controlled-subject fields describe the
-currently open Passage Leg semantics.
+truthful survivor-only composition. Responsibility Transition Authority
+refreshes the Cooperative-Passage read-only Resolution view under the same
+continuing `RS-*`; this maintenance is not a Responsibility Transition. The
+surviving participant then receives a fresh BA grant and ControlRequest under
+that same `RS-*`, same retained `CM-*`, same surviving `AU-*`, same capability
+and already-authorised Passage target. Active Passage Control accepts the
+successor permission before survivor choreography resumes and only then is the
+predecessor survivor BA retired. Failure to establish or accept successor
+permission is fail-closed and retires stale BA only for the still-open survivor
+Passage Leg rather than releasing unrelated Commitment authority.
+
+**Implementation discovery — Passage Subject Executability != Job Episode
+Lifecycle; Participation Loss != Job Episode Termination:** positive player
+takeover immediately removes that assembly from GIANTS-AI Local Operation
+participation and vacates any still-live Passage Leg, but it does not fabricate
+Job Episode termination. The Job Episode remains until its own authoritative
+completion, succession/restart, or positive runtime-subject removal evidence.
+Conversely, explicit retained-object deletion is positive
+`RUNTIME_SUBJECT_REMOVED` Job Episode evidence and emits no retained current
+occupancy; mere object absence remains unresolved and retains conservative
+last-observed occupancy.
+
 
 `TerminalSettlementEvaluator` remains unchanged. Last-Leg Dissolution is reached
 when no open Passage Leg/shared obligation remains, at which point the existing

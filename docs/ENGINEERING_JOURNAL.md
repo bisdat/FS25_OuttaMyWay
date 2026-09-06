@@ -1,3 +1,54 @@
+## 2026-09-06 — Interrupted Codex recovery: Passage loss evidence and authority ordering
+
+**Observe:** the final Codex repair stopped mid-edit after credits were exhausted.
+The pushed branch remained at `608f6f3`; eight unstaged files contained a
+recoverable partial implementation. Review found useful work on physical
+neutralisation-before-release, survivor permission failure and positive runtime
+removal, but also three remaining mismatches: Observation had begun assigning a
+semantic `participantLossEvidence`, same-observation dual loss could transiently
+rebind one already-doomed survivor, and the no-Control failure path released
+Bounded Authority at whole-Commitment scope.
+
+**Discuss / discover:** D-0217 does not require every Passage vacatur cause to be
+a Job Episode terminal event. **Passage Subject Executability != Job Episode
+Lifecycle** and **Participation Loss != Job Episode Termination**. Positive
+player control is sufficient to remove a Physical Assembly from GIANTS-AI Local
+Operation participation and from a still-live Passage choreography while the
+underlying Job Episode remains unresolved/active until its own lifecycle
+authority establishes completion, succession/restart or positive runtime
+removal. Observation therefore reports factual player control only; Passage
+lifecycle interprets that evidence downstream. Explicit retained-object
+`isDeleted` is positive runtime removal, while mere absence remains unresolved.
+
+**Implement:** Cooperative Passage now collects the complete sealed participant
+loss set before mutation. Active OMW physical effects for every affected
+still-live leg are neutralised first. Only after the whole set is physically
+quiescent are those legs settled by `BASIS_CESSATION`, their participant BA/AU
+released and retained composition revised. Survivor BA/ControlRequest refresh
+and choreography continuation happen once, after the complete loss set, so two
+legs lost in one sealed observation cannot transiently restart either one.
+D-0200 is restored to whole-purpose collapse for non-Passage D-0146 traffic.
+
+Responsibility Transition Authority now owns a Passage-specific refresh of the
+same `RS-*` read-only Resolution view. Survivor rebind failure is fail-closed
+and retires stale BA only for still-open Passage Legs, preserving unrelated
+Commitment authority and the surviving mechanical `AU-*`. Positive player
+control removes Local Operation participation without fabricating Job Episode
+termination. Positive runtime deletion ends the Job Episode as
+`RUNTIME_SUBJECT_REMOVED`, emits no ghost current occupancy and drops the dead
+retained track after its evidence-bearing snapshot; mere object absence remains
+unresolved with conservative retained occupancy. Cooperative Passage hard-safety
+uses the same distinction: player takeover vacates choreography but preserves
+former-participant physical occupancy, while positive runtime removal removes
+that former participant from occupancy checks.
+
+**Validate:** this recovery script performs LuaJIT compile-only checks for
+changed Lua/test files plus `git diff --check`, status and diff inspection. Per
+root and `/tests` `AGENTS.md`, it does not run pytest,
+`tests/replacement_core/run.lua` or other repository offline suites locally.
+GitHub Actions remains the independent offline validation authority and no
+Farming Simulator Reality validation is claimed.
+
 ## 2026-09-06 — Passage Leg survivor-continuity review correction
 
 **Observe:** review of the initial D-0217 implementation found nine concrete

@@ -349,11 +349,13 @@ function Lifecycle.settleD0146ActionSpacePurpose(runtime,commitmentId,bridge,evi
     return {commitment=record,settledObligationId=settledId,remainingObligations=remaining,terminal=terminal},nil
 end
 
--- D-0200 Job Episode Dependency Collapse. A traffic Commitment may outlive a
--- transient Situation witness, but it cannot outlive the exact active Job Episode
--- pair recorded in its D-0146 governing basis. Natural Job Episode completion is
--- positive basis cessation for that dependent traffic responsibility; it is not
--- SOURCE_INTENT_TERMINATION.
+-- D-0217 Cooperative Passage participant loss is participant-scoped. A sealed
+-- observation first establishes the complete set of still-open Passage Legs
+-- whose original AI subject is positively no longer executable: either the
+-- exact Job Episode ended, or current positive player control displaced that
+-- AI Passage subject. All active OMW physical effects for that loss set are
+-- neutralised before any corresponding BA/AU release. Survivor authority and
+-- choreography are refreshed only after the whole sealed loss set is settled.
 local function endedEpisodeSet(episodeResult)
     local result={}
     for _,episodeId in OuttaMyWay.ValueRecord.ipairs(episodeResult and episodeResult.endedEpisodeIds or {}) do result[episodeId]=true end
@@ -365,6 +367,11 @@ local function d0146TrafficResponsibility(record)
     return type(responsibility)=="string" and (string.sub(responsibility,1,26)=="d0146-cooperative-passage:" or string.sub(responsibility,1,32)=="forward-intersection-regulation:")
 end
 
+local function cooperativePassageResponsibility(record)
+    local responsibility=record and record.governingBasis and record.governingBasis.responsibilityKey or nil
+    return type(responsibility)=="string" and string.sub(responsibility,1,26)=="d0146-cooperative-passage:"
+end
+
 local function endedDependency(record,ended)
     local basis=record and record.governingBasis or nil
     for _,episodeId in OuttaMyWay.ValueRecord.ipairs(basis and basis.dependentJobEpisodeIds or {}) do
@@ -373,20 +380,179 @@ local function endedDependency(record,ended)
     return nil
 end
 
-local function endedDependencies(record,ended)
-    local result={}
-    local basis=record and record.governingBasis or nil
-    for _,episodeId in OuttaMyWay.ValueRecord.ipairs(basis and basis.dependentJobEpisodeIds or {}) do
-        if ended[episodeId] then result[#result+1]=episodeId end
-    end
-    table.sort(result)
-    return result
-end
-
 local isCooperativePassageLegObligation
 local hasCooperativePassageLegObligations
 local findCooperativePassageLegObligation
 
+local function snapshotAssemblyIdByReference(snapshot)
+    local result={}
+    for _,assembly in OuttaMyWay.ValueRecord.ipairs(snapshot and snapshot.assemblies or {}) do
+        if assembly.referenceKey~=nil and assembly.assemblyId~=nil then result[assembly.referenceKey]=assembly.assemblyId end
+    end
+    return result
+end
+
+local function playerControlledAssemblySet(snapshot)
+    local result={}
+    local byReference=snapshotAssemblyIdByReference(snapshot)
+    for referenceKey,evidence in OuttaMyWay.ValueRecord.pairs(snapshot and snapshot.playerControl or {}) do
+        if type(evidence)=="table" and evidence.playerControlled==true then
+            local assemblyId=byReference[referenceKey]
+            if assemblyId~=nil then result[assemblyId]=true end
+        end
+    end
+    return result
+end
+
+local function passageLossForOpenLeg(runtime,record,obligation,ended,playerControlled,snapshot,episodeResult)
+    local basis=obligation and obligation.basis or {}
+    local assemblyId=basis.assemblyId
+    local jobEpisodeId=basis.jobEpisodeId
+    if type(assemblyId)~="string" or type(jobEpisodeId)~="string" then return nil end
+    local recordBasis=record.governingBasis or {}
+    local observationSnapshotId=snapshot and snapshot.identity or (episodeResult and episodeResult.observationSnapshotId or nil)
+
+    if ended[jobEpisodeId] then
+        local episode=runtime.jobEpisodes and runtime.jobEpisodes.get and runtime.jobEpisodes:get(jobEpisodeId) or nil
+        local terminalCause=episode and episode.terminalCause or nil
+        local kind=terminalCause=="RUNTIME_SUBJECT_REMOVED" and "POSITIVE_VEHICLE_RUNTIME_REMOVAL" or "JOB_EPISODE_DEPENDENCY_CEASED"
+        return {
+            assemblyId=assemblyId,jobEpisodeId=jobEpisodeId,endedJobEpisodeId=jobEpisodeId,
+            evidence={
+                kind=kind,commitmentId=record.identity,encounterIdentity=recordBasis.dependentEncounterId,
+                endedJobEpisodeId=jobEpisodeId,participantJobEpisodeId=jobEpisodeId,
+                jobEpisodeTerminalCause=terminalCause,dependentJobEpisodeIds=recordBasis.dependentJobEpisodeIds,
+                observationSnapshotId=observationSnapshotId,basisCessation=true,
+                positiveRemoval=terminalCause=="RUNTIME_SUBJECT_REMOVED"
+            }
+        }
+    end
+
+    if playerControlled[assemblyId]==true then
+        return {
+            assemblyId=assemblyId,jobEpisodeId=jobEpisodeId,endedJobEpisodeId=nil,
+            evidence={
+                kind="PLAYER_TAKEOVER",commitmentId=record.identity,encounterIdentity=recordBasis.dependentEncounterId,
+                participantJobEpisodeId=jobEpisodeId,dependentJobEpisodeIds=recordBasis.dependentJobEpisodeIds,
+                observationSnapshotId=observationSnapshotId,basisCessation=true,positivePlayerControl=true
+            }
+        }
+    end
+    return nil
+end
+
+function Lifecycle.applyCooperativePassageParticipantLosses(runtime,episodeResult,snapshot)
+    if runtime==nil or episodeResult==nil then return {} end
+    local ended=endedEpisodeSet(episodeResult)
+    local playerControlled=playerControlledAssemblySet(snapshot)
+    if next(ended)==nil and next(playerControlled)==nil then return {} end
+
+    local outcomes={}
+    for _,record in OuttaMyWay.ValueRecord.ipairs(runtime.commitments:list()) do
+        if not OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) and record.state~="SETTLING" and cooperativePassageResponsibility(record) then
+            local losses={}
+            for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(record.identity)) do
+                if isCooperativePassageLegObligation~=nil and isCooperativePassageLegObligation(obligation) then
+                    local loss=passageLossForOpenLeg(runtime,record,obligation,ended,playerControlled,snapshot,episodeResult)
+                    if loss~=nil then losses[#losses+1]=loss end
+                end
+            end
+            table.sort(losses,function(a,b)
+                if a.assemblyId~=b.assemblyId then return tostring(a.assemblyId)<tostring(b.assemblyId) end
+                return tostring(a.jobEpisodeId)<tostring(b.jobEpisodeId)
+            end)
+
+            if #losses>0 then
+                local control=runtime.liveControlDispatcher and runtime.liveControlDispatcher.cooperativePassageControl or nil
+                local activeControl=control~=nil and control.run~=nil and control.run.commitmentId==record.identity
+                logInfo("COOPERATIVE_PASSAGE_PARTICIPANT_LOSS_SET commitment=%s losses=%d activeControl=%s sealedObservation=%s",
+                    tostring(record.identity),#losses,tostring(activeControl),tostring(snapshot and snapshot.identity or episodeResult.observationSnapshotId))
+
+                local neutralizationFailure=nil
+                if activeControl then
+                    for _,loss in OuttaMyWay.ValueRecord.ipairs(losses) do
+                        local ok,result,reason=pcall(control.vacateParticipant,control,record.identity,loss.assemblyId,loss.evidence)
+                        if not ok then reason=tostring(result); result=nil end
+                        if result==nil or (result.disposition~="VACATED" and result.disposition~="ALREADY_TERMINAL") then
+                            neutralizationFailure="PASSAGE_PHYSICAL_VACATUR_FAILED:"..tostring(reason or (result and result.disposition) or "UNRESOLVED")
+                            if type(control._failHeld)=="function" then control:_failHeld(neutralizationFailure) end
+                            break
+                        end
+                    end
+                end
+
+                if neutralizationFailure~=nil then
+                    outcomes[#outcomes+1]={
+                        commitmentId=record.identity,participantLossCount=#losses,
+                        physicalNeutralizationFailed=true,failureReason=neutralizationFailure
+                    }
+                else
+                    local settledLosses={}
+                    local lastSettled=nil
+                    local settlementFailure=nil
+                    for _,loss in OuttaMyWay.ValueRecord.ipairs(losses) do
+                        local settled,reason=Lifecycle.settleCooperativePassageLeg(runtime,record.identity,loss.assemblyId,"VACATED",loss.evidence)
+                        if settled==nil then
+                            settlementFailure="PASSAGE_LEG_SETTLEMENT_FAILED:"..tostring(reason)
+                            break
+                        end
+                        if settled.alreadyTerminal~=true then
+                            settledLosses[#settledLosses+1]={loss=loss,settled=settled}
+                            lastSettled=settled
+                        end
+                    end
+
+                    if settlementFailure~=nil then
+                        if activeControl and control.run~=nil and control.run.commitmentId==record.identity and type(control._failHeld)=="function" then
+                            control:_failHeld(settlementFailure)
+                        end
+                        outcomes[#outcomes+1]={
+                            commitmentId=record.identity,participantLossCount=#losses,
+                            settlementFailed=true,failureReason=settlementFailure
+                        }
+                    else
+                        local survivorAuthority=nil
+                        local survivorFailure=nil
+                        if lastSettled~=nil and lastSettled.terminal==nil then
+                            survivorAuthority,survivorFailure=runtime:refreshCooperativePassageSurvivorAuthority(record.identity,lastSettled)
+                            if survivorAuthority==nil then
+                                runtime:failCooperativePassageSurvivorAuthority(record.identity,survivorFailure)
+                            elseif activeControl and type(control.continueAfterParticipantVacatur)=="function" then
+                                control:continueAfterParticipantVacatur(record.identity,losses[1].assemblyId)
+                            end
+                        end
+
+                        for _,item in OuttaMyWay.ValueRecord.ipairs(settledLosses) do
+                            local loss=item.loss
+                            local settled=item.settled
+                            outcomes[#outcomes+1]={
+                                commitmentId=record.identity,
+                                terminalState=settled.commitment and settled.commitment.state or nil,
+                                encounterIdentity=record.governingBasis and record.governingBasis.dependentEncounterId or nil,
+                                endedJobEpisodeId=loss.endedJobEpisodeId,participantJobEpisodeId=loss.jobEpisodeId,
+                                vacatedAssemblyId=loss.assemblyId,participantLossKind=loss.evidence.kind,
+                                settledObligationIds=settled.settledObligationId and {settled.settledObligationId} or {},
+                                releasedAuthorityTokenIds=settled.releasedAuthorityTokenIds or {},
+                                partialPassageBasisCessation=true,survivorAuthority=survivorAuthority,
+                                failureReason=survivorFailure
+                            }
+                            logInfo("COOPERATIVE_PASSAGE_LEG_VACATED commitment=%s encounter=%s jobEpisode=%s assembly=%s loss=%s terminal=%s survivorAuthority=%s",
+                                tostring(record.identity),tostring(record.governingBasis and record.governingBasis.dependentEncounterId or "NONE"),
+                                tostring(loss.jobEpisodeId),tostring(loss.assemblyId),tostring(loss.evidence.kind),
+                                tostring(settled.terminal and settled.terminal.state or "NO"),tostring(survivorAuthority and survivorAuthority.boundedAuthorityId or "NO"))
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return outcomes
+end
+
+-- D-0200 Job Episode Dependency Collapse remains the whole-purpose collapse
+-- path for non-Passage D-0146 traffic responsibilities. Cooperative Passage
+-- participant loss is reconciled above at Passage-Leg scope and must never be
+-- promoted back into whole-Commitment basis cessation.
 function Lifecycle.collapseEndedJobEpisodeDependencies(runtime,episodeResult,snapshot)
     if runtime==nil or episodeResult==nil then return {} end
     local ended=endedEpisodeSet(episodeResult)
@@ -394,73 +560,42 @@ function Lifecycle.collapseEndedJobEpisodeDependencies(runtime,episodeResult,sna
 
     local collapsed={}
     for _,record in OuttaMyWay.ValueRecord.ipairs(runtime.commitments:list()) do
-        if not OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) and record.state~="SETTLING" and d0146TrafficResponsibility(record) then
+        if not OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) and record.state~="SETTLING"
+            and d0146TrafficResponsibility(record) and not cooperativePassageResponsibility(record) then
             local endedDependentEpisodeId=endedDependency(record,ended)
             if endedDependentEpisodeId~=nil then
                 local basis=record.governingBasis or {}
-                if hasCooperativePassageLegObligations~=nil and hasCooperativePassageLegObligations(runtime,record.identity) then
-                    for _,passageEndedEpisodeId in OuttaMyWay.ValueRecord.ipairs(endedDependencies(record,ended)) do
-                        local settlementEvidence={
-                            kind="JOB_EPISODE_DEPENDENCY_CEASED",
-                            commitmentId=record.identity,
-                            encounterIdentity=basis.dependentEncounterId,
-                            endedJobEpisodeId=passageEndedEpisodeId,
-                            dependentJobEpisodeIds=basis.dependentJobEpisodeIds,
-                            observationSnapshotId=snapshot and snapshot.identity or episodeResult.observationSnapshotId,
-                            basisCessation=true
-                        }
-                        local assemblyId=Lifecycle.cooperativePassageAssemblyForEndedEpisode(runtime,record,passageEndedEpisodeId)
-                        local settled,settleReason=Lifecycle.settleCooperativePassageLeg(runtime,record.identity,assemblyId,"VACATED",settlementEvidence)
-                        if settled~=nil and settled.alreadyTerminal~=true then
-                            local terminalControl=nil
-                            if runtime.liveControlDispatcher~=nil and runtime.liveControlDispatcher.cooperativePassageControl~=nil
-                                and type(runtime.liveControlDispatcher.cooperativePassageControl.vacateParticipant)=="function" then
-                                terminalControl=runtime.liveControlDispatcher.cooperativePassageControl:vacateParticipant(record.identity,assemblyId,settlementEvidence)
-                            end
-                            local survivorAuthority=nil
-                            if settled.terminal==nil and type(runtime.refreshCooperativePassageSurvivorAuthority)=="function" then
-                                survivorAuthority=runtime:refreshCooperativePassageSurvivorAuthority(record.identity,settled)
-                            end
-                            collapsed[#collapsed+1]={commitmentId=record.identity,terminalState=settled.commitment and settled.commitment.state or nil,encounterIdentity=basis.dependentEncounterId,endedJobEpisodeId=passageEndedEpisodeId,vacatedAssemblyId=assemblyId,settledObligationIds=settled.settledObligationId and {settled.settledObligationId} or {},releasedAuthorityTokenIds=settled.releasedAuthorityTokenIds or {},partialPassageBasisCessation=true,survivorAuthority=survivorAuthority}
-                            logInfo("JOB_EPISODE_DEPENDENCY_PASSAGE_LEG_VACATED commitment=%s encounter=%s endedEpisode=%s assembly=%s terminal=%s controlVacated=%s",
-                                tostring(record.identity),tostring(basis.dependentEncounterId or "NONE"),tostring(passageEndedEpisodeId),tostring(assemblyId),tostring(settled.terminal and settled.terminal.state or "NO"),tostring(terminalControl and terminalControl.disposition or "NO_ACTIVE_CONTROL"))
-                            if settled.terminal~=nil then break end
-                        elseif settled~=nil and settled.alreadyTerminal==true then
-                            logInfo("JOB_EPISODE_DEPENDENCY_PASSAGE_LEG_ALREADY_TERMINAL commitment=%s encounter=%s endedEpisode=%s assembly=%s lifecycleEffect=false",
-                                tostring(record.identity),tostring(basis.dependentEncounterId or "NONE"),tostring(passageEndedEpisodeId),tostring(assemblyId))
-                        else
-                            logInfo("JOB_EPISODE_DEPENDENCY_PASSAGE_LEG_VACATUR_UNRESOLVED commitment=%s endedEpisode=%s assembly=%s reason=%s",
-                                tostring(record.identity),tostring(passageEndedEpisodeId),tostring(assemblyId),tostring(settleReason))
-                        end
-                    end
-                else
-                    local settlementEvidence={
-                        kind="JOB_EPISODE_DEPENDENCY_CEASED",
-                        commitmentId=record.identity,
-                        encounterIdentity=basis.dependentEncounterId,
-                        endedJobEpisodeId=endedDependentEpisodeId,
-                        dependentJobEpisodeIds=basis.dependentJobEpisodeIds,
-                        observationSnapshotId=snapshot and snapshot.identity or episodeResult.observationSnapshotId,
-                        basisCessation=true
-                    }
-                    local settledIds={}
-                    for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(record.identity)) do
-                        runtime.obligations:settle(obligation.identity,"BASIS_CESSATION",settlementEvidence)
-                        settledIds[#settledIds+1]=obligation.identity
-                    end
-                    local verdict=runtime.governingBasisEvaluator:evaluate(record,{
-                        kind="OBJECTIVE_SATISFIED",evidence=settlementEvidence,
-                        provenance={source="LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies",authority="D0200_JOB_EPISODE_DEPENDENCY_COLLAPSE"}
-                    })
-                    if runtime.regulationBoundedAuthority~=nil and type(runtime.regulationBoundedAuthority.retireTrafficLeasesForCommitment)=="function" then
-                        runtime.regulationBoundedAuthority:retireTrafficLeasesForCommitment(record.identity,"JOB_EPISODE_DEPENDENCY_CEASED")
-                    end
-                    local settling=runtime.terminalSettlementEvaluator:enterSettling(record.identity,verdict)
-                    local terminal=runtime.terminalSettlementEvaluator:attemptTerminal(record.identity,settlementEvidence)
-                    collapsed[#collapsed+1]={commitmentId=record.identity,terminalState=terminal.state,encounterIdentity=basis.dependentEncounterId,endedJobEpisodeId=endedDependentEpisodeId,settledObligationIds=settledIds,releasedAuthorityTokenIds=settling.releasedAuthorityTokenIds or {}}
-                    logInfo("JOB_EPISODE_DEPENDENCY_COLLAPSE commitment=%s encounter=%s endedEpisode=%s obligations=%d releasedAuthority=%d terminal=%s",
-                        tostring(record.identity),tostring(basis.dependentEncounterId or "NONE"),tostring(endedDependentEpisodeId),#settledIds,#(settling.releasedAuthorityTokenIds or {}),tostring(terminal.state))
+                local settlementEvidence={
+                    kind="JOB_EPISODE_DEPENDENCY_CEASED",
+                    commitmentId=record.identity,
+                    encounterIdentity=basis.dependentEncounterId,
+                    endedJobEpisodeId=endedDependentEpisodeId,
+                    dependentJobEpisodeIds=basis.dependentJobEpisodeIds,
+                    observationSnapshotId=snapshot and snapshot.identity or episodeResult.observationSnapshotId,
+                    basisCessation=true
+                }
+                local settledIds={}
+                for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(record.identity)) do
+                    runtime.obligations:settle(obligation.identity,"BASIS_CESSATION",settlementEvidence)
+                    settledIds[#settledIds+1]=obligation.identity
                 end
+                local verdict=runtime.governingBasisEvaluator:evaluate(record,{
+                    kind="OBJECTIVE_SATISFIED",evidence=settlementEvidence,
+                    provenance={source="LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies",authority="D0200_JOB_EPISODE_DEPENDENCY_COLLAPSE"}
+                })
+                if runtime.regulationBoundedAuthority~=nil and type(runtime.regulationBoundedAuthority.retireTrafficLeasesForCommitment)=="function" then
+                    runtime.regulationBoundedAuthority:retireTrafficLeasesForCommitment(record.identity,"JOB_EPISODE_DEPENDENCY_CEASED")
+                end
+                local settling=runtime.terminalSettlementEvaluator:enterSettling(record.identity,verdict)
+                local terminal=runtime.terminalSettlementEvaluator:attemptTerminal(record.identity,settlementEvidence)
+                collapsed[#collapsed+1]={
+                    commitmentId=record.identity,terminalState=terminal.state,encounterIdentity=basis.dependentEncounterId,
+                    endedJobEpisodeId=endedDependentEpisodeId,settledObligationIds=settledIds,
+                    releasedAuthorityTokenIds=settling.releasedAuthorityTokenIds or {}
+                }
+                logInfo("JOB_EPISODE_DEPENDENCY_COLLAPSE commitment=%s encounter=%s endedEpisode=%s obligations=%d releasedAuthority=%d terminal=%s",
+                    tostring(record.identity),tostring(basis.dependentEncounterId or "NONE"),tostring(endedDependentEpisodeId),
+                    #settledIds,#(settling.releasedAuthorityTokenIds or {}),tostring(terminal.state))
             end
         end
     end

@@ -135,13 +135,17 @@ function Runtime:processSealedObservation(raw)
     local snapshot=self:publishObservation(raw)
     local episodes=self:admitJobEpisodes(snapshot)
     local operation=self:admitOperation(snapshot,episodes)
-    -- D-0200: positive Job Episode termination collapses any traffic Commitment
-    -- whose Encounter dependency includes that episode before Situation publishes
-    -- Commitment context. This prevents dead traffic authority from blocking D-0147
-    -- terminal succession in the same sealed observation.
+    -- D-0217: reconcile the complete sealed Cooperative Passage participant-loss
+    -- set at Passage-Leg scope before D-0200 considers non-Passage traffic
+    -- responsibilities. This prevents one lost participant from collapsing the
+    -- survivor and prevents same-observation dual loss from transiently restarting
+    -- a doomed survivor.
+    local passageParticipantVacatur=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageParticipantLosses(self,episodes,snapshot)
+    -- D-0200 remains whole-purpose Job Episode dependency collapse for non-Passage
+    -- D-0146 traffic responsibilities.
     local trafficCommitmentCollapse=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(self,episodes,snapshot)
     local picture=self:assessOperationalPicture(snapshot,episodes,operation)
-    return {snapshot=snapshot,jobEpisodes=episodes,operation=operation,picture=picture,trafficCommitmentCollapse=trafficCommitmentCollapse}
+    return {snapshot=snapshot,jobEpisodes=episodes,operation=operation,picture=picture,passageParticipantVacatur=passageParticipantVacatur,trafficCommitmentCollapse=trafficCommitmentCollapse}
 end
 function Runtime:evaluateSealedOperationalPicture(picture)
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
@@ -212,31 +216,45 @@ function Runtime:_jointCooperativePassageRequests(picture,evaluated,candidate,co
     return requests,nil
 end
 
+function Runtime:failCooperativePassageSurvivorAuthority(commitmentId,reason)
+    local failure="SURVIVOR_AUTHORITY_REBIND_FAILED:"..tostring(reason)
+    local control=self.liveControlDispatcher and self.liveControlDispatcher.cooperativePassageControl
+    if control~=nil and control.run~=nil and control.run.commitmentId==commitmentId then
+        control:_failHeld(failure)
+    end
+    -- Emergency narrowing ends ordinary survivor execution. Retire only BA
+    -- grants belonging to still-open survivor Passage Legs; the same RS/CM and
+    -- surviving AU may remain as semantic/mechanical substrate while fail-closed.
+    local released={}
+    for _,obligation in OuttaMyWay.ValueRecord.ipairs(self.obligations:openForOwner(commitmentId)) do
+        local basis=obligation.basis or {}
+        if basis.kind=="COOPERATIVE_PASSAGE_LEG" and type(basis.assemblyId)=="string" then
+            for _,grantId in OuttaMyWay.ValueRecord.ipairs(self.boundedAuthority:releaseForCommitmentAssembly(commitmentId,basis.assemblyId,failure)) do
+                released[#released+1]=grantId
+            end
+        end
+    end
+    table.sort(released)
+    runtimeLogWarning("COOPERATIVE_PASSAGE_SURVIVOR_AUTHORITY_FAILED commitment=%s reason=%s releasedSurvivorBA=%d",tostring(commitmentId),failure,#released)
+    return {failureReason=failure,releasedBoundedAuthorityGrantIds=released}
+end
+
 function Runtime:refreshCooperativePassageSurvivorAuthority(commitmentId,settled)
     local current=self.responsibilityTransitionAuthority:getCurrentResolutionCommitment(commitmentId)
     local commitment=self.commitments:get(commitmentId)
     if current==nil or commitment==nil or commitment.state~="ACTIVE" then return nil,"SURVIVOR_RESPONSIBILITY_NOT_CURRENT" end
     local survivorAssemblyId=nil
-    local openObligationIds={}
-    local openLegAssemblyIds={}
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(settled and settled.remainingObligations or self.obligations:openForOwner(commitmentId)) do
-        openObligationIds[#openObligationIds]=obligation.identity
         local basis=obligation.basis or {}
         if basis.kind=="COOPERATIVE_PASSAGE_LEG" and type(basis.assemblyId)=="string" then
             if survivorAssemblyId~=nil then return nil,"MULTIPLE_SURVIVOR_PASSAGE_LEGS_UNSUPPORTED" end
             survivorAssemblyId=basis.assemblyId
-            openLegAssemblyIds[#openLegAssemblyIds]=basis.assemblyId
         end
     end
-    table.sort(openObligationIds)
-    table.sort(openLegAssemblyIds)
     if survivorAssemblyId==nil then return nil,"SURVIVOR_PASSAGE_LEG_UNAVAILABLE" end
-    self.responsibilityTransitionAuthority.resolutionsByCommitmentId[commitmentId]=OuttaMyWay.ResolutionCommitment.new({
-        identity=current.identity,kind=current.kind,purpose=current.purpose,governingBasis=current.governingBasis,
-        beneficiaryAssemblyIds=openLegAssemblyIds,controlledSubjectAssemblyIds=openLegAssemblyIds,
-        openResolutionObligationIds=openObligationIds,provenance=current.provenance
-    })
-    current=self.responsibilityTransitionAuthority:getCurrentResolutionCommitment(commitmentId)
+    local refreshedResolution,refreshResolutionReason=self.responsibilityTransitionAuthority:refreshCooperativePassageResolutionCommitment(commitmentId)
+    if refreshedResolution==nil then return nil,refreshResolutionReason end
+    current=refreshedResolution
     local control=self.liveControlDispatcher and self.liveControlDispatcher.cooperativePassageControl or nil
     if control==nil or type(control.currentParticipantRequest)~="function" or type(control.acceptSurvivorPermission)~="function" then
         return nil,"SURVIVOR_CONTROL_REBIND_UNAVAILABLE"
@@ -387,9 +405,7 @@ function Runtime:onCooperativePassageCompletion(result)
         else
             if settled.terminal==nil and settled.alreadyTerminal~=true then
                 local refreshed,refreshReason=self:refreshCooperativePassageSurvivorAuthority(result.commitmentId,settled)
-                if refreshed==nil and self.liveControlDispatcher and self.liveControlDispatcher.cooperativePassageControl and type(self.liveControlDispatcher.cooperativePassageControl._failHeld)=="function" then
-                    self.liveControlDispatcher.cooperativePassageControl:_failHeld("SURVIVOR_AUTHORITY_REBIND_FAILED:"..tostring(refreshReason))
-                end
+                if refreshed==nil then self:failCooperativePassageSurvivorAuthority(result.commitmentId,refreshReason) end
             end
             cooperativeLog("COOPERATIVE_PASSAGE_LEG_TERMINAL commitment=%s assembly=%s disposition=%s terminal=%s survivorAuthorityPreserved=%s",
                 tostring(result.commitmentId),tostring(assemblyId),tostring(disposition),tostring(settled.terminal and settled.terminal.state or "NO"),tostring((settled.remainingObligations and #settled.remainingObligations>0) or false))

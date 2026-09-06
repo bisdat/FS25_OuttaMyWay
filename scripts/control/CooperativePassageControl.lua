@@ -244,7 +244,10 @@ end
 function Control:_formerParticipantOccupancySupport(run,gate)
     local clearance=tonumber(run and run.passageArrangement and run.passageArrangement.nominalInterAssemblyClearanceM) or 1
     for _,former in OuttaMyWay.ValueRecord.ipairs(run and run.participants or {}) do
-        if former.vacated==true then
+        local vacaturEvidence=former.vacaturEvidence or {}
+        local positivelyRemoved=former.vacated==true
+            and (vacaturEvidence.positiveRemoval==true or vacaturEvidence.kind=="POSITIVE_VEHICLE_RUNTIME_REMOVAL")
+        if former.vacated==true and not positivelyRemoved then
             local formerPose=pose(former.vehicle)
             local formerReserve=transitReserve(former)
             if formerPose~=nil and formerReserve~=nil then
@@ -1007,11 +1010,25 @@ function Control:vacateParticipant(commitmentId,assemblyId,evidence)
     for _,candidate in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
         if candidate.assemblyId==assemblyId then participant=candidate; break end
     end
-    if participant==nil or not legLive(participant) then return {disposition="ALREADY_TERMINAL",assemblyId=assemblyId} end
-    self.driveAuthority:clear(participant.vehicle)
-    self.permissionGate:release(participant.vehicle)
-    self.configurationAuthority:clear(participant.vehicle)
-    self:_endRepresentationConfigurationAuthority(participant)
+    if participant==nil then return nil,"CONTROL_PARTICIPANT_UNAVAILABLE" end
+    if not legLive(participant) then return {disposition="ALREADY_TERMINAL",assemblyId=assemblyId},nil end
+    local positiveRemoval=evidence and evidence.kind=="POSITIVE_VEHICLE_RUNTIME_REMOVAL"
+    if participant.vehicle==nil and not positiveRemoval then return nil,"CONTROL_VEHICLE_REFERENCE_UNAVAILABLE" end
+    if participant.vehicle~=nil then
+        if type(self.driveAuthority.getState)~="function" or type(self.permissionGate.isHolding)~="function"
+            or type(self.configurationAuthority.getState)~="function" then
+            return nil,"CONTROL_NEUTRALISATION_VERIFICATION_UNAVAILABLE"
+        end
+        self.driveAuthority:clear(participant.vehicle)
+        self.permissionGate:release(participant.vehicle)
+        self.configurationAuthority:clear(participant.vehicle)
+        self:_endRepresentationConfigurationAuthority(participant)
+        if self.driveAuthority:getState(participant.vehicle)~=nil
+            or self.permissionGate:isHolding(participant.vehicle)
+            or self.configurationAuthority:getState(participant.vehicle)~=nil then
+            return nil,"CONTROL_PHYSICAL_EFFECT_REMAINS"
+        end
+    end
     participant.vacated=true
     participant.vacatedAt=g_time or 0
     participant.vacaturEvidence=evidence
@@ -1023,10 +1040,19 @@ function Control:vacateParticipant(commitmentId,assemblyId,evidence)
     if allPassageLegsTerminal(run) then
         self.run=nil
         logInfo("PAIR_CONTEXT_DISSOLVED commitment=%s reason=LAST_PASSAGE_LEG_VACATED participantSpecificRelease=true",tostring(run.commitmentId))
-    else
-        self:_continueAfterParticipantVacatur(run,participant)
     end
     return {disposition="VACATED",assemblyId=assemblyId}
+end
+
+function Control:continueAfterParticipantVacatur(commitmentId,assemblyId)
+    local run=self.run
+    if run==nil or run.commitmentId~=commitmentId or run.failureReason~=nil then return end
+    for _,participant in OuttaMyWay.ValueRecord.ipairs(run.participants) do
+        if participant.assemblyId==assemblyId and participant.vacated==true then
+            self:_continueAfterParticipantVacatur(run,participant)
+            return
+        end
+    end
 end
 
 function Control:currentParticipantRequest(commitmentId,assemblyId)
@@ -1173,7 +1199,7 @@ end
 
 function Control:update(dt)
     local run=self.run
-    if run==nil then return end
+    if run==nil or run.failureReason~=nil then return end
     if run.mode~="D0146_GUIDE" then self:_failHeld("NON_D0146_RUNTIME_MODE_REJECTED"); return end
     local boundedAuthority=self.runtime and self.runtime.boundedAuthority or nil
     if boundedAuthority~=nil then

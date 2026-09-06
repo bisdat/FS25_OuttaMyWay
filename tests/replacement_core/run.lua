@@ -4942,29 +4942,31 @@ test("D0146 production Candidate binds each Passage Leg to exact assembly and Jo
     equal(specification.evidenceBasis.governingBasis.dependentJobEpisodeIds[2],"JE-B")
 end)
 
-local function passageLegRuntime()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+local function passageLegRuntime(runtime,assemblyA,assemblyB,episodeA,episodeB)
+    if runtime==nil then runtime=OuttaMyWay.Runtime.new(); runtime:initialize() end
+    assemblyA=assemblyA or "AS-A"; assemblyB=assemblyB or "AS-B"
+    episodeA=episodeA or "JE-A"; episodeB=episodeB or "JE-B"
     local commitment=runtime.commitmentAdmission:admit({
         objective={kind="D0146_COOPERATIVE_PASSAGE"},
-        governingBasis={responsibilityKey="d0146-cooperative-passage:LEG-LIFECYCLE",dependentEncounterId="EN-LEG",dependentJobEpisodeIds={"JE-A","JE-B"},sourceIntentIds={"JE-A","JE-B"}},
-        progressAssemblyIds={"AS-A","AS-B"},
+        governingBasis={responsibilityKey="d0146-cooperative-passage:LEG-LIFECYCLE",dependentEncounterId="EN-LEG",dependentJobEpisodeIds={episodeA,episodeB},sourceIntentIds={episodeA,episodeB}},
+        progressAssemblyIds={assemblyA,assemblyB},
         obligationSpecifications={
-            {origin={kind="OTM_MATERIAL_DISPLACEMENT"},basis={kind="COOPERATIVE_PASSAGE_LEG",assemblyId="AS-A",jobEpisodeId="JE-A"},requiredOutcome={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",assemblyId="AS-A",terminalDisposition="HANDED_BACK"},requiredAuthority={capabilities={"REPOSITION","RESTORE_CONFIGURATION","HANDOVER_TO_GIANTS"}},evidenceContract={kind="PARTICIPANT_PASSAGE_DEBT_DISCHARGED_THEN_GIANTS_HANDOFF_OR_POSITIVE_BASIS_CESSATION"},ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true},
-            {origin={kind="OTM_MATERIAL_DISPLACEMENT"},basis={kind="COOPERATIVE_PASSAGE_LEG",assemblyId="AS-B",jobEpisodeId="JE-B"},requiredOutcome={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",assemblyId="AS-B",terminalDisposition="HANDED_BACK"},requiredAuthority={capabilities={"REPOSITION","RESTORE_CONFIGURATION","HANDOVER_TO_GIANTS"}},evidenceContract={kind="PARTICIPANT_PASSAGE_DEBT_DISCHARGED_THEN_GIANTS_HANDOFF_OR_POSITIVE_BASIS_CESSATION"},ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true}
+            {origin={kind="OTM_MATERIAL_DISPLACEMENT"},basis={kind="COOPERATIVE_PASSAGE_LEG",assemblyId=assemblyA,jobEpisodeId=episodeA},requiredOutcome={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",assemblyId=assemblyA,terminalDisposition="HANDED_BACK"},requiredAuthority={capabilities={"REPOSITION","RESTORE_CONFIGURATION","HANDOVER_TO_GIANTS"}},evidenceContract={kind="PARTICIPANT_PASSAGE_DEBT_DISCHARGED_THEN_GIANTS_HANDOFF_OR_POSITIVE_BASIS_CESSATION"},ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true},
+            {origin={kind="OTM_MATERIAL_DISPLACEMENT"},basis={kind="COOPERATIVE_PASSAGE_LEG",assemblyId=assemblyB,jobEpisodeId=episodeB},requiredOutcome={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",assemblyId=assemblyB,terminalDisposition="HANDED_BACK"},requiredAuthority={capabilities={"REPOSITION","RESTORE_CONFIGURATION","HANDOVER_TO_GIANTS"}},evidenceContract={kind="PARTICIPANT_PASSAGE_DEBT_DISCHARGED_THEN_GIANTS_HANDOFF_OR_POSITIVE_BASIS_CESSATION"},ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true}
         }
     }).commitment
     commitment=runtime.commitments:get(commitment.identity)
     local composition=OuttaMyWay.EffectiveActuationComposition.create({
-        identity="EC-LEG-LIFECYCLE",epoch=1,relevantAssemblyIds={"AS-A","AS-B"},
+        identity="EC-LEG-LIFECYCLE",epoch=1,relevantAssemblyIds={assemblyA,assemblyB},
         entries={
-            {assemblyId="AS-A",commitmentId=commitment.identity,capability="REPOSITION",effectClass="MOVE",progressActuation=true},
-            {assemblyId="AS-B",commitmentId=commitment.identity,capability="REPOSITION",effectClass="MOVE",progressActuation=true}
+            {assemblyId=assemblyA,commitmentId=commitment.identity,capability="REPOSITION",effectClass="MOVE",progressActuation=true},
+            {assemblyId=assemblyB,commitmentId=commitment.identity,capability="REPOSITION",effectClass="MOVE",progressActuation=true}
         }
     })
     commitment=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(commitment,{effectiveActuationCompositionId=composition.identity,epoch=runtime.epochs:next()}))
     runtime.responsibilityTransitionAuthority.resolutionsByCommitmentId[commitment.identity]=OuttaMyWay.ResolutionCommitment.new({
         identity="RS-LEG-LIFECYCLE",kind="RESOLUTION_COMMITMENT",purpose=commitment.objective,governingBasis=commitment.governingBasis,
-        beneficiaryAssemblyIds={"AS-A","AS-B"},controlledSubjectAssemblyIds={"AS-A","AS-B"},
+        beneficiaryAssemblyIds={assemblyA,assemblyB},controlledSubjectAssemblyIds={assemblyA,assemblyB},
         openResolutionObligationIds=commitment.obligationIds,provenance={source="test",genericCommitmentIdentity=commitment.identity}
     })
     for _,token in OuttaMyWay.ValueRecord.ipairs(runtime.authorities:tokensForCommitment(commitment.identity)) do
@@ -4996,7 +4998,7 @@ test("D0217 Issue 51 ended already handed-back participant does not settle survi
     local runtime,commitmentId=passageLegRuntime()
     OuttaMyWay.LiveTrafficCommitmentLifecycle.settleCooperativePassageLeg(runtime,commitmentId,"AS-A","HANDED_BACK",{kind="TEST_HANDOFF_A"})
     runtime.jobEpisodes.records["JE-A"]={identity="JE-A",assemblyId="AS-A",status="ENDED"}
-    local collapsed=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(runtime,{endedEpisodeIds={"JE-A"},observationSnapshotId="OBS-51"},{identity="OBS-51"})
+    local collapsed=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageParticipantLosses(runtime,{endedEpisodeIds={"JE-A"},observationSnapshotId="OBS-51"},{identity="OBS-51"})
     equal(#collapsed,0)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
     equal(runtime.obligations:openForOwner(commitmentId)[1].basis.assemblyId,"AS-B")
@@ -5006,7 +5008,7 @@ end)
 test("D0217 live participant Job Episode loss vacates only that Passage Leg",function()
     local runtime,commitmentId=passageLegRuntime()
     runtime.jobEpisodes.records["JE-A"]={identity="JE-A",assemblyId="AS-A",status="ENDED"}
-    local collapsed=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(runtime,{endedEpisodeIds={"JE-A"},observationSnapshotId="OBS-VACATE"},{identity="OBS-VACATE"})
+    local collapsed=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageParticipantLosses(runtime,{endedEpisodeIds={"JE-A"},observationSnapshotId="OBS-VACATE"},{identity="OBS-VACATE"})
     equal(#collapsed,1); equal(collapsed[1].partialPassageBasisCessation,true)
     equal(collapsed[1].vacatedAssemblyId,"AS-A")
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
@@ -5019,7 +5021,7 @@ test("D0217 both dependent Passage Leg Job Episodes ending in one observation va
     local runtime,commitmentId=passageLegRuntime()
     runtime.jobEpisodes.records["JE-A"]={identity="JE-A",assemblyId="AS-A",status="ENDED"}
     runtime.jobEpisodes.records["JE-B"]={identity="JE-B",assemblyId="AS-B",status="ENDED"}
-    local collapsed=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(runtime,{endedEpisodeIds={"JE-A","JE-B"},observationSnapshotId="OBS-BOTH"},{identity="OBS-BOTH"})
+    local collapsed=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageParticipantLosses(runtime,{endedEpisodeIds={"JE-A","JE-B"},observationSnapshotId="OBS-BOTH"},{identity="OBS-BOTH"})
     equal(#collapsed,2)
     equal(collapsed[1].partialPassageBasisCessation,true)
     equal(collapsed[2].partialPassageBasisCessation,true)
@@ -5033,7 +5035,7 @@ test("D0217 already terminal A and live B ending in one observation only vacates
     OuttaMyWay.LiveTrafficCommitmentLifecycle.settleCooperativePassageLeg(runtime,commitmentId,"AS-A","HANDED_BACK",{kind="TEST_HANDOFF_A"})
     runtime.jobEpisodes.records["JE-A"]={identity="JE-A",assemblyId="AS-A",status="ENDED"}
     runtime.jobEpisodes.records["JE-B"]={identity="JE-B",assemblyId="AS-B",status="ENDED"}
-    local collapsed=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(runtime,{endedEpisodeIds={"JE-A","JE-B"},observationSnapshotId="OBS-MIXED-END"},{identity="OBS-MIXED-END"})
+    local collapsed=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageParticipantLosses(runtime,{endedEpisodeIds={"JE-A","JE-B"},observationSnapshotId="OBS-MIXED-END"},{identity="OBS-MIXED-END"})
     equal(#collapsed,1)
     equal(collapsed[1].endedJobEpisodeId,"JE-B")
     equal(collapsed[1].vacatedAssemblyId,"AS-B")
@@ -5076,6 +5078,222 @@ local function currentBoundedAuthorityGrant(runtime,assemblyId)
     end
     return nil
 end
+
+local function passageVacaturControl(runtime,commitmentId,assemblyA,assemblyB,vehicleA,vehicleB)
+    local drive,holds,configuration={},{},{}
+    local donor={
+        driveAuthority={clear=function(self,v) drive[v]=nil end,getState=function(self,v) return drive[v] end},
+        permissionGate={release=function(self,v) holds[v]=nil end,isHolding=function(self,v) return holds[v]~=nil end,setHold=function(self,v) holds[v]=true; return true end},
+        configurationAuthority={clear=function(self,v) configuration[v]=nil end,getState=function(self,v) return configuration[v] end}
+    }
+    local control=OuttaMyWay.CooperativePassageControl.new(runtime,donor)
+    local function participant(id,vehicle)
+        local grant=currentBoundedAuthorityGrant(runtime,id)
+        local request=runtime.boundedAuthority:materializeRequest({boundedAuthorityId=grant.identity})
+        drive[vehicle]=true; holds[vehicle]=true; configuration[vehicle]=true
+        return {name=id,assemblyId=id,vehicle=vehicle,request=request}
+    end
+    local a=participant(assemblyA,vehicleA or {})
+    local b=participant(assemblyB,vehicleB or {})
+    control.run={mode="D0146_GUIDE",commitmentId=commitmentId,phase="AXIS_RETURN",a=a,b=b,participants={a,b},activeReturnParticipant=a}
+    local continued=0
+    control._beginAxisReturn=function(self,run,p)
+        local valid=runtime.boundedAuthority:validateRequest(p.request,"RS-LEG-LIFECYCLE")
+        equal(valid,true)
+        equal(p.request.effectiveActuationCompositionId,runtime.commitments:get(commitmentId).effectiveActuationCompositionId)
+        continued=continued+1; run.activeReturnParticipant=p; return true
+    end
+    runtime:setCooperativePassageControl(control)
+    return control,donor,function() return continued end
+end
+
+test("D0217 physical vacatur precedes leg BA and AU release",function()
+    local runtime,commitmentId=passageLegRuntime()
+    local control,donor,continued=passageVacaturControl(runtime,commitmentId,"AS-A","AS-B")
+    local participant=control.run.a
+    local boundaries={}
+    local vacate=control.vacateParticipant
+    control.vacateParticipant=function(self,...)
+        equal(runtime.authorities:ownerOf("AS-A"),commitmentId)
+        local result,reason=vacate(self,...)
+        equal(result.disposition,"VACATED")
+        equal(donor.driveAuthority:getState(participant.vehicle),nil)
+        equal(donor.permissionGate:isHolding(participant.vehicle),false)
+        equal(donor.configurationAuthority:getState(participant.vehicle),nil)
+        equal(continued(),0)
+        boundaries[#boundaries+1]="PHYSICAL"
+        return result,reason
+    end
+    local releaseBA=runtime.boundedAuthority.releaseForCommitmentAssembly
+    runtime.boundedAuthority.releaseForCommitmentAssembly=function(self,cid,id,...)
+        equal(boundaries[1],"PHYSICAL"); boundaries[#boundaries+1]="BA"
+        return releaseBA(self,cid,id,...)
+    end
+    local releaseAU=runtime.authorities.release
+    runtime.authorities.release=function(self,token)
+        if token.assemblyId=="AS-A" then equal(boundaries[2],"BA"); boundaries[#boundaries+1]="AU" end
+        return releaseAU(self,token)
+    end
+    local result=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageParticipantLosses(runtime,{endedEpisodeIds={"JE-A"}},{identity="OBS-ORDER"})
+    equal(result[1].failureReason,nil); equal(boundaries[3],"AU"); equal(continued(),1)
+end)
+
+test("D0217 rejected survivor permission fails held and retires stale BA",function()
+    local runtime,commitmentId=passageLegRuntime()
+    local control,donor,continued=passageVacaturControl(runtime,commitmentId,"AS-A","AS-B")
+    local old=control.run.b.request
+    control.acceptSurvivorPermission=function() return false,"TEST_REBIND_REJECTED" end
+    local result=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageParticipantLosses(runtime,{endedEpisodeIds={"JE-A"}},{identity="OBS-REJECT"})
+    equal(result[1].failureReason,"TEST_REBIND_REJECTED")
+    equal(control.run.failureReason,"SURVIVOR_AUTHORITY_REBIND_FAILED:TEST_REBIND_REJECTED")
+    equal(control.run.phase,"FAILED_HELD"); equal(continued(),0)
+    equal(donor.permissionGate:isHolding(control.run.b.vehicle),true)
+    equal(donor.driveAuthority:getState(control.run.b.vehicle),nil)
+    equal(runtime.boundedAuthority:isCurrent(old.boundedAuthorityId),false)
+    equal(runtime.boundedAuthority:validateRequest(old),false)
+    equal(currentBoundedAuthorityGrant(runtime,"AS-B"),nil)
+    equal(runtime.authorities:ownerOf("AS-B"),commitmentId)
+    control:update(16); equal(continued(),0)
+end)
+
+test("D0217 physical neutralisation refusal retains leg authority",function()
+    local runtime,commitmentId=passageLegRuntime()
+    local control,donor,continued=passageVacaturControl(runtime,commitmentId,"AS-A","AS-B")
+    donor.configurationAuthority.clear=function() end
+    local old=control.run.a.request
+    local result=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageParticipantLosses(runtime,{endedEpisodeIds={"JE-A"}},{identity="OBS-NEUTRALISATION-FAIL"})
+    equal(result[1].failureReason,"PASSAGE_PHYSICAL_VACATUR_FAILED:CONTROL_PHYSICAL_EFFECT_REMAINS")
+    equal(control.run.phase,"FAILED_HELD"); equal(continued(),0)
+    equal(runtime.authorities:ownerOf("AS-A"),commitmentId)
+    equal(runtime.boundedAuthority:isCurrent(old.boundedAuthorityId),true)
+    equal(#runtime.obligations:openForOwner(commitmentId),2)
+end)
+
+for _,lossCase in ipairs({"PLAYER_TAKEOVER","POSITIVE_VEHICLE_RUNTIME_REMOVAL","ABSENCE"}) do
+    test("D0217 production observation routes "..lossCase.." with truthful lifecycle evidence",function()
+        withFakeLiveGlobals(function(mission,a,b,positions,jobA)
+            local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+            runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,10)[1])
+            local assemblyA=runtime.identities:resolve("ASSEMBLY","vehicle-root:101")
+            local assemblyB=runtime.identities:resolve("ASSEMBLY","vehicle-root:201")
+            local episodeA=runtime.jobEpisodes:getActiveForAssembly(assemblyA).identity
+            local episodeB=runtime.jobEpisodes:getActiveForAssembly(assemblyB).identity
+            local _,commitmentId=passageLegRuntime(runtime,assemblyA,assemblyB,episodeA,episodeB)
+            local control,donor,continued=passageVacaturControl(runtime,commitmentId,assemblyA,assemblyB,a,b)
+            setActiveVehicles(mission,b)
+            if lossCase=="PLAYER_TAKEOVER" then
+                a.getIsEntered=function() return true end
+                a.spec_aiFieldWorker.isActive=false
+                a.spec_aiJobVehicle.job=nil; a.spec_aiFieldWorker.fieldJob=nil
+                a.spec_aiJobVehicle.lastJob=nil -- No positive source-job completion yet.
+            elseif lossCase=="POSITIVE_VEHICLE_RUNTIME_REMOVAL" then
+                a.isDeleted=true
+            else
+                mission.vehicles={b}
+                runtime.liveObservationSource.tracks["vehicle-root:101"].object=nil
+            end
+
+            local raw=runtime.liveObservationSource:capture(mission,11)[1]
+            local removedCurrentSpace=false
+            for _,space in OuttaMyWay.ValueRecord.ipairs(raw.geometry.currentSpaceEvidence or {}) do
+                if space.assemblyReferenceKey=="vehicle-root:101" then removedCurrentSpace=true end
+            end
+            local result=runtime:processSealedObservation(raw)
+
+            if lossCase=="ABSENCE" then
+                equal(#result.passageParticipantVacatur,0)
+                equal(#runtime.obligations:openForOwner(commitmentId),2)
+                equal(runtime.jobEpisodes:get(episodeA).status,"ACTIVE")
+                equal(control.run.a.vacated,nil); equal(continued(),0)
+                equal(removedCurrentSpace,true) -- retained last pose remains conservative Reality
+            else
+                equal(#result.passageParticipantVacatur,1)
+                equal(result.passageParticipantVacatur[1].failureReason,nil)
+                equal(control.run.a.vacated,true); equal(continued(),1)
+                equal(runtime.authorities:ownerOf(assemblyA),nil)
+                local leg=nil
+                for _,id in OuttaMyWay.ValueRecord.ipairs(runtime.commitments:get(commitmentId).obligationIds) do
+                    local obligation=runtime.obligations:get(id)
+                    if obligation.basis.assemblyId==assemblyA then leg=obligation end
+                end
+                equal(leg.settlementDisposition.evidence.kind,lossCase)
+                if lossCase=="PLAYER_TAKEOVER" then
+                    equal(runtime.jobEpisodes:get(episodeA).status,"ACTIVE")
+                    equal(control.run.a.vehicle,a) -- Still physical Reality for survivor safety.
+                    equal(raw.playerControl["vehicle-root:101"].playerControlled,true)
+                    local activeOperation=runtime.operations:listActive()[1]
+                    equal(activeOperation~=nil,true)
+                    equal(#activeOperation.memberAssemblyIds,1)
+                    equal(activeOperation.memberAssemblyIds[1],assemblyB)
+                    equal(runtime.liveObservationSource.tracks["vehicle-root:101"]~=nil,true)
+                    runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,12)[1])
+                    equal(runtime.liveObservationSource.tracks["vehicle-root:101"]~=nil,true)
+                    a.spec_aiJobVehicle.lastJob=jobA; mission.aiSystem.activeJobs={}
+                    local ended=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,13)[1])
+                    equal(runtime.jobEpisodes:get(episodeA).status,"ENDED")
+                    equal(#ended.passageParticipantVacatur,0) -- already VACATED: no Passage lifecycle effect
+                else
+                    equal(runtime.jobEpisodes:get(episodeA).status,"ENDED")
+                    equal(runtime.jobEpisodes:get(episodeA).terminalCause,"RUNTIME_SUBJECT_REMOVED")
+                    equal(removedCurrentSpace,false) -- positive removal cannot leave ghost occupancy
+                    equal(runtime.liveObservationSource.tracks["vehicle-root:101"],nil)
+                end
+            end
+        end)
+    end)
+end
+
+test("D0217 same sealed two-leg loss never transiently continues a doomed survivor",function()
+    local runtime,commitmentId=passageLegRuntime()
+    local control,donor,continued=passageVacaturControl(runtime,commitmentId,"AS-A","AS-B")
+    runtime.jobEpisodes.records["JE-A"]={identity="JE-A",assemblyId="AS-A",status="ENDED"}
+    runtime.jobEpisodes.records["JE-B"]={identity="JE-B",assemblyId="AS-B",status="ENDED"}
+    local outcomes=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageParticipantLosses(
+        runtime,{endedEpisodeIds={"JE-A","JE-B"},observationSnapshotId="OBS-SEALED-BOTH"},{identity="OBS-SEALED-BOTH",assemblies={},playerControl={}})
+    equal(#outcomes,2)
+    equal(continued(),0)
+    equal(control.run,nil)
+    equal(runtime.commitments:get(commitmentId).state,"SUCCEEDED")
+end)
+
+test("D0217 former-participant hard safety distinguishes player takeover from physical removal",function()
+    local vehicleA={rootNode=9701}
+    local vehicleB={rootNode=9702}
+    function vehicleA:getAISteeringNode() return self.rootNode end
+    function vehicleB:getAISteeringNode() return self.rootNode end
+    local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
+    getWorldTranslation=function(node) return 0,0,0 end
+    localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
+
+    local control=OuttaMyWay.CooperativePassageControl.new({},{
+        permissionGate={},driveAuthority={},configurationAuthority={}
+    })
+    local envelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1}
+    local former={
+        vehicle=vehicleA,assemblyId="AS-A",vacated=true,
+        vacaturEvidence={kind="PLAYER_TAKEOVER",positivePlayerControl=true},
+        transitPassageEnvelope=envelope
+    }
+    local survivor={
+        vehicle=vehicleB,assemblyId="AS-B",
+        transitPassageEnvelope=envelope
+    }
+    local run={
+        participants={former,survivor},
+        passageArrangement={nominalInterAssemblyClearanceM=1}
+    }
+
+    local supported,reason=control:_formerParticipantOccupancySupport(run,nil)
+    equal(supported,false)
+    equal(reason,"PASSAGE_SUPPORT_LOSS_FORMER_PARTICIPANT_CURRENT_OCCUPANCY:AS-A")
+
+    former.vacaturEvidence={kind="POSITIVE_VEHICLE_RUNTIME_REMOVAL",positiveRemoval=true}
+    supported,reason=control:_formerParticipantOccupancySupport(run,nil)
+    equal(supported,true)
+    equal(reason,nil)
+
+    getWorldTranslation,localDirectionToWorld=oldTranslation,oldDirection
+end)
 
 test("D0217 survivor Commitment Bounded Authority and ControlRequest composition remain aligned",function()
     local runtime,commitmentId=passageLegRuntime()
@@ -6161,13 +6379,15 @@ end)
 test("D0217 vacating active Axis Return participant starts survivor return without new Candidate",function()
     local a={name="A",assemblyId="AS-A",vehicle={},request={identity="CR-A",boundedAuthorityId="BA-A"}}
     local b={name="B",assemblyId="AS-B",vehicle={},request={identity="CR-B",boundedAuthorityId="BA-B"}}
-    local donor={permissionGate={release=function() end},driveAuthority={clear=function() end},configurationAuthority={clear=function() end,getState=function() return nil end}}
+    local donor={permissionGate={release=function() end,isHolding=function() return false end},driveAuthority={clear=function() end,getState=function() return nil end},configurationAuthority={clear=function() end,getState=function() return nil end}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     local beginReturn=0; local beginRestore=0
     control._beginAxisReturn=function(self,run,p,other,requiresClearance) beginReturn=beginReturn+1; equal(p,b); equal(other,a); equal(requiresClearance,false); run.activeReturnParticipant=p; run.phase="AXIS_RETURN"; return true,nil end
     control._beginParticipantRestore=function(self,run,p) beginRestore=beginRestore+1; run.activeRestoreParticipant=p; run.phase="RESTORING_PARTICIPANT"; return true,nil end
     control.run={mode="D0146_GUIDE",commitmentId="CM-VACATE-AXIS",phase="AXIS_RETURN",a=a,b=b,participants={a,b},activeReturnParticipant=a}
     control:vacateParticipant("CM-VACATE-AXIS","AS-A",{kind="JOB_EPISODE_DEPENDENCY_CEASED"})
+    equal(beginReturn,0); equal(beginRestore,0)
+    control:continueAfterParticipantVacatur("CM-VACATE-AXIS","AS-A")
     equal(a.vacated,true)
     equal(beginReturn,1)
     equal(beginRestore,0)
@@ -6177,13 +6397,15 @@ end)
 test("D0217 vacating active restoring participant starts survivor return without repeating completed debt",function()
     local a={name="A",assemblyId="AS-A",vehicle={},request={identity="CR-A",boundedAuthorityId="BA-A"}}
     local b={name="B",assemblyId="AS-B",vehicle={},request={identity="CR-B",boundedAuthorityId="BA-B"},axisReturnCompleted=true}
-    local donor={permissionGate={release=function() end},driveAuthority={clear=function() end},configurationAuthority={clear=function() end,getState=function() return nil end}}
+    local donor={permissionGate={release=function() end,isHolding=function() return false end},driveAuthority={clear=function() end,getState=function() return nil end},configurationAuthority={clear=function() end,getState=function() return nil end}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     local beginReturn=0; local beginRestore=0
     control._beginAxisReturn=function() beginReturn=beginReturn+1; return true,nil end
     control._beginParticipantRestore=function(self,run,p) beginRestore=beginRestore+1; equal(p,b); run.activeRestoreParticipant=p; run.phase="RESTORING_PARTICIPANT"; return true,nil end
     control.run={mode="D0146_GUIDE",commitmentId="CM-VACATE-RESTORE",phase="RESTORING_PARTICIPANT",a=a,b=b,participants={a,b},activeRestoreParticipant=a}
     control:vacateParticipant("CM-VACATE-RESTORE","AS-A",{kind="JOB_EPISODE_DEPENDENCY_CEASED"})
+    equal(beginReturn,0); equal(beginRestore,0)
+    control:continueAfterParticipantVacatur("CM-VACATE-RESTORE","AS-A")
     equal(a.vacated,true)
     equal(beginReturn,0)
     equal(beginRestore,1)
