@@ -373,8 +373,18 @@ function Authority:preflightFollowerRegulationForCooperativePassage(picture,eval
         return nil,"FOLLOWER_PASSAGE_PREFLIGHT_CONTEXT_MISMATCH"
     end
     local ids=ownershipAssemblyIds(candidate)
+    local participants={}
+    for _,id in OuttaMyWay.ValueRecord.ipairs(bridge.assemblyIds or {}) do
+        if type(id)~="string" or participants[id] then
+            return nil,"FOLLOWER_PASSAGE_PREFLIGHT_PARTICIPANTS_INVALID"
+        end
+        participants[id]=true
+    end
     if #ids~=2 or ids[1]==ids[2] or OuttaMyWay.ValueRecord.length(bridge.assemblyIds or {})~=2 then
         return nil,"FOLLOWER_PASSAGE_PREFLIGHT_PARTICIPANTS_INVALID"
+    end
+    if not participants[ids[1]] or not participants[ids[2]] then
+        return nil,"FOLLOWER_PASSAGE_PREFLIGHT_PARTICIPANTS_MISMATCH"
     end
     local current=nil
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
@@ -404,6 +414,10 @@ function Authority:preflightFollowerRegulationForCooperativePassage(picture,eval
         local basis,outcome=obligation.basis,obligation.requiredOutcome
         if basis and basis.kind=="FOLLOWER_BOUNDARY_PROTECTION" and basis.pairKey==current.provenance.pairKey
             and outcome and outcome.kind=="FOLLOWER_BOUNDARY_ORDERING_PRESERVED_UNTIL_POSITIVE_RETIREMENT" then
+            if type(basis.leaderAssemblyId)~="string" or type(basis.followerAssemblyId)~="string"
+                or not participants[basis.leaderAssemblyId] or not participants[basis.followerAssemblyId] then
+                return nil,"FOLLOWER_PASSAGE_PREFLIGHT_PARTICIPANTS_MISMATCH"
+            end
             return {commitmentId=commitment.identity,pairKey=current.provenance.pairKey,obligationId=obligation.identity},nil
         end
     end
