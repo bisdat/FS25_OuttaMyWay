@@ -6,18 +6,29 @@ is not a changelog, release ledger, or canonical-release record.
 
 ## Current engineering concern
 
-Accepted Repository State at the start of Phase 11 is
-`a92e9a60917aeb79bfa684b425fa01643a551998`.
+Phase 11 — Reduce `LiveControlDispatcher` to Authorised Control Routing —
+**COMPLETE** and accepted before this increment.
 
-Issue #37 remains open as non-blocking validation debt. The successful Category-1 Reality exemplar is sufficient to treat Strangler Phase 8 as **ASSUMED COMPLETE FOR PROGRAMME PROGRESSION** without waiting for a Category-2 fixture. Category-2 Reality validation remains required for Issue #37 closure. Materially contrary later evidence must reopen the affected architectural assumptions.
+Phase 12 — Retire superseded generic Commitment/orchestration only when no
+supported path relies on it — **COMPLETE in the current source state**. The
+retirement audit found one superseded pre-D-0146 generic head-on/recovery
+lifecycle with no supported production caller. That historical path and its two
+direct v4.7.47 API tests were retired. Generic Commitment machinery still used
+by supported D-0141, D-0146, D-0147, D-0200 and Guarded Recovery paths remains
+intentionally retained.
 
-Phase 10 — Reconcile Bounded Authority — COMPLETE. It is the accepted baseline
-for Phase 11 and did not change canonical release authority.
+The next strangler boundary is **Phase 13 — Simplify
+Candidate/Constraint/Decision only where evidence proves duplication**. This is
+an evidence-led simplification pass, not a requirement to collapse layers that
+still express distinct responsibilities. A valid Phase-13 result may therefore
+be that little or no simplification is justified.
 
-The active strangler boundary is **Phase 11 — Reduce LiveControlDispatcher to
-Authorised Control Routing**. This increment moves migrated-path physical
-authority state and request materialisation out of `LiveControlDispatcher` so
-dispatch receives already-authorised `ControlRequest` work.
+Issue #37 remains open as non-blocking Category-2 Reality-validation debt.
+Materially contrary later evidence must reopen the affected assumptions.
+Bubble Bullet Time remains accepted but unimplemented and is still tracked
+separately by Issue #45.
+
+This ordinary Engineering Increment does not change canonical release authority.
 
 ## Established
 
@@ -67,6 +78,19 @@ dispatch receives already-authorised `ControlRequest` work.
   **Responsibility Displacement != Responsibility Separation**,
   **Unwired Reassessment Authority** and
   **Compatibility Facade != Compatibility Isolation**.
+
+- Phase 12 applied a strict retirement gate: code was removed only where it was
+  both superseded and no supported production path relied on it.
+- The superseded pre-D-0146 generic head-on/recovery API was the only production
+  retirement justified by that audit. Supported generic Commitment,
+  Obligation, Authority, D-0200 dependency-collapse and Guarded Recovery
+  machinery remains intentionally retained.
+- Initial independent offline validation after the retirement preserved the
+  existing Lua observational profile of `298 passed / 9 failed` with the same
+  nine known failure identities. Two structural contracts were found to depend
+  textually on retired implementation details and were rebound to the surviving
+  contract boundary, with a Phase-12 backsliding guard added for the retired
+  API.
 
 - The accepted [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Strangler Transition Map](IMPLEMENTATION_MAP.md#detailed-strangler-transition-map) remain authoritative for architecture and programme direction respectively.
 - Cooperative Passage upstream transition remains accepted and Reality-validated for one direct `CREATE` episode.

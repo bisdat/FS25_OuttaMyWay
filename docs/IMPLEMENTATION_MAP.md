@@ -1330,21 +1330,12 @@ replacement is again the downstream validation/reconciliation boundary.
 9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion — COMPLETE IN PR #44 PENDING OWNER MERGE/ACCEPTANCE. Phase 9 covers Action-Space Regulation identity, follower Regulation identity, both same-Commitment Passage replacement paths, direct Cooperative Passage CREATE Resolution identity, completed-obstruction Resolution identity and semantic cleanup on existing terminal paths.**
 10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility — COMPLETE.**
 11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities — COMPLETE.**
-12. **Retire superseded generic Commitment/orchestration only when no supported path relies on it — COMPLETE.** The Phase-12 audit retained generic Commitment machinery still required by supported D-0141, D-0146, D-0147, D-0200 and Guarded Recovery paths, and retired only the superseded pre-D-0146 head-on/recovery lifecycle.
+12. **Retire superseded generic Commitment/orchestration only when no supported path relies on it — COMPLETE.** The audit retained supported generic Commitment machinery and retired only the superseded pre-D-0146 head-on/recovery lifecycle; detailed evidence is recorded in the [Engineering Journal](ENGINEERING_JOURNAL.md).
 13. **Simplify Candidate/Constraint/Decision only where evidence proves duplication.**
 14. **Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming.**
 15. **Perform whole-system validation and another architecture-to-runtime review.**
 
 > This sequence is a plan, not a promise. Update it after each strangler tranche when implementation or validation evidence changes the safest or most truthful route.
-
-Phase 12 recorded **Historical Recovery Lifecycle Superseded by Authorised
-Passage Lifecycle**. The former generic head-on/recovery helpers no longer had
-a supported production caller after explicit D-0146 Cooperative Passage
-Responsibility Transition, Bounded Authority, authorised Control routing and
-completion settlement became the production path. Their remaining direct
-v4.7.47 tests therefore described retired implementation rather than supported
-behaviour and were removed with them. Surviving generic Commitment machinery
-was not redesigned merely to improve architectural appearance.
 
 The order evolved through **Second Exemplar Before Generalisation**: Reality
 evidence from two distinct Resolution purposes now precedes any attempt to define
