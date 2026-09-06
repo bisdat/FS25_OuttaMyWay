@@ -1080,6 +1080,7 @@ def test_v47106_d0146_current_excursion_conserves_action_space_before_establishe
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
     envelope=(ROOT/"scripts"/"authority"/"ResolutionSpaceProgressionEnvelope.lua").read_text(encoding="utf-8")
+    authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
 
@@ -1406,7 +1407,7 @@ def test_v47124_d0147_protected_yield_interval_uses_valuerecord_traversal_and_se
         'D0147_PROTECTED_YIELD_OWNER_TAG="D0147_PROTECTED_YIELD"',
         "_applyD0147ProtectedYield",
         "_releaseD0147ProtectedYield",
-        'bridge.phase=="INFIELD"',
+        'bridge.phase~="INFIELD"',
         '"APPLY",D0147_PROTECTED_YIELD_OWNER_TAG,0.0',
         'D0147_PROTECTED_YIELD_HOLD_APPLIED',
         'self:_releaseD0147ProtectedYield(result.commitmentId,"TERMINAL_CONTROL_"..tostring(result.status))',
@@ -1813,7 +1814,6 @@ def test_v01143_d0198_regulation_authority_semantics():
         "D0198_NO_CURRENT_EXCURSION_PROTECTED_INTENT_REVELATION_REMAINS_LOCAL",
         "intentRevelationQuiescenceVeto",
         'action.reason~="NO_CURRENT_EXCURSION"',
-        'actionSpace.status~="QUIESCENT"',
     ):
         assert token in authority
     # Quiescence is an authority-lifetime change, not semantic purpose settlement.
@@ -1826,6 +1826,7 @@ def test_v01143_d0198_regulation_authority_semantics():
     dispatch=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
     assert 'dispatch==nil or dispatch.status=="QUIESCENT"' in dispatch
     assert 'assessFollowerBoundaryPermission' in dispatch
+    assert 'actionSpace.status~="QUIESCENT"' in dispatch
     # Diagnostic-only 0.1.14.2 hot-path instrumentation is withdrawn.
     assert "D0141_AUTHORITY_ATTEMPT" not in authority
     assert "D0141_AUTHORITY_DIAG" not in authority
@@ -1877,7 +1878,8 @@ def test_cooperative_passage_responsibility_transition_is_upstream_and_singular(
     assert "LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision" not in authority
     assert transition.count("LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision") == 1
     assert "applyD0146ActionSpaceDecision" not in authority
-    assert "acquireSupportingRegulationAuthority" in runtime or "acquireSupportingRegulationAuthority" in transition
+    assert "_jointCooperativePassageRequests" in runtime
+    assert '_authorizeBoundedAuthority(currentResponsibility,commitment,token' in runtime
 
 
 def test_completed_obstruction_responsibility_transition_is_upstream_and_singular():
@@ -1908,7 +1910,8 @@ def test_completed_obstruction_responsibility_transition_is_upstream_and_singula
     assert "TerminalEgressCommitmentLifecycle.settle" not in authority
     assert "LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision" not in authority
     assert "applyD0146ActionSpaceDecision" not in authority
-    assert "acquireSupportingRegulationAuthority" in runtime
+    assert "_completedObstructionRequest" in runtime
+    assert '_authorizeBoundedAuthority(applied.currentResponsibility,applied.commitment,applied.authorityToken' in runtime
 
 
 def test_explicit_resolution_commitment_is_a_read_only_view_at_both_transition_boundaries():
@@ -1946,7 +1949,8 @@ def test_explicit_resolution_commitment_is_a_read_only_view_at_both_transition_b
     assert "LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision" not in regulation_authority
     assert "TerminalEgressCommitmentLifecycle.applyDecision" not in regulation_authority
     assert "applyD0146ActionSpaceDecision" not in regulation_authority
-    assert "acquireSupportingRegulationAuthority" in regulation_authority
+    assert "ResolutionCommitmentAdapter.build" in cooperative
+    assert "ResolutionCommitmentAdapter.build" in completed
 
 
 def test_follower_boundary_regulation_application_is_upstream_and_singular():
@@ -2116,7 +2120,8 @@ def test_follower_regulation_uses_semantic_authority_before_control_and_terminal
     assert transition.index("applyFollowerBoundaryDecision") < transition.index("establishOrPreserveFollowerRegulation")
     assert "applied.currentResponsibility=currentResponsibility" in transition
     assert "commitment=%s responsibility=%s" in transition
-    assert runtime.index("replaceFollowerRegulationWithCooperativePassage") < runtime.index("_continueCooperativePassage")
+    orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
+    assert orchestration.index("replaceFollowerRegulationWithCooperativePassage") < orchestration.index("_continueCooperativePassage")
     replacement=authority[authority.index("function Authority:replaceFollowerRegulationWithCooperativePassage"):]
     assert replacement.index("preflightFollowerRegulationForCooperativePassage") < replacement.index("replaceRegulationWithCooperativePassage")
     continuation=runtime[runtime.index("function Runtime:_continueCooperativePassage"):runtime.index("function Runtime:_completedObstructionRequest")]
@@ -2186,7 +2191,8 @@ def test_phase10_migrated_control_requests_require_bounded_authority():
 
     completed=runtime[runtime.index("function Runtime:_continueCompletedObstruction"):runtime.index("function Runtime:_assessCurrentActionSpaceRegulation")]
     assert completed.index("_applyD0147ProtectedYield") < completed.index("_completedObstructionRequest")
-    assert 'exemplar="COMPLETED_OBSTRUCTION"' in completed
+    completed_request=runtime[runtime.index("function Runtime:_completedObstructionRequest"):runtime.index("function Runtime:_continueCompletedObstruction")]
+    assert 'exemplar="COMPLETED_OBSTRUCTION"' in completed_request
     assert "self.liveControlDispatcher:dispatch" in completed
 
     assert "boundedAuthority:validateRequest(request)" in p22
