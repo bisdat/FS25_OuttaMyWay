@@ -118,7 +118,7 @@ function Authority:replaceActionSpaceRegulationWithCooperativePassage(picture,ev
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
         if context.commitmentId==preflight.commitmentId then targeted=true break end
     end
-    if targeted~=true or evaluated.decision.commitmentAction~="REVISE" then
+    if targeted~=true then
         return nil,"ACTION_SPACE_PASSAGE_RESPONSIBILITY_SUCCESSION_NOT_TARGETED"
     end
     return self:replaceRegulationWithCooperativePassage(current,preflight,picture,evaluated,readiness,passageTransition,regulationAuthority,
@@ -195,9 +195,9 @@ end
 
 function Authority:resolutionIdentityForCommitment(commitmentId,action)
     local current=self:getCurrentResolutionCommitment(commitmentId)
-    if current~=nil then return current.identity,nil end
-    if action=="MAINTAIN" or action=="REVISE" then return nil,"RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING" end
-    return self.runtime.identities:issue("RESPONSIBILITY"),nil
+    if current~=nil then return current.identity,true,nil end
+    if action=="MAINTAIN" or action=="REVISE" then return nil,nil,"RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING" end
+    return self.runtime.identities:issue("RESPONSIBILITY"),false,nil
 end
 
 function Authority:transitionCooperativePassageResolution(picture,evaluated,readiness,passageTransition)
@@ -206,14 +206,17 @@ function Authority:transitionCooperativePassageResolution(picture,evaluated,read
         if type(context.commitmentId)=="string" then commitmentId=context.commitmentId break end
     end
     local identity=nil
+    local responsibilityAlreadyCurrent=false
     if type(commitmentId)=="string" then
         local reason=nil
-        identity,reason=self:resolutionIdentityForCommitment(commitmentId,evaluated and evaluated.decision and evaluated.decision.commitmentAction)
+        identity,responsibilityAlreadyCurrent,reason=self:resolutionIdentityForCommitment(commitmentId,evaluated and evaluated.decision and evaluated.decision.commitmentAction)
         if identity==nil then return nil,reason end
     else
         identity=self.runtime.identities:issue("RESPONSIBILITY")
     end
-    local applied,reason=passageTransition:transition(picture,evaluated,readiness,{responsibilityIdentity=identity})
+    local applied,reason=passageTransition:transition(picture,evaluated,readiness,{
+        responsibilityIdentity=identity,responsibilityAlreadyCurrent=responsibilityAlreadyCurrent
+    })
     if applied==nil then return nil,reason end
     self.resolutionsByCommitmentId[applied.commitment.identity]=applied.currentResponsibility
     return applied,nil
@@ -225,14 +228,17 @@ function Authority:transitionCompletedObstructionResolution(picture,evaluated,re
         if type(context.commitmentId)=="string" then commitmentId=context.commitmentId break end
     end
     local identity=nil
+    local responsibilityAlreadyCurrent=false
     if type(commitmentId)=="string" then
         local reason=nil
-        identity,reason=self:resolutionIdentityForCommitment(commitmentId,evaluated and evaluated.decision and evaluated.decision.commitmentAction)
+        identity,responsibilityAlreadyCurrent,reason=self:resolutionIdentityForCommitment(commitmentId,evaluated and evaluated.decision and evaluated.decision.commitmentAction)
         if identity==nil then return nil,reason end
     else
         identity=self.runtime.identities:issue("RESPONSIBILITY")
     end
-    local applied,reason=completedTransition:transition(picture,evaluated,readiness,{responsibilityIdentity=identity})
+    local applied,reason=completedTransition:transition(picture,evaluated,readiness,{
+        responsibilityIdentity=identity,responsibilityAlreadyCurrent=responsibilityAlreadyCurrent
+    })
     if applied==nil then return nil,reason end
     self.resolutionsByCommitmentId[applied.commitment.identity]=applied.currentResponsibility
     return applied,nil
@@ -318,7 +324,7 @@ function Authority:replaceFollowerRegulationWithCooperativePassage(picture,evalu
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
         if context.commitmentId==preflight.commitmentId then targeted=true break end
     end
-    if not targeted or OuttaMyWay.ValueRecord.length(picture.commitmentContext)~=1 or evaluated.decision.commitmentAction~="REVISE" then return nil,"FOLLOWER_PASSAGE_SUCCESSION_NOT_TARGETED" end
+    if not targeted or OuttaMyWay.ValueRecord.length(picture.commitmentContext)~=1 then return nil,"FOLLOWER_PASSAGE_SUCCESSION_NOT_TARGETED" end
     return self:replaceRegulationWithCooperativePassage(current,preflight,picture,evaluated,readiness,passageTransition,regulationAuthority,
         self.supersedeFollowerRegulationForCooperativePassage)
 end
