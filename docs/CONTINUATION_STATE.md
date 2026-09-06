@@ -94,8 +94,9 @@ terminal settlement path ends the parent Commitment and semantic Resolution.
 This increment has only implementation-local validation so far:
 LuaJIT bytecode compilation of changed Lua/test files and diff inspection.
 Repository offline validation remains owned by GitHub Actions, and no Farming
-Simulator Reality validation is claimed yet. Issue #51 remains open until a
-later implementation build receives in-game validation. Candidate-Embedded
+Simulator Reality validation is claimed yet. Issue #51 remains open until the
+**v0.3.0.11 TEST** playable build receives targeted in-game validation.
+Candidate-Embedded
 Verdict Authority and generic multi-context application cardinality remain
 Phase-13 work after this correction.
 
@@ -103,9 +104,11 @@ Issue #37 remains open as non-blocking Category-2 Reality-validation debt.
 Bubble Bullet Time remains accepted but unimplemented and is tracked separately
 by Issue #45.
 
-This Engineering Increment changes runtime and focused offline validation
-contracts only. It changes no mod version, release identity or canonical
-authority.
+This Engineering Increment changes runtime, focused offline validation
+contracts, and the playable **test-build identity** only. The implementation is
+now identified as **v0.3.0.11 TEST** so Issue #51 Reality evidence cannot be
+confused with the materially different failing v0.3.0.10 executable. This is not
+a release or canonical declaration; canonical authority remains **v0.3.0.0**.
 
 ## Established
 

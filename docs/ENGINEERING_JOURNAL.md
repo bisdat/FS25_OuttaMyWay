@@ -1,3 +1,21 @@
+## 2026-09-06 — Test build identity advanced to v0.3.0.11
+
+**Observe:** the completed Passage Leg lifecycle branch still identified itself
+as `v0.3.0.10 TEST`, but that identity already belongs to the Issue #51 failing
+Reality build. Reusing it for materially different runtime behaviour would make
+subsequent logs, HUD evidence and Build Reality evidence ambiguous.
+
+**Decision / record:** advance only the playable test-build identity to
+**v0.3.0.11 TEST**. `modDesc.xml`, `OuttaMyWay.VERSION` and
+`OuttaMyWay.BUILD_LABEL` now agree on the v0.3.0.11 test identity. This does not
+declare a release, does not advance canonical authority, and does not alter the
+current canonical **v0.3.0.0**.
+
+**Validate:** version-surface agreement, XML parse, LuaJIT syntax compilation,
+`git diff --check`, changed-file scope and final status are checked locally.
+Repository offline suites remain owned by GitHub Actions; no in-game Reality
+validation is claimed by this identity change.
+
 ## 2026-09-06 — Interrupted Codex recovery: Passage loss evidence and authority ordering
 
 **Observe:** the final Codex repair stopped mid-edit after credits were exhausted.
