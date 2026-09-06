@@ -844,11 +844,11 @@ test("Accepted Bounded Authority update retires predecessor only after successor
         boundedAuthorityId=oldGrant.identity,currentCapKmh=20,progressionEnvelope=envelope,actuationActive=true}
     local acceptedGrantId=nil
     local dispatcher=runtime.regulationBoundedAuthority
-    dispatcher.capability={executeControlRequest=function(self,request,candidate)
+    runtime:setLiveControlCapability({executeControlRequest=function(self,request,candidate)
         equal(runtime.boundedAuthority:isCurrent(oldGrant.identity),true)
         acceptedGrantId=request.boundedAuthorityId
         return true,"ACCEPTED"
-    end}
+    end})
     local candidate=boundedAuthorityCandidate("CA-BA-ACCEPTED-UPDATE")
     local result=dispatcher:_updateD0146ActionSpaceEnvelope({epoch=220},boundedAuthorityEvaluated(candidate),candidate,lease,{currentClosing={separationM=80}},"RELATIONSHIP_REMAINS")
     equal(result.status,"ENVELOPE_UPDATED")
