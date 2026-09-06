@@ -351,11 +351,12 @@ end
 
 -- D-0217 Cooperative Passage participant loss is participant-scoped. A sealed
 -- observation first establishes the complete set of still-open Passage Legs
--- whose original AI subject is positively no longer executable: either the
--- exact Job Episode ended, or current positive player control displaced that
--- AI Passage subject. All active OMW physical effects for that loss set are
--- neutralised before any corresponding BA/AU release. Survivor authority and
--- choreography are refreshed only after the whole sealed loss set is settled.
+-- whose exact original GIANTS Job Episode has authoritatively ended. Why the
+-- Job Episode ended is provenance, not a second Passage lifecycle: player entry
+-- or control-like evidence while the Job Episode remains active cannot vacate a
+-- Passage Leg. All active OMW physical effects for the ended-Episode loss set
+-- are neutralised before any corresponding BA/AU release. Survivor authority
+-- and choreography are refreshed only after the whole sealed loss set is settled.
 local function endedEpisodeSet(episodeResult)
     local result={}
     for _,episodeId in OuttaMyWay.ValueRecord.ipairs(episodeResult and episodeResult.endedEpisodeIds or {}) do result[episodeId]=true end
@@ -379,27 +380,7 @@ local isCooperativePassageLegObligation
 local hasCooperativePassageLegObligations
 local findCooperativePassageLegObligation
 
-local function snapshotAssemblyIdByReference(snapshot)
-    local result={}
-    for _,assembly in OuttaMyWay.ValueRecord.ipairs(snapshot and snapshot.assemblies or {}) do
-        if assembly.referenceKey~=nil and assembly.assemblyId~=nil then result[assembly.referenceKey]=assembly.assemblyId end
-    end
-    return result
-end
-
-local function playerControlledAssemblySet(snapshot)
-    local result={}
-    local byReference=snapshotAssemblyIdByReference(snapshot)
-    for referenceKey,evidence in OuttaMyWay.ValueRecord.pairs(snapshot and snapshot.playerControl or {}) do
-        if type(evidence)=="table" and evidence.playerControlled==true then
-            local assemblyId=byReference[referenceKey]
-            if assemblyId~=nil then result[assemblyId]=true end
-        end
-    end
-    return result
-end
-
-local function passageLossForOpenLeg(runtime,record,obligation,ended,playerControlled,snapshot,episodeResult)
+local function passageLossForOpenLeg(runtime,record,obligation,ended,snapshot,episodeResult)
     local basis=obligation and obligation.basis or {}
     local assemblyId=basis.assemblyId
     local jobEpisodeId=basis.jobEpisodeId
@@ -423,24 +404,13 @@ local function passageLossForOpenLeg(runtime,record,obligation,ended,playerContr
         }
     end
 
-    if playerControlled[assemblyId]==true then
-        return {
-            assemblyId=assemblyId,jobEpisodeId=jobEpisodeId,endedJobEpisodeId=nil,
-            evidence={
-                kind="PLAYER_TAKEOVER",commitmentId=record.identity,encounterIdentity=recordBasis.dependentEncounterId,
-                participantJobEpisodeId=jobEpisodeId,dependentJobEpisodeIds=recordBasis.dependentJobEpisodeIds,
-                observationSnapshotId=observationSnapshotId,basisCessation=true,positivePlayerControl=true
-            }
-        }
-    end
     return nil
 end
 
 function Lifecycle.applyCooperativePassageParticipantLosses(runtime,episodeResult,snapshot)
     if runtime==nil or episodeResult==nil then return {} end
     local ended=endedEpisodeSet(episodeResult)
-    local playerControlled=playerControlledAssemblySet(snapshot)
-    if next(ended)==nil and next(playerControlled)==nil then return {} end
+    if next(ended)==nil then return {} end
 
     local outcomes={}
     for _,record in OuttaMyWay.ValueRecord.ipairs(runtime.commitments:list()) do
@@ -449,7 +419,7 @@ function Lifecycle.applyCooperativePassageParticipantLosses(runtime,episodeResul
             local losses={}
             for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(record.identity)) do
                 if isCooperativePassageLegObligation~=nil and isCooperativePassageLegObligation(obligation) then
-                    local loss=passageLossForOpenLeg(runtime,record,obligation,ended,playerControlled,snapshot,episodeResult)
+                    local loss=passageLossForOpenLeg(runtime,record,obligation,ended,snapshot,episodeResult)
                     if loss~=nil then losses[#losses+1]=loss end
                 end
             end

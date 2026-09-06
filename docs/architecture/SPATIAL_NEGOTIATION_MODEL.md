@@ -212,12 +212,15 @@ A Passage Leg has two ordinary terminal dispositions:
   execute that original participant as the committed AI Passage subject.
 
 **Participant Loss Vacates a Passage Leg; It Does Not Cancel the Passage.**
-For a still-live Passage Leg, positive participant loss may include authoritative
-Job Episode completion, stoppage or supersession, player takeover, or positive
-physical/runtime removal. An already `HANDED_BACK` or `VACATED` leg remains
-terminal; later participant lifecycle change has no Passage effect. Incomplete
-observation or mere absence cannot establish vacatur under Lifecycle Evidence
-Asymmetry.
+For a still-live Passage Leg, active-participant loss is established by
+authoritative termination of that leg's exact original GIANTS Job Episode.
+Natural completion, player-stopped work, GIANTS abort/supersession/restart and
+positive runtime-subject removal may be different causes or evidence paths for
+that Job Episode termination; they are not parallel Passage lifecycles. Player
+entry/presence while the exact Job Episode remains active has no Passage
+lifecycle effect. An already `HANDED_BACK` or `VACATED` leg remains terminal;
+later participant lifecycle change has no Passage effect. Incomplete observation
+or mere absence cannot establish vacatur under Lifecycle Evidence Asymmetry.
 
 Vacatur settles only the obligations and physical authority belonging to that
 Passage Leg. It admits no replacement participant and creates no new Candidate,

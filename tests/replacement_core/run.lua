@@ -5042,14 +5042,25 @@ test("D0217 already terminal A and live B ending in one observation only vacates
     equal(runtime.commitments:get(commitmentId).state,"SUCCEEDED")
 end)
 
-test("D0217 player takeover vacates only the affected live Passage Leg",function()
+test("D0217 player-control evidence alone does not vacate an active Passage Leg",function()
     local runtime,commitmentId=passageLegRuntime()
-    local settled=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleCooperativePassageLeg(runtime,commitmentId,"AS-A","VACATED",{kind="PLAYER_TAKEOVER",positivePlayerControl=true})
-    equal(settled.terminal,nil)
+    local snapshot={
+        identity="OBS-PLAYER-PRESENCE",
+        assemblies={
+            {referenceKey="vehicle-root:A",assemblyId="AS-A"},
+            {referenceKey="vehicle-root:B",assemblyId="AS-B"}
+        },
+        playerControl={
+            ["vehicle-root:A"]={playerControlled=true,playerPresent=true}
+        }
+    }
+    local result=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageParticipantLosses(
+        runtime,{endedEpisodeIds={},observationSnapshotId=snapshot.identity},snapshot)
+
+    equal(#result,0)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
-    equal(runtime.obligations:get(settled.settledObligationId).settlementDisposition.mode,"BASIS_CESSATION")
-    equal(runtime.obligations:get(settled.settledObligationId).settlementDisposition.evidence.passageLegDisposition,"VACATED")
-    equal(runtime.authorities:ownerOf("AS-A"),nil)
+    equal(#runtime.obligations:openForOwner(commitmentId),2)
+    equal(runtime.authorities:ownerOf("AS-A"),commitmentId)
     equal(runtime.authorities:ownerOf("AS-B"),commitmentId)
 end)
 
@@ -5065,7 +5076,7 @@ test("D0217 both participants lost dissolves after the last vacated Passage Leg"
     local runtime,commitmentId=passageLegRuntime()
     local first=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleCooperativePassageLeg(runtime,commitmentId,"AS-A","VACATED",{kind="POSITIVE_VEHICLE_RUNTIME_REMOVAL"})
     equal(first.terminal,nil)
-    local second=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleCooperativePassageLeg(runtime,commitmentId,"AS-B","VACATED",{kind="PLAYER_TAKEOVER"})
+    local second=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleCooperativePassageLeg(runtime,commitmentId,"AS-B","VACATED",{kind="JOB_EPISODE_DEPENDENCY_CEASED"})
     equal(second.terminal.state,"SUCCEEDED")
     equal(runtime.authorities:ownerOf("AS-A"),nil)
     equal(runtime.authorities:ownerOf("AS-B"),nil)
@@ -5240,10 +5251,11 @@ test("D0217 production observation preserves runtime absence as unresolved",func
     end)
 end)
 
-test("D0217 explicit positive player-control evidence vacates a live leg without ending its Job Episode",function()
+test("D0217 ended Job Episode owns participant loss even when player-control evidence is present",function()
     local runtime,commitmentId=passageLegRuntime()
+    runtime.jobEpisodes.records["JE-A"]={identity="JE-A",assemblyId="AS-A",status="ENDED"}
     local snapshot={
-        identity="OBS-PLAYER-CONTROL",
+        identity="OBS-JOB-END-AND-PLAYER",
         assemblies={
             {referenceKey="vehicle-root:A",assemblyId="AS-A"},
             {referenceKey="vehicle-root:B",assemblyId="AS-B"}
@@ -5253,11 +5265,11 @@ test("D0217 explicit positive player-control evidence vacates a live leg without
         }
     }
     local result=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageParticipantLosses(
-        runtime,{endedEpisodeIds={},observationSnapshotId=snapshot.identity},snapshot)
+        runtime,{endedEpisodeIds={"JE-A"},observationSnapshotId=snapshot.identity},snapshot)
 
     equal(#result,1)
-    equal(result[1].participantLossKind,"PLAYER_TAKEOVER")
-    equal(result[1].endedJobEpisodeId,nil)
+    equal(result[1].participantLossKind,"JOB_EPISODE_DEPENDENCY_CEASED")
+    equal(result[1].endedJobEpisodeId,"JE-A")
     equal(result[1].vacatedAssemblyId,"AS-A")
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
     equal(runtime.obligations:openForOwner(commitmentId)[1].basis.assemblyId,"AS-B")
@@ -5276,7 +5288,7 @@ test("D0217 same sealed two-leg loss never transiently continues a doomed surviv
     equal(runtime.commitments:get(commitmentId).state,"SUCCEEDED")
 end)
 
-test("D0217 former-participant hard safety distinguishes player takeover from physical removal",function()
+test("D0217 former-participant hard safety distinguishes Job Episode end from physical removal",function()
     local vehicleA={rootNode=9701}
     local vehicleB={rootNode=9702}
     function vehicleA:getAISteeringNode() return self.rootNode end
@@ -5291,7 +5303,7 @@ test("D0217 former-participant hard safety distinguishes player takeover from ph
     local envelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1}
     local former={
         vehicle=vehicleA,assemblyId="AS-A",vacated=true,
-        vacaturEvidence={kind="PLAYER_TAKEOVER",positivePlayerControl=true},
+        vacaturEvidence={kind="JOB_EPISODE_DEPENDENCY_CEASED",endedJobEpisodeId="JE-A"},
         transitPassageEnvelope=envelope
     }
     local survivor={
@@ -5332,7 +5344,7 @@ test("D0217 survivor Commitment Bounded Authority and ControlRequest composition
         acceptSurvivorPermission=function(self,cid,assemblyId,request) acceptedRequest=request; survivorRequest=request; return cid==commitmentId and assemblyId=="AS-B",nil end
     }
     runtime:setCooperativePassageControl(control)
-    local settled=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleCooperativePassageLeg(runtime,commitmentId,"AS-A","VACATED",{kind="PLAYER_TAKEOVER"})
+    local settled=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleCooperativePassageLeg(runtime,commitmentId,"AS-A","VACATED",{kind="JOB_EPISODE_DEPENDENCY_CEASED",endedJobEpisodeId="JE-A"})
     local refreshed,reason=runtime:refreshCooperativePassageSurvivorAuthority(commitmentId,settled)
     equal(reason,nil); equal(refreshed.assemblyId,"AS-B")
     local revised=runtime.commitments:get(commitmentId)

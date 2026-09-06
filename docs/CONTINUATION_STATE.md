@@ -34,13 +34,13 @@ to identify a leg.
 
 Cooperative Passage participant loss is now reconciled at Passage-Leg scope
 before D-0200. One sealed observation first establishes the complete set of
-still-open legs whose original AI Passage subject is positively no longer
-executable. Authoritative exact Job Episode termination, including positive
-runtime-subject removal, is a current production source. The lifecycle can also
-consume an explicit authoritative positive player-control fact, but production
-Observation does **not** infer that fact merely from player presence/entry in an
-AI-active GIANTS worker. Active OMW physical effects for the
-whole sealed loss set are neutralised before any affected BA/AU is released.
+still-open legs whose exact original GIANTS Job Episodes have authoritatively
+ended. **Job Termination Owns Active-Participant Loss:** natural completion,
+player-stopped work, GIANTS abort/supersession/restart and positive runtime
+removal may establish or explain that terminal fact; player entry/presence while
+the Job Episode remains active is not a separate Passage lifecycle authority.
+Active OMW physical effects for the whole sealed loss set are neutralised before
+any affected BA/AU is released.
 Only after that complete loss set is settled may an unaffected survivor receive
 truthful survivor-only BA/ControlRequest provenance and continue its existing
 choreography. Simultaneous two-leg loss therefore cannot transiently restart a
@@ -56,11 +56,11 @@ remains hard-safety evidence where observed. Vacatur before execution-origin
 capture requires pose only from still-live legs and preserves the vacated
 participant's existing Candidate-supplied guide fields rather than inventing
 replacement geometry. Raw unavailable native Job tokens do not establish
-`VACATED`. Current production participant-loss evidence comes from
-authoritative exact Job Episode termination or positive runtime removal; an
-explicit authoritative player-control fact remains a valid downstream D-0217
-input if such a source is available. Player presence alone is not that fact.
-Control neutralises the affected physical effect first; survivor continuation is
+`VACATED`. Current production participant-loss evidence is authoritative exact
+Job Episode termination; positive runtime removal matters because it can
+establish `RUNTIME_SUBJECT_REMOVED` termination and physical disappearance.
+Player-control evidence alone cannot vacate an active Passage Leg. Control
+neutralises the affected physical effect first; survivor continuation is
 deferred until the retained
 Commitment, Current Resolution view and survivor BA/ControlRequest are truthful.
 A player-taken-over former participant remains current hard-safety occupancy,
@@ -81,17 +81,16 @@ predecessor survivor BA retired. Failure to establish or accept successor
 permission is fail-closed and retires stale BA only for the still-open survivor
 Passage Leg rather than releasing unrelated Commitment authority.
 
-**Implementation discovery — Passage Subject Executability != Job Episode
-Lifecycle; Participation Loss != Job Episode Termination:** an authoritative
-positive player takeover would immediately remove that assembly from GIANTS-AI
-Local Operation participation and vacate any still-live Passage Leg without
-fabricating Job Episode termination. **Player Presence != Player Control:** an
-AI-active vehicle remaining in `activeJobVehicles` is not positively taken over
-merely because the player enters/tabs into it; `getIsEntered()` and
-`mission.controlledVehicle` are presence evidence in that state, not Passage
-vacatur authority. The Job Episode remains until its own authoritative
-completion, succession/restart, or positive runtime-subject removal evidence.
-Conversely, explicit retained-object deletion is positive
+**Job Termination Owns Active-Participant Loss:** a player cannot physically
+take over an AI worker without first ending the GIANTS job, so active Passage
+does not need an independent player-takeover lifecycle. Entering or tabbing into
+an AI-active vehicle has no Passage effect while the exact Job Episode remains
+active. If the player stops the job, the authoritative Job Episode termination
+is the lifecycle event consumed by Operation and Passage. **Player Claim Exists
+Only After Job Termination:** D-0147 remains the one special case where
+`getIsEntered()` is authoritative, because OuttaMyWay may be physically moving a
+completed assembly after its AI Job Episode has already ended and must relinquish
+immediately when the human claims that vehicle. Conversely, explicit retained-object deletion is positive
 `RUNTIME_SUBJECT_REMOVED` Job Episode evidence and emits no retained current
 occupancy; mere object absence remains unresolved and retains conservative
 last-observed occupancy.
@@ -139,11 +138,29 @@ Runtime already performs that exact merge semantically, but the compact spelling
 without the space does not satisfy the lexical Structural guard.
 
 The correction therefore restores the accepted source-contract spelling rather
-than weakening the test or changing Operation behaviour. Local validation
-remains Lua syntax checks, `git diff --check`, status and diff inspection;
-repository suites are not run locally. A fresh GitHub Actions result is required
-before any targeted Farming Simulator Reality validation. Issue #51 remains
-open.
+than weakening the test or changing Operation behaviour.
+
+GitHub Actions run #114 at `d994f62` then reached **112 passed / 0 failed**
+Structural contracts and **323 passed / 9 failed** Lua observations, with exactly
+the established nine accepted-state observational failure identities and all
+new D-0217 coverage green.
+
+Owner-supplied Farming Simulator Reality evidence for the final `0.3.0.11 TEST`
+PR #54 implementation is a targeted **PASS**. The loaded mod hash is
+`e755f22801be3866ca3708128b10e529`. In `CM-00005`, Condor's Passage Leg
+`OB-00006` settled `HANDED_BACK` at 16:26:11.176 while Patriot remained live;
+Condor's exact Job Episode ended at 16:26:32.326; Patriot continued restoration
+without Commitment/BA collapse; Patriot's `OB-00007` settled `HANDED_BACK` and
+the parent Commitment succeeded at 16:26:45.133. The run contains no
+`BOUNDED_AUTHORITY_LOST`, `PLAYER_INTERVENTION`, or
+`JOB_EPISODE_DEPENDENCY_COLLAPSE` evidence for that Passage.
+
+The same `0.3.0.11` label had already been used by materially different failing
+PR #54 bytes, so the PASS remains truthfully recorded as the executable that
+identified itself as `0.3.0.11`, while the next playable identity advances to
+**v0.3.0.12 TEST**. This is a build-identity correction, not canonicalisation.
+Issue #51 remains open until the accepted repository state contains the
+validated implementation.
 Candidate-Embedded
 Verdict Authority and generic multi-context application cardinality remain
 Phase-13 work after this correction.
@@ -153,10 +170,11 @@ Bubble Bullet Time remains accepted but unimplemented and is tracked separately
 by Issue #45.
 
 This Engineering Increment changes runtime, focused offline validation
-contracts, and the playable **test-build identity** only. The implementation is
-now identified as **v0.3.0.11 TEST** so Issue #51 Reality evidence cannot be
-confused with the materially different failing v0.3.0.10 executable. This is not
-a release or canonical declaration; canonical authority remains **v0.3.0.0**.
+contracts, architecture/decision knowledge, and the playable **test-build
+identity** only. The next executable is **v0.3.0.12 TEST — Passage Leg Lifecycle
+Reconciliation** because materially different PR #54 executables were
+accidentally tested under the same `v0.3.0.11` identity. This is not a release
+or canonical declaration; canonical authority remains **v0.3.0.0**.
 
 ## Established
 

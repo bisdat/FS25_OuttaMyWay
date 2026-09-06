@@ -166,6 +166,20 @@ responsibilities founded on that Job Episode lose their basis as applicable
 Physical Assembly remains Reality
 ```
 
+**Job Termination Owns Active-Participant Loss.** While a qualifying GIANTS AI
+Job Episode remains active, player entry/presence does not independently end
+Local Operation participation or Job-founded responsibility. If the player
+stops the helper, GIANTS aborts, the job is superseded/restarted, or positive
+runtime removal establishes termination, the authoritative lifecycle fact is
+the exact Job Episode ending. Downstream responsibilities consume that terminal
+fact rather than inferring a parallel player-takeover lifecycle.
+
+**Player Claim Exists Only After Job Termination.** When OuttaMyWay later holds
+bounded physical authority over a completed assembly, player entry is a
+different post-job authority event: the human has claimed the physical vehicle,
+so post-job Control must relinquish immediately. That D-0147 Player Claim does
+not redefine active Job Episode lifecycle.
+
 Nothing automatically moves the completed assembly. A harmless completed assembly remains where GIANTS left it. Completion creates no terminal lifecycle, terminal succession, completed-worker queue, parking duty, tidying duty or automatic settlement responsibility.
 
 ## 8. Beneficiary and controlled subject

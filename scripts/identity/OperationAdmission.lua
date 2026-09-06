@@ -41,20 +41,6 @@ local function mergedUnique(first, second)
     return sortedUnique(values)
 end
 
-local function playerControlledAssemblySet(snapshot)
-    local byReference,result={},{}
-    for _,assembly in OuttaMyWay.ValueRecord.ipairs(snapshot and snapshot.assemblies or {}) do
-        if assembly.referenceKey~=nil and assembly.assemblyId~=nil then byReference[assembly.referenceKey]=assembly.assemblyId end
-    end
-    for referenceKey,evidence in OuttaMyWay.ValueRecord.pairs(snapshot and snapshot.playerControl or {}) do
-        if type(evidence)=="table" and evidence.playerControlled==true then
-            local assemblyId=byReference[referenceKey]
-            if assemblyId~=nil then result[assemblyId]=true end
-        end
-    end
-    return result
-end
-
 function Admission.new(identityRegistry, epochSequence, jobEpisodes)
     local self = setmetatable({}, Admission)
     self.identities = identityRegistry
@@ -125,14 +111,13 @@ function Admission:observe(snapshot, episodeResult)
     OuttaMyWay.ValueRecord.assertType(snapshot, "ObservationSnapshot")
     OuttaMyWay.ValueRecord.assertType(episodeResult, "JobEpisodeAdmissionResult")
     local fieldWorldKey, complete = fieldContext(snapshot)
-    local playerControlled=playerControlledAssemblySet(snapshot)
     local memberAssemblyIds, memberEpisodeIds, snapshotReferences, polygonReferences = {}, {}, {}, {}
 
     for _, evidence in OuttaMyWay.ValueRecord.ipairs(snapshot.operationMembershipEvidence) do
         if evidence.fieldWorldReferenceKey ~= nil and evidence.fieldWorldReferenceKey ~= fieldWorldKey then
             error("Operation membership evidence belongs to a different Field World", 2)
         end
-        if evidence.performingRecognisedFieldWork == true and playerControlled[evidence.assemblyId]~=true then
+        if evidence.performingRecognisedFieldWork == true then
             if evidence.fieldWorldReferenceKey==nil then error("recognised Operation membership requires resolved Field World identity",2) end
             if evidence.fieldWorldSnapshotReferenceKey==nil or evidence.fieldPolygonReferenceKey==nil then
                 error("recognised Operation membership requires immutable Snapshot and polygon provenance",2)
@@ -153,87 +138,41 @@ function Admission:observe(snapshot, episodeResult)
     local active = activeId and self.records[activeId] or nil
     local endedIds, transitions = {}, {}
 
-    if active == nil then
-        if #memberAssemblyIds > 0 then
+    if #memberAssemblyIds > 0 then
+        if active == nil then
             active = self:_admit(fieldWorldKey, memberAssemblyIds, memberEpisodeIds, snapshotReferences, polygonReferences, snapshot)
             transitions[#transitions + 1] = { event="ADMITTED", operationId=active.identity, memberAssemblyIds=memberAssemblyIds }
-        end
-    elseif complete then
-        if #memberAssemblyIds > 0 then
+        elseif complete then
             active = self:_update(active, memberAssemblyIds, memberEpisodeIds, snapshotReferences, polygonReferences, snapshot)
             transitions[#transitions + 1] = { event="MEMBERSHIP_UPDATED", operationId=active.identity, memberAssemblyIds=memberAssemblyIds, membershipEvidenceComplete=true }
         else
-            active = self:_end(active, snapshot)
-            endedIds[#endedIds + 1] = active.identity
-            transitions[#transitions + 1] = { event="ENDED", operationId=active.identity, cause="MEMBERSHIP_ZERO" }
-            active = nil
-        end
-    else
-        -- Incomplete observation cannot remove an admitted member merely because
-        -- it disappeared. Positive authoritative player control is a separate
-        -- evidence class: it can remove that assembly from GIANTS-AI Operation
-        -- participation without pretending that incomplete membership evidence
-        -- itself proved removal.
-        local retainedAssemblyIds={}
-        local positivePlayerRemoval=false
-        for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(active.memberAssemblyIds or {}) do
-            if playerControlled[assemblyId]==true then
-                positivePlayerRemoval=true
-            else
-                retainedAssemblyIds[#retainedAssemblyIds+1]=assemblyId
+            -- Incomplete membership evidence may add positively observed members, but it cannot
+            -- prove removal of previously admitted members. Preserve the prior membership set
+            -- until complete evidence arrives; this prevents an unresolved Job Episode stop
+            -- sample from masquerading as explicit Encounter membership invalidation.
+            local retainedEpisodeIds = {}
+            for _, assemblyId in OuttaMyWay.ValueRecord.ipairs(active.memberAssemblyIds or {}) do
+                local activeEpisode = self.jobEpisodes:getActiveForAssembly(assemblyId)
+                if activeEpisode ~= nil then retainedEpisodeIds[#retainedEpisodeIds + 1] = activeEpisode.identity end
             end
-        end
-
-        if positivePlayerRemoval then
-            local nextMemberAssemblyIds=mergedUnique(retainedAssemblyIds,memberAssemblyIds)
-            if #nextMemberAssemblyIds>0 then
-                local retainedEpisodeIds={}
-                for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(nextMemberAssemblyIds) do
-                    local activeEpisode=self.jobEpisodes:getActiveForAssembly(assemblyId)
-                    if activeEpisode~=nil then retainedEpisodeIds[#retainedEpisodeIds+1]=activeEpisode.identity end
-                end
-                active=self:_update(
-                    active,nextMemberAssemblyIds,mergedUnique(retainedEpisodeIds,memberEpisodeIds),
-                    mergedUnique(active.memberFieldWorldSnapshotReferenceKeys,snapshotReferences),
-                    mergedUnique(active.memberFieldPolygonReferenceKeys,polygonReferences),snapshot
-                )
-                transitions[#transitions+1]={
-                    event="MEMBERSHIP_UPDATED_INCOMPLETE",operationId=active.identity,
-                    memberAssemblyIds=active.memberAssemblyIds,membershipEvidenceComplete=false,
-                    removalDeferred=false,positivePlayerControlRemoval=true
-                }
-            else
-                active=self:_end(active,snapshot)
-                endedIds[#endedIds+1]=active.identity
-                transitions[#transitions+1]={
-                    event="ENDED",operationId=active.identity,
-                    cause="POSITIVE_PLAYER_CONTROL_MEMBERSHIP_ZERO"
-                }
-                active=nil
-            end
-        elseif #memberAssemblyIds>0 then
-            -- Accepted incomplete-membership contract: positive additions may be
-            -- merged, but no previously admitted member can be removed until
-            -- membership evidence becomes complete.
-            local retainedEpisodeIds={}
-            for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(active.memberAssemblyIds or {}) do
-                local activeEpisode=self.jobEpisodes:getActiveForAssembly(assemblyId)
-                if activeEpisode~=nil then retainedEpisodeIds[#retainedEpisodeIds+1]=activeEpisode.identity end
-            end
-            active=self:_update(
+            active = self:_update(
                 active,
                 mergedUnique(active.memberAssemblyIds, memberAssemblyIds),
-                mergedUnique(retainedEpisodeIds,memberEpisodeIds),
-                mergedUnique(active.memberFieldWorldSnapshotReferenceKeys,snapshotReferences),
-                mergedUnique(active.memberFieldPolygonReferenceKeys,polygonReferences),
+                mergedUnique(retainedEpisodeIds, memberEpisodeIds),
+                mergedUnique(active.memberFieldWorldSnapshotReferenceKeys, snapshotReferences),
+                mergedUnique(active.memberFieldPolygonReferenceKeys, polygonReferences),
                 snapshot
             )
-            transitions[#transitions+1]={
-                event="MEMBERSHIP_UPDATED_INCOMPLETE",operationId=active.identity,
-                memberAssemblyIds=active.memberAssemblyIds,membershipEvidenceComplete=false,
-                removalDeferred=true,positivePlayerControlRemoval=false
+            transitions[#transitions + 1] = {
+                event="MEMBERSHIP_UPDATED_INCOMPLETE", operationId=active.identity,
+                memberAssemblyIds=active.memberAssemblyIds, membershipEvidenceComplete=false, removalDeferred=true
             }
         end
+    elseif active ~= nil and complete then
+        active = self:_end(active, snapshot)
+        endedIds[#endedIds + 1] = active.identity
+        transitions[#transitions + 1] = { event="ENDED", operationId=active.identity, cause="MEMBERSHIP_ZERO" }
+        active = nil
     end
 
     local activeIds = {}

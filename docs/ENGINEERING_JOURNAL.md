@@ -1,3 +1,56 @@
+## 2026-09-06 — Reality PASS and active-job Player Claim boundary
+
+**Observe:** GitHub Actions run #114 at `d994f62` reached 112/112 Structural
+contracts and 323/332 Lua observations, preserving exactly the accepted nine
+non-blocking failure identities. The owner then supplied a targeted Farming
+Simulator log from the final PR #54 implementation. The executable identified
+itself as `0.3.0.11 TEST — PASSAGE LEG LIFECYCLE RECONCILIATION` with mod hash
+`e755f22801be3866ca3708128b10e529`.
+
+The decisive Reality sequence is `CM-00005`: Condor's `OB-00006` settles
+`HANDED_BACK` at 16:26:11.176 with Patriot still live; Condor's Job Episode ends
+at 16:26:32.326; Patriot remains in the same Passage responsibility and
+continues restoration; Patriot's `OB-00007` settles `HANDED_BACK` and the parent
+Commitment succeeds at 16:26:45.133. No `BOUNDED_AUTHORITY_LOST`,
+`PLAYER_INTERVENTION`, or `JOB_EPISODE_DEPENDENCY_COLLAPSE` occurs. This is a
+targeted Reality PASS for Issue #51 and D-0217 survivor continuity.
+
+**Discuss / discover:** the earlier PR implementation still retained an
+unnecessary theoretical active-Passage `PLAYER_TAKEOVER` path. Reality and GIANTS
+interaction semantics make the boundary simpler: a player cannot take over an
+AI worker without first ending the GIANTS job. **Job Termination Owns
+Active-Participant Loss.** While the exact Job Episode remains active, player
+entry/presence has no Operation or Passage lifecycle authority. If the player
+stops the helper, the resulting authoritative Job Episode termination is the
+fact downstream lifecycle consumes, just as for natural completion, GIANTS
+abort/supersession/restart, or positive runtime-subject removal.
+
+**Player Claim Exists Only After Job Termination.** D-0147 is the sole current
+special case. Once the Job Episode has ended, OuttaMyWay may hold bounded
+post-job physical authority over the completed assembly; the validated
+`vehicle:getIsEntered()` witness then means the human has claimed that physical
+vehicle and D-0147 must relinquish immediately. This does not create an
+active-job player-takeover lifecycle.
+
+**Implement:** remove player-control as an independent Passage-loss and Operation
+membership-removal authority; active Passage vacatur is sourced only from
+authoritative exact Job Episode termination. Preserve active player-presence
+observation as factual diagnostics and preserve D-0147
+`PostJobActuationAuthority:isPlayerClaimed()` unchanged. Rebind D-0217 tests so
+player-control-looking evidence alone is explicitly lifecycle-neutral while Job
+Episode termination remains authoritative even when such evidence is also
+present.
+
+**Build identity discovery:** materially different PR #54 executables were
+accidentally tested under `0.3.0.11`. The successful Reality run is recorded
+truthfully under the identity it actually emitted; the next playable executable
+advances to `0.3.0.12 TEST`. Canonical authority remains `v0.3.0.0`.
+
+**Validate:** changed Lua/test files receive compile-only syntax checks and
+`git diff --check` locally. Repository suites remain GitHub Actions execution
+responsibility. No additional in-game claim is made for the `0.3.0.12` identity
+until that executable is actually run.
+
 ## 2026-09-06 — PR #54 Run #113: runtime profile restored; one lexical Structural guard remains
 
 **Observe:** GitHub Actions run #113 at `c705309` reports **323 passed / 9
