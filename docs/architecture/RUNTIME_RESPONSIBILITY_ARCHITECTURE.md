@@ -94,7 +94,7 @@ Bootstrap is Job Episode-scoped. It may establish Job Episode identity, discover
 
 Bootstrap does not freeze dynamic pose, articulation, configuration state, heading, productive direction or future GIANTS intent. Its job-scoped cache may expire when the Job Episode ends and is not extended merely because a completed assembly remains physically present.
 
-Exceptional later movement of a completed obstruction may request semantic capabilities such as `compact`, bounded movement, stop and relinquish. Capability and Control acquire only information needed for that fresh intervention on demand; the ended Job Episode's cache need not survive.
+Later movement of a non-active **Causal Obstruction** may request semantic capabilities such as `compact`, bounded movement, stop and relinquish. Capability and Control acquire only information needed for that fresh intervention on demand. Historical Job Episode cache or provenance is not a prerequisite for recognising or relocating the blocker.
 
 ## 4. Establishment and participation
 
@@ -142,11 +142,84 @@ This is an evidence-authority rule, not a timeout, grace period, cooldown or per
 
 ## 6. Active participation and physical relevance
 
-An **active participant** is a supported Physical Assembly with a current qualifying GIANTS AI Job Episode participating in the Local Operation.
+An **active participant** is a supported Physical Assembly with a current
+qualifying GIANTS AI Job Episode participating in the Local Operation.
 
-A **physically relevant entity** can materially affect active work without being an active cooperative worker. Examples include a completed assembly, a player-controlled vehicle, or another supported physical subject where architecture permits.
+A **physically relevant entity** can materially affect active work without being
+an active cooperative worker. Physical relevance is established from current
+Reality; it does not require prior participation in the Local Operation.
 
-Active participation is not synonymous with physical relevance. Completed assemblies do not remain active members merely because they remain in the Field World.
+### Causal Obstruction
+
+A **Causal Obstruction** is a current positive Situation relationship in which a
+physical subject is established as the cause preventing an active supported
+beneficiary from continuing its supported work.
+
+```text
+current Reality
+    |
+positive causal blockage
+    |
+CAUSAL OBSTRUCTION
+    |-- beneficiary = active supported worker whose continuation is blocked
+    `-- blocker     = physical subject causing that blockage
+```
+
+**Obstruction Is the Predicate.** The obstruction relationship establishes why
+the blocker is relevant and why a Resolution may be justified. A parked,
+completed, player-owned or otherwise non-active vehicle creates no responsibility
+merely by existing in the Field World. Conversely, a positively causal blocker
+must not be made invisible merely because OuttaMyWay has no historical record of
+it.
+
+**Physical Relevance != Historical Provenance.** Past Job Episode history,
+previous OuttaMyWay observation, completed-worker provenance, vehicle ownership,
+and prior Local Operation membership are not prerequisites for Causal Obstruction
+recognition.
+
+After Causal Obstruction is established, current blocker classification
+determines the applicable response:
+
+```text
+Causal Obstruction
+    |
+    +-- blocker has current qualifying GIANTS AI Job Episode
+    |       -> active spatial negotiation; GIANTS keeps job ownership
+    |
+    `-- blocker is non-active
+            |
+            +-- getIsEntered() == true
+            |       -> Current Player Claim; OuttaMyWay must not actuate blocker
+            |
+            `-- getIsEntered() == false
+                    -> unclaimed non-active blocker;
+                       eligible for bounded obstruction relocation
+```
+
+**Obstruction Recognition != Actuation Authority.** Recognition answers whether
+the subject is currently the blocker. Bounded Authority answers which physical
+response is permitted. The non-active, unclaimed branch is sufficient to make
+the blocker eligible for bounded relocation; historical Job Episode provenance
+does not add a further permission prerequisite.
+
+**Player Entry Is a Claim Boundary, Not a Vehicle Classification.** While the
+blocker remains an active GIANTS AI participant, `getIsEntered()` is player
+presence evidence only and has no independent Job Episode or responsibility
+lifecycle authority. Once the blocker is non-active, `getIsEntered()==true`
+means the human currently claims that vehicle and OuttaMyWay must remain
+hands-off or relinquish immediately. `getIsEntered()==false` means the
+non-active blocker is unclaimed and does not veto otherwise-supported
+OuttaMyWay relocation.
+
+**Vehicle Ownership != Obstruction Relocation Authority.** Ownership metadata
+does not replace current claim evidence. A non-active, unclaimed vehicle that
+positively causes a Causal Obstruction is eligible for the same bounded
+relocation assessment whether it was formerly an AI worker, was parked before
+load, belongs to the player, or has no known Job history.
+
+Active participation remains distinct from physical relevance. A temporarily
+stopped active GIANTS AI worker remains an active participant and does not enter
+the non-active relocation branch merely because its speed is zero.
 
 ## 7. Completion leaves occupancy, not responsibility
 
@@ -174,11 +247,16 @@ runtime removal establishes termination, the authoritative lifecycle fact is
 the exact Job Episode ending. Downstream responsibilities consume that terminal
 fact rather than inferring a parallel player-takeover lifecycle.
 
-**Player Claim Exists Only After Job Termination.** When OuttaMyWay later holds
-bounded physical authority over a completed assembly, player entry is a
-different post-job authority event: the human has claimed the physical vehicle,
-so post-job Control must relinquish immediately. That D-0147 Player Claim does
-not redefine active Job Episode lifecycle.
+**Player Claim Boundary.** For an active GIANTS AI participant, player
+entry/presence remains lifecycle-neutral: GIANTS owns the Job Episode until
+authoritative Job termination. For a non-active physical vehicle,
+`getIsEntered()==true` is a current human claim and OuttaMyWay must not acquire
+or retain physical actuation authority over that subject; `false` means the
+non-active subject is unclaimed. A known Job termination is one way an
+AI-active vehicle can enter the non-active domain, but historical Job provenance
+is not required when current Reality already establishes that the blocker is
+non-active. The validated D-0147 post-job Player Claim is a donor instance of
+this broader current-claim boundary.
 
 **Pre-Semantic Contradiction != Resolution Failure.** Control may observe a raw
 native Job-token contradiction before Observation and lifecycle authority have
@@ -196,28 +274,50 @@ Nothing automatically moves the completed assembly. A harmless completed assembl
 
 ## 8. Beneficiary and controlled subject
 
-The entity whose physical state OuttaMyWay changes need not be the entity whose continuity or purpose the intervention serves.
+The entity whose physical state OuttaMyWay changes need not be the entity whose
+continuity or purpose the intervention serves.
 
 ```text
 active worker B productively blocked
         |
-positive cause = completed assembly A
+positive current cause = physical blocker A
+        |
+Causal Obstruction
+beneficiary = B
+blocker / controlled subject = A
+        |
+classify A from current Reality
+        |
+non-active + unclaimed
         |
 fresh Resolution Commitment
-beneficiary = B
-controlled subject = A
-purpose = restore B's supported productive continuity
+purpose = remove the Causal Obstruction
         |
 bounded authority over A
         |
-Control compacts/moves A only as justified
+Control optionally compacts/folds and moves A only as justified
         |
 B can continue
         |
 responsibility discharged
 ```
 
-OuttaMyWay is not looking after or parking the completed worker. Intervention exists on behalf of the active productive beneficiary and requires fresh positive purpose. Once productive continuity is restored, OuttaMyWay has no independent interest in further tidying. The detailed mechanism and its eventual name remain matters for later reconciliation.
+OuttaMyWay is not looking after, parking or tidying the blocker. Intervention
+exists only because the current Causal Obstruction prevents supported productive
+continuation. Once that obstruction is removed, OuttaMyWay has no independent
+interest in the subject.
+
+A formerly completed AI worker is one possible blocker, not the architectural
+definition of the responsibility. A cold-loaded parked vehicle, a vehicle with
+unknown Job history, or another supported non-active physical vehicle can be the
+same controlled subject when current positive Reality establishes it as the
+blocker and no Player Claim exists.
+
+**Current Obstruction Authority Does Not Depend on Historical Job Provenance.**
+Historical Job Episode identity may remain useful diagnostic or implementation
+provenance for an already-known warm subject, but it must not gate Causal
+Obstruction recognition, Resolution justification or bounded relocation of an
+otherwise-supported non-active unclaimed blocker.
 
 ## 9. Natural closure
 
@@ -547,6 +647,8 @@ Bounded Authority answers: **Given current responsibility and current Reality, w
 
 It may apply a specific Regulation limit, request supported compaction, perform one currently justified physical leg, or restore and relinquish when an accepted obligation requires it.
 
+For a non-active unclaimed blocker under an accepted Causal Obstruction Resolution, Bounded Authority may permit only the compaction and bounded relocation needed to remove the current obstruction. It does not require completed-Job provenance, vehicle ownership authority or a historical terminal identity.
+
 Bounded Authority does not invent strategic purpose, broaden itself because another manoeuvre is convenient, preserve stale geometry as authority, or create a new Regulation or Resolution Commitment.
 
 A Bounded Authority grant is distinct from both Current Responsibility identity
@@ -587,7 +689,7 @@ outlive its Current Responsibility.
 
 Control answers: **How is this already-authorised physical request realised through available GIANTS mechanisms?**
 
-Control may regulate speed, hold, compact, restore, perform bounded forward/reverse/orientation/displacement, stop, and relinquish authority. Capability resolution for a completed obstruction may discover that an assembly is already compact, supports a transition, has no applicable transition, or is unsupported.
+Control may regulate speed, hold, compact, restore, perform bounded forward/reverse/orientation/displacement, stop, and relinquish authority. For a non-active Causal Obstruction, an available obvious compact/fold action is a mechanical aid to relocation rather than a semantic objective or Transit-state prerequisite. Control may request that compaction and proceed with the already-authorised bounded relocation without waiting for a separate `isTransit` verdict, fold-completion confirmation or configuration-settlement lifecycle. Current hard-safety evidence and the bounded relocation target remain authoritative throughout.
 
 Control reports physical feasibility and outcomes. It does not invent strategic alternatives or declare semantic Resolution success merely because an actuator reached a target.
 

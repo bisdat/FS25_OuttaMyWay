@@ -18,6 +18,46 @@ established `Commitment Operation != Responsibility Transition`, explicit
 direct-Passage substrate targeting, `Key Match Is Not Lifecycle Match`, and
 `Semantic Targetability != Application Cardinality`.
 
+### Phase 13 / Issue #33 — Causal Obstruction
+
+After PR #54 acceptance, Phase 13 resumed at the remaining
+completed-obstruction semantic-continuity question. Issue #33 changes the
+abstraction boundary: the enduring concept is **Causal Obstruction**, not
+historical completed-worker provenance.
+
+Current accepted predicate:
+
+```text
+positive current Causal Obstruction
+        +
+blocker is not an active GIANTS AI worker
+        +
+getIsEntered() == false
+        =
+blocker eligible for bounded obstruction relocation
+```
+
+Past Job Episode history, prior OuttaMyWay observation, `terminalEpisodeId` and
+vehicle ownership are not prerequisites. `getIsEntered()==true` is a Current
+Player Claim only in the non-active domain and requires hands-off/relinquishment;
+while a qualifying GIANTS AI Job Episode remains active it is player-presence
+evidence only and has no lifecycle authority.
+
+D-0147 is the validated mechanical donor for this broader responsibility rather
+than the architectural definition of the blocker. Available fold/compact action
+is an opportunistic mechanical aid, not an `isTransit`/fold-settlement
+prerequisite to relocation. The Resolution purpose is to remove the current
+obstruction, not to achieve a configuration state.
+
+The next runtime investigation starts upstream: enumerate cold-start non-active
+physical vehicles relevant to the current Field World; establish positive causal
+blockage independently of historical Job provenance; classify the blocker as
+active AI, non-active Player Claim, or non-active unclaimed; then reuse/narrow
+existing D-0147 physical mechanics behind the new authority boundary. Do not
+first clean up the remaining generic `decision.commitmentAction` continuity
+proxy around `terminalEpisodeId`; that would preserve the provenance-first
+abstraction Issue #33 disproved.
+
 Issue #51 interrupted Phase-13 simplification with the accepted D-0217
 Cooperative Passage lifecycle correction. Runtime now represents Cooperative
 Passage as two participant-scoped `COOPERATIVE_PASSAGE_LEG` obligations under
@@ -86,20 +126,17 @@ predecessor survivor BA retired. Failure to establish or accept successor
 permission is fail-closed and retires stale BA only for the still-open survivor
 Passage Leg rather than releasing unrelated Commitment authority.
 
-**Job Termination Owns Active-Participant Loss:** a player cannot physically
-take over an AI worker without first ending the GIANTS job, so active Passage
-does not need an independent player-takeover lifecycle. Entering or tabbing into
-an AI-active vehicle has no Passage effect while the exact Job Episode remains
-active. If the player stops the job, the authoritative Job Episode termination
-is the lifecycle event consumed by Operation and Passage. **Player Claim Exists
-Only After Job Termination:** D-0147 remains the one special case where
-`getIsEntered()` is authoritative, because OuttaMyWay may be physically moving a
-completed assembly after its AI Job Episode has already ended and must relinquish
-immediately when the human claims that vehicle. Conversely, explicit retained-object deletion is positive
-`RUNTIME_SUBJECT_REMOVED` Job Episode evidence and emits no retained current
-occupancy; mere object absence remains unresolved and retains conservative
-last-observed occupancy.
-
+**Within active Cooperative Passage, Job Termination Owns
+Active-Participant Loss.** Entering or tabbing into an AI-active vehicle has no
+Passage lifecycle effect while the exact Job Episode remains active. If the
+player stops the job, authoritative Job Episode termination remains the
+lifecycle event consumed by Operation and Passage. D-0218 generalises the
+separate physical claim boundary outside active GIANTS ownership: for any
+non-active causal blocker, `getIsEntered()==true` is Current Player Claim and
+`false` means unclaimed, regardless of historical completed-Job provenance.
+Explicit retained-object deletion remains positive `RUNTIME_SUBJECT_REMOVED`
+Job Episode evidence for an active/retained subject; mere object absence remains
+unresolved.
 
 `TerminalSettlementEvaluator` remains unchanged. Last-Leg Dissolution is reached
 when no open Passage Leg/shared obligation remains, at which point the existing
@@ -186,7 +223,7 @@ This establishes **Pre-Semantic Contradiction != Resolution Failure**. Raw
 Control evidence must wait for the semantic lifecycle authority instead of
 making a terminal decision. The next playable identity advances to
 **v0.3.0.13 TEST — Passage Leg Lifecycle Reconciliation**. This remains a
-test-build identity only; canonical authority is still **v0.3.0.0**. GitHub Actions run #116 and owner-supplied `v0.3.0.13 TEST` two-run Farming Simulator Reality evidence now validate this ordering correction. Issues #51 and #55 are resolved on PR #54 head `ff9c961e54bc1a675bededb2e130bed09cd2d9b8`; PR #54 remains open only pending repository-owner acceptance/merge.
+test-build identity only; canonical authority is still **v0.3.0.0**. GitHub Actions run #116 and owner-supplied `v0.3.0.13 TEST` two-run Farming Simulator Reality evidence now validate this ordering correction. Issues #51 and #55 were resolved on PR #54 implementation head `ff9c961e54bc1a675bededb2e130bed09cd2d9b8` and are now closed; PR #54 has been merged into Accepted Repository State `f0e90096d238eab2271cc7b2174331b0ecb45691`.
 ### PR #54 final validation — v0.3.0.13
 
 Final PR #54 implementation head `ff9c961e54bc1a675bededb2e130bed09cd2d9b8` is independently validated both
@@ -206,13 +243,11 @@ offline and in Farming Simulator Reality.
 - No manufactured `SAFE_ABANDON_ESCALATE`, `FAILED_HELD`, or
   `PLAYER_INTERVENTION_REQUIRED` occurs in that tested lifecycle path.
 
-This closes the validation debt that interrupted Phase 13. Issues #51 and #55
-are resolved by evidence on this PR head. PR #54 remains pending only
-repository-owner acceptance/merge; canonical authority remains `v0.3.0.0`.
+This closes the validation debt that interrupted Phase 13. Issues #51 and #55 were resolved by that evidence and are now closed. PR #54 has been merged into Accepted Repository State `f0e90096d238eab2271cc7b2174331b0ecb45691`; canonical authority remains `v0.3.0.0`.
 
-Candidate-Embedded
-Verdict Authority and generic multi-context application cardinality remain
-Phase-13 work after this correction.
+Causal Obstruction / Issue #33 runtime reconciliation is now the immediate
+Phase-13 work. Candidate-Embedded Verdict Authority and generic multi-context
+application cardinality remain later Phase-13 questions.
 
 Issue #37 remains open as non-blocking Category-2 Reality-validation debt.
 Bubble Bullet Time remains accepted but unimplemented and is tracked separately

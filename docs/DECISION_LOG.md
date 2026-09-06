@@ -1,3 +1,76 @@
+## D-0218 — Causal Obstruction and Non-Active Blocker Relocation
+
+**Status:** Accepted owner decision.
+
+**Decision:** **Causal Obstruction** is the current positive Situation
+relationship that predicates obstruction Resolution. It exists when a physical
+blocker is positively established as preventing an active supported beneficiary
+from continuing its supported work. Recognition is grounded in current Reality,
+not in the blocker's historical provenance.
+
+**Physical Relevance != Historical Provenance.** Past Job Episode history,
+previous OuttaMyWay observation, completed-worker provenance, prior Local
+Operation membership and vehicle ownership are not prerequisites for recognising
+a Causal Obstruction. A cold-loaded non-active vehicle can therefore become a
+blocker directly from current positive causal evidence.
+
+After obstruction is established, current classification determines authority.
+A blocker with a current qualifying GIANTS AI Job Episode remains in active
+spatial negotiation. Player entry while that Job Episode remains active is
+presence evidence only and does not transfer lifecycle ownership. For a
+non-active blocker, `getIsEntered()==true` is the **Current Player Claim** veto:
+OuttaMyWay must not acquire or retain physical actuation authority over that
+vehicle. `getIsEntered()==false` means the non-active blocker is unclaimed and
+is eligible for bounded obstruction relocation.
+
+**Obstruction Recognition != Actuation Authority.** Causal Obstruction supplies
+the purpose; Bounded Authority supplies the permitted physical response.
+**Vehicle Ownership != Obstruction Relocation Authority.** A non-active,
+unclaimed causal blocker may be relocated whether it was a completed AI worker,
+a cold-loaded parked vehicle, the player's own parked vehicle, or a vehicle with
+no known Job history.
+
+**Current Obstruction Authority Does Not Depend on Historical Job Provenance.**
+A completed Job Episode / `terminalEpisodeId` may remain useful provenance for
+the already-validated warm D-0147 path, but it is not the generic Situation
+identity and must not gate recognition, Resolution justification or relocation
+authority. D-0147 is retained as validated mechanical donor evidence for
+non-job vehicle activation, direct movement, neutralisation, Player Claim
+relinquishment and source-AI reactivation.
+
+Obstruction relocation is deliberately human-simple. If an obvious supported
+compact/fold command is available, Control may request it as a mechanical aid
+and proceed with bounded relocation without waiting for `isTransit`, fold
+completion or a separate configuration-settlement lifecycle. Compaction is not
+the Resolution objective; removing the current Causal Obstruction is. Current
+hard-safety evidence and bounded relocation limits remain authoritative.
+
+No parking, tidying, ownership-management, historical pair memory or general
+vehicle-management responsibility is created. Once the beneficiary is no longer
+positively blocked by that subject, the obstruction purpose is discharged.
+
+**Reason:** Issue #33 demonstrated a cold-start Physical Relevance gap: a
+stationary Condor physically blocked an active worker but remained invisible
+because current Observation enumerated only active vehicles and previously
+retained tracks. The accepted warm completed-worker path later succeeded,
+showing that D-0147's mechanics were not the root problem. Architectural review
+then exposed completed-worker provenance as an accidental gateway to a more
+general responsibility. The owner supplied the governing human analogy: when an
+unoccupied tractor blocks another worker, one simply enters/makes it compact if
+useful, moves it aside, stops and leaves it; no historical Job reconstruction
+or sophisticated Transit confirmation is required.
+
+**Consequence:** Phase 13 must reconcile the current warm
+`TerminalOccupancyAssessment` / D-0147 implementation with Causal Obstruction
+without reopening validated mechanics unnecessarily. Observation must be able to
+enumerate cold-start non-active physical blockers; Situation Assessment must
+establish causal obstruction independently of Job history; current blocker
+classification must separate active GIANTS AI, non-active Player Claim and
+non-active unclaimed cases; retained terminal provenance becomes optional
+special-case evidence rather than generic authority. This decision changes
+architecture only: no runtime, tests, version, release or canonical authority
+changes in this increment.
+
 ## D-0217 — Passage Leg Vacatur and Last-Leg Dissolution
 
 **Status:** Accepted owner decision.
