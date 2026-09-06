@@ -1,3 +1,60 @@
+## D-0217 — Passage Leg Vacatur and Last-Leg Dissolution
+
+**Status:** Accepted owner decision.
+
+**Decision:** Cooperative Passage remains pairwise at admission: exactly two
+current active GIANTS AI workers are required to form the Bubble and establish
+one coupled Resolution Commitment. After commitment, each original participant
+has a participant-scoped **Passage Leg** containing that participant's already
+accepted Passage execution and intervention-created debt.
+
+**Participant Loss Vacates a Passage Leg; It Does Not Cancel the Passage.**
+Positive Job Episode completion/stoppage/supersession, player takeover, or
+positive physical/runtime removal terminalises only an affected still-live Passage
+Leg as `VACATED`. An already `HANDED_BACK` or `VACATED` leg remains terminal and
+is not reclassified by later participant lifecycle change. The other Passage Leg receives no new Candidate, Resolution,
+strategy, cleanup responsibility or survivor mode; it continues the same
+already-committed Passage, runout, Axis recovery/return, restoration and GIANTS
+handoff choreography. Incomplete observation cannot establish vacatur.
+
+Vacatur removes the former participant as a choreography dependency, not as
+physical Reality. A still-present player-controlled, completed or stationary
+assembly remains current occupancy and hard-safety evidence. No replacement
+participant may join the existing Bubble.
+
+**Coupled Admission != Coupled Execution Persistence**, **Pairwise Resolution !=
+Symmetric Progress Requirement**, and **Partial Basis Cessation !=
+Responsibility Termination**. One participant's dependency loss settles only
+obligations and Bounded/Mechanical Authority belonging to that Passage Leg. The
+parent Resolution Commitment, Bubble Protection and Resolution Epoch persist
+while any Passage Leg or shared coupled obligation remains legitimate.
+
+The Bubble uses **Last-Leg Dissolution**: it dissolves when both original Passage
+Legs are terminal, whether by `HANDED_BACK`, `VACATED`, or one of each.
+
+**Reason:** Issue #51 on `0.3.0.10 TEST` supplied fresh GIANTS Reality evidence:
+Condor had already been handed back to GIANTS while Patriot was still restoring.
+Condor's Job Episode then ended, D-0200 settled every Passage obligation and
+terminalised the retained Commitment, and Phase-10 Bounded Authority enforcement
+correctly exposed `BOUNDED_AUTHORITY_LOST`. A/B comparison with the last in-game
+`0.3.0.8 TEST` run showed the same dependency-collapse timing while Patriot was
+still restoring; the older build appeared to work only because Control
+continued after authority had already been released.
+
+Current Cooperative Passage Control already demonstrates procedural asymmetry:
+one participant can be handed back while the other continues clearance wait,
+Axis Return, restoration and handoff. Reality therefore supports two execution
+legs more accurately than coupled execution persistence.
+
+**Consequence:** current D-0200 whole-Commitment collapse is known
+implementation divergence for Cooperative Passage. A separate runtime
+Engineering Increment must reconcile participant-scoped Passage obligations,
+per-leg authority vacatur/release and whole-Commitment completion.
+`TerminalSettlementEvaluator` is not pre-judged as defective; if upstream
+dependency/obligation scope is corrected, final terminal settlement may remain
+unchanged. D-0147 is not implicated. This documentation increment changes no
+runtime, tests, version, release or canonical authority.
+
 ## D-0216 — Validation Execution Separation
 
 **Status:** Accepted owner decision.
