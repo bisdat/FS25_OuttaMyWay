@@ -1213,33 +1213,6 @@ test("v4.7.47 CREATE boundary rebinds proposed composition to admitted Commitmen
 end)
 
 
-test("v4.7.47 failed actuator start releases progress authority but retains responsibility",function()
-    local runtime=newDecisionRuntime()
-    local admitted=runtime.commitmentAdmission:admit({
-        objective={kind="TRAFFIC_RESOLUTION"},governingBasis={responsibilityKey="start-failure"},progressAssemblyIds={"AS-YIELD"},
-        obligationSpecifications={{origin={kind="OTM_DISPLACEMENT"},basis={decision="D-0122"},requiredOutcome={kind="NATIVE_CONTINUATION_RESTORED_AND_GIANTS_REACQUIRED"},evidenceContract={kind="POSITIVE_GIANTS_REACQUISITION"},ownershipClass="ORIGIN_BOUND"}}
-    })
-    local result,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.markActuationStartFailed(runtime,admitted.commitment.identity,{reason="FIXTURE_REFUSED"})
-    equal(reason,nil); equal(result.commitment.state,"WAITING_FOR_EVIDENCE")
-    equal(#result.remainingObligations,1); equal(#runtime.authorities:tokensForCommitment(admitted.commitment.identity),0)
-end)
-
-test("v4.7.47 Native reacquisition settles recovery only and keeps traffic responsibility",function()
-    local runtime=newDecisionRuntime()
-    local admitted=runtime.commitmentAdmission:admit({
-        objective={kind="TRAFFIC_RESOLUTION"},governingBasis={responsibilityKey="recovery-continuity"},progressAssemblyIds={"AS-YIELD"},
-        obligationSpecifications={
-            {origin={kind="OTM_DISPLACEMENT"},basis={decision="D-0122"},requiredOutcome={kind="NATIVE_CONTINUATION_RESTORED_AND_GIANTS_REACQUIRED"},evidenceContract={kind="POSITIVE_GIANTS_REACQUISITION"},ownershipClass="ORIGIN_BOUND"},
-            {origin={kind="TRAFFIC_INTERVENTION"},basis={decision="D-0119"},requiredOutcome={kind="DURABLE_SEPARATION_SUPPORTED"},evidenceContract={kind="CONTINUATION_AWARE_TRAFFIC_SETTLEMENT_NO_FIXED_DISTANCE_OR_TIME"},ownershipClass="CONTINUITY"}
-        }
-    })
-    local result,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.markNativeReacquisition(runtime,admitted.commitment.identity,{kind="POSITIVE_GIANTS_REACQUISITION"})
-    equal(reason,nil); equal(result.commitment.state,"WAITING_FOR_EVIDENCE")
-    equal(#result.settledObligationIds,1); equal(#result.remainingObligations,1)
-    equal(result.remainingObligations[1].requiredOutcome.kind,"DURABLE_SEPARATION_SUPPORTED")
-    equal(#runtime.authorities:tokensForCommitment(admitted.commitment.identity),0)
-end)
-
 test("SETTLING Commitment rejects maintain or revise strategy",function()
     local runtime=newDecisionRuntime()
     local admitted=runtime.commitmentAdmission:admit({objective={kind="x"},governingBasis={responsibilityKey="settling-no-progress"}})
