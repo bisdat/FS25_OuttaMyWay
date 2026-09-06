@@ -18,31 +18,44 @@ by supported D-0141, D-0146, D-0147, D-0200 and Guarded Recovery paths remains
 intentionally retained.
 
 Phase 13 — Simplify Candidate/Constraint/Decision only where evidence proves
-duplication — is **IN PROGRESS**. The first bounded tranche established
-**Commitment Operation != Responsibility Transition**: generic Commitment
-`CREATE` / `MAINTAIN` / `REVISE` remains retained orchestration substrate, but
-where independent semantic evidence already exists it no longer acts as Current
-Responsibility transition authority.
+duplication — is **IN PROGRESS**.
 
-The validated tranche removes redundant `REVISE` succession checks from the two
-Regulation-to-Cooperative-Passage semantic replacement paths, derives
-Action-Space Regulation establishment/revalidation from RTA preflight Current
-Responsibility state, and derives Resolution exposure diagnostics from explicit
-RTA semantic continuity. Generic Commitment lifecycle behaviour remains
-otherwise unchanged.
+The first validated tranche established **Commitment Operation !=
+Responsibility Transition** and removed only proven semantic dependence on
+generic Commitment `CREATE` / `MAINTAIN` / `REVISE` operation.
 
-The broader hypothesis that all semantic use of `decision.commitmentAction`
-could now be removed was disproved. Direct Resolution continuity still lacks an
-independent Situation-owned witness when a retained `CM-*` context exists but
-no matching Resolution `RS-*` is current. Its fail-safe
-`RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING` guard therefore remains
-intentionally retained.
+The second validated tranche establishes **Sole Context != Semantic Target**,
+**Key Match Is Not Lifecycle Match**, and **Semantic Targetability !=
+Application Cardinality** for direct Cooperative Passage. A retained Passage
+substrate is now positively targeted by the selected D-0146
+`governingRequirementKey` and must still belong to the same two current Job
+Episodes. Pair-specific Job-Episode dependencies corroborate that lifecycle
+binding where available; no new Passage identity or persistent pair history was
+introduced.
 
-The next Phase-13 question is whether Situation Assessment should expose a
-truthful independent Resolution-continuity witness. The separate
-**Candidate-Embedded Verdict Authority** observation — nominal Constraint
-verdicts already authored inside some Candidate support paths — remains a later
-Phase-13 ownership question rather than an authorised simplification.
+Direct Cooperative Passage therefore no longer uses
+`decision.commitmentAction` as semantic substrate/continuity evidence. A
+targeted retained `CM-*` without a matching current Resolution `RS-*` still
+fails safely as `RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING`.
+
+A semantically targetable Passage may coexist with another independent retained
+context, but the generic Commitment application boundary currently accepts only
+one context. That condition now fails closed as
+`COOPERATIVE_PASSAGE_MULTI_CONTEXT_APPLICATION_UNSUPPORTED`; it is recorded as
+an application-cardinality limitation rather than semantic target ambiguity.
+
+Completed-obstruction/D-0147 is unchanged by this tranche and retains its
+generic-action continuity guard. Issue #51 is fresh GIANTS Reality evidence at
+the Passage-to-natural-completion/terminal-succession boundary; its attached log
+has not yet been analysed here, so no terminal diagnosis or change is authorised
+from the issue summary alone.
+
+The next Phase-13 work should therefore return to **Observe**: analyse Issue #51
+before altering completed-obstruction Resolution continuity, and separately
+decide whether generic multi-context Commitment application is a genuine
+Candidate/Constraint/Decision ownership problem. **Candidate-Embedded Verdict
+Authority** remains a later Phase-13 ownership question rather than an
+authorised simplification.
 
 Issue #37 remains open as non-blocking Category-2 Reality-validation debt.
 Materially contrary later evidence must reopen the affected assumptions.
@@ -128,6 +141,29 @@ This ordinary Engineering Increment does not change canonical release authority.
   `111 passed` blocking Structural contracts and `298 passed / 9 failed` in the
   Lua observational harness, preserving exactly the same nine known failure
   identities with no new failure.
+
+- Phase 13 direct Cooperative Passage substrate targeting now requires the
+  retained `CM-*` to match the selected D-0146 `governingRequirementKey` and the
+  selected pair's current Job Episodes before semantic Resolution continuity may
+  be reused.
+- **Sole Context != Semantic Target** and **Key Match Is Not Lifecycle Match**:
+  retained-context cardinality is not identity evidence, while a pair-purpose
+  key alone is not Job-Episode lifecycle evidence.
+- **Semantic Targetability != Application Cardinality**: a semantically matching
+  Passage substrate in a multi-context picture currently fails closed as
+  `COOPERATIVE_PASSAGE_MULTI_CONTEXT_APPLICATION_UNSUPPORTED` because the
+  retained generic Commitment application boundary still accepts one context.
+- Direct Cooperative Passage no longer uses `decision.commitmentAction` as
+  semantic substrate/continuity evidence. D-0147 remains deliberately unchanged
+  and retains the unresolved direct-Resolution generic-action guard.
+- GitHub Actions Run #105 validated the second Phase-13 tranche with `112 passed`
+  blocking Structural contracts and `299 passed / 9 failed` in the Lua
+  observational harness. The new direct-Passage targeting test passed and the
+  same nine established failure identities were preserved.
+- Issue #51 records separate GIANTS Reality evidence after a successful Passage:
+  one participant completed normal work and Player Intervention followed before
+  the remaining worker resumed. Its runtime log remains to be analysed before
+  any completed-obstruction/terminal conclusion is drawn.
 
 - The accepted [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) and [Strangler Transition Map](IMPLEMENTATION_MAP.md#detailed-strangler-transition-map) remain authoritative for architecture and programme direction respectively.
 - Cooperative Passage upstream transition remains accepted and Reality-validated for one direct `CREATE` episode.

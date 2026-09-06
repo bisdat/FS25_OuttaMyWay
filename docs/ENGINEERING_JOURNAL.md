@@ -1,3 +1,80 @@
+## 2026-09-06 — Phase 13 explicit direct-Passage substrate targeting
+
+**Observe:** after the first Phase-13 tranche removed only proven semantic
+dependence on generic Commitment operation, direct Cooperative Passage still
+selected the first available retained `CM-*` context before asking whether the
+same Resolution responsibility was current. Inspection showed that the retained
+generic application boundary accepts one live Commitment context and that direct
+Passage had no independent proof that this sole context belonged to the selected
+D-0146 pair-purpose.
+
+**Named discovery — Sole Context != Semantic Target:** the existence of one live
+retained Commitment does not establish that it is the substrate belonging to the
+selected Cooperative Passage purpose. Semantic targeting must identify the
+retained substrate positively rather than infer identity from cardinality.
+
+**Named discovery — Key Match Is Not Lifecycle Match:** the existing
+`governingRequirementKey` identifies the D-0146 pair-purpose, but its
+Physical-Assembly-based conflict identity can survive replacement Job Episodes.
+Purpose-key equality therefore does not by itself prove lifecycle continuity.
+The retained Governing Basis already contains Job Episode identities in
+`sourceIntentIds`, while the Job Episode registry can resolve the current active
+episode for each selected participant. No new Passage identity or persistent
+pair history is required.
+
+**Named discovery — Semantic Targetability != Application Cardinality:** review
+of the first implementation found that a semantically identifiable Passage
+substrate can coexist with another independent retained context. The generic
+`DecisionCommitmentBoundary` still accepts only one context, so a multi-context
+picture is an application-cardinality limitation rather than semantic target
+ambiguity. The implementation therefore fails closed with
+`COOPERATIVE_PASSAGE_MULTI_CONTEXT_APPLICATION_UNSUPPORTED` instead of claiming
+that the semantic target is unknown.
+
+**Decision:** direct Cooperative Passage may reuse retained substrate only when
+the selected `governingRequirementKey` targets that retained Commitment and the
+retained pair's Job Episodes still match the two current participant Job
+Episodes. Pair-specific `dependentJobEpisodeIds`, when present, corroborate that
+lifecycle binding. A targeted retained Commitment without a matching current
+Resolution `RS-*` remains the explicit fail-safe inconsistency
+`RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING`.
+
+Direct Cooperative Passage no longer consults
+`decision.commitmentAction` as semantic substrate or continuity evidence.
+Completed-obstruction/D-0147 remains outside this tranche and retains its
+generic-action continuity guard.
+
+**Implement:** `ResponsibilityTransitionAuthority.lua` now evaluates direct
+Cooperative Passage retained substrate by semantic purpose and current
+Job-Episode binding before selecting Resolution identity. Focused structural and
+Lua observational contracts protect unrelated-substrate refusal, current-pair
+episode matching, retained-Resolution continuity, the multi-context application
+limit, and the deliberate unchanged D-0147 boundary.
+
+**Validate:** implementation-local Lua syntax, Python contract syntax and
+`git diff --check` passed. GitHub Actions Run #105 validated the PR test merge
+with `112 passed` blocking Structural contracts. The Lua observational harness
+reported `299 passed / 9 failed`; the new direct-Passage substrate-targeting
+test passed and the nine failures were exactly the established nine identities,
+with no new failure. Relevant direct Passage, Regulation-to-Passage,
+responsibility-replacement, role-migration, D-0200 and D-0147 persistence paths
+remained green. No GIANTS Reality validation is claimed for this increment.
+
+**Separate Reality observation:** Issue #51 records a successful
+Condor/Patriot Cooperative Passage followed by Condor's normal work completion
+and then Player Intervention before Patriot resumed. Its attached runtime log
+has not yet been analysed in this engineering tranche. The issue is therefore
+kept separate from this pre-application substrate-targeting change and no
+D-0147/terminal diagnosis is inferred here.
+
+**Record:** Phase 13 remains in progress. The direct Cooperative Passage
+substrate/semantic-action conflation is now narrowed to explicit purpose and
+Job-Episode evidence. Generic multi-context Commitment application remains a
+known implementation limitation, not yet an authorised redesign. The remaining
+completed-obstruction Resolution-continuity question should not be changed until
+Issue #51's fresh Reality evidence is analysed. Candidate-Embedded Verdict
+Authority remains a separate later Phase-13 ownership question.
+
 ## 2026-09-06 — Phase 13 Commitment operation / Responsibility transition separation
 
 **Observe:** Phase 13 began by mapping Candidate, Constraint and Decision
