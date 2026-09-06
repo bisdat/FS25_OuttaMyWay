@@ -6015,5 +6015,107 @@ test("Forward Intersection missing motion leaves temporal allocation unresolved 
     equal(knowledge.pairRelationships[1].temporalAllocationStatus,"UNRESOLVED")
 end)
 
+
+test("Phase13 direct Cooperative Passage substrate targeting is purpose and Job-Episode bound",function()
+    local episodes={
+        ["JE-A"]={identity="JE-A",assemblyId="AS-A",sourceJobToken="JOB-A",status="ACTIVE"},
+        ["JE-B"]={identity="JE-B",assemblyId="AS-B",sourceJobToken="JOB-B",status="ACTIVE"},
+        ["JE-C"]={identity="JE-C",assemblyId="AS-C",sourceJobToken="JOB-C",status="ACTIVE"},
+        ["JE-A2"]={identity="JE-A2",assemblyId="AS-A",sourceJobToken="JOB-A2",status="ACTIVE"}
+    }
+    local activeByAssembly={
+        ["AS-A"]=episodes["JE-A"],
+        ["AS-B"]=episodes["JE-B"],
+        ["AS-C"]=episodes["JE-C"]
+    }
+    local requirement="d0146-cooperative-passage:OC-DIRECT-TARGET"
+    local retained={
+        identity="CM-DIRECT-TARGET",
+        state="ACTIVE",
+        governingBasis={
+            responsibilityKey=requirement,
+            sourceIntentIds={"JE-A","JE-B","JE-C"},
+            dependentJobEpisodeIds={"JE-A","JE-B"}
+        }
+    }
+    local runtime={
+        jobEpisodes={
+            get=function(_,identity) return episodes[identity] end,
+            getActiveForAssembly=function(_,assemblyId) return activeByAssembly[assemblyId] end
+        },
+        commitments={
+            get=function(_,identity)
+                if identity==retained.identity then return retained end
+                return nil
+            end
+        }
+    }
+    local authority=OuttaMyWay.ResponsibilityTransitionAuthority.new(runtime)
+    local bridge={
+        architecture="D0146_STEP2",
+        governingRequirementKey=requirement,
+        subjectAssemblyId="AS-A",
+        otherAssemblyId="AS-B",
+        subjectJobToken="JOB-A",
+        otherJobToken="JOB-B"
+    }
+    local candidate={
+        identity="CA-DIRECT-TARGET",
+        evidenceBasis={cooperativePassageBridge=bridge}
+    }
+    local evaluated={
+        decision={selectedCandidateId=candidate.identity},
+        candidates={candidate}
+    }
+
+    local newSubstrate,newReason=authority:evaluateDirectCooperativePassageSubstrate(
+        {commitmentContext={}},evaluated)
+    equal(newReason,nil)
+    equal(newSubstrate.commitmentId,nil)
+
+    local unrelated,unrelatedReason=authority:evaluateDirectCooperativePassageSubstrate(
+        {commitmentContext={{
+            commitmentId="CM-OTHER",
+            governingBasis={responsibilityKey="other-purpose"}
+        }}},evaluated)
+    equal(unrelated,nil)
+    equal(unrelatedReason,"COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_NOT_TARGETED")
+
+    authority.resolutionsByCommitmentId[retained.identity]={
+        identity="RS-DIRECT-TARGET",
+        kind="RESOLUTION_COMMITMENT",
+        governingBasis=retained.governingBasis
+    }
+    local targeted,targetReason=authority:evaluateDirectCooperativePassageSubstrate(
+        {commitmentContext={{
+            commitmentId=retained.identity,
+            governingBasis=retained.governingBasis
+        }}},evaluated)
+    equal(targetReason,nil)
+    equal(targeted.commitmentId,retained.identity)
+    equal(targeted.currentResolution.identity,"RS-DIRECT-TARGET")
+
+    activeByAssembly["AS-A"]=episodes["JE-A2"]
+    bridge.subjectJobToken="JOB-A2"
+    local stale,staleReason=authority:evaluateDirectCooperativePassageSubstrate(
+        {commitmentContext={{
+            commitmentId=retained.identity,
+            governingBasis=retained.governingBasis
+        }}},evaluated)
+    equal(stale,nil)
+    equal(staleReason,"COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_JOB_EPISODE_MISMATCH")
+
+    activeByAssembly["AS-A"]=episodes["JE-A"]
+    bridge.subjectJobToken="JOB-A"
+    authority.resolutionsByCommitmentId[retained.identity]=nil
+    local missing,missingReason=authority:evaluateDirectCooperativePassageSubstrate(
+        {commitmentContext={{
+            commitmentId=retained.identity,
+            governingBasis=retained.governingBasis
+        }}},evaluated)
+    equal(missing,nil)
+    equal(missingReason,"RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING")
+end)
+
 print(string.format("RESULT %d passed, %d failed",passed,failed))
 if failed > 0 then os.exit(1) end

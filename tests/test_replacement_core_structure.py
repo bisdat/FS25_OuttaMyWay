@@ -2369,3 +2369,41 @@ def test_phase13_responsibility_semantics_remove_only_proven_commitment_action_d
     ]
     assert 'action=="MAINTAIN" or action=="REVISE"' in identity_section
     assert "RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING" in identity_section
+
+def test_phase13_direct_cooperative_passage_targets_substrate_by_purpose_and_job_episode():
+    authority=(ROOT/"scripts"/"responsibility"/"ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
+
+    targeting=authority[
+        authority.index("local function cooperativePassageTargetContext"):
+        authority.index("function Authority:resolutionIdentityForCommitment")
+    ]
+    for token in (
+        "basis.responsibilityKey==bridge.governingRequirementKey",
+        "sourceIntentIds",
+        "dependentJobEpisodeIds",
+        "getActiveForAssembly",
+        "COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_NOT_TARGETED",
+        "COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_JOB_EPISODE_MISMATCH",
+        "COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_DEPENDENCY_MISMATCH",
+        "RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING",
+    ):
+        assert token in targeting
+
+    direct=authority[
+        authority.index("function Authority:transitionCooperativePassageResolution"):
+        authority.index("function Authority:transitionCompletedObstructionResolution")
+    ]
+    assert "evaluateDirectCooperativePassageSubstrate" in direct
+    assert "COOPERATIVE_PASSAGE_RETAINED_COMMITMENT_CHANGED" in direct
+    assert "resolutionIdentityForCommitment" not in direct
+    assert "commitmentAction" not in direct
+
+    # D0147 is intentionally outside this increment. Its unresolved direct
+    # Resolution continuity guard remains on the retained generic action until
+    # that exemplar is separately investigated.
+    completed=authority[
+        authority.index("function Authority:transitionCompletedObstructionResolution"):
+        authority.index("function Authority:terminateActionSpaceRegulation")
+    ]
+    assert "resolutionIdentityForCommitment" in completed
+    assert "commitmentAction" in completed
