@@ -1,3 +1,44 @@
+## 2026-09-06 — Phase 13 / Issue #33: Causal Obstruction becomes the predicate
+
+**Observe:** after PR #54 merged, Phase 13 returned to the remaining
+completed-obstruction Resolution-continuity seam. The first simplification
+hypothesis was to replace generic `decision.commitmentAction` evidence with the
+warm D-0147 pair `terminalEpisodeId + existingCommitmentId`. Issue #33 exposed
+why that would still overfit the current implementation: cold-loaded non-active
+blockers can be physically causal without any current-runtime Job Episode
+history or retained track.
+
+**Discuss / discover:** the owner confirmed that the obstruction itself is the
+predicate. **Causal Obstruction** is the current positive relationship between
+an active supported beneficiary and the physical blocker preventing its
+continuation. **Physical Relevance != Historical Provenance** extends through
+authority: prior Job history, completed-worker provenance and vehicle ownership
+are not prerequisites for recognition or bounded relocation.
+
+The player boundary becomes contextual. While a qualifying GIANTS AI Job
+Episode remains active, `getIsEntered()` is presence evidence only. For a
+non-active blocker, `getIsEntered()==true` is the Current Player Claim veto;
+`false` means the vehicle is unclaimed and eligible for otherwise-supported
+bounded relocation. **Player Entry Is a Claim Boundary, Not a Vehicle
+Classification.**
+
+The owner supplied the governing human analogy: if an unoccupied tractor blocks
+another tractor, one gets into the blocker, folds/compacts it if useful, moves it
+elsewhere and leaves it. One does not reconstruct its past work, prove Transit
+state, or wait for sophisticated fold settlement. This establishes **Current
+Obstruction Authority Does Not Depend on Historical Job Provenance** and
+**Vehicle Ownership != Obstruction Relocation Authority**.
+
+**Architecture consequence:** D-0147 remains useful Reality-validated mechanical
+donor evidence—non-job vehicle activation, direct movement, neutralisation,
+Player Claim relinquishment and AI reactivation—but `terminalEpisodeId` is no
+longer the generic obstruction identity or authority gateway.
+
+**Next:** runtime implementation begins upstream at cold-start physical
+enumeration and Causal Obstruction Situation evidence, preserving D-0147
+mechanics where truthful. Candidate-Embedded Verdict Authority remains separate
+later Phase-13 work.
+
 ## 2026-09-06 — v0.3.0.13 final Reality: both targeted Passage runs PASS
 
 **Observe:** owner-supplied Farming Simulator evidence for
