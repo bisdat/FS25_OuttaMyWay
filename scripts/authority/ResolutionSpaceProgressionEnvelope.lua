@@ -1,5 +1,5 @@
 -- FS25_OuttaMyWay v0.1.3.0 CANONICAL CANDIDATE — D-0155 Resolution-Space Progression Envelope with Intent-Revelation Creep.
--- Control-magnitude policy only. Situation owns the Resolution-Space obligation and
+-- Bounded-Authority magnitude policy only. Situation owns the Resolution-Space obligation and
 -- role assignment; this module owns the elastic integer Regulation magnitude and unresolved-intent creep floor.
 
 OuttaMyWay.ResolutionSpaceProgressionEnvelope = {}

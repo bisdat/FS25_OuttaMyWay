@@ -643,11 +643,11 @@ The 1.0 km/h D-0123 Regulation value is **not** retired with the test bridges. I
 
 ---
 
-## D-0156 — Implement D-0155 with Control-owned magnitude and a provisional 75% contingency reserve (v0.1.2.1 TEST)
+## D-0156 — Implement D-0155 with Bounded-Authority-owned magnitude and a provisional 75% contingency reserve (v0.1.2.1 TEST)
 
 **Decision:** implement the smallest Resolution-Space Progression Envelope against owner-declared canonical v0.1.2.0. Use a provisional 75% Resolution Contingency Reserve for this TEST tranche; retain the 80 m Situation locality ceiling separately.
 
-**Authority-Layer discovery — Magnitude Leakage:** the prior implementation let Situation Assessment select `requestedCapKmh=8` and decide candidate support partly from that magnitude. This conflated “does the Resolution-Space obligation exist?” with “what current Control magnitude expresses it?”. Situation now owns obligation/relevance and regulated/protected role selection only; Control owns elastic progression magnitude.
+**Authority-Layer discovery — Magnitude Leakage:** the prior implementation let Situation Assessment select `requestedCapKmh=8` and decide candidate support partly from that magnitude. This conflated “does the Resolution-Space obligation exist?” with “what current physical Regulation magnitude expresses it?”. Situation now owns obligation/relevance and regulated/protected role selection only; Bounded Authority owns elastic progression magnitude and Control realises it.
 
 **Control expression:** establish `D0` from current usable pair separation, withhold `C=0.75*D0`, set ordinary allowance `S0=D0-C`, and seed the policy trajectory from current constrained-participant progression `u`. For remaining ordinary allowance `r`, derive `v_raw=u*sqrt(r/S0)` (equivalent to the D-0155 zero-terminal policy form) and floor to a whole integer km/h. Zero is Hold within the same envelope; it is not a separate escalation state and does not require proof that a previous cap was physically realised.
 
