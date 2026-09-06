@@ -22,7 +22,9 @@ the surviving participant's already-committed Passage debt remains valid.
 
 **Named discovery — Participant Loss Vacates a Passage Leg; It Does Not Cancel
 the Passage:** Cooperative Passage requires two active AI workers to commit, but
-after commitment the original participants carry distinct execution legs.
+after commitment the original participants carry distinct execution legs. Positive
+participant loss vacates a leg only while that leg remains live; an already
+handed-back leg is unaffected by later Job Episode completion.
 
 **Named discovery — Coupled Admission != Coupled Execution Persistence:** the
 pair is an admission requirement, not a requirement that both legs remain live

@@ -44,7 +44,8 @@ The owner has accepted:
 Cooperative Passage requires two active AI workers at Bubble Formation, but
 after commitment each original participant has a participant-scoped Passage
 Leg. Positive Job Episode completion/stoppage/supersession, player takeover or
-positive vehicle/runtime removal vacates only the affected leg. No replacement
+positive vehicle/runtime removal vacates only an affected still-live leg; an
+already handed-back or vacated leg remains terminal. No replacement
 joins the Bubble. The parent Resolution, Bubble Protection and Resolution Epoch
 persist while another Passage Leg or shared coupled obligation remains
 legitimate.

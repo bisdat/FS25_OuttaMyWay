@@ -10,8 +10,9 @@ accepted Passage execution and intervention-created debt.
 
 **Participant Loss Vacates a Passage Leg; It Does Not Cancel the Passage.**
 Positive Job Episode completion/stoppage/supersession, player takeover, or
-positive physical/runtime removal terminalises only the affected Passage Leg as
-`VACATED`. The other Passage Leg receives no new Candidate, Resolution,
+positive physical/runtime removal terminalises only an affected still-live Passage
+Leg as `VACATED`. An already `HANDED_BACK` or `VACATED` leg remains terminal and
+is not reclassified by later participant lifecycle change. The other Passage Leg receives no new Candidate, Resolution,
 strategy, cleanup responsibility or survivor mode; it continues the same
 already-committed Passage, runout, Axis recovery/return, restoration and GIANTS
 handoff choreography. Incomplete observation cannot establish vacatur.

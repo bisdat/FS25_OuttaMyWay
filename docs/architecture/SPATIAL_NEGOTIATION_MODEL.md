@@ -196,8 +196,8 @@ creates no permanent pair history, future-route ownership or right-of-way.
 A **Passage Leg** is one original participant's already-committed physical
 execution and intervention-created debt within Cooperative Passage. Depending on
 what the Passage actually required, a leg may include capture/Passage movement,
-Alignment Runout, Axis Settlement/Return, configuration or agronomic restoration
-and GIANTS handback.
+Alignment Runout, Axis Settlement/Return, intervention-created configuration or
+physical recovery/restoration debt, and GIANTS handback.
 
 The parent Cooperative Passage Resolution persists while any legitimate Passage
 Leg or shared Bubble obligation remains open. **Pairwise Resolution != Symmetric
@@ -212,10 +212,12 @@ A Passage Leg has two ordinary terminal dispositions:
   execute that original participant as the committed AI Passage subject.
 
 **Participant Loss Vacates a Passage Leg; It Does Not Cancel the Passage.**
-Positive participant loss may include authoritative Job Episode completion,
-stoppage or supersession, player takeover, or positive physical/runtime removal.
-Incomplete observation or mere absence cannot establish vacatur under Lifecycle
-Evidence Asymmetry.
+For a still-live Passage Leg, positive participant loss may include authoritative
+Job Episode completion, stoppage or supersession, player takeover, or positive
+physical/runtime removal. An already `HANDED_BACK` or `VACATED` leg remains
+terminal; later participant lifecycle change has no Passage effect. Incomplete
+observation or mere absence cannot establish vacatur under Lifecycle Evidence
+Asymmetry.
 
 Vacatur settles only the obligations and physical authority belonging to that
 Passage Leg. It admits no replacement participant and creates no new Candidate,
