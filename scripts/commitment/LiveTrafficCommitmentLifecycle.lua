@@ -26,19 +26,6 @@ local function selectedCandidate(evaluated)
     return nil
 end
 
-local function isRecoverySpecification(specification)
-    local outcome=specification and specification.requiredOutcome or nil
-    return type(outcome)=="table" and outcome.kind=="NATIVE_CONTINUATION_RESTORED_AND_GIANTS_REACQUIRED"
-end
-
-local function hasOpenDurableSeparation(runtime,commitmentId)
-    for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
-        local outcome=obligation.requiredOutcome
-        if type(outcome)=="table" and outcome.kind=="DURABLE_SEPARATION_SUPPORTED" then return true end
-    end
-    return false
-end
-
 local function appendCopy(values,value)
     local out={}
     for _,item in OuttaMyWay.ValueRecord.ipairs(values or {}) do out[#out+1]=item end
@@ -55,85 +42,6 @@ local function rebindComposition(candidate,commitmentId)
     end
     return OuttaMyWay.EffectiveActuationComposition.create(rebound)
 end
-
--- Apply a proven head-on Resolution Strategy through the real Commitment
--- boundary. CREATE is the first stage. REVISE is a later head-on within the same
--- unresolved traffic responsibility; it creates only the fresh displacement
--- recovery obligation and reacquires Yield actuation authority. The continuing
--- Durable Separation obligation is not duplicated.
-function Lifecycle.applyHeadOnDecision(runtime,picture,evaluated)
-    if runtime==nil or picture==nil or evaluated==nil or evaluated.decision==nil then return nil,"MISSING_CONTEXT" end
-    local decision=evaluated.decision
-    if decision.commitmentAction=="CREATE" then return Lifecycle.applyInitialDecision(runtime,picture,evaluated) end
-    if decision.commitmentAction~="REVISE" then return nil,"DECISION_NOT_CREATE_OR_REVISE" end
-    local contexts=picture.commitmentContext or {}
-    if OuttaMyWay.ValueRecord.length(contexts)~=1 or type(contexts[1].commitmentId)~="string" then return nil,"UNRESOLVED_COMMITMENT_CONTEXT" end
-    local candidate=selectedCandidate(evaluated)
-    if candidate==nil or candidate.capability~="REPOSITION" then return nil,"SELECTED_HEAD_ON_REPOSITION_UNAVAILABLE" end
-
-    local application=runtime.decisionCommitmentBoundary:apply(picture,evaluated)
-    if application==nil or application.commitmentId~=contexts[1].commitmentId then return nil,"COMMITMENT_REVISION_UNRESOLVED" end
-    local commitmentId=application.commitmentId
-    local record=runtime.commitments:get(commitmentId)
-    if record==nil or record.state~="ACTIVE" then return nil,"REVISED_COMMITMENT_NOT_ACTIVE" end
-
-    local createdObligationIds={}
-    for _,specification in OuttaMyWay.ValueRecord.ipairs(candidate.obligationsCreated or {}) do
-        local create=isRecoverySpecification(specification)
-        local outcome=specification.requiredOutcome
-        if type(outcome)=="table" and outcome.kind=="DURABLE_SEPARATION_SUPPORTED" then
-            create=not hasOpenDurableSeparation(runtime,commitmentId)
-        end
-        if create then
-            local obligation=runtime.obligations:create({
-                origin=specification.origin,basis=specification.basis,ownerCommitmentId=commitmentId,
-                requiredOutcome=specification.requiredOutcome,requiredAuthority=specification.requiredAuthority or {},
-                evidenceContract=specification.evidenceContract,ownershipClass=specification.ownershipClass,
-                transferPolicy=specification.transferPolicy or {},terminalDependency=specification.terminalDependency~=false,
-                creationEvidence={kind="RESOLUTION_STRATEGY_STAGE_REVISED",decisionId=decision.identity}
-            })
-            createdObligationIds[#createdObligationIds+1]=obligation.identity
-        end
-    end
-
-    local ownership={}
-    local authorityTokens={}
-    local reusedAuthorityTokens={}
-    local requestedOwnership=candidate.evidenceBasis and candidate.evidenceBasis.progressActuationOwnership or nil
-    for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(requestedOwnership and requestedOwnership.assemblyIds or {}) do
-        local owner=runtime.authorities:ownerOf(assemblyId)
-        local token=nil
-        if owner~=nil then
-            if owner~=commitmentId then return nil,"YIELD_PROGRESS_AUTHORITY_ALREADY_OWNED_BY_OTHER_COMMITMENT" end
-            -- Same-Commitment strategy succession may legitimately change the
-            -- capability exercised by an already-owned assembly (for example,
-            -- D-0141 supporting Regulation -> head-on Yield/Reposition).  The
-            -- AuthorityToken is generic progress-actuation ownership, so reuse
-            -- that live token rather than rejecting the REVISE Decision.
-            for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(runtime.authorities:tokensForCommitment(commitmentId)) do
-                if candidateToken.assemblyId==assemblyId then token=candidateToken break end
-            end
-            if token==nil or runtime.authorities:validate(token)~=true then return nil,"SAME_COMMITMENT_AUTHORITY_TOKEN_UNAVAILABLE" end
-            reusedAuthorityTokens[#reusedAuthorityTokens+1]=token
-        else
-            token=runtime.authorities:acquireProgress(assemblyId,commitmentId)
-            authorityTokens[#authorityTokens+1]=token
-        end
-        ownership[#ownership+1]={assemblyId=assemblyId,authorityTokenId=token.identity}
-    end
-
-    local obligationIds={}
-    for _,id in OuttaMyWay.ValueRecord.ipairs(record.obligationIds or {}) do obligationIds[#obligationIds+1]=id end
-    for _,id in ipairs(createdObligationIds) do obligationIds[#obligationIds+1]=id end
-    local composition=rebindComposition(candidate,commitmentId)
-    local changes={obligationIds=obligationIds,progressActuationOwnership=ownership,epoch=runtime.epochs:next()}
-    if composition~=nil then changes.effectiveActuationCompositionId=composition.identity end
-    record=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(record,changes))
-    logInfo("REVISE_HEAD_ON decision=%s application=%s commitment=%s state=%s newRecoveryObligations=%d acquiredAuthorityTokens=%d reusedAuthorityTokens=%d continuingDurableSeparation=%s strategySuccession=true productionControlAuthority=false",
-        tostring(decision.identity),tostring(application.identity),tostring(commitmentId),tostring(record.state),#createdObligationIds,#authorityTokens,#reusedAuthorityTokens,tostring(hasOpenDurableSeparation(runtime,commitmentId)))
-    return {application=application,commitment=record,createdObligationIds=createdObligationIds,authorityTokens=authorityTokens,reusedAuthorityTokens=reusedAuthorityTokens},nil
-end
-
 
 local function ownershipCopy(record)
     local result={}
@@ -508,13 +416,6 @@ function Lifecycle.collapseEndedJobEpisodeDependencies(runtime,episodeResult,sna
     return collapsed
 end
 
-local function clearReleasedOwnership(runtime,record)
-    local composition=OuttaMyWay.EffectiveActuationComposition.create({identity=runtime.identities:issue("COMPOSITION"),epoch=runtime.epochs:next(),entries={},relevantAssemblyIds={}})
-    return runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(record,{
-        progressActuationOwnership={},effectiveActuationCompositionId=composition.identity,epoch=runtime.epochs:next()
-    }))
-end
-
 function Lifecycle.applyInitialDecision(runtime, picture, evaluated)
     if runtime==nil or picture==nil or evaluated==nil or evaluated.decision==nil then return nil,"MISSING_CONTEXT" end
     if evaluated.decision.commitmentAction~="CREATE" then return nil,"DECISION_NOT_CREATE" end
@@ -527,52 +428,6 @@ function Lifecycle.applyInitialDecision(runtime, picture, evaluated)
         #(application.createdObligationIds or {}),#(application.authorityTokenIds or {}),tostring(record.governingBasis and record.governingBasis.responsibilityKey or "n/a"))
     return {application=application,commitment=record},nil
 end
-
-local function isRecoveryObligation(obligation)
-    local outcome=obligation and obligation.requiredOutcome or nil
-    return type(outcome)=="table" and outcome.kind=="NATIVE_CONTINUATION_RESTORED_AND_GIANTS_REACQUIRED"
-end
-
-function Lifecycle.markActuationStartFailed(runtime, commitmentId, evidence)
-    if runtime==nil or commitmentId==nil then return nil,"MISSING_COMMITMENT_CONTEXT" end
-    local record=runtime.commitments:get(commitmentId)
-    if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then return nil,"COMMITMENT_NOT_LIVE" end
-    local released=runtime.authorities:releaseForCommitment(commitmentId)
-    if record.state=="ACTIVE" then
-        record=OuttaMyWay.CommitmentStateMachine.transition(record,"WAITING_FOR_EVIDENCE",{epoch=runtime.epochs:next()},runtime.obligations)
-        record=runtime.commitments:save(record)
-    end
-    record=clearReleasedOwnership(runtime,record)
-    local remaining=runtime.obligations:openForOwner(commitmentId)
-    logInfo("ACTUATION_START_FAILED commitment=%s state=%s remainingObligations=%d releasedProgressAuthority=%d responsibilityRetained=true evidence=%s",
-        tostring(commitmentId),tostring(record.state),#remaining,#released,tostring(evidence and evidence.reason or "UNSPECIFIED"))
-    return {commitment=record,remainingObligations=remaining,releasedAuthorityTokenIds=released},nil
-end
-
-function Lifecycle.markNativeReacquisition(runtime, commitmentId, evidence)
-    if runtime==nil or commitmentId==nil then return nil,"MISSING_COMMITMENT_CONTEXT" end
-    local record=runtime.commitments:get(commitmentId)
-    if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then return nil,"COMMITMENT_NOT_LIVE" end
-    local settled={}
-    for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
-        if isRecoveryObligation(obligation) then
-            runtime.obligations:settle(obligation.identity,"SATISFACTION",evidence or {kind="POSITIVE_GIANTS_REACQUISITION"})
-            settled[#settled+1]=obligation.identity
-        end
-    end
-    local released=runtime.authorities:releaseForCommitment(commitmentId)
-    record=runtime.commitments:get(commitmentId)
-    if record.state=="ACTIVE" then
-        record=OuttaMyWay.CommitmentStateMachine.transition(record,"WAITING_FOR_EVIDENCE",{epoch=runtime.epochs:next()},runtime.obligations)
-        record=runtime.commitments:save(record)
-    end
-    record=clearReleasedOwnership(runtime,record)
-    local remaining=runtime.obligations:openForOwner(commitmentId)
-    logInfo("NATIVE_REACQUISITION commitment=%s state=%s settledRecoveryObligations=%d remainingObligations=%d releasedProgressAuthority=%d trafficSettlementComplete=false",
-        tostring(commitmentId),tostring(record.state),#settled,#remaining,#released)
-    return {commitment=record,settledObligationIds=settled,remainingObligations=remaining,releasedAuthorityTokenIds=released},nil
-end
-
 
 local function isCooperativePassageObligation(obligation)
     local outcome=obligation and obligation.requiredOutcome or nil

@@ -1,3 +1,54 @@
+## 2026-09-06 — Phase 12 superseded recovery lifecycle retirement
+
+**Observe:** Phase 12 asked one retirement question only: is generic
+Commitment/orchestration machinery both superseded and unused by every supported
+production path? Most retained Commitment machinery failed that retirement test
+because supported D-0141, D-0146, D-0147, D-0200 or Guarded Recovery behaviour
+still relies on it. One historical cluster differed: the pre-D-0146 generic
+head-on/recovery lifecycle had no supported production caller after Cooperative
+Passage responsibility transition, Bounded Authority, authorised Control
+routing and current Passage completion/settlement became the production path.
+
+**Interpret:** unused code alone is not retirement authority, and architectural
+overlap alone does not justify replacement work. This cluster was eligible
+because both required conditions were positively supported: the old lifecycle
+had been superseded, and supported production no longer depended on it.
+
+**Named discovery — Historical Recovery Lifecycle Superseded by Authorised
+Passage Lifecycle:** the old generic head-on/recovery API survived as source and
+historical direct tests after production responsibility and execution had moved
+to the explicit Cooperative Passage responsibility/authority path.
+
+**Decision:** retire only that historical cluster. Retain the generic
+Commitment, Obligation, Authority and orchestration machinery that still carries
+supported behaviour. Do not redesign D-0200, terminal settlement, Commitment
+admission, Decision lifecycle or Guarded Recovery merely to make Phase 12
+larger.
+
+**Implement:** remove `isRecoverySpecification`,
+`hasOpenDurableSeparation`, `applyHeadOnDecision`,
+`clearReleasedOwnership`, `isRecoveryObligation`,
+`markActuationStartFailed` and `markNativeReacquisition` from
+`LiveTrafficCommitmentLifecycle.lua`, together with the two v4.7.47 direct Lua
+tests that exercised the retired API. Add a structural backsliding contract
+that keeps those seven symbols retired.
+
+**Validate:** the first independent GitHub Actions observation after retirement
+reported `298 passed / 9 failed` in the Lua harness with the same nine known
+failure identities. Structural contracts exposed two stale source-coupled
+assertions: one expected a ValueRecord expression inside the deleted
+`applyHeadOnDecision()` path, and one used deleted
+`clearReleasedOwnership()` merely as a textual boundary for the still-live
+D-0200 section. Those contracts were rebound to the surviving architecture
+rather than weakening production expectations. Final GitHub Actions execution
+remains the independent acceptance gate. No GIANTS Reality validation is
+claimed by this increment.
+
+**Record:** Phase 12 is a retirement pass, not a redesign programme. Its result
+is deliberately small: retire one positively superseded unsupported lifecycle,
+retain every generic substrate still required by supported runtime behaviour,
+then proceed to Phase 13 only after independent validation and owner acceptance.
+
 ## 2026-09-02 — Continuation State / status-ledger responsibility discovery
 
 **Observe:** `PROJECT_STATUS.md` is an accumulated sequence of historical TEST and candidate state snapshots. `ENGINEERING_HANDOVER.md` is an accumulated sequence of historical continuation instructions. Neither reliably answers the present-tense questions "where are we?" or "what is the next bounded engineering boundary?"
