@@ -422,6 +422,22 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
     end
     local guarded=self.guardedRecoveryCompatibility and self.guardedRecoveryCompatibility:dispatch(picture,evaluated,candidate) or nil
     if guarded~=nil then return guarded end
+
+    local bridge=cooperativePassageBridge(candidate)
+    local dispatch=nil
+    if candidate~=nil and candidate.capability=="REPOSITION" and bridge~=nil then
+        if self.liveControlDispatcher.cooperativePassageControl==nil then return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_CONTROL_UNAVAILABLE",candidateId=candidate.identity} end
+        local inventory=evaluated.candidateInventory
+        local boundary=inventory and inventory.supportBoundary or nil
+        if type(boundary)~="table" or boundary.mode~="D0146_COOPERATIVE_PASSAGE_STEP2_TEST" then
+            return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_SUPPORT_BOUNDARY_MISMATCH",candidateId=candidate.identity}
+        end
+        if type(self.liveControlDispatcher.cooperativePassageControl.isActive)=="function" and self.liveControlDispatcher.cooperativePassageControl:isActive() then
+            return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_CONTROL_ALREADY_ACTIVE",candidateId=candidate.identity}
+        end
+        dispatch={status="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity}
+    end
+
     local actionBridge=actionSpaceBridge(candidate)
     local currentAction=actionBridge and self.responsibilityTransitionAuthority:findRegulation("conflictIdentity",actionBridge.conflictIdentity) or self.responsibilityTransitionAuthority:getCurrentActionSpaceRegulation()
     local actionAssessment=nil
@@ -431,28 +447,14 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
             return self:_terminateActionSpaceRegulation(picture,evaluated,currentAction,actionAssessment)
         end
     end
-    local dispatch=self.regulationBoundedAuthority:assessActionSpaceRegulationPermission(picture,evaluated,candidate,actionAssessment)
+    if dispatch==nil then dispatch=self.regulationBoundedAuthority:assessActionSpaceRegulationPermission(picture,evaluated,candidate,actionAssessment) end
     if dispatch==nil or dispatch.status=="QUIESCENT" then
         local follower=self.regulationBoundedAuthority:assessFollowerBoundaryPermission(picture,evaluated,candidate,followerAssessment)
         if follower~=nil then dispatch=follower end
     end
     if dispatch==nil then
-        local bridge=cooperativePassageBridge(candidate)
         if candidate==nil then return {status="NO_DISPATCH",reason="NO_SELECTED_PHYSICAL_CANDIDATE"} end
-        if candidate.capability=="REPOSITION" and bridge~=nil then
-            if self.liveControlDispatcher.cooperativePassageControl==nil then return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_CONTROL_UNAVAILABLE",candidateId=candidate.identity} end
-            local inventory=evaluated.candidateInventory
-            local boundary=inventory and inventory.supportBoundary or nil
-            if type(boundary)~="table" or boundary.mode~="D0146_COOPERATIVE_PASSAGE_STEP2_TEST" then
-                return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_SUPPORT_BOUNDARY_MISMATCH",candidateId=candidate.identity}
-            end
-            if type(self.liveControlDispatcher.cooperativePassageControl.isActive)=="function" and self.liveControlDispatcher.cooperativePassageControl:isActive() then
-                return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_CONTROL_ALREADY_ACTIVE",candidateId=candidate.identity}
-            end
-            dispatch={status="COOPERATIVE_PASSAGE_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity}
-        else
-            return {status="NO_DISPATCH",reason="PHYSICAL_CANDIDATE_NOT_ALIGNED_FOR_LIVE_CONTROL",candidateId=candidate.identity}
-        end
+        return {status="NO_DISPATCH",reason="PHYSICAL_CANDIDATE_NOT_ALIGNED_FOR_LIVE_CONTROL",candidateId=candidate.identity}
     end
     if dispatch.status=="FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED" then
         local applied,reason=self.followerBoundaryResponsibilityTransition:transition(picture,evaluated,dispatch)
