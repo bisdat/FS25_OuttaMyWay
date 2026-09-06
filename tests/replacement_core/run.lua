@@ -4232,7 +4232,7 @@ for _,failure in ipairs({"TARGET","LEASE","OBLIGATION","PARTICIPANTS","SUCCESSOR
                     if failure=="PARTICIPANTS" then values.evidenceBasis.cooperativePassageBridge.assemblyIds={"AS-A","AS-X"}
                     else values.obligationsCreated={} end
                 end
-                candidates[#candidates+1]=values
+                candidates[#candidates+1]=OuttaMyWay.CandidateAction.new(values)
             end
             evaluated.candidates=candidates
         elseif failure=="REVISION" then
