@@ -659,7 +659,7 @@ function Authority:_continueD0146ActionSpaceRoleMigration(picture,evaluated,cand
     local newCap=tonumber(rebased.capKmh) or 0
     local newRequest,newRequestReason=self:_regulationRequest(picture,evaluated,candidate,applied.commitment,newToken,bridge,"APPLY",D0146_ACTION_SPACE_OWNER_TAG,newCap,applied.currentResponsibility)
     if newRequest==nil then return {status="MAINTAINED",reason=newRequestReason,d0146ActionSpace=true,commitmentId=lease.commitmentId} end
-    local started,newResult=self.capability:executeControlRequest(newRequest,candidate)
+    local started,newResult=self.runtime.liveControlDispatcher:dispatch(newRequest,candidate)
     if started~=true then
         self:_releaseRequestBoundedAuthority(newRequest,"D0146_ROLE_MIGRATION_NEW_CONTROL_REQUEST_REJECTED")
         if applied.authorityAcquired then OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,applied.commitment.identity,bridge.regulatedAssemblyId,{reason="D0146_ROLE_MIGRATION_NEW_CONTROL_REQUEST_REJECTED:"..tostring(newResult),preserveAuthority=self:_otherRegulationPurposeOwnsAuthority(applied.commitment.identity,bridge.regulatedAssemblyId,"D0146_ACTION_SPACE")}) end
@@ -676,7 +676,7 @@ function Authority:_continueD0146ActionSpaceRoleMigration(picture,evaluated,cand
         local syntheticCandidate={preconditions={},invalidationConditions={}}
         oldRequest=self:_regulationRequest(picture,evaluated,syntheticCandidate,applied.commitment,oldToken,{regulatedAssemblyId=lease.regulatedAssemblyId,regulatedReferenceKey=lease.regulatedReferenceKey,governingPurpose=lease.governingPurpose},"RELEASE",D0146_ACTION_SPACE_OWNER_TAG,nil,nil,lease.boundedAuthorityId)
         if oldRequest==nil then return {status="MAINTAINED",reason="D0146_ROLE_MIGRATION_OLD_BOUNDED_AUTHORITY_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId} end
-        local oldReleased=self.capability:executeControlRequest(oldRequest,nil)
+        local oldReleased=self.runtime.liveControlDispatcher:dispatch(oldRequest,nil)
         if oldReleased~=true and type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG) end
     elseif type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG) end
     local preserveOld=self:_otherRegulationPurposeOwnsAuthority(lease.commitmentId,lease.regulatedAssemblyId,"D0146_ACTION_SPACE")

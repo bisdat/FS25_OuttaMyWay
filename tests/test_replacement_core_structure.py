@@ -2293,6 +2293,7 @@ def test_phase11_live_control_dispatcher_is_authorised_routing_only():
     assert "RegulationBoundedAuthority" in authority
     assert "boundedAuthority:materializeRequest" in authority
     assert "self.runtime.liveControlDispatcher:dispatch(request,candidate)" in authority
+    assert "self.capability:executeControlRequest(" not in authority
     assert "self.runtime.liveControlDispatcher:dispatchJoint" not in authority
     assert 'capability="REPOSITION"' not in authority
     assert "guardedRecoveryLease" not in authority
