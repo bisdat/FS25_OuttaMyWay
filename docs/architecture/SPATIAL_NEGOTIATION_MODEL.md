@@ -171,22 +171,75 @@ The historical 80 m locality literal is not a commitment rule and must not be re
 
 ## 8. Cooperative Passage admission and Bubble
 
-Under the parent's Pairwise Resolution Exclusivity rule, Cooperative Passage has exactly two active AI worker participants and at most one coupled Resolution Commitment may exist within a Local Operation.
+Under the parent's Pairwise Resolution Exclusivity rule, Cooperative Passage is
+admitted only from exactly two active AI worker participants and at most one
+coupled Resolution Commitment may exist within a Local Operation.
 
-A **Bubble** is the coupled pairwise context created specifically by Cooperative Passage Resolution Commitment. It forms only when fresh evidence still supports Passage, the required reserve remains viable, independent approach nears the latest safe capture point, and the pair accepts jointly dependent Passage obligations.
+A **Bubble** is the coupled pairwise context created specifically by Cooperative
+Passage Resolution Commitment. It forms only when fresh evidence still supports
+Passage, the required reserve remains viable, independent approach nears the
+latest safe capture point, and the pair accepts jointly dependent Passage
+obligations.
 
-Bubble Formation begins the Resolution Epoch. Bubble owns only its participants, coupled obligations, Bubble Protection, Resolution Epoch/third-party protection scope and Last-Handoff Dissolution. It creates no permanent pair history, future-route ownership or right-of-way.
+At Bubble Formation the accepted Passage is expressed as two
+participant-scoped **Passage Legs** under one Resolution Commitment. The pair is
+required to create the coupled responsibility; the two execution legs need not
+remain symmetrically live afterwards.
+
+Bubble Formation begins the Resolution Epoch. Bubble owns only its originating
+pair, Passage Legs, shared coupled obligations, Bubble Protection,
+Resolution-Epoch/third-party protection scope and Last-Leg Dissolution. It
+creates no permanent pair history, future-route ownership or right-of-way.
 
 ## 9. Committed Passage execution
 
-The full Cooperative Passage obligation persists until legitimate completion or another generic commitment end defined by the parent. The obligation is sticky; execution geometry is adaptive.
+A **Passage Leg** is one original participant's already-committed physical
+execution and intervention-created debt within Cooperative Passage. Depending on
+what the Passage actually required, a leg may include capture/Passage movement,
+Alignment Runout, Axis Settlement/Return, configuration or agronomic restoration
+and GIANTS handback.
 
-Persist through the Bubble:
+The parent Cooperative Passage Resolution persists while any legitimate Passage
+Leg or shared Bubble obligation remains open. **Pairwise Resolution != Symmetric
+Progress Requirement**: the two Passage Legs may progress and terminate at
+different times.
 
-- coupled membership and joint Passage responsibility;
-- required Bubble Protection;
-- configuration/restoration debt actually created by Passage; and
-- safe completion through final-participant handback.
+A Passage Leg has two ordinary terminal dispositions:
+
+- **HANDED_BACK** — its required Passage debt is discharged and the participant
+  is returned to GIANTS AI;
+- **VACATED** — positive Reality establishes that OuttaMyWay can no longer
+  execute that original participant as the committed AI Passage subject.
+
+**Participant Loss Vacates a Passage Leg; It Does Not Cancel the Passage.**
+Positive participant loss may include authoritative Job Episode completion,
+stoppage or supersession, player takeover, or positive physical/runtime removal.
+Incomplete observation or mere absence cannot establish vacatur under Lifecycle
+Evidence Asymmetry.
+
+Vacatur settles only the obligations and physical authority belonging to that
+Passage Leg. It admits no replacement participant and creates no new Candidate,
+Resolution Commitment, cleanup responsibility or survivor mode for the other
+leg.
+
+**Survivor Invariance:** the surviving Passage Leg continues the same
+already-committed Passage choreography it would have followed had the other leg
+remained executable: Passage, runout, Axis recovery/return, intervention-created
+restoration debt and GIANTS handback as applicable. The vacated leg is silently
+removed as a procedural dependency.
+
+**Choreography Vacatur != Physical Disappearance.** A former participant whose
+Passage Leg is vacated ceases to be a Passage-phase dependency but remains
+current physical Reality if it is still present. Player-controlled, completed or
+otherwise stationary occupancy may therefore still constrain the surviving leg
+through fresh hard-safety evidence.
+
+Persist while any Passage Leg remains live:
+
+- the parent Resolution Commitment;
+- required Bubble Protection and Resolution-Epoch third-party serialization;
+- configuration/restoration debt actually created by the surviving leg; and
+- the surviving leg's normal path to GIANTS handback.
 
 Remain Reality-sensitive:
 
@@ -194,12 +247,22 @@ Remain Reality-sensitive:
 - actual clearance deficit;
 - Development burden;
 - execution origin;
-- exact guide geometry and lateral allocation until the relevant physical leg begins; and
-- recovery debt derived from the manoeuvre actually executed.
+- exact guide geometry and lateral allocation until the relevant physical leg
+  begins;
+- recovery debt derived from the manoeuvre actually executed; and
+- current physical occupancy, including a former participant whose Passage Leg
+  has already been vacated.
 
-Stale early guides have no independent authority. The existing Phase-5 Transit/settlement boundary is the donor for reality-verified execution geometry and origin rebasing before physical guide movement. It resolves the supported configuration handling without universally asserting successful folding. Once a physical leg begins, its locally authorised execution choice should normally remain stable to avoid unsafe oscillation. Hard safety remains authoritative.
+Stale early guides have no independent authority. The existing Phase-5
+Transit/settlement boundary remains the donor for reality-verified execution
+geometry and origin rebasing before physical guide movement. Once a physical
+leg begins, its locally authorised execution choice should normally remain
+stable to avoid unsafe oscillation. Hard safety remains authoritative.
 
-Passage owns only intervention-created debt. It does not reconstruct pre-existing imperfections or articulation. Physical crossing alone is not completion; required recovery, restoration and handback remain coupled obligations.
+Passage owns only intervention-created debt. It does not reconstruct
+pre-existing imperfections or articulation. Physical crossing alone is not
+completion; each still-live Passage Leg retains its own required recovery,
+restoration and handback debt.
 
 ## 10. Third-worker serialization
 
@@ -221,11 +284,20 @@ current Situation reason for temporal coordination. It is not a separate
 third-worker Regulation subtype, and its exact `1 km/h` policy does not become
 the universal magnitude for Regulation.
 
-## 11. Last-Handoff Dissolution
+## 11. Last-Leg Dissolution
 
-The Bubble dissolves immediately after its **last participant is handed back to GIANTS AI**. It has no distance tail, arbitrary timeout, relationship-settlement delay, cooldown or surviving relationship memory.
+The Bubble dissolves immediately when both original Passage Legs are terminal.
+Normal two-participant completion is the special case
+`HANDED_BACK + HANDED_BACK`; participant loss may instead produce
+`VACATED + HANDED_BACK` or, if both original subjects cease to be executable,
+`VACATED + VACATED`.
 
-Fresh Situation Assessment under the parent architecture then determines any responsibility involving former participants and the independent third worker.
+The Resolution Epoch and Bubble Protection persist while at least one Passage
+Leg remains live. Dissolution has no distance tail, arbitrary timeout,
+relationship-settlement delay, cooldown or surviving relationship memory.
+
+Fresh Situation Assessment under the parent architecture then determines any
+responsibility involving former participants and the independent third worker.
 
 ## 12. Completed obstructions
 

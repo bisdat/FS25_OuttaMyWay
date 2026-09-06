@@ -7,62 +7,80 @@ is not a changelog, release ledger, or canonical-release record.
 ## Current engineering concern
 
 Phase 11 — Reduce `LiveControlDispatcher` to Authorised Control Routing —
-**COMPLETE** and accepted before this increment.
+**COMPLETE**.
 
 Phase 12 — Retire superseded generic Commitment/orchestration only when no
-supported path relies on it — **COMPLETE in the current source state**. The
-retirement audit found one superseded pre-D-0146 generic head-on/recovery
-lifecycle with no supported production caller. That historical path and its two
-direct v4.7.47 API tests were retired. Generic Commitment machinery still used
-by supported D-0141, D-0146, D-0147, D-0200 and Guarded Recovery paths remains
-intentionally retained.
+supported path relies on it — **COMPLETE**.
 
 Phase 13 — Simplify Candidate/Constraint/Decision only where evidence proves
-duplication — is **IN PROGRESS**.
+duplication — remains **IN PROGRESS**. Its first two accepted tranches
+established `Commitment Operation != Responsibility Transition`, explicit
+direct-Passage substrate targeting, `Key Match Is Not Lifecycle Match`, and
+`Semantic Targetability != Application Cardinality`.
 
-The first validated tranche established **Commitment Operation !=
-Responsibility Transition** and removed only proven semantic dependence on
-generic Commitment `CREATE` / `MAINTAIN` / `REVISE` operation.
+Fresh GIANTS Reality from Issue #51 has interrupted further Phase-13
+simplification with a more fundamental Cooperative Passage lifecycle discovery.
+In `0.3.0.10 TEST`, Condor had already been handed back to GIANTS while Patriot
+was still restoring. Condor's natural Job Episode completion caused D-0200 to
+settle every Passage obligation and terminalise the retained Commitment;
+Phase-10 Bounded Authority enforcement then exposed
+`BOUNDED_AUTHORITY_LOST` and Player Intervention.
 
-The second validated tranche establishes **Sole Context != Semantic Target**,
-**Key Match Is Not Lifecycle Match**, and **Semantic Targetability !=
-Application Cardinality** for direct Cooperative Passage. A retained Passage
-substrate is now positively targeted by the selected D-0146
-`governingRequirementKey` and must still belong to the same two current Job
-Episodes. Pair-specific Job-Episode dependencies corroborate that lifecycle
-binding where available; no new Passage identity or persistent pair history was
-introduced.
+A/B comparison with the last in-game `0.3.0.8 TEST` run demonstrated the same
+dependency-collapse timing while Patriot was still restoring. The older build
+appeared successful only because Passage Control continued physical restoration
+after authority had already been released.
 
-Direct Cooperative Passage therefore no longer uses
-`decision.commitmentAction` as semantic substrate/continuity evidence. A
-targeted retained `CM-*` without a matching current Resolution `RS-*` still
-fails safely as `RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING`.
+The owner has accepted:
 
-A semantically targetable Passage may coexist with another independent retained
-context, but the generic Commitment application boundary currently accepts only
-one context. That condition now fails closed as
-`COOPERATIVE_PASSAGE_MULTI_CONTEXT_APPLICATION_UNSUPPORTED`; it is recorded as
-an application-cardinality limitation rather than semantic target ambiguity.
+- **Participant Loss Vacates a Passage Leg; It Does Not Cancel the Passage.**
+- **Coupled Admission != Coupled Execution Persistence.**
+- **Pairwise Resolution != Symmetric Progress Requirement.**
+- **Survivor Invariance.**
+- **Choreography Vacatur != Physical Disappearance.**
+- **Partial Basis Cessation != Responsibility Termination.**
+- **Last-Leg Dissolution.**
 
-Completed-obstruction/D-0147 is unchanged by this tranche and retains its
-generic-action continuity guard. Issue #51 is fresh GIANTS Reality evidence at
-the Passage-to-natural-completion/terminal-succession boundary; its attached log
-has not yet been analysed here, so no terminal diagnosis or change is authorised
-from the issue summary alone.
+Cooperative Passage requires two active AI workers at Bubble Formation, but
+after commitment each original participant has a participant-scoped Passage
+Leg. Positive Job Episode completion/stoppage/supersession, player takeover or
+positive vehicle/runtime removal vacates only the affected leg. No replacement
+joins the Bubble. The parent Resolution, Bubble Protection and Resolution Epoch
+persist while another Passage Leg or shared coupled obligation remains
+legitimate.
 
-The next Phase-13 work should therefore return to **Observe**: analyse Issue #51
-before altering completed-obstruction Resolution continuity, and separately
-decide whether generic multi-context Commitment application is a genuine
-Candidate/Constraint/Decision ownership problem. **Candidate-Embedded Verdict
-Authority** remains a later Phase-13 ownership question rather than an
-authorised simplification.
+Current runtime diverges at the retained substrate boundary. D-0146 Candidate
+support creates one joint restoration/handoff obligation for both assemblies,
+and D-0200 currently treats any ended dependent Job Episode as whole-Commitment
+basis cessation, settling every open obligation and entering terminal
+settlement. Passage Control itself already supports procedural asymmetry by
+handing one participant back while the other continues clearance wait, Axis
+Return or restoration.
+
+**Next Engineering Increment:** implement the smallest generic reconciliation
+that makes Cooperative Passage dependency/obligation scope participant-aware:
+vacate/release only the lost leg, preserve the survivor's existing Passage
+choreography and authority, and permit whole-Commitment terminal settlement only
+after no legitimate Passage Leg/shared Bubble obligation remains. Do not
+pre-judge `TerminalSettlementEvaluator` as needing redesign.
+
+Regression evidence must distinguish expected participant loss from unexpected
+authority loss: expected participant loss must not manufacture Player
+Intervention, while genuinely unexplained Bounded Authority loss during a
+still-live leg remains fail-closed. Cover natural Job completion, player
+takeover and positive vehicle removal without fixture-specific branching.
+
+Issue #51 remains open as the failing Reality record until a later
+implementation build receives in-game validation. Candidate-Embedded Verdict
+Authority and generic multi-context application cardinality remain Phase-13 work
+but are paused behind this Reality-driven correction.
 
 Issue #37 remains open as non-blocking Category-2 Reality-validation debt.
-Materially contrary later evidence must reopen the affected assumptions.
-Bubble Bullet Time remains accepted but unimplemented and is still tracked
-separately by Issue #45.
+Bubble Bullet Time remains accepted but unimplemented and is tracked separately
+by Issue #45.
 
-This ordinary Engineering Increment does not change canonical release authority.
+This documentation-only Engineering Increment changes no runtime, tests, mod
+version, release identity or canonical authority.
 
 ## Established
 

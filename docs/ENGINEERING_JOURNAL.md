@@ -1,3 +1,68 @@
+## 2026-09-06 — Issue #51 Passage Leg vacatur architecture discovery
+
+**Observe:** Issue #51 recorded `0.3.0.10 TEST` completing the physical
+Condor/Patriot Passage and handing Condor back to GIANTS while Patriot remained
+in restoration. Condor's Job Episode then ended naturally. D-0200 settled every
+open obligation and terminalised the Passage substrate, after which Phase-10
+Bounded Authority enforcement produced `BOUNDED_AUTHORITY_LOST` / Player
+Intervention while Patriot was still restoring.
+
+A/B comparison with the last in-game `0.3.0.8 TEST` log showed the same
+dependency-collapse timing while Patriot was still restoring. `0.3.0.8`
+appeared operational only because Passage Control continued after its retained
+authority had already been released. Phase 10 exposed rather than created the
+latent lifecycle mismatch.
+
+**Disproved/refined hypotheses:** the first interpretation centred on terminal
+settlement ordering; the second proposed immediate Bubble dissolution after
+participant loss. A check-order swap is insufficient because an already
+handed-back participant is intentionally excluded from the controller's
+same-Job check. Immediate Bubble cancellation is also the wrong abstraction:
+the surviving participant's already-committed Passage debt remains valid.
+
+**Named discovery — Participant Loss Vacates a Passage Leg; It Does Not Cancel
+the Passage:** Cooperative Passage requires two active AI workers to commit, but
+after commitment the original participants carry distinct execution legs.
+
+**Named discovery — Coupled Admission != Coupled Execution Persistence:** the
+pair is an admission requirement, not a requirement that both legs remain live
+or progress symmetrically until the end.
+
+**Named discovery — Survivor Invariance:** vacating one leg creates no new
+Candidate, Resolution, strategy, cleanup responsibility or survivor mode. The
+surviving leg continues its already-committed Passage, runout, Axis
+recovery/return, restoration and GIANTS handback choreography.
+
+**Named discovery — Choreography Vacatur != Physical Disappearance:** a vacated
+participant stops being a Passage-phase dependency but remains physical Reality
+if still present.
+
+**Named discovery — Partial Basis Cessation != Responsibility Termination:**
+ending one participant-specific dependency settles only obligations whose basis
+actually ceased.
+
+**Named discovery — Last-Leg Dissolution:** the Bubble ends when both original
+Passage Legs are terminal by handback and/or vacatur.
+
+**Implementation observation:** current Candidate support creates one joint
+`COOPERATIVE_PASSAGE_RESTORATION_AND_HANDOFF` obligation for both assemblies.
+Current D-0200 treats any ended dependent Job Episode as whole-Passage basis
+cessation, settles all open obligations and enters terminal settlement. Passage
+Control itself already supports procedural asymmetry by handing one participant
+back while the other remains in clearance wait, Axis Return or restoration.
+
+**Decision:** record the Passage Leg/vacatur architecture before changing
+runtime behaviour. A later implementation increment should make dependency and
+obligation scope truthful, release/vacate only the affected participant's
+authority, preserve the surviving leg unchanged, and terminalise the parent
+Resolution only after no legitimate Passage Leg/shared Bubble obligation
+remains.
+
+**Record:** Issue #51 remains the failing Reality record until a later
+implementation build passes an in-game Reality check. Phase 13 remains in
+progress, but this Reality-driven correction precedes further
+Candidate/Constraint/Decision simplification.
+
 ## 2026-09-06 — Phase 13 explicit direct-Passage substrate targeting
 
 **Observe:** after the first Phase-13 tranche removed only proven semantic

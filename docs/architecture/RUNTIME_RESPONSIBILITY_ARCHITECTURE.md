@@ -450,9 +450,22 @@ Regulation has no cooldown, pair memory or sticky recent-subject rule. One alloc
 
 ### Resolution Commitment
 
-Resolution Commitment is a durable accepted resolution obligation. It has strong persistence while legitimate obligations remain open. Obligations, not stale admission predictions or geometry, justify persistence; execution may adapt to fresh Reality.
+Resolution Commitment is a durable accepted resolution obligation. It has strong
+persistence while legitimate obligations remain open. Obligations, not stale
+admission predictions or geometry, justify persistence; execution may adapt to
+fresh Reality.
 
-Generic ends are completion, failure, supersession, governing-basis cessation and escalation. The [Spatial Negotiation Model](SPATIAL_NEGOTIATION_MODEL.md) owns detailed spatial admission and policy.
+A Resolution may contain more than one subject-scoped obligation or bounded
+physical effect. Positive loss of support for one such obligation settles only
+the obligation whose basis has actually ceased. It does not terminate the wider
+Resolution while other legitimate committed obligations remain open.
+
+**Partial Basis Cessation != Responsibility Termination.** A dependency must not
+be allowed to manufacture settlement outside the scope it actually governs.
+
+Generic ends are completion, failure, supersession, governing-basis cessation
+and escalation. The [Spatial Negotiation Model](SPATIAL_NEGOTIATION_MODEL.md)
+owns detailed Cooperative Passage admission, Passage Leg and Bubble policy.
 
 ## 14. Operation Context, Relationship Responsibility
 
@@ -468,16 +481,18 @@ Responsibility contexts may be invoked several times during a Local Operation or
 
 ## 15. Pairwise Resolution Exclusivity
 
-Within one Local Operation, at most one coupled Resolution Commitment is active at a time, and it has exactly two active GIANTS AI worker participants.
+Within one Local Operation, at most one coupled Resolution Commitment is active
+at a time. Cooperative Passage is admitted only from exactly two current active
+GIANTS AI worker participants.
 
-Supported:
+Supported at admission:
 
 ```text
 A <-> B : coupled Resolution Commitment
 C       : external / independent / protected
 ```
 
-Unsupported:
+Unsupported at admission:
 
 ```text
 A <-> B <-> C : three-way Resolution Commitment
@@ -486,7 +501,17 @@ A <-> B : Resolution #1
 B <-> C : Resolution #2
 ```
 
-The third worker does not join the pairwise commitment. Spatial Negotiation owns Bubble Protection and exact 1 km/h Bullet-Time policy. This exclusivity does not imply that all weaker, purpose-bound Regulation allocations are globally exclusive.
+**Coupled Admission != Coupled Execution Persistence.** The pair is an admission
+requirement. After commitment, participant-scoped Passage obligations may
+progress and reach terminal conditions independently. Positive loss of one
+original participant does not admit a replacement participant, create a new
+one-participant Passage, or automatically terminate the existing Resolution
+while another legitimate Passage obligation remains open.
+
+The third worker does not join the pairwise commitment. Spatial Negotiation owns
+Passage Leg vacatur, Bubble Protection, Last-Leg Dissolution and the exact
+1 km/h Bullet-Time policy. This exclusivity does not imply that all weaker,
+purpose-bound Regulation allocations are globally exclusive.
 
 ## 16. Bounded Authority
 
@@ -520,6 +545,12 @@ authorize multiple simultaneous bounded effects where its accepted obligation
 requires them, for example one Cooperative Passage reposition permission per
 participant or protected-demand Regulation plus completed-subject movement
 during completed-obstruction resolution.
+
+For Cooperative Passage, participant-scoped Bounded Authority may end
+independently when that participant's Passage Leg is handed back or vacated.
+Releasing one participant's grant does not imply termination of the surviving
+participant's grant or of the parent Resolution Commitment while legitimate
+Passage obligations remain.
 
 Relinquishment does not require a new grant. A release or quiescence request
 references the active grant whose physical effect is being narrowed or ended;
