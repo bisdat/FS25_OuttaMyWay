@@ -1480,7 +1480,6 @@ def test_v47127_d0147_courtesy_constraint_and_valuerecord_regression_contract():
     assert 'OuttaMyWay.ValueRecord.length(postJobOwnership.assemblyIds)' in boundary
     assert '#progressOwnership.assemblyIds' not in boundary
     assert '#postJobOwnership.assemblyIds' not in boundary
-    assert 'OuttaMyWay.ValueRecord.length(contexts)~=1' in lifecycle
     assert 'OuttaMyWay.ValueRecord.length(candidate.evidenceBasis.progressActuationOwnership and candidate.evidenceBasis.progressActuationOwnership.assemblyIds or {})' in lifecycle
     assert 'OuttaMyWay.ValueRecord.length(ring)<3' in planner
     assert 'OuttaMyWay.ValueRecord.length(fieldWorld.boundary)<3' in planner
@@ -1850,7 +1849,7 @@ def test_v01145_d0200_job_episode_dependency_collapse_precedes_terminal_candidat
     assert '"BASIS_CESSATION"' in lifecycle
     assert 'kind="OBJECTIVE_SATISFIED"' in lifecycle
     assert 'JOB_EPISODE_DEPENDENCY_COLLAPSE' in lifecycle
-    section=lifecycle[lifecycle.index('function Lifecycle.collapseEndedJobEpisodeDependencies'):lifecycle.index('local function clearReleasedOwnership')]
+    section=lifecycle[lifecycle.index('function Lifecycle.collapseEndedJobEpisodeDependencies'):lifecycle.index('function Lifecycle.applyInitialDecision')]
     assert 'SOURCE_INTENT_TERMINATED' not in section
     process=runtime[runtime.index('function Runtime:processSealedObservation'):runtime.index('function Runtime:evaluateSealedOperationalPicture')]
     assert process.index('collapseEndedJobEpisodeDependencies') < process.index('assessOperationalPicture')
@@ -2303,3 +2302,19 @@ def test_phase11_live_control_dispatcher_is_authorised_routing_only():
     assert "completeCooperativePassage" not in authority
     assert "Bounded-Authority magnitude policy" in envelope
     assert "magnitudeAuthority=CONTROL" not in p22
+
+def test_phase12_superseded_pre_d0146_recovery_lifecycle_remains_retired():
+    lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+
+    # Phase 12 retired only the historical pre-D0146 generic head-on/recovery
+    # API. Current D0141, D0146, D0200 and Guarded-Recovery substrate remains.
+    for retired in (
+        "isRecoverySpecification",
+        "hasOpenDurableSeparation",
+        "applyHeadOnDecision",
+        "clearReleasedOwnership",
+        "isRecoveryObligation",
+        "markActuationStartFailed",
+        "markNativeReacquisition",
+    ):
+        assert retired not in lifecycle
