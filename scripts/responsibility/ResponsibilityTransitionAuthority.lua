@@ -193,6 +193,162 @@ function Authority:terminateSemanticResponsibilitiesForTerminalCommitment(commit
     return true
 end
 
+local function cooperativePassageTargetContext(picture,bridge)
+    local contexts=picture and picture.commitmentContext or {}
+    local match=nil
+    for _,context in OuttaMyWay.ValueRecord.ipairs(contexts) do
+        local basis=context.governingBasis
+        if type(basis)=="table" and basis.responsibilityKey==bridge.governingRequirementKey then
+            if match~=nil then return nil,"MULTIPLE_COOPERATIVE_PASSAGE_RETAINED_SUBSTRATES" end
+            match=context
+        end
+    end
+    if match==nil then
+        if OuttaMyWay.ValueRecord.length(contexts)>0 then
+            return nil,"COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_NOT_TARGETED"
+        end
+        return nil,nil
+    end
+    -- Semantic targeting may already be unambiguous even when another
+    -- independent retained context exists. The current generic Commitment
+    -- application boundary nevertheless accepts only one context, so fail
+    -- closed without misclassifying that implementation limit as semantic
+    -- target ambiguity.
+    if OuttaMyWay.ValueRecord.length(contexts)~=1 then
+        return nil,"COOPERATIVE_PASSAGE_MULTI_CONTEXT_APPLICATION_UNSUPPORTED"
+    end
+    return match,nil
+end
+
+local function currentCooperativePassagePairEpisodes(runtime,bridge)
+    local registry=runtime and runtime.jobEpisodes or nil
+    if registry==nil
+        or type(registry.getActiveForAssembly)~="function"
+        or type(registry.get)~="function" then
+        return nil,"COOPERATIVE_PASSAGE_JOB_EPISODE_AUTHORITY_UNAVAILABLE"
+    end
+
+    local subject=registry:getActiveForAssembly(bridge.subjectAssemblyId)
+    local other=registry:getActiveForAssembly(bridge.otherAssemblyId)
+    if subject==nil or other==nil
+        or subject.status~="ACTIVE" or other.status~="ACTIVE"
+        or subject.identity==other.identity then
+        return nil,"COOPERATIVE_PASSAGE_CURRENT_JOB_EPISODE_UNAVAILABLE"
+    end
+
+    if bridge.subjectJobToken~=nil and subject.sourceJobToken~=bridge.subjectJobToken then
+        return nil,"COOPERATIVE_PASSAGE_CURRENT_JOB_EPISODE_MISMATCH"
+    end
+    if bridge.otherJobToken~=nil and other.sourceJobToken~=bridge.otherJobToken then
+        return nil,"COOPERATIVE_PASSAGE_CURRENT_JOB_EPISODE_MISMATCH"
+    end
+
+    return {subjectId=subject.identity,otherId=other.identity},nil
+end
+
+local function retainedCooperativePassagePairEpisodesMatch(runtime,basis,bridge,current)
+    local retainedSubject=nil
+    local retainedOther=nil
+
+    for _,episodeId in OuttaMyWay.ValueRecord.ipairs(basis and basis.sourceIntentIds or {}) do
+        local episode=runtime.jobEpisodes:get(episodeId)
+        if episode~=nil and episode.assemblyId==bridge.subjectAssemblyId then
+            if retainedSubject~=nil then
+                return false,"COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_JOB_EPISODE_AMBIGUOUS"
+            end
+            retainedSubject=episode.identity
+        elseif episode~=nil and episode.assemblyId==bridge.otherAssemblyId then
+            if retainedOther~=nil then
+                return false,"COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_JOB_EPISODE_AMBIGUOUS"
+            end
+            retainedOther=episode.identity
+        end
+    end
+
+    if retainedSubject~=current.subjectId or retainedOther~=current.otherId then
+        return false,"COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_JOB_EPISODE_MISMATCH"
+    end
+
+    local dependencies=basis and basis.dependentJobEpisodeIds or {}
+    if OuttaMyWay.ValueRecord.length(dependencies)>0 then
+        local subjectDependency=false
+        local otherDependency=false
+        for _,episodeId in OuttaMyWay.ValueRecord.ipairs(dependencies) do
+            if episodeId==current.subjectId then subjectDependency=true end
+            if episodeId==current.otherId then otherDependency=true end
+        end
+        if OuttaMyWay.ValueRecord.length(dependencies)~=2
+            or subjectDependency~=true or otherDependency~=true then
+            return false,"COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_DEPENDENCY_MISMATCH"
+        end
+    end
+
+    return true,nil
+end
+
+-- Direct Cooperative Passage substrate targeting is a transition-boundary
+-- consistency question, not Responsibility continuation authority.  The
+-- retained purpose must first target the selected D0146 governing requirement
+-- and the same two current Job Episodes.  Only then may an already-current
+-- Resolution responsibility be reused.
+function Authority:evaluateDirectCooperativePassageSubstrate(picture,evaluated)
+    local bridge=selectedBridge(evaluated,"cooperativePassageBridge")
+    if type(bridge)~="table"
+        or bridge.architecture~="D0146_STEP2"
+        or type(bridge.governingRequirementKey)~="string"
+        or type(bridge.subjectAssemblyId)~="string"
+        or type(bridge.otherAssemblyId)~="string"
+        or bridge.subjectAssemblyId==bridge.otherAssemblyId then
+        return nil,"COOPERATIVE_PASSAGE_SUBSTRATE_CONTEXT_INVALID"
+    end
+
+    local target,targetReason=cooperativePassageTargetContext(picture,bridge)
+    if targetReason~=nil then return nil,targetReason end
+    if target==nil then
+        return {bridge=bridge,commitmentId=nil,currentResolution=nil},nil
+    end
+
+    if type(target.commitmentId)~="string" or target.commitmentId=="" then
+        return nil,"COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_IDENTITY_INVALID"
+    end
+
+    local retained=self.runtime.commitments:get(target.commitmentId)
+    if retained==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(retained.state) then
+        return nil,"COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_NOT_LIVE"
+    end
+
+    local basis=retained.governingBasis
+    if type(basis)~="table"
+        or basis.responsibilityKey~=bridge.governingRequirementKey then
+        return nil,"COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_PURPOSE_MISMATCH"
+    end
+
+    local currentEpisodes,episodeReason=currentCooperativePassagePairEpisodes(self.runtime,bridge)
+    if currentEpisodes==nil then return nil,episodeReason end
+
+    local episodeMatch,matchReason=retainedCooperativePassagePairEpisodesMatch(
+        self.runtime,basis,bridge,currentEpisodes)
+    if episodeMatch~=true then return nil,matchReason end
+
+    local current=self:getCurrentResolutionCommitment(retained.identity)
+    if current==nil then
+        return nil,"RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING"
+    end
+
+    local currentBasis=current.governingBasis
+    if current.kind~="RESOLUTION_COMMITMENT"
+        or type(currentBasis)~="table"
+        or currentBasis.responsibilityKey~=bridge.governingRequirementKey then
+        return nil,"COOPERATIVE_PASSAGE_CURRENT_RESPONSIBILITY_SUBSTRATE_MISMATCH"
+    end
+
+    return {
+        bridge=bridge,
+        commitmentId=retained.identity,
+        currentResolution=current
+    },nil
+end
+
 function Authority:resolutionIdentityForCommitment(commitmentId,action)
     local current=self:getCurrentResolutionCommitment(commitmentId)
     if current~=nil then return current.identity,true,nil end
@@ -201,23 +357,23 @@ function Authority:resolutionIdentityForCommitment(commitmentId,action)
 end
 
 function Authority:transitionCooperativePassageResolution(picture,evaluated,readiness,passageTransition)
-    local commitmentId=nil
-    for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
-        if type(context.commitmentId)=="string" then commitmentId=context.commitmentId break end
-    end
-    local identity=nil
-    local responsibilityAlreadyCurrent=false
-    if type(commitmentId)=="string" then
-        local reason=nil
-        identity,responsibilityAlreadyCurrent,reason=self:resolutionIdentityForCommitment(commitmentId,evaluated and evaluated.decision and evaluated.decision.commitmentAction)
-        if identity==nil then return nil,reason end
-    else
-        identity=self.runtime.identities:issue("RESPONSIBILITY")
-    end
+    local substrate,substrateReason=self:evaluateDirectCooperativePassageSubstrate(picture,evaluated)
+    if substrate==nil then return nil,substrateReason end
+
+    local current=substrate.currentResolution
+    local identity=current and current.identity or self.runtime.identities:issue("RESPONSIBILITY")
+    local responsibilityAlreadyCurrent=current~=nil
+
     local applied,reason=passageTransition:transition(picture,evaluated,readiness,{
         responsibilityIdentity=identity,responsibilityAlreadyCurrent=responsibilityAlreadyCurrent
     })
     if applied==nil then return nil,reason end
+
+    if substrate.commitmentId~=nil
+        and (applied.commitment==nil or applied.commitment.identity~=substrate.commitmentId) then
+        return nil,"COOPERATIVE_PASSAGE_RETAINED_COMMITMENT_CHANGED"
+    end
+
     self.resolutionsByCommitmentId[applied.commitment.identity]=applied.currentResponsibility
     return applied,nil
 end
