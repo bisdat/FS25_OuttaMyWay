@@ -1329,10 +1329,10 @@ replacement is again the downstream validation/reconciliation boundary.
    - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — ARCHITECTURAL COMPARISON COMPLETE; implementation discovery found no truthful retained Regulation instance identity witness, so the Responsibility Instance Identity Gap required explicit Action-Space and follower Regulation identities during Phase 9.**
 9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion — COMPLETE IN PR #44 PENDING OWNER MERGE/ACCEPTANCE. Phase 9 covers Action-Space Regulation identity, follower Regulation identity, both same-Commitment Passage replacement paths, direct Cooperative Passage CREATE Resolution identity, completed-obstruction Resolution identity and semantic cleanup on existing terminal paths.**
 10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility — COMPLETE.**
-11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities — ACTIVE.**
+11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities — COMPLETE.**
 12. **Retire superseded generic Commitment/orchestration only when no supported path relies on it.**
 13. **Simplify Candidate/Constraint/Decision only where evidence proves duplication.**
-14. **Graduate Prototype/diagnostic production mechanics and naming.**
+14. **Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming.**
 15. **Perform whole-system validation and another architecture-to-runtime review.**
 
 > This sequence is a plan, not a promise. Update it after each strangler tranche when implementation or validation evidence changes the safest or most truthful route.
