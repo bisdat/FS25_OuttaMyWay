@@ -1,3 +1,79 @@
+## 2026-09-06 — Phase 13 Commitment operation / Responsibility transition separation
+
+**Observe:** Phase 13 began by mapping Candidate, Constraint and Decision
+responsibilities rather than assuming that all three layers should collapse.
+Candidate planning and Decision selection remain substantively distinct. A
+narrower duplication appeared around `decision.commitmentAction`: retained
+generic Commitment operations such as `CREATE`, `MAINTAIN` and `REVISE` were
+also being consulted as evidence about semantic Current Responsibility
+establishment, persistence or replacement.
+
+**Interpret:** the accepted Runtime Responsibility Architecture already states
+that retained generic Commitment lifecycle is implementation substrate rather
+than Current Responsibility identity or transition authority. Two
+Regulation-to-Cooperative-Passage paths already possessed independent semantic
+witnesses: an explicit current Regulation, the targeted retained Commitment,
+the selected successor Candidate, participant/relationship agreement and open
+predecessor obligation evidence. Their additional requirement that the generic
+Commitment operation be `REVISE` therefore duplicated semantic transition
+evidence rather than strengthening it. Action-Space Regulation establishment
+versus revalidation likewise already existed explicitly in Responsibility
+Transition Authority preflight state.
+
+**Named discovery — Commitment Operation != Responsibility Transition:**
+`CREATE`, `MAINTAIN`, `REVISE`, `WAIT` and `SETTLE` describe retained generic
+Commitment orchestration. They do not establish whether a Current
+Responsibility is new, persisting, replaced or terminated.
+
+**Disproved broader hypothesis:** the initial investigation considered removing
+`decision.commitmentAction` from semantic responsibility reasoning altogether.
+That stronger hypothesis is not currently supported. Direct Cooperative Passage
+and completed-obstruction Resolution can encounter an existing retained
+`CM-*` context when Responsibility Transition Authority has no corresponding
+current Resolution `RS-*`. Situation Assessment does not yet publish an
+independent Resolution-continuity witness for that condition. The existing
+`MAINTAIN` / `REVISE` fail-safe therefore still detects
+`RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING` and must remain until a truthful
+semantic witness replaces it.
+
+**Decision:** remove only the positively demonstrated duplication. Regulation
+to Cooperative Passage replacement no longer requires generic Commitment
+`REVISE` as semantic succession evidence. Action-Space Regulation
+`ESTABLISHED` versus `REVALIDATED` disposition comes from its RTA preflight
+Current Responsibility state. Cooperative Passage and completed-obstruction
+Resolution exposure diagnostics consume explicit RTA semantic continuity rather
+than inferring persistence from generic Commitment application action. Retain
+`DecisionRecord.commitmentAction`, `DecisionSelector`,
+`DecisionCommitmentBoundary`, `LiveTrafficCommitmentLifecycle` and the direct
+Resolution continuity fail-safe unchanged in responsibility.
+
+**Implement:** the bounded tranche changed
+`ResponsibilityTransitionAuthority.lua`,
+`ActionSpaceRegulationResponsibilityTransition.lua`,
+`CooperativePassageResponsibilityTransition.lua` and
+`CompletedObstructionResponsibilityTransition.lua`. A structural contract
+protects both sides of the boundary: the proven semantic dependencies remain
+removed while retained Commitment orchestration and the unresolved direct
+Resolution continuity guard remain present.
+
+**Validate:** implementation-local validation passed with Lua syntax checked by
+`/usr/bin/luajit`, Python contract syntax checked successfully and
+`git diff --check` clean. GitHub Actions Run #102 then reported `111 passed` for
+blocking Structural contracts. The Lua harness reported
+`298 passed / 9 failed` with exactly the same nine established failure
+identities and no new failure identity. Relevant Regulation-to-Passage,
+responsibility replacement, reactivation/revalidation, direct Resolution and
+D-0147 Resolution-persistence paths remained green. No GIANTS Reality
+validation is claimed by this tranche.
+
+**Record:** Phase 13 remains in progress. The next semantic question is whether
+Situation Assessment can and should expose an independent Resolution-continuity
+witness sufficient to replace the remaining direct-Resolution generic
+Commitment-action fail-safe. That witness must be discovered before the guard is
+removed. Separately, the observed Candidate-embedded nominal Constraint verdict
+duplication remains a later Phase-13 ownership question and has not been changed
+by this tranche.
+
 ## 2026-09-06 — Phase 12 superseded recovery lifecycle retirement
 
 **Observe:** Phase 12 asked one retirement question only: is generic
