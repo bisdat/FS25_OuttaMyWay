@@ -15,6 +15,10 @@ spatial-coordination policy, or to the
 [Physical Representation Architecture](PHYSICAL_REPRESENTATION_ARCHITECTURE.md)
 for representation detail.
 
+For the Phase-13 Candidate/Decision boundary, including the Reality-driven
+correction to fresh multi-purpose Candidate enumeration, read the
+[Candidate Support Projection Architecture](CANDIDATE_SUPPORT_PROJECTION.md).
+
 Architecture may describe intended behaviour that is not yet implemented. Read
 it as the system's direction and responsibility model, not as a complete account
 of current runtime capability.
