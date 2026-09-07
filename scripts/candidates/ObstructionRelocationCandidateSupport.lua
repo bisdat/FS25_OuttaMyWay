@@ -284,6 +284,47 @@ function Support.new(identityRegistry,epochSequence)
     return setmetatable({identities=identityRegistry,epochs=epochSequence,publishedCount=0,lastStatus="INACTIVE"},Support)
 end
 
+
+-- Fresh-only Candidate Support Projection seam. It reuses the accepted cold
+-- blocker classification and first-courtesy specification while binding the
+-- group's generated composition evidence to the caller-owned target picture.
+function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targetEpoch)
+    OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
+    OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
+    if OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS~=true then return nil,"DEVELOPMENT_CONSENT_DISABLED" end
+    if type(targetPictureId)~="string" or targetPictureId=="" or type(targetEpoch)~="number" then
+        return nil,"TARGET_DECISION_PICTURE_REQUIRED"
+    end
+    local context,contextReason=genericContext(picture)
+    if contextReason~=nil then return nil,contextReason end
+    if context~=nil then return nil,"INCUMBENT_CONTEXT_REQUIRES_EXISTING_SINGLE_PURPOSE_PATH" end
+
+    local references=referencesByAssembly(snapshot)
+    local terminalOwned=terminalOwnedAssemblies(picture)
+    local groups=activeRelationsByKey(picture)
+    local poses=posesByReference(snapshot)
+    local keys={}
+    for key in OuttaMyWay.ValueRecord.pairs(groups) do keys[#keys+1]=key end
+    table.sort(keys)
+    local specifications={}
+    local pictureBasis={identity=targetPictureId,epoch=targetEpoch}
+    for _,key in OuttaMyWay.ValueRecord.ipairs(keys) do
+        local group=groups[key]
+        if eligibleGroup(group) and terminalOwned[group.blockerAssemblyId]~=true and type(group.blockerAssemblyReferenceKey)=="string" then
+            local specification=physicalSpec(pictureBasis,snapshot,group,nil,references,poses[group.blockerAssemblyReferenceKey])
+            if specification~=nil then specifications[#specifications+1]=specification end
+        end
+    end
+    if OuttaMyWay.ValueRecord.length(specifications)==0 then return nil,"NO_GENERIC_CAUSAL_OBSTRUCTION_ACTION" end
+
+    return {
+        supportBoundary={mode="CAUSAL_OBSTRUCTION_RELOCATION_TEST",supportedCandidateClasses={"REPOSITION","CONTINUE_OBSERVATION","CONTINUE_UNCHANGED","ESCALATE"},physicalCapabilitiesImplemented=true,controlAuthority="OBSTRUCTION_RELOCATION_ACTUATION_PLUS_PROTECTED_BENEFICIARY_HOLD",boundedScope="ONE_NON_ACTIVE_UNCLAIMED_BLOCKER_ONE_FIRST_COURTESY_THEN_FRESH_POSITIVE_SUPPORTED_CONTINUATION_EVIDENCE",parking=false,tidying=false,historicalJobProvenanceRequired=false,secondCourtesyWithheldByEvidence=true},
+        candidateSpecifications=specifications,
+        representationFitness={},
+        provenance={source="ObstructionRelocationCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true}
+    },nil
+end
+
 function Support:attach(picture,snapshot)
     if OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS~=true then self.lastStatus="DEVELOPMENT_CONSENT_DISABLED"; return nil end
     local context,contextReason=genericContext(picture)

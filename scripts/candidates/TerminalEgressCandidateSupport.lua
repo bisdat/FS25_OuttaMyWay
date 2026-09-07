@@ -326,6 +326,57 @@ end
 function Support.new(identityRegistry,epochSequence)
     return setmetatable({identities=identityRegistry,epochs=epochSequence,publishedCount=0,lastStatus="INACTIVE"},Support)
 end
+
+local function projectedTerminalRecord(picture,terminalEpisodeId)
+    for _,record in OuttaMyWay.ValueRecord.ipairs(picture.terminalOccupancyKnowledge or {}) do
+        if record.terminalEpisodeId==terminalEpisodeId then return record end
+    end
+    return nil
+end
+
+-- Fresh-only Candidate Support Projection seam. The projection nominates one
+-- Terminal Occupancy record but the full parent picture remains visible to all
+-- D-0147 support and safety evidence.
+function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId,targetEpoch)
+    OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
+    OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
+    if OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS~=true then return nil,"DISABLED" end
+    if OuttaMyWay.ValueRecord.length(picture.commitmentContext or {})>0 then return nil,"INCUMBENT_CONTEXT_REQUIRES_EXISTING_SINGLE_PURPOSE_PATH" end
+    if type(projection)~="table" or projection.kind~="TERMINAL_OCCUPANCY" or type(projection.terminalEpisodeId)~="string" then
+        return nil,"TERMINAL_OCCUPANCY_PROJECTION_REQUIRED"
+    end
+    if type(targetPictureId)~="string" or targetPictureId=="" or type(targetEpoch)~="number" then
+        return nil,"TARGET_DECISION_PICTURE_REQUIRED"
+    end
+    local record=projectedTerminalRecord(picture,projection.terminalEpisodeId)
+    if record==nil then return nil,"PROJECTED_TERMINAL_OCCUPANCY_NOT_FOUND" end
+    if record.obstructionPositive~=true or record.playerClaimed==true or record.exhausted==true or record.yieldAwaitingContinuation==true then
+        return nil,"PROJECTED_TERMINAL_OCCUPANCY_NOT_FRESHLY_ELIGIBLE"
+    end
+
+    local specification
+    if record.playerClaimed==true then specification=settlementSpec(record,"PLAYER_CLAIM")
+    elseif record.exhausted==true then specification=settlementSpec(record,"OBJECTIVE_FAILED")
+    else
+        local config=record.configurationEvidence or {}
+        local phase="COMPACT"
+        local protected=protectedDemandAssemblies(record,nil,snapshot)
+        local objective,objectiveReason=nil,nil
+        if config.retainCurrent==true or config.allFolded==true then
+            phase="INFIELD"
+            objective,objectiveReason=infieldObjective(record,snapshot.fieldWorld,snapshot,protected)
+        end
+        local pictureBasis={identity=targetPictureId,epoch=targetEpoch,identities=picture.identities}
+        specification=physicalSpec(pictureBasis,record,phase,objective,objectiveReason,protected)
+    end
+    return {
+        supportBoundary={mode="D0147_BOUNDED_TERMINAL_EGRESS",supportedCandidateClasses={specification.capability},physicalCapabilitiesImplemented=true,controlAuthority="D0147_POST_JOB_PLUS_PROTECTED_YIELD_HOLD",boundedScope="ONE_COMPLETED_ASSEMBLY_MAX_TWO_FIXED_DIRECTION_COURTESY_MOVES_INTERIOR_THEN_PROTECTED_AWAY_BOUNDARY_WITH_CURRENT_OCCUPANCY_CLEARANCE",automaticTerminalEgress=true},
+        candidateSpecifications={specification},
+        representationFitness={},
+        provenance={source="TerminalEgressCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,terminalEpisodeId=record.terminalEpisodeId}
+    },nil
+end
+
 function Support:attach(picture,snapshot)
     if OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS~=true then self.lastStatus="DISABLED"; return nil end
     local context,contextReason=activeTerminalContext(picture); if contextReason~=nil then self.lastStatus=contextReason; return nil end

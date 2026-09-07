@@ -819,6 +819,19 @@ local function planConflict(picture,snapshot,conflict)
     return nil,"LOCAL_PASSAGE_SPACE_EXHAUSTED_WITHIN_SUPPORTED_PROFILE",rejected
 end
 
+
+-- Candidate Support Projection asks the existing per-conflict planner one
+-- bounded support question while retaining the complete parent Operational
+-- Picture as the evidence universe. It owns no inter-conflict selection.
+function Planner.planConflict(picture,snapshot,conflict)
+    if OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED~=true then return nil,"D0146_STEP2_DISABLED" end
+    if type(conflict)~="table" or conflict.classification~="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" then
+        return nil,"PROJECTED_RELATIONSHIP_NOT_ESTABLISHED_OPPOSED_CONFLICT"
+    end
+    if conflict.cooperativePassageEligible==false then return nil,"PROJECTED_CONFLICT_NOT_COOPERATIVE_PASSAGE_ELIGIBLE" end
+    return planConflict(picture,snapshot,conflict)
+end
+
 function Planner.plan(picture,snapshot)
     if OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED~=true then return nil,"D0146_STEP2_DISABLED" end
     local conflicts=establishedConflicts(picture)

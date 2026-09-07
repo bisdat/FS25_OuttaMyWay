@@ -812,6 +812,127 @@ local function followerMatchesCooperative(follower,record)
     return ids[follower.leaderAssemblyId]==true and ids[follower.followerAssemblyId]==true
 end
 
+
+local function projectedFitnessAdditions(values,baselineCount)
+    local result={}
+    local fitness=values.representationFitness or {}
+    for index=baselineCount+1,#fitness do result[#result+1]=fitness[index] end
+    return result
+end
+
+local function projectedOpposedRelation(picture,relationshipIdentity)
+    for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.opposedCorridorKnowledge or {}) do
+        if relation.identity==relationshipIdentity then return relation end
+    end
+    return nil
+end
+
+local function projectedActionSpaceGroup(self,picture,snapshot,values,targetPictureId,item)
+    local requirement=(item.action.admissionKind=="FORWARD_INTERSECTION" and "forward-intersection-regulation:" or "d0146-cooperative-passage:")..tostring(item.relation.identity)
+    local existing,existingReason=d0146ExistingCommitmentForRequirement(values,requirement)
+    if existingReason~=nil then return nil,existingReason end
+    local baseline=#(values.representationFitness or {})
+    local representationId=d0146ActionSpaceRepresentation(values,targetPictureId,item)
+    local specification=makeD0146ActionSpaceCandidate(targetPictureId,values,item,requirement,existing,representationId)
+    local action=item.action
+    logInfo("D0146_ACTION_SPACE_REGULATION_SUPPORTED conflict=%s classification=%s admission=%s regulated=%s protected=%s role=%s separation=%.2f overlap=%.2f native=%.2fkmh closureContribution=%.2fkmh moveForwards=%s envelope=BOUNDED_AUTHORITY_OWNED existingCommitment=%s",
+        tostring(item.relation.identity),tostring(item.relation.classification),tostring(action.admissionKind or "CURRENT_EXCURSION"),tostring(action.regulatedReferenceKey or action.regulatedAssemblyId),tostring(action.protectedReferenceKey or action.excursionReferenceKey or action.protectedAssemblyId or action.excursionAssemblyId),tostring(action.roleBasis or "CURRENT_EXCURSION_STABLE_PARTICIPANT"),
+        tonumber(action.separationM) or -1,tonumber(action.currentCorridorOverlap and action.currentCorridorOverlap.overlapM) or -1,
+        tonumber(action.nativeUnrestrictedKmh) or -1,tonumber(action.nativeClosureContributionKmh) or -1,tostring(action.nativeMoveForwards),tostring(existing or "NONE"))
+    return {
+        supportBoundary={mode="D0146_RESOLUTION_SPACE_REGULATION",supportedCandidateClasses={"REGULATE_SPEED"},physicalCapabilitiesImplemented=true,controlAuthority="D0155_RESOLUTION_SPACE_PROGRESSION_ENVELOPE",boundedScope="POTENTIAL_CURRENT_EXCURSION_OR_ESTABLISHED_OPPOSED_CONFLICT_INSIDE_LOCAL_PASSAGE_ENVELOPE_INCLUDING_SAME_FIELD_WORLD_ACTIVE_JOB_INTENT_REVELATION_PENDING",decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
+        candidateSpecifications={specification},
+        representationFitness=projectedFitnessAdditions(values,baseline),
+        provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,authority="D0146_RESOLUTION_SPACE_CONSERVATION"}
+    },nil
+end
+
+-- Candidate Support Projection asks one already-assessed prospective support
+-- question while retaining the complete parent Operational Picture as evidence.
+-- It returns a plain support-group fragment and never publishes a picture.
+function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId,targetEpoch)
+    OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
+    OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
+    if type(projection)~="table" or type(projection.kind)~="string" then return nil,"CANDIDATE_SUPPORT_PROJECTION_REQUIRED" end
+    if type(targetPictureId)~="string" or targetPictureId=="" or type(targetEpoch)~="number" then return nil,"TARGET_DECISION_PICTURE_REQUIRED" end
+
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    values.identity=targetPictureId
+    values.epoch=targetEpoch
+
+    if projection.kind=="FOLLOWER_BOUNDARY" then
+        local record,reason=followerBoundaryRecord(picture)
+        if record==nil then return nil,reason or "NO_FOLLOWER_BOUNDARY_SUPPORT" end
+        local baseline=#(values.representationFitness or {})
+        local representationId=followerRepresentation(values,targetPictureId,record)
+        local specification,requirement=followerSpecification(targetPictureId,values,record,representationId)
+        local decisionPolicy=nil
+        if specification.capability~="CONTINUE_UNCHANGED" then
+            decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}
+        end
+        return {
+            supportBoundary={mode="FOLLOWER_BOUNDARY_D0141",supportedCandidateClasses={specification.capability},physicalCapabilitiesImplemented=specification.capability=="REGULATE_SPEED",controlAuthority=false,boundedScope="CURRENT_ADJACENT_FOLLOWING_WITH_PROVISIONAL_DEMAND_SEED",decisionPolicy=decisionPolicy},
+            candidateSpecifications={specification},
+            representationFitness=projectedFitnessAdditions(values,baseline),
+            provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,authority="D0141_ALIGNED_FOLLOWER_BOUNDARY"}
+        },nil
+    end
+
+    if projection.kind=="GUARDED_RECOVERY" then
+        local guard,reason=activeGuardedRecovery(picture)
+        if guard==nil then return nil,reason or "NO_ACTIVE_GUARDED_RECOVERY" end
+        local specification,requirement=guardedRecoverySpecification(targetPictureId,values,guard)
+        return {
+            supportBoundary={mode="GUARDED_RECOVERY_D0123",supportedCandidateClasses={specification.capability},physicalCapabilitiesImplemented=specification.capability=="REGULATE_SPEED",controlAuthority=false,boundedScope="ACTIVE_GUARDED_RECOVERY_COMMITMENT",decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
+            candidateSpecifications={specification},
+            representationFitness={},
+            provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,authority="D0123_GUARDED_RECOVERY_ALIGNMENT"}
+        },nil
+    end
+
+    if projection.kind=="FORWARD_INTERSECTION" then
+        local item,reason=forwardIntersectionRecord(picture)
+        if item==nil then return nil,reason or "NO_FORWARD_INTERSECTION_SUPPORT" end
+        return projectedActionSpaceGroup(self,picture,snapshot,values,targetPictureId,item)
+    end
+
+    if projection.kind=="OPPOSED_RELATIONSHIP" then
+        if type(projection.relationshipIdentity)~="string" then return nil,"OPPOSED_RELATIONSHIP_ID_REQUIRED" end
+        local relation=projectedOpposedRelation(picture,projection.relationshipIdentity)
+        if relation==nil then return nil,"PROJECTED_OPPOSED_RELATIONSHIP_NOT_FOUND" end
+
+        local passageReason=nil
+        if relation.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" and relation.cooperativePassageEligible~=false then
+            local plan,reason=OuttaMyWay.LocalPassagePlanner.planConflict(picture,snapshot,relation)
+            passageReason=reason
+            if plan~=nil then
+                if type(plan.progressiveSearch)=="table" then
+                    plan.progressiveSearch.conflictSelection="ONE_CONFLICT_SUPPORT_PROJECTION_NO_INTER_CONFLICT_SELECTION"
+                end
+                local governingRequirementKey=d0146RequirementKey(plan)
+                local specification=makeD0146PassageCandidate(targetPictureId,values,plan,governingRequirementKey)
+                logInfo("D0146_PASSAGE_SUPPORTED conflict=%s separation=%.2f entryReady=%s targetPicture=%s projection=true",
+                    tostring(plan.conflictIdentity),tonumber(plan.separationM) or -1,tostring(plan.passageEntry and plan.passageEntry.ready==true),tostring(targetPictureId))
+                return {
+                    supportBoundary={mode="D0146_COOPERATIVE_PASSAGE_STEP2_TEST",supportedCandidateClasses={"REPOSITION"},physicalCapabilitiesImplemented=true,controlAuthority="D0146_BOUNDED_ACTIVE_TEST",boundedScope="ESTABLISHED_CONFLICT_CONFIGURATION_FIRST_PAIR_SPECIFIC_CLEARANCE_WITH_OPERATION_AWARE_LOCAL_SPACE",king=false,refuge=false,vehicleNameAdmissionGate=false,generalVehicleAuthority=false,decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=governingRequirementKey}},
+                    candidateSpecifications={specification},
+                    representationFitness={},
+                    provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,authority="D0146_STEP2_ACTIVE_TEST",operatorCommandRequired=false}
+                },nil
+            end
+        end
+
+        local action=relation.actionSpaceConservation
+        if (relation.classification=="POTENTIAL_OPPOSED_CORRIDOR_CONFLICT" or relation.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
+            and type(action)=="table" and action.status=="REGULATE_SUPPORTED" and action.supported==true then
+            return projectedActionSpaceGroup(self,picture,snapshot,values,targetPictureId,{relation=relation,action=action})
+        end
+        return nil,passageReason or "PROJECTED_OPPOSED_RELATIONSHIP_HAS_NO_SUPPORTED_CANDIDATE"
+    end
+
+    return nil,"UNSUPPORTED_CANDIDATE_SUPPORT_PROJECTION_KIND:"..tostring(projection.kind)
+end
+
 function Support:attach(picture,snapshot)
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
     OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
