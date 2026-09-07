@@ -17,5 +17,10 @@ function Evaluator.evaluate(candidate,operationalPicture)
         end
         return OuttaMyWay.ConstraintEvidence.pass("Bounded Observation Contract is complete",{contract=contract},{operationalPictureId=operationalPicture.identity},{kind="BOUNDED_OBSERVATION_EXHAUSTION",deadline=contract.reassessmentDeadline})
     end
-    return OuttaMyWay.ConstraintEvidence.fromCandidate(candidate,Evaluator.id)
+    return OuttaMyWay.ConstraintEvidence.pass(
+        "No additional Commitment precondition is owned by this evaluator",
+        {},
+        {operationalPictureId=operationalPicture.identity},
+        {kind="CANDIDATE_CHANGE"}
+    )
 end

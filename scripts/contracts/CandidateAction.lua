@@ -9,25 +9,26 @@ local allowedCapabilities = {
     ESCALATE=true
 }
 
-local forbiddenSelectionFields = {
+local forbiddenDownstreamAuthorityFields = {
     selected=true,
     selectedCandidateId=true,
     admissible=true,
     viable=true,
     commitmentAction=true,
-    controlRequest=true
+    controlRequest=true,
+    constraintEvidence=true
 }
 
-local function rejectSelection(value, path, seen)
+local function rejectDownstreamAuthority(value, path, seen)
     if type(value) ~= "table" then return end
     seen = seen or {}
     if seen[value] then return end
     seen[value] = true
     for key,item in OuttaMyWay.ValueRecord.pairs(value) do
-        if forbiddenSelectionFields[key] then
-            error("CandidateAction contains forbidden selection field " .. path .. tostring(key),3)
+        if forbiddenDownstreamAuthorityFields[key] then
+            error("CandidateAction contains forbidden downstream authority field " .. path .. tostring(key),3)
         end
-        rejectSelection(item,path .. tostring(key) .. ".",seen)
+        rejectDownstreamAuthority(item,path .. tostring(key) .. ".",seen)
     end
 end
 
@@ -47,7 +48,7 @@ OuttaMyWay.CandidateAction = OuttaMyWay.ValueRecord.register(
             if type(values.comparisonCost) ~= "number" or values.comparisonCost < 0 then
                 error("CandidateAction comparisonCost must be a non-negative number",3)
             end
-            rejectSelection(values,"")
+            rejectDownstreamAuthority(values,"")
         end
     )
 )

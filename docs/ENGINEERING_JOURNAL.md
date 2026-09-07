@@ -3331,3 +3331,15 @@ Run #147 exposed the final companion literal in the same pre-1.0 versioning cont
 **Discovery — TEST Build Identity Is Executable Provenance.** A TEST build string identifies the executable bytes under validation. Reusing it after an executable-code change makes later Reality evidence ambiguous even when Git commits remain distinct.
 
 **Decision.** Root `AGENTS.md` now owns the standing workflow rule: every pushed executable-code revision must increment the TEST `BUILD` component and update all current build-identity surfaces atomically before PR/CI/field validation. Historical evidence is never renumbered. The present branch advances to `0.3.0.17 TEST — CAUSAL OBSTRUCTION RELOCATION` as an identity-only correction after the repaired `0.3.0.16` Reality PASS; no new behavioural claim is attached to the version-only change.
+
+## 2026-09-07 — Phase 13 Constraint Verdict Ownership
+
+**Observation:** the Phase-13 closure audit found seven nominal mandatory Constraint evaluators that did not independently evaluate a bounded question; they re-labelled Candidate-authored verdict packets. Four evaluators performed independent work.
+
+**Discoveries:** **Candidate Evidence != Constraint Verdict**, **Candidate Self-Attestation != Constraint Evaluation**, **Planning Feasibility != Constraint Re-evaluation**, and **Release Contract != Pre-Decision Verdict**.
+
+**Decision:** `.18` removes Candidate-owned verdict authority at the canonical Candidate boundary, retires the seven pass-through evaluators, and retains only Representation Fitness, Responsibility Compatibility, Commitment Preconditions, and Effective Actuation Composition as independently evaluated mandatory Constraint questions. Useful planning evidence is preserved without `result`/`applicable` authority.
+
+**Hypothesis:** this is behaviour-preserving for supported production paths because the removed verdicts duplicated conclusions already established during planning or enforced later at their truthful lifecycle/Control boundaries. CI is the first independent validation; GIANTS Reality will be requested only if the resulting evidence justifies it.
+
+**Deferred:** **Preselection != Candidate Enumeration** remains the final Phase-13 closure question. Generic multi-context Commitment application remains an acceptable fail-closed current limit pending a concrete supported consumer.

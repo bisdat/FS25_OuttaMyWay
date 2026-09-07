@@ -2,18 +2,13 @@ OuttaMyWay.ConstraintEngine={}
 local Engine=OuttaMyWay.ConstraintEngine
 Engine.__index=Engine
 
+-- Phase 13: only independently evaluated bounded questions are mandatory
+-- Constraint verdicts. Candidate planning evidence is not a verdict source.
 local evaluatorNames={
-    "FieldWorldContainmentConstraint",
-    "TransitionClearanceConstraint",
     "RepresentationFitnessConstraint",
-    "CapabilityAvailabilityConstraint",
-    "ContinuingIntentPriorityConstraint",
-    "ProgressPreservationConstraint",
     "ResponsibilityCompatibilityConstraint",
-    "ObligationCompatibilityConstraint",
     "CommitmentPreconditionsConstraint",
-    "EffectiveActuationCompositionConstraint",
-    "ReleaseSafetyConstraint"
+    "EffectiveActuationCompositionConstraint"
 }
 
 function Engine.new(identityRegistry,epochSequence)

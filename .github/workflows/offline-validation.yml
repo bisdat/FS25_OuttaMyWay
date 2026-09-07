@@ -32,7 +32,7 @@ jobs:
         run: python -m pip install pytest
 
       - name: Run structural/source-contract suite
-        run: python -m pytest -q tests/test_replacement_core_structure.py tests/test_obstruction_relocation_structure.py
+        run: python -m pytest -q tests/test_replacement_core_structure.py tests/test_obstruction_relocation_structure.py tests/test_constraint_verdict_ownership_structure.py
 
   lua-observation:
     name: Lua offline observation (non-blocking)
@@ -52,7 +52,7 @@ jobs:
           echo "LUAJIT_BIN=$RUNNER_TEMP/luajit/src/luajit" >> "$GITHUB_ENV"
           "$RUNNER_TEMP/luajit/src/luajit" -v
 
-      - name: Check obstruction-relocation Lua syntax
+      - name: Check changed runtime Lua syntax
         run: |
           for file in \
             scripts/authority/AuthorityRegistry.lua \
@@ -63,6 +63,13 @@ jobs:
             scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua \
             scripts/commitment/TerminalSettlementEvaluator.lua \
             scripts/config.lua \
+            scripts/contracts/CandidateAction.lua \
+            scripts/candidates/CandidateSpace.lua \
+            scripts/constraints/ConstraintEvidence.lua \
+            scripts/constraints/ConstraintEngine.lua \
+            scripts/constraints/evaluators/ResponsibilityCompatibility.lua \
+            scripts/constraints/evaluators/CommitmentPreconditions.lua \
+            scripts/constraints/evaluators/EffectiveActuationComposition.lua \
             scripts/contracts/CommitmentRecord.lua \
             scripts/control/LiveControlDispatcher.lua \
             scripts/control/ObstructionRelocationControl.lua \

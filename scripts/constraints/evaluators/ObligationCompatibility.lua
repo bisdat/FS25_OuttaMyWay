@@ -1,6 +1,0 @@
-OuttaMyWay.ObligationCompatibilityConstraint={}
-OuttaMyWay.ObligationCompatibilityConstraint.id="OBLIGATION_COMPATIBILITY"
-OuttaMyWay.ObligationCompatibilityConstraint.owner="ObligationCompatibilityConstraint"
-function OuttaMyWay.ObligationCompatibilityConstraint.evaluate(candidate,operationalPicture)
-    return OuttaMyWay.ConstraintEvidence.fromCandidate(candidate,OuttaMyWay.ObligationCompatibilityConstraint.id)
-end
