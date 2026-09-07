@@ -8,15 +8,21 @@ local function logWarning(formatText,...)
 end
 
 function Dispatcher.new(runtime)
-    return setmetatable({runtime=runtime,capability=nil,cooperativePassageControl=nil,terminalEgressControl=nil,outcomes={},dispatchCount=0},Dispatcher)
+    return setmetatable({runtime=runtime,capability=nil,cooperativePassageControl=nil,terminalEgressControl=nil,obstructionRelocationControl=nil,outcomes={},dispatchCount=0},Dispatcher)
 end
 
 function Dispatcher:setCapability(capability) self.capability=capability end
 function Dispatcher:setCooperativePassageControl(control) self.cooperativePassageControl=control end
 function Dispatcher:setTerminalEgressControl(control) self.terminalEgressControl=control end
+function Dispatcher:setObstructionRelocationControl(control) self.obstructionRelocationControl=control end
 
 function Dispatcher:getTerminalEgressObservation()
     if self.terminalEgressControl~=nil and type(self.terminalEgressControl.getControlExecutionObservation)=="function" then return self.terminalEgressControl:getControlExecutionObservation() end
+    return nil
+end
+
+function Dispatcher:getObstructionRelocationObservation()
+    if self.obstructionRelocationControl~=nil and type(self.obstructionRelocationControl.getControlExecutionObservation)=="function" then return self.obstructionRelocationControl:getControlExecutionObservation() end
     return nil
 end
 
@@ -47,6 +53,13 @@ function Dispatcher:dispatch(request,candidate)
         if target.kind=="D0147_BOUNDED_TERMINAL_EGRESS" then
             local control=self.terminalEgressControl
             if control==nil or type(control.executeControlRequest)~="function" then return false,"TERMINAL_EGRESS_CONTROL_UNAVAILABLE" end
+            local started,result=control:executeControlRequest(request,candidate)
+            if started==true then self.dispatchCount=self.dispatchCount+1 end
+            return started,result
+        end
+        if target.kind=="CAUSAL_OBSTRUCTION_RELOCATION" then
+            local control=self.obstructionRelocationControl
+            if control==nil or type(control.executeControlRequest)~="function" then return false,"OBSTRUCTION_RELOCATION_CONTROL_UNAVAILABLE" end
             local started,result=control:executeControlRequest(request,candidate)
             if started==true then self.dispatchCount=self.dispatchCount+1 end
             return started,result

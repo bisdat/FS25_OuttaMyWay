@@ -20,25 +20,13 @@ direct-Passage substrate targeting, `Key Match Is Not Lifecycle Match`, and
 
 ### Phase 13 / Issue #33 — Causal Obstruction
 
-**Validated acquisition tranche:** PR #57 / `0.3.0.14 TEST` established that a
-cold non-active Physical Assembly can enter Observation from current GIANTS
-mission Reality, receive a positive Field World member-position witness and
-remain runtime-addressable without prior Job Episode or retained-worker history.
-The normal `0.3.0.14_b` smoke run also preserved the existing warm D-0147
-terminal-resolution mechanics.
+**Validated relocation tranche:** PR #59 now has owner-supplied Farming Simulator Reality evidence for the repaired `0.3.0.16 TEST — CAUSAL OBSTRUCTION RELOCATION` executable. A cold Condor with no qualifying historical Job Episode was recognised as `NON_ACTIVE_UNCLAIMED` Causal Obstruction while native `blocked=false`; one relocation responsibility was established for the current Operation/blocker pair, Patriot was protected by a temporary hold, and Condor executed one fixed centroid-bearing courtesy bounded to 60 m.
 
-**Current implementation hypothesis:** acquisition alone is insufficient for
-Causal Obstruction. The next bounded tranche adds a current positive-conflict
-representation for an already-witnessed physical-only assembly, with incomplete
-coverage and no negative-clearance authority, then lets Situation Assessment
-establish generic Causal Obstruction when that physical subject positively
-occupies an active supported worker's current or supported continuation space.
+The first field run validated recognition, authority, hold and physical relocation but exposed **Post-Manoeuvre Settlement Gap**: Control completion was not reaching fresh Situation assessment because the outcome payload overwrote the outer `OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION` envelope kind. The bounded correction preserves the outer Observation identity and carries the narrower completion classification as `outcomeEvidenceKind`. The repeat Reality run then showed Causal Obstruction cessation, `MANOEUVRE_COMPLETE` with `semanticResolutionNotInferred=true`, and fresh positive beneficiary continuation followed by `OBJECTIVE_SATISFIED` / terminal `SUCCEEDED`. Manoeuvre completion therefore remains distinct from semantic Resolution.
 
-This tranche stops at Situation knowledge. It creates no Candidate, Resolution
-Commitment, Bounded Authority or Control request, does not fabricate
-`terminalEpisodeId`, and does not alter D-0147 Candidate/Control mechanics.
-Native GIANTS `blocked` remains diagnostic only and is not a Causal Obstruction
-admission prerequisite.
+The generic cold-blocker path authorises only the first courtesy because current physical representation still has positive/incomplete authority and cannot truthfully support D-0147's second boundary-away clearance claim. Warm D-0147 retains its existing two-stage donor behaviour. Native GIANTS `blocked` remains diagnostic only.
+
+The successful repaired executable still emitted `0.3.0.16`, an identity already used by materially different earlier bytes. Before PR merge the repository test identity therefore advances to **`0.3.0.17 TEST — CAUSAL OBSTRUCTION RELOCATION`** as an identity/provenance-only correction; no runtime behaviour changes with that increment. Canonical authority remains `v0.3.0.0`.
 
 
 After PR #54 acceptance, Phase 13 resumed at the remaining
