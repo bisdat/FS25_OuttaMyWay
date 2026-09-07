@@ -4,9 +4,9 @@ Continuation State is the compact, replace-in-place description of the project's
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #72 merge, commit `0f6d8aca7f3765d90ac07c580f08dec67f3d7779`.
+- Accepted Repository State baseline for this increment: `main` after PR #73 merge, commit `38699140270cee29836c22124b4199a5087031c7`.
 - Canonical authority remains **v0.3.0.0**.
-- Last accepted non-canonical playable identity is **`0.3.0.20 TEST — CANDIDATE SUPPORT PROJECTION`**.
+- Last accepted non-canonical playable identity is **`0.3.0.21 TEST — REGULATION CONTROL BOUNDARY`**.
 - PR #70 passed Offline Validation Run #187 blocking Structural contracts and changed-runtime Lua syntax, then passed owner GIANTS Reality validation before merge.
 - Issue #68 is closed as the `.19` failure / `.20` correction record.
 
@@ -15,7 +15,7 @@ Continuation State is the compact, replace-in-place description of the project's
 - Phase 11 — Reduce `LiveControlDispatcher` to Authorised Control Routing — **COMPLETE**.
 - Phase 12 — Retire superseded generic Commitment/orchestration only when no supported path relies on it — **COMPLETE**.
 - Phase 13 — Simplify Candidate/Constraint/Decision only where evidence proves duplication — **COMPLETE**.
-- Phase 14 — Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming — **IN PROGRESS — 14.1 REGULATION CONTROL BOUNDARY**.
+- Phase 14 — Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming — **IN PROGRESS — 14.2 PHYSICAL CAPABILITY GRADUATION**.
 - Phase 15 — Whole-system validation and architecture-to-runtime review — **NOT STARTED**.
 
 Read [Phase 13 Closure Audit](architecture/PHASE_13_CLOSURE_AUDIT.md) for the closure evidence and responsibility verdicts.
@@ -109,8 +109,12 @@ These are not Phase-13 closure blockers.
 
 ## Immediate next action
 
-Validate **Phase 14.1 — Production Regulation Control Boundary**.
+Validate **Phase 14.2 — Physical Capability Graduation**.
 
-The candidate separates production `REGULATE_SPEED` request execution, raw execution observation and fail-safe lease cleanup from the manual `Prototype22CapabilityGate`, while deliberately reusing the exact existing `Prototype22DriveAuthority` mechanism.
+The candidate re-homes the proven Hold, Drive and Configuration mechanisms under
+production Control placement, makes `main.lua` the production composition root,
+and leaves `Prototype22CapabilityGate` as a manual client.
 
-Do not begin Phase 14.2 until 14.1 has blocking CI evidence and owner GIANTS behaviour-preservation smoke. The minimum Reality smoke is one ordinary Regulation apply/release episode plus one ordinary Cooperative Passage proving the shared donor remains intact.
+Do not begin Phase 14.3 until blocking CI and owner GIANTS preservation evidence
+cover Regulation, Cooperative Passage including Transit configuration where
+available, warm D-0147, and cold D-0218.

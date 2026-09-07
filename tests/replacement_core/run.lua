@@ -106,9 +106,9 @@ load("scripts/diagnostics/GuardedRecoveryConvergenceProbe.lua")
 load("scripts/observation/NativeManoeuvreObservationSource.lua")
 load("scripts/diagnostics/FollowerMaturationCompressionProbe.lua")
 load("scripts/diagnostics/ProgressionPreservationProbe.lua")
-load("scripts/prototypes/Prototype22PermissionGate.lua")
-load("scripts/prototypes/Prototype22DriveAuthority.lua")
-load("scripts/prototypes/Prototype22ConfigurationAuthority.lua")
+load("scripts/control/mechanisms/FieldWorkHoldMechanism.lua")
+load("scripts/control/mechanisms/NativeDriveMechanism.lua")
+load("scripts/control/mechanisms/TransitConfigurationMechanism.lua")
 load("scripts/prototypes/Prototype22CapabilityGate.lua")
 load("scripts/control/CooperativePassageControl.lua")
 load("scripts/control/TerminalEgressControl.lua")
@@ -2920,7 +2920,7 @@ end)
 test("D-0130 regulation leases compose by least-permissive cap and release independently", function()
     local oldAIVehicleUtil=AIVehicleUtil
     AIVehicleUtil={driveToPoint=function(...) return true end}
-    local authority=OuttaMyWay.Prototype22DriveAuthority.new()
+    local authority=OuttaMyWay.NativeDriveMechanism.new()
     local vehicle={name="Patriot"}
     local ok=authority:setRegulationLease(vehicle,17.1,"MATURATION")
     equal(ok,true)
@@ -2946,7 +2946,7 @@ test("D-0186 Regulation-Hold Boundary maps zero cap to GIANTS no-drive permissio
         calls[#calls+1]={allowed=isAllowedToDrive,maxSpeed=maxSpeed,moveForwards=moveForwards}
         return true
     end}
-    local authority=OuttaMyWay.Prototype22DriveAuthority.new()
+    local authority=OuttaMyWay.NativeDriveMechanism.new()
     local vehicle={name="Patriot"}
 
     equal(authority:setRegulationLease(vehicle,10.0,"TRAFFIC"),true)
@@ -5097,9 +5097,9 @@ end
 local function passageVacaturControl(runtime,commitmentId,assemblyA,assemblyB,vehicleA,vehicleB)
     local drive,holds,configuration={},{},{}
     local donor={
-        driveAuthority={clear=function(self,v) drive[v]=nil end,getState=function(self,v) return drive[v] end},
-        permissionGate={release=function(self,v) holds[v]=nil end,isHolding=function(self,v) return holds[v]~=nil end,setHold=function(self,v) holds[v]=true; return true end},
-        configurationAuthority={clear=function(self,v) configuration[v]=nil end,getState=function(self,v) return configuration[v] end}
+        driveMechanism={clear=function(self,v) drive[v]=nil end,getState=function(self,v) return drive[v] end},
+        holdMechanism={release=function(self,v) holds[v]=nil end,isHolding=function(self,v) return holds[v]~=nil end,setHold=function(self,v) holds[v]=true; return true end},
+        configurationMechanism={clear=function(self,v) configuration[v]=nil end,getState=function(self,v) return configuration[v] end}
     }
     local control=OuttaMyWay.CooperativePassageControl.new(runtime,donor)
     local function participant(id,vehicle)
@@ -5132,9 +5132,9 @@ test("D0217 physical vacatur precedes leg BA and AU release",function()
         equal(runtime.authorities:ownerOf("AS-A"),commitmentId)
         local result,reason=vacate(self,...)
         equal(result.disposition,"VACATED")
-        equal(donor.driveAuthority:getState(participant.vehicle),nil)
-        equal(donor.permissionGate:isHolding(participant.vehicle),false)
-        equal(donor.configurationAuthority:getState(participant.vehicle),nil)
+        equal(donor.driveMechanism:getState(participant.vehicle),nil)
+        equal(donor.holdMechanism:isHolding(participant.vehicle),false)
+        equal(donor.configurationMechanism:getState(participant.vehicle),nil)
         equal(continued(),0)
         boundaries[#boundaries+1]="PHYSICAL"
         return result,reason
@@ -5162,8 +5162,8 @@ test("D0217 rejected survivor permission fails held and retires stale BA",functi
     equal(result[1].failureReason,"TEST_REBIND_REJECTED")
     equal(control.run.failureReason,"SURVIVOR_AUTHORITY_REBIND_FAILED:TEST_REBIND_REJECTED")
     equal(control.run.phase,"FAILED_HELD"); equal(continued(),0)
-    equal(donor.permissionGate:isHolding(control.run.b.vehicle),true)
-    equal(donor.driveAuthority:getState(control.run.b.vehicle),nil)
+    equal(donor.holdMechanism:isHolding(control.run.b.vehicle),true)
+    equal(donor.driveMechanism:getState(control.run.b.vehicle),nil)
     equal(runtime.boundedAuthority:isCurrent(old.boundedAuthorityId),false)
     equal(runtime.boundedAuthority:validateRequest(old),false)
     equal(currentBoundedAuthorityGrant(runtime,"AS-B"),nil)
@@ -5174,7 +5174,7 @@ end)
 test("D0217 physical neutralisation refusal retains leg authority",function()
     local runtime,commitmentId=passageLegRuntime()
     local control,donor,continued=passageVacaturControl(runtime,commitmentId,"AS-A","AS-B")
-    donor.configurationAuthority.clear=function() end
+    donor.configurationMechanism.clear=function() end
     local old=control.run.a.request
     local result=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageParticipantLosses(runtime,{endedEpisodeIds={"JE-A"}},{identity="OBS-NEUTRALISATION-FAIL"})
     equal(result[1].failureReason,"PASSAGE_PHYSICAL_VACATUR_FAILED:CONTROL_PHYSICAL_EFFECT_REMAINS")
@@ -5302,7 +5302,7 @@ test("D0217 former-participant hard safety distinguishes Job Episode end from ph
     localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
 
     local control=OuttaMyWay.CooperativePassageControl.new({},{
-        permissionGate={},driveAuthority={},configurationAuthority={}
+        holdMechanism={},driveMechanism={},configurationMechanism={}
     })
     local envelope={minRightM=-1,maxRightM=1,minForwardM=-1,maxForwardM=1}
     local former={
@@ -5364,9 +5364,9 @@ end)
 
 test("D0217 unexpected Bounded Authority loss during a live Passage Leg remains fail closed",function()
     local donor={
-        permissionGate={setHold=function() return true end,release=function() return true end},
-        driveAuthority={clear=function() end},
-        configurationAuthority={clear=function() end,getState=function() return nil end}
+        holdMechanism={setHold=function() return true end,release=function() return true end},
+        driveMechanism={clear=function() end},
+        configurationMechanism={clear=function() end,getState=function() return nil end}
     }
     local runtime={boundedAuthority={isCurrent=function() return false end},authorities={tokensForCommitment=function() return {} end}}
     local control=OuttaMyWay.CooperativePassageControl.new(runtime,donor)
@@ -5383,9 +5383,9 @@ test("D0217 transient unavailable raw Job token does not vacate a live Passage L
     OuttaMyWay.LiveAIJobEvidence.jobToken=function() return nil end
     local notified=0
     local donor={
-        permissionGate={setHold=function() return true end,release=function() return true end},
-        driveAuthority={clear=function() end,getState=function() return {targetReached=false} end},
-        configurationAuthority={clear=function() end,getState=function() return nil end}
+        holdMechanism={setHold=function() return true end,release=function() return true end},
+        driveMechanism={clear=function() end,getState=function() return {targetReached=false} end},
+        configurationMechanism={clear=function() end,getState=function() return nil end}
     }
     local control=OuttaMyWay.CooperativePassageControl.new({boundedAuthority={isCurrent=function() return true end}},donor)
     control:setCompletionHandler(function() notified=notified+1 end)
@@ -5425,16 +5425,16 @@ test("D0217 raw Job contradiction waits for semantic lifecycle instead of fail-h
             [vehicleB]={mode="REPOSITION"}
         }
         local donor={
-            permissionGate={
+            holdMechanism={
                 setHold=function(self,vehicle) holds[vehicle]=true; return true end,
                 release=function(self,vehicle) holds[vehicle]=nil; return true end,
                 isHolding=function(self,vehicle) return holds[vehicle]~=nil end
             },
-            driveAuthority={
+            driveMechanism={
                 clear=function(self,vehicle) driveStates[vehicle]=nil end,
                 getState=function(self,vehicle) return driveStates[vehicle] end
             },
-            configurationAuthority={
+            configurationMechanism={
                 clear=function() end,
                 getState=function() return nil end
             }
@@ -5523,9 +5523,9 @@ test("D0146 Passage Approach stays native until Entry Boundary then begins settl
     OuttaMyWay.LiveAIJobEvidence.jobToken=function(job) return job and job.token end
     local holds=0
     local donor={
-        permissionGate={setHold=function() holds=holds+1; return true end,release=function() return true end,getCallCount=function() return 1 end},
-        driveAuthority={clear=function() end,getState=function() return {targetReached=false} end},
-        configurationAuthority={getState=function() return nil end,getEvidence=function() return {allDeployed=true,allFolded=false} end}
+        holdMechanism={setHold=function() holds=holds+1; return true end,release=function() return true end,getCallCount=function() return 1 end},
+        driveMechanism={clear=function() end,getState=function() return {targetReached=false} end},
+        configurationMechanism={getState=function() return nil end,getEvidence=function() return {allDeployed=true,allFolded=false} end}
     }
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     control.run={
@@ -5559,7 +5559,7 @@ test("D0146 execution-origin capture rebases short Development ahead of stopped 
     getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
     localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
     OuttaMyWay.LiveAIJobEvidence.fieldAtPosition=function() return {resolved=true,sourceFieldId=1} end
-    local donor={permissionGate={},driveAuthority={},configurationAuthority={}}
+    local donor={holdMechanism={},driveMechanism={},configurationMechanism={}}
     local runtime={assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
         return {members={{memberReferenceKey=tostring(referenceKey),lateralOffsetM=0,forwardOffsetM=0,headingX=fx,headingZ=fz}}}
     end}}
@@ -5597,7 +5597,7 @@ test("D0217 vacatur before execution-origin rebase preserves survivor guide geom
     local runtime={assemblyRepresentationCache={getAssemblyAlignmentSnapshot=function(self,referenceKey,jobToken,originX,originZ,fx,fz)
         return {members={{memberReferenceKey=tostring(referenceKey),lateralOffsetM=0,forwardOffsetM=0,headingX=fx,headingZ=fz}}}
     end}}
-    local control=OuttaMyWay.CooperativePassageControl.new(runtime,{permissionGate={},driveAuthority={},configurationAuthority={}})
+    local control=OuttaMyWay.CooperativePassageControl.new(runtime,{holdMechanism={},driveMechanism={},configurationMechanism={}})
     control.run={
         mode="D0146_GUIDE",commitmentId="CM-REBASE-VACATED",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
         passageArrangement={subjectLateralOffsetM=1,otherLateralOffsetM=-1},
@@ -5622,11 +5622,11 @@ test("D0146 settling accepts owned Hold plus physical stationary state even when
     local vehicleA={rootNode=1351,lastSpeedReal=0}; local vehicleB={rootNode=1352,lastSpeedReal=0}
     local held={[vehicleA]=true,[vehicleB]=true}
     local donor={
-        permissionGate={
+        holdMechanism={
             isHolding=function(self,vehicle) return held[vehicle]==true end,
             getCallCount=function() return 0 end
         },
-        driveAuthority={},configurationAuthority={}
+        driveMechanism={},configurationMechanism={}
     }
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     local run={participants={{vehicle=vehicleA},{vehicle=vehicleB}}}
@@ -5680,7 +5680,7 @@ test("D0179 cached Transit actuator waits for requested endpoint and then settle
     local implement={spec_foldable={foldAnimTime=0},getToggledFoldDirection=function() return 1 end,setFoldDirection=function(self,direction) self.requested=direction end}
     local vehicle={rootNode=1363}
     local capability={isFoldable=true,members={vehicle,implement},actuators={{object=implement,memberReferenceKey="member-root:1364"}},settlementTimeoutMs=10000}
-    local authority=OuttaMyWay.Prototype22ConfigurationAuthority.new()
+    local authority=OuttaMyWay.TransitConfigurationMechanism.new()
     local ok=authority:prepareCachedTransit(vehicle,capability); equal(ok,true); equal(implement.requested,1)
     local pending=authority:getCachedTransitSettlement(vehicle); equal(pending.settled,false); equal(pending.exhausted,false)
     implement.spec_foldable.foldAnimTime=0.5; g_time=6000
@@ -5694,7 +5694,7 @@ test("D0179 cached Transit settlement exhaustion removes configuration veto with
     local implement={spec_foldable={foldAnimTime=0},getToggledFoldDirection=function() return 1 end,setFoldDirection=function(self,direction) self.requested=direction end}
     local vehicle={rootNode=1365}
     local capability={isFoldable=true,members={vehicle,implement},actuators={{object=implement,memberReferenceKey="member-root:1366"}},settlementTimeoutMs=2000}
-    local authority=OuttaMyWay.Prototype22ConfigurationAuthority.new()
+    local authority=OuttaMyWay.TransitConfigurationMechanism.new()
     equal(authority:prepareCachedTransit(vehicle,capability),true)
     g_time=2500; local pending=authority:getCachedTransitSettlement(vehicle); equal(pending.settled,false)
     g_time=3001; local exhausted=authority:getCachedTransitSettlement(vehicle); equal(exhausted.settled,true); equal(exhausted.exhausted,true); equal(exhausted.normal,false); equal(exhausted.settledCount,0)
@@ -5705,7 +5705,7 @@ test("D0179 TRANSIT_BASE Control consumes cached foldability and bounded settlem
     local capability={isFoldable=true,actuatorCount=1,expectedFoldDurationMs=6000,settlementTimeoutMs=11000,source="TEST",members={vehicle},actuators={{object=vehicle}}}
     local settlement={settled=false,exhausted=false,settledCount=0,actuatorCount=1,elapsedMs=1000,timeoutMs=11000}
     local cache={getTransitFoldCapability=function(self,reference,token) return capability end,beginOuttaMyWayConfigurationAuthority=function() end,endOuttaMyWayConfigurationAuthority=function() end}
-    local donor={permissionGate={},driveAuthority={},configurationAuthority={prepareCachedTransit=function() return true,{owned=true} end,getCachedTransitSettlement=function() return settlement end,requestRestore=function() return true end}}
+    local donor={holdMechanism={},driveMechanism={},configurationMechanism={prepareCachedTransit=function() return true,{owned=true} end,getCachedTransitSettlement=function() return settlement end,requestRestore=function() return true end}}
     local control=OuttaMyWay.CooperativePassageControl.new({assemblyRepresentationCache=cache},donor)
     local participant={vehicle=vehicle,name="folding",assemblyId="AS-F",referenceKey="vehicle-root:1367",startJobToken="JOB-F",configurationMode="TRANSIT_REQUIRED"}
     local run={mode="D0146_GUIDE",commitmentId="CM-D0179",phase="SETTLING",participants={participant}}
@@ -5717,7 +5717,7 @@ end)
 test("D0179 non-foldable bootstrap capability is immediate non-veto and no live fold discovery occurs",function()
     local vehicle={rootNode=1368}
     local cache={getTransitFoldCapability=function() return {isFoldable=false,actuatorCount=0,expectedFoldDurationMs=0,settlementTimeoutMs=30000,source="TEST"} end}
-    local donor={permissionGate={},driveAuthority={},configurationAuthority={prepareCachedTransit=function() error("non-foldable capability must not actuate") end,getCachedTransitSettlement=function() error("non-foldable capability must not wait") end,requestRestore=function() return true end}}
+    local donor={holdMechanism={},driveMechanism={},configurationMechanism={prepareCachedTransit=function() error("non-foldable capability must not actuate") end,getCachedTransitSettlement=function() error("non-foldable capability must not wait") end,requestRestore=function() return true end}}
     local control=OuttaMyWay.CooperativePassageControl.new({assemblyRepresentationCache=cache},donor)
     control._rebaseD0146Guide=function() return true,nil end
     control._startGuideGate=function() return true,nil end
@@ -5728,7 +5728,7 @@ end)
 
 test("D0181 Cooperative Passage configuration rejects any non-Transit mode",function()
     local vehicle={rootNode=1371}
-    local donor={permissionGate={},driveAuthority={},configurationAuthority={requestRestore=function() return true end}}
+    local donor={holdMechanism={},driveMechanism={},configurationMechanism={requestRestore=function() return true end}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     local run={mode="D0146_GUIDE",commitmentId="CM-NON-TRANSIT",phase="SETTLING",participants={{vehicle=vehicle,name="A",assemblyId="AS-A",configurationMode="LEGACY_MODE"}}}
     local ok,reason=control:_beginD0146Configuration(run)
@@ -5739,9 +5739,9 @@ test("D0146 failed guide holds compact configuration without restore request",fu
     local vehicleA={rootNode=1001}; local vehicleB={rootNode=1002}
     local restoreRequests=0; local holds=0; local clears=0
     local donor={
-        permissionGate={setHold=function(self,vehicle,owner) holds=holds+1; return true end},
-        driveAuthority={clear=function(self,vehicle) clears=clears+1 end},
-        configurationAuthority={
+        holdMechanism={setHold=function(self,vehicle,owner) holds=holds+1; return true end},
+        driveMechanism={clear=function(self,vehicle) clears=clears+1 end},
+        configurationMechanism={
             getState=function(self,vehicle) return {owned=true} end,
             requestRestore=function(self,vehicle) restoreRequests=restoreRequests+1; return true end
         }
@@ -5765,13 +5765,13 @@ test("D0146 native blocked signal does not independently abort an active guide",
     local vehicleB={rootNode=1102,spec_aiFieldWorker={isBlocked=false},lastSpeedReal=0}
     local reached=false; local restoreRequests=0
     local donor={
-        permissionGate={setHold=function() return true end,release=function() return true end,getCallCount=function() return 1 end},
-        driveAuthority={
+        holdMechanism={setHold=function() return true end,release=function() return true end,getCallCount=function() return 1 end},
+        driveMechanism={
             clear=function() end,
             getState=function(self,vehicle) return {targetReached=reached} end,
             setReposition=function() return true end
         },
-        configurationAuthority={
+        configurationMechanism={
             getState=function() return nil end,
             getEvidence=function() return {allDeployed=true,allFolded=false} end,
             requestRestore=function() restoreRequests=restoreRequests+1; return true end
@@ -6320,7 +6320,7 @@ test("D0183 cached restoration commands only physically changed cached Transit a
     local unrelated={spec_foldable={foldAnimTime=0},getToggledFoldDirection=function() return 1 end,setFoldDirection=function(self,direction) self.requested=direction end}
     local vehicle={rootNode=1380}
     local capability={isFoldable=true,members={vehicle,active,unrelated},actuators={{object=active,memberReferenceKey="member-root:1381"}},settlementTimeoutMs=10000}
-    local authority=OuttaMyWay.Prototype22ConfigurationAuthority.new()
+    local authority=OuttaMyWay.TransitConfigurationMechanism.new()
     equal(authority:prepareCachedTransit(vehicle,capability),true); equal(active.requested,1); equal(unrelated.requested,nil)
     active.spec_foldable.foldAnimTime=1; g_time=7000
     local ok,state=authority:requestCachedTransitRestore(vehicle); equal(ok,true); equal(#state.restoreActuatorStates,1); equal(active.requested,-1); equal(unrelated.requested,nil)
@@ -6336,7 +6336,7 @@ test("D0183 inert cached Transit command creates no compensating restore fold",f
     local inert={spec_foldable={foldAnimTime=0},getToggledFoldDirection=function() return 1 end,setFoldDirection=function(self,direction) calls[#calls+1]=direction end}
     local vehicle={rootNode=1382}
     local capability={isFoldable=true,members={vehicle,inert},actuators={{object=inert,memberReferenceKey="member-root:1383"}},settlementTimeoutMs=2000}
-    local authority=OuttaMyWay.Prototype22ConfigurationAuthority.new()
+    local authority=OuttaMyWay.TransitConfigurationMechanism.new()
     equal(authority:prepareCachedTransit(vehicle,capability),true); equal(#calls,1); equal(calls[1],1)
     -- Simulate a false-positive/native-inert Transit request: fold position never left its start endpoint.
     g_time=3001; local exhausted=authority:getCachedTransitSettlement(vehicle); equal(exhausted.exhausted,true)
@@ -6350,7 +6350,7 @@ test("D0183 restore settlement exhaustion removes restoration veto without asser
     local active={spec_foldable={foldAnimTime=0},getToggledFoldDirection=function() return 1 end,setFoldDirection=function(self,direction) self.requested=direction end}
     local vehicle={rootNode=1384}
     local capability={isFoldable=true,members={vehicle,active},actuators={{object=active,memberReferenceKey="member-root:1385"}},settlementTimeoutMs=2000}
-    local authority=OuttaMyWay.Prototype22ConfigurationAuthority.new()
+    local authority=OuttaMyWay.TransitConfigurationMechanism.new()
     equal(authority:prepareCachedTransit(vehicle,capability),true)
     active.spec_foldable.foldAnimTime=1; g_time=3001
     equal(authority:requestCachedTransitRestore(vehicle),true); equal(active.requested,-1)
@@ -6370,7 +6370,7 @@ test("D0192 Axis Travel reverses on captured axis rather than pursuing a point",
     getWorldTranslation=function(node) return 0,0,z end
     worldDirectionToLocal=function(node,x,y,dz) return x,y,dz end
     local vehicle={rootNode=19001,getAISteeringNode=function(self) return self.rootNode end}
-    local authority=OuttaMyWay.Prototype22DriveAuthority.new()
+    local authority=OuttaMyWay.NativeDriveMechanism.new()
     equal(authority:setAxisTravel(vehicle,0,0,0,1,0,8,false,1),true)
     AIVehicleUtil.driveToPoint(vehicle,16,1,true,true,0,1,25)
     equal(calls[#calls].moveForwards,false); equal(math.abs(calls[#calls].lx)<0.0001,true); equal(math.abs(calls[#calls].lz+1)<0.0001,true)
@@ -6385,7 +6385,7 @@ test("D0195 Recovery Alignment settles the assembly on the captured axis rather 
     local vehicle={rootNode=19011,getAISteeringNode=function(self) return self.rootNode end}
     getWorldTranslation=function(node) return 0.1,0,12 end
     localDirectionToWorld=function(node,x,y,z) return 0,0,1 end
-    local control=OuttaMyWay.CooperativePassageControl.new({}, {permissionGate={},driveAuthority={},configurationAuthority={}})
+    local control=OuttaMyWay.CooperativePassageControl.new({}, {holdMechanism={},driveMechanism={},configurationMechanism={}})
     local participant={vehicle=vehicle,referenceKey="vehicle-root:19011",startJobToken="JE",executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1}
     control._alignmentSnapshot=function() return {members={
         {memberReferenceKey="tractor",lateralOffsetM=0.1,headingX=0,headingZ=1},
@@ -6410,7 +6410,7 @@ test("D0192 Return Staging places each Transit assembly beyond the other's retur
     local directions={[19101]={0,1},[19102]={0,-1}}
     getWorldTranslation=function(node) local p=positions[node]; return p[1],p[2],p[3] end
     localDirectionToWorld=function(node,x,y,z) local d=directions[node]; return d[1],0,d[2] end
-    local control=OuttaMyWay.CooperativePassageControl.new({}, {permissionGate={},driveAuthority={},configurationAuthority={}})
+    local control=OuttaMyWay.CooperativePassageControl.new({}, {holdMechanism={},driveMechanism={},configurationMechanism={}})
     local envelope={minRightM=-1,maxRightM=1,minForwardM=-2,maxForwardM=2,lengthM=4}
     local a={vehicle={rootNode=19101,getAISteeringNode=function(self) return self.rootNode end},executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1,transitPassageEnvelope=envelope}
     local b={vehicle={rootNode=19102,getAISteeringNode=function(self) return self.rootNode end},executionOriginX=0,executionOriginZ=10,axisForwardX=0,axisForwardZ=-1,transitPassageEnvelope=envelope}
@@ -6429,7 +6429,7 @@ test("D0192 Return token transfers only after released current occupancy clears 
     local runtime={liveObservationSource={getTrackedRepresentation=function(self,key)
         return {worldPrimitives={{kind="DISC",positiveConflictSupport=true,x=0,z=z,radius=2,identity="released"}}}
     end}}
-    local control=OuttaMyWay.CooperativePassageControl.new(runtime,{permissionGate={},driveAuthority={},configurationAuthority={}})
+    local control=OuttaMyWay.CooperativePassageControl.new(runtime,{holdMechanism={},driveMechanism={},configurationMechanism={}})
     local released={vehicle={rootNode=19201,getAISteeringNode=function(self) return self.rootNode end},referenceKey="REF-A",executionOriginX=0,executionOriginZ=0,axisForwardX=0,axisForwardZ=1,transitPassageEnvelope=envelope}
     local waiting={executionOriginX=0,executionOriginZ=15,axisForwardX=0,axisForwardZ=-1,transitPassageEnvelope=envelope}
     local clear,reason,evidence=control:_releasedParticipantClearedReturnSpace(released,waiting)
@@ -6443,9 +6443,9 @@ test("D0192 second Axis Return aborts safely if released clearance is lost",func
     local waiting={name="Waiting",vehicle={},axisReturnSkipped=false}
     local released={name="Released",vehicle={},released=true}
     local donor={
-        permissionGate={},
-        driveAuthority={clear=function() end,getState=function() return {targetReached=false} end},
-        configurationAuthority={}
+        holdMechanism={},
+        driveMechanism={clear=function() end,getState=function() return {targetReached=false} end},
+        configurationMechanism={}
     }
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     control.run={mode="D0146_GUIDE",commitmentId="CM-D0192-CLEAR",phase="AXIS_RETURN",phaseStartedAt=0,startedAt=0,a=released,b=waiting,participants={released,waiting},activeReturnParticipant=waiting,releasedLeader=released,returnRequiresReleasedClearance=true,failureReason=nil}
@@ -6464,7 +6464,7 @@ end)
 test("D0192 Axis Return alignment loss aborts reverse instead of steering into a circle",function()
     local participant={name="S416",vehicle={}}
     local other={name="Other",vehicle={}}
-    local donor={permissionGate={},driveAuthority={clear=function() end,getState=function() return {targetReached=false} end},configurationAuthority={}}
+    local donor={holdMechanism={},driveMechanism={clear=function() end,getState=function() return {targetReached=false} end},configurationMechanism={}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     control.run={mode="D0146_GUIDE",commitmentId="CM-D0192-ALIGN",phase="AXIS_RETURN",phaseStartedAt=0,startedAt=0,a=participant,b=other,participants={participant,other},activeReturnParticipant=participant,returnRequiresReleasedClearance=false,failureReason=nil}
     control.nextHeartbeatMs=math.huge; control._allSameJob=function() return true,nil end; control._thirdPartySupport=function() return true,nil end
@@ -6480,7 +6480,7 @@ end)
 test("D0192 participant release prevents the first returned worker from soft-locking the second token",function()
     local first={name="First",vehicle={},released=false}
     local second={name="Second",vehicle={},released=false}
-    local donor={permissionGate={},driveAuthority={},configurationAuthority={}}
+    local donor={holdMechanism={},driveMechanism={},configurationMechanism={}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     control.run={mode="D0146_GUIDE",commitmentId="CM-D0192-TOKEN",phase="RESTORING_PARTICIPANT",phaseStartedAt=0,startedAt=0,a=first,b=second,participants={first,second},activeRestoreParticipant=first,failureReason=nil}
     control.nextHeartbeatMs=math.huge; control._allSameJob=function() return true,nil end; control._thirdPartySupport=function() return true,nil end
@@ -6500,7 +6500,7 @@ end)
 test("D0217 vacating active Axis Return participant starts survivor return without new Candidate",function()
     local a={name="A",assemblyId="AS-A",vehicle={},request={identity="CR-A",boundedAuthorityId="BA-A"}}
     local b={name="B",assemblyId="AS-B",vehicle={},request={identity="CR-B",boundedAuthorityId="BA-B"}}
-    local donor={permissionGate={release=function() end,isHolding=function() return false end},driveAuthority={clear=function() end,getState=function() return nil end},configurationAuthority={clear=function() end,getState=function() return nil end}}
+    local donor={holdMechanism={release=function() end,isHolding=function() return false end},driveMechanism={clear=function() end,getState=function() return nil end},configurationMechanism={clear=function() end,getState=function() return nil end}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     local beginReturn=0; local beginRestore=0
     control._beginAxisReturn=function(self,run,p,other,requiresClearance) beginReturn=beginReturn+1; equal(p,b); equal(other,a); equal(requiresClearance,false); run.activeReturnParticipant=p; run.phase="AXIS_RETURN"; return true,nil end
@@ -6518,7 +6518,7 @@ end)
 test("D0217 vacating active restoring participant starts survivor return without repeating completed debt",function()
     local a={name="A",assemblyId="AS-A",vehicle={},request={identity="CR-A",boundedAuthorityId="BA-A"}}
     local b={name="B",assemblyId="AS-B",vehicle={},request={identity="CR-B",boundedAuthorityId="BA-B"},axisReturnCompleted=true}
-    local donor={permissionGate={release=function() end,isHolding=function() return false end},driveAuthority={clear=function() end,getState=function() return nil end},configurationAuthority={clear=function() end,getState=function() return nil end}}
+    local donor={holdMechanism={release=function() end,isHolding=function() return false end},driveMechanism={clear=function() end,getState=function() return nil end},configurationMechanism={clear=function() end,getState=function() return nil end}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     local beginReturn=0; local beginRestore=0
     control._beginAxisReturn=function() beginReturn=beginReturn+1; return true,nil end
@@ -6537,7 +6537,7 @@ test("D0217 mixed vacated and handed-back final evidence does not claim same job
     local evidence=nil
     local a={name="A",assemblyId="AS-A",vehicle={},request={identity="CR-A"},vacated=true}
     local b={name="B",assemblyId="AS-B",vehicle={},request={identity="CR-B"},released=true}
-    local control=OuttaMyWay.CooperativePassageControl.new({}, {permissionGate={},driveAuthority={},configurationAuthority={}})
+    local control=OuttaMyWay.CooperativePassageControl.new({}, {holdMechanism={},driveMechanism={},configurationMechanism={}})
     control:setCompletionHandler(function(result) if result.status=="SUCCEEDED" then evidence=result.evidence end end)
     control:_completePairContext({commitmentId="CM-MIXED-EVIDENCE",guide={identity="PG-MIXED"},a=a,b=b,participants={a,b}})
     equal(evidence.kind,"D0146_COOPERATIVE_PASSAGE_LAST_LEG_DISSOLVED_AFTER_BASIS_CESSATION")

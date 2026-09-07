@@ -40,7 +40,7 @@ function Control.new(runtime,observationSource)
         runtime=runtime,
         source=observationSource,
         movementDonor=OuttaMyWay.PostJobActuationAuthority.new(),
-        configurationAuthority=OuttaMyWay.Prototype22ConfigurationAuthority.new(),
+        configurationMechanism=OuttaMyWay.TransitConfigurationMechanism.new(),
         active=nil,
         completionHandler=nil,
         latestObservation=nil,
@@ -84,7 +84,7 @@ function Control:_releaseConfigurationOwnership(vehicle,state)
     if state~=nil and state.configurationOwned==true and vehicle~=nil then
         -- Compaction is an opportunistic aid, not a restoration obligation.
         -- Release bookkeeping without issuing a new configuration command.
-        self.configurationAuthority:clear(vehicle)
+        self.configurationMechanism:clear(vehicle)
         return true
     end
     return false
@@ -188,10 +188,10 @@ function Control:executeControlRequest(request,candidate)
     if not activityOk then return false,"OBSTRUCTION_RELOCATION_ACTIVITY_CONTEXT_UNAVAILABLE:"..tostring(activityContext) end
 
     local configurationOwned=false
-    local configurationEvidence=self.configurationAuthority:getEvidence(vehicle)
+    local configurationEvidence=self.configurationMechanism:getEvidence(vehicle)
     local configurationResult="RETAIN_CURRENT"
     if configurationEvidence.foldableCount>0 and configurationEvidence.unknownCount==0 and configurationEvidence.allDeployed==true then
-        local compactOk,compactResult=self.configurationAuthority:prepareCompact(vehicle)
+        local compactOk,compactResult=self.configurationMechanism:prepareCompact(vehicle)
         configurationOwned=compactOk==true
         configurationResult=compactOk and "COMPACTION_REQUESTED_NO_SETTLEMENT_GATE" or ("COMPACTION_NOT_AVAILABLE:"..tostring(compactResult))
     elseif configurationEvidence.foldableCount>0 then
@@ -200,7 +200,7 @@ function Control:executeControlRequest(request,candidate)
 
     local maximumSpeedKmh,speedReason=self.movementDonor:maximumForwardSpeedKmh(vehicle)
     if maximumSpeedKmh==nil then
-        if configurationOwned then self.configurationAuthority:clear(vehicle) end
+        if configurationOwned then self.configurationMechanism:clear(vehicle) end
         self.movementDonor:releaseVehicleActivityContext(vehicle,activityContext)
         return false,"OBSTRUCTION_RELOCATION_NATIVE_MAX_SPEED_UNAVAILABLE:"..tostring(speedReason)
     end
@@ -280,8 +280,8 @@ function Control:update(dt)
     })
 end
 
-function Control:loadMap() self.active=nil; self.latestObservation=nil; self.configurationAuthority:clearAll() end
-function Control:deleteMap() self.active=nil; self.latestObservation=nil; self.configurationAuthority:clearAll() end
+function Control:loadMap() self.active=nil; self.latestObservation=nil; self.configurationMechanism:clearAll() end
+function Control:deleteMap() self.active=nil; self.latestObservation=nil; self.configurationMechanism:clearAll() end
 function Control:keyEvent() end
 function Control:mouseEvent() end
 function Control:draw() end

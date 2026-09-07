@@ -1,6 +1,6 @@
 -- FS25_OuttaMyWay v0.3.0.21 TEST — REGULATION CONTROL BOUNDARY.
 -- Phase 14.1 production boundary for already-authorised REGULATE_SPEED requests.
--- Physical drive mechanics remain the existing Prototype22DriveAuthority donor;
+-- Physical drive mechanics are supplied by the production NativeDriveMechanism;
 -- this module owns request validation, lease execution/cleanup and raw execution
 -- observation only. It owns no Decision, Regulation magnitude or GIANTS routing.
 
@@ -45,10 +45,10 @@ local function logWarning(formatText,...)
     end
 end
 
-function Control.new(runtime,driveAuthority)
+function Control.new(runtime,driveMechanism)
     if runtime==nil then error("RegulationControl requires Runtime",2) end
-    if driveAuthority==nil then error("RegulationControl requires the existing Regulation drive mechanism",2) end
-    return setmetatable({runtime=runtime,driveAuthority=driveAuthority},Control)
+    if driveMechanism==nil then error("RegulationControl requires the existing Regulation drive mechanism",2) end
+    return setmetatable({runtime=runtime,driveMechanism=driveMechanism},Control)
 end
 
 function Control:_vehicleForReferenceKey(referenceKeyValue)
@@ -62,7 +62,7 @@ end
 -- Raw physical execution Observation only. Situation Assessment remains the
 -- semantic owner of whether observed Control state has traffic meaning.
 function Control:getVehicleControlObservation(vehicle)
-    local state=self.driveAuthority and self.driveAuthority:getState(vehicle) or nil
+    local state=self.driveMechanism and self.driveMechanism:getState(vehicle) or nil
     return {
         mode=state and state.mode or nil,
         ownerTag=state and state.ownerTag or nil,
@@ -125,11 +125,11 @@ function Control:executeControlRequest(request,candidate)
         if commitment.state~="ACTIVE" then return false,"CONTROL_REQUEST_COMMITMENT_NOT_ACTIVE" end
         local speed=tonumber(target.maxSpeedKmh)
         if speed==nil or speed<0 then return false,"CONTROL_REQUEST_REGULATION_SPEED_INVALID" end
-        local ok,reason=self.driveAuthority:setRegulationLease(vehicle,speed,target.ownerTag)
+        local ok,reason=self.driveMechanism:setRegulationLease(vehicle,speed,target.ownerTag)
         if not ok then return false,reason end
         return true,"REGULATION_LEASE_APPLIED"
     elseif target.operation=="RELEASE" then
-        self.driveAuthority:clearRegulationLease(vehicle,target.ownerTag)
+        self.driveMechanism:clearRegulationLease(vehicle,target.ownerTag)
         return true,"REGULATION_LEASE_RELEASED"
     end
 
@@ -141,14 +141,14 @@ end
 function Control:clearRegulationLeaseByReference(vehicleReferenceKey,ownerTag)
     local vehicle=self:_vehicleForReferenceKey(vehicleReferenceKey)
     if vehicle==nil then return false,"CONTROL_CLEANUP_VEHICLE_UNAVAILABLE" end
-    self.driveAuthority:clearRegulationLease(vehicle,ownerTag)
+    self.driveMechanism:clearRegulationLease(vehicle,ownerTag)
     return true,"CONTROL_CLEANUP_RELEASED"
 end
 
 function Control:loadMap()
-    local ok,reason=self.driveAuthority:install()
+    local ok,reason=self.driveMechanism:install()
     if ok then
-        logInfo("loaded physicalMechanism=existing-drive-authority policyAuthority=false")
+        logInfo("loaded physicalMechanism=NativeDriveMechanism policyAuthority=false")
     else
         logWarning("drive mechanism unavailable reason=%s",tostring(reason))
     end

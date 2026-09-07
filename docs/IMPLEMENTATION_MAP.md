@@ -20,10 +20,10 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 | 11 | Reduce `LiveControlDispatcher` to authorised routing/execution | COMPLETE |
 | 12 | Retire superseded generic Commitment/orchestration only where unsupported | COMPLETE |
 | 13 | Simplify Candidate/Constraint/Decision only where evidence proves duplication | **COMPLETE** |
-| 14 | Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming | **IN PROGRESS — 14.1 REGULATION CONTROL BOUNDARY** |
+| 14 | Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming | **IN PROGRESS — 14.2 PHYSICAL CAPABILITY GRADUATION** |
 | 15 | Whole-system validation and architecture-to-runtime review | NOT STARTED |
 
-Accepted Repository State for this map is `main` after PR #70 merge, commit `0d99e635e233dfd3d5ba51f6e21708d5eddfe021`. Canonical authority remains `v0.3.0.0`. Last accepted non-canonical playable identity is **`0.3.0.20 TEST — CANDIDATE SUPPORT PROJECTION`**.
+Accepted Repository State for this map is `main` after PR #73 merge, commit `38699140270cee29836c22124b4199a5087031c7`. Canonical authority remains `v0.3.0.0`. Last accepted non-canonical playable identity is **`0.3.0.20 TEST — CANDIDATE SUPPORT PROJECTION`**.
 
 Read [Phase 13 Closure Audit](architecture/PHASE_13_CLOSURE_AUDIT.md) for the final Candidate/Constraint/Decision responsibility audit.
 
@@ -63,7 +63,7 @@ Read [Phase 13 Closure Audit](architecture/PHASE_13_CLOSURE_AUDIT.md) for the fi
 | Effective actuation composition | `scripts/authority/EffectiveActuationComposition.lua` | PRESERVE |
 | Typed Control boundary | `scripts/contracts/ControlRequest.lua`, `ControlOutcome.lua` | PRESERVE |
 | Control routing | `scripts/control/LiveControlDispatcher.lua` | PRESERVE authorised routing/execution only |
-| Regulation physical Control | `scripts/control/RegulationControl.lua` using the existing `Prototype22DriveAuthority` mechanism | **PHASE 14.1** — production `REGULATE_SPEED` execution/observation/cleanup separated from the manual P22 harness; physical mechanism graduation remains 14.2 |
+| Regulation physical Control | `scripts/control/RegulationControl.lua` using `scripts/control/mechanisms/NativeDriveMechanism.lua` | **PHASE 14.1** — production `REGULATE_SPEED` execution/observation/cleanup separated from the manual P22 harness; physical mechanism graduation remains 14.2 |
 | Cooperative Passage physical Control | `scripts/control/CooperativePassageControl.lua` | PRESERVE validated mechanics |
 | Warm terminal-egress physical Control | `scripts/control/TerminalEgressControl.lua` | PRESERVE validated D-0147 mechanics |
 | Generic obstruction relocation Control | `scripts/control/ObstructionRelocationControl.lua` | PRESERVE bounded D-0218 cold-blocker actuation |
