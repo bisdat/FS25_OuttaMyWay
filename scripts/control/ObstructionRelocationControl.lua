@@ -1,7 +1,7 @@
 -- D-0218 bounded Control for a current non-active, unclaimed Causal Obstruction.
 -- Semantic authority is OBSTRUCTION_RELOCATION_ACTUATION. The proven
--- PostJobActuationAuthority implementation is reused only as a low-level
--- non-job movement donor; no completed Job Episode is inferred or required.
+-- NonJobActuationMechanism supplies only low-level physical actuation;
+-- no completed Job Episode is inferred or required by this cold path.
 
 OuttaMyWay.ObstructionRelocationControl={}
 local Control=OuttaMyWay.ObstructionRelocationControl
@@ -39,7 +39,7 @@ function Control.new(runtime,observationSource)
     return setmetatable({
         runtime=runtime,
         source=observationSource,
-        movementDonor=OuttaMyWay.PostJobActuationAuthority.new(),
+        actuationMechanism=OuttaMyWay.NonJobActuationMechanism.new(),
         configurationMechanism=OuttaMyWay.TransitConfigurationMechanism.new(),
         active=nil,
         completionHandler=nil,
@@ -67,7 +67,7 @@ function Control:_publish(state,status,extra)
         phase=state and state.phase or nil,
         status=status,
         active=self.active~=nil,
-        directDriveCalls=self.movementDonor:getDirectDriveCallCount(),
+        directDriveCalls=self.actuationMechanism:getDirectDriveCallCount(),
         provenance={source="ObstructionRelocationControl",authority="OBSTRUCTION_RELOCATION_ACTUATION",historicalJobProvenanceRequired=false}
     }
     -- The Observation envelope kind identifies this value as a Control outcome
@@ -107,7 +107,7 @@ function Control:_complete(status,evidence)
             completionEvidence.neutralization={performed=false,reason="CURRENT_PHYSICAL_OBJECT_LOST"}
             ownedCleanupFailed=true
         else
-            local neutralized,neutralEvidence=self.movementDonor:neutralize(vehicle,state.lastDt or 0)
+            local neutralized,neutralEvidence=self.actuationMechanism:neutralize(vehicle,state.lastDt or 0)
             completionEvidence.neutralization={performed=neutralized==true,evidence=type(neutralEvidence)=="table" and neutralEvidence or nil,reason=neutralized and nil or tostring(neutralEvidence)}
             if neutralized~=true then
                 ownedCleanupFailed=true
@@ -121,7 +121,7 @@ function Control:_complete(status,evidence)
             completionEvidence.activityContext={released=false,reason="CURRENT_PHYSICAL_OBJECT_LOST"}
             if status~="PLAYER_CLAIM" and status~="SUPERSEDED" then ownedCleanupFailed=true end
         else
-            local released,releaseEvidence=self.movementDonor:releaseVehicleActivityContext(vehicle,state.activityContext)
+            local released,releaseEvidence=self.actuationMechanism:releaseVehicleActivityContext(vehicle,state.activityContext)
             completionEvidence.activityContext={released=released==true,evidence=type(releaseEvidence)=="table" and releaseEvidence or nil,reason=released and nil or tostring(releaseEvidence)}
             if released~=true and status~="PLAYER_CLAIM" and status~="SUPERSEDED" then
                 ownedCleanupFailed=true
@@ -168,8 +168,8 @@ function Control:executeControlRequest(request,candidate)
 
     local vehicle=self:_vehicle(bridge.blockerAssemblyReferenceKey)
     if vehicle==nil then return false,"CURRENT_BLOCKER_RUNTIME_OBJECT_UNAVAILABLE" end
-    if self.movementDonor:isPlayerClaimed(vehicle) then return false,"PLAYER_CLAIM_AT_CONTROL_BOUNDARY" end
-    if self.movementDonor:isSourceReactivated(vehicle) then return false,"SOURCE_AI_REACTIVATED_AT_CONTROL_BOUNDARY" end
+    if self.actuationMechanism:isPlayerClaimed(vehicle) then return false,"PLAYER_CLAIM_AT_CONTROL_BOUNDARY" end
+    if self.actuationMechanism:isSourceReactivated(vehicle) then return false,"SOURCE_AI_REACTIVATED_AT_CONTROL_BOUNDARY" end
 
     local objective=bridge.objective
     if type(objective)~="table"
@@ -182,9 +182,9 @@ function Control:executeControlRequest(request,candidate)
     end
     if tonumber(objective.courtesyStage)~=1 then return false,"OBSTRUCTION_RELOCATION_ONLY_FIRST_COURTESY_SUPPORTED" end
 
-    local position=self.movementDonor:position(vehicle)
+    local position=self.actuationMechanism:position(vehicle)
     if position==nil then return false,"OBSTRUCTION_RELOCATION_START_POSE_UNAVAILABLE" end
-    local activityOk,activityContext=self.movementDonor:acquireVehicleActivityContext(vehicle)
+    local activityOk,activityContext=self.actuationMechanism:acquireVehicleActivityContext(vehicle)
     if not activityOk then return false,"OBSTRUCTION_RELOCATION_ACTIVITY_CONTEXT_UNAVAILABLE:"..tostring(activityContext) end
 
     local configurationOwned=false
@@ -198,10 +198,10 @@ function Control:executeControlRequest(request,candidate)
         configurationResult="COMPACTION_NOT_OBVIOUSLY_AVAILABLE"
     end
 
-    local maximumSpeedKmh,speedReason=self.movementDonor:maximumForwardSpeedKmh(vehicle)
+    local maximumSpeedKmh,speedReason=self.actuationMechanism:maximumForwardSpeedKmh(vehicle)
     if maximumSpeedKmh==nil then
         if configurationOwned then self.configurationMechanism:clear(vehicle) end
-        self.movementDonor:releaseVehicleActivityContext(vehicle,activityContext)
+        self.actuationMechanism:releaseVehicleActivityContext(vehicle,activityContext)
         return false,"OBSTRUCTION_RELOCATION_NATIVE_MAX_SPEED_UNAVAILABLE:"..tostring(speedReason)
     end
 
@@ -247,10 +247,10 @@ function Control:update(dt)
 
     local vehicle=self:_vehicle(state.assemblyReferenceKey)
     if vehicle==nil then self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="CURRENT_PHYSICAL_OBJECT_LOST"}); return end
-    if self.movementDonor:isPlayerClaimed(vehicle) then self:_complete("PLAYER_CLAIM",{kind="CURRENT_PLAYER_CLAIM"}); return end
-    if self.movementDonor:isSourceReactivated(vehicle) then self:_complete("SUPERSEDED",{kind="CURRENT_SOURCE_AI_REACTIVATION"}); return end
+    if self.actuationMechanism:isPlayerClaimed(vehicle) then self:_complete("PLAYER_CLAIM",{kind="CURRENT_PLAYER_CLAIM"}); return end
+    if self.actuationMechanism:isSourceReactivated(vehicle) then self:_complete("SUPERSEDED",{kind="CURRENT_SOURCE_AI_REACTIVATION"}); return end
 
-    local position=self.movementDonor:position(vehicle)
+    local position=self.actuationMechanism:position(vehicle)
     if position==nil then self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="CURRENT_POSE_LOST"}); return end
     local dx,dz=position.x-state.startX,position.z-state.startZ
     local realisedProgress=dx*state.infieldDirectionX+dz*state.infieldDirectionZ
@@ -265,7 +265,7 @@ function Control:update(dt)
         return
     end
 
-    local ok,result=self.movementDonor:driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)
+    local ok,result=self.actuationMechanism:driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)
     if not ok then
         if result=="PLAYER_CLAIM" then self:_complete("PLAYER_CLAIM",{kind="CURRENT_PLAYER_CLAIM"})
         elseif result=="SOURCE_INTENT_REACTIVATED" then self:_complete("SUPERSEDED",{kind="CURRENT_SOURCE_AI_REACTIVATION"})
@@ -292,9 +292,9 @@ function Control:getStatus()
         startedCount=self.startedCount,
         completedCount=self.completedCount,
         failedCount=self.failedCount,
-        directDriveCalls=self.movementDonor:getDirectDriveCallCount(),
-        neutralizeCalls=self.movementDonor:getNeutralizeCallCount(),
-        activityContextAcquireCalls=self.movementDonor:getActivityContextAcquireCallCount(),
-        activityContextReleaseCalls=self.movementDonor:getActivityContextReleaseCallCount()
+        directDriveCalls=self.actuationMechanism:getDirectDriveCallCount(),
+        neutralizeCalls=self.actuationMechanism:getNeutralizeCallCount(),
+        activityContextAcquireCalls=self.actuationMechanism:getActivityContextAcquireCallCount(),
+        activityContextReleaseCalls=self.actuationMechanism:getActivityContextReleaseCallCount()
     }
 end

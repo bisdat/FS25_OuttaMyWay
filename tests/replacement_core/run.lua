@@ -61,7 +61,7 @@ load("scripts/commitment/CommitmentStateMachine.lua")
 load("scripts/commitment/CommitmentRegistry.lua")
 load("scripts/commitment/ObligationLedger.lua")
 load("scripts/authority/AuthorityRegistry.lua")
-load("scripts/authority/PostJobActuationAuthority.lua")
+load("scripts/control/mechanisms/NonJobActuationMechanism.lua")
 load("scripts/authority/EffectiveActuationComposition.lua")
 load("scripts/authority/BoundedAuthority.lua")
 load("scripts/commitment/CommitmentAdmission.lua")
@@ -6055,7 +6055,7 @@ test("D0147 direct post-job actuation holds one world Exit Alignment direction a
         getMotor=function() return motor end,getCruiseControlState=function() return 0 end,
         brake=function() return true end,stopVehicle=function() return true end,setCruiseControlState=function() return true end
     }
-    local authority=OuttaMyWay.PostJobActuationAuthority.new()
+    local authority=OuttaMyWay.NonJobActuationMechanism.new()
     local nativeMax,nativeMaxReason=authority:maximumForwardSpeedKmh(vehicle); equal(nativeMaxReason,nil); if math.abs(nativeMax-25)>0.0001 then error("unexpected native maximum forward speed") end
     local baseline=authority:steeringTelemetry(vehicle); equal(baseline.rotatedTime,0); equal(baseline.isActive,false); equal(baseline.forceIsActive,false); equal(baseline.crabState,2); equal(baseline.crabAiSteeringModeIndex,2); equal(baseline.steerableWheelCount,1); equal(baseline.wheels[1].steeringAngle,0.12)
     local activityOk,activityContext=authority:acquireVehicleActivityContext(vehicle); equal(activityOk,true); equal(vehicle.forceIsActive,true); equal(activityContext.previousForceIsActive,false); equal(authority:getActivityContextAcquireCallCount(),1)
