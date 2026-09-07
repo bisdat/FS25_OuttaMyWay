@@ -86,8 +86,10 @@ local function observeCurrentState(root,mission)
     local controlledRoot=rootVehicle(mission and mission.controlledVehicle or nil)
     return {
         aiActive=okAI and aiActive==true or false,
+        aiActiveObserved=okAI==true,
         fieldActive=(okField and fieldActive==true) or specFieldActive,
         playerEntered=okEntered and entered==true or false,
+        playerEnteredObserved=okEntered==true,
         playerControlled=controlledRoot==root,
         blocked=blocked,
         speedMps=math.abs(tonumber(root.lastSpeedReal) or 0)*1000
@@ -166,8 +168,8 @@ function Source:observe(mission)
             referenceKey=ref,name=objectName(root),
             memberReferenceKeys=memberReferenceKeys,memberPositions=memberPositions,
             memberCount=#members,memberPositionCount=#memberPositions,memberSource=memberSource,
-            aiActive=state.aiActive,fieldActive=state.fieldActive,
-            playerEntered=state.playerEntered,playerControlled=state.playerControlled,
+            aiActive=state.aiActive,aiActiveObserved=state.aiActiveObserved,fieldActive=state.fieldActive,
+            playerEntered=state.playerEntered,playerEnteredObserved=state.playerEnteredObserved,playerControlled=state.playerControlled,
             blocked=state.blocked,speedMps=state.speedMps,
             provenance={
                 populationSource="mission.vehicleSystem.vehicles",

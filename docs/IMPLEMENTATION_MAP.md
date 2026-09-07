@@ -1389,3 +1389,29 @@ vocabulary, `EncounterRegistry`, `FieldBoundedFutureSpace`, and old diagnostic o
 probe names remain in source. This is placement or vocabulary lag, not current
 architectural authority. Diagnostic and probe existence does not establish an
 architectural responsibility, authorise pruning or determine a permanent inventory.
+
+# Phase 13 Causal Obstruction Recognition
+
+Current placement after the `0.3.0.15 TEST` implementation tranche:
+
+- [`CurrentPhysicalAssemblySource.lua`](../scripts/observation/CurrentPhysicalAssemblySource.lua)
+  owns current mission Physical Assembly acquisition and positive Field World
+  member-position witnessing.
+- [`CurrentPhysicalConflictRepresentation.lua`](../scripts/representation/CurrentPhysicalConflictRepresentation.lua)
+  supplies current positive-conflict primitives for already-witnessed
+  physical-only assemblies. Its authority is positive-only; coverage is
+  incomplete and it supplies no negative-clearance conclusion.
+- [`CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua)
+  owns the bounded Situation question: whether a current physical subject is
+  positively established as preventing an active supported beneficiary's
+  current or supported continuation space, and how that blocker is classified
+  from current Reality.
+- [`SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua)
+  publishes `causalObstructionKnowledge` and promotes a physical-only subject to
+  Situation relevance only after a positive Causal Obstruction relationship is
+  established.
+
+The existing `TerminalOccupancyAssessment`,
+`TerminalEgressCandidateSupport`, `TerminalEgressControl` and
+`PostJobActuationAuthority` remain unchanged by this tranche. Routing generic
+Causal Obstruction into those proven mechanics is a later bounded increment.

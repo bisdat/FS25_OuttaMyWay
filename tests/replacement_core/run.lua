@@ -29,6 +29,7 @@ load("scripts/identity/EpochSequence.lua")
 load("scripts/representation/catalogues/CondorEndurance2Donor.lua")
 load("scripts/representation/PlanViewFootprint.lua")
 load("scripts/representation/AssemblyRepresentationCache.lua")
+load("scripts/representation/CurrentPhysicalConflictRepresentation.lua")
 load("scripts/representation/PairSpecificPassageClearance.lua")
 load("scripts/diagnostics/LiveInteractionDiagnostics.lua")
 load("scripts/identity/IdentityRegistry.lua")
@@ -37,6 +38,7 @@ load("scripts/identity/FieldWorldEquivalenceEvaluator.lua")
 load("scripts/identity/FieldWorldEquivalenceAuthority.lua")
 load("scripts/observation/RuntimeObservationAdapter.lua")
 load("scripts/observation/LiveAIJobEvidence.lua")
+load("scripts/observation/CurrentPhysicalAssemblySource.lua")
 load("scripts/observation/LocalIntentObservation.lua")
 load("scripts/observation/FieldBoundedFutureSpace.lua")
 load("scripts/observation/NativeFieldWorkObservation.lua")
@@ -50,6 +52,7 @@ load("scripts/assessment/GuardedRecoveryThreatAssessment.lua")
 load("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
 load("scripts/assessment/TrajectoryConflictAssessment.lua")
 load("scripts/assessment/PassageCapabilityAssessment.lua")
+load("scripts/assessment/CausalObstructionAssessment.lua")
 load("scripts/assessment/TerminalOccupancyAssessment.lua")
 load("scripts/assessment/SpatialConstraintAssessment.lua")
 load("scripts/assessment/CurrentResponsibilityAssessment.lua")
@@ -6776,6 +6779,69 @@ test("Phase13 direct Cooperative Passage substrate targeting is purpose and Job-
         }}},evaluated)
     equal(missing,nil)
     equal(missingReason,"RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING")
+end)
+
+
+local function causalObstructionAssessmentFixture(options)
+    options=options or {}
+    local activeRecords={{identity="JE-BENEFICIARY",assemblyId="AS-BENEFICIARY",status="ACTIVE"}}
+    if options.activeBlocker==true then
+        activeRecords[#activeRecords+1]={identity="JE-BLOCKER",assemblyId="AS-BLOCKER",status="ACTIVE"}
+    end
+    local jobs={}
+    function jobs:list() return activeRecords end
+
+    local assessment=OuttaMyWay.CausalObstructionAssessment.new(jobs)
+    local blockerZ=tonumber(options.blockerZ) or 0
+    local snapshot={
+        assemblies={
+            {assemblyId="AS-BENEFICIARY",referenceKey="vehicle-root:beneficiary"},
+            {assemblyId="AS-BLOCKER",referenceKey="vehicle-root:blocker"}
+        },
+        aiStates={
+            ["vehicle-root:beneficiary"]={aiActive=true,aiActiveObserved=true,blocked=false},
+            ["vehicle-root:blocker"]={aiActive=options.activeBlocker==true,aiActiveObserved=true,blocked=false}
+        },
+        playerControl={["vehicle-root:blocker"]={playerEntered=options.playerEntered==true,playerEnteredObserved=true}}
+    }
+    local futureSpace={{assemblyId="AS-BENEFICIARY",alternatives={{startX=0,startZ=0,endX=20,endZ=0}}}}
+    local physicalSpace={
+        {assemblyId="AS-BENEFICIARY",assemblyReferenceKey="vehicle-root:beneficiary",primitives={{identity="beneficiary-disc",kind="DISC",x=0,z=0,radius=1,positiveConflictSupport=true}}},
+        {assemblyId="AS-BLOCKER",assemblyReferenceKey="vehicle-root:blocker",primitives={{identity="blocker-disc",kind="DISC",x=10,z=blockerZ,radius=1,positiveConflictSupport=true}}}
+    }
+    return assessment:assess(snapshot,futureSpace,physicalSpace,{["AS-BENEFICIARY"]=true},{["AS-BENEFICIARY"]="OR-CAUSAL"})
+end
+
+test("D0218 cold non-active unclaimed blocker is recognised from spatial evidence while native blocked is false",function()
+    local records=causalObstructionAssessmentFixture({})
+    equal(#records,1)
+    equal(records[1].blockerAssemblyId,"AS-BLOCKER")
+    equal(records[1].beneficiaryAssemblyId,"AS-BENEFICIARY")
+    equal(records[1].blockerClassification,"NON_ACTIVE_UNCLAIMED")
+    equal(records[1].relocationEligible,true)
+    equal(records[1].obstructionEvidence.kind,"CONTINUING_ACTIVE_FUTURE_SPACE")
+    equal(records[1].provenance.nativeBlockedRequired,false)
+end)
+
+test("D0218 merely present parked assembly does not become a Causal Obstruction",function()
+    local records=causalObstructionAssessmentFixture({blockerZ=10})
+    equal(#records,0)
+end)
+
+test("D0218 player claim preserves physical obstruction but withholds relocation eligibility",function()
+    local records=causalObstructionAssessmentFixture({playerEntered=true})
+    equal(#records,1)
+    equal(records[1].blockerClassification,"NON_ACTIVE_PLAYER_CLAIMED")
+    equal(records[1].relocationEligible,false)
+    equal(records[1].playerClaimEvidence.playerEntered,true)
+end)
+
+test("D0218 active GIANTS AI blocker remains outside non-active relocation eligibility",function()
+    local records=causalObstructionAssessmentFixture({activeBlocker=true})
+    equal(#records,1)
+    equal(records[1].blockerClassification,"ACTIVE_GIANTS_AI")
+    equal(records[1].relocationEligible,false)
+    equal(records[1].activeBlockerJobEpisodeId,"JE-BLOCKER")
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

@@ -161,8 +161,8 @@ local function relevantVehicles(activeList, tracks)
     return result
 end
 
-function Source.new(fieldWorldSnapshots, fieldWorldEquivalenceAuthority, assemblyRepresentationCache, currentPhysicalAssemblySource)
-    return setmetatable({knownWorlds = {}, tracks = {}, nextObservedEpisode = 0, nextFieldWorldCapture = 0, fieldWorldSnapshots = fieldWorldSnapshots, fieldWorldEquivalenceAuthority = fieldWorldEquivalenceAuthority, assemblyRepresentationCache=assemblyRepresentationCache, currentPhysicalAssemblySource=currentPhysicalAssemblySource, lastCycleDiagnostics={}}, Source)
+function Source.new(fieldWorldSnapshots, fieldWorldEquivalenceAuthority, assemblyRepresentationCache, currentPhysicalAssemblySource, currentPhysicalConflictRepresentation)
+    return setmetatable({knownWorlds = {}, tracks = {}, nextObservedEpisode = 0, nextFieldWorldCapture = 0, fieldWorldSnapshots = fieldWorldSnapshots, fieldWorldEquivalenceAuthority = fieldWorldEquivalenceAuthority, assemblyRepresentationCache=assemblyRepresentationCache, currentPhysicalAssemblySource=currentPhysicalAssemblySource, currentPhysicalConflictRepresentation=currentPhysicalConflictRepresentation, lastCycleDiagnostics={}}, Source)
 end
 
 function Source:reset()
@@ -170,6 +170,7 @@ function Source:reset()
     if self.fieldWorldEquivalenceAuthority ~= nil then self.fieldWorldEquivalenceAuthority:reset() end
     if self.assemblyRepresentationCache ~= nil then self.assemblyRepresentationCache:reset() end
     if self.currentPhysicalAssemblySource ~= nil then self.currentPhysicalAssemblySource:reset() end
+    if self.currentPhysicalConflictRepresentation ~= nil then self.currentPhysicalConflictRepresentation:reset() end
 end
 
 function Source:getLastDiagnostics()
@@ -445,6 +446,14 @@ function Source:capture(mission, nowSeconds)
                 for _,candidate in OuttaMyWay.ValueRecord.ipairs(witnessed) do
                     local physical=candidate.assembly
                     if physical~=nil and workerReferences[physical.referenceKey]~=true then
+                        if self.currentPhysicalConflictRepresentation~=nil then
+                            local currentObject=self.currentPhysicalAssemblySource:getObject(physical.referenceKey)
+                            if currentObject~=nil then
+                                candidate.currentPhysicalRepresentation=self.currentPhysicalConflictRepresentation:observe(
+                                    currentObject,physical.referenceKey,nowSeconds
+                                )
+                            end
+                        end
                         group.physicalAssemblies[#group.physicalAssemblies+1]=candidate
                     end
                 end
@@ -792,14 +801,30 @@ function Source:capture(mission, nowSeconds)
                     fieldWorldPresenceEvidence=presence
                 }
             }
+            local currentRepresentation=candidate.currentPhysicalRepresentation
+            if currentRepresentation~=nil then
+                raw.geometry.shadowPlanViewEvidence[#raw.geometry.shadowPlanViewEvidence+1]={
+                    assemblyReferenceKey=physical.referenceKey,
+                    episodeKey=nil,
+                    configurationProfileId=nil,
+                    configurationEvidence={},
+                    configurationAlternatives={},
+                    primitives=currentRepresentation.worldPrimitives or {},
+                    summary=currentRepresentation.summary,
+                    coverageComplete=false,
+                    negativeClearanceAuthority=false,
+                    provenance=currentRepresentation.provenance
+                }
+            end
             raw.aiStates[physical.referenceKey]={
-                fieldActive=physical.fieldActive,aiActive=physical.aiActive,observedActive=false,
+                fieldActive=physical.fieldActive,aiActive=physical.aiActive,aiActiveObserved=physical.aiActiveObserved,observedActive=false,
                 blocked=physical.blocked,speedMps=physical.speedMps,name=physical.name
             }
             raw.playerControl[physical.referenceKey]={
                 playerControlled=physical.playerControlled,
                 playerPresent=physical.playerEntered,
-                playerEntered=physical.playerEntered
+                playerEntered=physical.playerEntered,
+                playerEnteredObserved=physical.playerEnteredObserved
             }
             raw.diagnostics.assemblyDiagnostics[#raw.diagnostics.assemblyDiagnostics+1]={
                 assemblyReferenceKey=physical.referenceKey,name=physical.name,
@@ -808,7 +833,11 @@ function Source:capture(mission, nowSeconds)
                 memberSource=physical.memberSource,memberPositions=physical.memberPositions,
                 aiActive=physical.aiActive,fieldActive=physical.fieldActive,
                 playerEntered=physical.playerEntered,playerControlled=physical.playerControlled,
-                fieldWorldPresenceEvidence=presence,coverageComplete=false,
+                fieldWorldPresenceEvidence=presence,
+                currentPositiveConflictPrimitiveCount=currentRepresentation and currentRepresentation.positivePrimitiveCount or 0,
+                currentConflictRepresentationAvailable=currentRepresentation~=nil and currentRepresentation.structurallyValid==true,
+                currentConflictRepresentationScanTruncated=currentRepresentation and currentRepresentation.scanTruncated==true or false,
+                coverageComplete=false,
                 negativeExclusionAuthority=false,semanticAuthority=false
             }
         end
