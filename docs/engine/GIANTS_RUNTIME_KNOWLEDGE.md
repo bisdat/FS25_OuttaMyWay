@@ -212,6 +212,28 @@ without explicit frame conversion.
 
 **Evidence:** single-worker egress observations.
 
+## Current mission vehicle population
+
+### VehicleSystem exposes current savegame vehicles and root assemblies
+
+**Finding:** FS25 `VehicleSystem` exposes the registered current savegame vehicle
+population through `mission.vehicleSystem.vehicles`. GIANTS' own vehicle-set
+handling resolves `getRootVehicle()` and current `getChildVehicles()` assembly
+membership.
+
+**Safe use:** this population may provide current Physical Assembly existence,
+current member-position evidence and runtime-object correlation independently of
+OuttaMyWay Job Episode history.
+
+**Do not infer:** mission population presence, root-assembly membership or one
+current member position establishes Local Operation membership, Situation
+relevance, Causal Obstruction, negative exclusion, relocation eligibility or
+Control authority.
+
+**Evidence:** GIANTS FS25 `VehicleSystem` runtime surface and the current
+implementation investigation for Issue #33.
+
+
 ## Physical configuration
 
 ### Configuration is multidimensional

@@ -20,6 +20,28 @@ direct-Passage substrate targeting, `Key Match Is Not Lifecycle Match`, and
 
 ### Phase 13 / Issue #33 — Causal Obstruction
 
+**Current implementation hypothesis:** the first Issue #33 runtime tranche is
+limited to current Physical Assembly Observation. A focused
+`CurrentPhysicalAssemblySource` observes the GIANTS mission vehicle population,
+deduplicates current root Physical Assemblies, observes current child-member
+positions and retains current runtime-object correlation independently of worker
+tracks.
+
+`LiveObservationSource` uses a positive member-position witness against any
+immutable Snapshot belonging to a resolved active Field World to add an
+otherwise-unobserved assembly through a physical-only path. The witness has
+incomplete coverage and no negative exclusion, Job Episode, Local Operation,
+Situation, Causal Obstruction or Control authority.
+
+The immediate Reality test is acquisition-only. The cold-block fixture should
+show Condor, Patriot, Valtra and Bredal in current GIANTS mission acquisition;
+Field-77 Observation should retain Patriot through the worker path and add
+Condor through the physical-only path. Valtra and Bredal on the adjacent field
+should have no Field-77 member-position witness. Do not change
+`TerminalOccupancyAssessment` until this Observation hypothesis survives
+Reality.
+
+
 After PR #54 acceptance, Phase 13 resumed at the remaining
 completed-obstruction semantic-continuity question. Issue #33 changes the
 abstraction boundary: the enduring concept is **Causal Obstruction**, not

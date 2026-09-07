@@ -161,14 +161,15 @@ local function relevantVehicles(activeList, tracks)
     return result
 end
 
-function Source.new(fieldWorldSnapshots, fieldWorldEquivalenceAuthority, assemblyRepresentationCache)
-    return setmetatable({knownWorlds = {}, tracks = {}, nextObservedEpisode = 0, nextFieldWorldCapture = 0, fieldWorldSnapshots = fieldWorldSnapshots, fieldWorldEquivalenceAuthority = fieldWorldEquivalenceAuthority, assemblyRepresentationCache=assemblyRepresentationCache, lastCycleDiagnostics={}}, Source)
+function Source.new(fieldWorldSnapshots, fieldWorldEquivalenceAuthority, assemblyRepresentationCache, currentPhysicalAssemblySource)
+    return setmetatable({knownWorlds = {}, tracks = {}, nextObservedEpisode = 0, nextFieldWorldCapture = 0, fieldWorldSnapshots = fieldWorldSnapshots, fieldWorldEquivalenceAuthority = fieldWorldEquivalenceAuthority, assemblyRepresentationCache=assemblyRepresentationCache, currentPhysicalAssemblySource=currentPhysicalAssemblySource, lastCycleDiagnostics={}}, Source)
 end
 
 function Source:reset()
     self.knownWorlds = {}; self.tracks = {}; self.nextObservedEpisode = 0; self.nextFieldWorldCapture = 0; self.lastCycleDiagnostics={}
     if self.fieldWorldEquivalenceAuthority ~= nil then self.fieldWorldEquivalenceAuthority:reset() end
     if self.assemblyRepresentationCache ~= nil then self.assemblyRepresentationCache:reset() end
+    if self.currentPhysicalAssemblySource ~= nil then self.currentPhysicalAssemblySource:reset() end
 end
 
 function Source:getLastDiagnostics()
@@ -219,6 +220,10 @@ function Source:capture(mission, nowSeconds)
     local groups, present, removeAfterCapture = {}, {}, {}
     local activeList, activeSet = activeVehicleSet(mission)
     local relevantList = relevantVehicles(activeList, self.tracks)
+    local currentPhysicalAssemblies={}
+    if self.currentPhysicalAssemblySource~=nil then
+        currentPhysicalAssemblies=self.currentPhysicalAssemblySource:observe(mission)
+    end
     local cycleDiagnostics = {
         timestamp=nowSeconds,
         activeJobVehicleCount=#activeList,
@@ -417,6 +422,36 @@ function Source:capture(mission, nowSeconds)
     for key, known in OuttaMyWay.ValueRecord.pairs(self.knownWorlds) do
         if groups[key] == nil then
             groups[key] = {groupKey=key,fieldWorldReferenceKey=key,workers={},locators={},snapshots=known.snapshots or {},membershipEvidenceComplete=true,stale=true}
+        end
+    end
+
+    -- Current physical existence and Field World census evidence remain
+    -- separate from Job/Operation/Situation authority. A positive current
+    -- member-position witness may make an otherwise-unobserved assembly visible
+    -- in Observation. Absence of such a witness has no exclusion authority.
+    if self.currentPhysicalAssemblySource~=nil then
+        for _,group in OuttaMyWay.ValueRecord.pairs(groups) do
+            local workerReferences={}
+            local hasActiveWorker=false
+            for _,worker in OuttaMyWay.ValueRecord.ipairs(group.workers or {}) do
+                workerReferences[worker.referenceKey]=true
+                if worker.activeObserved==true then hasActiveWorker=true end
+            end
+            group.physicalAssemblies={}
+            if hasActiveWorker and group.fieldWorldReferenceKey~=nil then
+                local witnessed=self.currentPhysicalAssemblySource:observeFieldWorldPresence(
+                    currentPhysicalAssemblies,group.snapshots,group.fieldWorldReferenceKey
+                )
+                for _,candidate in OuttaMyWay.ValueRecord.ipairs(witnessed) do
+                    local physical=candidate.assembly
+                    if physical~=nil and workerReferences[physical.referenceKey]~=true then
+                        group.physicalAssemblies[#group.physicalAssemblies+1]=candidate
+                    end
+                end
+            end
+            table.sort(group.physicalAssemblies,function(a,b)
+                return a.assembly.referenceKey<b.assembly.referenceKey
+            end)
         end
     end
 
@@ -742,6 +777,42 @@ function Source:capture(mission, nowSeconds)
             end
         end
 
+        -- Physical-only Observation evidence. These records intentionally
+        -- carry no Job Episode evidence, Operation membership, Current/Future
+        -- Space, Demand, Situation relevance or Causal Obstruction conclusion.
+        for _,candidate in OuttaMyWay.ValueRecord.ipairs(group.physicalAssemblies or {}) do
+            local physical=candidate.assembly
+            local presence=candidate.fieldWorldPresenceEvidence
+            raw.assemblies[#raw.assemblies+1]={
+                referenceKey=physical.referenceKey,
+                componentReferenceKeys=physical.memberReferenceKeys,
+                source={
+                    kind="CURRENT_MISSION_PHYSICAL_ASSEMBLY_FIELD_WITNESS",
+                    name=physical.name,
+                    fieldWorldPresenceEvidence=presence
+                }
+            }
+            raw.aiStates[physical.referenceKey]={
+                fieldActive=physical.fieldActive,aiActive=physical.aiActive,observedActive=false,
+                blocked=physical.blocked,speedMps=physical.speedMps,name=physical.name
+            }
+            raw.playerControl[physical.referenceKey]={
+                playerControlled=physical.playerControlled,
+                playerPresent=physical.playerEntered,
+                playerEntered=physical.playerEntered
+            }
+            raw.diagnostics.assemblyDiagnostics[#raw.diagnostics.assemblyDiagnostics+1]={
+                assemblyReferenceKey=physical.referenceKey,name=physical.name,
+                source="CURRENT_MISSION_PHYSICAL_ASSEMBLY_FIELD_WITNESS",
+                memberCount=physical.memberCount,memberPositionCount=physical.memberPositionCount,
+                memberSource=physical.memberSource,memberPositions=physical.memberPositions,
+                aiActive=physical.aiActive,fieldActive=physical.fieldActive,
+                playerEntered=physical.playerEntered,playerControlled=physical.playerControlled,
+                fieldWorldPresenceEvidence=presence,coverageComplete=false,
+                negativeExclusionAuthority=false,semanticAuthority=false
+            }
+        end
+
         for i = 1, #group.workers - 1 do
             for j = i + 1, #group.workers do
                 local a, b = group.workers[i], group.workers[j]
@@ -934,6 +1005,14 @@ function Source:capture(mission, nowSeconds)
         }
     end
     return observations
+end
+
+-- Current physical addressability follows current GIANTS mission existence.
+-- It is independent of worker history and Field World census membership and
+-- grants no actuation authority.
+function Source:getCurrentPhysicalObject(referenceKeyValue)
+    if self.currentPhysicalAssemblySource==nil then return nil end
+    return self.currentPhysicalAssemblySource:getObject(referenceKeyValue)
 end
 
 function Source:getTrackedObject(referenceKeyValue)
