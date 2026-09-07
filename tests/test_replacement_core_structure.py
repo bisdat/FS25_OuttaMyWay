@@ -384,8 +384,8 @@ def test_v4714_field_world_equivalence_authority_is_active_and_conservative():
 
 def test_v4715_bounded_interaction_diagnostics_are_multi_worker_and_passive():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    assert "scripts/diagnostics/LiveInteractionDiagnostics.lua" in main
-    diagnostics=(ROOT/"scripts"/"diagnostics"/"LiveInteractionDiagnostics.lua").read_text(encoding="utf-8")
+    assert "scripts/observation/LiveInteractionObservation.lua" in main
+    diagnostics=(ROOT/"scripts"/"observation"/"LiveInteractionObservation.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
@@ -540,7 +540,7 @@ def test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidenc
 def test_v4724_removes_legacy_future_predictor_without_changing_future_space_admission_authority():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
-    diagnostics=(ROOT/"scripts"/"diagnostics"/"LiveInteractionDiagnostics.lua").read_text(encoding="utf-8")
+    diagnostics=(ROOT/"scripts"/"observation"/"LiveInteractionObservation.lua").read_text(encoding="utf-8")
     footprint=(ROOT/"scripts"/"representation"/"PlanViewFootprint.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
     hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")

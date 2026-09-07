@@ -31,7 +31,7 @@ load("scripts/representation/PlanViewFootprint.lua")
 load("scripts/representation/AssemblyRepresentationCache.lua")
 load("scripts/representation/CurrentPhysicalConflictRepresentation.lua")
 load("scripts/representation/PairSpecificPassageClearance.lua")
-load("scripts/diagnostics/LiveInteractionDiagnostics.lua")
+load("scripts/observation/LiveInteractionObservation.lua")
 load("scripts/identity/IdentityRegistry.lua")
 load("scripts/identity/FieldWorldSnapshotRegistry.lua")
 load("scripts/identity/FieldWorldEquivalenceEvaluator.lua")
@@ -1374,7 +1374,7 @@ test("pre-productive same-Field-World active Job remains Resolution-Space releva
 end)
 
 test("interaction diagnostics publish current pair state without future prediction",function()
-    local diagnostics=OuttaMyWay.LiveInteractionDiagnostics
+    local diagnostics=OuttaMyWay.LiveInteractionObservation
     local a={pose={x=0,z=0,dx=0,dz=1},speedMps=3,radius=nil}
     local b={pose={x=0,z=20,dx=0,dz=-1},speedMps=3,radius=4}
     local missing=diagnostics.observePairState(a,b)
@@ -1389,7 +1389,7 @@ test("interaction diagnostics publish current pair state without future predicti
 end)
 
 test("position-derived motion diagnostics separate forward reverse turning and stationary evidence",function()
-    local diagnostics=OuttaMyWay.LiveInteractionDiagnostics
+    local diagnostics=OuttaMyWay.LiveInteractionObservation
     local previous={x=0,z=0,dx=0,dz=1}
     local forward=diagnostics.deriveMotion(previous,{x=0,z=2,dx=0,dz=1},0,1,2)
     equal(forward.classification,"STABLE_FORWARD")

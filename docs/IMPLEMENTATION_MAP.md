@@ -20,10 +20,10 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 | 11 | Reduce `LiveControlDispatcher` to authorised routing/execution | COMPLETE |
 | 12 | Retire superseded generic Commitment/orchestration only where unsupported | COMPLETE |
 | 13 | Simplify Candidate/Constraint/Decision only where evidence proves duplication | **COMPLETE** |
-| 14 | Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming | **IN PROGRESS — 14.2 PHYSICAL CAPABILITY GRADUATION** |
+| 14 | Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming | **IN PROGRESS — 14.3 LIVE INTERACTION OBSERVATION GRADUATION** |
 | 15 | Whole-system validation and architecture-to-runtime review | NOT STARTED |
 
-Accepted Repository State for this map is `main` after PR #73 merge, commit `38699140270cee29836c22124b4199a5087031c7`. Canonical authority remains `v0.3.0.0`. Last accepted non-canonical playable identity is **`0.3.0.20 TEST — CANDIDATE SUPPORT PROJECTION`**.
+Accepted Repository State for this map is `main` after PR #74 merge, commit `16c98a0c5948d99faa082d886de900a56f564f4d`. Canonical authority remains `v0.3.0.0`. Last accepted non-canonical playable identity is **`0.3.0.22 TEST — PHYSICAL CAPABILITY GRADUATION`**.
 
 Read [Phase 13 Closure Audit](architecture/PHASE_13_CLOSURE_AUDIT.md) for the final Candidate/Constraint/Decision responsibility audit.
 
@@ -36,6 +36,7 @@ Read [Phase 13 Closure Audit](architecture/PHASE_13_CLOSURE_AUDIT.md) for the fi
 | Current Physical Assembly acquisition | `scripts/observation/CurrentPhysicalAssemblySource.lua` | PRESERVE |
 | Current physical pose observation | `scripts/observation/CurrentPhysicalPoseSource.lua` | PRESERVE factual positive evidence only |
 | Live Observation composition | `scripts/observation/LiveObservationSource.lua` | PRESERVE; later decompose only where responsibility becomes clearer |
+| Live interaction Observation calculation | `scripts/observation/LiveInteractionObservation.lua` | **PHASE 14.3** — graduated from diagnostic placement; calculations/evidence meaning preserved |
 | Physical representation | `scripts/representation/AssemblyRepresentationCache.lua`, `PlanViewFootprint.lua`, `PairSpecificPassageClearance.lua`, `CurrentPhysicalConflictRepresentation.lua` | PRESERVE explicit positive/incomplete authority |
 | Situation Assessment | `scripts/assessment/SituationAssessment.lua` plus focused assessment collaborators | PRESERVE interpreted current relationship knowledge |
 | Causal Obstruction assessment | `scripts/assessment/CausalObstructionAssessment.lua` | PRESERVE D-0218 Situation authority |
