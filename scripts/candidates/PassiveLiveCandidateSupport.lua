@@ -12,6 +12,40 @@ function Support.new(identityRegistry,epochSequence)
     return setmetatable({identities=identityRegistry,epochs=epochSequence,publishedCount=0},Support)
 end
 
+
+-- Non-authoritative Candidate Support Projection seam. This builds the same
+-- passive Candidate support statement for a caller-owned target Decision
+-- picture identity without publishing an intermediate Operational Picture.
+function Support:buildProjectedGroup(picture,snapshot,targetPictureId,targetEpoch)
+    OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
+    OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
+    if type(targetPictureId)~="string" or targetPictureId=="" then return nil,"TARGET_OPERATIONAL_PICTURE_ID_REQUIRED" end
+    local observe=OuttaMyWay.ValueRecord.length(snapshot.assemblies)>0 or OuttaMyWay.ValueRecord.length(snapshot.unavailableSources)>0 or OuttaMyWay.ValueRecord.length(picture.encounters)>0 or OuttaMyWay.ValueRecord.length(picture.uncertainty)>0
+    local capability=observe and "CONTINUE_OBSERVATION" or "CONTINUE_UNCHANGED"
+    local evidence={constraintEvidence={},governingBasis={responsibilityKey="passive-live:"..targetPictureId,sourceIntentIds=picture.identities.jobEpisodes.active,operationIds=picture.identities.operations.active}}
+    for _,id in OuttaMyWay.ValueRecord.ipairs(mandatory) do evidence.constraintEvidence[id]=packet("Non-actuating passive validation candidate",false) end
+    local preconditions={evidenceContracts={}}
+    if observe then
+        preconditions.boundedObservationContract={knowledgeGap="LIVE_ADMISSION_OR_REPRESENTATION_EVIDENCE_REMAINS_INCOMPLETE",expectedRealityEvolution="NEXT_PASSIVE_SAMPLE",preservedUsefulAction="GIANTS_NATIVE_PROGRESS_UNCHANGED",exhaustionCondition="MATERIAL_TRACE_CHANGE_OR_REASSESSMENT_DEADLINE",reassessmentDeadline=snapshot.timestamp+((OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS or 1000)/1000),progressParticipantId=picture.identities.assemblies[1] or picture.identities.jobEpisodes.active[1] or "PASSIVE_FIELD_WORLD"}
+    end
+    local specification={
+        referenceKey="passive:"..targetPictureId..":"..capability,
+        purpose={kind="PASSIVE_LIVE_VALIDATION",result="PUBLISH_CANONICAL_TRACE"},
+        subject={assemblyIds=picture.identities.assemblies},capability=capability,
+        expectedEffect={physicalChange=false,giantsAuthorityPreserved=true},evidenceBasis=evidence,
+        representationFitness={requirements={}},preconditions=preconditions,
+        invalidationConditions={{kind="NEXT_PASSIVE_SAMPLE"}},reversibility={physicalEffect=false},
+        obligationsCreated={},releaseImplications={none=true},uncertainty=picture.uncertainty,
+        comparisonCost=observe and 1 or 0
+    }
+    return {
+        supportBoundary={mode="PASSIVE_LIVE_ZERO_CONTROL",supportedCandidateClasses={capability},physicalCapabilitiesImplemented=false,controlAuthority=false},
+        candidateSpecifications={specification},
+        representationFitness={},
+        provenance={source="PassiveLiveCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true}
+    },nil
+end
+
 function Support:attach(picture,snapshot)
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
     OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
