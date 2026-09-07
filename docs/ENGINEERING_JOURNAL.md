@@ -3323,3 +3323,11 @@ After the Run #138 contract correction, Run #143 reduced the blocking Structural
 ### Run #147 follow-up
 
 Run #147 exposed the final companion literal in the same pre-1.0 versioning contract: `BUILD_LABEL` still named the prior `0.3.0.15 TEST — CAUSAL OBSTRUCTION RECOGNITION` build. The assertion was advanced to `0.3.0.16 TEST — CAUSAL OBSTRUCTION RELOCATION`, after which the structural contract file contains no remaining `0.3.0.15` current-build literal. No runtime behaviour changed.
+
+### 2026-09-07 — TEST Build Identity Is Executable Provenance
+
+**Observation.** The repaired Causal Obstruction Relocation executable passed the cold Condor / active Patriot Reality fixture while still emitting `0.3.0.16`. Earlier materially different PR #59 bytes had already used the same TEST identity.
+
+**Discovery — TEST Build Identity Is Executable Provenance.** A TEST build string identifies the executable bytes under validation. Reusing it after an executable-code change makes later Reality evidence ambiguous even when Git commits remain distinct.
+
+**Decision.** Root `AGENTS.md` now owns the standing workflow rule: every pushed executable-code revision must increment the TEST `BUILD` component and update all current build-identity surfaces atomically before PR/CI/field validation. Historical evidence is never renumbered. The present branch advances to `0.3.0.17 TEST — CAUSAL OBSTRUCTION RELOCATION` as an identity-only correction after the repaired `0.3.0.16` Reality PASS; no new behavioural claim is attached to the version-only change.

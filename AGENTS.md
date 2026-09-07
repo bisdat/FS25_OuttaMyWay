@@ -1,4 +1,4 @@
-# Codex Working Rules
+# Engineering Working Rules
 
 ## Repository authority and workflow
 
@@ -9,8 +9,23 @@
 - An ordinary pull-request merge advances Accepted Repository State; it is not canonicalisation.
 - Only a pull request explicitly designated in advance as a **Release Declaration PR** can become canonical. The repository owner's merge of that PR is the **Canonical Merge** and declares the resulting exact `main` commit canonical for its named version.
 - A Git tag, GitHub Release or package may record or process release material but does not create canonical authority.
-- Do not change the mod version, canonical labels, release identity, or release manifests unless the task explicitly requires it.
+- Do not change canonical labels, release identity, or release manifests unless the task explicitly requires it. Non-canonical TEST build identity follows the standing rule below.
 - Do not infer that a newer branch is more authoritative than the latest owner-accepted state.
+
+### TEST build identity before push
+
+Every pushed revision that changes executable mod code must carry a fresh non-canonical TEST build identity before that branch revision is published for pull-request review, CI, or Farming Simulator testing. Do not reuse one TEST build identity for materially different executable bytes.
+
+Advance the `BUILD` component once for the coherent pushed code revision under the repository's `0.MINOR.PATCH.BUILD` policy, and update all **current build identity surfaces atomically** in the same commit. At minimum this includes:
+
+- `scripts/config.lua`: `OuttaMyWay.VERSION` and `OuttaMyWay.BUILD_LABEL`;
+- `modDesc.xml`: the mod version value/text;
+- `scripts/main.lua`: the current TEST build header;
+- current-build test or validation assertions that intentionally protect those surfaces.
+
+Historical evidence, archived material, journal entries, release records, and other provenance that truthfully name an earlier build must not be renumbered merely to satisfy the current build identity.
+
+Documentation-only, test-only, governance-only, or other non-executable changes do not consume a new TEST `BUILD` unless the repository owner explicitly requests one. A version-only identity correction after already-tested executable bytes likewise does not imply a new behavioural claim; it gives those bytes a unique future-facing identity.
 
 ## Engineering method
 
