@@ -127,7 +127,7 @@ local function radiusFor(object)
 end
 
 local function observePairState(a, b)
-    return OuttaMyWay.LiveInteractionDiagnostics.observePairState(a, b)
+    return OuttaMyWay.LiveInteractionObservation.observePairState(a, b)
 end
 
 local function copyPose(pose)
@@ -307,7 +307,7 @@ function Source:capture(mission, nowSeconds)
             track.fieldWorldError = worldError
             local radius, width, length = radiusFor(object)
             local speedMps = math.abs(tonumber(object.lastSpeedReal) or 0) * 1000
-            local motionDiagnostic = OuttaMyWay.LiveInteractionDiagnostics.deriveMotion(track.diagnosticPose,pose,track.diagnosticTimestamp,nowSeconds,speedMps)
+            local motionDiagnostic = OuttaMyWay.LiveInteractionObservation.deriveMotion(track.diagnosticPose,pose,track.diagnosticTimestamp,nowSeconds,speedMps)
             local components = componentKeys(object)
             local shadowRepresentation = self.assemblyRepresentationCache and self.assemblyRepresentationCache:observe(object,ref,sourceToken,nowSeconds) or nil
             local localIntentObserved=OuttaMyWay.LocalIntentObservation.observe(object)
@@ -343,7 +343,7 @@ function Source:capture(mission, nowSeconds)
             local playerControlled = playerEntered
             local sourceJobEndEvidence = OuttaMyWay.LiveAIJobEvidence.sourceJobEndEvidence(mission, object, track.sourceJobToken)
             if pose ~= nil then
-                track.motionDiagnostic=OuttaMyWay.LiveInteractionDiagnostics.deriveMotion(track.diagnosticPose,pose,track.diagnosticTimestamp,nowSeconds,math.abs(tonumber(object.lastSpeedReal) or 0) * 1000)
+                track.motionDiagnostic=OuttaMyWay.LiveInteractionObservation.deriveMotion(track.diagnosticPose,pose,track.diagnosticTimestamp,nowSeconds,math.abs(tonumber(object.lastSpeedReal) or 0) * 1000)
                 track.pose = pose; track.diagnosticPose=copyPose(pose); track.diagnosticTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic
             elseif poseDiagnostic~=nil then
                 track.poseDiagnostic=poseDiagnostic
@@ -845,7 +845,7 @@ function Source:capture(mission, nowSeconds)
         for i = 1, #group.workers - 1 do
             for j = i + 1, #group.workers do
                 local a, b = group.workers[i], group.workers[j]
-                local pairReferenceKey = OuttaMyWay.LiveInteractionDiagnostics.pairReferenceKey(a.referenceKey,b.referenceKey)
+                local pairReferenceKey = OuttaMyWay.LiveInteractionObservation.pairReferenceKey(a.referenceKey,b.referenceKey)
                 local eligible = a.activeObserved==true and b.activeObserved==true and a.pose~=nil and b.pose~=nil
                 local exclusionReason = nil
                 if not eligible then

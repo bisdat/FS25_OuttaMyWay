@@ -1,5 +1,5 @@
-OuttaMyWay.LiveInteractionDiagnostics = {}
-local Diagnostics = OuttaMyWay.LiveInteractionDiagnostics
+OuttaMyWay.LiveInteractionObservation = {}
+local Observation = OuttaMyWay.LiveInteractionObservation
 
 local function clamp(value, minimum, maximum)
     if value < minimum then return minimum end
@@ -7,14 +7,14 @@ local function clamp(value, minimum, maximum)
     return value
 end
 
-function Diagnostics.pairReferenceKey(firstReferenceKey, secondReferenceKey)
+function Observation.pairReferenceKey(firstReferenceKey, secondReferenceKey)
     local first = tostring(firstReferenceKey)
     local second = tostring(secondReferenceKey)
     if second < first then first, second = second, first end
     return "live-pair:" .. first .. ":" .. second
 end
 
-function Diagnostics.deriveMotion(previousPose, currentPose, previousTimestamp, currentTimestamp, reportedSpeedMps)
+function Observation.deriveMotion(previousPose, currentPose, previousTimestamp, currentTimestamp, reportedSpeedMps)
     local result = {
         classification = "MOTION_EVIDENCE_UNRESOLVED",
         reportedSpeedMps = tonumber(reportedSpeedMps) or 0,
@@ -75,7 +75,7 @@ function Diagnostics.deriveMotion(previousPose, currentPose, previousTimestamp, 
     return result
 end
 
-function Diagnostics.observePairState(subject, other)
+function Observation.observePairState(subject, other)
     local rx = other.pose.x - subject.pose.x
     local rz = other.pose.z - subject.pose.z
     local distance = math.sqrt(rx * rx + rz * rz)
