@@ -3301,3 +3301,25 @@ existing D-0147 Candidate/Control mechanics.
 Named discoveries retained:
 - **Cold Physical Acquisition != Cold Conflict Representation**
 - **GIANTS Native Blocked != Timely Obstruction Evidence**
+
+## 2026-09-07 — Run #138 Structural Contract Drift
+
+GitHub Actions Run #138 executed the new `0.3.0.16 TEST — CAUSAL OBSTRUCTION RELOCATION` branch. The Lua offline observation job passed, including the focused obstruction-relocation contract, while the blocking Structural contracts job reported 19 failures.
+
+The failures separated into three contract-maintenance discoveries rather than runtime-relocation evidence:
+
+- **Historical Contract != Current Build Identity** — fifteen structural tests asserted the prior current build identity `0.3.0.15`; those tests protect current implementation contracts and must advance with the test build rather than freeze a superseded build literal.
+- **Historical Module Set != Current Module Ceiling** — two tests encoded the four-module Control directory as a permanent ceiling. The new explicit `ObstructionRelocationControl` is a deliberate Control responsibility, so the executable topology contract now contains five Control modules.
+- **Authority Class Contract != Literal Token in Every Layer** — the new authority class is literal where authority vocabulary is owned, while Boundary and Admission deliberately carry it through typed obstruction-relocation ownership fields. Structural validation should assert each layer's responsibility rather than require the same literal token everywhere.
+
+One further historical D-0147 wording assertion was updated from a two-class exclusivity sentence to the current generic invariant: one assembly cannot simultaneously own multiple actuation classes.
+
+No runtime, Candidate, Responsibility, Commitment, Control, authority behaviour, movement geometry, or D-0147 mechanics were changed by this correction. GitHub Actions remains the execution authority for the corrected source contracts.
+
+### Run #143 follow-up
+
+After the Run #138 contract correction, Run #143 reduced the blocking Structural contracts result to one failure: the pre-1.0 versioning contract had a companion `modDesc.xml` literal still frozen at `0.3.0.15`. The test-build identity contract is coherent only when both `scripts/config.lua` and `modDesc.xml` advance together, so that companion assertion was advanced to `0.3.0.16`. No runtime behaviour changed.
+
+### Run #147 follow-up
+
+Run #147 exposed the final companion literal in the same pre-1.0 versioning contract: `BUILD_LABEL` still named the prior `0.3.0.15 TEST — CAUSAL OBSTRUCTION RECOGNITION` build. The assertion was advanced to `0.3.0.16 TEST — CAUSAL OBSTRUCTION RELOCATION`, after which the structural contract file contains no remaining `0.3.0.15` current-build literal. No runtime behaviour changed.

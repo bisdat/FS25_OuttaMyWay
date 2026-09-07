@@ -53,6 +53,9 @@ function Admission:admit(values)
     for _, assemblyId in OuttaMyWay.ValueRecord.ipairs(values.postJobAssemblyIds or {}) do
         local owner=self.authorities:ownerOf(assemblyId); if owner~=nil then error("actuation authority already owned for assembly "..assemblyId,2) end
     end
+    for _, assemblyId in OuttaMyWay.ValueRecord.ipairs(values.obstructionRelocationAssemblyIds or {}) do
+        local owner=self.authorities:ownerOf(assemblyId); if owner~=nil then error("actuation authority already owned for assembly "..assemblyId,2) end
+    end
 
     local record = self.commitments:create({
         objective=values.objective,
@@ -78,16 +81,23 @@ function Admission:admit(values)
         })
         obligationIds[#obligationIds+1] = obligation.identity
     end
-    local authorityTokens,ownership,postJobOwnership={},{},{}
+    local authorityTokens,ownership,postJobOwnership,obstructionRelocationOwnership={},{},{},{}
     for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(values.progressAssemblyIds or {}) do
         local token=self.authorities:acquireProgress(assemblyId,record.identity); authorityTokens[#authorityTokens+1]=token; ownership[#ownership+1]={assemblyId=assemblyId,authorityTokenId=token.identity}
     end
     for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(values.postJobAssemblyIds or {}) do
         local token=self.authorities:acquirePostJob(assemblyId,record.identity); authorityTokens[#authorityTokens+1]=token; postJobOwnership[#postJobOwnership+1]={assemblyId=assemblyId,authorityTokenId=token.identity}
     end
-    if #obligationIds>0 or #ownership>0 or #postJobOwnership>0 then
+    for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(values.obstructionRelocationAssemblyIds or {}) do
+        local token=self.authorities:acquireObstructionRelocation(assemblyId,record.identity); authorityTokens[#authorityTokens+1]=token; obstructionRelocationOwnership[#obstructionRelocationOwnership+1]={assemblyId=assemblyId,authorityTokenId=token.identity}
+    end
+    if #obligationIds>0 or #ownership>0 or #postJobOwnership>0 or #obstructionRelocationOwnership>0 then
         local revised=OuttaMyWay.CommitmentStateMachine.revise(record,{
-            obligationIds=obligationIds,progressActuationOwnership=ownership,postJobActuationOwnership=postJobOwnership,epoch=self.epochs:next()
+            obligationIds=obligationIds,
+            progressActuationOwnership=ownership,
+            postJobActuationOwnership=postJobOwnership,
+            obstructionRelocationActuationOwnership=obstructionRelocationOwnership,
+            epoch=self.epochs:next()
         })
         record = self.commitments:save(revised)
     end

@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.15 TEST — Causal Obstruction Recognition.
+-- FS25_OuttaMyWay v0.3.0.16 TEST — Causal Obstruction Relocation.
 -- Situation/Decision/Commitment admission semantics remain inherited; Control magnitude is now elastic.
--- D-0147 now implements the agreed optional Bounded Infield Retreat courtesy hypothesis while retaining the validated v4.7.120 mechanical actuator substrate.
+-- D-0147 remains the validated warm mechanical donor while D-0218 tests current non-active Causal Obstruction relocation behind distinct authority.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.15"
+OuttaMyWay.VERSION = "0.3.0.16"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -208,7 +208,7 @@ OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.15 TEST — CAUSAL OBSTRUCTION RECOGNITION"
+OuttaMyWay.BUILD_LABEL = "0.3.0.16 TEST — CAUSAL OBSTRUCTION RELOCATION"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
@@ -228,8 +228,8 @@ OuttaMyWay.D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0
 -- D-0147 automatic completed-worker movement consent gate.
 -- The legacy implementation name AUTOMATIC_TERMINAL_EGRESS is retained deliberately to avoid
 -- interface/plumbing churn. It remains ON for development testing as requested by the repository owner.
--- Governing architecture treats it as Terminal Yield Consent; an eventual player-facing release should
--- require explicit opt-in/default-off because D-0147 is best-effort courtesy behaviour.
+-- D-0218 temporarily reuses this development consent check for the generic Causal Obstruction
+-- test path; this does not define a future player-facing setting or release default.
 OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS = true
 -- D-0199 retains D-0194/D-0196 Double Courtesy but makes the courtesy budget explicitly
 -- belong to the moved completed Job Episode. Courtesy 1 remains one fixed centroid bearing,

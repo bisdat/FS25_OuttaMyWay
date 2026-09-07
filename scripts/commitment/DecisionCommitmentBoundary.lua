@@ -28,9 +28,10 @@ local function situationDependencies(picture)
     return result
 end
 
-local function validatePhysicalOwnershipAgainstComposition(progressOwnership,postJobOwnership,compositionValues)
+local function validatePhysicalOwnershipAgainstComposition(progressOwnership,postJobOwnership,obstructionRelocationOwnership,compositionValues)
     if type(compositionValues)~="table" then return end
-    local progressDeclared,postJobDeclared,progressComposed,postJobComposed={},{},{},{}
+    local progressDeclared,postJobDeclared,obstructionDeclared={},{},{}
+    local progressComposed,postJobComposed,obstructionComposed={},{},{}
     for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(progressOwnership and progressOwnership.assemblyIds or {}) do
         if type(assemblyId)~="string" or assemblyId=="" then error("progress-actuation ownership requires assembly identity",3) end
         progressDeclared[assemblyId]=true
@@ -39,9 +40,14 @@ local function validatePhysicalOwnershipAgainstComposition(progressOwnership,pos
         if type(assemblyId)~="string" or assemblyId=="" then error("post-job-actuation ownership requires assembly identity",3) end
         postJobDeclared[assemblyId]=true
     end
+    for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(obstructionRelocationOwnership and obstructionRelocationOwnership.assemblyIds or {}) do
+        if type(assemblyId)~="string" or assemblyId=="" then error("obstruction-relocation-actuation ownership requires assembly identity",3) end
+        obstructionDeclared[assemblyId]=true
+    end
     for _,entry in OuttaMyWay.ValueRecord.ipairs(compositionValues.entries or {}) do
         if entry.progressActuation==true then progressComposed[entry.assemblyId]=true end
         if entry.postJobActuation==true then postJobComposed[entry.assemblyId]=true end
+        if entry.obstructionRelocationActuation==true then obstructionComposed[entry.assemblyId]=true end
     end
     local function same(a,b,label)
         for id in pairs(a) do if not b[id] then error("physical selected Candidate "..label.." ownership disagrees with Effective Actuation Composition",3) end end
@@ -49,7 +55,9 @@ local function validatePhysicalOwnershipAgainstComposition(progressOwnership,pos
     end
     same(progressDeclared,progressComposed,"progress-actuation")
     same(postJobDeclared,postJobComposed,"post-job-actuation")
-    for id in pairs(progressDeclared) do if postJobDeclared[id] then error("one assembly cannot simultaneously own progress and post-job actuation",3) end end
+    same(obstructionDeclared,obstructionComposed,"obstruction-relocation-actuation")
+    for id in pairs(progressDeclared) do if postJobDeclared[id] or obstructionDeclared[id] then error("one assembly cannot simultaneously own multiple actuation classes",3) end end
+    for id in pairs(postJobDeclared) do if obstructionDeclared[id] then error("one assembly cannot simultaneously own multiple actuation classes",3) end end
 end
 
 function Boundary.new(identityRegistry,epochSequence,admission,commitmentRegistry,obligationLedger,authorityRegistry,governingBasisEvaluator,terminalSettlementEvaluator)
@@ -63,22 +71,21 @@ function Boundary:_admitFromCandidate(picture,decision,candidate)
     if candidate == nil then error("Commitment creation requires selected Candidate",3) end
     local basis = candidate.evidenceBasis.governingBasis
     if type(basis) ~= "table" then error("selected Candidate requires explicit Governing Basis",3) end
-    local progressAssemblyIds,postJobAssemblyIds={},{}
+    local progressAssemblyIds,postJobAssemblyIds,obstructionRelocationAssemblyIds={},{},{}
     local progressOwnership=candidate.evidenceBasis.progressActuationOwnership
     local postJobOwnership=candidate.evidenceBasis.postJobActuationOwnership
+    local obstructionRelocationOwnership=candidate.evidenceBasis.obstructionRelocationActuationOwnership
     if physical[candidate.capability] then
         local progressCount=type(progressOwnership)=="table" and type(progressOwnership.assemblyIds)=="table" and OuttaMyWay.ValueRecord.length(progressOwnership.assemblyIds) or 0
         local postJobCount=type(postJobOwnership)=="table" and type(postJobOwnership.assemblyIds)=="table" and OuttaMyWay.ValueRecord.length(postJobOwnership.assemblyIds) or 0
-        if progressCount+postJobCount==0 then error("physical selected Candidate requires explicit actuation ownership",3) end
-        -- v4.7.125 D-0147 Protected Yield may compose progress authority for one
-        -- productive assembly with post-job authority for a different completed
-        -- assembly. validatePhysicalOwnershipAgainstComposition() below remains the
-        -- invariant: one assembly may never own both classes simultaneously.
+        local obstructionCount=type(obstructionRelocationOwnership)=="table" and type(obstructionRelocationOwnership.assemblyIds)=="table" and OuttaMyWay.ValueRecord.length(obstructionRelocationOwnership.assemblyIds) or 0
+        if progressCount+postJobCount+obstructionCount==0 then error("physical selected Candidate requires explicit actuation ownership",3) end
         for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(progressOwnership and progressOwnership.assemblyIds or {}) do progressAssemblyIds[#progressAssemblyIds+1]=assemblyId end
         for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(postJobOwnership and postJobOwnership.assemblyIds or {}) do postJobAssemblyIds[#postJobAssemblyIds+1]=assemblyId end
+        for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(obstructionRelocationOwnership and obstructionRelocationOwnership.assemblyIds or {}) do obstructionRelocationAssemblyIds[#obstructionRelocationAssemblyIds+1]=assemblyId end
     end
     local compositionValues=candidate.evidenceBasis.effectiveActuationComposition
-    if physical[candidate.capability] then validatePhysicalOwnershipAgainstComposition(progressOwnership,postJobOwnership,compositionValues) end
+    if physical[candidate.capability] then validatePhysicalOwnershipAgainstComposition(progressOwnership,postJobOwnership,obstructionRelocationOwnership,compositionValues) end
     local admitted = self.admission:admit({
         objective=candidate.purpose,
         governingBasis=basis,
@@ -86,7 +93,7 @@ function Boundary:_admitFromCandidate(picture,decision,candidate)
         situationDependencies=situationDependencies(picture),
         evidenceContracts=candidate.preconditions.evidenceContracts or {},
         obligationSpecifications=candidate.obligationsCreated,
-        progressAssemblyIds=progressAssemblyIds,postJobAssemblyIds=postJobAssemblyIds,
+        progressAssemblyIds=progressAssemblyIds,postJobAssemblyIds=postJobAssemblyIds,obstructionRelocationAssemblyIds=obstructionRelocationAssemblyIds,
         effectiveActuationCompositionId=nil
     })
     if type(compositionValues) == "table" then

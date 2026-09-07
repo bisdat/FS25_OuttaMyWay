@@ -10,7 +10,6 @@ local function logError(message)
     if Logging~=nil and type(Logging.error)=="function" then Logging.error("[FS25_OuttaMyWay][LIVE-RUNTIME] %s",message) else print("[FS25_OuttaMyWay][LIVE-RUNTIME][ERROR] "..message) end
 end
 
-
 local function rawContainsReference(raw, referenceKey)
     if referenceKey==nil then return false end
     for _,assembly in OuttaMyWay.ValueRecord.ipairs(raw.assemblies or {}) do
@@ -28,6 +27,11 @@ local function appendCapabilityObservation(raw, observation)
 end
 local function appendTerminalEgressObservation(raw,observation)
     if type(observation)~="table" or observation.kind~="D0147_TERMINAL_EGRESS_CONTROL_OBSERVATION" then return false end
+    if not rawContainsReference(raw,observation.assemblyReferenceKey) then return false end
+    raw.controlOutcomes=raw.controlOutcomes or {}; raw.controlOutcomes[#raw.controlOutcomes+1]=observation; return true
+end
+local function appendObstructionRelocationObservation(raw,observation)
+    if type(observation)~="table" or observation.kind~="OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION" then return false end
     if not rawContainsReference(raw,observation.assemblyReferenceKey) then return false end
     raw.controlOutcomes=raw.controlOutcomes or {}; raw.controlOutcomes[#raw.controlOutcomes+1]=observation; return true
 end
@@ -70,9 +74,11 @@ function Coordinator:update(dt)
     local records={}
     local capabilityObservation=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getCapabilityObservation() or nil
     local terminalEgressObservation=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getTerminalEgressObservation() or nil
+    local obstructionRelocationObservation=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getObstructionRelocationObservation() or nil
     for _,raw in OuttaMyWay.ValueRecord.ipairs(observations) do
         appendCapabilityObservation(raw,capabilityObservation)
         appendTerminalEgressObservation(raw,terminalEgressObservation)
+        appendObstructionRelocationObservation(raw,obstructionRelocationObservation)
         local ok,live=pcall(self.runtime.processLiveObservation,self.runtime,raw)
         if ok then
             if self.diagnosticObserver and type(self.diagnosticObserver.observeRuntimeResult)=="function" then

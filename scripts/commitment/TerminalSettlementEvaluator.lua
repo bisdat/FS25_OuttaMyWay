@@ -19,7 +19,7 @@ function Evaluator:enterSettling(commitmentId,governingBasisVerdict)
         local releasedBoundedAuthority = self.boundedAuthority and self.boundedAuthority:releaseForCommitment(commitmentId,"TERMINAL_SETTLEMENT_ENTER_SETTLING") or {}
         local released = self.authorities:releaseForCommitment(commitmentId)
         if #released > 0 then
-            record = OuttaMyWay.CommitmentStateMachine.revise(record,{progressActuationOwnership={},postJobActuationOwnership={},epoch=self.epochs:next()})
+            record = OuttaMyWay.CommitmentStateMachine.revise(record,{progressActuationOwnership={},postJobActuationOwnership={},obstructionRelocationActuationOwnership={},epoch=self.epochs:next()})
             record = self.commitments:save(record)
         end
         return {commitment=record,releasedAuthorityTokenIds=released,releasedBoundedAuthorityGrantIds=releasedBoundedAuthority}
@@ -34,7 +34,7 @@ function Evaluator:enterSettling(commitmentId,governingBasisVerdict)
     local releasedBoundedAuthority = self.boundedAuthority and self.boundedAuthority:releaseForCommitment(commitmentId,"TERMINAL_SETTLEMENT_ENTER_SETTLING") or {}
     local released = self.authorities:releaseForCommitment(commitmentId)
     if #released > 0 then
-        updated = OuttaMyWay.CommitmentStateMachine.revise(updated,{progressActuationOwnership={},postJobActuationOwnership={},epoch=self.epochs:next()})
+        updated = OuttaMyWay.CommitmentStateMachine.revise(updated,{progressActuationOwnership={},postJobActuationOwnership={},obstructionRelocationActuationOwnership={},epoch=self.epochs:next()})
         updated = self.commitments:save(updated)
     end
     return {commitment=updated,releasedAuthorityTokenIds=released,releasedBoundedAuthorityGrantIds=releasedBoundedAuthority}
