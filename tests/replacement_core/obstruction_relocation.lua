@@ -13,7 +13,7 @@ load("scripts/commitment/CommitmentRegistry.lua")
 load("scripts/authority/AuthorityRegistry.lua")
 load("scripts/authority/EffectiveActuationComposition.lua")
 load("scripts/authority/PostJobActuationAuthority.lua")
-load("scripts/prototypes/Prototype22ConfigurationAuthority.lua")
+load("scripts/control/mechanisms/TransitConfigurationMechanism.lua")
 load("scripts/control/ObstructionRelocationControl.lua")
 load("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
 

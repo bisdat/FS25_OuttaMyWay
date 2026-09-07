@@ -37,17 +37,17 @@ def test_phase14_1_regulation_control_owns_production_speed_execution():
 def test_phase14_1_regulation_control_reuses_mechanics_without_owning_policy():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"RegulationControl.lua").read_text(encoding="utf-8")
-    drive=(ROOT/"scripts"/"prototypes"/"Prototype22DriveAuthority.lua").read_text(encoding="utf-8")
+    drive=(ROOT/"scripts"/"control"/"mechanisms"/"NativeDriveMechanism.lua").read_text(encoding="utf-8")
     passage=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
 
-    assert "Prototype22DriveAuthority.new" not in control
-    assert "driveAuthority=driveAuthority" in control
-    assert "driveAuthority:setRegulationLease" in control
-    assert "driveAuthority:clearRegulationLease" in control
+    assert "NativeDriveMechanism.new" not in control
+    assert "driveMechanism=driveMechanism" in control
+    assert "driveMechanism:setRegulationLease" in control
+    assert "driveMechanism:clearRegulationLease" in control
     assert "AIVehicleUtil.driveToPoint" in drive
-    assert "OuttaMyWay.RegulationControl.new(OuttaMyWay.runtime,OuttaMyWay.prototype22CapabilityGate.driveAuthority)" in main
-    assert "OuttaMyWay.CooperativePassageControl.new(OuttaMyWay.runtime,OuttaMyWay.prototype22CapabilityGate)" in main
-    assert "CooperativePassageControl requires the existing physical capability donor" in passage
+    assert "OuttaMyWay.RegulationControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms.driveMechanism)" in main
+    assert "OuttaMyWay.CooperativePassageControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms)" in main
+    assert "CooperativePassageControl requires Hold, Drive and Configuration mechanisms" in passage
 
     for forbidden in (
         "DecisionSelector",
@@ -91,9 +91,8 @@ def test_phase14_1_p22_remains_manual_harness_and_passage_donor_only():
 
     assert 'addConsoleCommand("otmP22"' in p22
     assert "PROTOTYPE_22_CAPABILITY_GATE_ENABLED" in p22
-    assert "permissionGate = OuttaMyWay.Prototype22PermissionGate.new()" in p22
-    assert "driveAuthority = OuttaMyWay.Prototype22DriveAuthority.new()" in p22
-    assert "configurationAuthority = OuttaMyWay.Prototype22ConfigurationAuthority.new()" in p22
+    assert "mechanisms.holdMechanism" in p22
+    assert "mechanisms.driveMechanism" in p22
     assert "addModEventListener(OuttaMyWay.prototype22CapabilityGate)" in main
     assert "addModEventListener(OuttaMyWay.regulationControl)" in main
 

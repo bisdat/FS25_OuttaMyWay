@@ -1,9 +1,7 @@
--- FS25_OuttaMyWay v0.1.10.0 CANONICAL CANDIDATE — D-0184 Runtime Archaeology Removal; bounded Permission/Drive/Configuration donor only.
--- Bounded physical capability donor. Under D-0140 this module is below the
--- Control boundary: it executes valid typed Control requests supplied by the
--- central LiveControlDispatcher and retains the proven Permission, Drive and
--- Configuration mechanisms. Retired TS015 relocation/reposition fixtures are
--- deliberately absent. It does not select traffic roles or own Commitment lifecycle.
+-- Prototype22 manual capability-validation harness.
+-- Production Hold and Drive mechanisms are injected by the composition root.
+-- This Prototype may exercise them manually but owns no production Decision,
+-- Commitment, Responsibility or Control lifecycle.
 
 OuttaMyWay.Prototype22CapabilityGate = {}
 local Probe = OuttaMyWay.Prototype22CapabilityGate
@@ -80,12 +78,18 @@ local function lower(value)
     return string.lower(tostring(value or ""))
 end
 
-function Probe.new(runtime)
+function Probe.new(runtime, mechanisms)
+    mechanisms = mechanisms or {
+        holdMechanism = OuttaMyWay.FieldWorkHoldMechanism.new(),
+        driveMechanism = OuttaMyWay.NativeDriveMechanism.new()
+    }
+    if mechanisms.holdMechanism == nil or mechanisms.driveMechanism == nil then
+        error("Prototype22CapabilityGate requires Hold and Drive mechanisms", 2)
+    end
     return setmetatable({
         runtime = runtime,
-        permissionGate = OuttaMyWay.Prototype22PermissionGate.new(),
-        driveAuthority = OuttaMyWay.Prototype22DriveAuthority.new(),
-        configurationAuthority = OuttaMyWay.Prototype22ConfigurationAuthority.new(),
+        holdMechanism = mechanisms.holdMechanism,
+        driveMechanism = mechanisms.driveMechanism,
         run = nil,
         releasedMonitor = nil,
         commandsRegistered = false,
@@ -111,7 +115,7 @@ end
 
 function Probe:loadMap()
     self:_registerCommands()
-    local ok, reason = self.driveAuthority:install()
+    local ok, reason = self.driveMechanism:install()
     logInfo("CAPABILITY_GATE loaded enabled=%s productionControlAuthority=%s driveHook=%s reason=%s retiredReposition=false retiredTs015Relocation=false",
         tostring(OuttaMyWay.PROTOTYPE_22_CAPABILITY_GATE_ENABLED == true),
         tostring(self.runtime ~= nil and self.runtime.generalControlAuthorityEnabled == true),
@@ -121,9 +125,7 @@ end
 
 function Probe:deleteMap()
     self:_clearAuthority(false)
-    self.permissionGate:clear()
-    self.driveAuthority:clearAll()
-    self.configurationAuthority:clearAll()
+    self.holdMechanism:clear()
     self:_unregisterCommands()
     self.run = nil
     self.releasedMonitor = nil
@@ -216,8 +218,8 @@ end
 function Probe:_clearAuthority(wake)
     local run = self.run
     if run ~= nil and run.vehicle ~= nil then
-        self.driveAuthority:clear(run.vehicle)
-        self.permissionGate:release(run.vehicle)
+        self.driveMechanism:clear(run.vehicle)
+        self.holdMechanism:release(run.vehicle)
         if wake == true then self:_wakeNativeContinuation(run.vehicle) end
     end
 end
@@ -264,7 +266,7 @@ function Probe:_startRegulate(selector, speedText)
     if speed < minSpeed or speed > maxSpeed then return string.format("P22 Regulation speed must be %.1f..%.1f km/h", minSpeed, maxSpeed) end
     local run, runReason = self:_newRun("REGULATE", vehicle)
     if run == nil then return runReason end
-    local ok, authorityReason = self.driveAuthority:setRegulation(vehicle, speed)
+    local ok, authorityReason = self.driveMechanism:setRegulation(vehicle, speed)
     if not ok then return "P22 Regulation unavailable: " .. tostring(authorityReason) end
     run.speedKmh = speed
     self.run = run
@@ -280,7 +282,7 @@ function Probe:_startHold(selector)
     if vehicle == nil then return reason end
     local run, runReason = self:_newRun("HOLD", vehicle)
     if run == nil then return runReason end
-    local ok, gateReason = self.permissionGate:setHold(vehicle, "P22-HOLD")
+    local ok, gateReason = self.holdMechanism:setHold(vehicle, "P22-HOLD")
     if not ok then return "P22 Hold unavailable: " .. tostring(gateReason) end
     run.phase = "HOLDING"
     self.run = run
@@ -309,12 +311,12 @@ function Probe:_startReleaseMonitor(run, reason)
     }
     logInfo("RELEASE vehicle=%s ref=%s startJob=%s currentJob=%s reason=%s wake=%s gateCalls=%d",
         run.vehicleName, run.referenceKey, run.startJobToken, tostring(currentJobToken(run.vehicle)), tostring(reason), tostring(method),
-        self.permissionGate:getCallCount(run.vehicle))
+        self.holdMechanism:getCallCount(run.vehicle))
 end
 
 function Probe:_releaseImmediate(run, reason)
-    self.driveAuthority:clear(run.vehicle)
-    self.permissionGate:release(run.vehicle)
+    self.driveMechanism:clear(run.vehicle)
+    self.holdMechanism:release(run.vehicle)
     local p = pose(run.vehicle)
     local travelled = distanceFrom(run, p)
     logInfo("CAPABILITY_END kind=%s phase=%s vehicle=%s startJob=%s currentJob=%s sameJob=%s travel=%s maxActualSpeed=%.2fkmh spatialResult=%s reason=%s",
@@ -336,10 +338,10 @@ end
 function Probe:_cancelToHold()
     local run=self.run
     if run==nil then return "P22 has no active capability" end
-    self.driveAuthority:clear(run.vehicle)
-    local ok,reason=self.permissionGate:setHold(run.vehicle,"P22-MANUAL-CANCEL")
+    self.driveMechanism:clear(run.vehicle)
+    local ok,reason=self.holdMechanism:setHold(run.vehicle,"P22-MANUAL-CANCEL")
     if not ok then
-        self.permissionGate:release(run.vehicle); self.run=nil
+        self.holdMechanism:release(run.vehicle); self.run=nil
         return "P22 cancel could not establish Hold: "..tostring(reason)
     end
     run.kind="HOLD"; run.phase="CANCEL_HOLD"; run.holdEffectLogged=false
@@ -356,10 +358,10 @@ function Probe:_statusText()
         local run = self.run
         local p = pose(run.vehicle)
         local travelled = distanceFrom(run, p)
-        local drive = self.driveAuthority:getState(run.vehicle)
+        local drive = self.driveMechanism:getState(run.vehicle)
         return string.format("P22 %s/%s vehicle=%s job=%s sameJob=%s speed=%.2f travel=%s gateCalls=%d driveCalls=%d remaining=%s",
             run.kind, tostring(run.phase), run.vehicleName, tostring(run.startJobToken), tostring(currentJobToken(run.vehicle) == run.startJobToken),
-            actualSpeedKmh(run.vehicle), travelled and string.format("%.2fm", travelled) or "n/a", self.permissionGate:getCallCount(run.vehicle),
+            actualSpeedKmh(run.vehicle), travelled and string.format("%.2fm", travelled) or "n/a", self.holdMechanism:getCallCount(run.vehicle),
             drive and (drive.driveCalls or 0) or 0, drive and drive.lastRemainingM and string.format("%.2fm", drive.lastRemainingM) or "n/a")
     end
     local monitor = self.releasedMonitor
@@ -434,7 +436,6 @@ function Probe:update(dt)
         logWarning("CAPABILITY_ABORT kind=%s phase=%s vehicle=%s startJob=%s currentJob=%s reason=JOB_EPISODE_CHANGED authority=RELEASED",
             run.kind, tostring(run.phase), run.vehicleName, tostring(run.startJobToken), tostring(token))
         self:_clearAuthority(false)
-        self.configurationAuthority:clear(run.vehicle)
         self:_setHud("OTM P22 — ABORT", run.vehicleName, "Job Episode changed; probe authority removed")
         self.run = nil
         return
@@ -446,7 +447,7 @@ function Probe:update(dt)
     local travelled = distanceFrom(run, p)
 
     if run.kind == "HOLD" and run.holdEffectLogged ~= true then
-        local gateCalls = self.permissionGate:getCallCount(run.vehicle)
+        local gateCalls = self.holdMechanism:getCallCount(run.vehicle)
         if gateCalls > 0 and speed <= (OuttaMyWay.PROTOTYPE_22_HOLD_EFFECT_SPEED_KMH or 0.25) then
             run.holdEffectLogged = true
             logInfo("HOLD_EFFECT_PASS vehicle=%s job=%s sameJob=true speed=%.2f gateCalls=%d travel=%s",
@@ -457,10 +458,10 @@ function Probe:update(dt)
 
     if nowMs >= (run.nextLogAt or 0) then
         run.nextLogAt = nowMs + (OuttaMyWay.PROTOTYPE_22_HEARTBEAT_MS or 1000)
-        local drive = self.driveAuthority:getState(run.vehicle)
+        local drive = self.driveMechanism:getState(run.vehicle)
         logInfo("SAMPLE kind=%s phase=%s vehicle=%s job=%s sameJob=true speed=%.2f travel=%s gateCalls=%d driveCalls=%d inputMax=%s outputMax=%s inputForward=%s remaining=%s",
             run.kind, tostring(run.phase), run.vehicleName, tostring(token), speed,
-            travelled and string.format("%.2fm", travelled) or "n/a", self.permissionGate:getCallCount(run.vehicle),
+            travelled and string.format("%.2fm", travelled) or "n/a", self.holdMechanism:getCallCount(run.vehicle),
             drive and (drive.driveCalls or 0) or 0,
             drive and drive.lastInputMaxSpeed and string.format("%.2f", drive.lastInputMaxSpeed) or "n/a",
             drive and drive.lastOutputMaxSpeed and string.format("%.2f", drive.lastOutputMaxSpeed) or "n/a",

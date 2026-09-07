@@ -1,15 +1,11 @@
--- FS25_OuttaMyWay Prototype 22 configuration capability probe.
---
--- Temporary, explicit-console-only assembly configuration authority used only
--- by P22-C.  This module reuses previously proven GIANTS integration
--- mechanisms (work off, raise/lower, fold-direction request) without creating
--- production Traffic Policeman policy.  Fold animation values are diagnostic
--- motion evidence only; spatial PASS is established separately from realised
--- plan-view representation evidence.
+-- Physical configuration mechanism below Control.
+-- Reuses the proven GIANTS work/raise/fold integration. It owns no traffic
+-- policy or semantic configuration conclusion. Cached Transit actuation serves
+-- Cooperative Passage; generic compact capability is retained for D-0147/D-0218.
 
-OuttaMyWay.Prototype22ConfigurationAuthority = {}
-local Authority = OuttaMyWay.Prototype22ConfigurationAuthority
-Authority.__index = Authority
+OuttaMyWay.TransitConfigurationMechanism = {}
+local Mechanism = OuttaMyWay.TransitConfigurationMechanism
+Mechanism.__index = Mechanism
 
 local function safeCall(object, methodName, ...)
     if object == nil or type(object[methodName]) ~= "function" then return false, nil end
@@ -133,23 +129,23 @@ local function requestFoldDirection(object,direction)
     return ok
 end
 
-function Authority.new()
-    return setmetatable({states = setmetatable({}, {__mode = "k"})}, Authority)
+function Mechanism.new()
+    return setmetatable({states = setmetatable({}, {__mode = "k"})}, Mechanism)
 end
 
-function Authority:getEvidence(vehicle)
+function Mechanism:getEvidence(vehicle)
     return foldEvidence(vehicle)
 end
 
 -- D-0178: actuation-motion evidence only; no semantic folded/deployed inference.
-function Authority:getActiveFoldMotionEvidence(vehicle)
+function Mechanism:getActiveFoldMotionEvidence(vehicle)
     return activeFoldMotionEvidence(vehicle)
 end
 
 
 -- D-0179: TRANSIT_BASE Passage consumes the Job-Episode bootstrap capability
 -- record directly.  No assembly/capability discovery is performed here.
-function Authority:prepareCachedTransit(vehicle,capability)
+function Mechanism:prepareCachedTransit(vehicle,capability)
     if vehicle==nil then return false,"vehicle-unavailable" end
     if self.states[vehicle]~=nil then return false,"configuration-authority-already-owned" end
     if type(capability)~="table" then return false,"transit-capability-unavailable" end
@@ -193,7 +189,7 @@ function Authority:prepareCachedTransit(vehicle,capability)
     return true,state
 end
 
-function Authority:getCachedTransitSettlement(vehicle)
+function Mechanism:getCachedTransitSettlement(vehicle)
     local state=vehicle~=nil and self.states[vehicle] or nil
     if state==nil or state.bootstrapTransitCapability~=true then return {settled=true,exhausted=false,actuatorCount=0,settledCount=0,elapsedMs=0,timeoutMs=0,reason="NO_CACHED_TRANSIT_STATE"} end
     local settledCount=0
@@ -216,7 +212,7 @@ end
 -- Restore only cached actuators whose fold position actually moved away from the
 -- pre-Transit endpoint; generic assembly rediscovery and aggregate fold state
 -- carry no D-0146 restoration authority.
-function Authority:requestCachedTransitRestore(vehicle)
+function Mechanism:requestCachedTransitRestore(vehicle)
     local state=vehicle~=nil and self.states[vehicle] or nil
     if state==nil or state.bootstrapTransitCapability~=true then return false,"cached-transit-authority-not-owned" end
     if state.restoreRequestedAt~=nil then return true,state end
@@ -242,7 +238,7 @@ function Authority:requestCachedTransitRestore(vehicle)
     return true,state
 end
 
-function Authority:getCachedRestoreSettlement(vehicle)
+function Mechanism:getCachedRestoreSettlement(vehicle)
     local state=vehicle~=nil and self.states[vehicle] or nil
     if state==nil or state.bootstrapTransitCapability~=true then return {settled=true,normal=true,exhausted=false,actuatorCount=0,settledCount=0,elapsedMs=0,timeoutMs=0,reason="NO_CACHED_TRANSIT_STATE"} end
     local actuators=state.restoreActuatorStates or {}
@@ -263,7 +259,7 @@ function Authority:getCachedRestoreSettlement(vehicle)
     return {settled=normal or exhausted,normal=normal,exhausted=exhausted,actuatorCount=actuatorCount,settledCount=settledCount,elapsedMs=elapsed,timeoutMs=timeout,reason=normal and "RESTORE_ACTUATORS_SETTLED" or (exhausted and "RESTORE_FOLD_SETTLEMENT_EXHAUSTED" or "RESTORE_ACTUATORS_PENDING")}
 end
 
-function Authority:finishCachedTransitRestore(vehicle)
+function Mechanism:finishCachedTransitRestore(vehicle)
     local state=vehicle~=nil and self.states[vehicle] or nil
     if state==nil or state.bootstrapTransitCapability~=true then return false,"cached-transit-authority-not-owned" end
     local settlement=self:getCachedRestoreSettlement(vehicle)
@@ -274,7 +270,7 @@ function Authority:finishCachedTransitRestore(vehicle)
     return true,{state=state,settlement=settlement}
 end
 
-function Authority:prepareCompact(vehicle)
+function Mechanism:prepareCompact(vehicle)
     if vehicle == nil then return false, "vehicle-unavailable" end
     if self.states[vehicle] ~= nil then return false, "configuration-authority-already-owned" end
 
@@ -332,7 +328,7 @@ function Authority:prepareCompact(vehicle)
     return true, state
 end
 
-function Authority:requestRestore(vehicle)
+function Mechanism:requestRestore(vehicle)
     local state = vehicle ~= nil and self.states[vehicle] or nil
     if state == nil then return false, "configuration-authority-not-owned" end
     if state.restoreRequestedAt ~= nil then return true, state end
@@ -355,7 +351,7 @@ function Authority:requestRestore(vehicle)
     return true, state
 end
 
-function Authority:finishRestore(vehicle)
+function Mechanism:finishRestore(vehicle)
     local state = vehicle ~= nil and self.states[vehicle] or nil
     if state == nil then return false, "configuration-authority-not-owned" end
     local evidence = foldEvidence(vehicle)
@@ -367,14 +363,14 @@ function Authority:finishRestore(vehicle)
     return true, state
 end
 
-function Authority:getState(vehicle)
+function Mechanism:getState(vehicle)
     return vehicle ~= nil and self.states[vehicle] or nil
 end
 
-function Authority:clear(vehicle)
+function Mechanism:clear(vehicle)
     if vehicle ~= nil then self.states[vehicle] = nil end
 end
 
-function Authority:clearAll()
+function Mechanism:clearAll()
     self.states = setmetatable({}, {__mode = "k"})
 end

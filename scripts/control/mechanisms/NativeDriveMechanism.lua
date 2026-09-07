@@ -1,11 +1,11 @@
--- FS25_OuttaMyWay v0.1.13.0 CANONICAL CANDIDATE — D-0192 Bounded Axis Return; D-0186 Regulation–Hold Boundary retained.
--- GIANTS-native drive-call authority for bounded Regulation.
--- Positive Regulation preserves native permission; a zero effective cap is a Hold and revokes drive permission.
--- Historical Reposition helpers remain non-production residue pending later naming/ownership normalisation.
+-- GIANTS-native drive mechanism below Control.
+-- Positive Regulation preserves native permission; a zero effective cap is a
+-- Hold and revokes drive permission. The same interception realises validated
+-- Cooperative Passage point-Reposition and captured-axis travel.
 
-OuttaMyWay.Prototype22DriveAuthority = {}
-local Authority = OuttaMyWay.Prototype22DriveAuthority
-Authority.__index = Authority
+OuttaMyWay.NativeDriveMechanism = {}
+local Mechanism = OuttaMyWay.NativeDriveMechanism
+Mechanism.__index = Mechanism
 
 local function weakKeys()
     return setmetatable({}, {__mode = "k"})
@@ -25,12 +25,12 @@ local function position(vehicle)
     return node, x, y, z
 end
 
-function Authority.new()
+function Mechanism.new()
     return setmetatable({
         states = weakKeys(),
         installed = false,
         originalDriveToPoint = nil
-    }, Authority)
+    }, Mechanism)
 end
 
 local function sortedLeaseOwners(leases)
@@ -56,16 +56,16 @@ local function recomputeRegulationState(state)
     return state
 end
 
-function Authority:install()
+function Mechanism:install()
     if self.installed then return true end
     if AIVehicleUtil == nil or type(AIVehicleUtil.driveToPoint) ~= "function" then
         return false, "AIVehicleUtil.driveToPoint-unavailable"
     end
-    local authority = self
+    local mechanism = self
     local original = AIVehicleUtil.driveToPoint
     self.originalDriveToPoint = original
     AIVehicleUtil.driveToPoint = function(vehicle, dt, acceleration, isAllowedToDrive, moveForwards, lx, lz, maxSpeed)
-        local state = authority.states[vehicle]
+        local state = mechanism.states[vehicle]
         if state == nil then
             return original(vehicle, dt, acceleration, isAllowedToDrive, moveForwards, lx, lz, maxSpeed)
         end
@@ -88,23 +88,6 @@ function Authority:install()
             state.lastOutputMaxSpeed = outputMax
             state.lastOutputAllowed = outputAllowedToDrive
             return original(vehicle, dt, acceleration, outputAllowedToDrive, moveForwards, lx, lz, outputMax)
-        end
-
-        if state.mode == "REPOSITION_ORIENT" then
-            local steerX = tonumber(state.steerX) or 1
-            local steerZ = tonumber(state.steerZ) or 0.30
-            local length = math.sqrt(steerX * steerX + steerZ * steerZ)
-            if length <= 0.0001 then
-                state.invalidReason = "reposition-orientation-direction-degenerate"
-                return original(vehicle, dt, 0, false, true, 0, 1, 0)
-            end
-            steerX, steerZ = steerX / length, steerZ / length
-            local cap = tonumber(state.speedKmh) or 0
-            state.lastOutputMaxSpeed = cap
-            -- Temporary P22/TS015 evidence authority only. This reuses the
-            -- archived empirically successful forward-only rejoin orientation
-            -- mechanism; it creates no production routing or speed policy.
-            return original(vehicle, dt, 1, true, true, steerX, steerZ, cap)
         end
 
         if state.mode == "AXIS_TRAVEL" then
@@ -193,7 +176,7 @@ function Authority:install()
     return true
 end
 
-function Authority:setRegulation(vehicle, speedKmh, ownerTag)
+function Mechanism:setRegulation(vehicle, speedKmh, ownerTag)
     local ok, reason = self:install()
     if not ok then return false, reason end
     self.states[vehicle] = {mode = "REGULATE", speedKmh = speedKmh, driveCalls = 0, ownerTag = ownerTag}
@@ -204,7 +187,7 @@ end
 -- may coexist.  The physical actuation is the least permissive active cap;
 -- each owner may release only its own lease.  This remains Prototype-22 test
 -- authority and does not create production Commitment or speed policy.
-function Authority:setRegulationLease(vehicle, speedKmh, ownerTag)
+function Mechanism:setRegulationLease(vehicle, speedKmh, ownerTag)
     if vehicle == nil or ownerTag == nil then return false, "regulation-lease-subject-or-owner-unavailable" end
     local ok, reason = self:install()
     if not ok then return false, reason end
@@ -226,14 +209,14 @@ function Authority:setRegulationLease(vehicle, speedKmh, ownerTag)
     return true
 end
 
-function Authority:hasRegulationLease(vehicle, ownerTag)
+function Mechanism:hasRegulationLease(vehicle, ownerTag)
     local state = vehicle ~= nil and self.states[vehicle] or nil
     if state == nil or state.mode ~= "REGULATE" then return false end
     if type(state.regulationLeases) == "table" then return state.regulationLeases[tostring(ownerTag)] ~= nil end
     return state.ownerTag == ownerTag
 end
 
-function Authority:getRegulationLease(vehicle, ownerTag)
+function Mechanism:getRegulationLease(vehicle, ownerTag)
     local state = vehicle ~= nil and self.states[vehicle] or nil
     if state == nil or state.mode ~= "REGULATE" then return nil end
     if type(state.regulationLeases) == "table" then return state.regulationLeases[tostring(ownerTag)] end
@@ -241,7 +224,7 @@ function Authority:getRegulationLease(vehicle, ownerTag)
     return nil
 end
 
-function Authority:clearRegulationLease(vehicle, ownerTag)
+function Mechanism:clearRegulationLease(vehicle, ownerTag)
     local state = vehicle ~= nil and self.states[vehicle] or nil
     if state == nil or state.mode ~= "REGULATE" then return false end
     if type(state.regulationLeases) ~= "table" then
@@ -260,20 +243,7 @@ function Authority:clearRegulationLease(vehicle, ownerTag)
     return true
 end
 
-function Authority:setRepositionOrientation(vehicle, steerX, steerZ, speedKmh)
-    local ok, reason = self:install()
-    if not ok then return false, reason end
-    self.states[vehicle] = {
-        mode = "REPOSITION_ORIENT",
-        steerX = steerX,
-        steerZ = steerZ,
-        speedKmh = speedKmh,
-        driveCalls = 0
-    }
-    return true
-end
-
-function Authority:setAxisTravel(vehicle, originX, originZ, axisForwardX, axisForwardZ, targetStationM, speedKmh, moveForwards, stationToleranceM)
+function Mechanism:setAxisTravel(vehicle, originX, originZ, axisForwardX, axisForwardZ, targetStationM, speedKmh, moveForwards, stationToleranceM)
     local ok, reason = self:install()
     if not ok then return false, reason end
     self.states[vehicle] = {
@@ -284,7 +254,7 @@ function Authority:setAxisTravel(vehicle, originX, originZ, axisForwardX, axisFo
     return true
 end
 
-function Authority:setReposition(vehicle, targetX, targetZ, speedKmh, targetRadiusM)
+function Mechanism:setReposition(vehicle, targetX, targetZ, speedKmh, targetRadiusM)
     local ok, reason = self:install()
     if not ok then return false, reason end
     self.states[vehicle] = {
@@ -299,14 +269,14 @@ function Authority:setReposition(vehicle, targetX, targetZ, speedKmh, targetRadi
     return true
 end
 
-function Authority:getState(vehicle)
+function Mechanism:getState(vehicle)
     return vehicle ~= nil and self.states[vehicle] or nil
 end
 
-function Authority:clear(vehicle)
+function Mechanism:clear(vehicle)
     if vehicle ~= nil then self.states[vehicle] = nil end
 end
 
-function Authority:clearAll()
+function Mechanism:clearAll()
     self.states = weakKeys()
 end

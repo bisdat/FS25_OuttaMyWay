@@ -143,11 +143,15 @@ local function allPassageLegsTerminal(run)
     return true
 end
 
-function Control.new(runtime,capabilityDonor)
-    if capabilityDonor==nil then error("CooperativePassageControl requires the existing physical capability donor",2) end
+function Control.new(runtime,mechanisms)
+    if type(mechanisms)~="table" or mechanisms.holdMechanism==nil or mechanisms.driveMechanism==nil or mechanisms.configurationMechanism==nil then
+        error("CooperativePassageControl requires Hold, Drive and Configuration mechanisms",2)
+    end
     return setmetatable({
-        runtime=runtime,donor=capabilityDonor,
-        permissionGate=capabilityDonor.permissionGate,driveAuthority=capabilityDonor.driveAuthority,configurationAuthority=capabilityDonor.configurationAuthority,
+        runtime=runtime,
+        holdMechanism=mechanisms.holdMechanism,
+        driveMechanism=mechanisms.driveMechanism,
+        configurationMechanism=mechanisms.configurationMechanism,
         run=nil,completionHandler=nil,nextHeartbeatMs=0,completedCount=0,failedCount=0
     },Control)
 end
@@ -162,7 +166,7 @@ function Control:keyEvent() end
 function Control:mouseEvent() end
 
 function Control:loadMap()
-    local ok,reason=self.driveAuthority:install()
+    local ok,reason=self.driveMechanism:install()
     logInfo("LOAD architecture=D0146_TRANSIT_ONLY_FAIL_CLOSED mechanicalProfile=JOB_START_CAPABILITY_GUIDED_PASSAGE vehicleNameGate=false legacyD0143=false driveHook=%s reason=%s king=false refuge=false cooldown=false generalVehicleAuthority=false",
         tostring(ok),tostring(reason or "ready"))
 end
@@ -171,8 +175,8 @@ function Control:deleteMap()
     local run=self.run
     if run~=nil then
         for _,p in OuttaMyWay.ValueRecord.ipairs(run.participants or {}) do
-            self.driveAuthority:clear(p.vehicle); if p.released~=true then self.permissionGate:release(p.vehicle) end
-            if self.configurationAuthority:getState(p.vehicle)~=nil then self.configurationAuthority:clear(p.vehicle) end
+            self.driveMechanism:clear(p.vehicle); if p.released~=true then self.holdMechanism:release(p.vehicle) end
+            if self.configurationMechanism:getState(p.vehicle)~=nil then self.configurationMechanism:clear(p.vehicle) end
             self:_endRepresentationConfigurationAuthority(p)
         end
     end
@@ -355,9 +359,9 @@ function Control:_allStopped(run)
         -- Passage settling needs owned Hold authority plus physical settlement.
         -- Do not require proof that OuttaMyWay causally stopped the participant:
         -- GIANTS may already refuse native continuation before Passage Hold is
-        -- applied, in which case the PermissionGate call count legitimately
+        -- applied, in which case the Hold-mechanism call count legitimately
         -- remains zero even though the required stationary state is present.
-        if self.permissionGate:isHolding(p.vehicle)~=true or actualSpeedKmh(p.vehicle)>limit then return false end
+        if self.holdMechanism:isHolding(p.vehicle)~=true or actualSpeedKmh(p.vehicle)>limit then return false end
     end
     return true
 end
@@ -375,9 +379,9 @@ end
 function Control:_beginD0146Settling(run,reason)
     local held={}
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
-        local hold,holdReason=self.permissionGate:setHold(participant.vehicle,"D0146-COOPERATIVE-PASSAGE")
+        local hold,holdReason=self.holdMechanism:setHold(participant.vehicle,"D0146-COOPERATIVE-PASSAGE")
         if not hold then
-            for _,previous in OuttaMyWay.ValueRecord.ipairs(held) do self.permissionGate:release(previous.vehicle) end
+            for _,previous in OuttaMyWay.ValueRecord.ipairs(held) do self.holdMechanism:release(previous.vehicle) end
             return false,tostring(participant.name).."_HOLD_UNAVAILABLE:"..tostring(holdReason)
         end
         held[#held+1]=participant
@@ -436,9 +440,9 @@ function Control:_startLeg(run,phase,forwardM,lateralM,radiusM)
     for _,p in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
         local x,z=self:_targetFor(run,p,forwardM,lateralM)
         p.targetX,p.targetZ,p.targetRadiusM=x,z,radiusM
-        local ok,reason=self.driveAuthority:setReposition(p.vehicle,x,z,run.speedKmh,radiusM)
+        local ok,reason=self.driveMechanism:setReposition(p.vehicle,x,z,run.speedKmh,radiusM)
         if not ok then
-            for _,rollback in OuttaMyWay.ValueRecord.ipairs(run.participants) do self.driveAuthority:clear(rollback.vehicle) end
+            for _,rollback in OuttaMyWay.ValueRecord.ipairs(run.participants) do self.driveMechanism:clear(rollback.vehicle) end
             return false,p.name..":"..tostring(reason)
         end
     end
@@ -450,12 +454,12 @@ function Control:_startLeg(run,phase,forwardM,lateralM,radiusM)
 end
 function Control:_bothReached(run)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
-        if not targetReached(self.driveAuthority,participant.vehicle) then return false end
+        if not targetReached(self.driveMechanism,participant.vehicle) then return false end
     end
     return true
 end
 function Control:_stopLeg(run)
-    for _,participant in OuttaMyWay.ValueRecord.ipairs(run and run.participants or {}) do self.driveAuthority:clear(participant.vehicle) end
+    for _,participant in OuttaMyWay.ValueRecord.ipairs(run and run.participants or {}) do self.driveMechanism:clear(participant.vehicle) end
 end
 
 local function validGuideTarget(target,assemblyId)
@@ -497,9 +501,9 @@ function Control:_startGuideGate(run,index)
         local fieldOk,fieldReason=fieldResolvedAt(target.x,target.z)
         if not fieldOk then return false,"PASSAGE_SUPPORT_LOSS_FIELD_TARGET:"..tostring(index)..":"..p.name..":"..tostring(fieldReason) end
         p.targetX,p.targetZ,p.targetRadiusM=target.x,target.z,target.radiusM
-        local ok,reason=self.driveAuthority:setReposition(p.vehicle,target.x,target.z,run.speedKmh,target.radiusM)
+        local ok,reason=self.driveMechanism:setReposition(p.vehicle,target.x,target.z,run.speedKmh,target.radiusM)
         if not ok then
-            for _,rollback in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do self.driveAuthority:clear(rollback.vehicle) end
+            for _,rollback in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do self.driveMechanism:clear(rollback.vehicle) end
             return false,"PASSAGE_SUPPORT_LOSS_ACTUATION:"..tostring(index)..":"..p.name..":"..tostring(reason)
         end
     end
@@ -677,7 +681,7 @@ function Control:_startRunoutChunk(run,participant)
     if not inside then return false,"ALIGNMENT_RUNOUT_FIELD_TARGET:"..tostring(fieldReason) end
     local progress=(pp.x-participant.executionOriginX)*participant.axisForwardX+(pp.z-participant.executionOriginZ)*participant.axisForwardZ
     local tolerance=tonumber(OuttaMyWay.D0146_STEP2_TRAVERSAL_GATE_RADIUS_M) or 1.0
-    local ok,reason=self.driveAuthority:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,progress+length,run.speedKmh,true,tolerance)
+    local ok,reason=self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,progress+length,run.speedKmh,true,tolerance)
     if not ok then return false,"ALIGNMENT_RUNOUT_ACTUATION:"..tostring(reason) end
     participant.runoutActive=true
     logInfo("ALIGNMENT_RUNOUT_START commitment=%s participant=%s chunk=%.2fm targetStation=%.2fm derivedFrom=TRANSIT_ASSEMBLY_LENGTH",tostring(run.commitmentId),participant.name,length,progress+length)
@@ -697,15 +701,15 @@ end
 function Control:_updateAlignmentRunout(run)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
         if participant.runoutReady~=true then
-            if participant.runoutActive==true and targetReached(self.driveAuthority,participant.vehicle) then
-                self.driveAuthority:clear(participant.vehicle); participant.runoutActive=false
+            if participant.runoutActive==true and targetReached(self.driveMechanism,participant.vehicle) then
+                self.driveMechanism:clear(participant.vehicle); participant.runoutActive=false
             end
             if participant.runoutActive~=true then
                 local other=participant==run.a and run.b or run.a
                 local ready,reason,evidence=self:_participantRunoutReady(participant,other)
                 if ready then
                     participant.runoutReady=true
-                    self.permissionGate:setHold(participant.vehicle,"D0146-RETURN-STAGED")
+                    self.holdMechanism:setHold(participant.vehicle,"D0146-RETURN-STAGED")
                     logInfo("RETURN_STAGING_READY commitment=%s participant=%s wholeAssemblyAligned=true transitReturnSpaceClear=true rearStation=%.2fm requiredStation=%.2fm",tostring(run.commitmentId),participant.name,tonumber(evidence and evidence.rearStationM) or -1,tonumber(evidence and evidence.otherReturnLimitM) or -1)
                 else
                     local ok,startReason=self:_startRunoutChunk(run,participant)
@@ -732,7 +736,7 @@ function Control:_beginAxisReturn(run,participant,other,requiresReleasedClearanc
     if pp==nil then return false,"AXIS_RETURN_POSE_UNAVAILABLE" end
     local progress=(pp.x-participant.executionOriginX)*participant.axisForwardX+(pp.z-participant.executionOriginZ)*participant.axisForwardZ
     local tolerance=tonumber(OuttaMyWay.D0146_STEP2_TRAVERSAL_GATE_RADIUS_M) or 1.0
-    local ok,reason=self.driveAuthority:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,0,run.speedKmh,false,tolerance)
+    local ok,reason=self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,0,run.speedKmh,false,tolerance)
     if not ok then return false,"AXIS_RETURN_ACTUATION:"..tostring(reason) end
     run.activeReturnParticipant=participant; run.waitingParticipant=other; run.returnRequiresReleasedClearance=requiresReleasedClearance==true
     self:_setPhase(run,"AXIS_RETURN",g_time or 0)
@@ -741,14 +745,14 @@ function Control:_beginAxisReturn(run,participant,other,requiresReleasedClearanc
 end
 
 function Control:_beginParticipantRestore(run,participant)
-    self.driveAuthority:clear(participant.vehicle)
+    self.driveMechanism:clear(participant.vehicle)
     participant.passageRestoreFoldWaitingLogged=false; participant.passageRestoreFoldSettledLogged=false; participant.passageRestoreFoldExhaustedLogged=false
-    if self.configurationAuthority:getState(participant.vehicle)==nil then
+    if self.configurationMechanism:getState(participant.vehicle)==nil then
         run.activeRestoreParticipant=participant
         self:_setPhase(run,"RESTORING_PARTICIPANT",g_time or 0)
         return true,"NO_CONFIGURATION_CHANGED"
     end
-    local ok,state=self.configurationAuthority:requestCachedTransitRestore(participant.vehicle)
+    local ok,state=self.configurationMechanism:requestCachedTransitRestore(participant.vehicle)
     if not ok then return false,participant.name..":"..tostring(state) end
     participant.restoreRequested=true
     run.activeRestoreParticipant=participant
@@ -758,20 +762,20 @@ function Control:_beginParticipantRestore(run,participant)
 end
 
 function Control:_participantRestoreReady(participant)
-    if self.configurationAuthority:getState(participant.vehicle)==nil then return true end
-    local settlement=self.configurationAuthority:getCachedRestoreSettlement(participant.vehicle)
+    if self.configurationMechanism:getState(participant.vehicle)==nil then return true end
+    local settlement=self.configurationMechanism:getCachedRestoreSettlement(participant.vehicle)
     if settlement.settled~=true then return false end
     participant.restoreSettlementExhausted=settlement.exhausted==true
     return true
 end
 
 function Control:_releaseParticipant(run,participant)
-    if self.configurationAuthority:getState(participant.vehicle)~=nil then
-        local ok,result=self.configurationAuthority:finishCachedTransitRestore(participant.vehicle)
+    if self.configurationMechanism:getState(participant.vehicle)~=nil then
+        local ok,result=self.configurationMechanism:finishCachedTransitRestore(participant.vehicle)
         if not ok then return false,participant.name..":"..tostring(result) end
         self:_endRepresentationConfigurationAuthority(participant)
     end
-    self.driveAuthority:clear(participant.vehicle); self.permissionGate:release(participant.vehicle)
+    self.driveMechanism:clear(participant.vehicle); self.holdMechanism:release(participant.vehicle)
     participant.wakeMethod=wakeNativeContinuation(participant.vehicle); participant.released=true; participant.releasedAt=g_time or 0
     logInfo("PARTICIPANT_WAVE_ON commitment=%s participant=%s job=%s wake=%s axisReturn=%s restorationExhausted=%s",tostring(run.commitmentId),participant.name,tostring(participant.startJobToken),tostring(participant.wakeMethod),tostring(participant.axisReturnCompleted==true),tostring(participant.restoreSettlementExhausted==true))
     self:_notify({status="PARTICIPANT_HANDED_BACK",commitmentId=run.commitmentId,requestIds={participant.request.identity},boundedAuthorityIds={participant.request.boundedAuthorityId},assemblyId=participant.assemblyId,assemblyIds={participant.assemblyId},evidence={kind="D0146_COOPERATIVE_PASSAGE_LEG_HANDED_BACK",passageLegDisposition="HANDED_BACK",assemblyId=participant.assemblyId,passageGuideId=run.guide and run.guide.identity or nil,sameJob=true,restorationExhausted=participant.restoreSettlementExhausted==true,completedAt=g_time or 0}})
@@ -834,7 +838,7 @@ function Control:_beginD0146Configuration(run)
     local ignored=0
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
         if participant.configurationMode~="TRANSIT_REQUIRED" then
-            for _,rollback in OuttaMyWay.ValueRecord.ipairs(owned) do self.configurationAuthority:requestCachedTransitRestore(rollback.vehicle) end
+            for _,rollback in OuttaMyWay.ValueRecord.ipairs(owned) do self.configurationMechanism:requestCachedTransitRestore(rollback.vehicle) end
             return false,participant.name..":unsupported-configuration-mode:"..tostring(participant.configurationMode)
         end
         participant.passageTransitFoldWaitingLogged=false
@@ -848,7 +852,7 @@ function Control:_beginD0146Configuration(run)
         logInfo("TRANSIT_CAPABILITY_CACHE commitment=%s participant=%s available=%s isFoldable=%s actuators=%d expectedDurationMs=%.0f timeoutMs=%.0f source=%s",
             tostring(run.commitmentId),participant.name,tostring(type(capability)=="table"),tostring(participant.passageTransitFoldExpected),type(capability)=="table" and tonumber(capability.actuatorCount) or 0,type(capability)=="table" and tonumber(capability.expectedFoldDurationMs) or 0,type(capability)=="table" and tonumber(capability.settlementTimeoutMs) or 0,type(capability)=="table" and tostring(capability.source) or "UNAVAILABLE")
         local ok,state
-        if participant.passageTransitFoldExpected then ok,state=self.configurationAuthority:prepareCachedTransit(participant.vehicle,capability) else ok,state=false,"bootstrap-non-foldable" end
+        if participant.passageTransitFoldExpected then ok,state=self.configurationMechanism:prepareCachedTransit(participant.vehicle,capability) else ok,state=false,"bootstrap-non-foldable" end
         if ok then
             self:_beginRepresentationConfigurationAuthority(participant)
             participant.passageTransitCompactionActive=true
@@ -885,7 +889,7 @@ function Control:_d0146ConfigurationReady(run)
         -- D-0179 + D-0181: only Job-Episode cached Transit actuator settlement
         -- owns configuration waiting on the single production Passage path.
         if participant.passageTransitFoldExpected==true and participant.passageTransitCompactionActive==true then
-            local settlement=self.configurationAuthority:getCachedTransitSettlement(participant.vehicle)
+            local settlement=self.configurationMechanism:getCachedTransitSettlement(participant.vehicle)
             if settlement.settled~=true then
                 if participant.passageTransitFoldWaitingLogged~=true then
                     participant.passageTransitFoldWaitingLogged=true
@@ -915,8 +919,8 @@ function Control:_beginD0146Restore(run)
         participant.passageRestoreFoldWaitingLogged=false
         participant.passageRestoreFoldSettledLogged=false
         participant.passageRestoreFoldExhaustedLogged=false
-        if self.configurationAuthority:getState(participant.vehicle)~=nil then
-            local ok,state=self.configurationAuthority:requestCachedTransitRestore(participant.vehicle)
+        if self.configurationMechanism:getState(participant.vehicle)~=nil then
+            local ok,state=self.configurationMechanism:requestCachedTransitRestore(participant.vehicle)
             if not ok then return false,participant.name..":"..tostring(state) end
             owned=owned+1
             restoreActuators=restoreActuators+#(state.restoreActuatorStates or {})
@@ -936,8 +940,8 @@ end
 
 function Control:_d0146RestoreReady(run)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
-        if self.configurationAuthority:getState(participant.vehicle)~=nil then
-            local settlement=self.configurationAuthority:getCachedRestoreSettlement(participant.vehicle)
+        if self.configurationMechanism:getState(participant.vehicle)~=nil then
+            local settlement=self.configurationMechanism:getCachedRestoreSettlement(participant.vehicle)
             if settlement.settled~=true then
                 if participant.passageRestoreFoldWaitingLogged~=true then
                     participant.passageRestoreFoldWaitingLogged=true
@@ -962,10 +966,10 @@ end
 function Control:_finishD0146Restore(run)
     local exhausted=false
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
-        if self.configurationAuthority:getState(participant.vehicle)~=nil then
-            local settlement=self.configurationAuthority:getCachedRestoreSettlement(participant.vehicle)
+        if self.configurationMechanism:getState(participant.vehicle)~=nil then
+            local settlement=self.configurationMechanism:getCachedRestoreSettlement(participant.vehicle)
             exhausted=exhausted or settlement.exhausted==true
-            local ok,result=self.configurationAuthority:finishCachedTransitRestore(participant.vehicle)
+            local ok,result=self.configurationMechanism:finishCachedTransitRestore(participant.vehicle)
             if not ok then return false,participant.name..":"..tostring(result) end
             self:_endRepresentationConfigurationAuthority(participant)
         end
@@ -984,8 +988,8 @@ end
 
 function Control:_complete(run)
     for _,p in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
-        self.driveAuthority:clear(p.vehicle)
-        self.permissionGate:release(p.vehicle)
+        self.driveMechanism:clear(p.vehicle)
+        self.holdMechanism:release(p.vehicle)
         p.wakeMethod=wakeNativeContinuation(p.vehicle)
         p.released=true
         self:_notify({
@@ -1043,7 +1047,7 @@ function Control:_failHeld(reason)
     if run==nil or run.failureReason~=nil then return end
     self:_stopLeg(run)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
-        self.permissionGate:setHold(participant.vehicle,"COOPERATIVE-PASSAGE-FAIL-HELD")
+        self.holdMechanism:setHold(participant.vehicle,"COOPERATIVE-PASSAGE-FAIL-HELD")
     end
     run.failureReason=tostring(reason or "UNRESOLVED")
 
@@ -1069,17 +1073,17 @@ function Control:vacateParticipant(commitmentId,assemblyId,evidence)
     local positiveRemoval=evidence and evidence.kind=="POSITIVE_VEHICLE_RUNTIME_REMOVAL"
     if participant.vehicle==nil and not positiveRemoval then return nil,"CONTROL_VEHICLE_REFERENCE_UNAVAILABLE" end
     if participant.vehicle~=nil then
-        if type(self.driveAuthority.getState)~="function" or type(self.permissionGate.isHolding)~="function"
-            or type(self.configurationAuthority.getState)~="function" then
+        if type(self.driveMechanism.getState)~="function" or type(self.holdMechanism.isHolding)~="function"
+            or type(self.configurationMechanism.getState)~="function" then
             return nil,"CONTROL_NEUTRALISATION_VERIFICATION_UNAVAILABLE"
         end
-        self.driveAuthority:clear(participant.vehicle)
-        self.permissionGate:release(participant.vehicle)
-        self.configurationAuthority:clear(participant.vehicle)
+        self.driveMechanism:clear(participant.vehicle)
+        self.holdMechanism:release(participant.vehicle)
+        self.configurationMechanism:clear(participant.vehicle)
         self:_endRepresentationConfigurationAuthority(participant)
-        if self.driveAuthority:getState(participant.vehicle)~=nil
-            or self.permissionGate:isHolding(participant.vehicle)
-            or self.configurationAuthority:getState(participant.vehicle)~=nil then
+        if self.driveMechanism:getState(participant.vehicle)~=nil
+            or self.holdMechanism:isHolding(participant.vehicle)
+            or self.configurationMechanism:getState(participant.vehicle)~=nil then
             return nil,"CONTROL_PHYSICAL_EFFECT_REMAINS"
         end
     end
@@ -1355,20 +1359,20 @@ function Control:update(dt)
         if run.returnRequiresReleasedClearance==true and run.releasedLeader~=nil then
             local clear,clearReason,evidence=self:_releasedParticipantClearedReturnSpace(run.releasedLeader,participant)
             if not clear then
-                self.driveAuthority:clear(participant.vehicle); participant.axisReturnSkipped=true
+                self.driveMechanism:clear(participant.vehicle); participant.axisReturnSkipped=true
                 logWarning("AXIS_RETURN_CLEARANCE_LOST commitment=%s participant=%s released=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),participant.name,run.releasedLeader.name,tostring(clearReason))
                 local ok,reason=self:_beginParticipantRestore(run,participant); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
                 return
             end
         end
-        if targetReached(self.driveAuthority,participant.vehicle) then
-            self.driveAuthority:clear(participant.vehicle); participant.axisReturnCompleted=true
+        if targetReached(self.driveMechanism,participant.vehicle) then
+            self.driveMechanism:clear(participant.vehicle); participant.axisReturnCompleted=true
             logInfo("AXIS_RETURN_COMPLETE commitment=%s participant=%s executionOriginStation=true",tostring(run.commitmentId),participant.name)
             local ok,reason=self:_beginParticipantRestore(run,participant); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
         else
             local aligned,alignmentReason=self:_assemblyAxisSettled(participant)
             if not aligned then
-                self.driveAuthority:clear(participant.vehicle); participant.axisReturnSkipped=true
+                self.driveMechanism:clear(participant.vehicle); participant.axisReturnSkipped=true
                 logWarning("AXIS_RETURN_ALIGNMENT_LOST commitment=%s participant=%s reason=%s fallback=RESTORE_AND_HAND_BACK",tostring(run.commitmentId),participant.name,tostring(alignmentReason))
                 local ok,reason=self:_beginParticipantRestore(run,participant); if not ok then self:_failHeld("PARTICIPANT_RESTORE_START:"..tostring(reason)) end
             end

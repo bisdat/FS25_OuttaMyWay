@@ -1,13 +1,10 @@
--- FS25_OuttaMyWay Prototype 22.
--- Temporary same-Job-Episode Hold capability probe.
---
--- This module intentionally reuses the empirically proven GIANTS integration
--- point getCanAIFieldWorkerContinueWork.  It is not production Traffic
--- Policeman policy: a Hold exists only after an explicit Prototype 22 console
--- command and the wrapper is transparent at all other times.
+-- Physical Hold mechanism below Control.
+-- Reuses the empirically proven GIANTS getCanAIFieldWorkerContinueWork
+-- integration point. It owns no traffic policy, Commitment or semantic
+-- authority; callers must already own the reason to hold.
 
-OuttaMyWay.Prototype22PermissionGate = {}
-local Gate = OuttaMyWay.Prototype22PermissionGate
+OuttaMyWay.FieldWorkHoldMechanism = {}
+local Gate = OuttaMyWay.FieldWorkHoldMechanism
 Gate.__index = Gate
 
 local function weakKeys()

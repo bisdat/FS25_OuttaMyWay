@@ -31,6 +31,11 @@ Regulation Control from the Prototype22 manual harness while preserving the
 existing physical drive mechanism, read the
 [Phase 14.1 Production Regulation Control Boundary](PHASE_14_REGULATION_CONTROL_BOUNDARY.md).
 
+For the second Phase-14 engineering boundary, graduating the proven Hold,
+Drive and Configuration mechanisms from Prototype placement and making `main.lua`
+the production composition root, read the
+[Phase 14.2 Physical Capability Graduation](PHASE_14_PHYSICAL_CAPABILITY_GRADUATION.md).
+
 Architecture may describe intended behaviour that is not yet implemented. Read
 it as the system's direction and responsibility model, not as a complete account
 of current runtime capability.

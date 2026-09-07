@@ -48,7 +48,7 @@ local function distanceTo(x,z,cx,cz)
 end
 
 function Control.new(runtime,observationSource)
-    return setmetatable({runtime=runtime,source=observationSource,postJobAuthority=OuttaMyWay.PostJobActuationAuthority.new(),configurationAuthority=OuttaMyWay.Prototype22ConfigurationAuthority.new(),active=nil,completionHandler=nil,latestObservation=nil,startedCount=0,completedCount=0,failedCount=0},Control)
+    return setmetatable({runtime=runtime,source=observationSource,postJobAuthority=OuttaMyWay.PostJobActuationAuthority.new(),configurationMechanism=OuttaMyWay.TransitConfigurationMechanism.new(),active=nil,completionHandler=nil,latestObservation=nil,startedCount=0,completedCount=0,failedCount=0},Control)
 end
 function Control:setCompletionHandler(handler) self.completionHandler=handler end
 function Control:isActive() return self.active~=nil end
@@ -140,7 +140,7 @@ function Control:executeControlRequest(request,candidate)
     local state={commitmentId=request.commitmentId,terminalEpisodeId=bridge.terminalEpisodeId,assemblyId=request.assemblyId,assemblyReferenceKey=bridge.assemblyReferenceKey,phase=bridge.phase,requestId=request.identity,boundedAuthorityId=request.boundedAuthorityId,authorityToken=request.authorityToken,startedAt=now,vehicle=vehicle,objective=bridge.objective,configurationOwned=false}
     self.active=state; self.startedCount=self.startedCount+1
     if bridge.phase=="COMPACT" then
-        local evidence=self.configurationAuthority:getEvidence(vehicle)
+        local evidence=self.configurationMechanism:getEvidence(vehicle)
         if evidence.foldableCount==0 or evidence.allFolded==true then
             logInfo("COMPACTION_RETAIN_CURRENT episode=%s assembly=%s foldable=%d",tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),tonumber(evidence.foldableCount) or 0)
             self:_complete("COMPACTION_COMPLETE",{kind="D0147_SUPPORTED_COMPACTION",mode="RETAIN_CURRENT",configurationEvidence=evidence})
@@ -154,7 +154,7 @@ function Control:executeControlRequest(request,candidate)
         if not evidence.allDeployed or evidence.unknownCount>0 then
             return self:_rejectBeforeStart(request,bridge,"FAILED","SUPPORTED_COMPACTION_UNAVAILABLE")
         end
-        local ok,result=self.configurationAuthority:prepareCompact(vehicle)
+        local ok,result=self.configurationMechanism:prepareCompact(vehicle)
         if not ok then return self:_rejectBeforeStart(request,bridge,"FAILED","COMPACTION_COMMAND_REJECTED:"..tostring(result)) end
         state.configurationOwned=true
         self:_publish(state,{status="COMPACTION_IN_PROGRESS",existingMotion=false})
@@ -207,14 +207,14 @@ function Control:update(dt)
     if self.postJobAuthority:isSourceReactivated(vehicle) then self:_complete("SUPERSEDED",{kind="D0147_SOURCE_INTENT_REACTIVATED"}); return end
     local elapsed=(tonumber(g_time) or 0)-state.startedAt
     if state.phase=="COMPACT" then
-        local evidence=self.configurationAuthority:getEvidence(vehicle)
+        local evidence=self.configurationMechanism:getEvidence(vehicle)
         if evidence.allFolded==true then
-            if state.configurationOwned then self.configurationAuthority:clear(vehicle) end
+            if state.configurationOwned then self.configurationMechanism:clear(vehicle) end
             self:_complete("COMPACTION_COMPLETE",{kind="D0147_SUPPORTED_COMPACTION",mode="COMPACTED",configurationEvidence=evidence})
             return
         end
         if elapsed>(tonumber(OuttaMyWay.TERMINAL_EGRESS_COMPACTION_TIMEOUT_MS) or 25000) then
-            if state.configurationOwned then self.configurationAuthority:clear(vehicle) end
+            if state.configurationOwned then self.configurationMechanism:clear(vehicle) end
             self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="COMPACTION_WATCHDOG_EXPIRED",configurationEvidence=evidence}); return
         end
         self:_publish(state,{status="COMPACTION_IN_PROGRESS",configurationEvidence=evidence})
@@ -258,8 +258,8 @@ function Control:update(dt)
         self:_publish(state,{status="MANOEUVRE_IN_PROGRESS",courtesyStage=state.courtesyStage,destinationKind=state.destinationKind,infieldDirectionX=state.infieldDirectionX,infieldDirectionZ=state.infieldDirectionZ,targetX=state.targetX,targetZ=state.targetZ,targetProgressM=state.targetProgressM,realisedProgressM=realisedProgress,currentTargetDistanceM=targetDistance,continuousCourseCorrection=false,directDriveCalls=self.postJobAuthority:getDirectDriveCallCount(),directionEvidence=result})
     end
 end
-function Control:loadMap() self.active=nil; self.latestObservation=nil; self.configurationAuthority:clearAll() end
-function Control:deleteMap() self.active=nil; self.latestObservation=nil; self.configurationAuthority:clearAll() end
+function Control:loadMap() self.active=nil; self.latestObservation=nil; self.configurationMechanism:clearAll() end
+function Control:deleteMap() self.active=nil; self.latestObservation=nil; self.configurationMechanism:clearAll() end
 function Control:keyEvent() end
 function Control:mouseEvent() end
 function Control:draw() end
