@@ -1983,7 +1983,7 @@ def test_follower_boundary_regulation_application_is_upstream_and_singular():
     assert 'semanticAssessment.disposition=="TERMINATE"' in readiness
     assert readiness.index('bridge.action=="PRESERVE"') < readiness.index('bridge.action~="APPLY"')
     assert readiness.index('candidate.capability~="REGULATE_SPEED"') < readiness.index('self.regulationControl==nil')
-    assert readiness.index('self.capability==nil') < readiness.index('status="FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED"')
+    assert readiness.index('self.regulationControl==nil') < readiness.index('status="FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED"')
     assert "LiveTrafficCommitmentLifecycle.applyFollowerBoundaryDecision" not in regulation_authority
     assert transition.count("LiveTrafficCommitmentLifecycle.applyFollowerBoundaryDecision") == 1
     assert "function Authority:continueFollowerBoundary" in regulation_authority
