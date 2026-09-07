@@ -19,6 +19,9 @@ For the Phase-13 Candidate/Decision boundary, including the Reality-driven
 correction to fresh multi-purpose Candidate enumeration, read the
 [Candidate Support Projection Architecture](CANDIDATE_SUPPORT_PROJECTION.md).
 
+For the final post-`.20` responsibility audit and the decision that Phase 13 is
+complete, read the [Phase 13 Closure Audit](PHASE_13_CLOSURE_AUDIT.md).
+
 Architecture may describe intended behaviour that is not yet implemented. Read
 it as the system's direction and responsibility model, not as a complete account
 of current runtime capability.
