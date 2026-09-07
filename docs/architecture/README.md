@@ -22,6 +22,10 @@ correction to fresh multi-purpose Candidate enumeration, read the
 For the final post-`.20` responsibility audit and the decision that Phase 13 is
 complete, read the [Phase 13 Closure Audit](PHASE_13_CLOSURE_AUDIT.md).
 
+For the Phase-14 architecture-to-runtime placement audit covering production
+mechanics still named or located as Prototype/Diagnostic/legacy integration,
+read the [Phase 14 Production Placement Audit](PHASE_14_PLACEMENT_AUDIT.md).
+
 Architecture may describe intended behaviour that is not yet implemented. Read
 it as the system's direction and responsibility model, not as a complete account
 of current runtime capability.
