@@ -70,7 +70,13 @@ function Control:_publish(state,status,extra)
         directDriveCalls=self.movementDonor:getDirectDriveCallCount(),
         provenance={source="ObstructionRelocationControl",authority="OBSTRUCTION_RELOCATION_ACTUATION",historicalJobProvenanceRequired=false}
     }
-    for key,value in OuttaMyWay.ValueRecord.pairs(extra or {}) do item[key]=value end
+    -- The Observation envelope kind identifies this value as a Control outcome
+    -- for LiveRuntimeCoordinator/Situation Assessment. Completion/failure evidence
+    -- may carry its own narrower kind, but that payload must not overwrite the
+    -- envelope identity or the result disappears before fresh-Reality settlement.
+    for key,value in OuttaMyWay.ValueRecord.pairs(extra or {}) do
+        if key=="kind" then item.outcomeEvidenceKind=value else item[key]=value end
+    end
     self.latestObservation=item
 end
 

@@ -12,6 +12,9 @@ load("scripts/commitment/CommitmentStateMachine.lua")
 load("scripts/commitment/CommitmentRegistry.lua")
 load("scripts/authority/AuthorityRegistry.lua")
 load("scripts/authority/EffectiveActuationComposition.lua")
+load("scripts/authority/PostJobActuationAuthority.lua")
+load("scripts/prototypes/Prototype22ConfigurationAuthority.lua")
+load("scripts/control/ObstructionRelocationControl.lua")
 load("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
 
 local passed, failed = 0, 0
@@ -116,6 +119,26 @@ test("effective composition rejects cross-entry authority-class aliasing", funct
             }
         })
     end)
+end)
+
+test("control observation envelope kind survives terminal outcome evidence", function()
+    local control=OuttaMyWay.ObstructionRelocationControl.new({}, {})
+    control:_publish({
+        relocationKey="obstruction-relocation:OR-1:AS-BLOCKER",
+        assemblyReferenceKey="REF-BLOCKER",
+        commitmentId="CM-1",
+        phase="INFIELD"
+    },"MANOEUVRE_COMPLETE",{
+        kind="BOUNDED_RELOCATION_MANOEUVRE_COMPLETE",
+        freshSituationRequired=true,
+        semanticResolutionNotInferred=true
+    })
+    local observed=control:getControlExecutionObservation()
+    equal(observed.kind,"OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION")
+    equal(observed.outcomeEvidenceKind,"BOUNDED_RELOCATION_MANOEUVRE_COMPLETE")
+    equal(observed.status,"MANOEUVRE_COMPLETE")
+    equal(observed.freshSituationRequired,true)
+    equal(observed.semanticResolutionNotInferred,true)
 end)
 
 test("pairwise causal relations aggregate to one blocker relocation responsibility", function()
