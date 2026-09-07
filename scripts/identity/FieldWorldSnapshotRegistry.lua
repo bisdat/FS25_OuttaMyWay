@@ -288,6 +288,28 @@ local function relativeDelta(a,b)
     return math.abs((a or 0)-(b or 0))/divisor
 end
 
+function Registry.evaluatePositionContainment(snapshot,x,z)
+    if type(snapshot)~="table" or type(x)~="number" or type(z)~="number" then
+        return {resolved=false,inside=false,reason="FIELD_WORLD_POSITION_EVIDENCE_UNAVAILABLE",negativeExclusionAuthority=false}
+    end
+    local boundary=snapshot.boundary
+    local islands=snapshot.islands
+    if type(boundary)~="table" and type(snapshot.geometryMetrics)=="table" then
+        boundary=snapshot.geometryMetrics.boundary
+        islands=snapshot.geometryMetrics.islands
+    end
+    local ring=rawRing(boundary or {})
+    if #ring<3 then
+        return {resolved=false,inside=false,reason="FIELD_WORLD_BOUNDARY_UNAVAILABLE",negativeExclusionAuthority=false}
+    end
+    local inside=pointInGeometry({x=x,z=z},{boundary=boundary or {},islands=islands or {}})
+    return {
+        resolved=true,inside=inside,
+        reason=inside and "POSITION_INSIDE_FIELD_WORLD_SNAPSHOT" or "POSITION_OUTSIDE_FIELD_WORLD_SNAPSHOT",
+        negativeExclusionAuthority=false
+    }
+end
+
 function Registry.measureGeometry(boundary,islands)
     local outer,outerRing=ringMetrics(boundary)
     local area=outer.area

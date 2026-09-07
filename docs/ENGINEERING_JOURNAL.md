@@ -1,3 +1,36 @@
+## 2026-09-07 — Issue #33: current Physical Assembly Observation hypothesis
+
+**Observe:** the first implementation attempt correctly reached for the current
+GIANTS mission vehicle population, but it combined mission census, assembly
+discovery, duplicate polygon mathematics, Field World screening and
+runtime-object correlation inside `LiveObservationSource`. It also treated a
+root-centred size disc against one selected equivalent Field World Snapshot as
+positive physical intersection authority. The attempt was discarded
+uncommitted.
+
+**Discover:** **Physical Census Screening != Causal Spatial Proof**. Partial or
+approximate geometry may justify Observation but cannot manufacture causal
+blockage. **Field World Equivalence Does Not Create Representative Geometry
+Authority**: equivalent immutable Snapshots retain their own evidence;
+lexicographic selection does not create a canonical admission polygon.
+**Physical Addressability != Field Membership**: runtime-object correlation must
+follow current GIANTS mission existence rather than disappear because field
+screening changes.
+
+**Hypothesise:** use one focused current Physical Assembly Observation source.
+Observe the current mission vehicle population, root Physical Assembly, current
+child-member positions and runtime-object correlation. For this tranche, one
+current member position inside any immutable Snapshot of the resolved active
+Field World is sufficient only as positive census evidence. It has no negative
+exclusion or semantic authority.
+
+**Validate next:** in the cold-block fixture, GIANTS mission acquisition should
+show Condor, Patriot, Valtra and Bredal. The active Field-77 Observation should
+contain Patriot through worker evidence and Condor through physical-only
+Observation; adjacent-field Valtra and Bredal should have no Field-77 witness.
+Causal Obstruction admission remains unchanged until that Reality hypothesis is
+validated.
+
 ## 2026-09-06 — Phase 13 / Issue #33: Causal Obstruction becomes the predicate
 
 **Observe:** after PR #54 merged, Phase 13 returned to the remaining

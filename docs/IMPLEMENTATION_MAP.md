@@ -446,6 +446,21 @@ Observation/provenance problem. [Issue #33 — Cold-Start Non-Active Obstruction
 Recognition](https://github.com/bisdat/FS25_OuttaMyWay/issues/33)
 owns its unresolved investigation; it is not a PR #32 transition regression or fix.
 
+**Current Phase-13 implementation hypothesis:** current GIANTS Physical Assembly
+acquisition is separated from worker tracking in
+[`CurrentPhysicalAssemblySource.lua`](../scripts/observation/CurrentPhysicalAssemblySource.lua).
+The source observes current mission vehicles, resolves current root Physical
+Assemblies and current child members, and retains runtime-object correlation
+without requiring Job Episode history.
+
+`LiveObservationSource` may publish an otherwise-unobserved Physical Assembly
+when at least one current member position is positively contained by at least
+one immutable Snapshot belonging to the resolved active Field World. This is
+incomplete census evidence only. It does not establish Situation relevance,
+Causal Obstruction or negative exclusion and does not create Job Episode, Local
+Operation or Control authority.
+
+
 # Explicit Resolution Commitment Representation
 
 The two migrated Resolution seams now materialize an explicit, read-only
