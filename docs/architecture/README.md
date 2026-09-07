@@ -36,6 +36,11 @@ Drive and Configuration mechanisms from Prototype placement and making `main.lua
 the production composition root, read the
 [Phase 14.2 Physical Capability Graduation](PHASE_14_PHYSICAL_CAPABILITY_GRADUATION.md).
 
+For the third Phase-14 engineering boundary, graduating production live
+interaction evidence from Diagnostic to Observation placement without changing
+its calculations or evidence meaning, read the
+[Phase 14.3 Live Interaction Observation Graduation](PHASE_14_LIVE_INTERACTION_OBSERVATION_GRADUATION.md).
+
 Architecture may describe intended behaviour that is not yet implemented. Read
 it as the system's direction and responsibility model, not as a complete account
 of current runtime capability.
