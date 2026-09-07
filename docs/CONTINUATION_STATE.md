@@ -20,26 +20,25 @@ direct-Passage substrate targeting, `Key Match Is Not Lifecycle Match`, and
 
 ### Phase 13 / Issue #33 — Causal Obstruction
 
-**Current implementation hypothesis:** the first Issue #33 runtime tranche is
-limited to current Physical Assembly Observation. A focused
-`CurrentPhysicalAssemblySource` observes the GIANTS mission vehicle population,
-deduplicates current root Physical Assemblies, observes current child-member
-positions and retains current runtime-object correlation independently of worker
-tracks.
+**Validated acquisition tranche:** PR #57 / `0.3.0.14 TEST` established that a
+cold non-active Physical Assembly can enter Observation from current GIANTS
+mission Reality, receive a positive Field World member-position witness and
+remain runtime-addressable without prior Job Episode or retained-worker history.
+The normal `0.3.0.14_b` smoke run also preserved the existing warm D-0147
+terminal-resolution mechanics.
 
-`LiveObservationSource` uses a positive member-position witness against any
-immutable Snapshot belonging to a resolved active Field World to add an
-otherwise-unobserved assembly through a physical-only path. The witness has
-incomplete coverage and no negative exclusion, Job Episode, Local Operation,
-Situation, Causal Obstruction or Control authority.
+**Current implementation hypothesis:** acquisition alone is insufficient for
+Causal Obstruction. The next bounded tranche adds a current positive-conflict
+representation for an already-witnessed physical-only assembly, with incomplete
+coverage and no negative-clearance authority, then lets Situation Assessment
+establish generic Causal Obstruction when that physical subject positively
+occupies an active supported worker's current or supported continuation space.
 
-The immediate Reality test is acquisition-only. The cold-block fixture should
-show Condor, Patriot, Valtra and Bredal in current GIANTS mission acquisition;
-Field-77 Observation should retain Patriot through the worker path and add
-Condor through the physical-only path. Valtra and Bredal on the adjacent field
-should have no Field-77 member-position witness. Do not change
-`TerminalOccupancyAssessment` until this Observation hypothesis survives
-Reality.
+This tranche stops at Situation knowledge. It creates no Candidate, Resolution
+Commitment, Bounded Authority or Control request, does not fabricate
+`terminalEpisodeId`, and does not alter D-0147 Candidate/Control mechanics.
+Native GIANTS `blocked` remains diagnostic only and is not a Causal Obstruction
+admission prerequisite.
 
 
 After PR #54 acceptance, Phase 13 resumed at the remaining

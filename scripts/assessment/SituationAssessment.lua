@@ -236,7 +236,7 @@ local function normalizeDemand(values, map)
     return result
 end
 
-function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, encounters, commitments, obligations, terminalOccupancyAssessment)
+function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, encounters, commitments, obligations, terminalOccupancyAssessment, causalObstructionAssessment)
     local self = setmetatable({}, Assessment)
     self.identities = identityRegistry
     self.epochs = epochSequence
@@ -246,6 +246,7 @@ function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations
     self.commitments = commitments
     self.obligations = obligations
     self.terminalOccupancyAssessment=terminalOccupancyAssessment
+    self.causalObstructionAssessment=causalObstructionAssessment
     self.spatialConstraintAssessment=OuttaMyWay.SpatialConstraintAssessment.new()
     self.publishedCount = 0
     self.latestProductiveContinuationByReference={}
@@ -476,6 +477,17 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     local activeOperationMemberCount=0
     for _ in OuttaMyWay.ValueRecord.pairs(activeOperationMemberSet) do activeOperationMemberCount=activeOperationMemberCount+1 end
 
+    local causalObstructionKnowledge={}
+    if self.causalObstructionAssessment~=nil then
+        causalObstructionKnowledge=self.causalObstructionAssessment:assess(
+            snapshot,futureSpace,physicalSpaceEvidence,activeOperationMemberSet,operationByAssembly
+        )
+        for _,relation in OuttaMyWay.ValueRecord.ipairs(causalObstructionKnowledge) do
+            relevant[#relevant+1]=relation.beneficiaryAssemblyId
+            relevant[#relevant+1]=relation.blockerAssemblyId
+        end
+    end
+
     local representationByAssembly={}
     for _,fitness in OuttaMyWay.ValueRecord.ipairs(representationFitness) do representationByAssembly[fitness.assemblyId]=fitness end
 
@@ -570,6 +582,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             activeGroupWorkerCount=sourceCounters.activeGroupWorkerCount or 0,
             poseResolvedWorkerCount=sourceCounters.poseResolvedWorkerCount or 0,
             activeOperationMemberCount=activeOperationMemberCount,
+            causalObstructionCount=#causalObstructionKnowledge,
             mathematicallyPossiblePairCount=sourceCounters.mathematicallyPossiblePairCount or 0,
             relevantPairCount=sourceCounters.relevantPairCount or 0,
             eligiblePairCount=sourceCounters.eligiblePairCount or 0,
@@ -742,6 +755,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         opposedCorridorKnowledge=opposedCorridorKnowledge,
         spatialConstraintKnowledge=spatialConstraintKnowledge,
         cooperativePassageKnowledge=cooperativePassageKnowledge,
+        causalObstructionKnowledge=causalObstructionKnowledge,
         terminalOccupancyKnowledge=terminalOccupancyKnowledge,
         uncertainty=uncertainty,
         representationFitness=representationFitness,

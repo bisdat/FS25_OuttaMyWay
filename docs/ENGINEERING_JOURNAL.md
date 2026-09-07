@@ -3274,3 +3274,30 @@ Independence**. Tests remain readable contract evidence and may change when an
 accepted contract changes; CI executes and reports, Engineering interprets,
 the owner accepts by merge, and GIANTS Reality remains necessary for
 runtime-dependent claims.
+
+## 2026-09-07 — Phase 13: Cold Physical Acquisition != Cold Conflict Representation
+
+`0.3.0.14 TEST` established the cold Physical Assembly acquisition seam and
+preserved the warm D-0147 terminal-resolution donor path. The next missing
+responsibility is narrower than acquisition: Situation cannot truthfully name a
+cold subject as the cause of blocked continuation until Observation supplies a
+current physical representation fit for positive conflict support.
+
+The implementation hypothesis for `0.3.0.15 TEST — CAUSAL OBSTRUCTION
+RECOGNITION` therefore introduces a focused current-physical conflict
+representation based only on current shape evidence already accepted for
+positive conflict support: coherent member-root partial shapes and currently
+participating runtime compound-child shapes. Its coverage remains explicitly
+incomplete and it grants no negative-clearance authority.
+
+Situation Assessment then recognises Causal Obstruction from positive current
+overlap or intersection with the active beneficiary's supported Future Space.
+Historical Job provenance and native GIANTS `blocked` are not prerequisites.
+Classification is current-state based: active GIANTS AI, non-active Player
+Claim, or non-active unclaimed. Relocation eligibility is recorded as Situation
+knowledge only; this tranche deliberately does not route the result into the
+existing D-0147 Candidate/Control mechanics.
+
+Named discoveries retained:
+- **Cold Physical Acquisition != Cold Conflict Representation**
+- **GIANTS Native Blocked != Timely Obstruction Evidence**
