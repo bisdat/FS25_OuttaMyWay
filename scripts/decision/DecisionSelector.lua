@@ -3,12 +3,41 @@ local Selector=OuttaMyWay.DecisionSelector
 Selector.__index=Selector
 local nonActuating={CONTINUE_UNCHANGED=true,CONTINUE_OBSERVATION=true,ESCALATE=true}
 
-local function sortedCopy(values)
-    local result={}; for _,value in OuttaMyWay.ValueRecord.ipairs(values or {}) do result[#result+1]=value end; table.sort(result); return result
-end
 local function hasUnresolved(verdicts)
     for _,verdict in OuttaMyWay.ValueRecord.ipairs(verdicts) do if verdict.result=="UNRESOLVED" then return true end end
     return false
+end
+
+local function candidateGroupKey(candidate)
+    local group=candidate and candidate.evidenceBasis and candidate.evidenceBasis.candidateSupportGroup or nil
+    return type(group)=="table" and group.groupKey or nil
+end
+
+local function portfolioBoundary(inventory)
+    local boundary=inventory and inventory.supportBoundary or nil
+    if type(boundary)=="table" and boundary.mode=="PROSPECTIVE_DECISION_PORTFOLIO" then return boundary end
+    return nil
+end
+
+local function groupBoundary(inventory,groupKey)
+    local boundary=portfolioBoundary(inventory)
+    if boundary==nil then return nil end
+    for _,group in OuttaMyWay.ValueRecord.ipairs(boundary.groups or {}) do
+        if group.groupKey==groupKey then return group.supportBoundary end
+    end
+    return nil
+end
+
+local function projectedInventory(inventory,candidates,groupKey,boundary)
+    local candidateIds={}
+    for _,candidate in OuttaMyWay.ValueRecord.ipairs(candidates or {}) do
+        if candidateGroupKey(candidate)==groupKey then candidateIds[#candidateIds+1]=candidate.identity end
+    end
+    return OuttaMyWay.CandidateInventory.new({
+        identity=inventory.identity,epoch=inventory.epoch,operationalPictureId=inventory.operationalPictureId,
+        candidateIds=candidateIds,complete=true,supportBoundary=boundary,
+        provenance={source="DecisionSelector",portfolioProjection=true,portfolioCandidateInventoryId=inventory.identity,selectedGroupKey=groupKey}
+    })
 end
 
 function Selector.new(identityRegistry,epochSequence)
@@ -48,15 +77,51 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
     table.sort(unresolvedCandidates)
 
     local viableIds={}; for _,candidate in OuttaMyWay.ValueRecord.ipairs(viable) do viableIds[#viableIds+1]=candidate.identity end
-    local trafficPolicy=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(operationalPicture,candidateResult.inventory,viable)
-    local selected=trafficPolicy and trafficPolicy.selected or viable[1]
+
+    local inventoryForLocalPolicy=candidateResult.inventory
+    local selectable=viable
+    local selectedUnresolved=unresolvedCandidates
+    local portfolioChoice=nil
+    local portfolioSelectionMissing=false
+    if portfolioBoundary(candidateResult.inventory)~=nil then
+        portfolioChoice=OuttaMyWay.ProspectivePortfolioDecisionPolicy:selectGroup(candidateResult.inventory)
+        if portfolioChoice==nil or type(portfolioChoice.groupKey)~="string" then
+            portfolioSelectionMissing=true
+            selectable={}
+            selectedUnresolved={}
+        else
+            local groupKey=portfolioChoice.groupKey
+            local filtered={}
+            for _,candidate in OuttaMyWay.ValueRecord.ipairs(viable) do if candidateGroupKey(candidate)==groupKey then filtered[#filtered+1]=candidate end end
+            selectable=filtered
+            local unresolved={}
+            for _,candidateId in OuttaMyWay.ValueRecord.ipairs(unresolvedCandidates) do
+                local entry=byCandidate[candidateId]
+                if entry~=nil and candidateGroupKey(entry.candidate)==groupKey then unresolved[#unresolved+1]=candidateId end
+            end
+            selectedUnresolved=unresolved
+            local boundary=groupBoundary(candidateResult.inventory,groupKey)
+            if type(boundary)~="table" then error("Prospective Decision Portfolio selected group lacks support boundary",2) end
+            inventoryForLocalPolicy=projectedInventory(candidateResult.inventory,candidateResult.candidates,groupKey,boundary)
+        end
+    end
+
+    local trafficPolicy=nil
+    if not portfolioSelectionMissing then
+        trafficPolicy=OuttaMyWay.TrafficPolicemanDecisionPolicy:select(operationalPicture,inventoryForLocalPolicy,selectable)
+    end
+    local selected=trafficPolicy and trafficPolicy.selected or selectable[1]
     local commitmentAction
     local nonIntervention
     local explanation
-    if trafficPolicy~=nil and trafficPolicy.waitForPreferenceEvidence==true then
+    if portfolioSelectionMissing then
+        commitmentAction="WAIT"
+        nonIntervention={explicit=true,classification="PROSPECTIVE_PORTFOLIO_POLICY_UNRESOLVED"}
+        explanation="Prospective Decision Portfolio was complete but compatibility policy could not identify one governing support group"
+    elseif trafficPolicy~=nil and trafficPolicy.waitForPreferenceEvidence==true then
         selected=nil
         commitmentAction="WAIT"
-        nonIntervention={explicit=true,classification="WAIT_FOR_PREFERENCE_EXHAUSTION_EVIDENCE",governingRequirementKey=trafficPolicy.governingRequirementKey,blockedCandidates=trafficPolicy.blocked}
+        nonIntervention={explicit=true,classification="WAIT_FOR_PREFERENCE_EXHAUSTION_EVIDENCE",governingRequirementKey=trafficPolicy.governingRequirementKey,blockedCandidates=trafficPolicy.blocked,selectedGroupKey=portfolioChoice and portfolioChoice.groupKey or nil}
         explanation="Traffic Policeman later-band candidate lacks explicit same-picture exhaustion evidence for every earlier preference band"
     elseif selected~=nil then
         if selected.capability=="CONTINUE_OBSERVATION" then
@@ -67,19 +132,34 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
         elseif selected.evidenceBasis.maintainsExistingCommitment==true then commitmentAction="MAINTAIN"
         else commitmentAction="REVISE" end
         nonIntervention={explicit=nonActuating[selected.capability]==true,classification=selected.capability}
-        explanation=trafficPolicy~=nil and "Selected earliest supportable Traffic Policeman preference band after explicit earlier-band exhaustion, then minimum comparison cost within that band" or "Selected minimum-cost candidate after every mandatory verdict passed"
-    elseif #unresolvedCandidates>0 then
+        if portfolioChoice~=nil then
+            explanation="Prospective Decision Portfolio compatibility policy selected the governing support group; local group policy then selected without lower-precedence Constraint fallback"
+        else
+            explanation=trafficPolicy~=nil and "Selected earliest supportable Traffic Policeman preference band after explicit earlier-band exhaustion, then minimum comparison cost within that band" or "Selected minimum-cost candidate after every mandatory verdict passed"
+        end
+    elseif #selectedUnresolved>0 then
         commitmentAction="WAIT"
-        nonIntervention={explicit=true,classification="WAIT_FOR_EVIDENCE",unresolvedCandidateIds=unresolvedCandidates}
-        explanation="No candidate passed every mandatory constraint; unresolved evidence remains"
+        nonIntervention={explicit=true,classification="WAIT_FOR_EVIDENCE",unresolvedCandidateIds=selectedUnresolved,selectedGroupKey=portfolioChoice and portfolioChoice.groupKey or nil}
+        explanation="No candidate in the selected governing support group passed every mandatory constraint; unresolved evidence remains and lower-precedence groups are not fallback"
     else
         commitmentAction="SETTLE"
-        nonIntervention={explicit=true,classification="COMPLETE_SUPPORTABLE_SPACE_EXHAUSTED"}
-        explanation="Complete supportable Candidate Action Space contains no admissible candidate"
+        nonIntervention={explicit=true,classification="COMPLETE_SUPPORTABLE_SPACE_EXHAUSTED",selectedGroupKey=portfolioChoice and portfolioChoice.groupKey or nil}
+        explanation=portfolioChoice~=nil and "Selected governing support group contains no admissible candidate; lower-precedence groups are intentionally not fallback" or "Complete supportable Candidate Action Space contains no admissible candidate"
     end
 
     local ranked={}
-    for _,candidate in OuttaMyWay.ValueRecord.ipairs(viable) do ranked[#ranked+1]={candidateId=candidate.identity,comparisonCost=candidate.comparisonCost,capability=candidate.capability} end
+    for _,candidate in OuttaMyWay.ValueRecord.ipairs(selectable) do ranked[#ranked+1]={candidateId=candidate.identity,comparisonCost=candidate.comparisonCost,capability=candidate.capability} end
+    local localBasis=trafficPolicy and {rule=trafficPolicy.rule,governingRequirementKey=trafficPolicy.governingRequirementKey,rankedCandidates=trafficPolicy.ranked,blockedCandidates=trafficPolicy.blocked or {}} or {rule="MINIMUM_COMPARISON_COST_AFTER_MANDATORY_PASS",rankedCandidates=ranked}
+    local comparisonBasis=localBasis
+    if portfolioChoice~=nil then
+        comparisonBasis={
+            rule=OuttaMyWay.ProspectivePortfolioDecisionPolicy.KIND,selectedGroupKey=portfolioChoice.groupKey,selectedFamily=portfolioChoice.family,
+            compatibilityRule=portfolioChoice.rule,compatibilityDetail=portfolioChoice.detail,lowerPrecedenceConstraintFallback=false,localSelection=localBasis
+        }
+    elseif portfolioSelectionMissing then
+        comparisonBasis={rule=OuttaMyWay.ProspectivePortfolioDecisionPolicy.KIND,selection="UNRESOLVED",lowerPrecedenceConstraintFallback=false}
+    end
+
     local record=OuttaMyWay.DecisionRecord.new({
         identity=self.identities:issue("DECISION"),
         epoch=self.epochs:next(),
@@ -89,10 +169,10 @@ function Selector:select(operationalPicture,candidateResult,verdictResult)
         viableCandidateIds=viableIds,
         selectedCandidateId=selected and selected.identity or nil,
         nonIntervention=nonIntervention,
-        comparisonBasis=trafficPolicy and {rule=trafficPolicy.rule,governingRequirementKey=trafficPolicy.governingRequirementKey,rankedCandidates=trafficPolicy.ranked,blockedCandidates=trafficPolicy.blocked or {}} or {rule="MINIMUM_COMPARISON_COST_AFTER_MANDATORY_PASS",rankedCandidates=ranked},
+        comparisonBasis=comparisonBasis,
         commitmentAction=commitmentAction,
         explanation=explanation,
-        provenance={source="DecisionSelector",operationalPictureId=operationalPicture.identity,candidateInventoryId=candidateResult.inventory.identity,verdictSetId=verdictResult.set.identity}
+        provenance={source="DecisionSelector",operationalPictureId=operationalPicture.identity,candidateInventoryId=candidateResult.inventory.identity,verdictSetId=verdictResult.set.identity,prospectivePortfolio=portfolioChoice~=nil}
     })
     self.publishedCount=self.publishedCount+1
     return record

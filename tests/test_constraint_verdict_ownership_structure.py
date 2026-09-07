@@ -54,7 +54,7 @@ def test_phase13_constraint_ownership_test_identity_is_coherent():
     config=read("scripts/config.lua")
     main=read("scripts/main.lua")
     moddesc=read("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.18"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.18 TEST — CONSTRAINT VERDICT OWNERSHIP"' in config
-    assert 'v0.3.0.18 TEST — CONSTRAINT VERDICT OWNERSHIP' in main
-    assert '<version value="0.3.0.18">0.3.0.18</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.19"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.19 TEST — PROSPECTIVE DECISION OWNERSHIP"' in config
+    assert 'v0.3.0.19 TEST — PROSPECTIVE DECISION OWNERSHIP' in main
+    assert '<version value="0.3.0.19">0.3.0.19</version>' in moddesc

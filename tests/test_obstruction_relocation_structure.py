@@ -138,7 +138,7 @@ def test_phase13_test_identity_is_coherent():
     moddesc = read("modDesc.xml")
     main = read("scripts/main.lua")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.18"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.18 TEST — CONSTRAINT VERDICT OWNERSHIP"' in config
-    assert '<version value="0.3.0.18">0.3.0.18</version>' in moddesc
-    assert "v0.3.0.18 TEST — CONSTRAINT VERDICT OWNERSHIP" in main
+    assert 'OuttaMyWay.VERSION = "0.3.0.19"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.19 TEST — PROSPECTIVE DECISION OWNERSHIP"' in config
+    assert '<version value="0.3.0.19">0.3.0.19</version>' in moddesc
+    assert "v0.3.0.19 TEST — PROSPECTIVE DECISION OWNERSHIP" in main
