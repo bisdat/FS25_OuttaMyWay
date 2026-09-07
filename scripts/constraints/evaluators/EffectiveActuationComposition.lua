@@ -16,11 +16,5 @@ function Evaluator.evaluate(candidate,operationalPicture)
     if not ok then
         return OuttaMyWay.ConstraintEvidence.fail("Effective Actuation Composition rejected: " .. tostring(record),{composition=values},{operationalPictureId=operationalPicture.identity},{kind="COMPOSITION_CHANGE"})
     end
-    local packet=(candidate.evidenceBasis.constraintEvidence or {})[Evaluator.id]
-    if packet~=nil then
-        local result=OuttaMyWay.ConstraintEvidence.fromCandidate(candidate,Evaluator.id)
-        result.evidence={compositionId=record.identity,declared=result.evidence}
-        return result
-    end
     return OuttaMyWay.ConstraintEvidence.pass("Effective Actuation Composition is structurally valid",{compositionId=record.identity},{operationalPictureId=operationalPicture.identity},{kind="COMPOSITION_CHANGE"})
 end

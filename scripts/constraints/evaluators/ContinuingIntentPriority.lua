@@ -1,6 +1,0 @@
-OuttaMyWay.ContinuingIntentPriorityConstraint={}
-OuttaMyWay.ContinuingIntentPriorityConstraint.id="CONTINUING_INTENT_PRIORITY"
-OuttaMyWay.ContinuingIntentPriorityConstraint.owner="ContinuingIntentPriorityConstraint"
-function OuttaMyWay.ContinuingIntentPriorityConstraint.evaluate(candidate,operationalPicture)
-    return OuttaMyWay.ConstraintEvidence.fromCandidate(candidate,OuttaMyWay.ContinuingIntentPriorityConstraint.id)
-end

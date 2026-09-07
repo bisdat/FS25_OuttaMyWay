@@ -1,6 +1,0 @@
-OuttaMyWay.ProgressPreservationConstraint={}
-OuttaMyWay.ProgressPreservationConstraint.id="PROGRESS_PRESERVATION"
-OuttaMyWay.ProgressPreservationConstraint.owner="ProgressPreservationConstraint"
-function OuttaMyWay.ProgressPreservationConstraint.evaluate(candidate,operationalPicture)
-    return OuttaMyWay.ConstraintEvidence.fromCandidate(candidate,OuttaMyWay.ProgressPreservationConstraint.id)
-end

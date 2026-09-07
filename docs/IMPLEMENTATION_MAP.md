@@ -55,11 +55,11 @@ At every intermediate state there must be exactly one authoritative owner of eac
 | 10 | Bounded Authority reconciliation | COMPLETE |
 | 11 | Reduce `LiveControlDispatcher` to authorised routing/execution | COMPLETE |
 | 12 | Retire superseded generic Commitment/orchestration only where unsupported | COMPLETE |
-| 13 | Simplify Candidate/Constraint/Decision only where evidence proves duplication | **IN PROGRESS — CLOSURE AUDIT** |
+| 13 | Simplify Candidate/Constraint/Decision only where evidence proves duplication | **IN PROGRESS — CONSTRAINT VERDICT OWNERSHIP** |
 | 14 | Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming | NOT STARTED |
 | 15 | Whole-system validation and architecture-to-runtime review | NOT STARTED |
 
-Accepted Repository State for this map is `main` after PR #59 merge, commit `197742404a038c9072e3934c57f0be8f71ea6b60`. Canonical authority remains `v0.3.0.0`.
+Accepted Repository State for this map is `main` after PR #61 merge, commit `23370f19f05f912ca9517dcf24ac5930c8fbb5e0`. Canonical authority remains `v0.3.0.0`. The `.18` branch below is an unaccepted Engineering Increment until merged.
 
 # Principal Responsibility Placement
 
@@ -77,7 +77,7 @@ Accepted Repository State for this map is `main` after PR #59 merge, commit `197
 | Prospective spatial constraints | `scripts/assessment/SpatialConstraintAssessment.lua` | PRESERVE pending separate Issue #37 Reality debt |
 | Passage capability | `scripts/assessment/PassageCapabilityAssessment.lua` | PRESERVE |
 | Candidate construction / planning | `scripts/candidates/`, including `LiveTrafficCandidateSupport.lua`, `TerminalEgressCandidateSupport.lua`, `ObstructionRelocationCandidateSupport.lua`, `LocalPassagePlanner.lua`, `CandidateSpace.lua` | **PHASE-13 AUDIT** — retain planning; remove only proved embedded verdict authority |
-| Constraint evaluation | `scripts/constraints/ConstraintEngine.lua` | **PHASE-13 AUDIT** — retain distinct rejection/narrowing if real |
+| Constraint evaluation | `scripts/constraints/ConstraintEngine.lua` plus four independently owned evaluators | **PHASE-13 RECONCILIATION** — Candidate self-verdict pass-through removed in `.18`; independent bounded questions retained |
 | Policy / Decision selection | `scripts/decision/DecisionSelector.lua`, `TrafficPolicemanDecisionPolicy.lua` | **PHASE-13 AUDIT** — retain least-intervention choice if distinct |
 | Responsibility Transition Authority | `scripts/responsibility/ResponsibilityTransitionAuthority.lua` and purpose-specific transition modules | PRESERVE as semantic transition authority |
 | Follower Regulation transition | `scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua` | PRESERVE |
@@ -181,6 +181,19 @@ The first generic relocation Reality run exposed **Post-Manoeuvre Settlement Gap
 The corrected boundary preserves `OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION` as the envelope and carries the narrower completion classification separately. Semantic success is still not inferred from physical manoeuvre completion; fresh obstruction cessation plus positive beneficiary continuation must be observed before `OBJECTIVE_SATISFIED` terminal settlement.
 
 # Phase 13 Closure Audit
+
+## Discovery — Candidate Evidence != Constraint Verdict
+
+The closure audit found that seven nominal mandatory Constraint evaluators did not evaluate an independent question: they re-labelled Candidate-authored PASS/FAIL/UNRESOLVED packets as `ConstraintVerdict`. `.18` removes that duplicate verdict authority while preserving useful planning evidence.
+
+The independently owned current Constraint questions are `REPRESENTATION_FITNESS`, `RESPONSIBILITY_COMPATIBILITY`, `COMMITMENT_PRECONDITIONS`, and `EFFECTIVE_ACTUATION_COMPOSITION`. Candidate support may still produce transitional planning packets, but the canonical `CandidateAction` boundary strips verdict/applicability fields and forbids `constraintEvidence` from entering Candidate data.
+
+The seven pass-through evaluator modules are retired rather than preserved as empty architecture shells.
+
+**Generic multi-context application cardinality** is classified as an acceptable fail-closed current limit; it should be revisited only for a concrete supported consumer such as Issue #45.
+
+After `.18` validation, the remaining Phase-13 audit is narrowly `Candidate enumeration -> Decision selection`, testing the separate discovery **Preselection != Candidate Enumeration**.
+
 
 ## Discovery — Issue Completion != Phase Completion
 

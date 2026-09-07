@@ -17,6 +17,37 @@ local function requireSpecification(specification)
     end
 end
 
+-- Candidate support may still carry transitional planning packets that predate
+-- Phase 13. Their evidence remains useful, but PASS/FAIL/UNRESOLVED and
+-- applicability are Constraint conclusions and must not cross the canonical
+-- CandidateAction boundary.
+local function candidateEvidenceBasis(specification)
+    local source=specification.evidenceBasis or {}
+    local result={}
+    for key,value in OuttaMyWay.ValueRecord.pairs(source) do
+        if key~="constraintEvidence" then result[key]=value end
+    end
+
+    local legacy=source.constraintEvidence
+    if type(legacy)=="table" then
+        local planning={}
+        local count=0
+        for constraintId,packet in OuttaMyWay.ValueRecord.pairs(legacy) do
+            if type(packet)=="table" then
+                planning[constraintId]={
+                    evidence=packet.evidence or {},
+                    reason=packet.reason,
+                    provenance=packet.provenance or {},
+                    revalidationTrigger=packet.revalidationTrigger or {}
+                }
+                count=count+1
+            end
+        end
+        if count>0 then result.candidatePlanningEvidence=planning end
+    end
+    return result
+end
+
 function CandidateSpace.new(identityRegistry,epochSequence)
     return setmetatable({identities=identityRegistry,epochs=epochSequence,publishedCount=0},CandidateSpace)
 end
@@ -50,7 +81,7 @@ function CandidateSpace:generate(operationalPicture)
             subject=specification.subject,
             capability=specification.capability,
             expectedEffect=specification.expectedEffect,
-            evidenceBasis=specification.evidenceBasis,
+            evidenceBasis=candidateEvidenceBasis(specification),
             representationFitness=specification.representationFitness,
             preconditions=specification.preconditions,
             invalidationConditions=specification.invalidationConditions,

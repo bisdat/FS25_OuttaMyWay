@@ -1,6 +1,0 @@
-OuttaMyWay.TransitionClearanceConstraint={}
-OuttaMyWay.TransitionClearanceConstraint.id="TRANSITION_CLEARANCE"
-OuttaMyWay.TransitionClearanceConstraint.owner="TransitionClearanceConstraint"
-function OuttaMyWay.TransitionClearanceConstraint.evaluate(candidate,operationalPicture)
-    return OuttaMyWay.ConstraintEvidence.fromCandidate(candidate,OuttaMyWay.TransitionClearanceConstraint.id)
-end
