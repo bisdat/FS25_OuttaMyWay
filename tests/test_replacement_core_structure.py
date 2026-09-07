@@ -1768,8 +1768,8 @@ def test_v0181_d0182_d0146_restore_uses_cached_actuator_symmetry_only():
     assert 'state.transitActuatorStates' in authority
     assert 'initialTargetFoldAnimTime' in authority
     assert 'physicallyChanged' in authority
-    assert 'function Authority:getCachedRestoreSettlement(vehicle)' in authority
-    assert 'function Authority:finishCachedTransitRestore(vehicle)' in authority
+    assert 'function Mechanism:getCachedRestoreSettlement(vehicle)' in authority
+    assert 'function Mechanism:finishCachedTransitRestore(vehicle)' in authority
 
 
 
