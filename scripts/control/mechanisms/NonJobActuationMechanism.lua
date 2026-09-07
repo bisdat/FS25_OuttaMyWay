@@ -1,16 +1,12 @@
--- FS25_OuttaMyWay v0.1.0.0 CANONICAL CANDIDATE — validated post-job forward-direction actuator substrate retained unchanged from canonical v4.7.128.
--- D-0147 mechanical authority only. No traffic meaning, route construction or
--- spatial-proof policy lives here. Each direct drive call is guarded by the
--- validated Player Claim witness vehicle:getIsEntered(). v4.7.118 added
--- steering-state telemetry and positive actuation neutralisation; v4.7.119
--- validated one bounded Vehicle Activity Context so GIANTS WheelPhysics can
--- realise post-job steering; v4.7.120 validated fixed-world-direction actuation.
--- Current D-0147 consumes one Candidate-supplied fixed Infield Alignment and
--- Control terminates on its bounded retreat allowance, not Positive Field Exit.
+-- Shared non-job physical actuation mechanism for warm D-0147 and cold D-0218.
+-- Mechanical safety boundary only: semantic movement permission remains in the
+-- purpose-specific authority/Responsibility/Control path. This mechanism neither
+-- infers completed-Job provenance nor creates relocation purpose.
+-- Player Claim and source-AI reactivation remain higher-priority Reality boundaries.
 
-OuttaMyWay.PostJobActuationAuthority={}
-local Authority=OuttaMyWay.PostJobActuationAuthority
-Authority.__index=Authority
+OuttaMyWay.NonJobActuationMechanism={}
+local Mechanism=OuttaMyWay.NonJobActuationMechanism
+Mechanism.__index=Mechanism
 
 local function safeCall(object,methodName,...)
     if object==nil or type(object[methodName])~="function" then return false,nil end
@@ -24,10 +20,10 @@ local function steeringPose(vehicle)
     local good,x,y,z=pcall(getWorldTranslation,node); if not good then return nil end
     return node,x,y,z
 end
-function Authority.new() return setmetatable({directDriveCalls=0,neutralizeCalls=0,activityContextAcquireCalls=0,activityContextReleaseCalls=0},Authority) end
+function Mechanism.new() return setmetatable({directDriveCalls=0,neutralizeCalls=0,activityContextAcquireCalls=0,activityContextReleaseCalls=0},Mechanism) end
 
 local function boolOrNil(ok,value) if ok then return value==true end return nil end
-function Authority:steeringTelemetry(vehicle)
+function Mechanism:steeringTelemetry(vehicle)
     if vehicle==nil then return {available=false,reason="VEHICLE_UNAVAILABLE"} end
     local controlledOk,controlled=safeCall(vehicle,"getIsControlled")
     local crab=vehicle.spec_crabSteering
@@ -67,14 +63,14 @@ function Authority:steeringTelemetry(vehicle)
     telemetry.steerableWheelCount=#telemetry.wheels
     return telemetry
 end
-function Authority:isPlayerClaimed(vehicle)
+function Mechanism:isPlayerClaimed(vehicle)
     local ok,value=safeCall(vehicle,"getIsEntered"); return ok and value==true
 end
-function Authority:isSourceReactivated(vehicle)
+function Mechanism:isSourceReactivated(vehicle)
     local ok,value=safeCall(vehicle,"getIsAIActive"); return ok and value==true
 end
 
-function Authority:acquireVehicleActivityContext(vehicle)
+function Mechanism:acquireVehicleActivityContext(vehicle)
     if self:isPlayerClaimed(vehicle) then return false,"PLAYER_CLAIM" end
     if self:isSourceReactivated(vehicle) then return false,"SOURCE_INTENT_REACTIVATED" end
     if vehicle==nil then return false,"VEHICLE_UNAVAILABLE" end
@@ -85,24 +81,24 @@ function Authority:acquireVehicleActivityContext(vehicle)
     context.postAcquireSteering=self:steeringTelemetry(vehicle)
     return true,context
 end
-function Authority:releaseVehicleActivityContext(vehicle,context)
+function Mechanism:releaseVehicleActivityContext(vehicle,context)
     if vehicle==nil then return false,"VEHICLE_UNAVAILABLE" end
     if type(context)~="table" or context.acquiredForceIsActive~=true then return false,"VEHICLE_ACTIVITY_CONTEXT_UNAVAILABLE" end
     vehicle.forceIsActive=context.previousForceIsActive
     self.activityContextReleaseCalls=self.activityContextReleaseCalls+1
     return true,{releaseCall=self.activityContextReleaseCalls,restoredForceIsActive=context.previousForceIsActive,postReleaseSteering=self:steeringTelemetry(vehicle)}
 end
-function Authority:position(vehicle)
+function Mechanism:position(vehicle)
     local _,x,_,z=steeringPose(vehicle); if x==nil then return nil end; return {x=x,z=z}
 end
-function Authority:heading(vehicle)
+function Mechanism:heading(vehicle)
     local node=steeringPose(vehicle); if node==nil or type(localDirectionToWorld)~="function" then return nil end
     local ok,hx,_,hz=pcall(localDirectionToWorld,node,0,0,1)
     if not ok or not finite(hx) or not finite(hz) then return nil end
     local length=math.sqrt(hx*hx+hz*hz); if length<=0.000001 then return nil end
     return {x=hx/length,z=hz/length}
 end
-function Authority:maximumForwardSpeedKmh(vehicle)
+function Mechanism:maximumForwardSpeedKmh(vehicle)
     local motorOk,motor=safeCall(vehicle,"getMotor")
     if not motorOk or motor==nil or type(motor.getMaximumForwardSpeed)~="function" then return nil,"POST_JOB_MOTOR_MAX_FORWARD_SPEED_UNAVAILABLE" end
     local ok,value=pcall(motor.getMaximumForwardSpeed,motor)
@@ -123,7 +119,7 @@ local function steeringAngleLimitDeg(vehicle)
     return 60
 end
 
-function Authority:driveInWorldDirection(vehicle,dt,directionX,directionZ,speedKmh)
+function Mechanism:driveInWorldDirection(vehicle,dt,directionX,directionZ,speedKmh)
     if self:isPlayerClaimed(vehicle) then return false,"PLAYER_CLAIM" end
     if self:isSourceReactivated(vehicle) then return false,"SOURCE_INTENT_REACTIVATED" end
     if AIVehicleUtil==nil or type(AIVehicleUtil.driveInDirection)~="function" then return false,"AIVEHICLEUTIL_DRIVE_IN_DIRECTION_UNAVAILABLE" end
@@ -160,7 +156,7 @@ function Authority:driveInWorldDirection(vehicle,dt,directionX,directionZ,speedK
     return true,{localDirectionX=lx,localDirectionZ=lz,headingErrorDeg=headingErrorDeg,steeringAngleLimitDeg=steeringLimit,directDriveCalls=self.directDriveCalls,postCommandSteering=self:steeringTelemetry(vehicle)}
 end
 
-function Authority:neutralize(vehicle,dt)
+function Mechanism:neutralize(vehicle,dt)
     if self:isPlayerClaimed(vehicle) then return false,"PLAYER_CLAIM" end
     if self:isSourceReactivated(vehicle) then return false,"SOURCE_INTENT_REACTIVATED" end
     if WheelsUtil==nil or type(WheelsUtil.updateWheelsPhysics)~="function" then return false,"WHEELSUTIL_UPDATE_PHYSICS_UNAVAILABLE" end
@@ -174,8 +170,8 @@ function Authority:neutralize(vehicle,dt)
     if type(vehicle.setCruiseControlState)=="function" and Drivable~=nil and Drivable.CRUISECONTROL_STATE_OFF~=nil then cruiseOk=select(1,safeCall(vehicle,"setCruiseControlState",Drivable.CRUISECONTROL_STATE_OFF,true)) end
     return true,{neutralizeCalls=self.neutralizeCalls,wheelPhysicsNeutralized=true,brakeRequested=brakeOk,stopVehicleRequested=stopOk,cruiseControlOffRequested=cruiseOk,postNeutralizeSteering=self:steeringTelemetry(vehicle)}
 end
-function Authority:stop(vehicle,dt) return self:neutralize(vehicle,dt) end
-function Authority:getDirectDriveCallCount() return self.directDriveCalls end
-function Authority:getNeutralizeCallCount() return self.neutralizeCalls end
-function Authority:getActivityContextAcquireCallCount() return self.activityContextAcquireCalls end
-function Authority:getActivityContextReleaseCallCount() return self.activityContextReleaseCalls end
+function Mechanism:stop(vehicle,dt) return self:neutralize(vehicle,dt) end
+function Mechanism:getDirectDriveCallCount() return self.directDriveCalls end
+function Mechanism:getNeutralizeCallCount() return self.neutralizeCalls end
+function Mechanism:getActivityContextAcquireCallCount() return self.activityContextAcquireCalls end
+function Mechanism:getActivityContextReleaseCallCount() return self.activityContextReleaseCalls end

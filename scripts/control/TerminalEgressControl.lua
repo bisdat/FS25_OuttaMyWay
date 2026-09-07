@@ -48,13 +48,13 @@ local function distanceTo(x,z,cx,cz)
 end
 
 function Control.new(runtime,observationSource)
-    return setmetatable({runtime=runtime,source=observationSource,postJobAuthority=OuttaMyWay.PostJobActuationAuthority.new(),configurationMechanism=OuttaMyWay.TransitConfigurationMechanism.new(),active=nil,completionHandler=nil,latestObservation=nil,startedCount=0,completedCount=0,failedCount=0},Control)
+    return setmetatable({runtime=runtime,source=observationSource,actuationMechanism=OuttaMyWay.NonJobActuationMechanism.new(),configurationMechanism=OuttaMyWay.TransitConfigurationMechanism.new(),active=nil,completionHandler=nil,latestObservation=nil,startedCount=0,completedCount=0,failedCount=0},Control)
 end
 function Control:setCompletionHandler(handler) self.completionHandler=handler end
 function Control:isActive() return self.active~=nil end
 function Control:_vehicle(referenceKey) return self.source and self.source:getTrackedObject(referenceKey) or nil end
 function Control:_publish(state,extra)
-    local item={kind="D0147_TERMINAL_EGRESS_CONTROL_OBSERVATION",terminalEpisodeId=state and state.terminalEpisodeId or (extra and extra.terminalEpisodeId),assemblyReferenceKey=state and state.assemblyReferenceKey or (extra and extra.assemblyReferenceKey),commitmentId=state and state.commitmentId or (extra and extra.commitmentId),phase=state and state.phase or (extra and extra.phase),active=self.active~=nil,directDriveCalls=self.postJobAuthority:getDirectDriveCallCount(),provenance={source="TerminalEgressControl",authority="POST_JOB_ACTUATION"}}
+    local item={kind="D0147_TERMINAL_EGRESS_CONTROL_OBSERVATION",terminalEpisodeId=state and state.terminalEpisodeId or (extra and extra.terminalEpisodeId),assemblyReferenceKey=state and state.assemblyReferenceKey or (extra and extra.assemblyReferenceKey),commitmentId=state and state.commitmentId or (extra and extra.commitmentId),phase=state and state.phase or (extra and extra.phase),active=self.active~=nil,directDriveCalls=self.actuationMechanism:getDirectDriveCallCount(),provenance={source="TerminalEgressControl",authority="POST_JOB_ACTUATION"}}
     for k,v in OuttaMyWay.ValueRecord.pairs(extra or {}) do item[k]=v end
     self.latestObservation=item
 end
@@ -80,10 +80,10 @@ function Control:_complete(status,evidence)
             completionEvidence.neutralization={performed=false,reason="COMPLETED_ASSEMBLY_RUNTIME_OBJECT_LOST"}
             logWarning("ACTUATION_NEUTRALIZATION_UNAVAILABLE commitment=%s episode=%s reason=%s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),"COMPLETED_ASSEMBLY_RUNTIME_OBJECT_LOST")
         else
-            local neutralized,neutralEvidence=self.postJobAuthority:neutralize(vehicle,state.lastDt or 0)
+            local neutralized,neutralEvidence=self.actuationMechanism:neutralize(vehicle,state.lastDt or 0)
             completionEvidence.neutralization={performed=neutralized==true,evidence=type(neutralEvidence)=="table" and neutralEvidence or nil,reason=neutralized and nil or tostring(neutralEvidence)}
             if neutralized then
-                logInfo("ACTUATION_NEUTRALIZED commitment=%s episode=%s status=%s neutralizeCalls=%d %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(status),self.postJobAuthority:getNeutralizeCallCount(),steeringTelemetryText(type(neutralEvidence)=="table" and neutralEvidence.postNeutralizeSteering or nil))
+                logInfo("ACTUATION_NEUTRALIZED commitment=%s episode=%s status=%s neutralizeCalls=%d %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(status),self.actuationMechanism:getNeutralizeCallCount(),steeringTelemetryText(type(neutralEvidence)=="table" and neutralEvidence.postNeutralizeSteering or nil))
             else
                 logWarning("ACTUATION_NEUTRALIZATION_FAILED commitment=%s episode=%s status=%s reason=%s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(status),tostring(neutralEvidence))
             end
@@ -99,10 +99,10 @@ function Control:_complete(status,evidence)
             completionEvidence.activityContext={released=false,reason="COMPLETED_ASSEMBLY_RUNTIME_OBJECT_LOST"}
             logWarning("VEHICLE_ACTIVITY_CONTEXT_RELEASE_UNAVAILABLE commitment=%s episode=%s reason=%s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),"COMPLETED_ASSEMBLY_RUNTIME_OBJECT_LOST")
         else
-            local released,releaseEvidence=self.postJobAuthority:releaseVehicleActivityContext(vehicle,state.activityContext)
+            local released,releaseEvidence=self.actuationMechanism:releaseVehicleActivityContext(vehicle,state.activityContext)
             completionEvidence.activityContext={released=released==true,evidence=type(releaseEvidence)=="table" and releaseEvidence or nil,reason=released and nil or tostring(releaseEvidence)}
             if released then
-                logInfo("VEHICLE_ACTIVITY_CONTEXT_RELEASED commitment=%s episode=%s status=%s releaseCalls=%d restoredForceIsActive=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(status),self.postJobAuthority:getActivityContextReleaseCallCount(),tostring(releaseEvidence.restoredForceIsActive),steeringTelemetryText(type(releaseEvidence)=="table" and releaseEvidence.postReleaseSteering or nil))
+                logInfo("VEHICLE_ACTIVITY_CONTEXT_RELEASED commitment=%s episode=%s status=%s releaseCalls=%d restoredForceIsActive=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(status),self.actuationMechanism:getActivityContextReleaseCallCount(),tostring(releaseEvidence.restoredForceIsActive),steeringTelemetryText(type(releaseEvidence)=="table" and releaseEvidence.postReleaseSteering or nil))
             else
                 logWarning("VEHICLE_ACTIVITY_CONTEXT_RELEASE_FAILED commitment=%s episode=%s status=%s reason=%s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(status),tostring(releaseEvidence))
             end
@@ -134,8 +134,8 @@ function Control:executeControlRequest(request,candidate)
     local grantOk,grantReason=self.runtime.boundedAuthority:validateRequest(request)
     if grantOk~=true then return false,grantReason end
     local vehicle=self:_vehicle(bridge.assemblyReferenceKey); if vehicle==nil then return self:_rejectBeforeStart(request,bridge,"FAILED","COMPLETED_ASSEMBLY_RUNTIME_OBJECT_UNAVAILABLE") end
-    if self.postJobAuthority:isPlayerClaimed(vehicle) then return self:_rejectBeforeStart(request,bridge,"PLAYER_CLAIM","PLAYER_CLAIM_AT_CONTROL_BOUNDARY") end
-    if self.postJobAuthority:isSourceReactivated(vehicle) then return self:_rejectBeforeStart(request,bridge,"SUPERSEDED","SOURCE_INTENT_REACTIVATED_AT_CONTROL_BOUNDARY") end
+    if self.actuationMechanism:isPlayerClaimed(vehicle) then return self:_rejectBeforeStart(request,bridge,"PLAYER_CLAIM","PLAYER_CLAIM_AT_CONTROL_BOUNDARY") end
+    if self.actuationMechanism:isSourceReactivated(vehicle) then return self:_rejectBeforeStart(request,bridge,"SUPERSEDED","SOURCE_INTENT_REACTIVATED_AT_CONTROL_BOUNDARY") end
     local now=tonumber(g_time) or 0
     local state={commitmentId=request.commitmentId,terminalEpisodeId=bridge.terminalEpisodeId,assemblyId=request.assemblyId,assemblyReferenceKey=bridge.assemblyReferenceKey,phase=bridge.phase,requestId=request.identity,boundedAuthorityId=request.boundedAuthorityId,authorityToken=request.authorityToken,startedAt=now,vehicle=vehicle,objective=bridge.objective,configurationOwned=false}
     self.active=state; self.startedCount=self.startedCount+1
@@ -172,27 +172,27 @@ function Control:executeControlRequest(request,candidate)
             or not tonumber(objective.targetProgressM) or not tonumber(objective.targetX) or not tonumber(objective.targetZ) then
             return self:_rejectBeforeStart(request,bridge,"FAILED","TERMINAL_COURTESY_OBJECTIVE_INCOMPLETE:"..tostring(bridge.objectiveReason))
         end
-        local position=self.postJobAuthority:position(vehicle); if position==nil then return self:_rejectBeforeStart(request,bridge,"FAILED","POST_JOB_POSE_UNAVAILABLE") end
-        local activityOk,activityContext=self.postJobAuthority:acquireVehicleActivityContext(vehicle)
+        local position=self.actuationMechanism:position(vehicle); if position==nil then return self:_rejectBeforeStart(request,bridge,"FAILED","POST_JOB_POSE_UNAVAILABLE") end
+        local activityOk,activityContext=self.actuationMechanism:acquireVehicleActivityContext(vehicle)
         if not activityOk then
             local status=activityContext=="PLAYER_CLAIM" and "PLAYER_CLAIM" or (activityContext=="SOURCE_INTENT_REACTIVATED" and "SUPERSEDED" or "FAILED")
             return self:_rejectBeforeStart(request,bridge,status,"VEHICLE_ACTIVITY_CONTEXT_UNAVAILABLE:"..tostring(activityContext))
         end
         state.activityContext=activityContext
-        logInfo("VEHICLE_ACTIVITY_CONTEXT_ACQUIRED commitment=%s episode=%s assembly=%s acquireCalls=%d previousForceIsActive=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),self.postJobAuthority:getActivityContextAcquireCallCount(),tostring(activityContext.previousForceIsActive),steeringTelemetryText(activityContext.postAcquireSteering))
+        logInfo("VEHICLE_ACTIVITY_CONTEXT_ACQUIRED commitment=%s episode=%s assembly=%s acquireCalls=%d previousForceIsActive=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),self.actuationMechanism:getActivityContextAcquireCallCount(),tostring(activityContext.previousForceIsActive),steeringTelemetryText(activityContext.postAcquireSteering))
         state.infieldDirectionX=objective.infieldDirectionX; state.infieldDirectionZ=objective.infieldDirectionZ
         state.startX=position.x; state.startZ=position.z
         state.targetX=objective.targetX; state.targetZ=objective.targetZ
         state.targetProgressM=objective.targetProgressM; state.retreatDistanceM=objective.retreatDistanceM or objective.targetProgressM
         state.courtesyStage=tonumber(objective.courtesyStage) or 1; state.destinationKind=objective.destinationKind; state.objectiveKind=objective.objectiveKind
-        local nativeMaxSpeedKmh,nativeMaxReason=self.postJobAuthority:maximumForwardSpeedKmh(vehicle)
+        local nativeMaxSpeedKmh,nativeMaxReason=self.actuationMechanism:maximumForwardSpeedKmh(vehicle)
         if nativeMaxSpeedKmh==nil then
             return self:_rejectBeforeStart(request,bridge,"FAILED","POST_JOB_NATIVE_MAX_SPEED_UNAVAILABLE:"..tostring(nativeMaxReason))
         end
         state.speedKmh=nativeMaxSpeedKmh
         self:_publish(state,{status="MANOEUVRE_IN_PROGRESS",courtesyStage=state.courtesyStage,destinationKind=state.destinationKind,infieldDirectionX=state.infieldDirectionX,infieldDirectionZ=state.infieldDirectionZ,targetX=state.targetX,targetZ=state.targetZ,targetProgressM=state.targetProgressM,continuousCourseCorrection=false,settlement=objective.settlement,speedPolicy="NATIVE_MAX_FORWARD"})
         logInfo("TERMINAL_COURTESY_STARTED commitment=%s episode=%s assembly=%s stage=%d destination=%s fixedDirection=(%.4f,%.4f) target=(%.2f,%.2f) targetProgress=%.2fm speed=%.2fkmh speedPolicy=NATIVE_MAX_FORWARD alignment=%s continuousCourseCorrection=false",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),state.courtesyStage,tostring(state.destinationKind),tonumber(state.infieldDirectionX) or 0,tonumber(state.infieldDirectionZ) or 0,tonumber(state.targetX) or 0,tonumber(state.targetZ) or 0,tonumber(state.targetProgressM) or 0,tonumber(state.speedKmh) or 0,tostring(objective.alignmentMode))
-        logInfo("STEERING_BASELINE commitment=%s episode=%s assembly=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),steeringTelemetryText(self.postJobAuthority:steeringTelemetry(vehicle)))
+        logInfo("STEERING_BASELINE commitment=%s episode=%s assembly=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),steeringTelemetryText(self.actuationMechanism:steeringTelemetry(vehicle)))
         return true,"MANOEUVRE_STARTED"
     end
     return self:_rejectBeforeStart(request,bridge,"FAILED","UNSUPPORTED_D0147_PHASE:"..tostring(bridge.phase))
@@ -203,8 +203,8 @@ function Control:update(dt)
     if self.runtime.boundedAuthority:isCurrent(state.boundedAuthorityId)~=true then self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="BOUNDED_AUTHORITY_LOST"}); return end
     if tokenFor(self.runtime,state)==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="POST_JOB_AUTHORITY_LOST"}); return end
     local vehicle=self:_vehicle(state.assemblyReferenceKey); if vehicle==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="COMPLETED_ASSEMBLY_RUNTIME_OBJECT_LOST"}); return end
-    if self.postJobAuthority:isPlayerClaimed(vehicle) then self:_complete("PLAYER_CLAIM",{kind="D0147_PLAYER_CLAIM",directDriveCallsAtClaim=self.postJobAuthority:getDirectDriveCallCount()}); return end
-    if self.postJobAuthority:isSourceReactivated(vehicle) then self:_complete("SUPERSEDED",{kind="D0147_SOURCE_INTENT_REACTIVATED"}); return end
+    if self.actuationMechanism:isPlayerClaimed(vehicle) then self:_complete("PLAYER_CLAIM",{kind="D0147_PLAYER_CLAIM",directDriveCallsAtClaim=self.actuationMechanism:getDirectDriveCallCount()}); return end
+    if self.actuationMechanism:isSourceReactivated(vehicle) then self:_complete("SUPERSEDED",{kind="D0147_SOURCE_INTENT_REACTIVATED"}); return end
     local elapsed=(tonumber(g_time) or 0)-state.startedAt
     if state.phase=="COMPACT" then
         local evidence=self.configurationMechanism:getEvidence(vehicle)
@@ -225,25 +225,25 @@ function Control:update(dt)
             local now=tonumber(g_time) or 0
             if state.nextUpdateTelemetryLogged~=true then
                 state.nextUpdateTelemetryLogged=true
-                logInfo("STEERING_NEXT_UPDATE commitment=%s episode=%s assembly=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),steeringTelemetryText(self.postJobAuthority:steeringTelemetry(vehicle)))
+                logInfo("STEERING_NEXT_UPDATE commitment=%s episode=%s assembly=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),steeringTelemetryText(self.actuationMechanism:steeringTelemetry(vehicle)))
             elseif state.lastSteeringHeartbeatAt==nil or now-state.lastSteeringHeartbeatAt>=1000 then
                 state.lastSteeringHeartbeatAt=now
-                logInfo("STEERING_HEARTBEAT commitment=%s episode=%s assembly=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),steeringTelemetryText(self.postJobAuthority:steeringTelemetry(vehicle)))
+                logInfo("STEERING_HEARTBEAT commitment=%s episode=%s assembly=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),steeringTelemetryText(self.actuationMechanism:steeringTelemetry(vehicle)))
             end
         end
-        local position=self.postJobAuthority:position(vehicle); if position==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="POST_JOB_POSE_LOST"}); return end
+        local position=self.actuationMechanism:position(vehicle); if position==nil then self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="POST_JOB_POSE_LOST"}); return end
         local dx,dz=position.x-state.startX,position.z-state.startZ
         local realisedProgress=dx*state.infieldDirectionX+dz*state.infieldDirectionZ
         local targetDistance=distanceTo(position.x,position.z,state.targetX,state.targetZ)
         if realisedProgress>=state.targetProgressM then
-            self:_complete("MANOEUVRE_COMPLETE",{kind=state.courtesyStage==2 and "D0147_FINAL_BOUNDARY_SETTLEMENT_COMPLETE" or "D0147_INTERIOR_SETTLEMENT_COMPLETE",courtesyStage=state.courtesyStage,destinationKind=state.destinationKind,targetX=state.targetX,targetZ=state.targetZ,targetProgressM=state.targetProgressM,realisedProgressM=realisedProgress,finalTargetDistanceM=targetDistance,fixedDirectionX=state.infieldDirectionX,fixedDirectionZ=state.infieldDirectionZ,continuousCourseCorrection=false,directDriveCalls=self.postJobAuthority:getDirectDriveCallCount()}); return
+            self:_complete("MANOEUVRE_COMPLETE",{kind=state.courtesyStage==2 and "D0147_FINAL_BOUNDARY_SETTLEMENT_COMPLETE" or "D0147_INTERIOR_SETTLEMENT_COMPLETE",courtesyStage=state.courtesyStage,destinationKind=state.destinationKind,targetX=state.targetX,targetZ=state.targetZ,targetProgressM=state.targetProgressM,realisedProgressM=realisedProgress,finalTargetDistanceM=targetDistance,fixedDirectionX=state.infieldDirectionX,fixedDirectionZ=state.infieldDirectionZ,continuousCourseCorrection=false,directDriveCalls=self.actuationMechanism:getDirectDriveCallCount()}); return
         end
         if elapsed>(tonumber(OuttaMyWay.TERMINAL_EGRESS_MOVE_TIMEOUT_MS) or 45000) then
             self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason="ONE_TERMINAL_COURTESY_WATCHDOG_EXPIRED",courtesyStage=state.courtesyStage,destinationKind=state.destinationKind,targetProgressM=state.targetProgressM,realisedProgressM=realisedProgress,currentTargetDistanceM=targetDistance}); return
         end
-        local ok,result=self.postJobAuthority:driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)
+        local ok,result=self.actuationMechanism:driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)
         if not ok then
-            if result=="PLAYER_CLAIM" then self:_complete("PLAYER_CLAIM",{kind="D0147_PLAYER_CLAIM",directDriveCallsAtClaim=self.postJobAuthority:getDirectDriveCallCount()})
+            if result=="PLAYER_CLAIM" then self:_complete("PLAYER_CLAIM",{kind="D0147_PLAYER_CLAIM",directDriveCallsAtClaim=self.actuationMechanism:getDirectDriveCallCount()})
             elseif result=="SOURCE_INTENT_REACTIVATED" then self:_complete("SUPERSEDED",{kind="D0147_SOURCE_INTENT_REACTIVATED"})
             else self:_complete("FAILED",{kind="D0147_TERMINAL_YIELD_EXHAUSTION",reason=tostring(result)}) end
             return
@@ -255,7 +255,7 @@ function Control:update(dt)
             logInfo("INFIELD_ALIGNMENT_ACTUATION commitment=%s episode=%s assembly=%s localDirection=(%.4f,%.4f) headingErrorDeg=%.2f steeringAngleLimitDeg=%.2f fixedWorldDirection=(%.4f,%.4f)",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),tonumber(result.localDirectionX) or 0,tonumber(result.localDirectionZ) or 0,tonumber(result.headingErrorDeg) or 0,tonumber(result.steeringAngleLimitDeg) or 0,tonumber(state.infieldDirectionX) or 0,tonumber(state.infieldDirectionZ) or 0)
             logInfo("STEERING_COMMAND_STATE commitment=%s episode=%s assembly=%s %s",tostring(state.commitmentId),tostring(state.terminalEpisodeId),tostring(state.assemblyReferenceKey),steeringTelemetryText(result.postCommandSteering))
         end
-        self:_publish(state,{status="MANOEUVRE_IN_PROGRESS",courtesyStage=state.courtesyStage,destinationKind=state.destinationKind,infieldDirectionX=state.infieldDirectionX,infieldDirectionZ=state.infieldDirectionZ,targetX=state.targetX,targetZ=state.targetZ,targetProgressM=state.targetProgressM,realisedProgressM=realisedProgress,currentTargetDistanceM=targetDistance,continuousCourseCorrection=false,directDriveCalls=self.postJobAuthority:getDirectDriveCallCount(),directionEvidence=result})
+        self:_publish(state,{status="MANOEUVRE_IN_PROGRESS",courtesyStage=state.courtesyStage,destinationKind=state.destinationKind,infieldDirectionX=state.infieldDirectionX,infieldDirectionZ=state.infieldDirectionZ,targetX=state.targetX,targetZ=state.targetZ,targetProgressM=state.targetProgressM,realisedProgressM=realisedProgress,currentTargetDistanceM=targetDistance,continuousCourseCorrection=false,directDriveCalls=self.actuationMechanism:getDirectDriveCallCount(),directionEvidence=result})
     end
 end
 function Control:loadMap() self.active=nil; self.latestObservation=nil; self.configurationMechanism:clearAll() end
@@ -263,4 +263,4 @@ function Control:deleteMap() self.active=nil; self.latestObservation=nil; self.c
 function Control:keyEvent() end
 function Control:mouseEvent() end
 function Control:draw() end
-function Control:getStatus() return {active=self.active~=nil,phase=self.active and self.active.phase or nil,terminalEpisodeId=self.active and self.active.terminalEpisodeId or nil,startedCount=self.startedCount,completedCount=self.completedCount,failedCount=self.failedCount,directDriveCalls=self.postJobAuthority:getDirectDriveCallCount(),neutralizeCalls=self.postJobAuthority:getNeutralizeCallCount(),activityContextAcquireCalls=self.postJobAuthority:getActivityContextAcquireCallCount(),activityContextReleaseCalls=self.postJobAuthority:getActivityContextReleaseCallCount()} end
+function Control:getStatus() return {active=self.active~=nil,phase=self.active and self.active.phase or nil,terminalEpisodeId=self.active and self.active.terminalEpisodeId or nil,startedCount=self.startedCount,completedCount=self.completedCount,failedCount=self.failedCount,directDriveCalls=self.actuationMechanism:getDirectDriveCallCount(),neutralizeCalls=self.actuationMechanism:getNeutralizeCallCount(),activityContextAcquireCalls=self.actuationMechanism:getActivityContextAcquireCallCount(),activityContextReleaseCalls=self.actuationMechanism:getActivityContextReleaseCallCount()} end

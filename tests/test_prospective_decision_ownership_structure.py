@@ -102,7 +102,7 @@ def test_phase13_candidate_support_projection_test_identity_is_coherent():
     config=read("scripts/config.lua")
     main=read("scripts/main.lua")
     moddesc=read("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.23"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.23 TEST — LIVE INTERACTION OBSERVATION GRADUATION"' in config
-    assert 'v0.3.0.23 TEST — LIVE INTERACTION OBSERVATION GRADUATION' in main
-    assert '<version value="0.3.0.23">0.3.0.23</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.24"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.24 TEST — NON-JOB ACTUATION MECHANISM GRADUATION"' in config
+    assert 'v0.3.0.24 TEST — NON-JOB ACTUATION MECHANISM GRADUATION' in main
+    assert '<version value="0.3.0.24">0.3.0.24</version>' in moddesc

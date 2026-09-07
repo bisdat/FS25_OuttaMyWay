@@ -4,9 +4,9 @@ Continuation State is the compact, replace-in-place description of the project's
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #74 merge, commit `16c98a0c5948d99faa082d886de900a56f564f4d`.
+- Accepted Repository State baseline for this increment: `main` after PR #75 merge, commit `5b13bcc6251d6b482402e6ba1d37e740dd050d8a`.
 - Canonical authority remains **v0.3.0.0**.
-- Last accepted non-canonical playable identity is **`0.3.0.22 TEST — PHYSICAL CAPABILITY GRADUATION`**.
+- Last accepted non-canonical playable identity is **`0.3.0.23 TEST — LIVE INTERACTION OBSERVATION GRADUATION`**.
 - PR #70 passed Offline Validation Run #187 blocking Structural contracts and changed-runtime Lua syntax, then passed owner GIANTS Reality validation before merge.
 - Issue #68 is closed as the `.19` failure / `.20` correction record.
 
@@ -15,7 +15,7 @@ Continuation State is the compact, replace-in-place description of the project's
 - Phase 11 — Reduce `LiveControlDispatcher` to Authorised Control Routing — **COMPLETE**.
 - Phase 12 — Retire superseded generic Commitment/orchestration only when no supported path relies on it — **COMPLETE**.
 - Phase 13 — Simplify Candidate/Constraint/Decision only where evidence proves duplication — **COMPLETE**.
-- Phase 14 — Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming — **IN PROGRESS — 14.3 LIVE INTERACTION OBSERVATION GRADUATION**.
+- Phase 14 — Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming — **IN PROGRESS — 14.4 NON-JOB ACTUATION MECHANISM GRADUATION**.
 - Phase 15 — Whole-system validation and architecture-to-runtime review — **NOT STARTED**.
 
 Read [Phase 13 Closure Audit](architecture/PHASE_13_CLOSURE_AUDIT.md) for the closure evidence and responsibility verdicts.
@@ -109,12 +109,13 @@ These are not Phase-13 closure blockers.
 
 ## Immediate next action
 
-Validate **Phase 14.3 — Live Interaction Observation Graduation**.
+Validate **Phase 14.4 — Non-Job Actuation Mechanism Graduation**.
 
-The candidate moves the existing live interaction calculation support from
-Diagnostic to Observation placement under `LiveInteractionObservation`, with
-mechanically verified calculation equivalence.
+The candidate graduates the shared non-job physical actuation donor from
+`PostJobActuationAuthority` to `NonJobActuationMechanism` while preserving the
+separate warm `POST_JOB_ACTUATION` and cold
+`OBSTRUCTION_RELOCATION_ACTUATION` semantic authority classes.
 
-Do not begin Phase 14.4 until blocking CI and owner GIANTS Reality confirm that
-ordinary live motion/pair Observation and Encounter/Situation processing remain
-unchanged.
+Do not begin Phase 14.5 until blocking CI and owner GIANTS Reality confirm both
+warm D-0147 and cold D-0218 still execute and clean up the shared physical
+mechanics correctly.

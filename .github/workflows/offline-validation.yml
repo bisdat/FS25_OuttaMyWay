@@ -32,7 +32,7 @@ jobs:
         run: python -m pip install pytest
 
       - name: Run structural/source-contract suite
-        run: python -m pytest -q tests/test_replacement_core_structure.py tests/test_obstruction_relocation_structure.py tests/test_constraint_verdict_ownership_structure.py tests/test_candidate_support_projection_structure.py tests/test_prospective_decision_ownership_structure.py tests/test_phase14_regulation_control_structure.py tests/test_phase14_physical_capability_structure.py tests/test_phase14_live_interaction_observation_structure.py
+        run: python -m pytest -q tests/test_replacement_core_structure.py tests/test_obstruction_relocation_structure.py tests/test_constraint_verdict_ownership_structure.py tests/test_candidate_support_projection_structure.py tests/test_prospective_decision_ownership_structure.py tests/test_phase14_regulation_control_structure.py tests/test_phase14_physical_capability_structure.py tests/test_phase14_live_interaction_observation_structure.py tests/test_phase14_non_job_actuation_structure.py
 
   lua-observation:
     name: Lua offline observation (non-blocking)
@@ -80,6 +80,7 @@ jobs:
             scripts/control/mechanisms/FieldWorkHoldMechanism.lua \
             scripts/control/mechanisms/NativeDriveMechanism.lua \
             scripts/control/mechanisms/TransitConfigurationMechanism.lua \
+            scripts/control/mechanisms/NonJobActuationMechanism.lua \
             scripts/control/CooperativePassageControl.lua \
             scripts/control/TerminalEgressControl.lua \
             scripts/control/ObstructionRelocationControl.lua \
