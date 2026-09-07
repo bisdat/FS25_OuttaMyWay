@@ -1764,7 +1764,7 @@ def test_v0181_d0182_d0146_restore_uses_cached_actuator_symmetry_only():
     assert 'RESTORE_FOLD_SETTLEMENT_EXHAUSTED' in restore
     for forbidden in ('requestRestore(participant.vehicle)','finishRestore(participant.vehicle)','getEvidence(participant.vehicle)','allDeployed','allFolded','collectAssembly','spec_foldable'):
         assert forbidden not in restore
-    assert 'function Authority:requestCachedTransitRestore(vehicle)' in authority
+    assert 'function Mechanism:requestCachedTransitRestore(vehicle)' in authority
     assert 'state.transitActuatorStates' in authority
     assert 'initialTargetFoldAnimTime' in authority
     assert 'physicallyChanged' in authority
@@ -1801,7 +1801,7 @@ def test_v01124_d0192_bounded_axis_return_is_isolated_after_canonical_passage_gu
     assert 'AXIS_RETURN_CLEARANCE_LOST' in control
     assert 'PARTICIPANT_WAVE_ON' in control
     assert 'PAIR_CONTEXT_DISSOLVED' in control
-    assert 'function Authority:setAxisTravel' in drive
+    assert 'function Mechanism:setAxisTravel' in drive
     assert 'state.mode == "AXIS_TRAVEL"' in drive
     assert 'function Cache:getAssemblyAlignmentSnapshot' in cache
     assert 'function Control:_assemblyAxisSettled' in control
