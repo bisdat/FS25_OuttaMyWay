@@ -2223,12 +2223,12 @@ def test_phase10_bounded_authority_cleanup_precedes_terminal_or_successor_contro
 
     action_supersede=transition[transition.index("function Authority:supersedeActionSpaceRegulationForCooperativePassage"):transition.index("function Authority:preflightFollowerRegulationForCooperativePassage")]
     assert "COOPERATIVE_PASSAGE_SUPERSEDES_D0146_ACTION_SPACE_REGULATION" in action_supersede
-    neutralize=regulation_authority[regulation_authority.index("function Mechanism:neutralizeActionSpaceRegulationPhysical"):regulation_authority.index("local function d0146ActionSpaceToken")]
+    neutralize=regulation_authority[regulation_authority.index("function Authority:neutralizeActionSpaceRegulationPhysical"):regulation_authority.index("local function d0146ActionSpaceToken")]
     assert neutralize.index("_releaseBoundedAuthority") < neutralize.index("self.d0146ActionSpaceLease=nil")
 
     follower_supersede=transition[transition.index("function Authority:supersedeFollowerRegulationForCooperativePassage"):]
     assert "COOPERATIVE_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION" in follower_supersede
-    follower_neutralize=regulation_authority[regulation_authority.index("function Mechanism:neutralizeFollowerBoundaryPhysical"):regulation_authority.index("function Authority:_quiesceFollowerBoundaryActuation")]
+    follower_neutralize=regulation_authority[regulation_authority.index("function Authority:neutralizeFollowerBoundaryPhysical"):regulation_authority.index("function Authority:_quiesceFollowerBoundaryActuation")]
     assert follower_neutralize.index("_releaseBoundedAuthority") < follower_neutralize.index("self.followerBoundaryLease=nil")
 
     replacement=transition[transition.index("function Authority:replaceRegulationWithCooperativePassage"):transition.index("function Authority:matchesActionSpacePassage")]
