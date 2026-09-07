@@ -4,11 +4,11 @@ Continuation State is the compact, replace-in-place description of the project's
 
 ## Repository authority
 
-- Accepted Repository State: `main` at merge commit `23370f19f05f912ca9517dcf24ac5930c8fbb5e0` (PR #61).
+- Accepted Repository State: `main` at merge commit `0329cc853d7897aff1d6a83fffbda6239ca4b605` (PR #62).
 - Canonical authority remains **v0.3.0.0**.
-- Last accepted non-canonical playable identity is **`0.3.0.17 TEST — CAUSAL OBSTRUCTION RELOCATION`**.
-- Current Phase-13 Engineering Increment advances the branch identity to **`0.3.0.18 TEST — CONSTRAINT VERDICT OWNERSHIP`**; this is not accepted or Reality-validated until its PR/validation completes.
-- Issues #33 and #60 are closed PASS records for the accepted `.17` obstruction-relocation and normal smoke evidence.
+- Last accepted non-canonical playable identity is **`0.3.0.18 TEST — CONSTRAINT VERDICT OWNERSHIP`**.
+- PR #62 Constraint Verdict Ownership passed GitHub Actions Offline Validation Run #173 and an owner-performed GIANTS Reality smoke before merge.
+- Issues #33 and #60 remain closed PASS records for the accepted `.17` obstruction-relocation and normal smoke evidence.
 
 ## Strangler programme status
 
@@ -16,64 +16,108 @@ Phase 11 — Reduce `LiveControlDispatcher` to Authorised Control Routing — **
 
 Phase 12 — Retire superseded generic Commitment/orchestration only when no supported path relies on it — **COMPLETE**.
 
-Phase 13 — Simplify Candidate/Constraint/Decision only where evidence proves duplication — **IN PROGRESS — CONSTRAINT VERDICT OWNERSHIP RECONCILIATION**.
+Phase 13 — Simplify Candidate/Constraint/Decision only where evidence proves duplication — **IN PROGRESS — FINAL CANDIDATE / DECISION OWNERSHIP CORRECTION REQUIRED**.
 
 Phase 14 — Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming — **NOT STARTED**.
 
 Phase 15 — Whole-system validation and architecture-to-runtime review — **NOT STARTED**.
 
-## Phase 13 closure-audit discovery
+## Accepted Phase-13 Constraint result
 
 ### Candidate Evidence != Constraint Verdict
 
-The closure audit found one proved duplication before Phase 13 can close. Candidate describes a feasible option and its evidence, requirements, obligations and expected effects; it is not selection or verdict authority.
-
-Production nevertheless carried historical `evidenceBasis.constraintEvidence` packets through Candidate creation. Seven nominal mandatory evaluators merely converted Candidate-authored `PASS` / `FAIL` / `UNRESOLVED` into new `ConstraintVerdict` identities without independently answering a bounded question.
-
-Named discoveries:
-
-- **Candidate Evidence != Constraint Verdict**.
-- **Candidate Self-Attestation != Constraint Evaluation**.
-- **Planning Feasibility != Constraint Re-evaluation**.
-- **Release Contract != Pre-Decision Verdict**.
-
-### Independently owned Constraint questions
-
-The current evidence supports four independently evaluated questions:
-
-1. `REPRESENTATION_FITNESS` — current purpose-specific Representation evidence.
-2. `RESPONSIBILITY_COMPATIBILITY` — current `FOLLOWER_OWNS_CLOSURE` invariant where applicable.
-3. `COMMITMENT_PRECONDITIONS` — Bounded Observation Contract for `CONTINUE_OBSERVATION`.
-4. `EFFECTIVE_ACTUATION_COMPOSITION` — structural validity of proposed physical actuation composition.
-
-The former checklist families `FIELD_WORLD_CONTAINMENT`, `TRANSITION_CLEARANCE`, `CONTROL_CAPABILITY_AVAILABILITY`, `CONTINUING_INTENT_PRIORITY`, `PROGRESS_PRESERVATION`, `OBLIGATION_COMPATIBILITY`, and `SAFE_RELEASE_HANDOVER` are not independently evaluated Constraint authority. Their useful evidence and contracts remain at the planning/lifecycle boundary that owns them.
-
-## Current implementation hypothesis — `.18`
+PR #62 accepted the bounded `.18` correction:
 
 > Candidate proposes evidence and a feasible option. Constraint owns any claim that the option satisfies a mandatory invariant.
 
-The bounded `.18` implementation:
+Canonical `CandidateAction` construction no longer carries Candidate-authored Constraint verdict authority. Seven pass-through evaluator modules were retired. The independently owned current Constraint questions remain:
 
-- strips historical Candidate-support verdict packets at the canonical `CandidateAction` construction boundary and preserves their non-verdict content as descriptive planning evidence;
-- forbids `constraintEvidence` inside canonical `CandidateAction` data;
-- removes `ConstraintEvidence.fromCandidate()` and the seven pass-through evaluator modules;
-- retains only the four independently owned Constraint questions above;
-- removes Candidate-packet fallback from retained evaluators;
-- leaves Situation Assessment, Candidate planning, Decision policy, Responsibility Transition, D-0217, D-0218 and physical Control mechanics unchanged.
+1. `REPRESENTATION_FITNESS`;
+2. `RESPONSIBILITY_COMPATIBILITY`;
+3. `COMMITMENT_PRECONDITIONS`; and
+4. `EFFECTIVE_ACTUATION_COMPOSITION`.
 
-This is a behavioural-preservation hypothesis until CI and, if warranted by evidence, GIANTS Reality validate it.
+`.18` is accepted and Reality-smoked. Do not reopen Constraint Verdict Ownership without contradictory evidence.
+
+## Final Phase-13 audit — Preselection != Candidate Enumeration
+
+The post-`.18` closure audit found one remaining ownership mismatch.
+
+### Facts from accepted source
+
+`CandidateInventory` requires `complete=true` and describes itself as the complete supportable Candidate Action Space for its declared support boundary.
+
+`CandidateSpace` does not choose among purpose contexts. It materialises every `candidateSpecification` supplied by the current `OperationalPicture` and publishes those Candidate identities into the inventory.
+
+`DecisionSelector` genuinely owns downstream viability filtering and selection. `TrafficPolicemanDecisionPolicy` applies the explicit capability order and requires current exhaustion evidence before a later capability band may win.
+
+Before either layer sees the inventory, however, Candidate-support composition performs purpose/context ordering:
+
+- the generic Causal Obstruction support wrapper returns before legacy Terminal Egress support whenever it publishes a Candidate space;
+- `Runtime.processLiveObservation()` uses Terminal Egress / obstruction support before live traffic support;
+- `LiveTrafficCandidateSupport` gives an existing follower retirement path precedence;
+- then active Guarded Recovery precedence;
+- absent a follower purpose, Forward Intersection is considered before Passage planning;
+- after Passage planning fails, action-space Regulation is considered before follower fallback;
+- when Passage planning succeeds, an unrelated follower purpose can still replace that prospective Passage Candidate space;
+- follower support itself ranks actionable follower contexts before publishing one best context and fails closed on equal-best multiplicity.
+
+The result is that Candidate support often publishes one already-preselected purpose/context and then marks that bounded Candidate space complete. `DecisionSelector` can choose only among the alternatives that survived this earlier ordering.
+
+### Architectural distinction
+
+Not every narrowing is a defect.
+
+An already-owned Current Responsibility, live Resolution obligation, settlement duty or other incumbent lifecycle constraint may legitimately restrict what is supportable now. That is not a competing prospective policy choice merely because Candidate enumeration becomes smaller.
+
+The mismatch is **prospective independent purpose preselection**: when more than one fresh, independently supportable Situation relationship could justify a new action, Candidate construction must not silently decide which governing purpose is considered before Decision.
+
+This confirms the existing named discovery:
+
+> **Preselection != Candidate Enumeration**
+
+Candidate construction may plan and describe supportable options. Selection policy belongs to Decision. If existing precedence is still the correct behavioural policy, preserve that ordering explicitly at the Decision boundary rather than relying on first-success Candidate-support control flow.
+
+### Why Phase 13 cannot close yet
+
+Current source splits selection authority:
+
+```text
+Situation Assessment
+    -> publishes multiple interpreted Situation relationships
+
+Candidate-support composition
+    -> chooses which prospective purpose/context gets a Candidate space
+
+CandidateSpace / Constraint
+    -> materialise and independently evaluate that narrowed space
+
+Decision
+    -> selects only within the preselected space
+```
+
+This does not satisfy the intended Candidate / Decision ownership boundary. Phase 13 therefore remains open.
+
+## Final bounded Phase-13 implementation hypothesis
+
+> Candidate support should enumerate every independently supportable prospective Candidate within the explicitly valid current support scope. Decision should own the policy that selects among those prospective alternatives. Incumbent responsibility and obligation constraints may still narrow the support scope where architecture requires persistence or settlement.
+
+The intended correction is **ownership-preserving and behaviour-preserving**:
+
+- do not redesign Situation Assessment geometry or classification;
+- do not change existing Traffic Policeman capability preference merely because its current placement is wrong;
+- do not weaken Current Responsibility persistence, Passage obligations, Causal Obstruction settlement or terminal lifecycle rules;
+- do not make all responsibilities globally exclusive;
+- do not generalise the separately accepted generic Commitment multi-context fail-closed limit;
+- expose currently suppressed prospective alternatives to the Decision boundary where they are genuinely simultaneous and supportable;
+- express any retained deterministic precedence as explicit Decision policy/evidence rather than Candidate-support call order;
+- preserve fail-closed behaviour where the source cannot truthfully establish a complete or comparable Candidate set.
+
+The implementation design must first distinguish incumbent lifecycle gating from prospective policy ordering before moving code.
 
 ## Generic multi-context application cardinality
 
-The closure audit classifies the known generic Commitment multi-context limitation as **ACCEPTABLE FAIL-CLOSED LIMIT for current implemented production behaviour**. Revisit it only when a concrete supported consumer requires it, notably Issue #45 Bubble Bullet Time.
-
-## Deferred final Phase-13 question — Preselection != Candidate Enumeration
-
-Purpose-specific Candidate support still performs some ordering before `DecisionSelector` sees the Candidate inventory. `.18` deliberately does not change that. After Constraint Verdict Ownership is validated, repeat the closure audit only across Candidate enumeration → Decision selection.
-
-## Phase 13 closure rule
-
-Phase 13 can close when `.18` is independently validated and the final Candidate-enumeration / Decision-selection audit either finds distinct truthful responsibilities or proves one final bounded duplication that is then corrected and independently validated.
+The known generic Commitment multi-context limitation remains **ACCEPTABLE FAIL-CLOSED LIMIT for current implemented production behaviour**. Revisit it only when a concrete supported consumer requires it, notably Issue #45 Bubble Bullet Time. This is not part of the final Phase-13 Candidate / Decision correction.
 
 ## Separate non-blocking work
 
@@ -82,4 +126,12 @@ Phase 13 can close when `.18` is independently validated and the final Candidate
 
 ## Immediate next action
 
-Validate the `.18` Constraint Verdict Ownership Engineering Increment through GitHub Actions. If offline contracts pass, decide from the actual behavioural delta whether a GIANTS Reality smoke run is justified. Then repeat the Phase-13 closure audit only at Candidate enumeration → Decision selection.
+Design one final bounded Phase-13 Engineering Increment for **Preselection != Candidate Enumeration**. Audit each current preselection site as either:
+
+1. **INCUMBENT LIFECYCLE GATING** — legitimately narrows what can be considered;
+2. **MUTUALLY EXCLUSIVE SITUATION SUPPORT** — alternatives cannot truthfully coexist, so no policy selection exists; or
+3. **PROSPECTIVE POLICY ORDERING** — independently supportable alternatives are being suppressed and must reach Decision.
+
+Move only category 3 ordering to the Decision boundary, preserve existing behavioural preference unless architecture or Reality disproves it, add executable contracts for inventory completeness/selection ownership, then validate independently.
+
+If that correction is accepted and the repeated closure audit finds no further duplicated or fragmented Candidate/Constraint/Decision authority, record **Phase 13 COMPLETE** and proceed deliberately to Phase 14.
