@@ -1,124 +1,26 @@
 # Implementation Map
 
-> **Implementation Map** records where accepted architectural responsibilities are presently realised in source and identifies material architecture-to-code placement or vocabulary lag. It does not document source behaviour exhaustively, replace the source itself, preserve implementation chronology, or grant architectural authority.
+> **Implementation Map** records where accepted architectural responsibilities are presently realised in source and identifies material architecture-to-code placement or vocabulary lag. It does not preserve implementation chronology; Git history, pull requests, issues and the Engineering Journal own that evidence.
 
 ```text
-Architecture       → what responsibilities should exist
-Implementation Map → where those responsibilities currently appear
-Source             → exactly how they are implemented
+Architecture       -> what responsibilities should exist
+Implementation Map -> where those responsibilities currently appear
+Source             -> exactly how they are implemented
 ```
 
-This is a concise map of principal placement, divergence, transition disposition
-and planned migration seams. Architectural meaning remains owned by the
-[Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md),
-[Spatial Negotiation Model](architecture/SPATIAL_NEGOTIATION_MODEL.md) and
-[Physical Representation Architecture](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md).
-The [Configuration architecture](CONFIGURATION.md) and
-[Naming Conventions](NAMING_CONVENTIONS.md) remain authoritative for their areas.
+Architectural meaning remains owned by the [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md), [Spatial Negotiation Model](architecture/SPATIAL_NEGOTIATION_MODEL.md), [Physical Representation Architecture](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md), [Configuration architecture](CONFIGURATION.md) and [Naming Conventions](NAMING_CONVENTIONS.md).
 
 # High-Level Strangler Plan
 
-## What the strangler is
-
-OuttaMyWay is not being rewritten from scratch. The strangler progressively
-replaces or reconciles runtime areas whose responsibilities no longer match the
-accepted architecture while retaining proven behaviour and mechanics:
+OuttaMyWay is being reconciled incrementally rather than rewritten wholesale:
 
 > **Keep the eyes. Reconcile the brain and spinal cord. Keep the hands.**
 
-- The **eyes** are trusted Reality acquisition, Observation, Field World and Representation.
-- The **brain and spinal cord** are the semantic and orchestration path from
-  Situation Assessment through responsibility and authority to Control.
-- The **hands** are proven physical Control mechanisms.
+- **Eyes** — trusted Reality acquisition, Observation, Field World and physical Representation.
+- **Brain and spinal cord** — Situation Assessment, semantic responsibility, obligations, Bounded Authority and execution ordering.
+- **Hands** — validated physical Control mechanisms that should be preserved unless Reality disproves them.
 
-The aim is incremental convergence toward accepted architecture, not an
-all-at-once replacement-core rewrite. Useful current machinery may remain behind
-truthful boundaries while responsibility and execution order are reconciled.
-
-## Required behaviour during transition
-
-Ordinary strangler tranches should normally preserve currently accepted
-supported behaviour:
-
-- GIANTS continues to own jobs, productive routing, navigation, turning and work.
-- Validated Passage, Regulation, handoff and completed-obstruction behaviour
-  should remain materially unchanged unless a tranche explicitly changes an
-  accepted behaviour.
-- Non-migrated behaviour remains on its current implementation path.
-- Unrelated geometry, calibration, Configuration and mechanical changes should be avoided.
-- Each tranche should move only one bounded responsibility or path.
-
-> At every intermediate state there must be exactly one authoritative owner of each semantic responsibility.
-
-Compatibility adapters may call legacy mechanics. Parallel old and new semantic
-authority is not acceptable. This principal transition risk is named **Dual
-Transition Authority**.
-
-## How old code is removed
-
-```text
-existing behaviour
-        ↓
-introduce a truthful architectural seam
-        ↓
-route one existing behaviour through it
-        ↓
-validate equivalent behaviour
-        ↓
-make the new route authoritative
-        ↓
-remove the superseded old authority for that path
-        ↓
-repeat
-```
-
-Old code is not deleted merely because it is historical, badly named or
-oversized. It is removed only when:
-
-1. its responsibility has a recognised target owner;
-2. the replacement path is authoritative;
-3. required invariants and behaviour have been validated; and
-4. no supported runtime path still relies on the superseded authority.
-
-Useful algorithms and proven mechanical capabilities should be extracted and
-preserved where appropriate rather than rediscovered.
-
-## Principal risks
-
-### Behavioural regression
-
-Ownership moves may disturb hard-won working behaviour. Keep tranches bounded,
-preserve proven mechanics, regress against previously validated scenarios and
-avoid combining migration with unrelated tuning.
-
-### Dual Transition Authority
-
-Old and new mechanisms may both believe they own the same responsibility. This
-is the most serious transition risk. Maintain exactly one semantic owner,
-migrate one path at a time and remove old ownership when the new path becomes authoritative.
-
-### Semantic translation error
-
-Legacy Candidate, Decision, generic Commitment and D-number lifecycle concepts
-may not map one-to-one onto accepted architecture. Map observed implementation
-before moving it, retain `UNRESOLVED` where truth is not established and change
-architecture deliberately if implementation or Reality disproves it.
-
-### Accidental rewrite
-
-Too many simultaneous changes could turn the strangler into another
-replacement-core rewrite. Use one bounded seam or tranche, keep architecture,
-implementation and testing distinct, and defer unrelated cleanup.
-
-### Loss of hard-won GIANTS knowledge
-
-Historically named or oversized modules may contain valuable validated
-mechanical knowledge. Distinguish poor ownership from poor mechanism, preserve
-or extract proven capability, and retain Reality as final authority.
-
-## Success criteria
-
-The programme succeeds when the live implementation materially resembles:
+The target semantic chain remains:
 
 ```text
 Reality
@@ -133,1285 +35,224 @@ Current Responsibility
    ↓
 Bounded Authority
    ↓
+ControlRequest
+   ↓
 Control
    ↓
 Reality
 ```
 
-Success means Situation Assessment interprets evidence without acquiring
-responsibility; Responsibility Transition occurs before Control; and Current
-Responsibility explicitly distinguishes GIANTS AI, Regulation and Resolution
-Commitment. Bounded Authority determines what physical action is permitted now
-without inventing strategic purpose. Control executes already-authorised
-requests and reports outcomes.
+Candidate, Constraint and Decision may remain implementation machinery between Situation Assessment and Responsibility Transition where they contribute distinct truthful work. Phase 13 does **not** assume those layers should collapse.
 
-Regulation responsibility is not inferred merely from a Regulation actuator.
-Resolution Commitment persistence is justified by legitimate obligations, and
-generic Commitment vocabulary no longer hides distinct responsibilities.
-Semantic responsibility acquisition and settlement leave
-`LiveControlDispatcher`; proven mechanics remain behind clear boundaries;
-superseded orchestration is removed rather than retained as a dormant second
-architecture; and supported in-game behaviour remains valid.
+At every intermediate state there must be exactly one authoritative owner of each semantic responsibility. Compatibility machinery may reuse proven mechanics, but parallel old/new semantic authority is not acceptable.
 
-The diagram does not imply one Lua module per box. Ownership should instead be
-predictable enough to identify where evidence enters, meaning is established,
-responsibility changes, persistence is justified, physical permission is
-bounded, execution occurs and outcomes return to Reality.
+# Programme Status
 
-## Future development rhythm
+| Phase | Boundary | Status |
+|---|---|---|
+| 1–8 | Initial strangler seams, explicit Resolution/Regulation representation and programme groundwork | COMPLETE / accepted for programme progression |
+| 9 | Current Responsibility reconciliation and Regulation-to-Passage succession | COMPLETE |
+| 10 | Bounded Authority reconciliation | COMPLETE |
+| 11 | Reduce `LiveControlDispatcher` to authorised routing/execution | COMPLETE |
+| 12 | Retire superseded generic Commitment/orchestration only where unsupported | COMPLETE |
+| 13 | Simplify Candidate/Constraint/Decision only where evidence proves duplication | **IN PROGRESS — CLOSURE AUDIT** |
+| 14 | Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming | NOT STARTED |
+| 15 | Whole-system validation and architecture-to-runtime review | NOT STARTED |
+
+Accepted Repository State for this map is `main` after PR #59 merge, commit `197742404a038c9072e3934c57f0be8f71ea6b60`. Canonical authority remains `v0.3.0.0`.
+
+# Principal Responsibility Placement
+
+| Architectural responsibility | Principal current source placement | Disposition |
+|---|---|---|
+| Runtime entry and sequencing | `modDesc.xml` -> `scripts/main.lua`; `scripts/runtime/Runtime.lua`; `scripts/runtime/LiveRuntimeCoordinator.lua` | PRESERVE / keep sequencing explicit |
+| Job Episode / Operation / Field World identity | `scripts/identity/JobEpisodeAdmission.lua`, `OperationAdmission.lua`, `FieldWorldSnapshotRegistry.lua`, `FieldWorldEquivalenceAuthority.lua`, `FieldWorldEquivalenceEvaluator.lua` | PRESERVE |
+| Current Physical Assembly acquisition | `scripts/observation/CurrentPhysicalAssemblySource.lua` | PRESERVE |
+| Current physical pose observation | `scripts/observation/CurrentPhysicalPoseSource.lua` | PRESERVE as factual positive evidence; no semantic or negative-clearance authority |
+| Live Observation composition | `scripts/observation/LiveObservationSource.lua` | PRESERVE / decompose only where ownership becomes clearer |
+| Physical representation | `scripts/representation/AssemblyRepresentationCache.lua`, `PlanViewFootprint.lua`, `PairSpecificPassageClearance.lua`, `CurrentPhysicalConflictRepresentation.lua` | PRESERVE / positive authority must remain explicit |
+| Situation Assessment | `scripts/assessment/SituationAssessment.lua` plus focused assessment collaborators | PRESERVE / later decomposition only where useful |
+| Causal Obstruction assessment | `scripts/assessment/CausalObstructionAssessment.lua` | PRESERVE — D-0218 Situation authority |
+| Current Responsibility reassessment | `scripts/assessment/CurrentResponsibilityAssessment.lua` | PRESERVE — evidence/reassessment only, not lifecycle authority |
+| Prospective spatial constraints | `scripts/assessment/SpatialConstraintAssessment.lua` | PRESERVE pending separate Issue #37 Reality debt |
+| Passage capability | `scripts/assessment/PassageCapabilityAssessment.lua` | PRESERVE |
+| Candidate construction / planning | `scripts/candidates/`, including `LiveTrafficCandidateSupport.lua`, `TerminalEgressCandidateSupport.lua`, `ObstructionRelocationCandidateSupport.lua`, `LocalPassagePlanner.lua`, `CandidateSpace.lua` | **PHASE-13 AUDIT** — retain planning; remove only proved embedded verdict authority |
+| Constraint evaluation | `scripts/constraints/ConstraintEngine.lua` | **PHASE-13 AUDIT** — retain distinct rejection/narrowing if real |
+| Policy / Decision selection | `scripts/decision/DecisionSelector.lua`, `TrafficPolicemanDecisionPolicy.lua` | **PHASE-13 AUDIT** — retain least-intervention choice if distinct |
+| Responsibility Transition Authority | `scripts/responsibility/ResponsibilityTransitionAuthority.lua` and purpose-specific transition modules | PRESERVE as semantic transition authority |
+| Follower Regulation transition | `scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua` | PRESERVE |
+| Action-Space / Forward Intersection Regulation transition | `scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua` | PRESERVE |
+| Cooperative Passage transition | `scripts/responsibility/CooperativePassageResponsibilityTransition.lua` | PRESERVE |
+| Completed warm obstruction transition | `scripts/responsibility/CompletedObstructionResponsibilityTransition.lua` | PRESERVE warm-path semantics where still applicable |
+| Generic current obstruction relocation transition | `scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua` | PRESERVE — current `(Operation, blocker Physical Assembly)` responsibility |
+| Generic retained Commitment / obligations | `scripts/commitment/`, including `CommitmentAdmission.lua`, `DecisionCommitmentBoundary.lua`, `ObligationLedger.lua`, purpose-specific lifecycle modules | RETAIN as substrate where supported; Phase 13 audits remaining semantic leakage |
+| Cooperative Passage participant lifecycle | `COOPERATIVE_PASSAGE_LEG` obligations plus current Passage lifecycle/settlement modules | PRESERVE — D-0217 |
+| Resolution read-only semantic representation | `scripts/contracts/ResolutionCommitment.lua`, `scripts/responsibility/ResolutionCommitmentAdapter.lua` | PRESERVE |
+| Regulation semantic representation | `scripts/contracts/Regulation.lua` | PRESERVE |
+| Bounded Authority | `scripts/contracts/BoundedAuthorityGrant.lua`, `scripts/authority/BoundedAuthority.lua` | PRESERVE |
+| Regulation physical-authority state | `scripts/authority/RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua` | PRESERVE |
+| Mechanical actuation exclusivity | `scripts/authority/AuthorityRegistry.lua` | PRESERVE; exclusivity is not semantic permission |
+| Effective actuation composition | `scripts/authority/EffectiveActuationComposition.lua` | PRESERVE |
+| Typed Control boundary | `scripts/contracts/ControlRequest.lua`, `ControlOutcome.lua` | PRESERVE |
+| Control routing | `scripts/control/LiveControlDispatcher.lua` | PRESERVE as authorised routing/execution boundary only |
+| Cooperative Passage physical Control | `scripts/control/CooperativePassageControl.lua` | PRESERVE proven mechanics |
+| Warm terminal-egress physical Control | `scripts/control/TerminalEgressControl.lua` | PRESERVE proven D-0147 mechanics |
+| Generic obstruction relocation Control | `scripts/control/ObstructionRelocationControl.lua` | PRESERVE bounded cold-blocker actuation |
+| Generic obstruction relocation runtime integration | `scripts/runtime/ObstructionRelocationRuntimeIntegration.lua` | PRESERVE explicit sequencing/settlement integration |
+| Guarded Recovery | `scripts/control/GuardedRecoveryCompatibility.lua` | RETAIN as explicit legacy compatibility; not precedent for new architecture |
+
+# Phase 13 — Accepted Discoveries and Current Boundary
+
+Phase 13 is an evidence-led simplification pass, not a mandate to delete Candidate, Constraint or Decision layers.
+
+## Accepted separation: Commitment Operation != Responsibility Transition
+
+PR #50 removed proven semantic dependence on generic Commitment action where independent Current Responsibility evidence already exists.
+
+Retained `CREATE`, `MAINTAIN`, `REVISE`, `WAIT` and `SETTLE` vocabulary may describe substrate operations. It must not be promoted back into semantic transition authority.
+
+## Accepted direct-Passage targeting
+
+PR #52 established:
+
+- **Sole Context != Semantic Target**;
+- **Key Match Is Not Lifecycle Match**; and
+- **Semantic Targetability != Application Cardinality**.
+
+Direct Passage substrate targeting now uses purpose and current Job Episode/lifecycle evidence rather than assuming that one live Commitment is therefore the semantic target.
+
+A separate limitation remains: the generic Commitment application boundary may fail closed when more than one retained context exists even though a Passage target is semantically identifiable. Phase 13 must decide whether that cardinality limitation is a supported-runtime defect or an acceptable fail-closed boundary.
+
+## D-0217 Passage-Leg lifecycle correction
+
+Phase-13 Reality exposed that pairwise Cooperative Passage admission had been incorrectly coupled to whole-pair execution persistence.
+
+Accepted runtime now represents two participant-scoped `COOPERATIVE_PASSAGE_LEG` obligations under one parent Resolution/Commitment. A leg may become terminal by:
+
+- `SATISFACTION` -> `HANDED_BACK`; or
+- `BASIS_CESSATION` -> `VACATED`.
+
+The surviving leg continues existing choreography under Survivor Invariance. The Bubble/parent dissolves at **Last-Leg Dissolution**. Raw Control contradiction is not semantic lifecycle authority.
+
+PR #54 and later `0.3.0.17` smoke evidence validate the normal participant-handback path; the PR #54 targeted fixture separately validated live-leg Job termination / vacatur.
+
+## D-0218 Causal Obstruction
+
+Issue #33 showed that a provenance-first completed-worker model was the wrong abstraction for generic obstruction.
+
+The accepted Situation concept is **Causal Obstruction**: a current positive relationship where a physical blocker prevents an active supported beneficiary from continuing supported work.
 
 ```text
-Observe
+current Reality
    ↓
-Discuss
+positive physical/continuation conflict
    ↓
-Hypothesise
+Causal Obstruction
    ↓
-Implement one bounded responsibility change
-   ↓
-Validate
-   ↓
-Record
-   ↓
-Repeat
+classify blocker from current authority state
+   ├─ active qualifying GIANTS AI -> active spatial negotiation
+   ├─ non-active Player Claimed -> hands off
+   └─ non-active unclaimed -> eligible for otherwise-supported relocation
 ```
 
-> When repeated implementation pressure creates exceptions, first ask whether a missing architectural concept has been revealed rather than where another special case can be inserted.
+Historical Job Episode provenance, `terminalEpisodeId`, prior OuttaMyWay observation and vehicle ownership are not generic admission prerequisites.
 
-New capabilities should enter through established responsibility boundaries,
-not convenient insertion points in large coordinators. Architecture,
-implementation mapping, testing evidence and Continuation State should remain
-aligned. The desired rhythm is **incremental architectural maintenance, not
-periodic architectural rescue**.
+Current source placement after PR #59:
 
-# Detailed Strangler Transition Map
+- `CurrentPhysicalAssemblySource.lua` — current mission Physical Assembly acquisition and positive Field World witnessing.
+- `CurrentPhysicalConflictRepresentation.lua` — positive current conflict primitives for witnessed physical assemblies; incomplete coverage, no negative-clearance authority.
+- `CurrentPhysicalPoseSource.lua` — factual current physical reference pose for relocation planning; no semantic authority.
+- `CausalObstructionAssessment.lua` — Situation-level causal relationship and current blocker classification.
+- `SituationAssessment.lua` — publishes Causal Obstruction knowledge and current relevant context.
+- `ObstructionRelocationCandidateSupport.lua` — aggregates pairwise obstruction by `(Local Operation, blocker Physical Assembly)` and proposes one bounded first-courtesy relocation only when current evidence supports it.
+- `ObstructionRelocationResponsibilityTransition.lua` — establishes current Resolution responsibility before physical dispatch.
+- `AuthorityRegistry.lua` / commitment boundary — use truthful `OBSTRUCTION_RELOCATION_ACTUATION` exclusivity rather than historical post-job identity.
+- `ObstructionRelocationControl.lua` — reuses proven low-level non-job movement mechanics, with Player Claim and GIANTS reactivation supersession.
+- `ObstructionRelocationRuntimeIntegration.lua` — connects Control outcome evidence back to fresh semantic settlement.
 
-## Current live execution mismatch
+The generic cold-blocker path deliberately authorises only the first centroid-bearing courtesy, bounded to the existing 60 m mechanical donor limit. Current physical representation has positive/incomplete authority and cannot truthfully support D-0147's second boundary-away negative-clearance claim.
 
-The current live semantic path is materially:
+Issue #33 is **FULL PASS and closed**. Reality now supports the intended positive, negative and claim-boundary cases, including independent relocation of more than one cold non-active blocker when each becomes causally relevant. Issue #60 separately records the `0.3.0.17` normal smoke PASS and is closed.
+
+## Settlement discovery
+
+The first generic relocation Reality run exposed **Post-Manoeuvre Settlement Gap**. The implementation cause was **Control Outcome Envelope Kind != Outcome Evidence Kind**: completion evidence overwrote the outer Observation envelope identity and therefore could not reach fresh Situation reassessment.
+
+The corrected boundary preserves `OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION` as the envelope and carries the narrower completion classification separately. Semantic success is still not inferred from physical manoeuvre completion; fresh obstruction cessation plus positive beneficiary continuation must be observed before `OBJECTIVE_SATISFIED` terminal settlement.
+
+# Phase 13 Closure Audit
+
+## Discovery — Issue Completion != Phase Completion
+
+Issue #33 completion removes the principal Reality-driven detour. Phase 13 now returns to its original Candidate/Constraint/Decision ownership question.
+
+No further runtime change should be proposed until the current production chain is audited at its actual abstraction boundaries.
+
+## Audit question 1 — Candidate-Embedded Verdict Authority
+
+For each stage:
 
 ```text
 Situation Assessment
         ↓
-Candidate-support orchestration
-        ↓
-Candidate materialisation
+Candidate construction/planning
         ↓
 Constraint evaluation
         ↓
-Decision selection
-        ↓
-LiveControlDispatcher
-        ↓
-purpose-specific Commitment/lifecycle mutation
-        ↓
-obligation / authority mutation
-        ↓
-ControlRequest
-        ↓
-Control
-```
-
-The accepted target remains:
-
-```text
-Situation Assessment
+Decision/policy selection
         ↓
 Responsibility Transition
-        ↓
-Current Responsibility
-        ↓
-Bounded Authority
-        ↓
-Control
 ```
 
-Candidate, Constraint and Decision may initially remain implementation machinery
-used to determine a transition. This increment does not decide their final
-survival or topology.
+ask:
 
-## Current-to-target disposition
+> What genuinely new information, feasibility result, policy choice or authority is introduced here?
 
-| Accepted responsibility / boundary | Principal current implementation | Current disposition |
-|---|---|---|
-| Situation Assessment | [`SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua) and focused assessment modules | PRESERVE / later decompose where useful |
-| Transition proposal/choice machinery | [`LiveTrafficCandidateSupport.lua`](../scripts/candidates/LiveTrafficCandidateSupport.lua), [`TerminalEgressCandidateSupport.lua`](../scripts/candidates/TerminalEgressCandidateSupport.lua), [`CandidateSpace.lua`](../scripts/candidates/CandidateSpace.lua), [`ConstraintEngine.lua`](../scripts/constraints/ConstraintEngine.lua), [`DecisionSelector.lua`](../scripts/decision/DecisionSelector.lua), [`TrafficPolicemanDecisionPolicy.lua`](../scripts/decision/TrafficPolicemanDecisionPolicy.lua) | ADAPT / STRANGLE orchestration; preserve useful policy/invariants |
-| Responsibility Transition application | [`DecisionCommitmentBoundary.lua`](../scripts/commitment/DecisionCommitmentBoundary.lua) and purpose-specific lifecycle `apply...Decision()` functions | EXTRACT / ADAPT |
-| Current Responsibility | Generic [`CommitmentRecord.lua`](../scripts/contracts/CommitmentRecord.lua), Commitment Registry/State Machine and purpose obligations | STRANGLE generic shell; preserve useful substrate |
-| Durable obligations | [`ObligationLedger.lua`](../scripts/commitment/ObligationLedger.lua) | PRESERVE |
-| Bounded Authority substrate | [`AuthorityRegistry.lua`](../scripts/authority/AuthorityRegistry.lua), Effective Actuation Composition and capability/precondition evidence | PRESERVE / ADAPT |
-| Typed Control boundary | [`ControlRequest.lua`](../scripts/contracts/ControlRequest.lua) / [`ControlOutcome.lua`](../scripts/contracts/ControlOutcome.lua) | PRESERVE / later vocabulary adaptation |
-| Control dispatch | [`LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua) | STRANGLE semantic responsibilities; preserve routing/execution role |
-| Physical Control | [`CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua), [`TerminalEgressControl.lua`](../scripts/control/TerminalEgressControl.lua), progression envelope and proven donors | PRESERVE / decompose / graduate truthful names later |
+Expected distinctions to protect unless source evidence disproves them:
 
-Uncertain future removals remain uncertain; disposition records direction, not a
-premature deletion decision.
+- Situation Assessment owns factual interpreted knowledge.
+- Candidate owns feasible option construction/planning, not semantic lifecycle authority.
+- Constraint owns rejection/narrowing against accepted invariants where that is genuinely distinct.
+- Decision owns selection among feasible alternatives and least-intervention policy where a choice genuinely exists.
+- Responsibility Transition owns semantic establishment/revalidation/replacement/termination.
 
-## Purpose-path discoveries
+A Candidate field is a simplification target only if it already decides a downstream verdict or semantic transition that is then repeated later. Naming overlap or implementation verbosity is not sufficient evidence.
 
-### Regulation Responsibility ≠ Regulation Actuation
+## Audit question 2 — Generic multi-context application cardinality
 
-`REGULATE_SPEED` is a physical capability, not automatically a Current
-Responsibility. It sometimes realises **Current Responsibility = Regulation**,
-including standalone follower-boundary Regulation and D-0146 Action-Space
-Regulation. At other times Regulation actuation supports an existing Resolution
-Commitment, including Guarded Recovery protection and protected-yield holds
-during completed-obstruction resolution. Migration must not proceed by capability name alone.
+PR #52 left one known boundary intentionally unresolved: a semantically targetable retained context may still be unusable because generic application assumes a single live context.
 
-### Same-Commitment Responsibility Fusion
+The audit must classify that limitation as one of:
 
-Same-Commitment Responsibility Fusion was a current implementation divergence: D-0146 Action-Space Regulation could be succeeded by Cooperative Passage by revising the same generic Commitment and reusing authority. Phase 9 reconciles that divergence by explicitly replacing Regulation responsibility R1 with Resolution Commitment R2 while the retained generic Commitment may remain continuous. R1 != R2, and neither semantic responsibility identity equals retained CM-*.
+1. **SUPPORTED REQUIREMENT** — current supported runtime can legitimately require multiple independent retained contexts and the generic application boundary must become addressable;
+2. **ACCEPTABLE FAIL-CLOSED LIMIT** — the condition is outside the supported requirement envelope or already has a truthful safe refusal; or
+3. **MISSING CONCEPT** — repeated addressing pressure reveals an architectural concept not yet represented.
 
-### Responsibility Acquisition at the Control Edge
+Do not generalise generic Commitment application simply to make it more elegant.
 
-`LiveControlDispatcher` still performs or invokes semantic lifecycle work for
-non-migrated paths immediately before Control, including combinations of Commitment admission or
-revision, obligation creation or settlement, authority-token acquisition or
-release, responsibility succession, Control request construction, physical
-dispatch and lifecycle settlement after Control outcomes. The target establishes
-semantic responsibility before dispatch so the dispatcher routes and executes
-already-established authority.
+## Phase 13 completion condition
 
-### Proven substrate already exists
+Phase 13 is complete when every remaining Candidate/Constraint/Decision concern has either:
 
-Useful existing substrate includes `DecisionCommitmentBoundary`,
-`CommitmentAdmission` invariants, Obligation semantics, governing-basis
-settlement, Authority-token exclusivity, Effective Actuation Composition,
-`ControlRequest` / `ControlOutcome`, Traffic Policeman least-intervention policy
-and proven physical Control mechanisms. The primary problem is semantic
-ownership, composition and order, not absence of all required machinery.
+- a distinct truthful responsibility and therefore no justified simplification; or
+- a proved duplication that has been removed through one bounded seam and independently validated.
 
-### Validation Identity Defect
+If the closure audit finds no remaining architecture-to-runtime mismatch, record Phase 13 **COMPLETE** and move to Phase 14 without manufacturing extra implementation work.
 
-Development builds inherited the visible `0.3.0.0` canonical identity, so HUD
-observation alone could not prove which ZIP was under test. Test builds now use
-the existing BUILD component of the four-part
-[Pre-1.0 Versioning Policy](ENGINEERING_ARCHITECTURE.md#pre-10-versioning-policy).
-The first strangler test build is `0.3.0.1`; canonical `0.3.0.0` remains unchanged.
+If one mismatch remains, create one bounded Phase-13 Engineering Increment for that mismatch, validate it, then repeat the closure audit.
 
-### HUD Glyph Compatibility
+# Separate Non-Blocking Work
 
-GIANTS texture-font Reality does not support the `•` separator previously used
-by `VersionHud`. Diagnostic build identity therefore uses the ASCII-safe `|`
-separator. This is an implementation observation, not GUI architecture.
+- [Issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37) — Category-2 Forward Intersection Reality-validation debt. It does not block Phase-13 closure unless contrary Reality invalidates an assumption used here.
+- [Issue #45](https://github.com/bisdat/FS25_OuttaMyWay/issues/45) — Bubble Bullet Time. Accepted but unimplemented; separate from Phase-13 Candidate/Constraint/Decision simplification.
 
-# First Strangler Seam
+# Immediate Programme Step
 
-> **Cooperative Passage Responsibility Transition extraction**
+Perform the Phase 13 Closure Audit on accepted `main` before changing runtime behaviour.
 
-This seam is implemented and Reality-validated for one observed direct `CREATE`
-Cooperative Passage episode. [`CooperativePassageResponsibilityTransition.lua`](../scripts/responsibility/CooperativePassageResponsibilityTransition.lua)
-is the sole live owner that invokes `applyCooperativePassageDecision()`.
+The audit output must either:
 
-The implemented handoff is:
+1. identify one concrete duplicated verdict/authority boundary or supported multi-context requirement and define a bounded correction; or
+2. conclude that current Candidate, Constraint and Decision responsibilities are materially distinct enough to retain, classify the multi-context limitation, and recommend **Phase 13 COMPLETE**.
 
-```text
-Decision
-   ↓
-LiveControlDispatcher readiness / pre-emption checks
-   ↓
-non-mutating readiness handoff
-   ↓
-Runtime
-   ↓
-CooperativePassageResponsibilityTransition
-   ↓
-existing Cooperative Passage lifecycle machinery
-   ↓
-responsibility already established
-   ↓
-LiveControlDispatcher
-   ↓
-existing ControlRequest / CooperativePassageControl
-```
-
-`LiveControlDispatcher` retains the existing pre-transition readiness and
-pre-emption checks, then returns the non-mutating readiness handoff. Runtime
-invokes the upstream transition and passes its already-established Commitment
-result to the dedicated dispatcher continuation. Physical Passage Control and
-existing completion settlement are preserved. Non-migrated intervention paths
-remain on their legacy lifecycle ownership.
-
-The observed `0.3.0.1` episode logged exactly one
-`COOPERATIVE_PASSAGE_TRANSITION_UPSTREAM` with `action=CREATE` and
-`beforePhysicalDispatch=true`, followed by `COOPERATIVE_ACCEPTED`, normal
-physical Passage, Axis Return and GIANTS handoff, pair-context dissolution,
-Commitment success and authority release. No duplicate transition,
-`COMMITMENT_APPLICATION_FAILED`, `COOPERATIVE_REJECTED` or observable regression
-was identified in that episode. This evidence does not independently validate
-the Regulation-to-Passage `REVISE` succession path or the full supported envelope.
-
-> `LiveControlDispatcher` must not independently apply the Cooperative Passage transition.
-
-This **No Dual Transition Authority** invariant is structurally protected. The
-tranche did not remove generic Commitment semantics or resolve Same-Commitment
-Responsibility Fusion.
-
-# Second Strangler Seam
-
-> **Completed-Obstruction Resolution Responsibility Transition extraction**
-
-The physical acquisition seam is implemented and Reality-validated for one
-in-session completed-obstruction episode. The topology is:
-
-```text
-Terminal physical Decision
-    ↓
-LiveControlDispatcher readiness checks
-    ↓
-non-mutating readiness handoff
-    ↓
-Runtime
-    ↓
-CompletedObstructionResponsibilityTransition
-    ↓
-existing TerminalEgressCommitmentLifecycle.applyDecision()
-    ↓
-responsibility already established
-    ↓
-LiveControlDispatcher continuation
-    ↓
-existing Protected Yield where required
-    ↓
-existing TerminalEgress ControlRequest / Control
-    ↓
-existing downstream settlement
-```
-
-[`CompletedObstructionResponsibilityTransition.lua`](../scripts/responsibility/CompletedObstructionResponsibilityTransition.lua)
-is the sole live physical owner of `TerminalEgressCommitmentLifecycle.applyDecision()`;
-`LiveControlDispatcher` no longer applies physical completed-obstruction
-responsibility. Terminal settlement and Protected Yield deliberately remain
-downstream. The generic Commitment, Obligation and Authority machinery remains
-in use, and no generic Resolution Commitment abstraction was introduced.
-
-The `0.3.0.2` Reality episode produced two upstream application logs for the
-same `CM-00005`, not two responsibility acquisitions. `CREATE` established the
-Commitment before `COMPACT`; compaction completed and required fresh Situation
-Assessment; `MAINTAIN` then preserved the same Commitment before Protected Yield
-and `INFIELD`. The existing stage-1 centroid-bearing, fixed-initial-bearing,
-no-course-correction movement remained bounded to `60.00 m`. Protected Yield
-released on manoeuvre completion, terminal settlement reached `SUCCEEDED`, two
-authority tokens were released, and productive Continuation Renewal was observed.
-There was no application failure, physical rejection, Player Claim, Protected
-Yield rejection, new Commitment identity, altered courtesy geometry or
-observable regression in this episode.
-
-## Resolution Persistence Across Control Phases
-
-One Resolution responsibility may legitimately persist while the currently
-permitted physical Control phase changes. `CM-00005` persisted from compaction
-through fresh Situation Assessment into protected bounded movement, while
-physical authority changed and settlement waited for the continuation-restoring
-movement. This supports the architectural distinction between Current
-Responsibility (why intervention persists) and Bounded Authority (what action is
-permitted now), but one run does not establish the final Bounded Authority representation.
-
-## Maintenance Is Not Transition
-
-The second call through the compatibility transition seam reported `MAINTAIN`.
-Architecturally, fresh Situation Assessment positively preserving an existing
-Resolution responsibility is not a new Responsibility Transition. The module
-still delegates legacy `CREATE` / `MAINTAIN` / `REVISE` vocabulary through one
-transition-shaped seam. This semantic mismatch is observed but not corrected here.
-
-## Transition–Execution Readiness Coupling
-
-Both Cooperative Passage and completed-obstruction Resolution now provide
-independent evidence that physical/readiness checks occur before the upstream
-semantic application seam. This is cross-cutting architectural debt rather than
-a Passage-specific accident; this tranche records but does not resolve it.
-
-## Second Exemplar Before Generalisation
-
-The programme deliberately migrated a materially different second Resolution
-exemplar before introducing a generic explicit Resolution Commitment. Cooperative
-Passage couples two active workers with progress-plus-progress actuation and has
-direct `CREATE` evidence. Completed obstruction couples an active beneficiary to
-a completed controlled subject with progress-plus-post-job actuation,
-player-consented capability, and `CREATE` → `MAINTAIN` evidence across Control
-phases. Comparing them now offers a stronger empirical basis for identifying
-genuinely common Resolution semantics without presupposing an abstraction.
-
-## Cold-Start Physical Relevance Gap
-
-Two cold-loaded-save attempts did not exercise this seam. The completed Condor
-was stationary Reality but was not a current active-job vehicle, had no retained
-runtime track and had no observed positive active-to-ended Job Episode transition.
-Consequently no Terminal Occupancy, D-0147 Candidate or upstream transition was
-established. Stationarity alone is insufficient completed-worker provenance.
-
-Cold-start non-active obstruction recognition remains in scope as a separate
-Observation/provenance problem. [Issue #33 — Cold-Start Non-Active Obstruction
-Recognition](https://github.com/bisdat/FS25_OuttaMyWay/issues/33)
-owns its unresolved investigation; it is not a PR #32 transition regression or fix.
-
-**Current Phase-13 implementation hypothesis:** current GIANTS Physical Assembly
-acquisition is separated from worker tracking in
-[`CurrentPhysicalAssemblySource.lua`](../scripts/observation/CurrentPhysicalAssemblySource.lua).
-The source observes current mission vehicles, resolves current root Physical
-Assemblies and current child members, and retains runtime-object correlation
-without requiring Job Episode history.
-
-`LiveObservationSource` may publish an otherwise-unobserved Physical Assembly
-when at least one current member position is positively contained by at least
-one immutable Snapshot belonging to the resolved active Field World. This is
-incomplete census evidence only. It does not establish Situation relevance,
-Causal Obstruction or negative exclusion and does not create Job Episode, Local
-Operation or Control authority.
-
-
-# Explicit Resolution Commitment Representation
-
-The two migrated Resolution seams now materialize an explicit, read-only
-[`ResolutionCommitment`](../scripts/contracts/ResolutionCommitment.lua) through
-[`ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua)
-after the retained generic lifecycle application succeeds. The representation
-uses the existing generic Commitment identity and exposes purpose, governing
-basis, explicit beneficiary and controlled-subject roles, the open
-purpose-specific Resolution obligations, and diagnostic provenance.
-
-This is a semantic view over the retained substrate, not another lifecycle.
-`CommitmentRegistry`, `ObligationLedger`, admission, authority allocation and
-settlement remain singular and authoritative. Neither Control nor Bounded
-Authority consumes the view in this tranche. **No Dual Responsibility Record
-Authority** is therefore preserved.
-
-Roles are supplied from semantic context at each Responsibility Transition:
-
-- Cooperative Passage validates exactly two distinct coupled participant
-  assemblies and represents both as beneficiaries and controlled subjects.
-- Completed obstruction represents the authorising active demand assemblies as
-  beneficiaries and the completed terminal assembly as the controlled subject.
-
-Authority ownership, authority tokens and Effective Actuation Composition are
-not used to infer these roles. Candidate identity, Control phase, capability,
-authority tokens and legacy lifecycle action are not part of Resolution
-identity. `CREATE` and `REVISE` expose an established Resolution view;
-completed-obstruction `MAINTAIN` re-exposes the same identity as persistence of
-Current Responsibility, not a new architectural transition. The legacy action
-is retained only as diagnostic provenance.
-
-GitHub Structural contracts and Lua offline observation completed successfully.
-GIANTS Reality then validated both required `0.3.0.3` exemplars. Direct
-Cooperative Passage logged `RESOLUTION_COMMITMENT_ESTABLISHED` with
-`legacyAction=CREATE`, the retained generic Commitment identity, and both
-coupled workers explicitly represented as beneficiaries and controlled
-subjects; existing Passage Control and participant-handoff settlement completed
-successfully. Completed obstruction logged
-`RESOLUTION_COMMITMENT_ESTABLISHED` with `legacyAction=CREATE`, then after
-`COMPACT` and fresh Situation Assessment logged
-`RESOLUTION_COMMITMENT_PERSISTED` with the same identity and
-`legacyAction=MAINTAIN`, followed by Protected Yield, `INFIELD`, terminal
-`SUCCEEDED`, authority release and Continuation Renewal.
-
-This positively validates the explicit representation, identity reuse, role
-separation, Resolution Persistence Across Control Phases and Maintenance Is Not
-Transition in the observed run. Downstream Passage and completed-obstruction
-mechanics remained consistent with their retained behaviour. It does not claim
-full supported-envelope regression coverage. Standalone Regulation,
-Same-Commitment Regulation-to-Passage fusion, Bounded Authority and issue #33
-remain outside this tranche.
-
-## A/B behavioural-equivalence evidence
-
-The `0.3.0.3` run later encountered a corner sequence in a different location
-from the original uninterrupted `0.3.0.2` run: D-0146 Action-Space Regulation
-progressively regulated the Condor, Regulation actuation became quiescent, both
-workers became physically blocked, and player intervention was required.
-
-The same saved-game fixture was rerun on accepted `0.3.0.2` at
-`2aa47fda4d6c0e75f24c9e5f2200c8c1c2eae921`. It reproduced a closely comparable
-ordering and timing: Cooperative Passage, later D-0146 Action-Space Regulation,
-Regulation quiescence, mutual corner blockage and required player intervention.
-Therefore **PR #34 regression suspicion is cleared** for this failure. The
-corner outcome predates the explicit Resolution Commitment representation.
-
-### Saved-State Test Fixture Divergence
-
-A saved game created during an uninterrupted GIANTS AI run is not necessarily a
-behaviourally identical continuation fixture after reload, even when visible
-vehicle and field state appears equivalent. The original uninterrupted
-`0.3.0.2` run completed successfully, while later reloads reconstructed enough
-different GIANTS continuation or path state for subsequent encounters to occur
-elsewhere. This is primarily a test-fixture and reproducibility finding, not a
-new OuttaMyWay architectural defect. The saved fixture remains a useful
-repeatable corner/deadlock scenario; the historical scenario is not claimed to
-be deterministic across save/reload.
-
-### Quiescent Regulation Deadlock
-
-The saved-state A/B runs provide an unresolved working observation:
-
-```text
-unresolved Regulation responsibility
-    ↓
-preventative actuation quiesces
-    ↓
-physical corner / pinch conflict persists or worsens
-    ↓
-both workers become blocked
-    ↓
-no autonomous resolution follows
-    ↓
-player intervention required
-```
-
-Positive native forward-rate evidence became unavailable while the relationship
-remained unresolved, causing Regulation actuation to become quiescent. Later
-trajectory interpretation no longer supported an opposed-corridor conflict even
-though the physical corner conflict remained. This supports the narrower
-working distinction **Opposed-Corridor Conflict ≠ Corner Conflict**.
-
-These are Reality observations for the later standalone Regulation
-reconciliation, not accepted architecture or an implementation proposal. PR #34
-does not authorise or implement a fix to Regulation, Situation Assessment,
-D-0146, corner modelling or Control. The evidence is unrelated to issue #33's
-separate cold-start non-active obstruction-recognition investigation.
-
-# First Regulation Strangler Seam
-
-> **D-0141 Follower-Boundary Regulation Responsibility Transition extraction**
-
-The first standalone Regulation implementation hypothesis moves only D-0141
-`APPLY` responsibility application and revalidation upstream of physical
-Control:
-
-```text
-selected follower-boundary Decision
-    ↓
-LiveControlDispatcher APPLY routing / readiness checks
-    ↓
-non-mutating transition-required handoff
-    ↓
-Runtime
-    ↓
-FollowerBoundaryResponsibilityTransition
-    ↓
-existing LiveTrafficCommitmentLifecycle.applyFollowerBoundaryDecision()
-    ↓
-responsibility application / revalidation established
-    ↓
-LiveControlDispatcher continuation
-    ↓
-existing elastic Regulation request / lease / Control
-```
-
-[`FollowerBoundaryResponsibilityTransition.lua`](../scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua)
-is the sole production caller of `applyFollowerBoundaryDecision()`. The
-dispatcher first confirms the selected semantic bridge is D-0141 `APPLY`, the
-Candidate capability is `REGULATE_SPEED`, and the existing Control capability
-is available. Runtime then invokes the purpose-specific transition and returns
-the already-applied result to `continueFollowerBoundary()`. Authority-token
-validation, `ControlRequest` construction, requested elastic cap, owner tag,
-lease application/update, quiescence/reactivation bookkeeping, outcomes,
-rejection rollback and physical Control remain downstream and unchanged in
-intent.
-
-This is a deliberately incomplete Regulation strangler boundary:
-
-```text
-D-0141 acquisition / revalidation → upstream
-D-0141 retirement / termination   → retained downstream legacy
-```
-
-Positive RETIRE application, physical lease release, purpose-bound authority
-release and follower-obligation settlement remain in the dispatcher/lifecycle
-path. PRESERVE and quiescent/reactivated physical actuation bookkeeping also
-remain downstream. Repeated `APPLY` for an already-live purpose is logged as
-retained/revalidated responsibility rather than claimed as a new architectural
-Responsibility Transition.
-
-No explicit or generic Regulation representation, registry or lifecycle is
-introduced. D-0146 Action-Space Regulation remains the required second
-standalone exemplar before comparing common Regulation semantics. **Second
-Exemplar Before Generalisation** therefore continues to apply. The
-implementation does not address Quiescent Regulation Deadlock, corner
-behaviour, Same-Commitment Responsibility Fusion, Bounded Authority or issue
-#33.
-
-## D-0141 GIANTS Reality validation
-
-The `0.3.0.4` Reality episode naturally established Patriot 4450 as leader and
-Condor Endurance II as follower. Initial lifecycle application produced
-`AP-00001`, `CM-00001` and `OB-00001` for pair
-`AS-00002|AS-00001`. The architecture-facing marker then reported:
-
-```text
-FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM
-commitment=CM-00001
-leader=AS-00002
-follower=AS-00001
-legacyAction=CREATE
-responsibilityDisposition=ESTABLISHED
-beforePhysicalDispatch=true
-```
-
-Downstream `D0141_APPLY` followed for the same `CM-00001` and follower at
-`5.15 km/h`. This positively validates responsibility application upstream of
-physical Regulation.
-
-The episode then naturally exercised retained purpose and elastic Control. An
-observed `legacyAction=MAINTAIN`, `responsibilityDisposition=REVALIDATED` marker
-for `CM-00001` preceded `D0141_UPDATE` at `6.21 km/h`, with repeated further
-updates. Approximate episode counts were one established marker, 44 revalidated
-markers, one physical APPLY, 43 physical updates, two quiescence events and one
-reactivation. All retained `CM-00001`.
-
-Quiescence released temporary authority for `AS-00001` while logging
-`purposeRetained=true`. Reactivation later acquired `AU-00002`, revalidated the
-same `CM-00001` / `OB-00001`, and applied `11.40 km/h` through
-`D0141_ACTUATION_REACTIVATED`. This validates responsibility persistence
-independently of temporary Bounded Authority, along with elastic magnitude,
-quiescence, reactivation and **Maintenance Is Not Transition**. No contrary
-evidence of changed GIANTS productive routing or steering ownership was
-observed.
-
-Positive D-0141 retirement was **not observed / not required for this tranche**.
-That is not a validation failure. Retirement/termination remains deliberately
-downstream and unchanged. The observed D-0141 strangler seam passed; standalone
-Regulation reconciliation remains incomplete.
-
-# Second Regulation Strangler Seam
-
-> **Action-Space Regulation Responsibility Transition extraction**
-
-Programme step 8b moves all three live Action-Space responsibility application
-contexts upstream while retaining their execution envelope downstream:
-
-```text
-selected Action-Space Decision
-    ↓
-LiveControlDispatcher routing / readiness
-    ↓
-non-mutating transition-required handoff
-    ↓
-Runtime
-    ↓
-ActionSpaceRegulationResponsibilityTransition
-    ↓
-existing LiveTrafficCommitmentLifecycle.applyD0146ActionSpaceDecision()
-    ↓
-responsibility established / revalidated
-    ↓
-LiveControlDispatcher continuation
-    ↓
-existing progression envelope / elastic Regulation / Control
-```
-
-[`ActionSpaceRegulationResponsibilityTransition.lua`](../scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua)
-is the sole production caller of the retained application function. The three
-covered contexts are initial/current application, reactivation after quiescence
-and regulated-role migration. Dispatcher readiness still proves the selected
-bridge, `REGULATE_SPEED` capability, Control availability and applicable
-retained lease context before the handoff.
-
-The unresolved interaction plus current action-space-preservation purpose is
-the durable responsibility core. The regulated participant, protected
-participant, supporting authority, speed ceiling, progression envelope,
-quiescence/reactivation condition and role migration are its mutable execution
-envelope. **Responsibility Roles ≠ Regulation Actuation Roles**: changing the
-regulated assembly does not establish a new responsibility identity.
-
-The deliberate intermediate asymmetry is:
-
-```text
-Action-Space acquisition / revalidation → upstream
-Action-Space purpose settlement         → retained downstream legacy
-```
-
-Progression-envelope mechanics, physical Regulation, quiescence and settlement
-remain downstream. No generic Regulation representation is introduced.
-
-**Successor-Agnostic Regulation** remains authoritative: Action-Space
-Regulation exists because the current unresolved interaction justifies
-preserving usable action space. It does not predict or reserve Cooperative
-Passage; fresh Situation Assessment independently determines any successor.
-
-The saved-corner Reality attempt did not exercise this seam. No Action-Space
-Regulation was selected, no `ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM` or
-D0155 progression-envelope Regulation occurred, and existing Situation and
-selection machinery admitted Cooperative Passage directly. The attempt
-therefore neither validates nor disproves the ownership extraction; no PR #36
-runtime regression is inferred from a seam bypassed upstream.
-
-This exposed the broader **Spatial Constraint Overlay Implementation Gap**.
-The architecture's Category-1 corner and Category-2 headland/boundary overlay
-and allocation policy are not yet implemented as a production Situation
-concept. Existing boundary, Future Space, opposed-corridor and follower-boundary
-mechanisms do not constitute that overlay. The gap is tracked in
-[issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37).
-
-**Incidental Regulation ≠ Spatial Regulation**: earlier saved-corner runs that
-received Action-Space Regulation through opposed-corridor machinery do not
-prove that Category-1 spatial Regulation existed. Without the explicit overlay,
-other heuristics may incidentally capture a constrained-space interaction or a
-different responsibility may mature first. The exact cause of run-to-run
-divergence is not claimed here. The saved-corner fixture is no longer a reliable
-PR #36 seam-validation fixture until that gap is addressed or another fixture
-reliably selects Action-Space Regulation.
-
-## Regulation exemplar comparison — programme step 8c
-
-Comparison of the extracted follower-boundary and Action-Space seams disproved
-the emerging assumption that their Situation-specific forms should become
-separate architectural Regulation types. The architectural result is **Many
-Situations, One Regulation Capability: Temporal Coordination**. Regulation
-remains one Current Responsibility whose invariant capability is bounded,
-reversible alteration of relative timing while GIANTS retains productive route
-and progression ownership.
-
-The comparison establishes this allocation:
-
-```text
-Situation Assessment → why temporal coordination is currently useful
-Regulation           → bounded temporal responsibility
-Bounded Authority    → which subject and permissible magnitude now
-Control              → physical timing adjustment
-fresh assessment     → continuation, termination and successor
-```
-
-Follower/leader interaction, uncertain intent, constrained option-space
-competition, poor prospective Passage theatre and third-worker Bubble
-protection are Situation distinctions and benefits, not Regulation subtypes.
-This also records **Regulation Cause ≠ Regulation Capability** and preserves
-**Responsibility Roles ≠ Regulation Actuation Roles**: follower, leader,
-regulated/protected participant, cap, authority token, progression envelope,
-quiescence/reactivation and Action-Space role migration do not define generic
-Regulation identity.
-
-**Spatial Strategy / Temporal Regulation** permits Situation Assessment to use
-positive spatial foreseeability strategically, including moving a highly
-probable encounter toward better Passage theatre by changing timing. Regulation
-does not thereby acquire routing or Passage authority. **Successor-Agnostic ≠
-Future-Blind**: Regulation neither reserves nor guarantees a successor, but
-Situation Assessment need not ignore a strongly supported future interaction.
-Fresh assessment independently justifies any later Resolution Commitment.
-
-The two purpose-specific transition modules remain legitimate implementation
-seams and provenance; their names do not establish architectural subclasses.
-Follower-boundary and Action-Space obligations remain retained substrate that
-currently encodes Situation-specific provenance and persistence. Neither those
-obligation identities nor generic Commitment identity is promoted here as the
-final architectural Regulation identity. The smallest truthful explicit,
-read-only Regulation representation remains to be determined after review of
-this Record; no runtime representation, registry, adapter or lifecycle is
-introduced in this tranche.
-
-### Discovery gate: Responsibility Instance Identity Gap
-
-Implementation inspection found no existing truthful witness for one Regulation
-responsibility instance across all continuity permitted by the architecture.
-The read-only representation hypothesis is therefore blocked rather than
-materialised.
-
-**Evidence Succession ≠ Responsibility Succession** governs this result. A
-Regulation instance may remain continuous while current Situation evidence and
-governing basis evolve, so an evidence identity cannot substitute for the
-responsibility instance that persists through that change.
-
-The retained identities fail for distinct reasons:
-
-- generic Commitment identity survives follower revalidation and Action-Space
-  role migration, but is broader than Current Responsibility and currently may
-  continue across the known Regulation-to-Passage responsibility discontinuity;
-- follower-boundary and Action-Space Obligation identities are distinct,
-  Situation-specific records keyed through pair or conflict provenance. They
-  can witness their own retained obligation, but cannot identify one Regulation
-  instance when its governing evidence evolves without turning those causes
-  into architectural subtypes;
-- authority tokens can be released during quiescence, reacquired during
-  reactivation and changed with the regulated actuation role;
-- Candidate and Decision identities are assessment/application episodes, while
-  pair keys, conflict identities, participant tuples and current Situation
-  reasons identify evidence or context rather than Regulation responsibility.
-
-No remaining registry or record explicitly witnesses the interval from
-Regulation acquisition to genuine Regulation termination independently of both
-Situation cause and generic Commitment lifecycle. Deriving an identity from
-those fields, issuing a new counter or adding a parallel registry would create
-new lifecycle authority rather than expose retained truth. No fake identity or
-parallel Regulation lifecycle was introduced.
-
-This **Responsibility Instance Identity Gap** is the next dependency for the
-smallest explicit read-only Regulation representation. It must be reconciled
-without pre-empting step 9's Same-Commitment Responsibility Fusion work.
-
-### Responsibility Transition Authority Gap
-
-The failed representation hypothesis exposed the deeper architectural
-dependency: current implementation has no explicit sole **Responsibility
-Transition Authority** that owns establishment, termination and atomic
-replacement of Current Responsibility. **Responsibility Transition Is the
-Semantic Boundary**; continuous Situation Assessment may preserve the same
-responsibility without invoking that boundary, while a genuine lifecycle change
-requires one authoritative transition.
-
-Responsibility-instance identity belongs to the Current Responsibility
-established at that boundary, not to retained substrate. It remains stable
-through changing evidence and actuation but ends at genuine termination or
-replacement. This preserves **Evidence Succession ≠ Responsibility Succession**
-and adds **Substrate Continuity ≠ Responsibility Continuity**.
-
-The Regulation-to-Cooperative-Passage `REVISE` path is the primary step-9
-exemplar. The retained generic Commitment may remain continuous while
-architectural responsibility changes from Regulation R1 to Resolution
-Commitment R2. Therefore **Commitment `REVISE` ≠ Responsibility Continuation**.
-Likewise, **Obligation Settlement ≠ Responsibility Transition**: obligation
-creation or settlement may support a handoff but cannot own its semantic
-authority.
-
-**Semantic Discontinuity Can Be Atomic.** Responsibility Transition Authority
-may end Regulation R1 and establish Resolution Commitment R2 as one semantic
-replacement without a mandatory intermediate GIANTS-AI tick or uncontrolled
-interval. Regulation does not mutate into Resolution. Bounded Authority and any
-AuthorityToken reuse remain deferred to programme step 10.
-
-The existing purpose-specific transition modules are valuable strangler seams,
-not a unified Responsibility Transition Authority. Responsibility application,
-generic Commitment revision, obligation settlement and downstream completion
-remain fragmented across current Candidate, Decision, transition, lifecycle and
-dispatcher surfaces. This is evidence to inspect, not a runtime design decision;
-no current module is declared to own the new architectural authority.
-
-Earlier direct Resolution exemplars used a transitional mapping in which observed Resolution and retained Commitment lifetimes coincided. Coincident Identity ≠ Identity Equivalence remained the governing architectural conclusion. Phase 9 now reconciles that mapping by requiring explicit authority-issued RS-* identity for direct Resolution responsibilities while retaining CM-* only as implementation substrate and provenance.
-
-### Phase 9 Responsibility Reconciliation
-
-Phase 9 resolves Regulation-to-Passage succession and Same-Commitment
-Responsibility Fusion in one programme boundary. The Action-Space Regulation →
-same-Commitment Cooperative Passage exemplar supplies the donor replacement
-seam upstream of physical Passage Control; follower-boundary uses the same
-semantic replacement commit point. Direct Cooperative Passage `CREATE` and
-completed-obstruction Resolution now use the same authority-issued
-responsibility identity rule instead of coinciding with retained generic
-Commitment identity.
-
-```text
-Action-Space Regulation R1 / retained CM-*
-    -> fresh Passage Decision
-    -> retained Commitment REVISE
-    -> predecessor D-0146 purpose settlement and lease cleanup
-    -> authoritative replacement by Resolution Commitment R2
-    -> Passage Control continuation
-```
-
-`IdentityRegistry` issues opaque `RS-*` responsibility identities. Initial
-Action-Space Regulation establishes R1; revalidation, authority quiescence and
-reactivation, and regulated-role migration preserve that same identity. These
-execution-envelope changes are not transitions. The selected conflict remains
-validation provenance and is not used as responsibility identity.
-
-For the migrated same-Commitment succession, the authority establishes a fresh
-R2 identity and supplies it to the accepted `ResolutionCommitmentAdapter`. The
-retained generic Commitment identity remains unchanged, while `R1 != R2` and
-neither responsibility identity equals the Commitment identity.
-
-Responsibility Transition Authority owns the semantic predecessor preflight and
-replacement boundary. It uses Current Responsibility and retained
-Commitment/Obligation evidence rather than Bounded Authority lease state as
-semantic truth, and asks Regulation Bounded Authority only to neutralise the
-already-known predecessor speed effect before Runtime materialises successor
-Passage `REPOSITION` requests. Failed application, Commitment-continuity
-validation, predecessor settlement or physical neutralisation produces no
-Passage continuation and does not make both semantic responsibilities current.
-
-This is not general Responsibility Transition Authority coverage. Generic
-Commitment, Obligation and AuthorityToken behaviour remains retained substrate;
-AuthorityToken reuse is not redesigned before Phase 10.
-
-### Phase 10 Bounded Authority Reconciliation
-
-**Phase 10 — Reconcile Bounded Authority — COMPLETE.**
-
-Phase 10 addresses the **Responsibility-to-Control Traceability Gap**: migrated
-physical requests previously carried retained `CM-*`, mechanical `AU-*`,
-Candidate evidence and Control machinery, but did not directly trace through a
-semantic Bounded Authority permission to the `RS-*` Current Responsibility that
-justified the action.
-
-The new [`BoundedAuthorityGrant`](../scripts/contracts/BoundedAuthorityGrant.lua)
-sealed contract introduces distinct `BA-*` identity. It records semantic
-`responsibilityId`, retained `commitmentId`, controlled `assemblyId`,
-`capability`, bounded target/magnitude, mechanical `authorityToken`, relevant
-epochs, effective composition, preconditions, invalidation conditions and
-provenance. `CM-*` and `AU-*` remain substrate/provenance only; neither can
-substitute for `RS-*` or `BA-*`.
-
-[`BoundedAuthority`](../scripts/authority/BoundedAuthority.lua) is the focused
-production authority for this boundary. It authorizes only from an already
-current Regulation or Resolution Commitment and an already-selected physical
-envelope. It validates live retained Commitment state, current `RS-*`, valid
-`AU-*`, matching assembly/capability/composition and non-broadened target.
-Effective Actuation Composition identity remains Candidate-supplied provenance
-and is linked by exact equality, not by an imposed prefix convention. It does
-not assess Reality, select roles or geometry, create responsibilities, manage
-generic Commitment lifecycle, own obligations or execute Control.
-
-The migrated request chain is now:
-
-```text
-Current Responsibility RS-*
-        ↓
-BoundedAuthorityGrant BA-*
-        ↓
-ControlRequest CR-* references BA-*
-        ↓
-Control validates BA-* before physical execution
-```
-
-`ControlRequest` now has optional `boundedAuthorityId` for migrated paths.
-Follower Regulation, Action-Space/Forward Intersection Regulation, Cooperative
-Passage and completed-obstruction Resolution requests are created through
-`BoundedAuthority` before Control. Guarded Recovery Regulation remains an
-intentionally unmigrated legacy `ControlRequest` path because
-it is outside the four fixed Phase-10 exemplars except for completed-obstruction
-protected-demand actuation, which is migrated.
-
-Follower Regulation preserves one continuing `RS-*` while each current elastic
-cap is represented as a fresh bounded `REGULATE_SPEED` grant. Quiescence and
-positive release reference the active grant to remove the physical lease, then
-release the grant. Reactivation acquires a fresh grant under the same
-responsibility when Situation evidence again supports actuation.
-
-Action-Space Regulation and Forward Intersection use the same D-0146 downstream
-path. The existing progression envelope and the fixed Forward Intersection
-`1 km/h` Intent-Revelation Creep still decide magnitude upstream/downstream as
-before; Phase 10 materializes that already-decided cap as Bounded Authority
-before `REGULATE_SPEED` Control. Role migration and reactivation preserve the
-same `RS-*` and acquire fresh grants for the current subject/envelope.
-
-Cooperative Passage materializes one `REPOSITION` grant per participant under
-one Resolution Commitment `RS-*`; both requests may share the retained
-Effective Actuation Composition. `CooperativePassageControl` validates each
-grant before starting and checks that the active grants remain current during
-execution. It still halts on support loss rather than broadening the Candidate
-Guide.
-
-Completed-obstruction Resolution materializes a `REPOSITION` grant for the
-completed controlled subject. Existing protected-demand holds now receive
-separate `REGULATE_SPEED` grants under the same Resolution `RS-*` where the
-current D-0147 phase requires them. The two-stage courtesy policy, 60 m maximum,
-fixed-direction movement, centroid/boundary objective rules, Player Claim,
-source reactivation, speed policy and terminal geometry are intended unchanged.
-
-Regulation-to-Cooperative-Passage replacement now preserves the Phase 9
-semantic replacement boundary and adds grant cleanup: predecessor Regulation BA
-is released during subordinate predecessor cleanup before successor Passage
-requests can be authorized and executed. The retained `AU-*` may still be reused
-where the existing lifecycle legitimately permits it; `AU-*` reuse is not BA
-continuity.
-
-Terminal settlement now releases Bounded Authority for the retained Commitment
-before releasing mechanical AuthorityTokens and before terminalising the
-Current Responsibility. Responsibility termination also defensively releases
-any remaining grants for that `RS-*`.
-
-Key discoveries recorded for this increment:
-
-- **Responsibility-to-Control Traceability Gap**: physical execution lacked an explicit `RS-*` permission chain.
-- **Implicit Authority Assembly**: dispatcher code assembled permission-like facts from `CM-*`, `AU-*`, Candidate target and Control request shape without one truthful authority record.
-- **Exclusivity != Permission**: `AuthorityRegistry` remains mechanical exclusivity substrate only.
-- **Responsibility Continuity Allows Authority Discontinuity**: cap changes, quiescence, subject migration and reactivation can change BA without changing `RS-*`.
-- **Exclusivity Continuity != Authority Continuity**: retained `AU-*` reuse does not continue predecessor BA.
-- **One Responsibility May Authorise Multiple Bounded Effects**: one Resolution `RS-*` can authorize paired Passage grants or D-0147 movement plus protected-demand holds.
-- **Representation Convention != Identity Authority**: Phase 10 requires truthful Effective Actuation Composition linkage, not invention of a new `EC-*` identity convention.
-- **Rejected Permission Must Not Persist**: a fresh BA grant rejected before becoming the accepted physical effect is released immediately. For attempted updates, the rejected successor BA is removed while the predecessor BA and existing physical lease remain current until successor Control acceptance.
-
-Bubble Bullet Time is not implemented here. It remains explicitly outside Phase
-10 and is tracked separately in issue #45.
-
-PR review exposed **Replacement Precondition Lag**: the first implementation
-validated retained-Commitment continuity and predecessor cleanup eligibility
-only after the Passage `REVISE`. The corrected seam now validates the complete
-known boundary before successor mutation: selected Candidate/readiness,
-`D0146_STEP2` bridge and conflict, current Regulation identity and retained
-Commitment, matching dispatcher lease, open Action-Space obligation, and the
-picture's targeted same-Commitment `REVISE`. Action-Space INITIAL,
-REACTIVATION and ROLE_MIGRATION likewise preflight semantic compatibility before
-their retained lifecycle application. Preflight is read-only and performs no
-Control or retained lifecycle mutation.
-
-### Phase 11 Authorised Control Routing
-
-Phase 11 addresses the **Dispatch Boundary Inversion**: migrated production
-paths previously entered `LiveControlDispatcher` before their current physical
-permission was fully materialized. The accepted routing chain is now explicit:
-
-```text
-Current Responsibility RS-*
-        ↓
-Bounded Authority Grant BA-*
-        ↓
-ControlRequest CR-*
-        ↓
-LiveControlDispatcher
-        ↓
-Control
-```
-
-[`LiveControlDispatcher`](../scripts/control/LiveControlDispatcher.lua) is now
-the routing boundary. It owns executor availability checks, routing
-already-authorised `ControlRequest` values to the Regulation capability,
-Cooperative Passage Control or Terminal Egress Control, recording Control
-outcomes and dispatch diagnostics. It does not create Bounded Authority, choose
-Regulation magnitude, interpret persistence, own migrated lease state or settle
-semantic responsibilities.
-
-[`RegulationBoundedAuthority`](../scripts/authority/RegulationBoundedAuthority.lua)
-now owns only migrated Regulation physical-authority state for follower
-Regulation, Action-Space/Forward Intersection Regulation and
-completed-obstruction protected-demand `REGULATE_SPEED` holds. It keeps the
-existing physical policies and literals, including follower elastic caps,
-D-0155, fixed Forward Intersection `1 km/h`, D-0147 protected demand,
-quiescence/reactivation and role migration. It does not own Candidate/exemplar
-selection, semantic persistence/termination, Passage or completed-subject
-`REPOSITION`, semantic completion/settlement or Guarded Recovery compatibility
-internals. The progression envelope is rehomed as
-[`ResolutionSpaceProgressionEnvelope`](../scripts/authority/ResolutionSpaceProgressionEnvelope.lua)
-because it is Bounded-Authority magnitude policy: Situation owns purpose and
-role evidence; Bounded Authority owns the current permitted cap; Control
-realises the authorised cap.
-
-Runtime explicitly sequences the Phase-11 collaborators. It selects the
-evaluated production path, invokes
-[`CurrentResponsibilityAssessment`](../scripts/assessment/CurrentResponsibilityAssessment.lua)
-for existing Regulation responsibilities, calls Responsibility Transition
-Authority when termination or replacement is justified, asks the appropriate
-Bounded Authority for physical permission, materialises `BA-*` into `CR-*`
-through generic `BoundedAuthority.materializeRequest()`, and then enters
-`LiveControlDispatcher`.
-
-[`BoundedAuthority.materializeRequest()`](../scripts/authority/BoundedAuthority.lua)
-is the narrow CR materialisation operation. It requires an existing current
-`BA-*` grant and refuses target broadening; it does not create strategic
-authority.
-
-[`CurrentResponsibilityAssessment`](../scripts/assessment/CurrentResponsibilityAssessment.lua)
-is an implementation component inside Situation Assessment. It records the
-bounded reassessment question "does this existing RS-* remain positively
-justified now?" Runtime now wires that answer into production before asking
-Regulation Bounded Authority to update current physical permission. It does not
-introduce a new lifecycle or Responsibility Authority.
-
-[`GuardedRecoveryCompatibility`](../scripts/control/GuardedRecoveryCompatibility.lua)
-owns the D-0123 Guarded Recovery legacy path, including its private legacy lease,
-legacy supporting `AU-*` acquisition/release, intentionally non-BA
-ControlRequest, apply/release, status and terminal dependency cleanup. Guarded
-Recovery remains explicitly unmigrated and must not be used as precedent for
-migrated Bounded Authority paths.
-
-The Phase-11 amendment records three review discoveries:
-**Responsibility Displacement != Responsibility Separation**,
-**Unwired Reassessment Authority** and
-**Compatibility Facade != Compatibility Isolation**.
-
-The Phase-11 discoveries are recorded as implementation placement constraints:
-
-- **Authority-Dispatcher Dependency Cycle**: Responsibility Transition Authority
-  no longer depends on dispatcher-owned predecessor state; predecessor cleanup
-  is sequenced through the authority owner.
-- **Authority Shadow State**: `followerBoundaryLease`,
-  `d0146ActionSpaceLease` and `d0147ProtectedYieldLeases` leave
-  `LiveControlDispatcher`.
-- **Current Responsibility Reassessment Gap**: reassessment is documented as
-  Situation Assessment implementation work, not dispatch work.
-- **Predecessor Neutralisation Must Precede Substrate Rebinding**: predecessor
-  physical Regulation is neutralised and predecessor BA ended before successor
-  Control can execute; retained `AU-*` reuse is mechanical continuity only.
-- **Terminal Lease Cleanup Lag**: D-0200 cleanup now clears migrated physical
-  Regulation effects before terminal settlement attempts final semantic
-  teardown.
-- **Control-Owned Magnitude Wording Was False**: source-adjacent wording now
-  describes D-0155 as Bounded-Authority-owned magnitude policy.
-
-`0.3.0.10 TEST — CURRENT RESPONSIBILITY RECONCILIATION` completes the remaining
-Phase 9 responsibility coverage in PR #44. Follower-boundary is the second
-Regulation exemplar after Action-Space. Both use one architectural `Regulation`
-contract and opaque `RS-*` identity. Purpose, pair and conflict data are
-provenance only. The authority's private map uses retained `CM-*` as an
-implementation lookup key, so an independent Commitment's Regulation cannot
-overwrite another. This adds no worker context, relationship object or
-Operation-scoped responsibility container, and does not repair the remaining
-Global-to-Local singleton Control state.
-
-Follower application now follows read-only semantic preflight → existing
-`applyFollowerBoundaryDecision()` → authority establishment/preservation →
-`continueFollowerBoundary()`. Upstream diagnostics expose both identities.
-Ordinary maintenance, magnitude changes and quiescence/reactivation preserve the
-same semantic identity; none introduces a `CONTINUE` transition.
-
-Fresh same-Commitment follower → Cooperative Passage uses follower preflight
-and the donor's shared semantic replacement commit point. Preflight checks the
-selected Candidate/readiness, Passage participants and ownership, live retained
-target, physical cleanup availability, supporting authority, successor
-obligation specification and open predecessor obligation before mutation. The
-fresh successor `RS-*` is injected through the existing Passage transition.
-Dispatcher physical lease cleanup and follower obligation settlement must
-succeed before R1 is removed and R2 is returned to Runtime for Passage Control.
-There is no GIANTS-AI tick between responsibilities. Failed preflight performs no
-revision; failed revision or cleanup exposes no successor and starts no Passage.
-A failed cleanup after revision does not roll back retained substrate; it leaves
-only R1 semantically current and refuses physical continuation, as at the donor
-boundary.
-
-Direct Cooperative Passage `CREATE` now asks Responsibility Transition
-Authority for a fresh `RS-*` Resolution Commitment identity before physical
-Passage Control. The retained generic `CM-*` Commitment still owns the
-implementation substrate, obligations, AuthorityTokens, Candidate, Decision and
-Control requests. The `ResolutionCommitment` view records the generic
-Commitment identity only as provenance, and `RS-* != CM-*`.
-
-Completed-obstruction Resolution follows the same rule. Establishment retains
-the existing generic Commitment lifecycle, beneficiary semantics and
-controlled-subject semantics, while Responsibility Transition Authority issues
-and preserves a distinct `RS-*` identity for the Resolution Commitment view.
-Physical terminal-egress behaviour, courtesy policy, Protected Yield and
-settlement policy remain unchanged.
-
-`TerminalSettlementEvaluator.attemptTerminal()` now terminates all tracked
-semantic responsibilities for the terminalised retained Commitment. Cooperative
-Passage completion, Cooperative Passage failure during Control start,
-completed-obstruction successful settlement, completed-obstruction failure and
-completed-obstruction supersession therefore cannot leave a semantic Resolution
-responsibility current after the substrate terminalises.
-
-Positive follower retirement keeps physical lease release, supporting authority
-release and obligation settlement in the dispatcher/lifecycle, then terminates
-semantic Regulation through the authority. Terminal-path inventory found:
-
-- `TerminalSettlementEvaluator.attemptTerminal()` is the common successful
-  terminal boundary used by Decision application and traffic/terminal lifecycle
-  settlement. Runtime explicitly connects it to a follower-only authority hook;
-  terminal substrate cannot leave follower Regulation current, including after
-  a rejected Control acquisition or absent lease.
-- Job Episode dependency collapse already terminalises eligible D0146/Forward
-  Intersection substrate, then invokes `retireTrafficLeasesForCommitment()`.
-  Both paths now clear corresponding semantic state. The existing collapse
-  eligibility does not include ordinary follower-only substrate; Phase 9 does
-  not broaden that dependency policy.
-- Terminal traffic lease retirement also invokes the hook independently of
-  whether the follower lease is still present. Quiescence never invokes it.
-
-Intended behavioural changes = **none**: follower admission, variable-speed and
-elastic magnitude, reversing-leader handling, quiescence/reactivation and
-positive retirement mechanics remain the regression boundary. Action-Space,
-Forward Intersection's fixed `1 km/h`, D-0146 magnitude and Issue #37 policy are
-unchanged. Failure gating prevents Passage before successful cleanup.
-
-Offline evidence after this amendment: structural/source contracts **104
-passed**; Lua replacement harness **292 passed / 13 failed**, preserving the
-same historical failure profile while adding focused green coverage for direct
-Cooperative Passage identity, completed-obstruction identity, semantic
-persistence, completion, failure and supersession cleanup, and the existing
-Action-Space/follower replacement seams. Lua syntax and `git diff --check`
-pass. No GIANTS Reality validation is claimed for this Phase 9 amendment. Later
-Reality regression should repeat the proven follower behaviour and observe
-follower → Passage only if a natural fixture produces it; no policy forces it.
-
-### PR #41 GIANTS Reality observation
-
-The `2026-09-04` `0.3.0.6` run produced exactly one upstream Action-Space
-Regulation establishment at `19:25:53.205`: decision `DE-01249`, Candidate
-`CA-01249`, conflict `d0146-opposed:OR-00001:AS-00001:AS-00002`, retained
-Commitment `CM-00003`, Regulation responsibility `RS-00001`, regulated assembly
-`AS-00001` and protected assembly `AS-00002`. It reported `CREATE`,
-`ESTABLISHED`, `INITIAL` and `beforePhysicalDispatch=true`.
-
-Existing D0155 Control then admitted `25 km/h` and tightened under the same
-`CM-00003` through `21`, `16`, `10` and `1 km/h`, ending in unchanged
-`INTENT_REVELATION_CREEP`. At approximately `19:25:55.200`, actuation quiesced
-when the excursion pair was no longer positively closing while the relationship
-remained retained. This validates explicit `RS-*` Regulation establishment
-distinct from retained `CM-*`, establishment before physical dispatch, existing
-elastic magnitude policy, and responsibility persistence while current physical
-actuation disappears.
-
-The worker subsequently accelerated and turned; Condor was reported blocked at
-approximately `19:26:02.456`, Patriot at `19:26:02.953`, and both were stationary
-and blocked by approximately `19:26:05`. **Spatial Risk Outlives Closing
-Evidence**: current Situation evidence ceased requesting temporal actuation when
-instantaneous positive closing disappeared even though constrained-corner risk
-remained. Regulation behaved according to supplied Situation evidence. This is
-consistent with, but does not solve or fully specify, the [Spatial Constraint
-Overlay implementation gap in issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37).
-
-The log contained zero `RESPONSIBILITY_REPLACED` and zero
-`COOPERATIVE_PASSAGE_REVISE` events. Other Passage events did not constitute the
-target same-Commitment succession. Therefore the PR #41 replacement seam,
-distinct predecessor/successor `RS-*` identities, and live replacement ordering
-before `COOPERATIVE_ACCEPTED` remain **not GIANTS Reality-validated**. The
-fixture ceased requesting Regulation before the constrained interaction was
-safely resolved, so this attempt neither validates nor disproves the replacement
-implementation. Further use of this corner fixture is confounded by the upstream
-Situation/Spatial Constraint Overlay gap.
-
-## Regulation naming governance
-
-D-number runtime vocabulary such as `D0141_APPLY`, `D0141_UPDATE`,
-`D0141_ACTUATION_QUIESCENT`, `D0146_ACTION_SPACE_DECISION_APPLIED` and
-`D0155_ENVELOPE_UPDATE` is transitional implementation debt, not accepted
-Regulation terminology. Under the [Naming Conventions](NAMING_CONVENTIONS.md),
-Decision identifiers record provenance and must not become primary module or
-architectural names.
-
-The extracted architecture-facing seam already uses
-`FollowerBoundaryResponsibilityTransition`,
-`FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED`,
-`FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM` and `continueFollowerBoundary()`.
-Retained downstream `D0141_*` vocabulary remains unchanged solely to isolate
-behaviour in this tranche. Do not infer accepted terminology from it or create a
-naming-cleanup increment here.
-
-Remaining Regulation semantic runtime names should be graduated only after
-D-0141 and D-0146 have both been extracted and validated, their exemplars have
-been compared, and the explicit Regulation representation is stable. Historical
-D-identifiers may remain as genuine provenance, including tests that clearly
-document historical decision contracts.
-
-## Follower HUD Glyph Compatibility Leak
-
-GIANTS texture-font Reality reported missing character `8226` because retained
-follower-regulation HUD text still uses `•`. This is separate UI implementation
-debt, not Regulation architecture or PR #35 acceptance evidence. It is not fixed
-in this tranche and should use ASCII-safe punctuation when later addressed.
-
-## Forward Intersection tranche for Spatial Constraint
-
-[Issue #37](https://github.com/bisdat/FS25_OuttaMyWay/issues/37) remains open as
-non-blocking Category-2 Reality validation debt. GIANTS Reality first
-falsified the half-working-width representation hypothesis; subsequent
-`0.3.0.8` Reality validated the replacement Category-1 Forward Intersection
-behaviour. **Spatial Width Is Not Temporal
-Conflict Evidence**: half working width cannot decide whether supported future
-trajectories intersect.
-
-```text
-two finite, positively supported Field-bounded continuations
-        ↓
-common Forward Intersection within both extents
-        ↓
-positive time-to-intersection evidence
-        ↓
-greater-time participant yields at fixed 1 km/h
-        ↓
-fresh Reality maintains or promptly releases Regulation
-```
-
-`SpatialConstraintAssessment` owns centreline intersection and timing. Candidate,
-responsibility and Control consume that Situation knowledge rather than deriving
-geometry again. Category 1, Category 2 and open field annotate the future theatre
-after the generic relationship is established; they are annotations, not admission
-mechanisms. No corner radius, width gate, pair-closing requirement or replacement
-for the retired 80 m literal exists.
-
-Where both positive rates support ordering, the greater-time party is selected
-as temporal yielder and the retained Regulation substrate applies fixed 1 km/h
-Intent-Revelation Creep. Missing rate or exact equal time is unresolved. Fresh
-loss of the intersection dissolves the purpose and releases its lease.
-
-**Established Relationship Precedence** prevents this prospective geometry from
-displacing a valid follower relationship. Follower Regulation remains variable
-speed, including reversing-leader handling. Bubble Bullet Time remains a separate
-fixed-1-km/h purpose despite sharing the magnitude.
-
-The successful `0.3.0.8` GIANTS Reality run validated Category-1 prospective
-recognition, greater-time temporal yielding, fixed 1 km/h actuation, fresh-evidence
-release and downstream Cooperative Passage succession. The run also supplied
-positive open-field admission/release evidence. It did not revalidate established
-leader/follower precedence or Bubble Bullet Time.
-
-Category-2 Reality validation remains outstanding for Issue #37 closure, but no
-longer blocks programme progression. Phase 8 is **ASSUMED COMPLETE FOR PROGRAMME
-PROGRESSION**. Materially contrary Category-2 evidence must reopen the affected
-Forward Intersection assumptions and dependent conclusions. **Phase 9 — Resolve
-Regulation-to-Passage succession and Same-Commitment Responsibility Fusion** is
-active; the PR #41 Action-Space Regulation → same-Commitment Cooperative Passage
-replacement is again the downstream validation/reconciliation boundary.
-
-# Intermediate Programme Steps
-
-1. **Record the transition map — COMPLETE.**
-2. **Extract Cooperative Passage Responsibility Transition before Control — COMPLETE.**
-3. **Validate the first strangler seam and behavioural equivalence — COMPLETE for the observed direct Cooperative Passage `CREATE` path.**
-4. **Extract completed-obstruction physical Resolution responsibility — COMPLETE.**
-5. **Validate the second Resolution exemplar — COMPLETE for the observed in-session `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` episode.**
-6. **Compare the two migrated Resolution exemplars and determine the smallest truthful explicit Resolution Commitment representation — COMPLETE for the read-only adapter/view hypothesis.**
-7. **Expose Resolution Commitment explicitly only where the two exemplars support it — COMPLETE and GIANTS Reality-validated for the observed direct Cooperative Passage `CREATE` and completed-obstruction `CREATE` → `MAINTAIN`, `COMPACT` → `INFIELD` exemplars.**
-8. **Reconcile standalone Regulation — ASSUMED COMPLETE FOR PROGRAMME PROGRESSION.** The follower-boundary and Action-Space exemplars, subsequent explicit Regulation identity/replacement work, and successful Category-1 Forward Intersection Reality exemplar provide sufficient evidence to continue the strangler. Issue #37 remains open for non-blocking Category-2 Reality validation; materially contrary later evidence reopens this assumption.
-   - **8a. Extract D-0141 follower-boundary Regulation application/revalidation upstream — COMPLETE and GIANTS Reality-validated for the observed establishment, same-responsibility revalidation, elastic update, quiescence and reactivation episode. Positive retirement was not observed and was not required.**
-   - **8b. Extract D-0146 Action-Space Regulation as the second standalone exemplar — IMPLEMENTED and offline-validated; GIANTS Reality attempt inconclusive because the saved-corner Situation bypassed Action-Space Regulation upstream of the extracted seam.**
-   - **8c. Compare both exemplars and determine the smallest truthful explicit Regulation representation — ARCHITECTURAL COMPARISON COMPLETE; implementation discovery found no truthful retained Regulation instance identity witness, so the Responsibility Instance Identity Gap required explicit Action-Space and follower Regulation identities during Phase 9.**
-9. **Resolve Regulation-to-Passage succession and Same-Commitment Responsibility Fusion — COMPLETE IN PR #44 PENDING OWNER MERGE/ACCEPTANCE. Phase 9 covers Action-Space Regulation identity, follower Regulation identity, both same-Commitment Passage replacement paths, direct Cooperative Passage CREATE Resolution identity, completed-obstruction Resolution identity and semantic cleanup on existing terminal paths.**
-10. **Reconcile Bounded Authority as downstream consequence of Current Responsibility — COMPLETE.**
-11. **Reduce `LiveControlDispatcher` toward dispatch/execution responsibilities — COMPLETE.**
-12. **Retire superseded generic Commitment/orchestration only when no supported path relies on it — COMPLETE.** The audit retained supported generic Commitment machinery and retired only the superseded pre-D-0146 head-on/recovery lifecycle; detailed evidence is recorded in the [Engineering Journal](ENGINEERING_JOURNAL.md).
-13. **Simplify Candidate/Constraint/Decision only where evidence proves duplication.**
-14. **Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming.**
-15. **Perform whole-system validation and another architecture-to-runtime review.**
-
-> This sequence is a plan, not a promise. Update it after each strangler tranche when implementation or validation evidence changes the safest or most truthful route.
-
-The order evolved through **Second Exemplar Before Generalisation**: Reality
-evidence from two distinct Resolution purposes now precedes any attempt to define
-their common explicit representation.
-
-The High-Level Strangler Plan is the human-readable programme dashboard and
-should be refreshed after each accepted tranche.
-
-## Composition and principal responsibility placement
-
-| Architectural responsibility | Principal current source placement |
-|---|---|
-| Runtime entrypoint | [`modDesc.xml`](../modDesc.xml) → [`scripts/main.lua`](../scripts/main.lua) |
-| Global Runtime and Local Operation lifecycle | [`scripts/runtime/Runtime.lua`](../scripts/runtime/Runtime.lua), [`scripts/runtime/LiveRuntimeCoordinator.lua`](../scripts/runtime/LiveRuntimeCoordinator.lua), [`scripts/identity/OperationAdmission.lua`](../scripts/identity/OperationAdmission.lua) |
-| Job Episode admission | [`scripts/identity/JobEpisodeAdmission.lua`](../scripts/identity/JobEpisodeAdmission.lua) |
-| Field World Snapshot, Equivalence and Operation admission | [`scripts/identity/FieldWorldSnapshotRegistry.lua`](../scripts/identity/FieldWorldSnapshotRegistry.lua), [`scripts/identity/FieldWorldEquivalenceAuthority.lua`](../scripts/identity/FieldWorldEquivalenceAuthority.lua), [`scripts/identity/FieldWorldEquivalenceEvaluator.lua`](../scripts/identity/FieldWorldEquivalenceEvaluator.lua), [`scripts/identity/OperationAdmission.lua`](../scripts/identity/OperationAdmission.lua) |
-| Observation | [`scripts/observation/`](../scripts/observation/) and [`scripts/observation/LiveObservationSource.lua`](../scripts/observation/LiveObservationSource.lua) |
-| Situation Assessment | [`scripts/assessment/SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua) and focused collaborators in [`scripts/assessment/`](../scripts/assessment/), including representation-only prospective constraint knowledge in [`scripts/assessment/SpatialConstraintAssessment.lua`](../scripts/assessment/SpatialConstraintAssessment.lua) |
-| Candidate, Constraint and Decision boundary | [`scripts/candidates/`](../scripts/candidates/), [`scripts/constraints/`](../scripts/constraints/), [`scripts/decision/`](../scripts/decision/), and [`scripts/commitment/DecisionCommitmentBoundary.lua`](../scripts/commitment/DecisionCommitmentBoundary.lua) |
-| Commitment and Obligation substrate | [`scripts/commitment/`](../scripts/commitment/) |
-| Mechanical actuation exclusivity | [`scripts/authority/AuthorityRegistry.lua`](../scripts/authority/AuthorityRegistry.lua) |
-| Bounded Authority grants and validation | [`scripts/contracts/BoundedAuthorityGrant.lua`](../scripts/contracts/BoundedAuthorityGrant.lua), [`scripts/authority/BoundedAuthority.lua`](../scripts/authority/BoundedAuthority.lua), and migrated request construction in [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua) |
-| Regulation identity, preservation, termination and same-Commitment Passage replacement | [`scripts/responsibility/ResponsibilityTransitionAuthority.lua`](../scripts/responsibility/ResponsibilityTransitionAuthority.lua), [`scripts/contracts/Regulation.lua`](../scripts/contracts/Regulation.lua); Runtime connects terminal settlement to follower semantic cleanup |
-| Explicit Resolution Commitment view | [`scripts/contracts/ResolutionCommitment.lua`](../scripts/contracts/ResolutionCommitment.lua), [`scripts/responsibility/ResolutionCommitmentAdapter.lua`](../scripts/responsibility/ResolutionCommitmentAdapter.lua), and the two purpose-specific transition modules in [`scripts/responsibility/`](../scripts/responsibility/) |
-| D-0141 follower-boundary Regulation transition and downstream Control | [`scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua`](../scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua), [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua), and [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua) |
-| Action-Space Regulation transition and downstream Control | [`scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua`](../scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua), [`scripts/commitment/LiveTrafficCommitmentLifecycle.lua`](../scripts/commitment/LiveTrafficCommitmentLifecycle.lua), and [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua) |
-| Physical Representation | [`scripts/representation/AssemblyRepresentationCache.lua`](../scripts/representation/AssemblyRepresentationCache.lua), [`scripts/representation/PlanViewFootprint.lua`](../scripts/representation/PlanViewFootprint.lua), [`scripts/representation/PairSpecificPassageClearance.lua`](../scripts/representation/PairSpecificPassageClearance.lua) |
-| Passage capability and planning | [`scripts/assessment/PassageCapabilityAssessment.lua`](../scripts/assessment/PassageCapabilityAssessment.lua), [`scripts/candidates/LocalPassagePlanner.lua`](../scripts/candidates/LocalPassagePlanner.lua) |
-| Control dispatch and Cooperative Passage | [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua), [`scripts/control/CooperativePassageControl.lua`](../scripts/control/CooperativePassageControl.lua) |
-| Completed-obstruction transition, settlement and Control | [`scripts/responsibility/CompletedObstructionResponsibilityTransition.lua`](../scripts/responsibility/CompletedObstructionResponsibilityTransition.lua), [`scripts/assessment/TerminalOccupancyAssessment.lua`](../scripts/assessment/TerminalOccupancyAssessment.lua), [`scripts/candidates/TerminalEgressCandidateSupport.lua`](../scripts/candidates/TerminalEgressCandidateSupport.lua), [`scripts/commitment/TerminalEgressCommitmentLifecycle.lua`](../scripts/commitment/TerminalEgressCommitmentLifecycle.lua), [`scripts/control/LiveControlDispatcher.lua`](../scripts/control/LiveControlDispatcher.lua), [`scripts/control/TerminalEgressControl.lua`](../scripts/control/TerminalEgressControl.lua) |
-
-## Implementation-alignment observations
-
-Historical names and structures such as `shadow`, `TEST`, D-number and prototype
-vocabulary, `EncounterRegistry`, `FieldBoundedFutureSpace`, and old diagnostic or
-probe names remain in source. This is placement or vocabulary lag, not current
-architectural authority. Diagnostic and probe existence does not establish an
-architectural responsibility, authorise pruning or determine a permanent inventory.
-
-# Phase 13 Causal Obstruction Recognition
-
-Current placement after the `0.3.0.15 TEST` implementation tranche:
-
-- [`CurrentPhysicalAssemblySource.lua`](../scripts/observation/CurrentPhysicalAssemblySource.lua)
-  owns current mission Physical Assembly acquisition and positive Field World
-  member-position witnessing.
-- [`CurrentPhysicalConflictRepresentation.lua`](../scripts/representation/CurrentPhysicalConflictRepresentation.lua)
-  supplies current positive-conflict primitives for already-witnessed
-  physical-only assemblies. Its authority is positive-only; coverage is
-  incomplete and it supplies no negative-clearance conclusion.
-- [`CausalObstructionAssessment.lua`](../scripts/assessment/CausalObstructionAssessment.lua)
-  owns the bounded Situation question: whether a current physical subject is
-  positively established as preventing an active supported beneficiary's
-  current or supported continuation space, and how that blocker is classified
-  from current Reality.
-- [`SituationAssessment.lua`](../scripts/assessment/SituationAssessment.lua)
-  publishes `causalObstructionKnowledge` and promotes a physical-only subject to
-  Situation relevance only after a positive Causal Obstruction relationship is
-  established.
-
-The existing `TerminalOccupancyAssessment`,
-`TerminalEgressCandidateSupport`, `TerminalEgressControl` and
-`PostJobActuationAuthority` remain unchanged by this tranche. Routing generic
-Causal Obstruction into those proven mechanics is a later bounded increment.
+Only after that decision should Phase 14 begin.
