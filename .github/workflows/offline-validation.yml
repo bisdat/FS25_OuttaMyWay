@@ -72,7 +72,7 @@ jobs:
             scripts/runtime/LiveRuntimeCoordinator.lua \
             scripts/runtime/ObstructionRelocationRuntimeIntegration.lua
           do
-            "$LUAJIT_BIN" -e 'assert(loadfile(arg[1]))' "$file"
+            CHECK_FILE="$file" "$LUAJIT_BIN" -e 'assert(loadfile(os.getenv("CHECK_FILE")))'
           done
 
       - name: Report LuaJIT semantic profile
