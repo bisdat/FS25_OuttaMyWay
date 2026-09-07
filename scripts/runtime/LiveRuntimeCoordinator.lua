@@ -18,7 +18,7 @@ local function rawContainsReference(raw, referenceKey)
     return false
 end
 
-local function appendCapabilityObservation(raw, observation)
+local function appendRegulationControlObservation(raw, observation)
     if type(observation)~="table" then return false end
     if not rawContainsReference(raw,observation.yieldReferenceKey) or not rawContainsReference(raw,observation.progressReferenceKey) then return false end
     raw.controlOutcomes=raw.controlOutcomes or {}
@@ -72,11 +72,11 @@ function Coordinator:update(dt)
     local due=false
     if self.diagnosticObserver and type(self.diagnosticObserver.beginRuntimeCycle)=="function" then due=self.diagnosticObserver:beginRuntimeCycle(self.source:getLastDiagnostics(),nowMilliseconds)==true end
     local records={}
-    local capabilityObservation=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getCapabilityObservation() or nil
+    local regulationControlObservation=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getRegulationControlObservation() or nil
     local terminalEgressObservation=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getTerminalEgressObservation() or nil
     local obstructionRelocationObservation=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getObstructionRelocationObservation() or nil
     for _,raw in OuttaMyWay.ValueRecord.ipairs(observations) do
-        appendCapabilityObservation(raw,capabilityObservation)
+        appendRegulationControlObservation(raw,regulationControlObservation)
         appendTerminalEgressObservation(raw,terminalEgressObservation)
         appendObstructionRelocationObservation(raw,obstructionRelocationObservation)
         local ok,live=pcall(self.runtime.processLiveObservation,self.runtime,raw)

@@ -138,20 +138,20 @@ function Probe.evaluateSummary(samples,entryPose,exitPose)
 end
 
 function Probe.new(runtime)
-    return setmetatable({runtime=runtime,capabilityObservationSource=nil,elapsed=0,states={},runSequence=0,observations={}},Probe)
+    return setmetatable({runtime=runtime,regulationControlObservationSource=nil,elapsed=0,states={},runSequence=0,observations={}},Probe)
 end
 
 function Probe:reset()
     self.elapsed=0; self.states={}; self.runSequence=0; self.observations={}
 end
 
-function Probe:setCapabilityObservationSource(source)
-    self.capabilityObservationSource=source
+function Probe:setRegulationControlObservationSource(source)
+    self.regulationControlObservationSource=source
 end
 
 function Probe:_observeControlInfluence(state)
-    if state==nil or self.capabilityObservationSource==nil or type(self.capabilityObservationSource.getVehicleControlObservation)~="function" then return end
-    local drive=self.capabilityObservationSource:getVehicleControlObservation(state.vehicle)
+    if state==nil or self.regulationControlObservationSource==nil or type(self.regulationControlObservationSource.getVehicleControlObservation)~="function" then return end
+    local drive=self.regulationControlObservationSource:getVehicleControlObservation(state.vehicle)
     if drive~=nil and drive.mode~=nil then
         state.controlInfluenced=true
         state.controlMode=tostring(drive.mode or "UNKNOWN")
