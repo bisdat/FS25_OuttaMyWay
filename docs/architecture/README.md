@@ -41,6 +41,11 @@ interaction evidence from Diagnostic to Observation placement without changing
 its calculations or evidence meaning, read the
 [Phase 14.3 Live Interaction Observation Graduation](PHASE_14_LIVE_INTERACTION_OBSERVATION_GRADUATION.md).
 
+For the fourth Phase-14 engineering boundary, graduating the shared warm/cold
+non-job physical actuation donor from misleading post-job Authority placement
+while preserving both semantic authority classes, read the
+[Phase 14.4 Non-Job Actuation Mechanism Graduation](PHASE_14_NON_JOB_ACTUATION_MECHANISM_GRADUATION.md).
+
 Architecture may describe intended behaviour that is not yet implemented. Read
 it as the system's direction and responsibility model, not as a complete account
 of current runtime capability.
