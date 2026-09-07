@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.20 TEST — Prospective Decision Ownership.
+-- FS25_OuttaMyWay v0.3.0.21 TEST — REGULATION CONTROL BOUNDARY.
 -- Situation/Decision/Commitment admission semantics remain inherited; Control magnitude is now elastic.
 -- D-0147 remains the validated warm mechanical donor while D-0218 tests current non-active Causal Obstruction relocation behind distinct authority.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.20"
+OuttaMyWay.VERSION = "0.3.0.21"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -72,11 +72,11 @@ OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_PROBE_ENABLED = false
 OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_INFIELD_OFFSETS_M = {20.0, 35.0, 50.0}
 OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_COVERAGE_SAMPLE_COUNT = 12
 
--- Prototype 22: capability validation plus bounded autonomous head-on
--- Resolution Strategy dispatch. Manual probe commands remain diagnostic only. These
--- literals are experimental safety/observation bounds only and carry no
--- production Decision or policy authority. Production CONTROL_AUTHORITY remains
--- false; automatic head-on dispatch does not grant general production Control authority.
+-- Prototype 22 manual capability-validation harness and retained donor-container values.
+-- Production REGULATE_SPEED dispatch is owned by RegulationControl as of Phase 14.1;
+-- these P22 values gate or describe the manual experiment only. The shared physical
+-- donor mechanisms retain their historical names until Phase 14.2. No value here
+-- grants production Decision, Responsibility or Control authority.
 
 -- D-0123 Guarded-Recovery Convergence Shadow Validation. Diagnostic cadence only.
 -- No distance, time, speed or intersection result below carries policy or Control authority.
@@ -208,7 +208,7 @@ OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.20 TEST — CANDIDATE SUPPORT PROJECTION"
+OuttaMyWay.BUILD_LABEL = "0.3.0.21 TEST — REGULATION CONTROL BOUNDARY"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985

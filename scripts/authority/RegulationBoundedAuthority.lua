@@ -25,7 +25,7 @@ local function selectedCandidate(evaluated)
 end
 function Authority.new(runtime)
     return setmetatable({
-        runtime=runtime,capability=nil,requests={},outcomes={},dispatchCount=0,
+        runtime=runtime,regulationControl=nil,requests={},outcomes={},dispatchCount=0,
         d0147ProtectedYieldLeases={},
         followerBoundaryLease=nil,followerBoundaryApplyCount=0,followerBoundaryReleaseCount=0,followerBoundaryUpdateCount=0,
         d0146ActionSpaceLease=nil,d0146ActionSpaceApplyCount=0,d0146ActionSpaceReleaseCount=0,d0146ActionSpaceEnvelopeUpdateCount=0,d0146ActionSpaceRoleMigrationCount=0,
@@ -33,15 +33,12 @@ function Authority.new(runtime)
         followerBoundaryQuiescenceCount=0,followerBoundaryReactivationCount=0
     },Authority)
 end
-function Authority:setCapability(capability)
-    self.capability=capability
-    if self.runtime~=nil and self.runtime.liveControlDispatcher~=nil and type(self.runtime.liveControlDispatcher.setCapability)=="function" then
-        self.runtime.liveControlDispatcher:setCapability(capability)
-    end
+function Authority:setRegulationControl(control)
+    self.regulationControl=control
 end
 
-function Authority:getCapabilityObservation()
-    if self.capability~=nil and type(self.capability.getControlExecutionObservation)=="function" then return self.capability:getControlExecutionObservation() end
+function Authority:getRegulationControlObservation()
+    if self.regulationControl~=nil and type(self.regulationControl.getControlExecutionObservation)=="function" then return self.regulationControl:getControlExecutionObservation() end
     return nil
 end
 function Authority:_outcome(request,status,effect,failure)
@@ -92,8 +89,8 @@ function Authority:_releaseD0147ProtectedYield(commitmentId,reason)
     if type(leases)~="table" then return 0 end
     local released=0
     for _,lease in ipairs(leases) do
-        if self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" and type(lease.referenceKey)=="string" then
-            local ok=self.capability:clearRegulationLeaseByReference(lease.referenceKey,D0147_PROTECTED_YIELD_OWNER_TAG)
+        if self.regulationControl~=nil and type(self.regulationControl.clearRegulationLeaseByReference)=="function" and type(lease.referenceKey)=="string" then
+            local ok=self.regulationControl:clearRegulationLeaseByReference(lease.referenceKey,D0147_PROTECTED_YIELD_OWNER_TAG)
             if ok==true then released=released+1 end
         end
         self:_releaseBoundedAuthority(lease.boundedAuthorityId,reason)
@@ -118,12 +115,12 @@ function Authority:_applyD0147ProtectedYield(picture,evaluated,candidate,commitm
     -- ValueRecord proxy in GIANTS. Never use native #/pairs/ipairs here.
     local protected=bridge.protectedDemandAssemblies or {}
     if OuttaMyWay.ValueRecord.length(protected)==0 then return false,"D0147_PROTECTED_YIELD_AUTHORISING_DEMAND_UNAVAILABLE" end
-    if self.capability==nil or type(self.capability.executeControlRequest)~="function" then return false,"D0147_PROTECTED_YIELD_CONTROL_CAPABILITY_UNAVAILABLE" end
+    if self.regulationControl==nil or type(self.regulationControl.executeControlRequest)~="function" then return false,"D0147_PROTECTED_YIELD_CONTROL_CAPABILITY_UNAVAILABLE" end
     if self.d0147ProtectedYieldLeases[commitment.identity]~=nil then return true,"ALREADY_PROTECTED" end
     local leases={}
     local function rollbackLeases(reason)
         for _,lease in ipairs(leases) do
-            if type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.referenceKey,D0147_PROTECTED_YIELD_OWNER_TAG) end
+            if type(self.regulationControl.clearRegulationLeaseByReference)=="function" then self.regulationControl:clearRegulationLeaseByReference(lease.referenceKey,D0147_PROTECTED_YIELD_OWNER_TAG) end
             self:_releaseBoundedAuthority(lease.boundedAuthorityId,reason)
         end
     end
@@ -167,7 +164,7 @@ function Authority:_regulationRequest(picture,evaluated,candidate,commitment,tok
     if operation=="APPLY" and speed==nil then speed=1.0 end
     local assemblyId=bridge.progressAssemblyId or bridge.followerAssemblyId or bridge.regulatedAssemblyId
     local referenceKey=bridge.progressReferenceKey or bridge.followerReferenceKey or bridge.regulatedReferenceKey
-    local target={kind="P22_REGULATION_LEASE",operation=operation,vehicleReferenceKey=referenceKey,ownerTag=ownerTag,
+    local target={kind="REGULATION_LEASE",operation=operation,vehicleReferenceKey=referenceKey,ownerTag=ownerTag,
         maxSpeedKmh=operation=="APPLY" and speed or nil,governingPurpose=bridge.governingPurpose}
     local boundedAuthorityId=nil
     if type(existingBoundedAuthorityId)=="string" then
@@ -177,7 +174,7 @@ function Authority:_regulationRequest(picture,evaluated,candidate,commitment,tok
     elseif currentResponsibility~=nil then
         local grant,grantReason=self:_authorizeBoundedAuthority(currentResponsibility,commitment,token,{
             assemblyId=assemblyId,capability="REGULATE_SPEED",
-            target={kind="P22_REGULATION_LEASE",vehicleReferenceKey=referenceKey,ownerTag=ownerTag,maxSpeedKmh=speed,governingPurpose=bridge.governingPurpose},
+            target={kind="REGULATION_LEASE",vehicleReferenceKey=referenceKey,ownerTag=ownerTag,maxSpeedKmh=speed,governingPurpose=bridge.governingPurpose},
             operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,
             preconditions=candidate and candidate.preconditions or {},invalidationConditions=candidate and candidate.invalidationConditions or {},
             provenance={source="RegulationBoundedAuthority",exemplar=bridge.governingPurpose or ownerTag}
@@ -293,20 +290,20 @@ function Authority:neutralizeFollowerBoundaryPhysical(picture,evaluated,candidat
     local request,outcome=nil,nil
     local released=false
     local releaseReason=nil
-    if token~=nil and self.runtime.authorities:validate(token)==true and self.capability~=nil and type(self.capability.executeControlRequest)=="function" then
+    if token~=nil and self.runtime.authorities:validate(token)==true and self.regulationControl~=nil and type(self.regulationControl.executeControlRequest)=="function" then
         request=self:_regulationRequest(picture,evaluated,candidate,commitment,token,{followerAssemblyId=lease.followerAssemblyId,followerReferenceKey=lease.followerReferenceKey,governingPurpose=lease.governingPurpose},"RELEASE",D0141_OWNER_TAG,nil,nil,lease.boundedAuthorityId)
         if request==nil then return {status="NO_DISPATCH",reason="D0141_RELEASE_BOUNDED_AUTHORITY_UNAVAILABLE",followerBoundary=true} end
         local ok,result=self.runtime.liveControlDispatcher:dispatch(request,candidate)
         outcome=self:_outcome(request,ok and "ACCEPTED" or "REJECTED",{kind=ok and "REGULATION_LEASE_RELEASED" or "REGULATION_RELEASE_NOT_CONFIRMED",capability="REGULATE_SPEED"},ok and nil or {reason=tostring(result)})
         released=ok==true
         releaseReason=result
-        if released~=true and type(self.capability.clearRegulationLeaseByReference)=="function" then
-            local cleared,clearReason=self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
+        if released~=true and type(self.regulationControl.clearRegulationLeaseByReference)=="function" then
+            local cleared,clearReason=self.regulationControl:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
             released=cleared==true
             if released~=true then releaseReason=clearReason or result end
         end
-    elseif self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" then
-        local cleared,clearReason=self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
+    elseif self.regulationControl~=nil and type(self.regulationControl.clearRegulationLeaseByReference)=="function" then
+        local cleared,clearReason=self.regulationControl:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
         released=cleared==true
         releaseReason=clearReason
     end
@@ -334,14 +331,14 @@ function Authority:_quiesceFollowerBoundaryActuation(picture,evaluated,candidate
         end
     end
     local request,outcome=nil,nil
-    if commitment~=nil and token~=nil and self.capability~=nil and type(self.capability.executeControlRequest)=="function" then
+    if commitment~=nil and token~=nil and self.regulationControl~=nil and type(self.regulationControl.executeControlRequest)=="function" then
         request=self:_regulationRequest(picture,evaluated,candidate,commitment,token,{followerAssemblyId=lease.followerAssemblyId,followerReferenceKey=lease.followerReferenceKey,governingPurpose=lease.governingPurpose},"RELEASE",D0141_OWNER_TAG,nil,nil,lease.boundedAuthorityId)
         if request==nil then return {status="NO_DISPATCH",reason="D0141_QUIESCENCE_BOUNDED_AUTHORITY_UNAVAILABLE",followerBoundary=true} end
         local ok,result=self.runtime.liveControlDispatcher:dispatch(request,candidate)
         outcome=self:_outcome(request,ok and "ACCEPTED" or "REJECTED",{kind=ok and "D0141_ACTUATION_QUIESCED" or "D0141_ACTUATION_QUIESCENCE_NOT_CONFIRMED",capability="REGULATE_SPEED"},ok and nil or {reason=tostring(result)})
-        if ok~=true and type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG) end
-    elseif self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" then
-        self.capability:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
+        if ok~=true and type(self.regulationControl.clearRegulationLeaseByReference)=="function" then self.regulationControl:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG) end
+    elseif self.regulationControl~=nil and type(self.regulationControl.clearRegulationLeaseByReference)=="function" then
+        self.regulationControl:clearRegulationLeaseByReference(lease.followerReferenceKey,D0141_OWNER_TAG)
     end
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
         local preserve=self:_otherRegulationPurposeOwnsAuthority(commitment.identity,lease.followerAssemblyId,"D0141")
@@ -367,7 +364,7 @@ function Authority:assessFollowerBoundaryPermission(picture,evaluated,candidate,
         return self:_quiesceFollowerBoundaryActuation(picture,evaluated,candidate,bridge)
     end
     if bridge==nil or bridge.action~="APPLY" or candidate.capability~="REGULATE_SPEED" then return nil end
-    if self.capability==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",followerBoundary=true} end
+    if self.regulationControl==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",followerBoundary=true} end
     return {status="FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,pairKey=bridge.pairKey,followerAssemblyId=bridge.followerAssemblyId,followerBoundary=true}
 end
 
@@ -380,7 +377,7 @@ function Authority:continueFollowerBoundary(picture,evaluated,applied)
     if candidate==nil or bridge==nil or bridge.action~="APPLY" or candidate.capability~="REGULATE_SPEED" then
         return {status="NO_DISPATCH",reason="FOLLOWER_BOUNDARY_ESTABLISHED_RESPONSIBILITY_MISMATCH",followerBoundary=true}
     end
-    if self.capability==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",followerBoundary=true} end
+    if self.regulationControl==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",followerBoundary=true} end
     local current=self.followerBoundaryLease
     local token=applied.authorityToken
     if token==nil or self.runtime.authorities:validate(token)~=true then
@@ -439,16 +436,16 @@ function Authority:neutralizeActionSpaceRegulationPhysical(picture,evaluated,rea
     end
     local request,outcome=nil,nil
     local syntheticCandidate={preconditions={},invalidationConditions={}}
-    if commitment~=nil and token~=nil and self.runtime.authorities:validate(token)==true and self.capability~=nil and type(self.capability.executeControlRequest)=="function" then
+    if commitment~=nil and token~=nil and self.runtime.authorities:validate(token)==true and self.regulationControl~=nil and type(self.regulationControl.executeControlRequest)=="function" then
         request=self:_regulationRequest(picture,evaluated,syntheticCandidate,commitment,token,{
             regulatedAssemblyId=lease.regulatedAssemblyId,regulatedReferenceKey=lease.regulatedReferenceKey,governingPurpose=lease.governingPurpose
         },"RELEASE",lease.ownerTag or D0146_ACTION_SPACE_OWNER_TAG,nil,nil,lease.boundedAuthorityId)
         if request==nil then return {status="NO_DISPATCH",reason="D0146_ACTION_SPACE_RELEASE_BOUNDED_AUTHORITY_UNAVAILABLE"} end
         local ok,result=self.runtime.liveControlDispatcher:dispatch(request,nil)
         outcome=self:_outcome(request,ok and "ACCEPTED" or "REJECTED",{kind=ok and "REGULATION_LEASE_RELEASED" or "REGULATION_RELEASE_NOT_CONFIRMED",capability="REGULATE_SPEED"},ok and nil or {reason=tostring(result)})
-        if ok~=true and type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,lease.ownerTag or D0146_ACTION_SPACE_OWNER_TAG) end
-    elseif self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" then
-        self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,lease.ownerTag or D0146_ACTION_SPACE_OWNER_TAG)
+        if ok~=true and type(self.regulationControl.clearRegulationLeaseByReference)=="function" then self.regulationControl:clearRegulationLeaseByReference(lease.regulatedReferenceKey,lease.ownerTag or D0146_ACTION_SPACE_OWNER_TAG) end
+    elseif self.regulationControl~=nil and type(self.regulationControl.clearRegulationLeaseByReference)=="function" then
+        self.regulationControl:clearRegulationLeaseByReference(lease.regulatedReferenceKey,lease.ownerTag or D0146_ACTION_SPACE_OWNER_TAG)
     end
     self.d0146ActionSpaceReleaseCount=self.d0146ActionSpaceReleaseCount+1
     self:_releaseBoundedAuthority(lease.boundedAuthorityId,reason)
@@ -522,16 +519,16 @@ function Authority:_quiesceD0146ActionSpaceActuation(picture,evaluated,lease,rel
     local token=commitment and d0146ActionSpaceToken(self,commitment,lease) or nil
     local request,outcome=nil,nil
     local syntheticCandidate={preconditions={},invalidationConditions={}}
-    if commitment~=nil and token~=nil and self.runtime.authorities:validate(token)==true and self.capability~=nil and type(self.capability.executeControlRequest)=="function" then
+    if commitment~=nil and token~=nil and self.runtime.authorities:validate(token)==true and self.regulationControl~=nil and type(self.regulationControl.executeControlRequest)=="function" then
         request=self:_regulationRequest(picture,evaluated,syntheticCandidate,commitment,token,{
             regulatedAssemblyId=lease.regulatedAssemblyId,regulatedReferenceKey=lease.regulatedReferenceKey,governingPurpose=lease.governingPurpose
         },"RELEASE",D0146_ACTION_SPACE_OWNER_TAG,nil,nil,lease.boundedAuthorityId)
         if request==nil then return {status="NO_DISPATCH",reason="D0155_QUIESCENCE_BOUNDED_AUTHORITY_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId} end
         local ok,result=self.runtime.liveControlDispatcher:dispatch(request,nil)
         outcome=self:_outcome(request,ok and "ACCEPTED" or "REJECTED",{kind=ok and "D0155_ACTUATION_QUIESCED" or "D0155_ACTUATION_QUIESCENCE_NOT_CONFIRMED",capability="REGULATE_SPEED"},ok and nil or {reason=tostring(result)})
-        if ok~=true and type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG) end
-    elseif self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" then
-        self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG)
+        if ok~=true and type(self.regulationControl.clearRegulationLeaseByReference)=="function" then self.regulationControl:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG) end
+    elseif self.regulationControl~=nil and type(self.regulationControl.clearRegulationLeaseByReference)=="function" then
+        self.regulationControl:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG)
     end
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
         local preserve=self:_otherRegulationPurposeOwnsAuthority(commitment.identity,lease.regulatedAssemblyId,"D0146_ACTION_SPACE")
@@ -677,8 +674,8 @@ function Authority:_continueD0146ActionSpaceRoleMigration(picture,evaluated,cand
         oldRequest=self:_regulationRequest(picture,evaluated,syntheticCandidate,applied.commitment,oldToken,{regulatedAssemblyId=lease.regulatedAssemblyId,regulatedReferenceKey=lease.regulatedReferenceKey,governingPurpose=lease.governingPurpose},"RELEASE",D0146_ACTION_SPACE_OWNER_TAG,nil,nil,lease.boundedAuthorityId)
         if oldRequest==nil then return {status="MAINTAINED",reason="D0146_ROLE_MIGRATION_OLD_BOUNDED_AUTHORITY_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId} end
         local oldReleased=self.runtime.liveControlDispatcher:dispatch(oldRequest,nil)
-        if oldReleased~=true and type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG) end
-    elseif type(self.capability.clearRegulationLeaseByReference)=="function" then self.capability:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG) end
+        if oldReleased~=true and type(self.regulationControl.clearRegulationLeaseByReference)=="function" then self.regulationControl:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG) end
+    elseif type(self.regulationControl.clearRegulationLeaseByReference)=="function" then self.regulationControl:clearRegulationLeaseByReference(lease.regulatedReferenceKey,D0146_ACTION_SPACE_OWNER_TAG) end
     local preserveOld=self:_otherRegulationPurposeOwnsAuthority(lease.commitmentId,lease.regulatedAssemblyId,"D0146_ACTION_SPACE")
     OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,lease.commitmentId,lease.regulatedAssemblyId,{reason="D0146_RESOLUTION_SPACE_ROLE_MIGRATED",preserveAuthority=preserveOld})
     self:_releaseBoundedAuthority(lease.boundedAuthorityId,"D0146_ACTION_SPACE_ROLE_MIGRATED")
@@ -723,7 +720,7 @@ function Authority:assessActionSpaceRegulationPermission(picture,evaluated,candi
                     if bridge.conflictIdentity~=lease.conflictIdentity then
                         return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_CURRENT_SUPPORT_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId}
                     end
-                    if self.capability==nil or type(self.capability.executeControlRequest)~="function" then
+                    if self.regulationControl==nil or type(self.regulationControl.executeControlRequest)~="function" then
                         return {status="QUIESCENT",reason="D0155_ACTUATION_REACTIVATION_CONTROL_CAPABILITY_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId}
                     end
                     return {status="ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED",applicationContext="REACTIVATION",candidateId=candidate.identity,
@@ -732,7 +729,7 @@ function Authority:assessActionSpaceRegulationPermission(picture,evaluated,candi
                 return {status="QUIESCENT",reason=relationshipReason or "D0155_RELATIONSHIP_RETAINED_CURRENT_ACTUATION_NOT_SUPPORTED",d0146ActionSpace=true,commitmentId=lease.commitmentId}
             end
             if bridge~=nil and bridge.conflictIdentity==lease.conflictIdentity and bridge.regulatedAssemblyId~=lease.regulatedAssemblyId then
-                if self.capability==nil or type(self.capability.executeControlRequest)~="function" then
+                if self.regulationControl==nil or type(self.regulationControl.executeControlRequest)~="function" then
                     return {status="MAINTAINED",reason="D0146_ROLE_MIGRATION_CONTROL_CAPABILITY_UNAVAILABLE",d0146ActionSpace=true,commitmentId=lease.commitmentId}
                 end
                 return {status="ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED",applicationContext="ROLE_MIGRATION",candidateId=candidate.identity,
@@ -744,7 +741,7 @@ function Authority:assessActionSpaceRegulationPermission(picture,evaluated,candi
     end
 
     if bridge==nil or candidate.capability~="REGULATE_SPEED" then return nil end
-    if self.capability==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",d0146ActionSpace=true} end
+    if self.regulationControl==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",d0146ActionSpace=true} end
     return {status="ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED",applicationContext="INITIAL",candidateId=candidate.identity,
         conflictIdentity=bridge.conflictIdentity,regulatedAssemblyId=bridge.regulatedAssemblyId,d0146ActionSpace=true}
 end
@@ -834,8 +831,8 @@ function Authority:retireTrafficLeasesForCommitment(commitmentId,reason)
     if type(commitmentId)~="string" then return {released=0} end
     local released=0
     local function clear(referenceKey,ownerTag)
-        if self.capability~=nil and type(self.capability.clearRegulationLeaseByReference)=="function" and type(referenceKey)=="string" then
-            self.capability:clearRegulationLeaseByReference(referenceKey,ownerTag)
+        if self.regulationControl~=nil and type(self.regulationControl.clearRegulationLeaseByReference)=="function" and type(referenceKey)=="string" then
+            self.regulationControl:clearRegulationLeaseByReference(referenceKey,ownerTag)
         end
     end
     local actionSpace=self.d0146ActionSpaceLease

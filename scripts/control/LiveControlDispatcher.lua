@@ -8,10 +8,10 @@ local function logWarning(formatText,...)
 end
 
 function Dispatcher.new(runtime)
-    return setmetatable({runtime=runtime,capability=nil,cooperativePassageControl=nil,terminalEgressControl=nil,obstructionRelocationControl=nil,outcomes={},dispatchCount=0},Dispatcher)
+    return setmetatable({runtime=runtime,regulationControl=nil,cooperativePassageControl=nil,terminalEgressControl=nil,obstructionRelocationControl=nil,outcomes={},dispatchCount=0},Dispatcher)
 end
 
-function Dispatcher:setCapability(capability) self.capability=capability end
+function Dispatcher:setRegulationControl(control) self.regulationControl=control end
 function Dispatcher:setCooperativePassageControl(control) self.cooperativePassageControl=control end
 function Dispatcher:setTerminalEgressControl(control) self.terminalEgressControl=control end
 function Dispatcher:setObstructionRelocationControl(control) self.obstructionRelocationControl=control end
@@ -26,8 +26,8 @@ function Dispatcher:getObstructionRelocationObservation()
     return nil
 end
 
-function Dispatcher:getCapabilityObservation()
-    if self.capability~=nil and type(self.capability.getControlExecutionObservation)=="function" then return self.capability:getControlExecutionObservation() end
+function Dispatcher:getRegulationControlObservation()
+    if self.regulationControl~=nil and type(self.regulationControl.getControlExecutionObservation)=="function" then return self.regulationControl:getControlExecutionObservation() end
     return nil
 end
 
@@ -42,9 +42,9 @@ end
 function Dispatcher:dispatch(request,candidate)
     if request==nil then return false,"CONTROL_REQUEST_REQUIRED" end
     if request.capability=="REGULATE_SPEED" then
-        local capability=self.capability
-        if capability==nil or type(capability.executeControlRequest)~="function" then return false,"REGULATION_CONTROL_CAPABILITY_UNAVAILABLE" end
-        local started,result=capability:executeControlRequest(request,candidate)
+        local control=self.regulationControl
+        if control==nil or type(control.executeControlRequest)~="function" then return false,"REGULATION_CONTROL_CAPABILITY_UNAVAILABLE" end
+        local started,result=control:executeControlRequest(request,candidate)
         if started==true then self.dispatchCount=self.dispatchCount+1 end
         return started,result
     end

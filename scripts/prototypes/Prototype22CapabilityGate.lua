@@ -80,13 +80,6 @@ local function lower(value)
     return string.lower(tostring(value or ""))
 end
 
-local migratedBoundedAuthorityOwnerTags = {
-    D0141_FOLLOWER_BOUNDARY=true,
-    D0146_ACTION_SPACE_CONSERVATION=true,
-    FORWARD_INTERSECTION_INTENT_REVELATION=true,
-    D0147_PROTECTED_YIELD=true
-}
-
 function Probe.new(runtime)
     return setmetatable({
         runtime = runtime,
@@ -352,94 +345,6 @@ function Probe:_cancelToHold()
     run.kind="HOLD"; run.phase="CANCEL_HOLD"; run.holdEffectLogged=false
     self:_setHud("OTM P22 — CANCEL HOLD",run.vehicleName.." remains stopped","Use release when safe")
     return string.format("P22 cancelled active capability for %s; HOLD retained. Use 'otmP22 release' when safe",run.vehicleName)
-end
-
-function Probe:_vehicleForReferenceKey(ref)
-    if ref == nil then return nil end
-    local run=self.run
-    if run~=nil then
-        if run.referenceKey==ref then return run.vehicle end
-    end
-    local monitor=self.releasedMonitor
-    if monitor~=nil then
-        if monitor.referenceKey==ref then return monitor.vehicle end
-    end
-    for _,vehicle in OuttaMyWay.ValueRecord.ipairs(activeVehicles()) do
-        if referenceKey(vehicle)==ref then return vehicle end
-    end
-    return nil
-end
-
--- Raw Control-execution Observation only.  The Capability reports what bounded
--- mechanism is currently executing; it does not decide whether that state is
--- traffic-relevant. Situation Assessment owns that semantic promotion.
-function Probe:getVehicleControlObservation(vehicle)
-    local state=self.driveAuthority and self.driveAuthority:getState(vehicle) or nil
-    return {
-        mode=state and state.mode or nil,ownerTag=state and state.ownerTag or nil,
-        regulationSpeedKmh=state and state.regulationSpeedKmh or nil,actualSpeedKmh=vehicle and actualSpeedKmh(vehicle) or nil,
-        driveCalls=state and state.driveCalls or 0,lastInputMaxSpeed=state and state.lastInputMaxSpeed or nil,
-        lastOutputMaxSpeed=state and state.lastOutputMaxSpeed or nil,lastInputForward=state and state.lastInputForward or nil,
-        provenance={source="Prototype22CapabilityGate",layer="CONTROL_CAPABILITY_OBSERVATION",semanticAuthority=false}
-    }
-end
-
--- Reference-scoped raw Control observation for the live dispatcher. This exposes
--- only whether the already-authorised Regulation actuator has actually been
--- consumed by GIANTS and the participant's measured speed; it grants no traffic
--- or escalation authority by itself.
-function Probe:getVehicleControlObservationByReference(referenceKey)
-    local vehicle=self:_vehicleForReferenceKey(referenceKey)
-    if vehicle==nil then return nil end
-    return self:getVehicleControlObservation(vehicle)
-end
-
-function Probe:executeControlRequest(request,candidate)
-    OuttaMyWay.ValueRecord.assertType(request,"ControlRequest")
-    if self.runtime==nil then return false,"RUNTIME_UNAVAILABLE" end
-    local commitment=self.runtime.commitments:get(request.commitmentId)
-    if commitment==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then return false,"CONTROL_REQUEST_COMMITMENT_NOT_LIVE" end
-    if commitment.effectiveActuationCompositionId~=request.effectiveActuationCompositionId then return false,"CONTROL_REQUEST_COMPOSITION_STALE" end
-    local token=nil
-    for _,candidateToken in OuttaMyWay.ValueRecord.ipairs(self.runtime.authorities:tokensForCommitment(request.commitmentId)) do
-        if candidateToken.identity==request.authorityToken and candidateToken.assemblyId==request.assemblyId then token=candidateToken break end
-    end
-    if token==nil or self.runtime.authorities:validate(token)~=true then return false,"CONTROL_REQUEST_AUTHORITY_TOKEN_STALE" end
-    local target=request.target or {}
-
-    if request.capability=="REGULATE_SPEED" then
-        if migratedBoundedAuthorityOwnerTags[tostring(target.ownerTag)]==true and request.boundedAuthorityId==nil then return false,"BOUNDED_AUTHORITY_GRANT_REQUIRED" end
-        if request.boundedAuthorityId~=nil then
-            local ok,reason=self.runtime.boundedAuthority:validateRequest(request)
-            if ok~=true then return false,reason end
-        end
-        if target.kind~="P22_REGULATION_LEASE" or type(target.vehicleReferenceKey)~="string" or type(target.ownerTag)~="string" then return false,"CONTROL_REQUEST_TARGET_UNSUPPORTED" end
-        local vehicle=self:_vehicleForReferenceKey(target.vehicleReferenceKey)
-        if vehicle==nil then return false,"CONTROL_REQUEST_VEHICLE_UNAVAILABLE" end
-        if target.operation=="APPLY" then
-            if commitment.state~="ACTIVE" then return false,"CONTROL_REQUEST_COMMITMENT_NOT_ACTIVE" end
-            local speed=tonumber(target.maxSpeedKmh)
-            if speed==nil or speed<0 then return false,"CONTROL_REQUEST_REGULATION_SPEED_INVALID" end
-            local ok,reason=self.driveAuthority:setRegulationLease(vehicle,speed,target.ownerTag)
-            if not ok then return false,reason end
-            return true,"REGULATION_LEASE_APPLIED"
-        elseif target.operation=="RELEASE" then
-            self.driveAuthority:clearRegulationLease(vehicle,target.ownerTag)
-            return true,"REGULATION_LEASE_RELEASED"
-        end
-        return false,"CONTROL_REQUEST_REGULATION_OPERATION_UNSUPPORTED"
-    end
-
-    return false,"P22_ALIGNED_DISPATCH_CAPABILITY_UNSUPPORTED"
-end
-
--- Fail-safe Control cleanup may remove an already-owned bounded lease when its
--- central Authority token has expired. This cannot grant or tighten authority.
-function Probe:clearRegulationLeaseByReference(vehicleReferenceKey,ownerTag)
-    local vehicle=self:_vehicleForReferenceKey(vehicleReferenceKey)
-    if vehicle==nil then return false,"CONTROL_CLEANUP_VEHICLE_UNAVAILABLE" end
-    self.driveAuthority:clearRegulationLease(vehicle,ownerTag)
-    return true,"CONTROL_CLEANUP_RELEASED"
 end
 
 function Probe:_statusText()

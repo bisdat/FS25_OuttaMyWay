@@ -115,6 +115,7 @@ load("scripts/control/TerminalEgressControl.lua")
 load("scripts/authority/ResolutionSpaceProgressionEnvelope.lua")
 load("scripts/authority/RegulationBoundedAuthority.lua")
 load("scripts/control/GuardedRecoveryCompatibility.lua")
+load("scripts/control/RegulationControl.lua")
 load("scripts/responsibility/ResolutionCommitmentAdapter.lua")
 load("scripts/responsibility/ResponsibilityTransitionAuthority.lua")
 load("scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua")
@@ -777,14 +778,14 @@ end)
 
 test("Bounded Authority accepts Candidate-supplied composition identity without EC convention",function()
     local runtime,commitment,token,current=boundedAuthorityRegulationFixture({compositionId="candidate-composition:truthful-link"})
-    local grant=activeGrant(runtime,current,commitment,token,{kind="P22_REGULATION_LEASE",vehicleReferenceKey="ref:ba-a",ownerTag="D0146_ACTION_SPACE_CONSERVATION",maxSpeedKmh=5,governingPurpose="BA_TEST_REGULATION"})
+    local grant=activeGrant(runtime,current,commitment,token,{kind="REGULATION_LEASE",vehicleReferenceKey="ref:ba-a",ownerTag="D0146_ACTION_SPACE_CONSERVATION",maxSpeedKmh=5,governingPurpose="BA_TEST_REGULATION"})
     equal(grant.effectiveActuationCompositionId,"candidate-composition:truthful-link")
     local request=OuttaMyWay.ControlRequest.new({
         identity="CR-BA-COMPOSITION",
         commitmentId=commitment.identity,
         assemblyId=token.assemblyId,
         capability="REGULATE_SPEED",
-        target={kind="P22_REGULATION_LEASE",operation="APPLY",vehicleReferenceKey="ref:ba-a",ownerTag="D0146_ACTION_SPACE_CONSERVATION",maxSpeedKmh=5,governingPurpose="BA_TEST_REGULATION"},
+        target={kind="REGULATION_LEASE",operation="APPLY",vehicleReferenceKey="ref:ba-a",ownerTag="D0146_ACTION_SPACE_CONSERVATION",maxSpeedKmh=5,governingPurpose="BA_TEST_REGULATION"},
         authorityToken=token.identity,
         boundedAuthorityId=grant.identity,
         operationalPictureEpoch=220,
@@ -817,7 +818,7 @@ end)
 
 test("Rejected Bounded Authority update removes successor while predecessor remains current",function()
     local runtime,commitment,token,current=boundedAuthorityRegulationFixture()
-    local oldGrant=activeGrant(runtime,current,commitment,token,{kind="P22_REGULATION_LEASE",vehicleReferenceKey="ref:ba-a",ownerTag="D0146_ACTION_SPACE_CONSERVATION",maxSpeedKmh=20,governingPurpose="BA_TEST_REGULATION"})
+    local oldGrant=activeGrant(runtime,current,commitment,token,{kind="REGULATION_LEASE",vehicleReferenceKey="ref:ba-a",ownerTag="D0146_ACTION_SPACE_CONSERVATION",maxSpeedKmh=20,governingPurpose="BA_TEST_REGULATION"})
     local envelope=OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(100,20,0.75,1)
     local lease={commitmentId=commitment.identity,conflictIdentity="REL-BA",regulatedAssemblyId=token.assemblyId,regulatedReferenceKey="ref:ba-a",
         protectedAssemblyId="AS-BA-B",protectedReferenceKey="ref:ba-b",governingPurpose="BA_TEST_REGULATION",authorityTokenId=token.identity,
@@ -840,14 +841,14 @@ end)
 
 test("Accepted Bounded Authority update retires predecessor only after successor Control acceptance",function()
     local runtime,commitment,token,current=boundedAuthorityRegulationFixture()
-    local oldGrant=activeGrant(runtime,current,commitment,token,{kind="P22_REGULATION_LEASE",vehicleReferenceKey="ref:ba-a",ownerTag="D0146_ACTION_SPACE_CONSERVATION",maxSpeedKmh=20,governingPurpose="BA_TEST_REGULATION"})
+    local oldGrant=activeGrant(runtime,current,commitment,token,{kind="REGULATION_LEASE",vehicleReferenceKey="ref:ba-a",ownerTag="D0146_ACTION_SPACE_CONSERVATION",maxSpeedKmh=20,governingPurpose="BA_TEST_REGULATION"})
     local envelope=OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(100,20,0.75,1)
     local lease={commitmentId=commitment.identity,conflictIdentity="REL-BA",regulatedAssemblyId=token.assemblyId,regulatedReferenceKey="ref:ba-a",
         protectedAssemblyId="AS-BA-B",protectedReferenceKey="ref:ba-b",governingPurpose="BA_TEST_REGULATION",authorityTokenId=token.identity,
         boundedAuthorityId=oldGrant.identity,currentCapKmh=20,progressionEnvelope=envelope,actuationActive=true}
     local acceptedGrantId=nil
     local dispatcher=runtime.regulationBoundedAuthority
-    runtime:setLiveControlCapability({executeControlRequest=function(self,request,candidate)
+    runtime:setRegulationControl({executeControlRequest=function(self,request,candidate)
         equal(runtime.boundedAuthority:isCurrent(oldGrant.identity),true)
         acceptedGrantId=request.boundedAuthorityId
         return true,"ACCEPTED"
@@ -2716,7 +2717,7 @@ test("D-0141 aligned follower Regulation travels Situation Candidate Decision Co
     local capability={}
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,request.target.operation end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local firstBase=d0141Picture(d0141Record(12,nil,nil),nil)
     local first=runtime.liveTrafficCandidateSupport:attach(firstBase,headOnTestSnapshot())
@@ -2832,7 +2833,7 @@ test("D-0141 follower and D-0123 Guarded-Recovery Regulation purposes share auth
     local capability={}
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,request.target.operation end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local first=runtime.liveTrafficCandidateSupport:attach(d0141Picture(d0141Record(14,nil,nil),nil),headOnTestSnapshot())
     local firstEval=runtime:evaluateSealedOperationalPicture(first)
@@ -3101,7 +3102,7 @@ test("architecture alignment routes D-0123 through Situation Candidate Decision 
         return true,tostring(request.target and request.target.operation or "ACCEPTED")
     end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local function guardPicture(status,guardReason)
         local repId="REP-GUARD-"..status
@@ -3975,7 +3976,7 @@ test("Forward Intersection applies fixed one kilometre per hour and releases on 
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) cleared=cleared+1; return true end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
     local picture=forwardIntersectionPicture(true)
     local supported=runtime.liveTrafficCandidateSupport:attach(picture,headOnTestSnapshot())
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
@@ -4061,7 +4062,7 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     local capability={}
     function capability:executeControlRequest(request,candidate) regulationRequests[#regulationRequests+1]=request; return true,"ACCEPTED" end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local base=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(base,headOnTestSnapshot())
@@ -4137,7 +4138,7 @@ local function followerResponsibilityFixture()
         return true
     end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
     local record=d0141Record(12,nil,nil)
     record.pairKey="AS-A|AS-B"; record.leaderAssemblyId="AS-A"; record.followerAssemblyId="AS-B"
     record.leaderReferenceKey="vehicle-root:101"; record.followerReferenceKey="vehicle-root:201"
@@ -4311,7 +4312,7 @@ test("Action-Space responsibility replacement preflight refusal leaves retained 
     function capability:executeControlRequest(request,candidate) return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
     local base=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(base,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
@@ -4367,7 +4368,7 @@ test("Action-Space responsibility authority preserves identity for reactivation 
     function capability:executeControlRequest(request,candidate) return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
     local picture=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(picture,headOnTestSnapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
@@ -4404,7 +4405,7 @@ test("D0146 Resolution-Space role migration moves actuation under the same Commi
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) cleared[#cleared+1]={referenceKey=referenceKey,ownerTag=ownerTag}; return true end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local initial=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(initial,headOnTestSnapshot())
@@ -4465,7 +4466,7 @@ test("D0155 Resolution-Space Progression Envelope tightens prospectively as ordi
     function capability:getVehicleControlObservationByReference(referenceKey)
         return {mode="REGULATE",ownerTag="D0146_ACTION_SPACE_CONSERVATION",regulationSpeedKmh=25,actualSpeedKmh=self.actualSpeedKmh,driveCalls=1,lastOutputMaxSpeed=25,lastInputForward=true}
     end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
@@ -4500,7 +4501,7 @@ test("D0198 D0155 bare NO_CURRENT_EXCURSION does not quiesce while protected par
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
@@ -4538,7 +4539,7 @@ test("D0197 D0155 positive NOT_REQUIRED quiesces actuation while the relationshi
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
@@ -4581,7 +4582,7 @@ test("D0197 D0155 quiescent actuation reactivates on positive REGULATE_SUPPORTED
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
@@ -4640,7 +4641,7 @@ test("D0155 exhausted ordinary space retains 1 kmh Intent-Revelation Creep inste
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
@@ -4678,7 +4679,7 @@ test("D0155 Reverse-Created Resolution Reserve is not immediately spendable ordi
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
@@ -4722,7 +4723,7 @@ test("D0155 low admission speed seeds the envelope instead of suppressing the Re
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local values=OuttaMyWay.ValueRecord.toTable(d0146ActionSpacePicture())
     values.identity="OP-D0155-LOW-SPEED-ADMISSION"; values.epoch=796
@@ -4757,7 +4758,7 @@ test("D0197 transient reverse non-closing evidence retains D0146 obligation but 
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
@@ -4792,7 +4793,7 @@ test("D0197 Potential conflict may retain D0146 obligation while current D0155 a
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
@@ -4829,7 +4830,7 @@ test("D0197 Transitional Continuation retains D0146 obligation but does not itse
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())
@@ -4865,7 +4866,7 @@ test("D0146 Action-Space Regulation releases only on positive settled relationsh
     function capability:executeControlRequest(request,candidate) requests[#requests+1]=request; return true,"ACCEPTED" end
     function capability:clearRegulationLeaseByReference(referenceKey,ownerTag) return true end
     function capability:getControlExecutionObservation() return nil end
-    runtime:setLiveControlCapability(capability)
+    runtime:setRegulationControl(capability)
 
     local active=d0146ActionSpacePicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(active,headOnTestSnapshot())

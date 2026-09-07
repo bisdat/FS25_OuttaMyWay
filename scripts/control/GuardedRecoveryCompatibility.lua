@@ -32,8 +32,8 @@ function Compatibility.new(runtime)
     return setmetatable({runtime=runtime,guardedRecoveryLease=nil,guardedRecoveryApplyCount=0,guardedRecoveryReleaseCount=0,outcomes={}},Compatibility)
 end
 
-function Compatibility:_capability()
-    return self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher.capability or nil
+function Compatibility:_regulationControl()
+    return self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher.regulationControl or nil
 end
 
 function Compatibility:_outcome(request,status,effect,failure)
@@ -47,7 +47,7 @@ end
 function Compatibility:_legacyRegulationRequest(picture,evaluated,candidate,commitment,token,bridge,operation)
     local speed=nil
     if operation=="APPLY" then speed=OuttaMyWay.D0123_NATIVE_HANDOVER_CREEP_KMH or 1.0 end
-    local target={kind="P22_REGULATION_LEASE",operation=operation,vehicleReferenceKey=bridge.progressReferenceKey,ownerTag=D0123_OWNER_TAG,
+    local target={kind="REGULATION_LEASE",operation=operation,vehicleReferenceKey=bridge.progressReferenceKey,ownerTag=D0123_OWNER_TAG,
         maxSpeedKmh=speed,governingPurpose=bridge.governingPurpose}
     local request=OuttaMyWay.ControlRequest.new({
         identity=self.runtime.identities:issue("CONTROL_REQUEST"),commitmentId=commitment.identity,assemblyId=bridge.progressAssemblyId,capability="REGULATE_SPEED",
@@ -75,7 +75,7 @@ function Compatibility:_releaseGuardedRecoveryLease(picture,evaluated,reason)
         if candidateToken.assemblyId==lease.progressAssemblyId then token=candidateToken break end
     end
     local request,outcome=nil,nil
-    local capability=self:_capability()
+    local capability=self:_regulationControl()
     if commitment~=nil and token~=nil and self.runtime.authorities:validate(token)==true and capability~=nil and type(capability.executeControlRequest)=="function" then
         local syntheticCandidate={preconditions={},invalidationConditions={}}
         request=self:_legacyRegulationRequest(picture,evaluated,syntheticCandidate,commitment,token,{
@@ -120,7 +120,7 @@ function Compatibility:dispatch(picture,evaluated,candidate)
         return {status="MAINTAINED",reason="D0123_POSITIVE_PURPOSE_PERSISTS",guardedRecovery=true,commitmentId=bridge.commitmentId}
     end
     if currentLease~=nil then self:_releaseGuardedRecoveryLease(picture,evaluated,"GUARDED_RECOVERY_CONTEXT_CHANGED") end
-    local capability=self:_capability()
+    local capability=self:_regulationControl()
     if capability==nil then return {status="NO_DISPATCH",reason="CONTROL_CAPABILITY_UNAVAILABLE",guardedRecovery=true} end
 
     local acquired,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.acquireSupportingRegulationAuthority(self.runtime,bridge.commitmentId,bridge.progressAssemblyId,{governingPurpose=bridge.governingPurpose})
@@ -142,7 +142,7 @@ end
 function Compatibility:retireTrafficLeaseForCommitment(commitmentId,reason)
     local lease=self.guardedRecoveryLease
     if type(commitmentId)~="string" or lease==nil or lease.commitmentId~=commitmentId then return {released=0} end
-    local capability=self:_capability()
+    local capability=self:_regulationControl()
     if capability~=nil and type(capability.clearRegulationLeaseByReference)=="function" then
         capability:clearRegulationLeaseByReference(lease.progressReferenceKey,D0123_OWNER_TAG)
     end

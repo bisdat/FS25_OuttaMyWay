@@ -117,9 +117,9 @@ function Runtime:initialize()
     print(string.format("FS25_OuttaMyWay %s loaded; D-0195 Assembly Axis Settlement + D-0194 Two-Stage Terminal Courtesy TEST: Phase-8A settles on captured axis without reproducing Phase-5 articulation; terminal first obstruction -> centroid, renewed obstruction -> one final boundary settlement; no third automatic relocation; D-0192/D-0188/D-0186 remain active; automatic terminal-yield gate=%s",tostring(OuttaMyWay.BUILD_LABEL or ("v"..tostring(OuttaMyWay.VERSION))),tostring(OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS==true)))
 end
 
-function Runtime:setLiveControlCapability(capability)
-    self.liveControlDispatcher:setCapability(capability)
-    if self.regulationBoundedAuthority~=nil then self.regulationBoundedAuthority:setCapability(capability) end
+function Runtime:setRegulationControl(control)
+    self.liveControlDispatcher:setRegulationControl(control)
+    if self.regulationBoundedAuthority~=nil then self.regulationBoundedAuthority:setRegulationControl(control) end
 end
 function Runtime:markAutonomousHeadOnDispatched(governingRequirementKey)
     self.liveTrafficCandidateSupport:markAutonomousHeadOnDispatched(governingRequirementKey)

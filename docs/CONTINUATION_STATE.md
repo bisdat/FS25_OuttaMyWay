@@ -4,7 +4,7 @@ Continuation State is the compact, replace-in-place description of the project's
 
 ## Repository authority
 
-- Accepted Repository State: `main` after PR #70 merge, commit `0d99e635e233dfd3d5ba51f6e21708d5eddfe021`.
+- Accepted Repository State baseline for this increment: `main` after PR #72 merge, commit `0f6d8aca7f3765d90ac07c580f08dec67f3d7779`.
 - Canonical authority remains **v0.3.0.0**.
 - Last accepted non-canonical playable identity is **`0.3.0.20 TEST — CANDIDATE SUPPORT PROJECTION`**.
 - PR #70 passed Offline Validation Run #187 blocking Structural contracts and changed-runtime Lua syntax, then passed owner GIANTS Reality validation before merge.
@@ -15,7 +15,7 @@ Continuation State is the compact, replace-in-place description of the project's
 - Phase 11 — Reduce `LiveControlDispatcher` to Authorised Control Routing — **COMPLETE**.
 - Phase 12 — Retire superseded generic Commitment/orchestration only when no supported path relies on it — **COMPLETE**.
 - Phase 13 — Simplify Candidate/Constraint/Decision only where evidence proves duplication — **COMPLETE**.
-- Phase 14 — Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming — **NEXT / NOT STARTED**.
+- Phase 14 — Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming — **IN PROGRESS — 14.1 REGULATION CONTROL BOUNDARY**.
 - Phase 15 — Whole-system validation and architecture-to-runtime review — **NOT STARTED**.
 
 Read [Phase 13 Closure Audit](architecture/PHASE_13_CLOSURE_AUDIT.md) for the closure evidence and responsibility verdicts.
@@ -109,13 +109,8 @@ These are not Phase-13 closure blockers.
 
 ## Immediate next action
 
-Begin **Phase 14** with an architecture/placement audit of remaining prototype/diagnostic production mechanics, runtime scoping and naming.
+Validate **Phase 14.1 — Production Regulation Control Boundary**.
 
-Do not jump directly to implementation. The Phase-14 audit should first distinguish:
+The candidate separates production `REGULATE_SPEED` request execution, raw execution observation and fail-safe lease cleanup from the manual `Prototype22CapabilityGate`, while deliberately reusing the exact existing `Prototype22DriveAuthority` mechanism.
 
-- current production responsibility that is merely named like a prototype/test artefact;
-- genuinely diagnostic or compatibility machinery still executing in production;
-- runtime integration that belongs in a more truthful scope;
-- names that lag accepted architecture but do not justify behavioural change.
-
-Only evidence-backed mismatches should become Phase-14 engineering increments.
+Do not begin Phase 14.2 until 14.1 has blocking CI evidence and owner GIANTS behaviour-preservation smoke. The minimum Reality smoke is one ordinary Regulation apply/release episode plus one ordinary Cooperative Passage proving the shared donor remains intact.
