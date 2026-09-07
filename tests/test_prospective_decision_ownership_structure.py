@@ -58,7 +58,7 @@ def test_phase13_decision_owns_inter_group_compatibility_and_no_constraint_fallb
         "candidateGroupKey(candidate)==groupKey",
         "projectedInventory",
         "lowerPrecedenceConstraintFallback=false",
-        "selected governing support group contains no admissible candidate",
+        "Selected governing support group contains no admissible candidate",
     ):
         assert token in selector
     assert "TrafficPolicemanDecisionPolicy:select" in selector
