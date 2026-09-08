@@ -9,6 +9,7 @@ def test_relocation_serialization_is_shared_execution_vocabulary_not_d0147_prove
     control = (ROOT / "scripts" / "control" / "RegulationControl.lua").read_text(encoding="utf-8")
     terminal = (ROOT / "scripts" / "candidates" / "TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
     obstruction = (ROOT / "scripts" / "candidates" / "ObstructionRelocationCandidateSupport.lua").read_text(encoding="utf-8")
+    completed_transition = (ROOT / "scripts" / "responsibility" / "CompletedObstructionResponsibilityTransition.lua").read_text(encoding="utf-8")
 
     for token in (
         'RELOCATION_SERIALIZATION_OWNER_TAG="RELOCATION_SERIALIZATION"',
@@ -29,6 +30,10 @@ def test_relocation_serialization_is_shared_execution_vocabulary_not_d0147_prove
     assert "COMPLETED_OBSTRUCTION_RELOCATION_SERIALIZATION_START_FAILED" in runtime
     assert "OBSTRUCTION_RELOCATION_SERIALIZATION_START_FAILED" in runtime
     assert "serializedBeneficiaryAssemblyIds" in runtime
+    assert "RELOCATION_SERIALIZATION_START_FAILED" in runtime
+    assert "PROTECTED_YIELD_START_FAILED" not in runtime
+    assert "beforeRelocationSerialization=true beforePhysicalDispatch=true" in completed_transition
+    assert "beforeProtectedYield" not in completed_transition
 
     assert "relocationSerializationBeneficiaries" in terminal
     assert "relocationSerializationBeneficiaries" in obstruction

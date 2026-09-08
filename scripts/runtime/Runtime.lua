@@ -400,7 +400,7 @@ function Runtime:_continueCompletedObstruction(picture,evaluated,applied)
     if bridge.phase=="INFIELD" then
         local protected,protectedReason=self.regulationBoundedAuthority:_applyRelocationSerialization(picture,evaluated,candidate,applied.commitment,applied.currentResponsibility,bridge)
         if protected~=true then
-            self.regulationBoundedAuthority:_releaseRelocationSerialization(applied.commitment.identity,"PROTECTED_YIELD_START_FAILED")
+            self.regulationBoundedAuthority:_releaseRelocationSerialization(applied.commitment.identity,"RELOCATION_SERIALIZATION_START_FAILED")
             local terminal,settleReason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self,applied.commitment.identity,"OBJECTIVE_FAILED",{kind="COMPLETED_OBSTRUCTION_RELOCATION_SERIALIZATION_START_FAILED",reason=protectedReason},bridge.terminalEpisodeId)
             runtimeLogWarning("COMPLETED_OBSTRUCTION_RELOCATION_SERIALIZATION_REJECTED commitment=%s episode=%s reason=%s settlement=%s",tostring(applied.commitment.identity),tostring(bridge.terminalEpisodeId),tostring(protectedReason),tostring(settleReason))
             return {status="REJECTED",reason=protectedReason,terminalEgress=true,commitment=terminal or applied.commitment}

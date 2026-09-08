@@ -3481,3 +3481,13 @@ Issue #91 owns the separate evidence-led retention/retirement question and does 
 The audit also found that the newly added focused `test_phase14_relocation_serialization_structure.py` was absent from the workflow's explicit structural-test command. This is another instance of the already-established **Validation Inventory Is Executable Topology** rule: adding an executable contract file does not make CI execute it when the workflow inventory is explicit.
 
 **Decision:** reconcile only those four stale assertions and add the focused structural contract to the workflow inventory. Production Lua and `.31` TEST identity remain unchanged. Ordinary suite execution remains GitHub Actions responsibility; no local pytest run substitutes for the next independent CI result.
+
+## 2026-09-08 — Phase 14.6B: Relocation Serialization materially active in `.31` Reality
+
+**Observe:** the `.31` Terminal Egress smoke supplied the missing current-architecture necessity evidence. Immediately before final Terminal Egress translation, Patriot was productive and travelling at about 25 km/h while GIANTS continued to command 25 km/h. At `19:25:46.498`, `RELOCATION_SERIALIZATION_APPLIED` placed an exact `0.00 km/h` lease on Patriot. Patriot decelerated to zero and remained held while Condor translated. At `19:25:55.673`, `RELOCATION_SERIALIZATION_RELEASE ... released=1`; Patriot subsequently resumed.
+
+**Discover:** **Relocation Serialization Materially Active.** The mechanism did not merely apply to an already-stationary beneficiary. It materially changed an actively progressing GIANTS-owned worker to held while the non-active blocker moved. This is direct current Reality evidence for **RETAIN** and resolves the central evidence question in Issue #91.
+
+**Separate observation:** the same `.31` Reality/audit exposed two residual production vocabulary surfaces: `beforeProtectedYield=true` in `COMPLETED_OBSTRUCTION_TRANSITION_UPSTREAM`, and Runtime rollback reason `PROTECTED_YIELD_START_FAILED` after failed Relocation Serialization application. Neither changes control semantics; both retain obsolete implementation vocabulary.
+
+**Decision:** retain Relocation Serialization. Correct both residual terms inside Phase 14.6B. Because production Lua bytes change, advance to fresh `.32 TEST` identity even though behaviour is intentionally unchanged. This is not a 14.6D tranche.

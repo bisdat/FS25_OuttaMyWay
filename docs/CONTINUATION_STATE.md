@@ -6,10 +6,10 @@ Continuation State is the compact, replace-in-place description of the project's
 
 - Accepted Repository State baseline for this increment: `main` after PR #88 merge, commit `304908d55ce84fa75ec60cece0a37a7ee364c5c9`.
 - Canonical authority remains **v0.3.0.0**.
-- This branch advances executable identity to **`0.3.0.31 TEST — RELOCATION SERIALIZATION VOCABULARY GRADUATION`**; it makes no canonical claim.
+- This branch advances executable identity to **`0.3.0.32 TEST — RELOCATION SERIALIZATION RESIDUAL VOCABULARY RECONCILIATION`**; it makes no canonical claim.
 - Protected `main` requires both `Structural contracts` and `Lua offline behavioural contracts`.
-- Phase 14 remains **ACTIVE**. Phase 14.6A is accepted repository state. Phase 14.6B is the current bounded vocabulary-graduation increment.
-- Issue #91 separately owns the evidence question of whether Relocation Serialization remains materially necessary; that question does not block the strangler.
+- Phase 14 remains **ACTIVE**. Phase 14.6A is accepted repository state. Phase 14.6B remains the current bounded vocabulary-graduation increment; `.32` reconciles the residual production vocabulary exposed by `.31` Reality.
+- Issue #91 now has direct `.31` Reality evidence that Relocation Serialization is materially active; current disposition is **RETAIN**.
 
 ## Documentation responsibility correction
 
@@ -82,7 +82,7 @@ This branch removes the `TerminalEgressControl` / `ObstructionRelocationControl`
 
 Relocation Serialization preserves the existing `PROGRESS_ACTUATION` + Bounded Authority + `REGULATE_SPEED` at exactly `0.0 km/h` mechanics. **Relocation Serialization != Relocation Clearance**: holding the beneficiary prevents concurrent beneficiary progression but does not make its occupied physical space available to the relocating blocker.
 
-The mechanism has historical Reality evidence for necessity and recent Reality evidence that it still executes, but recent evidence does not prove that it remains materially active rather than redundant. Issue #91 owns that separate retention/retirement evidence question. Phase 14.6B preserves behaviour and changes production vocabulary only.
+The `.31` Terminal Egress smoke resolved the modern necessity question: Patriot was travelling at about 25 km/h under a continuing GIANTS 25 km/h command when Relocation Serialization applied an exact 0 km/h lease, materially stopped Patriot while Condor translated, then released the lease before Patriot resumed. **Relocation Serialization Materially Active** is current Reality evidence for **RETAIN**. Issue #91 records that disposition.
 
 `TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M` and `TERMINAL_EGRESS_MOVE_TIMEOUT_MS` are acceptable execution-owned constants if they continue to describe one shared Terminal Egress policy. Do not create per-trigger copies merely because two trigger paths consume the same execution.
 
@@ -115,7 +115,7 @@ The next executable tranche must preserve:
 - current first-courtesy 60 m Interior Settlement policy;
 - completed-obstruction second-courtesy Final Boundary Settlement rules;
 - current Causal Obstruction first-courtesy-only scope and fresh-Situation reassessment;
-- Relocation Serialization beneficiary hold behaviour, pending the separate necessity evidence in Issue #91;
+- Relocation Serialization beneficiary hold behaviour, now directly validated as materially active in `.31` Reality;
 - Player Claim and source-AI supersession;
 - compaction/configuration behaviour;
 - actuation neutralisation and Vehicle Activity Context release;
@@ -131,20 +131,18 @@ These remain separate from the current Phase-14.6 placement/vocabulary work.
 
 ## Immediate next action
 
-Phase 14.6B is the current bounded increment: graduate the shared D-0147 `Protected Yield` execution vocabulary to **Relocation Serialization** without changing behaviour.
+Phase 14.6B remains the current bounded increment. `.31` completed the functional Relocation Serialization vocabulary graduation and produced positive GIANTS Reality, but that Reality/audit exposed two residual production terms: `beforeProtectedYield=true` in Completed Obstruction transition telemetry and `PROTECTED_YIELD_START_FAILED` in the Runtime rollback reason.
 
-The `.31` implementation must preserve:
+`.32` reconciles those two residual vocabulary surfaces to `beforeRelocationSerialization=true` and `RELOCATION_SERIALIZATION_START_FAILED`. It advances TEST identity because production Lua bytes change. It must not alter:
 
 - the exact `0.0 km/h` beneficiary hold;
 - `PROGRESS_ACTUATION` ownership and Bounded Authority enforcement;
 - Completed Obstruction and current Causal Obstruction trigger/lifecycle differences;
-- all Terminal Egress geometry, courtesy, compaction, Player Claim/source-AI supersession and neutralisation behaviour;
-- Regulation and Cooperative Passage behaviour.
+- Terminal Egress geometry, courtesy, compaction, Player Claim/source-AI supersession or neutralisation;
+- Regulation or Cooperative Passage behaviour.
 
-Independent GitHub Actions must run both blocking offline suites on the exact proposed commit. After green CI, use a brief GIANTS Reality smoke appropriate to the changed execution surface. The purpose of that smoke is regression confidence, not to settle Issue #91.
+Run both blocking GitHub Actions suites on exact `.32` head. After green CI, a minimal GIANTS log-vocabulary confirmation is sufficient; the `.31` smoke already supplied behavioural Reality evidence.
 
-Issue #91 records **Relocation Serialization Applied != Relocation Serialization Materially Active**. Do not retire the mechanism during Phase 14.6B merely because recent happy-path evidence has not demonstrated necessity.
-
-After 14.6B owner acceptance, continue to the bounded Phase 14.6C remaining production vocabulary/ownership reconciliation, then perform the Phase-14 closure review. Issue #90 owns the high-level roadmap through the later Phase-15 architecture <-> code audit.
+Issue #91 now has direct evidence for **RETAIN**: **Relocation Serialization Applied** was also **Relocation Serialization Materially Active**. After 14.6B owner acceptance, continue to Phase 14.6C remaining production vocabulary/ownership reconciliation, then perform the Phase-14 closure review. Issue #90 owns the high-level roadmap through the later Phase-15 architecture <-> code audit.
 
 Contrary Reality updates the architecture rather than being hidden behind compatibility special cases.

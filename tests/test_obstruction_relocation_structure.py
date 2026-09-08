@@ -139,7 +139,7 @@ def test_phase13_test_identity_is_coherent():
     moddesc = read("modDesc.xml")
     main = read("scripts/main.lua")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.31"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.31 TEST — RELOCATION SERIALIZATION VOCABULARY GRADUATION"' in config
-    assert '<version value="0.3.0.31">0.3.0.31</version>' in moddesc
-    assert "v0.3.0.31 TEST — RELOCATION SERIALIZATION VOCABULARY GRADUATION" in main
+    assert 'OuttaMyWay.VERSION = "0.3.0.32"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.32 TEST — RELOCATION SERIALIZATION RESIDUAL VOCABULARY RECONCILIATION"' in config
+    assert '<version value="0.3.0.32">0.3.0.32</version>' in moddesc
+    assert "v0.3.0.32 TEST — RELOCATION SERIALIZATION RESIDUAL VOCABULARY RECONCILIATION" in main

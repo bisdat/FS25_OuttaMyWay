@@ -14,7 +14,7 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 
 - Accepted Repository State baseline for this map: `main` after PR #88 merge, commit `304908d55ce84fa75ec60cece0a37a7ee364c5c9`.
 - Canonical authority remains **v0.3.0.0**.
-- Current branch executable identity is **`0.3.0.31 TEST — RELOCATION SERIALIZATION VOCABULARY GRADUATION`**; acceptance and canonical authority are unchanged until review/merge/Reality evidence says otherwise.
+- Current branch executable identity is **`0.3.0.32 TEST — RELOCATION SERIALIZATION RESIDUAL VOCABULARY RECONCILIATION`**; acceptance and canonical authority are unchanged until review/merge/Reality evidence says otherwise.
 - Strangler Phase 14 is active. The remaining work is current placement/vocabulary reconciliation, not replay of the earlier Phase-14 tranches.
 - Phase 15 whole-system validation and architecture-to-runtime review has not started.
 
@@ -49,7 +49,7 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 | Resolution semantic representation | `scripts/contracts/ResolutionCommitment.lua`, `scripts/responsibility/ResolutionCommitmentAdapter.lua` | PRESERVE |
 | Regulation semantic representation | `scripts/contracts/Regulation.lua` | PRESERVE |
 | Bounded Authority | `scripts/contracts/BoundedAuthorityGrant.lua`, `scripts/authority/BoundedAuthority.lua` | PRESERVE |
-| Regulation physical-authority state | `scripts/authority/RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua` | CURRENT `.31` graduates the shared beneficiary-hold execution vocabulary to Relocation Serialization; necessity remains an evidence question in Issue #91 |
+| Regulation physical-authority state | `scripts/authority/RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua` | CURRENT Relocation Serialization vocabulary is graduated; `.31` Reality demonstrated material beneficiary serialization, supporting RETAIN; `.32` reconciles two residual production vocabulary surfaces |
 | Mechanical actuation exclusivity | `scripts/authority/AuthorityRegistry.lua` | PRESERVE; exclusivity is not semantic permission |
 | Effective actuation composition | `scripts/authority/EffectiveActuationComposition.lua` | PRESERVE |
 | Typed Control boundary | `scripts/contracts/ControlRequest.lua`, `ControlOutcome.lua` | PRESERVE |
@@ -112,11 +112,13 @@ Git and merged PRs preserve how those placements were reached. This map records 
 
 PR #88 accepted **Trigger Provenance != Terminal Egress Execution** and the shared provenance-neutral `TerminalEgressControl`. Completed Obstruction and current Causal Obstruction remain distinct upstream responsibilities.
 
-The remaining shared beneficiary-hold execution support still uses D-0147 `Protected Yield` production vocabulary. Phase 14.6B graduates that implementation identity to **Relocation Serialization** while preserving the exact existing `PROGRESS_ACTUATION` + Bounded Authority + `REGULATE_SPEED 0.0 km/h` mechanics.
+Phase 14.6B graduates the shared beneficiary-hold execution identity from D-0147 `Protected Yield` vocabulary to **Relocation Serialization** while preserving the exact existing `PROGRESS_ACTUATION` + Bounded Authority + `REGULATE_SPEED 0.0 km/h` mechanics.
 
 **Relocation Serialization != Relocation Clearance.** Serialization prevents the active beneficiary from progressing concurrently with an authorised blocker relocation; it does not grant clearance through the beneficiary's current occupancy.
 
-Historical Reality established why this mechanism was introduced. Recent Reality confirms that it still executes but does not establish that it remains materially necessary under the later architecture. Issue #91 owns that retention/retirement evidence question and does not block strangler completion.
+The `.31` GIANTS smoke established **Relocation Serialization Materially Active**: Patriot was progressing at about 25 km/h under a continuing GIANTS 25 km/h command when the zero-speed serialization lease applied, stopped Patriot while Condor translated, then released before Patriot resumed. Issue #91 therefore has direct current Reality evidence for **RETAIN**.
+
+That same smoke/audit exposed two residual production terms: `beforeProtectedYield=true` in `CompletedObstructionResponsibilityTransition` and Runtime rollback reason `PROTECTED_YIELD_START_FAILED`. `.32` corrects only those vocabulary surfaces plus the mandatory TEST identity and executable contracts.
 
 ### Terminal Egress execution consolidation — accepted placement
 
@@ -150,9 +152,9 @@ Do not mix those concerns into the current Phase-14 placement/vocabulary correct
 
 ## Immediate implementation boundary
 
-Phase 14.6B is intentionally limited to **Relocation Serialization vocabulary graduation**.
+Phase 14.6B remains intentionally limited to **Relocation Serialization vocabulary graduation**. `.32` is the residual-vocabulary reconciliation inside that same boundary, not a new subphase.
 
-It changes the shared production owner tag, API/state names, bridge beneficiary vocabulary, execution outcome/failure vocabulary and corresponding executable contracts. It does **not** change:
+The correction changes only the two observed residual production terms plus mandatory TEST identity/current contracts. It does **not** change:
 
 - the `0.0 km/h` hold magnitude;
 - who is serialized;
@@ -163,7 +165,7 @@ It changes the shared production owner tag, API/state names, bridge beneficiary 
 
 Next evidence boundary:
 
-1. blocking Structural + Lua CI on exact `.31` head;
-2. brief GIANTS Reality regression smoke for the changed execution surface;
+1. blocking Structural + Lua CI on exact `.32` head;
+2. minimal GIANTS log-vocabulary confirmation if required;
 3. owner acceptance/merge if evidence remains positive;
-4. continue to Phase 14.6C; Issue #91 separately tracks whether Relocation Serialization should later be retained or retired.
+4. close Issue #91 as RETAIN and continue to Phase 14.6C.
