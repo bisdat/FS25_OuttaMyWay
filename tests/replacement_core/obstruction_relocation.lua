@@ -1,5 +1,5 @@
 local root = arg[1] or "."
-local function load(relativePath) do dofile(root .. "/" .. relativePath) end
+local function load(relativePath) dofile(root .. "/" .. relativePath) end
 
 OuttaMyWay = {}
 load("scripts/config.lua")

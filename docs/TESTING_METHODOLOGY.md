@@ -74,13 +74,32 @@ acceptance. Engineering owns interpretation, and the repository owner's merge
 accepts an Engineering Increment. CI cannot replace appropriately scoped
 in-game Reality validation where a claim depends on GIANTS behaviour.
 
-The `Lua offline observation (non-blocking)` job remains observational while its
-known failures are being reconciled. It must preserve the raw failure outcome;
-the current count must not be encoded as an accepted threshold merely to
-manufacture green status. **Validation Execution Separation** and **Independent
-Execution Preserves Validation Independence** distinguish implementation-local
-checks, independent CI execution, engineering interpretation, owner acceptance,
-and in-game Reality evidence without weakening any test to obtain green CI.
+The `Lua offline observation (non-blocking)` job is observational.
+`continue-on-error` is workflow control only: it permits the workflow to
+continue, but it does not convert a failing Lua observation into a PASS.
+Therefore **Workflow Success != Observation Success**; the workflow summary
+must surface the inner main-harness and focused-harness outcomes explicitly.
+
+Issue #67 established **Test Composition != Accepted Production Topology**:
+an offline harness may become misleading when its composition root, fixtures or
+causal assertions remain bound to retired production concepts even though the
+wrapper still executes. Reconciliation updates the harness to the accepted
+production topology; it must not preserve obsolete expectations merely to
+retain historical pass counts.
+
+At the Issue #67 reconciliation checkpoint on accepted production identity
+`0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE`, the main replacement-
+core observation executes 337 tests with **336 passed / 1 failed**, while the
+focused obstruction-relocation observation is **9 passed / 0 failed**. The sole
+remaining main-harness failure is the independently reproduced production defect
+tracked as Issue #78, **Signed-Zero Canonicalization Leak**. These counts are
+recorded evidence, **not** an accepted failure threshold and not a reason to
+manufacture green status.
+
+**Validation Execution Separation** and **Independent Execution Preserves
+Validation Independence** distinguish implementation-local checks, independent
+CI execution, engineering interpretation, owner acceptance, and in-game Reality
+evidence without weakening any test to obtain green CI.
 
 ### Validation Runtime Contract
 

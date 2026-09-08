@@ -32,7 +32,7 @@ jobs:
         run: python -m pip install pytest
 
       - name: Run structural/source-contract suite
-        run: python -m pytest -q tests/test_replacement_core_structure.py tests/test_obstruction_relocation_structure.py tests/test_constraint_verdict_ownership_structure.py tests/test_candidate_support_projection_structure.py tests/test_prospective_decision_ownership_structure.py tests/test_phase14_regulation_control_structure.py tests/test_phase14_physical_capability_structure.py tests/test_phase14_live_interaction_observation_structure.py tests/test_phase14_non_job_actuation_structure.py tests/test_phase14_runtime_integration_consolidation_structure.py
+        run: python -m pytest -q tests/test_replacement_core_structure.py tests/test_obstruction_relocation_structure.py tests/test_constraint_verdict_ownership_structure.py tests/test_candidate_support_projection_structure.py tests/test_prospective_decision_ownership_structure.py tests/test_phase14_regulation_control_structure.py tests/test_phase14_physical_capability_structure.py tests/test_phase14_live_interaction_observation_structure.py tests/test_phase14_non_job_actuation_structure.py tests/test_phase14_runtime_integration_consolidation_structure.py tests/test_issue67_lua_harness_reconciliation_structure.py
 
   lua-observation:
     name: Lua offline observation (non-blocking)
@@ -135,9 +135,10 @@ jobs:
           {
             echo "## Lua offline observation"
             echo
-            echo "- Existing harness step outcome: \`${{ steps.lua.outcome }}\`"
-            echo "- Focused obstruction-relocation contract outcome: \`${{ steps.obstruction_relocation.outcome }}\`"
-            echo "- This job is intentionally non-blocking while the existing Lua harness failures are being reconciled."
+            echo "- Main replacement-core observation outcome: \`${{ steps.lua.outcome }}\`"
+            echo "- Focused obstruction-relocation observation outcome: \`${{ steps.obstruction_relocation.outcome }}\`"
+            echo "- **Workflow/job success is not evidence that either Lua observation passed.**"
+            echo "- \`continue-on-error\` is workflow control only; inspect the inner outcomes above and the raw logs."
             echo "- No failure-count threshold is encoded as an accepted contract."
             echo "- See the job log for the full harness output."
           } >> "$GITHUB_STEP_SUMMARY"
