@@ -76,7 +76,6 @@ def test_pull_request_template_surfaces_knowledge_trace():
     assert "NEW / KNOWN OPEN / REGRESSION / HISTORICAL" in template
 
 
-
 def test_rendered_text_validation_uses_durable_engine_knowledge_without_unicode_overreach():
     agents=flattened("AGENTS.md")
     knowledge=flattened("docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md")
@@ -87,3 +86,14 @@ def test_rendered_text_validation_uses_durable_engine_knowledge_without_unicode_
     assert "U+2022 BULLET (`•`)" in knowledge
     assert "ASCII-safe `|`" in knowledge
     assert "not a complete Unicode capability map" in knowledge
+
+
+def test_documentation_creation_gate_prevents_phase_history_from_becoming_live_architecture():
+    agents=flattened("AGENTS.md")
+
+    assert "Documentation Creation Gate" in agents
+    assert "Malicious Compliance guard" in agents
+    assert "Engineering Increment Documentation != Durable Architecture" in agents
+    assert "Current Architecture Should Not Require Historical Reconstruction" in agents
+    assert "Reject phase-shaped architecture containers" in agents
+    assert "do not create the new live document" in agents
