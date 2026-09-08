@@ -61,13 +61,16 @@ def test_phase14_5_fresh_and_incumbent_live_cycle_split_is_preserved():
     assert "self.terminalEgressCandidateSupport:attach(processed.picture,processed.snapshot)" in process
     assert "self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot)" in process
 
-def test_phase14_5_d0218_semantics_and_cleanup_remain_in_runtime():
+def test_phase14_5_d0218_semantics_survive_terminal_egress_execution_consolidation():
     runtime=read("scripts/runtime/Runtime.lua")
+    assert "function Runtime:setObstructionRelocationControl" not in runtime
     for token in (
-        "function Runtime:setObstructionRelocationControl",
+        "function Runtime:onTerminalEgressControlCompletion",
         "function Runtime:_obstructionRelocationRequest",
         "function Runtime:onObstructionRelocationCompletion",
         "function Runtime:_dispatchObstructionRelocation",
+        'kind="TERMINAL_EGRESS"',
+        'triggerKind="CURRENT_CAUSAL_OBSTRUCTION"',
         'authorityClass="OBSTRUCTION_RELOCATION_ACTUATION"',
         "historicalJobProvenanceRequired=false",
         "semanticResolutionNotInferred=true",
@@ -83,12 +86,11 @@ def test_phase14_5_absorbed_d0218_methods_retain_lexical_logging_dependencies():
     assert '[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION][WARNING] ' in runtime
 
     d0218=runtime[
-        runtime.index("function Runtime:setObstructionRelocationControl(control)"):
+        runtime.index("function Runtime:_obstructionRelocationRequest"):
         runtime.index("function Runtime:dispatchEvaluatedOperationalPicture")
     ]
     assert "logInfo(" in d0218
     assert "logWarning(" in d0218
-
 
 def test_phase14_5_runtime_still_does_not_physically_actuate():
     runtime=read("scripts/runtime/Runtime.lua")
@@ -99,7 +101,7 @@ def test_phase14_5_current_build_identity_is_coherent():
     config=read("scripts/config.lua")
     main=read("scripts/main.lua")
     moddesc=read("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.28"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY"' in config
-    assert "v0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY" in main
-    assert '<version value="0.3.0.28">0.3.0.28</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.29"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION"' in config
+    assert "v0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION" in main
+    assert '<version value="0.3.0.29">0.3.0.29</version>' in moddesc

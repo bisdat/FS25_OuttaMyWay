@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION.
--- Situation/Decision/Commitment admission semantics remain inherited; Control magnitude is now elastic.
--- D-0147 remains the validated warm mechanical donor while D-0218 tests current non-active Causal Obstruction relocation behind distinct authority.
+-- FS25_OuttaMyWay v0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION.
+-- Completed Obstruction and current Causal Obstruction remain distinct upstream responsibilities.
+-- One provenance-neutral Terminal Egress executor consumes only current physical subject, objective and current Bounded Authority.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.28"
+OuttaMyWay.VERSION = "0.3.0.29"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -71,11 +71,6 @@ OuttaMyWay.PRODUCTIVE_COVERAGE_RESIDUAL_HEARTBEAT_MS = 2000
 OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_PROBE_ENABLED = false
 OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_INFIELD_OFFSETS_M = {20.0, 35.0, 50.0}
 OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_COVERAGE_SAMPLE_COUNT = 12
-
--- Prototype 22 manual capability-validation harness values.
--- Production Hold/Drive/Configuration mechanisms are graduated in Phase 14.2;
--- these P22 values gate or describe the manual experiment only. No value here
--- grants production Decision, Responsibility or Control authority.
 
 -- D-0123 Guarded-Recovery Convergence Shadow Validation. Diagnostic cadence only.
 -- No distance, time, speed or intersection result below carries policy or Control authority.
@@ -207,7 +202,7 @@ OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY"
+OuttaMyWay.BUILD_LABEL = "0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
@@ -241,48 +236,6 @@ OuttaMyWay.TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M = 60.0
 OuttaMyWay.TERMINAL_EGRESS_COMPACTION_TIMEOUT_MS = 25000 -- watchdog only; not policy authority
 OuttaMyWay.TERMINAL_EGRESS_MOVE_TIMEOUT_MS = 45000 -- watchdog only; one bounded retreat
 
--- D-0133 retains the latest positively supported Progress field-bounded continuation
--- horizon before committed-transition admission; D-0132 may seal that retained
--- endpoint across the immediate handoff while the same Job Episode and tracked
--- Local Intent epoch remain positively valid. D-0131 threat semantics remain unchanged.
--- D-0131 committed-transition Regulation TEST bridge. The bridge reuses the
--- existing 1 km/h temporary implementation value only after a positive bounded
--- timing witness shows Productive Progress could reach an admitted TS015 egress
--- sweep no later than even ideal max-speed egress completion. No new speed literal.
-
-OuttaMyWay.PROTOTYPE_22_CAPABILITY_GATE_ENABLED = true
-OuttaMyWay.PROTOTYPE_22_REGULATE_DEFAULT_KMH = 1.0
-OuttaMyWay.PROTOTYPE_22_REGULATE_MIN_KMH = 0.5
-OuttaMyWay.PROTOTYPE_22_REGULATE_MAX_KMH = 10.0
-OuttaMyWay.PROTOTYPE_22_HOLD_EFFECT_SPEED_KMH = 0.25
-OuttaMyWay.PROTOTYPE_22_HEARTBEAT_MS = 1000
-OuttaMyWay.PROTOTYPE_22_RELEASE_MONITOR_MS = 5000
-OuttaMyWay.PROTOTYPE_22_RELEASE_RESUME_TRAVEL_M = 0.5
-OuttaMyWay.PROTOTYPE_22_RELEASE_RESUME_SPEED_KMH = 0.5
-
--- P22-C configuration/spatial evidence parameters. These are probe-only
--- observation bounds, never Traffic Policeman policy thresholds. Movement may
--- overlap folding after actual fold motion is observed; spatial PASS still
--- requires full compact configuration plus positive represented-span reduction.
-
--- TS015 autonomous native-recovery characterisation fixture. These literals
--- deliberately simulate one complete Traffic Policeman passing-place instruction
--- after a genuine live autonomous head-on Decision. They are evidence-fixture values only:
--- they grant no production Refuge Region, clearance, Durable Separation or
--- Safe Release authority.
--- v4.7.40 restoration-first comparison: preserve the settled pre-egress pose as
--- a Rejoin Anchor, return compact toward a short forward rejoin reference using
--- the archived empirically successful orientation mechanism, then restore the
--- original configuration before GIANTS handback. All values remain fixture-only.
-
--- Transition-only operator signalling: raw forensic logs remain available but
--- the tester need not follow the scrolling console during live actuation.
-OuttaMyWay.PROTOTYPE_22_HUD_ENABLED = false
-OuttaMyWay.PROTOTYPE_22_HUD_X = 0.985
-OuttaMyWay.PROTOTYPE_22_HUD_Y = 0.590
-OuttaMyWay.PROTOTYPE_22_HUD_TITLE_SIZE = 0.016
-OuttaMyWay.PROTOTYPE_22_HUD_TEXT_SIZE = 0.014
-OuttaMyWay.PROTOTYPE_22_HUD_LINE_HEIGHT = 0.021
 
 OuttaMyWay.FIELD_WORLD_SNAPSHOT_GENERATION_BUDGET = 0.00025
 OuttaMyWay.FIELD_WORLD_FINGERPRINT_QUANTIZATION_METRES = 0.1

@@ -80,30 +80,30 @@ def test_phase13_runtime_uses_portfolio_only_for_fresh_scope_and_projects_dispat
     assert "obstructionRelocationCandidateSupport" in runtime
 
 
-def test_phase13_warm_cold_and_passage_physical_mechanics_are_not_rewritten_by_portfolio_increment():
-    warm=read("scripts/candidates/TerminalEgressCandidateSupport.lua")
-    cold=read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
+def test_phase13_trigger_and_passage_semantics_survive_shared_terminal_egress_execution():
+    completed=read("scripts/candidates/TerminalEgressCandidateSupport.lua")
+    current=read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
     passage=read("scripts/candidates/LocalPassagePlanner.lua")
     terminal_control=read("scripts/control/TerminalEgressControl.lua")
-    obstruction_control=read("scripts/control/ObstructionRelocationControl.lua")
 
-    assert "local function selectRecord(picture,context)" in warm
-    assert "TERMINAL_FINAL_BOUNDARY_SETTLEMENT" in warm
-    assert "maximumCourtesyMovesPerEpisode=2" in warm
-    assert "courtesyStage=1" in cold
-    assert "secondCourtesyNotAuthorised=true" in cold
+    assert "local function selectRecord(picture,context)" in completed
+    assert "TERMINAL_FINAL_BOUNDARY_SETTLEMENT" in completed
+    assert "maximumCourtesyMovesPerEpisode=2" in completed
+    assert "courtesyStage=1" in current
+    assert "secondCourtesyNotAuthorised=true" in current
     assert "function Planner.plan(picture,snapshot)" in passage
     assert "function Planner.planConflict(picture,snapshot,conflict)" in passage
     assert "local plan,reason,rejected=planConflict(picture,snapshot,conflict)" in passage
     assert "driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)" in terminal_control
-    assert "driveInWorldDirection" in obstruction_control
-
+    assert 'target.kind~="TERMINAL_EGRESS"' in terminal_control
+    assert "CURRENT_CAUSAL_OBSTRUCTION" not in terminal_control
+    assert not (ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").exists()
 
 def test_phase13_candidate_support_projection_test_identity_is_coherent():
     config=read("scripts/config.lua")
     main=read("scripts/main.lua")
     moddesc=read("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.28"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY"' in config
-    assert 'v0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY' in main
-    assert '<version value="0.3.0.28">0.3.0.28</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.29"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION"' in config
+    assert 'v0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION' in main
+    assert '<version value="0.3.0.29">0.3.0.29</version>' in moddesc

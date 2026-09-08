@@ -223,7 +223,7 @@ end
 function Runtime:setTerminalEgressControl(control)
     self.liveControlDispatcher:setTerminalEgressControl(control)
     if control~=nil and type(control.setCompletionHandler)=="function" then
-        control:setCompletionHandler(function(result) self:onTerminalEgressCompletion(result) end)
+        control:setCompletionHandler(function(result) self:onTerminalEgressControlCompletion(result) end)
     end
 end
 
@@ -377,7 +377,11 @@ function Runtime:_continueCooperativePassage(picture,evaluated,applied)
 end
 
 function Runtime:_completedObstructionRequest(picture,evaluated,candidate,applied,bridge)
-    local target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase=bridge.phase,terminalEpisodeId=bridge.terminalEpisodeId,objective=bridge.objective}
+    local target={
+        kind="TERMINAL_EGRESS",phase=bridge.phase,assemblyReferenceKey=bridge.assemblyReferenceKey,objective=bridge.objective,
+        configurationPolicy=bridge.phase=="COMPACT" and "SETTLED_COMPACTION" or "RETAIN_CURRENT",cleanupFailurePolicy="REPORT_ONLY",
+        completionContext={triggerKind="COMPLETED_OBSTRUCTION",terminalEpisodeId=bridge.terminalEpisodeId}
+    }
     local grant,grantReason=self:_authorizeBoundedAuthority(applied.currentResponsibility,applied.commitment,applied.authorityToken,{
         assemblyId=bridge.assemblyId,capability="REPOSITION",target=target,operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,
         preconditions=candidate.preconditions or {},invalidationConditions=candidate.invalidationConditions or {},
@@ -501,6 +505,20 @@ function Runtime:onCooperativePassageCompletion(result)
     end
 end
 
+function Runtime:onTerminalEgressControlCompletion(result)
+    if type(result)~="table" then return end
+    local context=result.completionContext or {}
+    if context.triggerKind=="CURRENT_CAUSAL_OBSTRUCTION" then
+        self:onObstructionRelocationCompletion(result)
+        return
+    end
+    if context.triggerKind=="COMPLETED_OBSTRUCTION" then
+        self:onTerminalEgressCompletion(result)
+        return
+    end
+    runtimeLogWarning("TERMINAL_EGRESS_COMPLETION_CONTEXT_UNRESOLVED commitment=%s trigger=%s",tostring(result.commitmentId),tostring(context.triggerKind))
+end
+
 function Runtime:onTerminalEgressCompletion(result)
     if type(result)~="table" or type(result.commitmentId)~="string" then return end
     if result.status=="COMPACTION_COMPLETE" then
@@ -534,23 +552,16 @@ function Runtime:onTerminalEgressCompletion(result)
     end
 end
 
-function Runtime:setObstructionRelocationControl(control)
-    self.liveControlDispatcher:setObstructionRelocationControl(control)
-    if control~=nil and type(control.setCompletionHandler)=="function" then
-        control:setCompletionHandler(function(result) self:onObstructionRelocationCompletion(result) end)
-    end
-end
-
 function Runtime:_obstructionRelocationRequest(picture,evaluated,candidate,applied,bridge)
-    local target={kind="CAUSAL_OBSTRUCTION_RELOCATION",relocationKey=bridge.relocationKey,phase=bridge.phase,objective=bridge.objective}
+    local target={
+        kind="TERMINAL_EGRESS",phase=bridge.phase,assemblyReferenceKey=bridge.blockerAssemblyReferenceKey,objective=bridge.objective,
+        configurationPolicy="OPPORTUNISTIC_NO_SETTLEMENT_GATE",cleanupFailurePolicy="FAIL_COMPLETION",
+        completionContext={triggerKind="CURRENT_CAUSAL_OBSTRUCTION",relocationKey=bridge.relocationKey,historicalJobProvenanceRequired=false}
+    }
     local grant,grantReason=self:_authorizeBoundedAuthority(applied.currentResponsibility,applied.commitment,applied.authorityToken,{
-        assemblyId=bridge.blockerAssemblyId,
-        capability="REPOSITION",
-        target=target,
-        operationalPictureEpoch=picture.epoch,
-        evidenceEpoch=evaluated.decision.epoch,
-        preconditions=candidate.preconditions or {},
-        invalidationConditions=candidate.invalidationConditions or {},
+        assemblyId=bridge.blockerAssemblyId,capability="REPOSITION",target=target,
+        operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,
+        preconditions=candidate.preconditions or {},invalidationConditions=candidate.invalidationConditions or {},
         provenance={source="ObstructionRelocationRuntimeIntegration",candidateId=candidate.identity,relocationKey=bridge.relocationKey,authorityClass="OBSTRUCTION_RELOCATION_ACTUATION",historicalJobProvenanceRequired=false}
     })
     if grant==nil then return nil,grantReason end
@@ -595,9 +606,9 @@ function Runtime:_dispatchObstructionRelocation(picture,evaluated,candidate,brid
         return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_WAITING_FOR_POSITIVE_CONTINUATION",obstructionRelocation=true,commitmentId=bridge.existingCommitmentId}
     end
     if candidate.capability~="REPOSITION" then return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_NON_REPOSITION_CANDIDATE",obstructionRelocation=true} end
-    local control=self.liveControlDispatcher.obstructionRelocationControl
-    if control==nil then return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_CONTROL_UNAVAILABLE",obstructionRelocation=true} end
-    if type(control.isActive)=="function" and control:isActive() then return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_CONTROL_ALREADY_ACTIVE",obstructionRelocation=true} end
+    local control=self.liveControlDispatcher.terminalEgressControl
+    if control==nil then return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_TERMINAL_EGRESS_CONTROL_UNAVAILABLE",obstructionRelocation=true} end
+    if type(control.isActive)=="function" and control:isActive() then return {status="NO_DISPATCH",reason="TERMINAL_EGRESS_CONTROL_ALREADY_ACTIVE",obstructionRelocation=true} end
 
     local readiness={status="OBSTRUCTION_RELOCATION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,relocationKey=bridge.relocationKey}
     -- transitionCompletedObstructionResolution is the existing central Resolution

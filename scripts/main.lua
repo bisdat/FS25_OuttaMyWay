@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY.
+-- FS25_OuttaMyWay v0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION.
 -- modDesc.xml loads only this file. Retired implementation is preserved by repository history, not shipped runtime source.
 local modDirectory=g_currentModDirectory or ""
 local modules={
@@ -11,7 +11,7 @@ local modules={
     "scripts/commitment/CommitmentStateMachine.lua","scripts/commitment/CommitmentRegistry.lua","scripts/commitment/ObligationLedger.lua","scripts/authority/AuthorityRegistry.lua","scripts/control/mechanisms/NonJobActuationMechanism.lua","scripts/authority/EffectiveActuationComposition.lua","scripts/authority/BoundedAuthority.lua","scripts/commitment/CommitmentAdmission.lua","scripts/commitment/GoverningBasisEvaluator.lua","scripts/commitment/TerminalSettlementEvaluator.lua","scripts/commitment/DecisionCommitmentBoundary.lua","scripts/commitment/LiveTrafficCommitmentLifecycle.lua","scripts/commitment/TerminalEgressCommitmentLifecycle.lua","scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua","scripts/responsibility/ResolutionCommitmentAdapter.lua","scripts/responsibility/ResponsibilityTransitionAuthority.lua","scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua","scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua","scripts/responsibility/CooperativePassageResponsibilityTransition.lua","scripts/responsibility/CompletedObstructionResponsibilityTransition.lua","scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua",
     "scripts/candidates/CandidateSpace.lua","scripts/candidates/PassiveLiveCandidateSupport.lua","scripts/candidates/LocalPassagePlanner.lua","scripts/candidates/TerminalEgressCandidateSupport.lua","scripts/candidates/ObstructionRelocationCandidateSupport.lua","scripts/candidates/LiveTrafficCandidateSupport.lua","scripts/decision/ProspectivePortfolioDecisionPolicy.lua","scripts/candidates/ProspectiveDecisionPortfolioSupport.lua","scripts/constraints/ConstraintEvidence.lua",
     "scripts/constraints/evaluators/RepresentationFitness.lua","scripts/constraints/evaluators/ResponsibilityCompatibility.lua","scripts/constraints/evaluators/CommitmentPreconditions.lua","scripts/constraints/evaluators/EffectiveActuationComposition.lua",
-    "scripts/constraints/ConstraintEngine.lua","scripts/decision/TrafficPolicemanDecisionPolicy.lua","scripts/decision/DecisionSelector.lua","scripts/diagnostics/ArchitectureTrace.lua","scripts/replay/ConformanceAssertions.lua","scripts/replay/ReplayRunner.lua","scripts/diagnostics/TargetedFieldIdentityProbe.lua","scripts/diagnostics/FutureSpaceHud.lua","scripts/diagnostics/TransitionHud.lua","scripts/diagnostics/PassiveLiveValidator.lua","scripts/diagnostics/ProductiveContinuationProbe.lua","scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua","scripts/diagnostics/GuardedRecoveryConvergenceProbe.lua","scripts/observation/NativeManoeuvreObservationSource.lua","scripts/diagnostics/FollowerMaturationCompressionProbe.lua","scripts/diagnostics/ProgressionPreservationProbe.lua","scripts/diagnostics/VersionHud.lua","scripts/diagnostics/FollowerPacingHud.lua","scripts/control/mechanisms/FieldWorkHoldMechanism.lua","scripts/control/mechanisms/NativeDriveMechanism.lua","scripts/control/mechanisms/TransitConfigurationMechanism.lua","scripts/prototypes/Prototype22CapabilityGate.lua","scripts/control/CooperativePassageControl.lua","scripts/control/TerminalEgressControl.lua","scripts/control/ObstructionRelocationControl.lua","scripts/authority/ResolutionSpaceProgressionEnvelope.lua","scripts/authority/RegulationBoundedAuthority.lua","scripts/control/GuardedRecoveryCompatibility.lua","scripts/control/RegulationControl.lua","scripts/control/LiveControlDispatcher.lua","scripts/runtime/LiveRuntimeCoordinator.lua","scripts/runtime/Runtime.lua"
+    "scripts/constraints/ConstraintEngine.lua","scripts/decision/TrafficPolicemanDecisionPolicy.lua","scripts/decision/DecisionSelector.lua","scripts/diagnostics/ArchitectureTrace.lua","scripts/replay/ConformanceAssertions.lua","scripts/replay/ReplayRunner.lua","scripts/diagnostics/TargetedFieldIdentityProbe.lua","scripts/diagnostics/FutureSpaceHud.lua","scripts/diagnostics/TransitionHud.lua","scripts/diagnostics/PassiveLiveValidator.lua","scripts/diagnostics/ProductiveContinuationProbe.lua","scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua","scripts/diagnostics/GuardedRecoveryConvergenceProbe.lua","scripts/observation/NativeManoeuvreObservationSource.lua","scripts/diagnostics/FollowerMaturationCompressionProbe.lua","scripts/diagnostics/ProgressionPreservationProbe.lua","scripts/diagnostics/VersionHud.lua","scripts/diagnostics/FollowerPacingHud.lua","scripts/control/mechanisms/FieldWorkHoldMechanism.lua","scripts/control/mechanisms/NativeDriveMechanism.lua","scripts/control/mechanisms/TransitConfigurationMechanism.lua","scripts/control/CooperativePassageControl.lua","scripts/control/TerminalEgressControl.lua","scripts/authority/ResolutionSpaceProgressionEnvelope.lua","scripts/authority/RegulationBoundedAuthority.lua","scripts/control/GuardedRecoveryCompatibility.lua","scripts/control/RegulationControl.lua","scripts/control/LiveControlDispatcher.lua","scripts/runtime/LiveRuntimeCoordinator.lua","scripts/runtime/Runtime.lua"
 }
 for _,relativePath in ipairs(modules) do source(modDirectory..relativePath) end
 OuttaMyWay.modDirectory=modDirectory
@@ -37,25 +37,19 @@ OuttaMyWay.physicalControlMechanisms={
     driveMechanism=OuttaMyWay.NativeDriveMechanism.new(),
     configurationMechanism=OuttaMyWay.TransitConfigurationMechanism.new()
 }
-OuttaMyWay.prototype22CapabilityGate=OuttaMyWay.Prototype22CapabilityGate.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms)
 OuttaMyWay.regulationControl=OuttaMyWay.RegulationControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms.driveMechanism)
 OuttaMyWay.runtime:setRegulationControl(OuttaMyWay.regulationControl)
 OuttaMyWay.nativeManoeuvreObservationSource:setRegulationControlObservationSource(OuttaMyWay.regulationControl)
 
--- Production Cooperative Passage consumes the physical mechanisms directly.
--- Prototype22 remains a manual client, not the production donor/composition root.
+-- Production Cooperative Passage consumes the production physical mechanisms directly.
+-- No prototype owns or installs those shared mechanisms.
 OuttaMyWay.cooperativePassageControl=OuttaMyWay.CooperativePassageControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms)
 OuttaMyWay.runtime:setCooperativePassageControl(OuttaMyWay.cooperativePassageControl)
 
--- Warm D-0147 remains separately bounded by POST_JOB_ACTUATION and its existing
--- completed-obstruction consent path.
+-- Completed Obstruction and current Causal Obstruction retain distinct upstream
+-- authority/lifecycle semantics but share one provenance-neutral physical Terminal Egress executor.
 OuttaMyWay.terminalEgressControl=OuttaMyWay.TerminalEgressControl.new(OuttaMyWay.runtime,OuttaMyWay.runtime.liveObservationSource)
 OuttaMyWay.runtime:setTerminalEgressControl(OuttaMyWay.terminalEgressControl)
-
--- D-0218 cold/current non-active blockers use a distinct truthful authority
--- class while reusing only the validated low-level non-job movement mechanics.
-OuttaMyWay.obstructionRelocationControl=OuttaMyWay.ObstructionRelocationControl.new(OuttaMyWay.runtime,OuttaMyWay.runtime.liveObservationSource)
-OuttaMyWay.runtime:setObstructionRelocationControl(OuttaMyWay.obstructionRelocationControl)
 
 OuttaMyWay.liveRuntimeCoordinator=OuttaMyWay.LiveRuntimeCoordinator.new(OuttaMyWay.runtime,OuttaMyWay.runtime.liveObservationSource,OuttaMyWay.runtime.targetedFieldIdentityProbe,OuttaMyWay.runtime.fieldWorldSnapshots,OuttaMyWay.runtime.passiveLiveValidator)
 OuttaMyWay.runtime.liveRuntimeCoordinator=OuttaMyWay.liveRuntimeCoordinator
@@ -68,10 +62,8 @@ if type(addModEventListener)=="function" then
     addModEventListener(OuttaMyWay.nativeManoeuvreObservationSource)
     addModEventListener(OuttaMyWay.followerMaturationCompressionProbe)
     addModEventListener(OuttaMyWay.regulationControl)
-    addModEventListener(OuttaMyWay.prototype22CapabilityGate)
     addModEventListener(OuttaMyWay.cooperativePassageControl)
     addModEventListener(OuttaMyWay.terminalEgressControl)
-    addModEventListener(OuttaMyWay.obstructionRelocationControl)
     addModEventListener(OuttaMyWay.runtime.passiveLiveValidator)
     addModEventListener(OuttaMyWay.versionHud)
     addModEventListener(OuttaMyWay.followerPacingHud)

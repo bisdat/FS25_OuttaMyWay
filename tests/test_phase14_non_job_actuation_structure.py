@@ -63,57 +63,55 @@ def test_phase14_4_mechanical_surface_is_preserved():
     ):
         assert token in mechanism
 
-def test_phase14_4_warm_and_cold_semantic_authorities_remain_separate():
+def test_phase14_4_trigger_authorities_remain_separate_upstream_of_shared_executor():
     terminal = read("scripts/control/TerminalEgressControl.lua")
-    obstruction = read("scripts/control/ObstructionRelocationControl.lua")
+    completed = read("scripts/candidates/TerminalEgressCandidateSupport.lua")
+    current = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
 
-    assert 'token.authorityClass=="POST_JOB_ACTUATION"' in terminal
+    assert '"POST_JOB_ACTUATION"' in completed
+    assert '"OBSTRUCTION_RELOCATION_ACTUATION"' in current
+    assert "POST_JOB_ACTUATION" not in terminal
     assert "OBSTRUCTION_RELOCATION_ACTUATION" not in terminal
+    assert "actuationMechanism=OuttaMyWay.NonJobActuationMechanism.new()" in terminal
+    assert not (ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").exists()
 
-    assert 'token.authorityClass=="OBSTRUCTION_RELOCATION_ACTUATION"' in obstruction
-    assert "POST_JOB_ACTUATION" not in obstruction
-
-    constructor = "actuationMechanism=OuttaMyWay.NonJobActuationMechanism.new()"
-    assert constructor in terminal
-    assert constructor in obstruction
-
-    assert "postJobAuthority" not in terminal
-    assert "movementDonor" not in obstruction
-
-def test_phase14_4_cold_path_still_denies_completed_job_provenance_and_second_courtesy():
-    obstruction = read("scripts/control/ObstructionRelocationControl.lua")
+def test_phase14_4_current_causal_obstruction_still_denies_completed_job_provenance_and_second_courtesy():
+    terminal = read("scripts/control/TerminalEgressControl.lua")
     candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
 
-    assert "historicalJobProvenanceRequired=false" in obstruction
-    assert 'tonumber(objective.courtesyStage)~=1' in obstruction
     assert 'courtesyStage=1' in candidate
     assert 'secondCourtesyNotAuthorised=true' in candidate
+    assert 'historicalJobProvenanceRequired=false' in candidate
+    assert 'tonumber(objective.courtesyStage)~=1' not in terminal
+    assert "CURRENT_CAUSAL_OBSTRUCTION" not in terminal
 
-def test_phase14_4_warm_path_retains_double_courtesy_semantics():
+def test_phase14_4_completed_obstruction_retains_double_courtesy_semantics_upstream():
     terminal_candidate = read("scripts/candidates/TerminalEgressCandidateSupport.lua")
     terminal_control = read("scripts/control/TerminalEgressControl.lua")
 
     assert "TERMINAL_FINAL_BOUNDARY_SETTLEMENT" in terminal_candidate
     assert "maximumCourtesyMovesPerEpisode=2" in terminal_candidate
-    assert "POST_JOB_ACTUATION" in terminal_control
+    assert "POST_JOB_ACTUATION" not in terminal_control
+    assert 'target.kind~="TERMINAL_EGRESS"' in terminal_control
 
-def test_phase14_4_post_job_failure_reason_vocabulary_is_deliberately_deferred():
+def test_phase14_4_non_job_failure_reason_vocabulary_is_provenance_neutral():
     mechanism = read("scripts/control/mechanisms/NonJobActuationMechanism.lua")
 
     for token in (
-        "POST_JOB_MOTOR_MAX_FORWARD_SPEED_UNAVAILABLE",
-        "POST_JOB_POSE_UNAVAILABLE",
-        "POST_JOB_DIRECTION_DRIVE_CALL_FAILED",
-        "POST_JOB_NEUTRALIZE_WHEEL_PHYSICS_FAILED",
+        "NON_JOB_MOTOR_MAX_FORWARD_SPEED_UNAVAILABLE",
+        "NON_JOB_POSE_UNAVAILABLE",
+        "NON_JOB_DIRECTION_DRIVE_CALL_FAILED",
+        "NON_JOB_NEUTRALIZE_WHEEL_PHYSICS_FAILED",
     ):
         assert token in mechanism
+    assert "POST_JOB_" not in mechanism
 
 def test_phase14_4_current_build_identity_is_coherent():
     config = read("scripts/config.lua")
     main = read("scripts/main.lua")
     moddesc = read("modDesc.xml")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.28"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY"' in config
-    assert "v0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY" in main
-    assert '<version value="0.3.0.28">0.3.0.28</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.29"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION"' in config
+    assert "v0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION" in main
+    assert '<version value="0.3.0.29">0.3.0.29</version>' in moddesc

@@ -4,12 +4,12 @@ Continuation State is the compact, replace-in-place description of the project's
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #84 merge, commit `57f65c0dccdf39764bca6cfea4bfe082a93852f0`.
+- Accepted Repository State baseline for this increment: `main` after PR #85 merge, commit `466424f5fe6e984d041c9f00c484a9bd9e82b397`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted non-canonical playable identity remains **`0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY`**.
+- This branch advances executable identity to **`0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION`**; it makes no canonical claim.
 - Protected `main` requires both `Structural contracts` and `Lua offline behavioural contracts`.
 - Issue #82 is closed after the bounded `.28` follower-HUD correction and targeted GIANTS Reality validation.
-- Phase 14 remains **ACTIVE**. No executable Phase-14.6 change has yet consumed a new TEST build identity.
+- Phase 14 remains **ACTIVE**. Phase 14.6A is implemented on this branch and awaits independent CI plus GIANTS Reality validation.
 
 ## Documentation responsibility correction
 
@@ -74,7 +74,7 @@ Completed Obstruction and current Causal Obstruction remain distinct reasons for
 
 Once an already-authorised bounded movement reaches Control, the execution problem is Terminal Egress. The current hypothesis is that physical execution should depend on the supplied objective, current physical subject and current Bounded Authority rather than D-0147/D-0218 trigger provenance.
 
-This makes the existing `TerminalEgressControl` / `ObstructionRelocationControl` split a candidate duplicate-execution seam, not evidence of two required architectural Control concepts.
+This branch removes the `TerminalEgressControl` / `ObstructionRelocationControl` split: both already-authorised movement paths now enter one `TerminalEgressControl`, while their trigger-specific Responsibility and lifecycle semantics remain upstream. This is an implementation result pending Reality validation, not evidence that the two triggers are semantically identical.
 
 ### Shared execution support
 
@@ -88,7 +88,7 @@ Historical Job Episode evidence may establish a Completed Obstruction trigger, b
 
 ### Prototype22
 
-Prototype22 was a transient capability-validation harness. Its Hold, Drive and Configuration mechanisms have graduated to production. The prototype itself has no identified durable production responsibility and is targeted for retirement after an exact dependency scan.
+Prototype22 was a transient capability-validation harness. Its Hold, Drive and Configuration mechanisms have graduated to production. The exact dependency scan found no remaining durable runtime responsibility, so this branch removes the harness, event registration and `PROTOTYPE_22_*` runtime constants.
 
 The earlier hypothesis that Prototype22 uniquely installed the shared native drive hook was disproved: production Cooperative Passage independently installs the same idempotent mechanism.
 
@@ -127,15 +127,15 @@ These remain separate from the current Phase-14.6 placement/vocabulary work.
 
 ## Immediate next action
 
-Review and merge the current documentation-governance correction only if its diff leaves the live architecture tree describing current responsibilities rather than Phase-14 chronology.
+Review the `.29` Engineering Increment and let GitHub Actions provide the independent Structural + Lua offline verdicts. Do not infer GIANTS Reality from offline green.
 
-After acceptance, begin the first executable Phase-14.6 increment from clean/current `main`:
+If CI accepts the source topology, build `.29` locally and validate in Farming Simulator against both Terminal Egress trigger paths:
 
-1. establish one provenance-neutral Terminal Egress execution contract while preserving the two upstream trigger semantics;
-2. absorb duplicate obstruction-relocation physical execution only where the implementation dependency audit proves equivalence;
-3. graduate Protected Yield execution vocabulary away from D-0147 provenance;
-4. use current-physical subject addressability at Control where validated;
-5. retire Prototype22 only after exact dependency validation; and
-6. consume a fresh TEST build identity before publishing materially changed executable bytes.
+1. completed-obstruction Interior Settlement, including compaction where applicable and the existing second-courtesy Final Boundary Settlement path;
+2. current Causal Obstruction first courtesy, including opportunistic compaction, owned-cleanup failure semantics and fresh-Situation reassessment;
+3. Player Claim and source-AI supersession on both paths; and
+4. Regulation plus Cooperative Passage smoke/regression coverage after Prototype22 retirement.
 
-GIANTS Reality must validate both completed-obstruction and current Causal Obstruction Terminal Egress, plus Regulation and Cooperative Passage after Prototype22/shared-mechanism cleanup. Contrary Reality updates the architecture rather than being hidden behind compatibility special cases.
+Protected Yield still carries D-0147 implementation vocabulary and remains a later Phase-14.6 cleanup target. Production TEST/Step/D-number vocabulary and mixed constants remain ownership-driven follow-up work; they are not broadened into this physical-execution consolidation.
+
+Contrary Reality updates the architecture rather than being hidden behind compatibility special cases.

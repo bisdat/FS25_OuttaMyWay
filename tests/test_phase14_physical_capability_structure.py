@@ -22,30 +22,31 @@ def test_production_mechanisms_are_named_and_placed_truthfully():
         assert not (ROOT/rel).exists()
         assert rel not in main
 
-def test_main_is_production_composition_root_not_p22():
+def test_main_is_production_composition_root_and_p22_is_retired():
     main=text("scripts/main.lua")
-    p22=text("scripts/prototypes/Prototype22CapabilityGate.lua")
+    prototype22=ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua"
     assert "OuttaMyWay.physicalControlMechanisms={" in main
     assert "holdMechanism=OuttaMyWay.FieldWorkHoldMechanism.new()" in main
     assert "driveMechanism=OuttaMyWay.NativeDriveMechanism.new()" in main
     assert "configurationMechanism=OuttaMyWay.TransitConfigurationMechanism.new()" in main
-    assert "Prototype22CapabilityGate.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms)" in main
     assert "RegulationControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms.driveMechanism)" in main
     assert "CooperativePassageControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms)" in main
-    assert "mechanisms.holdMechanism" in p22
-    assert "mechanisms.driveMechanism" in p22
-    assert ":clearAll()" not in p22
+    assert not prototype22.exists()
+    assert "prototype22CapabilityGate" not in main
+    assert "Prototype22CapabilityGate" not in main
 
 def test_controls_consume_mechanisms_without_new_semantic_authority():
     passage=text("scripts/control/CooperativePassageControl.lua")
     terminal=text("scripts/control/TerminalEgressControl.lua")
-    obstruction=text("scripts/control/ObstructionRelocationControl.lua")
     candidate=text("scripts/candidates/LiveTrafficCandidateSupport.lua")
     assert "holdMechanism=mechanisms.holdMechanism" in passage
     assert "driveMechanism=mechanisms.driveMechanism" in passage
     assert "configurationMechanism=mechanisms.configurationMechanism" in passage
     assert "OuttaMyWay.TransitConfigurationMechanism.new()" in terminal
-    assert "OuttaMyWay.TransitConfigurationMechanism.new()" in obstruction
+    assert "OuttaMyWay.NonJobActuationMechanism.new()" in terminal
+    assert "POST_JOB_ACTUATION" not in terminal
+    assert "OBSTRUCTION_RELOCATION_ACTUATION" not in terminal
+    assert not (ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").exists()
     assert '{"FieldWorkHoldMechanism","NativeDriveMechanism","TransitConfigurationMechanism"}' in candidate
 
 def test_native_drive_retires_only_uncalled_orientation_residue():
@@ -55,7 +56,7 @@ def test_native_drive_retires_only_uncalled_orientation_residue():
     for required in ("setRegulationLease","clearRegulationLease","setReposition","setAxisTravel","getState","clear"):
         assert required in drive
 
-def test_configuration_preserves_passage_warm_and_cold_surfaces():
+def test_configuration_preserves_passage_and_terminal_egress_surfaces():
     config=text("scripts/control/mechanisms/TransitConfigurationMechanism.lua")
     for required in (
         "getEvidence","prepareCompact","prepareCachedTransit","getCachedTransitSettlement",

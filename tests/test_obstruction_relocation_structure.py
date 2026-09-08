@@ -17,7 +17,7 @@ def test_phase13_obstruction_relocation_is_explicitly_loaded_and_current_physica
         "scripts/candidates/ObstructionRelocationCandidateSupport.lua",
         "scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua",
         "scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua",
-        "scripts/control/ObstructionRelocationControl.lua",
+        "scripts/control/TerminalEgressControl.lua",
         "scripts/runtime/Runtime.lua",
     ):
         assert relative in main
@@ -68,7 +68,7 @@ def test_phase13_obstruction_relocation_uses_truthful_authority_class_not_post_j
 
 def test_phase13_cold_relocation_withholds_second_courtesy_without_negative_clearance_authority():
     candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
-    control = read("scripts/control/ObstructionRelocationControl.lua")
+    control = read("scripts/control/TerminalEgressControl.lua")
     terminal = read("scripts/candidates/TerminalEgressCandidateSupport.lua")
 
     assert 'courtesyStage=1' in candidate
@@ -76,7 +76,7 @@ def test_phase13_cold_relocation_withholds_second_courtesy_without_negative_clea
     assert 'secondCourtesyWithheldByEvidence=true' in candidate
     assert 'NEGATIVE_TRANSITION_CLEARANCE_NOT_AVAILABLE' in candidate
     assert 'NO_NEGATIVE_CLEARANCE_AUTHORITY' in candidate
-    assert 'tonumber(objective.courtesyStage)~=1' in control
+    assert 'objectiveKind="CAUSAL_OBSTRUCTION_FIRST_COURTESY"' in candidate
 
     # Warm D-0147 remains the separate validated two-courtesy donor path.
     assert 'TERMINAL_FINAL_BOUNDARY_SETTLEMENT' in terminal
@@ -98,7 +98,7 @@ def test_phase13_manoeuvre_completion_does_not_semantically_resolve_without_supp
 
 
 def test_phase13_obstruction_control_is_addressed_from_current_reality_and_fails_closed_on_owned_cleanup():
-    control = read("scripts/control/ObstructionRelocationControl.lua")
+    control = read("scripts/control/TerminalEgressControl.lua")
     dispatcher = read("scripts/control/LiveControlDispatcher.lua")
     coordinator = read("scripts/runtime/LiveRuntimeCoordinator.lua")
 
@@ -111,13 +111,13 @@ def test_phase13_obstruction_control_is_addressed_from_current_reality_and_fails
     assert "releaseVehicleActivityContext" in control
     assert 'finalStatus="FAILED"' in control
     assert 'reason="OWNED_ACTUATION_CLEANUP_FAILED"' in control
-    assert 'semanticResolutionNotInferred=true' in control
+    assert 'state.cleanupFailurePolicy=="FAIL_COMPLETION"' in control
 
-    assert "setObstructionRelocationControl" in dispatcher
-    assert 'target.kind=="CAUSAL_OBSTRUCTION_RELOCATION"' in dispatcher
-    assert "getObstructionRelocationObservation" in dispatcher
-    assert "appendObstructionRelocationObservation" in coordinator
-    assert "getObstructionRelocationObservation" in coordinator
+    assert "setObstructionRelocationControl" not in dispatcher
+    assert 'target.kind=="TERMINAL_EGRESS"' in dispatcher
+    assert "getTerminalEgressObservation" in dispatcher
+    assert "appendTerminalEgressObservation" in coordinator
+    assert "getTerminalEgressObservation" in coordinator
 
 
 def test_phase13_generic_path_preserves_warm_d0147_and_does_not_inherit_native_blocked_gate():
@@ -130,7 +130,8 @@ def test_phase13_generic_path_preserves_warm_d0147_and_does_not_inherit_native_b
     assert "terminalEpisodeId" not in generic
     assert "aiState.blocked==true" in terminal_assessment
     assert "TERMINAL_OCCUPANCY" in terminal_candidate
-    assert "POST_JOB_ACTUATION" in terminal_control
+    assert "POST_JOB_ACTUATION" not in terminal_control
+    assert 'target.kind=="TERMINAL_EGRESS"' in read("scripts/control/LiveControlDispatcher.lua")
 
 
 def test_phase13_test_identity_is_coherent():
@@ -138,7 +139,7 @@ def test_phase13_test_identity_is_coherent():
     moddesc = read("modDesc.xml")
     main = read("scripts/main.lua")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.28"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY"' in config
-    assert '<version value="0.3.0.28">0.3.0.28</version>' in moddesc
-    assert "v0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY" in main
+    assert 'OuttaMyWay.VERSION = "0.3.0.29"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION"' in config
+    assert '<version value="0.3.0.29">0.3.0.29</version>' in moddesc
+    assert "v0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION" in main

@@ -12,9 +12,9 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 
 ## Repository state
 
-- Accepted Repository State baseline for this map: `main` after PR #84 merge, commit `57f65c0dccdf39764bca6cfea4bfe082a93852f0`.
+- Accepted Repository State baseline for this map: `main` after PR #85 merge, commit `466424f5fe6e984d041c9f00c484a9bd9e82b397`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted non-canonical playable identity remains **`0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY`**.
+- Current branch executable identity is **`0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION`**; acceptance and canonical authority are unchanged until review/merge/Reality evidence says otherwise.
 - Strangler Phase 14 is active. The remaining work is current placement/vocabulary reconciliation, not replay of the earlier Phase-14 tranches.
 - Phase 15 whole-system validation and architecture-to-runtime review has not started.
 
@@ -53,17 +53,16 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 | Mechanical actuation exclusivity | `scripts/authority/AuthorityRegistry.lua` | PRESERVE; exclusivity is not semantic permission |
 | Effective actuation composition | `scripts/authority/EffectiveActuationComposition.lua` | PRESERVE |
 | Typed Control boundary | `scripts/contracts/ControlRequest.lua`, `ControlOutcome.lua` | PRESERVE |
-| Control routing | `scripts/control/LiveControlDispatcher.lua` | PRESERVE authorised routing only; current reposition routing still exposes trigger-specific target kinds |
+| Control routing | `scripts/control/LiveControlDispatcher.lua` | CURRENT branch routes authorised single-assembly Terminal Egress through one `TERMINAL_EGRESS` target; Cooperative Passage remains joint routing |
 | Regulation physical Control | `scripts/control/RegulationControl.lua` using `scripts/control/mechanisms/NativeDriveMechanism.lua` | PRESENT production `REGULATE_SPEED` executor |
 | Cooperative Passage physical Control | `scripts/control/CooperativePassageControl.lua` | PRESERVE validated mechanics |
-| Completed-obstruction physical movement | `scripts/control/TerminalEgressControl.lua` | CURRENT implementation; candidate generic Terminal Egress executor |
-| Current-obstruction physical movement | `scripts/control/ObstructionRelocationControl.lua` | CURRENT duplicate execution seam under review; trigger semantics remain upstream |
-| Shared non-job physical actuation | `scripts/control/mechanisms/NonJobActuationMechanism.lua` | PRESENT shared mechanism; mechanical failure vocabulary still contains post-job residue |
+| Terminal Egress physical movement | `scripts/control/TerminalEgressControl.lua` | CURRENT branch uses one provenance-neutral executor for completed-obstruction and current Causal Obstruction movement; trigger semantics remain upstream; GIANTS validation pending |
+| Shared non-job physical actuation | `scripts/control/mechanisms/NonJobActuationMechanism.lua` | PRESENT shared mechanism with provenance-neutral `NON_JOB_*` mechanical failure vocabulary |
 | Hold mechanism | `scripts/control/mechanisms/FieldWorkHoldMechanism.lua` | PRESENT production mechanism |
 | Native drive mechanism | `scripts/control/mechanisms/NativeDriveMechanism.lua` | PRESENT production mechanism shared by Regulation and Passage |
 | Transit configuration mechanism | `scripts/control/mechanisms/TransitConfigurationMechanism.lua` | PRESENT production mechanism with caller-owned state lifetime |
 | Guarded Recovery | `scripts/control/GuardedRecoveryCompatibility.lua` routed through production `RegulationControl` | RETAIN explicit compatibility path |
-| Prototype22 manual harness | `scripts/prototypes/Prototype22CapabilityGate.lua` plus `main.lua` registration and `PROTOTYPE_22_*` constants | NO DURABLE PRODUCTION RESPONSIBILITY IDENTIFIED; targeted for retirement after exact dependency validation |
+| Prototype22 manual harness | retired from executable source on this branch | NO DURABLE PRODUCTION RESPONSIBILITY; production mechanisms remain independently composed |
 
 ## Candidate / Constraint / Decision boundary
 
@@ -109,19 +108,21 @@ Git and merged PRs preserve how those placements were reached. This map records 
 
 ## Current architecture-to-code drift
 
-### Terminal Egress execution duplication
+### Terminal Egress execution consolidation — validation pending
 
-Completed Obstruction and current Causal Obstruction remain distinct upstream triggers. The current source nevertheless routes them through separate physical Controls: `TerminalEgressControl` and `ObstructionRelocationControl`.
+The branch now implements **Trigger Provenance != Terminal Egress Execution**. Completed Obstruction and current Causal Obstruction keep separate upstream triggers, Authority classes and lifecycle settlement, but their already-authorised physical movement is executed by one `TerminalEgressControl` addressed from current physical Reality.
 
-The active implementation hypothesis is **Trigger Provenance != Terminal Egress Execution**: once Bounded Authority has authorised a movement objective, physical execution should depend on that objective and current physical subject rather than D-0147/D-0218 provenance. The duplicate Control is therefore a bounded consolidation target, not yet an accepted implementation result.
+`ObstructionRelocationControl` is retired. The generic Control receives an opaque completion context and returns it unchanged so Runtime can deliver the physical outcome to the correct semantic lifecycle without teaching Control about D-0147/D-0218 provenance.
+
+This placement is not yet a GIANTS Reality claim; `.29` must validate both trigger paths.
 
 ### Protected Yield vocabulary
 
 `RegulationBoundedAuthority` exposes the beneficiary hold used by both obstruction paths through `d0147ProtectedYield...` names and `D0147_PROTECTED_YIELD` owner vocabulary. The mechanism is already shared; the names still claim the trigger that first introduced it.
 
-### Prototype22 residue
+### Prototype22 retirement — validation pending
 
-The Prototype22 runtime harness, command/HUD/event registration and `PROTOTYPE_22_*` constants remain after the physical mechanisms graduated to production. No current production responsibility has been identified for the prototype itself. Retirement requires an exact dependency scan before executable deletion.
+The exact dependency scan found no remaining durable production responsibility for Prototype22. The branch removes the harness, event registration and `PROTOTYPE_22_*` runtime constants. Production Hold, Drive and Transit Configuration mechanisms remain explicitly composed by their real consumers.
 
 ### Production validation vocabulary
 
@@ -151,13 +152,11 @@ Do not mix those concerns into the current Phase-14 placement/vocabulary correct
 
 ## Immediate implementation boundary
 
-The next executable Phase-14 increment should be behaviour-preserving and narrow:
+The `.29` branch is intentionally limited to physical Terminal Egress consolidation, current-physical addressability, shared non-job failure vocabulary and Prototype22 retirement. It does **not** collapse the two upstream obstruction responsibilities or retune movement policy.
 
-1. establish one provenance-neutral Terminal Egress execution contract while preserving completed-obstruction and current Causal Obstruction trigger semantics upstream;
-2. absorb `ObstructionRelocationControl` physical execution only where the dependency audit supports equivalence;
-3. graduate Protected Yield execution vocabulary away from D-0147 provenance;
-4. use current-physical subject addressability at Control where validated;
-5. retire Prototype22 only after exact dependency validation; and
-6. preserve Regulation, Cooperative Passage, Player Claim/source-AI supersession, configuration/compaction, beneficiary protection and existing settlement policy.
+Next evidence boundary:
 
-The first materially changed executable revision after `.28` requires a fresh TEST build identity before push.
+1. independent Structural + Lua CI on the exact `.29` commit;
+2. completed-obstruction and current Causal Obstruction GIANTS Reality validation;
+3. Player Claim/source-AI supersession plus Regulation/Cooperative Passage regression checks; and
+4. only after that evidence, continue Phase-14.6 with Protected Yield vocabulary and other ownership-driven production-name/constants cleanup.
