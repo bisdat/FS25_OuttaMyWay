@@ -9,7 +9,7 @@ Continuation State is the compact, replace-in-place description of the project's
 - This branch advances executable identity to **`0.3.0.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION`**; it makes no canonical claim.
 - Protected `main` requires both `Structural contracts` and `Lua offline behavioural contracts`.
 - Issue #82 is closed after the bounded `.28` follower-HUD correction and targeted GIANTS Reality validation.
-- Phase 14 remains **ACTIVE**. Phase 14.6A is implemented on this branch and awaits independent CI plus GIANTS Reality validation.
+- Phase 14 remains **ACTIVE**. Phase 14.6A is implemented on this branch; independent offline validation is green and the final `.30` GIANTS smoke is an apparent pass. PR #88 is at the owner-acceptance boundary.
 
 ## Documentation responsibility correction
 
@@ -74,7 +74,7 @@ Completed Obstruction and current Causal Obstruction remain distinct reasons for
 
 Once an already-authorised bounded movement reaches Control, the execution problem is Terminal Egress. The current hypothesis is that physical execution should depend on the supplied objective, current physical subject and current Bounded Authority rather than D-0147/D-0218 trigger provenance.
 
-This branch removes the `TerminalEgressControl` / `ObstructionRelocationControl` split: both already-authorised movement paths now enter one `TerminalEgressControl`, while their trigger-specific Responsibility and lifecycle semantics remain upstream. This is an implementation result pending Reality validation, not evidence that the two triggers are semantically identical.
+This branch removes the `TerminalEgressControl` / `ObstructionRelocationControl` split: both already-authorised movement paths now enter one `TerminalEgressControl`, while their trigger-specific Responsibility and lifecycle semantics remain upstream. Independent offline contracts are green and the `.30` GIANTS smoke is an apparent pass; this does not imply that the two triggers are semantically identical or prove the whole Supported Envelope.
 
 ### Shared execution support
 
@@ -127,19 +127,21 @@ These remain separate from the current Phase-14.6 placement/vocabulary work.
 
 ## Immediate next action
 
-Keep PR #88 on `.30` and let GitHub Actions independently rerun the Structural + Lua offline contracts after the direct-Control harness reconciliation. Do not merge while either required job is red.
+PR #88 is at the **owner-acceptance boundary** on `0.3.0.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION`.
 
-The `.30` CI run established a useful split: focused current Causal Obstruction was **9/9 PASS**, while the main replacement-core harness was **334 PASS / 3 FAIL**. All three failures were direct Completed-Obstruction `TerminalEgressControl` tests still composing the retired pre-consolidation Control contract (`D0147_BOUNDED_TERMINAL_EGRESS` plus historical tracked-object lookup). Production Runtime already constructs the generic `TERMINAL_EGRESS` target with current physical addressability. The test-only correction therefore migrates those fixtures and assertions without changing production executable bytes or consuming a new TEST identity.
+Final evidence on exact executable/test-contract head `a6d0921a5fff08ae498def74c71296cfbbebdee9` before this docs-only record:
 
-After CI is green, retain the existing GIANTS validation boundary:
+- GitHub Actions run #245: **Structural contracts PASS**;
+- GitHub Actions run #245: **Lua offline behavioural contracts PASS**;
+- `.30` GIANTS smoke: **apparent pass**;
+- the `.29` lingering final `Terminal...` HUD message was **not reproduced in `.30`**; screenshot/owner evidence is recorded in Issue #89.
 
-1. completed-obstruction Interior Settlement, including compaction where applicable and the existing second-courtesy Final Boundary Settlement path;
-2. current Causal Obstruction first courtesy, including opportunistic compaction, owned-cleanup failure semantics and fresh-Situation reassessment;
-3. Player Claim and source-AI supersession on both paths; and
-4. Regulation plus Cooperative Passage smoke/regression coverage after Prototype22 retirement.
+The HUD symptom is therefore cleared for this increment without a dedicated HUD implementation change. Issue #89 remains open because player-facing HUD/message ownership and lifecycle are still a separate unresolved architecture responsibility.
 
-Protected Yield still carries D-0147 implementation vocabulary and remains a later Phase-14.6 cleanup target. Production TEST/Step/D-number vocabulary and mixed constants remain ownership-driven follow-up work; they are not broadened into this physical-execution consolidation.
+If the repository owner accepts PR #88, merge it. That merge advances Accepted Repository State only; it does **not** canonicalise `.30`.
 
-The `.29` GIANTS smoke run was an apparent physical pass. One final `terminal` HUD message remained visible; that UI residue is recorded as non-blocking follow-up rather than being mixed into this execution tranche. Independent CI then disproved two implementation assumptions: Terminal Egress consolidation had unintentionally dropped steering/activity-context diagnostic evidence, and the workflow's Lua syntax inventory still named retired executable modules. `.30` restores provenance-neutral observability and reconciles the validation inventory without changing Terminal Egress movement policy.
+After merge, continue Phase 14.6 from clean/current `main`. Protected Yield still carries D-0147 implementation vocabulary and remains a later Phase-14.6 cleanup target. Production TEST/Step/D-number vocabulary and the Mixed Runtime Constants Surface remain ownership-driven follow-up work; Issues #86, #87 and #89 own the newly separated performance, configuration-surface and HUD work respectively.
+
+The `.30` smoke is fixture-bounded Reality evidence, not Supported-Envelope proof. Later regression selection remains causal to the responsibility being changed.
 
 Contrary Reality updates the architecture rather than being hidden behind compatibility special cases.

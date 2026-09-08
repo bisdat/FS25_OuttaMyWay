@@ -3445,3 +3445,15 @@ Run #147 exposed the final companion literal in the same pre-1.0 versioning cont
 **Discovery — Direct-Control Harness Must Follow Execution Addressability:** when an execution boundary graduates from trigger-history addressability to current-Reality addressability, direct tests of that boundary must migrate their fixtures with the boundary. Preserving an old fixture does not validate backward compatibility; it validates a contract the production Control no longer owns.
 
 **Decision:** migrate the three direct Completed-Obstruction Control tests to the generic Terminal Egress target/current-physical contract and generic physical outcome/failure vocabulary. Keep D0147/Completed Obstruction semantics upstream in Candidate/Responsibility/lifecycle tests. This is test/knowledge reconciliation only; production executable bytes remain `.30`.
+
+## 2026-09-08 — Phase 14.6A: final `.30` acceptance evidence
+
+**Independent offline evidence:** GitHub Actions run #245 completed successfully on `a6d0921a5fff08ae498def74c71296cfbbebdee9`; both blocking jobs passed: `Structural contracts` and `Lua offline behavioural contracts`.
+
+**GIANTS Reality observation:** the final `0.3.0.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION` smoke run was an apparent pass.
+
+**HUD observation:** the lingering final `Terminal...` message seen during the `.29` smoke was not reproduced in `.30`. The repository owner recorded screenshot evidence in Issue #89. No dedicated HUD implementation change was required; the symptom clearing does not resolve the broader player-facing messaging architecture owned by Issue #89.
+
+**Interpretation:** Phase 14.6A has sufficient bounded evidence for owner acceptance of PR #88: the generic Terminal Egress execution topology satisfies the reconciled offline contracts and survived the final smoke fixture after the last executable change. This remains fixture-bounded evidence and does not claim whole Supported-Envelope validation.
+
+**Decision boundary:** PR #88 may now be accepted by owner merge. Merge advances Accepted Repository State only; `.30` is not declared canonical by this evidence.
