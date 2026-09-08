@@ -46,6 +46,11 @@ non-job physical actuation donor from misleading post-job Authority placement
 while preserving both semantic authority classes, read the
 [Phase 14.4 Non-Job Actuation Mechanism Graduation](PHASE_14_NON_JOB_ACTUATION_MECHANISM_GRADUATION.md).
 
+For the fifth Phase-14 engineering boundary, absorbing accepted D-0218 and
+Prospective Portfolio strangler seams into explicit Observation/Runtime
+composition and retiring load-order monkey-patching, read the
+[Phase 14.5 Runtime Integration Consolidation](PHASE_14_RUNTIME_INTEGRATION_CONSOLIDATION.md).
+
 Architecture may describe intended behaviour that is not yet implemented. Read
 it as the system's direction and responsibility model, not as a complete account
 of current runtime capability.
