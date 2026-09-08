@@ -4,134 +4,138 @@ Continuation State is the compact, replace-in-place description of the project's
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #83 merge, commit `c69bd1ca186d858778efef6aeefeb9975471709e`.
+- Accepted Repository State baseline for this increment: `main` after PR #84 merge, commit `57f65c0dccdf39764bca6cfea4bfe082a93852f0`.
 - Canonical authority remains **v0.3.0.0**.
-- This bounded Issue #82 executable correction advances TEST identity to **`0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY`**; it makes no canonical claim.
-- Phase 14.5 Runtime Integration Consolidation is complete; Phase 14.6 has not started.
-- Issue #67 is closed after PR #79; the Lua harness is reconciled with current production topology.
-- Issue #78 is closed after PR #80; independent CI established the clean **337/0 main + 9/9 focused** Lua baseline.
-- PR #81 promoted `Lua offline behavioural contracts` to blocking CI. Protected `main` requires both `Structural contracts` and `Lua offline behavioural contracts`.
-- PR #83 completed **Repository Context Bootstrap**, **Relevant Knowledge Sweep** governance and promotion of the Reality-proven U+2022 texture-font constraint into durable Engine Knowledge.
-- Issue #82 remains **KNOWN OPEN / RE-OBSERVED** until independent CI and targeted GIANTS Reality validate the `.28` correction.
-- The `.28` code change is presentation compatibility only: follower Regulation policy, magnitude, admission, lifecycle, Bounded Authority and Control are intentionally unchanged.
-- Canonical authority is unchanged.
+- Accepted non-canonical playable identity remains **`0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY`**.
+- Protected `main` requires both `Structural contracts` and `Lua offline behavioural contracts`.
+- Issue #82 is closed after the bounded `.28` follower-HUD correction and targeted GIANTS Reality validation.
+- Phase 14 remains **ACTIVE**. No executable Phase-14.6 change has yet consumed a new TEST build identity.
 
-## Strangler programme status
+## Documentation responsibility correction
 
-- Phase 11 — Reduce `LiveControlDispatcher` to Authorised Control Routing — **COMPLETE**.
-- Phase 12 — Retire superseded generic Commitment/orchestration only when no supported path relies on it — **COMPLETE**.
-- Phase 13 — Simplify Candidate/Constraint/Decision only where evidence proves duplication — **COMPLETE**.
-- Phase 14 — Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming — **IN PROGRESS — 14.5 COMPLETE; 14.6 NOT YET STARTED**.
-- Phase 15 — Whole-system validation and architecture-to-runtime review — **NOT STARTED**.
+Phase 14 exposed a repository-governance defect: engineering tranche documents had been accumulated under `docs/architecture/` even though their responsibility was migration history rather than current architecture.
 
-Read [Phase 13 Closure Audit](architecture/PHASE_13_CLOSURE_AUDIT.md) for the closure evidence and responsibility verdicts.
+The governing correction is:
 
-## Current Candidate / Constraint / Decision architecture
+- **Engineering Increment Documentation != Durable Architecture**;
+- **Current Architecture Should Not Require Historical Reconstruction**.
 
-The current production chain is intentionally retained because each layer now contributes distinct truthful work:
+`AGENTS.md` now contains a mandatory **Documentation Creation Gate — Malicious Compliance guard**. A request to record, audit, design or document work does not authorise creation of another live document. New live documentation requires an enduring responsibility that no current document already owns. Phase/tranche/audit/closure chronology belongs in existing current owners plus authorised history/evidence surfaces, not in a chain of live architecture deltas.
+
+The Phase-14 tranche documents are being removed after their still-current knowledge is reconciled into the Implementation Map, this Continuation State and existing architectural/governance owners. Git and PR history retain the exact historical documents.
+
+## Current strangler boundary
+
+The current production responsibility chain remains:
 
 ```text
+Reality
+    ↓
+Observation
+    ↓
 Situation Assessment
-        ↓
-Candidate construction / planning
-        ↓
-Constraint evaluation
-        ↓
-Decision / policy selection
-        ↓
+    ↓
+Candidate
+    ↓
+Constraint
+    ↓
+Decision
+    ↓
 Responsibility Transition
+    ↓
+Current Responsibility
+    ↓
+Bounded Authority
+    ↓
+Control
+    ↓
+Reality
 ```
 
-### Candidate
+Candidate, Constraint, Decision and Responsibility Transition remain distinct because each contributes independently owned work. Phase 14 is not authorised to collapse those layers for implementation convenience.
 
-Candidate owns feasible option construction, planning and support provenance.
+## Current Phase-14 implementation state
 
-`CandidateAction` rejects downstream authority such as selection, admissibility, Commitment operation, Control request and canonical Constraint verdict fields.
+Already accepted source placement now includes:
 
-Fresh independently supportable purposes are exposed through the **Prospective Decision Portfolio**. Candidate Support Projection narrows the prospective support question without deleting the parent evidence universe or creating another Operational Picture.
+- production `RegulationControl` separated from the former Prototype22 Control surface;
+- production `FieldWorkHoldMechanism`, `NativeDriveMechanism` and `TransitConfigurationMechanism` under `scripts/control/mechanisms/`;
+- production `LiveInteractionObservation` under Observation placement;
+- shared `NonJobActuationMechanism` under Control mechanisms;
+- direct Runtime/Observation composition for accepted Causal Obstruction relocation and Prospective Decision Portfolio responsibilities, with the former load-order integration wrappers retired.
 
-Per-conflict Passage arrangement search remains Candidate planning. Choosing among supported conflicts does not.
+The current Implementation Map owns exact source placement and remaining drift.
 
-### Constraint
+## Current Phase-14.6 architectural interpretation
 
-Constraint owns exactly four independently evaluated mandatory questions:
+### Trigger Provenance != Terminal Egress Execution
 
-1. `REPRESENTATION_FITNESS`;
-2. `RESPONSIBILITY_COMPATIBILITY`;
-3. `COMMITMENT_PRECONDITIONS`;
-4. `EFFECTIVE_ACTUATION_COMPOSITION`.
+Completed Obstruction and current Causal Obstruction remain distinct reasons for establishing Resolution responsibility. Their admission, governing basis, beneficiary/controlled-subject semantics, Commitment/Obligation lifecycle and settlement evidence remain upstream and may differ.
 
-Candidate planning evidence cannot become a canonical Constraint verdict.
+Once an already-authorised bounded movement reaches Control, the execution problem is Terminal Egress. The current hypothesis is that physical execution should depend on the supplied objective, current physical subject and current Bounded Authority rather than D-0147/D-0218 trigger provenance.
 
-### Decision
+This makes the existing `TerminalEgressControl` / `ObstructionRelocationControl` split a candidate duplicate-execution seam, not evidence of two required architectural Control concepts.
 
-Decision owns fresh cross-purpose compatibility, nearest-supported Passage conflict selection, local Traffic Policeman preference and minimum-cost selection where applicable.
+### Shared execution support
 
-A selected higher-precedence Portfolio group does not expose lower-precedence groups merely because its Candidate is Constraint-failed or unresolved; this preserves accepted compatibility behaviour while keeping ownership explicit.
+Protected Yield, configuration handling, bounded fixed-direction movement, Player Claim/source-AI supersession, Vehicle Activity Context and neutralisation are execution-support concepts. Their production names should not retain D-0147 provenance when the same execution support is used by another legitimate trigger.
 
-### Responsibility Transition
+`TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M` and `TERMINAL_EGRESS_MOVE_TIMEOUT_MS` are acceptable execution-owned constants if they continue to describe one shared Terminal Egress policy. Do not create per-trigger copies merely because two trigger paths consume the same execution.
 
-Semantic Regulation / Resolution establishment, preservation, replacement and termination remain downstream in purpose-specific Responsibility Transition.
+### Current physical addressability
 
-**Commitment Operation != Responsibility Transition** remains an accepted boundary.
+Historical Job Episode evidence may establish a Completed Obstruction trigger, but authorised physical execution should address current Reality. `CurrentPhysicalAssemblySource` observes current usable mission vehicle roots independently of active Job membership and is the current candidate addressability boundary for Terminal Egress execution.
 
-## `.19` Reality failure and `.20` correction
+### Prototype22
 
-`.19` failed its first GIANTS Passage Reality test because its support-isolation mechanism manufactured intermediate Operational Pictures. Same-Reality Traffic Policeman exhaustion evidence was therefore stale by the time Decision evaluated it.
+Prototype22 was a transient capability-validation harness. Its Hold, Drive and Configuration mechanisms have graduated to production. The prototype itself has no identified durable production responsibility and is targeted for retirement after an exact dependency scan.
 
-Named discoveries:
+The earlier hypothesis that Prototype22 uniquely installed the shared native drive hook was disproved: production Cooperative Passage independently installs the same idempotent mechanism.
 
-- **Support Projection != New Operational Picture**;
-- **Support Scope != Evidence Deletion**.
+### Production vocabulary
 
-`.20` corrected the implementation by binding projected support groups directly to one Candidate-support-enriched target Decision picture while retaining the full parent evidence universe.
+Decision numbers and TEST/Step/Prototype labels may remain as provenance where they explain history. They should not remain the primary identity of current production concepts, support boundaries, target kinds, owner tags, failure reasons or constants.
 
-The direct `.19` regression repeat passed in Reality. Two ordinary Passages completed; warm D-0147 settlement passed; and a cold-start three-assembly run demonstrated two fresh cold blockers reaching Decision sequentially while Player Claim remained authoritative.
+The cleanup must be ownership-driven rather than a repository-wide textual rename.
 
-Do not reopen Passage geometry, D-0147 or D-0218 mechanics based on the resolved `.19` failure.
+## Behaviour preservation boundary
 
-## Accepted current limits
+The next executable tranche must preserve:
 
-### Generic multi-context application cardinality
-
-A semantically targetable retained context may still fail closed at generic Commitment application when more than one retained context exists.
-
-This remains **ACCEPTABLE FAIL-CLOSED LIMIT for current implemented production behaviour**.
-
-Revisit only for a concrete supported consumer, notably Issue #45 Bubble Bullet Time.
-
-### Supported traffic envelope
-
-The supported Operation envelope remains a maximum of **three simultaneously active GIANTS AI worker assemblies**. The player does not count. Validation is aimed at different agronomic roles; same-agronomy or >3-worker scenarios may work incidentally but are outside supported design/validation scope.
+- GIANTS ownership of jobs, productive route, steering, turning and ordinary navigation;
+- the maximum-three-active-AI supported Operation envelope;
+- Candidate / Constraint / Decision / Responsibility ownership boundaries;
+- Bounded Authority monotonicity;
+- Completed Obstruction versus current Causal Obstruction trigger semantics;
+- beneficiary / controlled-subject separation;
+- current first-courtesy 60 m Interior Settlement policy;
+- completed-obstruction second-courtesy Final Boundary Settlement rules;
+- current Causal Obstruction first-courtesy-only scope and fresh-Situation reassessment;
+- Protected Yield beneficiary protection;
+- Player Claim and source-AI supersession;
+- compaction/configuration behaviour;
+- actuation neutralisation and Vehicle Activity Context release;
+- Regulation and Cooperative Passage behaviour.
 
 ## Separate open work
 
 - Issue #37 — Category-2 Forward Intersection Reality-validation debt.
 - Issue #45 — Bubble Bullet Time, accepted but unimplemented.
 - Issue #65 — Behaviour Regression Contract != Build Identity Contract.
-- Issue #82 — known Follower HUD Glyph Compatibility Leak, re-observed in `.27`; `.28` bounded runtime correction awaits independent CI and targeted GIANTS Reality validation.
+
+These remain separate from the current Phase-14.6 placement/vocabulary work.
 
 ## Immediate next action
 
-Validate the bounded **Issue #82 Follower HUD Glyph Compatibility** correction.
+Review and merge the current documentation-governance correction only if its diff leaves the live architecture tree describing current responsibilities rather than Phase-14 chronology.
 
-The `.28` implementation:
+After acceptance, begin the first executable Phase-14.6 increment from clean/current `main`:
 
-- replaces only the Reality-proven unsupported U+2022 BULLET separators in `FollowerPacingHud` with the already demonstrated ASCII-safe `|`;
-- deliberately retains U+2014 EM DASH because current evidence does not establish a generic non-ASCII prohibition;
-- adds a blocking Structural source contract over the demonstrated Version/Follower texture-font HUD surfaces;
-- adds `FollowerPacingHud.lua` to CI Lua syntax coverage;
-- establishes the implementation-local **Known Rendered Glyph Check** so a statically visible recurrence of a known unsupported glyph is caught before another in-game tranche; and
-- advances executable TEST identity to **`0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY`**.
+1. establish one provenance-neutral Terminal Egress execution contract while preserving the two upstream trigger semantics;
+2. absorb duplicate obstruction-relocation physical execution only where the implementation dependency audit proves equivalence;
+3. graduate Protected Yield execution vocabulary away from D-0147 provenance;
+4. use current-physical subject addressability at Control where validated;
+5. retire Prototype22 only after exact dependency validation; and
+6. consume a fresh TEST build identity before publishing materially changed executable bytes.
 
-Validation order:
-
-1. implementation-local Lua/Python/XML/static/diff sanity only;
-2. independent GitHub `Structural contracts` and `Lua offline behavioural contracts`;
-3. targeted GIANTS Reality exercising active follower pacing and, preferably, the shadow form;
-4. confirm no `Character '8226' not found in texture font` warning and no follower Regulation behavioural change;
-5. record the evidence and close Issue #82 only if Reality supports closure.
-
-If retained U+2014 emits a GIANTS warning, classify that as new evidence rather than broadening the current correction retroactively.
-
-Only after Issue #82 is resolved should the already-agreed **Phase 14.6 Production Vocabulary and Constants-Scope Cleanup** audit begin.
+GIANTS Reality must validate both completed-obstruction and current Causal Obstruction Terminal Egress, plus Regulation and Cooperative Passage after Prototype22/shared-mechanism cleanup. Contrary Reality updates the architecture rather than being hidden behind compatibility special cases.

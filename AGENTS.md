@@ -199,6 +199,24 @@ Prefer one authoritative home for each piece of architectural knowledge. Link to
 
 After a significant discovery, decision, behavioural change, or structural change, update the relevant repository documentation as part of the same engineering increment.
 
+### Documentation Creation Gate — Malicious Compliance guard
+
+A request to "record", "document", "audit", "design", "capture the phase", or "update the architecture" is **not** permission to create another live documentation file. Local compliance with one instruction must not violate the repository's higher-order document responsibilities.
+
+Before creating any new live file under `docs/`, all of the following must be true:
+
+1. **Name the durable responsibility.** State in one sentence what enduring responsibility the proposed file would own after the current Issue, phase, tranche, experiment or migration has ended.
+2. **Prove there is no existing owner.** Follow the Repository Context Bootstrap and show why the current responsible document cannot truthfully own the knowledge by update-in-place.
+3. **Classify the content.** Current architecture/state may belong in a live responsible document. Engineering chronology, tranche boundaries, migration plans, implementation hypotheses, audit evidence, validation history and closure narratives belong in Git/PR/Issue history, `CONTINUATION_STATE.md`, `ENGINEERING_JOURNAL.md`, `research/`, or another already-authorised evidence/history surface as appropriate.
+4. **Reject phase-shaped architecture containers.** A Phase/Step/Tranche/Increment/Audit/Closure document does not become live architecture merely because it contains architectural reasoning. Do not create `PHASE_*`, `STEP_*`, tranche-specific or equivalent live architecture files to record engineering progression unless the repository owner explicitly authorises a new durable document responsibility.
+5. **Record significant discoveries by ownership, not proliferation.** The instruction to record a significant discovery means update its existing authoritative home and, where useful, the Journal/Continuation/PR. It does not mean create a new document.
+6. **Do not justify a file by breadcrumbing it.** First establish durable responsibility; only then add navigation. A README link cannot manufacture authority for a file whose responsibility does not exist.
+7. **Current architecture must be directly readable.** A future engineer must not have to replay Phase N.1 -> N.2 -> N.3 documents or apply chronological deltas to reconstruct the present system. **Current Architecture Should Not Require Historical Reconstruction.**
+
+If any condition is unresolved, **do not create the new live document**. Update the existing responsible owner, use the authorised history/evidence surfaces, or leave the question in Continuation/PR review until ownership is established.
+
+This is the operational form of **Engineering Increment Documentation != Durable Architecture** and the repository's existing Stranded Live Knowledge / stale-responsibility rules.
+
 ## Validation
 
 **Validation Execution Separation:** GitHub Actions owns execution of the repository offline validation suites under `/tests` for ordinary Engineering Increments. The implementation agent owns inexpensive implementation-local sanity checks and interpretation of the resulting CI evidence; it does not duplicate CI execution.
