@@ -109,7 +109,7 @@ The supported Operation envelope remains a maximum of **three simultaneously act
 - Issue #37 — Category-2 Forward Intersection Reality-validation debt.
 - Issue #45 — Bubble Bullet Time, accepted but unimplemented.
 - Issue #65 — Behaviour Regression Contract != Build Identity Contract.
-- Issue #82 — known Follower HUD Glyph Compatibility Leak, re-observed in `.27`; knowledge reconciliation precedes the bounded runtime correction.
+- Issue #82 — known Follower HUD Glyph Compatibility Leak, re-observed in `.27`; `.28` bounded runtime correction awaits independent CI and targeted GIANTS Reality validation.
 
 ## Immediate next action
 
