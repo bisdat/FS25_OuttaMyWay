@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE.
+-- FS25_OuttaMyWay v0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION.
 -- modDesc.xml loads only this file. Retired implementation is preserved by repository history, not shipped runtime source.
 local modDirectory=g_currentModDirectory or ""
 local modules={
