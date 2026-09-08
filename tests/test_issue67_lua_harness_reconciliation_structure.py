@@ -81,4 +81,4 @@ def test_reconciled_lua_workflow_collects_both_outcomes_and_blocks_on_failure():
     assert 'FOCUSED_OUTCOME="${{ steps.obstruction_relocation.outcome }}"' in workflow
     assert 'if [[ "$MAIN_OUTCOME" != "success" || "$FOCUSED_OUTCOME" != "success" ]]; then' in workflow
     assert "any non-success inner outcome fails the enforcement gate" in workflow
-    assert "Evidence Collection != CI Enforcement" in read("docs/TESTING_METHODOLOGY.md")
+    assert "Evidence Collection != CI Enforcement" in " ".join(read("docs/TESTING_METHODOLOGY.md").split())
