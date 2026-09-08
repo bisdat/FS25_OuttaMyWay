@@ -55,7 +55,7 @@ def test_phase14_3_current_build_identity_is_023():
     config=text("scripts/config.lua")
     main=text("scripts/main.lua")
     moddesc=text("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.25"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.25 TEST — RUNTIME INTEGRATION CONSOLIDATION"' in config
-    assert "v0.3.0.25 TEST — RUNTIME INTEGRATION CONSOLIDATION" in main
-    assert '<version value="0.3.0.25">0.3.0.25</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.26"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE"' in config
+    assert "v0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE" in main
+    assert '<version value="0.3.0.26">0.3.0.26</version>' in moddesc

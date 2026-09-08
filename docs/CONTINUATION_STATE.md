@@ -109,12 +109,19 @@ These are not Phase-13 closure blockers.
 
 ## Immediate next action
 
-Validate **Phase 14.5 — Runtime Integration Consolidation**.
+Validate **`0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE`** for
+Phase 14.5.
 
-The candidate absorbs accepted D-0218 and Prospective Portfolio strangler seams
-into permanent Observation/Runtime composition and removes load-order
-monkey-patching.
+The `.25` Reality run established that warm D-0147 routing survived integration
+consolidation and that cold D-0218 reached physical Control, but cold Runtime
+dispatch then failed because the absorbed D-0218 methods lacked their
+seam-local `logInfo` / `logWarning` lexical dependencies.
 
-Do not begin Phase 14.6 until blocking CI and owner GIANTS Reality confirm fresh
-Regulation, fresh Cooperative Passage, warm D-0147 and cold D-0218 route
-correctly.
+`.26` restores that exact lexical dependency closure and removes the two
+deliberately retired integration files from the CI Lua syntax list.
+
+Blocking CI must pass. GIANTS Reality then needs only a focused cold D-0218
+rerun showing the normal Runtime `ACCEPTED` path, `MANOEUVRE_COMPLETE`,
+fresh-Situation settlement and no OuttaMyWay Lua error.
+
+Do not begin Phase 14.6 until that correction is accepted.

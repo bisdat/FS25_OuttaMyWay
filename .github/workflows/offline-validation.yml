@@ -99,8 +99,6 @@ jobs:
             scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua \
             scripts/runtime/LiveRuntimeCoordinator.lua \
             scripts/runtime/Runtime.lua \
-            scripts/runtime/ObstructionRelocationRuntimeIntegration.lua \
-            scripts/runtime/ProspectiveDecisionPortfolioIntegration.lua
           do
             CHECK_FILE="$file" "$LUAJIT_BIN" -e 'assert(loadfile(os.getenv("CHECK_FILE")))'
           done

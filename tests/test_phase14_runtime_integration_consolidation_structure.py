@@ -75,6 +75,21 @@ def test_phase14_5_d0218_semantics_and_cleanup_remain_in_runtime():
     ):
         assert token in runtime
 
+def test_phase14_5_absorbed_d0218_methods_retain_lexical_logging_dependencies():
+    runtime=read("scripts/runtime/Runtime.lua")
+    assert "local function logInfo(formatText,...)" in runtime
+    assert "local function logWarning(formatText,...)" in runtime
+    assert '[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION] %s' in runtime
+    assert '[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION][WARNING] ' in runtime
+
+    d0218=runtime[
+        runtime.index("function Runtime:setObstructionRelocationControl(control)"):
+        runtime.index("function Runtime:dispatchEvaluatedOperationalPicture")
+    ]
+    assert "logInfo(" in d0218
+    assert "logWarning(" in d0218
+
+
 def test_phase14_5_runtime_still_does_not_physically_actuate():
     runtime=read("scripts/runtime/Runtime.lua")
     for forbidden in ("AIVehicleUtil.driveInDirection","AIVehicleUtil.driveToPoint","getCanAIFieldWorkerContinueWork"):
@@ -84,7 +99,7 @@ def test_phase14_5_current_build_identity_is_025():
     config=read("scripts/config.lua")
     main=read("scripts/main.lua")
     moddesc=read("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.25"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.25 TEST — RUNTIME INTEGRATION CONSOLIDATION"' in config
-    assert "v0.3.0.25 TEST — RUNTIME INTEGRATION CONSOLIDATION" in main
-    assert '<version value="0.3.0.25">0.3.0.25</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.26"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE"' in config
+    assert "v0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE" in main
+    assert '<version value="0.3.0.26">0.3.0.26</version>' in moddesc

@@ -148,3 +148,43 @@ syntax checks for changed production Lua and `git diff --check`.
 Because this tranche touches central live-cycle composition, GIANTS Reality
 must demonstrate routing for: fresh Regulation, fresh Cooperative Passage, warm
 D-0147 terminal courtesy, and cold D-0218 Causal Obstruction relocation.
+
+## Validation discovery — Lexical Dependency Closure
+
+The first `0.3.0.25` GIANTS Reality run disproved an implementation assumption
+without disproving the Phase-14.5 architecture.
+
+The D-0218 Runtime method bodies were copied exactly from the accepted strangler
+seam, but two seam-local logging helpers were not absorbed with them:
+
+- `logInfo`
+- `logWarning`
+
+The cold path therefore successfully established Causal Obstruction,
+Responsibility, Bounded Authority and physical Control, then failed at the
+post-start Runtime `ACCEPTED` diagnostic call because `logInfo` was nil.
+
+This names the implementation discovery:
+
+**Lexical Dependency Closure**
+
+Behaviour-preserving ownership absorption requires not only function-body
+equivalence but closure over local helper dependencies used by those functions.
+
+The physical relocation continuing after the Runtime diagnostic failure also
+demonstrates an important validation distinction:
+
+**Control Start != Runtime Dispatch Completion**
+
+A Control may already have accepted and begun physical work before the enclosing
+Runtime dispatch returns. Therefore any failure after Control acceptance is a
+real integration failure even if the physical manoeuvre later succeeds.
+
+The correction restores the exact accepted D-0218 logging helpers. It does not
+change Candidate, Decision, Responsibility, Bounded Authority, dispatch order
+or physical Control.
+
+The same validation cycle exposed a separate workflow migration omission: the
+non-blocking Lua syntax list still named the two integration files deliberately
+deleted by Phase 14.5. Their absence is expected and the workflow list must
+follow permanent source placement.

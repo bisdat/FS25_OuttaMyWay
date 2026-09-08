@@ -10,6 +10,14 @@ local function runtimeLogWarning(formatText,...)
     local message=string.format(formatText,...)
     if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][RUNTIME] %s",message) else print("[FS25_OuttaMyWay][RUNTIME][WARNING] "..message) end
 end
+local function logInfo(formatText,...)
+    local message=string.format(formatText,...)
+    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION] %s",message) else print("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION] "..message) end
+end
+local function logWarning(formatText,...)
+    local message=string.format(formatText,...)
+    if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION] %s",message) else print("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION][WARNING] "..message) end
+end
 local function selectedCandidate(evaluated)
     local selectedId=evaluated and evaluated.decision and evaluated.decision.selectedCandidateId or nil
     if selectedId==nil then return nil end
