@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION.
+-- FS25_OuttaMyWay v0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY.
 -- modDesc.xml loads only this file. Retired implementation is preserved by repository history, not shipped runtime source.
 local modDirectory=g_currentModDirectory or ""
 local modules={

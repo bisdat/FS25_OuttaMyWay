@@ -208,6 +208,7 @@ During an ordinary Engineering Increment:
 - do **not** run `pytest`, `tests/replacement_core/run.lua`, or equivalent repository test suites locally unless the repository owner explicitly requests it or the increment is specifically investigating validation machinery;
 - tests may be read as executable contract evidence and may be changed when the accepted contract genuinely changes, but must not be weakened or rewritten merely to obtain green CI;
 - run Lua syntax checks for changed Lua files;
+- for changed text rendered through a GIANTS texture-font surface, run a **Known Rendered Glyph Check** against known unsupported glyphs recorded in `docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md`; this checks demonstrated renderability knowledge and does not establish a generic non-ASCII ban;
 - run `git diff --check`;
 - inspect `git status` and the final diff;
 - do not leave temporary files, logs, generated ZIPs, test artefacts or OS/editor files in the repository;

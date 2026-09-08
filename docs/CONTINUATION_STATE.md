@@ -4,15 +4,16 @@ Continuation State is the compact, replace-in-place description of the project's
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #81 merge, commit `42b8b4c1afc5de4dcc7b1d74fee039bb81a32dfd`.
+- Accepted Repository State baseline for this increment: `main` after PR #83 merge, commit `c69bd1ca186d858778efef6aeefeb9975471709e`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted non-canonical playable identity remains **`0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION`**.
+- This bounded Issue #82 executable correction advances TEST identity to **`0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY`**; it makes no canonical claim.
 - Phase 14.5 Runtime Integration Consolidation is complete; Phase 14.6 has not started.
 - Issue #67 is closed after PR #79; the Lua harness is reconciled with current production topology.
 - Issue #78 is closed after PR #80; independent CI established the clean **337/0 main + 9/9 focused** Lua baseline.
-- PR #81 promoted `Lua offline behavioural contracts` to blocking CI. Protected `main` now requires both `Structural contracts` and `Lua offline behavioural contracts`.
-- The `.27` smoke re-observed the previously known PR #35 **Follower HUD Glyph Compatibility Leak**; Issue #82 now tracks closure as **KNOWN OPEN / RE-OBSERVED**, not a new `.27` defect.
-- This repository-knowledge reconciliation changes no executable mod bytes and consumes no new TEST build identity.
+- PR #81 promoted `Lua offline behavioural contracts` to blocking CI. Protected `main` requires both `Structural contracts` and `Lua offline behavioural contracts`.
+- PR #83 completed **Repository Context Bootstrap**, **Relevant Knowledge Sweep** governance and promotion of the Reality-proven U+2022 texture-font constraint into durable Engine Knowledge.
+- Issue #82 remains **KNOWN OPEN / RE-OBSERVED** until independent CI and targeted GIANTS Reality validate the `.28` correction.
+- The `.28` code change is presentation compatibility only: follower Regulation policy, magnitude, admission, lifecycle, Bounded Authority and Control are intentionally unchanged.
 - Canonical authority is unchanged.
 
 ## Strangler programme status
@@ -108,33 +109,29 @@ The supported Operation envelope remains a maximum of **three simultaneously act
 - Issue #37 — Category-2 Forward Intersection Reality-validation debt.
 - Issue #45 — Bubble Bullet Time, accepted but unimplemented.
 - Issue #65 — Behaviour Regression Contract != Build Identity Contract.
-- Issue #82 — known Follower HUD Glyph Compatibility Leak, re-observed in `.27`; knowledge reconciliation precedes the bounded runtime correction.
+- Issue #82 — known Follower HUD Glyph Compatibility Leak, re-observed in `.27`; `.28` bounded runtime correction awaits independent CI and targeted GIANTS Reality validation.
 
 ## Immediate next action
 
-Complete the **repository context / stranded-knowledge reconciliation** exposed by
-Issue #82 before changing follower HUD executable bytes or beginning Phase 14.6.
+Validate the bounded **Issue #82 Follower HUD Glyph Compatibility** correction.
 
-This increment establishes:
+The `.28` implementation:
 
-- **Repository Context Bootstrap** — reconstruct current authority from
-  `AGENTS.md` -> `docs/README.md` -> Engineering Architecture + Continuation
-  State -> task-relevant responsibility routes;
-- **Relevant Knowledge Sweep** — search current docs/source/tests, open and
-  closed Issues, PR history, journal/research and Git provenance before
-  classifying an observation as NEW;
-- durable GIANTS texture-font knowledge: U+2022 BULLET is unsupported on the
-  observed texture-font HUD surfaces and ASCII-safe `|` is the demonstrated
-  separator;
-- pull-request Knowledge Trace visibility; and
-- a Structural governance contract protecting the bootstrap/sweep and durable
-  knowledge placement.
+- replaces only the Reality-proven unsupported U+2022 BULLET separators in `FollowerPacingHud` with the already demonstrated ASCII-safe `|`;
+- deliberately retains U+2014 EM DASH because current evidence does not establish a generic non-ASCII prohibition;
+- adds a blocking Structural source contract over the demonstrated Version/Follower texture-font HUD surfaces;
+- adds `FollowerPacingHud.lua` to CI Lua syntax coverage;
+- establishes the implementation-local **Known Rendered Glyph Check** so a statically visible recurrence of a known unsupported glyph is caught before another in-game tranche; and
+- advances executable TEST identity to **`0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY`**.
 
-After that governance increment is accepted, perform one bounded Issue #82
-runtime correction: replace the known follower-HUD U+2022 separators with `|`,
-add the blocking rendered-HUD regression contract atomically with the fix,
-advance TEST build identity, validate in CI, then obtain targeted GIANTS Reality
-evidence that the warning is gone without Regulation behaviour change.
+Validation order:
 
-Only then begin the already-agreed **Phase 14.6 Production Vocabulary and
-Constants-Scope Cleanup** audit.
+1. implementation-local Lua/Python/XML/static/diff sanity only;
+2. independent GitHub `Structural contracts` and `Lua offline behavioural contracts`;
+3. targeted GIANTS Reality exercising active follower pacing and, preferably, the shadow form;
+4. confirm no `Character '8226' not found in texture font` warning and no follower Regulation behavioural change;
+5. record the evidence and close Issue #82 only if Reality supports closure.
+
+If retained U+2014 emits a GIANTS warning, classify that as new evidence rather than broadening the current correction retroactively.
+
+Only after Issue #82 is resolved should the already-agreed **Phase 14.6 Production Vocabulary and Constants-Scope Cleanup** audit begin.

@@ -138,7 +138,7 @@ def test_phase13_test_identity_is_coherent():
     moddesc = read("modDesc.xml")
     main = read("scripts/main.lua")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.27"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION"' in config
-    assert '<version value="0.3.0.27">0.3.0.27</version>' in moddesc
-    assert "v0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION" in main
+    assert 'OuttaMyWay.VERSION = "0.3.0.28"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY"' in config
+    assert '<version value="0.3.0.28">0.3.0.28</version>' in moddesc
+    assert "v0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY" in main

@@ -1,3 +1,34 @@
+## 2026-09-08 — Issue #82 bounded follower HUD glyph correction
+
+**Observe:** PR #83 has restored the historical U+2022 texture-font constraint to
+durable Engine Knowledge and established repository-context reconstruction. The
+remaining executable defect is now narrow and directly visible in
+`FollowerPacingHud`: four U+2022 BULLET separators remain across the active and
+shadow rendered forms.
+
+**Discover:** **Renderability Constraint != Encoding Constraint**. Valid UTF-8
+Lua source does not prove GIANTS texture-font renderability. The available
+Reality evidence establishes U+2022 as unsupported on the demonstrated HUD
+surfaces; it does not establish that U+2014 or non-ASCII generally is invalid.
+
+**Discover:** **Static Detectability != Runtime Discovery Requirement**. Runtime
+Reality was required to discover the font limitation, but once that limitation
+is durable knowledge, recurrence in a statically visible rendered string should
+be caught before another in-game tranche.
+
+**Implement:** advance to `0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY` and replace only follower-HUD
+U+2022 separators with the Reality-demonstrated ASCII-safe `|`. Preserve the
+shadow-form U+2014 EM DASH and all follower Regulation semantics. Add a blocking
+Structural contract for the demonstrated Version/Follower HUD surfaces, include
+the changed follower HUD in CI Lua syntax checking, and add the implementation-
+local **Known Rendered Glyph Check** to repository working rules.
+
+**Validation boundary:** local work performs syntax/static/XML/diff checks only;
+repository suites remain GitHub Actions responsibility. No GIANTS Reality claim
+is made by this source correction. Issue #82 remains open until active and
+preferably shadow follower HUD forms render without character 8226 warnings and
+follower Regulation shows no behavioural change.
+
 ## 2026-09-08 — Known follower HUD glyph leak reconstructed from repository history
 
 **Observe:** the `0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION`
