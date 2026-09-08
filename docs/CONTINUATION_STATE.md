@@ -4,18 +4,20 @@ Continuation State is the compact, replace-in-place description of the project's
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #76 merge, commit `4c4924b9d52dbfb15afe99f7f2ae231466a0b29a`.
+- Accepted Repository State baseline for this increment: `main` after PR #79 merge, commit `7c40b5590615af174ce9efea9a83cd3bbc2f5638`.
 - Canonical authority remains **v0.3.0.0**.
-- Last accepted non-canonical playable identity is **`0.3.0.24 TEST — NON-JOB ACTUATION MECHANISM GRADUATION`**.
-- PR #70 passed Offline Validation Run #187 blocking Structural contracts and changed-runtime Lua syntax, then passed owner GIANTS Reality validation before merge.
-- Issue #68 is closed as the `.19` failure / `.20` correction record.
+- Last accepted non-canonical playable identity before this increment is **`0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE`**.
+- This Issue #78 increment advances executable identity to **`0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION`** because production Lua changes.
+- Phase 14.5 Runtime Integration Consolidation is complete.
+- Issue #67 is closed after PR #79; the Lua observation harness now reflects current production topology and distinguishes wrapper success from inner observation success.
+- Canonical authority is unchanged by this ordinary TEST increment.
 
 ## Strangler programme status
 
 - Phase 11 — Reduce `LiveControlDispatcher` to Authorised Control Routing — **COMPLETE**.
 - Phase 12 — Retire superseded generic Commitment/orchestration only when no supported path relies on it — **COMPLETE**.
 - Phase 13 — Simplify Candidate/Constraint/Decision only where evidence proves duplication — **COMPLETE**.
-- Phase 14 — Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming — **IN PROGRESS — 14.5 RUNTIME INTEGRATION CONSOLIDATION**.
+- Phase 14 — Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming — **IN PROGRESS — 14.5 COMPLETE; 14.6 NOT YET STARTED**.
 - Phase 15 — Whole-system validation and architecture-to-runtime review — **NOT STARTED**.
 
 Read [Phase 13 Closure Audit](architecture/PHASE_13_CLOSURE_AUDIT.md) for the closure evidence and responsibility verdicts.
@@ -103,25 +105,37 @@ The supported Operation envelope remains a maximum of **three simultaneously act
 - Issue #37 — Category-2 Forward Intersection Reality-validation debt.
 - Issue #45 — Bubble Bullet Time, accepted but unimplemented.
 - Issue #65 — Behaviour Regression Contract != Build Identity Contract.
-- Issue #67 — Workflow Success != Observation Success / non-blocking Lua harness reconciliation.
+- Issue #78 — **Signed-Zero Canonicalization Leak** in Field World fingerprinting.
 
-These are not Phase-13 closure blockers.
+Issue #78 is an isolated correctness blocker being cleared before Phase 14.6. It
+does not reopen Field World identity policy: signed zero is a numeric
+representation artefact, not semantic geometry identity.
 
 ## Immediate next action
 
-Validate **`0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE`** for
-Phase 14.5.
+Validate **`0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION`** as the
+isolated Issue #78 correctness increment.
 
-The `.25` Reality run established that warm D-0147 routing survived integration
-consolidation and that cold D-0218 reached physical Control, but cold Runtime
-dispatch then failed because the absorbed D-0218 methods lacked their
-seam-local `logInfo` / `logWarning` lexical dependencies.
+The accepted Field World invariant is unchanged: ring start, winding direction
+and sub-quantum jitter must not alter polygon identity. LuaJIT can preserve
+negative signed zero after quantization; `tostring(-0)` then leaked that
+representation artefact into canonical ring ordering and fingerprint hashing.
 
-`.26` restores that exact lexical dependency closure and removes the two
-deliberately retired integration files from the CI Lua syntax list.
+`.27` normalizes only a quantized numeric zero to canonical positive zero before
+tokenization. All non-zero quantization arithmetic and Field World identity
+policy remain unchanged.
 
-Blocking CI must pass. GIANTS Reality then needs only a focused cold D-0218
-rerun showing the normal Runtime `ACCEPTED` path, `MANOEUVRE_COMPLETE`,
-fresh-Situation settlement and no OuttaMyWay Lua error.
+Implementation-local validation is limited to Lua syntax and a focused
+canonicalization probe. GitHub Actions owns the repository suites. Expected
+independent observation after push is:
 
-Do not begin Phase 14.6 until that correction is accepted.
+- blocking Structural contracts: PASS;
+- main replacement-core Lua observation: **337 passed / 0 failed**;
+- focused obstruction-relocation Lua observation: **9 passed / 0 failed**.
+
+The existing distinct-split-polygon fingerprint test must remain distinct. Do
+not weaken the winding/sub-quantum-jitter invariant or encode a failure-count
+threshold.
+
+After Issue #78 is accepted, begin the already-agreed Phase 14.6 Production
+Vocabulary and Constants-Scope Cleanup audit.

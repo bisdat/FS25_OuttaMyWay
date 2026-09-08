@@ -68,8 +68,14 @@ local function islandBoundary(island)
 end
 
 local function quantize(value, quantum)
-    if value >= 0 then return math.floor(value / quantum + 0.5) end
-    return math.ceil(value / quantum - 0.5)
+    local quantized
+    if value >= 0 then
+        quantized=math.floor(value / quantum + 0.5)
+    else
+        quantized=math.ceil(value / quantum - 0.5)
+    end
+    if quantized==0 then return 0 end
+    return quantized
 end
 
 local function pointToken(point)
