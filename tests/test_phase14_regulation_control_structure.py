@@ -6,7 +6,6 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_phase14_1_regulation_control_owns_production_speed_execution():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"RegulationControl.lua").read_text(encoding="utf-8")
-    p22=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
     dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
 
@@ -18,21 +17,14 @@ def test_phase14_1_regulation_control_owns_production_speed_execution():
     assert 'target.kind~="REGULATION_LEASE"' in control
     assert "boundedAuthority:validateRequest(request)" in control
     assert "boundedAuthorityRequiredOwnerTags" in control
-
-    for production_method in (
-        "function Probe:getVehicleControlObservation",
-        "function Probe:getVehicleControlObservationByReference",
-        "function Probe:executeControlRequest",
-        "function Probe:clearRegulationLeaseByReference",
-    ):
-        assert production_method not in p22
+    assert not (ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").exists()
+    assert "Prototype22CapabilityGate" not in main
 
     assert "regulationControl=nil" in dispatcher
     assert "function Dispatcher:setRegulationControl" in dispatcher
     assert "local control=self.regulationControl" in dispatcher
     assert "function Runtime:setRegulationControl" in runtime
     assert "setLiveControlCapability" not in runtime
-
 
 def test_phase14_1_regulation_control_reuses_mechanics_without_owning_policy():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
@@ -85,16 +77,17 @@ def test_phase14_1_production_regulation_vocabulary_and_observation_are_wired():
     assert "OuttaMyWay.nativeManoeuvreObservationSource:setRegulationControlObservationSource(OuttaMyWay.regulationControl)" in main
 
 
-def test_phase14_1_p22_remains_manual_harness_and_passage_donor_only():
-    p22=(ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").read_text(encoding="utf-8")
+def test_phase14_1_p22_is_retired_after_capability_graduation():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
+    prototype22=ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua"
 
-    assert 'addConsoleCommand("otmP22"' in p22
-    assert "PROTOTYPE_22_CAPABILITY_GATE_ENABLED" in p22
-    assert "mechanisms.holdMechanism" in p22
-    assert "mechanisms.driveMechanism" in p22
-    assert "addModEventListener(OuttaMyWay.prototype22CapabilityGate)" in main
+    assert not prototype22.exists()
+    assert "scripts/prototypes/Prototype22CapabilityGate.lua" not in main
+    assert "prototype22CapabilityGate" not in main
+    assert "PROTOTYPE_22_" not in config
     assert "addModEventListener(OuttaMyWay.regulationControl)" in main
+    assert "addModEventListener(OuttaMyWay.cooperativePassageControl)" in main
 
 def test_phase14_1_candidate_support_uses_production_regulation_lease_vocabulary():
     candidate=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")

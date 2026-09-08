@@ -4,12 +4,12 @@ Continuation State is the compact, replace-in-place description of the project's
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #84 merge, commit `57f65c0dccdf39764bca6cfea4bfe082a93852f0`.
+- Accepted Repository State baseline for this increment: `main` after PR #85 merge, commit `466424f5fe6e984d041c9f00c484a9bd9e82b397`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted non-canonical playable identity remains **`0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY`**.
+- This branch advances executable identity to **`0.3.0.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION`**; it makes no canonical claim.
 - Protected `main` requires both `Structural contracts` and `Lua offline behavioural contracts`.
 - Issue #82 is closed after the bounded `.28` follower-HUD correction and targeted GIANTS Reality validation.
-- Phase 14 remains **ACTIVE**. No executable Phase-14.6 change has yet consumed a new TEST build identity.
+- Phase 14 remains **ACTIVE**. Phase 14.6A is implemented on this branch; independent offline validation is green and the final `.30` GIANTS smoke is an apparent pass. PR #88 is at the owner-acceptance boundary.
 
 ## Documentation responsibility correction
 
@@ -74,7 +74,7 @@ Completed Obstruction and current Causal Obstruction remain distinct reasons for
 
 Once an already-authorised bounded movement reaches Control, the execution problem is Terminal Egress. The current hypothesis is that physical execution should depend on the supplied objective, current physical subject and current Bounded Authority rather than D-0147/D-0218 trigger provenance.
 
-This makes the existing `TerminalEgressControl` / `ObstructionRelocationControl` split a candidate duplicate-execution seam, not evidence of two required architectural Control concepts.
+This branch removes the `TerminalEgressControl` / `ObstructionRelocationControl` split: both already-authorised movement paths now enter one `TerminalEgressControl`, while their trigger-specific Responsibility and lifecycle semantics remain upstream. Independent offline contracts are green and the `.30` GIANTS smoke is an apparent pass; this does not imply that the two triggers are semantically identical or prove the whole Supported Envelope.
 
 ### Shared execution support
 
@@ -88,7 +88,7 @@ Historical Job Episode evidence may establish a Completed Obstruction trigger, b
 
 ### Prototype22
 
-Prototype22 was a transient capability-validation harness. Its Hold, Drive and Configuration mechanisms have graduated to production. The prototype itself has no identified durable production responsibility and is targeted for retirement after an exact dependency scan.
+Prototype22 was a transient capability-validation harness. Its Hold, Drive and Configuration mechanisms have graduated to production. The exact dependency scan found no remaining durable runtime responsibility, so this branch removes the harness, event registration and `PROTOTYPE_22_*` runtime constants.
 
 The earlier hypothesis that Prototype22 uniquely installed the shared native drive hook was disproved: production Cooperative Passage independently installs the same idempotent mechanism.
 
@@ -127,15 +127,21 @@ These remain separate from the current Phase-14.6 placement/vocabulary work.
 
 ## Immediate next action
 
-Review and merge the current documentation-governance correction only if its diff leaves the live architecture tree describing current responsibilities rather than Phase-14 chronology.
+PR #88 is at the **owner-acceptance boundary** on `0.3.0.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION`.
 
-After acceptance, begin the first executable Phase-14.6 increment from clean/current `main`:
+Final evidence on exact executable/test-contract head `a6d0921a5fff08ae498def74c71296cfbbebdee9` before this docs-only record:
 
-1. establish one provenance-neutral Terminal Egress execution contract while preserving the two upstream trigger semantics;
-2. absorb duplicate obstruction-relocation physical execution only where the implementation dependency audit proves equivalence;
-3. graduate Protected Yield execution vocabulary away from D-0147 provenance;
-4. use current-physical subject addressability at Control where validated;
-5. retire Prototype22 only after exact dependency validation; and
-6. consume a fresh TEST build identity before publishing materially changed executable bytes.
+- GitHub Actions run #245: **Structural contracts PASS**;
+- GitHub Actions run #245: **Lua offline behavioural contracts PASS**;
+- `.30` GIANTS smoke: **apparent pass**;
+- the `.29` lingering final `Terminal...` HUD message was **not reproduced in `.30`**; screenshot/owner evidence is recorded in Issue #89.
 
-GIANTS Reality must validate both completed-obstruction and current Causal Obstruction Terminal Egress, plus Regulation and Cooperative Passage after Prototype22/shared-mechanism cleanup. Contrary Reality updates the architecture rather than being hidden behind compatibility special cases.
+The HUD symptom is therefore cleared for this increment without a dedicated HUD implementation change. Issue #89 remains open because player-facing HUD/message ownership and lifecycle are still a separate unresolved architecture responsibility.
+
+If the repository owner accepts PR #88, merge it. That merge advances Accepted Repository State only; it does **not** canonicalise `.30`.
+
+After merge, continue Phase 14.6 from clean/current `main`. Protected Yield still carries D-0147 implementation vocabulary and remains a later Phase-14.6 cleanup target. Production TEST/Step/D-number vocabulary and the Mixed Runtime Constants Surface remain ownership-driven follow-up work; Issues #86, #87 and #89 own the newly separated performance, configuration-surface and HUD work respectively.
+
+The `.30` smoke is fixture-bounded Reality evidence, not Supported-Envelope proof. Later regression selection remains causal to the responsibility being changed.
+
+Contrary Reality updates the architecture rather than being hidden behind compatibility special cases.

@@ -107,7 +107,6 @@ load("scripts/diagnostics/ProgressionPreservationProbe.lua")
 load("scripts/control/mechanisms/FieldWorkHoldMechanism.lua")
 load("scripts/control/mechanisms/NativeDriveMechanism.lua")
 load("scripts/control/mechanisms/TransitConfigurationMechanism.lua")
-load("scripts/prototypes/Prototype22CapabilityGate.lua")
 load("scripts/control/CooperativePassageControl.lua")
 load("scripts/control/TerminalEgressControl.lua")
 load("scripts/authority/ResolutionSpaceProgressionEnvelope.lua")
@@ -2994,7 +2993,7 @@ end)
 
 
 test("D-0139 Progress Passage semantics are removed from P22 capability ownership", function()
-    equal(OuttaMyWay.Prototype22CapabilityGate.progressPassageContextForRun,nil)
+    equal(OuttaMyWay.Prototype22CapabilityGate,nil)
     local probe=OuttaMyWay.FollowerMaturationCompressionProbe.new({},nil,nil)
     equal(probe.setPurposeSuccessionSource,nil)
     equal(probe._retireForProgressPassage,nil)
@@ -5948,8 +5947,16 @@ local function d0147TransitionForControl(runtime,supported,evaluated)
     return admitted,candidate,bridge
 end
 
-local function d0147BoundedControlRequest(runtime,identity,admitted,supported,evaluated,candidate,bridge)
-    local target={kind="D0147_BOUNDED_TERMINAL_EGRESS",phase="INFIELD"}
+local function completedObstructionTerminalEgressRequest(runtime,identity,admitted,supported,evaluated,candidate,bridge)
+    local target={
+        kind="TERMINAL_EGRESS",
+        phase="INFIELD",
+        assemblyReferenceKey=bridge.assemblyReferenceKey,
+        objective=bridge.objective,
+        configurationPolicy="RETAIN_CURRENT",
+        cleanupFailurePolicy="REPORT_ONLY",
+        completionContext={triggerKind="COMPLETED_OBSTRUCTION",terminalEpisodeId=bridge.terminalEpisodeId}
+    }
     local grant,reason=runtime.boundedAuthority:authorize({
         responsibilityId=admitted.currentResponsibility.identity,
         commitmentId=admitted.commitment.identity,
@@ -5962,7 +5969,7 @@ local function d0147BoundedControlRequest(runtime,identity,admitted,supported,ev
         effectiveActuationCompositionId=admitted.commitment.effectiveActuationCompositionId,
         preconditions=candidate.preconditions or {},
         invalidationConditions=candidate.invalidationConditions or {},
-        provenance={source="test",phase="D0147_DIRECT_CONTROL"}
+        provenance={source="test",phase="COMPLETED_OBSTRUCTION_DIRECT_TERMINAL_EGRESS"}
     })
     if grant==nil then error(tostring(reason)) end
     return OuttaMyWay.ControlRequest.new({
@@ -6153,7 +6160,7 @@ test("D0147 config switch disables admission rather than merely suppressing Cont
 end)
 
 
-test("D0147 Control completes first courtesy from derived centroid station progress",function()
+test("Completed Obstruction Terminal Egress completes first courtesy from derived centroid station progress",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-INFIELD-PROGRESS"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
@@ -6167,20 +6174,20 @@ test("D0147 Control completes first courtesy from derived centroid station progr
     AIVehicleUtil={driveInDirection=function(v,dt,steeringLimit,accel,slowAccel,slowLimit,allowed,forwards,lx,lz,maxSpeed,slowDown) driveCalls=driveCalls+1; commandedMaxSpeed=maxSpeed; v.rotatedTime=0.2; return true end}
     WheelsUtil={updateWheelsPhysics=function() return true end}
     getWorldTranslation=function() return px,0,pz end; worldDirectionToLocal=function(node,x,y,z) return x,y,z end
-    local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="INFIELD-1",kind="DISC",x=px,z=pz,radius=1,positiveConflictSupport=true}}} end}
+    local source={getCurrentPhysicalObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="INFIELD-1",kind="DISC",x=px,z=pz,radius=1,positiveConflictSupport=true}}} end}
     local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
-    local request=d0147BoundedControlRequest(runtime,"CR-D0147-INFIELD",admitted,supported,evaluated,candidate,bridge)
+    local request=completedObstructionTerminalEgressRequest(runtime,"CR-D0147-INFIELD",admitted,supported,evaluated,candidate,bridge)
     local started,startReason=control:executeControlRequest(request,candidate); equal(started,true); equal(startReason,"MANOEUVRE_STARTED")
     control:update(16); equal(completion,nil); equal(driveCalls,1); if math.abs((commandedMaxSpeed or 0)-25)>0.0001 then error("D0147 retreat did not use native maximum forward speed") end
     px,pz=50,50
     control:update(16)
-    equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.kind,"D0147_INTERIOR_SETTLEMENT_COMPLETE"); equal(completion.evidence.courtesyStage,1); equal(completion.evidence.destinationKind,"CENTROID_BEARING_DISTANCE_CAP")
+    equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.kind,"TERMINAL_EGRESS_MANOEUVRE_COMPLETE"); equal(completion.evidence.courtesyStage,1); equal(completion.evidence.destinationKind,"CENTROID_BEARING_DISTANCE_CAP")
     if completion.evidence.realisedProgressM+0.0001 < completion.evidence.targetProgressM then error("interior settlement completed before derived centroid station") end
     equal(completion.evidence.continuousCourseCorrection,false); equal(driveCalls,1)
     AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil
 end)
 
-test("D0147 owned Infield Alignment actuation failure positively neutralizes propulsion before completion",function()
+test("Completed Obstruction Terminal Egress owned actuation failure positively neutralizes propulsion before completion",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-NEUTRALIZE"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
@@ -6194,19 +6201,19 @@ test("D0147 owned Infield Alignment actuation failure positively neutralizes pro
     AIVehicleUtil={driveInDirection=function(v,dt,steeringLimit,accel,slowAccel,slowLimit,allowed,forwards,lx,lz,maxSpeed,slowDown) driveCalls=driveCalls+1; if failDrive then error("synthetic direction actuation failure") end; v.rotatedTime=-0.2; return true end}
     WheelsUtil={updateWheelsPhysics=function(v,dt,speed,accel,handbrake,stopAndGo) neutralizeCalls=neutralizeCalls+1; neutralizedWhileActive=v.forceIsActive; return true end}
     getWorldTranslation=function(node) return 2,0,5 end; worldDirectionToLocal=function(node,x,y,z) return x,y,z end
-    local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="NEUTRALIZE-1",kind="DISC",x=2,z=5,radius=1,positiveConflictSupport=true}}} end}
+    local source={getCurrentPhysicalObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="NEUTRALIZE-1",kind="DISC",x=2,z=5,radius=1,positiveConflictSupport=true}}} end}
     local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
-    local request=d0147BoundedControlRequest(runtime,"CR-D0147-NEUTRALIZE",admitted,supported,evaluated,candidate,bridge)
+    local request=completedObstructionTerminalEgressRequest(runtime,"CR-D0147-NEUTRALIZE",admitted,supported,evaluated,candidate,bridge)
     local started=control:executeControlRequest(request,candidate); equal(started,true); equal(vehicle.forceIsActive,true); equal(control.actuationMechanism:getActivityContextAcquireCallCount(),1)
     control:update(16); equal(driveCalls,1); equal(vehicle.rotatedTime,-0.2); equal(completion,nil)
     failDrive=true
     control:update(16)
-    equal(completion.status,"FAILED"); if not string.find(completion.evidence.reason,"POST_JOB_DIRECTION_DRIVE_CALL_FAILED",1,true) then error("direction failure was not surfaced") end
+    equal(completion.status,"FAILED"); if not string.find(completion.evidence.reason,"NON_JOB_DIRECTION_DRIVE_CALL_FAILED",1,true) then error("direction failure was not surfaced") end
     equal(completion.evidence.neutralization.performed,true); equal(neutralizeCalls,1); equal(neutralizedWhileActive,true); equal(vehicle.rotatedTime,0); equal(vehicle.forceIsActive,false); equal(completion.evidence.activityContext.released,true); equal(control.actuationMechanism:getActivityContextReleaseCallCount(),1)
     AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil
 end)
 
-test("D0147 Player Claim relinquishes Vehicle Activity Context without post-claim actuation",function()
+test("Completed Obstruction Terminal Egress Player Claim relinquishes Vehicle Activity Context without post-claim actuation",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-CLAIM-ACTIVITY"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
@@ -6219,9 +6226,9 @@ test("D0147 Player Claim relinquishes Vehicle Activity Context without post-clai
     AIVehicleUtil={driveInDirection=function() driveCalls=driveCalls+1; return true end}
     WheelsUtil={updateWheelsPhysics=function() neutralizeCalls=neutralizeCalls+1; return true end}
     getWorldTranslation=function() return 2,0,5 end; worldDirectionToLocal=function(node,x,y,z) return x,y,z end
-    local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="CLAIM-ACTIVITY-1",kind="DISC",x=2,z=5,radius=1,positiveConflictSupport=true}}} end}
+    local source={getCurrentPhysicalObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="CLAIM-ACTIVITY-1",kind="DISC",x=2,z=5,radius=1,positiveConflictSupport=true}}} end}
     local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
-    local request=d0147BoundedControlRequest(runtime,"CR-D0147-CLAIM-ACTIVITY",admitted,supported,evaluated,candidate,bridge)
+    local request=completedObstructionTerminalEgressRequest(runtime,"CR-D0147-CLAIM-ACTIVITY",admitted,supported,evaluated,candidate,bridge)
     local started=control:executeControlRequest(request,candidate); equal(started,true); equal(vehicle.forceIsActive,true)
     entered=true
     control:update(16)
