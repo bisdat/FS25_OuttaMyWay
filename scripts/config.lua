@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.24 TEST — NON-JOB ACTUATION MECHANISM GRADUATION.
+-- FS25_OuttaMyWay v0.3.0.25 TEST — RUNTIME INTEGRATION CONSOLIDATION.
 -- Situation/Decision/Commitment admission semantics remain inherited; Control magnitude is now elastic.
 -- D-0147 remains the validated warm mechanical donor while D-0218 tests current non-active Causal Obstruction relocation behind distinct authority.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.24"
+OuttaMyWay.VERSION = "0.3.0.25"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -207,7 +207,7 @@ OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.24 TEST — NON-JOB ACTUATION MECHANISM GRADUATION"
+OuttaMyWay.BUILD_LABEL = "0.3.0.25 TEST — RUNTIME INTEGRATION CONSOLIDATION"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985

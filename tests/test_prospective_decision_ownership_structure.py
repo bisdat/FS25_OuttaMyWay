@@ -12,12 +12,13 @@ def test_phase13_prospective_decision_modules_are_loaded_in_order():
     for relative in (
         "scripts/decision/ProspectivePortfolioDecisionPolicy.lua",
         "scripts/candidates/ProspectiveDecisionPortfolioSupport.lua",
-        "scripts/runtime/ProspectiveDecisionPortfolioIntegration.lua",
+        "scripts/runtime/Runtime.lua",
     ):
         assert relative in main
     assert main.index("scripts/decision/ProspectivePortfolioDecisionPolicy.lua") < main.index("scripts/candidates/ProspectiveDecisionPortfolioSupport.lua")
     assert main.index("scripts/candidates/ProspectiveDecisionPortfolioSupport.lua") < main.index("scripts/decision/DecisionSelector.lua")
-    assert main.index("scripts/runtime/ObstructionRelocationRuntimeIntegration.lua") < main.index("scripts/runtime/ProspectiveDecisionPortfolioIntegration.lua")
+    assert "scripts/runtime/ObstructionRelocationRuntimeIntegration.lua" not in main
+    assert "scripts/runtime/ProspectiveDecisionPortfolioIntegration.lua" not in main
 
 
 def test_phase13_fresh_portfolio_enumerates_support_groups_without_control_authority():
@@ -65,18 +66,18 @@ def test_phase13_decision_owns_inter_group_compatibility_and_no_constraint_fallb
 
 
 def test_phase13_runtime_uses_portfolio_only_for_fresh_scope_and_projects_dispatch_boundary():
-    integration=read("scripts/runtime/ProspectiveDecisionPortfolioIntegration.lua")
+    runtime=read("scripts/runtime/Runtime.lua")
     for token in (
         "prospectiveDecisionPortfolioSupport",
         'OuttaMyWay.ValueRecord.length(processed.picture.commitmentContext or {})>0',
         'boundary.mode=="PROSPECTIVE_DECISION_PORTFOLIO"',
         "selectedGroupBoundary",
         "values.supportBoundary=localBoundary",
-        "originalDispatch(self,picture,normalized)",
+        "evaluated=normalized",
     ):
-        assert token in integration
-    assert "legacyTerminalEgressCandidateSupport" in integration
-    assert "obstructionRelocationCandidateSupport" in integration
+        assert token in runtime
+    assert "legacyTerminalEgressCandidateSupport" in runtime
+    assert "obstructionRelocationCandidateSupport" in runtime
 
 
 def test_phase13_warm_cold_and_passage_physical_mechanics_are_not_rewritten_by_portfolio_increment():
@@ -102,7 +103,7 @@ def test_phase13_candidate_support_projection_test_identity_is_coherent():
     config=read("scripts/config.lua")
     main=read("scripts/main.lua")
     moddesc=read("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.24"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.24 TEST — NON-JOB ACTUATION MECHANISM GRADUATION"' in config
-    assert 'v0.3.0.24 TEST — NON-JOB ACTUATION MECHANISM GRADUATION' in main
-    assert '<version value="0.3.0.24">0.3.0.24</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.25"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.25 TEST — RUNTIME INTEGRATION CONSOLIDATION"' in config
+    assert 'v0.3.0.25 TEST — RUNTIME INTEGRATION CONSOLIDATION' in main
+    assert '<version value="0.3.0.25">0.3.0.25</version>' in moddesc

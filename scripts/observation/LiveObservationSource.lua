@@ -1033,6 +1033,11 @@ function Source:capture(mission, nowSeconds)
             diagnostics={sourceCounters={cycleActiveJobVehicleCount=cycleDiagnostics.activeJobVehicleCount,cycleRelevantVehicleCount=cycleDiagnostics.relevantVehicleCount,groupWorkerCount=0,activeGroupWorkerCount=0,poseResolvedWorkerCount=0,mathematicallyPossiblePairCount=0,relevantPairCount=0,eligiblePairCount=0,evaluatedPairCount=0,excludedPairCount=0,qualifyingPairCount=0,interactionEvidenceEmittedCount=0},assemblyDiagnostics={},pairDiagnostics={},contradictions={}}
         }
     end
+    if self.currentPhysicalPoseSource~=nil then
+        for _,raw in OuttaMyWay.ValueRecord.ipairs(observations or {}) do
+            self.currentPhysicalPoseSource:observe(raw,self)
+        end
+    end
     return observations
 end
 
