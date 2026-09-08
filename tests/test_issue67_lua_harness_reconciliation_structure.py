@@ -76,4 +76,4 @@ def test_issue67_workflow_surfaces_inner_observation_outcomes():
     assert "id: obstruction_relocation" in workflow
     assert workflow.count("continue-on-error: true") >= 2
     assert "Workflow/job success is not evidence that either Lua observation passed." in workflow
-    assert "continue-on-error is workflow control only" in workflow
+    assert "workflow control only; inspect the inner outcomes above and the raw logs." in workflow

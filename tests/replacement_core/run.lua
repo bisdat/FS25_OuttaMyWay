@@ -1101,7 +1101,6 @@ end)
 test("unresolved complete space produces explicit WAIT non-intervention",function()
     local hold=candidateSpec("hold-unresolved","HOLD",1)
     hold.representationFitness={requirements={{representationId="REP-U",acceptedStates={"CURRENTLY_FIT"}}}}
-    hold.representationFitness={requirements={{representationId="REP-A",acceptedStates={"CURRENTLY_FIT"}}}}
     hold.evidenceBasis.effectiveActuationComposition={identity="EC-U",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00001",commitmentId="CM-U",capability="HOLD",effectClass="HOLD",progressActuation=false}}}
     local picture=decisionPicture({hold},{representationFitness={{representationId="REP-U",assemblyId="AS-00001",question="HOLD",assessmentHorizon=5,state="REFRESH_REQUIRED",claimPermissions={},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}}}})
     local result=newDecisionRuntime():evaluateSealedOperationalPicture(picture)
