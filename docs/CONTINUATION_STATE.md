@@ -127,9 +127,11 @@ These remain separate from the current Phase-14.6 placement/vocabulary work.
 
 ## Immediate next action
 
-Review the `.29` Engineering Increment and let GitHub Actions provide the independent Structural + Lua offline verdicts. Do not infer GIANTS Reality from offline green.
+Keep PR #88 on `.30` and let GitHub Actions independently rerun the Structural + Lua offline contracts after the direct-Control harness reconciliation. Do not merge while either required job is red.
 
-If CI accepts the source topology, build `.29` locally and validate in Farming Simulator against both Terminal Egress trigger paths:
+The `.30` CI run established a useful split: focused current Causal Obstruction was **9/9 PASS**, while the main replacement-core harness was **334 PASS / 3 FAIL**. All three failures were direct Completed-Obstruction `TerminalEgressControl` tests still composing the retired pre-consolidation Control contract (`D0147_BOUNDED_TERMINAL_EGRESS` plus historical tracked-object lookup). Production Runtime already constructs the generic `TERMINAL_EGRESS` target with current physical addressability. The test-only correction therefore migrates those fixtures and assertions without changing production executable bytes or consuming a new TEST identity.
+
+After CI is green, retain the existing GIANTS validation boundary:
 
 1. completed-obstruction Interior Settlement, including compaction where applicable and the existing second-courtesy Final Boundary Settlement path;
 2. current Causal Obstruction first courtesy, including opportunistic compaction, owned-cleanup failure semantics and fresh-Situation reassessment;

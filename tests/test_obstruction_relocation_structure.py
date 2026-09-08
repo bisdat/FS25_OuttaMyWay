@@ -140,6 +140,6 @@ def test_phase13_test_identity_is_coherent():
     main = read("scripts/main.lua")
 
     assert 'OuttaMyWay.VERSION = "0.3.0.30"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.30 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION"' in config
     assert '<version value="0.3.0.30">0.3.0.30</version>' in moddesc
-    assert "v0.3.0.30 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION" in main
+    assert "v0.3.0.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION" in main

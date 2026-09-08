@@ -3435,3 +3435,13 @@ Run #147 exposed the final companion literal in the same pre-1.0 versioning cont
 **Discovery — Validation Inventory Is Executable Topology:** a hard-coded CI source inventory is part of the current implementation topology. Retiring a module requires retiring it from validation inventories as well as production composition.
 
 **Decision:** advance to `.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION`; restore provenance-neutral terminal steering/activity-context telemetry, update only stale structural vocabulary assertions, remove retired modules from the Lua syntax inventory, and leave the terminal HUD residue for later UI work. No Terminal Egress geometry, courtesy policy, Responsibility semantics, or GIANTS ownership is intentionally changed.
+
+## 2026-09-08 — Phase 14.6A: direct-Control harness lagged execution addressability
+
+**CI evidence — `.30`:** after restoring Terminal Egress observability and reconciling the workflow source inventory, the focused current Causal Obstruction harness passed **9/9**. The main replacement-core harness ran **334 PASS / 3 FAIL**. The three failures were all direct Completed-Obstruction `TerminalEgressControl` tests failing at the initial `started == true` assertion.
+
+**Observation:** those three fixtures still supplied `getTrackedObject()` and constructed target kind `D0147_BOUNDED_TERMINAL_EGRESS`. The production generic Control now intentionally requires current physical addressability through `getCurrentPhysicalObject()` and target kind `TERMINAL_EGRESS`. Production Runtime already materialises that generic target and carries Completed Obstruction only as opaque completion context.
+
+**Discovery — Direct-Control Harness Must Follow Execution Addressability:** when an execution boundary graduates from trigger-history addressability to current-Reality addressability, direct tests of that boundary must migrate their fixtures with the boundary. Preserving an old fixture does not validate backward compatibility; it validates a contract the production Control no longer owns.
+
+**Decision:** migrate the three direct Completed-Obstruction Control tests to the generic Terminal Egress target/current-physical contract and generic physical outcome/failure vocabulary. Keep D0147/Completed Obstruction semantics upstream in Candidate/Responsibility/lifecycle tests. This is test/knowledge reconciliation only; production executable bytes remain `.30`.

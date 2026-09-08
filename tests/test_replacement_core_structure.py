@@ -1524,7 +1524,7 @@ def test_v0100_pre_1_0_versioning_epoch_contract():
     assert 'OuttaMyWay.VERSION = "0.3.0.30"' in config
     assert 'OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"' in config
     assert '<version value="0.3.0.30">0.3.0.30</version>' in moddesc
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.30 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION"' in config
     for token in ('0.MINOR.PATCH.BUILD','canonical releases use `BUILD=0`','TEST iterations increment BUILD','first public release is `1.0.0.0`'):
         assert token in decision
     for token in ('0.MINOR.PATCH.BUILD','Canonical named releases use `BUILD=0`','non-canonical TEST iterations','first public release is reserved'):
