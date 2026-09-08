@@ -4,13 +4,15 @@ Continuation State is the compact, replace-in-place description of the project's
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #80 merge, commit `a9eecac520bc4982284a63850f1a4f06d487a207`.
+- Accepted Repository State baseline for this increment: `main` after PR #81 merge, commit `42b8b4c1afc5de4dcc7b1d74fee039bb81a32dfd`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted non-canonical playable identity is **`0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION`**.
-- Phase 14.5 Runtime Integration Consolidation is complete.
+- Accepted non-canonical playable identity remains **`0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION`**.
+- Phase 14.5 Runtime Integration Consolidation is complete; Phase 14.6 has not started.
 - Issue #67 is closed after PR #79; the Lua harness is reconciled with current production topology.
-- Issue #78 is closed after PR #80; independent CI established a clean Lua baseline of **337/0 main + 9/9 focused**.
-- This validation-governance increment changes no executable mod bytes and therefore does **not** consume a new TEST build identity.
+- Issue #78 is closed after PR #80; independent CI established the clean **337/0 main + 9/9 focused** Lua baseline.
+- PR #81 promoted `Lua offline behavioural contracts` to blocking CI. Protected `main` now requires both `Structural contracts` and `Lua offline behavioural contracts`.
+- The `.27` smoke re-observed the previously known PR #35 **Follower HUD Glyph Compatibility Leak**; Issue #82 now tracks closure as **KNOWN OPEN / RE-OBSERVED**, not a new `.27` defect.
+- This repository-knowledge reconciliation changes no executable mod bytes and consumes no new TEST build identity.
 - Canonical authority is unchanged.
 
 ## Strangler programme status
@@ -106,26 +108,33 @@ The supported Operation envelope remains a maximum of **three simultaneously act
 - Issue #37 — Category-2 Forward Intersection Reality-validation debt.
 - Issue #45 — Bubble Bullet Time, accepted but unimplemented.
 - Issue #65 — Behaviour Regression Contract != Build Identity Contract.
+- Issue #82 — known Follower HUD Glyph Compatibility Leak, re-observed in `.27`; knowledge reconciliation precedes the bounded runtime correction.
 
 ## Immediate next action
 
-Promote the reconciled Lua validation suite to **blocking behavioural-contract
-authority** before Phase 14.6.
+Complete the **repository context / stranded-knowledge reconciliation** exposed by
+Issue #82 before changing follower HUD executable bytes or beginning Phase 14.6.
 
-The accepted clean baseline is:
+This increment establishes:
 
-- main replacement-core Lua behavioural contracts: **337 passed / 0 failed**;
-- focused obstruction-relocation Lua behavioural contracts: **9 passed / 0 failed**.
+- **Repository Context Bootstrap** — reconstruct current authority from
+  `AGENTS.md` -> `docs/README.md` -> Engineering Architecture + Continuation
+  State -> task-relevant responsibility routes;
+- **Relevant Knowledge Sweep** — search current docs/source/tests, open and
+  closed Issues, PR history, journal/research and Git provenance before
+  classifying an observation as NEW;
+- durable GIANTS texture-font knowledge: U+2022 BULLET is unsupported on the
+  observed texture-font HUD surfaces and ASCII-safe `|` is the demonstrated
+  separator;
+- pull-request Knowledge Trace visibility; and
+- a Structural governance contract protecting the bootstrap/sweep and durable
+  knowledge placement.
 
-The workflow must preserve both inner outcomes even when one fails, then fail
-the Lua job unless both are successful. This is **Evidence Collection != CI
-Enforcement**. Blocking offline regression authority does not claim GIANTS
-runtime Reality.
+After that governance increment is accepted, perform one bounded Issue #82
+runtime correction: replace the known follower-HUD U+2022 separators with `|`,
+add the blocking rendered-HUD regression contract atomically with the fix,
+advance TEST build identity, validate in CI, then obtain targeted GIANTS Reality
+evidence that the warning is gone without Regulation behaviour change.
 
-GitHub branch protection currently requires only `Structural contracts`. Once
-the renamed `Lua offline behavioural contracts` check has appeared on this pull
-request, add it to the required status checks for `main` before accepting the
-governance increment.
-
-After this validation-governance increment is accepted, begin the already-agreed
-**Phase 14.6 Production Vocabulary and Constants-Scope Cleanup** audit.
+Only then begin the already-agreed **Phase 14.6 Production Vocabulary and
+Constants-Scope Cleanup** audit.

@@ -4,6 +4,20 @@ This directory is the live entrance to OuttaMyWay's engineering knowledge.
 Each route below states the responsibility of a direct child. The archive is
 intentionally absent under the Archive Navigation Exemption.
 
+## How to use this map
+
+Root `../AGENTS.md` requires substantive engineering work to enter through this
+map after reading the root working rules. Establish current engineering governance
+and continuation first, then follow only the responsibility routes relevant to
+the task. Runtime work normally continues through Architecture; GIANTS/FS25
+behaviour or API assumptions continue through Engine Knowledge; validation work
+continues through Testing Methodology and `/tests`.
+
+Current documentation establishes present responsibility. When an observation
+may already be known, the root **Relevant Knowledge Sweep** additionally searches
+Issues, pull requests, journal/research evidence and Git provenance before the
+observation is classified as new.
+
 ## Project direction and engineering state
 
 - [Project Vision](PROJECT_VISION.md) — mission, Trust Test, Autonomous Continuity, scope, and product-level direction.

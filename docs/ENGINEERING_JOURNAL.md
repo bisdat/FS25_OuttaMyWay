@@ -1,3 +1,52 @@
+## 2026-09-08 — Known follower HUD glyph leak reconstructed from repository history
+
+**Observe:** the `0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION`
+smoke emitted `Character '8226' not found in texture font` while
+`FollowerPacingHud` rendered U+2022 BULLET (`•`). The first interpretation
+treated this as a new diagnostic/UI defect and opened Issue #82.
+
+A repository-wide provenance audit changed that classification. PR #31 had
+already established through GIANTS Reality that the Version HUD's `•` separator
+was unsupported and corrected it to ASCII-safe `|`, recording **HUD Glyph
+Compatibility**. PR #35 later recorded the exact still-unfixed
+**Follower HUD Glyph Compatibility Leak** and explicitly deferred it as UI
+implementation debt. The then-current Implementation Map stated that GIANTS
+reported character `8226` from follower HUD text and that ASCII-safe punctuation
+should be used when the debt was addressed.
+
+**Discover:** the `.27` observation is **KNOWN OPEN / RE-OBSERVED**, not NEW and
+not a `.27` regression. During later replace-in-place documentation compression,
+the still-current glyph finding disappeared from the live Implementation Map /
+Continuation surface without first being promoted to the repository's durable
+Engine Knowledge responsibility. This is an instance of the existing
+**Stranded Live Knowledge** failure mode.
+
+The audit also found independent current documentation drift:
+`ENGINEERING_ARCHITECTURE.md` still described the Lua harness as non-blocking
+after PR #81 had promoted `Lua offline behavioural contracts` to a required
+blocking check. A recently edited document therefore cannot substitute for
+responsibility-directed repository reconstruction.
+
+**Decide:** establish **Repository Context Bootstrap** and **Relevant Knowledge
+Sweep** as engineering-governance rules. Future substantive work starts from
+root working rules, the engineering start-here map, Engineering Architecture and
+Continuation State, then follows task-relevant responsibility routes. Before an
+observation is called new or a new Issue is created, perform a targeted sweep of
+current docs/source/tests, open and closed Issues, PR history, journal/research
+and Git provenance where needed; classify the result as NEW, KNOWN OPEN,
+REGRESSION, or HISTORICAL / NOT CURRENTLY APPLICABLE.
+
+**Record:** promote the U+2022 texture-font finding to
+`engine/GIANTS_RUNTIME_KNOWLEDGE.md`. Reclassify Issue #82 as the current tracking
+surface for closure of the known historical leak.
+
+**Validation boundary:** this governance-only increment does not change the
+known-bad `FollowerPacingHud` executable bytes. A blocking source contract
+forbidding U+2022 on the affected rendered HUD surfaces must therefore enter
+atomically with the later runtime `•` -> `|` correction and fresh TEST identity;
+the repository must not manufacture a deliberately failing accepted CI
+baseline.
+
 ## 2026-09-07 — Issue #33: current Physical Assembly Observation hypothesis
 
 **Observe:** the first implementation attempt correctly reached for the current
