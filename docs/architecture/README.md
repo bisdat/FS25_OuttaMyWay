@@ -51,6 +51,11 @@ Prospective Portfolio strangler seams into explicit Observation/Runtime
 composition and retiring load-order monkey-patching, read the
 [Phase 14.5 Runtime Integration Consolidation](PHASE_14_RUNTIME_INTEGRATION_CONSOLIDATION.md).
 
+For the sixth Phase-14 engineering boundary, separating trigger provenance from
+shared Terminal Egress execution, retiring Prototype22 after capability
+graduation, and defining the later production-vocabulary/constants cleanup, read
+[Phase 14.6 Terminal Egress Execution and Production Vocabulary](PHASE_14_6_TERMINAL_EGRESS_EXECUTION_AND_PRODUCTION_VOCABULARY.md).
+
 Architecture may describe intended behaviour that is not yet implemented. Read
 it as the system's direction and responsibility model, not as a complete account
 of current runtime capability.
