@@ -74,3 +74,16 @@ def test_pull_request_template_surfaces_knowledge_trace():
     assert "Repository Context Bootstrap" in template
     assert "Relevant Knowledge Sweep" in template
     assert "NEW / KNOWN OPEN / REGRESSION / HISTORICAL" in template
+
+
+
+def test_rendered_text_validation_uses_durable_engine_knowledge_without_unicode_overreach():
+    agents=flattened("AGENTS.md")
+    knowledge=flattened("docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md")
+
+    assert "Known Rendered Glyph Check" in agents
+    assert "known unsupported glyphs" in agents
+    assert "does not establish a generic non-ASCII ban" in agents
+    assert "U+2022 BULLET (`•`)" in knowledge
+    assert "ASCII-safe `|`" in knowledge
+    assert "not a complete Unicode capability map" in knowledge

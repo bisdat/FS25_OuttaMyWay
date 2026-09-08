@@ -21,14 +21,14 @@ function Hud:draw()
     local lines={}
     local active=self.activeSource and self.activeSource.getFollowerBoundaryStatus and self.activeSource:getFollowerBoundaryStatus() or nil
     if type(active)=="table" and active.active==true then
-        lines[#lines+1]=string.format("Follower regulation ALIGNED%s • %s for %s • cap %s / native %s km/h",
+        lines[#lines+1]=string.format("Follower regulation ALIGNED%s | %s for %s | cap %s / native %s km/h",
             active.transitionPreservation==true and " TRANSITION" or "",
             tostring(active.followerName or "Follower"),tostring(active.leaderName or "leader"),numberText(active.currentCapKmh),numberText(active.nativeUnrestrictedFollowerKmh))
     else
         local records=self.shadowSource and self.shadowSource.getActivePacingRecords and self.shadowSource:getActivePacingRecords() or {}
         for i=1,#records do
             local record=records[i]
-            lines[#lines+1]=string.format("%s — legacy follower SHADOW for %s • would-cap %s km/h • no Control",
+            lines[#lines+1]=string.format("%s — legacy follower SHADOW for %s | would-cap %s km/h | no Control",
                 tostring(record.followerName or "Follower"),tostring(record.leaderName or "leader"),numberText(record.hypotheticalCapKmh))
         end
     end
