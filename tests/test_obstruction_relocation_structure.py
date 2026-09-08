@@ -10,7 +10,7 @@ def read(relative):
 def test_phase13_obstruction_relocation_is_explicitly_loaded_and_current_physical_only():
     main = read("scripts/main.lua")
     pose = read("scripts/observation/CurrentPhysicalPoseSource.lua")
-    integration = read("scripts/runtime/ObstructionRelocationRuntimeIntegration.lua")
+    source = read("scripts/observation/LiveObservationSource.lua")
 
     for relative in (
         "scripts/observation/CurrentPhysicalPoseSource.lua",
@@ -18,7 +18,7 @@ def test_phase13_obstruction_relocation_is_explicitly_loaded_and_current_physica
         "scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua",
         "scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua",
         "scripts/control/ObstructionRelocationControl.lua",
-        "scripts/runtime/ObstructionRelocationRuntimeIntegration.lua",
+        "scripts/runtime/Runtime.lua",
     ):
         assert relative in main
 
@@ -27,7 +27,7 @@ def test_phase13_obstruction_relocation_is_explicitly_loaded_and_current_physica
     assert 'negativeClearanceAuthority=false' in pose
     assert 'semanticAuthority=false' in pose
     assert 'historicalJobProvenanceRequired=false' in pose
-    assert "currentPhysicalPoseSource:observe" in integration
+    assert "currentPhysicalPoseSource:observe" in source
 
 
 def test_phase13_obstruction_relocation_identity_aggregates_pairwise_cause_by_operation_and_blocker():
@@ -85,7 +85,7 @@ def test_phase13_cold_relocation_withholds_second_courtesy_without_negative_clea
 
 def test_phase13_manoeuvre_completion_does_not_semantically_resolve_without_supported_continuation():
     candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
-    integration = read("scripts/runtime/ObstructionRelocationRuntimeIntegration.lua")
+    runtime = read("scripts/runtime/Runtime.lua")
 
     assert "productiveContinuationKnowledge" in candidate
     assert "productive.productivePositive==true" in candidate
@@ -93,8 +93,8 @@ def test_phase13_manoeuvre_completion_does_not_semantically_resolve_without_supp
     assert "relationFor(picture,blockerAssemblyId,beneficiaryId)~=nil" in candidate
     assert 'outcome.status~="MANOEUVRE_COMPLETE"' in candidate
     assert 'terminalSpec(context,"OBJECTIVE_SATISFIED"' in candidate
-    assert "semanticResolutionNotInferred=true" in integration
-    assert "freshSituationRequired=true" in integration
+    assert "semanticResolutionNotInferred=true" in runtime
+    assert "freshSituationRequired=true" in runtime
 
 
 def test_phase13_obstruction_control_is_addressed_from_current_reality_and_fails_closed_on_owned_cleanup():
@@ -138,7 +138,7 @@ def test_phase13_test_identity_is_coherent():
     moddesc = read("modDesc.xml")
     main = read("scripts/main.lua")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.24"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.24 TEST — NON-JOB ACTUATION MECHANISM GRADUATION"' in config
-    assert '<version value="0.3.0.24">0.3.0.24</version>' in moddesc
-    assert "v0.3.0.24 TEST — NON-JOB ACTUATION MECHANISM GRADUATION" in main
+    assert 'OuttaMyWay.VERSION = "0.3.0.26"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE"' in config
+    assert '<version value="0.3.0.26">0.3.0.26</version>' in moddesc
+    assert "v0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE" in main

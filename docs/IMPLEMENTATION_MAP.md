@@ -20,10 +20,10 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 | 11 | Reduce `LiveControlDispatcher` to authorised routing/execution | COMPLETE |
 | 12 | Retire superseded generic Commitment/orchestration only where unsupported | COMPLETE |
 | 13 | Simplify Candidate/Constraint/Decision only where evidence proves duplication | **COMPLETE** |
-| 14 | Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming | **IN PROGRESS — 14.4 NON-JOB ACTUATION MECHANISM GRADUATION** |
+| 14 | Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming | **IN PROGRESS — 14.5 RUNTIME INTEGRATION CONSOLIDATION** |
 | 15 | Whole-system validation and architecture-to-runtime review | NOT STARTED |
 
-Accepted Repository State for this map is `main` after PR #75 merge, commit `5b13bcc6251d6b482402e6ba1d37e740dd050d8a`. Canonical authority remains `v0.3.0.0`. Last accepted non-canonical playable identity is **`0.3.0.23 TEST — LIVE INTERACTION OBSERVATION GRADUATION`**.
+Accepted Repository State for this map is `main` after PR #76 merge, commit `4c4924b9d52dbfb15afe99f7f2ae231466a0b29a`. Canonical authority remains `v0.3.0.0`. Last accepted non-canonical playable identity is **`0.3.0.24 TEST — NON-JOB ACTUATION MECHANISM GRADUATION`**.
 
 Read [Phase 13 Closure Audit](architecture/PHASE_13_CLOSURE_AUDIT.md) for the final Candidate/Constraint/Decision responsibility audit.
 
@@ -69,7 +69,8 @@ Read [Phase 13 Closure Audit](architecture/PHASE_13_CLOSURE_AUDIT.md) for the fi
 | Warm terminal-egress physical Control | `scripts/control/TerminalEgressControl.lua` | PRESERVE validated D-0147 mechanics |
 | Generic obstruction relocation Control | `scripts/control/ObstructionRelocationControl.lua` | PRESERVE bounded D-0218 cold-blocker actuation |
 | Shared non-job physical actuation mechanism | `scripts/control/mechanisms/NonJobActuationMechanism.lua` | **PHASE 14.4** — shared mechanics for warm D-0147 and cold D-0218; semantic authority classes remain purpose-specific |
-| Generic obstruction relocation runtime integration | `scripts/runtime/ObstructionRelocationRuntimeIntegration.lua` | PRESERVE explicit sequencing/settlement integration |
+| Runtime live-cycle composition and dispatch | `scripts/runtime/Runtime.lua` | **PHASE 14.5** — explicit Portfolio projection, cold D-0218 sequencing, incumbent/fresh support split; former integration seams retired |
+| Current physical relocation pose augmentation | `scripts/observation/LiveObservationSource.lua` with `CurrentPhysicalPoseSource.lua` | **PHASE 14.5** — direct pre-sealing Observation composition; no semantic or actuation authority |
 | Guarded Recovery | `scripts/control/GuardedRecoveryCompatibility.lua` routed through production `RegulationControl` | RETAIN as explicit compatibility; P22 request vocabulary removed in 14.1 |
 
 # Phase 13 Closed Responsibility Boundaries

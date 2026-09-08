@@ -4,9 +4,9 @@ Continuation State is the compact, replace-in-place description of the project's
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #75 merge, commit `5b13bcc6251d6b482402e6ba1d37e740dd050d8a`.
+- Accepted Repository State baseline for this increment: `main` after PR #76 merge, commit `4c4924b9d52dbfb15afe99f7f2ae231466a0b29a`.
 - Canonical authority remains **v0.3.0.0**.
-- Last accepted non-canonical playable identity is **`0.3.0.23 TEST — LIVE INTERACTION OBSERVATION GRADUATION`**.
+- Last accepted non-canonical playable identity is **`0.3.0.24 TEST — NON-JOB ACTUATION MECHANISM GRADUATION`**.
 - PR #70 passed Offline Validation Run #187 blocking Structural contracts and changed-runtime Lua syntax, then passed owner GIANTS Reality validation before merge.
 - Issue #68 is closed as the `.19` failure / `.20` correction record.
 
@@ -15,7 +15,7 @@ Continuation State is the compact, replace-in-place description of the project's
 - Phase 11 — Reduce `LiveControlDispatcher` to Authorised Control Routing — **COMPLETE**.
 - Phase 12 — Retire superseded generic Commitment/orchestration only when no supported path relies on it — **COMPLETE**.
 - Phase 13 — Simplify Candidate/Constraint/Decision only where evidence proves duplication — **COMPLETE**.
-- Phase 14 — Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming — **IN PROGRESS — 14.4 NON-JOB ACTUATION MECHANISM GRADUATION**.
+- Phase 14 — Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming — **IN PROGRESS — 14.5 RUNTIME INTEGRATION CONSOLIDATION**.
 - Phase 15 — Whole-system validation and architecture-to-runtime review — **NOT STARTED**.
 
 Read [Phase 13 Closure Audit](architecture/PHASE_13_CLOSURE_AUDIT.md) for the closure evidence and responsibility verdicts.
@@ -109,13 +109,19 @@ These are not Phase-13 closure blockers.
 
 ## Immediate next action
 
-Validate **Phase 14.4 — Non-Job Actuation Mechanism Graduation**.
+Validate **`0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE`** for
+Phase 14.5.
 
-The candidate graduates the shared non-job physical actuation donor from
-`PostJobActuationAuthority` to `NonJobActuationMechanism` while preserving the
-separate warm `POST_JOB_ACTUATION` and cold
-`OBSTRUCTION_RELOCATION_ACTUATION` semantic authority classes.
+The `.25` Reality run established that warm D-0147 routing survived integration
+consolidation and that cold D-0218 reached physical Control, but cold Runtime
+dispatch then failed because the absorbed D-0218 methods lacked their
+seam-local `logInfo` / `logWarning` lexical dependencies.
 
-Do not begin Phase 14.5 until blocking CI and owner GIANTS Reality confirm both
-warm D-0147 and cold D-0218 still execute and clean up the shared physical
-mechanics correctly.
+`.26` restores that exact lexical dependency closure and removes the two
+deliberately retired integration files from the CI Lua syntax list.
+
+Blocking CI must pass. GIANTS Reality then needs only a focused cold D-0218
+rerun showing the normal Runtime `ACCEPTED` path, `MANOEUVRE_COMPLETE`,
+fresh-Situation settlement and no OuttaMyWay Lua error.
+
+Do not begin Phase 14.6 until that correction is accepted.
