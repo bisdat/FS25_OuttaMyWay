@@ -95,11 +95,11 @@ def test_phase14_5_runtime_still_does_not_physically_actuate():
     for forbidden in ("AIVehicleUtil.driveInDirection","AIVehicleUtil.driveToPoint","getCanAIFieldWorkerContinueWork"):
         assert forbidden not in runtime
 
-def test_phase14_5_current_build_identity_is_025():
+def test_phase14_5_current_build_identity_is_coherent():
     config=read("scripts/config.lua")
     main=read("scripts/main.lua")
     moddesc=read("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.26"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE"' in config
-    assert "v0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE" in main
-    assert '<version value="0.3.0.26">0.3.0.26</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.27"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION"' in config
+    assert "v0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION" in main
+    assert '<version value="0.3.0.27">0.3.0.27</version>' in moddesc

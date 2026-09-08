@@ -51,11 +51,11 @@ def test_phase14_3_pair_key_remains_correlation_not_identity_authority():
     for forbidden in ("IdentityRegistry","identities:resolve","identities:issue"):
         assert forbidden not in observation
 
-def test_phase14_3_current_build_identity_is_023():
+def test_phase14_3_current_build_identity_is_coherent():
     config=text("scripts/config.lua")
     main=text("scripts/main.lua")
     moddesc=text("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.26"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE"' in config
-    assert "v0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE" in main
-    assert '<version value="0.3.0.26">0.3.0.26</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.27"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION"' in config
+    assert "v0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION" in main
+    assert '<version value="0.3.0.27">0.3.0.27</version>' in moddesc
