@@ -14,7 +14,7 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 
 - Accepted Repository State baseline for this map: `main` after PR #85 merge, commit `466424f5fe6e984d041c9f00c484a9bd9e82b397`.
 - Canonical authority remains **v0.3.0.0**.
-- Current branch executable identity is **`0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION`**; acceptance and canonical authority are unchanged until review/merge/Reality evidence says otherwise.
+- Current branch executable identity is **`0.3.0.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION`**; acceptance and canonical authority are unchanged until review/merge/Reality evidence says otherwise.
 - Strangler Phase 14 is active. The remaining work is current placement/vocabulary reconciliation, not replay of the earlier Phase-14 tranches.
 - Phase 15 whole-system validation and architecture-to-runtime review has not started.
 
@@ -114,7 +114,7 @@ The branch now implements **Trigger Provenance != Terminal Egress Execution**. C
 
 `ObstructionRelocationControl` is retired. The generic Control receives an opaque completion context and returns it unchanged so Runtime can deliver the physical outcome to the correct semantic lifecycle without teaching Control about D-0147/D-0218 provenance.
 
-This placement is not yet a GIANTS Reality claim; `.29` must validate both trigger paths.
+The `.29` smoke run provided a preliminary positive GIANTS Reality signal for the consolidated physical path. CI subsequently exposed an observability regression rather than a movement-policy failure: steering/activity-context evidence had been dropped during consolidation. `.30` restores that evidence under provenance-neutral Terminal Egress vocabulary. Full trigger-specific Reality validation remains required.
 
 ### Protected Yield vocabulary
 

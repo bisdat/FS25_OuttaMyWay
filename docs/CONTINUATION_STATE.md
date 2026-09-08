@@ -6,7 +6,7 @@ Continuation State is the compact, replace-in-place description of the project's
 
 - Accepted Repository State baseline for this increment: `main` after PR #85 merge, commit `466424f5fe6e984d041c9f00c484a9bd9e82b397`.
 - Canonical authority remains **v0.3.0.0**.
-- This branch advances executable identity to **`0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION`**; it makes no canonical claim.
+- This branch advances executable identity to **`0.3.0.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION`**; it makes no canonical claim.
 - Protected `main` requires both `Structural contracts` and `Lua offline behavioural contracts`.
 - Issue #82 is closed after the bounded `.28` follower-HUD correction and targeted GIANTS Reality validation.
 - Phase 14 remains **ACTIVE**. Phase 14.6A is implemented on this branch and awaits independent CI plus GIANTS Reality validation.
@@ -137,5 +137,7 @@ If CI accepts the source topology, build `.29` locally and validate in Farming S
 4. Regulation plus Cooperative Passage smoke/regression coverage after Prototype22 retirement.
 
 Protected Yield still carries D-0147 implementation vocabulary and remains a later Phase-14.6 cleanup target. Production TEST/Step/D-number vocabulary and mixed constants remain ownership-driven follow-up work; they are not broadened into this physical-execution consolidation.
+
+The `.29` GIANTS smoke run was an apparent physical pass. One final `terminal` HUD message remained visible; that UI residue is recorded as non-blocking follow-up rather than being mixed into this execution tranche. Independent CI then disproved two implementation assumptions: Terminal Egress consolidation had unintentionally dropped steering/activity-context diagnostic evidence, and the workflow's Lua syntax inventory still named retired executable modules. `.30` restores provenance-neutral observability and reconciles the validation inventory without changing Terminal Egress movement policy.
 
 Contrary Reality updates the architecture rather than being hidden behind compatibility special cases.

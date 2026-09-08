@@ -83,11 +83,9 @@ jobs:
             scripts/control/mechanisms/NonJobActuationMechanism.lua \
             scripts/control/CooperativePassageControl.lua \
             scripts/control/TerminalEgressControl.lua \
-            scripts/control/ObstructionRelocationControl.lua \
             scripts/control/GuardedRecoveryCompatibility.lua \
             scripts/control/LiveControlDispatcher.lua \
             scripts/control/RegulationControl.lua \
-            scripts/control/ObstructionRelocationControl.lua \
             scripts/decision/ProspectivePortfolioDecisionPolicy.lua \
             scripts/decision/DecisionSelector.lua \
             scripts/main.lua \
@@ -96,7 +94,6 @@ jobs:
             scripts/observation/LiveObservationSource.lua \
             scripts/observation/CurrentPhysicalPoseSource.lua \
             scripts/observation/NativeManoeuvreObservationSource.lua \
-            scripts/prototypes/Prototype22CapabilityGate.lua \
             scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua \
             scripts/runtime/LiveRuntimeCoordinator.lua \
             scripts/runtime/Runtime.lua

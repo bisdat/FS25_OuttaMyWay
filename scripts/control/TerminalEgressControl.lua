@@ -16,6 +16,20 @@ local function logWarning(formatText,...)
     local message=string.format(formatText,...)
     if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][TERMINAL-EGRESS-CONTROL] %s",message) else print("[FS25_OuttaMyWay][TERMINAL-EGRESS-CONTROL][WARNING] "..message) end
 end
+local function numberText(value,format)
+    if type(value)~="number" then return "nil" end
+    return string.format(format or "%.6f",value)
+end
+local function steeringTelemetryText(telemetry)
+    if type(telemetry)~="table" or telemetry.available==false then return "unavailable:"..tostring(telemetry and telemetry.reason) end
+    local wheels={}
+    for _,wheel in OuttaMyWay.ValueRecord.ipairs(telemetry.wheels or {}) do
+        wheels[#wheels+1]=string.format("%s[a=%s,min=%s,max=%s,rs=%s,off=%s]",
+            tostring(wheel.index),numberText(wheel.steeringAngle,"%.5f"),numberText(wheel.rotMin,"%.5f"),numberText(wheel.rotMax,"%.5f"),numberText(wheel.rotSpeed,"%.5f"),numberText(wheel.steeringOffset,"%.5f"))
+    end
+    return string.format("rotatedTime=%s minRotTime=%s maxRotTime=%s controlled=%s isActive=%s forceIsActive=%s crabState=%s crabAI=%s steerable=%s wheels={%s}",
+        numberText(telemetry.rotatedTime,"%.6f"),numberText(telemetry.minRotTime,"%.6f"),numberText(telemetry.maxRotTime,"%.6f"),tostring(telemetry.controlled),tostring(telemetry.isActive),tostring(telemetry.forceIsActive),tostring(telemetry.crabState),tostring(telemetry.crabAiSteeringModeIndex),tostring(telemetry.steerableWheelCount),table.concat(wheels,";"))
+end
 local function finite(value) return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge end
 local function distanceTo(x,z,cx,cz)
     if not finite(x) or not finite(z) or not finite(cx) or not finite(cz) then return nil end
@@ -92,14 +106,19 @@ function Control:_complete(status,evidence)
         if status=="PLAYER_CLAIM" then
             completionEvidence.neutralization={performed=false,reason="PLAYER_CLAIM_HIGHER_AUTHORITY"}
         elseif status=="SUPERSEDED" then
-            completionEvidence.neutralization={performed=false,reason="SOURCE_AI_HIGHER_AUTHORITY"}
+            completionEvidence.neutralization={performed=false,reason="SOURCE_INTENT_REACTIVATED_HIGHER_AUTHORITY"}
         elseif vehicle==nil then
             completionEvidence.neutralization={performed=false,reason="CURRENT_PHYSICAL_OBJECT_LOST"}
             ownedCleanupFailed=true
         else
             local neutralized,neutralEvidence=self.actuationMechanism:neutralize(vehicle,state.lastDt or 0)
             completionEvidence.neutralization={performed=neutralized==true,evidence=type(neutralEvidence)=="table" and neutralEvidence or nil,reason=neutralized and nil or tostring(neutralEvidence)}
-            if neutralized~=true then
+            if neutralized==true then
+                logInfo("ACTUATION_NEUTRALIZED commitment=%s assembly=%s status=%s neutralizeCalls=%d %s",
+                    tostring(state.commitmentId),tostring(state.assemblyReferenceKey),tostring(status),
+                    self.actuationMechanism:getNeutralizeCallCount(),
+                    steeringTelemetryText(type(neutralEvidence)=="table" and neutralEvidence.postNeutralizeSteering or nil))
+            else
                 ownedCleanupFailed=true
                 logWarning("NEUTRALIZATION_FAILED commitment=%s reason=%s",tostring(state.commitmentId),tostring(neutralEvidence))
             end
@@ -113,7 +132,13 @@ function Control:_complete(status,evidence)
         else
             local released,releaseEvidence=self.actuationMechanism:releaseVehicleActivityContext(vehicle,state.activityContext)
             completionEvidence.activityContext={released=released==true,evidence=type(releaseEvidence)=="table" and releaseEvidence or nil,reason=released and nil or tostring(releaseEvidence)}
-            if released~=true and status~="PLAYER_CLAIM" and status~="SUPERSEDED" then
+            if released==true then
+                logInfo("VEHICLE_ACTIVITY_CONTEXT_RELEASED commitment=%s assembly=%s status=%s releaseCalls=%d restoredForceIsActive=%s %s",
+                    tostring(state.commitmentId),tostring(state.assemblyReferenceKey),tostring(status),
+                    self.actuationMechanism:getActivityContextReleaseCallCount(),
+                    tostring(type(releaseEvidence)=="table" and releaseEvidence.restoredForceIsActive or nil),
+                    steeringTelemetryText(type(releaseEvidence)=="table" and releaseEvidence.postReleaseSteering or nil))
+            elseif status~="PLAYER_CLAIM" and status~="SUPERSEDED" then
                 ownedCleanupFailed=true
                 logWarning("ACTIVITY_CONTEXT_RELEASE_FAILED commitment=%s reason=%s",tostring(state.commitmentId),tostring(releaseEvidence))
             end
@@ -243,6 +268,11 @@ function Control:executeControlRequest(request,candidate)
         return self:_rejectBeforeStart(request,target,status,"VEHICLE_ACTIVITY_CONTEXT_UNAVAILABLE:"..tostring(activityContext))
     end
     state.activityContext=activityContext
+    logInfo("VEHICLE_ACTIVITY_CONTEXT_ACQUIRED commitment=%s assembly=%s acquireCalls=%d previousForceIsActive=%s %s",
+        tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
+        self.actuationMechanism:getActivityContextAcquireCallCount(),
+        tostring(activityContext.previousForceIsActive),
+        steeringTelemetryText(activityContext.postAcquireSteering))
 
     local configurationEvidence=nil
     if state.configurationPolicy=="OPPORTUNISTIC_NO_SETTLEMENT_GATE" then
@@ -278,6 +308,9 @@ function Control:executeControlRequest(request,candidate)
     })
     logInfo("CONTROL_STARTED commitment=%s assembly=%s targetProgress=%.2fm speed=%.2fkmh configuration=%s",
         tostring(state.commitmentId),tostring(state.assemblyReferenceKey),state.targetProgressM,state.speedKmh,tostring(state.configurationResult))
+    logInfo("STEERING_BASELINE commitment=%s assembly=%s %s",
+        tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
+        steeringTelemetryText(self.actuationMechanism:steeringTelemetry(vehicle)))
     return true,"MANOEUVRE_STARTED"
 end
 function Control:update(dt)
@@ -291,6 +324,21 @@ function Control:update(dt)
     if vehicle==nil then self:_complete("FAILED",{kind="TERMINAL_EGRESS_CONTROL_FAILURE",reason="CURRENT_PHYSICAL_OBJECT_LOST"}); return end
     if self.actuationMechanism:isPlayerClaimed(vehicle) then self:_complete("PLAYER_CLAIM",{kind="CURRENT_PLAYER_CLAIM"}); return end
     if self.actuationMechanism:isSourceReactivated(vehicle) then self:_complete("SUPERSEDED",{kind="CURRENT_SOURCE_AI_REACTIVATION"}); return end
+
+    if state.phase=="INFIELD" and state.actuationIssued==true then
+        local now=tonumber(g_time) or 0
+        if state.nextUpdateTelemetryLogged~=true then
+            state.nextUpdateTelemetryLogged=true
+            logInfo("STEERING_NEXT_UPDATE commitment=%s assembly=%s %s",
+                tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
+                steeringTelemetryText(self.actuationMechanism:steeringTelemetry(vehicle)))
+        elseif state.lastSteeringHeartbeatAt==nil or now-state.lastSteeringHeartbeatAt>=1000 then
+            state.lastSteeringHeartbeatAt=now
+            logInfo("STEERING_HEARTBEAT commitment=%s assembly=%s %s",
+                tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
+                steeringTelemetryText(self.actuationMechanism:steeringTelemetry(vehicle)))
+        end
+    end
 
     local elapsed=(tonumber(g_time) or 0)-state.startedAt
     if state.phase=="COMPACT" then
@@ -337,6 +385,18 @@ function Control:update(dt)
         return
     end
     state.actuationIssued=true
+    if state.directionEvidenceLogged~=true and type(result)=="table" then
+        state.directionEvidenceLogged=true
+        state.lastSteeringHeartbeatAt=tonumber(g_time) or 0
+        logInfo("INFIELD_ALIGNMENT_ACTUATION commitment=%s assembly=%s localDirection=(%.4f,%.4f) headingErrorDeg=%.2f steeringAngleLimitDeg=%.2f fixedWorldDirection=(%.4f,%.4f)",
+            tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
+            tonumber(result.localDirectionX) or 0,tonumber(result.localDirectionZ) or 0,
+            tonumber(result.headingErrorDeg) or 0,tonumber(result.steeringAngleLimitDeg) or 0,
+            tonumber(state.infieldDirectionX) or 0,tonumber(state.infieldDirectionZ) or 0)
+        logInfo("STEERING_COMMAND_STATE commitment=%s assembly=%s %s",
+            tostring(state.commitmentId),tostring(state.assemblyReferenceKey),
+            steeringTelemetryText(result.postCommandSteering))
+    end
     self:_publish(state,"MANOEUVRE_IN_PROGRESS",{
         courtesyStage=state.courtesyStage,destinationKind=state.destinationKind,
         realisedProgressM=realisedProgress,targetProgressM=state.targetProgressM,currentTargetDistanceM=targetDistance,

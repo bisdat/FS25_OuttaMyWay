@@ -3423,3 +3423,15 @@ Run #147 exposed the final companion literal in the same pre-1.0 versioning cont
 **Hypothesis:** this is behaviour-preserving for supported production paths because the removed verdicts duplicated conclusions already established during planning or enforced later at their truthful lifecycle/Control boundaries. CI is the first independent validation; GIANTS Reality will be requested only if the resulting evidence justifies it.
 
 **Deferred:** **Preselection != Candidate Enumeration** remains the final Phase-13 closure question. Generic multi-context Commitment application remains an acceptable fail-closed current limit pending a concrete supported consumer.
+
+## 2026-09-08 — Phase 14.6A: CI disproves observability/topology assumptions
+
+**Observation — `.29` GIANTS smoke:** the consolidated Terminal Egress physical path was an apparent pass. A final `terminal` HUD message remained visible after the run; this is retained as non-blocking UI follow-up rather than being mixed into the execution correction.
+
+**CI evidence:** `Structural contracts` reported five failures and the Lua job stopped in its syntax phase. Inspection separated stale vocabulary/topology assertions from one real preservation gap: the generic Terminal Egress executor had retained actuation mechanics but dropped the steering baseline/command/heartbeat and Vehicle Activity Context acquire/release diagnostic evidence previously available around terminal movement. The Lua workflow also still enumerated the retired `ObstructionRelocationControl.lua` and `Prototype22CapabilityGate.lua`.
+
+**Discovery — Execution Consolidation Must Preserve Observability:** two physical executors may collapse into one without collapsing their upstream semantics, but consolidation is incomplete if Reality evidence used to validate the physical boundary silently disappears. Observability is part of the executable engineering contract even when it does not change movement policy.
+
+**Discovery — Validation Inventory Is Executable Topology:** a hard-coded CI source inventory is part of the current implementation topology. Retiring a module requires retiring it from validation inventories as well as production composition.
+
+**Decision:** advance to `.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION`; restore provenance-neutral terminal steering/activity-context telemetry, update only stale structural vocabulary assertions, remove retired modules from the Lua syntax inventory, and leave the terminal HUD residue for later UI work. No Terminal Egress geometry, courtesy policy, Responsibility semantics, or GIANTS ownership is intentionally changed.

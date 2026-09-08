@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.3.0.29 TEST — TERMINAL EGRESS EXECUTION CONSOLIDATION.
+-- FS25_OuttaMyWay v0.3.0.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION.
 -- modDesc.xml loads only this file. Retired implementation is preserved by repository history, not shipped runtime source.
 local modDirectory=g_currentModDirectory or ""
 local modules={
