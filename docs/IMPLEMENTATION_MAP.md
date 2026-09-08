@@ -10,176 +10,154 @@ Source             -> exactly how they are implemented
 
 Architectural meaning remains owned by the [Runtime Responsibility Architecture](architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md), [Spatial Negotiation Model](architecture/SPATIAL_NEGOTIATION_MODEL.md), [Physical Representation Architecture](architecture/PHYSICAL_REPRESENTATION_ARCHITECTURE.md), [Candidate Support Projection Architecture](architecture/CANDIDATE_SUPPORT_PROJECTION.md), [Configuration architecture](CONFIGURATION.md) and [Naming Conventions](NAMING_CONVENTIONS.md).
 
-# Programme Status
+## Repository state
 
-| Phase | Boundary | Status |
+- Accepted Repository State baseline for this map: `main` after PR #84 merge, commit `57f65c0dccdf39764bca6cfea4bfe082a93852f0`.
+- Canonical authority remains **v0.3.0.0**.
+- Accepted non-canonical playable identity remains **`0.3.0.28 TEST — FOLLOWER HUD GLYPH COMPATIBILITY`**.
+- Strangler Phase 14 is active. The remaining work is current placement/vocabulary reconciliation, not replay of the earlier Phase-14 tranches.
+- Phase 15 whole-system validation and architecture-to-runtime review has not started.
+
+## Principal current responsibility placement
+
+| Architectural responsibility | Principal current source placement | Current disposition |
 |---|---|---|
-| 1–8 | Initial strangler seams, explicit Resolution/Regulation representation and programme groundwork | COMPLETE / accepted for programme progression |
-| 9 | Current Responsibility reconciliation and Regulation-to-Passage succession | COMPLETE |
-| 10 | Bounded Authority reconciliation | COMPLETE |
-| 11 | Reduce `LiveControlDispatcher` to authorised routing/execution | COMPLETE |
-| 12 | Retire superseded generic Commitment/orchestration only where unsupported | COMPLETE |
-| 13 | Simplify Candidate/Constraint/Decision only where evidence proves duplication | **COMPLETE** |
-| 14 | Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming | **IN PROGRESS — 14.5 RUNTIME INTEGRATION CONSOLIDATION** |
-| 15 | Whole-system validation and architecture-to-runtime review | NOT STARTED |
-
-Accepted Repository State for this map is `main` after PR #76 merge, commit `4c4924b9d52dbfb15afe99f7f2ae231466a0b29a`. Canonical authority remains `v0.3.0.0`. Last accepted non-canonical playable identity is **`0.3.0.24 TEST — NON-JOB ACTUATION MECHANISM GRADUATION`**.
-
-Read [Phase 13 Closure Audit](architecture/PHASE_13_CLOSURE_AUDIT.md) for the final Candidate/Constraint/Decision responsibility audit.
-
-# Principal Responsibility Placement
-
-| Architectural responsibility | Principal current source placement | Disposition |
-|---|---|---|
-| Runtime entry and sequencing | `modDesc.xml` -> `scripts/main.lua`; `scripts/runtime/Runtime.lua`; `scripts/runtime/LiveRuntimeCoordinator.lua`; runtime integration seams | PRESERVE; Phase 14 may reconcile placement/naming, not silently change behaviour |
+| Runtime entry and production composition | `modDesc.xml` -> `scripts/main.lua`; `scripts/runtime/Runtime.lua`; `scripts/runtime/LiveRuntimeCoordinator.lua` | PRESERVE explicit composition; former Phase-13/14 runtime integration wrappers are retired |
 | Job Episode / Operation / Field World identity | `scripts/identity/JobEpisodeAdmission.lua`, `OperationAdmission.lua`, `FieldWorldSnapshotRegistry.lua`, `FieldWorldEquivalenceAuthority.lua`, `FieldWorldEquivalenceEvaluator.lua` | PRESERVE |
-| Current Physical Assembly acquisition | `scripts/observation/CurrentPhysicalAssemblySource.lua` | PRESERVE |
+| Current Physical Assembly acquisition / addressability | `scripts/observation/CurrentPhysicalAssemblySource.lua` | PRESERVE current mission-root addressability; no semantic authority |
 | Current physical pose observation | `scripts/observation/CurrentPhysicalPoseSource.lua` | PRESERVE factual positive evidence only |
-| Live Observation composition | `scripts/observation/LiveObservationSource.lua` | PRESERVE; later decompose only where responsibility becomes clearer |
-| Live interaction Observation calculation | `scripts/observation/LiveInteractionObservation.lua` | **PHASE 14.3** — graduated from diagnostic placement; calculations/evidence meaning preserved |
+| Live Observation composition | `scripts/observation/LiveObservationSource.lua` | PRESERVE |
+| Live interaction Observation calculation | `scripts/observation/LiveInteractionObservation.lua` | PRESENT production Observation responsibility; no longer Diagnostic placement |
 | Physical representation | `scripts/representation/AssemblyRepresentationCache.lua`, `PlanViewFootprint.lua`, `PairSpecificPassageClearance.lua`, `CurrentPhysicalConflictRepresentation.lua` | PRESERVE explicit positive/incomplete authority |
 | Situation Assessment | `scripts/assessment/SituationAssessment.lua` plus focused assessment collaborators | PRESERVE interpreted current relationship knowledge |
-| Causal Obstruction assessment | `scripts/assessment/CausalObstructionAssessment.lua` | PRESERVE D-0218 Situation authority |
+| Causal Obstruction assessment | `scripts/assessment/CausalObstructionAssessment.lua` | PRESERVE current positive causal-obstruction semantics |
 | Current Responsibility reassessment | `scripts/assessment/CurrentResponsibilityAssessment.lua` | PRESERVE evidence/reassessment only, not lifecycle authority |
 | Prospective spatial constraints | `scripts/assessment/SpatialConstraintAssessment.lua` | PRESERVE pending separate Issue #37 Reality debt |
 | Passage capability | `scripts/assessment/PassageCapabilityAssessment.lua` | PRESERVE |
-| Candidate construction / planning | `scripts/candidates/` including `CandidateSpace.lua`, `LiveTrafficCandidateSupport.lua`, `LocalPassagePlanner.lua`, `TerminalEgressCandidateSupport.lua`, `ObstructionRelocationCandidateSupport.lua`, `PassiveLiveCandidateSupport.lua` | **PHASE 13 CLOSED** — feasible option/support/planning ownership retained |
-| Fresh Candidate support projection / portfolio composition | `scripts/candidates/ProspectiveDecisionPortfolioSupport.lua` plus projected group-builder seams in existing Candidate supports | PRESERVE — enumerates fresh support groups without inter-group selection; one target Decision picture |
-| Constraint evaluation | `scripts/constraints/ConstraintEngine.lua` plus four independently owned evaluators | **PHASE 13 CLOSED** — independent mandatory verdict ownership |
-| Policy / Decision selection | `scripts/decision/DecisionSelector.lua`, `TrafficPolicemanDecisionPolicy.lua`, `ProspectivePortfolioDecisionPolicy.lua` | **PHASE 13 CLOSED** — owns constrained alternative selection and compatibility policy |
-| Portfolio dispatch-boundary projection | `scripts/runtime/ProspectiveDecisionPortfolioIntegration.lua` | PRESERVE compatibility seam; projects only selected group's original local support boundary to existing dispatcher checks |
+| Candidate construction / planning | `scripts/candidates/` including `CandidateSpace.lua`, `LiveTrafficCandidateSupport.lua`, `LocalPassagePlanner.lua`, `TerminalEgressCandidateSupport.lua`, `ObstructionRelocationCandidateSupport.lua`, `PassiveLiveCandidateSupport.lua` | PRESERVE feasible option/support/planning ownership |
+| Fresh Candidate support projection / portfolio composition | `scripts/candidates/ProspectiveDecisionPortfolioSupport.lua` plus projected group-builder seams in existing Candidate supports | PRESERVE one target Decision picture and no inter-group selection |
+| Constraint evaluation | `scripts/constraints/ConstraintEngine.lua` plus four independently owned evaluators | PRESERVE independent mandatory verdict ownership |
+| Policy / Decision selection | `scripts/decision/DecisionSelector.lua`, `TrafficPolicemanDecisionPolicy.lua`, `ProspectivePortfolioDecisionPolicy.lua` | PRESERVE supported choice / compatibility policy |
 | Responsibility Transition Authority | `scripts/responsibility/ResponsibilityTransitionAuthority.lua` and purpose-specific transition modules | PRESERVE semantic establishment/replacement/termination authority |
 | Follower Regulation transition | `scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua` | PRESERVE |
 | Action-Space / Forward Intersection Regulation transition | `scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua` | PRESERVE |
 | Cooperative Passage transition | `scripts/responsibility/CooperativePassageResponsibilityTransition.lua` | PRESERVE |
-| Completed warm obstruction transition | `scripts/responsibility/CompletedObstructionResponsibilityTransition.lua` | PRESERVE D-0147 warm-path semantics |
-| Generic current obstruction relocation transition | `scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua` | PRESERVE current `(Operation, blocker Physical Assembly)` responsibility |
-| Generic retained Commitment / obligations | `scripts/commitment/`, including `CommitmentAdmission.lua`, `DecisionCommitmentBoundary.lua`, `ObligationLedger.lua`, purpose-specific lifecycle modules | RETAIN as substrate; not semantic transition authority |
-| Cooperative Passage participant lifecycle | `COOPERATIVE_PASSAGE_LEG` obligations plus Passage lifecycle/settlement modules | PRESERVE D-0217 Survivor Invariance / Last-Leg Dissolution |
+| Completed-obstruction transition | `scripts/responsibility/CompletedObstructionResponsibilityTransition.lua` | PRESERVE completed-obstruction trigger semantics |
+| Current Causal Obstruction relocation transition | `scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua` | PRESERVE current `(Operation, blocker Physical Assembly)` responsibility |
+| Generic retained Commitment / obligations | `scripts/commitment/`, including `CommitmentAdmission.lua`, `DecisionCommitmentBoundary.lua`, `ObligationLedger.lua` and purpose-specific lifecycle modules | RETAIN as substrate; not semantic transition authority |
+| Cooperative Passage participant lifecycle | `COOPERATIVE_PASSAGE_LEG` obligations plus Passage lifecycle/settlement modules | PRESERVE Survivor Invariance / Last-Leg Dissolution |
 | Resolution semantic representation | `scripts/contracts/ResolutionCommitment.lua`, `scripts/responsibility/ResolutionCommitmentAdapter.lua` | PRESERVE |
 | Regulation semantic representation | `scripts/contracts/Regulation.lua` | PRESERVE |
 | Bounded Authority | `scripts/contracts/BoundedAuthorityGrant.lua`, `scripts/authority/BoundedAuthority.lua` | PRESERVE |
-| Regulation physical-authority state | `scripts/authority/RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua` | PRESERVE |
+| Regulation physical-authority state | `scripts/authority/RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua` | PRESERVE semantics; Protected Yield vocabulary still carries D-0147 provenance |
 | Mechanical actuation exclusivity | `scripts/authority/AuthorityRegistry.lua` | PRESERVE; exclusivity is not semantic permission |
 | Effective actuation composition | `scripts/authority/EffectiveActuationComposition.lua` | PRESERVE |
 | Typed Control boundary | `scripts/contracts/ControlRequest.lua`, `ControlOutcome.lua` | PRESERVE |
-| Control routing | `scripts/control/LiveControlDispatcher.lua` | PRESERVE authorised routing/execution only |
-| Regulation physical Control | `scripts/control/RegulationControl.lua` using `scripts/control/mechanisms/NativeDriveMechanism.lua` | **PHASE 14.1** — production `REGULATE_SPEED` execution/observation/cleanup separated from the manual P22 harness; physical mechanism graduation remains 14.2 |
+| Control routing | `scripts/control/LiveControlDispatcher.lua` | PRESERVE authorised routing only; current reposition routing still exposes trigger-specific target kinds |
+| Regulation physical Control | `scripts/control/RegulationControl.lua` using `scripts/control/mechanisms/NativeDriveMechanism.lua` | PRESENT production `REGULATE_SPEED` executor |
 | Cooperative Passage physical Control | `scripts/control/CooperativePassageControl.lua` | PRESERVE validated mechanics |
-| Warm terminal-egress physical Control | `scripts/control/TerminalEgressControl.lua` | PRESERVE validated D-0147 mechanics |
-| Generic obstruction relocation Control | `scripts/control/ObstructionRelocationControl.lua` | PRESERVE bounded D-0218 cold-blocker actuation |
-| Shared non-job physical actuation mechanism | `scripts/control/mechanisms/NonJobActuationMechanism.lua` | **PHASE 14.4** — shared mechanics for warm D-0147 and cold D-0218; semantic authority classes remain purpose-specific |
-| Runtime live-cycle composition and dispatch | `scripts/runtime/Runtime.lua` | **PHASE 14.5** — explicit Portfolio projection, cold D-0218 sequencing, incumbent/fresh support split; former integration seams retired |
-| Current physical relocation pose augmentation | `scripts/observation/LiveObservationSource.lua` with `CurrentPhysicalPoseSource.lua` | **PHASE 14.5** — direct pre-sealing Observation composition; no semantic or actuation authority |
-| Guarded Recovery | `scripts/control/GuardedRecoveryCompatibility.lua` routed through production `RegulationControl` | RETAIN as explicit compatibility; P22 request vocabulary removed in 14.1 |
+| Completed-obstruction physical movement | `scripts/control/TerminalEgressControl.lua` | CURRENT implementation; candidate generic Terminal Egress executor |
+| Current-obstruction physical movement | `scripts/control/ObstructionRelocationControl.lua` | CURRENT duplicate execution seam under review; trigger semantics remain upstream |
+| Shared non-job physical actuation | `scripts/control/mechanisms/NonJobActuationMechanism.lua` | PRESENT shared mechanism; mechanical failure vocabulary still contains post-job residue |
+| Hold mechanism | `scripts/control/mechanisms/FieldWorkHoldMechanism.lua` | PRESENT production mechanism |
+| Native drive mechanism | `scripts/control/mechanisms/NativeDriveMechanism.lua` | PRESENT production mechanism shared by Regulation and Passage |
+| Transit configuration mechanism | `scripts/control/mechanisms/TransitConfigurationMechanism.lua` | PRESENT production mechanism with caller-owned state lifetime |
+| Guarded Recovery | `scripts/control/GuardedRecoveryCompatibility.lua` routed through production `RegulationControl` | RETAIN explicit compatibility path |
+| Prototype22 manual harness | `scripts/prototypes/Prototype22CapabilityGate.lua` plus `main.lua` registration and `PROTOTYPE_22_*` constants | NO DURABLE PRODUCTION RESPONSIBILITY IDENTIFIED; targeted for retirement after exact dependency validation |
 
-# Phase 13 Closed Responsibility Boundaries
+## Candidate / Constraint / Decision boundary
 
-Phase 13 was an evidence-led simplification pass, not a mandate to delete Candidate, Constraint or Decision.
+The current production chain remains intentionally separated because each layer contributes distinct work:
 
-## Candidate
+### Candidate
 
-Current Candidate work is constructive:
+Candidate owns feasible option construction, purpose-local planning, support provenance and representation requirements. It does not own final selection, canonical Constraint verdicts, Responsibility Transition or Control authority.
 
-- consume already-assessed Situation knowledge;
-- build feasible option specifications;
-- perform purpose-local planning such as one-conflict Passage arrangement search;
-- retain support provenance and representation requirements;
-- enumerate fresh support groups through Candidate Support Projection.
+Fresh independently supportable purposes are exposed through Candidate Support Projection over one target Decision picture. Support Projection does not create intermediate Operational Pictures or delete unrelated Situation knowledge.
 
-`CandidateAction` rejects downstream selection, admissibility, Commitment-operation, Control-request and canonical Constraint-verdict authority.
+### Constraint
 
-Historical support modules may still build transitional packets named `constraintEvidence`; `CandidateSpace` strips verdict/applicability semantics and preserves only useful planning evidence before canonical `CandidateAction` construction. This is vocabulary/mechanical debt, not duplicate canonical Constraint authority.
-
-## Constraint
-
-Current mandatory Constraint verdict ownership is limited to independently evaluated questions:
+Canonical mandatory Constraint verdict ownership remains limited to independently evaluated questions:
 
 - `REPRESENTATION_FITNESS`;
 - `RESPONSIBILITY_COMPATIBILITY`;
 - `COMMITMENT_PRECONDITIONS`;
 - `EFFECTIVE_ACTUATION_COMPOSITION`.
 
-Seven historical pass-through evaluators are retired. Candidate evidence is not a verdict source.
+Candidate planning evidence is not a canonical Constraint verdict source.
 
-## Decision
+### Decision
 
-Fresh prospective ordering now lives at Decision:
+Decision owns supported choice and compatibility policy, including prospective purpose ordering, local Traffic Policeman preference and supported Passage conflict selection.
 
-- cold Causal Obstruction vs warm D-0147 vs live traffic;
-- fresh warm terminal episode choice;
-- follower / Forward Intersection / Passage / Action-Space compatibility;
-- nearest supported Passage conflict;
-- same-class fail-closed handling under accepted policy;
-- Traffic Policeman sequential preference inside the selected governing requirement.
+### Responsibility Transition
 
-`ProspectivePortfolioDecisionPolicy` selects the governing support group. `DecisionSelector` then applies the group's local policy after mandatory Constraint evaluation.
+`ResponsibilityTransitionAuthority` and purpose-specific transition modules own semantic establishment, preservation, replacement and termination. Commitment operation intent is not semantic Responsibility Transition authority.
 
-## Responsibility Transition
+## Resolved placement worth protecting
 
-Semantic lifecycle authority remains downstream. Decision's `CREATE`, `MAINTAIN`, `REVISE`, `WAIT` and `SETTLE` values are Commitment-substrate operation intent, not semantic Regulation/Resolution establishment.
+The following source placement now truthfully reflects current production responsibility and should not be reintroduced as Prototype/Diagnostic/integration-wrapper structure without new evidence:
 
-`ResponsibilityTransitionAuthority` and purpose-specific transition modules own semantic establishment, preservation, replacement and termination.
+- production Regulation execution is owned by `RegulationControl`;
+- Hold, Drive and Transit Configuration are production Control mechanisms under `scripts/control/mechanisms/`;
+- live interaction derivation is Observation, not Diagnostic output;
+- shared non-job movement mechanics are `NonJobActuationMechanism`, not post-job semantic Authority;
+- accepted Causal Obstruction / Prospective Portfolio responsibilities are composed directly through Runtime/Observation rather than load-order monkey-patching;
+- current physical mission-root addressability is available independently of historical Job tracking.
 
-# Reality-Driven Candidate Support Projection Correction
+Git and merged PRs preserve how those placements were reached. This map records only the present placement.
 
-The first `.19` Portfolio implementation failed Reality because support isolation created new Operational Pictures and deleted unrelated Situation knowledge. Valid same-Reality Traffic Policeman evidence became stale before Decision.
+## Current architecture-to-code drift
 
-Accepted discoveries:
+### Terminal Egress execution duplication
 
-- **Support Projection != New Operational Picture**;
-- **Support Scope != Evidence Deletion**.
+Completed Obstruction and current Causal Obstruction remain distinct upstream triggers. The current source nevertheless routes them through separate physical Controls: `TerminalEgressControl` and `ObstructionRelocationControl`.
 
-Current `.20` placement:
+The active implementation hypothesis is **Trigger Provenance != Terminal Egress Execution**: once Bounded Authority has authorised a movement objective, physical execution should depend on that objective and current physical subject rather than D-0147/D-0218 provenance. The duplicate Control is therefore a bounded consolidation target, not yet an accepted implementation result.
 
-- projected group builders operate over the full parent picture;
-- one target Candidate-support-enriched Operational Picture identity is reserved for the complete fresh Portfolio;
-- same-picture support evidence is generated for that target identity directly;
-- only one Portfolio-supported Operational Picture is materialised;
-- strict `STALE_OPERATIONAL_PICTURE` validation remains intact;
-- no Passage, D-0147 or D-0218 physical Control change was required.
+### Protected Yield vocabulary
 
-Owner GIANTS Reality validated two ordinary Passages, warm D-0147 settlement, Player Claim exclusion, and sequential Decision/Responsibility/Control handling of two simultaneously eligible cold blockers.
+`RegulationBoundedAuthority` exposes the beneficiary hold used by both obstruction paths through `d0147ProtectedYield...` names and `D0147_PROTECTED_YIELD` owner vocabulary. The mechanism is already shared; the names still claim the trigger that first introduced it.
 
-# Explicit Current Limits / Separate Work
+### Prototype22 residue
 
-## Generic multi-context application cardinality
+The Prototype22 runtime harness, command/HUD/event registration and `PROTOTYPE_22_*` constants remain after the physical mechanisms graduated to production. No current production responsibility has been identified for the prototype itself. Retirement requires an exact dependency scan before executable deletion.
 
-Semantic targeting may be unambiguous while generic Commitment application still fails closed if more than one retained context exists. Current source reports this explicitly rather than confusing application cardinality with semantic targetability.
+### Production validation vocabulary
 
-Disposition: **ACCEPTABLE FAIL-CLOSED LIMIT for current implemented production behaviour**. Revisit for a concrete supported consumer such as Issue #45.
+Current production source still contains primary identifiers such as D-number/TEST/Step/prototype names in Cooperative Passage, Regulation support and related Runtime/contracts. Decision numbers may remain as provenance, but current production identity should describe the current concept.
 
-## Issue #37
+Renaming must follow ownership and must not become a blind repository-wide substitution.
 
-Category-2 Forward Intersection Reality-validation debt remains separate. It may challenge the underlying Forward Intersection model if contrary Reality appears, but it is not evidence of Candidate/Constraint/Decision ownership duplication.
+### Mixed runtime constants
 
-## Issue #45
+`scripts/config.lua` remains a Mixed Runtime Constants Surface. `TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M` and `TERMINAL_EGRESS_MOVE_TIMEOUT_MS` are plausible shared Terminal Egress execution-owned constants; do not clone them per trigger merely because two paths consume them.
 
-Bubble Bullet Time remains accepted but unimplemented architecture. It may require revisiting multi-context application cardinality and external-traffic regulation scope when it becomes the active consumer.
+`AUTOMATIC_TERMINAL_EGRESS` still spans development consent beyond the completed-obstruction player-configuration concept recorded in `CONFIGURATION.md`. Do not invent player-facing Configuration semantics while reconciling implementation scope.
 
-## Issues #65 and #67
+## Current explicit limits / separate work
 
-Test-architecture / validation debt remains open:
+### Generic multi-context application cardinality
 
-- Behaviour Regression Contract != Build Identity Contract;
-- Workflow Success != Observation Success / Lua observation harness reconciliation.
+Semantic targeting may be unambiguous while generic Commitment application still fails closed if more than one retained context exists. This remains an acceptable fail-closed implementation limit until a concrete supported consumer requires broader cardinality, notably Issue #45.
 
-Do not mix those corrections into Phase-14 production mechanics without a deliberate validation-architecture tranche.
+### Separate Issues
 
-# Phase 14 Entry Boundary
+- Issue #37 — Category-2 Forward Intersection Reality-validation debt.
+- Issue #45 — Bubble Bullet Time, accepted but unimplemented.
+- Issue #65 — Behaviour Regression Contract != Build Identity Contract.
 
-Phase 14 is now the active programme boundary:
+Do not mix those concerns into the current Phase-14 placement/vocabulary correction without an explicit engineering reason.
 
-> **Graduate remaining prototype/diagnostic production mechanics, runtime scoping and naming.**
+## Immediate implementation boundary
 
-Begin with observation and classification, not code changes.
+The next executable Phase-14 increment should be behaviour-preserving and narrow:
 
-For each suspect production surface ask:
+1. establish one provenance-neutral Terminal Egress execution contract while preserving completed-obstruction and current Causal Obstruction trigger semantics upstream;
+2. absorb `ObstructionRelocationControl` physical execution only where the dependency audit supports equivalence;
+3. graduate Protected Yield execution vocabulary away from D-0147 provenance;
+4. use current-physical subject addressability at Control where validated;
+5. retire Prototype22 only after exact dependency validation; and
+6. preserve Regulation, Cooperative Passage, Player Claim/source-AI supersession, configuration/compaction, beneficiary protection and existing settlement policy.
 
-1. Is the underlying responsibility still valid production architecture?
-2. Is only its name/provenance/test vocabulary stale?
-3. Is diagnostic or compatibility machinery still executing in the production path without a current responsibility?
-4. Is runtime integration placed at the wrong abstraction level?
-5. Would changing it alter behaviour, or only make accepted responsibility placement truthful?
-
-Only demonstrated mismatches should become Engineering Increments. Do not use Phase 14 as a general refactoring licence.
+The first materially changed executable revision after `.28` requires a fresh TEST build identity before push.
