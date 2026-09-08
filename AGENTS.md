@@ -124,7 +124,7 @@ During an ordinary Engineering Increment:
 - do not leave temporary files, logs, generated ZIPs, test artefacts or OS/editor files in the repository;
 - after pushing the branch, use GitHub Actions as the independent execution authority for repository/offline validation.
 
-`Structural contracts` is the required blocking check on `main`. `Lua offline observation (non-blocking)` remains observational while its existing failures are being reconciled.
+`Structural contracts` and `Lua offline behavioural contracts` are blocking CI contracts on `main`. The Lua job deliberately collects both inner harness outcomes before a final enforcement gate fails the job if either outcome is not successful. Neither offline contract proves GIANTS in-game Reality.
 
 Do not claim Farming Simulator field/runtime validation unless it was actually performed and the evidence is available. Implementation-local checks, CI offline validation and in-game Reality validation are separate claims.
 

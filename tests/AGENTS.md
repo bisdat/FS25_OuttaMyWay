@@ -27,5 +27,6 @@ These instructions apply to the entire `/tests` subtree and specialise the repos
 GitHub Actions provides the independent execution evidence for ordinary pull requests:
 
 - `Structural contracts` is blocking.
-- `Lua offline observation (non-blocking)` is observational until its existing failures are reconciled.
+- `Lua offline behavioural contracts` is blocking. Its two inner Lua steps retain `continue-on-error` only so both outcomes are collected; a final enforcement gate fails the job unless both are successful.
+- **Evidence Collection != CI Enforcement**: preserving both failure witnesses does not weaken the blocking verdict.
 - Neither offline mechanism proves GIANTS in-game Reality.

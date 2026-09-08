@@ -25,7 +25,7 @@ tests/
 
 [`replacement_core/run.lua`](replacement_core/run.lua) loads a broad implementation surface into a stubbed non-game environment. It exercises contracts, lifecycle, authority, assessment, candidate, decision, control and selected behaviour. See its [local README](replacement_core/README.md) for the validated command and limits.
 
-The harness currently contains pre-existing failures. GitHub Actions therefore runs it as an explicitly **non-blocking observation**: the raw harness outcome remains visible, but CI does not encode the current failure count as an accepted threshold. Once those failures are reconciled, the harness can become a blocking contract.
+Issue #67 reconciled the harness with accepted production topology and Issue #78 removed the sole remaining production failure. The accepted clean baseline is therefore **337 passed / 0 failed** for the main replacement-core harness and **9 passed / 0 failed** for the focused obstruction-relocation harness. GitHub Actions now treats those Lua suites as **blocking behavioural contracts**. No failure-count threshold is accepted.
 
 The harness also has a demonstrated **Validation Runtime Contract** for sealed collections: `pairs()` must honour `__pairs`, and `rawlen()` must be available. PR #24 isolated this from operating-system and LuaJIT source-version differences: stock Ubuntu LuaJIT from upstream commit `c525bcb9024510cad9e170e12b6209aedb330f83` produced **239 passed / 40 failed**, while the same source revision built with `LUAJIT_ENABLE_LUA52COMPAT` produced **266 passed / 13 failed**, matching the local Fedora baseline. CI therefore builds that pinned revision with Lua 5.2 compatibility enabled and reports the semantic profile before running the harness.
 
@@ -38,7 +38,8 @@ The harness also has a demonstrated **Validation Runtime Contract** for sealed c
 [`.github/workflows/offline-validation.yml`](../.github/workflows/offline-validation.yml) runs on pull requests targeting `main`, pushes to `main`, and manual dispatch.
 
 - **Structural contracts** are blocking because the structural/source-contract suite has a clean accepted baseline.
-- **Lua offline observation** executes the behavioural harness but is non-blocking while its existing failures are being investigated.
+- **Lua offline behavioural contracts** are blocking because their reconciled accepted baseline is clean. The workflow still lets both inner harnesses run even if one fails, then fails the final enforcement gate if either outcome is non-success.
+- **Evidence Collection != CI Enforcement**: complete failure evidence and a blocking CI verdict are compatible.
 - CI executes and reports repeatable repository/offline validation; it does not interpret evidence, define architecture, or replace in-game Reality testing.
 
 This lets implementation work push a commit and receive independent repeatable validation without requiring the implementation agent to spend time rerunning the complete offline suite itself.
