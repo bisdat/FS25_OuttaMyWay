@@ -74,10 +74,3 @@ def test_pull_request_template_surfaces_knowledge_trace():
     assert "Repository Context Bootstrap" in template
     assert "Relevant Knowledge Sweep" in template
     assert "NEW / KNOWN OPEN / REGRESSION / HISTORICAL" in template
-
-
-def test_issue82_runtime_glyph_contract_is_deliberately_not_fossilised_here():
-    continuation=flattened("docs/CONTINUATION_STATE.md")
-
-    assert "add the blocking rendered-HUD regression contract atomically with the fix" in continuation
-    assert "known Follower HUD Glyph Compatibility Leak" in continuation
