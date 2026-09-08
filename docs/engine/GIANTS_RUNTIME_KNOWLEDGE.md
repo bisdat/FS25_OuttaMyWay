@@ -410,6 +410,29 @@ ownership state.
 
 **Evidence:** post-job player-claim runtime probe.
 
+## Rendering and user-facing text
+
+### Texture-font support is narrower than source-text validity
+
+**Finding:** GIANTS texture-font Reality rejected U+2022 BULLET (`•`) with
+`Character '8226' not found in texture font`. PR #31 observed the failure on
+`VersionHud` and replaced the separator with ASCII-safe `|`. PR #35 separately
+recorded the still-unresolved **Follower HUD Glyph Compatibility Leak** in
+`FollowerPacingHud`; the `0.3.0.27` smoke test independently re-observed the same
+warning.
+
+**Safe use:** for diagnostic HUD separators on these demonstrated texture-font
+surfaces, use the Reality-proven ASCII-safe `|` representation unless another
+glyph has been separately validated.
+
+**Do not infer:** UTF-8/Lua source validity proves GIANTS can render a glyph, or
+that every non-ASCII character is unsupported. The current evidence establishes
+U+2022 as unsupported on the observed texture-font surfaces; it is not a
+complete Unicode capability map.
+
+**Evidence:** PR #31 Version HUD Reality correction; PR #35 follower-Regulation
+Reality observation; `0.3.0.27` follower pacing smoke re-observation.
+
 ## Evidence warnings and common misreadings
 
 - Predictor `CLEAR` after a collision may mean closing has ceased while both

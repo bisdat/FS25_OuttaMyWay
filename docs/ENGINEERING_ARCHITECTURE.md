@@ -75,6 +75,60 @@ GitHub Issues may own a substantial bounded prospective question or piece of wor
 
 A **Context Transfer Artifact** is a disposable reconstruction aid used to transfer sufficient working context between collaboration sessions. It does not establish architecture, engineering state, decisions or implementation authority. Chat carry-forwards therefore do not form a permanent accumulating repository document class; any durable discovery they contain is promoted into its responsible repository home.
 
+## Repository context discovery
+
+### Repository Context Bootstrap
+
+**Repository Context Bootstrap** is the minimum reconstruction of current
+repository authority required before substantive interpretation, implementation,
+Issue classification, or pull-request review. Its purpose is to make a new
+engineer or collaboration session reconstruct the project from repository
+responsibility rather than from remembered chronology.
+
+```text
+root working rules
+        ↓
+engineering start-here map
+        ↓
+Engineering Architecture + Continuation State
+        ↓
+task-relevant architecture / engine / implementation / policy / validation routes
+```
+
+The bootstrap is responsibility-directed, not an instruction to read every live
+document. Runtime semantic work follows current Architecture; GIANTS/FS25
+behaviour and API assumptions follow Engine Knowledge; implementation placement
+follows the Implementation Map; Configuration, Naming and Testing each retain
+their own authoritative routes. A pull-request review also reads the PR and
+linked Issue, changed-file list and governing responsibility documents before
+interpreting the diff.
+
+This protects **Repository Authority != Conversation Recall** and **PR Framing !=
+Repository Context**. Carry-forward material and PR prose may accelerate
+reconstruction but cannot replace it.
+
+### Relevant Knowledge Sweep
+
+**Relevant Knowledge Sweep** is the targeted provenance search performed before
+an observation is classified as new, a fix is proposed for it, or a new Issue is
+created.
+
+Use the observation's material error strings, identifiers, modules, concepts and
+synonyms to search current live documentation, current source/executable
+contracts, open and closed Issues, open and merged pull requests, Engineering
+Journal/research evidence, and Git history where provenance remains unclear.
+
+The result is classified as **NEW**, **KNOWN OPEN**, **REGRESSION**, or
+**HISTORICAL / NOT CURRENTLY APPLICABLE** before new tracking work is created.
+This is deliberately targeted rather than an exhaustive history ceremony.
+Unavailable history access must be stated as a limitation; absence of access does
+not establish novelty.
+
+Repository Context Bootstrap establishes *what currently owns the question*.
+Relevant Knowledge Sweep establishes *what the project has already learned about
+that question*. Together they operationalise Predictable Knowledge Placement and
+reduce recurrence of Stranded Live Knowledge.
+
 ## Engineering lifecycle
 
 ```text
@@ -114,7 +168,7 @@ Repeat
 - **Hypothesise:** state what is expected and what evidence could disprove it.
 - **Define:** bound the increment so intentional effects are attributable.
 - **Implement:** make the smallest constructive change that tests the hypothesis while preserving architectural intent.
-- **Validate:** the implementation agent performs inexpensive implementation-local sanity checks. GitHub Actions ordinarily executes and reports the repository offline suites; `Structural contracts` is the required blocking check on protected `main`, while the Lua harness remains non-blocking observational evidence. Engineering interprets CI evidence. Appropriately scoped in-game Reality validation remains separate and is required for claims that depend on GIANTS runtime behaviour.
+- **Validate:** the implementation agent performs inexpensive implementation-local sanity checks. GitHub Actions ordinarily executes and reports the repository offline suites; `Structural contracts` and `Lua offline behavioural contracts` are blocking checks on protected `main`. Engineering interprets CI evidence. Appropriately scoped in-game Reality validation remains separate and is required for claims that depend on GIANTS runtime behaviour.
 - **Record:** promote durable architecture, implementation knowledge, evidence and decisions into their responsible repository homes.
 - **Review:** inspect the complete increment through a pull request.
 - **Accept:** the repository owner's merge makes the result part of accepted `main`.

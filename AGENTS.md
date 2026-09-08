@@ -53,9 +53,98 @@ When changing code:
 
 A failed hypothesis or test is evidence, not wasted work. Record what was learned.
 
+## Repository Context Bootstrap
+
+Before interpreting a substantive repository task, classifying an observed defect,
+proposing implementation, opening an Issue, or reviewing a pull request, reconstruct
+the relevant current repository context. Do not rely on chat memory, carry-forward
+material, a PR body, or one familiar document as a substitute.
+
+Start in this order:
+
+```text
+AGENTS.md
+    ↓
+docs/README.md
+    ↓
+docs/ENGINEERING_ARCHITECTURE.md
+    +
+docs/CONTINUATION_STATE.md
+    ↓
+task-relevant responsibility routes
+```
+
+Follow the responsibility routes that can materially affect the question:
+
+- runtime/system semantics → `docs/architecture/README.md`, then
+  `docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md` and applicable
+  specialised architecture;
+- GIANTS/FS25 runtime behaviour or API assumptions → `docs/engine/README.md`,
+  then `docs/engine/GIANTS_RUNTIME_KNOWLEDGE.md` and
+  `docs/engine/GIANTS_API_SURFACES.md` where applicable;
+- current implementation placement or strangler state →
+  `docs/IMPLEMENTATION_MAP.md`;
+- Configuration or mixed runtime constants → `docs/CONFIGURATION.md`;
+- names, vocabulary, identifiers, or new durable terminology →
+  `docs/NAMING_CONVENTIONS.md`;
+- validation, regression, fixtures, or evidence strength →
+  `docs/TESTING_METHODOLOGY.md`, `tests/AGENTS.md`, and the relevant executable
+  contracts;
+- historical investigation or evidence → `docs/ENGINEERING_JOURNAL.md` and the
+  responsible `docs/research/` route.
+
+Do not read every branch ceremonially. Read to the depth required to understand
+the responsibility being changed or reviewed.
+
+For pull-request review, do not let the PR define its own universe. After the
+bootstrap above, read the PR and linked Issue, inspect the changed-file list,
+follow the governing responsibility documents for those files, perform the
+Relevant Knowledge Sweep below, then assess the complete diff and CI/evidence.
+
+## Relevant Knowledge Sweep
+
+Before calling an observation **new**, proposing a fix for it, or creating a new
+Issue, search for prior project knowledge using the observation's important
+error strings, identifiers, module names, concepts, and synonyms.
+
+The targeted sweep should cover, where relevant and accessible:
+
+```text
+current live documentation
+        ↓
+current source and executable contracts
+        ↓
+open GitHub Issues
+        ↓
+closed GitHub Issues
+        ↓
+open and merged pull requests
+        ↓
+Engineering Journal / research evidence
+        ↓
+Git history when provenance remains unclear
+```
+
+Classify the observation before creating new tracking work:
+
+- **NEW** — no materially matching current or historical project knowledge found;
+- **KNOWN OPEN** — the same unresolved condition is already recorded;
+- **REGRESSION** — a condition recorded as corrected/closed has reappeared;
+- **HISTORICAL / NOT CURRENTLY APPLICABLE** — related prior evidence exists but
+  does not describe the current responsibility or condition.
+
+Absence of access is not evidence of novelty. If a required Issue/PR/history
+source is unavailable in the current environment, state that limitation before
+classifying the observation as NEW.
+
 ## Current architectural authority
 
-Before changing runtime behaviour, start with `docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`, then read specialised architecture such as `docs/architecture/SPATIAL_NEGOTIATION_MODEL.md`, `docs/CONTINUATION_STATE.md` and applicable current decision material. Treat historical documents as evidence/provenance where they conflict with current accepted architecture.
+For runtime/system behaviour, the Repository Context Bootstrap must traverse
+`docs/architecture/README.md`,
+`docs/architecture/RUNTIME_RESPONSIBILITY_ARCHITECTURE.md`, the applicable
+specialised architecture and current Continuation State before implementation.
+Treat historical documents as evidence/provenance where they conflict with
+current accepted architecture.
 
 Preserve these standing constraints unless an explicit architectural decision changes them:
 
