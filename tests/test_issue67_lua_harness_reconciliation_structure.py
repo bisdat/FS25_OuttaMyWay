@@ -69,11 +69,16 @@ def test_issue67_focused_obstruction_fixture_has_executable_load_helper():
     assert "local function load(relativePath) do dofile" not in focused
 
 
-def test_issue67_workflow_surfaces_inner_observation_outcomes():
+def test_reconciled_lua_workflow_collects_both_outcomes_and_blocks_on_failure():
     workflow=read(".github/workflows/offline-validation.yml")
 
+    assert "name: Lua offline behavioural contracts" in workflow
     assert "id: lua" in workflow
     assert "id: obstruction_relocation" in workflow
-    assert workflow.count("continue-on-error: true") >= 2
-    assert "Workflow/job success is not evidence that either Lua observation passed." in workflow
-    assert "workflow control only; inspect the inner outcomes above and the raw logs." in workflow
+    assert workflow.count("continue-on-error: true") == 2
+    assert "name: Enforce Lua behavioural contracts" in workflow
+    assert 'MAIN_OUTCOME="${{ steps.lua.outcome }}"' in workflow
+    assert 'FOCUSED_OUTCOME="${{ steps.obstruction_relocation.outcome }}"' in workflow
+    assert 'if [[ "$MAIN_OUTCOME" != "success" || "$FOCUSED_OUTCOME" != "success" ]]; then' in workflow
+    assert "any non-success inner outcome fails the enforcement gate" in workflow
+    assert "Evidence Collection != CI Enforcement" in " ".join(read("docs/TESTING_METHODOLOGY.md").split())

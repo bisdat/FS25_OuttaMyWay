@@ -74,27 +74,33 @@ acceptance. Engineering owns interpretation, and the repository owner's merge
 accepts an Engineering Increment. CI cannot replace appropriately scoped
 in-game Reality validation where a claim depends on GIANTS behaviour.
 
-The `Lua offline observation (non-blocking)` job is observational.
-`continue-on-error` is workflow control only: it permits the workflow to
-continue, but it does not convert a failing Lua observation into a PASS.
-Therefore **Workflow Success != Observation Success**; the workflow summary
-must surface the inner main-harness and focused-harness outcomes explicitly.
+The `Lua offline behavioural contracts` job is blocking. Its two inner harness
+steps deliberately retain `continue-on-error` so both behavioural outcomes are
+collected even when one fails; a final enforcement gate then fails the job
+unless **both** outcomes are successful. This establishes **Evidence Collection
+!= CI Enforcement**: preserving complete failure evidence does not require a
+non-blocking CI verdict.
 
-Issue #67 established **Test Composition != Accepted Production Topology**:
-an offline harness may become misleading when its composition root, fixtures or
-causal assertions remain bound to retired production concepts even though the
-wrapper still executes. Reconciliation updates the harness to the accepted
-production topology; it must not preserve obsolete expectations merely to
-retain historical pass counts.
+Issue #67 established **Test Composition != Accepted Production Topology** and
+reconciled the offline harness composition, fixtures and causal assertions with
+accepted production responsibilities. Issue #78 then corrected the sole
+remaining production failure exposed by that reconciliation. Independent CI on
+`0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION` established the
+first clean reconciled baseline:
 
-At the Issue #67 reconciliation checkpoint on accepted production identity
-`0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE`, the main replacement-
-core observation executes 337 tests with **336 passed / 1 failed**, while the
-focused obstruction-relocation observation is **9 passed / 0 failed**. The sole
-remaining main-harness failure is the independently reproduced production defect
-tracked as Issue #78, **Signed-Zero Canonicalization Leak**. These counts are
-recorded evidence, **not** an accepted failure threshold and not a reason to
-manufacture green status.
+- main replacement-core behavioural contracts: **337 passed / 0 failed**;
+- focused obstruction-relocation behavioural contracts: **9 passed / 0 failed**.
+
+This evidence justifies **Observational Reconciliation Enables Regression
+Authority**: a future non-zero Lua harness result is now a blocking offline
+regression signal unless investigation proves that the asserted contract or
+validation mechanism itself has legitimately changed. No historical failure
+count is an accepted threshold.
+
+**Regression Authority != Runtime Reality Authority**. A green Lua contract
+means the implementation satisfies the asserted offline behaviour under the
+repository's pinned LuaJIT semantic profile and fixtures. It does not prove that
+GIANTS supplies equivalent evidence or produces equivalent in-game behaviour.
 
 **Validation Execution Separation** and **Independent Execution Preserves
 Validation Independence** distinguish implementation-local checks, independent

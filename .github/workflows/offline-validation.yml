@@ -35,7 +35,7 @@ jobs:
         run: python -m pytest -q tests/test_replacement_core_structure.py tests/test_obstruction_relocation_structure.py tests/test_constraint_verdict_ownership_structure.py tests/test_candidate_support_projection_structure.py tests/test_prospective_decision_ownership_structure.py tests/test_phase14_regulation_control_structure.py tests/test_phase14_physical_capability_structure.py tests/test_phase14_live_interaction_observation_structure.py tests/test_phase14_non_job_actuation_structure.py tests/test_phase14_runtime_integration_consolidation_structure.py tests/test_issue67_lua_harness_reconciliation_structure.py
 
   lua-observation:
-    name: Lua offline observation (non-blocking)
+    name: Lua offline behavioural contracts
     runs-on: ubuntu-latest
 
     steps:
@@ -129,16 +129,27 @@ jobs:
         run: |
           "$LUAJIT_BIN" tests/replacement_core/obstruction_relocation.lua
 
-      - name: Record Lua observation
+      - name: Record Lua behavioural contract outcomes
         if: always()
         run: |
           {
-            echo "## Lua offline observation"
+            echo "## Lua offline behavioural contracts"
             echo
-            echo "- Main replacement-core observation outcome: \`${{ steps.lua.outcome }}\`"
-            echo "- Focused obstruction-relocation observation outcome: \`${{ steps.obstruction_relocation.outcome }}\`"
-            echo "- **Workflow/job success is not evidence that either Lua observation passed.**"
-            echo "- \`continue-on-error\` is workflow control only; inspect the inner outcomes above and the raw logs."
+            echo "- Main replacement-core outcome: \`${{ steps.lua.outcome }}\`"
+            echo "- Focused obstruction-relocation outcome: \`${{ steps.obstruction_relocation.outcome }}\`"
+            echo "- **This job is blocking: any non-success inner outcome fails the enforcement gate.**"
+            echo "- \`continue-on-error\` keeps evidence collection complete so both harness outcomes remain visible."
             echo "- No failure-count threshold is encoded as an accepted contract."
             echo "- See the job log for the full harness output."
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Enforce Lua behavioural contracts
+        if: always()
+        run: |
+          MAIN_OUTCOME="${{ steps.lua.outcome }}"
+          FOCUSED_OUTCOME="${{ steps.obstruction_relocation.outcome }}"
+          if [[ "$MAIN_OUTCOME" != "success" || "$FOCUSED_OUTCOME" != "success" ]]; then
+            echo "::error::Lua behavioural contracts failed: main=$MAIN_OUTCOME focused=$FOCUSED_OUTCOME"
+            exit 1
+          fi
+          echo "Lua behavioural contracts PASS: main=$MAIN_OUTCOME focused=$FOCUSED_OUTCOME"

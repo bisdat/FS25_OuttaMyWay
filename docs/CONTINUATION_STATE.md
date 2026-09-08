@@ -4,13 +4,14 @@ Continuation State is the compact, replace-in-place description of the project's
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #79 merge, commit `7c40b5590615af174ce9efea9a83cd3bbc2f5638`.
+- Accepted Repository State baseline for this increment: `main` after PR #80 merge, commit `a9eecac520bc4982284a63850f1a4f06d487a207`.
 - Canonical authority remains **v0.3.0.0**.
-- Last accepted non-canonical playable identity before this increment is **`0.3.0.26 TEST — RUNTIME INTEGRATION DEPENDENCY CLOSURE`**.
-- This Issue #78 increment advances executable identity to **`0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION`** because production Lua changes.
+- Accepted non-canonical playable identity is **`0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION`**.
 - Phase 14.5 Runtime Integration Consolidation is complete.
-- Issue #67 is closed after PR #79; the Lua observation harness now reflects current production topology and distinguishes wrapper success from inner observation success.
-- Canonical authority is unchanged by this ordinary TEST increment.
+- Issue #67 is closed after PR #79; the Lua harness is reconciled with current production topology.
+- Issue #78 is closed after PR #80; independent CI established a clean Lua baseline of **337/0 main + 9/9 focused**.
+- This validation-governance increment changes no executable mod bytes and therefore does **not** consume a new TEST build identity.
+- Canonical authority is unchanged.
 
 ## Strangler programme status
 
@@ -105,37 +106,26 @@ The supported Operation envelope remains a maximum of **three simultaneously act
 - Issue #37 — Category-2 Forward Intersection Reality-validation debt.
 - Issue #45 — Bubble Bullet Time, accepted but unimplemented.
 - Issue #65 — Behaviour Regression Contract != Build Identity Contract.
-- Issue #78 — **Signed-Zero Canonicalization Leak** in Field World fingerprinting.
-
-Issue #78 is an isolated correctness blocker being cleared before Phase 14.6. It
-does not reopen Field World identity policy: signed zero is a numeric
-representation artefact, not semantic geometry identity.
 
 ## Immediate next action
 
-Validate **`0.3.0.27 TEST — FIELD WORLD CANONICAL ZERO NORMALIZATION`** as the
-isolated Issue #78 correctness increment.
+Promote the reconciled Lua validation suite to **blocking behavioural-contract
+authority** before Phase 14.6.
 
-The accepted Field World invariant is unchanged: ring start, winding direction
-and sub-quantum jitter must not alter polygon identity. LuaJIT can preserve
-negative signed zero after quantization; `tostring(-0)` then leaked that
-representation artefact into canonical ring ordering and fingerprint hashing.
+The accepted clean baseline is:
 
-`.27` normalizes only a quantized numeric zero to canonical positive zero before
-tokenization. All non-zero quantization arithmetic and Field World identity
-policy remain unchanged.
+- main replacement-core Lua behavioural contracts: **337 passed / 0 failed**;
+- focused obstruction-relocation Lua behavioural contracts: **9 passed / 0 failed**.
 
-Implementation-local validation is limited to Lua syntax and a focused
-canonicalization probe. GitHub Actions owns the repository suites. Expected
-independent observation after push is:
+The workflow must preserve both inner outcomes even when one fails, then fail
+the Lua job unless both are successful. This is **Evidence Collection != CI
+Enforcement**. Blocking offline regression authority does not claim GIANTS
+runtime Reality.
 
-- blocking Structural contracts: PASS;
-- main replacement-core Lua observation: **337 passed / 0 failed**;
-- focused obstruction-relocation Lua observation: **9 passed / 0 failed**.
+GitHub branch protection currently requires only `Structural contracts`. Once
+the renamed `Lua offline behavioural contracts` check has appeared on this pull
+request, add it to the required status checks for `main` before accepting the
+governance increment.
 
-The existing distinct-split-polygon fingerprint test must remain distinct. Do
-not weaken the winding/sub-quantum-jitter invariant or encode a failure-count
-threshold.
-
-After Issue #78 is accepted, begin the already-agreed Phase 14.6 Production
-Vocabulary and Constants-Scope Cleanup audit.
+After this validation-governance increment is accepted, begin the already-agreed
+**Phase 14.6 Production Vocabulary and Constants-Scope Cleanup** audit.
