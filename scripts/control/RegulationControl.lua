@@ -12,7 +12,7 @@ local boundedAuthorityRequiredOwnerTags = {
     D0141_FOLLOWER_BOUNDARY=true,
     D0146_ACTION_SPACE_CONSERVATION=true,
     FORWARD_INTERSECTION_INTENT_REVELATION=true,
-    D0147_PROTECTED_YIELD=true
+    RELOCATION_SERIALIZATION=true
 }
 
 local function referenceKey(vehicle)

@@ -398,11 +398,11 @@ function Runtime:_continueCompletedObstruction(picture,evaluated,applied)
         return {status="NO_DISPATCH",reason="COMPLETED_OBSTRUCTION_ESTABLISHED_RESPONSIBILITY_MISMATCH",terminalEgress=true}
     end
     if bridge.phase=="INFIELD" then
-        local protected,protectedReason=self.regulationBoundedAuthority:_applyD0147ProtectedYield(picture,evaluated,candidate,applied.commitment,applied.currentResponsibility,bridge)
+        local protected,protectedReason=self.regulationBoundedAuthority:_applyRelocationSerialization(picture,evaluated,candidate,applied.commitment,applied.currentResponsibility,bridge)
         if protected~=true then
-            self.regulationBoundedAuthority:_releaseD0147ProtectedYield(applied.commitment.identity,"PROTECTED_YIELD_START_FAILED")
-            local terminal,settleReason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self,applied.commitment.identity,"OBJECTIVE_FAILED",{kind="D0147_PROTECTED_YIELD_START_FAILED",reason=protectedReason},bridge.terminalEpisodeId)
-            runtimeLogWarning("D0147_PROTECTED_YIELD_REJECTED commitment=%s episode=%s reason=%s settlement=%s",tostring(applied.commitment.identity),tostring(bridge.terminalEpisodeId),tostring(protectedReason),tostring(settleReason))
+            self.regulationBoundedAuthority:_releaseRelocationSerialization(applied.commitment.identity,"RELOCATION_SERIALIZATION_START_FAILED")
+            local terminal,settleReason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self,applied.commitment.identity,"OBJECTIVE_FAILED",{kind="COMPLETED_OBSTRUCTION_RELOCATION_SERIALIZATION_START_FAILED",reason=protectedReason},bridge.terminalEpisodeId)
+            runtimeLogWarning("COMPLETED_OBSTRUCTION_RELOCATION_SERIALIZATION_REJECTED commitment=%s episode=%s reason=%s settlement=%s",tostring(applied.commitment.identity),tostring(bridge.terminalEpisodeId),tostring(protectedReason),tostring(settleReason))
             return {status="REJECTED",reason=protectedReason,terminalEgress=true,commitment=terminal or applied.commitment}
         end
     end
@@ -526,12 +526,12 @@ function Runtime:onTerminalEgressCompletion(result)
         cooperativeLog("D0147_COMPACTION_COMPLETE commitment=%s episode=%s freshSituationRequired=true",tostring(result.commitmentId),tostring(result.terminalEpisodeId))
         return
     end
-    local protectedDemandAssemblyIds=self.regulationBoundedAuthority:d0147ProtectedYieldAssemblyIds(result.commitmentId)
-    self.regulationBoundedAuthority:_releaseD0147ProtectedYield(result.commitmentId,"TERMINAL_CONTROL_"..tostring(result.status))
+    local serializedBeneficiaryAssemblyIds=self.regulationBoundedAuthority:relocationSerializationAssemblyIds(result.commitmentId)
+    self.regulationBoundedAuthority:_releaseRelocationSerialization(result.commitmentId,"TERMINAL_CONTROL_"..tostring(result.status))
     self.boundedAuthority:release(result.boundedAuthorityId,"TERMINAL_CONTROL_"..tostring(result.status))
     if result.status=="MANOEUVRE_COMPLETE" then
         local courtesyStage=result.evidence and tonumber(result.evidence.courtesyStage) or nil
-        if self.terminalOccupancyAssessment~=nil then self.terminalOccupancyAssessment:markRetreatCompleted(result.terminalEpisodeId,protectedDemandAssemblyIds,courtesyStage) end
+        if self.terminalOccupancyAssessment~=nil then self.terminalOccupancyAssessment:markRetreatCompleted(result.terminalEpisodeId,serializedBeneficiaryAssemblyIds,courtesyStage) end
         local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self,result.commitmentId,"OBJECTIVE_SATISFIED",result.evidence,result.terminalEpisodeId)
         if terminal==nil then
             runtimeLogWarning("D0147_INFIELD_RETREAT_SETTLEMENT_FAILED commitment=%s episode=%s reason=%s",tostring(result.commitmentId),tostring(result.terminalEpisodeId),tostring(reason))
@@ -570,7 +570,7 @@ end
 
 function Runtime:onObstructionRelocationCompletion(result)
     if type(result)~="table" or type(result.commitmentId)~="string" then return end
-    self.regulationBoundedAuthority:_releaseD0147ProtectedYield(result.commitmentId,"OBSTRUCTION_RELOCATION_CONTROL_"..tostring(result.status))
+    self.regulationBoundedAuthority:_releaseRelocationSerialization(result.commitmentId,"OBSTRUCTION_RELOCATION_CONTROL_"..tostring(result.status))
     if type(result.boundedAuthorityId)=="string" then self.boundedAuthority:release(result.boundedAuthorityId,"OBSTRUCTION_RELOCATION_CONTROL_"..tostring(result.status)) end
 
     if result.status=="MANOEUVRE_COMPLETE" then
@@ -597,7 +597,7 @@ function Runtime:_dispatchObstructionRelocation(picture,evaluated,candidate,brid
     if bridge.terminalEvent~=nil then
         local commitmentId=bridge.existingCommitmentId
         if type(commitmentId)~="string" then return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_SETTLEMENT_WITHOUT_COMMITMENT"} end
-        self.regulationBoundedAuthority:_releaseD0147ProtectedYield(commitmentId,"OBSTRUCTION_RELOCATION_SITUATION_SETTLEMENT")
+        self.regulationBoundedAuthority:_releaseRelocationSerialization(commitmentId,"OBSTRUCTION_RELOCATION_SITUATION_SETTLEMENT")
         local terminal,reason=OuttaMyWay.ObstructionRelocationCommitmentLifecycle.settle(self,commitmentId,bridge.terminalEvent,{kind="CAUSAL_OBSTRUCTION_RELOCATION_SITUATION_SETTLEMENT",relocationKey=bridge.relocationKey})
         return {status=terminal and "SETTLED" or "NO_DISPATCH",reason=reason,obstructionRelocation=true,terminalEvent=bridge.terminalEvent,commitment=terminal}
     end
@@ -621,17 +621,17 @@ function Runtime:_dispatchObstructionRelocation(picture,evaluated,candidate,brid
         return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_RESPONSIBILITY_APPLICATION_FAILED",detail=reason,obstructionRelocation=true,candidateId=candidate.identity}
     end
 
-    local protected,protectedReason=self.regulationBoundedAuthority:_applyD0147ProtectedYield(
+    local protected,protectedReason=self.regulationBoundedAuthority:_applyRelocationSerialization(
         picture,evaluated,candidate,applied.commitment,applied.currentResponsibility,bridge)
     if protected~=true then
-        self.regulationBoundedAuthority:_releaseD0147ProtectedYield(applied.commitment.identity,"OBSTRUCTION_RELOCATION_PROTECTED_YIELD_START_FAILED")
-        local terminal=OuttaMyWay.ObstructionRelocationCommitmentLifecycle.settle(self,applied.commitment.identity,"OBJECTIVE_FAILED",{kind="OBSTRUCTION_RELOCATION_PROTECTED_YIELD_START_FAILED",reason=protectedReason})
+        self.regulationBoundedAuthority:_releaseRelocationSerialization(applied.commitment.identity,"OBSTRUCTION_RELOCATION_SERIALIZATION_START_FAILED")
+        local terminal=OuttaMyWay.ObstructionRelocationCommitmentLifecycle.settle(self,applied.commitment.identity,"OBJECTIVE_FAILED",{kind="OBSTRUCTION_RELOCATION_SERIALIZATION_START_FAILED",reason=protectedReason})
         return {status="REJECTED",reason=protectedReason,obstructionRelocation=true,commitment=terminal or applied.commitment}
     end
 
     local request,requestReason=self:_obstructionRelocationRequest(picture,evaluated,candidate,applied,bridge)
     if request==nil then
-        self.regulationBoundedAuthority:_releaseD0147ProtectedYield(applied.commitment.identity,"OBSTRUCTION_RELOCATION_REQUEST_FAILED")
+        self.regulationBoundedAuthority:_releaseRelocationSerialization(applied.commitment.identity,"OBSTRUCTION_RELOCATION_REQUEST_FAILED")
         OuttaMyWay.ObstructionRelocationCommitmentLifecycle.settle(self,applied.commitment.identity,"OBJECTIVE_FAILED",{kind="OBSTRUCTION_RELOCATION_REQUEST_FAILED",reason=requestReason})
         return {status="NO_DISPATCH",reason=requestReason,obstructionRelocation=true,commitment=applied.commitment}
     end
@@ -641,14 +641,14 @@ function Runtime:_dispatchObstructionRelocation(picture,evaluated,candidate,brid
         or self.liveControlDispatcher:notifyRejected(request,result,{kind="NO_PHYSICAL_EFFECT_CONFIRMED",authorityClass="OBSTRUCTION_RELOCATION_ACTUATION",historicalJobProvenanceRequired=false})
     if started~=true then
         self.boundedAuthority:release(request.boundedAuthorityId,"OBSTRUCTION_RELOCATION_START_REJECTED")
-        self.regulationBoundedAuthority:_releaseD0147ProtectedYield(applied.commitment.identity,"OBSTRUCTION_RELOCATION_START_REJECTED")
+        self.regulationBoundedAuthority:_releaseRelocationSerialization(applied.commitment.identity,"OBSTRUCTION_RELOCATION_START_REJECTED")
         local eventKind=result=="PLAYER_CLAIM_AT_CONTROL_BOUNDARY" and "PLAYER_CLAIM" or (result=="SOURCE_AI_REACTIVATED_AT_CONTROL_BOUNDARY" and "NEW_AUTHORITATIVE_INTENT" or "OBJECTIVE_FAILED")
         OuttaMyWay.ObstructionRelocationCommitmentLifecycle.settle(self,applied.commitment.identity,eventKind,{kind="OBSTRUCTION_RELOCATION_START_REJECTED",reason=tostring(result)})
         return {status="REJECTED",reason=tostring(result),request=request,outcome=outcome,obstructionRelocation=true,commitment=applied.commitment}
     end
 
     logInfo("ACCEPTED commitment=%s responsibility=%s relocation=%s blocker=%s request=%s beneficiaries=%d authority=OBSTRUCTION_RELOCATION_ACTUATION",
-        tostring(applied.commitment.identity),tostring(applied.currentResponsibility.identity),tostring(bridge.relocationKey),tostring(bridge.blockerAssemblyReferenceKey),tostring(request.identity),OuttaMyWay.ValueRecord.length(bridge.protectedDemandAssemblies or {}))
+        tostring(applied.commitment.identity),tostring(applied.currentResponsibility.identity),tostring(bridge.relocationKey),tostring(bridge.blockerAssemblyReferenceKey),tostring(request.identity),OuttaMyWay.ValueRecord.length(bridge.relocationSerializationBeneficiaries or {}))
     return {status="ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,currentResponsibility=applied.currentResponsibility,obstructionRelocation=true,result=result}
 end
 
@@ -684,7 +684,7 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         if terminalBridge.terminalEvent~=nil then
             local commitmentId=terminalBridge.existingCommitmentId
             if type(commitmentId)~="string" then return {status="NO_DISPATCH",reason="D0147_SETTLEMENT_WITHOUT_LIVE_COMMITMENT"} end
-            self.regulationBoundedAuthority:_releaseD0147ProtectedYield(commitmentId,"SITUATION_SETTLEMENT_"..tostring(terminalBridge.terminalEvent))
+            self.regulationBoundedAuthority:_releaseRelocationSerialization(commitmentId,"SITUATION_SETTLEMENT_"..tostring(terminalBridge.terminalEvent))
             local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self,commitmentId,terminalBridge.terminalEvent,{kind="D0147_SITUATION_SETTLEMENT",terminalEpisodeId=terminalBridge.terminalEpisodeId,playerEscalationRequired=terminalBridge.terminalEvent=="OBJECTIVE_FAILED"},terminalBridge.terminalEpisodeId)
             return {status=terminal and "SETTLED" or "NO_DISPATCH",reason=reason,terminalEgress=true,terminalEvent=terminalBridge.terminalEvent,commitment=terminal}
         end

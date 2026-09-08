@@ -82,7 +82,7 @@ local function eligibleGroup(group)
     return true
 end
 
-local function protectedAssemblies(group,references)
+local function relocationSerializationBeneficiaries(group,references)
     local result={}
     for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(group.beneficiaryIds or {}) do
         result[#result+1]={assemblyId=assemblyId,referenceKey=references[assemblyId]}
@@ -122,7 +122,7 @@ end
 local function physicalSpec(picture,snapshot,group,context,references,pose)
     local objective,objectiveReason=firstCourtesyObjective(snapshot,pose)
     if objective==nil then return nil,objectiveReason end
-    local protected=protectedAssemblies(group,references)
+    local protected=relocationSerializationBeneficiaries(group,references)
     for _,item in OuttaMyWay.ValueRecord.ipairs(protected) do if type(item.referenceKey)~="string" then return nil,"BENEFICIARY_REFERENCE_UNAVAILABLE" end end
     if OuttaMyWay.ValueRecord.length(protected)==0 then return nil,"BENEFICIARY_UNAVAILABLE" end
 
@@ -130,14 +130,14 @@ local function physicalSpec(picture,snapshot,group,context,references,pose)
     constraints.FIELD_WORLD_CONTAINMENT=packet("First courtesy reuses the validated fixed centroid-bearing bounded movement without claiming predictive full-sweep Field World containment",{predictiveContainmentClaim=false,routePlanning=false,maximumCourtesyDistanceM=objective.maximumCourtesyDistanceM},false)
     constraints.TRANSITION_CLEARANCE=packet("Cold positive-only representation cannot prove the D-0147 final boundary-away translation clear; this tranche therefore authorises only the first courtesy and returns to fresh Reality",{negativeFutureClearanceAuthority=false,parking=false,routePlanning=false,secondCourtesyWithheld=true},false)
     constraints.REPRESENTATION_FITNESS=packet("Current Physical Assembly pose and positive-conflict representation support only this bounded relocation reference",{representationId="current-obstruction-relocation:"..group.blockerAssemblyReferenceKey})
-    constraints.CONTROL_CAPABILITY_AVAILABILITY=packet("Validated non-active direct movement mechanics supply current Player Claim/source-AI checks, opportunistic compaction, Vehicle Activity Context, forward-only fixed-direction actuation and neutralisation",{mechanicalDonor="NonJobActuationMechanism",authorityClass="OBSTRUCTION_RELOCATION_ACTUATION",historicalJobProvenanceRequired=false,protectedYieldHold=true})
+    constraints.CONTROL_CAPABILITY_AVAILABILITY=packet("Validated non-active direct movement mechanics supply current Player Claim/source-AI checks, opportunistic compaction, Vehicle Activity Context, forward-only fixed-direction actuation and neutralisation",{mechanicalDonor="NonJobActuationMechanism",authorityClass="OBSTRUCTION_RELOCATION_ACTUATION",historicalJobProvenanceRequired=false,relocationSerialization=true})
     constraints.CONTINUING_INTENT_PRIORITY=packet("Only active supported beneficiaries positively obstructed by this blocker are protected while it translates",{beneficiaryAssemblyIds=group.beneficiaryIds,productiveJobsRemainGiantsOwned=true})
     constraints.PROGRESS_PRESERVATION=packet("The non-active blocker has no supported productive progress to preserve; movement exists only to remove current Causal Obstruction",{parking=false,tidying=false})
     constraints.RESPONSIBILITY_COMPATIBILITY=packet("One relocation responsibility is keyed by Local Operation plus blocker Physical Assembly, aggregating pairwise beneficiaries",{relocationKey=group.relocationKey,blockerAssemblyId=group.blockerAssemblyId})
     constraints.OBLIGATION_COMPATIBILITY=packet("This increment permits one bounded first courtesy followed by fresh Reality assessment; incomplete cold representation does not authorise the donor's second boundary-away courtesy",{oneMovePerCommitment=true,secondCourtesyNotAuthorised=true,reason="NEGATIVE_TRANSITION_CLEARANCE_NOT_AVAILABLE"})
     constraints.COMMITMENT_PRECONDITIONS=packet("Current Causal Obstruction, NON_ACTIVE_UNCLAIMED classification, current relocation pose and development consent are independently present",{relocationEligible=true,historicalJobProvenanceRequired=false,developmentConsent=OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS==true})
-    constraints.EFFECTIVE_ACTUATION_COMPOSITION=packet("One retained Commitment owns OBSTRUCTION_RELOCATION_ACTUATION for the blocker and PROGRESS_ACTUATION only to protect active beneficiaries",{blockerAuthorityClass="OBSTRUCTION_RELOCATION_ACTUATION",protectedBeneficiaryAssemblyIds=group.beneficiaryIds})
-    constraints.SAFE_RELEASE_HANDOVER=packet("Current Player Claim or source AI reactivation immediately outranks relocation; owned completion neutralises actuation before releasing Vehicle Activity Context",{playerClaimCurrentNotSticky=true,actuationNeutralisation=true,protectedYieldRelease=true})
+    constraints.EFFECTIVE_ACTUATION_COMPOSITION=packet("One retained Commitment owns OBSTRUCTION_RELOCATION_ACTUATION for the blocker and PROGRESS_ACTUATION only to protect active beneficiaries",{blockerAuthorityClass="OBSTRUCTION_RELOCATION_ACTUATION",serializedBeneficiaryAssemblyIds=group.beneficiaryIds})
+    constraints.SAFE_RELEASE_HANDOVER=packet("Current Player Claim or source AI reactivation immediately outranks relocation; owned completion neutralises actuation before releasing Vehicle Activity Context",{playerClaimCurrentNotSticky=true,actuationNeutralisation=true,relocationSerializationRelease=true})
 
     local protectedIds={}
     local relevantIds={group.blockerAssemblyId}
@@ -161,7 +161,7 @@ local function physicalSpec(picture,snapshot,group,context,references,pose)
             obstructionRelocationActuationOwnership={assemblyIds={group.blockerAssemblyId}},
             effectiveActuationComposition={identity="obstruction-relocation-composition:"..group.relocationKey..":"..picture.identity,epoch=picture.epoch,relevantAssemblyIds=relevantIds,entries=compositionEntries},
             maintainsExistingCommitment=existingCommitmentId~=nil,
-            obstructionRelocationBridge={architecture="CAUSAL_OBSTRUCTION_RELOCATION",relocationKey=group.relocationKey,phase="INFIELD",operationId=group.operationId,blockerAssemblyId=group.blockerAssemblyId,blockerAssemblyReferenceKey=group.blockerAssemblyReferenceKey,objective=objective,objectiveReason=objectiveReason,existingCommitmentId=existingCommitmentId,protectedDemandAssemblies=protected,authorityClass="OBSTRUCTION_RELOCATION_ACTUATION",historicalJobProvenanceRequired=false}
+            obstructionRelocationBridge={architecture="CAUSAL_OBSTRUCTION_RELOCATION",relocationKey=group.relocationKey,phase="INFIELD",operationId=group.operationId,blockerAssemblyId=group.blockerAssemblyId,blockerAssemblyReferenceKey=group.blockerAssemblyReferenceKey,objective=objective,objectiveReason=objectiveReason,existingCommitmentId=existingCommitmentId,relocationSerializationBeneficiaries=protected,authorityClass="OBSTRUCTION_RELOCATION_ACTUATION",historicalJobProvenanceRequired=false}
         },
         representationFitness={requirements={{representationId="current-obstruction-relocation:"..group.blockerAssemblyReferenceKey,acceptedStates={"USABLE_WITH_UNCERTAINTY","FIT_FOR_LIMITED_HORIZON","CURRENTLY_FIT"}}}},
         preconditions={evidenceContracts={{kind="CURRENT_CAUSAL_OBSTRUCTION",relocationKey=group.relocationKey},{kind="NON_ACTIVE_UNCLAIMED_BLOCKER"},{kind="CURRENT_PHYSICAL_RELOCATION_REFERENCE"}}},

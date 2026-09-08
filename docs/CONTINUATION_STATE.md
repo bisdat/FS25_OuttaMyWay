@@ -4,12 +4,12 @@ Continuation State is the compact, replace-in-place description of the project's
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #85 merge, commit `466424f5fe6e984d041c9f00c484a9bd9e82b397`.
+- Accepted Repository State baseline for this increment: `main` after PR #88 merge, commit `304908d55ce84fa75ec60cece0a37a7ee364c5c9`.
 - Canonical authority remains **v0.3.0.0**.
-- This branch advances executable identity to **`0.3.0.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION`**; it makes no canonical claim.
+- This branch advances executable identity to **`0.3.0.32 TEST — RELOCATION SERIALIZATION RESIDUAL VOCABULARY RECONCILIATION`**; it makes no canonical claim.
 - Protected `main` requires both `Structural contracts` and `Lua offline behavioural contracts`.
-- Issue #82 is closed after the bounded `.28` follower-HUD correction and targeted GIANTS Reality validation.
-- Phase 14 remains **ACTIVE**. Phase 14.6A is implemented on this branch; independent offline validation is green and the final `.30` GIANTS smoke is an apparent pass. PR #88 is at the owner-acceptance boundary.
+- Phase 14 remains **ACTIVE**. Phase 14.6A is accepted repository state. Phase 14.6B remains the current bounded vocabulary-graduation increment; `.32` reconciles the residual production vocabulary exposed by `.31` Reality.
+- Issue #91 now has direct `.31` Reality evidence that Relocation Serialization is materially active; current disposition is **RETAIN**.
 
 ## Documentation responsibility correction
 
@@ -78,7 +78,11 @@ This branch removes the `TerminalEgressControl` / `ObstructionRelocationControl`
 
 ### Shared execution support
 
-Protected Yield, configuration handling, bounded fixed-direction movement, Player Claim/source-AI supersession, Vehicle Activity Context and neutralisation are execution-support concepts. Their production names should not retain D-0147 provenance when the same execution support is used by another legitimate trigger.
+**Relocation Serialization** is the current production name for the existing zero-speed beneficiary hold used while an already-authorised non-active blocker relocation executes. It is shared by Completed Obstruction and current Causal Obstruction paths, so its execution identity must not retain D-0147 provenance.
+
+Relocation Serialization preserves the existing `PROGRESS_ACTUATION` + Bounded Authority + `REGULATE_SPEED` at exactly `0.0 km/h` mechanics. **Relocation Serialization != Relocation Clearance**: holding the beneficiary prevents concurrent beneficiary progression but does not make its occupied physical space available to the relocating blocker.
+
+The `.31` Terminal Egress smoke resolved the modern necessity question: Patriot was travelling at about 25 km/h under a continuing GIANTS 25 km/h command when Relocation Serialization applied an exact 0 km/h lease, materially stopped Patriot while Condor translated, then released the lease before Patriot resumed. **Relocation Serialization Materially Active** is current Reality evidence for **RETAIN**. Issue #91 records that disposition.
 
 `TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M` and `TERMINAL_EGRESS_MOVE_TIMEOUT_MS` are acceptable execution-owned constants if they continue to describe one shared Terminal Egress policy. Do not create per-trigger copies merely because two trigger paths consume the same execution.
 
@@ -111,7 +115,7 @@ The next executable tranche must preserve:
 - current first-courtesy 60 m Interior Settlement policy;
 - completed-obstruction second-courtesy Final Boundary Settlement rules;
 - current Causal Obstruction first-courtesy-only scope and fresh-Situation reassessment;
-- Protected Yield beneficiary protection;
+- Relocation Serialization beneficiary hold behaviour, now directly validated as materially active in `.31` Reality;
 - Player Claim and source-AI supersession;
 - compaction/configuration behaviour;
 - actuation neutralisation and Vehicle Activity Context release;
@@ -127,21 +131,18 @@ These remain separate from the current Phase-14.6 placement/vocabulary work.
 
 ## Immediate next action
 
-PR #88 is at the **owner-acceptance boundary** on `0.3.0.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION`.
+Phase 14.6B remains the current bounded increment. `.31` completed the functional Relocation Serialization vocabulary graduation and produced positive GIANTS Reality, but that Reality/audit exposed two residual production terms: `beforeProtectedYield=true` in Completed Obstruction transition telemetry and `PROTECTED_YIELD_START_FAILED` in the Runtime rollback reason.
 
-Final evidence on exact executable/test-contract head `a6d0921a5fff08ae498def74c71296cfbbebdee9` before this docs-only record:
+`.32` reconciles those two residual vocabulary surfaces to `beforeRelocationSerialization=true` and `RELOCATION_SERIALIZATION_START_FAILED`. It advances TEST identity because production Lua bytes change. It must not alter:
 
-- GitHub Actions run #245: **Structural contracts PASS**;
-- GitHub Actions run #245: **Lua offline behavioural contracts PASS**;
-- `.30` GIANTS smoke: **apparent pass**;
-- the `.29` lingering final `Terminal...` HUD message was **not reproduced in `.30`**; screenshot/owner evidence is recorded in Issue #89.
+- the exact `0.0 km/h` beneficiary hold;
+- `PROGRESS_ACTUATION` ownership and Bounded Authority enforcement;
+- Completed Obstruction and current Causal Obstruction trigger/lifecycle differences;
+- Terminal Egress geometry, courtesy, compaction, Player Claim/source-AI supersession or neutralisation;
+- Regulation or Cooperative Passage behaviour.
 
-The HUD symptom is therefore cleared for this increment without a dedicated HUD implementation change. Issue #89 remains open because player-facing HUD/message ownership and lifecycle are still a separate unresolved architecture responsibility.
+Run both blocking GitHub Actions suites on exact `.32` head. After green CI, a minimal GIANTS log-vocabulary confirmation is sufficient; the `.31` smoke already supplied behavioural Reality evidence.
 
-If the repository owner accepts PR #88, merge it. That merge advances Accepted Repository State only; it does **not** canonicalise `.30`.
-
-After merge, continue Phase 14.6 from clean/current `main`. Protected Yield still carries D-0147 implementation vocabulary and remains a later Phase-14.6 cleanup target. Production TEST/Step/D-number vocabulary and the Mixed Runtime Constants Surface remain ownership-driven follow-up work; Issues #86, #87 and #89 own the newly separated performance, configuration-surface and HUD work respectively.
-
-The `.30` smoke is fixture-bounded Reality evidence, not Supported-Envelope proof. Later regression selection remains causal to the responsibility being changed.
+Issue #91 now has direct evidence for **RETAIN**: **Relocation Serialization Applied** was also **Relocation Serialization Materially Active**. After 14.6B owner acceptance, continue to Phase 14.6C remaining production vocabulary/ownership reconciliation, then perform the Phase-14 closure review. Issue #90 owns the high-level roadmap through the later Phase-15 architecture <-> code audit.
 
 Contrary Reality updates the architecture rather than being hidden behind compatibility special cases.

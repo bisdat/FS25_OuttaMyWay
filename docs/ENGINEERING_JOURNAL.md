@@ -3457,3 +3457,37 @@ Run #147 exposed the final companion literal in the same pre-1.0 versioning cont
 **Interpretation:** Phase 14.6A has sufficient bounded evidence for owner acceptance of PR #88: the generic Terminal Egress execution topology satisfies the reconciled offline contracts and survived the final smoke fixture after the last executable change. This remains fixture-bounded evidence and does not claim whole Supported-Envelope validation.
 
 **Decision boundary:** PR #88 may now be accepted by owner merge. Merge advances Accepted Repository State only; `.30` is not declared canonical by this evidence.
+
+## 2026-09-08 — Phase 14.6B: Relocation Serialization vocabulary decision
+
+**Observe:** Phase 14.6A established one provenance-neutral Terminal Egress executor for Completed Obstruction and current Causal Obstruction, but shared beneficiary-hold execution support still carried D-0147 `Protected Yield` production vocabulary.
+
+Repository-history review showed why the mechanism exists: v4.7.122 produced a genuine concurrent collision while a completed assembly translated and an active beneficiary continued productive movement; v4.7.123 introduced the zero-speed hold immediately before INFIELD translation, and v4.7.124 corrected the ValueRecord traversal needed to make it physically apply. Later Reality retained the mechanism successfully. Recent `.2` and `.14` completed-obstruction runs confirm the hold still executes and releases, but do not prove it materially changes beneficiary behaviour in the current architecture.
+
+**Discover:** **Relocation Serialization Applied != Relocation Serialization Materially Active**. Execution occurrence does not establish current necessity. Historical evidence makes speculative retirement unjustified, while current evidence is insufficient to grant the mechanism permanent architectural immunity.
+
+**Decide:** Phase 14.6B preserves the exact current behaviour and graduates shared execution vocabulary from D-0147 `Protected Yield` to **Relocation Serialization**. Relocation Serialization means temporarily preventing active beneficiary progression while an already-authorised non-active blocker relocation executes. It remains `PROGRESS_ACTUATION` plus Bounded Authority and exact `0.0 km/h` Regulation. **Relocation Serialization != Relocation Clearance**: serialization prevents concurrent beneficiary motion but does not make occupied beneficiary space available to the moving blocker.
+
+Issue #91 owns the separate evidence-led retention/retirement question and does not block Phase 14 strangler completion. No Concept Register promotion is made while the mechanism's enduring necessity remains unresolved.
+
+**Implementation boundary:** vocabulary/contract graduation only. Do not change relocation geometry, courtesy policy, configuration, Regulation policy, Passage, GIANTS job ownership, Player Claim/source-AI supersession or neutralisation semantics. A materially different executable receives fresh `.31 TEST` identity. Ordinary repository suites remain GitHub Actions responsibility.
+
+## 2026-09-08 — Phase 14.6B: CI #248 contract and validation-inventory reconciliation
+
+**Independent evidence:** Offline Validation run #248 on `.31` head `e606f21396b0ec57f8e23f00146c5a870dd753c9` split cleanly by responsibility. `Lua offline behavioural contracts` passed completely: the main replacement-core harness reported **337 passed / 0 failed** and the focused Causal Obstruction relocation harness reported **9 passed / 0 failed**. `Structural contracts` reported **178 passed / 4 failed**.
+
+**Interpretation:** all four structural failures are contract-vocabulary lag introduced by the Phase-14.6B vocabulary transformation rather than evidence of changed runtime behaviour. Three historical Terminal Egress structure assertions still expected the Runtime local `protectedDemandAssemblyIds`; Runtime now calls the unchanged `markRetreatCompleted(...)` lifecycle boundary with `serializedBeneficiaryAssemblyIds`. One Relocation Serialization assertion still expected `D0147_POST_JOB_PLUS_PROTECTED_YIELD_HOLD` while Candidate support now exposes `D0147_POST_JOB_PLUS_RELOCATION_SERIALIZATION`.
+
+The audit also found that the newly added focused `test_phase14_relocation_serialization_structure.py` was absent from the workflow's explicit structural-test command. This is another instance of the already-established **Validation Inventory Is Executable Topology** rule: adding an executable contract file does not make CI execute it when the workflow inventory is explicit.
+
+**Decision:** reconcile only those four stale assertions and add the focused structural contract to the workflow inventory. Production Lua and `.31` TEST identity remain unchanged. Ordinary suite execution remains GitHub Actions responsibility; no local pytest run substitutes for the next independent CI result.
+
+## 2026-09-08 — Phase 14.6B: Relocation Serialization materially active in `.31` Reality
+
+**Observe:** the `.31` Terminal Egress smoke supplied the missing current-architecture necessity evidence. Immediately before final Terminal Egress translation, Patriot was productive and travelling at about 25 km/h while GIANTS continued to command 25 km/h. At `19:25:46.498`, `RELOCATION_SERIALIZATION_APPLIED` placed an exact `0.00 km/h` lease on Patriot. Patriot decelerated to zero and remained held while Condor translated. At `19:25:55.673`, `RELOCATION_SERIALIZATION_RELEASE ... released=1`; Patriot subsequently resumed.
+
+**Discover:** **Relocation Serialization Materially Active.** The mechanism did not merely apply to an already-stationary beneficiary. It materially changed an actively progressing GIANTS-owned worker to held while the non-active blocker moved. This is direct current Reality evidence for **RETAIN** and resolves the central evidence question in Issue #91.
+
+**Separate observation:** the same `.31` Reality/audit exposed two residual production vocabulary surfaces: `beforeProtectedYield=true` in `COMPLETED_OBSTRUCTION_TRANSITION_UPSTREAM`, and Runtime rollback reason `PROTECTED_YIELD_START_FAILED` after failed Relocation Serialization application. Neither changes control semantics; both retain obsolete implementation vocabulary.
+
+**Decision:** retain Relocation Serialization. Correct both residual terms inside Phase 14.6B. Because production Lua bytes change, advance to fresh `.32 TEST` identity even though behaviour is intentionally unchanged. This is not a 14.6D tranche.

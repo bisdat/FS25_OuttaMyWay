@@ -72,7 +72,7 @@ function Transition:transition(picture,evaluated,readiness,semantics)
     logInfo("%s commitment=%s kind=%s beneficiaries=%s controlledSubjects=%s legacyAction=%s",
         exposure,tostring(currentResponsibility.identity),tostring(currentResponsibility.kind),
         table.concat(beneficiaryIds,","),tostring(bridge.assemblyId),tostring(applied.application.action))
-    logInfo("COMPLETED_OBSTRUCTION_TRANSITION_UPSTREAM decision=%s candidate=%s episode=%s commitment=%s action=%s beforeProtectedYield=true beforePhysicalDispatch=true",
+    logInfo("COMPLETED_OBSTRUCTION_TRANSITION_UPSTREAM decision=%s candidate=%s episode=%s commitment=%s action=%s beforeRelocationSerialization=true beforePhysicalDispatch=true",
         tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.terminalEpisodeId),
         tostring(applied.commitment and applied.commitment.identity or "NONE"),
         tostring(applied.application and applied.application.action or evaluated.decision.commitmentAction))
