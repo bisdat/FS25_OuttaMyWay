@@ -2969,13 +2969,13 @@ test("D-0186 Regulation-Hold Boundary maps zero cap to GIANTS no-drive permissio
     equal(calls[#calls].allowed,true)
     equal(calls[#calls].maxSpeed,1.0)
 
-    equal(authority:setRegulationLease(vehicle,0.0,"D0147_PROTECTED_YIELD"),true)
+    equal(authority:setRegulationLease(vehicle,0.0,"RELOCATION_SERIALIZATION"),true)
     AIVehicleUtil.driveToPoint(vehicle,16,1,true,true,0,1,25.0)
     equal(calls[#calls].allowed,false)
     equal(calls[#calls].maxSpeed,0.0)
     equal(authority:getState(vehicle).lastOutputAllowed,false)
 
-    equal(authority:clearRegulationLease(vehicle,"D0147_PROTECTED_YIELD"),true)
+    equal(authority:clearRegulationLease(vehicle,"RELOCATION_SERIALIZATION"),true)
     equal(authority:setRegulationLease(vehicle,10.0,"TRAFFIC"),true)
     AIVehicleUtil.driveToPoint(vehicle,16,1,false,true,0,1,25.0)
     equal(calls[#calls].allowed,false)

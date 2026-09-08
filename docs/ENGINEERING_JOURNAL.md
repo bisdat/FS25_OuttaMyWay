@@ -3457,3 +3457,17 @@ Run #147 exposed the final companion literal in the same pre-1.0 versioning cont
 **Interpretation:** Phase 14.6A has sufficient bounded evidence for owner acceptance of PR #88: the generic Terminal Egress execution topology satisfies the reconciled offline contracts and survived the final smoke fixture after the last executable change. This remains fixture-bounded evidence and does not claim whole Supported-Envelope validation.
 
 **Decision boundary:** PR #88 may now be accepted by owner merge. Merge advances Accepted Repository State only; `.30` is not declared canonical by this evidence.
+
+## 2026-09-08 — Phase 14.6B: Relocation Serialization vocabulary decision
+
+**Observe:** Phase 14.6A established one provenance-neutral Terminal Egress executor for Completed Obstruction and current Causal Obstruction, but shared beneficiary-hold execution support still carried D-0147 `Protected Yield` production vocabulary.
+
+Repository-history review showed why the mechanism exists: v4.7.122 produced a genuine concurrent collision while a completed assembly translated and an active beneficiary continued productive movement; v4.7.123 introduced the zero-speed hold immediately before INFIELD translation, and v4.7.124 corrected the ValueRecord traversal needed to make it physically apply. Later Reality retained the mechanism successfully. Recent `.2` and `.14` completed-obstruction runs confirm the hold still executes and releases, but do not prove it materially changes beneficiary behaviour in the current architecture.
+
+**Discover:** **Relocation Serialization Applied != Relocation Serialization Materially Active**. Execution occurrence does not establish current necessity. Historical evidence makes speculative retirement unjustified, while current evidence is insufficient to grant the mechanism permanent architectural immunity.
+
+**Decide:** Phase 14.6B preserves the exact current behaviour and graduates shared execution vocabulary from D-0147 `Protected Yield` to **Relocation Serialization**. Relocation Serialization means temporarily preventing active beneficiary progression while an already-authorised non-active blocker relocation executes. It remains `PROGRESS_ACTUATION` plus Bounded Authority and exact `0.0 km/h` Regulation. **Relocation Serialization != Relocation Clearance**: serialization prevents concurrent beneficiary motion but does not make occupied beneficiary space available to the moving blocker.
+
+Issue #91 owns the separate evidence-led retention/retirement question and does not block Phase 14 strangler completion. No Concept Register promotion is made while the mechanism's enduring necessity remains unresolved.
+
+**Implementation boundary:** vocabulary/contract graduation only. Do not change relocation geometry, courtesy policy, configuration, Regulation policy, Passage, GIANTS job ownership, Player Claim/source-AI supersession or neutralisation semantics. A materially different executable receives fresh `.31 TEST` identity. Ordinary repository suites remain GitHub Actions responsibility.

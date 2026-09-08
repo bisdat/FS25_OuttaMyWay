@@ -12,9 +12,9 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 
 ## Repository state
 
-- Accepted Repository State baseline for this map: `main` after PR #85 merge, commit `466424f5fe6e984d041c9f00c484a9bd9e82b397`.
+- Accepted Repository State baseline for this map: `main` after PR #88 merge, commit `304908d55ce84fa75ec60cece0a37a7ee364c5c9`.
 - Canonical authority remains **v0.3.0.0**.
-- Current branch executable identity is **`0.3.0.30 TEST — TERMINAL EGRESS OBSERVABILITY AND CI RECONCILIATION`**; acceptance and canonical authority are unchanged until review/merge/Reality evidence says otherwise.
+- Current branch executable identity is **`0.3.0.31 TEST — RELOCATION SERIALIZATION VOCABULARY GRADUATION`**; acceptance and canonical authority are unchanged until review/merge/Reality evidence says otherwise.
 - Strangler Phase 14 is active. The remaining work is current placement/vocabulary reconciliation, not replay of the earlier Phase-14 tranches.
 - Phase 15 whole-system validation and architecture-to-runtime review has not started.
 
@@ -49,14 +49,14 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 | Resolution semantic representation | `scripts/contracts/ResolutionCommitment.lua`, `scripts/responsibility/ResolutionCommitmentAdapter.lua` | PRESERVE |
 | Regulation semantic representation | `scripts/contracts/Regulation.lua` | PRESERVE |
 | Bounded Authority | `scripts/contracts/BoundedAuthorityGrant.lua`, `scripts/authority/BoundedAuthority.lua` | PRESERVE |
-| Regulation physical-authority state | `scripts/authority/RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua` | PRESERVE semantics; Protected Yield vocabulary still carries D-0147 provenance |
+| Regulation physical-authority state | `scripts/authority/RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua` | CURRENT `.31` graduates the shared beneficiary-hold execution vocabulary to Relocation Serialization; necessity remains an evidence question in Issue #91 |
 | Mechanical actuation exclusivity | `scripts/authority/AuthorityRegistry.lua` | PRESERVE; exclusivity is not semantic permission |
 | Effective actuation composition | `scripts/authority/EffectiveActuationComposition.lua` | PRESERVE |
 | Typed Control boundary | `scripts/contracts/ControlRequest.lua`, `ControlOutcome.lua` | PRESERVE |
 | Control routing | `scripts/control/LiveControlDispatcher.lua` | CURRENT branch routes authorised single-assembly Terminal Egress through one `TERMINAL_EGRESS` target; Cooperative Passage remains joint routing |
 | Regulation physical Control | `scripts/control/RegulationControl.lua` using `scripts/control/mechanisms/NativeDriveMechanism.lua` | PRESENT production `REGULATE_SPEED` executor |
 | Cooperative Passage physical Control | `scripts/control/CooperativePassageControl.lua` | PRESERVE validated mechanics |
-| Terminal Egress physical movement | `scripts/control/TerminalEgressControl.lua` | CURRENT branch uses one provenance-neutral executor for completed-obstruction and current Causal Obstruction movement; trigger semantics remain upstream; GIANTS validation pending |
+| Terminal Egress physical movement | `scripts/control/TerminalEgressControl.lua` | ACCEPTED shared provenance-neutral executor for Completed Obstruction and current Causal Obstruction movement; trigger semantics remain upstream |
 | Shared non-job physical actuation | `scripts/control/mechanisms/NonJobActuationMechanism.lua` | PRESENT shared mechanism with provenance-neutral `NON_JOB_*` mechanical failure vocabulary |
 | Hold mechanism | `scripts/control/mechanisms/FieldWorkHoldMechanism.lua` | PRESENT production mechanism |
 | Native drive mechanism | `scripts/control/mechanisms/NativeDriveMechanism.lua` | PRESENT production mechanism shared by Regulation and Passage |
@@ -108,21 +108,19 @@ Git and merged PRs preserve how those placements were reached. This map records 
 
 ## Current architecture-to-code drift
 
-### Terminal Egress execution consolidation — validation pending
+### Relocation Serialization vocabulary — current Phase 14.6B tranche
 
-The branch now implements **Trigger Provenance != Terminal Egress Execution**. Completed Obstruction and current Causal Obstruction keep separate upstream triggers, Authority classes and lifecycle settlement, but their already-authorised physical movement is executed by one `TerminalEgressControl` addressed from current physical Reality.
+PR #88 accepted **Trigger Provenance != Terminal Egress Execution** and the shared provenance-neutral `TerminalEgressControl`. Completed Obstruction and current Causal Obstruction remain distinct upstream responsibilities.
 
-`ObstructionRelocationControl` is retired. The generic Control receives an opaque completion context and returns it unchanged so Runtime can deliver the physical outcome to the correct semantic lifecycle without teaching Control about D-0147/D-0218 provenance.
+The remaining shared beneficiary-hold execution support still uses D-0147 `Protected Yield` production vocabulary. Phase 14.6B graduates that implementation identity to **Relocation Serialization** while preserving the exact existing `PROGRESS_ACTUATION` + Bounded Authority + `REGULATE_SPEED 0.0 km/h` mechanics.
 
-The `.29` smoke run provided a preliminary positive GIANTS Reality signal for the consolidated physical path. CI subsequently exposed an observability regression rather than a movement-policy failure: steering/activity-context evidence had been dropped during consolidation. `.30` restores that evidence under provenance-neutral Terminal Egress vocabulary. Full trigger-specific Reality validation remains required.
+**Relocation Serialization != Relocation Clearance.** Serialization prevents the active beneficiary from progressing concurrently with an authorised blocker relocation; it does not grant clearance through the beneficiary's current occupancy.
 
-### Protected Yield vocabulary
+Historical Reality established why this mechanism was introduced. Recent Reality confirms that it still executes but does not establish that it remains materially necessary under the later architecture. Issue #91 owns that retention/retirement evidence question and does not block strangler completion.
 
-`RegulationBoundedAuthority` exposes the beneficiary hold used by both obstruction paths through `d0147ProtectedYield...` names and `D0147_PROTECTED_YIELD` owner vocabulary. The mechanism is already shared; the names still claim the trigger that first introduced it.
+### Terminal Egress execution consolidation — accepted placement
 
-### Prototype22 retirement — validation pending
-
-The exact dependency scan found no remaining durable production responsibility for Prototype22. The branch removes the harness, event registration and `PROTOTYPE_22_*` runtime constants. Production Hold, Drive and Transit Configuration mechanisms remain explicitly composed by their real consumers.
+`ObstructionRelocationControl` and Prototype22 are retired from executable source. Production Hold, Drive, Transit Configuration and shared non-job actuation mechanisms remain explicitly composed by their real consumers. One `TerminalEgressControl` executes already-authorised Completed Obstruction and current Causal Obstruction movement from current physical addressability.
 
 ### Production validation vocabulary
 
@@ -152,11 +150,20 @@ Do not mix those concerns into the current Phase-14 placement/vocabulary correct
 
 ## Immediate implementation boundary
 
-The `.29` branch is intentionally limited to physical Terminal Egress consolidation, current-physical addressability, shared non-job failure vocabulary and Prototype22 retirement. It does **not** collapse the two upstream obstruction responsibilities or retune movement policy.
+Phase 14.6B is intentionally limited to **Relocation Serialization vocabulary graduation**.
+
+It changes the shared production owner tag, API/state names, bridge beneficiary vocabulary, execution outcome/failure vocabulary and corresponding executable contracts. It does **not** change:
+
+- the `0.0 km/h` hold magnitude;
+- who is serialized;
+- Bounded Authority or `PROGRESS_ACTUATION`;
+- Completed Obstruction versus current Causal Obstruction semantics;
+- Terminal Egress geometry/courtesy/configuration;
+- Regulation, Passage, Player Claim/source-AI supersession or GIANTS job ownership.
 
 Next evidence boundary:
 
-1. independent Structural + Lua CI on the exact `.29` commit;
-2. completed-obstruction and current Causal Obstruction GIANTS Reality validation;
-3. Player Claim/source-AI supersession plus Regulation/Cooperative Passage regression checks; and
-4. only after that evidence, continue Phase-14.6 with Protected Yield vocabulary and other ownership-driven production-name/constants cleanup.
+1. blocking Structural + Lua CI on exact `.31` head;
+2. brief GIANTS Reality regression smoke for the changed execution surface;
+3. owner acceptance/merge if evidence remains positive;
+4. continue to Phase 14.6C; Issue #91 separately tracks whether Relocation Serialization should later be retained or retired.

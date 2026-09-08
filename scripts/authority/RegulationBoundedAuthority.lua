@@ -6,7 +6,7 @@ OuttaMyWay.RegulationBoundedAuthority = {}
 local Authority = OuttaMyWay.RegulationBoundedAuthority
 Authority.__index = Authority
 
-local D0147_PROTECTED_YIELD_OWNER_TAG="D0147_PROTECTED_YIELD"
+local RELOCATION_SERIALIZATION_OWNER_TAG="RELOCATION_SERIALIZATION"
 
 local function logInfo(formatText,...)
     local message=string.format(formatText,...)
@@ -26,7 +26,7 @@ end
 function Authority.new(runtime)
     return setmetatable({
         runtime=runtime,regulationControl=nil,requests={},outcomes={},dispatchCount=0,
-        d0147ProtectedYieldLeases={},
+        relocationSerializationLeases={},
         followerBoundaryLease=nil,followerBoundaryApplyCount=0,followerBoundaryReleaseCount=0,followerBoundaryUpdateCount=0,
         d0146ActionSpaceLease=nil,d0146ActionSpaceApplyCount=0,d0146ActionSpaceReleaseCount=0,d0146ActionSpaceEnvelopeUpdateCount=0,d0146ActionSpaceRoleMigrationCount=0,
         d0146ActionSpaceQuiescenceCount=0,d0146ActionSpaceReactivationCount=0,
@@ -77,81 +77,81 @@ function Authority:_requestFromGrant(picture,evaluated,candidate,grant,target)
     return request
 end
 
-local function d0147TokenFor(runtime,commitmentId,assemblyId,authorityClass)
+local function relocationSerializationTokenFor(runtime,commitmentId,assemblyId,authorityClass)
     for _,token in OuttaMyWay.ValueRecord.ipairs(runtime.authorities:tokensForCommitment(commitmentId)) do
         if token.assemblyId==assemblyId and token.authorityClass==authorityClass and runtime.authorities:validate(token)==true then return token end
     end
     return nil
 end
 
-function Authority:_releaseD0147ProtectedYield(commitmentId,reason)
-    local leases=self.d0147ProtectedYieldLeases[commitmentId]
+function Authority:_releaseRelocationSerialization(commitmentId,reason)
+    local leases=self.relocationSerializationLeases[commitmentId]
     if type(leases)~="table" then return 0 end
     local released=0
     for _,lease in ipairs(leases) do
         if self.regulationControl~=nil and type(self.regulationControl.clearRegulationLeaseByReference)=="function" and type(lease.referenceKey)=="string" then
-            local ok=self.regulationControl:clearRegulationLeaseByReference(lease.referenceKey,D0147_PROTECTED_YIELD_OWNER_TAG)
+            local ok=self.regulationControl:clearRegulationLeaseByReference(lease.referenceKey,RELOCATION_SERIALIZATION_OWNER_TAG)
             if ok==true then released=released+1 end
         end
         self:_releaseBoundedAuthority(lease.boundedAuthorityId,reason)
     end
-    self.d0147ProtectedYieldLeases[commitmentId]=nil
-    logInfo("D0147_PROTECTED_YIELD_RELEASE commitment=%s released=%d reason=%s",tostring(commitmentId),released,tostring(reason))
+    self.relocationSerializationLeases[commitmentId]=nil
+    logInfo("RELOCATION_SERIALIZATION_RELEASE commitment=%s released=%d reason=%s",tostring(commitmentId),released,tostring(reason))
     return released
 end
 
-function Authority:d0147ProtectedYieldAssemblyIds(commitmentId)
+function Authority:relocationSerializationAssemblyIds(commitmentId)
     local ids={}
-    for _,lease in ipairs(self.d0147ProtectedYieldLeases[commitmentId] or {}) do
+    for _,lease in ipairs(self.relocationSerializationLeases[commitmentId] or {}) do
         if type(lease.assemblyId)=="string" then ids[#ids+1]=lease.assemblyId end
     end
     table.sort(ids)
     return ids
 end
 
-function Authority:_applyD0147ProtectedYield(picture,evaluated,candidate,commitment,currentResponsibility,bridge)
+function Authority:_applyRelocationSerialization(picture,evaluated,candidate,commitment,currentResponsibility,bridge)
     if bridge.phase~="INFIELD" then return true,"NOT_TRANSLATING" end
-    -- protectedDemandAssemblies is nested architecture value data and may be a sealed
+    -- relocationSerializationBeneficiaries is nested architecture value data and may be a sealed
     -- ValueRecord proxy in GIANTS. Never use native #/pairs/ipairs here.
-    local protected=bridge.protectedDemandAssemblies or {}
-    if OuttaMyWay.ValueRecord.length(protected)==0 then return false,"D0147_PROTECTED_YIELD_AUTHORISING_DEMAND_UNAVAILABLE" end
-    if self.regulationControl==nil or type(self.regulationControl.executeControlRequest)~="function" then return false,"D0147_PROTECTED_YIELD_CONTROL_CAPABILITY_UNAVAILABLE" end
-    if self.d0147ProtectedYieldLeases[commitment.identity]~=nil then return true,"ALREADY_PROTECTED" end
+    local protected=bridge.relocationSerializationBeneficiaries or {}
+    if OuttaMyWay.ValueRecord.length(protected)==0 then return false,"RELOCATION_SERIALIZATION_AUTHORISING_DEMAND_UNAVAILABLE" end
+    if self.regulationControl==nil or type(self.regulationControl.executeControlRequest)~="function" then return false,"RELOCATION_SERIALIZATION_CONTROL_CAPABILITY_UNAVAILABLE" end
+    if self.relocationSerializationLeases[commitment.identity]~=nil then return true,"ALREADY_PROTECTED" end
     local leases={}
     local function rollbackLeases(reason)
         for _,lease in ipairs(leases) do
-            if type(self.regulationControl.clearRegulationLeaseByReference)=="function" then self.regulationControl:clearRegulationLeaseByReference(lease.referenceKey,D0147_PROTECTED_YIELD_OWNER_TAG) end
+            if type(self.regulationControl.clearRegulationLeaseByReference)=="function" then self.regulationControl:clearRegulationLeaseByReference(lease.referenceKey,RELOCATION_SERIALIZATION_OWNER_TAG) end
             self:_releaseBoundedAuthority(lease.boundedAuthorityId,reason)
         end
     end
     for _,item in OuttaMyWay.ValueRecord.ipairs(protected) do
         if type(item.assemblyId)~="string" or type(item.referenceKey)~="string" then
-            rollbackLeases("D0147_PROTECTED_YIELD_REFERENCE_UNAVAILABLE")
-            return false,"D0147_PROTECTED_YIELD_REFERENCE_UNAVAILABLE"
+            rollbackLeases("RELOCATION_SERIALIZATION_REFERENCE_UNAVAILABLE")
+            return false,"RELOCATION_SERIALIZATION_REFERENCE_UNAVAILABLE"
         end
-        local token=d0147TokenFor(self.runtime,commitment.identity,item.assemblyId,"PROGRESS_ACTUATION")
+        local token=relocationSerializationTokenFor(self.runtime,commitment.identity,item.assemblyId,"PROGRESS_ACTUATION")
         if token==nil then
-            rollbackLeases("D0147_PROTECTED_YIELD_PROGRESS_AUTHORITY_UNAVAILABLE")
-            return false,"D0147_PROTECTED_YIELD_PROGRESS_AUTHORITY_UNAVAILABLE"
+            rollbackLeases("RELOCATION_SERIALIZATION_PROGRESS_AUTHORITY_UNAVAILABLE")
+            return false,"RELOCATION_SERIALIZATION_PROGRESS_AUTHORITY_UNAVAILABLE"
         end
-        local regulationBridge={regulatedAssemblyId=item.assemblyId,regulatedReferenceKey=item.referenceKey,governingPurpose="D0147_PROTECTED_YIELD_INTERVAL"}
-        local request,requestReason=self:_regulationRequest(picture,evaluated,candidate,commitment,token,regulationBridge,"APPLY",D0147_PROTECTED_YIELD_OWNER_TAG,0.0,currentResponsibility)
+        local regulationBridge={regulatedAssemblyId=item.assemblyId,regulatedReferenceKey=item.referenceKey,governingPurpose="RELOCATION_SERIALIZATION_INTERVAL"}
+        local request,requestReason=self:_regulationRequest(picture,evaluated,candidate,commitment,token,regulationBridge,"APPLY",RELOCATION_SERIALIZATION_OWNER_TAG,0.0,currentResponsibility)
         if request==nil then
-            rollbackLeases("D0147_PROTECTED_YIELD_REQUEST_FAILED")
+            rollbackLeases("RELOCATION_SERIALIZATION_REQUEST_FAILED")
             return false,requestReason
         end
         local started,result=self.runtime.liveControlDispatcher:dispatch(request,candidate)
-        local outcome=self:_outcome(request,started and "ACCEPTED" or "REJECTED",{kind=started and "D0147_PROTECTED_YIELD_HOLD_APPLIED" or "NO_PHYSICAL_EFFECT_CONFIRMED",capability="REGULATE_SPEED",maxSpeedKmh=0.0},started and nil or {reason=tostring(result)})
+        local outcome=self:_outcome(request,started and "ACCEPTED" or "REJECTED",{kind=started and "RELOCATION_SERIALIZATION_APPLIED" or "NO_PHYSICAL_EFFECT_CONFIRMED",capability="REGULATE_SPEED",maxSpeedKmh=0.0},started and nil or {reason=tostring(result)})
         if started~=true then
-            self:_releaseBoundedAuthority(request.boundedAuthorityId,"D0147_PROTECTED_YIELD_START_REJECTED")
-            rollbackLeases("D0147_PROTECTED_YIELD_START_REJECTED")
-            return false,"D0147_PROTECTED_YIELD_HOLD_REJECTED:"..tostring(result),outcome
+            self:_releaseBoundedAuthority(request.boundedAuthorityId,"RELOCATION_SERIALIZATION_START_REJECTED")
+            rollbackLeases("RELOCATION_SERIALIZATION_START_REJECTED")
+            return false,"RELOCATION_SERIALIZATION_REJECTED:"..tostring(result),outcome
         end
         leases[#leases+1]={assemblyId=item.assemblyId,referenceKey=item.referenceKey,requestId=request.identity,outcomeId=outcome.identity,boundedAuthorityId=request.boundedAuthorityId}
-        logInfo("D0147_PROTECTED_YIELD_HOLD commitment=%s assembly=%s ref=%s request=%s cap=0.00kmh",tostring(commitment.identity),tostring(item.assemblyId),tostring(item.referenceKey),tostring(request.identity))
+        logInfo("RELOCATION_SERIALIZATION_APPLIED commitment=%s assembly=%s ref=%s request=%s cap=0.00kmh",tostring(commitment.identity),tostring(item.assemblyId),tostring(item.referenceKey),tostring(request.identity))
     end
-    self.d0147ProtectedYieldLeases[commitment.identity]=leases
-    return true,"PROTECTED_YIELD_HOLD_APPLIED"
+    self.relocationSerializationLeases[commitment.identity]=leases
+    return true,"RELOCATION_SERIALIZATION_APPLIED"
 end
 
 local D0141_OWNER_TAG="D0141_FOLLOWER_BOUNDARY"
