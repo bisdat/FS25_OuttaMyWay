@@ -39,6 +39,7 @@ load("scripts/identity/FieldWorldEquivalenceAuthority.lua")
 load("scripts/observation/RuntimeObservationAdapter.lua")
 load("scripts/observation/LiveAIJobEvidence.lua")
 load("scripts/observation/CurrentPhysicalAssemblySource.lua")
+load("scripts/observation/CurrentPhysicalPoseSource.lua")
 load("scripts/observation/LocalIntentObservation.lua")
 load("scripts/observation/FieldBoundedFutureSpace.lua")
 load("scripts/observation/NativeFieldWorkObservation.lua")
@@ -70,23 +71,20 @@ load("scripts/commitment/TerminalSettlementEvaluator.lua")
 load("scripts/commitment/DecisionCommitmentBoundary.lua")
 load("scripts/commitment/LiveTrafficCommitmentLifecycle.lua")
 load("scripts/commitment/TerminalEgressCommitmentLifecycle.lua")
+load("scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua")
 load("scripts/candidates/CandidateSpace.lua")
 load("scripts/candidates/PassiveLiveCandidateSupport.lua")
 load("scripts/candidates/LocalPassagePlanner.lua")
 load("scripts/candidates/TerminalEgressCandidateSupport.lua")
+load("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
 load("scripts/candidates/LiveTrafficCandidateSupport.lua")
+load("scripts/decision/ProspectivePortfolioDecisionPolicy.lua")
+load("scripts/candidates/ProspectiveDecisionPortfolioSupport.lua")
 load("scripts/constraints/ConstraintEvidence.lua")
-load("scripts/constraints/evaluators/FieldWorldContainment.lua")
-load("scripts/constraints/evaluators/TransitionClearance.lua")
 load("scripts/constraints/evaluators/RepresentationFitness.lua")
-load("scripts/constraints/evaluators/CapabilityAvailability.lua")
-load("scripts/constraints/evaluators/ContinuingIntentPriority.lua")
-load("scripts/constraints/evaluators/ProgressPreservation.lua")
 load("scripts/constraints/evaluators/ResponsibilityCompatibility.lua")
-load("scripts/constraints/evaluators/ObligationCompatibility.lua")
 load("scripts/constraints/evaluators/CommitmentPreconditions.lua")
 load("scripts/constraints/evaluators/EffectiveActuationComposition.lua")
-load("scripts/constraints/evaluators/ReleaseSafety.lua")
 load("scripts/constraints/ConstraintEngine.lua")
 load("scripts/decision/TrafficPolicemanDecisionPolicy.lua")
 load("scripts/decision/DecisionSelector.lua")
@@ -122,6 +120,7 @@ load("scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua")
 load("scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua")
 load("scripts/responsibility/CooperativePassageResponsibilityTransition.lua")
 load("scripts/responsibility/CompletedObstructionResponsibilityTransition.lua")
+load("scripts/responsibility/ObstructionRelocationResponsibilityTransition.lua")
 load("scripts/control/LiveControlDispatcher.lua")
 load("scripts/runtime/LiveRuntimeCoordinator.lua")
 load("scripts/runtime/Runtime.lua")
@@ -443,7 +442,7 @@ test("Encounter persists when positive evidence is temporarily absent",function(
     equal(second.picture.encounters[1].evidence.positiveObservedThisAssessment,false)
     equal(runtime.encounters:get(encounterId).status,"ACTIVE")
     local retained=false
-    for _,transition in ipairs(second.picture.diagnostics.encounterLifecycleTransitions) do
+    for _,transition in OuttaMyWay.ValueRecord.ipairs(second.picture.diagnostics.encounterLifecycleTransitions) do
         if transition.encounterIdentity==encounterId and transition.lifecycle=="RETAINED" and transition.positiveObservedThisAssessment==false then retained=true end
     end
     if not retained then error("temporary evidence absence did not retain Encounter explicitly") end
@@ -464,7 +463,7 @@ test("Job Episode end terminates Encounter and restart creates fresh identity",f
     equal(runtime.encounters:get(oldEncounterId).status,"TERMINATED")
     equal(runtime.encounters:get(oldEncounterId).terminalReason,"JOB_EPISODE_ENDED")
     local terminated=false
-    for _,transition in ipairs(stopped.picture.diagnostics.encounterLifecycleTransitions) do
+    for _,transition in OuttaMyWay.ValueRecord.ipairs(stopped.picture.diagnostics.encounterLifecycleTransitions) do
         if transition.encounterIdentity==oldEncounterId and transition.lifecycle=="TERMINATED" and transition.terminalReason=="JOB_EPISODE_ENDED" then
             local ended=transition.terminalEvidence.details.endedJobEpisodes
             equal(#ended,1); equal(ended[1].terminalCause,nil)
@@ -480,7 +479,7 @@ test("Job Episode end terminates Encounter and restart creates fresh identity",f
     equal(#restarted.picture.encounters,0)
     equal(#runtime.encounters:listActive(),0)
     local freshEpisode=false
-    for _,episodeId in ipairs(restarted.jobEpisodes.activeEpisodeIds) do
+    for _,episodeId in OuttaMyWay.ValueRecord.ipairs(restarted.jobEpisodes.activeEpisodeIds) do
         if episodeId~=oldEpisodeIds[1] and episodeId~=oldEpisodeIds[2] then freshEpisode=true end
     end
     if not freshEpisode then error("restart did not create a fresh Job Episode") end
@@ -507,7 +506,7 @@ test("incomplete membership evidence does not end an Operation",function()
     local runtime=newPictureRuntime(); local first=runtime:processSealedObservation(pictureFixture(1))
     local second=runtime:processSealedObservation(pictureFixture(2,{membershipComplete=false,membership={}}))
     equal(second.operation.activeOperationIds[1],first.operation.activeOperationIds[1]); equal(#second.operation.endedOperationIds,0)
-    local found=false; for _,u in ipairs(second.picture.uncertainty) do if u.class=="OPERATION_MEMBERSHIP_INCOMPLETE" then found=true end end
+    local found=false; for _,u in OuttaMyWay.ValueRecord.ipairs(second.picture.uncertainty) do if u.class=="OPERATION_MEMBERSHIP_INCOMPLETE" then found=true end end
     if not found then error("incomplete membership was not preserved as uncertainty") end
 end)
 
@@ -528,7 +527,7 @@ test("incomplete membership cannot pre-empt authoritative Job Episode terminatio
     equal(unresolvedStop.picture.encounters[1].identity,encounterId)
     equal(runtime.encounters:get(encounterId).status,"ACTIVE")
     local retained=false
-    for _,transition in ipairs(unresolvedStop.picture.diagnostics.encounterLifecycleTransitions) do
+    for _,transition in OuttaMyWay.ValueRecord.ipairs(unresolvedStop.picture.diagnostics.encounterLifecycleTransitions) do
         if transition.encounterIdentity==encounterId and transition.lifecycle=="RETAINED" then retained=true end
     end
     if not retained then error("Encounter was not retained while membership evidence was incomplete") end
@@ -542,7 +541,7 @@ test("incomplete membership cannot pre-empt authoritative Job Episode terminatio
     equal(runtime.encounters:get(encounterId).status,"TERMINATED")
     equal(runtime.encounters:get(encounterId).terminalReason,"JOB_EPISODE_ENDED")
     local ended=false
-    for _,transition in ipairs(authoritativeStop.picture.diagnostics.encounterLifecycleTransitions) do
+    for _,transition in OuttaMyWay.ValueRecord.ipairs(authoritativeStop.picture.diagnostics.encounterLifecycleTransitions) do
         if transition.encounterIdentity==encounterId and transition.lifecycle=="TERMINATED" and transition.terminalReason=="JOB_EPISODE_ENDED" then
             local evidence=transition.terminalEvidence.details.endedJobEpisodes
             equal(#evidence,1); equal(evidence[1].terminalCause,nil)
@@ -617,7 +616,7 @@ end)
 test("Situation Assessment preserves unavailable sources and non-fit representations",function()
     local rep={assemblyReferenceKey="assembly-A",representationId="LIMIT",question="FUTURE",assessmentHorizon=10,structurallyValid=true,refreshRequired=false,currentForQuestion=true,coversAssessmentHorizon=false,coverageComplete=true,conservative=true,permittedConclusions={"CONFLICT_SUPPORT"},provenance={source="fixture"}}
     local runtime=newPictureRuntime(); local picture=runtime:processSealedObservation(pictureFixture(1,{representations={rep},unavailableSources={{source="sweep",reason="not observed"}}})).picture
-    local classes={}; for _,u in ipairs(picture.uncertainty) do classes[u.class]=true end
+    local classes={}; for _,u in OuttaMyWay.ValueRecord.ipairs(picture.uncertainty) do classes[u.class]=true end
     if not classes.REPRESENTATION_FITNESS or not classes.UNAVAILABLE_SOURCE then error("uncertainty was not preserved") end
 end)
 
@@ -875,27 +874,34 @@ end)
 test("every candidate receives every mandatory constraint verdict",function()
     local specs={candidateSpec("continue","CONTINUE_UNCHANGED",0),candidateSpec("escalate","ESCALATE",10)}
     local result=newDecisionRuntime():evaluateSealedOperationalPicture(decisionPicture(specs))
-    equal(#result.verdictSet.mandatoryConstraintIds,11); equal(#result.verdicts,22); equal(result.verdictSet.complete,true)
+    equal(#result.verdictSet.mandatoryConstraintIds,4); equal(#result.verdicts,8); equal(result.verdictSet.complete,true)
 end)
 
 test("FAIL and UNRESOLVED mandatory verdicts cannot remain viable",function()
     local failed=candidateSpec("failed","HOLD",0)
-    failed.evidenceBasis.constraintEvidence.FIELD_WORLD_CONTAINMENT.result="FAIL"
+    failed.representationFitness={requirements={{representationId="REP-FAIL",acceptedStates={"CURRENTLY_FIT"}}}}
+    failed.evidenceBasis.effectiveActuationComposition={identity="EC-FAIL",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00001",commitmentId="CM-FAIL",capability="HOLD",effectClass="HOLD",progressActuation=false}}}
     local unresolved=candidateSpec("unresolved","REGULATE_SPEED",1)
-    unresolved.evidenceBasis.constraintEvidence.TRANSITION_CLEARANCE.result="UNRESOLVED"
+    unresolved.representationFitness={requirements={{representationId="REP-MISSING",acceptedStates={"CURRENTLY_FIT"}}}}
+    unresolved.evidenceBasis.effectiveActuationComposition={identity="EC-UNRESOLVED",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00001",commitmentId="CM-UNRESOLVED",capability="REGULATE_SPEED",progressActuation=true}}}
     local pass=candidateSpec("pass","CONTINUE_UNCHANGED",5)
-    local result=newDecisionRuntime():evaluateSealedOperationalPicture(decisionPicture({failed,unresolved,pass}))
+    local picture=decisionPicture({failed,unresolved,pass},{representationFitness={{representationId="REP-FAIL",assemblyId="AS-00001",question="HOLD",assessmentHorizon=5,state="STRUCTURALLY_INVALID",claimPermissions={},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}}}})
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(picture)
+    equal(findVerdict(result,candidateByCapability(result,"HOLD").identity,"REPRESENTATION_FITNESS").result,"FAIL")
+    local unresolvedCandidate=candidateByCapability(result,"REGULATE_SPEED")
+    equal(findVerdict(result,unresolvedCandidate.identity,"REPRESENTATION_FITNESS").result,"UNRESOLVED")
     equal(#result.decision.viableCandidateIds,1)
     equal(result.decision.selectedCandidateId,candidateByCapability(result,"CONTINUE_UNCHANGED").identity)
 end)
 
 test("comparison cost is applied only after mandatory admissibility",function()
     local cheap=candidateSpec("cheap-fail","HOLD",0)
-    cheap.evidenceBasis.constraintEvidence.FIELD_WORLD_CONTAINMENT.result="FAIL"
+    cheap.representationFitness={requirements={{representationId="REP-FAIL",acceptedStates={"CURRENTLY_FIT"}}}}
+    cheap.evidenceBasis.effectiveActuationComposition={identity="EC-CHEAP-FAIL",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00001",commitmentId="CM-CHEAP-FAIL",capability="HOLD",effectClass="HOLD",progressActuation=false}}}
     local expensive=candidateSpec("expensive-pass","REGULATE_SPEED",10)
     expensive.representationFitness={requirements={{representationId="REP-A",acceptedStates={"CURRENTLY_FIT"}}}}
     expensive.evidenceBasis.effectiveActuationComposition={identity="EC-A",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00001",commitmentId="CM-FIXTURE",capability="REGULATE_SPEED",progressActuation=true}}}
-    local picture=decisionPicture({cheap,expensive},{representationFitness={{representationId="REP-A",assemblyId="AS-00001",question="SPEED",assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"SPEED"},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}}}})
+    local picture=decisionPicture({cheap,expensive},{representationFitness={{representationId="REP-FAIL",assemblyId="AS-00001",question="HOLD",assessmentHorizon=5,state="STRUCTURALLY_INVALID",claimPermissions={},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}},{representationId="REP-A",assemblyId="AS-00001",question="SPEED",assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"SPEED"},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}}}})
     local result=newDecisionRuntime():evaluateSealedOperationalPicture(picture)
     equal(result.decision.selectedCandidateId,candidateByCapability(result,"REGULATE_SPEED").identity)
 end)
@@ -1046,15 +1052,16 @@ test("Follower Owns Closure rejects generic Leader reposition",function()
     equal(result.decision.commitmentAction,"SETTLE")
 end)
 
-test("explicit responsibility exception may admit Leader reposition",function()
+test("Candidate responsibility self-attestation cannot override Follower Owns Closure",function()
     local reposition=candidateSpec("leader-reposition-exception","REPOSITION",1,"AS-00001")
     reposition.evidenceBasis.responsibilityException={result="PASS",reason="explicit transfer evidence",evidence={accepted=true},provenance={source="fixture"}}
     reposition.representationFitness={requirements={{representationId="REP-A",acceptedStates={"CURRENTLY_FIT"}}}}
     reposition.evidenceBasis.effectiveActuationComposition={identity="EC-R2",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00001",commitmentId="CM-R",capability="REPOSITION",progressActuation=true}}}
     local picture=decisionPicture({reposition},{responsibilityRelations={{relation="FOLLOWER_OWNS_CLOSURE",followerAssemblyId="AS-00002",leaderAssemblyId="AS-00001",closingRate=1,horizon=5,provenance={}}},representationFitness={{representationId="REP-A",assemblyId="AS-00001",question="REPOSITION",assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"REPOSITION"},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}}}})
     local result=newDecisionRuntime():evaluateSealedOperationalPicture(picture)
-    equal(findVerdict(result,result.candidates[1].identity,"RESPONSIBILITY_COMPATIBILITY").result,"PASS")
-    equal(result.decision.selectedCandidateId,result.candidates[1].identity)
+    equal(findVerdict(result,result.candidates[1].identity,"RESPONSIBILITY_COMPATIBILITY").result,"FAIL")
+    equal(result.decision.selectedCandidateId,nil)
+    equal(result.decision.commitmentAction,"SETTLE")
 end)
 
 test("purpose-specific Representation Fitness withholds unsupported authority",function()
@@ -1093,18 +1100,21 @@ end)
 
 test("unresolved complete space produces explicit WAIT non-intervention",function()
     local hold=candidateSpec("hold-unresolved","HOLD",1)
-    hold.evidenceBasis.constraintEvidence.CONTROL_CAPABILITY_AVAILABILITY.result="UNRESOLVED"
-    hold.representationFitness={requirements={{representationId="REP-A",acceptedStates={"CURRENTLY_FIT"}}}}
+    hold.representationFitness={requirements={{representationId="REP-U",acceptedStates={"CURRENTLY_FIT"}}}}
     hold.evidenceBasis.effectiveActuationComposition={identity="EC-U",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00001",commitmentId="CM-U",capability="HOLD",effectClass="HOLD",progressActuation=false}}}
-    local picture=decisionPicture({hold},{representationFitness={{representationId="REP-A",assemblyId="AS-00001",question="HOLD",assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"HOLD"},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}}}})
+    local picture=decisionPicture({hold},{representationFitness={{representationId="REP-U",assemblyId="AS-00001",question="HOLD",assessmentHorizon=5,state="REFRESH_REQUIRED",claimPermissions={},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}}}})
     local result=newDecisionRuntime():evaluateSealedOperationalPicture(picture)
+    equal(findVerdict(result,result.candidates[1].identity,"REPRESENTATION_FITNESS").result,"UNRESOLVED")
     equal(result.decision.selectedCandidateId,nil); equal(result.decision.commitmentAction,"WAIT"); equal(result.decision.nonIntervention.classification,"WAIT_FOR_EVIDENCE")
 end)
 
 test("fully failed complete space produces explicit SETTLE non-intervention",function()
-    local candidate=candidateSpec("failed","CONTINUE_UNCHANGED",1)
-    candidate.evidenceBasis.constraintEvidence.CONTINUING_INTENT_PRIORITY.result="FAIL"
-    local result=newDecisionRuntime():evaluateSealedOperationalPicture(decisionPicture({candidate}))
+    local candidate=candidateSpec("failed","HOLD",1)
+    candidate.representationFitness={requirements={{representationId="REP-FAIL",acceptedStates={"CURRENTLY_FIT"}}}}
+    candidate.evidenceBasis.effectiveActuationComposition={identity="EC-SETTLE-FAIL",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00001",commitmentId="CM-SETTLE-FAIL",capability="HOLD",effectClass="HOLD",progressActuation=false}}}
+    local picture=decisionPicture({candidate},{representationFitness={{representationId="REP-FAIL",assemblyId="AS-00001",question="HOLD",assessmentHorizon=5,state="STRUCTURALLY_INVALID",claimPermissions={},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}}}})
+    local result=newDecisionRuntime():evaluateSealedOperationalPicture(picture)
+    equal(findVerdict(result,result.candidates[1].identity,"REPRESENTATION_FITNESS").result,"FAIL")
     equal(result.decision.selectedCandidateId,nil); equal(result.decision.commitmentAction,"SETTLE"); equal(result.decision.nonIntervention.classification,"COMPLETE_SUPPORTABLE_SPACE_EXHAUSTED")
 end)
 
@@ -1232,9 +1242,10 @@ end)
 test("SETTLE directive cannot contradict canonical Governing Basis event",function()
     local runtime=newDecisionRuntime()
     local admitted=runtime.commitmentAdmission:admit({objective={kind="x"},governingBasis={responsibilityKey="settle-mapping"}})
-    local failed=candidateSpec("failed","CONTINUE_UNCHANGED",1)
-    failed.evidenceBasis.constraintEvidence.CONTINUING_INTENT_PRIORITY.result="FAIL"
-    local picture=decisionPicture({failed},{commitmentContext={{commitmentId=admitted.commitment.identity,settlementDirective={eventKind="OBJECTIVE_SATISFIED",intendedTerminalDisposition="FAILED",terminalCause="OBJECTIVE_FAILED"}}}})
+    local failed=candidateSpec("failed","HOLD",1)
+    failed.representationFitness={requirements={{representationId="REP-FAIL",acceptedStates={"CURRENTLY_FIT"}}}}
+    failed.evidenceBasis.effectiveActuationComposition={identity="EC-SETTLE-MAPPING",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00001",commitmentId="CM-SETTLE-MAPPING",capability="HOLD",effectClass="HOLD",progressActuation=false}}}
+    local picture=decisionPicture({failed},{commitmentContext={{commitmentId=admitted.commitment.identity,settlementDirective={eventKind="OBJECTIVE_SATISFIED",intendedTerminalDisposition="FAILED",terminalCause="OBJECTIVE_FAILED"}}},representationFitness={{representationId="REP-FAIL",assemblyId="AS-00001",question="HOLD",assessmentHorizon=5,state="STRUCTURALLY_INVALID",claimPermissions={},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}}}})
     local result=runtime:evaluateSealedOperationalPicture(picture)
     equal(result.decision.commitmentAction,"SETTLE")
     expectError(function() runtime.decisionCommitmentBoundary:apply(picture,result) end)
@@ -4215,13 +4226,13 @@ for _,failure in ipairs({"TARGET","LEASE","OBLIGATION","PARTICIPANTS","SUCCESSOR
         elseif failure=="REVISION" then
             runtime.decisionCommitmentBoundary.apply=function() return nil end
         elseif failure=="PHYSICAL_CLEANUP" then
-            runtime.regulationBoundedAuthority.capability.executeControlRequest=function(self,request,candidate)
+            runtime.regulationBoundedAuthority.regulationControl.executeControlRequest=function(self,request,candidate)
                 if request.target~=nil and request.target.operation=="RELEASE" then
                     return false,"INJECTED_PHYSICAL_CLEANUP_RELEASE_REFUSAL"
                 end
                 return true,"ACCEPTED"
             end
-            runtime.regulationBoundedAuthority.capability.clearRegulationLeaseByReference=function()
+            runtime.regulationBoundedAuthority.regulationControl.clearRegulationLeaseByReference=function()
                 return false,"INJECTED_PHYSICAL_CLEANUP_FALLBACK_REFUSAL"
             end
         elseif failure=="CLEANUP" then
@@ -4606,7 +4617,7 @@ test("D0197 D0155 quiescent actuation reactivates on positive REGULATE_SUPPORTED
     equal(runtime.responsibilityTransitionAuthority:getCurrentActionSpaceRegulation().identity,responsibilityId)
 
     local rValues=OuttaMyWay.ValueRecord.toTable(active)
-    rValues.identity="OP-D0197-REACTIVATION"; rValues.epoch=801; rValues.commitmentContext={{commitmentId=commitmentId}}
+    rValues.identity="OP-D0197-REACTIVATION"; rValues.epoch=801; rValues.commitmentContext={{commitmentId=commitmentId,governingBasis=runtime.commitments:get(commitmentId).governingBasis}}
     local rRelation=rValues.opposedCorridorKnowledge[1]
     rRelation.classification="POTENTIAL_OPPOSED_CORRIDOR_CONFLICT"
     rRelation.currentClosing={resolved=true,separationM=44,closingRateMps=4.0,currentDirectionDot=-0.98}
@@ -6083,17 +6094,17 @@ test("D0147 supported deployed configuration selects compaction before translati
     equal(#evaluated.candidates,1); equal(evaluated.decision.selectedCandidateId,evaluated.candidates[1].identity)
 end)
 
-test("D0147 first courtesy targets the Field World centroid with one fixed bearing",function()
+test("D0147 first courtesy follows the fixed centroid bearing with the bounded 60 m allowance",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="INFIELD"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
     local bridge=spec.evidenceBasis.terminalEgressBridge; equal(bridge.phase,"INFIELD")
     local objective=bridge.objective
-    equal(objective.objectiveKind,"TERMINAL_INTERIOR_SETTLEMENT"); equal(objective.courtesyStage,1); equal(objective.destinationKind,"FIELD_CENTROID"); equal(objective.alignmentMode,"FIXED_INITIAL_CENTRE_BEARING")
-    equal(objective.fieldCentreX,50); equal(objective.fieldCentreZ,50); equal(objective.fieldCentreIsDestination,true); equal(objective.continuousCourseCorrection,false)
-    equal(objective.settlement,"INTERIOR_SETTLEMENT"); equal(objective.targetX,50); equal(objective.targetZ,50)
-    if math.abs(objective.targetProgressM-math.sqrt(48*48+45*45))>0.0001 then error("centroid settlement did not derive full current centre distance") end
+    equal(objective.objectiveKind,"TERMINAL_INTERIOR_SETTLEMENT"); equal(objective.courtesyStage,1); equal(objective.destinationKind,"CENTROID_BEARING_DISTANCE_CAP"); equal(objective.alignmentMode,"FIXED_INITIAL_CENTRE_BEARING")
+    equal(objective.fieldCentreX,50); equal(objective.fieldCentreZ,50); equal(objective.fieldCentreIsDestination,false); equal(objective.distanceCapped,true); equal(objective.continuousCourseCorrection,false)
+    equal(objective.settlement,"INTERIOR_SETTLEMENT"); equal(objective.maximumCourtesyDistanceM,60)
+    if math.abs(objective.targetProgressM-60)>0.0001 then error("centroid-bearing settlement did not respect the 60 m courtesy cap") end
     local magnitude=math.sqrt(objective.infieldDirectionX*objective.infieldDirectionX+objective.infieldDirectionZ*objective.infieldDirectionZ)
     if math.abs(magnitude-1)>0.0001 then error("fixed Infield Alignment direction was not normalized") end
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
@@ -6138,7 +6149,7 @@ test("D0147 config switch disables admission rather than merely suppressing Cont
     local previous=OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS; OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS=false
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS=previous
-    equal(supported,nil); equal(runtime.terminalEgressCandidateSupport:getLastStatus(),"DISABLED")
+    equal(supported,nil); equal(runtime.terminalEgressCandidateSupport:getLastStatus(),"DEVELOPMENT_CONSENT_DISABLED")
 end)
 
 
@@ -6163,7 +6174,7 @@ test("D0147 Control completes first courtesy from derived centroid station progr
     control:update(16); equal(completion,nil); equal(driveCalls,1); if math.abs((commandedMaxSpeed or 0)-25)>0.0001 then error("D0147 retreat did not use native maximum forward speed") end
     px,pz=50,50
     control:update(16)
-    equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.kind,"D0147_INTERIOR_SETTLEMENT_COMPLETE"); equal(completion.evidence.courtesyStage,1); equal(completion.evidence.destinationKind,"FIELD_CENTROID")
+    equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.kind,"D0147_INTERIOR_SETTLEMENT_COMPLETE"); equal(completion.evidence.courtesyStage,1); equal(completion.evidence.destinationKind,"CENTROID_BEARING_DISTANCE_CAP")
     if completion.evidence.realisedProgressM+0.0001 < completion.evidence.targetProgressM then error("interior settlement completed before derived centroid station") end
     equal(completion.evidence.continuousCourseCorrection,false); equal(driveCalls,1)
     AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil
@@ -6186,12 +6197,12 @@ test("D0147 owned Infield Alignment actuation failure positively neutralizes pro
     local source={getTrackedObject=function() return vehicle end,getTrackedRepresentation=function() return {worldPrimitives={{identity="NEUTRALIZE-1",kind="DISC",x=2,z=5,radius=1,positiveConflictSupport=true}}} end}
     local control=OuttaMyWay.TerminalEgressControl.new(runtime,source); local completion=nil; control:setCompletionHandler(function(result) completion=result end)
     local request=d0147BoundedControlRequest(runtime,"CR-D0147-NEUTRALIZE",admitted,supported,evaluated,candidate,bridge)
-    local started=control:executeControlRequest(request,candidate); equal(started,true); equal(vehicle.forceIsActive,true); equal(control.postJobAuthority:getActivityContextAcquireCallCount(),1)
+    local started=control:executeControlRequest(request,candidate); equal(started,true); equal(vehicle.forceIsActive,true); equal(control.actuationMechanism:getActivityContextAcquireCallCount(),1)
     control:update(16); equal(driveCalls,1); equal(vehicle.rotatedTime,-0.2); equal(completion,nil)
     failDrive=true
     control:update(16)
     equal(completion.status,"FAILED"); if not string.find(completion.evidence.reason,"POST_JOB_DIRECTION_DRIVE_CALL_FAILED",1,true) then error("direction failure was not surfaced") end
-    equal(completion.evidence.neutralization.performed,true); equal(neutralizeCalls,1); equal(neutralizedWhileActive,true); equal(vehicle.rotatedTime,0); equal(vehicle.forceIsActive,false); equal(completion.evidence.activityContext.released,true); equal(control.postJobAuthority:getActivityContextReleaseCallCount(),1)
+    equal(completion.evidence.neutralization.performed,true); equal(neutralizeCalls,1); equal(neutralizedWhileActive,true); equal(vehicle.rotatedTime,0); equal(vehicle.forceIsActive,false); equal(completion.evidence.activityContext.released,true); equal(control.actuationMechanism:getActivityContextReleaseCallCount(),1)
     AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil
 end)
 
@@ -6563,7 +6574,7 @@ test("D0200 ended Job Episode collapses dependent quiescent D0146 traffic Commit
     dependent=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(dependent,{obligationIds={obligation.identity},epoch=runtime.epochs:next()}))
     local unrelated=runtime.commitments:create({objective={kind="D0146_PASSAGE_ACTION_SPACE_CONSERVATION"},governingBasis={responsibilityKey="d0146-cooperative-passage:REL-OTHER",dependentEncounterId="EN-OTHER",dependentJobEpisodeIds={"JE-OTHER-A","JE-OTHER-B"}},situationDependencies={"EN-OTHER"}})
     local cleared=0
-    runtime.regulationBoundedAuthority.capability={clearRegulationLeaseByReference=function(self,referenceKey,ownerTag) cleared=cleared+1 end}
+    runtime.regulationBoundedAuthority.regulationControl={clearRegulationLeaseByReference=function(self,referenceKey,ownerTag) cleared=cleared+1; return true end}
     runtime.regulationBoundedAuthority.d0146ActionSpaceLease={commitmentId=dependent.identity,conflictIdentity="REL-ENDED",regulatedAssemblyId="AS-A",regulatedReferenceKey="REF-A",actuationActive=false}
     local result=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(runtime,{endedEpisodeIds={"JE-END"},observationSnapshotId="OBS-END"},{identity="OBS-END"})
     equal(#result,1); equal(result[1].commitmentId,dependent.identity); equal(runtime.commitments:get(dependent.identity).state,"SUCCEEDED")
