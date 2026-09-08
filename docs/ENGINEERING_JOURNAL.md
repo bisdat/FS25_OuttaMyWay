@@ -3471,3 +3471,13 @@ Repository-history review showed why the mechanism exists: v4.7.122 produced a g
 Issue #91 owns the separate evidence-led retention/retirement question and does not block Phase 14 strangler completion. No Concept Register promotion is made while the mechanism's enduring necessity remains unresolved.
 
 **Implementation boundary:** vocabulary/contract graduation only. Do not change relocation geometry, courtesy policy, configuration, Regulation policy, Passage, GIANTS job ownership, Player Claim/source-AI supersession or neutralisation semantics. A materially different executable receives fresh `.31 TEST` identity. Ordinary repository suites remain GitHub Actions responsibility.
+
+## 2026-09-08 — Phase 14.6B: CI #248 contract and validation-inventory reconciliation
+
+**Independent evidence:** Offline Validation run #248 on `.31` head `e606f21396b0ec57f8e23f00146c5a870dd753c9` split cleanly by responsibility. `Lua offline behavioural contracts` passed completely: the main replacement-core harness reported **337 passed / 0 failed** and the focused Causal Obstruction relocation harness reported **9 passed / 0 failed**. `Structural contracts` reported **178 passed / 4 failed**.
+
+**Interpretation:** all four structural failures are contract-vocabulary lag introduced by the Phase-14.6B vocabulary transformation rather than evidence of changed runtime behaviour. Three historical Terminal Egress structure assertions still expected the Runtime local `protectedDemandAssemblyIds`; Runtime now calls the unchanged `markRetreatCompleted(...)` lifecycle boundary with `serializedBeneficiaryAssemblyIds`. One Relocation Serialization assertion still expected `D0147_POST_JOB_PLUS_PROTECTED_YIELD_HOLD` while Candidate support now exposes `D0147_POST_JOB_PLUS_RELOCATION_SERIALIZATION`.
+
+The audit also found that the newly added focused `test_phase14_relocation_serialization_structure.py` was absent from the workflow's explicit structural-test command. This is another instance of the already-established **Validation Inventory Is Executable Topology** rule: adding an executable contract file does not make CI execute it when the workflow inventory is explicit.
+
+**Decision:** reconcile only those four stale assertions and add the focused structural contract to the workflow inventory. Production Lua and `.31` TEST identity remain unchanged. Ordinary suite execution remains GitHub Actions responsibility; no local pytest run substitutes for the next independent CI result.

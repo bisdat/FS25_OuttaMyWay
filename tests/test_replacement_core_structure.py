@@ -1355,7 +1355,7 @@ def test_v47122_d0147_bounded_infield_retreat_is_one_shot_and_reactive():
     assert 'renewal.continuationObserved=true' in assessment
     assert 'aiState.blocked==true' in assessment
     assert 'record.yieldAwaitingContinuation~=true' in candidate
-    assert 'markRetreatCompleted(result.terminalEpisodeId,protectedDemandAssemblyIds,courtesyStage)' in runtime
+    assert 'markRetreatCompleted(result.terminalEpisodeId,serializedBeneficiaryAssemblyIds,courtesyStage)' in runtime
     assert 'TerminalEgressCommitmentLifecycle.settle(self,result.commitmentId,"OBJECTIVE_SATISFIED"' in runtime
     assert 'COURTESY_ALREADY_EXHAUSTED' in control
 
@@ -1373,7 +1373,7 @@ def test_v01131_d0194_two_stage_terminal_courtesy_is_bounded_and_geometry_derive
     for token in ('courtesyMoveCount','completed>=2','DOUBLE_COURTESY_EXHAUSTED','noThirdAutomaticRelocation=true'):
         assert token in assessment
     assert 'courtesyStage=result.evidence and tonumber(result.evidence.courtesyStage) or nil' in runtime
-    assert 'markRetreatCompleted(result.terminalEpisodeId,protectedDemandAssemblyIds,courtesyStage)' in runtime
+    assert 'markRetreatCompleted(result.terminalEpisodeId,serializedBeneficiaryAssemblyIds,courtesyStage)' in runtime
     assert 'realisedProgress>=state.targetProgressM' in control
     assert 'BOUNDED_MOVE_WATCHDOG_EXPIRED' in control
     assert 'driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)' in control
@@ -1407,7 +1407,7 @@ def test_relocation_serialization_uses_valuerecord_traversal_and_sequences_benef
         "authorizingDemandAssemblyIds",
         "progressActuationOwnership={assemblyIds=protectedIds}",
         'capability="REGULATE_SPEED",effectClass="HOLD",progressActuation=true',
-        'controlAuthority="D0147_POST_JOB_PLUS_PROTECTED_YIELD_HOLD"',
+        'controlAuthority="D0147_POST_JOB_PLUS_RELOCATION_SERIALIZATION"',
     ):
         assert token in candidate
     for token in (
@@ -1452,7 +1452,7 @@ def test_v47125_d0147_continuation_renewal_requires_progress_then_later_block():
     assert 'record.yieldAwaitingContinuation~=true' in candidate
     assert 'repeatRequiresContinuationRenewal=true' in candidate
     assert 'laterRetryRequiresContinuationRenewal=true' in candidate
-    assert 'markRetreatCompleted(result.terminalEpisodeId,protectedDemandAssemblyIds,courtesyStage)' in runtime
+    assert 'markRetreatCompleted(result.terminalEpisodeId,serializedBeneficiaryAssemblyIds,courtesyStage)' in runtime
     assert 'continuationRenewalRequired=true' in runtime
 
 
