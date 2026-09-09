@@ -1,3 +1,22 @@
+## 2026-09-09 — Structural-test rename self-reference closure
+
+**Observe:** Offline Validation run #257 on exact durable-test-naming head
+`8566ed9ef3ca01f9cbda8201ce221ab63b290358` kept the Lua offline behavioural
+contracts green. Structural contracts reached **194 passed / 1 failed**. The
+sole failure was inside the renamed
+`test_production_vocabulary_ownership_structure.py`: it still asserted that the
+blocking workflow contained its former
+`test_phase14_production_vocabulary_ownership_structure.py` path.
+
+**Discover:** **Validation Self-Reference Participates in Rename Closure.** A
+validation asset that asserts its own execution topology is both the thing being
+renamed and a consumer of that name. Renaming its file and workflow entry is
+incomplete until the self-reference is reconciled.
+
+**Decision:** correct only that assertion and current-state documentation. No
+runtime source changes and no new TEST build identity. Re-run blocking CI before
+PR #95 merge.
+
 ## 2026-09-09 — Durable structural-test naming
 
 **Observe:** Phase 14 left seven blocking structural-contract modules named for

@@ -92,19 +92,24 @@ The owner-run `.37` in-game smoke also **PASS**: normal Cooperative Passage
 completed through participant-specific restore/handoff and GIANTS continuation
 without exposing a regression from the semantic vocabulary changes.
 
-The only remaining pre-merge work is test/governance naming reconciliation:
-seven durable blocking structural-contract modules still carry `phase14_`
-development-origin filenames. They remain current validation authority and are
-being renamed by durable responsibility; executable identity remains `.37`.
+The seven durable structural-contract modules have now been renamed by current
+responsibility and the blocking workflow uses the new paths. Offline Validation
+run #257 on exact naming head
+`8566ed9ef3ca01f9cbda8201ce221ab63b290358` preserved the Lua behavioural PASS
+but reported **194 passed / 1 failed** in Structural contracts. The sole failure
+is validation self-reference drift: the renamed production-vocabulary contract
+still asserted that the workflow contained its old `test_phase14_...` path.
+
+The current follow-up is one test/docs-only self-reference correction followed
+by blocking CI. Executable identity remains `.37`.
 
 Implementation-local work performs only syntax/static/XML/diff checks. GitHub
-Actions owns the repository Structural and Lua behavioural suites. The naming
-reconciliation must receive the same blocking CI before PR #95 is merged.
+Actions owns the repository Structural and Lua behavioural suites.
 
 ## Next
 
-1. Complete the durable structural-test naming reconciliation and require
-   blocking Structural + Lua CI to remain green.
+1. Correct the renamed production-vocabulary contract's self-referential
+   workflow-path assertion and require blocking Structural + Lua CI to be green.
 2. Merge PR #95 if that exact head remains green.
 3. Update local `main`, then perform the **Phase 14 closure review**.
 4. Do not invent Phase 14.6D unless new evidence demonstrates a genuine

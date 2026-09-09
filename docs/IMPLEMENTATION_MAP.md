@@ -126,10 +126,13 @@ also passed through participant-specific restore/handoff and GIANTS
 continuation.
 
 There is no remaining known Phase-14.6C architecture-to-code placement or
-runtime-vocabulary drift. The only pre-merge cleanup is durable naming of seven
-blocking structural-test modules that still carry `phase14_` development-origin
-filenames. Those tests are retained as current validation authority and renamed
-by responsibility; this does not create `.38` or change executable bytes.
+runtime-vocabulary drift. The seven blocking structural-test modules have been
+renamed by durable responsibility. Offline Validation run #257 preserved the Lua
+behavioural PASS and reached **194 passed / 1 failed** structurally; the sole
+failure is the renamed production-vocabulary contract asserting its own old
+workflow path. That is validation self-reference drift only. The current
+correction is test/docs-only and does not create `.38` or change executable
+bytes.
 
 ### Resolved before Phase 14.6C
 
@@ -173,10 +176,10 @@ Validated state:
 6. Offline Validation run #256 is fully green; and
 7. owner-run `.37` in-game Cooperative Passage smoke is PASS.
 
-Immediate repository work is test/governance-only: rename seven durable
-`test_phase14_*` structural contracts by current responsibility, update their
-blocking workflow paths and current-state documentation, and require CI to
-remain green. No executable source changes and no `.38`.
+Immediate repository work is test/governance-only: correct the one stale
+self-referential workflow-path assertion exposed by run #257, then require both
+blocking CI jobs to be green on the exact corrected head. No executable source
+changes and no `.38`.
 
 After that exact PR head is green, merge PR #95 and proceed to the Phase 14
 closure review unless new Reality demonstrates a genuine remaining strangler

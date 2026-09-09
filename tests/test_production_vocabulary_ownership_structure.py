@@ -267,4 +267,4 @@ def test_semantic_recognition_and_validation_topology_are_closed():
     assert 'run.phase=="RESTORING"' not in passage
 
     # Validation Inventory Is Executable Topology.
-    assert "tests/test_phase14_production_vocabulary_ownership_structure.py" in workflow
+    assert "tests/test_production_vocabulary_ownership_structure.py" in workflow
