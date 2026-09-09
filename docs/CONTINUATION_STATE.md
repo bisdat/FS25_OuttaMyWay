@@ -6,11 +6,11 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline: `main` after PR #106 merge, commit
-  `7fc77da340270022cb61e14c2011610b6883fe20`.
+- Accepted Repository State baseline: `main` after PR #107 merge, commit
+  `9b9eae3383d73c81ef778ff12009c9bcadf4ddf5`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted executable identity is
-  **`0.3.0.38 TEST — TRANSIT INVENTORY CLOSURE`**.
+- This Engineering Increment carries
+  **`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`**.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
@@ -63,10 +63,13 @@ diagnostic directionality and live documentation responsibility.
 
 - **#98 — Follower Boundary permissible magnitude**
   - **Admissible Magnitude Evidence != Permitted Magnitude**.
-  - Final elastic follower speed is currently derived in Situation Assessment
-    and ferried into Bounded Authority.
-  - The existing numerical policy is accepted; ownership placement must change
-    without retuning behaviour.
+  - **Admissible Envelope != Authorised Target**.
+  - Situation retains the accepted timing/transition/reverse/0.90 admissible
+    magnitude envelope but no longer supplies a requested Control target.
+  - Candidate projects that evidence envelope; authority-owned
+    `FollowerBoundaryMagnitudePolicy` materialises the final permitted cap.
+  - D-0141 admission, retirement, quiescence/reactivation and accepted numerics
+    remain unchanged by design.
 
 - **#100 — Encounter reconciliation**
   - **Current Pair Assessment Scope != Persistent Pair History**.
@@ -150,16 +153,17 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Begin **Issue #98 — Follower Boundary permissible magnitude ownership** with
-placement verification and behaviour-preserving ownership design before
-implementation.
+Complete independent review and CI for **Issue #98 —
+`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`**, then run the required targeted
+GIANTS Follower Boundary Reality smoke before acceptance.
 
-Protect the accepted numerical and lifecycle behaviour while testing the
-architectural claim:
+Protect both ownership discoveries:
 
 > **Admissible Magnitude Evidence != Permitted Magnitude**
 
-After #98, unless new Reality changes the order:
+> **Admissible Envelope != Authorised Target**
+
+After #98 acceptance, unless new Reality changes the order:
 
 1. #100 — Encounter architecture/design reconciliation;
 2. #101 — dependency-proven retirement/naming cleanup.

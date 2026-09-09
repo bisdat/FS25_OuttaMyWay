@@ -139,7 +139,6 @@ local function magnitude(leader,follower,seed,clearanceFactor)
     if leaderApproachM<=0 and finite(leaderObservedSpeed) and leaderObservedSpeed>=0 then safeKmh=math.min(safeKmh,leaderObservedSpeed) end
     local unscaledSafeKmh=safeKmh
     local factoredSafeKmh,factorApplied=applyClearanceFactor(native,unscaledSafeKmh,clearanceFactor)
-    local appliedKmh=math.min(native,factoredSafeKmh)
     local epsilon=0.05
     local regulationRequired=native>unscaledSafeKmh+epsilon
     return {
@@ -150,7 +149,6 @@ local function magnitude(leader,follower,seed,clearanceFactor)
         unscaledMaxAdmissibleFollowerKmh=unscaledSafeKmh,
         clearanceFactor=tonumber(clearanceFactor) or 1.0,
         clearanceFactorApplied=factorApplied,
-        requestedFollowerCapKmh=appliedKmh,
         leaderObservedProgressKmh=leaderObservedSpeed,
         leaderNativeCommandKmh=leaderNativeRate,
         leaderRateUsedKmh=leaderSpeed,
@@ -177,7 +175,7 @@ local function transitionPreservationMagnitude(leader,follower,clearanceFactor)
     if leader.nativeCommandValid==true and leader.nativeZeroCommand~=true and leader.nativeMoveForwards==false then
         return {
             status="SUPPORTED",regulationRequired=native>0.05,nativeUnrestrictedFollowerKmh=native,
-            maxAdmissibleFollowerKmh=0,requestedFollowerCapKmh=0,leaderNativeCommandKmh=tonumber(leader.nativeMaxSpeedKmh),
+            maxAdmissibleFollowerKmh=0,leaderNativeCommandKmh=tonumber(leader.nativeMaxSpeedKmh),
             leaderObservedProgressKmh=tonumber(leader.progressSpeedKmh),leaderRateUsedKmh=0,transitionPreservation=true,
             reason="LEADER_NATIVE_REVERSE_COMMAND_REQUIRES_FOLLOWER_STOP"
         }
@@ -197,7 +195,7 @@ local function transitionPreservationMagnitude(leader,follower,clearanceFactor)
         status="SUPPORTED",regulationRequired=native>unscaledCap+0.05,nativeUnrestrictedFollowerKmh=native,
         maxAdmissibleFollowerKmh=cap,unscaledMaxAdmissibleFollowerKmh=unscaledCap,
         clearanceFactor=tonumber(clearanceFactor) or 1.0,clearanceFactorApplied=factorApplied,
-        requestedFollowerCapKmh=cap,leaderNativeCommandKmh=leaderNativeRate,
+        leaderNativeCommandKmh=leaderNativeRate,
         leaderObservedProgressKmh=observed,leaderRateUsedKmh=leaderRate,transitionPreservation=true,
         reason="EXISTING_FOLLOWER_PURPOSE_BOUNDED_BY_LEADER_TRANSITION_PROGRESS_RATE"
     }

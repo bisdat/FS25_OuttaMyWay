@@ -383,7 +383,12 @@ function Authority:continueFollowerBoundary(picture,evaluated,applied)
     if token==nil or self.runtime.authorities:validate(token)~=true then
         return {status="NO_DISPATCH",reason="FOLLOWER_BOUNDARY_VALID_AUTHORITY_TOKEN_UNAVAILABLE",followerBoundary=true}
     end
-    local request,requestReason=self:_regulationRequest(picture,evaluated,candidate,applied.commitment,token,bridge,"APPLY",FOLLOWER_BOUNDARY_OWNER_TAG,bridge.requestedFollowerCapKmh,applied.currentResponsibility)
+    local magnitude,magnitudeReason=OuttaMyWay.FollowerBoundaryMagnitudePolicy.materialize(bridge.magnitudeEvidence)
+    if magnitude==nil then
+        return {status="NO_DISPATCH",reason=magnitudeReason or "FOLLOWER_BOUNDARY_PERMISSIBLE_MAGNITUDE_UNAVAILABLE",followerBoundary=true}
+    end
+    local permittedFollowerCapKmh=magnitude.permittedFollowerCapKmh
+    local request,requestReason=self:_regulationRequest(picture,evaluated,candidate,applied.commitment,token,bridge,"APPLY",FOLLOWER_BOUNDARY_OWNER_TAG,permittedFollowerCapKmh,applied.currentResponsibility)
     if request==nil then return {status="NO_DISPATCH",reason=requestReason,followerBoundary=true} end
     local started,result=self.runtime.liveControlDispatcher:dispatch(request,candidate)
     if started~=true then
@@ -400,18 +405,18 @@ function Authority:continueFollowerBoundary(picture,evaluated,applied)
     local priorReactivationCount=update and tonumber(current.reactivationCount) or 0
     self.followerBoundaryLease={commitmentId=applied.commitment.identity,pairKey=bridge.pairKey,leaderAssemblyId=bridge.leaderAssemblyId,followerAssemblyId=bridge.followerAssemblyId,
         leaderReferenceKey=bridge.leaderReferenceKey,followerReferenceKey=bridge.followerReferenceKey,leaderName=bridge.leaderName,followerName=bridge.followerName,governingPurpose=bridge.governingPurpose,
-        authorityTokenId=token.identity,boundedAuthorityId=request.boundedAuthorityId,requestId=request.identity,currentCapKmh=bridge.requestedFollowerCapKmh,nativeUnrestrictedFollowerKmh=bridge.nativeUnrestrictedFollowerKmh,
-        leaderRateUsedKmh=bridge.leaderRateUsedKmh,transitionPreservation=bridge.transitionPreservation==true,actuationActive=true,quiescenceReason=nil,
+        authorityTokenId=token.identity,boundedAuthorityId=request.boundedAuthorityId,requestId=request.identity,currentCapKmh=permittedFollowerCapKmh,nativeUnrestrictedFollowerKmh=magnitude.nativeUnrestrictedFollowerKmh,
+        leaderRateUsedKmh=magnitude.leaderRateUsedKmh,transitionPreservation=bridge.transitionPreservation==true,actuationActive=true,quiescenceReason=nil,
         quiescenceCount=priorQuiescenceCount or 0,reactivationCount=(priorReactivationCount or 0)+(reactivated and 1 or 0)}
     if update then self.followerBoundaryUpdateCount=self.followerBoundaryUpdateCount+1 else self.followerBoundaryApplyCount=self.followerBoundaryApplyCount+1 end
     if previousBoundedAuthorityId~=nil and previousBoundedAuthorityId~=request.boundedAuthorityId then self:_releaseBoundedAuthority(previousBoundedAuthorityId,"FOLLOWER_BOUNDARY_GRANT_REPLACED_BY_CURRENT_MAGNITUDE") end
     if reactivated then self.followerBoundaryReactivationCount=(tonumber(self.followerBoundaryReactivationCount) or 0)+1 end
     self.dispatchCount=self.dispatchCount+1
-    local outcome=self:_outcome(request,"ACCEPTED",{kind=reactivated and "FOLLOWER_BOUNDARY_ACTUATION_REACTIVATED" or (update and "ELASTIC_REGULATION_MAGNITUDE_UPDATED" or "FOLLOWER_BOUNDARY_REGULATION_ADMITTED"),capability="REGULATE_SPEED",maxSpeedKmh=bridge.requestedFollowerCapKmh},nil)
+    local outcome=self:_outcome(request,"ACCEPTED",{kind=reactivated and "FOLLOWER_BOUNDARY_ACTUATION_REACTIVATED" or (update and "ELASTIC_REGULATION_MAGNITUDE_UPDATED" or "FOLLOWER_BOUNDARY_REGULATION_ADMITTED"),capability="REGULATE_SPEED",maxSpeedKmh=permittedFollowerCapKmh},nil)
     if reactivated then
-        logInfo("D0141_ACTUATION_REACTIVATED commitment=%s pair=%s follower=%s cap=%.2fkmh purposeRetained=true reactivationCount=%d",tostring(applied.commitment.identity),tostring(bridge.pairKey),tostring(bridge.followerAssemblyId),tonumber(bridge.requestedFollowerCapKmh) or 0,tonumber(self.followerBoundaryLease.reactivationCount) or 0)
+        logInfo("D0141_ACTUATION_REACTIVATED commitment=%s pair=%s follower=%s cap=%.2fkmh purposeRetained=true reactivationCount=%d",tostring(applied.commitment.identity),tostring(bridge.pairKey),tostring(bridge.followerAssemblyId),tonumber(permittedFollowerCapKmh) or 0,tonumber(self.followerBoundaryLease.reactivationCount) or 0)
     else
-        logInfo("D0141_%s commitment=%s pair=%s follower=%s ref=%s request=%s cap=%.2fkmh native=%.2fkmh leaderRate=%s transition=%s purpose=%s",update and "UPDATE" or "APPLY",tostring(applied.commitment.identity),tostring(bridge.pairKey),tostring(bridge.followerAssemblyId),tostring(bridge.followerReferenceKey),tostring(request.identity),tonumber(bridge.requestedFollowerCapKmh) or 0,tonumber(bridge.nativeUnrestrictedFollowerKmh) or 0,tostring(bridge.leaderRateUsedKmh or "n/a"),tostring(bridge.transitionPreservation==true),tostring(bridge.governingPurpose))
+        logInfo("D0141_%s commitment=%s pair=%s follower=%s ref=%s request=%s cap=%.2fkmh native=%.2fkmh leaderRate=%s transition=%s purpose=%s",update and "UPDATE" or "APPLY",tostring(applied.commitment.identity),tostring(bridge.pairKey),tostring(bridge.followerAssemblyId),tostring(bridge.followerReferenceKey),tostring(request.identity),tonumber(permittedFollowerCapKmh) or 0,tonumber(magnitude.nativeUnrestrictedFollowerKmh) or 0,tostring(magnitude.leaderRateUsedKmh or "n/a"),tostring(bridge.transitionPreservation==true),tostring(bridge.governingPurpose))
     end
     return {status=reactivated and "REACTIVATED" or "ACCEPTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,followerBoundary=true,elasticUpdate=update,reactivated=reactivated}
 end

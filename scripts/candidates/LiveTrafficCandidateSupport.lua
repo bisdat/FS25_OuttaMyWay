@@ -515,9 +515,19 @@ local function followerSpecification(pictureId,pictureValues,record,representati
             leaderReferenceKey=record.leaderReferenceKey,followerReferenceKey=record.followerReferenceKey,
             existingCommitmentId=record.existingCommitmentId,existingObligationId=record.existingObligationId,
             governingRequirementKey=requirement,governingPurpose="PRESERVE_BOUNDARY_TRANSITION_ORDERING",
-            requestedFollowerCapKmh=record.controlMagnitude and record.controlMagnitude.requestedFollowerCapKmh or nil,
-            nativeUnrestrictedFollowerKmh=record.controlMagnitude and record.controlMagnitude.nativeUnrestrictedFollowerKmh or nil,
-            leaderRateUsedKmh=record.controlMagnitude and record.controlMagnitude.leaderRateUsedKmh or nil,
+            magnitudeEvidence=record.controlMagnitude and {
+                status=record.controlMagnitude.status,
+                regulationRequired=record.controlMagnitude.regulationRequired==true,
+                nativeUnrestrictedFollowerKmh=record.controlMagnitude.nativeUnrestrictedFollowerKmh,
+                maxAdmissibleFollowerKmh=record.controlMagnitude.maxAdmissibleFollowerKmh,
+                unscaledMaxAdmissibleFollowerKmh=record.controlMagnitude.unscaledMaxAdmissibleFollowerKmh,
+                clearanceFactor=record.controlMagnitude.clearanceFactor,
+                clearanceFactorApplied=record.controlMagnitude.clearanceFactorApplied==true,
+                leaderObservedProgressKmh=record.controlMagnitude.leaderObservedProgressKmh,
+                leaderNativeCommandKmh=record.controlMagnitude.leaderNativeCommandKmh,
+                leaderRateUsedKmh=record.controlMagnitude.leaderRateUsedKmh,
+                transitionPreservation=record.transitionPreservation==true
+            } or nil,
             transitionPreservation=record.transitionPreservation==true,
             representationId=representationId,reason=record.reason,purposeState=record.purposeState
         }

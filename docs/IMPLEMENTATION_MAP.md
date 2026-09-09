@@ -21,11 +21,11 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline: `main` after PR #106 merge, commit
-  `7fc77da340270022cb61e14c2011610b6883fe20`.
+- Accepted Repository State baseline: `main` after PR #107 merge, commit
+  `9b9eae3383d73c81ef778ff12009c9bcadf4ddf5`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted executable identity is
-  **`0.3.0.38 TEST — TRANSIT INVENTORY CLOSURE`**.
+- This Engineering Increment carries
+  **`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 - No new TEST identity exists merely for audit closure.
@@ -45,7 +45,7 @@ Architectural meaning remains owned by the
 | Passage-specific geometry | `AssemblyRepresentationCache.lua`, `PairSpecificPassageClearance.lua`, `LocalPassagePlanner.lua` | PRESERVE directional Transit Passage contract for non-truncated complete assemblies |
 | Situation Assessment | `scripts/assessment/SituationAssessment.lua` and focused assessment collaborators | PRESERVE current interpreted relationship ownership except listed drift |
 | Encounter continuity | `scripts/assessment/EncounterRegistry.lua` plus `SituationAssessment.lua` | **DRIFT #100** — persistent pair-history implementation concept rejected by current architecture |
-| Follower Boundary evidence | `scripts/assessment/FollowerBoundaryDemandAssessment.lua` | **DRIFT #98** — retain evidence calculation but not final permissible-magnitude ownership |
+| Follower Boundary evidence | `scripts/assessment/FollowerBoundaryDemandAssessment.lua` | **RECONCILIATION #98** — retains admissible magnitude evidence/envelope; no requested Control target |
 | Forward Intersection / Action-Space evidence | `SpatialConstraintAssessment.lua`, `TrajectoryConflictAssessment.lua` | PRESERVE current positive/unresolved/negative semantics |
 | Causal Obstruction | `CausalObstructionAssessment.lua` | PRESERVE positive current obstruction semantics |
 | Candidate construction / planning | `scripts/candidates/` | PRESERVE feasible option/support/planning ownership |
@@ -58,7 +58,7 @@ Architectural meaning remains owned by the
 | Resolution semantic responsibility | `ResolutionCommitment.lua`, `ResolutionCommitmentAdapter.lua`, purpose-specific transition/lifecycle modules | PRESERVE obligation-backed strong persistence |
 | Passage Leg lifecycle | `LiveTrafficCommitmentLifecycle.lua`, Passage obligations and Control callbacks | PRESERVE Survivor Invariance / participant handback-vacatur / Last-Leg Dissolution |
 | Bounded Authority | `scripts/authority/BoundedAuthority.lua` | PRESERVE semantic permission distinct from `AU-*` exclusivity |
-| Regulation Bounded Authority | `RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua` | PRESERVE; **#98** moves final follower magnitude ownership here |
+| Regulation Bounded Authority | `RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua`, `FollowerBoundaryMagnitudePolicy.lua` | **RECONCILIATION #98** — materialises final follower speed permission from accepted admissible evidence |
 | Effective actuation composition | `EffectiveActuationComposition.lua` | PRESERVE |
 | Mechanical exclusivity | `AuthorityRegistry.lua` | PRESERVE; exclusivity is not permission |
 | Control routing | `LiveControlDispatcher.lua` | PRESERVE authorised typed routing |
@@ -129,7 +129,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #98 | confirmed placement mismatch | final follower speed permission is derived in Situation instead of Bounded Authority |
+| #98 | implementation reconciliation | Situation supplies admissible envelope; authority-owned policy now materialises final follower speed permission |
 | #100 | confirmed concept mismatch | rejected persistent pair-history concept remains as `EncounterRegistry` |
 | #101 | behaviour-preserving retirement/naming debt | orphaned Guarded Recovery, stale Control consumer, stranded Constraint semantics, defensive naming |
 
@@ -157,11 +157,11 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Begin **#98 — Follower Boundary magnitude ownership** with placement verification
-and behaviour-preserving ownership design. Do not retune the accepted follower
-cap numerics merely to move responsibility.
+Complete #98 review/CI for
+**`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`**, then obtain the required
+targeted GIANTS Follower Boundary Reality smoke before acceptance.
 
-After #98, unless new Reality changes the order:
+After #98 acceptance, unless new Reality changes the order:
 
 1. #100 — Encounter reconciliation, architecture/design before implementation;
 2. #101 — dependency-proven retirement/naming cleanup.
