@@ -12,10 +12,10 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 
 ## Repository state
 
-- Accepted Repository State baseline for this map: `main` after PR #88 merge, commit `304908d55ce84fa75ec60cece0a37a7ee364c5c9`.
+- Accepted Repository State baseline for this increment: `main` after PR #92 merge, commit `e31791ec510465020da7a0815a901186db3b558e`.
 - Canonical authority remains **v0.3.0.0**.
-- Current branch executable identity is **`0.3.0.32 TEST — RELOCATION SERIALIZATION RESIDUAL VOCABULARY RECONCILIATION`**; acceptance and canonical authority are unchanged until review/merge/Reality evidence says otherwise.
-- Strangler Phase 14 is active. The remaining work is current placement/vocabulary reconciliation, not replay of the earlier Phase-14 tranches.
+- Current branch executable identity is **`0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY`**; acceptance and canonical authority are unchanged until review/merge/Reality evidence says otherwise.
+- Strangler Phase 14 remains active. Phase 14.6B is accepted; the planned Phase 14.6C vocabulary/ownership reconciliation resumes after this bounded Issue #37 Reality correction.
 - Phase 15 whole-system validation and architecture-to-runtime review has not started.
 
 ## Principal current responsibility placement
@@ -31,8 +31,8 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 | Physical representation | `scripts/representation/AssemblyRepresentationCache.lua`, `PlanViewFootprint.lua`, `PairSpecificPassageClearance.lua`, `CurrentPhysicalConflictRepresentation.lua` | PRESERVE explicit positive/incomplete authority |
 | Situation Assessment | `scripts/assessment/SituationAssessment.lua` plus focused assessment collaborators | PRESERVE interpreted current relationship knowledge |
 | Causal Obstruction assessment | `scripts/assessment/CausalObstructionAssessment.lua` | PRESERVE current positive causal-obstruction semantics |
-| Current Responsibility reassessment | `scripts/assessment/CurrentResponsibilityAssessment.lua` | PRESERVE evidence/reassessment only, not lifecycle authority |
-| Prospective spatial constraints | `scripts/assessment/SpatialConstraintAssessment.lua` | PRESERVE pending separate Issue #37 Reality debt |
+| Current Responsibility reassessment | `scripts/assessment/CurrentResponsibilityAssessment.lua` | `.33` corrects Forward Intersection continuation semantics: UNRESOLVED -> WAITING/PERSIST; only positive dissolution/supersession may terminate |
+| Prospective spatial constraints | `scripts/assessment/SpatialConstraintAssessment.lua` | PRESERVE; Issue #37 Reality confirms geometry correctly distinguishes POSITIVE / UNRESOLVED / NEGATIVE |
 | Passage capability | `scripts/assessment/PassageCapabilityAssessment.lua` | PRESERVE |
 | Candidate construction / planning | `scripts/candidates/` including `CandidateSpace.lua`, `LiveTrafficCandidateSupport.lua`, `LocalPassagePlanner.lua`, `TerminalEgressCandidateSupport.lua`, `ObstructionRelocationCandidateSupport.lua`, `PassiveLiveCandidateSupport.lua` | PRESERVE feasible option/support/planning ownership |
 | Fresh Candidate support projection / portfolio composition | `scripts/candidates/ProspectiveDecisionPortfolioSupport.lua` plus projected group-builder seams in existing Candidate supports | PRESERVE one target Decision picture and no inter-group selection |
@@ -108,17 +108,26 @@ Git and merged PRs preserve how those placements were reached. This map records 
 
 ## Current architecture-to-code drift
 
-### Relocation Serialization vocabulary — current Phase 14.6B tranche
+### Forward Intersection evidence continuity — Issue #37
 
-PR #88 accepted **Trigger Provenance != Terminal Egress Execution** and the shared provenance-neutral `TerminalEgressControl`. Completed Obstruction and current Causal Obstruction remain distinct upstream responsibilities.
+`.32` Category-2 Condor/Patriot Reality exposed that production correctly
+published `relationshipStatus=UNRESOLVED` / `FORWARD_CONTINUATION_UNRESOLVED`,
+but `CurrentResponsibilityAssessment` converted that uncertainty into
+`TERMINATE`. Runtime then released the fixed 1 km/h lease and the generic
+Action-Space settlement helper labelled the purpose positively dissolved.
 
-Phase 14.6B graduates the shared beneficiary-hold execution identity from D-0147 `Protected Yield` vocabulary to **Relocation Serialization** while preserving the exact existing `PROGRESS_ACTUATION` + Bounded Authority + `REGULATE_SPEED 0.0 km/h` mechanics.
+`.33` keeps ownership at the existing boundaries:
 
-**Relocation Serialization != Relocation Clearance.** Serialization prevents the active beneficiary from progressing concurrently with an authorised blocker relocation; it does not grant clearance through the beneficiary's current occupancy.
+- `SpatialConstraintAssessment` continues to own POSITIVE / UNRESOLVED / NEGATIVE Forward Intersection knowledge and is unchanged;
+- `CurrentResponsibilityAssessment` maps temporary Forward Intersection uncertainty to `WAITING_FOR_EVIDENCE` + `PERSIST`;
+- existing `RegulationBoundedAuthority` keeps the already-admitted fixed 1 km/h lease active without a new Control path;
+- Runtime requires explicit positive dissolution or positive supersession evidence before physical release;
+- `LiveTrafficCommitmentLifecycle` independently rejects Forward Intersection settlement that does not satisfy that evidence contract.
 
-The `.31` GIANTS smoke established **Relocation Serialization Materially Active**: Patriot was progressing at about 25 km/h under a continuing GIANTS 25 km/h command when the zero-speed serialization lease applied, stopped Patriot while Condor translated, then released before Patriot resumed. Issue #91 therefore has direct current Reality evidence for **RETAIN**.
-
-That same smoke/audit exposed two residual production terms: `beforeProtectedYield=true` in `CompletedObstructionResponsibilityTransition` and Runtime rollback reason `PROTECTED_YIELD_START_FAILED`. `.32` corrects only those vocabulary surfaces plus the mandatory TEST identity and executable contracts.
+No timeout literal, turn-path prediction, Candidate redesign, Passage geometry
+change or Control redesign is introduced. Prolonged unresolved evidence remains a
+separate bounded fail-safe question if Reality demonstrates that normal fresh
+assessment does not resolve it.
 
 ### Terminal Egress execution consolidation — accepted placement
 
@@ -144,7 +153,7 @@ Semantic targeting may be unambiguous while generic Commitment application still
 
 ### Separate Issues
 
-- Issue #37 — Category-2 Forward Intersection Reality-validation debt.
+- Issue #37 — Category-2 Forward Intersection evidence-continuity correction and remaining Reality validation.
 - Issue #45 — Bubble Bullet Time, accepted but unimplemented.
 - Issue #65 — Behaviour Regression Contract != Build Identity Contract.
 
@@ -152,20 +161,39 @@ Do not mix those concerns into the current Phase-14 placement/vocabulary correct
 
 ## Immediate implementation boundary
 
-Phase 14.6B remains intentionally limited to **Relocation Serialization vocabulary graduation**. `.32` is the residual-vocabulary reconciliation inside that same boundary, not a new subphase.
+Issue #37 is the active bounded correction before planned Phase 14.6C resumes.
 
-The correction changes only the two observed residual production terms plus mandatory TEST identity/current contracts. It does **not** change:
+`0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY` must preserve:
 
-- the `0.0 km/h` hold magnitude;
-- who is serialized;
-- Bounded Authority or `PROGRESS_ACTUATION`;
-- Completed Obstruction versus current Causal Obstruction semantics;
-- Terminal Egress geometry/courtesy/configuration;
-- Regulation, Passage, Player Claim/source-AI supersession or GIANTS job ownership.
+- existing Forward Intersection geometry, temporal allocation and exact 1 km/h policy;
+- GIANTS ownership of jobs, route, steering, turning and ordinary navigation;
+- Candidate / Constraint / Decision / Responsibility Transition boundaries;
+- the existing Regulation physical executor and Bounded Authority path;
+- established follower precedence, Cooperative Passage and other Action-Space Regulation semantics.
 
-Next evidence boundary:
+The intended behavioural delta is only:
 
-1. blocking Structural + Lua CI on exact `.32` head;
-2. minimal GIANTS log-vocabulary confirmation if required;
-3. owner acceptance/merge if evidence remains positive;
-4. close Issue #91 as RETAIN and continue to Phase 14.6C.
+```text
+established Forward Intersection
+    + temporary continuation ambiguity / missing current relation
+        -> same Regulation responsibility persists
+        -> WAITING_FOR_EVIDENCE
+        -> existing yielder remains at 1 km/h
+
+fresh supported NEGATIVE relationship
+        -> positive dissolution
+        -> release
+
+fresh established successor relationship
+        -> positive supersession
+        -> release / successor assessment
+```
+
+Validation boundary:
+
+1. blocking Structural + Lua CI on exact `.33` head;
+2. repeat the Condor/Patriot Category-2 Reality fixture;
+3. confirm Patriot remains at 1 km/h through Condor's turn/reverse/square-off ambiguity;
+4. confirm fresh negative/successor evidence releases promptly without a sticky timeout;
+5. only then reassess the downstream boundary-constrained Passage observation;
+6. after owner acceptance, resume Phase 14.6C under Issue #90's existing roadmap.

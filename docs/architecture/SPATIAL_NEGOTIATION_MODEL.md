@@ -67,6 +67,24 @@ Regulation changes timing, not productive routes. Prefer an allocation that pres
 
 Intent-Revelation Creep and third-worker Bullet Time retain the exact **1 km/h** architectural policy where applicable. This is fixed policy for those responsibilities, not a general tuning parameter.
 
+### Forward Intersection evidence continuity
+
+**Forward Intersection Unresolved != Forward Intersection Dissolved.** Once a
+Forward Intersection temporal allocation has been admitted, loss of a supported
+forward continuation while GIANTS reveals a boundary manoeuvre does not itself
+prove that the constrained spatial relationship has disappeared. Situation
+Assessment may classify the same Regulation purpose as `WAITING_FOR_EVIDENCE`
+and preserve its existing yielder allocation and exact 1 km/h Intent-Revelation
+Creep while fresh Reality resolves the ambiguity.
+
+This continuity grants no turn-path prediction and creates no `TURNING`
+special-case route authority. Supported negative forward-intersection evidence
+may positively dissolve the allocation; an established valid relationship may
+positively supersede it. Temporary unresolvability or missing continuation
+evidence may do neither. A bounded fail-safe may later force reassessment or
+escalation if evidence does not recover, but timeout expiry alone must not
+manufacture a safe/dissolved conclusion.
+
 ## 5. Spatial constraint overlay
 
 The Field World supplies evidence about local option-space scarcity:

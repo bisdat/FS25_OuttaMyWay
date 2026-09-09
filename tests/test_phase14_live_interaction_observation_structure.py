@@ -55,7 +55,7 @@ def test_phase14_3_current_build_identity_is_coherent():
     config=text("scripts/config.lua")
     main=text("scripts/main.lua")
     moddesc=text("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.32"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.32 TEST — RELOCATION SERIALIZATION RESIDUAL VOCABULARY RECONCILIATION"' in config
-    assert "v0.3.0.32 TEST — RELOCATION SERIALIZATION RESIDUAL VOCABULARY RECONCILIATION" in main
-    assert '<version value="0.3.0.32">0.3.0.32</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.33"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY"' in config
+    assert "v0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY" in main
+    assert '<version value="0.3.0.33">0.3.0.33</version>' in moddesc

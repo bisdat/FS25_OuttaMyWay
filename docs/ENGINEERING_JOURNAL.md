@@ -1,3 +1,52 @@
+## 2026-09-08 — Issue #37: Forward Intersection evidence continuity
+
+**Observe:** `.32` Category-2 Condor/Patriot Reality showed a useful early
+Forward Intersection allocation followed by premature release. At
+`20:03:33.307`, Situation knowledge changed to `UNRESOLVED` with
+`FORWARD_CONTINUATION_UNRESOLVED`; Patriot's 1 km/h Regulation was released.
+About 83 ms later GIANTS began Condor's corner turn. Condor spent about 12 s in a
+turn/reverse/square-off sequence while Patriot accelerated natively and consumed
+roughly 79 m of Resolution Space before a later Forward Intersection formed.
+
+**Code walk:** `SpatialConstraintAssessment` already separates `POSITIVE`,
+`UNRESOLVED` and `NEGATIVE`. Forward Intersection Candidate/Obligation contracts
+already require positive dissolution. The semantic fault is
+`CurrentResponsibilityAssessment`: established Forward Intersection Regulation
+is retained only for actionable positive evidence; temporary unresolvability is
+converted to `TERMINATE`. Runtime then releases the physical lease and generic
+Action-Space settlement can record `SATISFACTION` / positively dissolved
+semantics.
+
+**Discover:** **Forward Intersection Unresolved != Forward Intersection
+Dissolved**. More generally at this boundary, **Evidence Loss Is Not Purpose
+Expiry**. The existing follower-purpose donor already demonstrates the same
+principle: unresolved evidence may require persistence while positive retirement
+evidence is absent.
+
+**Hypothesise:** `0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY`
+changes only the semantic continuation/settlement contract. Temporary Forward
+Intersection ambiguity becomes `WAITING_FOR_EVIDENCE` while the same Regulation
+responsibility and existing fixed 1 km/h yielder allocation persist. Supported
+negative evidence positively dissolves it; an established valid incumbent
+relationship positively supersedes it. Runtime and settlement fail closed if a
+caller attempts to terminalise Forward Intersection without either positive
+evidence class.
+
+**Implementation boundary:** no Forward Intersection geometry, temporal
+allocation, Candidate, Passage, Regulation Control or Bounded Authority redesign.
+Existing `RegulationBoundedAuthority` already keeps the fixed-creep lease active
+when semantic assessment returns `PERSIST`.
+
+**Fail-safe boundary:** no timeout literal is introduced. Prolonged uncertainty
+may later require bounded escalation, but timeout expiry cannot establish safety
+or dissolution.
+
+**Validate next:** independent CI first. Then repeat the Condor/Patriot
+Category-2 fixture and confirm the 1 km/h allocation survives the
+turn/reverse/square-off ambiguity until fresh supported negative or successor
+evidence appears. Only after that should the downstream boundary-constrained
+Passage observation be reinterpreted.
+
 ## 2026-09-08 — Issue #82 bounded follower HUD glyph correction
 
 **Observe:** PR #83 has restored the historical U+2022 texture-font constraint to

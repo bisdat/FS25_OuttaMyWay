@@ -18,17 +18,46 @@ end
 
 function Assessment:assessActionSpaceRegulation(current,relation)
     if current==nil then return {disposition="TERMINATE",reason="ACTION_SPACE_REGULATION_NOT_CURRENT"} end
+    local forward=current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION"
     if relation==nil then
-        if current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION" then
-            return {disposition="TERMINATE",reason="FORWARD_INTERSECTION_NO_LONGER_POSITIVELY_SUPPORTED"}
+        if forward then
+            return {
+                disposition="PERSIST",
+                evidenceState="WAITING_FOR_EVIDENCE",
+                reason="FORWARD_INTERSECTION_EVIDENCE_TEMPORARILY_UNRESOLVED"
+            }
         end
         return {disposition="PERSIST",reason="ACTION_SPACE_RELATIONSHIP_TEMPORARILY_UNRESOLVED"}
     end
-    if current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION" then
-        if relation.classification=="FORWARD_INTERSECTION" and relation.actionable==true and relation.incumbentRelationship==nil then
-            return {disposition="PERSIST",reason="FORWARD_INTERSECTION_REMAINS_POSITIVELY_SUPPORTED"}
+    if forward then
+        if relation.relationshipStatus=="NEGATIVE" then
+            return {
+                disposition="TERMINATE",
+                terminationEvidenceKind="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION",
+                reason=relation.reason or "FORWARD_INTERSECTION_POSITIVELY_DISSOLVED"
+            }
         end
-        return {disposition="TERMINATE",reason=relation.reason or "FORWARD_INTERSECTION_DISSOLVED_OR_SUPERSEDED"}
+        if relation.incumbentRelationship~=nil then
+            return {
+                disposition="TERMINATE",
+                terminationEvidenceKind="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION",
+                reason=relation.reason or "FORWARD_INTERSECTION_POSITIVELY_SUPERSEDED"
+            }
+        end
+        if relation.relationshipStatus=="POSITIVE"
+            and relation.classification=="FORWARD_INTERSECTION"
+            and relation.actionable==true then
+            return {
+                disposition="PERSIST",
+                evidenceState="SUPPORTED",
+                reason="FORWARD_INTERSECTION_REMAINS_POSITIVELY_SUPPORTED"
+            }
+        end
+        return {
+            disposition="PERSIST",
+            evidenceState="WAITING_FOR_EVIDENCE",
+            reason=relation.reason or "FORWARD_INTERSECTION_EVIDENCE_TEMPORARILY_UNRESOLVED"
+        }
     end
     local relationship=relation.resolutionSpaceRelationship
     if type(relationship)=="table" and relationship.positiveDissolution==true then
