@@ -1,3 +1,30 @@
+## 2026-09-09 — Phase 14.6C: `.37` behavioural validation passes; structural debt isolated
+
+**Observe:** PR #95 Offline Validation run #255 on exact `.37` head
+`96e0c7ae9c74df29a05761060bc55793b491d390` passed both blocking Lua
+behavioural contracts. The main replacement-core harness, focused
+obstruction-relocation harness and enforcement gate all succeeded. Structural
+contracts reported **185 passed / 10 failed**.
+
+All ten structural failures were stale source-contract expectations rather than
+production defects: one removed Productive Coverage config switch was still
+expected to exist disabled; one current Action-Space helper was still expected
+under its `d0146` implementation name; two tests expected the deliberately
+retired `COOPERATIVE_PASSAGE_MOVE_SPEED_KMH` identifier rather than the current
+`COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH`; and six phase-specific build checks
+still expected the `.33` main-file header while already expecting `.37` in
+config/modDesc.
+
+**Interpretation:** `.37` corrected the `.36` executable regressions. The
+remaining red CI state is validation-contract drift. Repository structural
+contracts protect current accepted behaviour and ownership, not obsolete
+implementation vocabulary.
+
+**Decision:** reconcile only tests and current validation documentation. Do not
+change runtime source and do not allocate `.38`; executable identity remains
+`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`. Re-run blocking CI
+after the test-only commit.
+
 ## 2026-09-09 — Phase 14.6C: semantic rename validation closure
 
 **Observe:** PR #95 supplied the first repository-wide validation of `.36`.

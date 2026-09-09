@@ -734,7 +734,7 @@ def test_v4765_d0136_productive_coverage_residual_settlement_is_intent_based_and
     coverage=(ROOT/"scripts"/"diagnostics"/"DemonstratedProductiveCoverageProbe.lua").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     assert 'OuttaMyWay.VERSION = "0.3.0.37"' in config
-    assert 'PRODUCTIVE_COVERAGE_RESIDUAL_PROBE_ENABLED = false' in config
+    assert 'PRODUCTIVE_COVERAGE_RESIDUAL_PROBE_ENABLED' not in config
     assert 'scripts/diagnostics/ProductiveCoverageResidualProbe.lua' not in main
     assert 'addModEventListener(OuttaMyWay.productiveCoverageResidualProbe)' not in main
     assert 'FIRST_POSITIVE_PRODUCTIVE_CORRIDOR_BACK_TO_FIELD_WORLD_BOUNDARY' in residual
@@ -1150,7 +1150,7 @@ def test_v47106_d0146_current_excursion_conserves_action_space_before_establishe
         'ACTION_SPACE_REGULATION_OWNER_TAG="ACTION_SPACE_REGULATION"',
         "assessActionSpaceRegulationPermission", "neutralizeActionSpaceRegulationPhysical", "_updateActionSpaceRegulationEnvelope",
         "D0155_ENVELOPE_UPDATE", "D0155_ROLE_REBASE",
-        "d0146CurrentPoseSeparation", "D0155_INTENT_REVELATION_CREEP",
+        "actionSpaceCurrentPoseSeparation", "D0155_INTENT_REVELATION_CREEP",
     ):
         assert token in authority
     assert "positiveDissolution" in current_assessment
@@ -1612,7 +1612,7 @@ def test_v0132_d0159_passage_excursion_restores_selection_handoff_and_rebases_ex
     assert "D0146_PASSAGE_SECOND_WHISTLE" not in control
     assert "COOPERATIVE_PASSAGE_EXCURSION" in control
     # Isolation guardrails for the first field experiment.
-    assert "OuttaMyWay.COOPERATIVE_PASSAGE_MOVE_SPEED_KMH = 8.0" in config
+    assert "OuttaMyWay.COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0" in config
     assert "AGRONOMIC_DEBT_RETURN" not in control
 
 
@@ -1637,7 +1637,7 @@ def test_v0133_directional_passage_envelope_uses_bootstrap_giants_size_with_disc
         assert token in planner
     assert "minimumTranslatedDiscClearance" in planner  # explicit fallback retained
     assert "OuttaMyWay.COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0" in config
-    assert "OuttaMyWay.COOPERATIVE_PASSAGE_MOVE_SPEED_KMH = 8.0" in config
+    assert "OuttaMyWay.COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0" in config
 
 
 def test_v0134_passage_settling_uses_owned_hold_plus_physical_stationary_not_permission_gate_causation():

@@ -80,6 +80,13 @@ and omission of the new 14.6C contract from the blocking CI inventory.
 `0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE` repairs those recognition/validation gaps without changing
 numeric policy or intended physical behaviour.
 
+Offline Validation run #255 on exact `.37` executable head confirmed the Lua
+behavioural contracts PASS. Structural contracts reached **185 passed / 10
+failed**; all ten failures were classified as stale validation vocabulary /
+build-identity expectations, with no additional runtime defect discovered.
+The current follow-up is test-contract reconciliation only and does not change
+the `.37` executable identity.
+
 Implementation-local work performs only syntax/static/XML/diff checks. GitHub
 Actions owns the repository Structural and Lua behavioural suites.
 
