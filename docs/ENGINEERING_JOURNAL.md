@@ -1,3 +1,25 @@
+## 2026-09-09 — Issue #99 accepted; Follower magnitude ownership becomes active boundary
+
+**Validate:** PR #106 independently passed the protected validation boundary on
+exact head `ef09cd3aa3b09656c2d420df8a9c5602ed6bb269`: **195 structural
+contracts**, **341 replacement-core behavioural contracts**, and **9 focused
+obstruction-relocation contracts** passed. The truncation regression is green,
+and existing non-truncated Transit behaviour remains protected.
+
+**Record:** PR #106 merged to Accepted Repository State as
+`7fc77da340270022cb61e14c2011610b6883fe20`. Issue #99 closed **completed**.
+Accepted executable identity is
+`0.3.0.38 TEST — TRANSIT INVENTORY CLOSURE`; canonical authority remains
+v0.3.0.0.
+
+**Next:** Issue #98 becomes the active reconciliation boundary. The task is
+ownership placement, not follower-policy redesign: preserve the accepted
+elastic-cap formula, 0.90 transition-clearance factor, reverse/transition
+handling, quiescence/reactivation and Regulation identity while verifying that
+final permissible magnitude belongs to Regulation Bounded Authority.
+
+> **Admissible Magnitude Evidence != Permitted Magnitude**
+
 ## 2026-09-09 — Issue #99 Transit Inventory Closure reconciliation
 
 **Observe:** Phase-15 audit found that the representation cache can exhaust
@@ -61,6 +83,7 @@ Advance reconciliation to #99. Record the 21 distributed build-version
 failures as fresh evidence for existing Issue #65
 **Behaviour Regression Contract != Build Identity Contract**, not as #97
 behavioural failures.
+
 ## 2026-09-09 — Structural-test rename self-reference closure
 
 **Observe:** Offline Validation run #257 on exact durable-test-naming head
