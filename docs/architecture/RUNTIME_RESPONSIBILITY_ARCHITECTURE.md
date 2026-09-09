@@ -574,6 +574,22 @@ determine whether GIANTS AI, Regulation or Resolution Commitment follows.
 
 Regulation has no cooldown, pair memory or sticky recent-subject rule. One allocation has a bounded uninterrupted authority lifetime; expiry requires fresh assessment and provides no inference of safety, failure or commitment.
 
+**Unresolved Evidence != Positive Responsibility Expiry.** Weak persistence does
+not permit incomplete evidence to manufacture termination. Once Regulation is
+established, fresh Situation Assessment may positively classify the current
+relationship evidence as `WAITING_FOR_EVIDENCE` when the same admitted temporal
+coordination purpose remains materially live but the evidence needed to prove
+continuation or dissolution is temporarily unavailable. The same Regulation
+responsibility and allocation may persist through that bounded uncertainty; this
+is maintenance, not a new Current Responsibility or generic Commitment state.
+
+Positive dissolution, positive supersession, governing-basis cessation or
+another authoritative lifecycle event may end the Regulation. `UNRESOLVED`,
+temporary evidence absence, or a watchdog expiry alone cannot be relabelled as
+successful dissolution. Prolonged uncertainty still requires bounded fail-safe
+handling or escalation; uncertainty is not authority to hold indefinitely and a
+timeout is not evidence of safety.
+
 ### Resolution Commitment
 
 Resolution Commitment is a durable accepted resolution obligation. It has strong

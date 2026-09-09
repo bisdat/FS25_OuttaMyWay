@@ -429,12 +429,32 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
     local commitmentId=current and current.provenance and current.provenance.retainedCommitmentId or nil
     local conflictIdentity=current and current.provenance and current.provenance.conflictIdentity or nil
     if type(commitmentId)~="string" or type(conflictIdentity)~="string" then return {status="NO_DISPATCH",reason="ACTION_SPACE_REGULATION_CURRENT_RESPONSIBILITY_INCOMPLETE",d0146ActionSpace=true} end
+    local forward=current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION"
+    if forward
+        and assessment.terminationEvidenceKind~="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION"
+        and assessment.terminationEvidenceKind~="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION" then
+        return {
+            status="NO_DISPATCH",
+            reason="FORWARD_INTERSECTION_TERMINATION_EVIDENCE_REQUIRED",
+            detail=assessment.reason,
+            d0146ActionSpace=true,
+            forwardIntersection=true,
+            commitmentId=commitmentId
+        }
+    end
     local status=self.regulationBoundedAuthority:getD0146ActionSpaceStatus()
     local physical=self.regulationBoundedAuthority:neutralizeActionSpaceRegulationPhysical(picture,evaluated,assessment.reason)
     local commitment=self.commitments:get(commitmentId)
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
         OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self,commitmentId,status and status.regulatedAssemblyId,{reason=assessment.reason,preserveAuthority=false})
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.settleD0146ActionSpacePurpose(self,commitmentId,{conflictIdentity=conflictIdentity,reason=assessment.reason},{kind="D0146_ACTION_SPACE_POSITIVE_PURPOSE_EXPIRY",reason=assessment.reason,conflictIdentity=conflictIdentity})
+        local settlementKind=forward and assessment.terminationEvidenceKind or "D0146_ACTION_SPACE_POSITIVE_PURPOSE_EXPIRY"
+        OuttaMyWay.LiveTrafficCommitmentLifecycle.settleD0146ActionSpacePurpose(self,commitmentId,{conflictIdentity=conflictIdentity,reason=assessment.reason},{
+            kind=settlementKind,
+            reason=assessment.reason,
+            conflictIdentity=conflictIdentity,
+            positiveDissolution=settlementKind=="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION",
+            positiveSupersession=settlementKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION"
+        })
     end
     self.responsibilityTransitionAuthority:terminateActionSpaceRegulation(commitmentId,conflictIdentity)
     return physical

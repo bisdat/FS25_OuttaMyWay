@@ -326,22 +326,44 @@ function Lifecycle.settleD0146ActionSpacePurpose(runtime,commitmentId,bridge,evi
     if runtime==nil or type(commitmentId)~="string" or type(bridge)~="table" or type(bridge.conflictIdentity)~="string" then return nil,"MISSING_D0146_ACTION_SPACE_SETTLEMENT_CONTEXT" end
     local record=runtime.commitments:get(commitmentId)
     if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then return nil,"D0146_ACTION_SPACE_COMMITMENT_NOT_LIVE" end
+    local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
+    local forward=type(responsibility)=="string" and string.sub(responsibility,1,32)=="forward-intersection-regulation:"
+    local settlementMode=nil
+    if bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_D0146_ACTION_SPACE_REGULATION" then
+        settlementMode="BASIS_CESSATION"
+    elseif forward then
+        local evidenceKind=evidence and evidence.kind or nil
+        if evidenceKind=="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION" then
+            settlementMode="SATISFACTION"
+        elseif evidenceKind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION" then
+            settlementMode="BASIS_CESSATION"
+        else
+            return nil,"FORWARD_INTERSECTION_SETTLEMENT_REQUIRES_POSITIVE_DISSOLUTION_OR_SUPERSESSION"
+        end
+    else
+        settlementMode="SATISFACTION"
+    end
+
     local obligation=findD0146ActionSpaceObligation(runtime,commitmentId,bridge.conflictIdentity)
     local settledId=nil
     if obligation~=nil then
-        local mode=bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_D0146_ACTION_SPACE_REGULATION" and "BASIS_CESSATION" or "SATISFACTION"
-        runtime.obligations:settle(obligation.identity,mode,evidence or {kind="D0146_ACTION_SPACE_PURPOSE_EXPIRED",reason=bridge.reason})
+        runtime.obligations:settle(obligation.identity,settlementMode,evidence or {kind="D0146_ACTION_SPACE_PURPOSE_EXPIRED",reason=bridge.reason})
         settledId=obligation.identity
     end
     local remaining=runtime.obligations:openForOwner(commitmentId)
     record=runtime.commitments:get(commitmentId)
-    local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
     local terminal=nil
-    local ownedTrafficPurpose=type(responsibility)=="string" and (string.sub(responsibility,1,26)=="d0146-cooperative-passage:" or string.sub(responsibility,1,32)=="forward-intersection-regulation:")
+    local ownedTrafficPurpose=type(responsibility)=="string" and (string.sub(responsibility,1,26)=="d0146-cooperative-passage:" or forward)
     if #remaining==0 and ownedTrafficPurpose then
         local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {kind="D0146_ACTION_SPACE_PURPOSE_EXPIRED"},provenance={source="LiveTrafficCommitmentLifecycle.settleD0146ActionSpacePurpose"}})
         runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
-        terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{kind="D0146_ACTION_SPACE_RELATIONSHIP_POSITIVELY_DISSOLVED",conflictIdentity=bridge.conflictIdentity,reason=bridge.reason})
+        local terminalEvidenceKind="D0146_ACTION_SPACE_RELATIONSHIP_POSITIVELY_DISSOLVED"
+        if forward then
+            terminalEvidenceKind=(evidence and evidence.kind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION")
+                and "FORWARD_INTERSECTION_RESPONSIBILITY_POSITIVELY_SUPERSEDED"
+                or "FORWARD_INTERSECTION_POSITIVELY_DISSOLVED"
+        end
+        terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{kind=terminalEvidenceKind,conflictIdentity=bridge.conflictIdentity,reason=bridge.reason})
         record=terminal
     end
     logInfo("D0146_ACTION_SPACE_PURPOSE_SETTLED commitment=%s conflict=%s obligation=%s remainingObligations=%d terminal=%s reason=%s",

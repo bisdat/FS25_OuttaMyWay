@@ -6801,6 +6801,102 @@ test("Phase13 direct Cooperative Passage substrate targeting is purpose and Job-
 end)
 
 
+test("Forward Intersection evidence continuity distinguishes waiting, dissolution and supersession",function()
+    local assessment=OuttaMyWay.CurrentResponsibilityAssessment.new()
+    local current={provenance={admissionKind="FORWARD_INTERSECTION",retainedCommitmentId="CM-FI",conflictIdentity="FI-CONTINUITY"}}
+
+    local positive={
+        identity="FI-CONTINUITY",classification="FORWARD_INTERSECTION",relationshipStatus="POSITIVE",
+        actionable=true,incumbentRelationship=nil,reason="GREATER_TIME_TO_FORWARD_INTERSECTION_YIELDS_FOR_INTENT_REVELATION"
+    }
+    local first=assessment:assessActionSpaceRegulation(current,positive)
+    equal(first.disposition,"PERSIST"); equal(first.evidenceState,"SUPPORTED")
+
+    local unresolved={
+        identity="FI-CONTINUITY",classification="UNRESOLVED",relationshipStatus="UNRESOLVED",
+        actionable=false,reason="FORWARD_CONTINUATION_UNRESOLVED"
+    }
+    local waiting=assessment:assessActionSpaceRegulation(current,unresolved)
+    equal(waiting.disposition,"PERSIST"); equal(waiting.evidenceState,"WAITING_FOR_EVIDENCE")
+    equal(waiting.reason,"FORWARD_CONTINUATION_UNRESOLVED")
+
+    local absent=assessment:assessActionSpaceRegulation(current,nil)
+    equal(absent.disposition,"PERSIST"); equal(absent.evidenceState,"WAITING_FOR_EVIDENCE")
+
+    local recovered=assessment:assessActionSpaceRegulation(current,positive)
+    equal(recovered.disposition,"PERSIST"); equal(recovered.evidenceState,"SUPPORTED")
+
+    local negative={
+        identity="FI-CONTINUITY",classification="NO_FORWARD_INTERSECTION",relationshipStatus="NEGATIVE",
+        actionable=false,reason="INTERSECTION_NOT_FORWARD_OF_BOTH_PARTICIPANTS"
+    }
+    local dissolved=assessment:assessActionSpaceRegulation(current,negative)
+    equal(dissolved.disposition,"TERMINATE")
+    equal(dissolved.terminationEvidenceKind,"FORWARD_INTERSECTION_POSITIVE_DISSOLUTION")
+
+    local superseded={
+        identity="FI-CONTINUITY",classification="FORWARD_INTERSECTION",relationshipStatus="POSITIVE",
+        actionable=false,incumbentRelationship={kind="FOLLOWER_BOUNDARY"},
+        reason="FORWARD_INTERSECTION_SUPPRESSED_BY_ESTABLISHED_RELATIONSHIP_PRECEDENCE"
+    }
+    local successor=assessment:assessActionSpaceRegulation(current,superseded)
+    equal(successor.disposition,"TERMINATE")
+    equal(successor.terminationEvidenceKind,"FORWARD_INTERSECTION_POSITIVE_SUPERSESSION")
+end)
+
+test("Forward Intersection WAITING_FOR_EVIDENCE retains the existing fixed one-kmh lease",function()
+    local runtime=OuttaMyWay.Runtime.new()
+    local authority=runtime.regulationBoundedAuthority
+    local lease={
+        commitmentId="CM-FI-WAIT",conflictIdentity="FI-WAIT",admissionKind="FORWARD_INTERSECTION",
+        regulatedAssemblyId="AS-YIELD",regulatedReferenceKey="vehicle-root:yield",
+        protectedAssemblyId="AS-CONTINUE",protectedReferenceKey="vehicle-root:continue",
+        governingPurpose="MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME",
+        actuationActive=true,fixedForwardIntersection=true,currentCapKmh=1
+    }
+    authority.d0146ActionSpaceLease=lease
+    local relation={
+        identity="FI-WAIT",classification="UNRESOLVED",relationshipStatus="UNRESOLVED",
+        actionable=false,reason="FORWARD_CONTINUATION_UNRESOLVED"
+    }
+    local picture={opposedCorridorKnowledge={},spatialConstraintKnowledge={{pairRelationships={relation}}}}
+    local semantic=runtime.currentResponsibilityAssessment:assessActionSpaceRegulation(
+        {provenance={admissionKind="FORWARD_INTERSECTION"}},relation)
+    local result=authority:assessActionSpaceRegulationPermission(
+        picture,{decision={epoch=1}},nil,semantic)
+
+    equal(result.status,"MAINTAINED")
+    equal(result.forwardIntersection,true)
+    equal(lease.actuationActive,true)
+    equal(lease.currentCapKmh,1)
+end)
+
+test("Forward Intersection unresolved evidence cannot settle or release as positive dissolution",function()
+    local runtime=OuttaMyWay.Runtime.new()
+    local record=runtime.commitments:create({
+        objective="preserve Forward Intersection intent-revelation time",
+        governingBasis={responsibilityKey="forward-intersection-regulation:FI-GUARD"}
+    })
+    local settled,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.settleD0146ActionSpacePurpose(
+        runtime,record.identity,
+        {conflictIdentity="FI-GUARD",reason="FORWARD_CONTINUATION_UNRESOLVED"},
+        {kind="D0146_ACTION_SPACE_POSITIVE_PURPOSE_EXPIRY",reason="FORWARD_CONTINUATION_UNRESOLVED"})
+    equal(settled,nil)
+    equal(reason,"FORWARD_INTERSECTION_SETTLEMENT_REQUIRES_POSITIVE_DISSOLUTION_OR_SUPERSESSION")
+
+    local refused=runtime:_terminateActionSpaceRegulation(
+        {},{},
+        {provenance={
+            retainedCommitmentId=record.identity,
+            conflictIdentity="FI-GUARD",
+            admissionKind="FORWARD_INTERSECTION"
+        }},
+        {disposition="TERMINATE",reason="FORWARD_CONTINUATION_UNRESOLVED"})
+    equal(refused.status,"NO_DISPATCH")
+    equal(refused.reason,"FORWARD_INTERSECTION_TERMINATION_EVIDENCE_REQUIRED")
+end)
+
+
 local function causalObstructionAssessmentFixture(options)
     options=options or {}
     local activeRecords={{identity="JE-BENEFICIARY",assemblyId="AS-BENEFICIARY",status="ACTIVE"}}
