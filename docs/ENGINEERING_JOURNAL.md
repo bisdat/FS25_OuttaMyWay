@@ -1,3 +1,24 @@
+## 2026-09-09 — Phase 14.6C: production vocabulary completeness is semantic
+
+**Observe:** the pushed `.34` pre-PR review found that its shortlist stale-token
+guard passed while current production contracts still carried development-origin
+identity: `{d0146=true}`, D-numbered Action-Space obligation kinds and support
+modes, `D0146_*_STEP2_TEST` Passage support identity, `d0146-` guide/run
+addressing and current physical-effect kinds.
+
+**Discover:** **Production Vocabulary Completeness Is Semantic, Not a Token-List
+Check.** A lexical shortlist can prove selected names are gone without proving
+that current contracts describe current responsibilities. Provenance and
+telemetry may legitimately retain D-numbers; current execution addressing,
+contract kinds, support-boundary modes, evidence/effect kinds and declarative
+policy metadata may not use development provenance as semantic identity.
+
+**Decision:** `.34` is not opened as a PR and is not accepted. Because it was
+already pushed, the correction receives fresh TEST identity `.35` while remaining
+the same Phase 14.6C tranche. `.35` graduates only current semantic/execution
+surfaces and preserves historical headers, `origin.decision`, provenance
+authorities and stable diagnostic event prefixes.
+
 ## 2026-09-09 — Issue #93: Passage-contact hypothesis disproven
 
 **Observe:** `.31`/`.32`/`.33` telemetry repeatedly reported GIANTS `isBlocked`

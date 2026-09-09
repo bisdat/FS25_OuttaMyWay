@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.3.0.34 TEST — PRODUCTION VOCABULARY OWNERSHIP RECONCILIATION.
+-- FS25_OuttaMyWay v0.3.0.35 TEST — PRODUCTION VOCABULARY CONTRACT COMPLETENESS.
 -- modDesc.xml loads only this file. Retired implementation is preserved by repository history, not shipped runtime source.
 local modDirectory=g_currentModDirectory or ""
 local modules={

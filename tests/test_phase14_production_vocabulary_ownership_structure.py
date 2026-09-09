@@ -85,7 +85,74 @@ def test_phase14_6c_test_build_identity_is_atomic():
     main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
     moddesc = (ROOT / "modDesc.xml").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.34"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.34 TEST — PRODUCTION VOCABULARY OWNERSHIP RECONCILIATION"' in config
-    assert "v0.3.0.34 TEST — PRODUCTION VOCABULARY OWNERSHIP RECONCILIATION" in main
-    assert '<version value="0.3.0.34">0.3.0.34</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.35"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.35 TEST — PRODUCTION VOCABULARY CONTRACT COMPLETENESS"' in config
+    assert "v0.3.0.35 TEST — PRODUCTION VOCABULARY CONTRACT COMPLETENESS" in main
+    assert '<version value="0.3.0.35">0.3.0.35</version>' in moddesc
+
+def test_phase14_6c_semantic_contracts_do_not_use_development_identity():
+    support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    planner = (ROOT / "scripts" / "candidates" / "LocalPassagePlanner.lua").read_text(encoding="utf-8")
+    lifecycle = (ROOT / "scripts" / "commitment" / "LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+    control = (ROOT / "scripts" / "control" / "CooperativePassageControl.lua").read_text(encoding="utf-8")
+    transition = (ROOT / "scripts" / "responsibility" / "ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
+    portfolio = (ROOT / "scripts" / "candidates" / "ProspectiveDecisionPortfolioSupport.lua").read_text(encoding="utf-8")
+    authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
+    capability = (ROOT / "scripts" / "assessment" / "PassageCapabilityAssessment.lua").read_text(encoding="utf-8")
+
+    current_contract = support + planner + lifecycle + control + transition + portfolio + authority + capability
+
+    for required in (
+        'supportBoundary={mode="COOPERATIVE_PASSAGE"',
+        'supportBoundary={mode="ACTION_SPACE_REGULATION"',
+        'controlAuthority="COOPERATIVE_PASSAGE_BOUNDED_CONTROL"',
+        'controlAuthority="RESOLUTION_SPACE_PROGRESSION_ENVELOPE"',
+        'referenceKey=(forward and "forward-intersection-regulation:" or "action-space-regulation:")',
+        'purpose=forward and {kind="FORWARD_INTERSECTION_INTENT_REVELATION"',
+        'or {kind="ACTION_SPACE_REGULATION"',
+        '"ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"',
+        '"cooperative-passage-guide:"',
+        'mode="COOPERATIVE_PASSAGE_GUIDE"',
+        '"COOPERATIVE_PASSAGE_LEG_HANDED_BACK"',
+        '"FOLLOWER_BOUNDARY_ACTUATION_QUIESCED"',
+        '"ACTION_SPACE_REGULATION_ACTUATION_QUIESCED"',
+        '"RESOLUTION_SPACE_PROGRESSION_ENVELOPE_UPDATED"',
+    ):
+        assert required in current_contract
+
+    for stale in (
+        "{d0146=true}",
+        '"d0146-guide:"',
+        '"d0146-action-space-regulation:"',
+        '"D0146_PASSAGE_ACTION_SPACE_CONSERVATION"',
+        '"D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"',
+        '"D0146_RESOLUTION_SPACE_REGULATION"',
+        '"D0146_COOPERATIVE_PASSAGE_STEP2_TEST"',
+        '"D0146_BOUNDED_ACTIVE_TEST"',
+        '"D0146_GUIDE"',
+        "_d0146LongitudinalSeparation",
+        "_beginD0146Settling",
+        "_preflightD0146Guide",
+        "_rebaseD0146Guide",
+        "_beginD0146Configuration",
+        "_d0146ConfigurationReady",
+        "_d0146RestoreReady",
+        "_finishD0146Restore",
+        "_executeD0146JointRequests",
+        '"REGULATION_RATE_IS_TEST_CALIBRATION"',
+        '"D0123_SPEED_IS_TEMPORARY_TEST_LITERAL"',
+        '"CURRENT_CONFIGURATION_RETAINED_BY_THIS_PAIR_SPECIFIC_CLEARANCE_TEST_TRANCHE"',
+        '"D0141_ACTUATION_QUIESCED"',
+        '"D0155_ACTUATION_QUIESCED"',
+        '"D0155_RESOLUTION_SPACE_ENVELOPE_UPDATED"',
+    ):
+        assert stale not in current_contract
+
+
+def test_phase14_6c_preserves_provenance_and_telemetry_separately_from_current_identity():
+    support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    lifecycle = (ROOT / "scripts" / "commitment" / "LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+
+    # D-numbers remain legitimate where they identify historical decision provenance.
+    assert 'decision="D-0146"' in support
+    assert 'decision="D-0141"' in lifecycle

@@ -40,7 +40,7 @@ local function record(conflict,motion,physical,assemblyId,otherAssemblyId)
         claimPermissions=ok and {"COOPERATIVE_PASSAGE_MECHANICAL_PREFLIGHT"} or {},
         coverage={complete=false,conservative=false,underApproximationRisk=true},
         uncertainty=ok and {
-            "CURRENT_CONFIGURATION_RETAINED_BY_THIS_PAIR_SPECIFIC_CLEARANCE_TEST_TRANCHE",
+            "CURRENT_CONFIGURATION_RETAINED_BY_PAIR_SPECIFIC_CLEARANCE_ASSESSMENT",
             "CONFIGURATION_REDUCTION_REMAINS_OPTIONAL_ARCHITECTURE_BUT_IS_NOT_SELECTED_HERE",
             "GENERIC_NEGATIVE_CLEARANCE_AUTHORITY_NOT_CLAIMED",
             "BOUNDARY_ENCROACHMENT_REQUIRES_SEPARATE_POSITIVE_SUPPORT"

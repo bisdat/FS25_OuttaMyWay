@@ -470,7 +470,7 @@ function Runtime:_terminateFollowerBoundaryRegulation(picture,evaluated,current,
     local commitment=applied.commitment
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
         OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self,commitment.identity,record and record.followerAssemblyId,{reason=assessment.reason,preserveAuthority=false})
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.settleFollowerBoundaryPurpose(self,commitment.identity,record or {pairKey=pairKey},{kind="D0141_POSITIVE_RETIREMENT",reason=assessment.reason,pairKey=pairKey})
+        OuttaMyWay.LiveTrafficCommitmentLifecycle.settleFollowerBoundaryPurpose(self,commitment.identity,record or {pairKey=pairKey},{kind="FOLLOWER_BOUNDARY_POSITIVE_RETIREMENT",reason=assessment.reason,pairKey=pairKey})
     end
     self.responsibilityTransitionAuthority:terminateRegulation(commitmentId)
     return physical
@@ -740,7 +740,7 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         if self.liveControlDispatcher.cooperativePassageControl==nil then return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_CONTROL_UNAVAILABLE",candidateId=candidate.identity} end
         local inventory=evaluated.candidateInventory
         local boundary=inventory and inventory.supportBoundary or nil
-        if type(boundary)~="table" or boundary.mode~="D0146_COOPERATIVE_PASSAGE_STEP2_TEST" then
+        if type(boundary)~="table" or boundary.mode~="COOPERATIVE_PASSAGE" then
             return {status="NO_DISPATCH",reason="COOPERATIVE_PASSAGE_SUPPORT_BOUNDARY_MISMATCH",candidateId=candidate.identity}
         end
         if type(self.liveControlDispatcher.cooperativePassageControl.isActive)=="function" and self.liveControlDispatcher.cooperativePassageControl:isActive() then
@@ -824,7 +824,7 @@ function Runtime:processLiveObservation(raw)
 
     local evaluated=self:evaluateSealedOperationalPicture(supported)
     local boundary=selectedGroupBoundary(evaluated)
-    if type(boundary)=="table" and (boundary.mode=="TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST" or boundary.mode=="D0146_COOPERATIVE_PASSAGE_STEP2_TEST") then
+    if type(boundary)=="table" and (boundary.mode=="TS015_COOPERATIVE_PASSAGE_PRODUCTION_TEST" or boundary.mode=="COOPERATIVE_PASSAGE") then
         local candidate=selectedCandidate(evaluated)
         if candidate~=nil then
             local bridge=candidate.evidenceBasis and candidate.evidenceBasis.cooperativePassageBridge or nil

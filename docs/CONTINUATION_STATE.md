@@ -8,7 +8,7 @@ Engineering Journal preserve chronology.
 
 - Accepted Repository State baseline: `main` after PR #94 merge, commit `48745375d259140117add5e0abf6047ec3667b17`.
 - Canonical authority remains **v0.3.0.0**.
-- Current Engineering Increment identity: **`0.3.0.34 TEST — PRODUCTION VOCABULARY OWNERSHIP RECONCILIATION`**.
+- Current Engineering Increment identity: **`0.3.0.35 TEST — PRODUCTION VOCABULARY CONTRACT COMPLETENESS`**.
 - Protected `main` requires both `Structural contracts` and `Lua offline behavioural contracts`.
 - Phase 14 remains **ACTIVE**. Phase 14.6B and the bounded Issue #37 `.33` correction are accepted; Phase 14.6C is the current final planned strangler tranche.
 - Issue #90 owns the roadmap through Phase 14 closure and the later Phase-15 architecture <-> code audit.

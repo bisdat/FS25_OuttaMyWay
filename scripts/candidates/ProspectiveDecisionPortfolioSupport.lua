@@ -160,7 +160,7 @@ function Support:attach(picture,snapshot)
     local forwardCount=forwardRelationshipCount(picture)
     if forwardCount==1 then
         local forward=self.liveSupport:buildProjectedGroup(picture,snapshot,{kind="FORWARD_INTERSECTION"},targetPictureId,targetEpoch)
-        if modeOfGroup(forward)=="D0146_RESOLUTION_SPACE_REGULATION" then
+        if modeOfGroup(forward)=="ACTION_SPACE_REGULATION" then
             appendGroup(state,forward,"FORWARD_INTERSECTION","forward-intersection",1)
         end
     elseif forwardCount>1 then
@@ -174,15 +174,15 @@ function Support:attach(picture,snapshot)
         local group=self.liveSupport:buildProjectedGroup(
             picture,snapshot,{kind="OPPOSED_RELATIONSHIP",relationshipIdentity=relation.identity},targetPictureId,targetEpoch)
         local mode=modeOfGroup(group)
-        if mode=="D0146_COOPERATIVE_PASSAGE_STEP2_TEST" then
+        if mode=="COOPERATIVE_PASSAGE" then
             appendGroup(state,group,"PASSAGE","passage:"..tostring(relation.identity),relationOrdinal)
-        elseif mode=="D0146_RESOLUTION_SPACE_REGULATION" then
+        elseif mode=="ACTION_SPACE_REGULATION" then
             actionSpaceGroups=actionSpaceGroups+1
             appendGroup(state,group,"ACTION_SPACE","action-space:"..tostring(relation.identity),relationOrdinal)
         end
     end
     if actionSpaceGroups>1 then
-        passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"ACTION_SPACE_FAIL_CLOSED","MULTIPLE_D0146_ACTION_SPACE_CONSERVATION_CONTEXTS",1)
+        passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"ACTION_SPACE_FAIL_CLOSED","MULTIPLE_ACTION_SPACE_REGULATION_CONTEXTS",1)
     end
 
     if #state.groups==0 then

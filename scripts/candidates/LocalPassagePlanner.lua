@@ -749,12 +749,12 @@ local function planConflict(picture,snapshot,conflict)
                 arrangement.pairwisePassageEconomy={combinedNecessaryInterventionM=arrangement.combinedLateralBurdenM,tieBreak="MINIMUM_MAX_PARTICIPANT_BURDEN_THEN_STABLE_ORDER"}
                 local passageConfiguration,configurationReason=passageConfigurationPlan(conflict,arrangement)
                 if passageConfiguration==nil then return nil,configurationReason end
-                guide.identity="d0146-guide:"..tostring(conflict.identity)..":"..tostring(index)
+                guide.identity="cooperative-passage-guide:"..tostring(conflict.identity)..":"..tostring(index)
                 guide.fieldSupport=fieldEvidence
                 guide.pairSweepSupport=sweepEvidence
                 guide.thirdPartySupport=thirdEvidence
                 return {
-                    status="SUPPORTED",reason="D0146_SUFFICIENT_LOCAL_PASSAGE_ARRANGEMENT_FOUND",
+                    status="SUPPORTED",reason="COOPERATIVE_PASSAGE_SUFFICIENT_LOCAL_ARRANGEMENT_FOUND",
                     authority="COOPERATIVE_PASSAGE_CANDIDATE_SUPPORT",
                     conflictIdentity=conflict.identity,operationId=conflict.operationId,encounterIdentity=encounterIdentity,
                     assemblyIds={conflict.subjectAssemblyId,conflict.otherAssemblyId},
@@ -824,7 +824,7 @@ end
 -- bounded support question while retaining the complete parent Operational
 -- Picture as the evidence universe. It owns no inter-conflict selection.
 function Planner.planConflict(picture,snapshot,conflict)
-    if OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED~=true then return nil,"D0146_STEP2_DISABLED" end
+    if OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED~=true then return nil,"COOPERATIVE_PASSAGE_DISABLED" end
     if type(conflict)~="table" or conflict.classification~="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" then
         return nil,"PROJECTED_RELATIONSHIP_NOT_ESTABLISHED_OPPOSED_CONFLICT"
     end
@@ -833,7 +833,7 @@ function Planner.planConflict(picture,snapshot,conflict)
 end
 
 function Planner.plan(picture,snapshot)
-    if OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED~=true then return nil,"D0146_STEP2_DISABLED" end
+    if OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED~=true then return nil,"COOPERATIVE_PASSAGE_DISABLED" end
     local conflicts=establishedConflicts(picture)
     if #conflicts==0 then return nil,"NO_ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" end
     local firstReason=nil

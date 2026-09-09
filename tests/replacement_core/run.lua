@@ -3841,7 +3841,7 @@ test("D0146 Passage Selection immediately supersedes D0155 even when physical En
     }
     local adapted=OuttaMyWay.OperationalPicture.new(values)
     local supported=runtime.liveTrafficCandidateSupport:attach(adapted,snapshot)
-    equal(supported.candidateSupportEvidence.supportBoundary.mode,"D0146_COOPERATIVE_PASSAGE_STEP2_TEST")
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"COOPERATIVE_PASSAGE")
     equal(supported.candidateSupportEvidence.candidateSpecifications[1].capability,"REPOSITION")
     equal(supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.passageEntry.ready,false)
     equal(runtime.liveTrafficCandidateSupport:getLastStatus(),"D0146_STEP2_COOPERATIVE_PASSAGE_CANDIDATE_PUBLISHED")
@@ -4032,7 +4032,7 @@ test("D0146 pre-productive intent relevance crosses Candidate as Regulation only
     }
     local picture=OuttaMyWay.OperationalPicture.new(values)
     local supported=runtime.liveTrafficCandidateSupport:attach(picture,headOnTestSnapshot())
-    equal(supported.candidateSupportEvidence.supportBoundary.mode,"D0146_RESOLUTION_SPACE_REGULATION")
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"ACTION_SPACE_REGULATION")
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.capability,"REGULATE_SPEED")
     equal(specification.preconditions.cooperativePassageEligible,false)
@@ -4059,7 +4059,7 @@ test("D0146 Established conflict Resolution-Space Regulation crosses Candidate s
     }
     base=OuttaMyWay.OperationalPicture.new(values)
     local supported=runtime.liveTrafficCandidateSupport:attach(base,headOnTestSnapshot())
-    equal(supported.candidateSupportEvidence.supportBoundary.mode,"D0146_RESOLUTION_SPACE_REGULATION")
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"ACTION_SPACE_REGULATION")
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.preconditions.relationshipClassification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
     equal(specification.evidenceBasis.actionSpaceRegulationBridge.protectedAssemblyId,"AS-B")
@@ -4076,7 +4076,7 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
 
     local base=actionSpaceRegulationPicture()
     local supported=runtime.liveTrafficCandidateSupport:attach(base,headOnTestSnapshot())
-    equal(supported.candidateSupportEvidence.supportBoundary.mode,"D0146_RESOLUTION_SPACE_REGULATION")
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"ACTION_SPACE_REGULATION")
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     equal(evaluated.decision.commitmentAction,"CREATE")
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
@@ -4092,7 +4092,7 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
     equal(envelopeStatus.active,true); equal(envelopeStatus.currentCapKmh,25); equal(envelopeStatus.effectClass,"REGULATE")
     equal(envelopeStatus.initialDistanceM,70); equal(envelopeStatus.contingencyReserveM,52.5); equal(envelopeStatus.remainingOrdinaryM,17.5)
     local actionObligation=runtime.obligations:openForOwner(commitmentId)[1]
-    equal(actionObligation.basis.kind,"D0146_PASSAGE_ACTION_SPACE_CONSERVATION")
+    equal(actionObligation.basis.kind,"ACTION_SPACE_REGULATION")
 
     local passagePicture,passageSnapshot=d0146Step2Fixture(nil,nil,60)
     local values=OuttaMyWay.ValueRecord.toTable(passagePicture)
@@ -4106,11 +4106,11 @@ test("D0146 Action-Space Regulation crosses Candidate Decision Commitment Contro
         equal(#regulationRequests,2)
         equal(regulationRequests[2].target.operation,"RELEASE")
         equal(runtime.obligations:get(actionObligation.identity).status,"SETTLED")
-        accepted={a,b,candidate}; return true,"D0146_COOPERATIVE_PASSAGE_STARTED"
+        accepted={a,b,candidate}; return true,"COOPERATIVE_PASSAGE_STARTED"
     end
     runtime:setCooperativePassageControl(cooperativeControl)
     local passageSupported=runtime.liveTrafficCandidateSupport:attach(passagePicture,passageSnapshot)
-    equal(passageSupported.candidateSupportEvidence.supportBoundary.mode,"D0146_COOPERATIVE_PASSAGE_STEP2_TEST")
+    equal(passageSupported.candidateSupportEvidence.supportBoundary.mode,"COOPERATIVE_PASSAGE")
     equal(passageSupported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.passageEntry.ready,false)
     local passageEval=runtime:evaluateSealedOperationalPicture(passageSupported)
     equal(passageEval.decision.commitmentAction,"REVISE")
@@ -4909,14 +4909,14 @@ test("D0146 Step2 Established Conflict crosses Candidate Decision Commitment and
     local runtime=autonomousHeadOnRuntime()
     local picture,snapshot=d0146Step2Fixture(nil,nil,18)
     local supported=runtime.liveTrafficCandidateSupport:attach(picture,snapshot)
-    equal(supported.candidateSupportEvidence.supportBoundary.mode,"D0146_COOPERATIVE_PASSAGE_STEP2_TEST")
+    equal(supported.candidateSupportEvidence.supportBoundary.mode,"COOPERATIVE_PASSAGE")
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     equal(#evaluated.candidates,1); equal(evaluated.decision.selectedCandidateId,evaluated.candidates[1].identity); equal(evaluated.decision.commitmentAction,"CREATE")
     local accepted=nil
     local control={}
     function control:setCompletionHandler(fn) self.handler=fn end
     function control:isActive() return false end
-    function control:executeJointRequests(a,b,candidate) accepted={a,b,candidate}; return true,"D0146_COOPERATIVE_PASSAGE_STARTED" end
+    function control:executeJointRequests(a,b,candidate) accepted={a,b,candidate}; return true,"COOPERATIVE_PASSAGE_STARTED" end
     runtime:setCooperativePassageControl(control)
     local dispatched=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(dispatched.status,"ACCEPTED"); equal(#accepted,3); equal(#dispatched.requests,2)
@@ -5120,7 +5120,7 @@ local function passageVacaturControl(runtime,commitmentId,assemblyA,assemblyB,ve
     end
     local a=participant(assemblyA,vehicleA or {})
     local b=participant(assemblyB,vehicleB or {})
-    control.run={mode="D0146_GUIDE",commitmentId=commitmentId,phase="AXIS_RETURN",a=a,b=b,participants={a,b},activeReturnParticipant=a}
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId=commitmentId,phase="AXIS_RETURN",a=a,b=b,participants={a,b},activeReturnParticipant=a}
     local continued=0
     control._beginAxisReturn=function(self,run,p)
         local valid=runtime.boundedAuthority:validateRequest(p.request,"RS-LEG-LIFECYCLE")
@@ -5382,7 +5382,7 @@ test("D0217 unexpected Bounded Authority loss during a live Passage Leg remains 
     local control=OuttaMyWay.CooperativePassageControl.new(runtime,donor)
     local a={vehicle={},assemblyId="AS-A",request={boundedAuthorityId="BA-A"},name="A"}
     local b={vehicle={},assemblyId="AS-B",request={boundedAuthorityId="BA-B"},name="B"}
-    control.run={mode="D0146_GUIDE",commitmentId="CM-BA-LOSS",phase="GUIDE_TEST",phaseStartedAt=0,startedAt=0,a=a,b=b,participants={a,b}}
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-BA-LOSS",phase="GUIDE_TEST",phaseStartedAt=0,startedAt=0,a=a,b=b,participants={a,b}}
     control:update(16)
     equal(control.run.failureReason,"BOUNDED_AUTHORITY_LOST")
 end)
@@ -5399,7 +5399,7 @@ test("D0217 transient unavailable raw Job token does not vacate a live Passage L
     }
     local control=OuttaMyWay.CooperativePassageControl.new({boundedAuthority={isCurrent=function() return true end}},donor)
     control:setCompletionHandler(function() notified=notified+1 end)
-    control.run={mode="D0146_GUIDE",commitmentId="CM-JOB-UNCERTAIN",phase="GUIDE_TEST",phaseStartedAt=0,startedAt=0,guideIndex=1,guide={gates={{index=1}}},
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-JOB-UNCERTAIN",phase="GUIDE_TEST",phaseStartedAt=0,startedAt=0,guideIndex=1,guide={gates={{index=1}}},
         a={vehicle={},assemblyId="AS-A",request={boundedAuthorityId="BA-A"},name="A",startJobToken="JOB-A"},
         b={vehicle={},assemblyId="AS-B",request={boundedAuthorityId="BA-B"},name="B",startJobToken="JOB-B"},
         participants={},thirdPartyConstraints={}}
@@ -5464,7 +5464,7 @@ test("D0217 raw Job contradiction waits for semantic lifecycle instead of fail-h
             request={boundedAuthorityId="BA-B"}
         }
         control.run={
-            mode="D0146_GUIDE",commitmentId="CM-SEMANTIC-PENDING",
+            mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-SEMANTIC-PENDING",
             phase="CONFIGURING",phaseStartedAt=0,startedAt=0,
             a=a,b=b,participants={a,b}
         }
@@ -5539,7 +5539,7 @@ test("D0146 Passage Approach stays native until Entry Boundary then begins settl
     }
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     control.run={
-        mode="D0146_GUIDE",commitmentId="CM-APPROACH",phase="PASSAGE_APPROACH",phaseStartedAt=0,startedAt=0,
+        mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-APPROACH",phase="PASSAGE_APPROACH",phaseStartedAt=0,startedAt=0,
         passageEntry={boundarySeparationM=20},thirdPartyConstraints={},failureReason=nil,
         a={vehicle=vehicleA,name="A",assemblyId="AS-A",startJobToken="JOB-A",startForwardX=0,startForwardZ=1},
         b={vehicle=vehicleB,name="B",assemblyId="AS-B",startJobToken="JOB-B",startForwardX=0,startForwardZ=-1},
@@ -5575,7 +5575,7 @@ test("D0146 execution-origin capture rebases short Development ahead of stopped 
     end}}
     local control=OuttaMyWay.CooperativePassageControl.new(runtime,donor)
     control.run={
-        mode="D0146_GUIDE",commitmentId="CM-REBASE",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
+        mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-REBASE",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
         passageArrangement={subjectLateralOffsetM=1,otherLateralOffsetM=-1},
         a={vehicle=vehicleA,name="A",assemblyId="AS-A",referenceKey="REF-A",startJobToken="JOB-A"},b={vehicle=vehicleB,name="B",assemblyId="AS-B",referenceKey="REF-B",startJobToken="JOB-B"},
         participants={},
@@ -5585,7 +5585,7 @@ test("D0146 execution-origin capture rebases short Development ahead of stopped 
         }}
     }
     control.run.participants={control.run.a,control.run.b}
-    local ok,reason=control:_rebaseD0146Guide(control.run)
+    local ok,reason=control:_rebasePassageGuide(control.run)
     equal(ok,true); equal(reason,nil)
     local first=control.run.guide.gates[1]
     equal(math.abs(first.subject.z-5)<0.0001,true)
@@ -5609,7 +5609,7 @@ test("D0217 vacatur before execution-origin rebase preserves survivor guide geom
     end}}
     local control=OuttaMyWay.CooperativePassageControl.new(runtime,{holdMechanism={},driveMechanism={},configurationMechanism={}})
     control.run={
-        mode="D0146_GUIDE",commitmentId="CM-REBASE-VACATED",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
+        mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-REBASE-VACATED",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",thirdPartyConstraints={},
         passageArrangement={subjectLateralOffsetM=1,otherLateralOffsetM=-1},
         a={vehicle=vehicleA,name="A",assemblyId="AS-A",referenceKey="REF-A",startJobToken="JOB-A"},
         b={vehicle={},name="B",assemblyId="AS-B",referenceKey="REF-B",startJobToken="JOB-B",vacated=true},
@@ -5619,7 +5619,7 @@ test("D0217 vacatur before execution-origin rebase preserves survivor guide geom
         }}
     }
     control.run.participants={control.run.a,control.run.b}
-    local ok,reason=control:_rebaseD0146Guide(control.run)
+    local ok,reason=control:_rebasePassageGuide(control.run)
     equal(ok,true); equal(reason,nil)
     equal(math.abs(control.run.guide.gates[1].subject.z-5)<0.0001,true)
     equal(control.run.guide.gates[1].other.z,18)
@@ -5718,10 +5718,10 @@ test("D0179 TRANSIT_BASE Control consumes cached foldability and bounded settlem
     local donor={holdMechanism={},driveMechanism={},configurationMechanism={prepareCachedTransit=function() return true,{owned=true} end,getCachedTransitSettlement=function() return settlement end,requestRestore=function() return true end}}
     local control=OuttaMyWay.CooperativePassageControl.new({assemblyRepresentationCache=cache},donor)
     local participant={vehicle=vehicle,name="folding",assemblyId="AS-F",referenceKey="vehicle-root:1367",startJobToken="JOB-F",configurationMode="TRANSIT_REQUIRED"}
-    local run={mode="D0146_GUIDE",commitmentId="CM-D0179",phase="SETTLING",participants={participant}}
-    equal(control:_beginD0146Configuration(run),true); equal(participant.passageTransitFoldExpected,true); equal(control:_d0146ConfigurationReady(run),false)
+    local run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-D0179",phase="SETTLING",participants={participant}}
+    equal(control:_beginPassageConfiguration(run),true); equal(participant.passageTransitFoldExpected,true); equal(control:_passageConfigurationReady(run),false)
     settlement={settled=true,normal=true,exhausted=false,settledCount=1,actuatorCount=1,elapsedMs=6000,timeoutMs=11000}
-    equal(control:_d0146ConfigurationReady(run),true)
+    equal(control:_passageConfigurationReady(run),true)
 end)
 
 test("D0179 non-foldable bootstrap capability is immediate non-veto and no live fold discovery occurs",function()
@@ -5729,19 +5729,19 @@ test("D0179 non-foldable bootstrap capability is immediate non-veto and no live 
     local cache={getTransitFoldCapability=function() return {isFoldable=false,actuatorCount=0,expectedFoldDurationMs=0,settlementTimeoutMs=30000,source="TEST"} end}
     local donor={holdMechanism={},driveMechanism={},configurationMechanism={prepareCachedTransit=function() error("non-foldable capability must not actuate") end,getCachedTransitSettlement=function() error("non-foldable capability must not wait") end,requestRestore=function() return true end}}
     local control=OuttaMyWay.CooperativePassageControl.new({assemblyRepresentationCache=cache},donor)
-    control._rebaseD0146Guide=function() return true,nil end
+    control._rebasePassageGuide=function() return true,nil end
     control._startGuideGate=function() return true,nil end
     local participant={vehicle=vehicle,name="static",assemblyId="AS-S",referenceKey="vehicle-root:1368",startJobToken="JOB-S",configurationMode="TRANSIT_REQUIRED"}
-    local run={mode="D0146_GUIDE",commitmentId="CM-D0179-NF",phase="SETTLING",participants={participant}}
-    equal(control:_beginD0146Configuration(run),true); equal(participant.passageTransitFoldExpected,false); equal(control:_d0146ConfigurationReady(run),true)
+    local run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-D0179-NF",phase="SETTLING",participants={participant}}
+    equal(control:_beginPassageConfiguration(run),true); equal(participant.passageTransitFoldExpected,false); equal(control:_passageConfigurationReady(run),true)
 end)
 
 test("D0181 Cooperative Passage configuration rejects any non-Transit mode",function()
     local vehicle={rootNode=1371}
     local donor={holdMechanism={},driveMechanism={},configurationMechanism={requestRestore=function() return true end}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
-    local run={mode="D0146_GUIDE",commitmentId="CM-NON-TRANSIT",phase="SETTLING",participants={{vehicle=vehicle,name="A",assemblyId="AS-A",configurationMode="LEGACY_MODE"}}}
-    local ok,reason=control:_beginD0146Configuration(run)
+    local run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-NON-TRANSIT",phase="SETTLING",participants={{vehicle=vehicle,name="A",assemblyId="AS-A",configurationMode="LEGACY_MODE"}}}
+    local ok,reason=control:_beginPassageConfiguration(run)
     equal(ok,false); equal(reason,"A:unsupported-configuration-mode:LEGACY_MODE")
 end)
 
@@ -5758,7 +5758,7 @@ test("D0146 failed guide holds compact configuration without restore request",fu
     }
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     control.run={
-        mode="D0146_GUIDE",commitmentId="CM-FAIL-PRESERVE",guide={identity="PG-FAIL-PRESERVE"},
+        mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-FAIL-PRESERVE",guide={identity="PG-FAIL-PRESERVE"},
         a={vehicle=vehicleA,name="A"},b={vehicle=vehicleB,name="B"},
         participants={{vehicle=vehicleA,name="A"},{vehicle=vehicleB,name="B"}},phase="GUIDE_TRAVERSAL"
     }
@@ -5789,7 +5789,7 @@ test("D0146 native blocked signal does not independently abort an active guide",
     }
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
     control.run={
-        mode="D0146_GUIDE",commitmentId="CM-BLOCKED-OBSERVATION",failureReason=nil,phase="GUIDE_TRAVERSAL",phaseStartedAt=0,guideIndex=1,
+        mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-BLOCKED-OBSERVATION",failureReason=nil,phase="GUIDE_TRAVERSAL",phaseStartedAt=0,guideIndex=1,
         guide={identity="PG-BLOCKED-OBSERVATION",gates={{index=1,kind="TRAVERSAL",subject={assemblyId="AS-A",x=0,z=0,radiusM=1},other={assemblyId="AS-B",x=10,z=0,radiusM=1}}}},
         a={vehicle=vehicleA,name="A",assemblyId="AS-A"},b={vehicle=vehicleB,name="B",assemblyId="AS-B"},
         participants={{vehicle=vehicleA,name="A",assemblyId="AS-A"},{vehicle=vehicleB,name="B",assemblyId="AS-B"}},thirdPartyConstraints={}
@@ -6466,7 +6466,7 @@ test("D0192 second Axis Return aborts safely if released clearance is lost",func
         configurationMechanism={}
     }
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
-    control.run={mode="D0146_GUIDE",commitmentId="CM-D0192-CLEAR",phase="AXIS_RETURN",phaseStartedAt=0,startedAt=0,a=released,b=waiting,participants={released,waiting},activeReturnParticipant=waiting,releasedLeader=released,returnRequiresReleasedClearance=true,failureReason=nil}
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-D0192-CLEAR",phase="AXIS_RETURN",phaseStartedAt=0,startedAt=0,a=released,b=waiting,participants={released,waiting},activeReturnParticipant=waiting,releasedLeader=released,returnRequiresReleasedClearance=true,failureReason=nil}
     control.nextHeartbeatMs=math.huge
     control._allSameJob=function() return true,nil end
     control._thirdPartySupport=function() return true,nil end
@@ -6484,7 +6484,7 @@ test("D0192 Axis Return alignment loss aborts reverse instead of steering into a
     local other={name="Other",vehicle={}}
     local donor={holdMechanism={},driveMechanism={clear=function() end,getState=function() return {targetReached=false} end},configurationMechanism={}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
-    control.run={mode="D0146_GUIDE",commitmentId="CM-D0192-ALIGN",phase="AXIS_RETURN",phaseStartedAt=0,startedAt=0,a=participant,b=other,participants={participant,other},activeReturnParticipant=participant,returnRequiresReleasedClearance=false,failureReason=nil}
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-D0192-ALIGN",phase="AXIS_RETURN",phaseStartedAt=0,startedAt=0,a=participant,b=other,participants={participant,other},activeReturnParticipant=participant,returnRequiresReleasedClearance=false,failureReason=nil}
     control.nextHeartbeatMs=math.huge; control._allSameJob=function() return true,nil end; control._thirdPartySupport=function() return true,nil end
     control._assemblyAxisSettled=function() return false,"ASSEMBLY_MEMBER_AXIS_HEADING_NOT_SETTLED:trailer:0.90000" end
     local restoreCalls=0; control._beginParticipantRestore=function(self,run,p) restoreCalls=restoreCalls+1; run.phase="RESTORING_PARTICIPANT"; return true,nil end
@@ -6500,7 +6500,7 @@ test("D0192 participant release prevents the first returned worker from soft-loc
     local second={name="Second",vehicle={},released=false}
     local donor={holdMechanism={},driveMechanism={},configurationMechanism={}}
     local control=OuttaMyWay.CooperativePassageControl.new({},donor)
-    control.run={mode="D0146_GUIDE",commitmentId="CM-D0192-TOKEN",phase="RESTORING_PARTICIPANT",phaseStartedAt=0,startedAt=0,a=first,b=second,participants={first,second},activeRestoreParticipant=first,failureReason=nil}
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-D0192-TOKEN",phase="RESTORING_PARTICIPANT",phaseStartedAt=0,startedAt=0,a=first,b=second,participants={first,second},activeRestoreParticipant=first,failureReason=nil}
     control.nextHeartbeatMs=math.huge; control._allSameJob=function() return true,nil end; control._thirdPartySupport=function() return true,nil end
     control._participantRestoreReady=function() return true end
     control._releaseParticipant=function(self,run,p) p.released=true; return true,nil end
@@ -6523,7 +6523,7 @@ test("D0217 vacating active Axis Return participant starts survivor return witho
     local beginReturn=0; local beginRestore=0
     control._beginAxisReturn=function(self,run,p,other,requiresClearance) beginReturn=beginReturn+1; equal(p,b); equal(other,a); equal(requiresClearance,false); run.activeReturnParticipant=p; run.phase="AXIS_RETURN"; return true,nil end
     control._beginParticipantRestore=function(self,run,p) beginRestore=beginRestore+1; run.activeRestoreParticipant=p; run.phase="RESTORING_PARTICIPANT"; return true,nil end
-    control.run={mode="D0146_GUIDE",commitmentId="CM-VACATE-AXIS",phase="AXIS_RETURN",a=a,b=b,participants={a,b},activeReturnParticipant=a}
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-VACATE-AXIS",phase="AXIS_RETURN",a=a,b=b,participants={a,b},activeReturnParticipant=a}
     control:vacateParticipant("CM-VACATE-AXIS","AS-A",{kind="JOB_EPISODE_DEPENDENCY_CEASED"})
     equal(beginReturn,0); equal(beginRestore,0)
     control:continueAfterParticipantVacatur("CM-VACATE-AXIS","AS-A")
@@ -6541,7 +6541,7 @@ test("D0217 vacating active restoring participant starts survivor return without
     local beginReturn=0; local beginRestore=0
     control._beginAxisReturn=function() beginReturn=beginReturn+1; return true,nil end
     control._beginParticipantRestore=function(self,run,p) beginRestore=beginRestore+1; equal(p,b); run.activeRestoreParticipant=p; run.phase="RESTORING_PARTICIPANT"; return true,nil end
-    control.run={mode="D0146_GUIDE",commitmentId="CM-VACATE-RESTORE",phase="RESTORING_PARTICIPANT",a=a,b=b,participants={a,b},activeRestoreParticipant=a}
+    control.run={mode="COOPERATIVE_PASSAGE_GUIDE",commitmentId="CM-VACATE-RESTORE",phase="RESTORING_PARTICIPANT",a=a,b=b,participants={a,b},activeRestoreParticipant=a}
     control:vacateParticipant("CM-VACATE-RESTORE","AS-A",{kind="JOB_EPISODE_DEPENDENCY_CEASED"})
     equal(beginReturn,0); equal(beginRestore,0)
     control:continueAfterParticipantVacatur("CM-VACATE-RESTORE","AS-A")
@@ -6558,7 +6558,7 @@ test("D0217 mixed vacated and handed-back final evidence does not claim same job
     local control=OuttaMyWay.CooperativePassageControl.new({}, {holdMechanism={},driveMechanism={},configurationMechanism={}})
     control:setCompletionHandler(function(result) if result.status=="SUCCEEDED" then evidence=result.evidence end end)
     control:_completePairContext({commitmentId="CM-MIXED-EVIDENCE",guide={identity="PG-MIXED"},a=a,b=b,participants={a,b}})
-    equal(evidence.kind,"D0146_COOPERATIVE_PASSAGE_LAST_LEG_DISSOLVED_AFTER_BASIS_CESSATION")
+    equal(evidence.kind,"COOPERATIVE_PASSAGE_LAST_LEG_DISSOLVED_AFTER_BASIS_CESSATION")
     equal(evidence.sameJobs,nil)
     equal(evidence.bothRestored,nil)
     equal(evidence.mixedPassageLegDispositions,true)
@@ -6569,17 +6569,17 @@ end)
 test("D0200 ended Job Episode collapses dependent quiescent D0146 traffic Commitment before terminal succession",function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
     local dependent=runtime.commitments:create({
-        objective={kind="D0146_PASSAGE_ACTION_SPACE_CONSERVATION"},
+        objective={kind="ACTION_SPACE_REGULATION"},
         governingBasis={responsibilityKey="cooperative-passage:REL-ENDED",dependentEncounterId="EN-ENDED",dependentJobEpisodeIds={"JE-END","JE-KEEP"}},
         situationDependencies={"SITUATION-1","EN-ENDED"}
     })
     local obligation=runtime.obligations:create({
-        origin={kind="TRAFFIC_INTERVENTION"},basis={kind="D0146_PASSAGE_ACTION_SPACE_CONSERVATION",conflictIdentity="REL-ENDED"},ownerCommitmentId=dependent.identity,
-        requiredOutcome={kind="D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"},requiredAuthority={capabilities={"REGULATE_SPEED"}},
+        origin={kind="TRAFFIC_INTERVENTION"},basis={kind="ACTION_SPACE_REGULATION",conflictIdentity="REL-ENDED"},ownerCommitmentId=dependent.identity,
+        requiredOutcome={kind="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES"},requiredAuthority={capabilities={"REGULATE_SPEED"}},
         evidenceContract={kind="POSITIVE_RELATIONSHIP_DISSOLUTION_OR_COOPERATIVE_PASSAGE_SUCCESSION"},ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
     })
     dependent=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(dependent,{obligationIds={obligation.identity},epoch=runtime.epochs:next()}))
-    local unrelated=runtime.commitments:create({objective={kind="D0146_PASSAGE_ACTION_SPACE_CONSERVATION"},governingBasis={responsibilityKey="cooperative-passage:REL-OTHER",dependentEncounterId="EN-OTHER",dependentJobEpisodeIds={"JE-OTHER-A","JE-OTHER-B"}},situationDependencies={"EN-OTHER"}})
+    local unrelated=runtime.commitments:create({objective={kind="ACTION_SPACE_REGULATION"},governingBasis={responsibilityKey="cooperative-passage:REL-OTHER",dependentEncounterId="EN-OTHER",dependentJobEpisodeIds={"JE-OTHER-A","JE-OTHER-B"}},situationDependencies={"EN-OTHER"}})
     local cleared=0
     runtime.regulationBoundedAuthority.regulationControl={clearRegulationLeaseByReference=function(self,referenceKey,ownerTag) cleared=cleared+1; return true end}
     runtime.regulationBoundedAuthority.actionSpaceRegulationLease={commitmentId=dependent.identity,conflictIdentity="REL-ENDED",regulatedAssemblyId="AS-A",regulatedReferenceKey="REF-A",actuationActive=false}
