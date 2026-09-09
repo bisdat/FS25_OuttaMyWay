@@ -6,105 +6,141 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline: `main` after PR #95 merge, commit `23c8ab1217bf090a4b5344e91cdb1cf6c3834eb1`.
+- Accepted Repository State baseline: `main` after PR #96 merge, commit
+  `cb5f599e581215b65339ef636be261477e262f4b`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted executable identity remains **`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
-- Protected `main` requires both `Structural contracts` and `Lua offline behavioural contracts`.
-- Phase 14 is **CLOSED**. Phase 14.6C is accepted through PR #95; the closure review found no known remaining strangler responsibility requiring Phase 14.6D.
-- Issue #90 remains the roadmap owner through the Phase-15 architecture <-> code audit and the later post-strangler documentation decision.
+- Accepted executable identity remains
+  **`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
+- Protected `main` requires both `Structural contracts` and
+  `Lua offline behavioural contracts`.
+- Phase 14 is **CLOSED**.
+- Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
+- Audit completion introduced no executable change and therefore no `.38`.
 
-## Phase 14 closure
-
-The post-PR-#95 closure review distinguishes the completed strangler migration
-from the broader audit that follows it:
+The closure distinction remains:
 
 > **Strangler Closure Debt != Architecture Audit Debt**
 
-Phase 14 is closed because no known live production responsibility remains
-misplaced beneath Prototype/Diagnostic/integration-wrapper ownership, and no
-known current production semantic identity remains dependent on migration or
-historical decision vocabulary where current responsibility vocabulary is
-required.
+The Phase-15 distinction is:
 
-Accepted closure evidence includes:
+> **Audit Completion != Reconciliation Completion**
 
-- principal production Observation, Regulation Control, shared physical
-  mechanisms and Runtime composition live under their current responsibility
-  placements;
-- Cooperative Passage, Follower Boundary Regulation, Action-Space Regulation,
-  Guarded Recovery and Completed Obstruction production vocabulary now names
-  current responsibility rather than development provenance;
-- semantic producer/consumer recognition is protected by blocking structural
-  contracts, including Regulation owner-tag closure and Cooperative Passage
-  prefix/addressability recognition;
-- the Phase-14.6C Passage Candidate contract now states the purpose-specific
-  Transit-representation authority boundary without treating generic current
-  physical-conflict overlap as Passage-clearance authority; and
-- no fresh review evidence justifies a Phase 14.6D.
+## Phase 15 audit outcome
 
-`EncounterRegistry` remains a live Situation-Assessment continuity mechanism.
-Current review evidence does not show it owning Regulation or Resolution
-Commitment transition authority. Whether that retained Encounter concept fully
-conforms to accepted architecture is therefore a Phase-15 architecture <->
-code audit question, not unresolved strangler placement by itself.
+The audit traversed the current responsibility chain:
 
-Issue #87 separately owns decomposition of the remaining live
-`scripts/config.lua` mixed runtime constants surface. That work is genuine
-ownership debt but was explicitly separated from Phase-14 strangler closure.
+```text
+Reality
+  -> Observation
+  -> Situation Assessment
+  -> Candidate
+  -> Constraint
+  -> Decision
+  -> Responsibility Transition
+  -> Current Responsibility
+  -> Bounded Authority
+  -> Control
+  -> Reality
+```
 
-## Accepted Reality carried forward
+It also reviewed Field World / Job Episode / Local Operation identity,
+Physical Representation, Configuration/GUI boundaries, runtime composition,
+diagnostic directionality and live documentation responsibility.
 
-### Forward Intersection evidence continuity
+### Confirmed reconciliation Issues
 
-`.33` established **Forward Intersection Unresolved != Forward Intersection
-Dissolved** and **Evidence Loss Is Not Purpose Expiry**. An existing Forward
-Intersection Regulation remains at exactly 1 km/h while continuation evidence is
-temporarily unresolved; fresh supported negative or superseding evidence owns
-release.
+- **#97 — Field World authority lifetime**
+  - **Unresolved Job Episode Retention Must Retain Field World Authority**.
+  - A retained unresolved Job Episode can currently outlive the relevance mark
+    of its established Field World equivalence class.
+  - This is a latent lifecycle-identity mismatch.
 
-### Cooperative Passage representation authority
+- **#99 — Transit complete-assembly authority**
+  - **Budget Exhaustion Must Revoke Completeness Authority**.
+  - `assemblyDiscoveryTruncated` does not currently revoke
+    complete-assembly Transit Passage authority.
+  - This is a latent fail-closed representation mismatch.
 
-Issue #93 was closed `not planned` after `.32` and `.33` video/log review
-disproved the claimed Passage-contact defect.
+- **#98 — Follower Boundary permissible magnitude**
+  - **Admissible Magnitude Evidence != Permitted Magnitude**.
+  - Final elastic follower speed is currently derived in Situation Assessment
+    and ferried into Bounded Authority.
+  - The existing numerical policy is accepted; ownership placement must change
+    without retuning behaviour.
 
-The durable distinctions remain:
+- **#100 — Encounter reconciliation**
+  - **Current Pair Assessment Scope != Persistent Pair History**.
+  - Current architecture rejects Persistent Pair-First / Encounter History,
+    while `EncounterRegistry` remains a retained pair object carrying
+    last-positive relationship evidence.
+  - The audit disproved the unsafe interpretation that retained positive
+    interaction evidence creates fresh Passage authority. Reconciliation must
+    preserve unresolved-evidence safety while removing the rejected concept.
 
-> **GIANTS `isBlocked` != Passage contact**
+- **#101 — orphaned / stranded semantic residue**
+  - Guarded Recovery compatibility has no demonstrated live production ingress.
+  - A stale completed-obstruction Control-observation consumer remains.
+  - `FOLLOWER_OWNS_CLOSURE` remains stranded Constraint semantics.
+  - Obstruction RTA API naming remains stale defensive/naming debt.
+  - These are retirement/naming questions, not demonstrated gameplay defects.
 
-> **Generic Bounding-Disc Overlap != Passage Physical Contact**
+## Findings protected from false redesign
 
-> **Purpose-Specific Representation Authority Takes Precedence**
+The audit does **not** justify reopening these accepted behaviours:
 
-Cached complete-assembly directional Transit geometry is the purpose-specific
-Passage representation. The approximately 1 m nominal inter-assembly clearance
-remains an empirical policy margin rather than an exact collision calculation.
+- D-0147 / D-0218 / Cooperative Passage terminal-resolution work;
+- participant-scoped Passage Leg handback/vacatur and Last-Leg Dissolution;
+- cold Causal Obstruction's bounded human-simple relocation policy;
+- multiple cold-blocker enumeration and deterministic Decision tie-break;
+- current Candidate -> Constraint -> Decision ownership separation;
+- current Regulation quiescence, where semantic responsibility may persist
+  while physical Bounded Authority is released;
+- the current generic multi-context Commitment application fail-closed limit;
+- the supported three-worker envelope as a validation/claim boundary rather
+  than a fourth-worker runtime rejection mechanism;
+- diagnostic probes as downstream consumers rather than semantic authority.
 
-## Validation boundary
+A useful retained distinction is:
 
-PR #95 final head `fb4cce69fb30d71497ee4697566b66b3c5e83a74`
-passed both blocking GitHub Actions jobs immediately before merge:
+> **Resolution Persistence After Actuation != Authority Persistence**
 
-- **Structural contracts — PASS**;
-- **Lua offline behavioural contracts — PASS**.
+## Existing separate work
 
-The owner-run `.37` in-game Cooperative Passage smoke also passed through
-participant-specific restore/handoff and GIANTS continuation.
+These remain independently owned and are not Phase-15 reconciliation findings:
 
-PR #95 then merged to `main` as
-`23c8ab1217bf090a4b5344e91cdb1cf6c3834eb1`.
+- **#45 — Bubble Bullet Time**: accepted architecture, unimplemented.
+- **#65 — Behaviour Regression Contract != Build Identity Contract**.
+- **#87 — `scripts/config.lua` Mixed Runtime Constants Surface decomposition**.
 
-This Phase-14 closure record is documentation/governance-only. It changes no
-executable bytes and therefore does not consume `.38`.
+Configuration and GUI architecture define accepted/deferred future product
+responsibilities. Their unimplemented player settings/UI do not by themselves
+constitute Phase-15 runtime defects.
+
+## Documentation responsibility
+
+- `docs/IMPLEMENTATION_MAP.md` remains the durable current
+  architecture-to-source placement / material-drift map.
+- Forward programme sequencing belongs in GitHub Issues, not in the
+  Implementation Map.
+- `docs/architecture/PHASE_13_CLOSURE_AUDIT.md` no longer owns present-tense
+  architecture and is removed from the working tree; Git and PR #71 preserve
+  its historical closure evidence.
+- No new phase-shaped architecture document is created.
 
 ## Next
 
-1. Begin the **Phase 15 whole-system architecture <-> code audit** from accepted
-   `main`, comparing current accepted architecture against live implementation
-   without assuming either is correct merely because it already exists.
-2. Treat `EncounterRegistry` and other retained implementation concepts as audit
-   questions only when evidence shows a material architecture <-> code
-   relationship; do not pre-classify them as defects.
-3. Keep Issue #90 open as the roadmap owner through Phase 15.
-4. Keep Issue #87 separate as the owner of `scripts/config.lua` decomposition.
-5. Do not reopen Phase 14 or invent 14.6D unless new evidence demonstrates a
-   genuine remaining strangler responsibility.
+Begin reconciliation with **Issue #97 — Retain Field World authority through
+unresolved Job Episode observation**.
+
+The preferred sequence after #97 is:
+
+1. #99 — Transit truncation authority;
+2. #98 — Follower Boundary magnitude ownership;
+3. #100 — Encounter architecture/design reconciliation;
+4. #101 — dependency-proven retirement/naming cleanup.
+
+Each executable increment requires its own fresh TEST build identity before push.
+Do not bundle these independent responsibilities into one Phase-15 mega-change.
+
+Issue #90 remains open until this audit-closure documentation increment is
+accepted and its roadmap/documentation responsibility can be closed cleanly.
