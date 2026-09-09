@@ -6,8 +6,8 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline: `main` after PR #96 merge, commit
-  `cb5f599e581215b65339ef636be261477e262f4b`.
+- Accepted Repository State baseline: `main` after PR #102 merge, commit
+  `257b310403a291ae52f1994a8f0f632baa05842b`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity remains
   **`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
@@ -49,12 +49,6 @@ diagnostic directionality and live documentation responsibility.
 
 ### Confirmed reconciliation Issues
 
-- **#97 — Field World authority lifetime**
-  - **Unresolved Job Episode Retention Must Retain Field World Authority**.
-  - A retained unresolved Job Episode can currently outlive the relevance mark
-    of its established Field World equivalence class.
-  - This is a latent lifecycle-identity mismatch.
-
 - **#99 — Transit complete-assembly authority**
   - **Budget Exhaustion Must Revoke Completeness Authority**.
   - `assemblyDiscoveryTruncated` does not currently revoke
@@ -83,6 +77,23 @@ diagnostic directionality and live documentation responsibility.
   - `FOLLOWER_OWNS_CLOSURE` remains stranded Constraint semantics.
   - Obstruction RTA API naming remains stale defensive/naming debt.
   - These are retirement/naming questions, not demonstrated gameplay defects.
+
+### Disproven audit finding
+
+- **#97 — Field World authority lifetime** was a Phase-15 code-walk
+  misclassification, not an implementation defect.
+- Accepted `main` already calls
+  `FieldWorldEquivalenceAuthority:resolve(existingSnapshot)` on both retained
+  track paths. For an existing immutable Snapshot assignment, that path marks
+  the established Field World class relevant without re-evaluating stale
+  geometry.
+- PR #103 independently exercised the missing composition: retained A survived
+  unresolved termination evidence and fresh B resolved into the same Field
+  World. The attempted `.38` runtime change was therefore redundant and PR #103
+  was closed unmerged.
+- No `.38` executable identity entered Accepted Repository State.
+
+> **Failed Audit Hypothesis != Runtime Defect**
 
 ## Findings protected from false redesign
 
@@ -129,18 +140,19 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Begin reconciliation with **Issue #97 — Retain Field World authority through
-unresolved Job Episode observation**.
+Begin reconciliation with **Issue #99 — Transit complete-assembly authority
+under representation discovery truncation**.
 
-The preferred sequence after #97 is:
+Then, unless new Reality changes the order:
 
-1. #99 — Transit truncation authority;
-2. #98 — Follower Boundary magnitude ownership;
-3. #100 — Encounter architecture/design reconciliation;
-4. #101 — dependency-proven retirement/naming cleanup.
+1. #98 — Follower Boundary magnitude ownership;
+2. #100 — Encounter architecture/design reconciliation;
+3. #101 — dependency-proven retirement/naming cleanup.
 
 Each executable increment requires its own fresh TEST build identity before push.
-Do not bundle these independent responsibilities into one Phase-15 mega-change.
+Do not bundle these independent responsibilities into one reconciliation tranche.
 
-Issue #90 remains open until this audit-closure documentation increment is
-accepted and its roadmap/documentation responsibility can be closed cleanly.
+Issue #90 is closed as completed after PR #102 established the durable
+post-strangler documentation responsibility. Issue #97 is a disproven audit
+hypothesis whose evidence is preserved in the Issue, PR #103 and Engineering
+Journal rather than as current implementation debt.

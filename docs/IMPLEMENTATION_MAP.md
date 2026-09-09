@@ -21,8 +21,8 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline: `main` after PR #96 merge, commit
-  `cb5f599e581215b65339ef636be261477e262f4b`.
+- Accepted Repository State baseline: `main` after PR #102 merge, commit
+  `257b310403a291ae52f1994a8f0f632baa05842b`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity remains
   **`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
@@ -37,7 +37,7 @@ Architectural meaning remains owned by the
 | Runtime composition | `scripts/main.lua`, `scripts/runtime/Runtime.lua`, `LiveRuntimeCoordinator.lua` | PRESERVE explicit production composition |
 | Job Episode identity | `scripts/identity/JobEpisodeAdmission.lua` | PRESERVE Lifecycle Evidence Asymmetry |
 | Local Operation identity/membership | `scripts/identity/OperationAdmission.lua` | PRESERVE lifecycle context; not traffic controller |
-| Field World snapshots/equivalence | `FieldWorldSnapshotRegistry.lua`, `FieldWorldEquivalenceEvaluator.lua`, `FieldWorldEquivalenceAuthority.lua`, `LiveObservationSource.lua` | **DRIFT #97** — unresolved retained Job Episode must retain established Field World authority |
+| Field World snapshots/equivalence | `FieldWorldSnapshotRegistry.lua`, `FieldWorldEquivalenceEvaluator.lua`, `FieldWorldEquivalenceAuthority.lua`, `LiveObservationSource.lua` | PRESERVE — retained tracks resolve their existing immutable Snapshot assignment, which refreshes Field World relevance without stale geometry re-evaluation |
 | Current Physical Assembly acquisition | `scripts/observation/CurrentPhysicalAssemblySource.lua` | PRESERVE mission-root addressability; no semantic authority |
 | Current pose / live Observation | `CurrentPhysicalPoseSource.lua`, `LiveObservationSource.lua`, `LiveInteractionObservation.lua` | PRESERVE factual/provenance boundary |
 | Physical representation cache | `scripts/representation/AssemblyRepresentationCache.lua` | **DRIFT #99** — member-discovery truncation must revoke complete-assembly Transit authority |
@@ -129,7 +129,6 @@ accepted contract.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #97 | NEW / latent behavioural identity | unresolved retained Job Episode may outlive Field World equivalence authority |
 | #99 | NEW / latent fail-closed representation | truncated member inventory can still claim complete-assembly Transit geometry |
 | #98 | confirmed placement mismatch | final follower speed permission is derived in Situation instead of Bounded Authority |
 | #100 | confirmed concept mismatch | rejected persistent pair-history concept remains as `EncounterRegistry` |
@@ -160,14 +159,18 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Begin with **#97 — Retain Field World authority through unresolved Job Episode
-observation**.
+Begin with **#99 — Transit complete-assembly authority under representation
+discovery truncation**.
 
 Then, unless new Reality changes the order:
 
-1. #99 — Transit truncation authority;
-2. #98 — Follower Boundary magnitude ownership;
-3. #100 — Encounter reconciliation, architecture/design before implementation;
-4. #101 — dependency-proven retirement/naming cleanup.
+1. #98 — Follower Boundary magnitude ownership;
+2. #100 — Encounter reconciliation, architecture/design before implementation;
+3. #101 — dependency-proven retirement/naming cleanup.
+
+Issue #97 is not current drift: PR #103 validation exposed that accepted `main`
+already refreshes retained Field World relevance through existing-Snapshot
+`resolve()` semantics. Preserve that implementation unless new Reality
+contradicts it.
 
 Do not combine these independent responsibilities into one executable tranche.
