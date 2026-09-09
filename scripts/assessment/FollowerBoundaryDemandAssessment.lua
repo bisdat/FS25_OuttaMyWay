@@ -435,7 +435,7 @@ local function relocationPhaseMaps(controlOutcomes,assemblyIdForReference)
         TS015_SETTLING=true,TS015_COMPACTING=true,TS015_MOVING=true,TS015_TARGET_COMPACTING=true
     }
     for _,observation in OuttaMyWay.ValueRecord.ipairs(controlOutcomes or {}) do
-        if observation.kind=="P22_TS015_CONTROL_EXECUTION_OBSERVATION" then
+        if observation.kind=="GUARDED_RECOVERY_CONTROL_EXECUTION_OBSERVATION" then
             local yieldId=assemblyIdForReference(observation.yieldReferenceKey)
             local progressId=assemblyIdForReference(observation.progressReferenceKey)
             if yieldId~=nil and progressId~=nil then

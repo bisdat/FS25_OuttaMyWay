@@ -13,7 +13,7 @@ def test_phase14_6c_primary_live_vocabulary_uses_current_responsibilities():
 
     for token in (
         "COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M",
-        "COOPERATIVE_PASSAGE_EXCURSION_V6",
+        "COOPERATIVE_PASSAGE_EXCURSION",
         'purpose={kind="COOPERATIVE_PASSAGE"',
         'architecture="COOPERATIVE_PASSAGE"',
         "cooperative-passage:",
@@ -85,10 +85,10 @@ def test_phase14_6c_test_build_identity_is_atomic():
     main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
     moddesc = (ROOT / "modDesc.xml").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.35"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.35 TEST — PRODUCTION VOCABULARY CONTRACT COMPLETENESS"' in config
-    assert "v0.3.0.35 TEST — PRODUCTION VOCABULARY CONTRACT COMPLETENESS" in main
-    assert '<version value="0.3.0.35">0.3.0.35</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.36"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.36 TEST — PRODUCTION VOCABULARY SEMANTIC CLOSURE"' in config
+    assert "v0.3.0.36 TEST — PRODUCTION VOCABULARY SEMANTIC CLOSURE" in main
+    assert '<version value="0.3.0.36">0.3.0.36</version>' in moddesc
 
 def test_phase14_6c_semantic_contracts_do_not_use_development_identity():
     support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
@@ -156,3 +156,73 @@ def test_phase14_6c_preserves_provenance_and_telemetry_separately_from_current_i
     # D-numbers remain legitimate where they identify historical decision provenance.
     assert 'decision="D-0146"' in support
     assert 'decision="D-0141"' in lifecycle
+
+def test_phase14_6c_semantic_runtime_categories_are_closed():
+    authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
+    regulation = (ROOT / "scripts" / "control" / "RegulationControl.lua").read_text(encoding="utf-8")
+    lifecycle = (ROOT / "scripts" / "commitment" / "LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+    guarded = (ROOT / "scripts" / "control" / "GuardedRecoveryCompatibility.lua").read_text(encoding="utf-8")
+    situation = (ROOT / "scripts" / "assessment" / "SituationAssessment.lua").read_text(encoding="utf-8")
+    trajectory = (ROOT / "scripts" / "assessment" / "TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
+    support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    planner = (ROOT / "scripts" / "candidates" / "LocalPassagePlanner.lua").read_text(encoding="utf-8")
+    representation = (ROOT / "scripts" / "representation" / "AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
+    portfolio = (ROOT / "scripts" / "candidates" / "ProspectiveDecisionPortfolioSupport.lua").read_text(encoding="utf-8")
+    passage = (ROOT / "scripts" / "control" / "CooperativePassageControl.lua").read_text(encoding="utf-8")
+    capability = (ROOT / "scripts" / "assessment" / "PassageCapabilityAssessment.lua").read_text(encoding="utf-8")
+
+    # Semantic Rename Requires Producer–Consumer Closure: the Authority producer
+    # and Control validation consumer must use the same current owner tags.
+    for current in ("FOLLOWER_BOUNDARY", "ACTION_SPACE_REGULATION"):
+        assert f'{current}_OWNER_TAG="{current}"' in authority
+        assert f'{current}=true' in regulation
+    assert "D0141_FOLLOWER_BOUNDARY" not in regulation + authority
+    assert "D0146_ACTION_SPACE_CONSERVATION" not in regulation + authority
+
+    # Current function/addressability vocabulary must not carry prototype identity.
+    for stale in (
+        "d0146CurrentPoseSeparation",
+        "d0146CurrentSeparation",
+        "_beginD0146Restore",
+        "d0146-action-space-composition:",
+        "d0123-guarded-recovery:",
+        "legacyOrdinal",
+    ):
+        assert stale not in authority + lifecycle + guarded + situation + trajectory + support + portfolio + passage
+
+    # Current representation/control contracts describe purpose, not test tranche/version.
+    for stale in (
+        "COOPERATIVE_PASSAGE_EXCURSION_V6",
+        "GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST",
+        "GIANTS_DIRECTIONAL_MEMBER_UNION_PASSAGE_TEST",
+        "P22_TS015_CONTROL_EXECUTION_OBSERVATION",
+        "D0123_GUARDED_RECOVERY_CURRENT_HEADING_THREAT",
+        "D0123_CURRENT_HEADING_THREAT_CLASSIFICATION",
+        "BOUNDED_D0123_TEST_REPRESENTATION_ONLY",
+    ):
+        assert stale not in capability + planner + representation + situation + guarded + support
+
+    assert "COOPERATIVE_PASSAGE_EXCURSION" in capability + planner
+    assert "GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY" in representation + planner
+    assert "GIANTS_DIRECTIONAL_MEMBER_UNION_PASSAGE_GEOMETRY" in representation
+    assert "GUARDED_RECOVERY_CONTROL_EXECUTION_OBSERVATION" in situation
+    assert "GUARDED_RECOVERY_CURRENT_HEADING_THREAT" in situation
+    assert "action-space-regulation-composition:" in support
+    assert "enumerationOrdinal" in portfolio
+
+    # Returned/stored current runtime reasons and statuses are production vocabulary.
+    semantic_result_files = authority + lifecycle + guarded + trajectory + support
+    for stale in (
+        'reason="D0123_',
+        'reason="D0141_',
+        'reason="D0146_',
+        'reason="D0155_',
+        'lastStatus="D0146_',
+        '"PRESERVE_D0146_PASSAGE_ACTION_SPACE',
+    ):
+        assert stale not in semantic_result_files
+
+    # Historical provenance and stable forensic event names remain legitimate.
+    assert 'decision="D-0146"' in support
+    assert 'decision="D-0141"' in lifecycle
+    assert 'logInfo("D0146_' in passage

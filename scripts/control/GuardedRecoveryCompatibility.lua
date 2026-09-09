@@ -104,7 +104,7 @@ function Compatibility:dispatch(picture,evaluated,candidate)
             if record.signalStatus=="NEGATIVE" or record.signalStatus=="INVALIDATED" or record.signalStatus=="EXPIRED" then
                 return self:_releaseGuardedRecoveryLease(picture,evaluated,record.reason or record.signalStatus)
             elseif record.signalStatus=="UNRESOLVED" then
-                return {status="NO_DISPATCH",reason="D0123_UNRESOLVED_PRESERVE_EXISTING_REGULATION",guardedRecovery=true}
+                return {status="NO_DISPATCH",reason="GUARDED_RECOVERY_UNRESOLVED_PRESERVE_EXISTING_REGULATION",guardedRecovery=true}
             end
         elseif pictureContainsAssembly(picture,currentLease.progressAssemblyId) and pictureContainsAssembly(picture,currentLease.yieldAssemblyId) then
             return self:_releaseGuardedRecoveryLease(picture,evaluated,"GUARDED_RECOVERY_CONTEXT_NOT_OBSERVED")
@@ -114,10 +114,10 @@ function Compatibility:dispatch(picture,evaluated,candidate)
     local bridge=guardedRecoveryBridge(candidate)
     if bridge==nil then return nil end
     if bridge.signalStatus~="POSITIVE" or candidate.capability~="REGULATE_SPEED" then
-        return {status="NO_DISPATCH",reason="D0123_OBSERVE_REMAINS_PRIMARY",guardedRecovery=true,signalStatus=bridge.signalStatus}
+        return {status="NO_DISPATCH",reason="GUARDED_RECOVERY_OBSERVE_REMAINS_PRIMARY",guardedRecovery=true,signalStatus=bridge.signalStatus}
     end
     if currentLease~=nil and currentLease.commitmentId==bridge.commitmentId and currentLease.progressAssemblyId==bridge.progressAssemblyId then
-        return {status="MAINTAINED",reason="D0123_POSITIVE_PURPOSE_PERSISTS",guardedRecovery=true,commitmentId=bridge.commitmentId}
+        return {status="MAINTAINED",reason="GUARDED_RECOVERY_POSITIVE_PURPOSE_PERSISTS",guardedRecovery=true,commitmentId=bridge.commitmentId}
     end
     if currentLease~=nil then self:_releaseGuardedRecoveryLease(picture,evaluated,"GUARDED_RECOVERY_CONTEXT_CHANGED") end
     local capability=self:_regulationControl()
@@ -128,7 +128,7 @@ function Compatibility:dispatch(picture,evaluated,candidate)
     local request=self:_regulationRequest(picture,evaluated,candidate,acquired.commitment,acquired.authorityToken,bridge,"APPLY")
     local started,result=self.runtime.liveControlDispatcher:dispatch(request,candidate)
     if started~=true then
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,bridge.commitmentId,bridge.progressAssemblyId,{reason="D0123_CONTROL_REQUEST_REJECTED:"..tostring(result),preserveAuthority=self:_otherRegulationPurposeOwnsAuthority(bridge.commitmentId,bridge.progressAssemblyId)})
+        OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self.runtime,bridge.commitmentId,bridge.progressAssemblyId,{reason="GUARDED_RECOVERY_CONTROL_REQUEST_REJECTED:"..tostring(result),preserveAuthority=self:_otherRegulationPurposeOwnsAuthority(bridge.commitmentId,bridge.progressAssemblyId)})
         local outcome=self:_outcome(request,"REJECTED",{kind="NO_PHYSICAL_EFFECT_OBSERVED"},{reason=tostring(result)})
         return {status="REJECTED",reason=tostring(result),request=request,outcome=outcome,guardedRecovery=true}
     end

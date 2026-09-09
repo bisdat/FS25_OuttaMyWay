@@ -11,7 +11,7 @@ local function candidateMetadata(specification,family,groupKey,ordinal,boundary,
     local evidence=specification.evidenceBasis or {}
     local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or evidence.guardedRecoveryBridge or {}
     local metadata={
-        groupKey=groupKey,family=family,legacyOrdinal=ordinal,supportBoundary=boundary,
+        groupKey=groupKey,family=family,enumerationOrdinal=ordinal,supportBoundary=boundary,
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,terminalEpisodeId=bridge.terminalEpisodeId,
         admissionKind=bridge.admissionKind,initialSeparationM=bridge.initialSeparationM,
         leaderAssemblyId=bridge.leaderAssemblyId,followerAssemblyId=bridge.followerAssemblyId,
@@ -32,7 +32,7 @@ local function descriptorFromSpecification(specification,family,groupKey,ordinal
     local evidence=specification.evidenceBasis or {}
     local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or evidence.guardedRecoveryBridge or {}
     local descriptor={
-        groupKey=groupKey,family=family,legacyOrdinal=ordinal,supportBoundary=boundary,
+        groupKey=groupKey,family=family,enumerationOrdinal=ordinal,supportBoundary=boundary,
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,terminalEpisodeId=bridge.terminalEpisodeId,
         admissionKind=bridge.admissionKind,initialSeparationM=bridge.initialSeparationM,
         leaderAssemblyId=bridge.leaderAssemblyId,followerAssemblyId=bridge.followerAssemblyId,
@@ -199,7 +199,7 @@ function Support:attach(picture,snapshot)
     end
     table.sort(capabilities)
     table.sort(state.groups,function(a,b)
-        if (a.legacyOrdinal or 0)~=(b.legacyOrdinal or 0) then return (a.legacyOrdinal or 0)<(b.legacyOrdinal or 0) end
+        if (a.enumerationOrdinal or 0)~=(b.enumerationOrdinal or 0) then return (a.enumerationOrdinal or 0)<(b.enumerationOrdinal or 0) end
         return tostring(a.groupKey)<tostring(b.groupKey)
     end)
 

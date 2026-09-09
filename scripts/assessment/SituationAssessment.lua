@@ -137,7 +137,7 @@ local function guardedRecoveryKnowledge(snapshot,currentSpace,productiveKnowledg
     local current=currentSpaceByAssembly(currentSpace)
     local productive=productiveByReference(productiveKnowledge)
     for _,observation in OuttaMyWay.ValueRecord.ipairs(snapshot.controlOutcomes or {}) do
-        if observation.kind=="P22_TS015_CONTROL_EXECUTION_OBSERVATION" then
+        if observation.kind=="GUARDED_RECOVERY_CONTROL_EXECUTION_OBSERVATION" then
             local yieldAssemblyId=assemblyIdForReference(map,observation.yieldReferenceKey)
             local progressAssemblyId=assemblyIdForReference(map,observation.progressReferenceKey)
             local recovery=current[yieldAssemblyId]
@@ -145,7 +145,7 @@ local function guardedRecoveryKnowledge(snapshot,currentSpace,productiveKnowledg
             local recoveryOccupancy=recovery and recovery.occupancy or nil
             local progressOccupancy=progress and progress.occupancy or nil
             local progressEvidence=productive[observation.progressReferenceKey]
-            local representationId="d0123-guarded-recovery:"..tostring(observation.commitmentId or observation.controlRequestId or snapshot.identity)
+            local representationId="guarded-recovery:"..tostring(observation.commitmentId or observation.controlRequestId or snapshot.identity)
             local signal
             local geometry={resolved=false,reason="GUARDED_RECOVERY_NOT_CURRENTLY_ACTIVE"}
             if observation.nativeReacquired==true then
@@ -174,10 +174,10 @@ local function guardedRecoveryKnowledge(snapshot,currentSpace,productiveKnowledg
             local fit=(signal.status=="POSITIVE" or signal.status=="NEGATIVE") and "FIT_FOR_LIMITED_HORIZON" or "REFRESH_REQUIRED"
             fitnessRecords[#fitnessRecords+1]={
                 representationId=representationId,assemblyId=progressAssemblyId,
-                question="D0123_GUARDED_RECOVERY_CURRENT_HEADING_THREAT",assessmentHorizon="CURRENT_GUARDED_RECOVERY_PICTURE_ONLY",
-                state=fit,claimPermissions=fit=="FIT_FOR_LIMITED_HORIZON" and {"D0123_CURRENT_HEADING_THREAT_CLASSIFICATION"} or {},
+                question="GUARDED_RECOVERY_CURRENT_HEADING_THREAT",assessmentHorizon="CURRENT_GUARDED_RECOVERY_PICTURE_ONLY",
+                state=fit,claimPermissions=fit=="FIT_FOR_LIMITED_HORIZON" and {"GUARDED_RECOVERY_CURRENT_HEADING_THREAT_CLASSIFICATION"} or {},
                 coverage={complete=false,conservative=false,underApproximationRisk=true},
-                uncertainty=fit=="FIT_FOR_LIMITED_HORIZON" and {"BOUNDED_D0123_TEST_REPRESENTATION_ONLY"} or {tostring(signal.reason or geometry.reason or "UNRESOLVED")},
+                uncertainty=fit=="FIT_FOR_LIMITED_HORIZON" and {"BOUNDED_GUARDED_RECOVERY_REPRESENTATION_ONLY"} or {tostring(signal.reason or geometry.reason or "UNRESOLVED")},
                 validityDependencies={"CURRENT_CONTROL_EXECUTION_OBSERVATION","CURRENT_SPACE","SAME_PROGRESS_JOB_EPISODE","CURRENT_PRODUCTIVE_OR_TURN_EVIDENCE"},
                 provenance={source="SituationAssessment.GuardedRecovery",layer="KNOWLEDGE",authority="D0123_BOUNDED_TEST_REPRESENTATION"}
             }

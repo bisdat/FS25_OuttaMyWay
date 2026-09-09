@@ -269,7 +269,7 @@ function Lifecycle.applyActionSpaceRegulationDecision(runtime,picture,evaluated)
     if runtime==nil or picture==nil or evaluated==nil or evaluated.decision==nil then return nil,"MISSING_CONTEXT" end
     local candidate=selectedCandidate(evaluated)
     local bridge=actionSpaceRegulationBridge(candidate)
-    if bridge==nil or candidate.capability~="REGULATE_SPEED" then return nil,"SELECTED_D0146_ACTION_SPACE_CANDIDATE_UNAVAILABLE" end
+    if bridge==nil or candidate.capability~="REGULATE_SPEED" then return nil,"SELECTED_ACTION_SPACE_REGULATION_CANDIDATE_UNAVAILABLE" end
     local action=evaluated.decision.commitmentAction
     local applied=nil
     local record=nil
@@ -279,14 +279,14 @@ function Lifecycle.applyActionSpaceRegulationDecision(runtime,picture,evaluated)
         applied=created.application; record=created.commitment
     elseif action=="MAINTAIN" or action=="REVISE" then
         applied=runtime.decisionCommitmentBoundary:apply(picture,evaluated)
-        if applied==nil or type(applied.commitmentId)~="string" then return nil,"D0146_ACTION_SPACE_COMMITMENT_APPLICATION_UNRESOLVED" end
+        if applied==nil or type(applied.commitmentId)~="string" then return nil,"ACTION_SPACE_REGULATION_COMMITMENT_APPLICATION_UNRESOLVED" end
         record=runtime.commitments:get(applied.commitmentId)
     else
-        return nil,"D0146_ACTION_SPACE_DECISION_NOT_CREATE_MAINTAIN_OR_REVISE"
+        return nil,"ACTION_SPACE_REGULATION_DECISION_NOT_CREATE_MAINTAIN_OR_REVISE"
     end
-    if record==nil or record.state~="ACTIVE" then return nil,"D0146_ACTION_SPACE_COMMITMENT_NOT_ACTIVE" end
+    if record==nil or record.state~="ACTIVE" then return nil,"ACTION_SPACE_REGULATION_COMMITMENT_NOT_ACTIVE" end
     local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or nil
-    if responsibility~=bridge.governingRequirementKey then return nil,"D0146_ACTION_SPACE_GOVERNING_REQUIREMENT_MISMATCH" end
+    if responsibility~=bridge.governingRequirementKey then return nil,"ACTION_SPACE_REGULATION_GOVERNING_REQUIREMENT_MISMATCH" end
 
     local obligation=findActionSpaceRegulationObligation(runtime,record.identity,bridge.conflictIdentity)
     if obligation==nil then
@@ -294,7 +294,7 @@ function Lifecycle.applyActionSpaceRegulationDecision(runtime,picture,evaluated)
         for _,item in OuttaMyWay.ValueRecord.ipairs(candidate.obligationsCreated or {}) do
             if type(item.requiredOutcome)=="table" and (item.requiredOutcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or item.requiredOutcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED") then specification=item break end
         end
-        if specification==nil then return nil,"D0146_ACTION_SPACE_OBLIGATION_SPECIFICATION_UNAVAILABLE" end
+        if specification==nil then return nil,"ACTION_SPACE_REGULATION_OBLIGATION_SPECIFICATION_UNAVAILABLE" end
         obligation=runtime.obligations:create({
             origin=specification.origin,basis=specification.basis,ownerCommitmentId=record.identity,
             requiredOutcome=specification.requiredOutcome,requiredAuthority=specification.requiredAuthority or {},
@@ -315,7 +315,7 @@ function Lifecycle.applyActionSpaceRegulationDecision(runtime,picture,evaluated)
         if result==nil then return nil,reason end
         record=result.commitment; token=result.authorityToken; acquired=true
     end
-    if token==nil or runtime.authorities:validate(token)~=true then return nil,"D0146_ACTION_SPACE_VALID_AUTHORITY_TOKEN_UNAVAILABLE" end
+    if token==nil or runtime.authorities:validate(token)~=true then return nil,"ACTION_SPACE_REGULATION_VALID_AUTHORITY_TOKEN_UNAVAILABLE" end
     logInfo("D0146_ACTION_SPACE_DECISION_APPLIED decision=%s commitment=%s conflict=%s admission=%s regulated=%s protected=%s obligation=%s token=%s acquired=%s magnitudeAuthority=BOUNDED_AUTHORITY",
         tostring(evaluated.decision.identity),tostring(record.identity),tostring(bridge.conflictIdentity),tostring(bridge.admissionKind or "CURRENT_EXCURSION"),tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),
         tostring(obligation.identity),tostring(token.identity),tostring(acquired))
@@ -323,9 +323,9 @@ function Lifecycle.applyActionSpaceRegulationDecision(runtime,picture,evaluated)
 end
 
 function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridge,evidence)
-    if runtime==nil or type(commitmentId)~="string" or type(bridge)~="table" or type(bridge.conflictIdentity)~="string" then return nil,"MISSING_D0146_ACTION_SPACE_SETTLEMENT_CONTEXT" end
+    if runtime==nil or type(commitmentId)~="string" or type(bridge)~="table" or type(bridge.conflictIdentity)~="string" then return nil,"MISSING_ACTION_SPACE_REGULATION_SETTLEMENT_CONTEXT" end
     local record=runtime.commitments:get(commitmentId)
-    if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then return nil,"D0146_ACTION_SPACE_COMMITMENT_NOT_LIVE" end
+    if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then return nil,"ACTION_SPACE_REGULATION_COMMITMENT_NOT_LIVE" end
     local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
     local forward=type(responsibility)=="string" and string.sub(responsibility,1,32)=="forward-intersection-regulation:"
     local settlementMode=nil

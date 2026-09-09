@@ -76,7 +76,7 @@ local function fitnessForConflict(picture,conflict)
     local result={}
     for _,item in OuttaMyWay.ValueRecord.ipairs(picture.representationFitness or {}) do
         local evidence=item.evidence or {}
-        if evidence.conflictIdentity==conflict.identity and evidence.controlProfile=="COOPERATIVE_PASSAGE_EXCURSION_V6" then result[#result+1]=item end
+        if evidence.conflictIdentity==conflict.identity and evidence.controlProfile=="COOPERATIVE_PASSAGE_EXCURSION" then result[#result+1]=item end
     end
     table.sort(result,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
     if #result~=2 then return nil,"PURPOSE_SPECIFIC_MECHANICAL_FITNESS_UNAVAILABLE" end
@@ -190,7 +190,7 @@ end
 local function directionalBasis(envelope)
     if type(envelope)~="table" then return nil end
     if envelope.authority=="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY" then return "GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY" end
-    if envelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST" then return "GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPE" end
+    if envelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY" then return "GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPE" end
     return "GIANTS_DIRECTIONAL_ASSEMBLY_ENVELOPE"
 end
 
@@ -422,7 +422,7 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
     end
     local supported=evidence()
     supported.clearanceContract="NON_CONTACT_OUTSIDE_CROSSING_WINDOW_NOMINAL_TARGET_WITH_POLICY_FLOOR_INSIDE_CROSSING_WINDOW"
-    supported.supportBasis=directional and (((aEnvelope.authority=="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY") and (bEnvelope.authority=="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")) and "TRANSLATED_GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY" or (((aEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST") and (bEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST")) and "TRANSLATED_GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES" or "TRANSLATED_GIANTS_DIRECTIONAL_ASSEMBLY_ENVELOPES")) or "TRANSLATED_CONFIGURATION_CONDITIONED_REPRESENTED_DISCS"
+    supported.supportBasis=directional and (((aEnvelope.authority=="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY") and (bEnvelope.authority=="GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY")) and "TRANSLATED_GIANTS_BASE_SIZE_TRANSIT_PASSAGE_GEOMETRY" or (((aEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY") and (bEnvelope.authority=="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY")) and "TRANSLATED_GIANTS_BASE_SIZE_DIRECTIONAL_ENVELOPES" or "TRANSLATED_GIANTS_DIRECTIONAL_ASSEMBLY_ENVELOPES")) or "TRANSLATED_CONFIGURATION_CONDITIONED_REPRESENTED_DISCS"
     supported.negativeClearanceAuthority=false
     return true,nil,supported
 end
@@ -787,7 +787,7 @@ local function planConflict(picture,snapshot,conflict)
                         otherFrontExtentM=geometry.otherFrontExtentM,otherRearExtentM=geometry.otherRearExtentM,crossingWindowBasis=geometry.crossingWindowBasis
                     },
                     progressiveSearch={candidateCount=#arrangements,selectedIndex=index,rejectedBeforeSelection=rejected,satisficed=true,conflictSelection="NEAREST_LOCAL_ESTABLISHED_CONFLICT_FIRST"},
-                    controlProfile="COOPERATIVE_PASSAGE_EXCURSION_V6",
+                    controlProfile="COOPERATIVE_PASSAGE_EXCURSION",
                     provenance={source="LocalPassagePlanner",layer="CANDIDATE_SUPPORT",decisionAuthority=false,controlAuthority=false,generalVehicleAuthority=false,globalOptimisation=false,vehicleNameAdmissionGate=false}
                 },nil
             end

@@ -4,7 +4,7 @@
 -- an Established Opposed Corridor Conflict exists, cached current/observed
 -- assembly geometry and configuration identity support Candidate-owned Local
 -- Passage search.  This assessment exposes mechanical fitness for the
--- COOPERATIVE_PASSAGE_EXCURSION_V6 control profile; configuration selection and the
+-- COOPERATIVE_PASSAGE_EXCURSION control profile; configuration selection and the
 -- Passage Excursion geometry remain Candidate responsibilities.
 
 OuttaMyWay.PassageCapabilityAssessment={}
@@ -56,7 +56,7 @@ local function record(conflict,motion,physical,assemblyId,otherAssemblyId)
             physicalPrimitiveCount=p and p.summary and p.summary.physicalPrimitiveCount or 0,
             physicalCoverageComplete=p and p.coverageComplete==true or false,
             negativeClearanceAuthority=p and p.negativeClearanceAuthority==true or false,
-            controlProfile="COOPERATIVE_PASSAGE_EXCURSION_V6",
+            controlProfile="COOPERATIVE_PASSAGE_EXCURSION",
             vehicleNameAdmissionGate=false,
             configurationReductionAuthority="NOT_SELECTED_CURRENT_CONFIGURATION_RETAINED"
         },

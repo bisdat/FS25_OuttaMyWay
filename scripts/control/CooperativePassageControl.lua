@@ -911,33 +911,6 @@ function Control:_passageConfigurationReady(run)
     return true
 end
 
-function Control:_beginD0146Restore(run)
-    self:_stopLeg(run)
-    local owned=0
-    local restoreActuators=0
-    for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
-        participant.passageRestoreFoldWaitingLogged=false
-        participant.passageRestoreFoldSettledLogged=false
-        participant.passageRestoreFoldExhaustedLogged=false
-        if self.configurationMechanism:getState(participant.vehicle)~=nil then
-            local ok,state=self.configurationMechanism:requestCachedTransitRestore(participant.vehicle)
-            if not ok then return false,participant.name..":"..tostring(state) end
-            owned=owned+1
-            restoreActuators=restoreActuators+#(state.restoreActuatorStates or {})
-            logInfo("RESTORE_CAPABILITY commitment=%s participant=%s cachedOnly=true physicallyChangedActuators=%d genericFoldDiscovery=false",
-                tostring(run.commitmentId),participant.name,#(state.restoreActuatorStates or {}))
-        end
-    end
-    if owned==0 then
-        logInfo("RESTORE_SKIPPED commitment=%s reason=NO_CONFIGURATION_CHANGED modes=%s",tostring(run.commitmentId),configurationModeText(run))
-        self:_complete(run)
-        return true,"COMPLETED_WITHOUT_CONFIGURATION_RESTORE"
-    end
-    self:_setPhase(run,"RESTORING",g_time or 0)
-    logInfo("RESTORE_START commitment=%s selective=true ownedParticipants=%d cachedActuators=%d restoreOnlyPhysicalTransitChanges=true modes=%s",tostring(run.commitmentId),owned,restoreActuators,configurationModeText(run))
-    return true
-end
-
 function Control:_passageRestoreReady(run)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
         if self.configurationMechanism:getState(participant.vehicle)~=nil then
@@ -1192,7 +1165,7 @@ function Control:_executeCooperativePassageJointRequests(requestA,requestB,candi
     if requestA.capability~="REPOSITION" or requestB.capability~="REPOSITION" then return false,"JOINT_REQUEST_REQUIRES_REPOSITION" end
     if requestA.effectiveActuationCompositionId~=requestB.effectiveActuationCompositionId then return false,"JOINT_REQUEST_COMPOSITION_MISMATCH" end
     if not self:_validAuthority(requestA) or not self:_validAuthority(requestB) then return false,"JOINT_REQUEST_AUTHORITY_INVALID" end
-    if type(bridge)~="table" or bridge.architecture~="COOPERATIVE_PASSAGE" or bridge.controlProfile~="COOPERATIVE_PASSAGE_EXCURSION_V6" then return false,"COOPERATIVE_PASSAGE_BRIDGE_INVALID" end
+    if type(bridge)~="table" or bridge.architecture~="COOPERATIVE_PASSAGE" or bridge.controlProfile~="COOPERATIVE_PASSAGE_EXCURSION" then return false,"COOPERATIVE_PASSAGE_BRIDGE_INVALID" end
 
     local subjectVehicle=self:_resolveReference(bridge.subjectReferenceKey)
     local otherVehicle=self:_resolveReference(bridge.otherReferenceKey)

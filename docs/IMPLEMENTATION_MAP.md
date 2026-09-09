@@ -14,7 +14,7 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 
 - Accepted Repository State baseline: `main` after PR #94 merge, commit `48745375d259140117add5e0abf6047ec3667b17`.
 - Canonical authority remains **v0.3.0.0**.
-- Current branch executable identity is **`0.3.0.35 TEST — PRODUCTION VOCABULARY CONTRACT COMPLETENESS`**; acceptance and canonical authority are unchanged until review/merge/validation.
+- Current branch executable identity is **`0.3.0.36 TEST — PRODUCTION VOCABULARY SEMANTIC CLOSURE`**; acceptance and canonical authority are unchanged until review/merge/validation.
 - Strangler Phase 14 remains active. Phase 14.6C is the current final planned vocabulary/ownership reconciliation tranche.
 - Phase 15 whole-system validation and architecture-to-runtime review has not started.
 
@@ -162,7 +162,7 @@ Semantic targeting may be unambiguous while generic Commitment application still
 
 Phase 14.6C is the current bounded Engineering Increment.
 
-`0.3.0.35 TEST — PRODUCTION VOCABULARY CONTRACT COMPLETENESS` must:
+`0.3.0.36 TEST — PRODUCTION VOCABULARY SEMANTIC CLOSURE` must:
 
 - graduate primary live Cooperative Passage identifiers away from D-number /
   `STEP2` implementation provenance;

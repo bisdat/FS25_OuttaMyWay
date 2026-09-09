@@ -9,8 +9,8 @@ local Control = OuttaMyWay.RegulationControl
 Control.__index = Control
 
 local boundedAuthorityRequiredOwnerTags = {
-    D0141_FOLLOWER_BOUNDARY=true,
-    D0146_ACTION_SPACE_CONSERVATION=true,
+    FOLLOWER_BOUNDARY=true,
+    ACTION_SPACE_REGULATION=true,
     FORWARD_INTERSECTION_INTENT_REVELATION=true,
     RELOCATION_SERIALIZATION=true
 }

@@ -1,3 +1,29 @@
+## 2026-09-09 — Phase 14.6C: semantic rename requires producer-consumer closure
+
+**Observe:** exact-head review of `.35` found that semantic cleanup had not
+closed every live contract surface. Current private execution helpers, returned
+reason/status values, Action-Space composition identity, Guarded-Recovery
+representation identity, directional Passage representation authority and
+prospective enumeration metadata still carried development-era vocabulary.
+The review also found a behavioural defect introduced by the partial rename:
+`RegulationBoundedAuthority` emitted `FOLLOWER_BOUNDARY` /
+`ACTION_SPACE_REGULATION` owner tags while `RegulationControl` still required
+Bounded Authority only for the old D-numbered owner tags.
+
+**Discover:** **Returned / Stored Runtime Vocabulary Is Production Vocabulary.**
+A value becomes production vocabulary when current runtime state or another
+runtime boundary consumes it, even if it began life as a diagnostic or test
+label. **Semantic Rename Requires Producer–Consumer Closure.** Renaming one
+side of a live contract without its consumer can alter behaviour even when the
+change appears lexical.
+
+**Decision:** `.35` remains unmerged and unaccepted. `.36` stays inside the
+same Phase 14.6C tranche and closes the reviewed current semantic surfaces
+atomically, including the Regulation owner-tag producer/consumer pair. Stable
+forensic log event names and explicit historical decision provenance remain
+unchanged. Terminal Egress / D-0147 and Issue #87 configuration decomposition
+remain outside this correction.
+
 ## 2026-09-09 — Phase 14.6C: production vocabulary completeness is semantic
 
 **Observe:** the pushed `.34` pre-PR review found that its shortlist stale-token

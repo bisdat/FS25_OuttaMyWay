@@ -17,6 +17,10 @@ def test_phase14_1_regulation_control_owns_production_speed_execution():
     assert 'target.kind~="REGULATION_LEASE"' in control
     assert "boundedAuthority:validateRequest(request)" in control
     assert "boundedAuthorityRequiredOwnerTags" in control
+    assert "FOLLOWER_BOUNDARY=true" in control
+    assert "ACTION_SPACE_REGULATION=true" in control
+    assert "D0141_FOLLOWER_BOUNDARY" not in control
+    assert "D0146_ACTION_SPACE_CONSERVATION" not in control
     assert not (ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").exists()
     assert "Prototype22CapabilityGate" not in main
 

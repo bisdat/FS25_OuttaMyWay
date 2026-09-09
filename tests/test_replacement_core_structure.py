@@ -938,7 +938,7 @@ def test_d0141_aligned_follower_boundary_regulation_uses_current_knowledge_and_c
     assert 'FOLLOWER_BOUNDARY_PROTECTION' in support
     assert 'applyFollowerBoundaryDecision' in lifecycle
     assert 'settleFollowerBoundaryPurpose' in lifecycle
-    assert 'D0141_FOLLOWER_BOUNDARY' in control
+    assert 'FOLLOWER_BOUNDARY' in control
     assert 'ELASTIC_REGULATION_MAGNITUDE_UPDATED' in control
     assert 'CAP_RELAXATION_REJECTED_PURPOSE_PERSISTS' not in control
     assert 'FOLLOWER_MATURATION_TRANSITION_CLEARANCE_FACTOR' not in control
@@ -997,7 +997,7 @@ def test_v47101_d0146_step2_is_active_candidate_owned_and_control_executes_only_
     assert "scripts/assessment/PassageCapabilityAssessment.lua" in main
     assert "scripts/candidates/LocalPassagePlanner.lua" in main
     assert 'COOPERATIVE_PASSAGE_ENABLED = true' in config
-    assert "COOPERATIVE_PASSAGE_EXCURSION_V6" in fitness
+    assert "COOPERATIVE_PASSAGE_EXCURSION" in fitness
     assert "vehicleNameAdmissionGate=false" in fitness
     assert "Condor Endurance II" not in fitness and "Patriot 4450" not in fitness
     assert "Condor Endurance II" not in planner and "Patriot 4450" not in planner
@@ -1062,7 +1062,7 @@ def test_v0104_d0146_pair_specific_clearance_is_transit_only_and_has_no_configur
     for forbidden in ('configurationConditionedPair','compactParticipantGeometry','COMPACT_REQUIRED','RETAIN_CURRENT','LEGACY_CONFIGURATION_CONDITIONED'):
         assert forbidden not in planner
     assert "passageConfiguration=plan.passageConfiguration" in support
-    assert "COOPERATIVE_PASSAGE_EXCURSION_V6" in fitness
+    assert "COOPERATIVE_PASSAGE_EXCURSION" in fitness
     assert 'participant.configurationMode~="TRANSIT_REQUIRED"' in control
     assert 'COMPACT_REQUIRED' not in control and 'RETAIN_CURRENT' not in control
     assert "policy=ALWAYS_ATTEMPT_TRANSIT" in control
@@ -1103,9 +1103,9 @@ def test_v47106_d0146_current_excursion_conserves_action_space_before_establishe
     for token in (
         "actionSpaceConservation", "currentCorridorOverlapOnAxis", "nativeForwardRateKmh", "nativeClosureContribution",
         "CURRENT_EXCURSION_CONSUMES_LOCAL_PASSAGE_ACTION_SPACE", "REGULATE_SUPPORTED",
-        "PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION",
+        "PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION",
         "resolutionSpaceRelationship", "positiveDissolution",
-        "D0146_TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION",
+        "TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION",
     ):
         assert token in assessment
     assert 'requestedCapKmh' not in assessment
@@ -1202,8 +1202,8 @@ def test_v47108_settled_relationship_dissolution_requires_positive_non_turn_cont
         'trajectory.contextEvidenceClass=="NON_TURN_LINE_ACTIVE"',
         'motion.localIntentClassification=="SETTLED_CONTINUATION"',
         "subjectSettledContinuation", "otherSettledContinuation",
-        "D0146_TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION",
-        "D0146_POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION",
+        "TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION",
+        "POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION",
     ):
         assert token in assessment
     assert 'D0146_POSITIVE_STABLE_TRAJECTORY_RELATIONSHIP_DISSOLUTION' not in assessment
@@ -1547,7 +1547,7 @@ def test_v0107_d0146_transit_first_preserves_native_blocked_as_observation_not_p
     # Configuration history remains representation evidence but has no D-0146 planner authority.
     assert "configurationConditionedPair" not in planner
     assert "COMPACT_REQUIRED" not in planner and "RETAIN_CURRENT" not in planner
-    assert "COOPERATIVE_PASSAGE_EXCURSION_V6" in planner and "COOPERATIVE_PASSAGE_EXCURSION_V6" in control
+    assert "COOPERATIVE_PASSAGE_EXCURSION" in planner and "COOPERATIVE_PASSAGE_EXCURSION" in control
     assert "spec_aiFieldWorker.isBlocked == true" in observation
     assert "POSITIVE_NATIVE_BLOCKED_DURING_PASSAGE_GUIDE" not in control
     assert "configurationPreserved=true" in control
@@ -1556,15 +1556,15 @@ def test_v0107_d0146_transit_first_preserves_native_blocked_as_observation_not_p
 def test_v01013_d0146_safe_release_vetoes_blocked_or_positive_future_space_false_dissolution():
     assessment=(ROOT/"scripts"/"assessment"/"TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
     for token in (
-        "D0146_BLOCKED_PARTICIPANT_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION",
-        "D0146_POSITIVE_FUTURE_SPACE_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION",
+        "BLOCKED_PARTICIPANT_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION",
+        "POSITIVE_FUTURE_SPACE_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION",
         "POSITIVE_DISSOLUTION_VETOED",
         "relevantFutureSpacePositive",
         "subjectBlocked", "otherBlocked",
     ):
         assert token in assessment
-    assert assessment.index('if record.subjectBlocked==true or record.otherBlocked==true') < assessment.index('D0146_POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION')
-    assert assessment.index('if record.relevantFutureSpacePositive==true') < assessment.index('D0146_POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION')
+    assert assessment.index('if record.subjectBlocked==true or record.otherBlocked==true') < assessment.index('POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION')
+    assert assessment.index('if record.relevantFutureSpacePositive==true') < assessment.index('POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION')
 
 def test_v0132_d0159_passage_excursion_restores_selection_handoff_and_rebases_execution_origin():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
@@ -1592,7 +1592,7 @@ def test_v0132_d0159_passage_excursion_restores_selection_handoff_and_rebases_ex
         "CROSSING_WINDOW_EXIT",
         "DEVELOPMENT_CROSSING_WINDOW_RECOVERY_EXCURSION",
         "entryOrigins",
-        "COOPERATIVE_PASSAGE_EXCURSION_V6",
+        "COOPERATIVE_PASSAGE_EXCURSION",
     ):
         assert token in planner
     assert "longitudinalSupportFromRelativeDiscs" in clearance
@@ -1605,7 +1605,7 @@ def test_v0132_d0159_passage_excursion_restores_selection_handoff_and_rebases_ex
     assert "executionFrame" in planner
     assert "D0146_PASSAGE_GUIDE_COMPLETE" in control
     assert "D0146_PASSAGE_SECOND_WHISTLE" not in control
-    assert "COOPERATIVE_PASSAGE_EXCURSION_V6" in control
+    assert "COOPERATIVE_PASSAGE_EXCURSION" in control
     # Isolation guardrails for the first field experiment.
     assert "OuttaMyWay.COOPERATIVE_PASSAGE_MOVE_SPEED_KMH = 8.0" in config
     assert "AGRONOMIC_DEBT_RETURN" not in control
@@ -1620,7 +1620,7 @@ def test_v0133_directional_passage_envelope_uses_bootstrap_giants_size_with_disc
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     for token in (
         "vehicle.base.size#width", "vehicle.base.size#length", "directionalPassageEnvelope",
-        "GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST", "SINGLE_MEMBER_BASE_SIZE",
+        "GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY", "SINGLE_MEMBER_BASE_SIZE",
     ):
         assert token in cache
     assert "directionalPassageEnvelope" in source
@@ -1648,7 +1648,7 @@ def test_v0134_passage_settling_uses_owned_hold_plus_physical_stationary_not_per
 def test_d0163_generic_directional_member_union_passage_envelope_is_vehicle_independent():
     cache=(ROOT/"scripts"/"representation"/"AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
-    assert "GIANTS_DIRECTIONAL_MEMBER_UNION_PASSAGE_TEST" in cache
+    assert "GIANTS_DIRECTIONAL_MEMBER_UNION_PASSAGE_GEOMETRY" in cache
     assert "directionalRectangleMemberCount" in cache
     assert "representedDiscFallbackMemberCount" in cache
     assert "leftExtentM" in cache and "rightExtentM" in cache
@@ -2188,7 +2188,7 @@ def test_phase10_migrated_control_requests_require_bounded_authority():
     assert follower.index("_regulationRequest") < follower.index("self.runtime.liveControlDispatcher:dispatch")
     assert "applied.currentResponsibility" in follower
     assert "boundedAuthorityId=request.boundedAuthorityId" in follower
-    assert "D0141_GRANT_REPLACED_BY_CURRENT_MAGNITUDE" in follower
+    assert "FOLLOWER_BOUNDARY_GRANT_REPLACED_BY_CURRENT_MAGNITUDE" in follower
 
     action=regulation_authority[regulation_authority.index("function Authority:_continueActionSpaceRegulationInitial"):regulation_authority.index("function Authority:actionSpaceRegulationTransitionFailed")]
     assert "applied.currentResponsibility" in action

@@ -2110,7 +2110,7 @@ test("representation cache reads GIANTS base size once and exposes it only for c
     equal(xmlReads,readsAfterBuild,"base size XML was reread after bootstrap")
     equal(math.abs(folded.directionalPassageEnvelope.widthM-3.5)<0.001,true)
     equal(math.abs(folded.directionalPassageEnvelope.lengthM-11.1)<0.001,true)
-    equal(folded.directionalPassageEnvelope.authority,"GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST")
+    equal(folded.directionalPassageEnvelope.authority,"GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY")
     getWorldTranslation=oldWorldTranslation
     localDirectionToWorld=oldLocalDirectionToWorld
 end)
@@ -2163,7 +2163,7 @@ test("representation cache composes generic multi-member directional Passage env
     cache:beginObservationCycle(); local evidence=cache:observe(worker,"vehicle-root:1","job-directional-union",0); cache:endObservationCycle()
     local envelope=evidence.directionalPassageEnvelope
     equal(envelope~=nil,true)
-    equal(envelope.authority,"GIANTS_DIRECTIONAL_MEMBER_UNION_PASSAGE_TEST")
+    equal(envelope.authority,"GIANTS_DIRECTIONAL_MEMBER_UNION_PASSAGE_GEOMETRY")
     equal(envelope.directionalRectangleMemberCount,2); equal(envelope.representedDiscFallbackMemberCount,0)
     equal(math.abs(envelope.minRightM+1.5)<0.001,true); equal(math.abs(envelope.maxRightM-5.0)<0.001,true)
     equal(math.abs(envelope.minForwardM+9.0)<0.001,true); equal(math.abs(envelope.maxForwardM-2.5)<0.001,true)
@@ -3147,7 +3147,7 @@ test("architecture alignment routes D-0123 through Situation Candidate Decision 
     equal(unresolvedEval.decision.commitmentAction,"MAINTAIN")
     local before=#requests
     local maintained=runtime:dispatchEvaluatedOperationalPicture(unresolved,unresolvedEval)
-    equal(maintained.reason,"D0123_UNRESOLVED_PRESERVE_EXISTING_REGULATION")
+    equal(maintained.reason,"GUARDED_RECOVERY_UNRESOLVED_PRESERVE_EXISTING_REGULATION")
     equal(#requests,before)
     equal(runtime.authorities:ownerOf(progressAssemblyId),commitmentId)
 
@@ -3524,7 +3524,7 @@ test("D0146 Resolution-Space relationship requires Settled Continuation before n
     equal(transitional.otherSettledContinuation,true)
     equal(transitional.resolutionSpaceRelationship.status,"TRANSITIONAL_RELATIONSHIP_CHANGE")
     equal(transitional.resolutionSpaceRelationship.positiveDissolution,false)
-    equal(transitional.resolutionSpaceRelationship.reason,"D0146_TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION")
+    equal(transitional.resolutionSpaceRelationship.reason,"TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION")
 
     local settledDissolution={d0146Motion("AS-A","JE-A",1,0,2,1,25,"SETTLED_CONTINUATION",true),d0146Motion("AS-B","JE-B",0,-1,2,1,25,"SETTLED_CONTINUATION",true)}
     trajectories=d0146Update(tracks,settledDissolution,spaces,5,{d0146Productive("AS-A",true,"NON_TURN_LINE_ACTIVE"),d0146Productive("AS-B",true,"NON_TURN_LINE_ACTIVE")})
@@ -3535,7 +3535,7 @@ test("D0146 Resolution-Space relationship requires Settled Continuation before n
     equal(dissolved.otherSettledContinuation,true)
     equal(dissolved.resolutionSpaceRelationship.status,"POSITIVELY_DISSOLVED")
     equal(dissolved.resolutionSpaceRelationship.positiveDissolution,true)
-    equal(dissolved.resolutionSpaceRelationship.reason,"D0146_POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION")
+    equal(dissolved.resolutionSpaceRelationship.reason,"POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION")
 end)
 
 test("D0146 Safe Release vetoes settled trajectory dissolution while a participant is blocked",function()
@@ -3558,7 +3558,7 @@ test("D0146 Safe Release vetoes settled trajectory dissolution while a participa
     equal(classified.subjectBlocked,true)
     equal(classified.resolutionSpaceRelationship.status,"POSITIVE_DISSOLUTION_VETOED")
     equal(classified.resolutionSpaceRelationship.positiveDissolution,false)
-    equal(classified.resolutionSpaceRelationship.reason,"D0146_BLOCKED_PARTICIPANT_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION")
+    equal(classified.resolutionSpaceRelationship.reason,"BLOCKED_PARTICIPANT_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION")
 end)
 
 test("D0146 Safe Release vetoes settled trajectory dissolution while relevant Future Space remains positively intersecting",function()
@@ -3588,7 +3588,7 @@ test("D0146 Safe Release vetoes settled trajectory dissolution while relevant Fu
     equal(classified.relevantFutureSpaceOutcome,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION_POSITIVE")
     equal(classified.resolutionSpaceRelationship.status,"POSITIVE_DISSOLUTION_VETOED")
     equal(classified.resolutionSpaceRelationship.positiveDissolution,false)
-    equal(classified.resolutionSpaceRelationship.reason,"D0146_POSITIVE_FUTURE_SPACE_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION")
+    equal(classified.resolutionSpaceRelationship.reason,"POSITIVE_FUTURE_SPACE_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION")
 end)
 
 test("D0146 Current Excursion Action-Space Conservation fails closed outside local envelope or without positive corridor support",function()
@@ -3712,7 +3712,7 @@ end)
 test("D0146 Passage Excursion enters only when derived Entry Boundary is reached and uses a physical Crossing Window",function()
     local picture,snapshot=d0146Step2Fixture(nil,nil,18)
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
-    equal(reason,nil); equal(plan.status,"SUPPORTED"); equal(plan.controlProfile,"COOPERATIVE_PASSAGE_EXCURSION_V6")
+    equal(reason,nil); equal(plan.status,"SUPPORTED"); equal(plan.controlProfile,"COOPERATIVE_PASSAGE_EXCURSION")
     equal(plan.passageEntry.ready,true); equal(plan.passageEntry.boundarySeparationM>=18,true)
     equal(#plan.passageGuide.gates,5); equal(plan.progressiveSearch.satisficed,true)
     equal(plan.passageGuide.gates[1].kind,"DEVELOPMENT_ENTRY")
@@ -3837,14 +3837,14 @@ test("D0146 Passage Selection immediately supersedes D0155 even when physical En
         regulatedAssemblyId="AS-A",regulatedReferenceKey="vehicle-root:101",protectedAssemblyId="AS-B",protectedReferenceKey="vehicle-root:201",
         roleBasis="DEFER_GREATER_NATIVE_CLOSURE_CONTRIBUTION",separationM=60,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=4},
         currentClosing={resolved=true,separationM=60,closingRateMps=6,currentDirectionDot=-1},nativeUnrestrictedKmh=25,nativeClosureContributionKmh=25,nativeSignedClosureContributionKmh=25,nativeMoveForwards=true,
-        governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
+        governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
     local adapted=OuttaMyWay.OperationalPicture.new(values)
     local supported=runtime.liveTrafficCandidateSupport:attach(adapted,snapshot)
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"COOPERATIVE_PASSAGE")
     equal(supported.candidateSupportEvidence.candidateSpecifications[1].capability,"REPOSITION")
     equal(supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.cooperativePassageBridge.passageEntry.ready,false)
-    equal(runtime.liveTrafficCandidateSupport:getLastStatus(),"D0146_STEP2_COOPERATIVE_PASSAGE_CANDIDATE_PUBLISHED")
+    equal(runtime.liveTrafficCandidateSupport:getLastStatus(),"COOPERATIVE_PASSAGE_CANDIDATE_PUBLISHED")
 end)
 
 test("D0146 Step2 has no arbitrary minimum entry separation and lets concrete Passage Guide support decide below 50 m",function()
@@ -3872,7 +3872,7 @@ test("D0146 Step2 mechanical preflight is vehicle-name independent and remains C
     values.motionEvidence[2].name="Arbitrary Foldable Worker"
     local fitness=OuttaMyWay.PassageCapabilityAssessment.buildFitness({opposedCorridorKnowledge=values.opposedCorridorKnowledge,motionEvidence=values.motionEvidence,physicalSpaceEvidence=values.physicalSpaceEvidence})
     equal(#fitness,2)
-    equal(fitness[1].evidence.controlProfile,"COOPERATIVE_PASSAGE_EXCURSION_V6")
+    equal(fitness[1].evidence.controlProfile,"COOPERATIVE_PASSAGE_EXCURSION")
     equal(fitness[1].evidence.vehicleNameAdmissionGate,false)
 end)
 
@@ -3953,7 +3953,7 @@ local function actionSpaceRegulationPicture()
             status="REGULATE_SUPPORTED",supported=true,reason="CURRENT_EXCURSION_OCCUPIES_APPROACHING_STABLE_TRAJECTORY_CORRIDOR_WHILE_LOCAL_PASSAGE_ACTION_SPACE_COMPRESSES",
             excursionAssemblyId="AS-A",excursionReferenceKey="vehicle-root:101",regulatedAssemblyId="AS-B",regulatedReferenceKey="vehicle-root:201",
             separationM=70,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=6},currentClosing={resolved=true,separationM=70,closingRateMps=8},
-            nativeUnrestrictedKmh=25,governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
+            nativeUnrestrictedKmh=25,governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
         }
     }
     return OuttaMyWay.OperationalPicture.new({
@@ -4028,7 +4028,7 @@ test("D0146 pre-productive intent relevance crosses Candidate as Regulation only
         regulatedAssemblyId="AS-A",regulatedReferenceKey="vehicle-root:101",protectedAssemblyId="AS-B",protectedReferenceKey="vehicle-root:201",
         roleBasis="PRESERVE_PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION",separationM=60,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=4},
         currentClosing={resolved=true,separationM=60,closingRateMps=6},nativeUnrestrictedKmh=25,nativeClosureContributionKmh=25,nativeSignedClosureContributionKmh=25,nativeMoveForwards=true,
-        governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
+        governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
     local picture=OuttaMyWay.OperationalPicture.new(values)
     local supported=runtime.liveTrafficCandidateSupport:attach(picture,headOnTestSnapshot())
@@ -4055,7 +4055,7 @@ test("D0146 Established conflict Resolution-Space Regulation crosses Candidate s
         regulatedAssemblyId="AS-A",regulatedReferenceKey="vehicle-root:101",protectedAssemblyId="AS-B",protectedReferenceKey="vehicle-root:201",
         roleBasis="PRESERVE_TRANSITIONAL_NATIVE_REVELATION",separationM=42,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=4},
         currentClosing={resolved=true,separationM=42,closingRateMps=8},nativeUnrestrictedKmh=22,
-        governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
+        governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
     base=OuttaMyWay.OperationalPicture.new(values)
     local supported=runtime.liveTrafficCandidateSupport:attach(base,headOnTestSnapshot())
@@ -4444,7 +4444,7 @@ test("D0146 Resolution-Space role migration moves actuation under the same Commi
         regulatedAssemblyId="AS-A",regulatedReferenceKey="vehicle-root:101",protectedAssemblyId="AS-B",protectedReferenceKey="vehicle-root:201",
         roleBasis="DEFER_GREATER_NATIVE_CLOSURE_CONTRIBUTION",separationM=32,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=5},
         currentClosing=relation.currentClosing,nativeUnrestrictedKmh=22,nativeClosureContributionKmh=21.8,nativeSignedClosureContributionKmh=21.8,nativeMoveForwards=true,
-        governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
+        governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
     local changed=OuttaMyWay.OperationalPicture.new(values)
     local changedSupported=runtime.liveTrafficCandidateSupport:attach(changed,headOnTestSnapshot())
@@ -4496,7 +4496,7 @@ test("D0155 Resolution-Space Progression Envelope tightens prospectively as ordi
     local closingEval=runtime:evaluateSealedOperationalPicture(closingSupported)
     local updated=runtime:dispatchEvaluatedOperationalPicture(closingSupported,closingEval)
     equal(updated.status,"ENVELOPE_UPDATED")
-    equal(updated.reason,"D0155_SUPPORTABLE_PROGRESSION_MAGNITUDE_UPDATED")
+    equal(updated.reason,"ACTION_SPACE_REGULATION_SUPPORTABLE_PROGRESSION_MAGNITUDE_UPDATED")
     equal(#requests,2); equal(requests[2].target.maxSpeedKmh,21)
     local status=runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus()
     equal(status.currentCapKmh,21); equal(status.effectClass,"REGULATE")
@@ -4529,7 +4529,7 @@ test("D0198 D0155 bare NO_CURRENT_EXCURSION does not quiesce while protected par
     relation.reason="ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED"
     relation.currentClosing=nil; relation.currentClosingPositive=false; relation.currentNonClosingPositive=false
     relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="NO_CURRENT_EXCURSION",intentRevelationQuiescenceVeto={active=true,assemblyIds={"AS-A"},separationM=60,maxSeparationM=80,reason="LOCAL_TURNING_PARTICIPANT_STILL_REVEALING_NATIVE_INTENT"}}
-    relation.resolutionSpaceRelationship={status="TRANSITIONAL_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="D0146_TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
+    relation.resolutionSpaceRelationship={status="TRANSITIONAL_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
     local transient=OuttaMyWay.OperationalPicture.new(values)
     local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
     local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
@@ -4569,13 +4569,13 @@ test("D0197 D0155 positive NOT_REQUIRED quiesces actuation while the relationshi
     relation.reason="ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED"
     relation.currentClosing=nil; relation.currentClosingPositive=false; relation.currentNonClosingPositive=false
     relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="CURRENT_EXCURSION_PAIR_NOT_POSITIVELY_CLOSING"}
-    relation.resolutionSpaceRelationship={status="TRANSIENT_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="D0146_TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
+    relation.resolutionSpaceRelationship={status="TRANSIENT_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
     local transient=OuttaMyWay.OperationalPicture.new(values)
     local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
     local transientEval=runtime:evaluateSealedOperationalPicture(transientSupported)
     local quiesced=runtime:dispatchEvaluatedOperationalPicture(transientSupported,transientEval)
     equal(quiesced.status,"QUIESCENT")
-    equal(quiesced.reason,"D0155_CURRENT_ACTION_SPACE_NOT_REQUIRED_ACTUATION_QUIESCENT")
+    equal(quiesced.reason,"ACTION_SPACE_REGULATION_CURRENT_ACTION_SPACE_NOT_REQUIRED_ACTUATION_QUIESCENT")
     equal(#requests,2); equal(requests[2].target.operation,"RELEASE"); equal(requests[2].target.vehicleReferenceKey,"vehicle-root:201")
     local status=runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus()
     equal(status.active,true); equal(status.actuationActive,false); equal(status.currentCapKmh,nil); equal(status.effectClass,nil)
@@ -4607,7 +4607,7 @@ test("D0197 D0155 quiescent actuation reactivates on positive REGULATE_SUPPORTED
     qRelation.classification="NO_OPPOSED_CONFLICT"
     qRelation.currentClosing=nil; qRelation.currentClosingPositive=false; qRelation.currentNonClosingPositive=false
     qRelation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="NO_CURRENT_EXCURSION"}
-    qRelation.resolutionSpaceRelationship={status="TRANSITIONAL_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="D0146_TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
+    qRelation.resolutionSpaceRelationship={status="TRANSITIONAL_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
     local qPicture=OuttaMyWay.OperationalPicture.new(qValues)
     local qSupported=runtime.liveTrafficCandidateSupport:attach(qPicture,headOnTestSnapshot())
     local qEval=runtime:evaluateSealedOperationalPicture(qSupported)
@@ -4626,7 +4626,7 @@ test("D0197 D0155 quiescent actuation reactivates on positive REGULATE_SUPPORTED
         status="REGULATE_SUPPORTED",supported=true,reason="CURRENT_EXCURSION_OCCUPIES_APPROACHING_STABLE_TRAJECTORY_CORRIDOR_WHILE_LOCAL_PASSAGE_ACTION_SPACE_COMPRESSES",
         excursionAssemblyId="AS-A",excursionReferenceKey="vehicle-root:101",regulatedAssemblyId="AS-B",regulatedReferenceKey="vehicle-root:201",
         separationM=44,maxSeparationM=80,currentCorridorOverlap={positive=true,overlapM=6},currentClosing=rRelation.currentClosing,
-        nativeUnrestrictedKmh=25,governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
+        nativeUnrestrictedKmh=25,governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     }
     local rPicture=OuttaMyWay.OperationalPicture.new(rValues)
     local rSupported=runtime.liveTrafficCandidateSupport:attach(rPicture,headOnTestSnapshot())
@@ -4676,7 +4676,7 @@ test("D0155 exhausted ordinary space retains 1 kmh Intent-Revelation Creep inste
     local updated=runtime:dispatchEvaluatedOperationalPicture(closingSupported,closingEval)
     equal(updated.status,"ENVELOPE_UPDATED")
     equal(#requests,2); equal(requests[2].target.maxSpeedKmh,1)
-    equal(updated.reason,"D0155_INTENT_REVELATION_CREEP_APPLIED")
+    equal(updated.reason,"ACTION_SPACE_REGULATION_INTENT_REVELATION_CREEP_APPLIED")
     local status=runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus()
     equal(status.active,true); equal(status.effectClass,"INTENT_REVELATION_CREEP"); equal(status.currentCapKmh,1); equal(status.remainingOrdinaryM,0)
     equal(runtime.commitments:get(commitmentId).state,"ACTIVE")
@@ -4782,7 +4782,7 @@ test("D0197 transient reverse non-closing evidence retains D0146 obligation but 
     relation.classification="NO_OPPOSED_CONFLICT"
     relation.reason="ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED"
     relation.subjectCurrentExcursion=true; relation.otherCurrentExcursion=false
-    relation.resolutionSpaceRelationship={status="TRANSIENT_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="D0146_TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
+    relation.resolutionSpaceRelationship={status="TRANSIENT_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
     relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="CURRENT_EXCURSION_PAIR_NOT_POSITIVELY_CLOSING"}
     local transient=OuttaMyWay.OperationalPicture.new(values)
     local transientSupported=runtime.liveTrafficCandidateSupport:attach(transient,headOnTestSnapshot())
@@ -4855,7 +4855,7 @@ test("D0197 Transitional Continuation retains D0146 obligation but does not itse
     relation.reason="ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED"
     relation.subjectCurrentExcursion=false; relation.otherCurrentExcursion=false
     relation.subjectSettledContinuation=false; relation.otherSettledContinuation=true
-    relation.resolutionSpaceRelationship={status="TRANSITIONAL_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="D0146_TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
+    relation.resolutionSpaceRelationship={status="TRANSITIONAL_RELATIONSHIP_CHANGE",positiveDissolution=false,reason="TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"}
     relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="NO_CURRENT_EXCURSION"}
     local transitional=OuttaMyWay.OperationalPicture.new(values)
     local transitionalSupported=runtime.liveTrafficCandidateSupport:attach(transitional,headOnTestSnapshot())
@@ -4891,14 +4891,14 @@ test("D0146 Action-Space Regulation releases only on positive settled relationsh
     relation.classification="NO_OPPOSED_CONFLICT"
     relation.reason="ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED"
     relation.subjectCurrentExcursion=false; relation.otherCurrentExcursion=false
-    relation.resolutionSpaceRelationship={status="POSITIVELY_DISSOLVED",positiveDissolution=true,reason="D0146_POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION"}
+    relation.resolutionSpaceRelationship={status="POSITIVELY_DISSOLVED",positiveDissolution=true,reason="POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION"}
     relation.actionSpaceConservation={status="NOT_REQUIRED",supported=false,reason="NO_CURRENT_EXCURSION"}
     local dissolved=OuttaMyWay.OperationalPicture.new(values)
     local dissolvedSupported=runtime.liveTrafficCandidateSupport:attach(dissolved,headOnTestSnapshot())
     local dissolvedEval=runtime:evaluateSealedOperationalPicture(dissolvedSupported)
     local released=runtime:dispatchEvaluatedOperationalPicture(dissolvedSupported,dissolvedEval)
     equal(released.status,"RELEASED")
-    equal(released.reason,"D0146_POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION")
+    equal(released.reason,"POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION")
     equal(requests[#requests].target.operation,"RELEASE")
     equal(runtime.regulationBoundedAuthority:getActionSpaceRegulationStatus().active,false)
     equal(runtime.authorities:ownerOf("AS-B"),nil)

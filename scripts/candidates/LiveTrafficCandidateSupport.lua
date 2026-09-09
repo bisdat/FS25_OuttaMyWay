@@ -314,7 +314,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
     local protectedReferenceKey=action.protectedReferenceKey or action.excursionReferenceKey
     local dependentEncounterId,dependentJobEpisodeIds=cooperativePassagePairDependency(pictureValues,relation.subjectAssemblyId,relation.otherAssemblyId,nil)
     local composition={
-        identity="d0146-action-space-composition:"..tostring(relation.identity)..":"..pictureId,epoch=pictureValues.epoch,
+        identity="action-space-regulation-composition:"..tostring(relation.identity)..":"..pictureId,epoch=pictureValues.epoch,
         relevantAssemblyIds={protectedAssemblyId,action.regulatedAssemblyId},
         entries={{assemblyId=action.regulatedAssemblyId,commitmentId=existingCommitmentId or "$NEW_COMMITMENT",capability="REGULATE_SPEED",effectClass="SPEED_LIMIT_OR_HOLD",progressActuation=true}}
     }
@@ -386,7 +386,7 @@ local function attachActionSpaceRegulation(self,picture,snapshot,item)
         tonumber(action.separationM) or -1,tonumber(action.currentCorridorOverlap and action.currentCorridorOverlap.overlapM) or -1,
         tonumber(action.nativeUnrestrictedKmh) or -1,tonumber(action.nativeClosureContributionKmh) or -1,tostring(action.nativeMoveForwards),tostring(existing or "NONE"))
     self.publishedCount=self.publishedCount+1
-    self.lastStatus="D0146_RESOLUTION_SPACE_REGULATION_CANDIDATE_PUBLISHED"
+    self.lastStatus="ACTION_SPACE_REGULATION_CANDIDATE_PUBLISHED"
     return OuttaMyWay.OperationalPicture.new(values)
 end
 
@@ -589,17 +589,17 @@ end
 
 local function guardConstraints(guard, physicalCandidate)
     local constraints={}
-    for _,id in ipairs(mandatory) do constraints[id]=guardPacket("D-0123 Guarded Recovery bounded candidate constraint",{commitmentId=guard.commitmentId}) end
+    for _,id in ipairs(mandatory) do constraints[id]=guardPacket("Guarded Recovery bounded candidate constraint",{commitmentId=guard.commitmentId}) end
     constraints.FIELD_WORLD_CONTAINMENT=guardPacket("Guarded Recovery remains inside the already-admitted local Encounter/Refuge context",{existingCommitment=true})
-    constraints.TRANSITION_CLEARANCE=guardPacket("D-0123 protects already-Committed recovery Action Space; no new Refuge transition is initiated",{existingRecovery=true})
+    constraints.TRANSITION_CLEARANCE=guardPacket("Guarded Recovery protects already-Committed recovery Action Space; no new Refuge transition is initiated",{existingRecovery=true})
     constraints.CONTROL_CAPABILITY_AVAILABILITY=guardPacket(physicalCandidate and "Existing P22 Regulation capability can bound GIANTS-owned Progress without replacing route or steering" or "No new physical capability is required while Observe remains supportable",{giantsRoutePreserved=true})
-    constraints.CONTINUING_INTENT_PRIORITY=guardPacket("Current D-0123 evidence protects an existing recovery obligation and does not assign new production route priority",{guardedRecovery=true})
+    constraints.CONTINUING_INTENT_PRIORITY=guardPacket("Current Guarded Recovery evidence protects an existing recovery obligation and does not assign new production route priority",{guardedRecovery=true})
     constraints.PROGRESS_PRESERVATION=guardPacket("Progress remains GIANTS-owned; Regulation changes only the bounded speed ceiling",{progressReferenceKey=guard.progressReferenceKey,giantsAuthorityPreserved=true})
     constraints.RESPONSIBILITY_COMPATIBILITY=guardPacket("The existing Commitment already owns recovery responsibility",{commitmentId=guard.commitmentId})
     constraints.OBLIGATION_COMPATIBILITY=guardPacket("Candidate protects the existing Native Continuation Restoration obligation and creates no new obligation",{commitmentId=guard.commitmentId})
     constraints.COMMITMENT_PRECONDITIONS=guardPacket("Candidate is valid only for the named live Guarded Recovery Commitment",{commitmentId=guard.commitmentId})
     constraints.EFFECTIVE_ACTUATION_COMPOSITION=guardPacket(physicalCandidate and "Existing Yield Reposition and temporary Progress speed Regulation are composable under one Commitment" or "No new actuation composition is proposed",{neverHoldAll=true})
-    constraints.SAFE_RELEASE_HANDOVER=guardPacket("D-0123 Regulation retirement is purpose expiry, not traffic settlement",{mechanicalHandoverDoesNotSettleTraffic=true})
+    constraints.SAFE_RELEASE_HANDOVER=guardPacket("Guarded Recovery Regulation retirement is purpose expiry, not traffic settlement",{mechanicalHandoverDoesNotSettleTraffic=true})
     return constraints
 end
 
@@ -612,7 +612,7 @@ local function guardedRecoverySpecification(pictureId,pictureValues,guard)
     if positive then
         exhaustion.CONTINUE_OBSERVATION={
             result="PASS",operationalPictureId=pictureId,governingRequirementKey=requirement,capability="CONTINUE_OBSERVATION",
-            reason="D-0123 positive Convergent Projection intersection consumes protected recovery Action Space; Observe is exhausted",
+            reason="Positive Guarded Recovery Convergent Projection intersection consumes protected recovery Action Space; Observe is exhausted",
             evidence={signalStatus=guard.signalStatus,reason=guard.reason,combination=guard.combination},
             provenance={source="SituationAssessment.GuardedRecovery",authority="D0123_OBSERVE_EXHAUSTION"}
         }
@@ -968,7 +968,7 @@ function Support:attach(picture,snapshot)
             if actionReason~=nil then self.lastStatus=actionReason; return self.passiveSupport:attach(picture,snapshot) end
             if follower~=nil then return attachFollowerBoundary(self,picture,snapshot,follower) end
             self.lastCooperativeTraceKey=nil
-            self.lastStatus=reason or "NO_SUPPORTED_D0146_LOCAL_PASSAGE"
+            self.lastStatus=reason or "NO_SUPPORTED_COOPERATIVE_PASSAGE"
             return self.passiveSupport:attach(picture,snapshot)
         end
         self.lastPassageRejectionTraceKey=nil
@@ -1009,7 +1009,7 @@ function Support:attach(picture,snapshot)
             provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,authority="COOPERATIVE_PASSAGE_CANDIDATE_SUPPORT",operatorCommandRequired=false}
         }
         self.publishedCount=self.publishedCount+1
-        self.lastStatus="D0146_STEP2_COOPERATIVE_PASSAGE_CANDIDATE_PUBLISHED"
+        self.lastStatus="COOPERATIVE_PASSAGE_CANDIDATE_PUBLISHED"
         return OuttaMyWay.OperationalPicture.new(values)
 end
 

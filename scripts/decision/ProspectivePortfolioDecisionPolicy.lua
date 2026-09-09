@@ -14,7 +14,7 @@ local function family(groups,name)
     local result={}
     for _,group in ipairs(groups) do if group.family==name then result[#result+1]=group end end
     table.sort(result,function(a,b)
-        local ao,bo=tonumber(a.legacyOrdinal) or math.huge,tonumber(b.legacyOrdinal) or math.huge
+        local ao,bo=tonumber(a.enumerationOrdinal) or math.huge,tonumber(b.enumerationOrdinal) or math.huge
         if ao~=bo then return ao<bo end
         return tostring(a.groupKey)<tostring(b.groupKey)
     end)
