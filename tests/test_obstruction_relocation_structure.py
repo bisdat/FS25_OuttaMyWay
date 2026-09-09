@@ -132,14 +132,3 @@ def test_phase13_generic_path_preserves_warm_d0147_and_does_not_inherit_native_b
     assert "TERMINAL_OCCUPANCY" in terminal_candidate
     assert "POST_JOB_ACTUATION" not in terminal_control
     assert 'target.kind=="TERMINAL_EGRESS"' in read("scripts/control/LiveControlDispatcher.lua")
-
-
-def test_phase13_test_identity_is_coherent():
-    config = read("scripts/config.lua")
-    moddesc = read("modDesc.xml")
-    main = read("scripts/main.lua")
-
-    assert 'OuttaMyWay.VERSION = "0.3.0.37"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE"' in config
-    assert '<version value="0.3.0.37">0.3.0.37</version>' in moddesc
-    assert "v0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE" in main

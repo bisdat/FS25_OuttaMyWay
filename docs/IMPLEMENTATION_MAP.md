@@ -21,8 +21,8 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline: `main` after PR #102 merge, commit
-  `257b310403a291ae52f1994a8f0f632baa05842b`.
+- Accepted Repository State baseline: `main` after PR #104 merge, commit
+  `794db9585973ba1b65de0a97813946a829bfddc4`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity remains
   **`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
@@ -137,7 +137,7 @@ accepted contract.
 ## Separate accepted work / explicit limits
 
 - **#45** — Bubble Bullet Time remains accepted but unimplemented.
-- **#65** — Behaviour Regression Contract != Build Identity Contract.
+- **#65** — Build Identity Contract ownership cleanup is the validation prerequisite for the next executable TEST increment; current version ownership belongs only to `scripts/config.lua` and `modDesc.xml`.
 - **#87** — decompose the remaining live `scripts/config.lua` Mixed Runtime
   Constants Surface.
 - Generic multi-context Commitment application remains an acceptable fail-closed
@@ -159,10 +159,13 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Begin with **#99 — Transit complete-assembly authority under representation
+Complete **#65 — Build Identity Contract ownership cleanup** first so future
+executable TEST identities do not require unrelated behavioural-test edits.
+
+Then implement **#99 — Transit complete-assembly authority under representation
 discovery truncation**.
 
-Then, unless new Reality changes the order:
+After #99, unless new Reality changes the order:
 
 1. #98 — Follower Boundary magnitude ownership;
 2. #100 — Encounter reconciliation, architecture/design before implementation;

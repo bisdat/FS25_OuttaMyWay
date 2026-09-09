@@ -50,12 +50,3 @@ def test_pair_key_remains_correlation_not_identity_authority():
     assert 'return "live-pair:" .. first .. ":" .. second' in observation
     for forbidden in ("IdentityRegistry","identities:resolve","identities:issue"):
         assert forbidden not in observation
-
-def test_current_build_identity_is_coherent():
-    config=text("scripts/config.lua")
-    main=text("scripts/main.lua")
-    moddesc=text("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.37"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE"' in config
-    assert "v0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE" in main
-    assert '<version value="0.3.0.37">0.3.0.37</version>' in moddesc

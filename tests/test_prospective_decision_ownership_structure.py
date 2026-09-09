@@ -98,12 +98,3 @@ def test_phase13_trigger_and_passage_semantics_survive_shared_terminal_egress_ex
     assert 'target.kind~="TERMINAL_EGRESS"' in terminal_control
     assert "CURRENT_CAUSAL_OBSTRUCTION" not in terminal_control
     assert not (ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").exists()
-
-def test_phase13_candidate_support_projection_test_identity_is_coherent():
-    config=read("scripts/config.lua")
-    main=read("scripts/main.lua")
-    moddesc=read("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.37"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE"' in config
-    assert 'v0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE' in main
-    assert '<version value="0.3.0.37">0.3.0.37</version>' in moddesc
