@@ -1560,6 +1560,72 @@ test("inactive assembly without authoritative source-job end evidence preserves 
     end)
 end)
 
+test("unresolved retained Job Episode keeps Field World authority for same-field admission and later retirement",function()
+    withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB)
+        mission.vehicles={a,b}
+        setActiveVehicles(mission,a)
+        mission.aiSystem.activeJobs={jobA,jobB}
+
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local firstRaw=runtime.liveObservationSource:capture(mission,10)[1]
+        local fieldWorldKey=firstRaw.fieldWorld.referenceKey
+        local first=runtime:processSealedObservation(firstRaw)
+        local operationId=first.operation.activeOperationIds[1]
+        equal(#first.jobEpisodes.activeEpisodeIds,1)
+        equal(#first.operation.activeOperationIds,1)
+        equal(runtime.fieldWorldEquivalenceAuthority:getActiveClassCount(),1)
+
+        -- A leaves current activeJobVehicles, but GIANTS has not positively
+        -- established source-job end. The exact Job Episode and its established
+        -- Field World must both remain semantically relevant.
+        setActiveVehicles(mission)
+        a.spec_aiFieldWorker.isActive=false
+        a.spec_aiJobVehicle.job=nil
+        a.spec_aiFieldWorker.fieldJob=nil
+        local gapRaw=runtime.liveObservationSource:capture(mission,11)[1]
+        equal(gapRaw.fieldWorld.referenceKey,fieldWorldKey)
+        equal(gapRaw.fieldWorld.operationMembershipEvidenceComplete,false)
+        equal(runtime.fieldWorldEquivalenceAuthority:getActiveClassCount(),1)
+        local gap=runtime:processSealedObservation(gapRaw)
+        equal(gap.jobEpisodes.activeEpisodeIds[1],first.jobEpisodes.activeEpisodeIds[1])
+        equal(gap.operation.activeOperationIds[1],operationId)
+
+        -- B now appears on the same physical field during A's uncertainty window.
+        -- It must resolve into the still-authoritative FW-1 class rather than
+        -- minting a second Field World / Operation.
+        setActiveVehicles(mission,b)
+        local joinedRaws=runtime.liveObservationSource:capture(mission,12)
+        equal(#joinedRaws,1)
+        equal(joinedRaws[1].fieldWorld.referenceKey,fieldWorldKey)
+        equal(runtime.fieldWorldEquivalenceAuthority:getActiveClassCount(),1)
+        local joined=runtime:processSealedObservation(joinedRaws[1])
+        equal(#joined.jobEpisodes.activeEpisodeIds,2)
+        equal(#joined.operation.activeOperationIds,1)
+        equal(joined.operation.activeOperationIds[1],operationId)
+
+        -- Positive end evidence for both Job Episodes must still permit ordinary
+        -- Field World retirement; retention is evidence-based, not a grace period.
+        setActiveVehicles(mission)
+        mission.aiSystem.activeJobs={}
+        a.spec_aiFieldWorker.isActive=false
+        a.spec_aiJobVehicle.job=nil
+        a.spec_aiFieldWorker.fieldJob=jobA
+        a.spec_aiJobVehicle.lastJob=jobA
+        b.spec_aiFieldWorker.isActive=false
+        b.spec_aiJobVehicle.job=nil
+        b.spec_aiFieldWorker.fieldJob=jobB
+        b.spec_aiJobVehicle.lastJob=jobB
+
+        local endedRaws=runtime.liveObservationSource:capture(mission,13)
+        equal(runtime.fieldWorldEquivalenceAuthority:getActiveClassCount(),0)
+        local ended=nil
+        for _,raw in ipairs(endedRaws) do ended=runtime:processSealedObservation(raw) end
+        equal(#ended.jobEpisodes.activeEpisodeIds,0)
+        equal(#ended.operation.activeOperationIds,0)
+        equal(runtime.fieldWorldEquivalenceAuthority:getRetiredClassCount(),1)
+    end)
+end)
+
 test("lastJob transition ends the Job Episode without guessing a termination subtype",function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA)
         mission.vehicles={a}; setActiveVehicles(mission,a); mission.aiSystem.activeJobs={jobA}

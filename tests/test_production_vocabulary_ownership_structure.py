@@ -85,10 +85,10 @@ def test_test_build_identity_is_atomic():
     main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
     moddesc = (ROOT / "modDesc.xml").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.37"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE"' in config
-    assert "v0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE" in main
-    assert '<version value="0.3.0.37">0.3.0.37</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.38"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.38 TEST — FIELD WORLD AUTHORITY RETENTION"' in config
+    assert "v0.3.0.38 TEST — FIELD WORLD AUTHORITY RETENTION" in main
+    assert '<version value="0.3.0.38">0.3.0.38</version>' in moddesc
 
 def test_semantic_contracts_do_not_use_development_identity():
     support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")

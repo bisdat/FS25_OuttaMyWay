@@ -1018,6 +1018,22 @@ function Source:capture(mission, nowSeconds)
         end
     end
 
+    -- Lifecycle Evidence Asymmetry also applies to the lifetime of the already-
+    -- established Field World assignment. A Job Episode retained because its
+    -- termination remains unresolved is still relevant to that Field World.
+    -- Refresh only the existing immutable Snapshot assignment; do not re-resolve
+    -- stale geometry or manufacture a new equivalence conclusion.
+    if self.fieldWorldEquivalenceAuthority ~= nil then
+        for _,group in OuttaMyWay.ValueRecord.pairs(groups) do
+            for _,worker in OuttaMyWay.ValueRecord.ipairs(group.workers or {}) do
+                local snapshot=worker.fieldWorldSnapshot
+                if worker.unresolvedTermination==true and snapshot~=nil and snapshot.referenceKey~=nil then
+                    self.fieldWorldEquivalenceAuthority:markRelevant(snapshot.referenceKey)
+                end
+            end
+        end
+    end
+
     for ref in OuttaMyWay.ValueRecord.pairs(removeAfterCapture) do self.tracks[ref] = nil end
     if self.fieldWorldEquivalenceAuthority ~= nil then self.fieldWorldEquivalenceAuthority:endObservationCycle() end
     if self.assemblyRepresentationCache ~= nil then self.assemblyRepresentationCache:endObservationCycle() end

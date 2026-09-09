@@ -6,11 +6,11 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline: `main` after PR #96 merge, commit
-  `cb5f599e581215b65339ef636be261477e262f4b`.
+- Accepted Repository State baseline: `main` after PR #102 merge, commit
+  `257b310403a291ae52f1994a8f0f632baa05842b`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted executable identity remains
-  **`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
+- This Engineering Increment carries
+  **`0.3.0.38 TEST — FIELD WORLD AUTHORITY RETENTION`**.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
@@ -51,9 +51,12 @@ diagnostic directionality and live documentation responsibility.
 
 - **#97 — Field World authority lifetime**
   - **Unresolved Job Episode Retention Must Retain Field World Authority**.
-  - A retained unresolved Job Episode can currently outlive the relevance mark
-    of its established Field World equivalence class.
-  - This is a latent lifecycle-identity mismatch.
+  - This increment refreshes the existing immutable Snapshot assignment when
+    the owning Job Episode is retained under unresolved termination evidence.
+  - It does not re-resolve stale geometry; positive lifecycle end still permits
+    normal Field World retirement.
+  - A composed offline behavioural contract protects same-field admission
+    during the uncertainty window and eventual retirement.
 
 - **#99 — Transit complete-assembly authority**
   - **Budget Exhaustion Must Revoke Completeness Authority**.
@@ -129,18 +132,16 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Begin reconciliation with **Issue #97 — Retain Field World authority through
-unresolved Job Episode observation**.
+Complete Issue #97 review and validation for
+**`0.3.0.38 TEST — FIELD WORLD AUTHORITY RETENTION`**.
 
-The preferred sequence after #97 is:
+After #97 acceptance, continue with:
 
 1. #99 — Transit truncation authority;
 2. #98 — Follower Boundary magnitude ownership;
 3. #100 — Encounter architecture/design reconciliation;
 4. #101 — dependency-proven retirement/naming cleanup.
 
-Each executable increment requires its own fresh TEST build identity before push.
-Do not bundle these independent responsibilities into one Phase-15 mega-change.
-
-Issue #90 remains open until this audit-closure documentation increment is
-accepted and its roadmap/documentation responsibility can be closed cleanly.
+Issue #90 is closed as completed after PR #102 established the durable
+post-strangler documentation responsibility. Keep the reconciliation Issues
+independent; do not bundle them into one executable tranche.

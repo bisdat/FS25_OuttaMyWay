@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE.
+-- FS25_OuttaMyWay v0.3.0.38 TEST — FIELD WORLD AUTHORITY RETENTION.
 -- modDesc.xml loads only this file. Retired implementation is preserved by repository history, not shipped runtime source.
 local modDirectory=g_currentModDirectory or ""
 local modules={
