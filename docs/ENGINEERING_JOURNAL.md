@@ -1,3 +1,30 @@
+## 2026-09-09 — Issue #99 Transit Inventory Closure reconciliation
+
+**Observe:** Phase-15 audit found that the representation cache can exhaust
+`REPRESENTATION_ASSEMBLY_MEMBER_BUDGET` and mark
+`assemblyDiscoveryTruncated=true` while `_transitPassageEnvelope()` still emits
+`memberBaseSizeComplete=true` for the discovered subset. A later code walk
+corrected one audit-detail assumption: the truncation flag itself is not copied
+into sealed Plan-View evidence, but `transitPassageReason` already is.
+
+**Discover:** **Budget Exhaustion Must Revoke Completeness Authority.** The
+Physical Representation Architecture already owns the governing rule through
+Inventory Closure and the Known-Coverage Trap. Complete geometry for every
+discovered member cannot establish complete Physical Assembly membership.
+
+**Decision:** revoke Transit complete-assembly authority at its Representation
+origin. When discovery truncates, emit no Transit Passage envelope and publish
+`TRANSIT_ASSEMBLY_MEMBERSHIP_TRUNCATED`. Do not add downstream
+Candidate/Constraint/Decision/Control exceptions. Existing non-truncated Transit
+geometry remains unchanged.
+
+**Validate:** add an offline behavioural contract that creates more assembly
+members than the 32-member discovery budget, proves truncation, and requires
+the Transit envelope to be absent with the explicit reason. GitHub Actions
+remains the independent suite execution authority. This executable increment
+uses `0.3.0.38 TEST — TRANSIT INVENTORY CLOSURE`; following Issue #65, only
+`scripts/config.lua` and `modDesc.xml` own the current version.
+
 ## 2026-09-09 — Issue #97 audit hypothesis disproved by composed validation
 
 **Observe:** Phase-15 audit Issue #97 claimed that a retained unresolved Job
