@@ -6,16 +6,16 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline: `main` after PR #105 merge, commit
-  `f7e78614515562a1e71eb5ecd500927f117799b5`.
+- Accepted Repository State baseline: `main` after PR #106 merge, commit
+  `7fc77da340270022cb61e14c2011610b6883fe20`.
 - Canonical authority remains **v0.3.0.0**.
-- This Engineering Increment carries
+- Accepted executable identity is
   **`0.3.0.38 TEST — TRANSIT INVENTORY CLOSURE`**.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
-- Audit completion introduced no executable change and therefore no `.38`.
+- The audit itself introduced no executable change; accepted reconciliation has since advanced TEST identity to `.38`.
 
 The closure distinction remains:
 
@@ -47,17 +47,19 @@ It also reviewed Field World / Job Episode / Local Operation identity,
 Physical Representation, Configuration/GUI boundaries, runtime composition,
 diagnostic directionality and live documentation responsibility.
 
-### Confirmed reconciliation Issues
+### Accepted reconciliation
 
-- **#99 — Transit complete-assembly authority**
+- **#99 — Transit complete-assembly authority** is accepted by PR #106.
   - **Budget Exhaustion Must Revoke Completeness Authority**.
-  - This increment revokes complete-assembly Transit Passage geometry at the
-    Representation owner whenever assembly-member discovery truncates.
-  - `transitPassageReason` already carries
-    `TRANSIT_ASSEMBLY_MEMBERSHIP_TRUNCATED` through Observation/Situation, so
-    no downstream Candidate/Constraint/Decision/Control special case is added.
-  - The new offline contract exceeds the 32-member discovery budget and proves
-    fail-closed authority while existing non-truncated Transit contracts remain.
+  - Physical Representation now withholds the complete-assembly Transit Passage
+    envelope whenever assembly-member discovery truncates.
+  - `TRANSIT_ASSEMBLY_MEMBERSHIP_TRUNCATED` uses the existing reason channel;
+    no downstream Candidate/Constraint/Decision/Control special case was added.
+  - Independent CI passed 195 structural contracts, 341 replacement-core
+    behavioural contracts, and 9 focused obstruction-relocation contracts.
+  - Issue #99 is closed **completed**.
+
+### Remaining reconciliation Issues
 
 - **#98 — Follower Boundary permissible magnitude**
   - **Admissible Magnitude Evidence != Permitted Magnitude**.
@@ -148,14 +150,19 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Complete review and independent CI validation for **Issue #99 —
-`0.3.0.38 TEST — TRANSIT INVENTORY CLOSURE`**.
+Begin **Issue #98 — Follower Boundary permissible magnitude ownership** with
+placement verification and behaviour-preserving ownership design before
+implementation.
 
-After #99 acceptance, unless new Reality changes the order:
+Protect the accepted numerical and lifecycle behaviour while testing the
+architectural claim:
 
-1. #98 — Follower Boundary magnitude ownership;
-2. #100 — Encounter architecture/design reconciliation;
-3. #101 — dependency-proven retirement/naming cleanup.
+> **Admissible Magnitude Evidence != Permitted Magnitude**
+
+After #98, unless new Reality changes the order:
+
+1. #100 — Encounter architecture/design reconciliation;
+2. #101 — dependency-proven retirement/naming cleanup.
 
 Do not bundle these independent responsibilities into one reconciliation tranche.
 

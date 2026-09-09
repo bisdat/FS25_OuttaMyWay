@@ -21,10 +21,10 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline: `main` after PR #105 merge, commit
-  `f7e78614515562a1e71eb5ecd500927f117799b5`.
+- Accepted Repository State baseline: `main` after PR #106 merge, commit
+  `7fc77da340270022cb61e14c2011610b6883fe20`.
 - Canonical authority remains **v0.3.0.0**.
-- This Engineering Increment carries
+- Accepted executable identity is
   **`0.3.0.38 TEST — TRANSIT INVENTORY CLOSURE`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
@@ -40,7 +40,7 @@ Architectural meaning remains owned by the
 | Field World snapshots/equivalence | `FieldWorldSnapshotRegistry.lua`, `FieldWorldEquivalenceEvaluator.lua`, `FieldWorldEquivalenceAuthority.lua`, `LiveObservationSource.lua` | PRESERVE — retained tracks resolve their existing immutable Snapshot assignment, which refreshes Field World relevance without stale geometry re-evaluation |
 | Current Physical Assembly acquisition | `scripts/observation/CurrentPhysicalAssemblySource.lua` | PRESERVE mission-root addressability; no semantic authority |
 | Current pose / live Observation | `CurrentPhysicalPoseSource.lua`, `LiveObservationSource.lua`, `LiveInteractionObservation.lua` | PRESERVE factual/provenance boundary |
-| Physical representation cache | `scripts/representation/AssemblyRepresentationCache.lua` | **RECONCILIATION #99** — member-discovery truncation revokes Transit complete-assembly authority at representation construction |
+| Physical representation cache | `scripts/representation/AssemblyRepresentationCache.lua` | PRESERVE — member-discovery truncation revokes Transit complete-assembly authority at representation construction (#99 / PR #106) |
 | Generic current physical conflict | `CurrentPhysicalConflictRepresentation.lua` | PRESERVE positive-only / no generic negative-clearance authority |
 | Passage-specific geometry | `AssemblyRepresentationCache.lua`, `PairSpecificPassageClearance.lua`, `LocalPassagePlanner.lua` | PRESERVE directional Transit Passage contract for non-truncated complete assemblies |
 | Situation Assessment | `scripts/assessment/SituationAssessment.lua` and focused assessment collaborators | PRESERVE current interpreted relationship ownership except listed drift |
@@ -122,14 +122,13 @@ Generic current physical-conflict primitives remain positive-only. Purpose-speci
 Transit Passage geometry may establish narrower Passage conclusions, but complete-
 assembly authority still inherits Physical Assembly membership completeness.
 
-Issue #99 owns the discovered budget-truncation exception to that otherwise
-accepted contract.
+PR #106 closes the discovered budget-truncation gap: truncated assembly
+inventory cannot materialise complete-assembly Transit Passage authority.
 
 ## Current material drift
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #99 | implementation reconciliation | discovery-budget truncation now withholds the Transit envelope and publishes `TRANSIT_ASSEMBLY_MEMBERSHIP_TRUNCATED` |
 | #98 | confirmed placement mismatch | final follower speed permission is derived in Situation instead of Bounded Authority |
 | #100 | confirmed concept mismatch | rejected persistent pair-history concept remains as `EncounterRegistry` |
 | #101 | behaviour-preserving retirement/naming debt | orphaned Guarded Recovery, stale Control consumer, stranded Constraint semantics, defensive naming |
@@ -158,14 +157,14 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Complete #99 review/CI validation for
-**`0.3.0.38 TEST — TRANSIT INVENTORY CLOSURE`**.
+Begin **#98 — Follower Boundary magnitude ownership** with placement verification
+and behaviour-preserving ownership design. Do not retune the accepted follower
+cap numerics merely to move responsibility.
 
-After #99 acceptance, unless new Reality changes the order:
+After #98, unless new Reality changes the order:
 
-1. #98 — Follower Boundary magnitude ownership;
-2. #100 — Encounter reconciliation, architecture/design before implementation;
-3. #101 — dependency-proven retirement/naming cleanup.
+1. #100 — Encounter reconciliation, architecture/design before implementation;
+2. #101 — dependency-proven retirement/naming cleanup.
 
 Issue #97 is not current drift: PR #103 validation exposed that accepted `main`
 already refreshes retained Field World relevance through existing-Snapshot
