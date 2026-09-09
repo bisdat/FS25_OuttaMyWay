@@ -14,7 +14,7 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 
 - Accepted Repository State baseline: `main` after PR #94 merge, commit `48745375d259140117add5e0abf6047ec3667b17`.
 - Canonical authority remains **v0.3.0.0**.
-- Current branch executable identity is **`0.3.0.36 TEST — PRODUCTION VOCABULARY SEMANTIC CLOSURE`**; acceptance and canonical authority are unchanged until review/merge/validation.
+- Current branch executable identity is **`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**; acceptance and canonical authority are unchanged until review/merge/validation.
 - Strangler Phase 14 remains active. Phase 14.6C is the current final planned vocabulary/ownership reconciliation tranche.
 - Phase 15 whole-system validation and architecture-to-runtime review has not started.
 
@@ -110,33 +110,28 @@ Git and merged PRs preserve how those placements were reached. This map records 
 
 ### Phase 14.6C — production vocabulary / ownership reconciliation
 
-The strangler has already moved principal production responsibilities to their
-accepted architectural homes. Remaining drift is now primarily naming and
-declarative ownership:
+The primary production-vocabulary graduation is present on the current branch.
+PR #95 validation of `.36` exposed four remaining closure defects rather than a
+new architectural responsibility:
 
-- Cooperative Passage current execution/configuration surfaces still expose
-  `D0146` / `STEP2` development identity despite `CooperativePassageControl`,
-  `LocalPassagePlanner` and the current Passage architecture being production.
-- `RegulationBoundedAuthority` still exposes D-number owner tags and
-  `d0146ActionSpace...` implementation identifiers although Follower Boundary,
-  Action-Space Regulation and Forward Intersection are the current purposes.
-- `GuardedRecoveryCompatibility` still exposes a D-number lease owner, a
-  D-number creep constant and `_legacyRegulationRequest()` despite being an
-  explicitly retained current compatibility path.
-- Runtime Candidate composition still calls the accepted Completed Obstruction
-  Candidate support `legacyTerminalEgressCandidateSupport`.
-- `scripts/config.lua` still carries values for positively retired/unsourced
-  diagnostics; Phase 14.6C removes that dead mixed-surface residue while Issue
-  #87 retains ownership of later decomposition of the remaining live values.
-- Issue #93 Reality demonstrated that generic current bounding-disc overlap and
-  GIANTS `isBlocked` do not establish Passage contact. Cooperative Passage uses
-  purpose-specific Transit geometry plus the empirical nominal-clearance policy.
-  The Candidate contract must therefore not advertise generic
-  `CURRENT_PHYSICAL_INTERACTION` as Passage invalidation authority.
+- Cooperative Passage semantic identities were renamed, but two current
+  recognition sites retained the old hard-coded prefix width, changing
+  Action-Space terminal settlement, D-0200 dependency collapse and D-0217
+  survivor-authority rebind behaviour.
+- the whole-pair Passage restore entry point had been retired while its
+  unreachable `RESTORING` lifecycle tail remained, making historical topology
+  appear current beside the participant-scoped D-0217 lifecycle;
+- `COOPERATIVE_PASSAGE_MOVE_SPEED_KMH` was accidentally reused even though that
+  historical donor identifier is explicitly retired; the unchanged 8 km/h
+  implementation calibration is now owned as Cooperative Passage actuation; and
+- the new Phase-14.6C structural contract existed locally but was absent from
+  the blocking Structural workflow inventory.
 
-Phase 14.6C does not tune values, redesign mechanics or create a new
-Responsibility. Decision numbers remain legitimate provenance where they explain
-a current constraint or historical evidence.
+The current `0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE` closes those gaps and the remaining lowercase
+D-0146 execution/addressability residues found by the exact-head audit. It does
+not tune numeric values, redesign Passage mechanics, change Regulation policy,
+or create a new Responsibility. Uppercase stable forensic event names and
+explicit D-number decision provenance remain legitimate.
 
 ### Resolved before Phase 14.6C
 
@@ -162,28 +157,27 @@ Semantic targeting may be unambiguous while generic Commitment application still
 
 Phase 14.6C is the current bounded Engineering Increment.
 
-`0.3.0.36 TEST — PRODUCTION VOCABULARY SEMANTIC CLOSURE` must:
+`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE` must:
 
-- graduate primary live Cooperative Passage identifiers away from D-number /
-  `STEP2` implementation provenance;
-- graduate Follower Boundary, Action-Space Regulation and Guarded Recovery live
-  ownership identifiers without changing their policy;
-- name Completed Obstruction support truthfully inside Runtime composition;
-- remove positively retired/unsourced historical constants from
-  `scripts/config.lua` while leaving historical donor source outside production
-  composition;
-- reconcile the Cooperative Passage Candidate contract with purpose-specific
-  Transit representation authority and remove generic
-  `CURRENT_PHYSICAL_INTERACTION` from its invalidation list;
-- preserve every numeric policy/calibration value and current physical behaviour;
-  and
-- update current-state documentation without creating another phase/tranche
-  document.
+- repair Cooperative Passage identity recognition using prefix-derived matching
+  rather than copied numeric prefix widths;
+- preserve current Action-Space terminal settlement, D-0200 Job-Episode
+  dependency collapse and D-0217 survivor-authority rebind semantics;
+- retire the unreachable whole-pair `RESTORING` tail while preserving the
+  participant-scoped restoration / last-leg dissolution lifecycle;
+- keep the historical `COOPERATIVE_PASSAGE_MOVE_SPEED_KMH` identifier retired
+  and name the unchanged live calibration by current Passage actuation
+  responsibility;
+- close the remaining current lowercase D-0146 execution/addressability names;
+- include the Phase-14.6C semantic contract in blocking Structural CI;
+- reconcile current structural contracts to current production vocabulary; and
+- preserve every numeric policy/calibration value and intended physical
+  behaviour.
 
 Validation boundary:
 
 1. implementation-local Lua syntax, XML parse, static token and diff checks only;
-2. blocking Structural + Lua behavioural CI on the exact `.34` head;
+2. blocking Structural + Lua behavioural CI on the exact `.37` head;
 3. owner review of the diff and CI;
 4. causally appropriate in-game smoke only to disprove accidental behavioural
    change from incomplete vocabulary reconciliation; and

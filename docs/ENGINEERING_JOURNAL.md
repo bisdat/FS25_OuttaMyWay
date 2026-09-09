@@ -1,3 +1,42 @@
+## 2026-09-09 — Phase 14.6C: semantic rename validation closure
+
+**Observe:** PR #95 supplied the first repository-wide validation of `.36`.
+Implementation-local semantic, producer-consumer, syntax and diff guards had
+passed, but GitHub Actions did not: the main Lua replacement-core harness
+reported **333 passed / 7 failed** and Structural contracts reported
+**159 passed / 28 failed**. The seven behavioural failures form one coherent
+causal group. `d0146-cooperative-passage:` had been renamed to
+`cooperative-passage:`, while two consumers still sliced the responsibility
+identity at the old 26-character width. Action-Space purpose settlement,
+D-0200 Job-Episode dependency collapse and D-0217 survivor Bounded-Authority
+rebind therefore stopped recognising the same current responsibility.
+
+Structural validation exposed three additional closure gaps: the new 14.6C
+semantic contract was absent from the blocking workflow inventory; the retired
+`COOPERATIVE_PASSAGE_MOVE_SPEED_KMH` donor identifier had been accidentally
+reused for the live 8 km/h Passage calibration; and removing the whole-pair
+restore entry point had left an unreachable `RESTORING` lifecycle tail beside
+the accepted participant-scoped D-0217 lifecycle.
+
+**Discover:** **Prefix Identity Rename Requires Prefix-Length Revalidation.**
+A semantic identity rename is incomplete until every recogniser derives its
+match boundary from the new identity rather than inheriting numeric structure
+from its predecessor. **Entry-Point Retirement Implies Lifecycle-Tail
+Retirement.** Once no current transition can enter a lifecycle state, retaining
+that state machinery misrepresents historical topology as current architecture.
+The run also re-demonstrates **Validation Inventory Is Executable Topology**:
+a contract that is not invoked by the blocking workflow is not repository
+validation authority.
+
+**Decision:** `.36` remains unmerged and unaccepted. `0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE` remains
+inside the same Phase 14.6C tranche. It repairs prefix recognition, retires the
+unreachable whole-pair restore tail, names the unchanged 8 km/h calibration
+`COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH`, closes the remaining current
+lowercase D-0146 execution/addressability residues found by exact-head review,
+and adds the Phase-14.6C semantic contract to blocking Structural CI. No numeric
+policy is retuned and no intended physical behaviour is changed. Uppercase
+forensic event names and explicit D-number decision provenance remain.
+
 ## 2026-09-09 — Phase 14.6C: semantic rename requires producer-consumer closure
 
 **Observe:** exact-head review of `.35` found that semantic cleanup had not

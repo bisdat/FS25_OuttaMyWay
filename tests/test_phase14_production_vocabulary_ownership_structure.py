@@ -85,10 +85,10 @@ def test_phase14_6c_test_build_identity_is_atomic():
     main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
     moddesc = (ROOT / "modDesc.xml").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.36"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.36 TEST — PRODUCTION VOCABULARY SEMANTIC CLOSURE"' in config
-    assert "v0.3.0.36 TEST — PRODUCTION VOCABULARY SEMANTIC CLOSURE" in main
-    assert '<version value="0.3.0.36">0.3.0.36</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.37"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE"' in config
+    assert "v0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE" in main
+    assert '<version value="0.3.0.37">0.3.0.37</version>' in moddesc
 
 def test_phase14_6c_semantic_contracts_do_not_use_development_identity():
     support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
@@ -226,3 +226,45 @@ def test_phase14_6c_semantic_runtime_categories_are_closed():
     assert 'decision="D-0146"' in support
     assert 'decision="D-0141"' in lifecycle
     assert 'logInfo("D0146_' in passage
+
+def test_phase14_6c_semantic_recognition_and_validation_topology_are_closed():
+    config = (ROOT / "scripts" / "config.lua").read_text(encoding="utf-8")
+    lifecycle = (ROOT / "scripts" / "commitment" / "LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+    transition = (ROOT / "scripts" / "responsibility" / "ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
+    situation = (ROOT / "scripts" / "assessment" / "SituationAssessment.lua").read_text(encoding="utf-8")
+    trajectory = (ROOT / "scripts" / "assessment" / "TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
+    planner = (ROOT / "scripts" / "candidates" / "LocalPassagePlanner.lua").read_text(encoding="utf-8")
+    passage = (ROOT / "scripts" / "control" / "CooperativePassageControl.lua").read_text(encoding="utf-8")
+    workflow = (ROOT / ".github" / "workflows" / "offline-validation.yml").read_text(encoding="utf-8")
+
+    # Prefix Identity Rename Requires Prefix-Length Revalidation.
+    assert 'hasPrefix(responsibility,"cooperative-passage:")' in lifecycle
+    assert 'hasPrefix(responsibility,"cooperative-passage:")' in transition
+    assert 'string.sub(responsibility,1,26)=="cooperative-passage:"' not in lifecycle
+    assert 'string.sub(responsibility,1,26)~="cooperative-passage:"' not in transition
+    assert "jobDependentTrafficResponsibility" in lifecycle
+    assert "d0146TrafficResponsibility" not in lifecycle
+
+    # Current execution/addressability identity names current responsibilities.
+    assert "d0146PassageFitness" not in situation
+    assert '"opposed-corridor:"' in trajectory
+    assert '"d0146-opposed:"' not in trajectory
+    assert '"cooperative-passage-arrangement:"' in planner
+    assert '"d0146-arrangement:"' not in planner
+
+    # One current Passage actuation calibration; the retired donor identifier
+    # remains retired rather than being resurrected by semantic cleanup.
+    assert "COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0" in config
+    assert "COOPERATIVE_PASSAGE_MOVE_SPEED_KMH = 8.0" not in config
+    assert "COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH or 8.0" in passage
+
+    # Entry-Point Retirement Implies Lifecycle-Tail Retirement.
+    assert "function Control:_beginParticipantRestore(run,participant)" in passage
+    assert 'run.phase=="RESTORING_PARTICIPANT"' in passage
+    assert "function Control:_passageRestoreReady(run)" not in passage
+    assert "function Control:_finishPassageRestore(run)" not in passage
+    assert "function Control:_complete(run)" not in passage
+    assert 'run.phase=="RESTORING"' not in passage
+
+    # Validation Inventory Is Executable Topology.
+    assert "tests/test_phase14_production_vocabulary_ownership_structure.py" in workflow

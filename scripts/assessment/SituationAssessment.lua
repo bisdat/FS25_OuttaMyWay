@@ -703,10 +703,10 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     -- D-0146 Step 2: Situation owns only purpose-specific mechanical
     -- Representation Fitness. Candidate responsibility later searches Local
     -- Passage Space and chooses the sufficient Arrangement/Guide.
-    local d0146PassageFitness=OuttaMyWay.PassageCapabilityAssessment.buildFitness({
+    local cooperativePassageFitness=OuttaMyWay.PassageCapabilityAssessment.buildFitness({
         opposedCorridorKnowledge=opposedCorridorKnowledge,motionEvidence=motionEvidence,physicalSpaceEvidence=physicalSpaceEvidence
     })
-    for _,fitness in OuttaMyWay.ValueRecord.ipairs(d0146PassageFitness or {}) do
+    for _,fitness in OuttaMyWay.ValueRecord.ipairs(cooperativePassageFitness or {}) do
         representationFitness[#representationFitness+1]=fitness
     end
 

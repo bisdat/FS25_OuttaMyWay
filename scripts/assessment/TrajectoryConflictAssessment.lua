@@ -802,7 +802,7 @@ function Assessment.classifyPairs(context)
                     local aTrajectory=trajectoryByAssembly[aId]
                     local bTrajectory=trajectoryByAssembly[bId]
                     local record={
-                    identity="d0146-opposed:"..tostring(situation.operationId)..":"..tostring(aId)..":"..tostring(bId),
+                    identity="opposed-corridor:"..tostring(situation.operationId)..":"..tostring(aId)..":"..tostring(bId),
                     operationId=situation.operationId,
                     subjectAssemblyId=aId,otherAssemblyId=bId,
                     subjectAssemblyReferenceKey=aTrajectory and aTrajectory.assemblyReferenceKey or nil,

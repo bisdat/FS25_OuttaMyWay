@@ -17,6 +17,12 @@ local function logInfo(formatText, ...)
 end
 
 
+local function hasPrefix(value,prefix)
+    return type(value)=="string"
+        and type(prefix)=="string"
+        and string.sub(value,1,string.len(prefix))==prefix
+end
+
 local function selectedCandidate(evaluated)
     local selectedId=evaluated and evaluated.decision and evaluated.decision.selectedCandidateId or nil
     if selectedId==nil then return nil end
@@ -234,7 +240,7 @@ function Lifecycle.settleFollowerBoundaryPurpose(runtime,commitmentId,bridge,evi
     record=runtime.commitments:get(commitmentId)
     local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
     local terminal=nil
-    if #remaining==0 and type(responsibility)=="string" and string.sub(responsibility,1,18)=="follower-boundary:" then
+    if #remaining==0 and hasPrefix(responsibility,"follower-boundary:") then
         local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {kind="FOLLOWER_BOUNDARY_POSITIVE_RETIREMENT"},provenance={source="LiveTrafficCommitmentLifecycle"}})
         local settling=runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
         terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{kind="FOLLOWER_BOUNDARY_PURPOSE_POSITIVELY_RETIRED",pairKey=bridge.pairKey,reason=bridge.reason})
@@ -327,7 +333,7 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     local record=runtime.commitments:get(commitmentId)
     if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then return nil,"ACTION_SPACE_REGULATION_COMMITMENT_NOT_LIVE" end
     local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
-    local forward=type(responsibility)=="string" and string.sub(responsibility,1,32)=="forward-intersection-regulation:"
+    local forward=hasPrefix(responsibility,"forward-intersection-regulation:")
     local settlementMode=nil
     if bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION" then
         settlementMode="BASIS_CESSATION"
@@ -353,7 +359,7 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
     local remaining=runtime.obligations:openForOwner(commitmentId)
     record=runtime.commitments:get(commitmentId)
     local terminal=nil
-    local ownedTrafficPurpose=type(responsibility)=="string" and (string.sub(responsibility,1,26)=="cooperative-passage:" or forward)
+    local ownedTrafficPurpose=hasPrefix(responsibility,"cooperative-passage:") or forward
     if #remaining==0 and ownedTrafficPurpose then
         local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {kind="ACTION_SPACE_REGULATION_PURPOSE_EXPIRED"},provenance={source="LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose"}})
         runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
@@ -385,9 +391,9 @@ local function endedEpisodeSet(episodeResult)
     return result
 end
 
-local function d0146TrafficResponsibility(record)
+local function jobDependentTrafficResponsibility(record)
     local responsibility=record and record.governingBasis and record.governingBasis.responsibilityKey or nil
-    return type(responsibility)=="string" and (string.sub(responsibility,1,26)=="cooperative-passage:" or string.sub(responsibility,1,32)=="forward-intersection-regulation:")
+    return hasPrefix(responsibility,"cooperative-passage:") or hasPrefix(responsibility,"forward-intersection-regulation:")
 end
 
 local function endedDependency(record,ended)
@@ -549,7 +555,7 @@ function Lifecycle.collapseEndedJobEpisodeDependencies(runtime,episodeResult,sna
     local collapsed={}
     for _,record in OuttaMyWay.ValueRecord.ipairs(runtime.commitments:list()) do
         if not OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) and record.state~="SETTLING"
-            and d0146TrafficResponsibility(record)
+            and jobDependentTrafficResponsibility(record)
             and not hasCooperativePassageLegObligations(runtime,record.identity) then
             local endedDependentEpisodeId=endedDependency(record,ended)
             if endedDependentEpisodeId~=nil then

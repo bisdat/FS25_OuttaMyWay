@@ -736,7 +736,7 @@ local function planConflict(picture,snapshot,conflict)
             local sweepOk,sweepReason,sweepEvidence=pairSweepSupport(guide,aSpace,bSpace,arrangement.subjectPassageDiscs,arrangement.otherPassageDiscs,nominalClearance,arrangement.subjectDirectionalPassageEnvelope,arrangement.otherDirectionalPassageEnvelope)
             local thirdOk,thirdReason,thirdEvidence=thirdPartyGuideSupport(guide,aSpace,bSpace,arrangement.subjectPassageDiscs,arrangement.otherPassageDiscs,picture,conflict,nominalClearance,arrangement.subjectDirectionalPassageEnvelope,arrangement.otherDirectionalPassageEnvelope)
             if fieldOk and sweepOk and thirdOk then
-                arrangement.identity="d0146-arrangement:"..tostring(conflict.identity)..":"..tostring(index)
+                arrangement.identity="cooperative-passage-arrangement:"..tostring(conflict.identity)..":"..tostring(index)
                 arrangement.currentSignedSeparationM=currentSigned
                 arrangement.targetCentrelineSeparationM=arrangement.policyRequiredSeparationM
                 arrangement.currentLateralSeparationM=pairClearance.currentLateralSeparationM

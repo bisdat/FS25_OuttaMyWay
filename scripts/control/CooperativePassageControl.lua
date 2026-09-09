@@ -911,108 +911,11 @@ function Control:_passageConfigurationReady(run)
     return true
 end
 
-function Control:_passageRestoreReady(run)
-    for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
-        if self.configurationMechanism:getState(participant.vehicle)~=nil then
-            local settlement=self.configurationMechanism:getCachedRestoreSettlement(participant.vehicle)
-            if settlement.settled~=true then
-                if participant.passageRestoreFoldWaitingLogged~=true then
-                    participant.passageRestoreFoldWaitingLogged=true
-                    logInfo("RESTORE_FOLD_WAIT commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
-                end
-                return false
-            end
-            if settlement.exhausted==true then
-                if participant.passageRestoreFoldExhaustedLogged~=true then
-                    participant.passageRestoreFoldExhaustedLogged=true
-                    logWarning("RESTORE_FOLD_SETTLEMENT_EXHAUSTED commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f action=REMOVE_RESTORATION_VETO restoredAsserted=false",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
-                end
-            elseif participant.passageRestoreFoldSettledLogged~=true then
-                participant.passageRestoreFoldSettledLogged=true
-                logInfo("RESTORE_FOLD_SETTLED commitment=%s participant=%s settled=%d/%d elapsedMs=%.0f timeoutMs=%.0f",tostring(run.commitmentId),participant.name,tonumber(settlement.settledCount) or 0,tonumber(settlement.actuatorCount) or 0,tonumber(settlement.elapsedMs) or 0,tonumber(settlement.timeoutMs) or 0)
-            end
-        end
-    end
-    return true
-end
-
-function Control:_finishPassageRestore(run)
-    local exhausted=false
-    for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
-        if self.configurationMechanism:getState(participant.vehicle)~=nil then
-            local settlement=self.configurationMechanism:getCachedRestoreSettlement(participant.vehicle)
-            exhausted=exhausted or settlement.exhausted==true
-            local ok,result=self.configurationMechanism:finishCachedTransitRestore(participant.vehicle)
-            if not ok then return false,participant.name..":"..tostring(result) end
-            self:_endRepresentationConfigurationAuthority(participant)
-        end
-    end
-    run.restorationExhausted=exhausted
-    self:_complete(run)
-    return true
-end
-
 function Control:_notify(result)
     if type(self.completionHandler)=="function" then
         local ok,reason=pcall(self.completionHandler,result)
         if not ok then logWarning("COMPLETION_HANDLER_ERROR commitment=%s detail=%s",tostring(result and result.commitmentId),tostring(reason)) end
     end
-end
-
-function Control:_complete(run)
-    for _,p in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
-        self.driveMechanism:clear(p.vehicle)
-        self.holdMechanism:release(p.vehicle)
-        p.wakeMethod=wakeNativeContinuation(p.vehicle)
-        p.released=true
-        self:_notify({
-            status="PARTICIPANT_HANDED_BACK",commitmentId=run.commitmentId,
-            requestIds={p.request.identity},boundedAuthorityIds={p.request.boundedAuthorityId},
-            assemblyId=p.assemblyId,assemblyIds={p.assemblyId},
-            evidence={
-                kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",
-                passageLegDisposition="HANDED_BACK",assemblyId=p.assemblyId,
-                passageGuideId=run.guide and run.guide.identity or nil,
-                sameJob=true,completedAt=g_time or 0
-            }
-        })
-    end
-
-    local mixed=(run.a.vacated==true or run.b.vacated==true)
-    local sameJobs=nil
-    local bothRestored=nil
-    if not mixed then
-        sameJobs=true
-        bothRestored=run.restorationExhausted~=true
-    end
-
-    local pa,pb=pose(run.a.vehicle),pose(run.b.vehicle)
-    logInfo("HANDOFF commitment=%s A=%s job=%s wake=%s B=%s job=%s wake=%s separation=%s sameJobs=%s authorityRelease=IMMEDIATE cooldown=false",
-        tostring(run.commitmentId),run.a.name,tostring(run.a.startJobToken),tostring(run.a.wakeMethod),
-        run.b.name,tostring(run.b.startJobToken),tostring(run.b.wakeMethod),
-        pa and pb and string.format("%.2fm",distance(pa.x,pa.z,pb.x,pb.z)) or "n/a",
-        tostring(sameJobs))
-
-    self.run=nil
-    self.completedCount=self.completedCount+1
-
-    local evidenceKind=run.restorationExhausted==true
-        and "COOPERATIVE_PASSAGE_RESTORE_EXHAUSTED_AND_HANDED_BACK"
-        or "COOPERATIVE_PASSAGE_RESTORED_AND_HANDED_BACK"
-    if mixed then evidenceKind="COOPERATIVE_PASSAGE_LAST_LEG_DISSOLVED_AFTER_BASIS_CESSATION" end
-
-    self:_notify({
-        status="SUCCEEDED",commitmentId=run.commitmentId,
-        requestIds={run.a.request.identity,run.b.request.identity},boundedAuthorityIds={},
-        assemblyIds={run.a.assemblyId,run.b.assemblyId},
-        evidence={
-            kind=evidenceKind,passageGuideId=run.guide and run.guide.identity or nil,
-            sameJobs=sameJobs,bothRestored=bothRestored,
-            mixedPassageLegDispositions=mixed,
-            restorationExhausted=run.restorationExhausted==true,
-            cooldown=false,completedAt=g_time or 0
-        }
-    })
 end
 
 function Control:_failHeld(reason)
@@ -1203,7 +1106,7 @@ function Control:_executeCooperativePassageJointRequests(requestA,requestB,candi
         passageArrangement=bridge.passageArrangement,passageConfiguration=configurationPlan,passageEntry=bridge.passageEntry,passageExcursion=bridge.passageExcursion,controlProfile=bridge.controlProfile,
         thirdPartyConstraints=bridge.localPassageSpace and bridge.localPassageSpace.thirdPartyConstraints or {},
         initialSeparationM=distance(a.startX,a.startZ,b.startX,b.startZ),headingDot=dot(a.startForwardX,a.startForwardZ,b.startForwardX,b.startForwardZ),
-        speedKmh=OuttaMyWay.COOPERATIVE_PASSAGE_MOVE_SPEED_KMH or 8.0
+        speedKmh=OuttaMyWay.COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH or 8.0
     }
     local guideOk,guideReason=self:_preflightPassageGuide(run)
     if not guideOk then return false,"COOPERATIVE_PASSAGE_GUIDE_PREFLIGHT:"..tostring(guideReason) end
@@ -1378,10 +1281,6 @@ function Control:update(dt)
         elseif nowMs>=(run.nextReturnClearDiagnosticMs or 0) then
             run.nextReturnClearDiagnosticMs=nowMs+(OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS or 1000)
             logInfo("RETURN_CLEARANCE_WAIT_DETAIL commitment=%s released=%s waiting=%s reason=%s rearStation=%s requiredStation=%s",tostring(run.commitmentId),released.name,waiting.name,tostring(clearReason),evidence and evidence.rearStationM and string.format("%.2f",evidence.rearStationM) or "n/a",evidence and evidence.requiredStationM and string.format("%.2f",evidence.requiredStationM) or "n/a")
-        end
-    elseif run.phase=="RESTORING" then
-        if self:_passageRestoreReady(run) then
-            local ok,reason=self:_finishPassageRestore(run); if not ok then self:_failHeld("RESTORE_FINISH:"..tostring(reason)) end
         end
     end
 

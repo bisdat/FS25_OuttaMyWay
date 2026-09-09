@@ -139,7 +139,7 @@ def test_phase13_test_identity_is_coherent():
     moddesc = read("modDesc.xml")
     main = read("scripts/main.lua")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.35"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.35 TEST — PRODUCTION VOCABULARY CONTRACT COMPLETENESS"' in config
-    assert '<version value="0.3.0.35">0.3.0.35</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.37"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE"' in config
+    assert '<version value="0.3.0.37">0.3.0.37</version>' in moddesc
     assert "v0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY" in main

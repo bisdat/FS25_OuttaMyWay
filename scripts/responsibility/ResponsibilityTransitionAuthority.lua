@@ -7,6 +7,12 @@ local function logInfo(formatText,...)
     if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][RESPONSIBILITY] %s",message) else print("[FS25_OuttaMyWay][RESPONSIBILITY] "..message) end
 end
 
+local function hasPrefix(value,prefix)
+    return type(value)=="string"
+        and type(prefix)=="string"
+        and string.sub(value,1,string.len(prefix))==prefix
+end
+
 local function selectedBridge(evaluated,name)
     local selectedId=evaluated and evaluated.decision and evaluated.decision.selectedCandidateId or nil
     for _,candidate in OuttaMyWay.ValueRecord.ipairs(evaluated and evaluated.candidates or {}) do
@@ -173,7 +179,7 @@ function Authority:refreshCooperativePassageResolutionCommitment(commitmentId)
     local current=self:getCurrentResolutionCommitment(commitmentId)
     if current==nil then return nil,"COOPERATIVE_PASSAGE_RESOLUTION_NOT_CURRENT" end
     local responsibility=current.governingBasis and current.governingBasis.responsibilityKey or nil
-    if type(responsibility)~="string" or string.sub(responsibility,1,26)~="cooperative-passage:" then
+    if not hasPrefix(responsibility,"cooperative-passage:") then
         return nil,"COOPERATIVE_PASSAGE_RESOLUTION_CONTEXT_MISMATCH"
     end
     local obligationIds,assemblyIds,seenAssemblies={},{},{}

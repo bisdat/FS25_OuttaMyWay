@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.35 TEST — PRODUCTION VOCABULARY CONTRACT COMPLETENESS.
+-- FS25_OuttaMyWay v0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE.
 -- Completed Obstruction and current Causal Obstruction remain distinct upstream responsibilities.
 -- One provenance-neutral Terminal Egress executor consumes only current physical subject, objective and current Bounded Authority.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.36"
+OuttaMyWay.VERSION = "0.3.0.37"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -138,7 +138,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M = 1.0
 OuttaMyWay.COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M = 2.0
 OuttaMyWay.COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M = 2.0
 OuttaMyWay.COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG = 20
-OuttaMyWay.COOPERATIVE_PASSAGE_MOVE_SPEED_KMH = 8.0
+OuttaMyWay.COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH = 8.0
 OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
 -- Assembly-alignment tolerances are measurements around the captured Transit
 -- assembly pose; they are not Passage-clearance geometry.
@@ -168,7 +168,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.36 TEST — PRODUCTION VOCABULARY SEMANTIC CLOSURE"
+OuttaMyWay.BUILD_LABEL = "0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985

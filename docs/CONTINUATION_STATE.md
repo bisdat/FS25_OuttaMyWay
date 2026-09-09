@@ -8,7 +8,7 @@ Engineering Journal preserve chronology.
 
 - Accepted Repository State baseline: `main` after PR #94 merge, commit `48745375d259140117add5e0abf6047ec3667b17`.
 - Canonical authority remains **v0.3.0.0**.
-- Current Engineering Increment identity: **`0.3.0.36 TEST — PRODUCTION VOCABULARY SEMANTIC CLOSURE`**.
+- Current Engineering Increment identity: **`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
 - Protected `main` requires both `Structural contracts` and `Lua offline behavioural contracts`.
 - Phase 14 remains **ACTIVE**. Phase 14.6B and the bounded Issue #37 `.33` correction are accepted; Phase 14.6C is the current final planned strangler tranche.
 - Issue #90 owns the roadmap through Phase 14 closure and the later Phase-15 architecture <-> code audit.
@@ -68,6 +68,17 @@ Issue #87 remains the owner for decomposition of the **remaining live**
 `scripts/config.lua` mixed surface by responsibility.
 
 ## Validation boundary
+
+PR #95 validation of `.36` disproved local semantic closure: the main Lua
+replacement-core harness reported **333 passed / 7 failed**, while Structural
+contracts reported **159 passed / 28 failed**. The seven behavioural failures
+map to stale hard-coded prefix widths left behind when
+`d0146-cooperative-passage:` became `cooperative-passage:`. Structural evidence
+also exposed a retired-name collision, an unreachable whole-pair restore tail
+and omission of the new 14.6C contract from the blocking CI inventory.
+
+`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE` repairs those recognition/validation gaps without changing
+numeric policy or intended physical behaviour.
 
 Implementation-local work performs only syntax/static/XML/diff checks. GitHub
 Actions owns the repository Structural and Lua behavioural suites.

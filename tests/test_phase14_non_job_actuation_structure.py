@@ -111,7 +111,7 @@ def test_phase14_4_current_build_identity_is_coherent():
     main = read("scripts/main.lua")
     moddesc = read("modDesc.xml")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.35"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.35 TEST — PRODUCTION VOCABULARY CONTRACT COMPLETENESS"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.37"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE"' in config
     assert "v0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY" in main
-    assert '<version value="0.3.0.35">0.3.0.35</version>' in moddesc
+    assert '<version value="0.3.0.37">0.3.0.37</version>' in moddesc
