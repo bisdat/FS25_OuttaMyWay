@@ -17,6 +17,12 @@ local function logInfo(formatText, ...)
 end
 
 
+local function hasPrefix(value,prefix)
+    return type(value)=="string"
+        and type(prefix)=="string"
+        and string.sub(value,1,string.len(prefix))==prefix
+end
+
 local function selectedCandidate(evaluated)
     local selectedId=evaluated and evaluated.decision and evaluated.decision.selectedCandidateId or nil
     if selectedId==nil then return nil end
@@ -153,7 +159,7 @@ function Lifecycle.ensureFollowerBoundaryObligation(runtime,commitmentId,bridge,
         requiredAuthority={capabilities={"REGULATE_SPEED"},trafficPoliceman=true},
         evidenceContract={kind="POSITIVE_CURRENT_RELATIONSHIP_INVERSE_OR_PURPOSE_SUCCESSION",absenceDoesNotRetire=true},
         ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true,
-        creationEvidence=evidence or {kind="D0141_FOLLOWER_BOUNDARY_PURPOSE_ADMITTED"}
+        creationEvidence=evidence or {kind="FOLLOWER_BOUNDARY_PURPOSE_ADMITTED"}
     })
     local ids=appendCopy(record.obligationIds,obligation.identity)
     record=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(record,{obligationIds=ids,epoch=runtime.epochs:next()}))
@@ -185,7 +191,7 @@ function Lifecycle.applyFollowerBoundaryDecision(runtime,picture,evaluated)
     end
     if commitment==nil or commitment.state~="ACTIVE" then return nil,"FOLLOWER_BOUNDARY_COMMITMENT_NOT_ACTIVE" end
 
-    local obligationResult,obligationReason=Lifecycle.ensureFollowerBoundaryObligation(runtime,commitment.identity,bridge,{kind="D0141_SELECTED_REGULATION",decisionId=evaluated.decision.identity})
+    local obligationResult,obligationReason=Lifecycle.ensureFollowerBoundaryObligation(runtime,commitment.identity,bridge,{kind="FOLLOWER_BOUNDARY_REGULATION_SELECTED",decisionId=evaluated.decision.identity})
     if obligationResult==nil then return nil,obligationReason end
     commitment=obligationResult.commitment
     local token=nil
@@ -227,15 +233,15 @@ function Lifecycle.settleFollowerBoundaryPurpose(runtime,commitmentId,bridge,evi
     local settledId=nil
     if obligation~=nil then
         local mode=bridge.reason=="PROGRESS_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION" and "BASIS_CESSATION" or "SATISFACTION"
-        runtime.obligations:settle(obligation.identity,mode,evidence or {kind="D0141_POSITIVE_RETIREMENT",reason=bridge.reason})
+        runtime.obligations:settle(obligation.identity,mode,evidence or {kind="FOLLOWER_BOUNDARY_POSITIVE_RETIREMENT",reason=bridge.reason})
         settledId=obligation.identity
     end
     local remaining=runtime.obligations:openForOwner(commitmentId)
     record=runtime.commitments:get(commitmentId)
     local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
     local terminal=nil
-    if #remaining==0 and type(responsibility)=="string" and string.sub(responsibility,1,18)=="follower-boundary:" then
-        local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {kind="D0141_POSITIVE_RETIREMENT"},provenance={source="LiveTrafficCommitmentLifecycle"}})
+    if #remaining==0 and hasPrefix(responsibility,"follower-boundary:") then
+        local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {kind="FOLLOWER_BOUNDARY_POSITIVE_RETIREMENT"},provenance={source="LiveTrafficCommitmentLifecycle"}})
         local settling=runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
         terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{kind="FOLLOWER_BOUNDARY_PURPOSE_POSITIVELY_RETIRED",pairKey=bridge.pairKey,reason=bridge.reason})
         record=terminal
@@ -245,19 +251,19 @@ function Lifecycle.settleFollowerBoundaryPurpose(runtime,commitmentId,bridge,evi
     return {commitment=record,settledObligationId=settledId,remainingObligations=remaining,terminal=terminal},nil
 end
 
-local function d0146ActionSpaceBridge(candidate)
+local function actionSpaceRegulationBridge(candidate)
     local basis=candidate and candidate.evidenceBasis or nil
-    local bridge=basis and basis.d0146ActionSpaceRegulationBridge or nil
+    local bridge=basis and basis.actionSpaceRegulationBridge or nil
     if type(bridge)=="table" and type(bridge.conflictIdentity)=="string" and type(bridge.regulatedAssemblyId)=="string" then return bridge end
     return nil
 end
 
-local function findD0146ActionSpaceObligation(runtime,commitmentId,conflictIdentity)
+local function findActionSpaceRegulationObligation(runtime,commitmentId,conflictIdentity)
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
         local basis=obligation.basis
         local outcome=obligation.requiredOutcome
-        local supportedBasis=type(basis)=="table" and (basis.kind=="D0146_PASSAGE_ACTION_SPACE_CONSERVATION" or basis.kind=="FORWARD_INTERSECTION_INTENT_REVELATION")
-        local supportedOutcome=type(outcome)=="table" and (outcome.kind=="D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or outcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED")
+        local supportedBasis=type(basis)=="table" and (basis.kind=="ACTION_SPACE_REGULATION" or basis.kind=="FORWARD_INTERSECTION_INTENT_REVELATION")
+        local supportedOutcome=type(outcome)=="table" and (outcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or outcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED")
         if supportedBasis and basis.conflictIdentity==conflictIdentity and supportedOutcome then
             return obligation
         end
@@ -265,11 +271,11 @@ local function findD0146ActionSpaceObligation(runtime,commitmentId,conflictIdent
     return nil
 end
 
-function Lifecycle.applyD0146ActionSpaceDecision(runtime,picture,evaluated)
+function Lifecycle.applyActionSpaceRegulationDecision(runtime,picture,evaluated)
     if runtime==nil or picture==nil or evaluated==nil or evaluated.decision==nil then return nil,"MISSING_CONTEXT" end
     local candidate=selectedCandidate(evaluated)
-    local bridge=d0146ActionSpaceBridge(candidate)
-    if bridge==nil or candidate.capability~="REGULATE_SPEED" then return nil,"SELECTED_D0146_ACTION_SPACE_CANDIDATE_UNAVAILABLE" end
+    local bridge=actionSpaceRegulationBridge(candidate)
+    if bridge==nil or candidate.capability~="REGULATE_SPEED" then return nil,"SELECTED_ACTION_SPACE_REGULATION_CANDIDATE_UNAVAILABLE" end
     local action=evaluated.decision.commitmentAction
     local applied=nil
     local record=nil
@@ -279,28 +285,28 @@ function Lifecycle.applyD0146ActionSpaceDecision(runtime,picture,evaluated)
         applied=created.application; record=created.commitment
     elseif action=="MAINTAIN" or action=="REVISE" then
         applied=runtime.decisionCommitmentBoundary:apply(picture,evaluated)
-        if applied==nil or type(applied.commitmentId)~="string" then return nil,"D0146_ACTION_SPACE_COMMITMENT_APPLICATION_UNRESOLVED" end
+        if applied==nil or type(applied.commitmentId)~="string" then return nil,"ACTION_SPACE_REGULATION_COMMITMENT_APPLICATION_UNRESOLVED" end
         record=runtime.commitments:get(applied.commitmentId)
     else
-        return nil,"D0146_ACTION_SPACE_DECISION_NOT_CREATE_MAINTAIN_OR_REVISE"
+        return nil,"ACTION_SPACE_REGULATION_DECISION_NOT_CREATE_MAINTAIN_OR_REVISE"
     end
-    if record==nil or record.state~="ACTIVE" then return nil,"D0146_ACTION_SPACE_COMMITMENT_NOT_ACTIVE" end
+    if record==nil or record.state~="ACTIVE" then return nil,"ACTION_SPACE_REGULATION_COMMITMENT_NOT_ACTIVE" end
     local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or nil
-    if responsibility~=bridge.governingRequirementKey then return nil,"D0146_ACTION_SPACE_GOVERNING_REQUIREMENT_MISMATCH" end
+    if responsibility~=bridge.governingRequirementKey then return nil,"ACTION_SPACE_REGULATION_GOVERNING_REQUIREMENT_MISMATCH" end
 
-    local obligation=findD0146ActionSpaceObligation(runtime,record.identity,bridge.conflictIdentity)
+    local obligation=findActionSpaceRegulationObligation(runtime,record.identity,bridge.conflictIdentity)
     if obligation==nil then
         local specification=nil
         for _,item in OuttaMyWay.ValueRecord.ipairs(candidate.obligationsCreated or {}) do
-            if type(item.requiredOutcome)=="table" and (item.requiredOutcome.kind=="D0146_PASSAGE_ACTION_SPACE_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or item.requiredOutcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED") then specification=item break end
+            if type(item.requiredOutcome)=="table" and (item.requiredOutcome.kind=="ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES" or item.requiredOutcome.kind=="FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED") then specification=item break end
         end
-        if specification==nil then return nil,"D0146_ACTION_SPACE_OBLIGATION_SPECIFICATION_UNAVAILABLE" end
+        if specification==nil then return nil,"ACTION_SPACE_REGULATION_OBLIGATION_SPECIFICATION_UNAVAILABLE" end
         obligation=runtime.obligations:create({
             origin=specification.origin,basis=specification.basis,ownerCommitmentId=record.identity,
             requiredOutcome=specification.requiredOutcome,requiredAuthority=specification.requiredAuthority or {},
             evidenceContract=specification.evidenceContract,ownershipClass=specification.ownershipClass,
             transferPolicy=specification.transferPolicy or {},terminalDependency=specification.terminalDependency~=false,
-            creationEvidence={kind="D0146_ACTION_SPACE_REGULATION_SELECTED",decisionId=evaluated.decision.identity}
+            creationEvidence={kind="ACTION_SPACE_REGULATION_SELECTED",decisionId=evaluated.decision.identity}
         })
         record=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(record,{obligationIds=appendCopy(record.obligationIds,obligation.identity),epoch=runtime.epochs:next()}))
     end
@@ -315,21 +321,21 @@ function Lifecycle.applyD0146ActionSpaceDecision(runtime,picture,evaluated)
         if result==nil then return nil,reason end
         record=result.commitment; token=result.authorityToken; acquired=true
     end
-    if token==nil or runtime.authorities:validate(token)~=true then return nil,"D0146_ACTION_SPACE_VALID_AUTHORITY_TOKEN_UNAVAILABLE" end
+    if token==nil or runtime.authorities:validate(token)~=true then return nil,"ACTION_SPACE_REGULATION_VALID_AUTHORITY_TOKEN_UNAVAILABLE" end
     logInfo("D0146_ACTION_SPACE_DECISION_APPLIED decision=%s commitment=%s conflict=%s admission=%s regulated=%s protected=%s obligation=%s token=%s acquired=%s magnitudeAuthority=BOUNDED_AUTHORITY",
         tostring(evaluated.decision.identity),tostring(record.identity),tostring(bridge.conflictIdentity),tostring(bridge.admissionKind or "CURRENT_EXCURSION"),tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),
         tostring(obligation.identity),tostring(token.identity),tostring(acquired))
     return {application=applied,commitment=record,obligation=obligation,authorityToken=token,authorityAcquired=acquired,bridge=bridge},nil
 end
 
-function Lifecycle.settleD0146ActionSpacePurpose(runtime,commitmentId,bridge,evidence)
-    if runtime==nil or type(commitmentId)~="string" or type(bridge)~="table" or type(bridge.conflictIdentity)~="string" then return nil,"MISSING_D0146_ACTION_SPACE_SETTLEMENT_CONTEXT" end
+function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridge,evidence)
+    if runtime==nil or type(commitmentId)~="string" or type(bridge)~="table" or type(bridge.conflictIdentity)~="string" then return nil,"MISSING_ACTION_SPACE_REGULATION_SETTLEMENT_CONTEXT" end
     local record=runtime.commitments:get(commitmentId)
-    if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then return nil,"D0146_ACTION_SPACE_COMMITMENT_NOT_LIVE" end
+    if record==nil or OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) then return nil,"ACTION_SPACE_REGULATION_COMMITMENT_NOT_LIVE" end
     local responsibility=record.governingBasis and record.governingBasis.responsibilityKey or ""
-    local forward=type(responsibility)=="string" and string.sub(responsibility,1,32)=="forward-intersection-regulation:"
+    local forward=hasPrefix(responsibility,"forward-intersection-regulation:")
     local settlementMode=nil
-    if bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_D0146_ACTION_SPACE_REGULATION" then
+    if bridge.reason=="COOPERATIVE_PASSAGE_SUPERSEDES_ACTION_SPACE_REGULATION" then
         settlementMode="BASIS_CESSATION"
     elseif forward then
         local evidenceKind=evidence and evidence.kind or nil
@@ -344,20 +350,20 @@ function Lifecycle.settleD0146ActionSpacePurpose(runtime,commitmentId,bridge,evi
         settlementMode="SATISFACTION"
     end
 
-    local obligation=findD0146ActionSpaceObligation(runtime,commitmentId,bridge.conflictIdentity)
+    local obligation=findActionSpaceRegulationObligation(runtime,commitmentId,bridge.conflictIdentity)
     local settledId=nil
     if obligation~=nil then
-        runtime.obligations:settle(obligation.identity,settlementMode,evidence or {kind="D0146_ACTION_SPACE_PURPOSE_EXPIRED",reason=bridge.reason})
+        runtime.obligations:settle(obligation.identity,settlementMode,evidence or {kind="ACTION_SPACE_REGULATION_PURPOSE_EXPIRED",reason=bridge.reason})
         settledId=obligation.identity
     end
     local remaining=runtime.obligations:openForOwner(commitmentId)
     record=runtime.commitments:get(commitmentId)
     local terminal=nil
-    local ownedTrafficPurpose=type(responsibility)=="string" and (string.sub(responsibility,1,26)=="d0146-cooperative-passage:" or forward)
+    local ownedTrafficPurpose=hasPrefix(responsibility,"cooperative-passage:") or forward
     if #remaining==0 and ownedTrafficPurpose then
-        local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {kind="D0146_ACTION_SPACE_PURPOSE_EXPIRED"},provenance={source="LiveTrafficCommitmentLifecycle.settleD0146ActionSpacePurpose"}})
+        local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {kind="ACTION_SPACE_REGULATION_PURPOSE_EXPIRED"},provenance={source="LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose"}})
         runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
-        local terminalEvidenceKind="D0146_ACTION_SPACE_RELATIONSHIP_POSITIVELY_DISSOLVED"
+        local terminalEvidenceKind="ACTION_SPACE_REGULATION_RELATIONSHIP_POSITIVELY_DISSOLVED"
         if forward then
             terminalEvidenceKind=(evidence and evidence.kind=="FORWARD_INTERSECTION_POSITIVE_SUPERSESSION")
                 and "FORWARD_INTERSECTION_RESPONSIBILITY_POSITIVELY_SUPERSEDED"
@@ -385,9 +391,9 @@ local function endedEpisodeSet(episodeResult)
     return result
 end
 
-local function d0146TrafficResponsibility(record)
+local function jobDependentTrafficResponsibility(record)
     local responsibility=record and record.governingBasis and record.governingBasis.responsibilityKey or nil
-    return type(responsibility)=="string" and (string.sub(responsibility,1,26)=="d0146-cooperative-passage:" or string.sub(responsibility,1,32)=="forward-intersection-regulation:")
+    return hasPrefix(responsibility,"cooperative-passage:") or hasPrefix(responsibility,"forward-intersection-regulation:")
 end
 
 local function endedDependency(record,ended)
@@ -549,7 +555,7 @@ function Lifecycle.collapseEndedJobEpisodeDependencies(runtime,episodeResult,sna
     local collapsed={}
     for _,record in OuttaMyWay.ValueRecord.ipairs(runtime.commitments:list()) do
         if not OuttaMyWay.CommitmentStateMachine.isTerminal(record.state) and record.state~="SETTLING"
-            and d0146TrafficResponsibility(record)
+            and jobDependentTrafficResponsibility(record)
             and not hasCooperativePassageLegObligations(runtime,record.identity) then
             local endedDependentEpisodeId=endedDependency(record,ended)
             if endedDependentEpisodeId~=nil then
@@ -656,7 +662,7 @@ function Lifecycle.settleCooperativePassageLeg(runtime,commitmentId,assemblyId,d
 
     local settlementEvidence={}
     for key,value in OuttaMyWay.ValueRecord.pairs(evidence or {}) do settlementEvidence[key]=value end
-    settlementEvidence.kind=settlementEvidence.kind or "D0146_COOPERATIVE_PASSAGE_LEG_TERMINAL"
+    settlementEvidence.kind=settlementEvidence.kind or "COOPERATIVE_PASSAGE_LEG_TERMINAL"
     settlementEvidence.commitmentId=commitmentId
     settlementEvidence.assemblyId=assemblyId
     settlementEvidence.passageLegDisposition=disposition
@@ -734,7 +740,7 @@ function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated)
                 requiredOutcome=specification.requiredOutcome,requiredAuthority=specification.requiredAuthority or {},
                 evidenceContract=specification.evidenceContract,ownershipClass=specification.ownershipClass,
                 transferPolicy=specification.transferPolicy or {},terminalDependency=specification.terminalDependency~=false,
-                creationEvidence={kind="D0146_COOPERATIVE_PASSAGE_REVISE",decisionId=evaluated.decision.identity}
+                creationEvidence={kind="COOPERATIVE_PASSAGE_REVISE",decisionId=evaluated.decision.identity}
             })
             obligation=obligation or created
         end
@@ -783,7 +789,7 @@ function Lifecycle.completeCooperativePassage(runtime,commitmentId,evidence)
     local settled={}
     for _,obligation in OuttaMyWay.ValueRecord.ipairs(runtime.obligations:openForOwner(commitmentId)) do
         if isCooperativePassageObligation(obligation) then
-            runtime.obligations:settle(obligation.identity,"SATISFACTION",evidence or {kind="D0146_POSITIVE_RESTORATION_AND_HANDOFF"})
+            runtime.obligations:settle(obligation.identity,"SATISFACTION",evidence or {kind="COOPERATIVE_PASSAGE_POSITIVE_RESTORATION_AND_HANDOFF"})
             settled[#settled+1]=obligation.identity
         end
     end
@@ -793,7 +799,7 @@ function Lifecycle.completeCooperativePassage(runtime,commitmentId,evidence)
     end
     local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {},provenance={source="LiveTrafficCommitmentLifecycle.completeCooperativePassage",decision="D-0146"}})
     local settling=runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
-    local terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,evidence or {kind="D0146_POSITIVE_RESTORATION_AND_HANDOFF"})
+    local terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,evidence or {kind="COOPERATIVE_PASSAGE_POSITIVE_RESTORATION_AND_HANDOFF"})
     logInfo("COOPERATIVE_PASSAGE_SETTLED commitment=%s terminal=%s settledObligations=%d releasedAuthorityTokens=%d cooldown=false",tostring(commitmentId),tostring(terminal.state),#settled,#(settling.releasedAuthorityTokenIds or {}))
     return {commitment=terminal,settledObligationIds=settled,releasedAuthorityTokenIds=settling.releasedAuthorityTokenIds or {}},nil
 end

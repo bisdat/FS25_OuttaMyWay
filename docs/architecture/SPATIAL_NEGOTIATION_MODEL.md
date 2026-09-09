@@ -17,7 +17,7 @@ GIANTS retains AI jobs, productive routing/navigation, native turning and produc
 ## 2. Spatial governing constraints
 
 1. **Partial observability is permanent.** Future GIANTS intent is not generally known while a worker is `TURNING`.
-2. **Physical non-contact is mandatory.** Nominal clearance is a quality target; represented non-contact is the hard safety condition.
+2. **Physical non-contact is mandatory.** Nominal Passage clearance is an empirical policy margin, not a precise collision calculation. Passage uses its purpose-specific representation; generic physical-conflict or GIANTS proximity signals do not independently establish Passage contact.
 3. **Field space is non-uniform.** Corners and headlands reduce manoeuvre options; open field is comparatively cheap spatial capacity.
 4. **Time consumes options.** Waiting for certainty is not free when native progression consumes Resolution Space.
 5. **Actuation is limited.** Spatial policy must use available native progression, Regulation/Hold, supported configuration, bounded Passage displacement/recovery and terminal movement.
@@ -150,6 +150,18 @@ current working geometry
 Physical guide movement relying on the Transit-conditioned plan must wait until the existing supported Transit configuration/settlement boundary has resolved. At that boundary fresh Reality may validate or adapt execution geometry and origins. This is not a universal requirement that folding succeed: existing handling for non-foldable or unsupported assemblies and bounded settlement exhaustion remains part of the validated lifecycle.
 
 This purpose-specific Transit Passage contract does not claim generic current collision-shape Coverage Closure or generic negative-clearance authority. Current evidence supports its coarse parametric geometry without sophisticated articulated Passage sweep, animation swept-volume solving or longitudinal arc/dynamics reconstruction. Reality determines whether that remains sufficient. Do not promote Deferred Detailed Manoeuvre Sweep Construction into a Passage prerequisite; generic Deployment Sweep and Manoeuvre Sweep remain available to other assessments that genuinely require them.
+
+**Generic Physical Conflict != Passage Physical Conflict.** GIANTS `isBlocked`
+is native proximity/control evidence and may be positive during safe Passage.
+Likewise, overlap of the generic current physical-conflict bounding discs is
+positive evidence for broad obstruction reasoning, not proof that the actual
+models have contacted and not Passage-clearance authority. During Cooperative
+Passage the purpose-specific Transit representation and the nominal clearance
+policy govern the simple Passage geometry. **Purpose-Specific Representation
+Authority Takes Precedence.** If field Reality later demonstrates actual contact
+despite the accepted Transit representation plus clearance policy, first adjust
+the empirical clearance margin before introducing a more detailed collision or
+dynamics model.
 
 ### Tactical Regulation
 

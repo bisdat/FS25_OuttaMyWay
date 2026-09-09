@@ -5,7 +5,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def read(relative):
     return (ROOT / relative).read_text(encoding="utf-8")
 
-def test_phase14_4_non_job_actuation_is_a_control_mechanism_not_semantic_authority():
+def test_non_job_actuation_is_a_control_mechanism_not_semantic_authority():
     main = read("scripts/main.lua")
     mechanism_path = ROOT / "scripts/control/mechanisms/NonJobActuationMechanism.lua"
 
@@ -30,7 +30,7 @@ def test_phase14_4_non_job_actuation_is_a_control_mechanism_not_semantic_authori
     ):
         assert forbidden not in mechanism
 
-def test_phase14_4_mechanical_surface_is_preserved():
+def test_mechanical_surface_is_preserved():
     mechanism = read("scripts/control/mechanisms/NonJobActuationMechanism.lua")
 
     for method in (
@@ -63,7 +63,7 @@ def test_phase14_4_mechanical_surface_is_preserved():
     ):
         assert token in mechanism
 
-def test_phase14_4_trigger_authorities_remain_separate_upstream_of_shared_executor():
+def test_trigger_authorities_remain_separate_upstream_of_shared_executor():
     terminal = read("scripts/control/TerminalEgressControl.lua")
     completed = read("scripts/candidates/TerminalEgressCandidateSupport.lua")
     current = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
@@ -75,7 +75,7 @@ def test_phase14_4_trigger_authorities_remain_separate_upstream_of_shared_execut
     assert "actuationMechanism=OuttaMyWay.NonJobActuationMechanism.new()" in terminal
     assert not (ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").exists()
 
-def test_phase14_4_current_causal_obstruction_still_denies_completed_job_provenance_and_second_courtesy():
+def test_current_causal_obstruction_still_denies_completed_job_provenance_and_second_courtesy():
     terminal = read("scripts/control/TerminalEgressControl.lua")
     candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
 
@@ -85,7 +85,7 @@ def test_phase14_4_current_causal_obstruction_still_denies_completed_job_provena
     assert 'tonumber(objective.courtesyStage)~=1' not in terminal
     assert "CURRENT_CAUSAL_OBSTRUCTION" not in terminal
 
-def test_phase14_4_completed_obstruction_retains_double_courtesy_semantics_upstream():
+def test_completed_obstruction_retains_double_courtesy_semantics_upstream():
     terminal_candidate = read("scripts/candidates/TerminalEgressCandidateSupport.lua")
     terminal_control = read("scripts/control/TerminalEgressControl.lua")
 
@@ -94,7 +94,7 @@ def test_phase14_4_completed_obstruction_retains_double_courtesy_semantics_upstr
     assert "POST_JOB_ACTUATION" not in terminal_control
     assert 'target.kind~="TERMINAL_EGRESS"' in terminal_control
 
-def test_phase14_4_non_job_failure_reason_vocabulary_is_provenance_neutral():
+def test_non_job_failure_reason_vocabulary_is_provenance_neutral():
     mechanism = read("scripts/control/mechanisms/NonJobActuationMechanism.lua")
 
     for token in (
@@ -106,12 +106,12 @@ def test_phase14_4_non_job_failure_reason_vocabulary_is_provenance_neutral():
         assert token in mechanism
     assert "POST_JOB_" not in mechanism
 
-def test_phase14_4_current_build_identity_is_coherent():
+def test_current_build_identity_is_coherent():
     config = read("scripts/config.lua")
     main = read("scripts/main.lua")
     moddesc = read("modDesc.xml")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.33"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY"' in config
-    assert "v0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY" in main
-    assert '<version value="0.3.0.33">0.3.0.33</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.37"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE"' in config
+    assert "v0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE" in main
+    assert '<version value="0.3.0.37">0.3.0.37</version>' in moddesc

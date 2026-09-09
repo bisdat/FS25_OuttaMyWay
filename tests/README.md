@@ -7,7 +7,7 @@ This directory describes the executable offline validation mechanisms and fixtur
 ```text
 tests/
 ├── README.md
-├── test_replacement_core_structure.py
+├── test_*_structure.py
 ├── replacement_core/
 │   ├── README.md
 │   └── run.lua
@@ -17,7 +17,7 @@ tests/
 
 ## Python structural and source-contract suite
 
-`test_replacement_core_structure.py` validates repository and source contracts: module placement, loading and dependencies; selected forbidden paths, literals and authority boundaries; and legitimate dependencies on live Research evidence. Accepted main entered the CI increment at an all-pass baseline of 96 tests.
+Responsibility-named `test_*_structure.py` modules validate repository and source contracts: module placement, loading and dependencies; selected forbidden paths, literals and authority boundaries; and legitimate dependencies on live Research evidence. Test module names describe the durable contract they protect rather than the engineering phase, Issue or migration that introduced them.
 
 `pytest` runs this suite in GitHub Actions and may also be used locally. These assertions do not prove GIANTS runtime behaviour.
 

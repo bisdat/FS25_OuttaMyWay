@@ -12,10 +12,10 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 
 ## Repository state
 
-- Accepted Repository State baseline for this increment: `main` after PR #92 merge, commit `e31791ec510465020da7a0815a901186db3b558e`.
+- Accepted Repository State baseline: `main` after PR #94 merge, commit `48745375d259140117add5e0abf6047ec3667b17`.
 - Canonical authority remains **v0.3.0.0**.
-- Current branch executable identity is **`0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY`**; acceptance and canonical authority are unchanged until review/merge/Reality evidence says otherwise.
-- Strangler Phase 14 remains active. Phase 14.6B is accepted; the planned Phase 14.6C vocabulary/ownership reconciliation resumes after this bounded Issue #37 Reality correction.
+- Current branch executable identity is **`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**; acceptance and canonical authority are unchanged until review/merge/validation.
+- Strangler Phase 14 remains active. Phase 14.6C is the current final planned vocabulary/ownership reconciliation tranche.
 - Phase 15 whole-system validation and architecture-to-runtime review has not started.
 
 ## Principal current responsibility placement
@@ -108,42 +108,38 @@ Git and merged PRs preserve how those placements were reached. This map records 
 
 ## Current architecture-to-code drift
 
-### Forward Intersection evidence continuity — Issue #37
+### Phase 14.6C — production vocabulary / ownership reconciliation
 
-`.32` Category-2 Condor/Patriot Reality exposed that production correctly
-published `relationshipStatus=UNRESOLVED` / `FORWARD_CONTINUATION_UNRESOLVED`,
-but `CurrentResponsibilityAssessment` converted that uncertainty into
-`TERMINATE`. Runtime then released the fixed 1 km/h lease and the generic
-Action-Space settlement helper labelled the purpose positively dissolved.
+The runtime vocabulary/ownership reconciliation is implementation-complete on
+**`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
 
-`.33` keeps ownership at the existing boundaries:
+PR #95 validation discovered and corrected the two material semantic-rename
+regressions: copied Cooperative Passage prefix widths and the orphan whole-pair
+`RESTORING` lifecycle tail. The retired Passage speed identifier remains
+retired; the unchanged 8 km/h implementation calibration is owned as
+`COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH`. Remaining lowercase D-0146 current
+execution/addressability names found by exact-head review were also reconciled.
 
-- `SpatialConstraintAssessment` continues to own POSITIVE / UNRESOLVED / NEGATIVE Forward Intersection knowledge and is unchanged;
-- `CurrentResponsibilityAssessment` maps temporary Forward Intersection uncertainty to `WAITING_FOR_EVIDENCE` + `PERSIST`;
-- existing `RegulationBoundedAuthority` keeps the already-admitted fixed 1 km/h lease active without a new Control path;
-- Runtime requires explicit positive dissolution or positive supersession evidence before physical release;
-- `LiveTrafficCommitmentLifecycle` independently rejects Forward Intersection settlement that does not satisfy that evidence contract.
+Offline Validation run #256 is fully green for both blocking Structural and Lua
+behavioural contracts. The owner-run `.37` in-game Cooperative Passage smoke
+also passed through participant-specific restore/handoff and GIANTS
+continuation.
 
-No timeout literal, turn-path prediction, Candidate redesign, Passage geometry
-change or Control redesign is introduced. Prolonged unresolved evidence remains a
-separate bounded fail-safe question if Reality demonstrates that normal fresh
-assessment does not resolve it.
+There is no remaining known Phase-14.6C architecture-to-code placement or
+runtime-vocabulary drift. The seven blocking structural-test modules have been
+renamed by durable responsibility. Offline Validation run #257 preserved the Lua
+behavioural PASS and reached **194 passed / 1 failed** structurally; the sole
+failure is the renamed production-vocabulary contract asserting its own old
+workflow path. That is validation self-reference drift only. The current
+correction is test/docs-only and does not create `.38` or change executable
+bytes.
 
-### Terminal Egress execution consolidation — accepted placement
+### Resolved before Phase 14.6C
 
-`ObstructionRelocationControl` and Prototype22 are retired from executable source. Production Hold, Drive, Transit Configuration and shared non-job actuation mechanisms remain explicitly composed by their real consumers. One `TerminalEgressControl` executes already-authorised Completed Obstruction and current Causal Obstruction movement from current physical addressability.
-
-### Production validation vocabulary
-
-Current production source still contains primary identifiers such as D-number/TEST/Step/prototype names in Cooperative Passage, Regulation support and related Runtime/contracts. Decision numbers may remain as provenance, but current production identity should describe the current concept.
-
-Renaming must follow ownership and must not become a blind repository-wide substitution.
-
-### Mixed runtime constants
-
-`scripts/config.lua` remains a Mixed Runtime Constants Surface. `TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M` and `TERMINAL_EGRESS_MOVE_TIMEOUT_MS` are plausible shared Terminal Egress execution-owned constants; do not clone them per trigger merely because two paths consume them.
-
-`AUTOMATIC_TERMINAL_EGRESS` still spans development consent beyond the completed-obstruction player-configuration concept recorded in `CONFIGURATION.md`. Do not invent player-facing Configuration semantics while reconciling implementation scope.
+Issue #37 is accepted on `.33`: Forward Intersection `UNRESOLVED` now preserves
+the existing Regulation as `WAITING_FOR_EVIDENCE`, while supported negative or
+successor evidence owns release. Issue #93 is closed as a disproven
+Passage-contact hypothesis after direct `.32`/`.33` video review.
 
 ## Current explicit limits / separate work
 
@@ -153,47 +149,38 @@ Semantic targeting may be unambiguous while generic Commitment application still
 
 ### Separate Issues
 
-- Issue #37 — Category-2 Forward Intersection evidence-continuity correction and remaining Reality validation.
 - Issue #45 — Bubble Bullet Time, accepted but unimplemented.
 - Issue #65 — Behaviour Regression Contract != Build Identity Contract.
-
-Do not mix those concerns into the current Phase-14 placement/vocabulary correction without an explicit engineering reason.
+- Issue #87 — decompose the remaining **live** `scripts/config.lua` mixed runtime constants surface by ownership and establish a clear player/developer/internal boundary.
+- Issue #90 — roadmap owner through Phase 14 closure, Phase 15 audit and the post-strangler documentation decision.
 
 ## Immediate implementation boundary
 
-Issue #37 is the active bounded correction before planned Phase 14.6C resumes.
+Phase 14.6C executable work is complete on
+**`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
 
-`0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY` must preserve:
+Validated state:
 
-- existing Forward Intersection geometry, temporal allocation and exact 1 km/h policy;
-- GIANTS ownership of jobs, route, steering, turning and ordinary navigation;
-- Candidate / Constraint / Decision / Responsibility Transition boundaries;
-- the existing Regulation physical executor and Bounded Authority path;
-- established follower precedence, Cooperative Passage and other Action-Space Regulation semantics.
+1. Cooperative Passage identity recognition derives prefix length from current
+   vocabulary rather than copied numeric widths;
+2. current Action-Space terminal settlement, D-0200 Job-Episode dependency
+   collapse and D-0217 survivor-authority rebind semantics pass offline
+   behavioural contracts;
+3. participant-scoped restoration / last-leg dissolution is the only current
+   Passage restore lifecycle;
+4. the historical `COOPERATIVE_PASSAGE_MOVE_SPEED_KMH` identifier remains
+   retired and the unchanged live calibration is owned as
+   `COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH`;
+5. current production vocabulary/ownership structural contracts are blocking in
+   CI;
+6. Offline Validation run #256 is fully green; and
+7. owner-run `.37` in-game Cooperative Passage smoke is PASS.
 
-The intended behavioural delta is only:
+Immediate repository work is test/governance-only: correct the one stale
+self-referential workflow-path assertion exposed by run #257, then require both
+blocking CI jobs to be green on the exact corrected head. No executable source
+changes and no `.38`.
 
-```text
-established Forward Intersection
-    + temporary continuation ambiguity / missing current relation
-        -> same Regulation responsibility persists
-        -> WAITING_FOR_EVIDENCE
-        -> existing yielder remains at 1 km/h
-
-fresh supported NEGATIVE relationship
-        -> positive dissolution
-        -> release
-
-fresh established successor relationship
-        -> positive supersession
-        -> release / successor assessment
-```
-
-Validation boundary:
-
-1. blocking Structural + Lua CI on exact `.33` head;
-2. repeat the Condor/Patriot Category-2 Reality fixture;
-3. confirm Patriot remains at 1 km/h through Condor's turn/reverse/square-off ambiguity;
-4. confirm fresh negative/successor evidence releases promptly without a sticky timeout;
-5. only then reassess the downstream boundary-constrained Passage observation;
-6. after owner acceptance, resume Phase 14.6C under Issue #90's existing roadmap.
+After that exact PR head is green, merge PR #95 and proceed to the Phase 14
+closure review unless new Reality demonstrates a genuine remaining strangler
+responsibility.

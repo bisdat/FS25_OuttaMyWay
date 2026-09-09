@@ -9,9 +9,9 @@ end
 
 local function candidateMetadata(specification,family,groupKey,ordinal,boundary,extra)
     local evidence=specification.evidenceBasis or {}
-    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.d0146ActionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or evidence.guardedRecoveryBridge or {}
+    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or evidence.guardedRecoveryBridge or {}
     local metadata={
-        groupKey=groupKey,family=family,legacyOrdinal=ordinal,supportBoundary=boundary,
+        groupKey=groupKey,family=family,enumerationOrdinal=ordinal,supportBoundary=boundary,
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,terminalEpisodeId=bridge.terminalEpisodeId,
         admissionKind=bridge.admissionKind,initialSeparationM=bridge.initialSeparationM,
         leaderAssemblyId=bridge.leaderAssemblyId,followerAssemblyId=bridge.followerAssemblyId,
@@ -30,9 +30,9 @@ end
 
 local function descriptorFromSpecification(specification,family,groupKey,ordinal,boundary,extra)
     local evidence=specification.evidenceBasis or {}
-    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.d0146ActionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or evidence.guardedRecoveryBridge or {}
+    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or evidence.guardedRecoveryBridge or {}
     local descriptor={
-        groupKey=groupKey,family=family,legacyOrdinal=ordinal,supportBoundary=boundary,
+        groupKey=groupKey,family=family,enumerationOrdinal=ordinal,supportBoundary=boundary,
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,terminalEpisodeId=bridge.terminalEpisodeId,
         admissionKind=bridge.admissionKind,initialSeparationM=bridge.initialSeparationM,
         leaderAssemblyId=bridge.leaderAssemblyId,followerAssemblyId=bridge.followerAssemblyId,
@@ -137,7 +137,7 @@ function Support:attach(picture,snapshot)
     end
 
     local follower,followerReason=self.liveSupport:buildProjectedGroup(picture,snapshot,{kind="FOLLOWER_BOUNDARY"},targetPictureId,targetEpoch)
-    if modeOfGroup(follower)=="FOLLOWER_BOUNDARY_D0141" then
+    if modeOfGroup(follower)=="FOLLOWER_BOUNDARY" then
         local family="FOLLOWER"
         local spec=follower.candidateSpecifications and follower.candidateSpecifications[1] or nil
         local action=spec and spec.evidenceBasis and spec.evidenceBasis.followerBoundaryBridge and spec.evidenceBasis.followerBoundaryBridge.action or nil
@@ -150,7 +150,7 @@ function Support:attach(picture,snapshot)
     local guardCount=activeGuardedRecoveryCount(picture)
     if guardCount>0 then
         local guard,guardReason=self.liveSupport:buildProjectedGroup(picture,snapshot,{kind="GUARDED_RECOVERY"},targetPictureId,targetEpoch)
-        if modeOfGroup(guard)=="GUARDED_RECOVERY_D0123" then
+        if modeOfGroup(guard)=="GUARDED_RECOVERY" then
             appendGroup(state,guard,"GUARDED_RECOVERY","guarded-recovery",1)
         elseif type(guardReason)=="string" and string.find(guardReason,"MULTIPLE_ACTIVE_GUARDED_RECOVERY_CONTEXTS",1,true) then
             passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"GUARDED_RECOVERY_FAIL_CLOSED",guardReason,1)
@@ -160,7 +160,7 @@ function Support:attach(picture,snapshot)
     local forwardCount=forwardRelationshipCount(picture)
     if forwardCount==1 then
         local forward=self.liveSupport:buildProjectedGroup(picture,snapshot,{kind="FORWARD_INTERSECTION"},targetPictureId,targetEpoch)
-        if modeOfGroup(forward)=="D0146_RESOLUTION_SPACE_REGULATION" then
+        if modeOfGroup(forward)=="ACTION_SPACE_REGULATION" then
             appendGroup(state,forward,"FORWARD_INTERSECTION","forward-intersection",1)
         end
     elseif forwardCount>1 then
@@ -174,15 +174,15 @@ function Support:attach(picture,snapshot)
         local group=self.liveSupport:buildProjectedGroup(
             picture,snapshot,{kind="OPPOSED_RELATIONSHIP",relationshipIdentity=relation.identity},targetPictureId,targetEpoch)
         local mode=modeOfGroup(group)
-        if mode=="D0146_COOPERATIVE_PASSAGE_STEP2_TEST" then
+        if mode=="COOPERATIVE_PASSAGE" then
             appendGroup(state,group,"PASSAGE","passage:"..tostring(relation.identity),relationOrdinal)
-        elseif mode=="D0146_RESOLUTION_SPACE_REGULATION" then
+        elseif mode=="ACTION_SPACE_REGULATION" then
             actionSpaceGroups=actionSpaceGroups+1
             appendGroup(state,group,"ACTION_SPACE","action-space:"..tostring(relation.identity),relationOrdinal)
         end
     end
     if actionSpaceGroups>1 then
-        passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"ACTION_SPACE_FAIL_CLOSED","MULTIPLE_D0146_ACTION_SPACE_CONSERVATION_CONTEXTS",1)
+        passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"ACTION_SPACE_FAIL_CLOSED","MULTIPLE_ACTION_SPACE_REGULATION_CONTEXTS",1)
     end
 
     if #state.groups==0 then
@@ -199,7 +199,7 @@ function Support:attach(picture,snapshot)
     end
     table.sort(capabilities)
     table.sort(state.groups,function(a,b)
-        if (a.legacyOrdinal or 0)~=(b.legacyOrdinal or 0) then return (a.legacyOrdinal or 0)<(b.legacyOrdinal or 0) end
+        if (a.enumerationOrdinal or 0)~=(b.enumerationOrdinal or 0) then return (a.enumerationOrdinal or 0)<(b.enumerationOrdinal or 0) end
         return tostring(a.groupKey)<tostring(b.groupKey)
     end)
 

@@ -5,14 +5,14 @@ ROOT=Path(__file__).resolve().parents[1]
 def text(rel):
     return (ROOT/rel).read_text(encoding="utf-8")
 
-def test_phase14_3_live_interaction_support_is_in_observation_scope():
+def test_live_interaction_support_is_in_observation_scope():
     main=text("scripts/main.lua")
     assert (ROOT/"scripts/observation/LiveInteractionObservation.lua").is_file()
     assert not (ROOT/"scripts/diagnostics/LiveInteractionDiagnostics.lua").exists()
     assert "scripts/observation/LiveInteractionObservation.lua" in main
     assert "scripts/diagnostics/LiveInteractionDiagnostics.lua" not in main
 
-def test_phase14_3_module_owns_only_bounded_live_observation_calculation():
+def test_module_owns_only_bounded_live_observation_calculation():
     observation=text("scripts/observation/LiveInteractionObservation.lua")
     assert "OuttaMyWay.LiveInteractionObservation = {}" in observation
     for fn in ("pairReferenceKey","deriveMotion","observePairState"):
@@ -24,14 +24,14 @@ def test_phase14_3_module_owns_only_bounded_live_observation_calculation():
     ):
         assert forbidden not in observation
 
-def test_phase14_3_live_source_consumes_observation_not_diagnostic_authority():
+def test_live_source_consumes_observation_not_diagnostic_authority():
     source=text("scripts/observation/LiveObservationSource.lua")
     assert "OuttaMyWay.LiveInteractionObservation.observePairState" in source
     assert "OuttaMyWay.LiveInteractionObservation.deriveMotion" in source
     assert "OuttaMyWay.LiveInteractionObservation.pairReferenceKey" in source
     assert "OuttaMyWay.LiveInteractionDiagnostics" not in source
 
-def test_phase14_3_raw_observation_evidence_and_diagnostic_projection_remain_distinct():
+def test_raw_observation_evidence_and_diagnostic_projection_remain_distinct():
     source=text("scripts/observation/LiveObservationSource.lua")
     adapter=text("scripts/observation/RuntimeObservationAdapter.lua")
     for token in (
@@ -45,17 +45,17 @@ def test_phase14_3_raw_observation_evidence_and_diagnostic_projection_remain_dis
     assert "motion=shallowCopy(raw.motion)" in adapter
     assert "diagnostics=shallowCopy(raw.diagnostics)" in adapter
 
-def test_phase14_3_pair_key_remains_correlation_not_identity_authority():
+def test_pair_key_remains_correlation_not_identity_authority():
     observation=text("scripts/observation/LiveInteractionObservation.lua")
     assert 'return "live-pair:" .. first .. ":" .. second' in observation
     for forbidden in ("IdentityRegistry","identities:resolve","identities:issue"):
         assert forbidden not in observation
 
-def test_phase14_3_current_build_identity_is_coherent():
+def test_current_build_identity_is_coherent():
     config=text("scripts/config.lua")
     main=text("scripts/main.lua")
     moddesc=text("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.33"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY"' in config
-    assert "v0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY" in main
-    assert '<version value="0.3.0.33">0.3.0.33</version>' in moddesc
+    assert 'OuttaMyWay.VERSION = "0.3.0.37"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE"' in config
+    assert "v0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE" in main
+    assert '<version value="0.3.0.37">0.3.0.37</version>' in moddesc

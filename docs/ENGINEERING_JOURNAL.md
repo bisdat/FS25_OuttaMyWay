@@ -1,3 +1,184 @@
+## 2026-09-09 — Structural-test rename self-reference closure
+
+**Observe:** Offline Validation run #257 on exact durable-test-naming head
+`8566ed9ef3ca01f9cbda8201ce221ab63b290358` kept the Lua offline behavioural
+contracts green. Structural contracts reached **194 passed / 1 failed**. The
+sole failure was inside the renamed
+`test_production_vocabulary_ownership_structure.py`: it still asserted that the
+blocking workflow contained its former
+`test_phase14_production_vocabulary_ownership_structure.py` path.
+
+**Discover:** **Validation Self-Reference Participates in Rename Closure.** A
+validation asset that asserts its own execution topology is both the thing being
+renamed and a consumer of that name. Renaming its file and workflow entry is
+incomplete until the self-reference is reconciled.
+
+**Decision:** correct only that assertion and current-state documentation. No
+runtime source changes and no new TEST build identity. Re-run blocking CI before
+PR #95 merge.
+
+## 2026-09-09 — Durable structural-test naming
+
+**Observe:** Phase 14 left seven blocking structural-contract modules named for
+their engineering origin (`test_phase14_*`) even though the contracts now
+protect durable current responsibilities.
+
+**Interpretation:** the tests are not transient. Deleting them would remove
+current validation authority. Their phase-prefixed filenames and collected test
+names are transitional naming debt under the repository convention: current
+things are named for current responsibility, while Git owns chronology.
+
+**Decision:** retain the contracts and rename them by durable responsibility:
+Regulation Control, physical Control mechanisms, Live Interaction Observation,
+Non-Job Actuation mechanism, Runtime composition, Relocation Serialization and
+production vocabulary ownership. Update blocking CI and `/tests` navigation
+atomically. No executable source changes and no new TEST build identity.
+
+## 2026-09-09 — Phase 14.6C: `.37` behavioural validation passes; structural debt isolated
+
+**Observe:** PR #95 Offline Validation run #255 on exact `.37` head
+`96e0c7ae9c74df29a05761060bc55793b491d390` passed both blocking Lua
+behavioural contracts. The main replacement-core harness, focused
+obstruction-relocation harness and enforcement gate all succeeded. Structural
+contracts reported **185 passed / 10 failed**.
+
+All ten structural failures were stale source-contract expectations rather than
+production defects: one removed Productive Coverage config switch was still
+expected to exist disabled; one current Action-Space helper was still expected
+under its `d0146` implementation name; two tests expected the deliberately
+retired `COOPERATIVE_PASSAGE_MOVE_SPEED_KMH` identifier rather than the current
+`COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH`; and six phase-specific build checks
+still expected the `.33` main-file header while already expecting `.37` in
+config/modDesc.
+
+**Interpretation:** `.37` corrected the `.36` executable regressions. The
+remaining red CI state is validation-contract drift. Repository structural
+contracts protect current accepted behaviour and ownership, not obsolete
+implementation vocabulary.
+
+**Decision:** reconcile only tests and current validation documentation. Do not
+change runtime source and do not allocate `.38`; executable identity remains
+`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`. Re-run blocking CI
+after the test-only commit.
+
+## 2026-09-09 — Phase 14.6C: semantic rename validation closure
+
+**Observe:** PR #95 supplied the first repository-wide validation of `.36`.
+Implementation-local semantic, producer-consumer, syntax and diff guards had
+passed, but GitHub Actions did not: the main Lua replacement-core harness
+reported **333 passed / 7 failed** and Structural contracts reported
+**159 passed / 28 failed**. The seven behavioural failures form one coherent
+causal group. `d0146-cooperative-passage:` had been renamed to
+`cooperative-passage:`, while two consumers still sliced the responsibility
+identity at the old 26-character width. Action-Space purpose settlement,
+D-0200 Job-Episode dependency collapse and D-0217 survivor Bounded-Authority
+rebind therefore stopped recognising the same current responsibility.
+
+Structural validation exposed three additional closure gaps: the new 14.6C
+semantic contract was absent from the blocking workflow inventory; the retired
+`COOPERATIVE_PASSAGE_MOVE_SPEED_KMH` donor identifier had been accidentally
+reused for the live 8 km/h Passage calibration; and removing the whole-pair
+restore entry point had left an unreachable `RESTORING` lifecycle tail beside
+the accepted participant-scoped D-0217 lifecycle.
+
+**Discover:** **Prefix Identity Rename Requires Prefix-Length Revalidation.**
+A semantic identity rename is incomplete until every recogniser derives its
+match boundary from the new identity rather than inheriting numeric structure
+from its predecessor. **Entry-Point Retirement Implies Lifecycle-Tail
+Retirement.** Once no current transition can enter a lifecycle state, retaining
+that state machinery misrepresents historical topology as current architecture.
+The run also re-demonstrates **Validation Inventory Is Executable Topology**:
+a contract that is not invoked by the blocking workflow is not repository
+validation authority.
+
+**Decision:** `.36` remains unmerged and unaccepted. `0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE` remains
+inside the same Phase 14.6C tranche. It repairs prefix recognition, retires the
+unreachable whole-pair restore tail, names the unchanged 8 km/h calibration
+`COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH`, closes the remaining current
+lowercase D-0146 execution/addressability residues found by exact-head review,
+and adds the Phase-14.6C semantic contract to blocking Structural CI. No numeric
+policy is retuned and no intended physical behaviour is changed. Uppercase
+forensic event names and explicit D-number decision provenance remain.
+
+## 2026-09-09 — Phase 14.6C: semantic rename requires producer-consumer closure
+
+**Observe:** exact-head review of `.35` found that semantic cleanup had not
+closed every live contract surface. Current private execution helpers, returned
+reason/status values, Action-Space composition identity, Guarded-Recovery
+representation identity, directional Passage representation authority and
+prospective enumeration metadata still carried development-era vocabulary.
+The review also found a behavioural defect introduced by the partial rename:
+`RegulationBoundedAuthority` emitted `FOLLOWER_BOUNDARY` /
+`ACTION_SPACE_REGULATION` owner tags while `RegulationControl` still required
+Bounded Authority only for the old D-numbered owner tags.
+
+**Discover:** **Returned / Stored Runtime Vocabulary Is Production Vocabulary.**
+A value becomes production vocabulary when current runtime state or another
+runtime boundary consumes it, even if it began life as a diagnostic or test
+label. **Semantic Rename Requires Producer–Consumer Closure.** Renaming one
+side of a live contract without its consumer can alter behaviour even when the
+change appears lexical.
+
+**Decision:** `.35` remains unmerged and unaccepted. `.36` stays inside the
+same Phase 14.6C tranche and closes the reviewed current semantic surfaces
+atomically, including the Regulation owner-tag producer/consumer pair. Stable
+forensic log event names and explicit historical decision provenance remain
+unchanged. Terminal Egress / D-0147 and Issue #87 configuration decomposition
+remain outside this correction.
+
+## 2026-09-09 — Phase 14.6C: production vocabulary completeness is semantic
+
+**Observe:** the pushed `.34` pre-PR review found that its shortlist stale-token
+guard passed while current production contracts still carried development-origin
+identity: `{d0146=true}`, D-numbered Action-Space obligation kinds and support
+modes, `D0146_*_STEP2_TEST` Passage support identity, `d0146-` guide/run
+addressing and current physical-effect kinds.
+
+**Discover:** **Production Vocabulary Completeness Is Semantic, Not a Token-List
+Check.** A lexical shortlist can prove selected names are gone without proving
+that current contracts describe current responsibilities. Provenance and
+telemetry may legitimately retain D-numbers; current execution addressing,
+contract kinds, support-boundary modes, evidence/effect kinds and declarative
+policy metadata may not use development provenance as semantic identity.
+
+**Decision:** `.34` is not opened as a PR and is not accepted. Because it was
+already pushed, the correction receives fresh TEST identity `.35` while remaining
+the same Phase 14.6C tranche. `.35` graduates only current semantic/execution
+surfaces and preserves historical headers, `origin.decision`, provenance
+authorities and stable diagnostic event prefixes.
+
+## 2026-09-09 — Issue #93: Passage-contact hypothesis disproven
+
+**Observe:** `.31`/`.32`/`.33` telemetry repeatedly reported GIANTS `isBlocked`
+and positive generic current bounding-disc interaction during Condor/Patriot
+Cooperative Passage. The initial Issue #93 interpretation promoted those signals
+to physical-contact evidence and proposed a continuing-Passage fail-safe.
+
+**Challenge with Reality:** `.32` and `.33` video shows a visible physical gap
+through the same intervals. No collision deflection, snag, bounce or model
+contact is observable. `.32` later fails for an Alignment Runout field target
+after the crossing has completed; `.33` completes and dissolves normally. `.31`
+has no available video, so its log alone cannot establish contact.
+
+**Discover:** **GIANTS `isBlocked` != Passage contact** and **Generic
+Bounding-Disc Overlap != Passage Physical Contact**. The generic positive-
+conflict discs answer a broad obstruction question; they do not acquire
+Passage-clearance authority. **Purpose-Specific Representation Authority Takes
+Precedence**: Cooperative Passage already constructs its geometry from cached
+complete-assembly directional Transit representation where required.
+
+**Policy clarification:** the approximately 1 m nominal lateral clearance is an
+empirical policy margin — a good current calibration — rather than a precise
+geometry-derived collision proof. If future Reality shows actual contact despite
+Transit geometry plus that margin, adjust the margin first before adding a more
+sophisticated geometry/dynamics model.
+
+**Decision:** no Passage fail-safe or runtime safety mechanism is justified from
+`isBlocked`, generic disc overlap or fresh-planner rejection alone. Remove the
+misleading `CURRENT_PHYSICAL_INTERACTION` declarative invalidation from the
+Cooperative Passage Candidate; retain `PASSAGE_SUPPORT_LOSS`. Issue #93 is
+closed `not planned` as a disproven defect hypothesis.
+
 ## 2026-09-08 — Issue #37: Forward Intersection evidence continuity
 
 **Observe:** `.32` Category-2 Condor/Patriot Reality showed a useful early

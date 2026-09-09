@@ -217,23 +217,26 @@ that architecture remains deferred.
 
 ## Transitional non-conformance
 
-Adopting this convention does not trigger an immediate repository-wide rename.
-Known implementation lag includes production mechanics under `Prototype22...`,
-semantic Observation support under `LiveInteractionDiagnostics`, generic
-Commitment vocabulary where current architecture distinguishes Regulation and
-Resolution Commitment, D-number/prototype/test vocabulary in runtime surfaces,
-and broad public verbs such as `attach()` where the responsibility is larger
-than the verb suggests.
+Adopting this convention does not require cosmetic rewriting of genuine
+historical/research provenance. Current production, however, should not retain a
+development-origin name once the responsibility is established.
 
-Track divergence through architecture and implementation review and the
-[Implementation Map](IMPLEMENTATION_MAP.md), not by turning this document into a
-rename backlog.
+Phase 14's strangler graduates principal production Observation, Control,
+execution-mechanism and traffic-purpose vocabulary as those responsibilities
+become current. Phase 14.6C specifically reconciles the remaining primary
+Cooperative Passage, Regulation, Guarded Recovery and runtime-composition
+identifiers. Historical decision numbers may remain where they are genuinely
+provenance rather than executable identity.
 
-During later strangler or recomposition work:
+Track any remaining divergence through architecture and implementation review
+and the [Implementation Map](IMPLEMENTATION_MAP.md), not by turning this document
+into a rename backlog.
+
+During later work:
 
 1. New or extracted code follows this convention immediately.
 2. Moved code is renamed when its responsibility is genuinely clarified.
-3. Untouched legacy code may temporarily retain old naming.
+3. Historical/research material may retain provenance where it remains useful evidence.
 4. Compatibility aliases are used only where genuinely required.
 5. Behavioural changes are not justified merely to achieve naming uniformity.
 

@@ -368,7 +368,7 @@ local function nativeClosureContribution(motion,subjectSpace,otherSpace)
 end
 
 local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,aPhysical,bPhysical,aSpace,bSpace,aParticipation,bParticipation,context)
-    local result={status="NOT_REQUIRED",supported=false,reason="CURRENT_EXCURSION_ACTION_SPACE_CONSERVATION_NOT_REQUIRED",authority="D0146_SITUATION_KNOWLEDGE",decisionAuthority=false,controlAuthority=false}
+    local result={status="NOT_REQUIRED",supported=false,reason="CURRENT_EXCURSION_ACTION_SPACE_CONSERVATION_NOT_REQUIRED",authority="OPPOSED_CORRIDOR_SITUATION_KNOWLEDGE",decisionAuthority=false,controlAuthority=false}
     local aExcursion=aTrajectory and aTrajectory.currentExcursion==true
     local bExcursion=bTrajectory and bTrajectory.currentExcursion==true
     if aExcursion==bExcursion then
@@ -515,7 +515,7 @@ local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,a
     if aPending~=bPending then
         result.reason="PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION_REQUIRES_RESOLUTION_SPACE_CONSERVATION"
     end
-    result.governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
+    result.governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     return result
 end
 
@@ -525,7 +525,7 @@ end
 -- Regulation role; Candidate still decides whether a supported Step-2 Passage
 -- expression is already available and therefore superior.
 local function establishedConflictConservation(record,aTrajectory,bTrajectory,aMotion,bMotion,aSpace,bSpace,aParticipation,bParticipation,context)
-    local result={status="NOT_REQUIRED",supported=false,reason="ESTABLISHED_CONFLICT_RESOLUTION_SPACE_CONSERVATION_NOT_REQUIRED",authority="D0146_SITUATION_KNOWLEDGE",decisionAuthority=false,controlAuthority=false,admissionKind="ESTABLISHED_CONFLICT"}
+    local result={status="NOT_REQUIRED",supported=false,reason="ESTABLISHED_CONFLICT_RESOLUTION_SPACE_CONSERVATION_NOT_REQUIRED",authority="OPPOSED_CORRIDOR_SITUATION_KNOWLEDGE",decisionAuthority=false,controlAuthority=false,admissionKind="ESTABLISHED_CONFLICT"}
     if record==nil or record.classification~="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" then return result end
     local closing=record.currentClosing or {}
     local separation=tonumber(closing.separationM)
@@ -617,7 +617,7 @@ local function establishedConflictConservation(record,aTrajectory,bTrajectory,aM
 
     result.status="REGULATE_SUPPORTED"; result.supported=true
     result.reason="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_CONSUMES_LOCAL_PASSAGE_ACTION_SPACE"
-    result.governingPurpose="PRESERVE_D0146_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
+    result.governingPurpose="PRESERVE_LOCAL_PASSAGE_ACTION_SPACE_UNTIL_SUPPORTED_PASSAGE_OR_POSITIVE_DISSOLUTION"
     return result
 end
 
@@ -718,7 +718,7 @@ end
 -- distinguishes actual relationship dissolution from a transient change in the
 -- Current Motion witness that first exposed the Potential conflict.
 local function resolutionSpaceRelationship(record)
-    local result={status="UNRESOLVED",positiveDissolution=false,reason="RELATIONSHIP_DISSOLUTION_NOT_POSITIVELY_ESTABLISHED",authority="D0146_SITUATION_KNOWLEDGE",decisionAuthority=false,controlAuthority=false}
+    local result={status="UNRESOLVED",positiveDissolution=false,reason="RELATIONSHIP_DISSOLUTION_NOT_POSITIVELY_ESTABLISHED",authority="OPPOSED_CORRIDOR_SITUATION_KNOWLEDGE",decisionAuthority=false,controlAuthority=false}
     if record.classification=="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" or record.classification=="POTENTIAL_OPPOSED_CORRIDOR_CONFLICT" then
         result.status="RELATIONSHIP_REMAINS_ACTIVE"
         result.reason="OPPOSED_CORRIDOR_RELATIONSHIP_REMAINS_ESTABLISHED_OR_POTENTIAL"
@@ -735,33 +735,33 @@ local function resolutionSpaceRelationship(record)
     -- trajectories are currently non-opposed.
     if record.subjectBlocked==true or record.otherBlocked==true then
         result.status="POSITIVE_DISSOLUTION_VETOED"
-        result.reason="D0146_BLOCKED_PARTICIPANT_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION"
+        result.reason="BLOCKED_PARTICIPANT_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION"
         return result
     end
     if record.relevantFutureSpacePositive==true then
         result.status="POSITIVE_DISSOLUTION_VETOED"
-        result.reason="D0146_POSITIVE_FUTURE_SPACE_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION"
+        result.reason="POSITIVE_FUTURE_SPACE_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION"
         return result
     end
 
     if record.reason=="PARTICIPANTS_NOT_MUTUALLY_AHEAD_ON_ESTABLISHED_TRAJECTORIES" then
         result.status="POSITIVELY_DISSOLVED"; result.positiveDissolution=true
-        result.reason="D0146_POSITIVE_POST_PASSAGE_RELATIONSHIP_DISSOLUTION"
+        result.reason="POSITIVE_POST_PASSAGE_RELATIONSHIP_DISSOLUTION"
         return result
     end
     if record.reason=="ESTABLISHED_TRAJECTORIES_NOT_SUBSTANTIALLY_OPPOSED" then
         if record.subjectCurrentExcursion==true or record.otherCurrentExcursion==true then
             result.status="TRANSIENT_RELATIONSHIP_CHANGE"
-            result.reason="D0146_TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"
+            result.reason="TRANSIENT_EXCURSION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"
             return result
         end
         if record.subjectSettledContinuation~=true or record.otherSettledContinuation~=true then
             result.status="TRANSITIONAL_RELATIONSHIP_CHANGE"
-            result.reason="D0146_TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"
+            result.reason="TRANSITIONAL_CONTINUATION_DOES_NOT_POSITIVELY_DISSOLVE_RESOLUTION_SPACE_OBLIGATION"
             return result
         end
         result.status="POSITIVELY_DISSOLVED"; result.positiveDissolution=true
-        result.reason="D0146_POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION"
+        result.reason="POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION"
         return result
     end
     return result
@@ -802,7 +802,7 @@ function Assessment.classifyPairs(context)
                     local aTrajectory=trajectoryByAssembly[aId]
                     local bTrajectory=trajectoryByAssembly[bId]
                     local record={
-                    identity="d0146-opposed:"..tostring(situation.operationId)..":"..tostring(aId)..":"..tostring(bId),
+                    identity="opposed-corridor:"..tostring(situation.operationId)..":"..tostring(aId)..":"..tostring(bId),
                     operationId=situation.operationId,
                     subjectAssemblyId=aId,otherAssemblyId=bId,
                     subjectAssemblyReferenceKey=aTrajectory and aTrajectory.assemblyReferenceKey or nil,

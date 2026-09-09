@@ -4,7 +4,7 @@
 -- an Established Opposed Corridor Conflict exists, cached current/observed
 -- assembly geometry and configuration identity support Candidate-owned Local
 -- Passage search.  This assessment exposes mechanical fitness for the
--- D0146_PASSAGE_EXCURSION_V6 control profile; configuration selection and the
+-- COOPERATIVE_PASSAGE_EXCURSION control profile; configuration selection and the
 -- Passage Excursion geometry remain Candidate responsibilities.
 
 OuttaMyWay.PassageCapabilityAssessment={}
@@ -32,15 +32,15 @@ local function record(conflict,motion,physical,assemblyId,otherAssemblyId)
     local p=physical[assemblyId]
     local ok,reason=footprintAvailable(p)
     return {
-        representationId="d0146-step2-mechanical:"..tostring(conflict.identity)..":"..tostring(assemblyId),
+        representationId="cooperative-passage-mechanical:"..tostring(conflict.identity)..":"..tostring(assemblyId),
         assemblyId=assemblyId,
-        question="D0146_STEP2_PAIR_SPECIFIC_CLEARANCE_GUIDED_PASSAGE_MECHANICAL_PREFLIGHT",
+        question="COOPERATIVE_PASSAGE_MECHANICAL_PREFLIGHT",
         assessmentHorizon="CURRENT_ESTABLISHED_OPPOSED_CONFLICT_ONLY",
         state=ok and "FIT_FOR_LIMITED_HORIZON" or "REFRESH_REQUIRED",
-        claimPermissions=ok and {"D0146_STEP2_PAIR_SPECIFIC_CLEARANCE_GUIDED_PASSAGE_MECHANICAL_PREFLIGHT"} or {},
+        claimPermissions=ok and {"COOPERATIVE_PASSAGE_MECHANICAL_PREFLIGHT"} or {},
         coverage={complete=false,conservative=false,underApproximationRisk=true},
         uncertainty=ok and {
-            "CURRENT_CONFIGURATION_RETAINED_BY_THIS_PAIR_SPECIFIC_CLEARANCE_TEST_TRANCHE",
+            "CURRENT_CONFIGURATION_RETAINED_BY_PAIR_SPECIFIC_CLEARANCE_ASSESSMENT",
             "CONFIGURATION_REDUCTION_REMAINS_OPTIONAL_ARCHITECTURE_BUT_IS_NOT_SELECTED_HERE",
             "GENERIC_NEGATIVE_CLEARANCE_AUTHORITY_NOT_CLAIMED",
             "BOUNDARY_ENCROACHMENT_REQUIRES_SEPARATE_POSITIVE_SUPPORT"
@@ -56,7 +56,7 @@ local function record(conflict,motion,physical,assemblyId,otherAssemblyId)
             physicalPrimitiveCount=p and p.summary and p.summary.physicalPrimitiveCount or 0,
             physicalCoverageComplete=p and p.coverageComplete==true or false,
             negativeClearanceAuthority=p and p.negativeClearanceAuthority==true or false,
-            controlProfile="D0146_PASSAGE_EXCURSION_V6",
+            controlProfile="COOPERATIVE_PASSAGE_EXCURSION",
             vehicleNameAdmissionGate=false,
             configurationReductionAuthority="NOT_SELECTED_CURRENT_CONFIGURATION_RETAINED"
         },

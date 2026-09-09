@@ -229,15 +229,15 @@ local function bootstrapTransitFoldCapability(members,nowSeconds)
     end
     capability.actuatorCount=#capability.actuators
     capability.isFoldable=capability.actuatorCount>0
-    local fallback=tonumber(OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS) or 30000
+    local fallback=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS) or 30000
     if capability.expectedFoldDurationMs>0 then
-        local factor=tonumber(OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR) or 1.5
-        local margin=tonumber(OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MARGIN_MS) or 2000
+        local factor=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR) or 1.5
+        local margin=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MARGIN_MS) or 2000
         capability.settlementTimeoutMs=capability.expectedFoldDurationMs*factor+margin
     else
         capability.settlementTimeoutMs=fallback
     end
-    capability.settlementTimeoutMs=math.min(capability.settlementTimeoutMs,tonumber(OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MAX_MS) or 35000)
+    capability.settlementTimeoutMs=math.min(capability.settlementTimeoutMs,tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS) or 35000)
     return capability
 end
 
@@ -588,7 +588,7 @@ local function relativeDirectionalAssemblyEnvelope(record,worldPrimitives,frame)
         memberCount=#(record.members or {}),directionalRectangleMemberCount=rectangleMembers,representedDiscFallbackMemberCount=fallbackMembers,
         source=(#(record.members or {})==1 and fallbackMembers==0) and ((record.members[1].directionalSizeMetadata or {}).source or "GIANTS_BASE_SIZE") or (fallbackMembers==0 and "GIANTS_BASE_SIZE_MEMBER_RECTANGLE_UNION" or "GIANTS_BASE_SIZE_MEMBER_RECTANGLES_WITH_DISC_FALLBACK"),
         assemblyScope=#(record.members or {})==1 and "SINGLE_MEMBER_BASE_SIZE" or "MULTI_MEMBER_DIRECTIONAL_UNION",
-        authority=#(record.members or {})==1 and "GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST" or "GIANTS_DIRECTIONAL_MEMBER_UNION_PASSAGE_TEST"
+        authority=#(record.members or {})==1 and "GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY" or "GIANTS_DIRECTIONAL_MEMBER_UNION_PASSAGE_GEOMETRY"
     }
 end
 
@@ -762,7 +762,7 @@ function Cache:_buildProfile(record,key,config,nowSeconds)
         profile.directionalPassageEnvelope={
             widthM=directional.widthM,lengthM=directional.lengthM,halfWidthM=directional.halfWidthM,halfLengthM=directional.halfLengthM,
             widthOffsetM=directional.widthOffsetM,lengthOffsetM=directional.lengthOffsetM,source=directional.source,assemblyScope=directional.assemblyScope,
-            authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_TEST",configurationApplicability=applicability
+            authority="GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY",configurationApplicability=applicability
         }
     end
     return profile
