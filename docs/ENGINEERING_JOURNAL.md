@@ -1,3 +1,20 @@
+## 2026-09-09 — Durable structural-test naming
+
+**Observe:** Phase 14 left seven blocking structural-contract modules named for
+their engineering origin (`test_phase14_*`) even though the contracts now
+protect durable current responsibilities.
+
+**Interpretation:** the tests are not transient. Deleting them would remove
+current validation authority. Their phase-prefixed filenames and collected test
+names are transitional naming debt under the repository convention: current
+things are named for current responsibility, while Git owns chronology.
+
+**Decision:** retain the contracts and rename them by durable responsibility:
+Regulation Control, physical Control mechanisms, Live Interaction Observation,
+Non-Job Actuation mechanism, Runtime composition, Relocation Serialization and
+production vocabulary ownership. Update blocking CI and `/tests` navigation
+atomically. No executable source changes and no new TEST build identity.
+
 ## 2026-09-09 — Phase 14.6C: `.37` behavioural validation passes; structural debt isolated
 
 **Observe:** PR #95 Offline Validation run #255 on exact `.37` head

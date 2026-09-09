@@ -3,7 +3,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_phase14_1_regulation_control_owns_production_speed_execution():
+def test_regulation_control_owns_production_speed_execution():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"RegulationControl.lua").read_text(encoding="utf-8")
     dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
@@ -30,7 +30,7 @@ def test_phase14_1_regulation_control_owns_production_speed_execution():
     assert "function Runtime:setRegulationControl" in runtime
     assert "setLiveControlCapability" not in runtime
 
-def test_phase14_1_regulation_control_reuses_mechanics_without_owning_policy():
+def test_regulation_control_reuses_mechanics_without_owning_policy():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"RegulationControl.lua").read_text(encoding="utf-8")
     drive=(ROOT/"scripts"/"control"/"mechanisms"/"NativeDriveMechanism.lua").read_text(encoding="utf-8")
@@ -55,7 +55,7 @@ def test_phase14_1_regulation_control_reuses_mechanics_without_owning_policy():
         assert forbidden not in control
 
 
-def test_phase14_1_production_regulation_vocabulary_and_observation_are_wired():
+def test_production_regulation_vocabulary_and_observation_are_wired():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     compatibility=(ROOT/"scripts"/"control"/"GuardedRecoveryCompatibility.lua").read_text(encoding="utf-8")
@@ -81,7 +81,7 @@ def test_phase14_1_production_regulation_vocabulary_and_observation_are_wired():
     assert "OuttaMyWay.nativeManoeuvreObservationSource:setRegulationControlObservationSource(OuttaMyWay.regulationControl)" in main
 
 
-def test_phase14_1_p22_is_retired_after_capability_graduation():
+def test_p22_is_retired_after_capability_graduation():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     prototype22=ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua"
@@ -93,7 +93,7 @@ def test_phase14_1_p22_is_retired_after_capability_graduation():
     assert "addModEventListener(OuttaMyWay.regulationControl)" in main
     assert "addModEventListener(OuttaMyWay.cooperativePassageControl)" in main
 
-def test_phase14_1_candidate_support_uses_production_regulation_lease_vocabulary():
+def test_candidate_support_uses_production_regulation_lease_vocabulary():
     candidate=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     assert "P22_REGULATION_LEASE" not in candidate
     assert 'leaseKind="REGULATION_LEASE"' in candidate

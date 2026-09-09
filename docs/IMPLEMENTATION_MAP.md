@@ -110,28 +110,26 @@ Git and merged PRs preserve how those placements were reached. This map records 
 
 ### Phase 14.6C — production vocabulary / ownership reconciliation
 
-The primary production-vocabulary graduation is present on the current branch.
-PR #95 validation of `.36` exposed four remaining closure defects rather than a
-new architectural responsibility:
+The runtime vocabulary/ownership reconciliation is implementation-complete on
+**`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
 
-- Cooperative Passage semantic identities were renamed, but two current
-  recognition sites retained the old hard-coded prefix width, changing
-  Action-Space terminal settlement, D-0200 dependency collapse and D-0217
-  survivor-authority rebind behaviour.
-- the whole-pair Passage restore entry point had been retired while its
-  unreachable `RESTORING` lifecycle tail remained, making historical topology
-  appear current beside the participant-scoped D-0217 lifecycle;
-- `COOPERATIVE_PASSAGE_MOVE_SPEED_KMH` was accidentally reused even though that
-  historical donor identifier is explicitly retired; the unchanged 8 km/h
-  implementation calibration is now owned as Cooperative Passage actuation; and
-- the new Phase-14.6C structural contract existed locally but was absent from
-  the blocking Structural workflow inventory.
+PR #95 validation discovered and corrected the two material semantic-rename
+regressions: copied Cooperative Passage prefix widths and the orphan whole-pair
+`RESTORING` lifecycle tail. The retired Passage speed identifier remains
+retired; the unchanged 8 km/h implementation calibration is owned as
+`COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH`. Remaining lowercase D-0146 current
+execution/addressability names found by exact-head review were also reconciled.
 
-The current `0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE` closes those gaps and the remaining lowercase
-D-0146 execution/addressability residues found by the exact-head audit. It does
-not tune numeric values, redesign Passage mechanics, change Regulation policy,
-or create a new Responsibility. Uppercase stable forensic event names and
-explicit D-number decision provenance remain legitimate.
+Offline Validation run #256 is fully green for both blocking Structural and Lua
+behavioural contracts. The owner-run `.37` in-game Cooperative Passage smoke
+also passed through participant-specific restore/handoff and GIANTS
+continuation.
+
+There is no remaining known Phase-14.6C architecture-to-code placement or
+runtime-vocabulary drift. The only pre-merge cleanup is durable naming of seven
+blocking structural-test modules that still carry `phase14_` development-origin
+filenames. Those tests are retained as current validation authority and renamed
+by responsibility; this does not create `.38` or change executable bytes.
 
 ### Resolved before Phase 14.6C
 
@@ -155,31 +153,31 @@ Semantic targeting may be unambiguous while generic Commitment application still
 
 ## Immediate implementation boundary
 
-Phase 14.6C is the current bounded Engineering Increment.
+Phase 14.6C executable work is complete on
+**`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
 
-`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE` must:
+Validated state:
 
-- repair Cooperative Passage identity recognition using prefix-derived matching
-  rather than copied numeric prefix widths;
-- preserve current Action-Space terminal settlement, D-0200 Job-Episode
-  dependency collapse and D-0217 survivor-authority rebind semantics;
-- retire the unreachable whole-pair `RESTORING` tail while preserving the
-  participant-scoped restoration / last-leg dissolution lifecycle;
-- keep the historical `COOPERATIVE_PASSAGE_MOVE_SPEED_KMH` identifier retired
-  and name the unchanged live calibration by current Passage actuation
-  responsibility;
-- close the remaining current lowercase D-0146 execution/addressability names;
-- include the Phase-14.6C semantic contract in blocking Structural CI;
-- reconcile current structural contracts to current production vocabulary; and
-- preserve every numeric policy/calibration value and intended physical
-  behaviour.
+1. Cooperative Passage identity recognition derives prefix length from current
+   vocabulary rather than copied numeric widths;
+2. current Action-Space terminal settlement, D-0200 Job-Episode dependency
+   collapse and D-0217 survivor-authority rebind semantics pass offline
+   behavioural contracts;
+3. participant-scoped restoration / last-leg dissolution is the only current
+   Passage restore lifecycle;
+4. the historical `COOPERATIVE_PASSAGE_MOVE_SPEED_KMH` identifier remains
+   retired and the unchanged live calibration is owned as
+   `COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH`;
+5. current production vocabulary/ownership structural contracts are blocking in
+   CI;
+6. Offline Validation run #256 is fully green; and
+7. owner-run `.37` in-game Cooperative Passage smoke is PASS.
 
-Validation boundary:
+Immediate repository work is test/governance-only: rename seven durable
+`test_phase14_*` structural contracts by current responsibility, update their
+blocking workflow paths and current-state documentation, and require CI to
+remain green. No executable source changes and no `.38`.
 
-1. implementation-local Lua syntax, XML parse, static token and diff checks only;
-2. blocking Structural + Lua behavioural CI on the exact `.37` head;
-3. owner review of the diff and CI;
-4. causally appropriate in-game smoke only to disprove accidental behavioural
-   change from incomplete vocabulary reconciliation; and
-5. after acceptance, proceed directly to the Phase 14 closure review unless new
-   evidence genuinely requires another bounded tranche.
+After that exact PR head is green, merge PR #95 and proceed to the Phase 14
+closure review unless new Reality demonstrates a genuine remaining strangler
+responsibility.

@@ -3,7 +3,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_phase14_6c_primary_live_vocabulary_uses_current_responsibilities():
+def test_primary_live_vocabulary_uses_current_responsibilities():
     config = (ROOT / "scripts" / "config.lua").read_text(encoding="utf-8")
     support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     capability = (ROOT / "scripts" / "assessment" / "PassageCapabilityAssessment.lua").read_text(encoding="utf-8")
@@ -42,7 +42,7 @@ def test_phase14_6c_primary_live_vocabulary_uses_current_responsibilities():
         assert stale not in config + support + capability + authority + recovery + runtime
 
 
-def test_phase14_6c_passage_contract_uses_purpose_specific_representation_authority():
+def test_passage_contract_uses_purpose_specific_representation_authority():
     support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
 
     assert 'invalidationConditions={{kind="JOB_EPISODE_CHANGE"},{kind="ESTABLISHED_CONFLICT_CHANGE"},{kind="PASSAGE_SUPPORT_LOSS"}}' in support
@@ -52,7 +52,7 @@ def test_phase14_6c_passage_contract_uses_purpose_specific_representation_author
     assert "GENERIC_CURRENT_PHYSICAL_CONFLICT_IS_NOT_PASSAGE_CLEARANCE_AUTHORITY" in support
 
 
-def test_phase14_6c_retired_unsourced_config_residue_is_removed():
+def test_retired_unsourced_config_residue_is_removed():
     config = (ROOT / "scripts" / "config.lua").read_text(encoding="utf-8")
     main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
 
@@ -80,7 +80,7 @@ def test_phase14_6c_retired_unsourced_config_residue_is_removed():
         assert (ROOT / rel).is_file()
 
 
-def test_phase14_6c_test_build_identity_is_atomic():
+def test_test_build_identity_is_atomic():
     config = (ROOT / "scripts" / "config.lua").read_text(encoding="utf-8")
     main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
     moddesc = (ROOT / "modDesc.xml").read_text(encoding="utf-8")
@@ -90,7 +90,7 @@ def test_phase14_6c_test_build_identity_is_atomic():
     assert "v0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE" in main
     assert '<version value="0.3.0.37">0.3.0.37</version>' in moddesc
 
-def test_phase14_6c_semantic_contracts_do_not_use_development_identity():
+def test_semantic_contracts_do_not_use_development_identity():
     support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     planner = (ROOT / "scripts" / "candidates" / "LocalPassagePlanner.lua").read_text(encoding="utf-8")
     lifecycle = (ROOT / "scripts" / "commitment" / "LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
@@ -149,7 +149,7 @@ def test_phase14_6c_semantic_contracts_do_not_use_development_identity():
         assert stale not in current_contract
 
 
-def test_phase14_6c_preserves_provenance_and_telemetry_separately_from_current_identity():
+def test_preserves_provenance_and_telemetry_separately_from_current_identity():
     support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     lifecycle = (ROOT / "scripts" / "commitment" / "LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
 
@@ -157,7 +157,7 @@ def test_phase14_6c_preserves_provenance_and_telemetry_separately_from_current_i
     assert 'decision="D-0146"' in support
     assert 'decision="D-0141"' in lifecycle
 
-def test_phase14_6c_semantic_runtime_categories_are_closed():
+def test_semantic_runtime_categories_are_closed():
     authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     regulation = (ROOT / "scripts" / "control" / "RegulationControl.lua").read_text(encoding="utf-8")
     lifecycle = (ROOT / "scripts" / "commitment" / "LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
@@ -227,7 +227,7 @@ def test_phase14_6c_semantic_runtime_categories_are_closed():
     assert 'decision="D-0141"' in lifecycle
     assert 'logInfo("D0146_' in passage
 
-def test_phase14_6c_semantic_recognition_and_validation_topology_are_closed():
+def test_semantic_recognition_and_validation_topology_are_closed():
     config = (ROOT / "scripts" / "config.lua").read_text(encoding="utf-8")
     lifecycle = (ROOT / "scripts" / "commitment" / "LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
     transition = (ROOT / "scripts" / "responsibility" / "ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
