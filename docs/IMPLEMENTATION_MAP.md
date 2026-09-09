@@ -12,11 +12,11 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 
 ## Repository state
 
-- Accepted Repository State baseline: `main` after PR #94 merge, commit `48745375d259140117add5e0abf6047ec3667b17`.
+- Accepted Repository State baseline: `main` after PR #95 merge, commit `23c8ab1217bf090a4b5344e91cdb1cf6c3834eb1`.
 - Canonical authority remains **v0.3.0.0**.
-- Current branch executable identity is **`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**; acceptance and canonical authority are unchanged until review/merge/validation.
-- Strangler Phase 14 remains active. Phase 14.6C is the current final planned vocabulary/ownership reconciliation tranche.
-- Phase 15 whole-system validation and architecture-to-runtime review has not started.
+- Accepted executable identity remains **`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
+- Strangler Phase 14 is **CLOSED**; the post-PR-#95 closure review found no known remaining Phase-14 placement or current-production-vocabulary debt requiring 14.6D.
+- Phase 15 whole-system architecture <-> code audit is the next engineering boundary; no new TEST identity exists merely for beginning that review.
 
 ## Principal current responsibility placement
 
@@ -31,7 +31,7 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 | Physical representation | `scripts/representation/AssemblyRepresentationCache.lua`, `PlanViewFootprint.lua`, `PairSpecificPassageClearance.lua`, `CurrentPhysicalConflictRepresentation.lua` | PRESERVE explicit positive/incomplete authority |
 | Situation Assessment | `scripts/assessment/SituationAssessment.lua` plus focused assessment collaborators | PRESERVE interpreted current relationship knowledge |
 | Causal Obstruction assessment | `scripts/assessment/CausalObstructionAssessment.lua` | PRESERVE current positive causal-obstruction semantics |
-| Current Responsibility reassessment | `scripts/assessment/CurrentResponsibilityAssessment.lua` | `.33` corrects Forward Intersection continuation semantics: UNRESOLVED -> WAITING/PERSIST; only positive dissolution/supersession may terminate |
+| Current Responsibility reassessment | `scripts/assessment/CurrentResponsibilityAssessment.lua` | PRESERVE Forward Intersection continuation semantics: UNRESOLVED -> WAITING/PERSIST; only positive dissolution/supersession may terminate |
 | Prospective spatial constraints | `scripts/assessment/SpatialConstraintAssessment.lua` | PRESERVE; Issue #37 Reality confirms geometry correctly distinguishes POSITIVE / UNRESOLVED / NEGATIVE |
 | Passage capability | `scripts/assessment/PassageCapabilityAssessment.lua` | PRESERVE |
 | Candidate construction / planning | `scripts/candidates/` including `CandidateSpace.lua`, `LiveTrafficCandidateSupport.lua`, `LocalPassagePlanner.lua`, `TerminalEgressCandidateSupport.lua`, `ObstructionRelocationCandidateSupport.lua`, `PassiveLiveCandidateSupport.lua` | PRESERVE feasible option/support/planning ownership |
@@ -49,11 +49,11 @@ Architectural meaning remains owned by the [Runtime Responsibility Architecture]
 | Resolution semantic representation | `scripts/contracts/ResolutionCommitment.lua`, `scripts/responsibility/ResolutionCommitmentAdapter.lua` | PRESERVE |
 | Regulation semantic representation | `scripts/contracts/Regulation.lua` | PRESERVE |
 | Bounded Authority | `scripts/contracts/BoundedAuthorityGrant.lua`, `scripts/authority/BoundedAuthority.lua` | PRESERVE |
-| Regulation physical-authority state | `scripts/authority/RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua` | CURRENT Relocation Serialization vocabulary is graduated; `.31` Reality demonstrated material beneficiary serialization, supporting RETAIN; `.32` reconciles two residual production vocabulary surfaces |
+| Regulation physical-authority state | `scripts/authority/RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua` | PRESERVE current Regulation authority composition and Relocation Serialization; accepted Reality supports beneficiary-serialization retention |
 | Mechanical actuation exclusivity | `scripts/authority/AuthorityRegistry.lua` | PRESERVE; exclusivity is not semantic permission |
 | Effective actuation composition | `scripts/authority/EffectiveActuationComposition.lua` | PRESERVE |
 | Typed Control boundary | `scripts/contracts/ControlRequest.lua`, `ControlOutcome.lua` | PRESERVE |
-| Control routing | `scripts/control/LiveControlDispatcher.lua` | CURRENT branch routes authorised single-assembly Terminal Egress through one `TERMINAL_EGRESS` target; Cooperative Passage remains joint routing |
+| Control routing | `scripts/control/LiveControlDispatcher.lua` | PRESERVE authorised single-assembly Terminal Egress routing through one `TERMINAL_EGRESS` target; Cooperative Passage remains joint routing |
 | Regulation physical Control | `scripts/control/RegulationControl.lua` using `scripts/control/mechanisms/NativeDriveMechanism.lua` | PRESENT production `REGULATE_SPEED` executor |
 | Cooperative Passage physical Control | `scripts/control/CooperativePassageControl.lua` | PRESERVE validated mechanics |
 | Terminal Egress physical movement | `scripts/control/TerminalEgressControl.lua` | ACCEPTED shared provenance-neutral executor for Completed Obstruction and current Causal Obstruction movement; trigger semantics remain upstream |
@@ -108,79 +108,87 @@ Git and merged PRs preserve how those placements were reached. This map records 
 
 ## Current architecture-to-code drift
 
-### Phase 14.6C — production vocabulary / ownership reconciliation
+### Phase 14 closure — strangler complete
 
-The runtime vocabulary/ownership reconciliation is implementation-complete on
-**`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
+The post-PR-#95 closure review found **no remaining known Phase-14
+architecture-to-code placement or current-production-vocabulary drift**.
 
-PR #95 validation discovered and corrected the two material semantic-rename
-regressions: copied Cooperative Passage prefix widths and the orphan whole-pair
-`RESTORING` lifecycle tail. The retired Passage speed identifier remains
-retired; the unchanged 8 km/h implementation calibration is owned as
-`COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH`. Remaining lowercase D-0146 current
-execution/addressability names found by exact-head review were also reconciled.
+The strangler result worth protecting is:
 
-Offline Validation run #256 is fully green for both blocking Structural and Lua
-behavioural contracts. The owner-run `.37` in-game Cooperative Passage smoke
-also passed through participant-specific restore/handoff and GIANTS
-continuation.
+- production responsibilities no longer depend on Prototype, Diagnostic or
+  integration-wrapper placement where those labels would misstate current
+  authority;
+- Cooperative Passage, Regulation, Guarded Recovery and Completed Obstruction
+  current semantic identities use responsibility vocabulary rather than
+  migration/development provenance;
+- Observation, Bounded Authority and Control producer/consumer seams are
+  structurally guarded against the partial semantic-renaming defects exposed
+  during Phase 14.6C;
+- current Cooperative Passage recognition derives from current addressability
+  vocabulary rather than copied historical prefix widths; and
+- blocking Structural and Lua behavioural contracts were green on PR #95 final
+  head before merge.
 
-There is no remaining known Phase-14.6C architecture-to-code placement or
-runtime-vocabulary drift. The seven blocking structural-test modules have been
-renamed by durable responsibility. Offline Validation run #257 preserved the Lua
-behavioural PASS and reached **194 passed / 1 failed** structurally; the sole
-failure is the renamed production-vocabulary contract asserting its own old
-workflow path. That is validation self-reference drift only. The current
-correction is test/docs-only and does not create `.38` or change executable
-bytes.
+The closure distinction is:
 
-### Resolved before Phase 14.6C
+> **Strangler Closure Debt != Architecture Audit Debt**
 
-Issue #37 is accepted on `.33`: Forward Intersection `UNRESOLVED` now preserves
-the existing Regulation as `WAITING_FOR_EVIDENCE`, while supported negative or
-successor evidence owns release. Issue #93 is closed as a disproven
-Passage-contact hypothesis after direct `.32`/`.33` video review.
+A live concept can therefore remain a legitimate Phase-15 audit question
+without being evidence that Phase 14 failed to finish.
+
+`EncounterRegistry`, for example, remains in `scripts/assessment/` and provides
+pair-scoped Situation-Assessment continuity across incomplete observation.
+Current review evidence does not show it owning Responsibility Transition.
+Whether its retained lifecycle is fully consistent with the accepted rule
+against persistent relationship responsibility is a Phase-15 architecture <->
+code question.
+
+Issue #87 separately owns decomposition of the remaining live
+`scripts/config.lua` mixed runtime constants surface. Its existence does not
+manufacture a Phase 14.6D.
 
 ## Current explicit limits / separate work
 
 ### Generic multi-context application cardinality
 
-Semantic targeting may be unambiguous while generic Commitment application still fails closed if more than one retained context exists. This remains an acceptable fail-closed implementation limit until a concrete supported consumer requires broader cardinality, notably Issue #45.
+Semantic targeting may be unambiguous while generic Commitment application
+still fails closed if more than one retained context exists. This remains an
+acceptable fail-closed implementation limit until a concrete supported consumer
+requires broader cardinality, notably Issue #45.
 
 ### Separate Issues
 
 - Issue #45 — Bubble Bullet Time, accepted but unimplemented.
 - Issue #65 — Behaviour Regression Contract != Build Identity Contract.
-- Issue #87 — decompose the remaining **live** `scripts/config.lua` mixed runtime constants surface by ownership and establish a clear player/developer/internal boundary.
-- Issue #90 — roadmap owner through Phase 14 closure, Phase 15 audit and the post-strangler documentation decision.
+- Issue #87 — decompose the remaining **live** `scripts/config.lua` mixed
+  runtime constants surface by ownership and establish a clear
+  player/developer/internal boundary.
+- Issue #90 — roadmap owner through the completed Phase 14 closure, Phase 15
+  audit and the post-strangler documentation decision.
 
 ## Immediate implementation boundary
 
-Phase 14.6C executable work is complete on
-**`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
+Phase 14 is closed on accepted `main` at
+`23c8ab1217bf090a4b5344e91cdb1cf6c3834eb1`.
 
-Validated state:
+The accepted executable identity remains
+**`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**. This
+documentation/governance-only closure record does not create `.38`.
 
-1. Cooperative Passage identity recognition derives prefix length from current
-   vocabulary rather than copied numeric widths;
-2. current Action-Space terminal settlement, D-0200 Job-Episode dependency
-   collapse and D-0217 survivor-authority rebind semantics pass offline
-   behavioural contracts;
-3. participant-scoped restoration / last-leg dissolution is the only current
-   Passage restore lifecycle;
-4. the historical `COOPERATIVE_PASSAGE_MOVE_SPEED_KMH` identifier remains
-   retired and the unchanged live calibration is owned as
-   `COOPERATIVE_PASSAGE_ACTUATION_SPEED_KMH`;
-5. current production vocabulary/ownership structural contracts are blocking in
-   CI;
-6. Offline Validation run #256 is fully green; and
-7. owner-run `.37` in-game Cooperative Passage smoke is PASS.
+The next activity is the **Phase 15 whole-system architecture <-> code audit**.
+It should start from accepted architecture and current source, protect
+abstraction levels, and distinguish:
 
-Immediate repository work is test/governance-only: correct the one stale
-self-referential workflow-path assertion exposed by run #257, then require both
-blocking CI jobs to be green on the exact corrected head. No executable source
-changes and no `.38`.
+1. architecture implemented as intended;
+2. accepted architecture not implemented or only partially implemented;
+3. implementation behaviour/responsibility not owned by accepted architecture;
+4. implementation concepts whose apparent mismatch is only naming, placement,
+   compatibility or evidence provenance; and
+5. architecture contradicted by current Reality and therefore requiring
+   architectural correction rather than implementation defence.
 
-After that exact PR head is green, merge PR #95 and proceed to the Phase 14
-closure review unless new Reality demonstrates a genuine remaining strangler
-responsibility.
+Known surfaces such as `EncounterRegistry` may be used as audit probes, but they
+must not constrain the audit's scope or be pre-judged as defects.
+
+No Phase 14.6D is justified unless fresh evidence demonstrates a genuine
+remaining strangler responsibility.
