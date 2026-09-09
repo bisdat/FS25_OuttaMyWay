@@ -21,10 +21,10 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline: `main` after PR #107 merge, commit
-  `9b9eae3383d73c81ef778ff12009c9bcadf4ddf5`.
+- Accepted Repository State baseline: `main` after PR #108 merge, commit
+  `b7e236955fd63b06d2b054bd25e8faaebbd78107`.
 - Canonical authority remains **v0.3.0.0**.
-- This Engineering Increment carries
+- Accepted executable identity is
   **`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
@@ -45,7 +45,7 @@ Architectural meaning remains owned by the
 | Passage-specific geometry | `AssemblyRepresentationCache.lua`, `PairSpecificPassageClearance.lua`, `LocalPassagePlanner.lua` | PRESERVE directional Transit Passage contract for non-truncated complete assemblies |
 | Situation Assessment | `scripts/assessment/SituationAssessment.lua` and focused assessment collaborators | PRESERVE current interpreted relationship ownership except listed drift |
 | Encounter continuity | `scripts/assessment/EncounterRegistry.lua` plus `SituationAssessment.lua` | **DRIFT #100** — persistent pair-history implementation concept rejected by current architecture |
-| Follower Boundary evidence | `scripts/assessment/FollowerBoundaryDemandAssessment.lua` | **RECONCILIATION #98** — retains admissible magnitude evidence/envelope; no requested Control target |
+| Follower Boundary evidence | `scripts/assessment/FollowerBoundaryDemandAssessment.lua` | PRESERVE admissible magnitude evidence/envelope; no requested Control target (#98 / PR #108) |
 | Forward Intersection / Action-Space evidence | `SpatialConstraintAssessment.lua`, `TrajectoryConflictAssessment.lua` | PRESERVE current positive/unresolved/negative semantics |
 | Causal Obstruction | `CausalObstructionAssessment.lua` | PRESERVE positive current obstruction semantics |
 | Candidate construction / planning | `scripts/candidates/` | PRESERVE feasible option/support/planning ownership |
@@ -58,7 +58,7 @@ Architectural meaning remains owned by the
 | Resolution semantic responsibility | `ResolutionCommitment.lua`, `ResolutionCommitmentAdapter.lua`, purpose-specific transition/lifecycle modules | PRESERVE obligation-backed strong persistence |
 | Passage Leg lifecycle | `LiveTrafficCommitmentLifecycle.lua`, Passage obligations and Control callbacks | PRESERVE Survivor Invariance / participant handback-vacatur / Last-Leg Dissolution |
 | Bounded Authority | `scripts/authority/BoundedAuthority.lua` | PRESERVE semantic permission distinct from `AU-*` exclusivity |
-| Regulation Bounded Authority | `RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua`, `FollowerBoundaryMagnitudePolicy.lua` | **RECONCILIATION #98** — materialises final follower speed permission from accepted admissible evidence |
+| Regulation Bounded Authority | `RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua`, `FollowerBoundaryMagnitudePolicy.lua` | PRESERVE authority-owned final follower speed permission from accepted admissible evidence (#98 / PR #108) |
 | Effective actuation composition | `EffectiveActuationComposition.lua` | PRESERVE |
 | Mechanical exclusivity | `AuthorityRegistry.lua` | PRESERVE; exclusivity is not permission |
 | Control routing | `LiveControlDispatcher.lua` | PRESERVE authorised typed routing |
@@ -129,7 +129,6 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #98 | implementation reconciliation | Situation supplies admissible envelope; authority-owned policy now materialises final follower speed permission |
 | #100 | confirmed concept mismatch | rejected persistent pair-history concept remains as `EncounterRegistry` |
 | #101 | behaviour-preserving retirement/naming debt | orphaned Guarded Recovery, stale Control consumer, stranded Constraint semantics, defensive naming |
 
@@ -157,14 +156,17 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Complete #98 review/CI for
-**`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`**, then obtain the required
-targeted GIANTS Follower Boundary Reality smoke before acceptance.
+Begin **#100 — Encounter reconciliation** with architecture/design before
+implementation. Account for every legitimate service of `EncounterRegistry`
+before changing or removing the implementation concept.
 
-After #98 acceptance, unless new Reality changes the order:
+The correction must preserve unresolved-evidence safety while establishing that
+last-positive evidence is not fresh current Reality and missing positive evidence
+does not manufacture safe separation.
 
-1. #100 — Encounter reconciliation, architecture/design before implementation;
-2. #101 — dependency-proven retirement/naming cleanup.
+After #100, unless new Reality changes the order:
+
+1. #101 — dependency-proven retirement/naming cleanup.
 
 Issue #97 is not current drift: PR #103 validation exposed that accepted `main`
 already refreshes retained Field World relevance through existing-Snapshot

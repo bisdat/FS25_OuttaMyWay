@@ -6,16 +6,16 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline: `main` after PR #107 merge, commit
-  `9b9eae3383d73c81ef778ff12009c9bcadf4ddf5`.
+- Accepted Repository State baseline: `main` after PR #108 merge, commit
+  `b7e236955fd63b06d2b054bd25e8faaebbd78107`.
 - Canonical authority remains **v0.3.0.0**.
-- This Engineering Increment carries
+- Accepted executable identity is
   **`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`**.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
-- The audit itself introduced no executable change; accepted reconciliation has since advanced TEST identity to `.38`.
+- The audit itself introduced no executable change; accepted reconciliation has since advanced TEST identity to `.39`.
 
 The closure distinction remains:
 
@@ -59,17 +59,22 @@ diagnostic directionality and live documentation responsibility.
     behavioural contracts, and 9 focused obstruction-relocation contracts.
   - Issue #99 is closed **completed**.
 
-### Remaining reconciliation Issues
-
-- **#98 — Follower Boundary permissible magnitude**
+- **#98 — Follower Boundary permissible magnitude** is accepted by PR #108.
   - **Admissible Magnitude Evidence != Permitted Magnitude**.
   - **Admissible Envelope != Authorised Target**.
   - Situation retains the accepted timing/transition/reverse/0.90 admissible
     magnitude envelope but no longer supplies a requested Control target.
   - Candidate projects that evidence envelope; authority-owned
     `FollowerBoundaryMagnitudePolicy` materialises the final permitted cap.
-  - D-0141 admission, retirement, quiescence/reactivation and accepted numerics
-    remain unchanged by design.
+  - Protected CI passed 195 structural contracts, 342 replacement-core
+    behavioural contracts, and 9 focused obstruction-relocation contracts.
+  - GIANTS Reality exercised APPLY -> UPDATE -> QUIESCENT -> REACTIVATED on the
+    same `RS-*`, with physical follower speed returning toward native during
+    authority release and returning to the authorised cap after reacquisition.
+  - **Authority Release Must Be Physically Observable**.
+  - Issue #98 is closed **completed**.
+
+### Remaining reconciliation Issues
 
 - **#100 — Encounter reconciliation**
   - **Current Pair Assessment Scope != Persistent Pair History**.
@@ -153,20 +158,25 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Complete independent review and CI for **Issue #98 —
-`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`**, then run the required targeted
-GIANTS Follower Boundary Reality smoke before acceptance.
+Begin **Issue #100 — Encounter reconciliation** with architecture/design before
+implementation.
 
-Protect both ownership discoveries:
+Protect the audit distinction:
 
-> **Admissible Magnitude Evidence != Permitted Magnitude**
+> **Current Pair Assessment Scope != Persistent Pair History**
 
-> **Admissible Envelope != Authorised Target**
+and the evidence distinction:
 
-After #98 acceptance, unless new Reality changes the order:
+> **Evidence Continuity != Evidence Freshness**
 
-1. #100 — Encounter architecture/design reconciliation;
-2. #101 — dependency-proven retirement/naming cleanup.
+The current question is not whether `EncounterRegistry` can be deleted. It is
+which minimum current concept preserves truthful unresolved pair assessment
+without republishing last-positive evidence as fresh Reality and without
+manufacturing safe separation.
+
+After #100, unless new Reality changes the order:
+
+1. #101 — dependency-proven retirement/naming cleanup.
 
 Do not bundle these independent responsibilities into one reconciliation tranche.
 

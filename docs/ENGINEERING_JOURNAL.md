@@ -1,3 +1,40 @@
+## 2026-09-09 — Issue #98 accepted; Encounter reconciliation becomes active boundary
+
+**Validate:** PR #108 was independently revalidated after PR #110 corrected the
+Lua validation bootstrap. Exact rebased head
+`7483844087119769c3de869439bb5e3c1ee3b752` passed **195 structural contracts**,
+**342 replacement-core behavioural contracts**, and **9 focused
+obstruction-relocation contracts**.
+
+GIANTS Reality then exercised the previously validated Patriot 4450 / Condor
+Endurance II Follower Boundary path under
+`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`. Regulation established, updated,
+released physical Bounded Authority into QUIESCENT state, reactivated the same
+semantic Regulation responsibility, and later retired correctly when opposed
+Passage superseded follower protection. During quiescence the follower returned
+toward native speed; after authority reacquisition it physically decelerated
+back onto the newly authorised cap.
+
+**Discover:** **Authority Release Must Be Physically Observable.** The Reality
+run demonstrated the architectural separation between retained semantic
+Regulation responsibility and current physical Bounded Authority rather than
+merely logging the expected lifecycle labels.
+
+**Record:** PR #108 merged to Accepted Repository State as
+`b7e236955fd63b06d2b054bd25e8faaebbd78107`. Issue #98 closed **completed**.
+Accepted executable identity is
+`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`; canonical authority remains
+v0.3.0.0.
+
+**Next:** Issue #100 becomes the active reconciliation boundary. Design must
+identify the minimum current pair-assessment concept that preserves unresolved
+evidence safety without retaining generic persistent pair history or publishing
+last-positive evidence as fresh current Reality.
+
+> **Current Pair Assessment Scope != Persistent Pair History**
+
+> **Evidence Continuity != Evidence Freshness**
+
 ## 2026-09-09 — Issue #109 validation-bootstrap dependency isolation
 
 **Observe:** PR #108 Offline Validation run `34383189896` passed Structural
