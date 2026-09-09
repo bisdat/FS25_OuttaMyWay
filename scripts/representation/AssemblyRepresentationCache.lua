@@ -594,6 +594,14 @@ end
 
 function Cache:_transitPassageEnvelope(record,frame)
     if type(record)~="table" or type(frame)~="table" then return nil,"TRANSIT_REFERENCE_FRAME_UNAVAILABLE" end
+
+    -- Inventory Closure is a prerequisite for complete-assembly Transit Passage
+    -- authority. Geometry completeness for every discovered member cannot prove
+    -- that the discovery budget found every Physical Assembly member.
+    if record.assemblyDiscoveryTruncated==true then
+        return nil,"TRANSIT_ASSEMBLY_MEMBERSHIP_TRUNCATED"
+    end
+
     local localToWorldFn=self:_api("localToWorld")
     if localToWorldFn==nil then return nil,"TRANSIT_LOCAL_TO_WORLD_UNAVAILABLE" end
     local members=record.members or {}

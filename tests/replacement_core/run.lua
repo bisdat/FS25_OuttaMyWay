@@ -3730,6 +3730,87 @@ test("D0146 Passage Excursion enters only when derived Entry Boundary is reached
     equal(math.abs(math.abs(plan.passageArrangement.subjectLateralOffsetM)+math.abs(plan.passageArrangement.otherLateralOffsetM)-7)<0.0001,true)
 end)
 
+test("Transit Passage authority is revoked when assembly member discovery truncates",function()
+    local oldWorldTranslation=getWorldTranslation
+    local oldLocalDirectionToWorld=localDirectionToWorld
+    local evidence=nil
+
+    local ok,err=pcall(function()
+        local budget=OuttaMyWay.REPRESENTATION_ASSEMBLY_MEMBER_BUDGET
+        if type(budget)~="number" or budget<2 then error("invalid representation assembly member budget") end
+
+        local positions={[1]={0,0,0}}
+        local function xml()
+            local values={
+                ["vehicle.base.size#width"]=2,
+                ["vehicle.base.size#length"]=4
+            }
+            return {getValue=function(self,key) return values[key] end}
+        end
+
+        local attached={}
+        for index=1,budget do
+            local node=100+index
+            positions[node]={index*0.1,0,-index*0.1}
+            local child={
+                rootNode=node,
+                name="Budget child "..tostring(index),
+                xmlFile=xml(),
+                components={{node=node}},
+                getName=function(self) return self.name end,
+                getAttachedImplements=function() return {} end
+            }
+            attached[#attached+1]={object=child}
+        end
+
+        local worker={
+            rootNode=1,
+            name="Budget root",
+            xmlFile=xml(),
+            components={{node=1}},
+            getName=function(self) return self.name end,
+            getAISteeringNode=function() return 1 end,
+            getAttachedImplements=function() return attached end
+        }
+
+        getWorldTranslation=function(node)
+            local p=positions[node] or {0,0,0}
+            return p[1],p[2],p[3]
+        end
+        localDirectionToWorld=function(node,x,y,z) return x,y,z end
+
+        local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={
+            getNumOfChildren=function() return 0 end,
+            getChildAt=function() return nil end,
+            getName=function() return "root" end,
+            localToWorld=function(node,x,y,z)
+                local p=positions[node] or {0,0,0}
+                return p[1]+x,p[2]+y,p[3]+z
+            end,
+            getShapeGeometryBoundingSphere=function() return 0,0,0,1,true end,
+            getShapeBoundingSphere=function() return 0,0,0,1,true end,
+            getShapeWorldBoundingSphere=function(node)
+                local p=positions[node] or {0,0,0}
+                return p[1],p[2],p[3],1
+            end,
+            getIsCompoundChild=function() return false end
+        }})
+
+        cache:beginObservationCycle()
+        evidence=cache:observe(worker,"vehicle-root:1","job-truncated-transit",0)
+        cache:endObservationCycle()
+    end)
+
+    getWorldTranslation=oldWorldTranslation
+    localDirectionToWorld=oldLocalDirectionToWorld
+    if not ok then error(err) end
+
+    equal(evidence.assemblyDiscoveryTruncated,true)
+    equal(evidence.memberCount,OuttaMyWay.REPRESENTATION_ASSEMBLY_MEMBER_BUDGET)
+    equal(evidence.transitPassageEnvelope,nil)
+    equal(evidence.transitPassageReason,"TRANSIT_ASSEMBLY_MEMBERSHIP_TRUNCATED")
+end)
+
 test("D0146 Transit Passage envelope uses cached GIANTS base size instead of inflated component discs",function()
     local picture,snapshot=d0146Step2Fixture(nil,nil,30)
     local values=OuttaMyWay.ValueRecord.toTable(picture)

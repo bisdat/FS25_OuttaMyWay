@@ -21,11 +21,11 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline: `main` after PR #104 merge, commit
-  `794db9585973ba1b65de0a97813946a829bfddc4`.
+- Accepted Repository State baseline: `main` after PR #105 merge, commit
+  `f7e78614515562a1e71eb5ecd500927f117799b5`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted executable identity remains
-  **`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
+- This Engineering Increment carries
+  **`0.3.0.38 TEST — TRANSIT INVENTORY CLOSURE`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 - No new TEST identity exists merely for audit closure.
@@ -40,7 +40,7 @@ Architectural meaning remains owned by the
 | Field World snapshots/equivalence | `FieldWorldSnapshotRegistry.lua`, `FieldWorldEquivalenceEvaluator.lua`, `FieldWorldEquivalenceAuthority.lua`, `LiveObservationSource.lua` | PRESERVE — retained tracks resolve their existing immutable Snapshot assignment, which refreshes Field World relevance without stale geometry re-evaluation |
 | Current Physical Assembly acquisition | `scripts/observation/CurrentPhysicalAssemblySource.lua` | PRESERVE mission-root addressability; no semantic authority |
 | Current pose / live Observation | `CurrentPhysicalPoseSource.lua`, `LiveObservationSource.lua`, `LiveInteractionObservation.lua` | PRESERVE factual/provenance boundary |
-| Physical representation cache | `scripts/representation/AssemblyRepresentationCache.lua` | **DRIFT #99** — member-discovery truncation must revoke complete-assembly Transit authority |
+| Physical representation cache | `scripts/representation/AssemblyRepresentationCache.lua` | **RECONCILIATION #99** — member-discovery truncation revokes Transit complete-assembly authority at representation construction |
 | Generic current physical conflict | `CurrentPhysicalConflictRepresentation.lua` | PRESERVE positive-only / no generic negative-clearance authority |
 | Passage-specific geometry | `AssemblyRepresentationCache.lua`, `PairSpecificPassageClearance.lua`, `LocalPassagePlanner.lua` | PRESERVE directional Transit Passage contract for non-truncated complete assemblies |
 | Situation Assessment | `scripts/assessment/SituationAssessment.lua` and focused assessment collaborators | PRESERVE current interpreted relationship ownership except listed drift |
@@ -129,7 +129,7 @@ accepted contract.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #99 | NEW / latent fail-closed representation | truncated member inventory can still claim complete-assembly Transit geometry |
+| #99 | implementation reconciliation | discovery-budget truncation now withholds the Transit envelope and publishes `TRANSIT_ASSEMBLY_MEMBERSHIP_TRUNCATED` |
 | #98 | confirmed placement mismatch | final follower speed permission is derived in Situation instead of Bounded Authority |
 | #100 | confirmed concept mismatch | rejected persistent pair-history concept remains as `EncounterRegistry` |
 | #101 | behaviour-preserving retirement/naming debt | orphaned Guarded Recovery, stale Control consumer, stranded Constraint semantics, defensive naming |
@@ -137,7 +137,6 @@ accepted contract.
 ## Separate accepted work / explicit limits
 
 - **#45** — Bubble Bullet Time remains accepted but unimplemented.
-- **#65** — Build Identity Contract ownership cleanup is the validation prerequisite for the next executable TEST increment; current version ownership belongs only to `scripts/config.lua` and `modDesc.xml`.
 - **#87** — decompose the remaining live `scripts/config.lua` Mixed Runtime
   Constants Surface.
 - Generic multi-context Commitment application remains an acceptable fail-closed
@@ -159,13 +158,10 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Complete **#65 — Build Identity Contract ownership cleanup** first so future
-executable TEST identities do not require unrelated behavioural-test edits.
+Complete #99 review/CI validation for
+**`0.3.0.38 TEST — TRANSIT INVENTORY CLOSURE`**.
 
-Then implement **#99 — Transit complete-assembly authority under representation
-discovery truncation**.
-
-After #99, unless new Reality changes the order:
+After #99 acceptance, unless new Reality changes the order:
 
 1. #98 — Follower Boundary magnitude ownership;
 2. #100 — Encounter reconciliation, architecture/design before implementation;

@@ -6,11 +6,11 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline: `main` after PR #104 merge, commit
-  `794db9585973ba1b65de0a97813946a829bfddc4`.
+- Accepted Repository State baseline: `main` after PR #105 merge, commit
+  `f7e78614515562a1e71eb5ecd500927f117799b5`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted executable identity remains
-  **`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
+- This Engineering Increment carries
+  **`0.3.0.38 TEST — TRANSIT INVENTORY CLOSURE`**.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
@@ -51,9 +51,13 @@ diagnostic directionality and live documentation responsibility.
 
 - **#99 — Transit complete-assembly authority**
   - **Budget Exhaustion Must Revoke Completeness Authority**.
-  - `assemblyDiscoveryTruncated` does not currently revoke
-    complete-assembly Transit Passage authority.
-  - This is a latent fail-closed representation mismatch.
+  - This increment revokes complete-assembly Transit Passage geometry at the
+    Representation owner whenever assembly-member discovery truncates.
+  - `transitPassageReason` already carries
+    `TRANSIT_ASSEMBLY_MEMBERSHIP_TRUNCATED` through Observation/Situation, so
+    no downstream Candidate/Constraint/Decision/Control special case is added.
+  - The new offline contract exceeds the 32-member discovery budget and proves
+    fail-closed authority while existing non-truncated Transit contracts remain.
 
 - **#98 — Follower Boundary permissible magnitude**
   - **Admissible Magnitude Evidence != Permitted Magnitude**.
@@ -120,12 +124,12 @@ A useful retained distinction is:
 These remain independently owned and are not Phase-15 reconciliation findings:
 
 - **#45 — Bubble Bullet Time**: accepted architecture, unimplemented.
-- **#65 — Behaviour Regression Contract != Build Identity Contract** is the
-  current validation-architecture prerequisite for the next executable
-  reconciliation. Current build version ownership is reduced to
-  `scripts/config.lua` + `modDesc.xml`; behavioural tests retain only their
-  named contracts.
 - **#87 — `scripts/config.lua` Mixed Runtime Constants Surface decomposition**.
+
+Issue #65 is completed by PR #105. Current TEST build version now has exactly
+two source owners (`scripts/config.lua` and `modDesc.xml`), and the dynamic Build
+Identity Contract protects that ownership without coupling behavioural tests to
+the current version literal.
 
 Configuration and GUI architecture define accepted/deferred future product
 responsibilities. Their unimplemented player settings/UI do not by themselves
@@ -144,14 +148,10 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Complete **Issue #65 — Build Identity Contract ownership cleanup** as the bounded
-validation-architecture prerequisite. This increment is behaviour-preserving and
-does not consume a new TEST BUILD; accepted executable identity remains `.37`.
+Complete review and independent CI validation for **Issue #99 —
+`0.3.0.38 TEST — TRANSIT INVENTORY CLOSURE`**.
 
-Then implement **Issue #99 — Transit complete-assembly authority under
-representation discovery truncation** with a clean fresh `.38` identity.
-
-After #99, unless new Reality changes the order:
+After #99 acceptance, unless new Reality changes the order:
 
 1. #98 — Follower Boundary magnitude ownership;
 2. #100 — Encounter architecture/design reconciliation;
