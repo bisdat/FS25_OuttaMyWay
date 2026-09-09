@@ -44,8 +44,12 @@ jobs:
 
       - name: Build validation LuaJIT
         run: |
-          sudo apt-get update
-          sudo apt-get install --yes build-essential
+          for tool in git make cc ar; do
+            if ! command -v "$tool" >/dev/null 2>&1; then
+              echo "::error::Validation runtime prerequisite unavailable on hosted runner: $tool"
+              exit 1
+            fi
+          done
           git clone --quiet https://github.com/LuaJIT/LuaJIT.git "$RUNNER_TEMP/luajit"
           git -C "$RUNNER_TEMP/luajit" checkout --quiet c525bcb9024510cad9e170e12b6209aedb330f83
           make -C "$RUNNER_TEMP/luajit" -j2 XCFLAGS=-DLUAJIT_ENABLE_LUA52COMPAT

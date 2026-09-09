@@ -134,6 +134,29 @@ This is **Identity Coherence Without Distributed Sentinels**: changing executabl
 bytes still requires one fresh TEST build identity before push, but that identity
 change must not masquerade as many unrelated behavioural regressions.
 
+### Validation Bootstrap Dependency
+
+**Validation Prerequisite != Runner Package Universe.** A blocking validation job
+must depend only on environment capabilities materially required to construct
+and execute its declared validation runtime.
+
+The Lua behavioural job requires a source-control client plus a compiler/archive
+toolchain capable of building the pinned LuaJIT source revision. It does not
+require arbitrary package repositories preconfigured on the hosted runner to be
+healthy. The workflow therefore verifies the required tools already exposed by
+the runner and fails explicitly if they are absent; it does not unconditionally
+run a global package-index refresh merely to repair the validation environment.
+
+This is **Validation Dependency Must Be Causally Relevant**. A missing compiler
+is a validation-environment failure. An unrelated browser repository publishing
+temporarily inconsistent metadata is not evidence about OuttaMyWay and must not
+prevent the behavioural harness from executing when the required toolchain is
+already present.
+
+This rule does not weaken the pinned LuaJIT source revision,
+`LUAJIT_ENABLE_LUA52COMPAT`, semantic-profile reporting, harness enforcement, or
+the requirement that both Lua behavioural outcomes succeed.
+
 ### Validation Runtime Contract
 
 Repeatable offline evidence depends on materially relevant execution semantics as well as repository bytes and test inputs. Interpreter name or source version alone is insufficient when build-time semantic options affect the contracts exercised by the suite.
