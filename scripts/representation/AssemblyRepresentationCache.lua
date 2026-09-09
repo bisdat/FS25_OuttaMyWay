@@ -229,15 +229,15 @@ local function bootstrapTransitFoldCapability(members,nowSeconds)
     end
     capability.actuatorCount=#capability.actuators
     capability.isFoldable=capability.actuatorCount>0
-    local fallback=tonumber(OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS) or 30000
+    local fallback=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS) or 30000
     if capability.expectedFoldDurationMs>0 then
-        local factor=tonumber(OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR) or 1.5
-        local margin=tonumber(OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MARGIN_MS) or 2000
+        local factor=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR) or 1.5
+        local margin=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MARGIN_MS) or 2000
         capability.settlementTimeoutMs=capability.expectedFoldDurationMs*factor+margin
     else
         capability.settlementTimeoutMs=fallback
     end
-    capability.settlementTimeoutMs=math.min(capability.settlementTimeoutMs,tonumber(OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MAX_MS) or 35000)
+    capability.settlementTimeoutMs=math.min(capability.settlementTimeoutMs,tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS) or 35000)
     return capability
 end
 

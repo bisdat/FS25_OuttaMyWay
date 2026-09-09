@@ -1,3 +1,35 @@
+## 2026-09-09 — Issue #93: Passage-contact hypothesis disproven
+
+**Observe:** `.31`/`.32`/`.33` telemetry repeatedly reported GIANTS `isBlocked`
+and positive generic current bounding-disc interaction during Condor/Patriot
+Cooperative Passage. The initial Issue #93 interpretation promoted those signals
+to physical-contact evidence and proposed a continuing-Passage fail-safe.
+
+**Challenge with Reality:** `.32` and `.33` video shows a visible physical gap
+through the same intervals. No collision deflection, snag, bounce or model
+contact is observable. `.32` later fails for an Alignment Runout field target
+after the crossing has completed; `.33` completes and dissolves normally. `.31`
+has no available video, so its log alone cannot establish contact.
+
+**Discover:** **GIANTS `isBlocked` != Passage contact** and **Generic
+Bounding-Disc Overlap != Passage Physical Contact**. The generic positive-
+conflict discs answer a broad obstruction question; they do not acquire
+Passage-clearance authority. **Purpose-Specific Representation Authority Takes
+Precedence**: Cooperative Passage already constructs its geometry from cached
+complete-assembly directional Transit representation where required.
+
+**Policy clarification:** the approximately 1 m nominal lateral clearance is an
+empirical policy margin — a good current calibration — rather than a precise
+geometry-derived collision proof. If future Reality shows actual contact despite
+Transit geometry plus that margin, adjust the margin first before adding a more
+sophisticated geometry/dynamics model.
+
+**Decision:** no Passage fail-safe or runtime safety mechanism is justified from
+`isBlocked`, generic disc overlap or fresh-planner rejection alone. Remove the
+misleading `CURRENT_PHYSICAL_INTERACTION` declarative invalidation from the
+Cooperative Passage Candidate; retain `PASSAGE_SUPPORT_LOSS`. Issue #93 is
+closed `not planned` as a disproven defect hypothesis.
+
 ## 2026-09-08 — Issue #37: Forward Intersection evidence continuity
 
 **Observe:** `.32` Category-2 Condor/Patriot Reality showed a useful early

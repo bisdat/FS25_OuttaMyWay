@@ -21,7 +21,7 @@ end
 
 local function actionSpaceBridge(candidate)
     local evidence=candidate and candidate.evidenceBasis or nil
-    local bridge=evidence and evidence.d0146ActionSpaceRegulationBridge or nil
+    local bridge=evidence and evidence.actionSpaceRegulationBridge or nil
     if type(bridge)=="table" and type(bridge.conflictIdentity)=="string" and type(bridge.regulatedAssemblyId)=="string" then return bridge end
     return nil
 end
@@ -44,7 +44,7 @@ function Transition:transition(picture,evaluated,readiness)
     end
     local preflight,preflightReason=self.runtime.responsibilityTransitionAuthority:preflightActionSpaceRegulation(picture,evaluated,readiness)
     if preflight==nil then return nil,preflightReason end
-    local applied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyD0146ActionSpaceDecision(self.runtime,picture,evaluated)
+    local applied,reason=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyActionSpaceRegulationDecision(self.runtime,picture,evaluated)
     if applied==nil then
         logWarning("ACTION_SPACE_REGULATION_TRANSITION_REFUSED decision=%s candidate=%s conflict=%s context=%s reason=%s",
             tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(bridge.conflictIdentity),tostring(context),tostring(reason))

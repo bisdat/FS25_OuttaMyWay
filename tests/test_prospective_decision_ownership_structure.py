@@ -76,7 +76,7 @@ def test_phase13_runtime_uses_portfolio_only_for_fresh_scope_and_projects_dispat
         "evaluated=normalized",
     ):
         assert token in runtime
-    assert "legacyTerminalEgressCandidateSupport" in runtime
+    assert "completedObstructionCandidateSupport" in runtime
     assert "obstructionRelocationCandidateSupport" in runtime
 
 
@@ -103,7 +103,7 @@ def test_phase13_candidate_support_projection_test_identity_is_coherent():
     config=read("scripts/config.lua")
     main=read("scripts/main.lua")
     moddesc=read("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.33"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.34"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.34 TEST — PRODUCTION VOCABULARY OWNERSHIP RECONCILIATION"' in config
     assert 'v0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY' in main
-    assert '<version value="0.3.0.33">0.3.0.33</version>' in moddesc
+    assert '<version value="0.3.0.34">0.3.0.34</version>' in moddesc

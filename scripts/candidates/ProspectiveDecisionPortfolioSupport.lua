@@ -9,7 +9,7 @@ end
 
 local function candidateMetadata(specification,family,groupKey,ordinal,boundary,extra)
     local evidence=specification.evidenceBasis or {}
-    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.d0146ActionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or evidence.guardedRecoveryBridge or {}
+    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or evidence.guardedRecoveryBridge or {}
     local metadata={
         groupKey=groupKey,family=family,legacyOrdinal=ordinal,supportBoundary=boundary,
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,terminalEpisodeId=bridge.terminalEpisodeId,
@@ -30,7 +30,7 @@ end
 
 local function descriptorFromSpecification(specification,family,groupKey,ordinal,boundary,extra)
     local evidence=specification.evidenceBasis or {}
-    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.d0146ActionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or evidence.guardedRecoveryBridge or {}
+    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or evidence.guardedRecoveryBridge or {}
     local descriptor={
         groupKey=groupKey,family=family,legacyOrdinal=ordinal,supportBoundary=boundary,
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,terminalEpisodeId=bridge.terminalEpisodeId,
@@ -137,7 +137,7 @@ function Support:attach(picture,snapshot)
     end
 
     local follower,followerReason=self.liveSupport:buildProjectedGroup(picture,snapshot,{kind="FOLLOWER_BOUNDARY"},targetPictureId,targetEpoch)
-    if modeOfGroup(follower)=="FOLLOWER_BOUNDARY_D0141" then
+    if modeOfGroup(follower)=="FOLLOWER_BOUNDARY" then
         local family="FOLLOWER"
         local spec=follower.candidateSpecifications and follower.candidateSpecifications[1] or nil
         local action=spec and spec.evidenceBasis and spec.evidenceBasis.followerBoundaryBridge and spec.evidenceBasis.followerBoundaryBridge.action or nil
@@ -150,7 +150,7 @@ function Support:attach(picture,snapshot)
     local guardCount=activeGuardedRecoveryCount(picture)
     if guardCount>0 then
         local guard,guardReason=self.liveSupport:buildProjectedGroup(picture,snapshot,{kind="GUARDED_RECOVERY"},targetPictureId,targetEpoch)
-        if modeOfGroup(guard)=="GUARDED_RECOVERY_D0123" then
+        if modeOfGroup(guard)=="GUARDED_RECOVERY" then
             appendGroup(state,guard,"GUARDED_RECOVERY","guarded-recovery",1)
         elseif type(guardReason)=="string" and string.find(guardReason,"MULTIPLE_ACTIVE_GUARDED_RECOVERY_CONTEXTS",1,true) then
             passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"GUARDED_RECOVERY_FAIL_CLOSED",guardReason,1)

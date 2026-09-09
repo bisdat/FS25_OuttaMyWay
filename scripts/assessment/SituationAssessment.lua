@@ -659,7 +659,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         physicalSpaceEvidence=physicalSpaceEvidence,opposedMaxDot=OuttaMyWay.OPPOSED_TRAJECTORY_MAX_DOT,
         currentOpposedMaxDot=OuttaMyWay.OPPOSED_CURRENT_MAX_DOT,persistenceAlignmentMinDot=OuttaMyWay.TRAJECTORY_PERSISTENCE_ALIGNMENT_MIN_DOT,
         currentStableDistanceM=OuttaMyWay.OPPOSED_CURRENT_STABLE_DISTANCE_M,minClosingRateMps=OuttaMyWay.OPPOSED_MIN_CLOSING_RATE_MPS,
-        actionSpaceMaxSeparationM=OuttaMyWay.D0146_STEP2_LOCAL_PASSAGE_MAX_ENTRY_SEPARATION_M
+        actionSpaceMaxSeparationM=OuttaMyWay.COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M
     })
     for _,relation in OuttaMyWay.ValueRecord.ipairs(opposedCorridorKnowledge) do
         local situation=situationByOperation[relation.operationId]

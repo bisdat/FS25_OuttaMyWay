@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY.
+-- FS25_OuttaMyWay v0.3.0.34 TEST — PRODUCTION VOCABULARY OWNERSHIP RECONCILIATION.
 -- Completed Obstruction and current Causal Obstruction remain distinct upstream responsibilities.
 -- One provenance-neutral Terminal Egress executor consumes only current physical subject, objective and current Bounded Authority.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.33"
+OuttaMyWay.VERSION = "0.3.0.34"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -44,14 +44,6 @@ OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_ENABLED = true
 OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_INTERVAL_MS = 250
 OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_HEARTBEAT_MS = 2000
 
--- D-0144 retirement boundary: the former D-0134 chessboard/productive-history
--- diagnostics remain in the repository as historical evidence only. They are disabled
--- here and not sourced by scripts/main.lua; no continuous productive-history raster work
--- is part of the current runtime. Constants below are retained only for forensic replay.
-OuttaMyWay.DEMONSTRATED_PRODUCTIVE_COVERAGE_PROBE_ENABLED = false
-OuttaMyWay.DEMONSTRATED_PRODUCTIVE_COVERAGE_PROBE_INTERVAL_MS = 250
-OuttaMyWay.DEMONSTRATED_PRODUCTIVE_COVERAGE_CELL_SIZE_M = 5.0
-OuttaMyWay.DEMONSTRATED_PRODUCTIVE_COVERAGE_MAX_SAMPLE_GAP_M = 12.0
 
 -- D-0138 passive GIANTS Native Field-Worker Drive Command shadow probe.
 -- Reads spec_aiFieldWorker.aiDriveParams only after GIANTS has populated it;
@@ -60,17 +52,7 @@ OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_ENABLED = true
 OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_INTERVAL_MS = 250
 OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_HEARTBEAT_MS = 1000
 
--- D-0144 retirement boundary: the former Productive Coverage Residual witness is
--- historical evidence only. It is disabled and unsourced from the live runtime.
-OuttaMyWay.PRODUCTIVE_COVERAGE_RESIDUAL_PROBE_ENABLED = false
-OuttaMyWay.PRODUCTIVE_COVERAGE_RESIDUAL_PROBE_INTERVAL_MS = 250
-OuttaMyWay.PRODUCTIVE_COVERAGE_RESIDUAL_HEARTBEAT_MS = 2000
 
--- D-0144 retirement boundary: Refuge qualification shadow is historical evidence only.
--- The module is unsourced from live runtime; these values remain for forensic replay.
-OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_PROBE_ENABLED = false
-OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_INFIELD_OFFSETS_M = {20.0, 35.0, 50.0}
-OuttaMyWay.REFUGE_QUALIFICATION_SHADOW_COVERAGE_SAMPLE_COUNT = 12
 
 -- D-0123 Guarded-Recovery Convergence Shadow Validation. Diagnostic cadence only.
 -- No distance, time, speed or intersection result below carries policy or Control authority.
@@ -78,10 +60,8 @@ OuttaMyWay.GUARDED_RECOVERY_CONVERGENCE_PROBE_ENABLED = true
 OuttaMyWay.GUARDED_RECOVERY_CONVERGENCE_PROBE_INTERVAL_MS = 100
 OuttaMyWay.GUARDED_RECOVERY_CONVERGENCE_PROBE_HEARTBEAT_MS = 500
 
--- Architecture alignment: D-0127 native manoeuvre observation is retained,
--- but TURNING/head-reversal no longer qualifies boundary-demand authority.
--- The legacy HeadlandManoeuvreSweepProbe is disabled/removed from active runtime.
-OuttaMyWay.HEADLAND_MANOEUVRE_SWEEP_PROBE_ENABLED = false
+-- Native manoeuvre observation is retained, but TURNING/head-reversal does not
+-- qualify boundary-demand authority.
 OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_ENABLED = true
 OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_INTERVAL_MS = 100
 OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_LOG_INTERVAL_MS = 250
@@ -136,73 +116,59 @@ OuttaMyWay.OPPOSED_CURRENT_STABLE_DISTANCE_M = 1.0
 OuttaMyWay.OPPOSED_MIN_CLOSING_RATE_MPS = 0.05
 
 
--- D-0146 Step-2 active test implementation. Traffic semantics are generic.
--- Pair-Specific Passage Clearance replaces the inherited 12 m centreline / 6 m
--- participant reserve geometry surrogate. The 1 m value below is the currently
--- agreed Nominal Inter-Assembly Clearance policy calibration; architecture owns
--- the concept, not this universal magnitude. Current represented geometry remains
--- bounded evidence and does not itself claim generic Coverage Closure.
-OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED = true
-OuttaMyWay.D0146_STEP2_LOCAL_PASSAGE_MAX_ENTRY_SEPARATION_M = 80.0
-OuttaMyWay.D0146_CLEARANCE_TRACE_MAX_SEPARATION_M = 40.0 -- TEST telemetry only; does not alter Candidate evaluation.
-OuttaMyWay.D0146_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0
-OuttaMyWay.D0146_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO = 0.95 -- TEST: nominal 1 m remains construction target; 95% is admissible Crossing-Window policy floor.
--- v0.1.3.3 TEST retains the v0.1.3.1 Passage Excursion geometry: Development is derived from the actual
--- participant displacement requirement, preserving the P23 shallow 2:1
--- forward:lateral donor where that requires more than a small 4 m nominal
--- manoeuvring floor. The Crossing Window itself is derived from represented
--- longitudinal assembly extents rather than initial encounter separation.
-OuttaMyWay.D0146_STEP2_MIN_DEVELOPMENT_DISTANCE_M = 4.0
-OuttaMyWay.D0146_STEP2_DEVELOPMENT_FORWARD_PER_LATERAL_M = 2.0
+-- Cooperative Passage policy and implementation calibration.
+-- The nominal 1 m Inter-Assembly Clearance is empirical policy rather than an
+-- exact collision calculation. Cached complete-assembly Transit geometry
+-- constructs Passage; Reality remains the calibration authority.
+OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED = true
+OuttaMyWay.COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M = 80.0
+OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_TRACE_MAX_SEPARATION_M = 40.0 -- TEST telemetry only; does not alter Candidate evaluation.
+OuttaMyWay.COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0
+OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO = 0.95 -- TEST: nominal 1 m remains construction target; 95% is admissible Crossing-Window policy floor.
+-- Passage Development is derived from actual participant displacement.
+-- Crossing Window extent is derived from represented longitudinal assembly extent,
+-- not initial encounter separation.
+OuttaMyWay.COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M = 4.0
+OuttaMyWay.COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M = 2.0
 -- Coarse allowance for live sampling / stop acquisition before Development.
 -- It is Control allowance, not physical assembly length or braking distance.
-OuttaMyWay.D0146_STEP2_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M = 3.0
-OuttaMyWay.D0146_STEP2_DEVELOPMENT_GATE_RADIUS_M = 2.0
-OuttaMyWay.D0146_STEP2_TRAVERSAL_GATE_RADIUS_M = 1.0
-OuttaMyWay.D0146_STEP2_REACQUISITION_GATE_RADIUS_M = 2.0
-OuttaMyWay.D0146_STEP2_FIELD_SWEEP_SAMPLE_M = 2.0
-OuttaMyWay.D0146_STEP2_PAIR_SWEEP_SAMPLES_PER_LEG = 20
-OuttaMyWay.D0146_STEP2_MOVE_SPEED_KMH = 8.0
-OuttaMyWay.D0146_STEP2_PHASE_WATCHDOG_MS = 45000
--- D-0192 Phase-8 alignment evidence. These are measurement tolerances around the
--- captured Phase-5 Transit assembly pose, not Passage geometry. The values reuse
--- the successful discarded D-0189 TEST donor and are subject to field Reality.
-OuttaMyWay.D0146_ASSEMBLY_ALIGNMENT_LATERAL_TOLERANCE_M = 0.50
-OuttaMyWay.D0146_ASSEMBLY_ALIGNMENT_HEADING_MIN_DOT = 0.995
+OuttaMyWay.COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M = 3.0
+OuttaMyWay.COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M = 2.0
+OuttaMyWay.COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M = 1.0
+OuttaMyWay.COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M = 2.0
+OuttaMyWay.COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M = 2.0
+OuttaMyWay.COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG = 20
+OuttaMyWay.COOPERATIVE_PASSAGE_MOVE_SPEED_KMH = 8.0
+OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS = 45000
+-- Assembly-alignment tolerances are measurements around the captured Transit
+-- assembly pose; they are not Passage-clearance geometry.
+OuttaMyWay.COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M = 0.50
+OuttaMyWay.COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT = 0.995
 
--- D-0155 Resolution-Space Progression Envelope provisional policy calibration.
--- This is a withheld fraction of positively established usable Resolution Space,
--- not claimed GIANTS braking distance. Ordinary progression may consume only the
--- remainder; Control derives an integer km/h cap from the zero-terminal policy
--- trajectory. The 75% reserve remains provisional policy calibration.
-OuttaMyWay.D0146_RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION = 0.75
+-- Resolution-Space Progression Envelope policy calibration.
+-- The reserve is a withheld fraction of positively established usable Resolution
+-- Space, not a claimed GIANTS braking distance.
+OuttaMyWay.RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION = 0.75
 
--- v0.1.3.0 validated policy: when ordinary Resolution Space is exhausted while
--- the same D-0146 intent-revelation obligation remains unresolved, retain a
--- minimal positive progression rather than imposing Hold. This is intended to
--- preserve current-motion evidence for existing Passage maturation without
--- changing Passage eligibility or spending ordinary Resolution Space authority.
-OuttaMyWay.D0146_RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH = 1
+-- When ordinary Resolution Space is exhausted while intent remains unresolved,
+-- retain minimal positive progression rather than Hold so fresh native intent can
+-- continue to reveal without spending ordinary Resolution Space authority.
+OuttaMyWay.RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH = 1
 
--- D-0181: D-0143 TS015 Cooperative Passage is historical donor/test evidence only.
--- Its production feature switch and manoeuvre literals are intentionally absent;
--- the live runtime cannot resurrect the superseded D-0143 Candidate/Control path.
--- Two values originally carried under generic D-0143 names remain live D-0146
--- implementation calibrations.  Closure A migrates ownership without tuning them.
-OuttaMyWay.D0146_COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH = 0.25
-OuttaMyWay.D0146_COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
+-- Cooperative Passage hold-settlement and heartbeat implementation calibration.
+OuttaMyWay.COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH = 0.25
+OuttaMyWay.COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
 
--- D-0179 Transit fold settlement is bounded.  The preferred ceiling is derived
--- once at Job-Episode bootstrap from the active runtime folding configuration's
--- maxFoldAnimDuration.  The factor/margin are fail-safe implementation policy,
--- not Passage geometry or configuration semantics.
-OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR = 1.50
-OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MARGIN_MS = 2000
-OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
-OuttaMyWay.D0146_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
+-- Transit fold settlement is bounded. The preferred ceiling is derived once at
+-- Job-Episode bootstrap from the active runtime folding configuration's
+-- maxFoldAnimDuration; factor/margin values are implementation fail-safe bounds.
+OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_DURATION_FACTOR = 1.50
+OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MARGIN_MS = 2000
+OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
+OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY"
+OuttaMyWay.BUILD_LABEL = "0.3.0.34 TEST — PRODUCTION VOCABULARY OWNERSHIP RECONCILIATION"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
@@ -214,10 +180,9 @@ OuttaMyWay.FOLLOWER_PACING_HUD_Y = 0.697
 OuttaMyWay.FOLLOWER_PACING_HUD_TEXT_SIZE = 0.013
 OuttaMyWay.FOLLOWER_PACING_HUD_MAX_ROWS = 3
 
--- D-0123 Native Handover Creep. 1 km/h is retained deliberately: earlier HOLD
--- prevented GIANTS from restarting into the Passage/handover, while bounded non-zero
--- Regulation preserved native route/steering authority and allowed reacquisition.
-OuttaMyWay.D0123_NATIVE_HANDOVER_CREEP_KMH = 1.0
+-- Guarded Recovery Native Handover Creep. 1 km/h preserves GIANTS route and
+-- steering authority while allowing bounded reacquisition.
+OuttaMyWay.GUARDED_RECOVERY_NATIVE_HANDOVER_CREEP_KMH = 1.0
 
 -- D-0147 automatic completed-worker movement consent gate.
 -- The legacy implementation name AUTOMATIC_TERMINAL_EGRESS is retained deliberately to avoid

@@ -31,7 +31,7 @@ def test_phase14_5_runtime_construction_preserves_wrapper_order():
     ordered=(
         "runtime.currentPhysicalPoseSource=OuttaMyWay.CurrentPhysicalPoseSource.new()",
         "runtime.obstructionRelocationCandidateSupport=OuttaMyWay.ObstructionRelocationCandidateSupport.new",
-        "runtime.legacyTerminalEgressCandidateSupport=runtime.terminalEgressCandidateSupport",
+        "runtime.completedObstructionCandidateSupport=runtime.terminalEgressCandidateSupport",
         "runtime.terminalEgressCandidateSupport=CompositeCandidateSupport.new",
         "runtime.obstructionRelocationResponsibilityTransition=OuttaMyWay.ObstructionRelocationResponsibilityTransition.new",
         "runtime.prospectiveDecisionPortfolioSupport=OuttaMyWay.ProspectiveDecisionPortfolioSupport.new",
@@ -101,7 +101,7 @@ def test_phase14_5_current_build_identity_is_coherent():
     config=read("scripts/config.lua")
     main=read("scripts/main.lua")
     moddesc=read("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.33"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY"' in config
+    assert 'OuttaMyWay.VERSION = "0.3.0.34"' in config
+    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.34 TEST — PRODUCTION VOCABULARY OWNERSHIP RECONCILIATION"' in config
     assert "v0.3.0.33 TEST — FORWARD INTERSECTION EVIDENCE CONTINUITY" in main
-    assert '<version value="0.3.0.33">0.3.0.33</version>' in moddesc
+    assert '<version value="0.3.0.34">0.3.0.34</version>' in moddesc

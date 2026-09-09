@@ -32,14 +32,14 @@ local function followerBoundaryBridge(candidate)
 end
 local function actionSpaceBridge(candidate)
     local evidence=candidate and candidate.evidenceBasis or nil
-    local bridge=evidence and evidence.d0146ActionSpaceRegulationBridge or nil
+    local bridge=evidence and evidence.actionSpaceRegulationBridge or nil
     if type(bridge)=="table" and type(bridge.conflictIdentity)=="string" and type(bridge.regulatedAssemblyId)=="string" then return bridge end
     return nil
 end
 local function cooperativePassageBridge(candidate)
     local evidence=candidate and candidate.evidenceBasis or nil
     local bridge=evidence and evidence.cooperativePassageBridge or nil
-    if type(bridge)~="table" or bridge.architecture~="D0146_STEP2" then return nil end
+    if type(bridge)~="table" or bridge.architecture~="COOPERATIVE_PASSAGE" then return nil end
     if type(bridge.subjectReferenceKey)=="string" and type(bridge.otherReferenceKey)=="string" and type(bridge.passageGuide)=="table" then return bridge end
     return nil
 end
@@ -80,21 +80,21 @@ end
 
 local CompositeCandidateSupport={}
 CompositeCandidateSupport.__index=CompositeCandidateSupport
-function CompositeCandidateSupport.new(genericSupport,legacySupport)
-    return setmetatable({genericSupport=genericSupport,legacySupport=legacySupport},CompositeCandidateSupport)
+function CompositeCandidateSupport.new(causalObstructionSupport,completedObstructionSupport)
+    return setmetatable({causalObstructionSupport=causalObstructionSupport,completedObstructionSupport=completedObstructionSupport},CompositeCandidateSupport)
 end
 function CompositeCandidateSupport:attach(picture,snapshot)
-    local generic=self.genericSupport and self.genericSupport:attach(picture,snapshot) or nil
+    local generic=self.causalObstructionSupport and self.causalObstructionSupport:attach(picture,snapshot) or nil
     if generic~=nil then return generic end
-    return self.legacySupport and self.legacySupport:attach(picture,snapshot) or nil
+    return self.completedObstructionSupport and self.completedObstructionSupport:attach(picture,snapshot) or nil
 end
 function CompositeCandidateSupport:getPublishedCount()
-    return (self.genericSupport and self.genericSupport:getPublishedCount() or 0)+(self.legacySupport and self.legacySupport:getPublishedCount() or 0)
+    return (self.causalObstructionSupport and self.causalObstructionSupport:getPublishedCount() or 0)+(self.completedObstructionSupport and self.completedObstructionSupport:getPublishedCount() or 0)
 end
 function CompositeCandidateSupport:getLastStatus()
-    local genericStatus=self.genericSupport and self.genericSupport:getLastStatus() or nil
+    local genericStatus=self.causalObstructionSupport and self.causalObstructionSupport:getLastStatus() or nil
     if genericStatus~=nil and genericStatus~="INACTIVE" and genericStatus~="NO_GENERIC_CAUSAL_OBSTRUCTION_ACTION" then return genericStatus end
-    return self.legacySupport and self.legacySupport:getLastStatus() or genericStatus
+    return self.completedObstructionSupport and self.completedObstructionSupport:getLastStatus() or genericStatus
 end
 
 local function selectedGroupBoundary(evaluated)
@@ -153,13 +153,13 @@ function Runtime.new()
     runtime.currentPhysicalPoseSource=OuttaMyWay.CurrentPhysicalPoseSource.new()
     runtime.liveObservationSource.currentPhysicalPoseSource=runtime.currentPhysicalPoseSource
     runtime.obstructionRelocationCandidateSupport=OuttaMyWay.ObstructionRelocationCandidateSupport.new(runtime.identities,runtime.epochs)
-    runtime.legacyTerminalEgressCandidateSupport=runtime.terminalEgressCandidateSupport
-    runtime.terminalEgressCandidateSupport=CompositeCandidateSupport.new(runtime.obstructionRelocationCandidateSupport,runtime.legacyTerminalEgressCandidateSupport)
+    runtime.completedObstructionCandidateSupport=runtime.terminalEgressCandidateSupport
+    runtime.terminalEgressCandidateSupport=CompositeCandidateSupport.new(runtime.obstructionRelocationCandidateSupport,runtime.completedObstructionCandidateSupport)
     runtime.obstructionRelocationResponsibilityTransition=OuttaMyWay.ObstructionRelocationResponsibilityTransition.new(runtime)
     runtime.prospectiveDecisionPortfolioSupport=OuttaMyWay.ProspectiveDecisionPortfolioSupport.new(
         runtime.identities,runtime.epochs,
         runtime.obstructionRelocationCandidateSupport,
-        runtime.legacyTerminalEgressCandidateSupport,
+        runtime.completedObstructionCandidateSupport,
         runtime.liveTrafficCandidateSupport,
         runtime.passiveCandidateSupport)
     return runtime
@@ -259,7 +259,7 @@ function Runtime:_jointCooperativePassageRequests(picture,evaluated,candidate,co
             if candidateToken.assemblyId==assemblyId then token=candidateToken break end
         end
         if token==nil or self.authorities:validate(token)~=true then releaseCreated("COOPERATIVE_PASSAGE_REQUEST_CREATION_FAILED"); return nil,"VALID_JOINT_COMMITMENT_AUTHORITY_TOKEN_UNAVAILABLE" end
-        local target={kind="D0146_COOPERATIVE_PASSAGE",conflictIdentity=bridge.conflictIdentity,encounterIdentity=bridge.encounterIdentity,governingRequirementKey=bridge.governingRequirementKey,
+        local target={kind="COOPERATIVE_PASSAGE",conflictIdentity=bridge.conflictIdentity,encounterIdentity=bridge.encounterIdentity,governingRequirementKey=bridge.governingRequirementKey,
             subjectReferenceKey=bridge.subjectReferenceKey,otherReferenceKey=bridge.otherReferenceKey,passageGuideId=bridge.passageGuide and bridge.passageGuide.identity,controlProfile=bridge.controlProfile}
         local grant,grantReason=self:_authorizeBoundedAuthority(currentResponsibility,commitment,token,{
             assemblyId=assemblyId,capability="REPOSITION",target=target,operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,
@@ -428,7 +428,7 @@ end
 function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,assessment)
     local commitmentId=current and current.provenance and current.provenance.retainedCommitmentId or nil
     local conflictIdentity=current and current.provenance and current.provenance.conflictIdentity or nil
-    if type(commitmentId)~="string" or type(conflictIdentity)~="string" then return {status="NO_DISPATCH",reason="ACTION_SPACE_REGULATION_CURRENT_RESPONSIBILITY_INCOMPLETE",d0146ActionSpace=true} end
+    if type(commitmentId)~="string" or type(conflictIdentity)~="string" then return {status="NO_DISPATCH",reason="ACTION_SPACE_REGULATION_CURRENT_RESPONSIBILITY_INCOMPLETE",actionSpaceRegulation=true} end
     local forward=current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION"
     if forward
         and assessment.terminationEvidenceKind~="FORWARD_INTERSECTION_POSITIVE_DISSOLUTION"
@@ -437,18 +437,18 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
             status="NO_DISPATCH",
             reason="FORWARD_INTERSECTION_TERMINATION_EVIDENCE_REQUIRED",
             detail=assessment.reason,
-            d0146ActionSpace=true,
+            actionSpaceRegulation=true,
             forwardIntersection=true,
             commitmentId=commitmentId
         }
     end
-    local status=self.regulationBoundedAuthority:getD0146ActionSpaceStatus()
+    local status=self.regulationBoundedAuthority:getActionSpaceRegulationStatus()
     local physical=self.regulationBoundedAuthority:neutralizeActionSpaceRegulationPhysical(picture,evaluated,assessment.reason)
     local commitment=self.commitments:get(commitmentId)
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
         OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self,commitmentId,status and status.regulatedAssemblyId,{reason=assessment.reason,preserveAuthority=false})
         local settlementKind=forward and assessment.terminationEvidenceKind or "D0146_ACTION_SPACE_POSITIVE_PURPOSE_EXPIRY"
-        OuttaMyWay.LiveTrafficCommitmentLifecycle.settleD0146ActionSpacePurpose(self,commitmentId,{conflictIdentity=conflictIdentity,reason=assessment.reason},{
+        OuttaMyWay.LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose(self,commitmentId,{conflictIdentity=conflictIdentity,reason=assessment.reason},{
             kind=settlementKind,
             reason=assessment.reason,
             conflictIdentity=conflictIdentity,

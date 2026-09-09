@@ -45,7 +45,7 @@ def test_phase14_1_regulation_control_reuses_mechanics_without_owning_policy():
         "DecisionSelector",
         "CandidateSpace",
         "ControlRequest.new",
-        "D0123_NATIVE_HANDOVER_CREEP_KMH",
+        "GUARDED_RECOVERY_NATIVE_HANDOVER_CREEP_KMH",
         "FORWARD_INTERSECTION_REGULATION_SPEED_KMH",
     ):
         assert forbidden not in control

@@ -76,7 +76,7 @@ local function fitnessForConflict(picture,conflict)
     local result={}
     for _,item in OuttaMyWay.ValueRecord.ipairs(picture.representationFitness or {}) do
         local evidence=item.evidence or {}
-        if evidence.conflictIdentity==conflict.identity and evidence.controlProfile=="D0146_PASSAGE_EXCURSION_V6" then result[#result+1]=item end
+        if evidence.conflictIdentity==conflict.identity and evidence.controlProfile=="COOPERATIVE_PASSAGE_EXCURSION_V6" then result[#result+1]=item end
     end
     table.sort(result,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
     if #result~=2 then return nil,"PURPOSE_SPECIFIC_MECHANICAL_FITNESS_UNAVAILABLE" end
@@ -217,14 +217,14 @@ local function excursionGeometry(arrangement,aTrajectory,bTrajectory,aSpace,bSpa
     local maximumOffset=math.max(math.abs(tonumber(arrangement.subjectLateralOffsetM) or 0),math.abs(tonumber(arrangement.otherLateralOffsetM) or 0))
     local development=0
     if maximumOffset>0.001 then
-        local minimumDevelopment=tonumber(OuttaMyWay.D0146_STEP2_MIN_DEVELOPMENT_DISTANCE_M) or 4.0
-        local forwardPerLateral=tonumber(OuttaMyWay.D0146_STEP2_DEVELOPMENT_FORWARD_PER_LATERAL_M) or 2.0
+        local minimumDevelopment=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_MIN_DEVELOPMENT_DISTANCE_M) or 4.0
+        local forwardPerLateral=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_DEVELOPMENT_FORWARD_PER_LATERAL_M) or 2.0
         development=math.max(minimumDevelopment,maximumOffset*forwardPerLateral)
     end
     local recovery=development
     local frontOverlap=aLong.frontExtentM+bLong.frontExtentM
     local rearClear=aLong.rearExtentM+bLong.rearExtentM
-    local entryAllowance=tonumber(OuttaMyWay.D0146_STEP2_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M) or 3.0
+    local entryAllowance=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_ENTRY_CONTROL_ALLOWANCE_M) or 3.0
     local entryBoundary=frontOverlap+2*development+entryAllowance
     local currentSeparation=tonumber(longitudinalSeparationM)
     if not finite(currentSeparation) or currentSeparation<0 then return nil,"CURRENT_PAIR_LONGITUDINAL_SEPARATION_UNRESOLVED" end
@@ -255,9 +255,9 @@ local function makeGuide(conflict,aTrajectory,bTrajectory,aSpace,bSpace,aOffset,
     local development=tonumber(geometry.developmentDistanceM) or 0
     local traversal=tonumber(geometry.crossingWindowForwardPerParticipantM) or 0
     local recovery=tonumber(geometry.recoveryDistanceM) or 0
-    local traversalRadius=tonumber(OuttaMyWay.D0146_STEP2_TRAVERSAL_GATE_RADIUS_M) or 1.0
-    local developmentRadius=math.min(tonumber(OuttaMyWay.D0146_STEP2_DEVELOPMENT_GATE_RADIUS_M) or 2.0,math.max(traversalRadius,development*0.25))
-    local recoveryRadius=math.min(tonumber(OuttaMyWay.D0146_STEP2_REACQUISITION_GATE_RADIUS_M) or 2.0,math.max(traversalRadius,recovery*0.25))
+    local traversalRadius=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M) or 1.0
+    local developmentRadius=math.min(tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_DEVELOPMENT_GATE_RADIUS_M) or 2.0,math.max(traversalRadius,development*0.25))
+    local recoveryRadius=math.min(tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_REACQUISITION_GATE_RADIUS_M) or 2.0,math.max(traversalRadius,recovery*0.25))
     local gates={}
     if development>0.001 then
         gates[#gates+1]={kind="DEVELOPMENT_ENTRY",forwardM=development*0.5,lateralFraction=0.5,radiusM=developmentRadius}
@@ -304,7 +304,7 @@ end
 
 local function guideFieldSupport(guide,aSpace,bSpace,fieldWorld)
     if type(fieldWorld)~="table" or type(fieldWorld.boundary)~="table" or OuttaMyWay.ValueRecord.length(fieldWorld.boundary)<3 then return false,"FIELD_WORLD_GEOMETRY_UNAVAILABLE" end
-    local stepM=OuttaMyWay.D0146_STEP2_FIELD_SWEEP_SAMPLE_M or 2.0
+    local stepM=OuttaMyWay.COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M or 2.0
     local entryOrigins=guide.entryOrigins or {}
     local previous={
         subject={x=tonumber(entryOrigins.subject and entryOrigins.subject.x) or tonumber(aSpace.occupancy and aSpace.occupancy.x),z=tonumber(entryOrigins.subject and entryOrigins.subject.z) or tonumber(aSpace.occupancy and aSpace.occupancy.z)},
@@ -380,7 +380,7 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
     local minimum=math.huge
     local minimumCrossing=math.huge
     local minimumOutsideCrossing=math.huge
-    local samples=OuttaMyWay.D0146_STEP2_PAIR_SWEEP_SAMPLES_PER_LEG or 20
+    local samples=OuttaMyWay.COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG or 20
     local directional=directionalEnvelopeValid(aEnvelope) and directionalEnvelopeValid(bEnvelope)
     local entryOrigins=guide.entryOrigins or {}
     local previous={
@@ -407,7 +407,7 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
         previous.subject={x=gate.subject.x,z=gate.subject.z}; previous.other={x=gate.other.x,z=gate.other.z}
     end
     local required=tonumber(nominalClearanceM) or 1.0
-    local acceptanceRatio=tonumber(OuttaMyWay.D0146_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO) or 1.0
+    local acceptanceRatio=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO) or 1.0
     acceptanceRatio=math.max(0,acceptanceRatio)
     local acceptedFloor=required*acceptanceRatio
     -- D-0165 + v0.1.4.7 TEST: Nominal Passage Clearance remains the Crossing-Window construction target, not an exact Boolean equality. The policy floor admits a bounded undershoot while represented non-contact remains hard. Development may build toward the target and Recovery may relinquish it once the physical crossing is positively complete, but represented overlap is never authorised outside the window.
@@ -529,7 +529,7 @@ local function thirdPartyGuideSupport(guide,aSpace,bSpace,aDiscs,bDiscs,picture,
     if aRadius==nil or bRadius==nil then return false,"PARTICIPANT_PASSAGE_RADIAL_RESERVE_UNAVAILABLE" end
     local participantDiscs={subject=aDiscs,other=bDiscs}
     local participantEnvelopes={subject=aEnvelope,other=bEnvelope}
-    local samples=OuttaMyWay.D0146_STEP2_PAIR_SWEEP_SAMPLES_PER_LEG or 20
+    local samples=OuttaMyWay.COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG or 20
     local support={}
     for _,third in ipairs(thirds) do
         local entryOrigins=guide.entryOrigins or {}
@@ -701,7 +701,7 @@ local function planConflict(picture,snapshot,conflict)
     if not aTrajectory or not bTrajectory or not aSpace or not bSpace or not aMotion or not bMotion or not aPhysical or not bPhysical then return nil,"PASSAGE_INPUT_KNOWLEDGE_INCOMPLETE" end
     local closing=conflict.currentClosing or {}
     local separation=tonumber(closing.separationM)
-    local maxSeparation=OuttaMyWay.D0146_STEP2_LOCAL_PASSAGE_MAX_ENTRY_SEPARATION_M or 80.0
+    local maxSeparation=OuttaMyWay.COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M or 80.0
     if separation==nil then return nil,"CURRENT_PAIR_SEPARATION_UNRESOLVED" end
     if separation>maxSeparation then return nil,"ESTABLISHED_CONFLICT_NOT_YET_LOCAL" end
     local interacting,encounterIdentity=currentInteraction(picture,conflict.subjectAssemblyId,conflict.otherAssemblyId)
@@ -714,7 +714,7 @@ local function planConflict(picture,snapshot,conflict)
     if not finite(ax) or not finite(az) or not finite(bx) or not finite(bz) then return nil,"CURRENT_SPACE_POSE_UNAVAILABLE" end
     local longitudinalSeparation=longitudinalPairSeparation(aSpace,bSpace,aTrajectory,bTrajectory)
     if not finite(longitudinalSeparation) then return nil,"CURRENT_PAIR_LONGITUDINAL_SEPARATION_UNRESOLVED" end
-    local nominalClearance=tonumber(OuttaMyWay.D0146_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M) or 1.0
+    local nominalClearance=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M) or 1.0
     local baselinePairClearance,clearanceReason=OuttaMyWay.PairSpecificPassageClearance.currentPair(aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)
     if baselinePairClearance==nil then return nil,"PAIR_SPECIFIC_PASSAGE_CLEARANCE_UNAVAILABLE:"..tostring(clearanceReason) end
     local pairClearance,transitReason=transitConditionedPair(baselinePairClearance,aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearance)
@@ -755,7 +755,7 @@ local function planConflict(picture,snapshot,conflict)
                 guide.thirdPartySupport=thirdEvidence
                 return {
                     status="SUPPORTED",reason="D0146_SUFFICIENT_LOCAL_PASSAGE_ARRANGEMENT_FOUND",
-                    authority="D0146_STEP2_ACTIVE_TEST",
+                    authority="COOPERATIVE_PASSAGE_CANDIDATE_SUPPORT",
                     conflictIdentity=conflict.identity,operationId=conflict.operationId,encounterIdentity=encounterIdentity,
                     assemblyIds={conflict.subjectAssemblyId,conflict.otherAssemblyId},
                     subjectAssemblyId=conflict.subjectAssemblyId,otherAssemblyId=conflict.otherAssemblyId,
@@ -787,7 +787,7 @@ local function planConflict(picture,snapshot,conflict)
                         otherFrontExtentM=geometry.otherFrontExtentM,otherRearExtentM=geometry.otherRearExtentM,crossingWindowBasis=geometry.crossingWindowBasis
                     },
                     progressiveSearch={candidateCount=#arrangements,selectedIndex=index,rejectedBeforeSelection=rejected,satisficed=true,conflictSelection="NEAREST_LOCAL_ESTABLISHED_CONFLICT_FIRST"},
-                    controlProfile="D0146_PASSAGE_EXCURSION_V6",
+                    controlProfile="COOPERATIVE_PASSAGE_EXCURSION_V6",
                     provenance={source="LocalPassagePlanner",layer="CANDIDATE_SUPPORT",decisionAuthority=false,controlAuthority=false,generalVehicleAuthority=false,globalOptimisation=false,vehicleNameAdmissionGate=false}
                 },nil
             end
@@ -824,7 +824,7 @@ end
 -- bounded support question while retaining the complete parent Operational
 -- Picture as the evidence universe. It owns no inter-conflict selection.
 function Planner.planConflict(picture,snapshot,conflict)
-    if OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED~=true then return nil,"D0146_STEP2_DISABLED" end
+    if OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED~=true then return nil,"D0146_STEP2_DISABLED" end
     if type(conflict)~="table" or conflict.classification~="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" then
         return nil,"PROJECTED_RELATIONSHIP_NOT_ESTABLISHED_OPPOSED_CONFLICT"
     end
@@ -833,7 +833,7 @@ function Planner.planConflict(picture,snapshot,conflict)
 end
 
 function Planner.plan(picture,snapshot)
-    if OuttaMyWay.D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED~=true then return nil,"D0146_STEP2_DISABLED" end
+    if OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED~=true then return nil,"D0146_STEP2_DISABLED" end
     local conflicts=establishedConflicts(picture)
     if #conflicts==0 then return nil,"NO_ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" end
     local firstReason=nil
