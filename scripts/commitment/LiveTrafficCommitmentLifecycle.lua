@@ -205,9 +205,9 @@ function Lifecycle.applyFollowerBoundaryDecision(runtime,picture,evaluated)
         commitment=result.commitment; token=result.authorityToken; acquired=true
     end
     if application~=nil or obligationResult.created or acquired then
-        logInfo("FOLLOWER_BOUNDARY_DECISION_APPLIED decision=%s application=%s commitment=%s obligation=%s pair=%s token=%s acquired=%s cap=%.2fkmh",
+        logInfo("FOLLOWER_BOUNDARY_DECISION_APPLIED decision=%s application=%s commitment=%s obligation=%s pair=%s token=%s acquired=%s admissible=%.2fkmh",
             tostring(evaluated.decision.identity),tostring(application and application.identity or "REVALIDATED"),tostring(commitment.identity),tostring(obligationResult.obligation.identity),
-            tostring(bridge.pairKey),tostring(token and token.identity or "NONE"),tostring(acquired),tonumber(bridge.requestedFollowerCapKmh) or 0)
+            tostring(bridge.pairKey),tostring(token and token.identity or "NONE"),tostring(acquired),tonumber(bridge.magnitudeEvidence and bridge.magnitudeEvidence.maxAdmissibleFollowerKmh) or 0)
     end
     return {application=application,commitment=commitment,obligation=obligationResult.obligation,authorityToken=token,authorityAcquired=acquired,bridge=bridge},nil
 end

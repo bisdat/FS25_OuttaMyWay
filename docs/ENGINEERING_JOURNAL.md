@@ -23,6 +23,43 @@ behavioural thresholds, semantic-profile requirements or harness enforcement
 change. Issue #98 remains independently responsible for Follower magnitude
 ownership.
 
+## 2026-09-09 — Issue #98 Follower magnitude ownership design and implementation
+
+**Observe:** `FollowerBoundaryDemandAssessment` computed
+`requestedFollowerCapKmh`; Candidate Support copied that value verbatim; and
+`RegulationBoundedAuthority` placed the same value into the Bounded Authority
+grant/request. The numerical policy itself remained well validated.
+
+**Discover:** **Admissible Envelope != Authorised Target.** Runtime architecture
+already allows Situation/Candidate to supply a validity or admissibility envelope
+while requiring Bounded Authority to own the current physical magnitude.
+
+**Decision:** retain the existing Situation-owned `maxAdmissibleFollowerKmh`
+calculation, including current timing, transition, reverse and 0.90 clearance
+behaviour. Remove `requestedFollowerCapKmh` from Situation and Candidate.
+Introduce authority-owned `FollowerBoundaryMagnitudePolicy`, which materialises
+`permittedFollowerCapKmh = min(native unrestricted rate, max admissible rate)`
+before Regulation Bounded Authority creates the physical grant/request.
+
+**Preserve:** no change to D-0141 admission, sticky-purpose retention, positive
+retirement/supersession, quiescence/reactivation, Regulation identity or accepted
+magnitude numerics. The existing behavioural values remain the validation oracle.
+
+**Implementation validation discovery:** the pre-commit active-source ownership
+scan found three residual `requestedFollowerCapKmh` consumers after the primary
+Situation/Candidate/Bounded-Authority migration: one lifecycle log and two
+Passive Live Validator diagnostic reads. Neither consumer owned magnitude, but
+the lifecycle residue would have become an invalid bridge dereference and both
+preserved misleading permission vocabulary. They now consume/report
+`maxAdmissibleFollowerKmh` only.
+
+> **Non-authoritative Consumer != Permission Owner**
+
+**Validate:** protected GitHub Actions must prove structural ownership and offline
+behaviour. A targeted GIANTS Follower Boundary Reality smoke remains required
+before Issue #98 acceptance. This executable increment uses
+`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`.
+
 ## 2026-09-09 — Issue #99 accepted; Follower magnitude ownership becomes active boundary
 
 **Validate:** PR #106 independently passed the protected validation boundary on

@@ -1982,7 +1982,7 @@ def test_follower_boundary_regulation_application_is_upstream_and_singular():
     assert continuation.index("authorities:validate") < continuation.index("_regulationRequest")
     assert continuation.index("_regulationRequest") < continuation.index("self.runtime.liveControlDispatcher:dispatch")
     assert 'ownerTag=FOLLOWER_BOUNDARY_OWNER_TAG' not in continuation  # owner tag is supplied as the existing request argument
-    assert "FOLLOWER_BOUNDARY_OWNER_TAG" in continuation and "requestedFollowerCapKmh" in continuation
+    assert "FOLLOWER_BOUNDARY_OWNER_TAG" in continuation and "permittedFollowerCapKmh" in continuation
     assert "applyFollowerBoundaryRetirementDecision" in runtime
     assert "settleFollowerBoundaryPurpose" in runtime
     assert "applyFollowerBoundaryRetirementDecision" not in regulation_authority
@@ -2431,3 +2431,38 @@ def test_d0218_causal_obstruction_recognition_stays_upstream_of_control():
     assert "ControlRequest" not in causal
     assert "BoundedAuthority" not in causal
     assert "TerminalEgress" not in causal
+
+def test_follower_boundary_permissible_magnitude_is_bounded_authority_owned():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    assessment=(ROOT/"scripts"/"assessment"/"FollowerBoundaryDemandAssessment.lua").read_text(encoding="utf-8")
+    support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
+    policy_path=ROOT/"scripts"/"authority"/"FollowerBoundaryMagnitudePolicy.lua"
+    policy=policy_path.read_text(encoding="utf-8")
+    authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
+
+    assert policy_path.is_file()
+    assert "scripts/authority/FollowerBoundaryMagnitudePolicy.lua" in main
+    assert main.index("scripts/authority/FollowerBoundaryMagnitudePolicy.lua") < main.index("scripts/authority/RegulationBoundedAuthority.lua")
+
+    # Situation owns the admissible envelope but no final executable target.
+    assert "maxAdmissibleFollowerKmh" in assessment
+    assert "requestedFollowerCapKmh" not in assessment
+
+    # Candidate projection carries evidence, not a pre-authorised speed request.
+    assert "magnitudeEvidence=" in support
+    assert "maxAdmissibleFollowerKmh=record.controlMagnitude.maxAdmissibleFollowerKmh" in support
+    assert "requestedFollowerCapKmh" not in support
+
+    # Final physical permission is materialised only in the authority layer.
+    assert "function Policy.materialize" in policy
+    assert "permittedFollowerCapKmh=math.min(native,admissible)" in policy
+    assert "FollowerBoundaryMagnitudePolicy.materialize(bridge.magnitudeEvidence)" in authority
+    assert "permittedFollowerCapKmh" in authority
+    assert "requestedFollowerCapKmh" not in authority
+
+    active_lua="\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (ROOT/"scripts").rglob("*.lua")
+        if "archive" not in path.parts
+    )
+    assert "requestedFollowerCapKmh" not in active_lua

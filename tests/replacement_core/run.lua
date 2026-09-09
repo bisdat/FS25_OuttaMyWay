@@ -110,6 +110,7 @@ load("scripts/control/mechanisms/TransitConfigurationMechanism.lua")
 load("scripts/control/CooperativePassageControl.lua")
 load("scripts/control/TerminalEgressControl.lua")
 load("scripts/authority/ResolutionSpaceProgressionEnvelope.lua")
+load("scripts/authority/FollowerBoundaryMagnitudePolicy.lua")
 load("scripts/authority/RegulationBoundedAuthority.lua")
 load("scripts/control/GuardedRecoveryCompatibility.lua")
 load("scripts/control/RegulationControl.lua")
@@ -141,6 +142,10 @@ local function expectError(fn)
 end
 local function equal(a,b,message)
     if a ~= b then error(message or (tostring(a) .. " ~= " .. tostring(b))) end
+end
+local function permittedFollowerCap(evidence)
+    local permission=OuttaMyWay.FollowerBoundaryMagnitudePolicy.materialize(evidence)
+    return permission and permission.permittedFollowerCapKmh or nil
 end
 
 local function newKernel()
@@ -2555,8 +2560,8 @@ test("D-0141 current Adjacent Following topology supports the v4.7.70 positive c
     equal(result.demandSeed.kind,"PROVISIONAL_DEMAND_SEED")
     equal(result.demandSeed.spatialSeedSource,"OBSERVED_GIANTS_WORKING_WIDTH")
     equal(result.controlMagnitude.nativeUnrestrictedFollowerKmh,25)
-    equal(result.controlMagnitude.requestedFollowerCapKmh>0,true)
-    equal(result.controlMagnitude.requestedFollowerCapKmh<25,true)
+    equal(permittedFollowerCap(result.controlMagnitude)>0,true)
+    equal(permittedFollowerCap(result.controlMagnitude)<25,true)
 end)
 
 test("D-0141 native zero command is unresolved rate evidence and cannot derive a zero policy cap", function()
@@ -2566,7 +2571,7 @@ test("D-0141 native zero command is unresolved rate evidence and cannot derive a
     equal(result.relationship.status,"POSITIVE")
     equal(result.status,"UNRESOLVED")
     equal(result.reason,"FOLLOWER_NATIVE_ZERO_COMMAND_HAS_NO_RATE_AUTHORITY")
-    equal(result.controlMagnitude.requestedFollowerCapKmh,nil)
+    equal(permittedFollowerCap(result.controlMagnitude),nil)
 end)
 
 test("D-0141 distant same-corridor following remains current topology but needs no Control while natural ordering is preserved", function()
@@ -2577,7 +2582,7 @@ test("D-0141 distant same-corridor following remains current topology but needs 
     equal(result.status,"OBSERVE_SUPPORTED")
     equal(result.purposeState,"NONE")
     equal(result.controlMagnitude.regulationRequired,false)
-    equal(result.controlMagnitude.requestedFollowerCapKmh,25)
+    equal(permittedFollowerCap(result.controlMagnitude),25)
 end)
 
 test("D-0141 current work-corridor topology rejects the v4.7.69 opposite-corners false follower", function()
@@ -2598,7 +2603,7 @@ test("D-0141 existing follower purpose actively follows positive leader Transiti
     equal(preserved.status,"REGULATE_SUPPORTED")
     equal(preserved.purposeState,"PERSIST")
     equal(preserved.transitionPreservation,true)
-    equal(preserved.controlMagnitude.requestedFollowerCapKmh,9)
+    equal(permittedFollowerCap(preserved.controlMagnitude),9)
     equal(preserved.reason,"EXISTING_FOLLOWER_PURPOSE_BOUNDED_BY_LEADER_TRANSITION_PROGRESS_RATE")
     local retired=OuttaMyWay.FollowerBoundaryDemandAssessment.evaluatePair(leader,follower,{existingPurpose=true,progressPassage=true,provisionalDurationSec=13,minHeadingDot=0.99})
     equal(retired.status,"RETIRE_SUPPORTED")
@@ -2672,7 +2677,7 @@ test("D-0141 positive GIANTS leader pre-turn slowdown applies the active 0.90 cl
     equal(result.purposeState,"PERSIST")
     equal(result.controlMagnitude.leaderNativeCommandKmh,4)
     equal(result.controlMagnitude.leaderRateUsedKmh,4)
-    equal(result.controlMagnitude.requestedFollowerCapKmh,3.6)
+    equal(permittedFollowerCap(result.controlMagnitude),3.6)
 end)
 
 test("D-0141 turn progression updates preserved cap and positive native reverse may stop follower", function()
@@ -2681,27 +2686,51 @@ test("D-0141 turn progression updates preserved cap and positive native reverse 
     local result=OuttaMyWay.FollowerBoundaryDemandAssessment.evaluatePair(leader,follower,{existingPurpose=true,provisionalDurationSec=13,minHeadingDot=0.99})
     equal(result.status,"REGULATE_SUPPORTED")
     equal(result.transitionPreservation,true)
-    equal(math.abs(result.controlMagnitude.requestedFollowerCapKmh-3.312)<0.000001,true)
+    equal(math.abs(permittedFollowerCap(result.controlMagnitude)-3.312)<0.000001,true)
     -- Even while Productive evidence has not yet fallen away, positive GIANTS
     -- turning supersedes the old line-astern heading test for this existing purpose.
     leader.productivePositive=true; leader.settledContinuation=true; leader.dx=0.6; leader.dz=0.8; leader.progressSpeedKmh=7.87; leader.nativeMaxSpeedKmh=15
     local rotating=OuttaMyWay.FollowerBoundaryDemandAssessment.evaluatePair(leader,follower,{existingPurpose=true,provisionalDurationSec=13,minHeadingDot=0.99,establishedAlignmentMinDot=0.95})
     equal(rotating.status,"REGULATE_SUPPORTED")
     equal(rotating.transitionPreservation,true)
-    equal(math.abs(rotating.controlMagnitude.requestedFollowerCapKmh-7.083)<0.000001,true)
+    equal(math.abs(permittedFollowerCap(rotating.controlMagnitude)-7.083)<0.000001,true)
     leader.productivePositive=false; leader.settledContinuation=false; leader.dx=0; leader.dz=1
     leader.nativeMoveForwards=false; leader.nativeMaxSpeedKmh=15; leader.progressSpeedKmh=2
     local reverse=OuttaMyWay.FollowerBoundaryDemandAssessment.evaluatePair(leader,follower,{existingPurpose=true,provisionalDurationSec=13,minHeadingDot=0.99})
     equal(reverse.status,"REGULATE_SUPPORTED")
-    equal(reverse.controlMagnitude.requestedFollowerCapKmh,0)
+    equal(permittedFollowerCap(reverse.controlMagnitude),0)
     equal(reverse.reason,"LEADER_NATIVE_REVERSE_COMMAND_REQUIRES_FOLLOWER_STOP")
+end)
+
+test("Follower Boundary magnitude policy materialises final permission from admissible Situation evidence", function()
+    local restrictive,restrictiveReason=OuttaMyWay.FollowerBoundaryMagnitudePolicy.materialize({
+        status="SUPPORTED",nativeUnrestrictedFollowerKmh=25,maxAdmissibleFollowerKmh=12
+    })
+    equal(restrictiveReason,nil)
+    equal(restrictive.permittedFollowerCapKmh,12)
+
+    local relaxed=OuttaMyWay.FollowerBoundaryMagnitudePolicy.materialize({
+        status="SUPPORTED",nativeUnrestrictedFollowerKmh=20,maxAdmissibleFollowerKmh=25
+    })
+    equal(relaxed.permittedFollowerCapKmh,20)
+
+    local reverse=OuttaMyWay.FollowerBoundaryMagnitudePolicy.materialize({
+        status="SUPPORTED",nativeUnrestrictedFollowerKmh=25,maxAdmissibleFollowerKmh=0,transitionPreservation=true
+    })
+    equal(reverse.permittedFollowerCapKmh,0)
+
+    local missing,missingReason=OuttaMyWay.FollowerBoundaryMagnitudePolicy.materialize({
+        status="SUPPORTED",nativeUnrestrictedFollowerKmh=25
+    })
+    equal(missing,nil)
+    equal(missingReason,"FOLLOWER_BOUNDARY_ADMISSIBLE_RATE_UNAVAILABLE")
 end)
 
 local function d0141Picture(record,commitmentId)
     local contexts={}
     if commitmentId~=nil then contexts={{commitmentId=commitmentId}} end
     return OuttaMyWay.OperationalPicture.new({
-        identity="OP-D0141-"..tostring(record.reason).."-"..tostring(record.controlMagnitude and record.controlMagnitude.requestedFollowerCapKmh or "x"),epoch=410,observationSnapshotId="OS-HEADON",
+        identity="OP-D0141-"..tostring(record.reason).."-"..tostring(record.controlMagnitude and record.controlMagnitude.maxAdmissibleFollowerKmh or "x"),epoch=410,observationSnapshotId="OS-HEADON",
         situations={},encounters={},identities={assemblies={"AS-C","AS-P"},components={},jobEpisodes={active={"JE-C","JE-P"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
         currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},representationFitness={},
         motionEvidence={},physicalSpaceEvidence={},productiveContinuationKnowledge={},guardedRecoveryKnowledge={},followerBoundaryKnowledge={record},
@@ -2715,7 +2744,7 @@ local function d0141Record(cap,existingCommitmentId,existingObligationId)
         status="REGULATE_SUPPORTED",purposeState=existingCommitmentId and "PERSIST" or "ADMIT",reason="UNRESTRICTED_NATIVE_FOLLOWER_PROGRESSION_WOULD_MATURE_BEFORE_PROVISIONAL_LEADER_DEMAND_VACATES",
         relationship={status="POSITIVE",reason="CURRENT_COHERENT_LINE_ASTERN_PRODUCTIVE_TOPOLOGY",headingDot=1,leaderToFollowerForwardM=-26,lateralOffsetM=0,corridorHalfWidthM=33,corridorOverlap=true},
         demandSeed={kind="PROVISIONAL_DEMAND_SEED",representationFitness="USABLE_WITH_UNCERTAINTY",uncertainty={"TEMPORAL_SEED_IS_TEST_MECHANIC_NOT_NATIVE_ROUTE_PREDICTION"}},
-        controlMagnitude={status="SUPPORTED",regulationRequired=cap<25,nativeUnrestrictedFollowerKmh=25,maxAdmissibleFollowerKmh=cap,requestedFollowerCapKmh=cap},
+        controlMagnitude={status="SUPPORTED",regulationRequired=cap<25,nativeUnrestrictedFollowerKmh=25,maxAdmissibleFollowerKmh=cap},
         representationFitness="USABLE_WITH_UNCERTAINTY",governingPurpose="PRESERVE_BOUNDARY_TRANSITION_ORDERING",existingCommitmentId=existingCommitmentId,existingObligationId=existingObligationId,
         provenance={source="FollowerBoundaryDemandAssessment",layer="KNOWLEDGE",historicalNativeManoeuvreAuthority=false}
     }
