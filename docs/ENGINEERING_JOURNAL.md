@@ -1,3 +1,28 @@
+## 2026-09-09 — Issue #109 validation-bootstrap dependency isolation
+
+**Observe:** PR #108 Offline Validation run `34383189896` passed Structural
+contracts but the blocking Lua job failed three times before LuaJIT construction
+or any OuttaMyWay Lua execution. `apt-get update` rejected inconsistent metadata
+from the GitHub-hosted runner's unrelated Google Chrome repository, so both Lua
+harness outcomes remained `skipped`.
+
+**Discover:** **Validation Prerequisite != Runner Package Universe.** The LuaJIT
+validation runtime needs the hosted runner's compiler/archive toolchain; it does
+not need unrelated third-party package repositories to be healthy.
+
+> **Validation Dependency Must Be Causally Relevant**
+
+**Decision:** remove unconditional `apt-get update` / `build-essential`
+installation from the Lua bootstrap. Explicitly verify `git`, `make`, `cc` and
+`ar`, then build the same pinned LuaJIT commit with the same
+`LUAJIT_ENABLE_LUA52COMPAT` flag. Missing required tools remain a blocking,
+precisely classified validation-environment failure.
+
+**Boundary:** validation/workflow only. No runtime bytes, TEST identity,
+behavioural thresholds, semantic-profile requirements or harness enforcement
+change. Issue #98 remains independently responsible for Follower magnitude
+ownership.
+
 ## 2026-09-09 — Issue #99 accepted; Follower magnitude ownership becomes active boundary
 
 **Validate:** PR #106 independently passed the protected validation boundary on
