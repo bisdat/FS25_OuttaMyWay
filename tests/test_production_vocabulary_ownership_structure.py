@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -80,15 +81,40 @@ def test_retired_unsourced_config_residue_is_removed():
         assert (ROOT / rel).is_file()
 
 
-def test_test_build_identity_is_atomic():
+def test_test_build_identity_has_two_dynamic_source_owners():
     config = (ROOT / "scripts" / "config.lua").read_text(encoding="utf-8")
     main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
     moddesc = (ROOT / "modDesc.xml").read_text(encoding="utf-8")
 
-    assert 'OuttaMyWay.VERSION = "0.3.0.37"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE"' in config
-    assert "v0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE" in main
-    assert '<version value="0.3.0.37">0.3.0.37</version>' in moddesc
+    version_match = re.search(r'OuttaMyWay\.VERSION = "([^"]+)"', config)
+    label_match = re.search(r'OuttaMyWay\.BUILD_LABEL = "([^"]+)"', config)
+    moddesc_match = re.search(r'<version value="([^"]+)">([^<]+)</version>', moddesc)
+
+    assert version_match is not None
+    assert label_match is not None
+    assert moddesc_match is not None
+
+    version = version_match.group(1)
+    build_label = label_match.group(1)
+    assert moddesc_match.group(1) == version
+    assert moddesc_match.group(2) == version
+    assert build_label.startswith(version + " TEST — ")
+
+    # Build Identity Contract != Behaviour Regression Contract.
+    assert version not in main
+
+    leaked = []
+    for path in sorted((ROOT / "scripts").rglob("*.lua")):
+        if path == ROOT / "scripts" / "config.lua":
+            continue
+        if version in path.read_text(encoding="utf-8"):
+            leaked.append(path.relative_to(ROOT).as_posix())
+    for path in sorted((ROOT / "tests").rglob("*")):
+        if path.is_file() and path.suffix in {".py", ".lua", ".md"}:
+            if version in path.read_text(encoding="utf-8"):
+                leaked.append(path.relative_to(ROOT).as_posix())
+    assert leaked == []
+
 
 def test_semantic_contracts_do_not_use_development_identity():
     support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")

@@ -107,6 +107,33 @@ Validation Independence** distinguish implementation-local checks, independent
 CI execution, engineering interpretation, owner acceptance, and in-game Reality
 evidence without weakening any test to obtain green CI.
 
+### Build Identity Contract
+
+**Behaviour Regression Contract != Build Identity Contract.** A behavioural,
+architectural or source-structure regression must fail because the responsibility
+it names changed, not merely because a new executable TEST build received a new
+version.
+
+Current non-canonical TEST build version has exactly two source owners:
+
+- `scripts/config.lua` owns `OuttaMyWay.VERSION` and the corresponding
+  `OuttaMyWay.BUILD_LABEL`;
+- `modDesc.xml` owns the equal mod version value/text consumed by GIANTS.
+
+`scripts/main.lua` has runtime-entry responsibility and does not own a current
+build-version literal. Historical regression tests likewise do not own the
+current version.
+
+One dedicated structural **Build Identity Contract** dynamically reads the two
+owner files and proves version equality, BUILD_LABEL coherence and absence of
+the current version literal from runtime/test surfaces that do not own it.
+Historical documentation and evidence may truthfully retain earlier or current
+build identities because provenance is not Build Identity ownership.
+
+This is **Identity Coherence Without Distributed Sentinels**: changing executable
+bytes still requires one fresh TEST build identity before push, but that identity
+change must not masquerade as many unrelated behavioural regressions.
+
 ### Validation Runtime Contract
 
 Repeatable offline evidence depends on materially relevant execution semantics as well as repository bytes and test inputs. Interpreter name or source version alone is insufficient when build-time semantic options affect the contracts exercised by the suite.

@@ -16,12 +16,12 @@
 
 Every pushed revision that changes executable mod code must carry a fresh non-canonical TEST build identity before that branch revision is published for pull-request review, CI, or Farming Simulator testing. Do not reuse one TEST build identity for materially different executable bytes.
 
-Advance the `BUILD` component once for the coherent pushed code revision under the repository's `0.MINOR.PATCH.BUILD` policy, and update all **current build identity surfaces atomically** in the same commit. At minimum this includes:
+Advance the `BUILD` component once for the coherent pushed code revision under the repository's `0.MINOR.PATCH.BUILD` policy. Current TEST build version has exactly two source owners and both must change atomically:
 
-- `scripts/config.lua`: `OuttaMyWay.VERSION` and `OuttaMyWay.BUILD_LABEL`;
-- `modDesc.xml`: the mod version value/text;
-- `scripts/main.lua`: the current TEST build header;
-- current-build test or validation assertions that intentionally protect those surfaces.
+- `scripts/config.lua`: `OuttaMyWay.VERSION`; `OuttaMyWay.BUILD_LABEL` must begin with that same version and describes the TEST increment;
+- `modDesc.xml`: the mod version value/text, equal to `OuttaMyWay.VERSION`.
+
+`scripts/main.lua` is the runtime entry point and must not carry a current build-version literal. Behavioural, architectural and source-structure regression tests must not hard-code the current TEST version merely as a provenance sentinel. One dedicated structural **Build Identity Contract** dynamically reads the two owner files, proves their coherence, and proves the current version literal has not leaked back into runtime/test surfaces.
 
 Historical evidence, archived material, journal entries, release records, and other provenance that truthfully name an earlier build must not be renumbered merely to satisfy the current build identity.
 

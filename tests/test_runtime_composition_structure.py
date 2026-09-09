@@ -96,12 +96,3 @@ def test_runtime_still_does_not_physically_actuate():
     runtime=read("scripts/runtime/Runtime.lua")
     for forbidden in ("AIVehicleUtil.driveInDirection","AIVehicleUtil.driveToPoint","getCanAIFieldWorkerContinueWork"):
         assert forbidden not in runtime
-
-def test_current_build_identity_is_coherent():
-    config=read("scripts/config.lua")
-    main=read("scripts/main.lua")
-    moddesc=read("modDesc.xml")
-    assert 'OuttaMyWay.VERSION = "0.3.0.37"' in config
-    assert 'OuttaMyWay.BUILD_LABEL = "0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE"' in config
-    assert "v0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE" in main
-    assert '<version value="0.3.0.37">0.3.0.37</version>' in moddesc

@@ -6,8 +6,8 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline: `main` after PR #102 merge, commit
-  `257b310403a291ae52f1994a8f0f632baa05842b`.
+- Accepted Repository State baseline: `main` after PR #104 merge, commit
+  `794db9585973ba1b65de0a97813946a829bfddc4`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity remains
   **`0.3.0.37 TEST — PRODUCTION VOCABULARY VALIDATION CLOSURE`**.
@@ -120,7 +120,11 @@ A useful retained distinction is:
 These remain independently owned and are not Phase-15 reconciliation findings:
 
 - **#45 — Bubble Bullet Time**: accepted architecture, unimplemented.
-- **#65 — Behaviour Regression Contract != Build Identity Contract**.
+- **#65 — Behaviour Regression Contract != Build Identity Contract** is the
+  current validation-architecture prerequisite for the next executable
+  reconciliation. Current build version ownership is reduced to
+  `scripts/config.lua` + `modDesc.xml`; behavioural tests retain only their
+  named contracts.
 - **#87 — `scripts/config.lua` Mixed Runtime Constants Surface decomposition**.
 
 Configuration and GUI architecture define accepted/deferred future product
@@ -140,16 +144,19 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Begin reconciliation with **Issue #99 — Transit complete-assembly authority
-under representation discovery truncation**.
+Complete **Issue #65 — Build Identity Contract ownership cleanup** as the bounded
+validation-architecture prerequisite. This increment is behaviour-preserving and
+does not consume a new TEST BUILD; accepted executable identity remains `.37`.
 
-Then, unless new Reality changes the order:
+Then implement **Issue #99 — Transit complete-assembly authority under
+representation discovery truncation** with a clean fresh `.38` identity.
+
+After #99, unless new Reality changes the order:
 
 1. #98 — Follower Boundary magnitude ownership;
 2. #100 — Encounter architecture/design reconciliation;
 3. #101 — dependency-proven retirement/naming cleanup.
 
-Each executable increment requires its own fresh TEST build identity before push.
 Do not bundle these independent responsibilities into one reconciliation tranche.
 
 Issue #90 is closed as completed after PR #102 established the durable
