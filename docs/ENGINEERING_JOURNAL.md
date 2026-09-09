@@ -1,3 +1,39 @@
+## 2026-09-09 — Issue #97 audit hypothesis disproved by composed validation
+
+**Observe:** Phase-15 audit Issue #97 claimed that a retained unresolved Job
+Episode could outlive its established Field World equivalence-class relevance.
+PR #103 attempted `0.3.0.38 TEST — FIELD WORLD AUTHORITY RETENTION` by adding an
+explicit retained-worker `markRelevant()` loop and a composed lifecycle
+regression. CI reported **340 passed / 1 failed** in the main Lua harness and
+**9 passed / 0 failed** in focused obstruction relocation. The new test alone
+failed at its final same-cycle Field World retirement assertion. Structural
+contracts separately reported **174 passed / 21 failed**, all from unrelated
+tests still hard-coding the previous `.37` version literal.
+
+**Investigate:** accepted `main` already calls
+`FieldWorldEquivalenceAuthority:resolve(track.fieldWorldSnapshot)` on both the
+object-present retained path and the object-unavailable retained path.
+`resolve()` detects the existing immutable Snapshot assignment and calls
+`markRelevant()` before returning it; it does not re-evaluate stale geometry.
+The composed test confirmed the important uncertainty-window behaviour before
+its invalid retirement tail: retained worker A survived incomplete termination
+evidence and newly active worker B resolved `SAME_FIELD_WORLD` into A's existing
+Field World.
+
+**Discover:** **Retained Snapshot Resolution Already Owns Field World
+Relevance.** The #97 Phase-15 observation was a code-walk misclassification.
+The proposed runtime loop duplicated authority already present. The failed
+retirement assertion additionally showed that a retained track can mark its
+Field World relevant earlier in the same Observation cycle before downstream
+Job Episode termination is consumed; adding an arbitrary extra-cycle rule would
+hide that ordering rather than validate #97.
+
+**Decision:** close PR #103 unmerged and remove #97 from current implementation
+drift. Accepted executable identity remains `.37`; no `.38` bytes are accepted.
+Advance reconciliation to #99. Record the 21 distributed build-version
+failures as fresh evidence for existing Issue #65
+**Behaviour Regression Contract != Build Identity Contract**, not as #97
+behavioural failures.
 ## 2026-09-09 — Structural-test rename self-reference closure
 
 **Observe:** Offline Validation run #257 on exact durable-test-naming head
