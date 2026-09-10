@@ -232,7 +232,7 @@ function Lifecycle.settleFollowerBoundaryPurpose(runtime,commitmentId,bridge,evi
     local obligation=findFollowerBoundaryObligation(runtime,commitmentId,bridge.pairKey)
     local settledId=nil
     if obligation~=nil then
-        local mode=bridge.reason=="PROGRESS_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION" and "BASIS_CESSATION" or "SATISFACTION"
+        local mode="SATISFACTION"
         runtime.obligations:settle(obligation.identity,mode,evidence or {kind="FOLLOWER_BOUNDARY_POSITIVE_RETIREMENT",reason=bridge.reason})
         settledId=obligation.identity
     end

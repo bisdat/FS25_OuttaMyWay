@@ -1,3 +1,21 @@
+## 2026-09-10 — Issue #101 `.42` Guarded-Recovery orphan-chain retirement candidate
+
+**Observe / dependency proof:** current production still loaded and composed `GuardedRecoveryThreatAssessment`, `GuardedRecoveryConvergenceProbe` and `GuardedRecoveryCompatibility`, but Situation could originate Guarded-Recovery Knowledge only from `GUARDED_RECOVERY_CONTROL_EXECUTION_OBSERVATION`. The current live Observation / Regulation / Terminal-Egress composition has no producer of that exact observation kind. Existing Lua contracts reached the path only by manufacturing Guarded-Recovery Knowledge or legacy recovery ownership synthetically.
+
+> **Loaded Topology != Production Reachability**
+
+Current accepted Runtime and Spatial architecture also establish no independent Guarded Recovery responsibility. Cooperative Passage still owns its real participant recovery/restoration debt and GIANTS handback obligations.
+
+> **Recovery Debt != Guarded-Recovery Compatibility**
+
+**Implement `.42`:** retire the orphan Guarded-Recovery assessment, diagnostic facade and compatibility-Control modules; remove their Situation schema/state, Candidate/portfolio paths, Runtime composition, config values and synthetic-only contracts. The final dependency sweep also found `FollowerBoundaryDemandAssessment` consuming the same absent Guarded-Recovery control observation to manufacture legacy P22 Progress-Passage / outbound-egress flags; retire that embedded compatibility branch and its now-unreachable special follower-obligation settlement mode while preserving current follower topology, transition-rate and opposed-succession semantics. Preserve shared supporting-Regulation lifecycle helpers because current Follower/Action-Space/Passage responsibilities still use the current Regulation substrate.
+
+> **Producer Retirement Implies Consumer Reachability Review**
+
+**Scope separation:** the stale D-0147 Control-observation consumer, structurally unreachable `FOLLOWER_OWNS_CLOSURE` Constraint branch and two inert `bridge.encounterIdentity` Runtime consumers remain for the later #101 leaf-residue increment. The live `transitionCompletedObstructionResolution(...)` seam remains behaviourally untouched and its naming review belongs to #112.
+
+**Validate next:** implementation-local Lua/Python/XML/diff checks only, then independent blocking GitHub Structural and Lua offline behavioural contracts. Because executable composition changes, a targeted GIANTS Reality smoke remains a separate evidence layer before owner acceptance. Candidate identity is **`0.3.0.42 TEST — GUARDED RECOVERY ORPHAN RETIREMENT`**; canonical authority remains v0.3.0.0.
+
 ## 2026-09-10 — Issue #100 `.41` runtime contracts pass; focused fixture schema corrected
 
 **Validate:** protected CI for

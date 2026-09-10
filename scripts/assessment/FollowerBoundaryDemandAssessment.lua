@@ -242,18 +242,9 @@ end
 function Assessment.evaluatePair(leader,follower,options)
     options=options or {}
     local existingPurpose=options.existingPurpose==true
-    local passage=options.progressPassage==true
     local clearanceFactor=options.clearanceFactor or OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR or 0.90
     local relation=currentRelationship(leader,follower,options.minHeadingDot or 0.99)
     if existingPurpose then relation=applyEstablishedPurposeRetention(relation,options) end
-
-    if existingPurpose and passage then
-        return {
-            pairKey=pairKey(leader.assemblyId,follower.assemblyId),leaderAssemblyId=leader.assemblyId,followerAssemblyId=follower.assemblyId,
-            status="RETIRE_SUPPORTED",purposeState="RETIRE",reason="PROGRESS_PASSAGE_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION",
-            relationship=relation,representationFitness="CURRENTLY_FIT",governingPurpose="PRESERVE_BOUNDARY_TRANSITION_ORDERING"
-        }
-    end
 
     -- D-0146 is a stronger current relationship witness than the historical
     -- D-0130 retention rule.  Once Established Trajectory knowledge positively
@@ -277,21 +268,6 @@ function Assessment.evaluatePair(leader,follower,options)
                 opposedRelationship=opposed,provenance={source="FollowerBoundaryDemandAssessment",authority="D0146_POSITIVE_RELATIONSHIP_SUCCESSION"}
             }
         end
-    end
-
-    -- During the already-admitted P22 outbound refuge manoeuvre, do not let the
-    -- elastic follower magnitude relax upward merely because the Yield worker's
-    -- productive/native evidence has changed under OuttaMyWay Control. Preserve
-    -- the last admitted D-0141 lease unchanged until the existing compact-Refuge
-    -- Progress Passage witness retires it. This is lease continuity, not a new
-    -- egress controller or speed policy.
-    if existingPurpose and options.headOnOutboundEgress==true then
-        return {
-            pairKey=pairKey(leader.assemblyId,follower.assemblyId),leaderAssemblyId=leader.assemblyId,followerAssemblyId=follower.assemblyId,
-            status="UNRESOLVED",purposeState="PERSIST_UNRESOLVED",reason="ESTABLISHED_FOLLOWER_LEASE_PRESERVED_DURING_HEAD_ON_OUTBOUND_EGRESS",
-            relationship=relation,representationFitness="UNRESOLVED",governingPurpose="PRESERVE_BOUNDARY_TRANSITION_ORDERING",
-            outboundEgress=true,outboundEgressPhase=options.headOnOutboundEgressPhase
-        }
     end
 
     -- Once GIANTS positively enters a native turn, the previously established
@@ -427,28 +403,6 @@ local function activePurposeMap(commitmentContext)
     return out
 end
 
-local function relocationPhaseMaps(controlOutcomes,assemblyIdForReference)
-    local passage,outbound={},{}
-    local outboundPhases={
-        TS015_SETTLING=true,TS015_COMPACTING=true,TS015_MOVING=true,TS015_TARGET_COMPACTING=true
-    }
-    for _,observation in OuttaMyWay.ValueRecord.ipairs(controlOutcomes or {}) do
-        if observation.kind=="GUARDED_RECOVERY_CONTROL_EXECUTION_OBSERVATION" then
-            local yieldId=assemblyIdForReference(observation.yieldReferenceKey)
-            local progressId=assemblyIdForReference(observation.progressReferenceKey)
-            if yieldId~=nil and progressId~=nil then
-                local key=pairKey(yieldId,progressId)
-                if observation.phase=="TS015_COMPACT_REFUGE_HOLD" then
-                    passage[key]={yieldAssemblyId=yieldId,progressAssemblyId=progressId,commitmentId=observation.commitmentId,sourcePhase=observation.phase}
-                elseif outboundPhases[observation.phase]==true then
-                    outbound[key]={yieldAssemblyId=yieldId,progressAssemblyId=progressId,commitmentId=observation.commitmentId,sourcePhase=observation.phase}
-                end
-            end
-        end
-    end
-    return passage,outbound
-end
-
 local function workerRecord(assemblyId,current,motion,future,productive,operationByAssembly)
     local c=current[assemblyId]; local m=motion[assemblyId]; local f=future[assemblyId]; local p=productive[assemblyId]
     local raw=m and m.nativeFieldWork or nil
@@ -479,7 +433,6 @@ function Assessment.buildKnowledge(values)
     local operationByAssembly=values.operationByAssembly or {}
     local active=activePurposeMap(values.commitmentContext)
     local opposedByPair=opposedRelationshipMap(values.opposedCorridorKnowledge)
-    local passage,outbound=relocationPhaseMaps(values.controlOutcomes,function(ref) return values.assemblyIdForReference and values.assemblyIdForReference(ref) or nil end)
     local ids={}
     for assemblyId,_ in pairs(operationByAssembly) do ids[#ids+1]=assemblyId end
     table.sort(ids)
@@ -493,8 +446,7 @@ function Assessment.buildKnowledge(values)
         local leader,follower=workers[purpose.leaderAssemblyId],workers[purpose.followerAssemblyId]
         if leader~=nil and follower~=nil then
             local result=Assessment.evaluatePair(leader,follower,{
-                existingPurpose=true,progressPassage=passage[key]~=nil,
-                headOnOutboundEgress=outbound[key]~=nil,headOnOutboundEgressPhase=outbound[key] and outbound[key].sourcePhase or nil,
+                existingPurpose=true,
                 minHeadingDot=values.minHeadingDot,provisionalDurationSec=values.provisionalDurationSec,
                 establishedLateralRetentionM=values.establishedLateralRetentionM,
                 establishedAlignmentMinDot=values.establishedAlignmentMinDot,
@@ -507,8 +459,6 @@ function Assessment.buildKnowledge(values)
             result.operationId=leader.operationId
             result.leaderReferenceKey=purpose.leaderReferenceKey or leader.assemblyReferenceKey
             result.followerReferenceKey=purpose.followerReferenceKey or follower.assemblyReferenceKey
-            result.progressPassage=passage[key]
-            result.headOnOutboundEgress=outbound[key]
             records[#records+1]=result; seen[key]=true
         end
     end

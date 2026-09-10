@@ -118,89 +118,6 @@ local function assemblyIdForReference(map, referenceKey)
     return map[type(referenceKey)..":"..tostring(referenceKey)] or map[referenceKey]
 end
 
-local function currentSpaceByAssembly(currentSpace)
-    local result={}
-    for _,item in OuttaMyWay.ValueRecord.ipairs(currentSpace or {}) do result[item.assemblyId]=item end
-    return result
-end
-
-local function productiveByReference(productiveKnowledge)
-    local result={}
-    for _,item in OuttaMyWay.ValueRecord.ipairs(productiveKnowledge or {}) do
-        if item.assemblyReferenceKey~=nil then result[item.assemblyReferenceKey]=item end
-    end
-    return result
-end
-
-local function guardedRecoveryKnowledge(snapshot,currentSpace,productiveKnowledge,map)
-    local records,fitnessRecords={},{}
-    local current=currentSpaceByAssembly(currentSpace)
-    local productive=productiveByReference(productiveKnowledge)
-    for _,observation in OuttaMyWay.ValueRecord.ipairs(snapshot.controlOutcomes or {}) do
-        if observation.kind=="GUARDED_RECOVERY_CONTROL_EXECUTION_OBSERVATION" then
-            local yieldAssemblyId=assemblyIdForReference(map,observation.yieldReferenceKey)
-            local progressAssemblyId=assemblyIdForReference(map,observation.progressReferenceKey)
-            local recovery=current[yieldAssemblyId]
-            local progress=current[progressAssemblyId]
-            local recoveryOccupancy=recovery and recovery.occupancy or nil
-            local progressOccupancy=progress and progress.occupancy or nil
-            local progressEvidence=productive[observation.progressReferenceKey]
-            local representationId="guarded-recovery:"..tostring(observation.commitmentId or observation.controlRequestId or snapshot.identity)
-            local signal
-            local geometry={resolved=false,reason="GUARDED_RECOVERY_NOT_CURRENTLY_ACTIVE"}
-            if observation.nativeReacquired==true then
-                signal={status="EXPIRED",reason="POSITIVE_GIANTS_REACQUISITION_OBSERVED"}
-            elseif observation.activeRecovery~=true then
-                signal={status="UNRESOLVED",reason="GUARDED_RECOVERY_CONTROL_CONTEXT_NOT_ACTIVE"}
-            else
-                local recoveryPose=recoveryOccupancy and {x=recoveryOccupancy.x,z=recoveryOccupancy.z,dx=recoveryOccupancy.headingX,dz=recoveryOccupancy.headingZ} or nil
-                local progressPose=progressOccupancy and {x=progressOccupancy.x,z=progressOccupancy.z,dx=progressOccupancy.headingX,dz=progressOccupancy.headingZ} or nil
-                geometry=OuttaMyWay.GuardedRecoveryThreatAssessment.evaluateGeometry({
-                    recoveryPose=recoveryPose,progressPose=progressPose,previousProgressPose=nil,
-                    recoveryCurrentSpanM=observation.recoveryCurrentSpanM,recoveryInitialSpanM=observation.recoveryInitialSpanM,
-                    progressSpanM=observation.progressSpanM,
-                    rejoinTargetX=observation.rejoinTargetX,rejoinTargetZ=observation.rejoinTargetZ,
-                    rejoinAnchorX=observation.rejoinAnchorX,rejoinAnchorZ=observation.rejoinAnchorZ
-                })
-                local sample={
-                    geometryResolved=geometry.resolved==true,geometryReason=geometry.reason,combinations=geometry.combinations,
-                    progressExpectedJobToken=observation.progressJobToken,
-                    progressEvidenceJobToken=progressEvidence and progressEvidence.jobToken or nil,
-                    progressEvidenceClass=progressEvidence and progressEvidence.evidenceClass or "UNAVAILABLE",
-                    progressMovingDirection=progressEvidence and progressEvidence.movingDirection or nil
-                }
-                signal=OuttaMyWay.GuardedRecoveryThreatAssessment.evaluateCurrentHeadingSignal(sample)
-            end
-            local fit=(signal.status=="POSITIVE" or signal.status=="NEGATIVE") and "FIT_FOR_LIMITED_HORIZON" or "REFRESH_REQUIRED"
-            fitnessRecords[#fitnessRecords+1]={
-                representationId=representationId,assemblyId=progressAssemblyId,
-                question="GUARDED_RECOVERY_CURRENT_HEADING_THREAT",assessmentHorizon="CURRENT_GUARDED_RECOVERY_PICTURE_ONLY",
-                state=fit,claimPermissions=fit=="FIT_FOR_LIMITED_HORIZON" and {"GUARDED_RECOVERY_CURRENT_HEADING_THREAT_CLASSIFICATION"} or {},
-                coverage={complete=false,conservative=false,underApproximationRisk=true},
-                uncertainty=fit=="FIT_FOR_LIMITED_HORIZON" and {"BOUNDED_GUARDED_RECOVERY_REPRESENTATION_ONLY"} or {tostring(signal.reason or geometry.reason or "UNRESOLVED")},
-                validityDependencies={"CURRENT_CONTROL_EXECUTION_OBSERVATION","CURRENT_SPACE","SAME_PROGRESS_JOB_EPISODE","CURRENT_PRODUCTIVE_OR_TURN_EVIDENCE"},
-                provenance={source="SituationAssessment.GuardedRecovery",layer="KNOWLEDGE",authority="D0123_BOUNDED_TEST_REPRESENTATION"}
-            }
-            records[#records+1]={
-                representationId=representationId,
-                commitmentId=observation.commitmentId,controlRequestId=observation.controlRequestId,
-                governingRequirementKey=observation.governingRequirementKey,encounterIdentity=observation.encounterIdentity,
-                yieldAssemblyId=yieldAssemblyId,progressAssemblyId=progressAssemblyId,
-                yieldReferenceKey=observation.yieldReferenceKey,progressReferenceKey=observation.progressReferenceKey,
-                yieldJobToken=observation.yieldJobToken,progressJobToken=observation.progressJobToken,
-                phase=observation.phase,activeRecovery=observation.activeRecovery==true,postHandoff=observation.postHandoff==true,nativeReacquired=observation.nativeReacquired==true,
-                signalStatus=signal.status,reason=signal.reason,combination=copyValue(signal.combination),geometryResolved=geometry.resolved==true,
-                governingPurpose="PRESERVE_GUARDED_RECOVERY_COMMITTED_DEMAND",
-                representationFitness=fit,
-                provenance={source="SituationAssessment.GuardedRecovery",layer="KNOWLEDGE",observationSource=observation.provenance and observation.provenance.source or nil}
-            }
-        end
-    end
-    table.sort(records,function(a,b) return tostring(a.commitmentId or a.controlRequestId)<tostring(b.commitmentId or b.controlRequestId) end)
-    table.sort(fitnessRecords,function(a,b) return tostring(a.representationId)<tostring(b.representationId) end)
-    return records,fitnessRecords
-end
-
 local function normalizePhysicalSpace(values,map)
     local result={}
     for _,item in OuttaMyWay.ValueRecord.ipairs(values or {}) do
@@ -249,7 +166,6 @@ function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations
     self.spatialConstraintAssessment=OuttaMyWay.SpatialConstraintAssessment.new()
     self.publishedCount = 0
     self.latestProductiveContinuationByReference={}
-    self.latestGuardedRecoveryKnowledge={}
     self.trajectoryTracks={}
     return self
 end
@@ -418,10 +334,6 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             uncertainty[#uncertainty+1] = { class="REPRESENTATION_FITNESS", subjectId=fitness.representationId, state=fitness.state, provenance=fitness.provenance }
         end
     end
-    local guardedKnowledge,guardedFitness=guardedRecoveryKnowledge(snapshot,currentSpace,productiveKnowledge,map)
-    for _,fitness in OuttaMyWay.ValueRecord.ipairs(guardedFitness) do representationFitness[#representationFitness+1]=fitness end
-    table.sort(representationFitness,function(a,b) return tostring(a.representationId) < tostring(b.representationId) end)
-    self.latestGuardedRecoveryKnowledge=copyValue(guardedKnowledge)
     for _, source in OuttaMyWay.ValueRecord.ipairs(snapshot.unavailableSources) do
         uncertainty[#uncertainty+1] = { class="UNAVAILABLE_SOURCE", source=source, provenance={observationSnapshotId=snapshot.identity} }
     end
@@ -626,8 +538,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     local followerBoundaryKnowledge=OuttaMyWay.FollowerBoundaryDemandAssessment.buildKnowledge({
         currentSpace=currentSpace,futureSpace=futureSpace,motionEvidence=motionEvidence,productiveKnowledge=productiveKnowledge,
         opposedCorridorKnowledge=opposedCorridorKnowledge,
-        commitmentContext=commitmentContext,controlOutcomes=snapshot.controlOutcomes,operationByAssembly=operationByAssembly,
-        assemblyIdForReference=function(referenceKey) return assemblyIdForReference(map,referenceKey) end,
+        commitmentContext=commitmentContext,operationByAssembly=operationByAssembly,
         minHeadingDot=OuttaMyWay.FOLLOWER_BOUNDARY_CURRENT_ALIGNMENT_MIN_DOT or 0.99,
         provisionalDurationSec=OuttaMyWay.FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC or 13.0,
         establishedLateralRetentionM=OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_LATERAL_RETENTION_M or 1.0,
@@ -701,7 +612,6 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         motionEvidence=motionEvidence,
         physicalSpaceEvidence=physicalSpaceEvidence,
         productiveContinuationKnowledge=productiveKnowledge,
-        guardedRecoveryKnowledge=guardedKnowledge,
         followerBoundaryKnowledge=followerBoundaryKnowledge,
         trajectoryKnowledge=trajectoryKnowledge,
         opposedCorridorKnowledge=opposedCorridorKnowledge,
@@ -725,7 +635,6 @@ end
 function Assessment:resetSituationKnowledge()
     self.trajectoryTracks={}
     self.latestProductiveContinuationByReference={}
-    self.latestGuardedRecoveryKnowledge={}
     if self.spatialConstraintAssessment~=nil then self.spatialConstraintAssessment:reset() end
     if self.terminalOccupancyAssessment and type(self.terminalOccupancyAssessment.reset)=="function" then self.terminalOccupancyAssessment:reset() end
 end
@@ -737,7 +646,4 @@ function Assessment:getEvidence(referenceKeyValue, jobToken)
     return copyValue(evidence)
 end
 
-function Assessment:getGuardedRecoveryKnowledge()
-    return copyValue(self.latestGuardedRecoveryKnowledge or {})
-end
 function Assessment:getPublishedCount() return self.publishedCount end

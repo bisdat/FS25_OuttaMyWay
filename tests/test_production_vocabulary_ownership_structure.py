@@ -9,7 +9,6 @@ def test_primary_live_vocabulary_uses_current_responsibilities():
     support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     capability = (ROOT / "scripts" / "assessment" / "PassageCapabilityAssessment.lua").read_text(encoding="utf-8")
     authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
-    recovery = (ROOT / "scripts" / "control" / "GuardedRecoveryCompatibility.lua").read_text(encoding="utf-8")
     runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
 
     for token in (
@@ -21,11 +20,9 @@ def test_primary_live_vocabulary_uses_current_responsibilities():
         "actionSpaceRegulationBridge",
         "FOLLOWER_BOUNDARY_OWNER_TAG",
         "ACTION_SPACE_REGULATION_OWNER_TAG",
-        "GUARDED_RECOVERY_OWNER_TAG",
-        "GUARDED_RECOVERY_NATIVE_HANDOVER_CREEP_KMH",
         "completedObstructionCandidateSupport",
     ):
-        assert token in config + support + capability + authority + recovery + runtime
+        assert token in config + support + capability + authority + runtime
 
     for stale in (
         "D0146_STEP2_COOPERATIVE_PASSAGE_ENABLED",
@@ -40,7 +37,7 @@ def test_primary_live_vocabulary_uses_current_responsibilities():
         "_legacyRegulationRequest",
         "legacyTerminalEgressCandidateSupport",
     ):
-        assert stale not in config + support + capability + authority + recovery + runtime
+        assert stale not in config + support + capability + authority + runtime
 
 
 def test_passage_contract_uses_purpose_specific_representation_authority():
@@ -187,7 +184,6 @@ def test_semantic_runtime_categories_are_closed():
     authority = (ROOT / "scripts" / "authority" / "RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     regulation = (ROOT / "scripts" / "control" / "RegulationControl.lua").read_text(encoding="utf-8")
     lifecycle = (ROOT / "scripts" / "commitment" / "LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
-    guarded = (ROOT / "scripts" / "control" / "GuardedRecoveryCompatibility.lua").read_text(encoding="utf-8")
     situation = (ROOT / "scripts" / "assessment" / "SituationAssessment.lua").read_text(encoding="utf-8")
     trajectory = (ROOT / "scripts" / "assessment" / "TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
     support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
@@ -214,7 +210,7 @@ def test_semantic_runtime_categories_are_closed():
         "d0123-guarded-recovery:",
         "legacyOrdinal",
     ):
-        assert stale not in authority + lifecycle + guarded + situation + trajectory + support + portfolio + passage
+        assert stale not in authority + lifecycle + situation + trajectory + support + portfolio + passage
 
     # Current representation/control contracts describe purpose, not test tranche/version.
     for stale in (
@@ -226,18 +222,16 @@ def test_semantic_runtime_categories_are_closed():
         "D0123_CURRENT_HEADING_THREAT_CLASSIFICATION",
         "BOUNDED_D0123_TEST_REPRESENTATION_ONLY",
     ):
-        assert stale not in capability + planner + representation + situation + guarded + support
+        assert stale not in capability + planner + representation + situation + support
 
     assert "COOPERATIVE_PASSAGE_EXCURSION" in capability + planner
     assert "GIANTS_BASE_SIZE_DIRECTIONAL_PASSAGE_GEOMETRY" in representation + planner
     assert "GIANTS_DIRECTIONAL_MEMBER_UNION_PASSAGE_GEOMETRY" in representation
-    assert "GUARDED_RECOVERY_CONTROL_EXECUTION_OBSERVATION" in situation
-    assert "GUARDED_RECOVERY_CURRENT_HEADING_THREAT" in situation
     assert "action-space-regulation-composition:" in support
     assert "enumerationOrdinal" in portfolio
 
     # Returned/stored current runtime reasons and statuses are production vocabulary.
-    semantic_result_files = authority + lifecycle + guarded + trajectory + support
+    semantic_result_files = authority + lifecycle + trajectory + support
     for stale in (
         'reason="D0123_',
         'reason="D0141_',

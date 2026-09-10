@@ -139,7 +139,6 @@ function Runtime.new()
     runtime.liveTrafficCandidateSupport=OuttaMyWay.LiveTrafficCandidateSupport.new(identities,epochs,runtime.passiveCandidateSupport)
     runtime.liveControlDispatcher=OuttaMyWay.LiveControlDispatcher.new(runtime)
     runtime.regulationBoundedAuthority=OuttaMyWay.RegulationBoundedAuthority.new(runtime)
-    runtime.guardedRecoveryCompatibility=OuttaMyWay.GuardedRecoveryCompatibility.new(runtime)
     runtime.decisionCommitmentBoundary=OuttaMyWay.DecisionCommitmentBoundary.new(identities,epochs,admission,commitments,obligations,authorities,governingBasis,terminalSettlement)
     runtime.responsibilityTransitionAuthority=OuttaMyWay.ResponsibilityTransitionAuthority.new(runtime)
     terminalSettlement.responsibilityTransitionAuthority=runtime.responsibilityTransitionAuthority
@@ -730,9 +729,6 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
             return self:_terminateFollowerBoundaryRegulation(picture,evaluated,currentFollower,followerBridge,followerAssessment)
         end
     end
-    local guarded=self.guardedRecoveryCompatibility and self.guardedRecoveryCompatibility:dispatch(picture,evaluated,candidate) or nil
-    if guarded~=nil then return guarded end
-
     local bridge=cooperativePassageBridge(candidate)
     local dispatch=nil
     if candidate~=nil and candidate.capability=="REPOSITION" and bridge~=nil then

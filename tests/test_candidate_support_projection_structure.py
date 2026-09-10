@@ -18,7 +18,6 @@ def test_projection_materializes_exactly_one_portfolio_picture_and_no_support_vi
         "opposedCorridorKnowledge={}",
         "spatialConstraintKnowledge={}",
         "followerBoundaryKnowledge={}",
-        "guardedRecoveryKnowledge={}",
         "terminalOccupancyKnowledge={record}",
     ):
         assert deleted_evidence_view not in support

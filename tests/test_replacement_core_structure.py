@@ -11,7 +11,7 @@ def test_active_loader_never_sources_archive_or_legacy_core():
         assert forbidden not in text
     assert "scripts/control/LiveControlDispatcher.lua" in text
     assert "scripts/control/CooperativePassageControl.lua" in text
-    assert text.count("scripts/control/") == 9
+    assert text.count("scripts/control/") == 8
 
 
 
@@ -31,7 +31,6 @@ def test_d0184_retired_passage_and_fixture_implementation_is_deleted_not_archive
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     current_assessment=(ROOT/"scripts"/"assessment"/"CurrentResponsibilityAssessment.lua").read_text(encoding="utf-8")
-    compatibility=(ROOT/"scripts"/"control"/"GuardedRecoveryCompatibility.lua").read_text(encoding="utf-8")
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
 
@@ -49,18 +48,44 @@ def test_d0184_retired_passage_and_fixture_implementation_is_deleted_not_archive
     assert 'function Control:_beginRestore(run)' not in control
     assert 'requestRestore(run.a.vehicle)' not in control
 
-    assert 'OuttaMyWay.GUARDED_RECOVERY_NATIVE_HANDOVER_CREEP_KMH = 1.0' in config
-    assert 'GUARDED_RECOVERY_REGULATION_TEST_KMH' not in config
-    assert 'GUARDED_RECOVERY_REGULATION_TEST_ENABLED' not in config
-    assert 'GUARDED_RECOVERY_REGULATION_TEST_HEARTBEAT_MS' not in config
     assert 'PROTOTYPE_22_TS015_' not in config
-    assert 'GUARDED_RECOVERY_NATIVE_HANDOVER_CREEP_KMH or 1.0' in compatibility
 
     assert 'D0143_COOPERATIVE_PASSAGE_REVISE' not in lifecycle
     assert 'D0143_POSITIVE_RESTORATION_AND_HANDOFF' not in lifecycle
     assert 'decision="D-0143"' not in lifecycle
     assert 'COOPERATIVE_PASSAGE_REVISE' in lifecycle
     assert 'COOPERATIVE_PASSAGE_POSITIVE_RESTORATION_AND_HANDOFF' in lifecycle
+
+def test_issue101_guarded_recovery_orphan_chain_is_retired():
+    main = (ROOT / "scripts" / "main.lua").read_text(encoding="utf-8")
+    for rel in (
+        "scripts/assessment/GuardedRecoveryThreatAssessment.lua",
+        "scripts/diagnostics/GuardedRecoveryConvergenceProbe.lua",
+        "scripts/control/GuardedRecoveryCompatibility.lua",
+    ):
+        assert not (ROOT / rel).exists()
+        assert rel not in main
+
+    active = "\n".join(
+        p.read_text(encoding="utf-8")
+        for p in (ROOT / "scripts").rglob("*.lua")
+        if "archive" not in p.parts
+    )
+    for token in (
+        "GuardedRecoveryCompatibility",
+        "GuardedRecoveryThreatAssessment",
+        "GuardedRecoveryConvergenceProbe",
+        "guardedRecoveryKnowledge",
+        "GUARDED_RECOVERY_CONTROL_EXECUTION_OBSERVATION",
+        "GUARDED_RECOVERY_NATIVE_HANDOVER_CREEP_KMH",
+        "GUARDED_RECOVERY_CONVERGENCE_PROBE",
+    ):
+        assert token not in active
+
+    lifecycle = (ROOT / "scripts" / "commitment" / "LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
+    assert "acquireSupportingRegulationAuthority" in lifecycle
+    assert "releaseSupportingRegulationAuthority" in lifecycle
+
 
 def test_runtime_has_no_giants_observation_or_control_hook():
     text = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
@@ -171,7 +196,7 @@ def test_constraint_engine_declares_only_independently_owned_mandatory_questions
 def test_current_control_topology_has_one_terminal_egress_executor_beside_the_central_dispatcher():
     control_dir = ROOT / "scripts" / "control"
     assert control_dir.is_dir()
-    assert sorted(p.name for p in control_dir.glob("*.lua")) == ["CooperativePassageControl.lua", "GuardedRecoveryCompatibility.lua", "LiveControlDispatcher.lua", "RegulationControl.lua", "TerminalEgressControl.lua"]
+    assert sorted(p.name for p in control_dir.glob("*.lua")) == ["CooperativePassageControl.lua", "LiveControlDispatcher.lua", "RegulationControl.lua", "TerminalEgressControl.lua"]
     dispatcher = (control_dir / "LiveControlDispatcher.lua").read_text(encoding="utf-8")
     for token in ("g_currentMission", "AIVehicleUtil.driveToPoint", "getCanAIFieldWorkerContinueWork"):
         assert token not in dispatcher
@@ -599,31 +624,6 @@ def test_v4742_traffic_policeman_decision_policy_current_implementation_contract
 
 
 
-def test_v4745_guarded_recovery_convergence_probe_is_parallel_shadow_only():
-    probe=(ROOT/"scripts"/"diagnostics"/"GuardedRecoveryConvergenceProbe.lua").read_text(encoding="utf-8")
-    assessment=(ROOT/"scripts"/"assessment"/"GuardedRecoveryThreatAssessment.lua").read_text(encoding="utf-8")
-    situation=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
-    assert "Situation-owned Guarded Recovery Knowledge" in probe
-    assert "evaluateGeometry" in assessment and "evaluateCurrentHeadingSignal" in assessment
-    assert "guardedRecoveryKnowledge" in situation
-    for token in ("setRegulationLease", "executeControlRequest", "addModEventListener", "decisionCommitmentBoundary"):
-        assert token not in probe
-
-
-
-
-def test_v4746_d0123_regulation_bridge_is_bounded_test_authority_only():
-    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"GuardedRecoveryCompatibility.lua").read_text(encoding="utf-8")
-    candidate=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
-    assert "scripts/prototypes/GuardedRecoveryRegulationTestBridge.lua" not in main
-    assert "GUARDED_RECOVERY" in control
-    assert "REGULATE_SPEED" in control
-    assert "GUARDED_RECOVERY" in candidate
-    assert "boundedObservationContract" in candidate
-
-
-
 def test_v4753_d0124_persistent_follower_boundary_demand_lifecycle_is_bounded_test_only():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"FollowerMaturationCompressionProbe.lua").read_text(encoding="utf-8")
@@ -822,12 +822,9 @@ def test_v4768_d0136_settlement_future_space_uses_explicit_observation_adapter()
 
 def test_v4769_d0139_refuge_progress_passage_succeeds_old_follower_compression_purpose():
     follower=(ROOT/"scripts"/"diagnostics"/"FollowerMaturationCompressionProbe.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"GuardedRecoveryCompatibility.lua").read_text(encoding="utf-8")
     assert not (ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").exists()
     assert "setPurposeSuccessionSource" not in follower
     assert "_retireForProgressPassage" not in follower
-    assert "FOLLOWER_TRANSITION_CLEARANCE_REGULATION" not in control
-    assert "GUARDED_RECOVERY" in control
 
 
 
@@ -982,7 +979,6 @@ def test_v47101_d0146_step2_is_active_candidate_owned_and_control_executes_only_
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    compatibility=(ROOT/"scripts"/"control"/"GuardedRecoveryCompatibility.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
 
@@ -1839,7 +1835,6 @@ def test_v01145_d0200_job_episode_dependency_collapse_precedes_terminal_candidat
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     regulation_authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
-    compatibility=(ROOT/"scripts"/"control"/"GuardedRecoveryCompatibility.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     assert 'function Lifecycle.collapseEndedJobEpisodeDependencies' in lifecycle
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
@@ -1858,7 +1853,6 @@ def test_v01145_d0200_job_episode_dependency_collapse_precedes_terminal_candidat
     assert 'function Authority:retireTrafficLeasesForCommitment' in regulation_authority
     for token in ('D0155_DEPENDENT_COMMITMENT_TERMINATED','D0141_DEPENDENT_COMMITMENT_TERMINATED'):
         assert token in regulation_authority
-    assert 'D0123_DEPENDENT_COMMITMENT_TERMINATED' in compatibility
 
 
 def test_cooperative_passage_responsibility_transition_is_upstream_and_singular():
@@ -2232,20 +2226,6 @@ def test_phase10_bounded_authority_cleanup_precedes_terminal_or_successor_contro
     assert "releaseForCommitment" in settlement
 
 
-def test_phase10_guarded_recovery_regulation_remains_intentionally_unmigrated():
-    regulation_authority=(ROOT/"scripts/authority/RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
-    compatibility=(ROOT/"scripts/control/GuardedRecoveryCompatibility.lua").read_text(encoding="utf-8")
-    guarded=compatibility[compatibility.index("function Compatibility:dispatch"):compatibility.index("function Compatibility:retireTrafficLeaseForCommitment")]
-    assert 'bridge,"APPLY")' in guarded
-    assert "acquireSupportingRegulationAuthority" in guarded
-    assert "applied.currentResponsibility" not in guarded
-    assert "boundedAuthority:authorize" not in guarded
-    assert "guardedRecoveryLease" not in regulation_authority
-    assert "_dispatchGuardedRecovery" not in regulation_authority
-    assert "GuardedRecoveryCompatibility" in compatibility
-    assert "guardedRecoveryLease" in compatibility
-
-
 def test_phase11_live_control_dispatcher_is_authorised_routing_only():
     main=(ROOT/"scripts/main.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts/runtime/Runtime.lua").read_text(encoding="utf-8")
@@ -2257,12 +2237,10 @@ def test_phase11_live_control_dispatcher_is_authorised_routing_only():
     assert "scripts/assessment/CurrentResponsibilityAssessment.lua" in main
     assert "scripts/authority/RegulationBoundedAuthority.lua" in main
     assert "scripts/authority/ResolutionSpaceProgressionEnvelope.lua" in main
-    assert "scripts/control/GuardedRecoveryCompatibility.lua" in main
     assert main.index("scripts/authority/ResolutionSpaceProgressionEnvelope.lua") < main.index("scripts/authority/RegulationBoundedAuthority.lua")
     assert main.index("scripts/authority/RegulationBoundedAuthority.lua") < main.index("scripts/control/LiveControlDispatcher.lua")
 
     assert "RegulationBoundedAuthority.new(runtime)" in runtime
-    assert "GuardedRecoveryCompatibility.new(runtime)" in runtime
     orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
     assert "regulationBoundedAuthority:dispatch(picture,evaluated)" not in orchestration
     assert "currentResponsibilityAssessment:assessActionSpaceRegulation" in orchestration

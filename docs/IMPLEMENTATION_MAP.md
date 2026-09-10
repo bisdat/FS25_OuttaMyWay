@@ -21,8 +21,8 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline: `main` after PR #113 merge, commit
-  `41e24b68ada5ad8e236c0a44ba6c52393b9e1c7e`.
+- Accepted Repository State baseline for this increment: `main` after PR #114 merge, commit
+  `97bdc75f75e069678313908bff481314d15c79fc`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
   **`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
@@ -66,7 +66,7 @@ Architectural meaning remains owned by the
 | Cooperative Passage Control | `CooperativePassageControl.lua` plus shared mechanisms | PRESERVE validated mechanics and participant-specific handback |
 | Terminal Egress Control | `TerminalEgressControl.lua`, `NonJobActuationMechanism.lua` | PRESERVE shared provenance-neutral executor for warm/cold obstruction movement |
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting D-0147/D-0218 movement | PRESERVE current beneficiary protection |
-| Guarded Recovery compatibility | `GuardedRecoveryCompatibility.lua` plus synthetic test topology | **RETIRE/PROVE #101** — no demonstrated live production ingress |
+| Guarded Recovery compatibility | no current production placement after `.42` candidate | **RETIRE #101 / `.42` CANDIDATE** — dependency-proven orphan generation removed; acceptance remains pending validation/review/owner merge |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; retired `bridge.encounterIdentity` verdict/target consumers tracked by #101 |
 | Mixed runtime constants | `scripts/config.lua` | **SEPARATE #87** — ownership decomposition / player-developer-internal boundary |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
@@ -129,7 +129,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #101 | behaviour-preserving retirement/naming debt | orphaned Guarded Recovery, stale Control consumer, stranded Constraint semantics, defensive naming, and two non-authoritative Runtime reads of retired `bridge.encounterIdentity` exposed by `.41` Reality/log review |
+| #101 | behaviour-preserving retirement debt | `.42` candidate retires the dependency-proven Guarded-Recovery orphan generation; remaining leaf debt is the stale D-0147 Control consumer, stranded `FOLLOWER_OWNS_CLOSURE` Constraint semantics and two non-authoritative Runtime reads of retired `bridge.encounterIdentity`. Live obstruction-RTA API naming is deferred to #112. |
 
 Issue #100 is no longer current drift. PR #113 accepted the Current Pair
 Assessment Scope reconciliation and merged to Accepted Repository State as
@@ -159,21 +159,8 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Begin **#101 — dependency-proven retirement/naming cleanup** from accepted `main`
-at `41e24b68ada5ad8e236c0a44ba6c52393b9e1c7e`.
+Validate **#101 `.42 — Guarded Recovery Orphan Retirement`** from accepted `main` at `97bdc75f75e069678313908bff481314d15c79fc`.
 
-For each retained surface, first prove production reachability or absence and
-separate synthetic compatibility coverage from current production responsibility.
-Retire only orphaned/stranded surfaces whose current responsibility is absent.
-Preserve accepted gameplay behaviour and the existing fail-closed boundaries.
+The implementation claim is deliberately narrow: production composition no longer carries the dependency-proven unreachable Guarded-Recovery compatibility generation, while current Regulation, Passage recovery/restoration, obstruction, responsibility and authority semantics are unchanged.
 
-The two inert Runtime reads of retired `bridge.encounterIdentity` discovered
-while validating `.41` belong to this #101 review; they are not evidence for a
-persistent pair lifecycle and do not reopen #100.
-
-Issue #97 is not current drift: PR #103 validation exposed that accepted `main`
-already refreshes retained Field World relevance through existing-Snapshot
-`resolve()` semantics. Preserve that implementation unless new Reality
-contradicts it.
-
-Do not combine independent #45, #87, #89, #112 or other work into #101.
+After independent CI and appropriately scoped GIANTS Reality evidence, owner acceptance may advance this increment. Only then proceed to the separate #101 leaf-residue retirement. Do not fold Issue #112 naming conformance, #45 Bubble Bullet Time, #87 config decomposition or #89 HUD work into this increment.

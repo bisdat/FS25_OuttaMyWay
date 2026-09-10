@@ -573,123 +573,6 @@ local function attachFollowerBoundary(self,picture,snapshot,record)
 end
 
 
-local function activeGuardedRecovery(picture)
-    local matches={}
-    for _,item in OuttaMyWay.ValueRecord.ipairs(picture.guardedRecoveryKnowledge or {}) do
-        if item.nativeReacquired~=true and item.activeRecovery==true and type(item.commitmentId)=="string" then matches[#matches+1]=item end
-    end
-    if #matches==1 then return matches[1] end
-    if #matches>1 then return nil,"MULTIPLE_ACTIVE_GUARDED_RECOVERY_CONTEXTS" end
-    return nil,nil
-end
-
-local function guardPacket(reason,evidence)
-    return {
-        result="PASS",applicable=true,evidence=evidence or {},reason=reason,
-        provenance={source="LiveTrafficCandidateSupport",authority="D0123_GUARDED_RECOVERY_BOUNDED_TEST"},
-        revalidationTrigger={kind="NEXT_LIVE_OPERATIONAL_PICTURE"}
-    }
-end
-
-local function guardConstraints(guard, physicalCandidate)
-    local constraints={}
-    for _,id in ipairs(mandatory) do constraints[id]=guardPacket("Guarded Recovery bounded candidate constraint",{commitmentId=guard.commitmentId}) end
-    constraints.FIELD_WORLD_CONTAINMENT=guardPacket("Guarded Recovery remains inside the already-admitted local Encounter/Refuge context",{existingCommitment=true})
-    constraints.TRANSITION_CLEARANCE=guardPacket("Guarded Recovery protects already-Committed recovery Action Space; no new Refuge transition is initiated",{existingRecovery=true})
-    constraints.CONTROL_CAPABILITY_AVAILABILITY=guardPacket(physicalCandidate and "Existing P22 Regulation capability can bound GIANTS-owned Progress without replacing route or steering" or "No new physical capability is required while Observe remains supportable",{giantsRoutePreserved=true})
-    constraints.CONTINUING_INTENT_PRIORITY=guardPacket("Current Guarded Recovery evidence protects an existing recovery obligation and does not assign new production route priority",{guardedRecovery=true})
-    constraints.PROGRESS_PRESERVATION=guardPacket("Progress remains GIANTS-owned; Regulation changes only the bounded speed ceiling",{progressReferenceKey=guard.progressReferenceKey,giantsAuthorityPreserved=true})
-    constraints.RESPONSIBILITY_COMPATIBILITY=guardPacket("The existing Commitment already owns recovery responsibility",{commitmentId=guard.commitmentId})
-    constraints.OBLIGATION_COMPATIBILITY=guardPacket("Candidate protects the existing Native Continuation Restoration obligation and creates no new obligation",{commitmentId=guard.commitmentId})
-    constraints.COMMITMENT_PRECONDITIONS=guardPacket("Candidate is valid only for the named live Guarded Recovery Commitment",{commitmentId=guard.commitmentId})
-    constraints.EFFECTIVE_ACTUATION_COMPOSITION=guardPacket(physicalCandidate and "Existing Yield Reposition and temporary Progress speed Regulation are composable under one Commitment" or "No new actuation composition is proposed",{neverHoldAll=true})
-    constraints.SAFE_RELEASE_HANDOVER=guardPacket("Guarded Recovery Regulation retirement is purpose expiry, not traffic settlement",{mechanicalHandoverDoesNotSettleTraffic=true})
-    return constraints
-end
-
-local function guardedRecoverySpecification(pictureId,pictureValues,guard)
-    local requirement=guard.governingRequirementKey or ("guarded-recovery:"..tostring(guard.commitmentId))
-    local positive=guard.signalStatus=="POSITIVE"
-    local capability=positive and "REGULATE_SPEED" or "CONTINUE_OBSERVATION"
-    local constraints=guardConstraints(guard,positive)
-    local exhaustion={}
-    if positive then
-        exhaustion.CONTINUE_OBSERVATION={
-            result="PASS",operationalPictureId=pictureId,governingRequirementKey=requirement,capability="CONTINUE_OBSERVATION",
-            reason="Positive Guarded Recovery Convergent Projection intersection consumes protected recovery Action Space; Observe is exhausted",
-            evidence={signalStatus=guard.signalStatus,reason=guard.reason,combination=guard.combination},
-            provenance={source="SituationAssessment.GuardedRecovery",authority="D0123_OBSERVE_EXHAUSTION"}
-        }
-    end
-    local evidence={
-        constraintEvidence=constraints,
-        governingBasis={responsibilityKey=requirement,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active},
-        maintainsExistingCommitment=true,existingProgressMayContinue=true,
-        trafficPolicemanPreference={primaryResolution=true,governingRequirementKey=requirement,exhaustionEvidence=exhaustion},
-        guardedRecoveryBridge={
-            commitmentId=guard.commitmentId,governingRequirementKey=requirement,encounterIdentity=guard.encounterIdentity,
-            yieldAssemblyId=guard.yieldAssemblyId,progressAssemblyId=guard.progressAssemblyId,
-            yieldReferenceKey=guard.yieldReferenceKey,progressReferenceKey=guard.progressReferenceKey,
-            progressJobToken=guard.progressJobToken,governingPurpose=guard.governingPurpose,
-            signalStatus=guard.signalStatus,signalReason=guard.reason,representationId=guard.representationId
-        }
-    }
-    local representation={requirements={}}
-    if positive then
-        evidence.progressActuationOwnership={assemblyIds={guard.progressAssemblyId}}
-        evidence.effectiveActuationComposition={
-            identity="d0123-composition:"..tostring(guard.commitmentId)..":"..pictureId,epoch=pictureValues.epoch,
-            relevantAssemblyIds={guard.yieldAssemblyId,guard.progressAssemblyId},
-            entries={
-                {assemblyId=guard.yieldAssemblyId,commitmentId=guard.commitmentId,capability="REPOSITION",effectClass="MOVE",progressActuation=true},
-                {assemblyId=guard.progressAssemblyId,commitmentId=guard.commitmentId,capability="REGULATE_SPEED",effectClass="SPEED_LIMIT_OR_HOLD",progressActuation=true}
-            }
-        }
-        representation={requirements={{representationId=guard.representationId,acceptedStates={"FIT_FOR_LIMITED_HORIZON"}}}}
-    end
-    return {
-        referenceKey="d0123:"..string.lower(capability)..":"..tostring(guard.commitmentId),
-        purpose={kind="GUARDED_RECOVERY_PROTECTION",result=positive and "PRESERVE_COMMITTED_RECOVERY_ACTION_SPACE" or "CONTINUE_RECOVERY_WITH_BOUNDED_OBSERVATION"},
-        subject={assemblyId=guard.progressAssemblyId,assemblyIds={guard.progressAssemblyId}},capability=capability,
-        expectedEffect=positive and {physicalChange=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,speedCeilingOnly=true} or {physicalChange=false,existingRecoveryMayContinue=true},
-        evidenceBasis=evidence,representationFitness=representation,
-        preconditions={
-            evidenceContracts={},existingCommitmentId=guard.commitmentId,signalStatus=guard.signalStatus,
-            boundedObservationContract=positive and nil or {
-                knowledgeGap="CURRENT_GUARDED_RECOVERY_TRAFFIC_COMPATIBILITY",
-                expectedRealityEvolution="RECOVERY_OR_PROGRESS_GEOMETRY_CHANGES",
-                preservedUsefulAction="EXISTING_GUARDED_RECOVERY_CONTINUES_WITHOUT_NEW_PROGRESS_CONTROL",
-                exhaustionCondition="SIGNAL_BECOMES_POSITIVE_OR_POSITIVE_NATIVE_REACQUISITION_ENDS_RECOVERY_WINDOW",
-                reassessmentDeadline="NEXT_LIVE_OPERATIONAL_PICTURE",
-                progressParticipantId=guard.progressAssemblyId
-            }
-        },
-        invalidationConditions={{kind="GUARDED_RECOVERY_SIGNAL_CHANGE"},{kind="PROGRESS_JOB_EPISODE_CHANGE"},{kind="POSITIVE_GIANTS_REACQUISITION"}},
-        reversibility={physicalEffect=positive,releaseOnPurposeExpiry=true},obligationsCreated={},
-        releaseImplications={trafficSettlement=false,releaseOnlyPurposeBoundProgressRegulation=true},
-        uncertainty=positive and {"GUARDED_RECOVERY_NATIVE_HANDOVER_CREEP_IS_CURRENT_FIXED_POLICY"} or {"CONTINUE_OBSERVATION_REQUIRES_NEXT_PICTURE_REASSESSMENT"},
-        comparisonCost=0
-    },requirement
-end
-
-local function attachGuardedRecovery(self,picture,snapshot,guard)
-    local values=OuttaMyWay.ValueRecord.toTable(picture)
-    local pictureId=self.identities:issue("PICTURE")
-    values.identity=pictureId; values.epoch=self.epochs:next()
-    values.provenance={source="LiveTrafficCandidateSupport",parentOperationalPictureId=picture.identity,observationSnapshotId=snapshot.identity,authority="D0123_GUARDED_RECOVERY_ALIGNMENT"}
-    local specification,requirement=guardedRecoverySpecification(pictureId,values,guard)
-    values.candidateSupportEvidence={
-        complete=true,
-        supportBoundary={mode="GUARDED_RECOVERY",supportedCandidateClasses={specification.capability},physicalCapabilitiesImplemented=specification.capability=="REGULATE_SPEED",controlAuthority=false,boundedScope="ACTIVE_GUARDED_RECOVERY_COMMITMENT",decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
-        candidateSpecifications={specification},
-        provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,authority="D0123_GUARDED_RECOVERY_ALIGNMENT"}
-    }
-    self.publishedCount=self.publishedCount+1
-    self.lastStatus="GUARDED_RECOVERY_"..tostring(guard.signalStatus).."_CANDIDATE_PUBLISHED"
-    return OuttaMyWay.OperationalPicture.new(values)
-end
-
-
 local function passageRejectionTelemetry(allRejected)
     if type(allRejected)~="table" then return nil,nil end
     local geometry,field,sweep,third,other,total=0,0,0,0,0,0
@@ -882,18 +765,6 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
         },nil
     end
 
-    if projection.kind=="GUARDED_RECOVERY" then
-        local guard,reason=activeGuardedRecovery(picture)
-        if guard==nil then return nil,reason or "NO_ACTIVE_GUARDED_RECOVERY" end
-        local specification,requirement=guardedRecoverySpecification(targetPictureId,values,guard)
-        return {
-            supportBoundary={mode="GUARDED_RECOVERY",supportedCandidateClasses={specification.capability},physicalCapabilitiesImplemented=specification.capability=="REGULATE_SPEED",controlAuthority=false,boundedScope="ACTIVE_GUARDED_RECOVERY_COMMITMENT",decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=requirement}},
-            candidateSpecifications={specification},
-            representationFitness={},
-            provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,authority="D0123_GUARDED_RECOVERY_ALIGNMENT"}
-        },nil
-    end
-
     if projection.kind=="FORWARD_INTERSECTION" then
         local item,reason=forwardIntersectionRecord(picture)
         if item==nil then return nil,reason or "NO_FORWARD_INTERSECTION_SUPPORT" end
@@ -944,10 +815,6 @@ function Support:attach(picture,snapshot)
     local follower,followerReason=followerBoundaryRecord(picture)
     if follower~=nil and follower.status=="RETIRE_SUPPORTED" then return attachFollowerBoundary(self,picture,snapshot,follower) end
     if followerReason~=nil then self.lastStatus=followerReason; return self.passiveSupport:attach(picture,snapshot) end
-
-    local guard,guardReason=activeGuardedRecovery(picture)
-    if guard~=nil then return attachGuardedRecovery(self,picture,snapshot,guard) end
-    if guardReason~=nil then self.lastStatus=guardReason; return self.passiveSupport:attach(picture,snapshot) end
 
     -- An established follower purpose has precedence. Otherwise the earliest
     -- supported Forward Intersection is considered before Passage planning.

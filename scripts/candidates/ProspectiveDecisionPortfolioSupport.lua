@@ -9,7 +9,7 @@ end
 
 local function candidateMetadata(specification,family,groupKey,ordinal,boundary,extra)
     local evidence=specification.evidenceBasis or {}
-    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or evidence.guardedRecoveryBridge or {}
+    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or {}
     local metadata={
         groupKey=groupKey,family=family,enumerationOrdinal=ordinal,supportBoundary=boundary,
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,terminalEpisodeId=bridge.terminalEpisodeId,
@@ -30,7 +30,7 @@ end
 
 local function descriptorFromSpecification(specification,family,groupKey,ordinal,boundary,extra)
     local evidence=specification.evidenceBasis or {}
-    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or evidence.guardedRecoveryBridge or {}
+    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or {}
     local descriptor={
         groupKey=groupKey,family=family,enumerationOrdinal=ordinal,supportBoundary=boundary,
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,terminalEpisodeId=bridge.terminalEpisodeId,
@@ -66,14 +66,6 @@ end
 local function passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,family,reason,ordinal)
     local group=self.passiveSupport:buildProjectedGroup(picture,snapshot,targetPictureId,targetEpoch)
     appendGroup(state,group,family,"fail-closed:"..string.lower(family)..":"..tostring(reason),ordinal,{failClosedReason=reason})
-end
-
-local function activeGuardedRecoveryCount(picture)
-    local count=0
-    for _,item in OuttaMyWay.ValueRecord.ipairs(picture.guardedRecoveryKnowledge or {}) do
-        if item.nativeReacquired~=true and item.activeRecovery==true and type(item.commitmentId)=="string" then count=count+1 end
-    end
-    return count
 end
 
 local function terminalEligible(record)
@@ -145,16 +137,6 @@ function Support:attach(picture,snapshot)
         appendGroup(state,follower,family,"follower",1)
     elseif type(followerReason)=="string" and string.find(followerReason,"MULTIPLE_SIMULTANEOUS_FOLLOWER_BOUNDARY_CONTEXTS",1,true) then
         passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"FOLLOWER_FAIL_CLOSED",followerReason,1)
-    end
-
-    local guardCount=activeGuardedRecoveryCount(picture)
-    if guardCount>0 then
-        local guard,guardReason=self.liveSupport:buildProjectedGroup(picture,snapshot,{kind="GUARDED_RECOVERY"},targetPictureId,targetEpoch)
-        if modeOfGroup(guard)=="GUARDED_RECOVERY" then
-            appendGroup(state,guard,"GUARDED_RECOVERY","guarded-recovery",1)
-        elseif type(guardReason)=="string" and string.find(guardReason,"MULTIPLE_ACTIVE_GUARDED_RECOVERY_CONTEXTS",1,true) then
-            passiveFailClosed(self,picture,snapshot,state,targetPictureId,targetEpoch,"GUARDED_RECOVERY_FAIL_CLOSED",guardReason,1)
-        end
     end
 
     local forwardCount=forwardRelationshipCount(picture)

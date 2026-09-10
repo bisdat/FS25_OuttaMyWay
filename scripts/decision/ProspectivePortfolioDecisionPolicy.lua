@@ -57,12 +57,7 @@ function Policy:selectGroup(inventory)
     if followerFail~=nil then return choose(followerFail,"LEGACY_LIVE_TRAFFIC_FAIL_CLOSED","FOLLOWER_SAME_CLASS_AMBIGUITY_PRECEDES_OTHER_LIVE_TRAFFIC") end
 
     local followerRetire=family(groups,"FOLLOWER_RETIRE")[1]
-    if followerRetire~=nil then return choose(followerRetire,"LEGACY_LIVE_TRAFFIC_PRECEDENCE","FOLLOWER_RETIREMENT_BEFORE_GUARDED_RECOVERY") end
-
-    local guardFail=family(groups,"GUARDED_RECOVERY_FAIL_CLOSED")[1]
-    if guardFail~=nil then return choose(guardFail,"LEGACY_LIVE_TRAFFIC_FAIL_CLOSED","MULTIPLE_GUARDED_RECOVERY_CONTEXTS") end
-    local guard=family(groups,"GUARDED_RECOVERY")[1]
-    if guard~=nil then return choose(guard,"LEGACY_LIVE_TRAFFIC_PRECEDENCE","ACTIVE_GUARDED_RECOVERY_BEFORE_FRESH_TRAFFIC_PURPOSES") end
+    if followerRetire~=nil then return choose(followerRetire,"LEGACY_LIVE_TRAFFIC_PRECEDENCE","FOLLOWER_RETIREMENT_BEFORE_OTHER_LIVE_TRAFFIC") end
 
     local follower=family(groups,"FOLLOWER")[1]
     local passage=nearestPassage(groups)
