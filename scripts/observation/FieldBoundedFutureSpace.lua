@@ -78,7 +78,7 @@ function Future.build(worker)
     if distance==nil then
         return {bounded=false,outcome="FUTURE_SPACE_UNRESOLVED",reason=boundarySource,intentClassification=intent.classification,intentEpoch=intent.intentEpoch,authority="NO_NEGATIVE_CLEARANCE_AUTHORITY"}
     end
-    local discs=physicalDiscs(worker.shadowRepresentation)
+    local discs=physicalDiscs(worker.assemblyRepresentation)
     if #discs==0 then
         return {bounded=false,outcome="FUTURE_SPACE_UNRESOLVED",reason="PHYSICAL_COMPONENT_FOOTPRINT_UNAVAILABLE",intentClassification=intent.classification,intentEpoch=intent.intentEpoch,boundaryDistance=distance,boundarySource=boundarySource,authority="NO_NEGATIVE_CLEARANCE_AUTHORITY"}
     end
@@ -147,8 +147,8 @@ function Future.evaluatePair(subject,other,subjectFuture,otherFuture)
         return {positive=false,unresolved=true,outcome="FUTURE_SPACE_INTERACTION_UNRESOLVED",reason=reason,authority="NO_NEGATIVE_CLEARANCE_AUTHORITY",subject=subjectFuture,other=otherFuture}
     end
 
-    local subjectDiscs=physicalDiscs(subject and subject.shadowRepresentation)
-    local otherDiscs=physicalDiscs(other and other.shadowRepresentation)
+    local subjectDiscs=physicalDiscs(subject and subject.assemblyRepresentation)
+    local otherDiscs=physicalDiscs(other and other.assemblyRepresentation)
     local best=nil
     for _,a in ipairs(subjectDiscs) do
         local a0={x=a.x,z=a.z}

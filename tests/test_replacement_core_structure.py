@@ -454,9 +454,9 @@ def test_v4717_plan_view_representation_foundation_remains_active():
         assert forbidden not in footprint
     for token in ("boom01ArmLeftCol01","boom01ArmRightCol04","PERMANENT_PHYSICAL_CONTROL","PROTOTYPES_08_09_10_11_13"):
         assert token in donor
-    for token in ("shadowPlanViewEvidence","currentFootprintOutcome","POSITIVE_INTERACTION_ONLY"):
+    for token in ("planViewOccupancyEvidence","currentFootprintOutcome","POSITIVE_INTERACTION_ONLY"):
         assert token in source
-    for token in ("shadowInventoryPrimitives","shadowParticipatingPrimitives","shadowInactivePrimitives","shadowProfileCacheHit","currentFootprintOutcome"):
+    for token in ("assemblyRepresentationInventoryPrimitives","assemblyRepresentationParticipatingPrimitives","assemblyRepresentationInactivePrimitives","assemblyRepresentationProfileCacheHit","currentFootprintOutcome"):
         assert token in validator
     assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
     assert "POTENTIAL_INTERACTION_FROM_REPRESENTED_COMPONENTS" in cache

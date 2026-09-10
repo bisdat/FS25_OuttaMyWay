@@ -6,15 +6,14 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #117 merge,
-  commit `35fd9386b7c5403fda5231871cdb53e98168f485`.
+- Accepted Repository State baseline for this increment: `main` after PR #118 merge,
+  commit `6c19920c51af93ee727d55b329a1634ca5b5565d`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.43 TEST — STRANDED LEAF SEMANTIC RETIREMENT`**.
+  **`0.3.0.44 TEST — OBSTRUCTION RELOCATION TRANSITION NAMING`**.
 - Current Issue #112 executable candidate is
-  **`0.3.0.44 TEST — OBSTRUCTION RELOCATION TRANSITION NAMING`**; it is not
-  accepted until independent CI, engineering review, any applicable Reality
-  challenge and owner merge.
+  **`0.3.0.45 TEST — PHYSICAL REPRESENTATION NAMING CLOSURE`**; it is not accepted until independent CI, engineering
+  review, any applicable Reality challenge and owner merge.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
@@ -107,16 +106,21 @@ diagnostic directionality and live documentation responsibility.
     the production-unreachable `FOLLOWER_OWNS_CLOSURE` Constraint authority and
     its stale validation consumers, and dead Encounter-provenance Runtime reads.
     Current Follower, Passage and obstruction responsibilities remain current.
-- **#112 — active-code naming conformance** is now the current bounded workstream.
-  - The first selected executable increment is `.44`: rename the shared
-    Responsibility Transition Authority obstruction-relocation seam from its
-    completed-worker donor name to current **Obstruction Relocation** vocabulary.
-  - `.44` changes no gameplay, authority, responsibility, decision order,
-    Control behaviour or Physical Representation semantics.
-  - `TerminalEgress*`, production `shadow*` vocabulary, D-0147 donor semantic
-    tokens, broad public verbs, rolling historical headers and Configuration
-    identifiers remain separate later questions; Configuration ownership remains
-    coordinated with #87.
+- **#112 — active-code naming conformance** is the current bounded workstream.
+  - `.44` is accepted by PR #118; the shared Responsibility Transition Authority
+    obstruction-relocation seam now uses current **Obstruction Relocation**
+    vocabulary. PR #118 merged as
+    `6c19920c51af93ee727d55b329a1634ca5b5565d`.
+  - `.45` is the selected **Physical Representation naming closure**:
+    graduated current `shadowRepresentation` identity becomes **Assembly
+    Representation**, and current `shadowPlanViewEvidence` becomes **Plan-View
+    Occupancy Evidence**.
+  - `.45` preserves `physicalRepresentationEvidence` as a distinct
+    question/fitness/permission contract and preserves genuinely passive or
+    historical Shadow probes/evidence.
+  - `TerminalEgress*`, D-0147 donor semantic tokens, broad public verbs, rolling
+    historical headers and Configuration identifiers remain separate later
+    questions; Configuration ownership remains coordinated with #87.
 
 ### Disproven audit finding
 

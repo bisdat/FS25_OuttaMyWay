@@ -2319,7 +2319,7 @@ end)
 test("field-bounded component continuations support positive intersection and turning remains unresolved", function()
     local field={boundary={{x=0,z=0},{x=100,z=0},{x=100,z=100},{x=0,z=100}},islands={}}
     local function worker(x,z,dx,dz,intent)
-        return {activeObserved=true,fieldWorldSnapshot=field,pose={x=x,z=z,dx=dx,dz=dz},localIntent=intent,shadowRepresentation={worldPrimitives={{kind="DISC",identity=tostring(x)..":"..tostring(z),x=x,z=z,radius=2,positiveConflictSupport=true}}}}
+        return {activeObserved=true,fieldWorldSnapshot=field,pose={x=x,z=z,dx=dx,dz=dz},localIntent=intent,assemblyRepresentation={worldPrimitives={{kind="DISC",identity=tostring(x)..":"..tostring(z),x=x,z=z,radius=2,positiveConflictSupport=true}}}}
     end
     local settledA={classification="SETTLED_CONTINUATION",intentEpoch=1,intentValid=true}
     local settledB={classification="SETTLED_CONTINUATION",intentEpoch=1,intentValid=true}
@@ -2982,7 +2982,7 @@ test("D0136 settlement Future-Space adapter preserves representation boundary",f
     equal(worker.activeObserved,true)
     equal(worker.localIntent,intent)
     equal(worker.fieldWorldSnapshot,field)
-    equal(worker.shadowRepresentation,representation)
+    equal(worker.assemblyRepresentation,representation)
     equal(track.activeObserved,nil)
     local future=OuttaMyWay.FieldBoundedFutureSpace.build(worker)
     equal(future.bounded,true)
@@ -5762,7 +5762,7 @@ local function d0147Snapshot(options)
         assemblies={{assemblyId="AS-TERMINAL",referenceKey="vehicle-root:terminal"},{assemblyId="AS-ACTIVE",referenceKey="vehicle-root:active"}},
         geometry={
             currentSpaceEvidence={{assemblyReferenceKey="vehicle-root:active",occupancy={x=activeX,z=activeZ,headingX=1,headingZ=0}}},
-            shadowPlanViewEvidence={{assemblyReferenceKey="vehicle-root:active",primitives={{identity="AP-1",kind="DISC",x=primitiveX,z=primitiveZ,radius=options.activeRadius or 1,positiveConflictSupport=true}}}}
+            planViewOccupancyEvidence={{assemblyReferenceKey="vehicle-root:active",primitives={{identity="AP-1",kind="DISC",x=primitiveX,z=primitiveZ,radius=options.activeRadius or 1,positiveConflictSupport=true}}}}
         }
     })
 end
@@ -5834,7 +5834,7 @@ test("D0199 first courtesy reaches the centroid on small fields but caps larger-
         identity="OS-D0147",
         fieldWorld={boundary={{x=0,z=0},{x=400,z=0},{x=400,z=400},{x=0,z=400}},geometryMetrics={centroidX=200,centroidZ=200}},
         assemblies={{assemblyId="AS-TERMINAL",referenceKey="vehicle-root:terminal"},{assemblyId="AS-ACTIVE",referenceKey="vehicle-root:active"}},
-        geometry={currentSpaceEvidence={{assemblyReferenceKey="vehicle-root:active",occupancy={x=20,z=50,headingX=1,headingZ=0}}},shadowPlanViewEvidence={{assemblyReferenceKey="vehicle-root:active",primitives={{identity="AP-1",kind="DISC",x=20,z=50,radius=1,positiveConflictSupport=true}}}}}
+        geometry={currentSpaceEvidence={{assemblyReferenceKey="vehicle-root:active",occupancy={x=20,z=50,headingX=1,headingZ=0}}},planViewOccupancyEvidence={{assemblyReferenceKey="vehicle-root:active",primitives={{identity="AP-1",kind="DISC",x=20,z=50,radius=1,positiveConflictSupport=true}}}}}
     })
     local largeSupported=runtime.terminalEgressCandidateSupport:attach(largePicture,largeSnapshot)
     local largeObjective=largeSupported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.terminalEgressBridge.objective

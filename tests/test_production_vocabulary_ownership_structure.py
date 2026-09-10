@@ -40,6 +40,57 @@ def test_primary_live_vocabulary_uses_current_responsibilities():
         assert stale not in config + support + capability + authority + runtime
 
 
+def test_issue112_graduated_physical_representation_uses_current_names_without_erasing_true_shadow():
+    current_paths = (
+        ROOT / "scripts" / "observation" / "LiveObservationSource.lua",
+        ROOT / "scripts" / "observation" / "FieldBoundedFutureSpace.lua",
+        ROOT / "scripts" / "observation" / "CurrentPhysicalPoseSource.lua",
+        ROOT / "scripts" / "assessment" / "SituationAssessment.lua",
+        ROOT / "scripts" / "candidates" / "TerminalEgressCandidateSupport.lua",
+        ROOT / "scripts" / "diagnostics" / "PassiveLiveValidator.lua",
+    )
+    current = "\n".join(path.read_text(encoding="utf-8") for path in current_paths)
+
+    for stale in (
+        "shadowRepresentation",
+        "shadowPlanViewEvidence",
+        "subjectShadowRepresentationAvailable",
+        "otherShadowRepresentationAvailable",
+        "shadowCacheHit",
+        "shadowInventoryPrimitives",
+        "shadowProfileCacheHit",
+    ):
+        assert stale not in current
+
+    for required in (
+        "assemblyRepresentation",
+        "planViewOccupancyEvidence",
+        "subjectAssemblyRepresentationAvailable",
+        "otherAssemblyRepresentationAvailable",
+        "assemblyRepresentationCacheHit",
+        "assemblyRepresentationInventoryPrimitives",
+        "assemblyRepresentationProfileCacheHit",
+    ):
+        assert required in current
+
+    # Existing question/fitness/permission evidence is a different contract.
+    live = (ROOT / "scripts" / "observation" / "LiveObservationSource.lua").read_text(encoding="utf-8")
+    assert "physicalRepresentationEvidence" in live
+    assert "planViewOccupancyEvidence" in live
+
+    # Current Interface Identity != Historical Evidence Identity.
+    residual = (ROOT / "scripts" / "diagnostics" / "ProductiveCoverageResidualProbe.lua").read_text(encoding="utf-8")
+    refuge = (ROOT / "scripts" / "diagnostics" / "RefugeQualificationShadowProbe.lua").read_text(encoding="utf-8")
+    follower = (ROOT / "scripts" / "diagnostics" / "FollowerMaturationCompressionProbe.lua").read_text(encoding="utf-8")
+    native_drive = (ROOT / "scripts" / "diagnostics" / "NativeFieldWorkerDriveCommandProbe.lua").read_text(encoding="utf-8")
+
+    assert "assemblyRepresentation=track.shadowRepresentation" in residual
+    assert "track.shadowRepresentation" in residual
+    assert "track.shadowRepresentation" in refuge
+    assert "PASSIVE_SHADOW_ONLY" in follower
+    assert "PASSIVE_SHADOW_ONLY" in native_drive
+
+
 def test_passage_contract_uses_purpose_specific_representation_authority():
     support = (ROOT / "scripts" / "candidates" / "LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
 

@@ -130,7 +130,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #112 | naming-conformance debt | `.44` is the first bounded correction: the live shared obstruction-relocation Responsibility Transition seam still carries a completed-worker donor-specific public method name. Later independently proved families remain production Physical Representation `shadow*` vocabulary, completed-obstruction donor-specific names/tokens, the shared physical relocation executor currently named `TerminalEgressControl`, Candidate Support public verbs, and current Runtime telemetry / rolling history headers. Configuration identifier movement remains coordinated with #87. |
+| #112 | naming-conformance debt | `.44` is accepted by PR #118 and the shared obstruction-relocation Responsibility Transition seam now uses current Obstruction Relocation vocabulary. `.45` is the selected bounded correction for graduated Physical Representation names: current `shadowRepresentation` -> Assembly Representation and `shadowPlanViewEvidence` -> Plan-View Occupancy Evidence, including current diagnostics/tests while preserving genuine passive/historical Shadow identity. Later independently proved families remain completed-obstruction donor-specific names/tokens, the shared physical relocation executor currently named `TerminalEgressControl`, Candidate Support public verbs, and current Runtime telemetry / rolling history headers. Configuration identifier movement remains coordinated with #87. |
 
 Issue #101 is no longer current drift. PR #117 accepted `.43` and closed the
 Phase-15 orphan/stranded semantic retirement work. Issue #100 likewise remains
