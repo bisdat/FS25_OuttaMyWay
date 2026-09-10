@@ -49,7 +49,6 @@ def test_regulation_control_reuses_mechanics_without_owning_policy():
         "DecisionSelector",
         "CandidateSpace",
         "ControlRequest.new",
-        "GUARDED_RECOVERY_NATIVE_HANDOVER_CREEP_KMH",
         "FORWARD_INTERSECTION_REGULATION_SPEED_KMH",
     ):
         assert forbidden not in control
@@ -58,19 +57,15 @@ def test_regulation_control_reuses_mechanics_without_owning_policy():
 def test_production_regulation_vocabulary_and_observation_are_wired():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
-    compatibility=(ROOT/"scripts"/"control"/"GuardedRecoveryCompatibility.lua").read_text(encoding="utf-8")
     dispatcher=(ROOT/"scripts"/"control"/"LiveControlDispatcher.lua").read_text(encoding="utf-8")
     coordinator=(ROOT/"scripts"/"runtime"/"LiveRuntimeCoordinator.lua").read_text(encoding="utf-8")
     manoeuvre=(ROOT/"scripts"/"observation"/"NativeManoeuvreObservationSource.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"RegulationControl.lua").read_text(encoding="utf-8")
 
     assert "P22_REGULATION_LEASE" not in authority
-    assert "P22_REGULATION_LEASE" not in compatibility
     assert "P22_REGULATION_LEASE" not in control
     assert 'kind="REGULATION_LEASE"' in authority
-    assert 'kind="REGULATION_LEASE"' in compatibility
     assert "setRegulationControl" in authority
-    assert "liveControlDispatcher.regulationControl" in compatibility
 
     assert "setRegulationControlObservationSource" in manoeuvre
     assert "regulationControlObservationSource" in manoeuvre

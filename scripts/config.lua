@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION.
+-- FS25_OuttaMyWay v0.3.0.42 TEST — GUARDED RECOVERY ORPHAN RETIREMENT.
 -- Completed Obstruction and current Causal Obstruction remain distinct upstream responsibilities.
 -- One provenance-neutral Terminal Egress executor consumes only current physical subject, objective and current Bounded Authority.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.41"
+OuttaMyWay.VERSION = "0.3.0.42"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -53,12 +53,6 @@ OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_INTERVAL_MS = 250
 OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_HEARTBEAT_MS = 1000
 
 
-
--- D-0123 Guarded-Recovery Convergence Shadow Validation. Diagnostic cadence only.
--- No distance, time, speed or intersection result below carries policy or Control authority.
-OuttaMyWay.GUARDED_RECOVERY_CONVERGENCE_PROBE_ENABLED = true
-OuttaMyWay.GUARDED_RECOVERY_CONVERGENCE_PROBE_INTERVAL_MS = 100
-OuttaMyWay.GUARDED_RECOVERY_CONVERGENCE_PROBE_HEARTBEAT_MS = 500
 
 -- Native manoeuvre observation is retained, but TURNING/head-reversal does not
 -- qualify boundary-demand authority.
@@ -168,7 +162,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION"
+OuttaMyWay.BUILD_LABEL = "0.3.0.42 TEST — GUARDED RECOVERY ORPHAN RETIREMENT"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
@@ -179,10 +173,6 @@ OuttaMyWay.FOLLOWER_PACING_HUD_X = 0.985
 OuttaMyWay.FOLLOWER_PACING_HUD_Y = 0.697
 OuttaMyWay.FOLLOWER_PACING_HUD_TEXT_SIZE = 0.013
 OuttaMyWay.FOLLOWER_PACING_HUD_MAX_ROWS = 3
-
--- Guarded Recovery Native Handover Creep. 1 km/h preserves GIANTS route and
--- steering authority while allowing bounded reacquisition.
-OuttaMyWay.GUARDED_RECOVERY_NATIVE_HANDOVER_CREEP_KMH = 1.0
 
 -- D-0147 automatic completed-worker movement consent gate.
 -- The legacy implementation name AUTOMATIC_TERMINAL_EGRESS is retained deliberately to avoid

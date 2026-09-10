@@ -6,11 +6,13 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline: `main` after PR #113 merge, commit
-  `41e24b68ada5ad8e236c0a44ba6c52393b9e1c7e`.
+- Accepted Repository State baseline for this increment: `main` after PR #114 merge, commit
+  `97bdc75f75e069678313908bff481314d15c79fc`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
   **`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
+- Current Issue #101 executable candidate is
+  **`0.3.0.42 TEST — GUARDED RECOVERY ORPHAN RETIREMENT`**; it is not accepted until CI, review, applicable Reality validation and owner merge.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
@@ -95,7 +97,7 @@ diagnostic directionality and live documentation responsibility.
 ### Remaining reconciliation Issue
 
 - **#101 — orphaned / stranded semantic residue**
-  - Guarded Recovery compatibility has no demonstrated live production ingress.
+  - Guarded Recovery compatibility is dependency-proven as **loaded topology without production reachability**; `.42` removes that orphan implementation generation while preserving current Passage recovery/restoration obligations and shared Regulation lifecycle machinery.
   - A stale completed-obstruction Control-observation consumer remains.
   - `FOLLOWER_OWNS_CLOSURE` remains stranded Constraint semantics.
   - Obstruction RTA API naming remains stale defensive/naming debt.
@@ -172,22 +174,23 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Begin **Issue #101 — dependency-proven retirement/naming cleanup**.
+Validate **Issue #101 `.42 — Guarded Recovery Orphan Retirement`**.
 
-Start from accepted `main` at
-`41e24b68ada5ad8e236c0a44ba6c52393b9e1c7e`. Before removing each residue,
-prove production reachability or absence from current Runtime composition and
-separate synthetic compatibility coverage from current production
-responsibility. Retire only surfaces whose current responsibility is absent.
+Dependency proof established:
 
-Preserve current accepted gameplay behaviour. In particular, do not reconnect
-Guarded Recovery, broaden multi-context Commitment application, alter Passage
-geometry, retune Regulation, or treat the inert `bridge.encounterIdentity`
-consumers as evidence that persistent pair authority still exists.
+> **Loaded Topology != Production Reachability**
 
-Do not bundle independent #45, #87, #89, #112 or other work into #101.
+> **Recovery Debt != Guarded-Recovery Compatibility**
 
-Issue #90 is closed as completed after PR #102 established the durable
-post-strangler documentation responsibility. Issue #97 is a disproven audit
-hypothesis whose evidence is preserved in the Issue, PR #103 and Engineering
-Journal rather than as current implementation debt.
+The `.42` candidate removes only the orphan Guarded-Recovery Situation / Candidate / compatibility-Control generation and its synthetic contracts. It deliberately preserves Cooperative Passage recovery/restoration debt, shared supporting-Regulation lifecycle helpers, Follower Boundary, Forward Intersection / Action-Space Regulation, obstruction responsibilities, Current Pair Assessment Scope and all GIANTS job ownership.
+
+Validation order:
+
+1. implementation-local syntax/static/diff checks only;
+2. independent GitHub `Structural contracts` and `Lua offline behavioural contracts`;
+3. targeted GIANTS Reality smoke adequate to challenge unintended current-behaviour change;
+4. owner review/merge before `.42` becomes Accepted Repository State.
+
+After `.42` acceptance, continue Issue #101 with the separate leaf-residue increment: stale D-0147 Control-observation consumer, structurally unreachable `FOLLOWER_OWNS_CLOSURE` Constraint branch, and the two non-authoritative `bridge.encounterIdentity` Runtime consumers. Keep the live obstruction RTA seam unchanged; its stale method name belongs to Issue #112.
+
+Do not combine #45, #87, #89 or #112 with this retirement work.
