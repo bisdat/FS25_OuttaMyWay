@@ -130,7 +130,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #101 | behaviour-preserving leaf retirement | `.42` Guarded-Recovery orphan generation is accepted by PR #115. `.43` retires the remaining stale D-0147-specific observation consumer, production-unreachable `FOLLOWER_OWNS_CLOSURE` Constraint authority/synthetic witnesses, and retired `bridge.encounterIdentity` Runtime consumers. |
+| #101 | behaviour-preserving leaf retirement | `.42` Guarded-Recovery orphan generation is accepted by PR #115. `.43` retires the remaining stale D-0147-specific observation consumer, production-unreachable `FOLLOWER_OWNS_CLOSURE` Constraint authority plus its stale validation consumers, and retired `bridge.encounterIdentity` Runtime consumers. CI #291 established that replay-contract reachability must be reconciled separately from production reachability. |
 | #112 | naming-conformance debt | Live obstruction RTA behaviour remains current; only its stale method name is deferred for post-Phase-15 naming review. |
 
 Issue #100 is no longer current drift. PR #113 accepted the Current Pair

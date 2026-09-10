@@ -107,8 +107,10 @@ diagnostic directionality and live documentation responsibility.
     - delete the stale D-0147-specific Terminal Occupancy Control-observation
       consumer without rebinding it to the current provenance-neutral producer;
     - retire the production-unreachable `FOLLOWER_OWNS_CLOSURE`
-      Responsibility Compatibility prohibition and only its synthetic authority
-      contracts, while preserving the live Situation relation;
+      Responsibility Compatibility prohibition while preserving the live
+      Situation relation; CI #291 exposed additional stale validation consumers,
+      including RF-TS016, which are reconciled to current Follower Regulation
+      semantics rather than used to restore the unreachable production rule;
     - remove the dead Cooperative Passage `bridge.encounterIdentity` target field
       and report the existing current `conflictIdentity` in the verdict diagnostic.
   - The live obstruction RTA seam remains current. Its stale method name belongs

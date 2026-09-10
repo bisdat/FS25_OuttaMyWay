@@ -45,7 +45,8 @@ def test_phase13_retained_evaluators_do_not_relabel_candidate_verdicts():
     for text in (responsibility,preconditions,composition):
         assert "fromCandidate" not in text
         assert "constraintEvidence" not in text
-    assert "FOLLOWER_OWNS_CLOSURE" in responsibility
+    assert "FOLLOWER_OWNS_CLOSURE" not in responsibility
+    assert "No conflicting responsibility relation applies" in responsibility
     assert "responsibilityException" not in responsibility
     assert "boundedObservationContract" in preconditions
     assert "EffectiveActuationComposition.create" in composition

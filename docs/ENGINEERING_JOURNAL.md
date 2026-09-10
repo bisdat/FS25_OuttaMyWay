@@ -4067,3 +4067,39 @@ Proceed with one attributable executable increment:
 
 No Passage fix, Follower policy change, obstruction redesign, RTA rename or Issue
 #116 work belongs in this increment.
+
+
+## 2026-09-10 — `.43` CI #291 validation-topology reconciliation
+
+Independent CI on `f0bff0c9a95996d97a9a127826e05e9acb0122e7`
+disproved the `.43` validation-dependency inventory:
+
+- Structural contracts reported **188 passed / 1 failed** because the retained
+  Phase-13 Constraint-ownership test still required `FOLLOWER_OWNS_CLOSURE`
+  inside `ResponsibilityCompatibility`.
+- The main replacement-core harness reported **334 passed / 1 failed** because
+  RF-TS016 fabricated a singular active-Leader `REPOSITION` Candidate and
+  expected the historical Responsibility Compatibility rule to reject it.
+- Focused obstruction relocation remained **9 passed / 0 failed**.
+
+The RF-TS016 failure did not establish a missed production ingress. It
+constructed the same Candidate shape already proven unavailable from current
+production: Cooperative Passage REPOSITION owns a pair/plural subject, while
+singular obstruction REPOSITION subjects are non-active and therefore cannot
+simultaneously own the live active-active closure relation.
+
+> **Production Reachability != Replay Contract Reachability**
+
+> **Synthetic Constraint Witness != Single Test Site**
+
+Test governance resolves the conflict: replay fixtures are current evidence, but
+historical provenance does not grant current architectural authority. D-0214
+likewise requires tests to protect current contracts rather than retired
+documentation topology.
+
+RF-TS016 therefore remains in the replay corpus, but its obsolete fabricated
+Leader-REPOSITION alternative and stale Constraint-verdict expectation retire.
+The fixture continues to exercise current Follower Regulation in the presence
+of closure Knowledge. The structural ownership contract is reconciled to the
+same current boundary. No production, configuration, modDesc or executable
+`.43` bytes change in this correction.
