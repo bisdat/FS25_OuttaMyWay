@@ -5998,7 +5998,7 @@ test("D0147 config switch disables admission rather than merely suppressing Cont
     local previous=OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS; OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS=false
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS=previous
-    equal(supported,nil); equal(runtime.terminalEgressCandidateSupport:getLastStatus(),"DEVELOPMENT_CONSENT_DISABLED")
+    equal(supported,nil); equal(runtime.terminalEgressCandidateSupport:getLastStatus(),"DISABLED")
 end)
 
 

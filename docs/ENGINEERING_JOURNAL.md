@@ -1,3 +1,35 @@
+## 2026-09-10 — PR #122 protected CI #301 validation-consumer reconciliation
+
+**Validate / disproven expectation:** `.47` production topology reached protected CI on
+head `68e5607c65d4703d89fec39ec7e19a84641ca1df`. Focused Obstruction Relocation
+contracts passed **11/11** and replay remained deterministic, while the main Lua
+harness reported one historical donor-fixture failure and Structural contracts
+reported eleven failures.
+
+The failures did not identify a missing production relocation behaviour. They
+identified validation consumers that still treated retired donor Runtime topology
+as part of the historical behaviour contract. The direct
+`TerminalEgressCandidateSupport` consent-disabled status is `DISABLED`; the
+previously expected `DEVELOPMENT_CONSENT_DISABLED` came from the now-strangled
+generic-first `CompositeCandidateSupport` wrapper. Structural consumers likewise
+still required donor callbacks, donor Responsibility Transition instantiation,
+`_continueCompletedObstruction`, two production relocation-serialization call
+sites, first/second courtesy fields, or used the removed donor function merely as
+a lexical slice delimiter.
+
+> **Historical Behaviour Contract != Historical Production Topology Contract**
+
+**Correction boundary:** tests now preserve historical D-0147 mechanics in their
+retained donor source and explicit test-only donor composition, while production
+structure contracts require those donor seams to be absent from `Runtime.lua`.
+Generic production contracts protect geometry-bounded recurrence, one Obstruction
+Relocation serialization path, retained Commitment/Bounded Authority separation,
+and the provenance-neutral shared physical executor.
+
+This correction changes tests and this Journal entry only. It does **not** change
+production Lua, XML or build identity; candidate remains
+**`0.3.0.47 TEST — OBSTRUCTION RELOCATION RESPONSIBILITY CONSOLIDATION`**.
+
 ## 2026-09-10 — Issue #121 `.47` Obstruction Relocation responsibility consolidation candidate
 
 **Observe / architecture:** post-`.46` naming review exposed that completed-worker provenance still selected a separate warm D-0147 responsibility even though D-0218 defines Causal Obstruction from current Reality. Owner review simplified the policy further: there is no architectural first/second courtesy count. A non-active unclaimed blocker moves only because it is positively blocking, and each actuation moves no farther than the nearer of the Field World centroid or the existing 60 m per-actuation maximum.

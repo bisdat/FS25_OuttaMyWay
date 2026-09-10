@@ -26,12 +26,14 @@ def test_relocation_serialization_is_shared_execution_vocabulary_not_d0147_prove
     assert "RELOCATION_SERIALIZATION=true" in control
     assert "D0147_PROTECTED_YIELD" not in control
 
-    assert runtime.count("_applyRelocationSerialization") >= 2
-    assert "COMPLETED_OBSTRUCTION_RELOCATION_SERIALIZATION_START_FAILED" in runtime
+    assert runtime.count("_applyRelocationSerialization") == 1
+    assert "COMPLETED_OBSTRUCTION_RELOCATION_SERIALIZATION_START_FAILED" not in runtime
     assert "OBSTRUCTION_RELOCATION_SERIALIZATION_START_FAILED" in runtime
-    assert "serializedBeneficiaryAssemblyIds" in runtime
+    assert "serializedBeneficiaryAssemblyIds" not in runtime
     assert "RELOCATION_SERIALIZATION_START_FAILED" in runtime
     assert "PROTECTED_YIELD_START_FAILED" not in runtime
+    assert "CompletedObstructionResponsibilityTransition.new(runtime)" not in runtime
+    # Retained donor source remains directly testable until the later retirement increment.
     assert "beforeRelocationSerialization=true beforePhysicalDispatch=true" in completed_transition
     assert "beforeProtectedYield" not in completed_transition
 

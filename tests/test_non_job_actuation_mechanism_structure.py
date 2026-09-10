@@ -76,13 +76,16 @@ def test_trigger_authorities_remain_separate_upstream_of_shared_executor():
     assert (ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").is_file()
     assert not (ROOT/"scripts"/"control"/"TerminalEgressControl.lua").exists()
 
-def test_current_causal_obstruction_still_denies_completed_job_provenance_and_second_courtesy():
+def test_current_causal_obstruction_is_provenance_neutral_and_geometry_bounded():
     terminal = read("scripts/control/ObstructionRelocationControl.lua")
     candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
 
-    assert 'courtesyStage=1' in candidate
-    assert 'secondCourtesyNotAuthorised=true' in candidate
+    assert 'boundedInwardRelocation=true' in candidate
+    assert 'repeatedActuationRequiresFreshPositiveObstruction=true' in candidate
+    assert 'moveCountBudget=false' in candidate
     assert 'historicalJobProvenanceRequired=false' in candidate
+    assert 'courtesyStage=1' not in candidate
+    assert 'secondCourtesyNotAuthorised=true' not in candidate
     assert 'tonumber(objective.courtesyStage)~=1' not in terminal
     assert "CURRENT_CAUSAL_OBSTRUCTION" not in terminal
 
