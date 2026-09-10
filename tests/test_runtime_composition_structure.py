@@ -31,8 +31,6 @@ def test_runtime_construction_preserves_wrapper_order():
     ordered=(
         "runtime.currentPhysicalPoseSource=OuttaMyWay.CurrentPhysicalPoseSource.new()",
         "runtime.obstructionRelocationCandidateSupport=OuttaMyWay.ObstructionRelocationCandidateSupport.new",
-        "runtime.completedObstructionCandidateSupport=runtime.terminalEgressCandidateSupport",
-        "runtime.terminalEgressCandidateSupport=CompositeCandidateSupport.new",
         "runtime.obstructionRelocationResponsibilityTransition=OuttaMyWay.ObstructionRelocationResponsibilityTransition.new",
         "runtime.prospectiveDecisionPortfolioSupport=OuttaMyWay.ProspectiveDecisionPortfolioSupport.new",
     )
@@ -45,7 +43,7 @@ def test_dispatch_order_is_portfolio_then_cold_then_existing():
     ordered=(
         'boundary.mode=="PROSPECTIVE_DECISION_PORTFOLIO"',
         "local obstructionBridge=relocationBridge(candidate)",
-        "local terminalBridge=terminalEgressBridge(candidate)",
+        "local followerBridge=followerBoundaryBridge(candidate)",
     )
     positions=[dispatch.index(token) for token in ordered]
     assert positions==sorted(positions)
@@ -58,7 +56,8 @@ def test_fresh_and_incumbent_live_cycle_split_is_preserved():
     process=runtime[runtime.index("function Runtime:processLiveObservation(raw)"):runtime.index("function Runtime:runReplay(fixture)")]
     assert "OuttaMyWay.ValueRecord.length(processed.picture.commitmentContext or {})>0" in process
     assert "self.prospectiveDecisionPortfolioSupport:attach(processed.picture,processed.snapshot)" in process
-    assert "self.terminalEgressCandidateSupport:attach(processed.picture,processed.snapshot)" in process
+    assert "self.obstructionRelocationCandidateSupport:attach(processed.picture,processed.snapshot)" in process
+    assert "self.terminalEgressCandidateSupport" not in process
     assert "self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot)" in process
 
 def test_d0218_semantics_survive_shared_obstruction_relocation_execution():

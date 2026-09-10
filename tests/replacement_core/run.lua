@@ -5732,6 +5732,16 @@ test("D0194 second courtesy exhausts the completed Job Episode with no third aut
     equal(assessment.courtesyMoveCount["JOB-TERMINAL"],2); equal(assessment.exhausted["JOB-TERMINAL"],true); equal(assessment.yieldRenewalState["JOB-TERMINAL"],nil)
 end)
 
+local function newHistoricalD0147DonorTestRuntime()
+    local runtime=OuttaMyWay.Runtime.new()
+    runtime:initialize()
+    runtime.terminalOccupancyAssessment=OuttaMyWay.TerminalOccupancyAssessment.new(runtime.jobEpisodes)
+    runtime.situationAssessment.terminalOccupancyAssessment=runtime.terminalOccupancyAssessment
+    runtime.terminalEgressCandidateSupport=OuttaMyWay.TerminalEgressCandidateSupport.new(runtime.identities,runtime.epochs)
+    runtime.completedObstructionResponsibilityTransition=OuttaMyWay.CompletedObstructionResponsibilityTransition.new(runtime)
+    return runtime
+end
+
 local function d0147TerminalPicture(runtime,configurationEvidence,options)
     options=options or {}
     local episodeId=options.terminalEpisodeId or "JOB-TERMINAL"
@@ -5821,7 +5831,7 @@ local function completedObstructionTerminalEgressRequest(runtime,identity,admitt
 end
 
 test("D0199 first courtesy reaches the centroid on small fields but caps larger-field travel at 60 m",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local configuration={foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true}
     local smallPicture=d0147TerminalPicture(runtime,configuration,{suffix="CENTROID-SMALL",terminalX=10,terminalZ=10})
     local smallSupported=runtime.terminalEgressCandidateSupport:attach(smallPicture,d0147Snapshot({activeX=20,activeZ=50}))
@@ -5846,7 +5856,7 @@ test("D0199 first courtesy reaches the centroid on small fields but caps larger-
 end)
 
 test("D0196 second courtesy chooses the one outer-boundary ray away from protected productive occupancy",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="BOUNDARY-STAGE",courtesyMoveCount=1,terminalX=30,terminalZ=50})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot({activeX=20,activeZ=50}))
     local candidate=supported.candidateSupportEvidence.candidateSpecifications[1]
@@ -5860,7 +5870,7 @@ test("D0196 second courtesy chooses the one outer-boundary ray away from protect
 end)
 
 test("D0196 second courtesy fails closed when the one protected-away boundary translation crosses current protected occupancy",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="BOUNDARY-BLOCKED",courtesyMoveCount=1,terminalX=30,terminalZ=50})
     -- The protected worker's steering origin is east of the terminal assembly, so the only
     -- authorised boundary ray points west. Its current trailed physical primitive still
@@ -5923,7 +5933,7 @@ test("D0147 direct post-job actuation holds one world Exit Alignment direction a
 end)
 
 test("D0147 supported deployed configuration selects compaction before translation",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=1,transitionCount=0,foldedCount=0,unknownCount=0,allDeployed=true,allFolded=false,retainCurrent=false,compactionSupported=true},{suffix="COMPACT"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"D0147_BOUNDED_TERMINAL_EGRESS")
@@ -5934,7 +5944,7 @@ test("D0147 supported deployed configuration selects compaction before translati
 end)
 
 test("D0147 first courtesy follows the fixed centroid bearing with the bounded 60 m allowance",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="INFIELD"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
@@ -5951,7 +5961,7 @@ test("D0147 first courtesy follows the fixed centroid bearing with the bounded 6
 end)
 
 test("D0147 Infield Alignment is derived from centre bearing rather than terminal heading",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local a=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="HEADING-A",headingX=-1,headingZ=0})
     local b=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="HEADING-B",headingX=1,headingZ=0})
     local oa=runtime.terminalEgressCandidateSupport:attach(a,d0147Snapshot()).candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.terminalEgressBridge.objective
@@ -5960,7 +5970,7 @@ test("D0147 Infield Alignment is derived from centre bearing rather than termina
 end)
 
 test("D0147 Terminal Resolution Commitment survives transient obstruction loss during compaction",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=1,foldedCount=0,unknownCount=0,allDeployed=false,allFolded=false,retainCurrent=false,compactionSupported=false},{suffix="TS016-INFLIGHT",existingCommitmentId="CM-D0147",obstructionPositive=false})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
@@ -5973,7 +5983,7 @@ test("D0147 Terminal Resolution Commitment survives transient obstruction loss d
 end)
 
 test("D0147 compacted committed assembly proceeds to infield retreat even when initiating obstruction is no longer visible",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="TS016-POST-COMPACT",existingCommitmentId="CM-D0147",obstructionPositive=false})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
@@ -5983,7 +5993,7 @@ test("D0147 compacted committed assembly proceeds to infield retreat even when i
 end)
 
 test("D0147 config switch disables admission rather than merely suppressing Control",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=0,retainCurrent=true,compactionSupported=true},{suffix="DISABLED"})
     local previous=OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS; OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS=false
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
@@ -5993,7 +6003,7 @@ end)
 
 
 test("Completed Obstruction Terminal Egress completes first courtesy from derived centroid station progress",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-INFIELD-PROGRESS"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
@@ -6020,7 +6030,7 @@ test("Completed Obstruction Terminal Egress completes first courtesy from derive
 end)
 
 test("Completed Obstruction Terminal Egress owned actuation failure positively neutralizes propulsion before completion",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-NEUTRALIZE"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
@@ -6046,7 +6056,7 @@ test("Completed Obstruction Terminal Egress owned actuation failure positively n
 end)
 
 test("Completed Obstruction Terminal Egress Player Claim relinquishes Vehicle Activity Context without post-claim actuation",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-CLAIM-ACTIVITY"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
@@ -6069,7 +6079,7 @@ test("Completed Obstruction Terminal Egress Player Claim relinquishes Vehicle Ac
 end)
 
 test("D0147 compaction-to-infield persistence exposes one Resolution Commitment with post-job plus protected progress authority",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local compactPicture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=1,transitionCount=0,foldedCount=0,unknownCount=0,allDeployed=true,allFolded=false,retainCurrent=false,compactionSupported=true},{suffix="LIFECYCLE-COMPACT"})
     local compactSupported=runtime.terminalEgressCandidateSupport:attach(compactPicture,d0147Snapshot())
     local compactEvaluated=runtime:evaluateSealedOperationalPicture(compactSupported)
@@ -6117,7 +6127,7 @@ end)
 
 test("D0147 completed-obstruction terminal failure and supersession remove semantic Resolution Commitment",function()
     local function admit(suffix)
-        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local runtime=newHistoricalD0147DonorTestRuntime()
         local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix=suffix})
         local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
         local evaluated=runtime:evaluateSealedOperationalPicture(supported)

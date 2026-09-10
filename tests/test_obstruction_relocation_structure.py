@@ -66,21 +66,15 @@ def test_phase13_obstruction_relocation_uses_truthful_authority_class_not_post_j
     assert "one assembly cannot simultaneously own multiple actuation classes" in boundary
 
 
-def test_phase13_cold_relocation_withholds_second_courtesy_without_negative_clearance_authority():
+def test_phase13_relocation_is_geometry_bounded_not_count_bounded():
     candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
-    control = read("scripts/control/ObstructionRelocationControl.lua")
-    terminal = read("scripts/candidates/TerminalEgressCandidateSupport.lua")
-
-    assert 'courtesyStage=1' in candidate
-    assert 'secondCourtesyNotAuthorised=true' in candidate
-    assert 'secondCourtesyWithheldByEvidence=true' in candidate
-    assert 'NEGATIVE_TRANSITION_CLEARANCE_NOT_AVAILABLE' in candidate
+    assert 'objectiveKind="CAUSAL_OBSTRUCTION_BOUNDED_INWARD_RELOCATION"' in candidate
+    assert "maximumRelocationDistanceM" in candidate
+    assert "repeatedActuationRequiresFreshPositiveObstruction=true" in candidate
+    assert "moveCountBudget=false" in candidate
     assert 'NO_NEGATIVE_CLEARANCE_AUTHORITY' in candidate
-    assert 'objectiveKind="CAUSAL_OBSTRUCTION_FIRST_COURTESY"' in candidate
-
-    # Warm D-0147 remains the separate validated two-courtesy donor path.
-    assert 'TERMINAL_FINAL_BOUNDARY_SETTLEMENT' in terminal
-    assert 'maximumCourtesyMovesPerEpisode=2' in terminal
+    for retired in ("secondCourtesyNotAuthorised","secondCourtesyWithheldByEvidence","CAUSAL_OBSTRUCTION_FIRST_COURTESY","ONE_BOUNDED_COURTESY_THEN_FRESH_REALITY"):
+        assert retired not in candidate
 
 
 def test_phase13_manoeuvre_completion_does_not_semantically_resolve_without_supported_continuation():
@@ -90,7 +84,8 @@ def test_phase13_manoeuvre_completion_does_not_semantically_resolve_without_supp
     assert "productiveContinuationKnowledge" in candidate
     assert "productive.productivePositive==true" in candidate
     assert 'productive.representationFitness=="FIT_FOR_LIMITED_HORIZON"' in candidate
-    assert "relationFor(picture,blockerAssemblyId,beneficiaryId)~=nil" in candidate
+    assert "retainedPositiveGroup" in candidate
+    assert "POSITIVE_CAUSAL_OBSTRUCTION_WITHOUT_MEANINGFUL_INWARD_RELOCATION_SPACE" in candidate
     assert 'outcome.status~="MANOEUVRE_COMPLETE"' in candidate
     assert 'terminalSpec(context,"OBJECTIVE_SATISFIED"' in candidate
     assert "semanticResolutionNotInferred=true" in runtime
@@ -121,15 +116,22 @@ def test_phase13_obstruction_control_is_addressed_from_current_reality_and_fails
     assert "getObstructionRelocationObservation" in coordinator
 
 
-def test_phase13_generic_path_preserves_warm_d0147_and_does_not_inherit_native_blocked_gate():
+def test_phase13_completed_worker_provenance_no_longer_selects_a_second_production_responsibility():
     generic = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
+    runtime = read("scripts/runtime/Runtime.lua")
+    main = read("scripts/main.lua")
     terminal_assessment = read("scripts/assessment/TerminalOccupancyAssessment.lua")
     terminal_candidate = read("scripts/candidates/TerminalEgressCandidateSupport.lua")
-    terminal_control = read("scripts/control/ObstructionRelocationControl.lua")
-
+    relocation_control = read("scripts/control/ObstructionRelocationControl.lua")
     assert "aiState.blocked==true" not in generic
+    assert "terminalOwnedAssemblies" not in generic
     assert "terminalEpisodeId" not in generic
+    assert "runtime.terminalEgressCandidateSupport=" not in runtime
+    assert "runtime.completedObstructionResponsibilityTransition=" not in runtime
+    assert "function Runtime:onTerminalEgressCompletion" not in runtime
+    assert "scripts/assessment/TerminalOccupancyAssessment.lua" in main
+    assert "scripts/candidates/TerminalEgressCandidateSupport.lua" in main
     assert "aiState.blocked==true" in terminal_assessment
     assert "TERMINAL_OCCUPANCY" in terminal_candidate
-    assert "POST_JOB_ACTUATION" not in terminal_control
+    assert "POST_JOB_ACTUATION" not in relocation_control
     assert 'target.kind=="OBSTRUCTION_RELOCATION"' in read("scripts/control/LiveControlDispatcher.lua")

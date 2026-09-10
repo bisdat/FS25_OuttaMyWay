@@ -27,13 +27,6 @@ local function genericContext(picture)
     return contexts[1],nil
 end
 
-local function terminalOwnedAssemblies(picture)
-    local result={}
-    for _,record in OuttaMyWay.ValueRecord.ipairs(picture.terminalOccupancyKnowledge or {}) do
-        if type(record.assemblyId)=="string" then result[record.assemblyId]=true end
-    end
-    return result
-end
 
 local function referencesByAssembly(snapshot)
     local result={}
@@ -90,7 +83,7 @@ local function relocationSerializationBeneficiaries(group,references)
     return result
 end
 
-local function firstCourtesyObjective(snapshot,pose)
+local function boundedInwardObjective(snapshot,pose)
     local metrics=snapshot and snapshot.fieldWorld and snapshot.fieldWorld.geometryMetrics or nil
     local cx,cz=metrics and tonumber(metrics.centroidX),metrics and tonumber(metrics.centroidZ)
     if not finite(cx) or not finite(cz) then return nil,"FIELD_WORLD_CENTROID_UNAVAILABLE" end
@@ -103,8 +96,8 @@ local function firstCourtesyObjective(snapshot,pose)
     local progress=math.min(distance,cap)
     if progress<=0.05 then return nil,"BOUNDED_RELOCATION_PROGRESS_UNAVAILABLE" end
     return {
-        objectiveKind="CAUSAL_OBSTRUCTION_FIRST_COURTESY",
-        courtesyStage=1,
+        objectiveKind="CAUSAL_OBSTRUCTION_BOUNDED_INWARD_RELOCATION",
+        boundedInwardRelocation=true,
         destinationKind=progress+0.000001<distance and "CENTROID_BEARING_DISTANCE_CAP" or "FIELD_CENTROID",
         alignmentMode="FIXED_INITIAL_CENTRE_BEARING",
         fieldCentreX=cx,fieldCentreZ=cz,
@@ -112,7 +105,7 @@ local function firstCourtesyObjective(snapshot,pose)
         infieldDirectionX=directionX,infieldDirectionZ=directionZ,
         targetProgressM=progress,retreatDistanceM=progress,
         targetX=pose.x+directionX*progress,targetZ=pose.z+directionZ*progress,
-        maximumCourtesyDistanceM=cap,
+        maximumRelocationDistanceM=cap,
         distanceCapped=progress+0.000001<distance,
         continuousCourseCorrection=false,
         parking=false
@@ -120,21 +113,21 @@ local function firstCourtesyObjective(snapshot,pose)
 end
 
 local function physicalSpec(picture,snapshot,group,context,references,pose)
-    local objective,objectiveReason=firstCourtesyObjective(snapshot,pose)
+    local objective,objectiveReason=boundedInwardObjective(snapshot,pose)
     if objective==nil then return nil,objectiveReason end
     local protected=relocationSerializationBeneficiaries(group,references)
     for _,item in OuttaMyWay.ValueRecord.ipairs(protected) do if type(item.referenceKey)~="string" then return nil,"BENEFICIARY_REFERENCE_UNAVAILABLE" end end
     if OuttaMyWay.ValueRecord.length(protected)==0 then return nil,"BENEFICIARY_UNAVAILABLE" end
 
     local constraints=allPassEvidence("Bounded Causal Obstruction relocation candidate")
-    constraints.FIELD_WORLD_CONTAINMENT=packet("First courtesy reuses the validated fixed centroid-bearing bounded movement without claiming predictive full-sweep Field World containment",{predictiveContainmentClaim=false,routePlanning=false,maximumCourtesyDistanceM=objective.maximumCourtesyDistanceM},false)
-    constraints.TRANSITION_CLEARANCE=packet("Cold positive-only representation cannot prove the D-0147 final boundary-away translation clear; this tranche therefore authorises only the first courtesy and returns to fresh Reality",{negativeFutureClearanceAuthority=false,parking=false,routePlanning=false,secondCourtesyWithheld=true},false)
+    constraints.FIELD_WORLD_CONTAINMENT=packet("Bounded inward relocation uses the validated fixed centroid-bearing movement without claiming predictive full-sweep Field World containment",{predictiveContainmentClaim=false,routePlanning=false,maximumRelocationDistanceM=objective.maximumRelocationDistanceM},false)
+    constraints.TRANSITION_CLEARANCE=packet("Positive-only representation does not authorise a boundary-away search or negative-clearance inference; each bounded inward actuation returns to fresh Reality",{negativeFutureClearanceAuthority=false,parking=false,routePlanning=false,repeatedActuationRequiresFreshPositiveObstruction=true},false)
     constraints.REPRESENTATION_FITNESS=packet("Current Physical Assembly pose and positive-conflict representation support only this bounded relocation reference",{representationId="current-obstruction-relocation:"..group.blockerAssemblyReferenceKey})
     constraints.CONTROL_CAPABILITY_AVAILABILITY=packet("Validated non-active direct movement mechanics supply current Player Claim/source-AI checks, opportunistic compaction, Vehicle Activity Context, forward-only fixed-direction actuation and neutralisation",{mechanicalDonor="NonJobActuationMechanism",authorityClass="OBSTRUCTION_RELOCATION_ACTUATION",historicalJobProvenanceRequired=false,relocationSerialization=true})
     constraints.CONTINUING_INTENT_PRIORITY=packet("Only active supported beneficiaries positively obstructed by this blocker are protected while it translates",{beneficiaryAssemblyIds=group.beneficiaryIds,productiveJobsRemainGiantsOwned=true})
     constraints.PROGRESS_PRESERVATION=packet("The non-active blocker has no supported productive progress to preserve; movement exists only to remove current Causal Obstruction",{parking=false,tidying=false})
     constraints.RESPONSIBILITY_COMPATIBILITY=packet("One relocation responsibility is keyed by Local Operation plus blocker Physical Assembly, aggregating pairwise beneficiaries",{relocationKey=group.relocationKey,blockerAssemblyId=group.blockerAssemblyId})
-    constraints.OBLIGATION_COMPATIBILITY=packet("This increment permits one bounded first courtesy followed by fresh Reality assessment; incomplete cold representation does not authorise the donor's second boundary-away courtesy",{oneMovePerCommitment=true,secondCourtesyNotAuthorised=true,reason="NEGATIVE_TRANSITION_CLEARANCE_NOT_AVAILABLE"})
+    constraints.OBLIGATION_COMPATIBILITY=packet("The same unresolved obstruction responsibility may authorise another bounded inward actuation only from fresh positive Causal Obstruction; no move-count budget or boundary-away stage exists",{repeatedActuationRequiresFreshPositiveObstruction=true,moveCountBudget=false,boundaryAwayStage=false})
     constraints.COMMITMENT_PRECONDITIONS=packet("Current Causal Obstruction, NON_ACTIVE_UNCLAIMED classification, current relocation pose and development consent are independently present",{relocationEligible=true,historicalJobProvenanceRequired=false,developmentConsent=OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS==true})
     constraints.EFFECTIVE_ACTUATION_COMPOSITION=packet("One retained Commitment owns OBSTRUCTION_RELOCATION_ACTUATION for the blocker and PROGRESS_ACTUATION only to protect active beneficiaries",{blockerAuthorityClass="OBSTRUCTION_RELOCATION_ACTUATION",serializedBeneficiaryAssemblyIds=group.beneficiaryIds})
     constraints.SAFE_RELEASE_HANDOVER=packet("Current Player Claim or source AI reactivation immediately outranks relocation; owned completion neutralises actuation before releasing Vehicle Activity Context",{playerClaimCurrentNotSticky=true,actuationNeutralisation=true,relocationSerializationRelease=true})
@@ -150,10 +143,10 @@ local function physicalSpec(picture,snapshot,group,context,references,pose)
     table.sort(protectedIds); table.sort(relevantIds)
     local existingCommitmentId=context and context.commitmentId or nil
     return {
-        referenceKey=group.relocationKey..":first-courtesy",
+        referenceKey=group.relocationKey..":bounded-inward-relocation",
         purpose={kind="CAUSAL_OBSTRUCTION_RELOCATION",result="REMOVE_CURRENT_CAUSAL_OBSTRUCTION"},
         subject={assemblyId=group.blockerAssemblyId},capability="REPOSITION",
-        expectedEffect={physicalChange=true,phase="INFIELD",courtesyStage=1,oneFixedAlignment=true,parking=false},
+        expectedEffect={physicalChange=true,phase="INFIELD",boundedInwardRelocation=true,oneFixedAlignment=true,parking=false},
         evidenceBasis={
             constraintEvidence=constraints,
             governingBasis={kind="CAUSAL_OBSTRUCTION_RELOCATION",responsibilityKey=group.relocationKey,operationIds={group.operationId},sourceIntentIds={},authorizingDemandAssemblyIds=protectedIds,blockerAssemblyId=group.blockerAssemblyId},
@@ -166,10 +159,10 @@ local function physicalSpec(picture,snapshot,group,context,references,pose)
         representationFitness={requirements={{representationId="current-obstruction-relocation:"..group.blockerAssemblyReferenceKey,acceptedStates={"USABLE_WITH_UNCERTAINTY","FIT_FOR_LIMITED_HORIZON","CURRENTLY_FIT"}}}},
         preconditions={evidenceContracts={{kind="CURRENT_CAUSAL_OBSTRUCTION",relocationKey=group.relocationKey},{kind="NON_ACTIVE_UNCLAIMED_BLOCKER"},{kind="CURRENT_PHYSICAL_RELOCATION_REFERENCE"}}},
         invalidationConditions={{kind="PLAYER_CLAIM"},{kind="SOURCE_AI_REACTIVATION"},{kind="BLOCKER_PHYSICAL_IDENTITY_LOST"}},
-        reversibility={kind="ONE_BOUNDED_COURTESY_THEN_FRESH_REALITY"},
+        reversibility={kind="BOUNDED_INWARD_RELOCATION_THEN_FRESH_REALITY"},
         obligationsCreated={{origin={kind="CAUSAL_OBSTRUCTION",relocationKey=group.relocationKey},basis={kind="CURRENT_CAUSAL_OBSTRUCTION",blockerAssemblyId=group.blockerAssemblyId,beneficiaryAssemblyIds=protectedIds},requiredOutcome={kind="CAUSAL_OBSTRUCTION_REMOVED_OR_ESCALATED"},requiredAuthority={classes={"OBSTRUCTION_RELOCATION_ACTUATION","PROGRESS_ACTUATION"}},evidenceContract={kind="FRESH_POSITIVE_CONTINUATION_AFTER_BOUNDED_RELOCATION"},ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true,creationEvidence={relations=group.relations}}},
-        releaseImplications={releaseBoundedAuthorityAfterCourtesy=true,freshSituationRequired=true,noImmediateRepeatMovement=true},
-        uncertainty={{kind="NO_NEGATIVE_CLEARANCE_AUTHORITY"},{kind="SECOND_COURTESY_WITHHELD_UNTIL_CLEARANCE_EVIDENCE_EXISTS"}},
+        releaseImplications={releaseBoundedAuthorityAfterActuation=true,freshSituationRequired=true,repeatedActuationRequiresFreshPositiveObstruction=true},
+        uncertainty={{kind="NO_NEGATIVE_CLEARANCE_AUTHORITY"}},
         comparisonCost=1
     },nil
 end
@@ -227,7 +220,7 @@ local function currentSourceAi(snapshot,referenceKey)
     return type(state)=="table" and state.aiActiveObserved==true and state.aiActive==true
 end
 
-local function terminalSpec(context,eventKind,blockerAssemblyId,referenceKey)
+local function terminalSpec(context,eventKind,blockerAssemblyId,referenceKey,terminalReason)
     local basis=context.governingBasis or {}
     local constraints=allPassEvidence("Causal Obstruction relocation settlement consumes fresh current evidence and requests no new actuation")
     return {
@@ -235,7 +228,7 @@ local function terminalSpec(context,eventKind,blockerAssemblyId,referenceKey)
         purpose={kind="CAUSAL_OBSTRUCTION_RELOCATION_SETTLEMENT",eventKind=eventKind},
         subject={assemblyId=blockerAssemblyId},capability=eventKind=="OBJECTIVE_FAILED" and "ESCALATE" or "CONTINUE_UNCHANGED",
         expectedEffect={physicalChange=false,terminalEvent=eventKind,playerEscalationRequired=eventKind=="OBJECTIVE_FAILED"},
-        evidenceBasis={constraintEvidence=constraints,maintainsExistingCommitment=true,obstructionRelocationBridge={architecture="CAUSAL_OBSTRUCTION_RELOCATION",relocationKey=basis.responsibilityKey,terminalEvent=eventKind,blockerAssemblyId=blockerAssemblyId,blockerAssemblyReferenceKey=referenceKey,existingCommitmentId=context.commitmentId}},
+        evidenceBasis={constraintEvidence=constraints,maintainsExistingCommitment=true,obstructionRelocationBridge={architecture="CAUSAL_OBSTRUCTION_RELOCATION",relocationKey=basis.responsibilityKey,terminalEvent=eventKind,terminalReason=terminalReason,blockerAssemblyId=blockerAssemblyId,blockerAssemblyReferenceKey=referenceKey,existingCommitmentId=context.commitmentId}},
         representationFitness={requirements={}},preconditions={evidenceContracts={}},invalidationConditions={},reversibility={kind="NOT_APPLICABLE_SETTLEMENT"},obligationsCreated={},releaseImplications={releasePhysicalAuthority=true},uncertainty={},comparisonCost=0
     }
 end
@@ -252,6 +245,27 @@ local function waitingSpec(context,blockerAssemblyId,referenceKey)
     }
 end
 
+local function retainedPositiveGroup(picture,basis)
+    local relocationKey=basis and basis.responsibilityKey or nil
+    local blockerAssemblyId=basis and basis.blockerAssemblyId or nil
+    if type(relocationKey)~="string" or type(blockerAssemblyId)~="string" then return nil end
+    local source=activeRelationsByKey(picture)[relocationKey]
+    if source==nil then return nil end
+    local authorised={}
+    for _,beneficiaryId in OuttaMyWay.ValueRecord.ipairs(basis.authorizingDemandAssemblyIds or {}) do authorised[beneficiaryId]=true end
+    local group={relocationKey=relocationKey,operationId=source.operationId,blockerAssemblyId=blockerAssemblyId,blockerAssemblyReferenceKey=source.blockerAssemblyReferenceKey,relations={},beneficiaryIds={},beneficiarySet={}}
+    for _,relation in OuttaMyWay.ValueRecord.ipairs(source.relations or {}) do
+        local beneficiaryId=relation.beneficiaryAssemblyId
+        if authorised[beneficiaryId]==true then
+            group.relations[#group.relations+1]=relation
+            if group.beneficiarySet[beneficiaryId]~=true then group.beneficiarySet[beneficiaryId]=true; group.beneficiaryIds[#group.beneficiaryIds+1]=beneficiaryId end
+        end
+    end
+    if OuttaMyWay.ValueRecord.length(group.relations)==0 then return nil end
+    table.sort(group.beneficiaryIds)
+    return group
+end
+
 local function reassessmentSpec(picture,snapshot,context,references)
     local basis=context.governingBasis or {}
     local blockerAssemblyId=basis.blockerAssemblyId
@@ -266,16 +280,25 @@ local function reassessmentSpec(picture,snapshot,context,references)
     if outcome.status=="SUPERSEDED" then return terminalSpec(context,"NEW_AUTHORITATIVE_INTENT",blockerAssemblyId,blockerReferenceKey),nil end
     if outcome.status~="MANOEUVRE_COMPLETE" then return waitingSpec(context,blockerAssemblyId,blockerReferenceKey),nil end
 
+    local blockedGroup=retainedPositiveGroup(picture,basis)
+    if blockedGroup~=nil then
+        if eligibleGroup(blockedGroup) then
+            local poses=posesByReference(snapshot)
+            local specification,reason=physicalSpec(picture,snapshot,blockedGroup,context,references,poses[blockerReferenceKey])
+            if specification~=nil then return specification,nil end
+            if reason=="CENTROID_BEARING_DEGENERATE" or reason=="BOUNDED_RELOCATION_PROGRESS_UNAVAILABLE" then
+                return terminalSpec(context,"OBJECTIVE_FAILED",blockerAssemblyId,blockerReferenceKey,"POSITIVE_CAUSAL_OBSTRUCTION_WITHOUT_MEANINGFUL_INWARD_RELOCATION_SPACE"),nil
+            end
+        end
+        return waitingSpec(context,blockerAssemblyId,blockerReferenceKey),nil
+    end
+
     local motion=motionByAssembly(picture)
     local productive=productiveByAssembly(picture)
     local beneficiaries=basis.authorizingDemandAssemblyIds or {}
     local allReleased=OuttaMyWay.ValueRecord.length(beneficiaries)>0
     for _,beneficiaryId in OuttaMyWay.ValueRecord.ipairs(beneficiaries) do
-        if relationFor(picture,blockerAssemblyId,beneficiaryId)~=nil
-            or not positiveSupportedContinuation(motion[beneficiaryId],productive[beneficiaryId]) then
-            allReleased=false
-            break
-        end
+        if not positiveSupportedContinuation(motion[beneficiaryId],productive[beneficiaryId]) then allReleased=false; break end
     end
     if allReleased then return terminalSpec(context,"OBJECTIVE_SATISFIED",blockerAssemblyId,blockerReferenceKey),nil end
     return waitingSpec(context,blockerAssemblyId,blockerReferenceKey),nil
@@ -301,7 +324,6 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     if context~=nil then return nil,"INCUMBENT_CONTEXT_REQUIRES_EXISTING_SINGLE_PURPOSE_PATH" end
 
     local references=referencesByAssembly(snapshot)
-    local terminalOwned=terminalOwnedAssemblies(picture)
     local groups=activeRelationsByKey(picture)
     local poses=posesByReference(snapshot)
     local keys={}
@@ -311,7 +333,7 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     local pictureBasis={identity=targetPictureId,epoch=targetEpoch}
     for _,key in OuttaMyWay.ValueRecord.ipairs(keys) do
         local group=groups[key]
-        if eligibleGroup(group) and terminalOwned[group.blockerAssemblyId]~=true and type(group.blockerAssemblyReferenceKey)=="string" then
+        if eligibleGroup(group) and type(group.blockerAssemblyReferenceKey)=="string" then
             local specification=physicalSpec(pictureBasis,snapshot,group,nil,references,poses[group.blockerAssemblyReferenceKey])
             if specification~=nil then specifications[#specifications+1]=specification end
         end
@@ -319,7 +341,7 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
     if OuttaMyWay.ValueRecord.length(specifications)==0 then return nil,"NO_GENERIC_CAUSAL_OBSTRUCTION_ACTION" end
 
     return {
-        supportBoundary={mode="CAUSAL_OBSTRUCTION_RELOCATION_TEST",supportedCandidateClasses={"REPOSITION","CONTINUE_OBSERVATION","CONTINUE_UNCHANGED","ESCALATE"},physicalCapabilitiesImplemented=true,controlAuthority="OBSTRUCTION_RELOCATION_ACTUATION_PLUS_PROTECTED_BENEFICIARY_HOLD",boundedScope="ONE_NON_ACTIVE_UNCLAIMED_BLOCKER_ONE_FIRST_COURTESY_THEN_FRESH_POSITIVE_SUPPORTED_CONTINUATION_EVIDENCE",parking=false,tidying=false,historicalJobProvenanceRequired=false,secondCourtesyWithheldByEvidence=true},
+        supportBoundary={mode="CAUSAL_OBSTRUCTION_RELOCATION_TEST",supportedCandidateClasses={"REPOSITION","CONTINUE_OBSERVATION","CONTINUE_UNCHANGED","ESCALATE"},physicalCapabilitiesImplemented=true,controlAuthority="OBSTRUCTION_RELOCATION_ACTUATION_PLUS_PROTECTED_BENEFICIARY_HOLD",boundedScope="NON_ACTIVE_UNCLAIMED_BLOCKER_REPEATED_BOUNDED_INWARD_RELOCATION_WHILE_FRESH_POSITIVE_OBSTRUCTION_PERSISTS",parking=false,tidying=false,historicalJobProvenanceRequired=false,moveCountBudget=false},
         candidateSpecifications=specifications,
         representationFitness={},
         provenance={source="ObstructionRelocationCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true}
@@ -337,7 +359,6 @@ function Support:attach(picture,snapshot)
         if specification==nil then self.lastStatus=reason or "GENERIC_REASSESSMENT_UNRESOLVED"; return nil end
         specifications[1]=specification
     else
-        local terminalOwned=terminalOwnedAssemblies(picture)
         local groups=activeRelationsByKey(picture)
         local poses=posesByReference(snapshot)
         local keys={}
@@ -345,7 +366,7 @@ function Support:attach(picture,snapshot)
         table.sort(keys)
         for _,key in OuttaMyWay.ValueRecord.ipairs(keys) do
             local group=groups[key]
-            if eligibleGroup(group) and terminalOwned[group.blockerAssemblyId]~=true and type(group.blockerAssemblyReferenceKey)=="string" then
+            if eligibleGroup(group) and type(group.blockerAssemblyReferenceKey)=="string" then
                 local specification=physicalSpec(picture,snapshot,group,nil,references,poses[group.blockerAssemblyReferenceKey])
                 if specification~=nil then specifications[#specifications+1]=specification end
             end
@@ -357,7 +378,7 @@ function Support:attach(picture,snapshot)
     values.identity=self.identities:issue("PICTURE")
     values.epoch=self.epochs:next()
     values.provenance={source="ObstructionRelocationCandidateSupport",parentOperationalPictureId=picture.identity,observationSnapshotId=snapshot.identity,authority="CAUSAL_OBSTRUCTION_RELOCATION_CANDIDATE_SUPPORT"}
-    values.candidateSupportEvidence={complete=true,supportBoundary={mode="CAUSAL_OBSTRUCTION_RELOCATION_TEST",supportedCandidateClasses={"REPOSITION","CONTINUE_OBSERVATION","CONTINUE_UNCHANGED","ESCALATE"},physicalCapabilitiesImplemented=true,controlAuthority="OBSTRUCTION_RELOCATION_ACTUATION_PLUS_PROTECTED_BENEFICIARY_HOLD",boundedScope="ONE_NON_ACTIVE_UNCLAIMED_BLOCKER_ONE_FIRST_COURTESY_THEN_FRESH_POSITIVE_SUPPORTED_CONTINUATION_EVIDENCE",parking=false,tidying=false,historicalJobProvenanceRequired=false,secondCourtesyWithheldByEvidence=true},candidateSpecifications=specifications,provenance={source="ObstructionRelocationCandidateSupport",observationSnapshotId=snapshot.identity}}
+    values.candidateSupportEvidence={complete=true,supportBoundary={mode="CAUSAL_OBSTRUCTION_RELOCATION_TEST",supportedCandidateClasses={"REPOSITION","CONTINUE_OBSERVATION","CONTINUE_UNCHANGED","ESCALATE"},physicalCapabilitiesImplemented=true,controlAuthority="OBSTRUCTION_RELOCATION_ACTUATION_PLUS_PROTECTED_BENEFICIARY_HOLD",boundedScope="NON_ACTIVE_UNCLAIMED_BLOCKER_REPEATED_BOUNDED_INWARD_RELOCATION_WHILE_FRESH_POSITIVE_OBSTRUCTION_PERSISTS",parking=false,tidying=false,historicalJobProvenanceRequired=false,moveCountBudget=false},candidateSpecifications=specifications,provenance={source="ObstructionRelocationCandidateSupport",observationSnapshotId=snapshot.identity}}
     self.publishedCount=self.publishedCount+1
     self.lastStatus="GENERIC_CAUSAL_OBSTRUCTION_CANDIDATES_PUBLISHED"
     return OuttaMyWay.OperationalPicture.new(values)

@@ -47,11 +47,8 @@ function Policy:selectGroup(inventory)
     local groups=groupsFor(inventory)
     if #groups==0 then return nil end
 
-    local cold=family(groups,"COLD_OBSTRUCTION")[1]
-    if cold~=nil then return choose(cold,"LEGACY_OUTER_PURPOSE_PRECEDENCE","COLD_CAUSAL_OBSTRUCTION_BEFORE_WARM_D0147_AND_LIVE_TRAFFIC") end
-
-    local warm=family(groups,"WARM_D0147")[1]
-    if warm~=nil then return choose(warm,"LEGACY_OUTER_PURPOSE_PRECEDENCE","FIRST_FRESH_WARM_D0147_BEFORE_LIVE_TRAFFIC") end
+    local obstruction=family(groups,"OBSTRUCTION_RELOCATION")[1]
+    if obstruction~=nil then return choose(obstruction,"OUTER_PURPOSE_PRECEDENCE","CURRENT_CAUSAL_OBSTRUCTION_BEFORE_LIVE_TRAFFIC") end
 
     local followerFail=family(groups,"FOLLOWER_FAIL_CLOSED")[1]
     if followerFail~=nil then return choose(followerFail,"LEGACY_LIVE_TRAFFIC_FAIL_CLOSED","FOLLOWER_SAME_CLASS_AMBIGUITY_PRECEDES_OTHER_LIVE_TRAFFIC") end

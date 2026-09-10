@@ -59,11 +59,14 @@ def test_same_picture_traffic_exhaustion_contract_remains_strict():
     assert "operationalPictureId=targetPictureId" not in portfolio
 
 
-def test_projection_does_not_reopen_d0147_d0218_or_control_mechanics():
+def test_projection_uses_one_obstruction_family_without_control_mechanics():
     portfolio=read("scripts/candidates/ProspectiveDecisionPortfolioSupport.lua")
     terminal=read("scripts/candidates/TerminalEgressCandidateSupport.lua")
     obstruction=read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
     assert "buildProjectedGroup" in terminal
     assert "buildFreshProjectedGroup" in obstruction
+    assert "WARM_D0147" not in portfolio
+    assert "terminalSupport" not in portfolio
+    assert "OBSTRUCTION_RELOCATION" in portfolio
     for forbidden in ("driveInWorldDirection", "AIVehicleUtil", "TerminalEgressControl", "ObstructionRelocationControl"):
         assert forbidden not in portfolio

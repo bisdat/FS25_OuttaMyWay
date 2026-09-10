@@ -45,8 +45,9 @@ OuttaMyWay.nativeManoeuvreObservationSource:setRegulationControlObservationSourc
 OuttaMyWay.cooperativePassageControl=OuttaMyWay.CooperativePassageControl.new(OuttaMyWay.runtime,OuttaMyWay.physicalControlMechanisms)
 OuttaMyWay.runtime:setCooperativePassageControl(OuttaMyWay.cooperativePassageControl)
 
--- Completed Obstruction and current Causal Obstruction retain distinct upstream
--- authority/lifecycle semantics but share one provenance-neutral physical Obstruction Relocation executor.
+-- One provenance-neutral Causal Obstruction / Obstruction Relocation responsibility
+-- owns production non-active blocker movement. Historical D-0147 donor modules remain
+-- loaded for this strangler increment but Runtime composition does not instantiate them.
 OuttaMyWay.obstructionRelocationControl=OuttaMyWay.ObstructionRelocationControl.new(OuttaMyWay.runtime,OuttaMyWay.runtime.liveObservationSource)
 OuttaMyWay.runtime:setObstructionRelocationControl(OuttaMyWay.obstructionRelocationControl)
 

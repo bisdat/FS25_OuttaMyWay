@@ -9,7 +9,7 @@ end
 
 local function candidateMetadata(specification,family,groupKey,ordinal,boundary,extra)
     local evidence=specification.evidenceBasis or {}
-    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or {}
+    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.obstructionRelocationBridge or {}
     local metadata={
         groupKey=groupKey,family=family,enumerationOrdinal=ordinal,supportBoundary=boundary,
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,terminalEpisodeId=bridge.terminalEpisodeId,
@@ -30,7 +30,7 @@ end
 
 local function descriptorFromSpecification(specification,family,groupKey,ordinal,boundary,extra)
     local evidence=specification.evidenceBasis or {}
-    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.terminalEgressBridge or evidence.obstructionRelocationBridge or {}
+    local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.obstructionRelocationBridge or {}
     local descriptor={
         groupKey=groupKey,family=family,enumerationOrdinal=ordinal,supportBoundary=boundary,
         conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,terminalEpisodeId=bridge.terminalEpisodeId,
@@ -68,9 +68,6 @@ local function passiveFailClosed(self,picture,snapshot,state,targetPictureId,tar
     appendGroup(state,group,family,"fail-closed:"..string.lower(family)..":"..tostring(reason),ordinal,{failClosedReason=reason})
 end
 
-local function terminalEligible(record)
-    return record.obstructionPositive==true and record.playerClaimed~=true and record.exhausted~=true and record.yieldAwaitingContinuation~=true
-end
 
 local function forwardRelationshipCount(picture)
     local count=0
@@ -92,8 +89,8 @@ local function opposedRelations(picture)
     return result
 end
 
-function Support.new(identityRegistry,epochSequence,obstructionSupport,terminalSupport,liveSupport,passiveSupport)
-    return setmetatable({identities=identityRegistry,epochs=epochSequence,obstructionSupport=obstructionSupport,terminalSupport=terminalSupport,liveSupport=liveSupport,passiveSupport=passiveSupport,publishedCount=0,lastStatus="INACTIVE"},Support)
+function Support.new(identityRegistry,epochSequence,obstructionSupport,liveSupport,passiveSupport)
+    return setmetatable({identities=identityRegistry,epochs=epochSequence,obstructionSupport=obstructionSupport,liveSupport=liveSupport,passiveSupport=passiveSupport,publishedCount=0,lastStatus="INACTIVE"},Support)
 end
 
 function Support:attach(picture,snapshot)
@@ -113,20 +110,8 @@ function Support:attach(picture,snapshot)
         if type(fitness.representationId)=="string" then state.fitnessIds[fitness.representationId]=true end
     end
 
-    local cold=self.obstructionSupport and self.obstructionSupport:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targetEpoch) or nil
-    if cold~=nil then appendGroup(state,cold,"COLD_OBSTRUCTION","cold-obstruction",1) end
-
-    local terminalOrdinal=0
-    for _,record in OuttaMyWay.ValueRecord.ipairs(picture.terminalOccupancyKnowledge or {}) do
-        if terminalEligible(record) then
-            terminalOrdinal=terminalOrdinal+1
-            local warm=self.terminalSupport and self.terminalSupport:buildProjectedGroup(
-                picture,snapshot,{kind="TERMINAL_OCCUPANCY",terminalEpisodeId=record.terminalEpisodeId},targetPictureId,targetEpoch) or nil
-            if modeOfGroup(warm)=="D0147_BOUNDED_TERMINAL_EGRESS" then
-                appendGroup(state,warm,"WARM_D0147","warm-d0147:"..tostring(record.terminalEpisodeId),terminalOrdinal)
-            end
-        end
-    end
+    local relocation=self.obstructionSupport and self.obstructionSupport:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targetEpoch) or nil
+    if relocation~=nil then appendGroup(state,relocation,"OBSTRUCTION_RELOCATION","obstruction-relocation",1) end
 
     local follower,followerReason=self.liveSupport:buildProjectedGroup(picture,snapshot,{kind="FOLLOWER_BOUNDARY"},targetPictureId,targetEpoch)
     if modeOfGroup(follower)=="FOLLOWER_BOUNDARY" then

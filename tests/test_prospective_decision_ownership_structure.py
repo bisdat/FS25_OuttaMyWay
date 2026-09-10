@@ -26,10 +26,8 @@ def test_phase13_fresh_portfolio_enumerates_support_groups_without_control_autho
     for token in (
         'mode="PROSPECTIVE_DECISION_PORTFOLIO"',
         "candidateSupportGroup",
-        'kind="TERMINAL_OCCUPANCY"',
         'kind="OPPOSED_RELATIONSHIP"',
-        "COLD_OBSTRUCTION",
-        "WARM_D0147",
+        "OBSTRUCTION_RELOCATION",
         "FORWARD_INTERSECTION_FAIL_CLOSED",
         "ACTION_SPACE_FAIL_CLOSED",
         "ONE_CONFLICT_SUPPORT_PROJECTION_NO_INTER_CONFLICT_SELECTION",
@@ -46,8 +44,7 @@ def test_phase13_decision_owns_inter_group_compatibility_and_no_constraint_fallb
     selector=read("scripts/decision/DecisionSelector.lua")
     for token in (
         'Policy.KIND="PROSPECTIVE_DECISION_PORTFOLIO_COMPATIBILITY"',
-        'family(groups,"COLD_OBSTRUCTION")',
-        'family(groups,"WARM_D0147")',
+        'family(groups,"OBSTRUCTION_RELOCATION")',
         "SAME_PAIR_SUPPORTED_PASSAGE_SUCCEEDS_FRESH_FOLLOWER_PURPOSE",
         "UNRELATED_SUPPORTED_PASSAGE_DOES_NOT_SUPERSEDE_FRESH_FOLLOWER_PURPOSE",
         "FORWARD_INTERSECTION_BEFORE_PASSAGE_WITHOUT_FOLLOWER_PURPOSE",
@@ -76,8 +73,9 @@ def test_phase13_runtime_uses_portfolio_only_for_fresh_scope_and_projects_dispat
         "evaluated=normalized",
     ):
         assert token in runtime
-    assert "completedObstructionCandidateSupport" in runtime
     assert "obstructionRelocationCandidateSupport" in runtime
+    assert "completedObstructionCandidateSupport" not in runtime
+    assert "runtime.terminalEgressCandidateSupport=" not in runtime
 
 
 def test_phase13_trigger_and_passage_semantics_survive_shared_obstruction_relocation_execution():
@@ -87,10 +85,10 @@ def test_phase13_trigger_and_passage_semantics_survive_shared_obstruction_reloca
     terminal_control=read("scripts/control/ObstructionRelocationControl.lua")
 
     assert "local function selectRecord(picture,context)" in completed
-    assert "TERMINAL_FINAL_BOUNDARY_SETTLEMENT" in completed
+    assert "TERMINAL_FINAL_BOUNDARY_SETTLEMENT" in completed  # historical donor remains testable in .47
     assert "maximumCourtesyMovesPerEpisode=2" in completed
-    assert "courtesyStage=1" in current
-    assert "secondCourtesyNotAuthorised=true" in current
+    assert 'objectiveKind="CAUSAL_OBSTRUCTION_BOUNDED_INWARD_RELOCATION"' in current
+    assert "repeatedActuationRequiresFreshPositiveObstruction=true" in current
     assert "function Planner.plan(picture,snapshot)" in passage
     assert "function Planner.planConflict(picture,snapshot,conflict)" in passage
     assert "local plan,reason,rejected=planConflict(picture,snapshot,conflict)" in passage

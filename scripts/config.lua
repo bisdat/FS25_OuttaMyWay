@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING.
--- Graduated Assembly Representation and Plan-View Occupancy Evidence use current production vocabulary.
--- Historical/passive Shadow probes remain Shadow; representation authority and behaviour are unchanged.
+-- FS25_OuttaMyWay v0.3.0.47 TEST — OBSTRUCTION RELOCATION RESPONSIBILITY CONSOLIDATION.
+-- Non-active unclaimed Causal Obstructions share one provenance-neutral relocation responsibility.
+-- Relocation is geometry-bounded by current centroid-directed space, not by a courtesy move count.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.46"
+OuttaMyWay.VERSION = "0.3.0.47"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -162,7 +162,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING"
+OuttaMyWay.BUILD_LABEL = "0.3.0.47 TEST — OBSTRUCTION RELOCATION RESPONSIBILITY CONSOLIDATION"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
@@ -174,22 +174,17 @@ OuttaMyWay.FOLLOWER_PACING_HUD_Y = 0.697
 OuttaMyWay.FOLLOWER_PACING_HUD_TEXT_SIZE = 0.013
 OuttaMyWay.FOLLOWER_PACING_HUD_MAX_ROWS = 3
 
--- D-0147 automatic completed-worker movement consent gate.
--- The legacy implementation name AUTOMATIC_TERMINAL_EGRESS is retained deliberately to avoid
--- interface/plumbing churn. It remains ON for development testing as requested by the repository owner.
--- D-0218 temporarily reuses this development consent check for the generic Causal Obstruction
--- test path; this does not define a future player-facing setting or release default.
+-- Development consent gate for automatic non-active obstruction relocation.
+-- The legacy identifier AUTOMATIC_TERMINAL_EGRESS remains temporarily as coordinated #87
+-- Configuration-ownership debt; its name no longer defines completed-worker semantics.
 OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS = true
--- D-0199 retains D-0194/D-0196 Double Courtesy but makes the courtesy budget explicitly
--- belong to the moved completed Job Episode. Courtesy 1 remains one fixed centroid bearing,
--- but the realised target is the nearer of the Field World centroid or this 60 m maximum.
--- The 60 m value is a maximum movement allowance only; it is never a minimum prerequisite.
--- After Continuation Renewal, any later active worker positively blocked by the same completed
--- assembly may authorise Courtesy 2. Stage 2 remains the single protected-away boundary move;
--- unsupported Stage 2 exhausts without search and no third automatic relocation exists.
+-- Maximum progress of one bounded inward Obstruction Relocation actuation. The current legacy
+-- identifier is likewise retained for #87 ownership reconciliation. Each fresh positive Causal
+-- Obstruction may authorise another actuation while meaningful centroid-directed space remains;
+-- there is no architectural move-count budget.
 OuttaMyWay.TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M = 60.0
 OuttaMyWay.TERMINAL_EGRESS_COMPACTION_TIMEOUT_MS = 25000 -- watchdog only; not policy authority
-OuttaMyWay.TERMINAL_EGRESS_MOVE_TIMEOUT_MS = 45000 -- watchdog only; one bounded retreat
+OuttaMyWay.TERMINAL_EGRESS_MOVE_TIMEOUT_MS = 45000 -- watchdog only; one bounded relocation actuation
 
 
 OuttaMyWay.FIELD_WORLD_SNAPSHOT_GENERATION_BUDGET = 0.00025

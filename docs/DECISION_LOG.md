@@ -45,6 +45,20 @@ completion or a separate configuration-settlement lifecycle. Compaction is not
 the Resolution objective; removing the current Causal Obstruction is. Current
 hard-safety evidence and bounded relocation limits remain authoritative.
 
+**Owner clarification — geometry-bounded recurrence.** Obstruction Relocation is
+not limited by a first/second courtesy count. Each actuation moves no farther
+than the current bounded maximum toward the Field World centroid, releases
+physical authority, and returns to fresh Reality. If the same unresolved
+responsibility still has fresh positive Causal Obstruction and meaningful inward
+space remains, another bounded inward actuation may be authorised. A large field
+may therefore require more than two movements; a small field may require one.
+No boundary-away final courtesy is architecture. When the blocker is
+approximately at the centroid, inward relocation has no further supported action.
+
+> **Relocation Is Geometry-Bounded, Not Count-Bounded**
+
+> **Actuation Recurrence != Resolution Settlement Evidence**
+
 No parking, tidying, ownership-management, historical pair memory or general
 vehicle-management responsibility is created. Once the beneficiary is no longer
 positively blocked by that subject, the obstruction purpose is discharged.

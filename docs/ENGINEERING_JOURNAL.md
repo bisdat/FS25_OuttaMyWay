@@ -1,3 +1,17 @@
+## 2026-09-10 — Issue #121 `.47` Obstruction Relocation responsibility consolidation candidate
+
+**Observe / architecture:** post-`.46` naming review exposed that completed-worker provenance still selected a separate warm D-0147 responsibility even though D-0218 defines Causal Obstruction from current Reality. Owner review simplified the policy further: there is no architectural first/second courtesy count. A non-active unclaimed blocker moves only because it is positively blocking, and each actuation moves no farther than the nearer of the Field World centroid or the existing 60 m per-actuation maximum.
+
+> **Relocation Is Geometry-Bounded, Not Count-Bounded**
+
+Fresh positive Causal Obstruction may authorise another actuation after `MANOEUVRE_COMPLETE`, while relation absence stops movement without manufacturing negative-clearance authority. Positive supported continuation remains the conservative current settlement witness.
+
+> **Actuation Recurrence != Resolution Settlement Evidence**
+
+**Implement `.47`:** production Runtime stops instantiating/enumerating/dispatching the warm D-0147 responsibility path. `ObstructionRelocationCandidateSupport` admits formerly completed blockers like other non-active unclaimed Causal Obstructions and may issue another centroid-directed actuation under the same retained Commitment/Current Responsibility only from fresh positive obstruction involving already-authorised beneficiaries. At approximately the centroid, fresh positive obstruction exhausts this inward strategy rather than inventing another move. Historical D-0147 donor source remains loaded and direct donor fixtures use explicit test-only composition until separate retirement.
+
+**Validate next:** implementation-local syntax/static checks only, then protected Structural and Lua behavioural CI. Because executable responsibility composition and repeated-relocation behaviour change, targeted GIANTS warm-completed-worker Reality is required before owner acceptance. Candidate identity is **`0.3.0.47 TEST — OBSTRUCTION RELOCATION RESPONSIBILITY CONSOLIDATION`**; canonical authority remains v0.3.0.0.
+
 ## 2026-09-10 — Issue #101 `.42` Guarded-Recovery orphan-chain retirement candidate
 
 **Observe / dependency proof:** current production still loaded and composed `GuardedRecoveryThreatAssessment`, `GuardedRecoveryConvergenceProbe` and `GuardedRecoveryCompatibility`, but Situation could originate Guarded-Recovery Knowledge only from `GUARDED_RECOVERY_CONTROL_EXECUTION_OBSERVATION`. The current live Observation / Regulation / Terminal-Egress composition has no producer of that exact observation kind. Existing Lua contracts reached the path only by manufacturing Guarded-Recovery Knowledge or legacy recovery ownership synthetically.

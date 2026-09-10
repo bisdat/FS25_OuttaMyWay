@@ -21,13 +21,13 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline for this increment: `main` after PR #117 merge,
-  commit `35fd9386b7c5403fda5231871cdb53e98168f485`.
+- Accepted Repository State baseline for this increment: `main` after PR #120 merge,
+  commit `487620178d75f333e6decdb47f6466f65effbd15`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.43 TEST — STRANDED LEAF SEMANTIC RETIREMENT`**.
-- Current Issue #112 executable candidate is
-  **`0.3.0.44 TEST — OBSTRUCTION RELOCATION TRANSITION NAMING`**.
+  **`0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING`**.
+- Current Issue #121 executable candidate is
+  **`0.3.0.47 TEST — OBSTRUCTION RELOCATION RESPONSIBILITY CONSOLIDATION`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -65,7 +65,7 @@ Architectural meaning remains owned by the
 | Control routing | `LiveControlDispatcher.lua` | PRESERVE authorised typed routing |
 | Regulation Control | `RegulationControl.lua`, `NativeDriveMechanism.lua` | PRESERVE production speed executor |
 | Cooperative Passage Control | `CooperativePassageControl.lua` plus shared mechanisms | PRESERVE validated mechanics and participant-specific handback |
-| Obstruction Relocation Control | `ObstructionRelocationControl.lua`, `NonJobActuationMechanism.lua` | PRESERVE one shared provenance-neutral physical executor for Completed Obstruction and current Causal Obstruction relocation; upstream semantics remain distinct |
+| Obstruction Relocation Control | `ObstructionRelocationControl.lua`, `NonJobActuationMechanism.lua` | `.47` candidate: PRESERVE one physical executor beneath one production Causal Obstruction / Obstruction Relocation responsibility; historical D-0147 donor modules remain loaded but production-uninstantiated pending separate retirement |
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting D-0147/D-0218 movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.43` removes the dead Passage target field and reports current `conflictIdentity` in the verdict trace |
@@ -161,17 +161,17 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Validate **#112 `.46 — Obstruction Relocation Control Naming`** from accepted
-`main` at `05aba26a4d91434b69b1ea7e03f872c29c7bcf9e`.
+Validate **#121 `.47 — Obstruction Relocation Responsibility Consolidation`**
+from accepted `main` at `487620178d75f333e6decdb47f6466f65effbd15`.
 
-This increment renames the one surviving shared physical relocation Control and
-its execution-facing interfaces only. It must preserve the four-Control-module
-topology established by Phase 14.6A/PR #88, retain completed-obstruction
-Candidate/Assessment/Commitment semantics upstream, and leave #87 Configuration
-identifiers in place.
+This strangler increment removes completed-worker provenance as a production
+responsibility selector, permits repeated centroid-directed Obstruction
+Relocation only from fresh positive Causal Obstruction, and leaves historical
+D-0147 donor modules physically present but production-uninstantiated. Donor
+source deletion plus `POST_JOB_ACTUATION` retirement belongs to a later increment.
 
-Independent CI remains the ordinary offline execution authority. Escalate to
-targeted GIANTS Reality only if exact diff review or CI identifies a
-runtime-dependent uncertainty beyond the naming/topology closure. Do not fold
-later #112 naming families, #87 Configuration ownership, #116 Passage
-investigation, #45 Bubble Bullet Time or #89 HUD work into this increment.
+Independent protected CI is the ordinary offline execution authority. Because
+`.47` changes executable responsibility composition and repeated-relocation
+behaviour, owner acceptance additionally requires a targeted GIANTS
+warm-completed-worker Reality test. Do not fold #87, #116, #45 or #89 into this
+increment.

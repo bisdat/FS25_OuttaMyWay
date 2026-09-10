@@ -307,6 +307,26 @@ exists only because the current Causal Obstruction prevents supported productive
 continuation. Once that obstruction is removed, OuttaMyWay has no independent
 interest in the subject.
 
+**Relocation Is Geometry-Bounded, Not Count-Bounded.** For a non-active,
+unclaimed blocker whose Causal Obstruction remains positively established,
+Obstruction Relocation may perform one bounded inward actuation toward the Field
+World centroid, limited to the nearer of the centroid or the current per-actuation
+maximum. Control then releases physical authority and Reality is reassessed. A
+fresh positive obstruction may justify another bounded inward actuation under the
+same unresolved responsibility while meaningful centroid-directed space remains.
+
+The architecture does not count first/second courtesies, create a completed-worker
+movement budget, or prescribe a later boundary-away settlement. If the blocker
+remains positively causal but no meaningful inward relocation space remains, this
+autonomous relocation strategy has no further supported actuation.
+
+Generic positive-conflict representation does not gain negative-clearance
+authority from this rule. Absence of a positive obstruction stops further movement
+but does not by itself prove semantic clearance; an accepted positive settlement
+witness remains necessary where the Resolution contract requires it.
+
+> **Actuation Recurrence != Resolution Settlement Evidence**
+
 A formerly completed AI worker is one possible blocker, not the architectural
 definition of the responsibility. A cold-loaded parked vehicle, a vehicle with
 unknown Job history, or another supported non-active physical vehicle can be the
