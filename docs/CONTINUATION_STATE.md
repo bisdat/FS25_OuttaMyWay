@@ -87,13 +87,27 @@ diagnostic directionality and live documentation responsibility.
     last-positive pair state survives.
   - Accepted Regulation/Resolution responsibility owns justified continuity
     after admission; Passage Bubble remains post-commit pairwise owner.
-  - `.41` implements this design; acceptance still requires CI and Reality.
+  - `.41` implements this design. Protected Structural and Lua offline
+    behavioural contracts are green, and owner-run GIANTS Reality produced an
+    apparent PASS in both a cold-start and warm-start smoke run.
+  - Warm Reality directly exercised positive -> `UNRESOLVED` pair evidence,
+    Regulation QUIESCENT -> REACTIVATED continuity, purpose-specific Passage
+    admission while generic pair evidence was unresolved, two successful
+    Cooperative Passages, and current pair-scope disappearance after one Job
+    Episode ended while the surviving committed Passage Leg completed normally.
+  - No known merge-blocking #100 contradiction remains; PR #113 is still
+    unmerged and requires explicit owner acceptance.
 
 - **#101 — orphaned / stranded semantic residue**
   - Guarded Recovery compatibility has no demonstrated live production ingress.
   - A stale completed-obstruction Control-observation consumer remains.
   - `FOLLOWER_OWNS_CLOSURE` remains stranded Constraint semantics.
   - Obstruction RTA API naming remains stale defensive/naming debt.
+  - `.41` Reality/log review additionally found two stranded Runtime reads of
+    retired `bridge.encounterIdentity`: an inert Passage Control-target field
+    and the `COOPERATIVE_CONSTRAINT_VERDICT encounter=n/a` diagnostic. They
+    carry no demonstrated authority and are recorded on #101 for dependency-
+    proven retirement rather than reopening #100.
   - These are retirement/naming questions, not demonstrated gameplay defects.
 
 ### Disproven audit finding
@@ -162,17 +176,19 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Validate **Issue #100 —
-`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
+Complete the **owner acceptance decision for PR #113 / Issue #100**.
 
-The implementation must prove current pair scope is ephemeral, exact Job Episode
-replacement cannot inherit pair state, loss of positive evidence yields current
-`UNRESOLVED` rather than remembered positive or manufactured separation, fresh
-current-space positive interaction still vetoes pre-contact Passage, and
-independently supported purpose-specific Passage remains possible while generic
-interaction evidence is unresolved.
+`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION` now has green protected
+offline validation and targeted cold/warm GIANTS Reality evidence supporting the
+Current Pair Assessment Scope architecture. No known merge-blocking #100
+contradiction remains. The Reality claim remains smoke/two-worker bounded rather
+than whole-Supported-Envelope proof.
 
-After #100, unless new Reality changes the order:
+Do not merge automatically. If the repository owner explicitly accepts and
+merges PR #113, that merge advances Accepted Repository State but does not
+canonicalise a release.
+
+After #100 acceptance, unless new Reality changes the order:
 
 1. #101 — dependency-proven retirement/naming cleanup.
 
