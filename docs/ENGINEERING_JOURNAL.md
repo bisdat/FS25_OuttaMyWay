@@ -4183,3 +4183,46 @@ The #87 Configuration identifiers `AUTOMATIC_TERMINAL_EGRESS`,
 
 No gameplay, geometry, authority, Candidate, Decision, Responsibility,
 Commitment, Bounded Authority or physical actuation behaviour change is intended.
+
+## 2026-09-10 — Issue #112 `.46`: CI #298 closes validation consumers
+
+**Independent validation:** Offline Validation #298 on candidate
+`88d3702f1eeeb16a970a1f670cb047616107c792` rejected the first `.46` head.
+
+Structural contracts reported nine failures because
+`tests/test_replacement_core_structure.py` still opened the retired
+`TerminalEgressControl.lua` path in current semantic assertions. The new
+four-Control topology assertion itself passed. The file had been included in the
+`.46` change set, but not every consumer inside it had been migrated.
+
+**Discovery:**
+
+> **Validation Consumer Closure != Validation File Inclusion**
+
+A dependency census or changed-file inventory proves only file-level reachability
+unless the individual validation consumers are also closed.
+
+The Lua main harness reported **334 PASS / 1 FAIL** while the focused
+Obstruction Relocation harness remained **9 PASS / 0 FAIL**. The sole failure
+completed the Completed Obstruction first courtesy physically and returned
+`MANOEUVRE_COMPLETE`; only its expected shared-Control evidence kind was stale.
+Exact-head `git grep` proved `TERMINAL_EGRESS_MANOEUVRE_COMPLETE` had no
+production/workflow consumer and occurred only in that direct test harness.
+
+**Discovery:**
+
+> **Shared Physical Outcome != Upstream Donor Outcome Name**
+
+Completed Obstruction remains the semantic trigger/lifecycle, while physical
+completion evidence emitted by the shared executor follows current Obstruction
+Relocation Control vocabulary.
+
+**Correction:** migrate current direct structural reads to
+`ObstructionRelocationControl.lua`, retain the explicit negative assertion that
+the donor-era filename is absent, and update the sole direct-Control outcome
+expectation to `OBSTRUCTION_RELOCATION_MANOEUVRE_COMPLETE`.
+
+This correction changes tests and engineering record only. It changes no
+production executable bytes and therefore remains `0.3.0.46 TEST — OBSTRUCTION
+RELOCATION CONTROL NAMING`; no `.47` identity is consumed. Protected CI must
+revalidate the corrected PR head.

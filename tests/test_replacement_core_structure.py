@@ -204,11 +204,11 @@ def test_current_control_topology_has_one_obstruction_relocation_executor_beside
     cooperative = (control_dir / "CooperativePassageControl.lua").read_text(encoding="utf-8")
     assert "executeJointRequests" in cooperative
     assert "CooperativePassageControl requires Hold, Drive and Configuration mechanisms" in cooperative
-    terminal = (control_dir / "TerminalEgressControl.lua").read_text(encoding="utf-8")
-    assert "OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION" in terminal
-    assert 'target.kind~="OBSTRUCTION_RELOCATION"' in terminal
-    assert "POST_JOB_ACTUATION" not in terminal
-    assert "OBSTRUCTION_RELOCATION_ACTUATION" not in terminal
+    relocation = (control_dir / "ObstructionRelocationControl.lua").read_text(encoding="utf-8")
+    assert "OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION" in relocation
+    assert 'target.kind~="OBSTRUCTION_RELOCATION"' in relocation
+    assert "POST_JOB_ACTUATION" not in relocation
+    assert "OBSTRUCTION_RELOCATION_ACTUATION" not in relocation
 
 
 
@@ -1210,7 +1210,7 @@ def test_v47108_settled_relationship_dissolution_requires_positive_non_turn_cont
 def test_v47117_d0147_value_record_boundary_accessors_remain_after_fixed_point_controller_retirement():
     authority=(ROOT/"scripts"/"control"/"mechanisms"/"NonJobActuationMechanism.lua").read_text(encoding="utf-8")
     candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"TerminalEgressControl.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
 
     # v4.7.117 fixed-point curvature was live-tested then retired by v4.7.120's
     # Exit Vector / Exit Heading correction. No stale fixed-target actuator remains.
@@ -1228,7 +1228,7 @@ def test_v47117_d0147_value_record_boundary_accessors_remain_after_fixed_point_c
 
 def test_v47118_d0147_diagnostic_steering_telemetry_and_owned_exit_neutralization():
     authority=(ROOT/"scripts"/"control"/"mechanisms"/"NonJobActuationMechanism.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"TerminalEgressControl.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
     for token in (
         "steeringTelemetry",
         "spec_crabSteering",
@@ -1254,7 +1254,7 @@ def test_v47118_d0147_diagnostic_steering_telemetry_and_owned_exit_neutralizatio
 
 def test_v47119_d0147_vehicle_activity_context_is_bounded_and_restored():
     authority=(ROOT/"scripts"/"control"/"mechanisms"/"NonJobActuationMechanism.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"TerminalEgressControl.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
     for token in (
         "acquireVehicleActivityContext",
         "releaseVehicleActivityContext",
@@ -1282,7 +1282,7 @@ def test_v47119_d0147_vehicle_activity_context_is_bounded_and_restored():
 def test_v47120_d0147_exit_alignment_is_direction_locked_and_positive_exit_terminated():
     authority=(ROOT/"scripts"/"control"/"mechanisms"/"NonJobActuationMechanism.lua").read_text(encoding="utf-8")
     candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"TerminalEgressControl.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
 
     for token in (
         "driveInWorldDirection",
@@ -1324,7 +1324,7 @@ def test_v47122_d0147_bounded_infield_retreat_is_one_shot_and_reactive():
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"TerminalOccupancyAssessment.lua").read_text(encoding="utf-8")
     candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"TerminalEgressControl.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
 
     assert 'TERMINAL_INFIELD_RETREAT_DISTANCE_M' not in config
@@ -1360,7 +1360,7 @@ def test_v01131_d0194_two_stage_terminal_courtesy_is_bounded_and_geometry_derive
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"TerminalOccupancyAssessment.lua").read_text(encoding="utf-8")
     candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"TerminalEgressControl.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     assert 'TERMINAL_INFIELD_RETREAT_DISTANCE_M' not in config
     assert 'TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M = 60.0' in config
@@ -1490,7 +1490,7 @@ def test_v47127_d0147_courtesy_constraint_and_valuerecord_regression_contract():
 
     # The live-validated courtesy calibration remains frozen in this audit tranche.
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"TerminalEgressControl.lua").read_text(encoding="utf-8")
+    control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
     assert 'TERMINAL_INFIELD_RETREAT_DISTANCE_M' not in config
     assert 'driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)' in control
     assert 'continuousCourseCorrection=false' in control
@@ -2449,7 +2449,7 @@ def test_follower_boundary_permissible_magnitude_is_bounded_authority_owned():
 
 def test_issue101_stranded_leaf_semantics_are_retired_without_erasing_current_knowledge():
     terminal = (ROOT / "scripts" / "assessment" / "TerminalOccupancyAssessment.lua").read_text(encoding="utf-8")
-    terminal_control = (ROOT / "scripts" / "control" / "TerminalEgressControl.lua").read_text(encoding="utf-8")
+    terminal_control = (ROOT / "scripts" / "control" / "ObstructionRelocationControl.lua").read_text(encoding="utf-8")
     coordinator = (ROOT / "scripts" / "runtime" / "LiveRuntimeCoordinator.lua").read_text(encoding="utf-8")
     compatibility = (ROOT / "scripts" / "constraints" / "evaluators" / "ResponsibilityCompatibility.lua").read_text(encoding="utf-8")
     situation = (ROOT / "scripts" / "assessment" / "SituationAssessment.lua").read_text(encoding="utf-8")
@@ -2459,7 +2459,7 @@ def test_issue101_stranded_leaf_semantics_are_retired_without_erasing_current_kn
     replay = (ROOT / "tests" / "replay" / "HistoricalFixtures.lua").read_text(encoding="utf-8")
 
     # Retired producer kind is deleted rather than rebound onto the current
-    # provenance-neutral Terminal Egress observation path.
+    # provenance-neutral Obstruction Relocation observation path.
     assert "D0147_TERMINAL_EGRESS_CONTROL_OBSERVATION" not in terminal
     assert "_consumeControlOutcomes" not in terminal
     assert 'kind="OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION"' in terminal_control

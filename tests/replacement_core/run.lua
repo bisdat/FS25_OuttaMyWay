@@ -6013,7 +6013,7 @@ test("Completed Obstruction Terminal Egress completes first courtesy from derive
     control:update(16); equal(completion,nil); equal(driveCalls,1); if math.abs((commandedMaxSpeed or 0)-25)>0.0001 then error("D0147 retreat did not use native maximum forward speed") end
     px,pz=50,50
     control:update(16)
-    equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.kind,"TERMINAL_EGRESS_MANOEUVRE_COMPLETE"); equal(completion.evidence.courtesyStage,1); equal(completion.evidence.destinationKind,"CENTROID_BEARING_DISTANCE_CAP")
+    equal(completion.status,"MANOEUVRE_COMPLETE"); equal(completion.evidence.kind,"OBSTRUCTION_RELOCATION_MANOEUVRE_COMPLETE"); equal(completion.evidence.courtesyStage,1); equal(completion.evidence.destinationKind,"CENTROID_BEARING_DISTANCE_CAP")
     if completion.evidence.realisedProgressM+0.0001 < completion.evidence.targetProgressM then error("interior settlement completed before derived centroid station") end
     equal(completion.evidence.continuousCourseCorrection,false); equal(driveCalls,1)
     AIVehicleUtil,getWorldTranslation,worldDirectionToLocal,WheelsUtil=oldAIVehicleUtil,oldGetWorldTranslation,oldWorldDirectionToLocal,oldWheelsUtil
