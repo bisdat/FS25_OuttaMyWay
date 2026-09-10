@@ -4021,3 +4021,49 @@ The audit also found that the newly added focused `test_phase14_relocation_seria
 **Separate observation:** the same `.31` Reality/audit exposed two residual production vocabulary surfaces: `beforeProtectedYield=true` in `COMPLETED_OBSTRUCTION_TRANSITION_UPSTREAM`, and Runtime rollback reason `PROTECTED_YIELD_START_FAILED` after failed Relocation Serialization application. Neither changes control semantics; both retain obsolete implementation vocabulary.
 
 **Decision:** retain Relocation Serialization. Correct both residual terms inside Phase 14.6B. Because production Lua bytes change, advance to fresh `.32 TEST` identity even though behaviour is intentionally unchanged. This is not a 14.6D tranche.
+
+
+## 2026-09-10 — Issue #101 `.43` closure review after accepted `.42`
+
+**Accepted evidence**
+
+- PR #115 merged `.42 — Guarded Recovery Orphan Retirement` to `main` as
+  `9159424fcc15b7a9873b50cf9817ff35636a64e3`.
+- Post-merge Offline Validation run #290 passed both protected jobs.
+- Owner GIANTS smoke run #1 was an apparent PASS including Player takeover.
+- An accidental second-run Cooperative Passage jam was separated into Issue #116
+  rather than attributed to the Guarded Recovery retirement without evidence.
+
+**Leaf dependency re-proof**
+
+- `TerminalOccupancyAssessment` still consumed only the retired
+  `D0147_TERMINAL_EGRESS_CONTROL_OBSERVATION`, while current Terminal Egress
+  publishes and the coordinator accepts `TERMINAL_EGRESS_CONTROL_OBSERVATION`.
+  The correct retirement is deletion, not rebinding.
+- `FOLLOWER_OWNS_CLOSURE` remains valid Situation Knowledge. Its historical
+  Responsibility Compatibility failure branch requires a singular active-Leader
+  `REPOSITION` Candidate that current production cannot construct: Passage owns
+  a plural pair subject; singular obstruction REPOSITION subjects are non-active.
+  Two Lua tests manufacture only that unreachable authority shape; the separate
+  Situation Knowledge test remains current.
+- Runtime still carried a nil `bridge.encounterIdentity` Passage target field and
+  a verdict trace that logged `encounter=n/a`. Current Cooperative Passage already
+  owns `conflictIdentity`; `.43` removes the dead target field and uses that current
+  identity for the diagnostic without recreating Encounter history.
+- `ResponsibilityTransitionAuthority:transitionCompletedObstructionResolution(...)`
+  remains a live shared exposure seam. Its name is #112 debt, not #101 retirement.
+- Acceptance of `.42` left `CONTINUATION_STATE.md` and `IMPLEMENTATION_MAP.md`
+  describing the previous `.41` baseline / `.42` candidate. `.43` reconciles those
+  replace-in-place current-state records.
+
+**Decision**
+
+Proceed with one attributable executable increment:
+**`0.3.0.43 TEST — STRANDED LEAF SEMANTIC RETIREMENT`**.
+
+> **Retired Producer Kind != Rename Permission**
+
+> **Synthetic Constraint Witness != Production Consumer**
+
+No Passage fix, Follower policy change, obstruction redesign, RTA rename or Issue
+#116 work belongs in this increment.

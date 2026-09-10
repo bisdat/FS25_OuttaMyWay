@@ -21,14 +21,15 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline for this increment: `main` after PR #114 merge, commit
-  `97bdc75f75e069678313908bff481314d15c79fc`.
+- Accepted Repository State baseline for this increment: `main` after PR #115 merge,
+  commit `9159424fcc15b7a9873b50cf9817ff35636a64e3`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
+  **`0.3.0.42 TEST — GUARDED RECOVERY ORPHAN RETIREMENT`**.
+- Current Issue #101 executable candidate is
+  **`0.3.0.43 TEST — STRANDED LEAF SEMANTIC RETIREMENT`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
-- No new TEST identity exists merely for audit closure.
 
 ## Principal current responsibility placement
 
@@ -50,9 +51,9 @@ Architectural meaning remains owned by the
 | Causal Obstruction | `CausalObstructionAssessment.lua` | PRESERVE positive current obstruction semantics |
 | Candidate construction / planning | `scripts/candidates/` | PRESERVE feasible option/support/planning ownership |
 | Prospective Candidate portfolio | `ProspectiveDecisionPortfolioSupport.lua` | PRESERVE complete fresh group enumeration on one Decision picture |
-| Constraint evaluation | `scripts/constraints/ConstraintEngine.lua` plus four canonical evaluators | PRESERVE independently owned mandatory verdicts; stranded legacy rule tracked by #101 |
+| Constraint evaluation | `scripts/constraints/ConstraintEngine.lua` plus four canonical evaluators | PRESERVE independently owned mandatory verdicts; `.43` retires only the production-unreachable historical Follower Owns Closure prohibition |
 | Decision / policy | `DecisionSelector.lua`, `TrafficPolicemanDecisionPolicy.lua`, `ProspectivePortfolioDecisionPolicy.lua` | PRESERVE supported choice / compatibility policy |
-| Responsibility Transition | `ResponsibilityTransitionAuthority.lua` plus purpose-specific transition modules | PRESERVE semantic establishment/replacement/termination; naming residue tracked by #101 |
+| Responsibility Transition | `ResponsibilityTransitionAuthority.lua` plus purpose-specific transition modules | PRESERVE semantic establishment/replacement/termination; live obstruction-RTA seam naming debt is tracked by #112 |
 | Generic retained Commitment / obligations | `scripts/commitment/` | RETAIN subordinate substrate; not Current Responsibility authority |
 | Regulation semantic responsibility | `scripts/contracts/Regulation.lua` and transition modules | PRESERVE one Regulation responsibility with purpose-specific evidence |
 | Resolution semantic responsibility | `ResolutionCommitment.lua`, `ResolutionCommitmentAdapter.lua`, purpose-specific transition/lifecycle modules | PRESERVE obligation-backed strong persistence |
@@ -66,8 +67,8 @@ Architectural meaning remains owned by the
 | Cooperative Passage Control | `CooperativePassageControl.lua` plus shared mechanisms | PRESERVE validated mechanics and participant-specific handback |
 | Terminal Egress Control | `TerminalEgressControl.lua`, `NonJobActuationMechanism.lua` | PRESERVE shared provenance-neutral executor for warm/cold obstruction movement |
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting D-0147/D-0218 movement | PRESERVE current beneficiary protection |
-| Guarded Recovery compatibility | no current production placement after `.42` candidate | **RETIRE #101 / `.42` CANDIDATE** — dependency-proven orphan generation removed; acceptance remains pending validation/review/owner merge |
-| Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; retired `bridge.encounterIdentity` verdict/target consumers tracked by #101 |
+| Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
+| Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.43` removes the dead Passage target field and reports current `conflictIdentity` in the verdict trace |
 | Mixed runtime constants | `scripts/config.lua` | **SEPARATE #87** — ownership decomposition / player-developer-internal boundary |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
 
@@ -129,11 +130,12 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #101 | behaviour-preserving retirement debt | `.42` candidate retires the dependency-proven Guarded-Recovery orphan generation; remaining leaf debt is the stale D-0147 Control consumer, stranded `FOLLOWER_OWNS_CLOSURE` Constraint semantics and two non-authoritative Runtime reads of retired `bridge.encounterIdentity`. Live obstruction-RTA API naming is deferred to #112. |
+| #101 | behaviour-preserving leaf retirement | `.42` Guarded-Recovery orphan generation is accepted by PR #115. `.43` retires the remaining stale D-0147-specific observation consumer, production-unreachable `FOLLOWER_OWNS_CLOSURE` Constraint authority/synthetic witnesses, and retired `bridge.encounterIdentity` Runtime consumers. |
+| #112 | naming-conformance debt | Live obstruction RTA behaviour remains current; only its stale method name is deferred for post-Phase-15 naming review. |
 
 Issue #100 is no longer current drift. PR #113 accepted the Current Pair
-Assessment Scope reconciliation and merged to Accepted Repository State as
-`41e24b68ada5ad8e236c0a44ba6c52393b9e1c7e`.
+Assessment Scope reconciliation. Issue #116 separately owns the accidental
+`.42` Crossing-Window Passage jam investigation and is not part of #101.
 
 ## Separate accepted work / explicit limits
 
@@ -159,8 +161,17 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Validate **#101 `.42 — Guarded Recovery Orphan Retirement`** from accepted `main` at `97bdc75f75e069678313908bff481314d15c79fc`.
+Validate **#101 `.43 — Stranded Leaf Semantic Retirement`** from accepted
+`main` at `9159424fcc15b7a9873b50cf9817ff35636a64e3`.
 
-The implementation claim is deliberately narrow: production composition no longer carries the dependency-proven unreachable Guarded-Recovery compatibility generation, while current Regulation, Passage recovery/restoration, obstruction, responsibility and authority semantics are unchanged.
+The candidate removes no current responsibility: it deletes one consumer of a
+retired observation kind, one production-unreachable historical Constraint
+prohibition plus its synthetic authority witnesses, and dead Encounter-provenance
+Runtime reads. The current Follower relation, Passage/Regulation/obstruction
+responsibilities and live RTA seam remain intact.
 
-After independent CI and appropriately scoped GIANTS Reality evidence, owner acceptance may advance this increment. Only then proceed to the separate #101 leaf-residue retirement. Do not fold Issue #112 naming conformance, #45 Bubble Bullet Time, #87 config decomposition or #89 HUD work into this increment.
+Use independent CI as the ordinary offline execution authority. Escalate to a
+targeted GIANTS Reality tranche only if the exact diff, CI or engineering review
+reveals a runtime-dependent uncertainty beyond this dependency proof. Do not fold
+Issue #112 naming conformance, #116 Passage investigation, #45 Bubble Bullet Time,
+#87 config decomposition or #89 HUD work into this increment.

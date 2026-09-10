@@ -2444,3 +2444,40 @@ def test_follower_boundary_permissible_magnitude_is_bounded_authority_owned():
         if "archive" not in path.parts
     )
     assert "requestedFollowerCapKmh" not in active_lua
+
+
+def test_issue101_stranded_leaf_semantics_are_retired_without_erasing_current_knowledge():
+    terminal = (ROOT / "scripts" / "assessment" / "TerminalOccupancyAssessment.lua").read_text(encoding="utf-8")
+    terminal_control = (ROOT / "scripts" / "control" / "TerminalEgressControl.lua").read_text(encoding="utf-8")
+    coordinator = (ROOT / "scripts" / "runtime" / "LiveRuntimeCoordinator.lua").read_text(encoding="utf-8")
+    compatibility = (ROOT / "scripts" / "constraints" / "evaluators" / "ResponsibilityCompatibility.lua").read_text(encoding="utf-8")
+    situation = (ROOT / "scripts" / "assessment" / "SituationAssessment.lua").read_text(encoding="utf-8")
+    runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
+    rta = (ROOT / "scripts" / "responsibility" / "ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
+    harness = (ROOT / "tests" / "replacement_core" / "run.lua").read_text(encoding="utf-8")
+
+    # Retired producer kind is deleted rather than rebound onto the current
+    # provenance-neutral Terminal Egress observation path.
+    assert "D0147_TERMINAL_EGRESS_CONTROL_OBSERVATION" not in terminal
+    assert "_consumeControlOutcomes" not in terminal
+    assert 'kind="TERMINAL_EGRESS_CONTROL_OBSERVATION"' in terminal_control
+    assert 'observation.kind~="TERMINAL_EGRESS_CONTROL_OBSERVATION"' in coordinator
+
+    # Situation Knowledge remains current; only its unreachable singular-Leader
+    # REPOSITION Constraint authority and synthetic witnesses retire.
+    assert "FOLLOWER_OWNS_CLOSURE" in situation
+    assert "FOLLOWER_OWNS_CLOSURE" not in compatibility
+    assert 'Evaluator.id="RESPONSIBILITY_COMPATIBILITY"' in compatibility
+    assert 'test("Follower Owns Closure is Knowledge not a selected role"' in harness
+    assert 'test("Follower Owns Closure rejects generic Leader reposition"' not in harness
+    assert 'test("Candidate responsibility self-attestation cannot override Follower Owns Closure"' not in harness
+
+    # Encounter history is not recreated. Passage Control targets retain current
+    # conflict identity and the diagnostic reports that truthful current identity.
+    assert "bridge.encounterIdentity" not in runtime
+    assert "COOPERATIVE_CONSTRAINT_VERDICT encounter=%s" not in runtime
+    assert "COOPERATIVE_CONSTRAINT_VERDICT conflict=%s" in runtime
+    assert "conflictIdentity=bridge.conflictIdentity" in runtime
+
+    # Live obstruction transition substrate is not retirement debt.
+    assert "function Authority:transitionCompletedObstructionResolution" in rta

@@ -257,7 +257,7 @@ function Runtime:_jointCooperativePassageRequests(picture,evaluated,candidate,co
             if candidateToken.assemblyId==assemblyId then token=candidateToken break end
         end
         if token==nil or self.authorities:validate(token)~=true then releaseCreated("COOPERATIVE_PASSAGE_REQUEST_CREATION_FAILED"); return nil,"VALID_JOINT_COMMITMENT_AUTHORITY_TOKEN_UNAVAILABLE" end
-        local target={kind="COOPERATIVE_PASSAGE",conflictIdentity=bridge.conflictIdentity,encounterIdentity=bridge.encounterIdentity,governingRequirementKey=bridge.governingRequirementKey,
+        local target={kind="COOPERATIVE_PASSAGE",conflictIdentity=bridge.conflictIdentity,governingRequirementKey=bridge.governingRequirementKey,
             subjectReferenceKey=bridge.subjectReferenceKey,otherReferenceKey=bridge.otherReferenceKey,passageGuideId=bridge.passageGuide and bridge.passageGuide.identity,controlProfile=bridge.controlProfile}
         local grant,grantReason=self:_authorizeBoundedAuthority(currentResponsibility,commitment,token,{
             assemblyId=assemblyId,capability="REPOSITION",target=target,operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,
@@ -823,7 +823,7 @@ function Runtime:processLiveObservation(raw)
         local candidate=selectedCandidate(evaluated)
         if candidate~=nil then
             local bridge=candidate.evidenceBasis and candidate.evidenceBasis.cooperativePassageBridge or nil
-            local traceKey=tostring(bridge and (bridge.encounterIdentity or bridge.conflictIdentity) or candidate.identity)
+            local traceKey=tostring(bridge and bridge.conflictIdentity or candidate.identity)
             if self.cooperativeVerdictTraceKey~=traceKey then
                 self.cooperativeVerdictTraceKey=traceKey
                 local summary={}
@@ -831,8 +831,8 @@ function Runtime:processLiveObservation(raw)
                     if verdict.candidateId==candidate.identity then summary[#summary+1]=tostring(verdict.constraintId).."="..tostring(verdict.result) end
                 end
                 table.sort(summary)
-                cooperativeLog("COOPERATIVE_CONSTRAINT_VERDICT encounter=%s candidate=%s decision=%s selected=true verdicts=%s",
-                    tostring(bridge and bridge.encounterIdentity or "n/a"),tostring(candidate.identity),tostring(evaluated.decision and evaluated.decision.identity or "n/a"),table.concat(summary,","))
+                cooperativeLog("COOPERATIVE_CONSTRAINT_VERDICT conflict=%s candidate=%s decision=%s selected=true verdicts=%s",
+                    tostring(bridge and bridge.conflictIdentity or "n/a"),tostring(candidate.identity),tostring(evaluated.decision and evaluated.decision.identity or "n/a"),table.concat(summary,","))
             end
         end
     else
