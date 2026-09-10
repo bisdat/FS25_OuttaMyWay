@@ -180,7 +180,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     local futureSpace = normalizeSpaces(snapshot.geometry.futureSpaceEvidence or {}, map, "FUTURE_SPACE")
     local demand = normalizeDemand(snapshot.geometry.demandEvidence or {}, map)
     local motionEvidence = normalizeMotion(snapshot.motion.progressionEvidence or {}, map)
-    local physicalSpaceEvidence = normalizePhysicalSpace(snapshot.geometry.shadowPlanViewEvidence or {}, map)
+    local physicalSpaceEvidence = normalizePhysicalSpace(snapshot.geometry.planViewOccupancyEvidence or {}, map)
     local productiveKnowledge = productiveContinuationKnowledge(motionEvidence)
     self.latestProductiveContinuationByReference={}
     for _,evidence in OuttaMyWay.ValueRecord.ipairs(productiveKnowledge) do

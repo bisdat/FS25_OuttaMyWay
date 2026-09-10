@@ -115,7 +115,7 @@ local function currentOccupancyByReference(snapshot,referenceKey)
 end
 local function currentPhysicalPrimitivesByReference(snapshot,referenceKey)
     local result={}
-    for _,item in OuttaMyWay.ValueRecord.ipairs(snapshot and snapshot.geometry and snapshot.geometry.shadowPlanViewEvidence or {}) do
+    for _,item in OuttaMyWay.ValueRecord.ipairs(snapshot and snapshot.geometry and snapshot.geometry.planViewOccupancyEvidence or {}) do
         if item.assemblyReferenceKey==referenceKey then
             for _,primitive in OuttaMyWay.ValueRecord.ipairs(item.primitives or {}) do
                 if primitive.kind=="DISC" and primitive.positiveConflictSupport==true and finite(tonumber(primitive.x)) and finite(tonumber(primitive.z)) and finite(tonumber(primitive.radius)) then

@@ -4103,3 +4103,40 @@ The fixture continues to exercise current Follower Regulation in the presence
 of closure Knowledge. The structural ownership contract is reconciled to the
 same current boundary. No production, configuration, modDesc or executable
 `.43` bytes change in this correction.
+
+## 2026-09-10 — Issue #112 `.45` Physical Representation naming closure selected
+
+**Observe:** after accepted PR #118 (`6c19920c51af93ee727d55b329a1634ca5b5565d`), a read-only exact-tree
+census found 73 `shadowRepresentation` occurrences and 10
+`shadowPlanViewEvidence` occurrences, but the broad repository Shadow census was
+429 lines dominated by historical provenance and genuinely passive probes. The
+graduated representation is constructed by `AssemblyRepresentationCache` and is
+used by current Future Space, current interaction/obstruction knowledge and
+purpose-scoped relocation evidence. Its production `Shadow` identity therefore
+no longer described its responsibility.
+
+**Discuss / classify:** `physicalRepresentationEvidence` already owns a separate
+question/fitness/permission evidence contract and must not be collapsed with
+plan-view occupancy geometry. Historical Decision Log/research Shadow evidence,
+`RefugeQualificationShadowProbe`, follower maturation Shadow and the native
+field-worker drive-command Shadow remain truthful passive names.
+
+**Discovery:**
+
+> **Current Interface Identity != Historical Evidence Identity**
+
+A historical donor may retain vocabulary truthful to its original passive
+authority state while an adapter projects the same value onto a graduated
+current interface.
+
+**Decision:** select `0.3.0.45 TEST — PHYSICAL REPRESENTATION NAMING CLOSURE`. Rename the live track/worker representation
+to **Assembly Representation**, rename the snapshot geometry collection to
+**Plan-View Occupancy Evidence**, and rename current Assembly Representation
+diagnostic labels. The unsourced `ProductiveCoverageResidualProbe` keeps
+`track.shadowRepresentation` as historical donor identity but adapts it onto the
+current `assemblyRepresentation` Future-Space interface.
+
+**Boundary:** no geometry, evidence authority, Candidate, Constraint, Decision,
+Responsibility, Bounded Authority or Control semantics change. This is not a
+repository-wide Shadow purge, does not move #87 Configuration identifiers and
+does not rename `TerminalEgress*`.

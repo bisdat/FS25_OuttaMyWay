@@ -111,7 +111,7 @@ function Probe.futureSpaceWorkerFromTrack(track)
         localIntent=track.localIntent,
         fieldWorldSnapshot=track.fieldWorldSnapshot,
         pose=track.pose,
-        shadowRepresentation=track.shadowRepresentation
+        assemblyRepresentation=track.shadowRepresentation
     }
 end
 

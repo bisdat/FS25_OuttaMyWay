@@ -309,10 +309,10 @@ function Source:capture(mission, nowSeconds)
             local speedMps = math.abs(tonumber(object.lastSpeedReal) or 0) * 1000
             local motionDiagnostic = OuttaMyWay.LiveInteractionObservation.deriveMotion(track.diagnosticPose,pose,track.diagnosticTimestamp,nowSeconds,speedMps)
             local components = componentKeys(object)
-            local shadowRepresentation = self.assemblyRepresentationCache and self.assemblyRepresentationCache:observe(object,ref,sourceToken,nowSeconds) or nil
+            local assemblyRepresentation = self.assemblyRepresentationCache and self.assemblyRepresentationCache:observe(object,ref,sourceToken,nowSeconds) or nil
             local localIntentObserved=OuttaMyWay.LocalIntentObservation.observe(object)
             local localIntent=OuttaMyWay.LocalIntentObservation.updateTrack(track,localIntentObserved)
-            track.shadowRepresentation=shadowRepresentation
+            track.assemblyRepresentation=assemblyRepresentation
             track.localIntent=localIntent
             track.everActive = true; track.active = true; track.object = object; track.pose = pose
             track.diagnosticPose=copyPose(pose); track.diagnosticTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic; track.motionDiagnostic=motionDiagnostic
@@ -329,7 +329,7 @@ function Source:capture(mission, nowSeconds)
                 restartObserved = reactivated and not replacementObserved, replacementObserved = replacementObserved,
                 playerPresent = activePlayerPresent, playerControlled = false, blocked = blockedState(object),
                 speedMps = speedMps, radius = radius, width = width, length = length,
-                sourceJobToken = sourceToken, nativeJobToken = nativeToken, nativeJobTokenSource = jobSource, components = track.components, shadowRepresentation=track.shadowRepresentation, localIntent=track.localIntent,
+                sourceJobToken = sourceToken, nativeJobToken = nativeToken, nativeJobTokenSource = jobSource, components = track.components, assemblyRepresentation=track.assemblyRepresentation, localIntent=track.localIntent,
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
@@ -354,7 +354,7 @@ function Source:capture(mission, nowSeconds)
                 track.fieldWorldResolution = self.fieldWorldEquivalenceAuthority:resolve(track.fieldWorldSnapshot)
             end
             if self.assemblyRepresentationCache~=nil and not isDeleted(object) and track.sourceJobToken~=nil then
-                track.shadowRepresentation=self.assemblyRepresentationCache:observe(object,ref,track.sourceJobToken,nowSeconds)
+                track.assemblyRepresentation=self.assemblyRepresentationCache:observe(object,ref,track.sourceJobToken,nowSeconds)
             end
             addToGroup(groups, {
                 object = object, referenceKey = ref, name = track.name or objectName(object), pose = track.pose, poseDiagnostic=track.poseDiagnostic, motionDiagnostic=track.motionDiagnostic,
@@ -365,7 +365,7 @@ function Source:capture(mission, nowSeconds)
                 unresolvedTermination = sourceJobEndEvidence.observed ~= true,
                 blocked = blockedState(object), speedMps = math.abs(tonumber(object.lastSpeedReal) or 0) * 1000,
                 radius = track.radius, width = track.width, length = track.length, sourceJobToken = track.sourceJobToken,
-                nativeJobToken = nil, nativeJobTokenSource = nil, components = track.components or componentKeys(object), shadowRepresentation=track.shadowRepresentation, localIntent={classification="UNRESOLVED",intentEpoch=track.localIntentEpoch or 0,intentValid=false,reason="JOB_EPISODE_NOT_ACTIVE",source="RETAINED_TRACK"},
+                nativeJobToken = nil, nativeJobTokenSource = nil, components = track.components or componentKeys(object), assemblyRepresentation=track.assemblyRepresentation, localIntent={classification="UNRESOLVED",intentEpoch=track.localIntentEpoch or 0,intentValid=false,reason="JOB_EPISODE_NOT_ACTIVE",source="RETAINED_TRACK"},
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
@@ -396,12 +396,12 @@ function Source:capture(mission, nowSeconds)
             local retainedPose=track.pose
             local retainedPoseDiagnostic=track.poseDiagnostic
             local retainedMotionDiagnostic=track.motionDiagnostic
-            local retainedShadowRepresentation=track.shadowRepresentation
+            local retainedAssemblyRepresentation=track.assemblyRepresentation
             if removed then
                 retainedPose=nil
                 retainedPoseDiagnostic=nil
                 retainedMotionDiagnostic=nil
-                retainedShadowRepresentation=nil
+                retainedAssemblyRepresentation=nil
             end
 
             addToGroup(groups, {
@@ -411,7 +411,7 @@ function Source:capture(mission, nowSeconds)
                 fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence, fieldActive = false, aiActive = false,
                 hasFieldWorker = true, activeObserved = false, playerControlled = false, unresolvedTermination = not removed, objectUnavailable = not removed,
                 blocked = false, speedMps = 0, radius = track.radius, width = track.width, length = track.length,
-                sourceJobToken = track.sourceJobToken, components = track.components or {}, shadowRepresentation=retainedShadowRepresentation,
+                sourceJobToken = track.sourceJobToken, components = track.components or {}, assemblyRepresentation=retainedAssemblyRepresentation,
                 localIntent={classification="UNRESOLVED",intentEpoch=track.localIntentEpoch or 0,intentValid=false,reason=removed and "RUNTIME_OBJECT_REMOVED" or "RUNTIME_OBJECT_UNAVAILABLE",source="RETAINED_TRACK"},
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
@@ -512,7 +512,7 @@ function Source:capture(mission, nowSeconds)
                 representativeGeometryOnly=representative~=nil,
                 playerFacingFieldLocators=locatorIds,immutableSnapshots=#snapshotKeys>0
             },
-            assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, futureSpaceRelationshipEvidence = {}, demandEvidence = {}, interactionEvidence = {}, shadowPlanViewEvidence = {}},
+            assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, futureSpaceRelationshipEvidence = {}, demandEvidence = {}, interactionEvidence = {}, planViewOccupancyEvidence = {}},
             motion = {closureEvidence = {}, progressionEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
             physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {},
             diagnostics = {
@@ -654,63 +654,63 @@ function Source:capture(mission, nowSeconds)
                 futureSpace=worker.futureSpace,
                 fieldWorldReferenceKey=worldResolved and worker.fieldWorldResolution.fieldWorldReferenceKey or nil,
                 fieldWorldSnapshotReferenceKey=snapshotResolved and worker.fieldWorldSnapshot.referenceKey or nil,
-                shadowRepresentation=worker.shadowRepresentation and {
-                    episodeKey=worker.shadowRepresentation.episodeKey,
-                    cacheHit=worker.shadowRepresentation.cacheHit,
-                    memberCount=worker.shadowRepresentation.memberCount,
-                    edgeCount=worker.shadowRepresentation.edgeCount,
-                    localPrimitiveCount=worker.shadowRepresentation.localPrimitiveCount,
-                    inventoryPrimitiveCount=worker.shadowRepresentation.inventoryPrimitiveCount,
-                    participatingPrimitiveCount=worker.shadowRepresentation.participatingPrimitiveCount,
-                    inactivePrimitiveCount=worker.shadowRepresentation.inactivePrimitiveCount,
-                    unresolvedPrimitiveCount=worker.shadowRepresentation.unresolvedPrimitiveCount,
-                    runtimeConfirmedPrimitiveCount=worker.shadowRepresentation.runtimeConfirmedPrimitiveCount,
-                    donorFallbackPrimitiveCount=worker.shadowRepresentation.donorFallbackPrimitiveCount,
-                    configurationSelectorSummary=worker.shadowRepresentation.configurationSelectorSummary,
-                    participatingPrimitiveNames=worker.shadowRepresentation.participatingPrimitiveNames,
-                    inactivePrimitiveNames=worker.shadowRepresentation.inactivePrimitiveNames,
-                    unresolvedPrimitiveNames=worker.shadowRepresentation.unresolvedPrimitiveNames,
-                    worldPrimitiveCount=worker.shadowRepresentation.worldPrimitiveCount,
-                    physicalPrimitiveCount=worker.shadowRepresentation.physicalPrimitiveCount,
-                    diagnosticPrimitiveCount=worker.shadowRepresentation.diagnosticPrimitiveCount,
-                    configurationKey=worker.shadowRepresentation.configurationKey,
-                    configurationProfileId=worker.shadowRepresentation.configurationProfileId,
-                    configurationProfileCacheHit=worker.shadowRepresentation.configurationProfileCacheHit,
-                    configurationProfileCount=worker.shadowRepresentation.configurationProfileCount,
-                    configurationAlternatives=worker.shadowRepresentation.configurationAlternatives,
-                    directionalPassageEnvelope=worker.shadowRepresentation.directionalPassageEnvelope,
-                    transitPassageEnvelope=worker.shadowRepresentation.transitPassageEnvelope,
-                    transitPassageReason=worker.shadowRepresentation.transitPassageReason,
-                    transitFoldCapability=worker.shadowRepresentation.transitFoldCapability,
-                    outtaMyWayConfigurationAuthorityActive=worker.shadowRepresentation.outtaMyWayConfigurationAuthorityActive,
-                    membershipChanged=worker.shadowRepresentation.membershipChanged,
-                    structurallyValid=worker.shadowRepresentation.structurallyValid,
-                    coverageComplete=worker.shadowRepresentation.coverageComplete,
-                    negativeClearanceAuthority=worker.shadowRepresentation.negativeClearanceAuthority,
-                    planViewSummary=worker.shadowRepresentation.planViewSummary,
-                    geometryStats=worker.shadowRepresentation.geometryStats,
-                    rejectionCount=worker.shadowRepresentation.rejectionCount,
-                    transformFailureCount=worker.shadowRepresentation.transformFailureCount
+                assemblyRepresentation=worker.assemblyRepresentation and {
+                    episodeKey=worker.assemblyRepresentation.episodeKey,
+                    cacheHit=worker.assemblyRepresentation.cacheHit,
+                    memberCount=worker.assemblyRepresentation.memberCount,
+                    edgeCount=worker.assemblyRepresentation.edgeCount,
+                    localPrimitiveCount=worker.assemblyRepresentation.localPrimitiveCount,
+                    inventoryPrimitiveCount=worker.assemblyRepresentation.inventoryPrimitiveCount,
+                    participatingPrimitiveCount=worker.assemblyRepresentation.participatingPrimitiveCount,
+                    inactivePrimitiveCount=worker.assemblyRepresentation.inactivePrimitiveCount,
+                    unresolvedPrimitiveCount=worker.assemblyRepresentation.unresolvedPrimitiveCount,
+                    runtimeConfirmedPrimitiveCount=worker.assemblyRepresentation.runtimeConfirmedPrimitiveCount,
+                    donorFallbackPrimitiveCount=worker.assemblyRepresentation.donorFallbackPrimitiveCount,
+                    configurationSelectorSummary=worker.assemblyRepresentation.configurationSelectorSummary,
+                    participatingPrimitiveNames=worker.assemblyRepresentation.participatingPrimitiveNames,
+                    inactivePrimitiveNames=worker.assemblyRepresentation.inactivePrimitiveNames,
+                    unresolvedPrimitiveNames=worker.assemblyRepresentation.unresolvedPrimitiveNames,
+                    worldPrimitiveCount=worker.assemblyRepresentation.worldPrimitiveCount,
+                    physicalPrimitiveCount=worker.assemblyRepresentation.physicalPrimitiveCount,
+                    diagnosticPrimitiveCount=worker.assemblyRepresentation.diagnosticPrimitiveCount,
+                    configurationKey=worker.assemblyRepresentation.configurationKey,
+                    configurationProfileId=worker.assemblyRepresentation.configurationProfileId,
+                    configurationProfileCacheHit=worker.assemblyRepresentation.configurationProfileCacheHit,
+                    configurationProfileCount=worker.assemblyRepresentation.configurationProfileCount,
+                    configurationAlternatives=worker.assemblyRepresentation.configurationAlternatives,
+                    directionalPassageEnvelope=worker.assemblyRepresentation.directionalPassageEnvelope,
+                    transitPassageEnvelope=worker.assemblyRepresentation.transitPassageEnvelope,
+                    transitPassageReason=worker.assemblyRepresentation.transitPassageReason,
+                    transitFoldCapability=worker.assemblyRepresentation.transitFoldCapability,
+                    outtaMyWayConfigurationAuthorityActive=worker.assemblyRepresentation.outtaMyWayConfigurationAuthorityActive,
+                    membershipChanged=worker.assemblyRepresentation.membershipChanged,
+                    structurallyValid=worker.assemblyRepresentation.structurallyValid,
+                    coverageComplete=worker.assemblyRepresentation.coverageComplete,
+                    negativeClearanceAuthority=worker.assemblyRepresentation.negativeClearanceAuthority,
+                    planViewSummary=worker.assemblyRepresentation.planViewSummary,
+                    geometryStats=worker.assemblyRepresentation.geometryStats,
+                    rejectionCount=worker.assemblyRepresentation.rejectionCount,
+                    transformFailureCount=worker.assemblyRepresentation.transformFailureCount
                 } or nil
             }
-            if worker.shadowRepresentation~=nil then
-                raw.geometry.shadowPlanViewEvidence[#raw.geometry.shadowPlanViewEvidence+1]={
+            if worker.assemblyRepresentation~=nil then
+                raw.geometry.planViewOccupancyEvidence[#raw.geometry.planViewOccupancyEvidence+1]={
                     assemblyReferenceKey=worker.referenceKey,
-                    episodeKey=worker.shadowRepresentation.episodeKey,
-                    configurationProfileId=worker.shadowRepresentation.configurationProfileId,
-                    configurationEvidence=worker.shadowRepresentation.configurationEvidence,
-                    configurationAlternatives=worker.shadowRepresentation.configurationAlternatives,
-                    directionalPassageEnvelope=worker.shadowRepresentation.directionalPassageEnvelope,
-                    transitPassageEnvelope=worker.shadowRepresentation.transitPassageEnvelope,
-                    transitPassageReason=worker.shadowRepresentation.transitPassageReason,
-                    transitFoldCapability=worker.shadowRepresentation.transitFoldCapability,
-                    primitives=worker.shadowRepresentation.worldPrimitives,
-                    summary=worker.shadowRepresentation.planViewSummary,
-                    coverageComplete=worker.shadowRepresentation.coverageComplete,
-                    negativeClearanceAuthority=worker.shadowRepresentation.negativeClearanceAuthority,
-                    provenance=worker.shadowRepresentation.provenance
+                    episodeKey=worker.assemblyRepresentation.episodeKey,
+                    configurationProfileId=worker.assemblyRepresentation.configurationProfileId,
+                    configurationEvidence=worker.assemblyRepresentation.configurationEvidence,
+                    configurationAlternatives=worker.assemblyRepresentation.configurationAlternatives,
+                    directionalPassageEnvelope=worker.assemblyRepresentation.directionalPassageEnvelope,
+                    transitPassageEnvelope=worker.assemblyRepresentation.transitPassageEnvelope,
+                    transitPassageReason=worker.assemblyRepresentation.transitPassageReason,
+                    transitFoldCapability=worker.assemblyRepresentation.transitFoldCapability,
+                    primitives=worker.assemblyRepresentation.worldPrimitives,
+                    summary=worker.assemblyRepresentation.planViewSummary,
+                    coverageComplete=worker.assemblyRepresentation.coverageComplete,
+                    negativeClearanceAuthority=worker.assemblyRepresentation.negativeClearanceAuthority,
+                    provenance=worker.assemblyRepresentation.provenance
                 }
-                if worker.shadowRepresentation.membershipChanged==true then
+                if worker.assemblyRepresentation.membershipChanged==true then
                     appendDiagnosticContradiction(raw.diagnostics.contradictions,"ASSEMBLY_MEMBERSHIP_CHANGED_DURING_JOB_EPISODE",{assemblyReferenceKey=worker.referenceKey,reason="CACHED_ASSEMBLY_FINGERPRINT_CHANGED"})
                 end
             end
@@ -803,7 +803,7 @@ function Source:capture(mission, nowSeconds)
             }
             local currentRepresentation=candidate.currentPhysicalRepresentation
             if currentRepresentation~=nil then
-                raw.geometry.shadowPlanViewEvidence[#raw.geometry.shadowPlanViewEvidence+1]={
+                raw.geometry.planViewOccupancyEvidence[#raw.geometry.planViewOccupancyEvidence+1]={
                     assemblyReferenceKey=physical.referenceKey,
                     episodeKey=nil,
                     configurationProfileId=nil,
@@ -877,8 +877,8 @@ function Source:capture(mission, nowSeconds)
                     interactionEvidenceEmitted=false,
                     subjectRepresentation={radius=a.radius,width=a.width,length=a.length,coverageComplete=false,conservative=false,underApproximationRisk=true},
                     otherRepresentation={radius=b.radius,width=b.width,length=b.length,coverageComplete=false,conservative=false,underApproximationRisk=true},
-                    subjectShadowRepresentationAvailable=a.shadowRepresentation~=nil,
-                    otherShadowRepresentationAvailable=b.shadowRepresentation~=nil
+                    subjectAssemblyRepresentationAvailable=a.assemblyRepresentation~=nil,
+                    otherAssemblyRepresentationAvailable=b.assemblyRepresentation~=nil
                 }
                 raw.diagnostics.sourceCounters.relevantPairCount=raw.diagnostics.sourceCounters.relevantPairCount+1
                 if eligible then
@@ -901,7 +901,7 @@ function Source:capture(mission, nowSeconds)
                     pairDiagnostic.principalOutcome=observed.principalOutcome
                     pairDiagnostic.currentSuppressionReason=observed.currentSuppressionReason
                     pairDiagnostic.representationFitForNegativeConclusion=false
-                    local currentFootprint=OuttaMyWay.PlanViewFootprint.evaluateCurrentOverlap(a.shadowRepresentation,b.shadowRepresentation)
+                    local currentFootprint=OuttaMyWay.PlanViewFootprint.evaluateCurrentOverlap(a.assemblyRepresentation,b.assemblyRepresentation)
                     pairDiagnostic.currentFootprintOutcome=currentFootprint.outcome
                     pairDiagnostic.currentFootprintIntersects=currentFootprint.current
                     pairDiagnostic.currentFootprintDistance=currentFootprint.distance
@@ -1027,7 +1027,7 @@ function Source:capture(mission, nowSeconds)
             timestamp = nowSeconds,
             provenance = {source = "LiveObservationSource", mode = "JOB_SEEDED_FIELD_WORLD_EQUIVALENCE_AUTHORITY", noActivity = true},
             fieldWorld = {referenceKey = "field-world:none", fieldPolygonReferenceKey = nil, fieldPolygonReferenceKeys = {}, fieldWorldSnapshotReferenceKeys = {}, operationMembershipEvidenceComplete = true, identityStatus="NO_ACTIVITY"},
-            assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, futureSpaceRelationshipEvidence = {}, demandEvidence = {}, interactionEvidence = {}, shadowPlanViewEvidence = {}},
+            assemblies = {}, geometry = {currentSpaceEvidence = {}, futureSpaceEvidence = {}, futureSpaceRelationshipEvidence = {}, demandEvidence = {}, interactionEvidence = {}, planViewOccupancyEvidence = {}},
             motion = {closureEvidence = {}, progressionEvidence = {}}, aiStates = {}, playerControl = {}, jobEpisodeEvidence = {}, operationMembershipEvidence = {},
             physicalRepresentationEvidence = {}, controlOutcomes = {}, unavailableSources = {},
             diagnostics={sourceCounters={cycleActiveJobVehicleCount=cycleDiagnostics.activeJobVehicleCount,cycleRelevantVehicleCount=cycleDiagnostics.relevantVehicleCount,groupWorkerCount=0,activeGroupWorkerCount=0,poseResolvedWorkerCount=0,mathematicallyPossiblePairCount=0,relevantPairCount=0,eligiblePairCount=0,evaluatedPairCount=0,excludedPairCount=0,qualifyingPairCount=0,interactionEvidenceEmittedCount=0},assemblyDiagnostics={},pairDiagnostics={},contradictions={}}
@@ -1062,6 +1062,6 @@ end
 function Source:getTrackedRepresentation(referenceKeyValue)
     local track=self.tracks and self.tracks[referenceKeyValue] or nil
     if track==nil or isDeleted(track.object) then return nil end
-    return track.shadowRepresentation
+    return track.assemblyRepresentation
 end
 

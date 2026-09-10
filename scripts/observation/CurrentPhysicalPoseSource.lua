@@ -38,7 +38,7 @@ end
 
 local function positivePrimitiveCount(raw,referenceKey)
     local count=0
-    for _,item in OuttaMyWay.ValueRecord.ipairs(raw and raw.geometry and raw.geometry.shadowPlanViewEvidence or {}) do
+    for _,item in OuttaMyWay.ValueRecord.ipairs(raw and raw.geometry and raw.geometry.planViewOccupancyEvidence or {}) do
         if item.assemblyReferenceKey==referenceKey then
             for _,primitive in OuttaMyWay.ValueRecord.ipairs(item.primitives or {}) do
                 if primitive.kind=="DISC" and primitive.positiveConflictSupport==true then count=count+1 end
