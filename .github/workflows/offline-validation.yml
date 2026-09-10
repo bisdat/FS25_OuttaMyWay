@@ -89,7 +89,6 @@ jobs:
             scripts/control/mechanisms/NonJobActuationMechanism.lua \
             scripts/control/CooperativePassageControl.lua \
             scripts/control/TerminalEgressControl.lua \
-            scripts/control/GuardedRecoveryCompatibility.lua \
             scripts/control/LiveControlDispatcher.lua \
             scripts/control/RegulationControl.lua \
             scripts/decision/ProspectivePortfolioDecisionPolicy.lua \
