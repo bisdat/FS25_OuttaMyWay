@@ -6,15 +6,15 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #115 merge,
-  commit `9159424fcc15b7a9873b50cf9817ff35636a64e3`.
+- Accepted Repository State baseline for this increment: `main` after PR #117 merge,
+  commit `35fd9386b7c5403fda5231871cdb53e98168f485`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.42 TEST — GUARDED RECOVERY ORPHAN RETIREMENT`**.
-- Current Issue #101 executable candidate is
-  **`0.3.0.43 TEST — STRANDED LEAF SEMANTIC RETIREMENT`**; it is not accepted
-  until independent CI, engineering review, any applicable Reality challenge
-  and owner merge.
+  **`0.3.0.43 TEST — STRANDED LEAF SEMANTIC RETIREMENT`**.
+- Current Issue #112 executable candidate is
+  **`0.3.0.44 TEST — OBSTRUCTION RELOCATION TRANSITION NAMING`**; it is not
+  accepted until independent CI, engineering review, any applicable Reality
+  challenge and owner merge.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
@@ -96,30 +96,27 @@ diagnostic directionality and live documentation responsibility.
   - PR #113 merged as `41e24b68ada5ad8e236c0a44ba6c52393b9e1c7e`.
   - Issue #100 is closed **completed**.
 
-### Remaining reconciliation Issue
+### Phase 15 reconciliation closure
 
-- **#101 — orphaned / stranded semantic residue**
-  - `.42` Guarded Recovery orphan-chain retirement is **ACCEPTED** by PR #115.
-    Production composition no longer carries that dependency-proven unreachable
-    implementation generation; shared Passage recovery/restoration and supporting
-    Regulation lifecycle machinery remain current.
-  - `.43` is the remaining leaf-semantic retirement candidate:
-    - delete the stale D-0147-specific Terminal Occupancy Control-observation
-      consumer without rebinding it to the current provenance-neutral producer;
-    - retire the production-unreachable `FOLLOWER_OWNS_CLOSURE`
-      Responsibility Compatibility prohibition while preserving the live
-      Situation relation; CI #291 exposed additional stale validation consumers,
-      including RF-TS016, which are reconciled to current Follower Regulation
-      semantics rather than used to restore the unreachable production rule;
-    - remove the dead Cooperative Passage `bridge.encounterIdentity` target field
-      and report the existing current `conflictIdentity` in the verdict diagnostic.
-  - The live obstruction RTA seam remains current. Its stale method name belongs
-    to **#112**, not to #101.
-  - The accidental `.42` Crossing-Window Passage jam is independently tracked by
-    **#116** and is not evidence that Guarded Recovery retirement caused a regression.
-
-These are behaviour-preserving retirement questions, not permission to redesign
-Passage, Regulation, obstruction or responsibility semantics.
+- **#101 — orphaned / stranded semantic residue** is closed **completed**.
+  - `.42` Guarded Recovery orphan-chain retirement is accepted by PR #115.
+  - `.43` Stranded Leaf Semantic Retirement is accepted by PR #117, whose merge
+    produced accepted `main` commit
+    `35fd9386b7c5403fda5231871cdb53e98168f485`.
+  - `.43` retired only the stale D-0147-specific Control-observation consumer,
+    the production-unreachable `FOLLOWER_OWNS_CLOSURE` Constraint authority and
+    its stale validation consumers, and dead Encounter-provenance Runtime reads.
+    Current Follower, Passage and obstruction responsibilities remain current.
+- **#112 — active-code naming conformance** is now the current bounded workstream.
+  - The first selected executable increment is `.44`: rename the shared
+    Responsibility Transition Authority obstruction-relocation seam from its
+    completed-worker donor name to current **Obstruction Relocation** vocabulary.
+  - `.44` changes no gameplay, authority, responsibility, decision order,
+    Control behaviour or Physical Representation semantics.
+  - `TerminalEgress*`, production `shadow*` vocabulary, D-0147 donor semantic
+    tokens, broad public verbs, rolling historical headers and Configuration
+    identifiers remain separate later questions; Configuration ownership remains
+    coordinated with #87.
 
 ### Disproven audit finding
 
@@ -187,28 +184,30 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Implement and validate **Issue #101 `.43 — Stranded Leaf Semantic Retirement`**.
+Implement and validate **Issue #112 `.44 — Obstruction Relocation Transition Naming`**
+from accepted `main` at
+`35fd9386b7c5403fda5231871cdb53e98168f485`.
 
-The dependency proof is complete:
+The bounded hypothesis is:
 
-> **Retired Producer Kind != Rename Permission**
+> **Shared Transition Seam != Donor-Specific Transition Name**
 
-> **Synthetic Constraint Witness != Production Consumer**
-
-The `.43` candidate removes only stranded consumers/authority assertions whose
-current producer or production-reachable Candidate shape is absent. It preserves
-current `FOLLOWER_OWNS_CLOSURE` Situation Knowledge, Follower Boundary,
-Cooperative Passage, Terminal/Causal Obstruction responsibilities, all GIANTS job
-ownership, and the live obstruction RTA seam.
+Rename only
+`ResponsibilityTransitionAuthority:transitionCompletedObstructionResolution(...)`
+to `transitionObstructionRelocationResolution(...)`, including its purpose-neutral
+transition parameter and direct Runtime/test consumers. Preserve the supplied
+purpose-specific transition objects as the owners of Completed Obstruction versus
+current Causal Obstruction semantics.
 
 Validation order:
 
-1. implementation-local syntax/static/diff checks only;
+1. implementation-local transformation guards, changed-file scope, Lua/Python
+   syntax, XML/build-identity coherence and `git diff --check`;
 2. independent GitHub `Structural contracts` and `Lua offline behavioural contracts`;
-3. engineering review of the exact leaf-retirement diff;
-4. targeted GIANTS Reality only if the actual diff, CI or review exposes a
-   runtime-dependent uncertainty not already bounded by the dependency proof;
-5. owner review/merge before `.43` becomes Accepted Repository State.
+3. engineering review of the exact naming-only diff;
+4. targeted GIANTS Reality only if CI or review exposes a runtime-dependent
+   uncertainty not already bounded by the no-behaviour-change proof;
+5. owner review/merge before `.44` becomes Accepted Repository State.
 
-Issue #116 remains an independent Passage investigation. Do not combine #45,
-#87, #89, #112 or #116 with this retirement work.
+Do not fold later #112 naming families, #87 Configuration ownership, #116 Passage
+investigation, #45 Bubble Bullet Time or #89 HUD work into this increment.

@@ -1889,8 +1889,8 @@ def test_completed_obstruction_responsibility_transition_is_upstream_and_singula
     assert "scripts/responsibility/CompletedObstructionResponsibilityTransition.lua" in main
     assert "CompletedObstructionResponsibilityTransition.new(runtime)" in runtime
     orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
-    assert orchestration.index('status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED"') < orchestration.index("transitionCompletedObstructionResolution")
-    assert orchestration.index("transitionCompletedObstructionResolution") < orchestration.index("_continueCompletedObstruction")
+    assert orchestration.index('status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED"') < orchestration.index("transitionObstructionRelocationResolution")
+    assert orchestration.index("transitionObstructionRelocationResolution") < orchestration.index("_continueCompletedObstruction")
     readiness=runtime[runtime.index("local terminalBridge=terminalEgressBridge(candidate)"):runtime.index("local followerBridge=followerBoundaryBridge(candidate)")]
     assert readiness.index('boundary.mode~="D0147_BOUNDED_TERMINAL_EGRESS"') < readiness.index('terminalBridge.terminalEvent~=nil')
     assert readiness.index('terminalBridge.terminalEvent~=nil') < readiness.index('candidate.capability~="REPOSITION"')
@@ -1928,7 +1928,7 @@ def test_explicit_resolution_commitment_is_a_read_only_view_at_both_transition_b
     assert "resolutionsByCommitmentId" in authority
     assert 'identities:issue("RESPONSIBILITY")' in authority
     assert "transitionCooperativePassageResolution" in authority
-    assert "transitionCompletedObstructionResolution" in authority
+    assert "transitionObstructionRelocationResolution" in authority
     assert "terminateSemanticResponsibilitiesForTerminalCommitment" in authority
     assert "application.commitmentId~=commitment.identity" in adapter
     assert "openResolutionObligationIds" in contract and "openForOwner" in adapter
@@ -2370,7 +2370,7 @@ def test_phase13_direct_cooperative_passage_targets_substrate_by_purpose_and_job
 
     direct=authority[
         authority.index("function Authority:transitionCooperativePassageResolution"):
-        authority.index("function Authority:transitionCompletedObstructionResolution")
+        authority.index("function Authority:transitionObstructionRelocationResolution")
     ]
     assert "evaluateDirectCooperativePassageSubstrate" in direct
     assert "COOPERATIVE_PASSAGE_RETAINED_COMMITMENT_CHANGED" in direct
@@ -2382,7 +2382,7 @@ def test_phase13_direct_cooperative_passage_targets_substrate_by_purpose_and_job
     # Resolution continuity guard remains on the retained generic action until
     # that exemplar is separately investigated.
     completed=authority[
-        authority.index("function Authority:transitionCompletedObstructionResolution"):
+        authority.index("function Authority:transitionObstructionRelocationResolution"):
         authority.index("function Authority:terminateActionSpaceRegulation")
     ]
     assert "resolutionIdentityForCommitment" in completed
@@ -2492,5 +2492,8 @@ def test_issue101_stranded_leaf_semantics_are_retired_without_erasing_current_kn
     assert "COOPERATIVE_CONSTRAINT_VERDICT conflict=%s" in runtime
     assert "conflictIdentity=bridge.conflictIdentity" in runtime
 
-    # Live obstruction transition substrate is not retirement debt.
-    assert "function Authority:transitionCompletedObstructionResolution" in rta
+    # Live obstruction transition substrate is current. Its public seam names
+    # the shared Obstruction Relocation responsibility rather than one donor caller.
+    assert "function Authority:transitionObstructionRelocationResolution" in rta
+    stale_api = "transition" + "CompletedObstructionResolution"
+    assert stale_api not in rta + runtime

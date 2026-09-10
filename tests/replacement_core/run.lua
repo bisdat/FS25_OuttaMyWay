@@ -5770,7 +5770,7 @@ end
 local function d0147TransitionForControl(runtime,supported,evaluated)
     local candidate=evaluated.candidates[1]
     local bridge=candidate.evidenceBasis.terminalEgressBridge
-    local admitted,reason=runtime.responsibilityTransitionAuthority:transitionCompletedObstructionResolution(supported,evaluated,{
+    local admitted,reason=runtime.responsibilityTransitionAuthority:transitionObstructionRelocationResolution(supported,evaluated,{
         status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",
         candidateId=candidate.identity,
         terminalEpisodeId=bridge.terminalEpisodeId
@@ -6076,7 +6076,7 @@ test("D0147 compaction-to-infield persistence exposes one Resolution Commitment 
     equal(compactEvaluated.decision.commitmentAction,"CREATE")
     local compactCandidate=compactEvaluated.candidates[1]
     local compactBridge=compactCandidate.evidenceBasis.terminalEgressBridge
-    local admitted,admitReason=runtime.responsibilityTransitionAuthority:transitionCompletedObstructionResolution(compactSupported,compactEvaluated,{status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=compactCandidate.identity,terminalEpisodeId=compactBridge.terminalEpisodeId},runtime.completedObstructionResponsibilityTransition)
+    local admitted,admitReason=runtime.responsibilityTransitionAuthority:transitionObstructionRelocationResolution(compactSupported,compactEvaluated,{status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=compactCandidate.identity,terminalEpisodeId=compactBridge.terminalEpisodeId},runtime.completedObstructionResponsibilityTransition)
     if admitted==nil then error(tostring(admitReason)) end
     local commitmentId=admitted.commitment.identity; local tokenId=admitted.authorityToken.identity
     equal(string.sub(admitted.currentResponsibility.identity,1,3),"RS-")
@@ -6095,7 +6095,7 @@ test("D0147 compaction-to-infield persistence exposes one Resolution Commitment 
     equal(egressEvaluated.decision.commitmentAction,"MAINTAIN")
     local egressCandidate=egressEvaluated.candidates[1]
     local egressBridge=egressCandidate.evidenceBasis.terminalEgressBridge
-    local revised,reviseReason=runtime.responsibilityTransitionAuthority:transitionCompletedObstructionResolution(egressSupported,egressEvaluated,{status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=egressCandidate.identity,terminalEpisodeId=egressBridge.terminalEpisodeId},runtime.completedObstructionResponsibilityTransition)
+    local revised,reviseReason=runtime.responsibilityTransitionAuthority:transitionObstructionRelocationResolution(egressSupported,egressEvaluated,{status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=egressCandidate.identity,terminalEpisodeId=egressBridge.terminalEpisodeId},runtime.completedObstructionResponsibilityTransition)
     if revised==nil then error(tostring(reviseReason)) end
     equal(revised.commitment.identity,commitmentId); equal(revised.authorityToken.identity,tokenId)
     equal(revised.application.action,"MAINTAIN")
@@ -6123,7 +6123,7 @@ test("D0147 completed-obstruction terminal failure and supersession remove seman
         local evaluated=runtime:evaluateSealedOperationalPicture(supported)
         local candidate=evaluated.candidates[1]
         local bridge=candidate.evidenceBasis.terminalEgressBridge
-        local applied,reason=runtime.responsibilityTransitionAuthority:transitionCompletedObstructionResolution(supported,evaluated,{status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,terminalEpisodeId=bridge.terminalEpisodeId},runtime.completedObstructionResponsibilityTransition)
+        local applied,reason=runtime.responsibilityTransitionAuthority:transitionObstructionRelocationResolution(supported,evaluated,{status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,terminalEpisodeId=bridge.terminalEpisodeId},runtime.completedObstructionResponsibilityTransition)
         if applied==nil then error(tostring(reason)) end
         return runtime,applied
     end
