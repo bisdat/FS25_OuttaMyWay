@@ -6,16 +6,15 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline: `main` after PR #111 merge, commit
-  `40c3a3f01b9d691b8b6b95d007be59173640cdea`.
+- Accepted Repository State baseline: `main` after PR #113 merge, commit
+  `41e24b68ada5ad8e236c0a44ba6c52393b9e1c7e`.
 - Canonical authority remains **v0.3.0.0**.
-- This Engineering Increment carries
+- Accepted executable identity is
   **`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
-- The audit itself introduced no executable change; accepted reconciliation has since advanced TEST identity to `.39`.
 
 The closure distinction remains:
 
@@ -74,29 +73,26 @@ diagnostic directionality and live documentation responsibility.
   - **Authority Release Must Be Physically Observable**.
   - Issue #98 is closed **completed**.
 
-### Remaining reconciliation Issues
-
-- **#100 — Current Pair Assessment Scope reconciliation**
+- **#100 — Current Pair Assessment Scope reconciliation** is accepted by PR #113.
   - **Current Pair Assessment Scope != Persistent Pair History**.
   - **Evidence Continuity != Evidence Freshness**.
   - **Absence Is Not Separation**.
   - **Unresolved Evidence Is Non-Authority, Not Universal Prohibition**.
-  - Accepted design rebuilds current pair scope from the active Operation and
-    exact active Job Episodes on every Operational Picture.
-  - Generic interaction evidence is current `POSITIVE` or `UNRESOLVED`; no
-    last-positive pair state survives.
-  - Accepted Regulation/Resolution responsibility owns justified continuity
-    after admission; Passage Bubble remains post-commit pairwise owner.
-  - `.41` implements this design. Protected Structural and Lua offline
-    behavioural contracts are green, and owner-run GIANTS Reality produced an
-    apparent PASS in both a cold-start and warm-start smoke run.
-  - Warm Reality directly exercised positive -> `UNRESOLVED` pair evidence,
+  - Current pair scope is rebuilt from active Operation membership and exact
+    active Job Episodes on every Operational Picture; no generic last-positive
+    pair lifecycle remains.
+  - Protected Structural and Lua offline behavioural contracts passed.
+  - Owner-run GIANTS Reality produced an apparent PASS in both cold-start and
+    warm-start smoke runs.
+  - Warm Reality exercised positive -> `UNRESOLVED` current pair evidence,
     Regulation QUIESCENT -> REACTIVATED continuity, purpose-specific Passage
     admission while generic pair evidence was unresolved, two successful
     Cooperative Passages, and current pair-scope disappearance after one Job
     Episode ended while the surviving committed Passage Leg completed normally.
-  - No known merge-blocking #100 contradiction remains; PR #113 is still
-    unmerged and requires explicit owner acceptance.
+  - PR #113 merged as `41e24b68ada5ad8e236c0a44ba6c52393b9e1c7e`.
+  - Issue #100 is closed **completed**.
+
+### Remaining reconciliation Issue
 
 - **#101 — orphaned / stranded semantic residue**
   - Guarded Recovery compatibility has no demonstrated live production ingress.
@@ -154,7 +150,7 @@ These remain independently owned and are not Phase-15 reconciliation findings:
 - **#45 — Bubble Bullet Time**: accepted architecture, unimplemented.
 - **#87 — `scripts/config.lua` Mixed Runtime Constants Surface decomposition**.
 
-Issue #65 is completed by PR #105. Current TEST build version now has exactly
+Issue #65 is completed by PR #105. Current TEST build version has exactly
 two source owners (`scripts/config.lua` and `modDesc.xml`), and the dynamic Build
 Identity Contract protects that ownership without coupling behavioural tests to
 the current version literal.
@@ -176,23 +172,20 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Complete the **owner acceptance decision for PR #113 / Issue #100**.
+Begin **Issue #101 — dependency-proven retirement/naming cleanup**.
 
-`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION` now has green protected
-offline validation and targeted cold/warm GIANTS Reality evidence supporting the
-Current Pair Assessment Scope architecture. No known merge-blocking #100
-contradiction remains. The Reality claim remains smoke/two-worker bounded rather
-than whole-Supported-Envelope proof.
+Start from accepted `main` at
+`41e24b68ada5ad8e236c0a44ba6c52393b9e1c7e`. Before removing each residue,
+prove production reachability or absence from current Runtime composition and
+separate synthetic compatibility coverage from current production
+responsibility. Retire only surfaces whose current responsibility is absent.
 
-Do not merge automatically. If the repository owner explicitly accepts and
-merges PR #113, that merge advances Accepted Repository State but does not
-canonicalise a release.
+Preserve current accepted gameplay behaviour. In particular, do not reconnect
+Guarded Recovery, broaden multi-context Commitment application, alter Passage
+geometry, retune Regulation, or treat the inert `bridge.encounterIdentity`
+consumers as evidence that persistent pair authority still exists.
 
-After #100 acceptance, unless new Reality changes the order:
-
-1. #101 — dependency-proven retirement/naming cleanup.
-
-Do not bundle these independent responsibilities into one reconciliation tranche.
+Do not bundle independent #45, #87, #89, #112 or other work into #101.
 
 Issue #90 is closed as completed after PR #102 established the durable
 post-strangler documentation responsibility. Issue #97 is a disproven audit
