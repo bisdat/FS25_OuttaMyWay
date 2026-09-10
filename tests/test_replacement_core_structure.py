@@ -393,10 +393,12 @@ def test_v4715_bounded_interaction_diagnostics_are_multi_worker_and_passive():
         assert forbidden not in diagnostics
     for token in ("mathematicallyPossiblePairCount","relevantPairCount","eligiblePairCount","evaluatedPairCount","qualifyingPairCount","pairDiagnostics"):
         assert token in source
-    for token in ("interactionEvidenceReceivedCount","encounterCreatedCount","SAME_OPERATION_ACTIVE_PAIR_NOT_EVALUATED","BOTH_WORKERS_BLOCKED_WITHOUT_ENCOUNTER"):
+    for token in ("interactionEvidenceReceivedCount","currentPairAssessmentCount","SAME_OPERATION_ACTIVE_PAIR_NOT_EVALUATED","INTERACTION_EVIDENCE_WITHOUT_CURRENT_PAIR_SCOPE","BOTH_WORKERS_BLOCKED_WITH_UNRESOLVED_CURRENT_PAIR"):
         assert token in assessment
-    for token in ("PAIR pair=","ENCOUNTER lifecycle=CREATED","ENCOUNTER lifecycle=RETAINED","ENCOUNTER lifecycle=TERMINATED","PAIR_OPERATION_CHANGED_DURING_JOB_EPISODE","PAIR_DISAPPEARED_WHILE_BOTH_WORKERS_ACTIVE"):
+    for token in ("PAIR pair=","pairScope=%s","relationship=%s","currentSpaceStatus=%s","futureSpaceStatus=%s"):
         assert token in validator
+    for retired in ("encounterCreatedCount","ENCOUNTER lifecycle=CREATED","ENCOUNTER lifecycle=RETAINED","ENCOUNTER lifecycle=TERMINATED","PAIR_OPERATION_CHANGED_DURING_JOB_EPISODE","PAIR_DISAPPEARED_WHILE_BOTH_WORKERS_ACTIVE"):
+        assert retired not in validator
     assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
     assert "PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE" in config
     for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):

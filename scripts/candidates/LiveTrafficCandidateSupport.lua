@@ -71,7 +71,7 @@ local function currentPairDependency(pictureValues,subjectAssemblyId,otherAssemb
     return preferredPairReferenceKey,nil,nil
 end
 
-local function cooperativePassageBandExhaustionlocal function cooperativePassageBandExhaustion(pictureId,governingRequirementKey,capability,reason)
+local function cooperativePassageBandExhaustion(pictureId,governingRequirementKey,capability,reason)
     return {
         result="PASS",operationalPictureId=pictureId,governingRequirementKey=governingRequirementKey,
         capability=capability,reason=reason,

@@ -1,3 +1,34 @@
+## 2026-09-10 — Issue #100 `.40` disproven by CI; `.41` correction
+
+**Validate `.40`: DISPROVEN.** PR #113 protected CI rejected commit
+`9588c1e8c2dd695261d7a5de833af5567ec2bf6d`.
+
+Independent patch review and CI identified a systematic implementation-script
+splice defect: replacement payloads repeated preserved end anchors. This produced
+malformed/duplicated declarations in `SituationAssessment`,
+`LocalPassagePlanner` and `LiveTrafficCandidateSupport`, plus duplicated
+documentation boundary text. CI stopped changed-runtime syntax at
+`LiveTrafficCandidateSupport.lua:74`. Structural validation independently found
+one older bounded-interaction diagnostic contract still requiring retired
+Encounter telemetry. Review also found `PassiveLiveValidator:deleteMap()` still
+calling the removed Transition HUD.
+
+> **Disproven Implementation != Disproven Architecture**
+
+> **Patch Boundary Marker != Replacement Payload**
+
+The failed build did not reach the Lua behavioural harness, so it provides no
+evidence for or against Current Pair Assessment Scope behaviour.
+
+**Implement `.41`:** correct only the proven splice/telemetry-contract defects,
+retain the #100 Current Pair Assessment Scope architecture and behaviour intent,
+and advance to the fresh pushed TEST identity
+**`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`** as required by Build
+Identity governance.
+
+**Validate next:** protected structural contracts and the complete Lua offline
+behavioural harness must both pass before any GIANTS Reality test is considered.
+
 ## 2026-09-10 — Issue #100 Current Pair Assessment Scope implementation candidate
 
 **Observe:** accepted `.39` `EncounterRegistry` combined exact pair/Job-Episode

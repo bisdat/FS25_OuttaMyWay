@@ -122,7 +122,7 @@ local function currentPairScope(picture,aId,bId)
     return nil
 end
 
-local function operationMembers(picture,operationId)local function operationMembers(picture,operationId)
+local function operationMembers(picture,operationId)
     for _,situation in OuttaMyWay.ValueRecord.ipairs(picture.situations or {}) do
         if situation.operationId==operationId then
             local ids={}

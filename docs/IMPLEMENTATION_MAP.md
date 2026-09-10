@@ -25,7 +25,7 @@ Architectural meaning remains owned by the
   `40c3a3f01b9d691b8b6b95d007be59173640cdea`.
 - Canonical authority remains **v0.3.0.0**.
 - This Engineering Increment carries
-  **`0.3.0.40 TEST — CURRENT PAIR ASSESSMENT SCOPE`**.
+  **`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 - No new TEST identity exists merely for audit closure.
@@ -129,7 +129,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #100 | implementation reconciliation | `.40` replaces persistent Encounter lifecycle with ephemeral Current Pair Assessment Scope; validation pending |
+| #100 | implementation reconciliation | `.41` replaces persistent Encounter lifecycle with ephemeral Current Pair Assessment Scope; validation pending |
 | #101 | behaviour-preserving retirement/naming debt | orphaned Guarded Recovery, stale Control consumer, stranded Constraint semantics, defensive naming |
 
 ## Separate accepted work / explicit limits
@@ -156,14 +156,14 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Validate **#100 — `0.3.0.40 TEST — CURRENT PAIR ASSESSMENT SCOPE`**.
+Validate **#100 — `0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
 
 The correction must preserve unresolved-evidence safety, exact Job Episode
 dependency ownership and fresh-positive current-space Passage vetoes, while
 proving generic unresolved interaction evidence neither grants safety nor
 universally prohibits independently supported purpose-specific Passage.
 
-After #100, unless new Reality changes the order:After #100, unless new Reality changes the order:
+After #100, unless new Reality changes the order:
 
 1. #101 — dependency-proven retirement/naming cleanup.
 

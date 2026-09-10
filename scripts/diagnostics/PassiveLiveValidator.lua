@@ -80,7 +80,7 @@ function Validator:loadMap()
     logInfo("Diagnostic observer active; Runtime processing and bounded Control dispatch are already complete before trace publication; diagnosticOnly=true")
 end
 function Validator:deleteMap()
-    self.elapsed=0; self.lastSignature=nil; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}; self.futureSpaceHud:reset(); self.transitionHud:reset()
+    self.elapsed=0; self.lastSignature=nil; self.futureSpaceLogSignatures={}; self.followerBoundaryLogSignatures={}; self.trajectoryLogSignatures={}; self.opposedCorridorLogSignatures={}; self.futureSpaceHud:reset()
 end
 function Validator:keyEvent() end
 function Validator:mouseEvent() end

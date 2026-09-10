@@ -10,7 +10,7 @@ Engineering Journal preserve chronology.
   `40c3a3f01b9d691b8b6b95d007be59173640cdea`.
 - Canonical authority remains **v0.3.0.0**.
 - This Engineering Increment carries
-  **`0.3.0.40 TEST — CURRENT PAIR ASSESSMENT SCOPE`**.
+  **`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
@@ -87,7 +87,7 @@ diagnostic directionality and live documentation responsibility.
     last-positive pair state survives.
   - Accepted Regulation/Resolution responsibility owns justified continuity
     after admission; Passage Bubble remains post-commit pairwise owner.
-  - `.40` implements this design; acceptance still requires CI and Reality.
+  - `.41` implements this design; acceptance still requires CI and Reality.
 
 - **#101 — orphaned / stranded semantic residue**
   - Guarded Recovery compatibility has no demonstrated live production ingress.
@@ -163,7 +163,7 @@ constitute Phase-15 runtime defects.
 ## Next
 
 Validate **Issue #100 —
-`0.3.0.40 TEST — CURRENT PAIR ASSESSMENT SCOPE`**.
+`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
 
 The implementation must prove current pair scope is ephemeral, exact Job Episode
 replacement cannot inherit pair state, loss of positive evidence yields current
@@ -172,7 +172,7 @@ current-space positive interaction still vetoes pre-contact Passage, and
 independently supported purpose-specific Passage remains possible while generic
 interaction evidence is unresolved.
 
-After #100, unless new Reality changes the order:After #100, unless new Reality changes the order:
+After #100, unless new Reality changes the order:
 
 1. #101 — dependency-proven retirement/naming cleanup.
 

@@ -394,7 +394,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         pairScopeByReference[pair.pairReferenceKey]=pair
     end
 
-    local responsibilityRelations = {}    local responsibilityRelations = {}
+    local responsibilityRelations = {}
     for _, item in OuttaMyWay.ValueRecord.ipairs(snapshot.motion.closureEvidence or {}) do
         if item.closingObserved == true then
             responsibilityRelations[#responsibilityRelations+1] = {
@@ -515,7 +515,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     end
     table.sort(currentPairScopeDiagnostics,function(a,b) return tostring(a.pairReferenceKey)<tostring(b.pairReferenceKey) end)
 
-    local assemblyDiagnostics={}    local assemblyDiagnostics={}
+    local assemblyDiagnostics={}
     for _,item in OuttaMyWay.ValueRecord.ipairs(sourceDiagnostics.assemblyDiagnostics or {}) do
         local copied=copyValue(item)
         local assemblyId=resolveAssembly(map,item)
