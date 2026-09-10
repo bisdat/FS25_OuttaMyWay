@@ -6,13 +6,13 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #118 merge,
-  commit `6c19920c51af93ee727d55b329a1634ca5b5565d`.
+- Accepted Repository State baseline for this increment: `main` after PR #119 merge,
+  commit `05aba26a4d91434b69b1ea7e03f872c29c7bcf9e`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.44 TEST — OBSTRUCTION RELOCATION TRANSITION NAMING`**.
+  **`0.3.0.45 TEST — PHYSICAL REPRESENTATION NAMING CLOSURE`**.
 - Current Issue #112 executable candidate is
-  **`0.3.0.45 TEST — PHYSICAL REPRESENTATION NAMING CLOSURE`**; it is not accepted until independent CI, engineering
+  **`0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING`**; it is not accepted until independent CI, engineering
   review, any applicable Reality challenge and owner merge.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
@@ -188,30 +188,45 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Implement and validate **Issue #112 `.44 — Obstruction Relocation Transition Naming`**
+Implement and validate **Issue #112 `.46 — Obstruction Relocation Control Naming`**
 from accepted `main` at
-`35fd9386b7c5403fda5231871cdb53e98168f485`.
+`05aba26a4d91434b69b1ea7e03f872c29c7bcf9e`.
 
 The bounded hypothesis is:
 
-> **Shared Transition Seam != Donor-Specific Transition Name**
+> **Execution Mechanism Identity != Upstream Responsibility Identity**
 
-Rename only
-`ResponsibilityTransitionAuthority:transitionCompletedObstructionResolution(...)`
-to `transitionObstructionRelocationResolution(...)`, including its purpose-neutral
-transition parameter and direct Runtime/test consumers. Preserve the supplied
-purpose-specific transition objects as the owners of Completed Obstruction versus
-current Causal Obstruction semantics.
+PR #88 already established one provenance-neutral physical executor for both
+Completed Obstruction and current Causal Obstruction and retired the duplicate
+Phase-13 `ObstructionRelocationControl`. `.46` does **not** recreate that
+five-Control-module topology. It renames the one surviving executor from
+`TerminalEgressControl` to `ObstructionRelocationControl` and migrates only its
+shared execution interface / target / observation vocabulary.
+
+Preserve:
+
+- exactly four root Control modules;
+- `TerminalOccupancyAssessment`, `TerminalEgressCandidateSupport`,
+  `TerminalEgressCommitmentLifecycle`, `terminalEgressBridge`,
+  `onTerminalEgressCompletion(...)`, `terminalEpisodeId` and D-0147 courtesy
+  semantics as completed-obstruction-specific;
+- #87-owned `AUTOMATIC_TERMINAL_EGRESS`,
+  `TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M`,
+  `TERMINAL_EGRESS_COMPACTION_TIMEOUT_MS` and
+  `TERMINAL_EGRESS_MOVE_TIMEOUT_MS` unchanged in this tranche;
+- all Control mechanics, authority classes, cleanup, Player Claim, source-AI
+  reactivation and completion-context routing.
 
 Validation order:
 
-1. implementation-local transformation guards, changed-file scope, Lua/Python
-   syntax, XML/build-identity coherence and `git diff --check`;
-2. independent GitHub `Structural contracts` and `Lua offline behavioural contracts`;
-3. engineering review of the exact naming-only diff;
-4. targeted GIANTS Reality only if CI or review exposes a runtime-dependent
-   uncertainty not already bounded by the no-behaviour-change proof;
-5. owner review/merge before `.44` becomes Accepted Repository State.
+1. exact transformation / four-Control topology / protected-name guards;
+2. syntax/static checks and `git diff --check`;
+3. independent GitHub Structural and Lua offline behavioural contracts;
+4. engineering review of the exact rename;
+5. targeted GIANTS Reality only if CI/review exposes a runtime-dependent
+   uncertainty beyond the closed-world naming/topology proof;
+6. owner review/merge before `.46` becomes Accepted Repository State.
 
-Do not fold later #112 naming families, #87 Configuration ownership, #116 Passage
-investigation, #45 Bubble Bullet Time or #89 HUD work into this increment.
+Do not fold later #112 donor naming, Runtime telemetry/header work, #87
+Configuration decomposition, #116 Passage investigation, #45 Bubble Bullet Time
+or #89 HUD work into this increment.

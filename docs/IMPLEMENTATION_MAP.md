@@ -65,7 +65,7 @@ Architectural meaning remains owned by the
 | Control routing | `LiveControlDispatcher.lua` | PRESERVE authorised typed routing |
 | Regulation Control | `RegulationControl.lua`, `NativeDriveMechanism.lua` | PRESERVE production speed executor |
 | Cooperative Passage Control | `CooperativePassageControl.lua` plus shared mechanisms | PRESERVE validated mechanics and participant-specific handback |
-| Terminal Egress Control | `TerminalEgressControl.lua`, `NonJobActuationMechanism.lua` | PRESERVE shared provenance-neutral executor for warm/cold obstruction movement |
+| Obstruction Relocation Control | `ObstructionRelocationControl.lua`, `NonJobActuationMechanism.lua` | PRESERVE one shared provenance-neutral physical executor for Completed Obstruction and current Causal Obstruction relocation; upstream semantics remain distinct |
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting D-0147/D-0218 movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.43` removes the dead Passage target field and reports current `conflictIdentity` in the verdict trace |
@@ -130,7 +130,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #112 | naming-conformance debt | `.44` is accepted by PR #118 and the shared obstruction-relocation Responsibility Transition seam now uses current Obstruction Relocation vocabulary. `.45` is the selected bounded correction for graduated Physical Representation names: current `shadowRepresentation` -> Assembly Representation and `shadowPlanViewEvidence` -> Plan-View Occupancy Evidence, including current diagnostics/tests while preserving genuine passive/historical Shadow identity. Later independently proved families remain completed-obstruction donor-specific names/tokens, the shared physical relocation executor currently named `TerminalEgressControl`, Candidate Support public verbs, and current Runtime telemetry / rolling history headers. Configuration identifier movement remains coordinated with #87. |
+| #112 | naming-conformance debt | `.44` and `.45` are accepted by PRs #118/#119. `.46` renames the one consolidated shared physical executor from donor-era `TerminalEgressControl` to current `ObstructionRelocationControl` vocabulary without recreating the retired duplicate Control topology. Later independently proved families remain completed-obstruction donor-specific names/tokens, Candidate Support public verbs, and current Runtime telemetry / rolling history headers. Configuration identifier movement remains coordinated with #87. |
 
 Issue #101 is no longer current drift. PR #117 accepted `.43` and closed the
 Phase-15 orphan/stranded semantic retirement work. Issue #100 likewise remains
@@ -161,19 +161,17 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Validate **#112 `.44 — Obstruction Relocation Transition Naming`** from accepted
-`main` at `35fd9386b7c5403fda5231871cdb53e98168f485`.
+Validate **#112 `.46 — Obstruction Relocation Control Naming`** from accepted
+`main` at `05aba26a4d91434b69b1ea7e03f872c29c7bcf9e`.
 
-The candidate changes only the shared Responsibility Transition Authority API
-name, its purpose-neutral local transition parameter, direct Runtime/test
-consumers, and the two current-state documents that still described `.43` as
-prospective. Purpose-specific `CompletedObstructionResponsibilityTransition` and
-`ObstructionRelocationResponsibilityTransition` remain the semantic owners for
-their respective paths.
+This increment renames the one surviving shared physical relocation Control and
+its execution-facing interfaces only. It must preserve the four-Control-module
+topology established by Phase 14.6A/PR #88, retain completed-obstruction
+Candidate/Assessment/Commitment semantics upstream, and leave #87 Configuration
+identifiers in place.
 
-Use independent CI as the ordinary offline execution authority. Escalate to a
-targeted GIANTS Reality tranche only if the exact diff, CI or engineering review
-reveals a runtime-dependent uncertainty beyond this naming-only dependency
-closure. Do not fold later #112 families, #87 Configuration decomposition,
-#116 Passage investigation, #45 Bubble Bullet Time or #89 HUD work into this
-increment.
+Independent CI remains the ordinary offline execution authority. Escalate to
+targeted GIANTS Reality only if exact diff review or CI identifies a
+runtime-dependent uncertainty beyond the naming/topology closure. Do not fold
+later #112 naming families, #87 Configuration ownership, #116 Passage
+investigation, #45 Bubble Bullet Time or #89 HUD work into this increment.

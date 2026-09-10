@@ -218,10 +218,10 @@ function Runtime:setCooperativePassageControl(control)
     end
 end
 
-function Runtime:setTerminalEgressControl(control)
-    self.liveControlDispatcher:setTerminalEgressControl(control)
+function Runtime:setObstructionRelocationControl(control)
+    self.liveControlDispatcher:setObstructionRelocationControl(control)
     if control~=nil and type(control.setCompletionHandler)=="function" then
-        control:setCompletionHandler(function(result) self:onTerminalEgressControlCompletion(result) end)
+        control:setCompletionHandler(function(result) self:onObstructionRelocationControlCompletion(result) end)
     end
 end
 
@@ -376,7 +376,7 @@ end
 
 function Runtime:_completedObstructionRequest(picture,evaluated,candidate,applied,bridge)
     local target={
-        kind="TERMINAL_EGRESS",phase=bridge.phase,assemblyReferenceKey=bridge.assemblyReferenceKey,objective=bridge.objective,
+        kind="OBSTRUCTION_RELOCATION",phase=bridge.phase,assemblyReferenceKey=bridge.assemblyReferenceKey,objective=bridge.objective,
         configurationPolicy=bridge.phase=="COMPACT" and "SETTLED_COMPACTION" or "RETAIN_CURRENT",cleanupFailurePolicy="REPORT_ONLY",
         completionContext={triggerKind="COMPLETED_OBSTRUCTION",terminalEpisodeId=bridge.terminalEpisodeId}
     }
@@ -523,7 +523,7 @@ function Runtime:onCooperativePassageCompletion(result)
     end
 end
 
-function Runtime:onTerminalEgressControlCompletion(result)
+function Runtime:onObstructionRelocationControlCompletion(result)
     if type(result)~="table" then return end
     local context=result.completionContext or {}
     if context.triggerKind=="CURRENT_CAUSAL_OBSTRUCTION" then
@@ -534,7 +534,7 @@ function Runtime:onTerminalEgressControlCompletion(result)
         self:onTerminalEgressCompletion(result)
         return
     end
-    runtimeLogWarning("TERMINAL_EGRESS_COMPLETION_CONTEXT_UNRESOLVED commitment=%s trigger=%s",tostring(result.commitmentId),tostring(context.triggerKind))
+    runtimeLogWarning("OBSTRUCTION_RELOCATION_COMPLETION_CONTEXT_UNRESOLVED commitment=%s trigger=%s",tostring(result.commitmentId),tostring(context.triggerKind))
 end
 
 function Runtime:onTerminalEgressCompletion(result)
@@ -572,7 +572,7 @@ end
 
 function Runtime:_obstructionRelocationRequest(picture,evaluated,candidate,applied,bridge)
     local target={
-        kind="TERMINAL_EGRESS",phase=bridge.phase,assemblyReferenceKey=bridge.blockerAssemblyReferenceKey,objective=bridge.objective,
+        kind="OBSTRUCTION_RELOCATION",phase=bridge.phase,assemblyReferenceKey=bridge.blockerAssemblyReferenceKey,objective=bridge.objective,
         configurationPolicy="OPPORTUNISTIC_NO_SETTLEMENT_GATE",cleanupFailurePolicy="FAIL_COMPLETION",
         completionContext={triggerKind="CURRENT_CAUSAL_OBSTRUCTION",relocationKey=bridge.relocationKey,historicalJobProvenanceRequired=false}
     }
@@ -624,9 +624,9 @@ function Runtime:_dispatchObstructionRelocation(picture,evaluated,candidate,brid
         return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_WAITING_FOR_POSITIVE_CONTINUATION",obstructionRelocation=true,commitmentId=bridge.existingCommitmentId}
     end
     if candidate.capability~="REPOSITION" then return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_NON_REPOSITION_CANDIDATE",obstructionRelocation=true} end
-    local control=self.liveControlDispatcher.terminalEgressControl
-    if control==nil then return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_TERMINAL_EGRESS_CONTROL_UNAVAILABLE",obstructionRelocation=true} end
-    if type(control.isActive)=="function" and control:isActive() then return {status="NO_DISPATCH",reason="TERMINAL_EGRESS_CONTROL_ALREADY_ACTIVE",obstructionRelocation=true} end
+    local control=self.liveControlDispatcher.obstructionRelocationControl
+    if control==nil then return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_CONTROL_UNAVAILABLE",obstructionRelocation=true} end
+    if type(control.isActive)=="function" and control:isActive() then return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_CONTROL_ALREADY_ACTIVE",obstructionRelocation=true} end
 
     local readiness={status="OBSTRUCTION_RELOCATION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,relocationKey=bridge.relocationKey}
     -- Shared obstruction-relocation Resolution exposure seam. It supplies only
@@ -706,8 +706,8 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
             return {status=terminal and "SETTLED" or "NO_DISPATCH",reason=reason,terminalEgress=true,terminalEvent=terminalBridge.terminalEvent,commitment=terminal}
         end
         if candidate.capability~="REPOSITION" then return {status="NO_DISPATCH",reason="D0147_NON_REPOSITION_PHYSICAL_CANDIDATE",terminalEgress=true} end
-        if self.liveControlDispatcher.terminalEgressControl==nil then return {status="NO_DISPATCH",reason="D0147_CONTROL_UNAVAILABLE",terminalEgress=true} end
-        if type(self.liveControlDispatcher.terminalEgressControl.isActive)=="function" and self.liveControlDispatcher.terminalEgressControl:isActive() then return {status="NO_DISPATCH",reason="D0147_CONTROL_ALREADY_ACTIVE",terminalEgress=true} end
+        if self.liveControlDispatcher.obstructionRelocationControl==nil then return {status="NO_DISPATCH",reason="D0147_CONTROL_UNAVAILABLE",terminalEgress=true} end
+        if type(self.liveControlDispatcher.obstructionRelocationControl.isActive)=="function" and self.liveControlDispatcher.obstructionRelocationControl:isActive() then return {status="NO_DISPATCH",reason="D0147_CONTROL_ALREADY_ACTIVE",terminalEgress=true} end
         local dispatch={status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,terminalEpisodeId=terminalBridge.terminalEpisodeId,terminalEgress=true}
         local applied,reason=self.responsibilityTransitionAuthority:transitionObstructionRelocationResolution(
             picture,evaluated,dispatch,self.completedObstructionResponsibilityTransition)
@@ -849,5 +849,5 @@ end
 function Runtime:runReplay(fixture) return self.replayRunner:run(fixture) end
 function Runtime:getStatus()
     return {initialized=self.initialized,runtimeMode=self.runtimeMode,controlAuthorityEnabled=self.controlAuthorityEnabled,
-        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),replayRunCount=self.replayRunner:getRunCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportCount=self.liveTrafficCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportStatus=self.liveTrafficCandidateSupport:getLastStatus(),terminalEgressCandidateSupportStatus=self.terminalEgressCandidateSupport:getLastStatus(),terminalEgressCandidateSupportCount=self.terminalEgressCandidateSupport:getPublishedCount(),liveControlDispatchCount=self.liveControlDispatcher:getDispatchCount(),regulationAuthorityDispatchCount=self.regulationBoundedAuthority and self.regulationBoundedAuthority:getDispatchCount() or 0,cooperativePassageControlStatus=(self.liveControlDispatcher.cooperativePassageControl and self.liveControlDispatcher.cooperativePassageControl:getStatus() or nil),terminalEgressControlStatus=(self.liveControlDispatcher.terminalEgressControl and self.liveControlDispatcher.terminalEgressControl:getStatus() or nil),liveRuntimeCoordinatorCycleCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getCycleCount() or 0,liveRuntimeCoordinatorErrorCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getErrorCount() or 0,passiveTraceCount=#self.passiveLiveValidator:getRecords(),passiveErrorCount=self.passiveLiveValidator:getErrorCount(),fieldIdentityProbeSampleCount=self.targetedFieldIdentityProbe:getSampleCount(),fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),representationCacheRetiredCount=self.assemblyRepresentationCache.retiredCount or 0,activeOperationCount=#self.operations:listActive(),commitmentCount=#self.commitments:list(),traceCount=self.trace:count()}
+        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),replayRunCount=self.replayRunner:getRunCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportCount=self.liveTrafficCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportStatus=self.liveTrafficCandidateSupport:getLastStatus(),terminalEgressCandidateSupportStatus=self.terminalEgressCandidateSupport:getLastStatus(),terminalEgressCandidateSupportCount=self.terminalEgressCandidateSupport:getPublishedCount(),liveControlDispatchCount=self.liveControlDispatcher:getDispatchCount(),regulationAuthorityDispatchCount=self.regulationBoundedAuthority and self.regulationBoundedAuthority:getDispatchCount() or 0,cooperativePassageControlStatus=(self.liveControlDispatcher.cooperativePassageControl and self.liveControlDispatcher.cooperativePassageControl:getStatus() or nil),obstructionRelocationControlStatus=(self.liveControlDispatcher.obstructionRelocationControl and self.liveControlDispatcher.obstructionRelocationControl:getStatus() or nil),liveRuntimeCoordinatorCycleCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getCycleCount() or 0,liveRuntimeCoordinatorErrorCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getErrorCount() or 0,passiveTraceCount=#self.passiveLiveValidator:getRecords(),passiveErrorCount=self.passiveLiveValidator:getErrorCount(),fieldIdentityProbeSampleCount=self.targetedFieldIdentityProbe:getSampleCount(),fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),representationCacheRetiredCount=self.assemblyRepresentationCache.retiredCount or 0,activeOperationCount=#self.operations:listActive(),commitmentCount=#self.commitments:list(),traceCount=self.trace:count()}
 end

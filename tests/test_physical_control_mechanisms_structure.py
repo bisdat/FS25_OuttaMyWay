@@ -37,7 +37,7 @@ def test_main_is_production_composition_root_and_p22_is_retired():
 
 def test_controls_consume_mechanisms_without_new_semantic_authority():
     passage=text("scripts/control/CooperativePassageControl.lua")
-    terminal=text("scripts/control/TerminalEgressControl.lua")
+    terminal=text("scripts/control/ObstructionRelocationControl.lua")
     candidate=text("scripts/candidates/LiveTrafficCandidateSupport.lua")
     assert "holdMechanism=mechanisms.holdMechanism" in passage
     assert "driveMechanism=mechanisms.driveMechanism" in passage
@@ -46,7 +46,8 @@ def test_controls_consume_mechanisms_without_new_semantic_authority():
     assert "OuttaMyWay.NonJobActuationMechanism.new()" in terminal
     assert "POST_JOB_ACTUATION" not in terminal
     assert "OBSTRUCTION_RELOCATION_ACTUATION" not in terminal
-    assert not (ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").exists()
+    assert (ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").is_file()
+    assert not (ROOT/"scripts"/"control"/"TerminalEgressControl.lua").exists()
     assert '{"FieldWorkHoldMechanism","NativeDriveMechanism","TransitConfigurationMechanism"}' in candidate
 
 def test_native_drive_retires_only_uncalled_orientation_residue():
@@ -56,7 +57,7 @@ def test_native_drive_retires_only_uncalled_orientation_residue():
     for required in ("setRegulationLease","clearRegulationLease","setReposition","setAxisTravel","getState","clear"):
         assert required in drive
 
-def test_configuration_preserves_passage_and_terminal_egress_surfaces():
+def test_configuration_preserves_passage_and_obstruction_relocation_surfaces():
     config=text("scripts/control/mechanisms/TransitConfigurationMechanism.lua")
     for required in (
         "getEvidence","prepareCompact","prepareCachedTransit","getCachedTransitSettlement",

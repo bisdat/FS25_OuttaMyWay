@@ -14,7 +14,7 @@ load("scripts/authority/AuthorityRegistry.lua")
 load("scripts/authority/EffectiveActuationComposition.lua")
 load("scripts/control/mechanisms/NonJobActuationMechanism.lua")
 load("scripts/control/mechanisms/TransitConfigurationMechanism.lua")
-load("scripts/control/TerminalEgressControl.lua")
+load("scripts/control/ObstructionRelocationControl.lua")
 load("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
 
 local passed, failed = 0, 0
@@ -122,7 +122,7 @@ test("effective composition rejects cross-entry authority-class aliasing", funct
 end)
 
 test("control observation envelope kind survives terminal outcome evidence", function()
-    local control=OuttaMyWay.TerminalEgressControl.new({}, {})
+    local control=OuttaMyWay.ObstructionRelocationControl.new({}, {})
     control:_publish({
         relocationKey="obstruction-relocation:OR-1:AS-BLOCKER",
         assemblyReferenceKey="REF-BLOCKER",
@@ -135,7 +135,7 @@ test("control observation envelope kind survives terminal outcome evidence", fun
         semanticResolutionNotInferred=true
     })
     local observed=control:getControlExecutionObservation()
-    equal(observed.kind,"TERMINAL_EGRESS_CONTROL_OBSERVATION")
+    equal(observed.kind,"OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION")
     equal(observed.completionContext.triggerKind,"CURRENT_CAUSAL_OBSTRUCTION")
     equal(observed.outcomeEvidenceKind,"BOUNDED_RELOCATION_MANOEUVRE_COMPLETE")
     equal(observed.status,"MANOEUVRE_COMPLETE")
@@ -174,7 +174,7 @@ end)
 local function reassessmentPicture(ids,epochs,productivePositive,retainRelation)
     local values={
         commitmentContext={{commitmentId="CM-1",governingBasis={kind="CAUSAL_OBSTRUCTION_RELOCATION",responsibilityKey="obstruction-relocation:OR-1:AS-BLOCKER",blockerAssemblyId="AS-BLOCKER",authorizingDemandAssemblyIds={"AS-A"}}}},
-        controlOutcomeEvidence={outcomes={{kind="TERMINAL_EGRESS_CONTROL_OBSERVATION",commitmentId="CM-1",status="MANOEUVRE_COMPLETE",completionContext={triggerKind="CURRENT_CAUSAL_OBSTRUCTION",relocationKey="obstruction-relocation:OR-1:AS-BLOCKER"}}}},
+        controlOutcomeEvidence={outcomes={{kind="OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION",commitmentId="CM-1",status="MANOEUVRE_COMPLETE",completionContext={triggerKind="CURRENT_CAUSAL_OBSTRUCTION",relocationKey="obstruction-relocation:OR-1:AS-BLOCKER"}}}},
         motionEvidence={{assemblyId="AS-A",motionClassification="STABLE_FORWARD",reportedSpeedMps=1.0,positionDerivedSpeedMps=1.0}},
         productiveContinuationKnowledge={{assemblyId="AS-A",productivePositive=productivePositive==true,representationFitness=productivePositive==true and "FIT_FOR_LIMITED_HORIZON" or "UNRESOLVED"}},
         causalObstructionKnowledge=retainRelation and {relation("AS-A","REF-A")} or {}
