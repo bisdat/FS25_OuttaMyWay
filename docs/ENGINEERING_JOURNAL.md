@@ -1,3 +1,30 @@
+## 2026-09-10 — Issue #100 `.41` runtime contracts pass; focused fixture schema corrected
+
+**Validate:** protected CI for
+`a4bc19359ba1854a76d8750e1108743de5e5edb7` produced a materially different
+result from disproven `.40`:
+
+- Structural contracts passed.
+- changed runtime Lua syntax passed.
+- the main replacement-core Lua harness passed **342 / 0**.
+- the focused obstruction-relocation harness passed 4 tests and failed 5.
+
+All five focused failures occurred while constructing the same test
+`OperationalPicture`: its shared fixture helper still supplied the retired
+`encounters={}` schema field and omitted required `currentPairAssessmentScope`.
+The obstruction-relocation assertions themselves were not reached.
+
+> **Fixture Schema Migration != Behavioural Regression**
+
+**Implement:** migrate that one shared focused fixture constructor to
+`currentPairAssessmentScope={}`. No executable source changes are made, so the
+current TEST identity remains
+**`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
+
+**Validate next:** rerun both protected checks. Acceptance still requires
+independent patch review and GIANTS Reality validation; no merge is implied by
+offline success.
+
 ## 2026-09-10 — Issue #100 `.40` disproven by CI; `.41` correction
 
 **Validate `.40`: DISPROVEN.** PR #113 protected CI rejected commit
