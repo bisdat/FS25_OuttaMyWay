@@ -629,11 +629,10 @@ function Runtime:_dispatchObstructionRelocation(picture,evaluated,candidate,brid
     if type(control.isActive)=="function" and control:isActive() then return {status="NO_DISPATCH",reason="TERMINAL_EGRESS_CONTROL_ALREADY_ACTIVE",obstructionRelocation=true} end
 
     local readiness={status="OBSTRUCTION_RELOCATION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,relocationKey=bridge.relocationKey}
-    -- transitionCompletedObstructionResolution is the existing central Resolution
-    -- exposure seam. Despite its legacy name it supplies only RS identity/current
-    -- responsibility ownership here; no terminalEpisodeId or completed-Job
-    -- provenance enters the generic transition.
-    local applied,reason=self.responsibilityTransitionAuthority:transitionCompletedObstructionResolution(
+    -- Shared obstruction-relocation Resolution exposure seam. It supplies only
+    -- RS identity/current-responsibility ownership; the supplied purpose-specific
+    -- transition owns Completed Obstruction versus current Causal Obstruction semantics.
+    local applied,reason=self.responsibilityTransitionAuthority:transitionObstructionRelocationResolution(
         picture,evaluated,readiness,self.obstructionRelocationResponsibilityTransition)
     if applied==nil then
         return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_RESPONSIBILITY_APPLICATION_FAILED",detail=reason,obstructionRelocation=true,candidateId=candidate.identity}
@@ -710,7 +709,7 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
         if self.liveControlDispatcher.terminalEgressControl==nil then return {status="NO_DISPATCH",reason="D0147_CONTROL_UNAVAILABLE",terminalEgress=true} end
         if type(self.liveControlDispatcher.terminalEgressControl.isActive)=="function" and self.liveControlDispatcher.terminalEgressControl:isActive() then return {status="NO_DISPATCH",reason="D0147_CONTROL_ALREADY_ACTIVE",terminalEgress=true} end
         local dispatch={status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,terminalEpisodeId=terminalBridge.terminalEpisodeId,terminalEgress=true}
-        local applied,reason=self.responsibilityTransitionAuthority:transitionCompletedObstructionResolution(
+        local applied,reason=self.responsibilityTransitionAuthority:transitionObstructionRelocationResolution(
             picture,evaluated,dispatch,self.completedObstructionResponsibilityTransition)
         if applied==nil then
             return {status="NO_DISPATCH",reason="D0147_COMMITMENT_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId,terminalEgress=true}

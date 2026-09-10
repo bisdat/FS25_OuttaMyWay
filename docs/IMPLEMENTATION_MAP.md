@@ -21,13 +21,13 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline for this increment: `main` after PR #115 merge,
-  commit `9159424fcc15b7a9873b50cf9817ff35636a64e3`.
+- Accepted Repository State baseline for this increment: `main` after PR #117 merge,
+  commit `35fd9386b7c5403fda5231871cdb53e98168f485`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.42 TEST — GUARDED RECOVERY ORPHAN RETIREMENT`**.
-- Current Issue #101 executable candidate is
   **`0.3.0.43 TEST — STRANDED LEAF SEMANTIC RETIREMENT`**.
+- Current Issue #112 executable candidate is
+  **`0.3.0.44 TEST — OBSTRUCTION RELOCATION TRANSITION NAMING`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -53,7 +53,7 @@ Architectural meaning remains owned by the
 | Prospective Candidate portfolio | `ProspectiveDecisionPortfolioSupport.lua` | PRESERVE complete fresh group enumeration on one Decision picture |
 | Constraint evaluation | `scripts/constraints/ConstraintEngine.lua` plus four canonical evaluators | PRESERVE independently owned mandatory verdicts; `.43` retires only the production-unreachable historical Follower Owns Closure prohibition |
 | Decision / policy | `DecisionSelector.lua`, `TrafficPolicemanDecisionPolicy.lua`, `ProspectivePortfolioDecisionPolicy.lua` | PRESERVE supported choice / compatibility policy |
-| Responsibility Transition | `ResponsibilityTransitionAuthority.lua` plus purpose-specific transition modules | PRESERVE semantic establishment/replacement/termination; live obstruction-RTA seam naming debt is tracked by #112 |
+| Responsibility Transition | `ResponsibilityTransitionAuthority.lua` plus purpose-specific transition modules | PRESERVE semantic establishment/replacement/termination; #112 `.44` renames only the shared obstruction-relocation RTA seam to current responsibility vocabulary |
 | Generic retained Commitment / obligations | `scripts/commitment/` | RETAIN subordinate substrate; not Current Responsibility authority |
 | Regulation semantic responsibility | `scripts/contracts/Regulation.lua` and transition modules | PRESERVE one Regulation responsibility with purpose-specific evidence |
 | Resolution semantic responsibility | `ResolutionCommitment.lua`, `ResolutionCommitmentAdapter.lua`, purpose-specific transition/lifecycle modules | PRESERVE obligation-backed strong persistence |
@@ -130,12 +130,12 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #101 | behaviour-preserving leaf retirement | `.42` Guarded-Recovery orphan generation is accepted by PR #115. `.43` retires the remaining stale D-0147-specific observation consumer, production-unreachable `FOLLOWER_OWNS_CLOSURE` Constraint authority plus its stale validation consumers, and retired `bridge.encounterIdentity` Runtime consumers. CI #291 established that replay-contract reachability must be reconciled separately from production reachability. |
-| #112 | naming-conformance debt | Live obstruction RTA behaviour remains current; only its stale method name is deferred for post-Phase-15 naming review. |
+| #112 | naming-conformance debt | `.44` is the first bounded correction: the live shared obstruction-relocation Responsibility Transition seam still carries a completed-worker donor-specific public method name. Later independently proved families remain production Physical Representation `shadow*` vocabulary, completed-obstruction donor-specific names/tokens, the shared physical relocation executor currently named `TerminalEgressControl`, Candidate Support public verbs, and current Runtime telemetry / rolling history headers. Configuration identifier movement remains coordinated with #87. |
 
-Issue #100 is no longer current drift. PR #113 accepted the Current Pair
-Assessment Scope reconciliation. Issue #116 separately owns the accidental
-`.42` Crossing-Window Passage jam investigation and is not part of #101.
+Issue #101 is no longer current drift. PR #117 accepted `.43` and closed the
+Phase-15 orphan/stranded semantic retirement work. Issue #100 likewise remains
+closed by PR #113. Issue #116 separately owns the accidental `.42`
+Crossing-Window Passage jam investigation and is not part of #112.
 
 ## Separate accepted work / explicit limits
 
@@ -161,17 +161,19 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Validate **#101 `.43 — Stranded Leaf Semantic Retirement`** from accepted
-`main` at `9159424fcc15b7a9873b50cf9817ff35636a64e3`.
+Validate **#112 `.44 — Obstruction Relocation Transition Naming`** from accepted
+`main` at `35fd9386b7c5403fda5231871cdb53e98168f485`.
 
-The candidate removes no current responsibility: it deletes one consumer of a
-retired observation kind, one production-unreachable historical Constraint
-prohibition plus its synthetic authority witnesses, and dead Encounter-provenance
-Runtime reads. The current Follower relation, Passage/Regulation/obstruction
-responsibilities and live RTA seam remain intact.
+The candidate changes only the shared Responsibility Transition Authority API
+name, its purpose-neutral local transition parameter, direct Runtime/test
+consumers, and the two current-state documents that still described `.43` as
+prospective. Purpose-specific `CompletedObstructionResponsibilityTransition` and
+`ObstructionRelocationResponsibilityTransition` remain the semantic owners for
+their respective paths.
 
 Use independent CI as the ordinary offline execution authority. Escalate to a
 targeted GIANTS Reality tranche only if the exact diff, CI or engineering review
-reveals a runtime-dependent uncertainty beyond this dependency proof. Do not fold
-Issue #112 naming conformance, #116 Passage investigation, #45 Bubble Bullet Time,
-#87 config decomposition or #89 HUD work into this increment.
+reveals a runtime-dependent uncertainty beyond this naming-only dependency
+closure. Do not fold later #112 families, #87 Configuration decomposition,
+#116 Passage investigation, #45 Bubble Bullet Time or #89 HUD work into this
+increment.

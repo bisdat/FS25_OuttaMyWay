@@ -413,7 +413,7 @@ function Authority:transitionCooperativePassageResolution(picture,evaluated,read
     return applied,nil
 end
 
-function Authority:transitionCompletedObstructionResolution(picture,evaluated,readiness,completedTransition)
+function Authority:transitionObstructionRelocationResolution(picture,evaluated,readiness,relocationTransition)
     local commitmentId=nil
     for _,context in OuttaMyWay.ValueRecord.ipairs(picture and picture.commitmentContext or {}) do
         if type(context.commitmentId)=="string" then commitmentId=context.commitmentId break end
@@ -427,7 +427,7 @@ function Authority:transitionCompletedObstructionResolution(picture,evaluated,re
     else
         identity=self.runtime.identities:issue("RESPONSIBILITY")
     end
-    local applied,reason=completedTransition:transition(picture,evaluated,readiness,{
+    local applied,reason=relocationTransition:transition(picture,evaluated,readiness,{
         responsibilityIdentity=identity,responsibilityAlreadyCurrent=responsibilityAlreadyCurrent
     })
     if applied==nil then return nil,reason end
