@@ -43,7 +43,7 @@ function Runner:_execute(step,context)
         return {activityCount=0}
     elseif step.kind=="PROCESS_OBSERVATION" then
         local result=self.runtime:processSealedObservation(input.raw)
-        return result,{encounterCount=#result.picture.encounters,situationCount=#result.picture.situations,activeOperationCount=#result.operation.activeOperationIds,commitmentCount=#self.runtime.commitments:list()}
+        return result,{currentPairAssessmentCount=#result.picture.currentPairAssessmentScope,situationCount=#result.picture.situations,activeOperationCount=#result.operation.activeOperationIds,commitmentCount=#self.runtime.commitments:list()}
     elseif step.kind=="EVALUATE_PICTURE" then
         local picture=OuttaMyWay.OperationalPicture.new(input.picture)
         local result=self.runtime:evaluateSealedOperationalPicture(picture)

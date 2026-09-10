@@ -457,20 +457,29 @@ def test_v4718_positive_filtered_footprint_admission_is_monotonic_and_passive():
         assert forbidden not in source
 
 
-def test_v4719_encounter_exit_contract_is_first_class_and_passive():
+def test_issue100_current_pair_assessment_scope_replaces_persistent_encounter_history():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    assert "scripts/assessment/EncounterRegistry.lua" in main
-    registry=(ROOT/"scripts"/"assessment"/"EncounterRegistry.lua").read_text(encoding="utf-8")
+    scope=(ROOT/"scripts"/"assessment"/"CurrentPairAssessmentScope.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
+    planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
+    support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
+    picture=(ROOT/"scripts"/"contracts"/"OperationalPicture.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    for token in ("JOB_EPISODE_ENDED","OPERATION_ENDED","MEMBERSHIP_INVALIDATED","INTENT_SUPERSEDED","positiveObservedThisAssessment","EncounterRecord"):
-        assert token in registry
-    assert "encounterLifecycleTransitions" in assessment
-    assert "ENCOUNTER lifecycle=TERMINATED" in validator
-    assert "Control authority disabled" in runtime
-    assert "controlAuthorityEnabled=false" in runtime
-
+    architecture=(ROOT/"docs"/"architecture"/"SPATIAL_NEGOTIATION_MODEL.md").read_text(encoding="utf-8")
+    assert "scripts/assessment/CurrentPairAssessmentScope.lua" in main
+    assert "scripts/assessment/EncounterRegistry.lua" not in main
+    assert not (ROOT/"scripts"/"assessment"/"EncounterRegistry.lua").exists()
+    assert not (ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").exists()
+    for token in ("Current Pair Assessment Scope","Current Pair Assessment Scope != Persistent Pair History","Absence Is Not Separation","Unresolved Evidence Is Non-Authority, Not Universal Prohibition"): assert token in architecture
+    for token in ("currentPairAssessmentScope","currentSpaceStatus","futureSpaceStatus","relationshipStatus","persistentPairHistory=false"): assert token in scope + assessment
+    for forbidden in ("lastPositiveEvidence","positiveObservedThisAssessment","encounterLifecycleTransitions"): assert forbidden not in scope + assessment
+    assert 'pairScope.currentSpaceStatus=="POSITIVE"' in planner
+    assert "CURRENT_PAIR_ASSESSMENT_SCOPE_UNAVAILABLE" in planner
+    assert "dependentPairReferenceKey" in support
+    assert "currentPairAssessmentScope" in picture
+    assert "currentPairAssessmentCount" in validator
+    assert "EncounterRegistry.new" not in runtime
 
 def test_v4720_shape_gate_and_diagnostic_throttling_remain_passive():
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
@@ -515,23 +524,14 @@ def test_v4721_future_space_conformance_recovers_existing_local_intent_architect
             assert forbidden not in text
 
 def test_v4722_incomplete_membership_cannot_preempt_job_episode_terminal_evidence():
-    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     operation=(ROOT/"scripts"/"identity"/"OperationAdmission.lua").read_text(encoding="utf-8")
+    scope=(ROOT/"scripts"/"assessment"/"CurrentPairAssessmentScope.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
-    hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
-    assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
-    assert "MEMBERSHIP_UPDATED_INCOMPLETE" in operation
-    assert "removalDeferred=true" in operation
+    assert "MEMBERSHIP_UPDATED_INCOMPLETE" in operation; assert "removalDeferred=true" in operation
     assert "mergedUnique(active.memberAssemblyIds, memberAssemblyIds)" in operation
-    assert "scripts/diagnostics/TransitionHud.lua" in main
-    for token in ("OTM TEST", "FUTURE SPACE ENCOUNTER", "ENCOUNTER TERMINATED", "NEW JOB EPISODE", "NEW FUTURE SPACE ENCOUNTER"):
-        assert token in hud
-    assert "transitionHud:observeEncounterTransition" in validator
-    assert "transitionHud:observeAdmittedEpisodes" in validator
-    for text in (operation,validator,hud):
-        for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
-            assert forbidden not in text
+    assert "getActiveForAssembly" in scope; assert "relationshipStatus" in scope; assert "currentPairScopePresent" in validator
+    for text in (operation,scope,validator):
+        for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"): assert forbidden not in text
 
 def test_v4724_removes_legacy_future_predictor_without_changing_future_space_admission_authority():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
@@ -539,7 +539,7 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     diagnostics=(ROOT/"scripts"/"observation"/"LiveInteractionObservation.lua").read_text(encoding="utf-8")
     footprint=(ROOT/"scripts"/"representation"/"PlanViewFootprint.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
-    hud=(ROOT/"scripts"/"diagnostics"/"TransitionHud.lua").read_text(encoding="utf-8")
+    scope=(ROOT/"scripts"/"assessment"/"CurrentPairAssessmentScope.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
@@ -550,15 +550,13 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     assert "evaluateCurrentOverlap" in footprint
     for token in ("FIELD_BOUNDED_FUTURE_SPACE_POSITIVE", "FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION", "fieldBoundedFutureSpacePositive"):
         assert token in source
-    assert "relationship=item.relationship or" in assessment
-    assert "OTM TEST — FUTURE SPACE ENCOUNTER" in hud
-    assert "OTM TEST — NEW FUTURE SPACE ENCOUNTER" in hud
+    assert "currentPairAssessmentScope" in assessment
+    assert "futureSpaceStatus" in scope and "relationshipStatus" in scope
     assert "futureSpacePositive=%s" in validator
     assert "d0143CooperativePassage=false" in runtime and "d0143MechanicalDonorHistoricalOnly=true" in runtime and "kingRetired=true" in runtime and "generalControl=false" in runtime
-    for text in (source,assessment,hud,validator,runtime):
+    for text in (source,assessment,scope,validator,runtime):
         for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
             assert forbidden not in text
-
 
 def test_v4731_productive_continuation_probe_is_passive_and_speed_non_authoritative():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
@@ -1844,8 +1842,8 @@ def test_v01145_d0200_job_episode_dependency_collapse_precedes_terminal_candidat
     assert 'function Lifecycle.collapseEndedJobEpisodeDependencies' in lifecycle
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     assert 'dependentJobEpisodeIds' in lifecycle
-    assert 'dependentEncounterId' in lifecycle
-    assert 'cooperativePassagePairDependency' in support
+    assert 'dependentPairReferenceKey' in lifecycle and 'dependentEncounterId' not in lifecycle
+    assert 'currentPairDependency' in support
     assert 'dependentJobEpisodeIds=dependentJobEpisodeIds' in support
     assert '"BASIS_CESSATION"' in lifecycle
     assert 'kind="OBJECTIVE_SATISFIED"' in lifecycle

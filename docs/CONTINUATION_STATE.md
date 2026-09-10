@@ -6,11 +6,11 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline: `main` after PR #108 merge, commit
-  `b7e236955fd63b06d2b054bd25e8faaebbd78107`.
+- Accepted Repository State baseline: `main` after PR #111 merge, commit
+  `40c3a3f01b9d691b8b6b95d007be59173640cdea`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted executable identity is
-  **`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`**.
+- This Engineering Increment carries
+  **`0.3.0.40 TEST — CURRENT PAIR ASSESSMENT SCOPE`**.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
@@ -76,14 +76,18 @@ diagnostic directionality and live documentation responsibility.
 
 ### Remaining reconciliation Issues
 
-- **#100 — Encounter reconciliation**
+- **#100 — Current Pair Assessment Scope reconciliation**
   - **Current Pair Assessment Scope != Persistent Pair History**.
-  - Current architecture rejects Persistent Pair-First / Encounter History,
-    while `EncounterRegistry` remains a retained pair object carrying
-    last-positive relationship evidence.
-  - The audit disproved the unsafe interpretation that retained positive
-    interaction evidence creates fresh Passage authority. Reconciliation must
-    preserve unresolved-evidence safety while removing the rejected concept.
+  - **Evidence Continuity != Evidence Freshness**.
+  - **Absence Is Not Separation**.
+  - **Unresolved Evidence Is Non-Authority, Not Universal Prohibition**.
+  - Accepted design rebuilds current pair scope from the active Operation and
+    exact active Job Episodes on every Operational Picture.
+  - Generic interaction evidence is current `POSITIVE` or `UNRESOLVED`; no
+    last-positive pair state survives.
+  - Accepted Regulation/Resolution responsibility owns justified continuity
+    after admission; Passage Bubble remains post-commit pairwise owner.
+  - `.40` implements this design; acceptance still requires CI and Reality.
 
 - **#101 — orphaned / stranded semantic residue**
   - Guarded Recovery compatibility has no demonstrated live production ingress.
@@ -158,23 +162,17 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Begin **Issue #100 — Encounter reconciliation** with architecture/design before
-implementation.
+Validate **Issue #100 —
+`0.3.0.40 TEST — CURRENT PAIR ASSESSMENT SCOPE`**.
 
-Protect the audit distinction:
+The implementation must prove current pair scope is ephemeral, exact Job Episode
+replacement cannot inherit pair state, loss of positive evidence yields current
+`UNRESOLVED` rather than remembered positive or manufactured separation, fresh
+current-space positive interaction still vetoes pre-contact Passage, and
+independently supported purpose-specific Passage remains possible while generic
+interaction evidence is unresolved.
 
-> **Current Pair Assessment Scope != Persistent Pair History**
-
-and the evidence distinction:
-
-> **Evidence Continuity != Evidence Freshness**
-
-The current question is not whether `EncounterRegistry` can be deleted. It is
-which minimum current concept preserves truthful unresolved pair assessment
-without republishing last-positive evidence as fresh Reality and without
-manufacturing safe separation.
-
-After #100, unless new Reality changes the order:
+After #100, unless new Reality changes the order:After #100, unless new Reality changes the order:
 
 1. #101 — dependency-proven retirement/naming cleanup.
 

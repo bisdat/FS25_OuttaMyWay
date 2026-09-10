@@ -1,3 +1,42 @@
+## 2026-09-10 — Issue #100 Current Pair Assessment Scope implementation candidate
+
+**Observe:** accepted `.39` `EncounterRegistry` combined exact pair/Job-Episode
+bookkeeping with last-positive spatial evidence retention. Situation republished
+that retained positive state while Passage used it only as a conservative veto.
+The service sweep found exact current participants already owned by Operation /
+Job Episode admission, unresolved Regulation continuity already owned by Current
+Responsibility, and committed pair persistence already owned by Passage Bubble /
+Leg obligations.
+
+**Discuss / Hypothesise:** adopt **Current Pair Assessment Scope** as ephemeral
+Situation context rebuilt from the current Operation and exact active Job
+Episodes on every Operational Picture.
+
+> **Current Pair Assessment Scope != Persistent Pair History**
+
+> **Evidence Continuity != Evidence Freshness**
+
+> **Absence Is Not Separation**
+
+> **Unresolved Evidence Is Non-Authority, Not Universal Prohibition**
+
+Fresh current-space positive interaction remains a conservative pre-contact
+Passage veto. Generic unresolved evidence grants no permission but does not
+override independently supported purpose-specific Passage geometry/constraints.
+
+**Implement:** `.40 TEST — CURRENT PAIR ASSESSMENT SCOPE` replaces the live
+Encounter registry with ephemeral current-pair scope, moves Passage exact Job
+Episode provenance to that scope, removes broad Encounter situation
+dependencies, and migrates direct passive diagnostics, passive Candidate observation gating,
+replay telemetry and Runtime status telemetry away from Encounter lifecycle vocabulary. The obsolete Encounter Transition test HUD is removed.
+#101 remains separate retirement/naming cleanup.
+
+**Validate next:** protected structural and Lua behavioural contracts must prove
+loss-of-positive -> UNRESOLVED, Job Episode replacement freshness, duplicate
+evidence collapse, fresh current-intersection veto, positive Current/Future
+evidence propagation, and unchanged Follower / Forward Intersection / Passage
+responsibility behavior. GIANTS Reality remains required before acceptance.
+
 ## 2026-09-09 — Issue #98 accepted; Encounter reconciliation becomes active boundary
 
 **Validate:** PR #108 was independently revalidated after PR #110 corrected the

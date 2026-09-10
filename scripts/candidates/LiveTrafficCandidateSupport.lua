@@ -55,29 +55,23 @@ local function cooperativePassageRequirementKey(plan)
     return "cooperative-passage:"..tostring(plan.conflictIdentity)
 end
 
--- D-0200 dependency provenance is pair-specific. Situation dependencies on a
--- Commitment may include many simultaneously visible Encounters, so terminal
--- lifecycle authority must not infer the governing pair from that broad list.
--- Bind the selected D-0146 pair to its exact active Encounter/Job Episodes.
-local function cooperativePassagePairDependency(pictureValues,subjectAssemblyId,otherAssemblyId,preferredEncounterId)
-    for _,encounter in OuttaMyWay.ValueRecord.ipairs(pictureValues.encounters or {}) do
-        local samePair=(encounter.subjectAssemblyId==subjectAssemblyId and encounter.otherAssemblyId==otherAssemblyId)
-            or (encounter.subjectAssemblyId==otherAssemblyId and encounter.otherAssemblyId==subjectAssemblyId)
-        if samePair and (preferredEncounterId==nil or encounter.identity==preferredEncounterId) then
-            if type(encounter.subjectJobEpisodeId)~="string" or type(encounter.otherJobEpisodeId)~="string" then return encounter.identity,nil,nil end
-            local episodes={encounter.subjectJobEpisodeId,encounter.otherJobEpisodeId}
+-- D-0200 dependency provenance is pair-specific. Current Pair Assessment Scope
+-- supplies exact current Job Episodes; no persistent generic pair identity is required.
+local function currentPairDependency(pictureValues,subjectAssemblyId,otherAssemblyId,preferredPairReferenceKey)
+    for _,pair in OuttaMyWay.ValueRecord.ipairs(pictureValues.currentPairAssessmentScope or {}) do
+        local samePair=(pair.subjectAssemblyId==subjectAssemblyId and pair.otherAssemblyId==otherAssemblyId)
+            or (pair.subjectAssemblyId==otherAssemblyId and pair.otherAssemblyId==subjectAssemblyId)
+        if samePair and (preferredPairReferenceKey==nil or pair.pairReferenceKey==preferredPairReferenceKey) then
+            if type(pair.subjectJobEpisodeId)~="string" or type(pair.otherJobEpisodeId)~="string" then return pair.pairReferenceKey,nil,nil end
+            local episodes={pair.subjectJobEpisodeId,pair.otherJobEpisodeId}
             table.sort(episodes,function(a,b) return tostring(a)<tostring(b) end)
-            local byAssembly={
-                [encounter.subjectAssemblyId]=encounter.subjectJobEpisodeId,
-                [encounter.otherAssemblyId]=encounter.otherJobEpisodeId
-            }
-            return encounter.identity,episodes,byAssembly
+            return pair.pairReferenceKey,episodes,{[pair.subjectAssemblyId]=pair.subjectJobEpisodeId,[pair.otherAssemblyId]=pair.otherJobEpisodeId}
         end
     end
-    return preferredEncounterId,nil,nil
+    return preferredPairReferenceKey,nil,nil
 end
 
-local function cooperativePassageBandExhaustion(pictureId,governingRequirementKey,capability,reason)
+local function cooperativePassageBandExhaustionlocal function cooperativePassageBandExhaustion(pictureId,governingRequirementKey,capability,reason)
     return {
         result="PASS",operationalPictureId=pictureId,governingRequirementKey=governingRequirementKey,
         capability=capability,reason=reason,
@@ -130,7 +124,7 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
     table.sort(compositionEntries,function(a,b) return tostring(a.assemblyId)<tostring(b.assemblyId) end)
     local requirements={}
     for _,id in OuttaMyWay.ValueRecord.ipairs(plan.representationFitnessIds or {}) do requirements[#requirements+1]={representationId=id,acceptedStates={"FIT_FOR_LIMITED_HORIZON","CURRENTLY_FIT"}} end
-    local dependentEncounterId,dependentJobEpisodeIds,dependentJobEpisodeIdByAssembly=cooperativePassagePairDependency(pictureValues,plan.subjectAssemblyId,plan.otherAssemblyId,plan.encounterIdentity)
+    local dependentPairReferenceKey,dependentJobEpisodeIds,dependentJobEpisodeIdByAssembly=currentPairDependency(pictureValues,plan.subjectAssemblyId,plan.otherAssemblyId,plan.pairReferenceKey)
     local passageLegObligations={}
     for _,assemblyId in OuttaMyWay.ValueRecord.ipairs(plan.assemblyIds or {}) do
         local jobToken=assemblyId==plan.subjectAssemblyId and plan.subjectJobToken or plan.otherJobToken
@@ -152,7 +146,7 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
         expectedEffect={physicalChange=true,jointReposition=true,passageArrangementId=plan.passageArrangement and plan.passageArrangement.identity,passageGuideId=plan.passageGuide and plan.passageGuide.identity,bothParticipantsForwardThroughEncounter=true,sameJobRestorationRequired=true,postHandoffCooldown=false,king=false,refuge=false},
         evidenceBasis={
             constraintEvidence=constraints,
-            governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentEncounterId=dependentEncounterId,dependentJobEpisodeIds=dependentJobEpisodeIds},
+            governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds},
             progressActuationOwnership={assemblyIds=plan.assemblyIds},
             effectiveActuationComposition={identity="cooperative-passage-composition:"..tostring(plan.conflictIdentity)..":"..pictureId,epoch=pictureValues.epoch,relevantAssemblyIds=plan.assemblyIds,entries=compositionEntries},
             trafficPolicemanPreference={primaryResolution=true,governingRequirementKey=governingRequirementKey,exhaustionEvidence={
@@ -162,7 +156,7 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
             }},
             cooperativePassageBridge={
                 architecture="COOPERATIVE_PASSAGE",governingRequirementKey=governingRequirementKey,operationId=plan.operationId,
-                conflictIdentity=plan.conflictIdentity,encounterIdentity=plan.encounterIdentity,
+                conflictIdentity=plan.conflictIdentity,pairReferenceKey=plan.pairReferenceKey,
                 assemblyIds=plan.assemblyIds,subjectAssemblyId=plan.subjectAssemblyId,otherAssemblyId=plan.otherAssemblyId,
                 subjectReferenceKey=plan.subjectReferenceKey,otherReferenceKey=plan.otherReferenceKey,
                 subjectJobToken=plan.subjectJobToken,otherJobToken=plan.otherJobToken,
@@ -312,7 +306,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
 
     local protectedAssemblyId=action.protectedAssemblyId or action.excursionAssemblyId
     local protectedReferenceKey=action.protectedReferenceKey or action.excursionReferenceKey
-    local dependentEncounterId,dependentJobEpisodeIds=cooperativePassagePairDependency(pictureValues,relation.subjectAssemblyId,relation.otherAssemblyId,nil)
+    local dependentPairReferenceKey,dependentJobEpisodeIds=currentPairDependency(pictureValues,relation.subjectAssemblyId,relation.otherAssemblyId,nil)
     local composition={
         identity="action-space-regulation-composition:"..tostring(relation.identity)..":"..pictureId,epoch=pictureValues.epoch,
         relevantAssemblyIds={protectedAssemblyId,action.regulatedAssemblyId},
@@ -326,7 +320,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
             elasticProgressionEnvelope=not forward,fixedIntentRevelationCreep=forward,zeroSpeedHoldExpression=not forward},
         evidenceBasis={
             constraintEvidence=constraints,
-            governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentEncounterId=dependentEncounterId,dependentJobEpisodeIds=dependentJobEpisodeIds},
+            governingBasis={responsibilityKey=governingRequirementKey,operationIds=pictureValues.identities.operations.active,sourceIntentIds=pictureValues.identities.jobEpisodes.active,dependentPairReferenceKey=dependentPairReferenceKey,dependentJobEpisodeIds=dependentJobEpisodeIds},
             maintainsExistingCommitment=existingCommitmentId~=nil,existingProgressMayContinue=true,
             progressActuationOwnership={assemblyIds={action.regulatedAssemblyId}},effectiveActuationComposition=composition,
             trafficPolicemanPreference={primaryResolution=true,governingRequirementKey=governingRequirementKey,exhaustionEvidence={

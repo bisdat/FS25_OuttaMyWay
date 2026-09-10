@@ -21,11 +21,11 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline: `main` after PR #108 merge, commit
-  `b7e236955fd63b06d2b054bd25e8faaebbd78107`.
+- Accepted Repository State baseline: `main` after PR #111 merge, commit
+  `40c3a3f01b9d691b8b6b95d007be59173640cdea`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted executable identity is
-  **`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`**.
+- This Engineering Increment carries
+  **`0.3.0.40 TEST — CURRENT PAIR ASSESSMENT SCOPE`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 - No new TEST identity exists merely for audit closure.
@@ -44,7 +44,7 @@ Architectural meaning remains owned by the
 | Generic current physical conflict | `CurrentPhysicalConflictRepresentation.lua` | PRESERVE positive-only / no generic negative-clearance authority |
 | Passage-specific geometry | `AssemblyRepresentationCache.lua`, `PairSpecificPassageClearance.lua`, `LocalPassagePlanner.lua` | PRESERVE directional Transit Passage contract for non-truncated complete assemblies |
 | Situation Assessment | `scripts/assessment/SituationAssessment.lua` and focused assessment collaborators | PRESERVE current interpreted relationship ownership except listed drift |
-| Encounter continuity | `scripts/assessment/EncounterRegistry.lua` plus `SituationAssessment.lua` | **DRIFT #100** — persistent pair-history implementation concept rejected by current architecture |
+| Current Pair Assessment Scope | `scripts/assessment/CurrentPairAssessmentScope.lua` plus `SituationAssessment.lua` | **RECONCILIATION #100** — ephemeral current Operation/exact-Job-Episode pair scope; no generic pair lifecycle or last-positive truth |
 | Follower Boundary evidence | `scripts/assessment/FollowerBoundaryDemandAssessment.lua` | PRESERVE admissible magnitude evidence/envelope; no requested Control target (#98 / PR #108) |
 | Forward Intersection / Action-Space evidence | `SpatialConstraintAssessment.lua`, `TrajectoryConflictAssessment.lua` | PRESERVE current positive/unresolved/negative semantics |
 | Causal Obstruction | `CausalObstructionAssessment.lua` | PRESERVE positive current obstruction semantics |
@@ -129,7 +129,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #100 | confirmed concept mismatch | rejected persistent pair-history concept remains as `EncounterRegistry` |
+| #100 | implementation reconciliation | `.40` replaces persistent Encounter lifecycle with ephemeral Current Pair Assessment Scope; validation pending |
 | #101 | behaviour-preserving retirement/naming debt | orphaned Guarded Recovery, stale Control consumer, stranded Constraint semantics, defensive naming |
 
 ## Separate accepted work / explicit limits
@@ -156,15 +156,14 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Begin **#100 — Encounter reconciliation** with architecture/design before
-implementation. Account for every legitimate service of `EncounterRegistry`
-before changing or removing the implementation concept.
+Validate **#100 — `0.3.0.40 TEST — CURRENT PAIR ASSESSMENT SCOPE`**.
 
-The correction must preserve unresolved-evidence safety while establishing that
-last-positive evidence is not fresh current Reality and missing positive evidence
-does not manufacture safe separation.
+The correction must preserve unresolved-evidence safety, exact Job Episode
+dependency ownership and fresh-positive current-space Passage vetoes, while
+proving generic unresolved interaction evidence neither grants safety nor
+universally prohibits independently supported purpose-specific Passage.
 
-After #100, unless new Reality changes the order:
+After #100, unless new Reality changes the order:After #100, unless new Reality changes the order:
 
 1. #101 — dependency-proven retirement/naming cleanup.
 

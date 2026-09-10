@@ -47,7 +47,7 @@ load("scripts/observation/LiveObservationSource.lua")
 load("scripts/identity/JobEpisodeAdmission.lua")
 load("scripts/identity/OperationAdmission.lua")
 load("scripts/assessment/RepresentationFitness.lua")
-load("scripts/assessment/EncounterRegistry.lua")
+load("scripts/assessment/CurrentPairAssessmentScope.lua")
 load("scripts/assessment/ProgressionGeometry.lua")
 load("scripts/assessment/GuardedRecoveryThreatAssessment.lua")
 load("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
@@ -93,7 +93,6 @@ load("scripts/replay/ConformanceAssertions.lua")
 load("scripts/replay/ReplayRunner.lua")
 load("scripts/diagnostics/TargetedFieldIdentityProbe.lua")
 load("scripts/diagnostics/FutureSpaceHud.lua")
-load("scripts/diagnostics/TransitionHud.lua")
 load("scripts/diagnostics/PassiveLiveValidator.lua")
 load("scripts/diagnostics/ProductiveContinuationProbe.lua")
 load("scripts/diagnostics/DemonstratedProductiveCoverageProbe.lua")
@@ -421,7 +420,7 @@ end
 local function newPictureRuntime() local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); return runtime end
 
 test("Operational Picture rejects Decision semantics",function()
-    expectError(function() OuttaMyWay.OperationalPicture.new({identity="OP-X",epoch=1,observationSnapshotId="OS-X",situations={},encounters={},identities={},currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},representationFitness={},provenance={},controlOutcomeEvidence={},candidateSupportEvidence={selectedCandidateId="CA-X"},commitmentContext={}}) end)
+    expectError(function() OuttaMyWay.OperationalPicture.new({identity="OP-X",epoch=1,observationSnapshotId="OS-X",situations={},currentPairAssessmentScope={},identities={},currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},representationFitness={},provenance={},controlOutcomeEvidence={},candidateSupportEvidence={selectedCandidateId="CA-X"},commitmentContext={}}) end)
 end)
 
 test("Observation rejects Operation and fitness interpretations",function()
@@ -429,74 +428,30 @@ test("Observation rejects Operation and fitness interpretations",function()
     expectError(function() OuttaMyWay.ObservationSnapshot.new({identity="OS-X",epoch=1,timestamp=1,provenance={},fieldWorld={},assemblies={},geometry={},motion={},aiStates={},playerControl={},jobEpisodeEvidence={},operationMembershipEvidence={},physicalRepresentationEvidence={{representationFitness="CURRENTLY_FIT"}},controlOutcomes={},unavailableSources={}}) end)
 end)
 
-test("sealed fixture produces one Operation Situation and Encounter",function()
+test("sealed fixture produces one Operation Situation and current Pair Assessment Scope",function()
     local runtime=newPictureRuntime(); local result=runtime:processSealedObservation(pictureFixture(1))
-    equal(#result.operation.activeOperationIds,1); equal(#result.picture.situations,1); equal(#result.picture.encounters,1)
-    equal(result.picture.encounters[1].relationship,"FUTURE_SPACE_CONVERGENCE")
-    equal(result.picture.observationSnapshotId,result.snapshot.identity)
+    equal(#result.operation.activeOperationIds,1); equal(#result.picture.situations,1); equal(#result.picture.currentPairAssessmentScope,1)
+    local pair=result.picture.currentPairAssessmentScope[1]
+    equal(pair.relationshipStatus,"POSITIVE"); equal(pair.futureSpaceStatus,"POSITIVE"); equal(pair.relationship,"FUTURE_SPACE_CONVERGENCE")
+    equal(pair.provenance.ephemeral,true); equal(pair.provenance.persistentPairHistory,false)
 end)
 
-test("Encounter persists when positive evidence is temporarily absent",function()
-    local runtime=newPictureRuntime()
-    local first=runtime:processSealedObservation(pictureFixture(1))
-    local encounterId=first.picture.encounters[1].identity
-    local second=runtime:processSealedObservation(pictureFixture(2,{interactions={}}))
-    equal(#second.picture.encounters,1)
-    equal(second.picture.encounters[1].identity,encounterId)
-    equal(second.picture.encounters[1].evidence.positiveObservedThisAssessment,false)
-    equal(runtime.encounters:get(encounterId).status,"ACTIVE")
-    local retained=false
-    for _,transition in OuttaMyWay.ValueRecord.ipairs(second.picture.diagnostics.encounterLifecycleTransitions) do
-        if transition.encounterIdentity==encounterId and transition.lifecycle=="RETAINED" and transition.positiveObservedThisAssessment==false then retained=true end
-    end
-    if not retained then error("temporary evidence absence did not retain Encounter explicitly") end
+test("current pair scope becomes unresolved when positive evidence is temporarily absent",function()
+    local runtime=newPictureRuntime(); local first=runtime:processSealedObservation(pictureFixture(1))
+    local firstPair=first.picture.currentPairAssessmentScope[1]
+    local second=runtime:processSealedObservation(pictureFixture(2,{interactions={}})); local pair=second.picture.currentPairAssessmentScope[1]
+    equal(#second.picture.currentPairAssessmentScope,1); equal(pair.pairReferenceKey,firstPair.pairReferenceKey); equal(pair.episodeSignature,firstPair.episodeSignature)
+    equal(pair.relationshipStatus,"UNRESOLVED"); equal(pair.relationship,"UNRESOLVED"); equal(pair.currentSpaceStatus,"UNRESOLVED"); equal(pair.futureSpaceStatus,"UNRESOLVED")
+    equal(pair.evidence.currentPositiveProvenance,nil); equal(pair.evidence.futurePositiveProvenance,nil)
 end)
 
-test("Job Episode end terminates Encounter and restart creates fresh identity",function()
-    local runtime=newPictureRuntime()
-    local first=runtime:processSealedObservation(pictureFixture(1))
-    local oldEncounterId=first.picture.encounters[1].identity
-    local oldEpisodeIds={first.jobEpisodes.activeEpisodeIds[1],first.jobEpisodes.activeEpisodeIds[2]}
-
-    local stopped=runtime:processSealedObservation(pictureFixture(2,{
-        interactions={},
-        evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false,sourceJobEndEvidence={observed=true,reason="FIXTURE_SOURCE_JOB_ENDED"}},
-        membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}
-    }))
-    equal(#stopped.picture.encounters,0)
-    equal(runtime.encounters:get(oldEncounterId).status,"TERMINATED")
-    equal(runtime.encounters:get(oldEncounterId).terminalReason,"JOB_EPISODE_ENDED")
-    local terminated=false
-    for _,transition in OuttaMyWay.ValueRecord.ipairs(stopped.picture.diagnostics.encounterLifecycleTransitions) do
-        if transition.encounterIdentity==oldEncounterId and transition.lifecycle=="TERMINATED" and transition.terminalReason=="JOB_EPISODE_ENDED" then
-            local ended=transition.terminalEvidence.details.endedJobEpisodes
-            equal(#ended,1); equal(ended[1].terminalCause,nil)
-            terminated=true
-        end
-    end
-    if not terminated then error("Encounter termination transition was not published") end
-
-    local restarted=runtime:processSealedObservation(pictureFixture(3,{
-        interactions={},
-        evidenceB={sourceJobToken="job-B2",jobPresent=true,aiControlled=true,aiActive=true}
-    }))
-    equal(#restarted.picture.encounters,0)
-    equal(#runtime.encounters:listActive(),0)
-    local freshEpisode=false
-    for _,episodeId in OuttaMyWay.ValueRecord.ipairs(restarted.jobEpisodes.activeEpisodeIds) do
-        if episodeId~=oldEpisodeIds[1] and episodeId~=oldEpisodeIds[2] then freshEpisode=true end
-    end
-    if not freshEpisode then error("restart did not create a fresh Job Episode") end
-
-    local renewed=runtime:processSealedObservation(pictureFixture(4,{
-        evidenceB={sourceJobToken="job-B2",jobPresent=true,aiControlled=true,aiActive=true}
-    }))
-    equal(#renewed.picture.encounters,1)
-    local newEncounterId=renewed.picture.encounters[1].identity
-    if newEncounterId==oldEncounterId then error("renewed positive evidence resurrected the terminal Encounter") end
-    equal(runtime.encounters:get(oldEncounterId).status,"TERMINATED")
-    equal(runtime.encounters:get(newEncounterId).status,"ACTIVE")
-    if renewed.picture.encounters[1].episodeSignature==first.picture.encounters[1].episodeSignature then error("stale Job Episode signature transferred to new Encounter") end
+test("Job Episode replacement rebuilds current pair scope without stale state",function()
+    local runtime=newPictureRuntime(); local first=runtime:processSealedObservation(pictureFixture(1)); local oldSignature=first.picture.currentPairAssessmentScope[1].episodeSignature
+    local stopped=runtime:processSealedObservation(pictureFixture(2,{interactions={},evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false,sourceJobEndEvidence={observed=true,reason="FIXTURE_SOURCE_JOB_ENDED"}},membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}}))
+    equal(#stopped.picture.currentPairAssessmentScope,0)
+    local restarted=runtime:processSealedObservation(pictureFixture(3,{interactions={},evidenceB={sourceJobToken="job-B2",jobPresent=true,aiControlled=true,aiActive=true}})); local pair=restarted.picture.currentPairAssessmentScope[1]
+    equal(#restarted.picture.currentPairAssessmentScope,1); equal(pair.relationshipStatus,"UNRESOLVED"); if pair.episodeSignature==oldSignature then error("replacement inherited stale pair state") end
+    local renewed=runtime:processSealedObservation(pictureFixture(4,{evidenceB={sourceJobToken="job-B2",jobPresent=true,aiControlled=true,aiActive=true}})); equal(renewed.picture.currentPairAssessmentScope[1].relationshipStatus,"POSITIVE")
 end)
 
 test("Operation identity persists while membership changes",function()
@@ -514,45 +469,11 @@ test("incomplete membership evidence does not end an Operation",function()
     if not found then error("incomplete membership was not preserved as uncertainty") end
 end)
 
-test("incomplete membership cannot pre-empt authoritative Job Episode termination",function()
-    local runtime=newPictureRuntime()
-    local first=runtime:processSealedObservation(pictureFixture(1))
-    local encounterId=first.picture.encounters[1].identity
-    local operationId=first.operation.activeOperationIds[1]
-
-    local unresolvedStop=runtime:processSealedObservation(pictureFixture(2,{
-        interactions={},membershipComplete=false,
-        evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false},
-        membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}
-    }))
-    equal(unresolvedStop.operation.activeOperationIds[1],operationId)
-    equal(#runtime.operations:get(operationId).memberAssemblyIds,2)
-    equal(#unresolvedStop.picture.encounters,1)
-    equal(unresolvedStop.picture.encounters[1].identity,encounterId)
-    equal(runtime.encounters:get(encounterId).status,"ACTIVE")
-    local retained=false
-    for _,transition in OuttaMyWay.ValueRecord.ipairs(unresolvedStop.picture.diagnostics.encounterLifecycleTransitions) do
-        if transition.encounterIdentity==encounterId and transition.lifecycle=="RETAINED" then retained=true end
-    end
-    if not retained then error("Encounter was not retained while membership evidence was incomplete") end
-
-    local authoritativeStop=runtime:processSealedObservation(pictureFixture(3,{
-        interactions={},
-        evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false,sourceJobEndEvidence={observed=true,reason="FIXTURE_SOURCE_JOB_ENDED"}},
-        membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}
-    }))
-    equal(#authoritativeStop.picture.encounters,0)
-    equal(runtime.encounters:get(encounterId).status,"TERMINATED")
-    equal(runtime.encounters:get(encounterId).terminalReason,"JOB_EPISODE_ENDED")
-    local ended=false
-    for _,transition in OuttaMyWay.ValueRecord.ipairs(authoritativeStop.picture.diagnostics.encounterLifecycleTransitions) do
-        if transition.encounterIdentity==encounterId and transition.lifecycle=="TERMINATED" and transition.terminalReason=="JOB_EPISODE_ENDED" then
-            local evidence=transition.terminalEvidence.details.endedJobEpisodes
-            equal(#evidence,1); equal(evidence[1].terminalCause,nil)
-            ended=true
-        end
-    end
-    if not ended then error("authoritative Job Episode termination did not win after incomplete membership evidence") end
+test("incomplete membership preserves pair scope only while exact Job Episodes remain active",function()
+    local runtime=newPictureRuntime(); local first=runtime:processSealedObservation(pictureFixture(1)); local operationId=first.operation.activeOperationIds[1]; local signature=first.picture.currentPairAssessmentScope[1].episodeSignature
+    local unresolved=runtime:processSealedObservation(pictureFixture(2,{interactions={},membershipComplete=false,evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false},membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}}))
+    equal(unresolved.operation.activeOperationIds[1],operationId); equal(#runtime.operations:get(operationId).memberAssemblyIds,2); equal(#unresolved.picture.currentPairAssessmentScope,1); equal(unresolved.picture.currentPairAssessmentScope[1].episodeSignature,signature); equal(unresolved.picture.currentPairAssessmentScope[1].relationshipStatus,"UNRESOLVED")
+    local ended=runtime:processSealedObservation(pictureFixture(3,{interactions={},evidenceB={sourceJobToken="job-B",jobPresent=false,aiControlled=false,aiActive=false,sourceJobEndEvidence={observed=true,reason="FIXTURE_SOURCE_JOB_ENDED"}},membership={{assemblyReferenceKey="assembly-A",fieldWorldReferenceKey="field-world-77",fieldWorldSnapshotReferenceKey="snapshot-A",fieldPolygonReferenceKey="field-77",performingRecognisedFieldWork=true,provenance={source="fixture"}}}})); equal(#ended.picture.currentPairAssessmentScope,0)
 end)
 
 test("explicit zero membership ends an Operation and later work creates a new identity",function()
@@ -605,16 +526,16 @@ test("Follower Owns Closure is Knowledge not a selected role",function()
     if picture.responsibilityRelations[1].yieldRole~=nil or picture.responsibilityRelations[1].progressRole~=nil then error("responsibility relation selected roles") end
 end)
 
-test("same pair may have independent Encounter identities",function()
+test("duplicate current interaction evidence collapses to one pair scope",function()
     local interactions={{interactionReferenceKey="first",subjectAssemblyReferenceKey="assembly-A",otherAssemblyReferenceKey="assembly-B",futureSpaceConverges=true,provenance={source="fixture"}},{interactionReferenceKey="second",subjectAssemblyReferenceKey="assembly-A",otherAssemblyReferenceKey="assembly-B",futureSpaceConverges=true,provenance={source="fixture"}}}
     local runtime=newPictureRuntime(); local picture=runtime:processSealedObservation(pictureFixture(1,{interactions=interactions})).picture
-    equal(#picture.encounters,2); if picture.encounters[1].identity==picture.encounters[2].identity then error("pair identity collapsed Encounter identity") end
+    equal(#picture.currentPairAssessmentScope,1); equal(picture.currentPairAssessmentScope[1].relationshipStatus,"POSITIVE"); equal(#picture.currentPairAssessmentScope[1].evidence.sourceInteractionReferenceKeys,2)
 end)
 
-test("current intersection takes precedence as current relationship Knowledge",function()
+test("fresh current intersection takes precedence in current pair assessment",function()
     local interactions={{interactionReferenceKey="current",subjectAssemblyReferenceKey="assembly-A",otherAssemblyReferenceKey="assembly-B",currentSpaceIntersects=true,futureSpaceConverges=true,provenance={source="fixture"}}}
-    local runtime=newPictureRuntime(); local picture=runtime:processSealedObservation(pictureFixture(1,{interactions=interactions})).picture
-    equal(picture.encounters[1].relationship,"CURRENT_SPACE_INTERACTION")
+    local runtime=newPictureRuntime(); local pair=runtime:processSealedObservation(pictureFixture(1,{interactions=interactions})).picture.currentPairAssessmentScope[1]
+    equal(pair.relationshipStatus,"POSITIVE"); equal(pair.currentSpaceStatus,"POSITIVE"); equal(pair.futureSpaceStatus,"POSITIVE"); equal(pair.relationship,"CURRENT_SPACE_INTERACTION")
 end)
 
 test("Situation Assessment preserves unavailable sources and non-fit representations",function()
@@ -676,7 +597,7 @@ local function decisionPicture(specifications,options)
         epoch=options.epoch or 100,
         observationSnapshotId="OS-DECISION",
         situations={{identity="SI-1",operationId="OR-1",memberAssemblyIds={"AS-00001","AS-00002"},relevantAssemblyIds={"AS-00001","AS-00002"},provenance={}}},
-        encounters={{identity="EN-1",operationId="OR-1",subjectAssemblyId="AS-00001",otherAssemblyId="AS-00002",relationship="FUTURE_SPACE_CONVERGENCE",evidence={}}},
+        currentPairAssessmentScope={{pairReferenceKey="pair:decision",operationId="OR-1",subjectAssemblyId="AS-00001",otherAssemblyId="AS-00002",subjectJobEpisodeId="JE-1",otherJobEpisodeId="JE-2",episodeSignature="JE-1|JE-2",relationshipStatus="UNRESOLVED",relationship="UNRESOLVED",currentSpaceStatus="UNRESOLVED",futureSpaceStatus="UNRESOLVED",evidence={negativeClearanceAuthority=false},provenance={ephemeral=true,persistentPairHistory=false}}},
         identities={assemblies={"AS-00001","AS-00002"},components={},jobEpisodes={active={"JE-1","JE-2"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
         currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},
         responsibilityRelations=options.responsibilityRelations or {},
@@ -1017,7 +938,7 @@ local function headOnSupportPicture(options)
     return OuttaMyWay.OperationalPicture.new({
         identity="OP-HEADON",epoch=200,observationSnapshotId="OS-HEADON",
         situations={{identity="SI-HEADON",operationId="OR-1",memberAssemblyIds={"AS-00001","AS-00002"},relevantAssemblyIds={"AS-00001","AS-00002"},futureSpaceRelationships={{interactionReferenceKey="vehicle-root:101|vehicle-root:201",subjectAssemblyId="AS-00001",otherAssemblyId="AS-00002",positiveIntersection=true}},provenance={}}},
-        encounters={{identity="EN-HEADON",operationId="OR-1",subjectAssemblyId="AS-00001",otherAssemblyId="AS-00002",relationship="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION",lifecycleState="ACTIVE",evidence={interactionReferenceKey="vehicle-root:101|vehicle-root:201",futureSpaceConverges=true,currentSpaceIntersects=currentInteraction}}},
+        currentPairAssessmentScope={{pairReferenceKey="vehicle-root:101|vehicle-root:201",operationId="OR-1",subjectAssemblyId="AS-00001",otherAssemblyId="AS-00002",subjectReferenceKey="vehicle-root:101",otherReferenceKey="vehicle-root:201",subjectJobEpisodeId="JE-A",otherJobEpisodeId="JE-B",episodeSignature="JE-A|JE-B",relationshipStatus="POSITIVE",relationship=currentInteraction and "CURRENT_SPACE_INTERACTION" or "FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION",currentSpaceStatus=currentInteraction and "POSITIVE" or "UNRESOLVED",futureSpaceStatus="POSITIVE",currentInteractionEvidencePresent=true,evidence={sourceInteractionReferenceKeys={"vehicle-root:101|vehicle-root:201"},negativeClearanceAuthority=false},provenance={source="head-on-test",ephemeral=true,persistentPairHistory=false}}},
         identities={assemblies={"AS-00001","AS-00002"},components={},jobEpisodes={active={"JE-A","JE-B"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
         currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},representationFitness={},
         motionEvidence={
@@ -1259,7 +1180,7 @@ end)
 
 
 test("PassiveLiveTraceRecord rejects enabled Control",function()
-    expectError(function() OuttaMyWay.PassiveLiveTraceRecord.new({identity="LT-X",epoch=1,timestamp=1,status="TRACE",activeAssemblyCount=0,activeJobEpisodeCount=0,activeOperationCount=0,situationCount=0,encounterCount=0,controlAuthorityEnabled=true,provenance={}}) end)
+    expectError(function() OuttaMyWay.PassiveLiveTraceRecord.new({identity="LT-X",epoch=1,timestamp=1,status="TRACE",activeAssemblyCount=0,activeJobEpisodeCount=0,activeOperationCount=0,situationCount=0,currentPairAssessmentCount=0,generalControlAuthorityEnabled=true,provenance={}}) end)
 end)
 
 
@@ -1445,28 +1366,20 @@ test("missing radius suppression survives the source-to-assessment diagnostic ha
         equal(raw.diagnostics.pairDiagnostics[1].principalOutcome,"MISSING_OTHER_RADIUS")
         equal(raw.diagnostics.pairDiagnostics[1].interactionEvidenceEmitted,false)
         local processed=runtime:processSealedObservation(raw)
-        equal(#processed.picture.encounters,0)
+        equal(#processed.picture.currentPairAssessmentScope,1)
+        equal(processed.picture.currentPairAssessmentScope[1].relationshipStatus,"UNRESOLVED")
         equal(processed.picture.diagnostics.counters.interactionEvidenceEmittedCount,0)
         equal(processed.picture.diagnostics.counters.interactionEvidenceReceivedCount,0)
         equal(processed.picture.diagnostics.pairPipeline[1].sameOperation,true)
     end)
 end)
 
-test("closing motion alone cannot admit Encounter without supported Future Space",function()
+test("closing motion alone leaves current pair relationship unresolved",function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions)
         directions[201]={0,-1}; a.lastSpeedReal=0.003; b.lastSpeedReal=0.003
-        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
-        local raw=runtime.liveObservationSource:capture(mission,10)[1]
-        local pair=raw.diagnostics.pairDiagnostics[1]
-        equal(pair.principalOutcome,"CURRENT_INTERACTION_UNRESOLVED")
-        if pair.closingRate<=0 then error("closing motion evidence was not preserved") end
-        equal(pair.fieldBoundedFutureSpacePositive,false)
-        equal(pair.interactionEvidenceEmitted,false)
-        local processed=runtime:processSealedObservation(raw)
-        equal(#processed.picture.encounters,0)
-        equal(processed.picture.diagnostics.counters.interactionEvidenceEmittedCount,0)
-        equal(processed.picture.diagnostics.counters.interactionEvidenceReceivedCount,0)
-        equal(processed.picture.diagnostics.pairPipeline[1].encounterCreated,false)
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); local raw=runtime.liveObservationSource:capture(mission,10)[1]; local pair=raw.diagnostics.pairDiagnostics[1]
+        equal(pair.principalOutcome,"CURRENT_INTERACTION_UNRESOLVED"); if pair.closingRate<=0 then error("closing motion evidence lost") end; equal(pair.interactionEvidenceEmitted,false)
+        local processed=runtime:processSealedObservation(raw); equal(#processed.picture.currentPairAssessmentScope,1); equal(processed.picture.currentPairAssessmentScope[1].relationshipStatus,"UNRESOLVED"); equal(processed.picture.diagnostics.pairPipeline[1].currentPairScopePresent,true)
     end)
 end)
 
@@ -1484,17 +1397,12 @@ test("active Job vehicle pose failure is explicit without changing admission",fu
     end)
 end)
 
-test("mutually blocked same-Operation pair without Encounter is an explicit diagnostic contradiction",function()
+test("mutually blocked same-Operation pair with unresolved scope is an explicit contradiction",function()
     withFakeLiveGlobals(function(mission,a,b)
-        a.spec_aiFieldWorker.isBlocked=true; b.spec_aiFieldWorker.isBlocked=true
-        a.lastSpeedReal=0; b.lastSpeedReal=0
-        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
-        local raw=runtime.liveObservationSource:capture(mission,10)[1]
-        local processed=runtime:processSealedObservation(raw)
-        equal(#processed.picture.encounters,0)
-        local found=false
-        for _,item in OuttaMyWay.ValueRecord.ipairs(processed.picture.diagnostics.contradictions) do if item.code=="BOTH_WORKERS_BLOCKED_WITHOUT_ENCOUNTER" then found=true end end
-        equal(found,true)
+        a.spec_aiFieldWorker.isBlocked=true; b.spec_aiFieldWorker.isBlocked=true; a.lastSpeedReal=0; b.lastSpeedReal=0
+        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); local processed=runtime:processSealedObservation(runtime.liveObservationSource:capture(mission,10)[1])
+        equal(#processed.picture.currentPairAssessmentScope,1); equal(processed.picture.currentPairAssessmentScope[1].relationshipStatus,"UNRESOLVED")
+        local found=false; for _,item in OuttaMyWay.ValueRecord.ipairs(processed.picture.diagnostics.contradictions) do if item.code=="BOTH_WORKERS_BLOCKED_WITH_UNRESOLVED_CURRENT_PAIR" then found=true end end; equal(found,true)
     end)
 end)
 
@@ -2361,7 +2269,7 @@ test("current footprint overlap remains positive-only evidence",function()
     equal(positive.current,true); equal(positive.authority,"POSITIVE_CONFLICT_SUPPORT_ONLY")
 end)
 
-test("filtered current-space footprint positive reaches Encounter when scalar radius is missing",function()
+test("filtered current-space footprint positive reaches current pair scope when scalar radius is missing",function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions,strategies)
         local saved={
             getNumOfChildren=getNumOfChildren,getChildAt=getChildAt,getName=getName,localToWorld=localToWorld,
@@ -2390,10 +2298,11 @@ test("filtered current-space footprint positive reaches Encounter when scalar ra
         equal(pair.interactionEvidenceSource,"CURRENT_SPACE_POSITIVE")
         equal(pair.interactionEvidenceEmitted,true)
         local processed=runtime:processSealedObservation(raw)
-        equal(#processed.picture.encounters,1)
-        equal(processed.picture.encounters[1].relationship,"CURRENT_SPACE_INTERACTION")
-        equal(processed.picture.encounters[1].evidence.provenance.authority,"POSITIVE_INTERACTION_ONLY")
-        equal(processed.picture.encounters[1].evidence.provenance.negativeClearanceAuthority,false)
+        equal(#processed.picture.currentPairAssessmentScope,1)
+        equal(processed.picture.currentPairAssessmentScope[1].relationship,"CURRENT_SPACE_INTERACTION")
+        equal(processed.picture.currentPairAssessmentScope[1].currentSpaceStatus,"POSITIVE")
+        equal(processed.picture.currentPairAssessmentScope[1].evidence.currentPositiveProvenance.authority,"POSITIVE_INTERACTION_ONLY")
+        equal(processed.picture.currentPairAssessmentScope[1].evidence.currentPositiveProvenance.negativeClearanceAuthority,false)
         getNumOfChildren=saved.getNumOfChildren; getChildAt=saved.getChildAt; getName=saved.getName; localToWorld=saved.localToWorld
         getShapeGeometryBoundingSphere=saved.getShapeGeometryBoundingSphere; getShapeBoundingSphere=saved.getShapeBoundingSphere
         getShapeWorldBoundingSphere=saved.getShapeWorldBoundingSphere; getIsCompoundChild=saved.getIsCompoundChild
@@ -2448,7 +2357,7 @@ test("field-bounded component continuations support positive intersection and tu
     equal(unresolved.positive,false); equal(unresolved.unresolved,true); equal(unresolved.outcome,"FUTURE_SPACE_INTERACTION_UNRESOLVED")
 end)
 
-test("field-bounded Future Space admits Encounter after legacy predictor removal", function()
+test("field-bounded Future Space reaches current pair scope after legacy predictor removal", function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA,jobB,field,farmland,directions)
         local saved={
             getNumOfChildren=getNumOfChildren,getChildAt=getChildAt,getName=getName,localToWorld=localToWorld,
@@ -2480,10 +2389,11 @@ test("field-bounded Future Space admits Encounter after legacy predictor removal
         equal(raw.geometry.interactionEvidence[1].relationship,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION")
         equal(raw.geometry.interactionEvidence[1].provenance.legacyShadow,nil)
         local processed=runtime:processSealedObservation(raw)
-        equal(#processed.picture.encounters,1)
-        equal(processed.picture.encounters[1].relationship,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION")
-        equal(processed.picture.encounters[1].evidence.provenance.source,"FIELD_BOUNDED_FUTURE_SPACE_POSITIVE")
-        equal(processed.picture.encounters[1].evidence.provenance.negativeClearanceAuthority,false)
+        equal(#processed.picture.currentPairAssessmentScope,1)
+        equal(processed.picture.currentPairAssessmentScope[1].relationship,"FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION")
+        equal(processed.picture.currentPairAssessmentScope[1].futureSpaceStatus,"POSITIVE")
+        equal(processed.picture.currentPairAssessmentScope[1].evidence.futurePositiveProvenance.source,"FIELD_BOUNDED_FUTURE_SPACE_POSITIVE")
+        equal(processed.picture.currentPairAssessmentScope[1].evidence.futurePositiveProvenance.negativeClearanceAuthority,false)
         getNumOfChildren=saved.getNumOfChildren; getChildAt=saved.getChildAt; getName=saved.getName; localToWorld=saved.localToWorld
         getShapeGeometryBoundingSphere=saved.getShapeGeometryBoundingSphere; getShapeBoundingSphere=saved.getShapeBoundingSphere
         getShapeWorldBoundingSphere=saved.getShapeWorldBoundingSphere; getIsCompoundChild=saved.getIsCompoundChild
@@ -2494,23 +2404,17 @@ test("Situation Assessment publishes field-bounded Future Space relationship as 
     local runtime=newPictureRuntime()
     local relationship={{interactionReferenceKey="future-rel-1",subjectAssemblyReferenceKey="assembly-A",otherAssemblyReferenceKey="assembly-B",positiveIntersection=true,unresolved=false,outcome="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION_POSITIVE",subjectIntentClassification="SETTLED_CONTINUATION",otherIntentClassification="SETTLED_CONTINUATION",subjectIntentEpoch=1,otherIntentEpoch=2,subjectBoundaryDistance=80,otherBoundaryDistance=70,distance=0,required=4,authority="POSITIVE_FUTURE_SPACE_SUPPORT_ONLY",negativeClearanceAuthority=false,provenance={source="fixture"}}}
     local result=runtime:processSealedObservation(pictureFixture(1,{interactions={},futureSpaceRelationships=relationship}))
-    equal(#result.picture.encounters,0)
+    equal(#result.picture.currentPairAssessmentScope,1)
+    equal(result.picture.currentPairAssessmentScope[1].relationshipStatus,"UNRESOLVED")
     equal(#result.picture.situations[1].futureSpaceRelationships,1)
     equal(result.picture.situations[1].futureSpaceRelationships[1].classification,"FUTURE_SPACE_INTERSECTION")
     equal(result.picture.situations[1].futureSpaceRelationships[1].negativeClearanceAuthority,false)
 end)
 
-test("Lifecycle test HUD preserves Encounter stop restart gate", function()
-    local hud=OuttaMyWay.TransitionHud.new()
-    equal(hud:getState().phase,"WAITING_FOR_ENCOUNTER")
-    hud:observeEncounterTransition({lifecycle="CREATED",encounterIdentity="EN-1",relationship="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION"})
-    equal(hud:getState().phase,"ENCOUNTER_ACTIVE"); equal(hud:getState().title,"OTM TEST — FUTURE SPACE ENCOUNTER")
-    hud:observeEncounterTransition({lifecycle="TERMINATED",encounterIdentity="EN-1",terminalReason="JOB_EPISODE_ENDED"})
-    equal(hud:getState().phase,"ENCOUNTER_TERMINATED")
-    hud:observeAdmittedEpisodes({"JE-NEW"})
-    equal(hud:getState().phase,"NEW_JOB_EPISODE")
-    hud:observeEncounterTransition({lifecycle="CREATED",encounterIdentity="EN-2",relationship="FIELD_BOUNDED_FUTURE_SPACE_INTERSECTION"})
-    equal(hud:getState().phase,"TEST_COMPLETE"); equal(hud:getState().title,"OTM TEST — NEW FUTURE SPACE ENCOUNTER")
+test("rejected Encounter lifecycle modules are absent from the active harness", function()
+    equal(rawget(OuttaMyWay,"EncounterRegistry"),nil)
+    equal(rawget(OuttaMyWay,"TransitionHud"),nil)
+    if OuttaMyWay.CurrentPairAssessmentScope==nil then error("Current Pair Assessment Scope module not loaded") end
 end)
 
 test("Future Space HUD reports settled, manoeuvring and intersecting Knowledge", function()
@@ -2731,7 +2635,7 @@ local function d0141Picture(record,commitmentId)
     if commitmentId~=nil then contexts={{commitmentId=commitmentId}} end
     return OuttaMyWay.OperationalPicture.new({
         identity="OP-D0141-"..tostring(record.reason).."-"..tostring(record.controlMagnitude and record.controlMagnitude.maxAdmissibleFollowerKmh or "x"),epoch=410,observationSnapshotId="OS-HEADON",
-        situations={},encounters={},identities={assemblies={"AS-C","AS-P"},components={},jobEpisodes={active={"JE-C","JE-P"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
+        situations={},currentPairAssessmentScope={},identities={assemblies={"AS-C","AS-P"},components={},jobEpisodes={active={"JE-C","JE-P"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
         currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},representationFitness={},
         motionEvidence={},physicalSpaceEvidence={},productiveContinuationKnowledge={},guardedRecoveryKnowledge={},followerBoundaryKnowledge={record},
         provenance={source="d0141-test"},controlOutcomeEvidence={},candidateSupportEvidence={complete=false,supportBoundary={},candidateSpecifications={},provenance={}},commitmentContext=contexts,diagnostics={}
@@ -2883,7 +2787,7 @@ test("D-0141 follower and D-0123 Guarded-Recovery Regulation purposes share auth
     local function guardPicture(status)
         return OuttaMyWay.OperationalPicture.new({
             identity="OP-D0141-GUARD-"..status,epoch=500,observationSnapshotId="OS-HEADON",
-            situations={},encounters={},identities={assemblies={"AS-C","AS-P"},components={},jobEpisodes={active={"JE-C","JE-P"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
+            situations={},currentPairAssessmentScope={},identities={assemblies={"AS-C","AS-P"},components={},jobEpisodes={active={"JE-C","JE-P"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
             currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},
             representationFitness={{representationId="REP-D0141-GUARD",assemblyId="AS-P",question="GUARDED_RECOVERY_CONVERGENT_PROJECTION",assessmentHorizon="CURRENT_BOUNDED_RECOVERY",state=status=="POSITIVE" and "FIT_FOR_LIMITED_HORIZON" or "REFRESH_REQUIRED",claimPermissions={"GUARDED_RECOVERY"},coverage={complete=false,conservative=true},uncertainty={},validityDependencies={},provenance={source="d0141-test"}}},
             motionEvidence={},physicalSpaceEvidence={},productiveContinuationKnowledge={},
@@ -3147,7 +3051,7 @@ test("architecture alignment routes D-0123 through Situation Candidate Decision 
         local repId="REP-GUARD-"..status
         return OuttaMyWay.OperationalPicture.new({
             identity="OP-GUARD-"..status,epoch=300+#requests,observationSnapshotId="OS-HEADON",
-            situations={},encounters={},identities={assemblies={"AS-00001","AS-00002"},components={},jobEpisodes={active={"JE-A","JE-B"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
+            situations={},currentPairAssessmentScope={},identities={assemblies={"AS-00001","AS-00002"},components={},jobEpisodes={active={"JE-A","JE-B"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
             currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},
             representationFitness={{representationId=repId,assemblyId=progressAssemblyId,question="GUARDED_RECOVERY_CONVERGENT_PROJECTION",assessmentHorizon="CURRENT_BOUNDED_RECOVERY",state=status=="POSITIVE" and "FIT_FOR_LIMITED_HORIZON" or "REFRESH_REQUIRED",claimPermissions={"GUARDED_RECOVERY"},coverage={complete=false,conservative=true},uncertainty={},validityDependencies={},provenance={source="alignment-test"}}},
             guardedRecoveryKnowledge={{representationId=repId,commitmentId=commitmentId,controlRequestId="CR-REPOSITION",governingRequirementKey="guarded-recovery:"..commitmentId,encounterIdentity="EN-HEADON",yieldAssemblyId=yieldAssemblyId,progressAssemblyId=progressAssemblyId,yieldReferenceKey=bridge.yieldParticipantReferenceKey,progressReferenceKey=bridge.progressParticipantReferenceKey,progressJobToken=progressJobToken,phase="TS015_REJOINING",activeRecovery=true,postHandoff=false,nativeReacquired=false,signalStatus=status,reason=guardReason or status,combination="COMMITTED_RECOVERY_UNION__CURRENT_HEADING",geometryResolved=status~="UNRESOLVED",governingPurpose="PRESERVE_GUARDED_RECOVERY_COMMITTED_DEMAND",representationFitness=status=="POSITIVE" and "FIT_FOR_LIMITED_HORIZON" or "REFRESH_REQUIRED",provenance={source="SituationAssessment.GuardedRecovery",layer="KNOWLEDGE"}}},
@@ -3697,7 +3601,7 @@ local function d0146Step2Fixture(fieldMinX,fieldMaxX,longitudinalSeparationM)
     local fitness=OuttaMyWay.PassageCapabilityAssessment.buildFitness({opposedCorridorKnowledge={conflict},motionEvidence=motion,physicalSpaceEvidence=physical})
     local picture=OuttaMyWay.OperationalPicture.new({
         identity="OP-D0146-STEP2",epoch=800,observationSnapshotId="OS-D0146-STEP2",
-        situations={},encounters={{identity="EN-D0146",operationId="OR-1",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",subjectJobEpisodeId="JE-A",otherJobEpisodeId="JE-B",relationship="FUTURE_SPACE_INTERSECTION",lifecycleState="ACTIVE",evidence={interactionReferenceKey="vehicle-root:101|vehicle-root:201",currentSpaceIntersects=false,futureSpaceConverges=true}}},
+        situations={},currentPairAssessmentScope={{pairReferenceKey="vehicle-root:101|vehicle-root:201",operationId="OR-1",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",subjectReferenceKey="vehicle-root:101",otherReferenceKey="vehicle-root:201",subjectJobEpisodeId="JE-A",otherJobEpisodeId="JE-B",episodeSignature="JE-A|JE-B",relationshipStatus="POSITIVE",relationship="FUTURE_SPACE_INTERSECTION",currentSpaceStatus="UNRESOLVED",futureSpaceStatus="POSITIVE",currentInteractionEvidencePresent=true,evidence={sourceInteractionReferenceKeys={"vehicle-root:101|vehicle-root:201"},negativeClearanceAuthority=false},provenance={source="d0146-step2-test",ephemeral=true,persistentPairHistory=false}}},
         identities={assemblies={"AS-A","AS-B"},components={},jobEpisodes={active={"JE-A","JE-B"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
         currentSpace=spaces,futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},representationFitness=fitness,
         motionEvidence=motion,physicalSpaceEvidence=physical,productiveContinuationKnowledge={},guardedRecoveryKnowledge={},followerBoundaryKnowledge={},trajectoryKnowledge=trajectories,opposedCorridorKnowledge={conflict},cooperativePassageKnowledge={},
@@ -4067,7 +3971,7 @@ local function actionSpaceRegulationPicture()
         }
     }
     return OuttaMyWay.OperationalPicture.new({
-        identity="OP-D0146-ACTION",epoch=790,observationSnapshotId="OS-D0146-ACTION",situations={},encounters={},
+        identity="OP-D0146-ACTION",epoch=790,observationSnapshotId="OS-D0146-ACTION",situations={},currentPairAssessmentScope={{pairReferenceKey="pair:d0146-action",operationId="OR-1",subjectAssemblyId="AS-A",otherAssemblyId="AS-B",subjectReferenceKey="vehicle-root:101",otherReferenceKey="vehicle-root:201",subjectJobEpisodeId="JE-A",otherJobEpisodeId="JE-B",episodeSignature="JE-A|JE-B",relationshipStatus="UNRESOLVED",relationship="UNRESOLVED",currentSpaceStatus="UNRESOLVED",futureSpaceStatus="UNRESOLVED",currentInteractionEvidencePresent=false,evidence={sourceInteractionReferenceKeys={},negativeClearanceAuthority=false},provenance={source="d0146-action-space-test",ephemeral=true,persistentPairHistory=false}}},
         identities={assemblies={"AS-A","AS-B"},components={},jobEpisodes={active={"JE-A","JE-B"},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
         currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},representationFitness={},
         motionEvidence={},physicalSpaceEvidence={},productiveContinuationKnowledge={},guardedRecoveryKnowledge={},followerBoundaryKnowledge={},trajectoryKnowledge={},opposedCorridorKnowledge={relation},cooperativePassageKnowledge={},
@@ -5072,7 +4976,7 @@ local function passageLegRuntime(runtime,assemblyA,assemblyB,episodeA,episodeB)
     episodeA=episodeA or "JE-A"; episodeB=episodeB or "JE-B"
     local commitment=runtime.commitmentAdmission:admit({
         objective={kind="COOPERATIVE_PASSAGE"},
-        governingBasis={responsibilityKey="cooperative-passage:LEG-LIFECYCLE",dependentEncounterId="EN-LEG",dependentJobEpisodeIds={episodeA,episodeB},sourceIntentIds={episodeA,episodeB}},
+        governingBasis={responsibilityKey="cooperative-passage:LEG-LIFECYCLE",dependentPairReferenceKey="pair:LEG-LIFECYCLE",dependentJobEpisodeIds={episodeA,episodeB},sourceIntentIds={episodeA,episodeB}},
         progressAssemblyIds={assemblyA,assemblyB},
         obligationSpecifications={
             {origin={kind="OTM_MATERIAL_DISPLACEMENT"},basis={kind="COOPERATIVE_PASSAGE_LEG",assemblyId=assemblyA,jobEpisodeId=episodeA},requiredOutcome={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",assemblyId=assemblyA},requiredAuthority={capabilities={"REPOSITION","RESTORE_CONFIGURATION","HANDOVER_TO_GIANTS"}},evidenceContract={kind="PARTICIPANT_PASSAGE_DEBT_DISCHARGED_THEN_GIANTS_HANDOFF_OR_POSITIVE_BASIS_CESSATION"},ownershipClass="ORIGIN_BOUND",transferPolicy={allowed=false},terminalDependency=true},
@@ -6021,7 +5925,7 @@ local function d0147TerminalPicture(runtime,configurationEvidence,options)
     end
     return OuttaMyWay.OperationalPicture.new({
         identity="OP-D0147-"..tostring(options.suffix or "BASE"),epoch=900,observationSnapshotId="OS-D0147",
-        situations={},encounters={},identities={assemblies={assemblyId,"AS-ACTIVE"},components={},jobEpisodes={active={"JOB-ACTIVE"},admitted={},ended={episodeId}},operations={active={"OP-ACTIVE"},ended={}}},
+        situations={},currentPairAssessmentScope={},identities={assemblies={assemblyId,"AS-ACTIVE"},components={},jobEpisodes={active={"JOB-ACTIVE"},admitted={},ended={episodeId}},operations={active={"OP-ACTIVE"},ended={}}},
         currentSpace={},futureSpace={},demand={committedDemand={},potentialDemand={},temporarySlack={}},responsibilityRelations={},uncertainty={},
         representationFitness={{representationId=representationId,assemblyId=assemblyId,question="D0147_TERMINAL_OCCUPANCY_AND_SINGLE_EGRESS",assessmentHorizon="CURRENT_PICTURE_ONLY",state="FIT_FOR_LIMITED_HORIZON",claimPermissions={"POSITIVE_TERMINAL_OBSTRUCTION"},coverage={complete=false},uncertainty={"NO_NEGATIVE_EXTERNAL_MARGIN_TRAVERSABILITY_AUTHORITY"},validityDependencies={},provenance={source="test"}}},
         provenance={source="test"},controlOutcomeEvidence={outcomes={}},candidateSupportEvidence={complete=false},commitmentContext=context,
@@ -6680,8 +6584,8 @@ test("D0200 ended Job Episode collapses dependent quiescent D0146 traffic Commit
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
     local dependent=runtime.commitments:create({
         objective={kind="ACTION_SPACE_REGULATION"},
-        governingBasis={responsibilityKey="cooperative-passage:REL-ENDED",dependentEncounterId="EN-ENDED",dependentJobEpisodeIds={"JE-END","JE-KEEP"}},
-        situationDependencies={"SITUATION-1","EN-ENDED"}
+        governingBasis={responsibilityKey="cooperative-passage:REL-ENDED",dependentPairReferenceKey="pair:REL-ENDED",dependentJobEpisodeIds={"JE-END","JE-KEEP"}},
+        situationDependencies={"SITUATION-1"}
     })
     local obligation=runtime.obligations:create({
         origin={kind="TRAFFIC_INTERVENTION"},basis={kind="ACTION_SPACE_REGULATION",conflictIdentity="REL-ENDED"},ownerCommitmentId=dependent.identity,
@@ -6689,7 +6593,7 @@ test("D0200 ended Job Episode collapses dependent quiescent D0146 traffic Commit
         evidenceContract={kind="POSITIVE_RELATIONSHIP_DISSOLUTION_OR_COOPERATIVE_PASSAGE_SUCCESSION"},ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
     })
     dependent=runtime.commitments:save(OuttaMyWay.CommitmentStateMachine.revise(dependent,{obligationIds={obligation.identity},epoch=runtime.epochs:next()}))
-    local unrelated=runtime.commitments:create({objective={kind="ACTION_SPACE_REGULATION"},governingBasis={responsibilityKey="cooperative-passage:REL-OTHER",dependentEncounterId="EN-OTHER",dependentJobEpisodeIds={"JE-OTHER-A","JE-OTHER-B"}},situationDependencies={"EN-OTHER"}})
+    local unrelated=runtime.commitments:create({objective={kind="ACTION_SPACE_REGULATION"},governingBasis={responsibilityKey="cooperative-passage:REL-OTHER",dependentPairReferenceKey="pair:REL-OTHER",dependentJobEpisodeIds={"JE-OTHER-A","JE-OTHER-B"}},situationDependencies={"SITUATION-OTHER"}})
     local cleared=0
     runtime.regulationBoundedAuthority.regulationControl={clearRegulationLeaseByReference=function(self,referenceKey,ownerTag) cleared=cleared+1; return true end}
     runtime.regulationBoundedAuthority.actionSpaceRegulationLease={commitmentId=dependent.identity,conflictIdentity="REL-ENDED",regulatedAssemblyId="AS-A",regulatedReferenceKey="REF-A",actuationActive=false}
