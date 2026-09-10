@@ -178,7 +178,7 @@ local function latestControlOutcome(picture,commitmentId)
     local latest=nil
     for _,outcome in OuttaMyWay.ValueRecord.ipairs(picture.controlOutcomeEvidence and picture.controlOutcomeEvidence.outcomes or {}) do
         local context=outcome.completionContext or {}
-        if outcome.kind=="TERMINAL_EGRESS_CONTROL_OBSERVATION" and context.triggerKind=="CURRENT_CAUSAL_OBSTRUCTION" and outcome.commitmentId==commitmentId then latest=outcome end
+        if outcome.kind=="OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION" and context.triggerKind=="CURRENT_CAUSAL_OBSTRUCTION" and outcome.commitmentId==commitmentId then latest=outcome end
     end
     return latest
 end

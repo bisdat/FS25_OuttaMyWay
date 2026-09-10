@@ -88,7 +88,7 @@ jobs:
             scripts/control/mechanisms/TransitConfigurationMechanism.lua \
             scripts/control/mechanisms/NonJobActuationMechanism.lua \
             scripts/control/CooperativePassageControl.lua \
-            scripts/control/TerminalEgressControl.lua \
+            scripts/control/ObstructionRelocationControl.lua \
             scripts/control/LiveControlDispatcher.lua \
             scripts/control/RegulationControl.lua \
             scripts/decision/ProspectivePortfolioDecisionPolicy.lua \

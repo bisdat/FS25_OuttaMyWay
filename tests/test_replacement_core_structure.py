@@ -193,10 +193,11 @@ def test_constraint_engine_declares_only_independently_owned_mandatory_questions
 
 
 
-def test_current_control_topology_has_one_terminal_egress_executor_beside_the_central_dispatcher():
+def test_current_control_topology_has_one_obstruction_relocation_executor_beside_the_central_dispatcher():
     control_dir = ROOT / "scripts" / "control"
     assert control_dir.is_dir()
-    assert sorted(p.name for p in control_dir.glob("*.lua")) == ["CooperativePassageControl.lua", "LiveControlDispatcher.lua", "RegulationControl.lua", "TerminalEgressControl.lua"]
+    assert sorted(p.name for p in control_dir.glob("*.lua")) == ["CooperativePassageControl.lua", "LiveControlDispatcher.lua", "ObstructionRelocationControl.lua", "RegulationControl.lua"]
+    assert not (control_dir / "TerminalEgressControl.lua").exists()
     dispatcher = (control_dir / "LiveControlDispatcher.lua").read_text(encoding="utf-8")
     for token in ("g_currentMission", "AIVehicleUtil.driveToPoint", "getCanAIFieldWorkerContinueWork"):
         assert token not in dispatcher
@@ -204,8 +205,8 @@ def test_current_control_topology_has_one_terminal_egress_executor_beside_the_ce
     assert "executeJointRequests" in cooperative
     assert "CooperativePassageControl requires Hold, Drive and Configuration mechanisms" in cooperative
     terminal = (control_dir / "TerminalEgressControl.lua").read_text(encoding="utf-8")
-    assert "TERMINAL_EGRESS_CONTROL_OBSERVATION" in terminal
-    assert 'target.kind~="TERMINAL_EGRESS"' in terminal
+    assert "OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION" in terminal
+    assert 'target.kind~="OBSTRUCTION_RELOCATION"' in terminal
     assert "POST_JOB_ACTUATION" not in terminal
     assert "OBSTRUCTION_RELOCATION_ACTUATION" not in terminal
 
@@ -1894,9 +1895,9 @@ def test_completed_obstruction_responsibility_transition_is_upstream_and_singula
     readiness=runtime[runtime.index("local terminalBridge=terminalEgressBridge(candidate)"):runtime.index("local followerBridge=followerBoundaryBridge(candidate)")]
     assert readiness.index('boundary.mode~="D0147_BOUNDED_TERMINAL_EGRESS"') < readiness.index('terminalBridge.terminalEvent~=nil')
     assert readiness.index('terminalBridge.terminalEvent~=nil') < readiness.index('candidate.capability~="REPOSITION"')
-    assert readiness.index('candidate.capability~="REPOSITION"') < readiness.index('self.liveControlDispatcher.terminalEgressControl==nil')
-    assert readiness.index('self.liveControlDispatcher.terminalEgressControl==nil') < readiness.index('self.liveControlDispatcher.terminalEgressControl:isActive()')
-    assert readiness.index('self.liveControlDispatcher.terminalEgressControl:isActive()') < readiness.index('status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED"')
+    assert readiness.index('candidate.capability~="REPOSITION"') < readiness.index('self.liveControlDispatcher.obstructionRelocationControl==nil')
+    assert readiness.index('self.liveControlDispatcher.obstructionRelocationControl==nil') < readiness.index('self.liveControlDispatcher.obstructionRelocationControl:isActive()')
+    assert readiness.index('self.liveControlDispatcher.obstructionRelocationControl:isActive()') < readiness.index('status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED"')
     assert "TerminalEgressCommitmentLifecycle.applyDecision" not in authority
     assert transition.count("TerminalEgressCommitmentLifecycle.applyDecision") == 1
     continuation=runtime[runtime.index("function Runtime:_continueCompletedObstruction"):runtime.index("function Runtime:_assessCurrentActionSpaceRegulation")]
@@ -2162,7 +2163,7 @@ def test_phase10_migrated_control_requests_require_bounded_authority():
     runtime=(ROOT/"scripts/runtime/Runtime.lua").read_text(encoding="utf-8")
     regulation_control=(ROOT/"scripts/control/RegulationControl.lua").read_text(encoding="utf-8")
     cooperative=(ROOT/"scripts/control/CooperativePassageControl.lua").read_text(encoding="utf-8")
-    terminal=(ROOT/"scripts/control/TerminalEgressControl.lua").read_text(encoding="utf-8")
+    terminal=(ROOT/"scripts/control/ObstructionRelocationControl.lua").read_text(encoding="utf-8")
 
     assert "_authorizeBoundedAuthority" in regulation_authority
     assert "_requestFromGrant" in regulation_authority
@@ -2461,8 +2462,8 @@ def test_issue101_stranded_leaf_semantics_are_retired_without_erasing_current_kn
     # provenance-neutral Terminal Egress observation path.
     assert "D0147_TERMINAL_EGRESS_CONTROL_OBSERVATION" not in terminal
     assert "_consumeControlOutcomes" not in terminal
-    assert 'kind="TERMINAL_EGRESS_CONTROL_OBSERVATION"' in terminal_control
-    assert 'observation.kind~="TERMINAL_EGRESS_CONTROL_OBSERVATION"' in coordinator
+    assert 'kind="OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION"' in terminal_control
+    assert 'observation.kind~="OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION"' in coordinator
 
     # Situation Knowledge remains current; only its unreachable singular-Leader
     # REPOSITION Constraint authority and synthetic witnesses retire.

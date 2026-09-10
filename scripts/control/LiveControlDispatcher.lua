@@ -8,13 +8,13 @@ local function logWarning(formatText,...)
 end
 
 function Dispatcher.new(runtime)
-    return setmetatable({runtime=runtime,regulationControl=nil,cooperativePassageControl=nil,terminalEgressControl=nil,outcomes={},dispatchCount=0},Dispatcher)
+    return setmetatable({runtime=runtime,regulationControl=nil,cooperativePassageControl=nil,obstructionRelocationControl=nil,outcomes={},dispatchCount=0},Dispatcher)
 end
 function Dispatcher:setRegulationControl(control) self.regulationControl=control end
 function Dispatcher:setCooperativePassageControl(control) self.cooperativePassageControl=control end
-function Dispatcher:setTerminalEgressControl(control) self.terminalEgressControl=control end
-function Dispatcher:getTerminalEgressObservation()
-    if self.terminalEgressControl~=nil and type(self.terminalEgressControl.getControlExecutionObservation)=="function" then return self.terminalEgressControl:getControlExecutionObservation() end
+function Dispatcher:setObstructionRelocationControl(control) self.obstructionRelocationControl=control end
+function Dispatcher:getObstructionRelocationObservation()
+    if self.obstructionRelocationControl~=nil and type(self.obstructionRelocationControl.getControlExecutionObservation)=="function" then return self.obstructionRelocationControl:getControlExecutionObservation() end
     return nil
 end
 function Dispatcher:getRegulationControlObservation()
@@ -39,9 +39,9 @@ function Dispatcher:dispatch(request,candidate)
     end
     if request.capability=="REPOSITION" then
         local target=request.target or {}
-        if target.kind=="TERMINAL_EGRESS" then
-            local control=self.terminalEgressControl
-            if control==nil or type(control.executeControlRequest)~="function" then return false,"TERMINAL_EGRESS_CONTROL_UNAVAILABLE" end
+        if target.kind=="OBSTRUCTION_RELOCATION" then
+            local control=self.obstructionRelocationControl
+            if control==nil or type(control.executeControlRequest)~="function" then return false,"OBSTRUCTION_RELOCATION_CONTROL_UNAVAILABLE" end
             local started,result=control:executeControlRequest(request,candidate)
             if started==true then self.dispatchCount=self.dispatchCount+1 end
             return started,result

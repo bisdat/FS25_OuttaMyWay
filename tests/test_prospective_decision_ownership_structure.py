@@ -80,11 +80,11 @@ def test_phase13_runtime_uses_portfolio_only_for_fresh_scope_and_projects_dispat
     assert "obstructionRelocationCandidateSupport" in runtime
 
 
-def test_phase13_trigger_and_passage_semantics_survive_shared_terminal_egress_execution():
+def test_phase13_trigger_and_passage_semantics_survive_shared_obstruction_relocation_execution():
     completed=read("scripts/candidates/TerminalEgressCandidateSupport.lua")
     current=read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
     passage=read("scripts/candidates/LocalPassagePlanner.lua")
-    terminal_control=read("scripts/control/TerminalEgressControl.lua")
+    terminal_control=read("scripts/control/ObstructionRelocationControl.lua")
 
     assert "local function selectRecord(picture,context)" in completed
     assert "TERMINAL_FINAL_BOUNDARY_SETTLEMENT" in completed
@@ -95,6 +95,7 @@ def test_phase13_trigger_and_passage_semantics_survive_shared_terminal_egress_ex
     assert "function Planner.planConflict(picture,snapshot,conflict)" in passage
     assert "local plan,reason,rejected=planConflict(picture,snapshot,conflict)" in passage
     assert "driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)" in terminal_control
-    assert 'target.kind~="TERMINAL_EGRESS"' in terminal_control
+    assert 'target.kind~="OBSTRUCTION_RELOCATION"' in terminal_control
     assert "CURRENT_CAUSAL_OBSTRUCTION" not in terminal_control
-    assert not (ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").exists()
+    assert (ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").is_file()
+    assert not (ROOT/"scripts"/"control"/"TerminalEgressControl.lua").exists()

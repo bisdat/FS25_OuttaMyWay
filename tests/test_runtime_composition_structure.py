@@ -61,15 +61,16 @@ def test_fresh_and_incumbent_live_cycle_split_is_preserved():
     assert "self.terminalEgressCandidateSupport:attach(processed.picture,processed.snapshot)" in process
     assert "self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot)" in process
 
-def test_d0218_semantics_survive_terminal_egress_execution_consolidation():
+def test_d0218_semantics_survive_shared_obstruction_relocation_execution():
     runtime=read("scripts/runtime/Runtime.lua")
-    assert "function Runtime:setObstructionRelocationControl" not in runtime
+    assert "function Runtime:setObstructionRelocationControl" in runtime
+    assert "function Runtime:setTerminalEgressControl" not in runtime
     for token in (
-        "function Runtime:onTerminalEgressControlCompletion",
+        "function Runtime:onObstructionRelocationControlCompletion",
         "function Runtime:_obstructionRelocationRequest",
         "function Runtime:onObstructionRelocationCompletion",
         "function Runtime:_dispatchObstructionRelocation",
-        'kind="TERMINAL_EGRESS"',
+        'kind="OBSTRUCTION_RELOCATION"',
         'triggerKind="CURRENT_CAUSAL_OBSTRUCTION"',
         'authorityClass="OBSTRUCTION_RELOCATION_ACTUATION"',
         "historicalJobProvenanceRequired=false",

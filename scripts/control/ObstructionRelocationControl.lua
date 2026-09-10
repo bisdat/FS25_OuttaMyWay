@@ -1,20 +1,20 @@
--- Provenance-neutral physical Terminal Egress execution.
+-- Provenance-neutral physical Obstruction Relocation execution.
 -- Completed Obstruction and current Causal Obstruction remain distinct upstream
 -- Responsibility/Commitment lifecycles. This Control consumes only an authorised
--- Terminal Egress objective, current physical subject and current Bounded Authority.
+-- Obstruction Relocation objective, current physical subject and current Bounded Authority.
 -- Player Claim and source-AI reactivation remain higher-priority Reality boundaries.
 
-OuttaMyWay.TerminalEgressControl={}
-local Control=OuttaMyWay.TerminalEgressControl
+OuttaMyWay.ObstructionRelocationControl={}
+local Control=OuttaMyWay.ObstructionRelocationControl
 Control.__index=Control
 
 local function logInfo(formatText,...)
     local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][TERMINAL-EGRESS-CONTROL] %s",message) else print("[FS25_OuttaMyWay][TERMINAL-EGRESS-CONTROL] "..message) end
+    if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION-CONTROL] %s",message) else print("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION-CONTROL] "..message) end
 end
 local function logWarning(formatText,...)
     local message=string.format(formatText,...)
-    if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][TERMINAL-EGRESS-CONTROL] %s",message) else print("[FS25_OuttaMyWay][TERMINAL-EGRESS-CONTROL][WARNING] "..message) end
+    if Logging~=nil and type(Logging.warning)=="function" then Logging.warning("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION-CONTROL] %s",message) else print("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION-CONTROL][WARNING] "..message) end
 end
 local function numberText(value,format)
     if type(value)~="number" then return "nil" end
@@ -44,7 +44,7 @@ local function tokenFor(runtime,request)
 end
 local function requestTarget(request)
     local target=request and request.target or nil
-    if type(target)~="table" or target.kind~="TERMINAL_EGRESS" then return nil end
+    if type(target)~="table" or target.kind~="OBSTRUCTION_RELOCATION" then return nil end
     if target.phase~="COMPACT" and target.phase~="INFIELD" then return nil end
     if type(target.assemblyReferenceKey)~="string" then return nil end
     return target
@@ -68,7 +68,7 @@ end
 function Control:_publish(state,status,extra)
     local context=state and state.completionContext or {}
     local item={
-        kind="TERMINAL_EGRESS_CONTROL_OBSERVATION",
+        kind="OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION",
         assemblyReferenceKey=state and state.assemblyReferenceKey or nil,
         assemblyId=state and state.assemblyId or nil,
         commitmentId=state and state.commitmentId or nil,
@@ -79,7 +79,7 @@ function Control:_publish(state,status,extra)
         relocationKey=context and context.relocationKey or nil,
         completionContext=context,
         directDriveCalls=self.actuationMechanism:getDirectDriveCallCount(),
-        provenance={source="TerminalEgressControl",physicalExecution="TERMINAL_EGRESS"}
+        provenance={source="ObstructionRelocationControl",physicalExecution="OBSTRUCTION_RELOCATION"}
     }
     for key,value in OuttaMyWay.ValueRecord.pairs(extra or {}) do
         if key=="kind" then item.outcomeEvidenceKind=value else item[key]=value end
@@ -149,7 +149,7 @@ function Control:_complete(status,evidence)
     local finalStatus=status
     if ownedCleanupFailed and status=="MANOEUVRE_COMPLETE" and state.cleanupFailurePolicy=="FAIL_COMPLETION" then
         finalStatus="FAILED"
-        completionEvidence.kind="TERMINAL_EGRESS_CONTROL_FAILURE"
+        completionEvidence.kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE"
         completionEvidence.reason="OWNED_ACTUATION_CLEANUP_FAILED"
         completionEvidence.manoeuvreTargetReached=true
     end
@@ -182,7 +182,7 @@ function Control:_rejectBeforeStart(request,target,status,reason)
         cleanupFailurePolicy=target.cleanupFailurePolicy or "REPORT_ONLY"
     }
     self.active=pseudo
-    self:_complete(status,{kind="TERMINAL_EGRESS_CONTROL_START_REJECTED",reason=reason})
+    self:_complete(status,{kind="OBSTRUCTION_RELOCATION_CONTROL_START_REJECTED",reason=reason})
     return false,reason
 end
 function Control:_prepareOpportunisticCompaction(vehicle,state)
@@ -201,9 +201,9 @@ end
 function Control:executeControlRequest(request,candidate)
     OuttaMyWay.ValueRecord.assertType(request,"ControlRequest")
     local target=requestTarget(request)
-    if target==nil then return false,"TERMINAL_EGRESS_TARGET_UNAVAILABLE" end
-    if self.active~=nil then return false,"TERMINAL_EGRESS_CONTROL_ALREADY_ACTIVE" end
-    if tokenFor(self.runtime,request)==nil then return false,"TERMINAL_EGRESS_CURRENT_AUTHORITY_TOKEN_UNAVAILABLE" end
+    if target==nil then return false,"OBSTRUCTION_RELOCATION_TARGET_UNAVAILABLE" end
+    if self.active~=nil then return false,"OBSTRUCTION_RELOCATION_CONTROL_ALREADY_ACTIVE" end
+    if tokenFor(self.runtime,request)==nil then return false,"OBSTRUCTION_RELOCATION_CURRENT_AUTHORITY_TOKEN_UNAVAILABLE" end
     local grantOk,grantReason=self.runtime.boundedAuthority:validateRequest(request)
     if grantOk~=true then return false,grantReason end
 
@@ -229,7 +229,7 @@ function Control:executeControlRequest(request,candidate)
     if state.phase=="COMPACT" then
         local evidence=self.configurationMechanism:getEvidence(vehicle)
         if evidence.foldableCount==0 or evidence.allFolded==true then
-            self:_complete("COMPACTION_COMPLETE",{kind="TERMINAL_EGRESS_COMPACTION",mode="RETAIN_CURRENT",configurationEvidence=evidence})
+            self:_complete("COMPACTION_COMPLETE",{kind="OBSTRUCTION_RELOCATION_COMPACTION",mode="RETAIN_CURRENT",configurationEvidence=evidence})
             return true,"COMPACTION_RETAIN_CURRENT"
         end
         if evidence.transitionCount>0 and evidence.unknownCount==0 then
@@ -254,7 +254,7 @@ function Control:executeControlRequest(request,candidate)
         or tonumber(objective.targetProgressM)==nil
         or tonumber(objective.targetX)==nil
         or tonumber(objective.targetZ)==nil then
-        return self:_rejectBeforeStart(request,target,"FAILED","TERMINAL_EGRESS_OBJECTIVE_INCOMPLETE")
+        return self:_rejectBeforeStart(request,target,"FAILED","OBSTRUCTION_RELOCATION_OBJECTIVE_INCOMPLETE")
     end
     if objective.courtesyExhausted==true then
         return self:_rejectBeforeStart(request,target,"FAILED","COURTESY_ALREADY_EXHAUSTED")
@@ -286,7 +286,7 @@ function Control:executeControlRequest(request,candidate)
         self:_releaseConfigurationOwnership(vehicle,state)
         self.actuationMechanism:releaseVehicleActivityContext(vehicle,activityContext)
         state.activityContext=nil
-        return self:_rejectBeforeStart(request,target,"FAILED","TERMINAL_EGRESS_NATIVE_MAX_SPEED_UNAVAILABLE:"..tostring(speedReason))
+        return self:_rejectBeforeStart(request,target,"FAILED","OBSTRUCTION_RELOCATION_NATIVE_MAX_SPEED_UNAVAILABLE:"..tostring(speedReason))
     end
 
     state.startX=position.x; state.startZ=position.z
@@ -317,11 +317,11 @@ function Control:update(dt)
     local state=self.active
     if state==nil then return end
     state.lastDt=dt
-    if self.runtime.boundedAuthority:isCurrent(state.boundedAuthorityId)~=true then self:_complete("FAILED",{kind="TERMINAL_EGRESS_CONTROL_FAILURE",reason="BOUNDED_AUTHORITY_LOST"}); return end
-    if tokenFor(self.runtime,state)==nil then self:_complete("FAILED",{kind="TERMINAL_EGRESS_CONTROL_FAILURE",reason="AUTHORITY_TOKEN_LOST"}); return end
+    if self.runtime.boundedAuthority:isCurrent(state.boundedAuthorityId)~=true then self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="BOUNDED_AUTHORITY_LOST"}); return end
+    if tokenFor(self.runtime,state)==nil then self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="AUTHORITY_TOKEN_LOST"}); return end
 
     local vehicle=self:_vehicle(state.assemblyReferenceKey)
-    if vehicle==nil then self:_complete("FAILED",{kind="TERMINAL_EGRESS_CONTROL_FAILURE",reason="CURRENT_PHYSICAL_OBJECT_LOST"}); return end
+    if vehicle==nil then self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="CURRENT_PHYSICAL_OBJECT_LOST"}); return end
     if self.actuationMechanism:isPlayerClaimed(vehicle) then self:_complete("PLAYER_CLAIM",{kind="CURRENT_PLAYER_CLAIM"}); return end
     if self.actuationMechanism:isSourceReactivated(vehicle) then self:_complete("SUPERSEDED",{kind="CURRENT_SOURCE_AI_REACTIVATION"}); return end
 
@@ -345,12 +345,12 @@ function Control:update(dt)
         local evidence=self.configurationMechanism:getEvidence(vehicle)
         if evidence.allFolded==true then
             self:_releaseConfigurationOwnership(vehicle,state)
-            self:_complete("COMPACTION_COMPLETE",{kind="TERMINAL_EGRESS_COMPACTION",mode="COMPACTED",configurationEvidence=evidence})
+            self:_complete("COMPACTION_COMPLETE",{kind="OBSTRUCTION_RELOCATION_COMPACTION",mode="COMPACTED",configurationEvidence=evidence})
             return
         end
         if elapsed>(tonumber(OuttaMyWay.TERMINAL_EGRESS_COMPACTION_TIMEOUT_MS) or 25000) then
             self:_releaseConfigurationOwnership(vehicle,state)
-            self:_complete("FAILED",{kind="TERMINAL_EGRESS_CONTROL_FAILURE",reason="COMPACTION_WATCHDOG_EXPIRED",configurationEvidence=evidence})
+            self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="COMPACTION_WATCHDOG_EXPIRED",configurationEvidence=evidence})
             return
         end
         self:_publish(state,"COMPACTION_IN_PROGRESS",{configurationEvidence=evidence})
@@ -358,13 +358,13 @@ function Control:update(dt)
     end
 
     local position=self.actuationMechanism:position(vehicle)
-    if position==nil then self:_complete("FAILED",{kind="TERMINAL_EGRESS_CONTROL_FAILURE",reason="NON_JOB_POSE_LOST"}); return end
+    if position==nil then self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="NON_JOB_POSE_LOST"}); return end
     local dx,dz=position.x-state.startX,position.z-state.startZ
     local realisedProgress=dx*state.infieldDirectionX+dz*state.infieldDirectionZ
     local targetDistance=distanceTo(position.x,position.z,state.targetX,state.targetZ)
     if realisedProgress>=state.targetProgressM then
         self:_complete("MANOEUVRE_COMPLETE",{
-            kind="TERMINAL_EGRESS_MANOEUVRE_COMPLETE",courtesyStage=state.courtesyStage,
+            kind="OBSTRUCTION_RELOCATION_MANOEUVRE_COMPLETE",courtesyStage=state.courtesyStage,
             destinationKind=state.destinationKind,targetX=state.targetX,targetZ=state.targetZ,
             targetProgressM=state.targetProgressM,realisedProgressM=realisedProgress,
             finalTargetDistanceM=targetDistance,fixedDirectionX=state.infieldDirectionX,fixedDirectionZ=state.infieldDirectionZ,
@@ -373,7 +373,7 @@ function Control:update(dt)
         return
     end
     if elapsed>(tonumber(OuttaMyWay.TERMINAL_EGRESS_MOVE_TIMEOUT_MS) or 45000) then
-        self:_complete("FAILED",{kind="TERMINAL_EGRESS_CONTROL_FAILURE",reason="BOUNDED_MOVE_WATCHDOG_EXPIRED",courtesyStage=state.courtesyStage,realisedProgressM=realisedProgress,targetProgressM=state.targetProgressM})
+        self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="BOUNDED_MOVE_WATCHDOG_EXPIRED",courtesyStage=state.courtesyStage,realisedProgressM=realisedProgress,targetProgressM=state.targetProgressM})
         return
     end
 
@@ -381,7 +381,7 @@ function Control:update(dt)
     if not ok then
         if result=="PLAYER_CLAIM" then self:_complete("PLAYER_CLAIM",{kind="CURRENT_PLAYER_CLAIM"})
         elseif result=="SOURCE_INTENT_REACTIVATED" then self:_complete("SUPERSEDED",{kind="CURRENT_SOURCE_AI_REACTIVATION"})
-        else self:_complete("FAILED",{kind="TERMINAL_EGRESS_CONTROL_FAILURE",reason=tostring(result)}) end
+        else self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason=tostring(result)}) end
         return
     end
     state.actuationIssued=true

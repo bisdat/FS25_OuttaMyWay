@@ -23,8 +23,8 @@ local function appendRegulationControlObservation(raw, observation)
     raw.controlOutcomes[#raw.controlOutcomes+1]=observation
     return true
 end
-local function appendTerminalEgressObservation(raw,observation)
-    if type(observation)~="table" or observation.kind~="TERMINAL_EGRESS_CONTROL_OBSERVATION" then return false end
+local function appendObstructionRelocationObservation(raw,observation)
+    if type(observation)~="table" or observation.kind~="OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION" then return false end
     if not rawContainsReference(raw,observation.assemblyReferenceKey) then return false end
     raw.controlOutcomes=raw.controlOutcomes or {}
     raw.controlOutcomes[#raw.controlOutcomes+1]=observation
@@ -67,10 +67,10 @@ function Coordinator:update(dt)
     if self.diagnosticObserver and type(self.diagnosticObserver.beginRuntimeCycle)=="function" then due=self.diagnosticObserver:beginRuntimeCycle(self.source:getLastDiagnostics(),nowMilliseconds)==true end
     local records={}
     local regulationControlObservation=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getRegulationControlObservation() or nil
-    local terminalEgressObservation=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getTerminalEgressObservation() or nil
+    local obstructionRelocationObservation=self.runtime and self.runtime.liveControlDispatcher and self.runtime.liveControlDispatcher:getObstructionRelocationObservation() or nil
     for _,raw in OuttaMyWay.ValueRecord.ipairs(observations) do
         appendRegulationControlObservation(raw,regulationControlObservation)
-        appendTerminalEgressObservation(raw,terminalEgressObservation)
+        appendObstructionRelocationObservation(raw,obstructionRelocationObservation)
         local ok,live=pcall(self.runtime.processLiveObservation,self.runtime,raw)
         if ok then
             if self.diagnosticObserver and type(self.diagnosticObserver.observeRuntimeResult)=="function" then

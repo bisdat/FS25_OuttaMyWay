@@ -4140,3 +4140,46 @@ current `assemblyRepresentation` Future-Space interface.
 Responsibility, Bounded Authority or Control semantics change. This is not a
 repository-wide Shadow purge, does not move #87 Configuration identifiers and
 does not rename `TerminalEgress*`.
+
+## 2026-09-10 — Issue #112 `.46` Obstruction Relocation Control naming selected
+
+**Observe:** after accepted PR #119 (`05aba26a4d91434b69b1ea7e03f872c29c7bcf9e`), the exact shared-Control
+dependency census found the donor-era `TerminalEgressControl` family across 25
+unique files: 7 active production/diagnostic files and 10 validation/workflow
+consumers, including the explicit offline-validation source manifest. The same
+Control receives opaque completion context from both `COMPLETED_OBSTRUCTION` and
+`CURRENT_CAUSAL_OBSTRUCTION` and does not own either trigger's semantic
+Responsibility.
+
+**Historical reconciliation:** Phase 13 had introduced a separate
+`ObstructionRelocationControl`. Phase 14.6A / PR #88 disproved the need for two
+physical executors and retired that duplicate, consolidating both paths into one
+provenance-neutral executor that survived under the older
+`TerminalEgressControl` name.
+
+**Discovery:**
+
+> **Retired Duplicate Module != Retired Responsibility Name**
+
+> **Single Executor Topology != Donor-Named Executor**
+
+The old structural assertions that `ObstructionRelocationControl.lua` must not
+exist protected the *absence of a second executor*, not permanent ownership of
+the donor-era filename.
+
+**Decision:** select `0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING`. Rename the one surviving executor,
+execution target, shared observation/outcome vocabulary, dispatcher/Runtime
+interface and validation topology to **Obstruction Relocation Control** while
+keeping exactly four root Control modules.
+
+**Protected boundary:** `TerminalOccupancyAssessment`,
+`TerminalEgressCandidateSupport`, `TerminalEgressCommitmentLifecycle`,
+`terminalEgressBridge`, `onTerminalEgressCompletion(...)`, `terminalEpisodeId`
+and D-0147 two-stage courtesy semantics remain completed-obstruction-specific.
+The #87 Configuration identifiers `AUTOMATIC_TERMINAL_EGRESS`,
+`TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M`,
+`TERMINAL_EGRESS_COMPACTION_TIMEOUT_MS` and
+`TERMINAL_EGRESS_MOVE_TIMEOUT_MS` are deliberately not renamed or moved here.
+
+No gameplay, geometry, authority, Candidate, Decision, Responsibility,
+Commitment, Bounded Authority or physical actuation behaviour change is intended.
