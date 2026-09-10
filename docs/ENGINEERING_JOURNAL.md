@@ -1,3 +1,100 @@
+## 2026-09-10 — Issue #100 `.41` runtime contracts pass; focused fixture schema corrected
+
+**Validate:** protected CI for
+`a4bc19359ba1854a76d8750e1108743de5e5edb7` produced a materially different
+result from disproven `.40`:
+
+- Structural contracts passed.
+- changed runtime Lua syntax passed.
+- the main replacement-core Lua harness passed **342 / 0**.
+- the focused obstruction-relocation harness passed 4 tests and failed 5.
+
+All five focused failures occurred while constructing the same test
+`OperationalPicture`: its shared fixture helper still supplied the retired
+`encounters={}` schema field and omitted required `currentPairAssessmentScope`.
+The obstruction-relocation assertions themselves were not reached.
+
+> **Fixture Schema Migration != Behavioural Regression**
+
+**Implement:** migrate that one shared focused fixture constructor to
+`currentPairAssessmentScope={}`. No executable source changes are made, so the
+current TEST identity remains
+**`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
+
+**Validate next:** rerun both protected checks. Acceptance still requires
+independent patch review and GIANTS Reality validation; no merge is implied by
+offline success.
+
+## 2026-09-10 — Issue #100 `.40` disproven by CI; `.41` correction
+
+**Validate `.40`: DISPROVEN.** PR #113 protected CI rejected commit
+`9588c1e8c2dd695261d7a5de833af5567ec2bf6d`.
+
+Independent patch review and CI identified a systematic implementation-script
+splice defect: replacement payloads repeated preserved end anchors. This produced
+malformed/duplicated declarations in `SituationAssessment`,
+`LocalPassagePlanner` and `LiveTrafficCandidateSupport`, plus duplicated
+documentation boundary text. CI stopped changed-runtime syntax at
+`LiveTrafficCandidateSupport.lua:74`. Structural validation independently found
+one older bounded-interaction diagnostic contract still requiring retired
+Encounter telemetry. Review also found `PassiveLiveValidator:deleteMap()` still
+calling the removed Transition HUD.
+
+> **Disproven Implementation != Disproven Architecture**
+
+> **Patch Boundary Marker != Replacement Payload**
+
+The failed build did not reach the Lua behavioural harness, so it provides no
+evidence for or against Current Pair Assessment Scope behaviour.
+
+**Implement `.41`:** correct only the proven splice/telemetry-contract defects,
+retain the #100 Current Pair Assessment Scope architecture and behaviour intent,
+and advance to the fresh pushed TEST identity
+**`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`** as required by Build
+Identity governance.
+
+**Validate next:** protected structural contracts and the complete Lua offline
+behavioural harness must both pass before any GIANTS Reality test is considered.
+
+## 2026-09-10 — Issue #100 Current Pair Assessment Scope implementation candidate
+
+**Observe:** accepted `.39` `EncounterRegistry` combined exact pair/Job-Episode
+bookkeeping with last-positive spatial evidence retention. Situation republished
+that retained positive state while Passage used it only as a conservative veto.
+The service sweep found exact current participants already owned by Operation /
+Job Episode admission, unresolved Regulation continuity already owned by Current
+Responsibility, and committed pair persistence already owned by Passage Bubble /
+Leg obligations.
+
+**Discuss / Hypothesise:** adopt **Current Pair Assessment Scope** as ephemeral
+Situation context rebuilt from the current Operation and exact active Job
+Episodes on every Operational Picture.
+
+> **Current Pair Assessment Scope != Persistent Pair History**
+
+> **Evidence Continuity != Evidence Freshness**
+
+> **Absence Is Not Separation**
+
+> **Unresolved Evidence Is Non-Authority, Not Universal Prohibition**
+
+Fresh current-space positive interaction remains a conservative pre-contact
+Passage veto. Generic unresolved evidence grants no permission but does not
+override independently supported purpose-specific Passage geometry/constraints.
+
+**Implement:** `.40 TEST — CURRENT PAIR ASSESSMENT SCOPE` replaces the live
+Encounter registry with ephemeral current-pair scope, moves Passage exact Job
+Episode provenance to that scope, removes broad Encounter situation
+dependencies, and migrates direct passive diagnostics, passive Candidate observation gating,
+replay telemetry and Runtime status telemetry away from Encounter lifecycle vocabulary. The obsolete Encounter Transition test HUD is removed.
+#101 remains separate retirement/naming cleanup.
+
+**Validate next:** protected structural and Lua behavioural contracts must prove
+loss-of-positive -> UNRESOLVED, Job Episode replacement freshness, duplicate
+evidence collapse, fresh current-intersection veto, positive Current/Future
+evidence propagation, and unchanged Follower / Forward Intersection / Passage
+responsibility behavior. GIANTS Reality remains required before acceptance.
+
 ## 2026-09-09 — Issue #98 accepted; Encounter reconciliation becomes active boundary
 
 **Validate:** PR #108 was independently revalidated after PR #110 corrected the

@@ -236,13 +236,12 @@ local function normalizeDemand(values, map)
     return result
 end
 
-function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, encounters, commitments, obligations, terminalOccupancyAssessment, causalObstructionAssessment)
+function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, commitments, obligations, terminalOccupancyAssessment, causalObstructionAssessment)
     local self = setmetatable({}, Assessment)
     self.identities = identityRegistry
     self.epochs = epochSequence
     self.jobEpisodes = jobEpisodes
     self.operations = operations
-    self.encounters = encounters
     self.commitments = commitments
     self.obligations = obligations
     self.terminalOccupancyAssessment=terminalOccupancyAssessment
@@ -377,58 +376,23 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         table.sort(situation.futureSpaceRelationships,function(a,b) return tostring(a.interactionReferenceKey)<tostring(b.interactionReferenceKey) end)
     end
 
-    local positiveEncounterItems = {}
-    local interactionEvidenceByKey = {}
-    for _, item in OuttaMyWay.ValueRecord.ipairs(snapshot.geometry.interactionEvidence or {}) do
-        if item.interactionReferenceKey~=nil then interactionEvidenceByKey[item.interactionReferenceKey]=item end
-        local subject = resolveAssembly(map,item,"subjectAssemblyReferenceKey")
-        local other = resolveAssembly(map,item,"otherAssemblyReferenceKey")
+    local interactionEvidenceByKey={}
+    for _,item in OuttaMyWay.ValueRecord.ipairs(snapshot.geometry.interactionEvidence or {}) do
+        local subject=resolveAssembly(map,item,"subjectAssemblyReferenceKey")
+        local other=resolveAssembly(map,item,"otherAssemblyReferenceKey")
         relevant[#relevant+1]=subject; relevant[#relevant+1]=other
-        if item.currentSpaceIntersects == true or item.futureSpaceConverges == true then
-            if item.interactionReferenceKey == nil then error("interaction evidence requires interactionReferenceKey",2) end
-            local operationId = activeOperationIds[1]
-            if operationId == nil then error("encounter evidence requires an active Operation",2) end
-            positiveEncounterItems[#positiveEncounterItems+1]={
-                operationId=operationId,interactionReferenceKey=item.interactionReferenceKey,
-                subjectAssemblyId=subject,otherAssemblyId=other,
-                relationship=item.relationship or (item.currentSpaceIntersects == true and "CURRENT_SPACE_INTERACTION" or "FUTURE_SPACE_CONVERGENCE"),
-                evidence={
-                    interactionReferenceKey=item.interactionReferenceKey,
-                    currentSpaceIntersects=item.currentSpaceIntersects == true,
-                    futureSpaceConverges=item.futureSpaceConverges == true,
-                    horizon=item.horizon,provenance=item.provenance
-                }
-            }
-        end
+        if item.interactionReferenceKey==nil then error("interaction evidence requires interactionReferenceKey",2) end
+        local pairKey=OuttaMyWay.LiveInteractionObservation.pairReferenceKey(
+            item.subjectAssemblyReferenceKey,item.otherAssemblyReferenceKey)
+        interactionEvidenceByKey[pairKey]=item
     end
 
-    local encounterReconciliation=self.encounters:reconcile(snapshot,episodeResult,operationResult,positiveEncounterItems)
-    local positiveObservedByIdentity={}
-    for _,transition in OuttaMyWay.ValueRecord.ipairs(encounterReconciliation.transitions) do
-        if transition.positiveObservedThisAssessment==true then positiveObservedByIdentity[transition.encounterIdentity]=true end
+    local currentPairAssessmentScope=OuttaMyWay.CurrentPairAssessmentScope.build(
+        snapshot,activeOperationIds,self.operations,self.jobEpisodes)
+    local pairScopeByReference={}
+    for _,pair in OuttaMyWay.ValueRecord.ipairs(currentPairAssessmentScope) do
+        pairScopeByReference[pair.pairReferenceKey]=pair
     end
-    local encounters = {}
-    local encounterByInteractionKey = {}
-    for _,record in OuttaMyWay.ValueRecord.ipairs(encounterReconciliation.activeRecords) do
-        local last=record.lastPositiveEvidence
-        local encounter={
-            identity=record.identity,operationId=record.operationId,
-            subjectAssemblyId=record.subjectAssemblyId,otherAssemblyId=record.otherAssemblyId,
-            subjectJobEpisodeId=record.subjectJobEpisodeId,otherJobEpisodeId=record.otherJobEpisodeId,
-            episodeSignature=record.episodeSignature,relationship=record.relationship,lifecycleState=record.status,
-            evidence={
-                interactionReferenceKey=record.interactionReferenceKey,
-                currentSpaceIntersects=last.currentSpaceIntersects==true,
-                futureSpaceConverges=last.futureSpaceConverges==true,
-                horizon=last.horizon,provenance=last.provenance,
-                positiveObservedThisAssessment=positiveObservedByIdentity[record.identity]==true,
-                lastPositiveObservationSnapshotId=last.provenance and last.provenance.observationSnapshotId or nil
-            }
-        }
-        encounters[#encounters+1]=encounter
-        encounterByInteractionKey[record.interactionReferenceKey]=encounter
-    end
-    table.sort(encounters,function(a,b) return a.identity < b.identity end)
 
     local responsibilityRelations = {}
     for _, item in OuttaMyWay.ValueRecord.ipairs(snapshot.motion.closureEvidence or {}) do
@@ -501,24 +465,25 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         local subjectOperation=operationByAssembly[subject]
         local otherOperation=operationByAssembly[other]
         local sameOperation=subjectOperation~=nil and subjectOperation==otherOperation
+        local pairScope=pairScopeByReference[item.pairReferenceKey]
         local received=interactionEvidenceByKey[item.pairReferenceKey]~=nil
-        local encounter=encounterByInteractionKey[item.pairReferenceKey]
         local subjectFitness=representationByAssembly[subject]
         local otherFitness=representationByAssembly[other]
         local pipeline=copyValue(item)
-        pipeline.subjectAssemblyId=subject
-        pipeline.otherAssemblyId=other
+        pipeline.subjectAssemblyId=subject; pipeline.otherAssemblyId=other
         pipeline.sameOperation=sameOperation
         pipeline.operationId=sameOperation and subjectOperation or nil
         pipeline.interactionEvidenceReceived=received
-        pipeline.encounterCreated=encounter~=nil
-        pipeline.encounterActive=encounter~=nil
-        pipeline.encounterPositiveObservedThisAssessment=encounter and encounter.evidence.positiveObservedThisAssessment==true or false
-        pipeline.encounterIdentity=encounter and encounter.identity or nil
-        pipeline.encounterRelationship=encounter and encounter.relationship or nil
+        pipeline.currentPairScopePresent=pairScope~=nil
+        pipeline.currentPairRelationshipStatus=pairScope and pairScope.relationshipStatus or nil
+        pipeline.currentSpaceStatus=pairScope and pairScope.currentSpaceStatus or nil
+        pipeline.futureSpaceStatus=pairScope and pairScope.futureSpaceStatus or nil
+        pipeline.subjectJobEpisodeId=pairScope and pairScope.subjectJobEpisodeId or nil
+        pipeline.otherJobEpisodeId=pairScope and pairScope.otherJobEpisodeId or nil
         pipeline.subjectRepresentationFitnessState=subjectFitness and subjectFitness.state or nil
         pipeline.otherRepresentationFitnessState=otherFitness and otherFitness.state or nil
-        pipeline.episodeSignature=tostring(item.subjectSourceJobToken).."|"..tostring(item.otherSourceJobToken)
+        pipeline.episodeSignature=pairScope and pairScope.episodeSignature
+            or (tostring(item.subjectSourceJobToken).."|"..tostring(item.otherSourceJobToken))
         pairPipeline[#pairPipeline+1]=pipeline
         pairByReference[item.pairReferenceKey]=pipeline
         if sameOperation and item.subjectActive==true and item.otherActive==true and item.evaluated~=true then
@@ -527,38 +492,28 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         if item.interactionEvidenceEmitted==true and not received then
             appendContradiction(diagnosticContradictions,"INTERACTION_EVIDENCE_HANDOFF_LOST",{pairReferenceKey=item.pairReferenceKey,operationId=subjectOperation})
         end
-        if received and encounter==nil then
-            appendContradiction(diagnosticContradictions,"INTERACTION_EVIDENCE_WITHOUT_ENCOUNTER",{pairReferenceKey=item.pairReferenceKey,operationId=subjectOperation})
+        if received and pairScope==nil then
+            appendContradiction(diagnosticContradictions,"INTERACTION_EVIDENCE_WITHOUT_CURRENT_PAIR_SCOPE",{pairReferenceKey=item.pairReferenceKey,operationId=subjectOperation})
         end
-        if sameOperation and item.subjectBlocked==true and item.otherBlocked==true and encounter==nil then
-            appendContradiction(diagnosticContradictions,"BOTH_WORKERS_BLOCKED_WITHOUT_ENCOUNTER",{pairReferenceKey=item.pairReferenceKey,operationId=subjectOperation})
+        if sameOperation and item.subjectBlocked==true and item.otherBlocked==true
+            and (pairScope==nil or pairScope.relationshipStatus~="POSITIVE") then
+            appendContradiction(diagnosticContradictions,"BOTH_WORKERS_BLOCKED_WITH_UNRESOLVED_CURRENT_PAIR",{pairReferenceKey=item.pairReferenceKey,operationId=subjectOperation})
         end
     end
     table.sort(pairPipeline,function(a,b) return tostring(a.pairReferenceKey)<tostring(b.pairReferenceKey) end)
 
-    local encounterDiagnostics={}
-    for _,encounter in OuttaMyWay.ValueRecord.ipairs(encounters) do
-        local interactionReferenceKey=encounter.evidence.interactionReferenceKey
-        encounterDiagnostics[#encounterDiagnostics+1]={
-            encounterIdentity=encounter.identity,
-            pairReferenceKey=interactionReferenceKey,
-            operationId=encounter.operationId,
-            relationship=encounter.relationship,
-            lifecycleState=encounter.lifecycleState,
-            subjectAssemblyId=encounter.subjectAssemblyId,
-            otherAssemblyId=encounter.otherAssemblyId,
-            subjectJobEpisodeId=encounter.subjectJobEpisodeId,
-            otherJobEpisodeId=encounter.otherJobEpisodeId,
-            episodeSignature=encounter.episodeSignature,
-            currentSpaceIntersects=encounter.evidence.currentSpaceIntersects,
-            futureSpaceConverges=encounter.evidence.futureSpaceConverges,
-            positiveObservedThisAssessment=encounter.evidence.positiveObservedThisAssessment
+    local currentPairScopeDiagnostics={}
+    for _,pair in OuttaMyWay.ValueRecord.ipairs(currentPairAssessmentScope) do
+        currentPairScopeDiagnostics[#currentPairScopeDiagnostics+1]={
+            pairReferenceKey=pair.pairReferenceKey,operationId=pair.operationId,
+            relationshipStatus=pair.relationshipStatus,relationship=pair.relationship,
+            currentSpaceStatus=pair.currentSpaceStatus,futureSpaceStatus=pair.futureSpaceStatus,
+            subjectAssemblyId=pair.subjectAssemblyId,otherAssemblyId=pair.otherAssemblyId,
+            subjectJobEpisodeId=pair.subjectJobEpisodeId,otherJobEpisodeId=pair.otherJobEpisodeId,
+            episodeSignature=pair.episodeSignature,negativeClearanceAuthority=false
         }
-        if encounter.evidence.positiveObservedThisAssessment==true and interactionEvidenceByKey[interactionReferenceKey]==nil then
-            appendContradiction(diagnosticContradictions,"POSITIVE_ENCOUNTER_WITHOUT_CURRENT_INTERACTION_EVIDENCE",{pairReferenceKey=interactionReferenceKey,encounterIdentity=encounter.identity,operationId=encounter.operationId})
-        end
     end
-    table.sort(encounterDiagnostics,function(a,b) return tostring(a.encounterIdentity)<tostring(b.encounterIdentity) end)
+    table.sort(currentPairScopeDiagnostics,function(a,b) return tostring(a.pairReferenceKey)<tostring(b.pairReferenceKey) end)
 
     local assemblyDiagnostics={}
     for _,item in OuttaMyWay.ValueRecord.ipairs(sourceDiagnostics.assemblyDiagnostics or {}) do
@@ -592,14 +547,11 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
             interactionEvidenceEmittedCount=sourceCounters.interactionEvidenceEmittedCount or 0,
             interactionEvidenceReceivedCount=OuttaMyWay.ValueRecord.length(snapshot.geometry.interactionEvidence or {}),
             operationSituationCount=#situations,
-            encounterCreatedCount=#encounters,
-            activeEncounterCount=#encounters,
-            encounterLifecycleTransitionCount=#encounterReconciliation.transitions
+            currentPairAssessmentCount=#currentPairAssessmentScope
         },
         assemblyDiagnostics=assemblyDiagnostics,
         pairPipeline=pairPipeline,
-        encounterDiagnostics=encounterDiagnostics,
-        encounterLifecycleTransitions=encounterReconciliation.transitions,
+        currentPairScopeDiagnostics=currentPairScopeDiagnostics,
         contradictions=diagnosticContradictions,
         provenance={source="SituationAssessment diagnostic handoff",observationSnapshotId=snapshot.identity}
     }
@@ -726,7 +678,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         futureSpaceEvidenceCount=#futureSpace,
         demandEvidenceCount=#demand.committedDemand + #demand.potentialDemand + #demand.temporarySlack,
         representationEvidenceCount=#representationFitness,
-        interactionEvidenceCount=#encounters,
+        interactionEvidenceCount=OuttaMyWay.ValueRecord.length(snapshot.geometry.interactionEvidence or {}),
         provenance={observationSnapshotId=snapshot.identity}
     }
 
@@ -735,7 +687,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         epoch=self.epochs:next(),
         observationSnapshotId=snapshot.identity,
         situations=situations,
-        encounters=encounters,
+        currentPairAssessmentScope=currentPairAssessmentScope,
         identities={
             assemblies=sortedUnique(assemblyIds),
             components=sortedUnique(componentIds),

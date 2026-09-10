@@ -423,7 +423,7 @@ local function passageLossForOpenLeg(runtime,record,obligation,ended,snapshot,ep
         return {
             assemblyId=assemblyId,jobEpisodeId=jobEpisodeId,endedJobEpisodeId=jobEpisodeId,
             evidence={
-                kind=kind,commitmentId=record.identity,encounterIdentity=recordBasis.dependentEncounterId,
+                kind=kind,commitmentId=record.identity,pairReferenceKey=recordBasis.dependentPairReferenceKey,
                 endedJobEpisodeId=jobEpisodeId,participantJobEpisodeId=jobEpisodeId,
                 jobEpisodeTerminalCause=terminalCause,dependentJobEpisodeIds=recordBasis.dependentJobEpisodeIds,
                 observationSnapshotId=observationSnapshotId,basisCessation=true,
@@ -522,7 +522,7 @@ function Lifecycle.applyCooperativePassageParticipantLosses(runtime,episodeResul
                             outcomes[#outcomes+1]={
                                 commitmentId=record.identity,
                                 terminalState=settled.commitment and settled.commitment.state or nil,
-                                encounterIdentity=record.governingBasis and record.governingBasis.dependentEncounterId or nil,
+                                pairReferenceKey=record.governingBasis and record.governingBasis.dependentPairReferenceKey or nil,
                                 endedJobEpisodeId=loss.endedJobEpisodeId,participantJobEpisodeId=loss.jobEpisodeId,
                                 vacatedAssemblyId=loss.assemblyId,participantLossKind=loss.evidence.kind,
                                 settledObligationIds=settled.settledObligationId and {settled.settledObligationId} or {},
@@ -530,8 +530,8 @@ function Lifecycle.applyCooperativePassageParticipantLosses(runtime,episodeResul
                                 partialPassageBasisCessation=true,survivorAuthority=survivorAuthority,
                                 failureReason=survivorFailure
                             }
-                            logInfo("COOPERATIVE_PASSAGE_LEG_VACATED commitment=%s encounter=%s jobEpisode=%s assembly=%s loss=%s terminal=%s survivorAuthority=%s",
-                                tostring(record.identity),tostring(record.governingBasis and record.governingBasis.dependentEncounterId or "NONE"),
+                            logInfo("COOPERATIVE_PASSAGE_LEG_VACATED commitment=%s pair=%s jobEpisode=%s assembly=%s loss=%s terminal=%s survivorAuthority=%s",
+                                tostring(record.identity),tostring(record.governingBasis and record.governingBasis.dependentPairReferenceKey or "NONE"),
                                 tostring(loss.jobEpisodeId),tostring(loss.assemblyId),tostring(loss.evidence.kind),
                                 tostring(settled.terminal and settled.terminal.state or "NO"),tostring(survivorAuthority and survivorAuthority.boundedAuthorityId or "NO"))
                         end
@@ -563,7 +563,7 @@ function Lifecycle.collapseEndedJobEpisodeDependencies(runtime,episodeResult,sna
                 local settlementEvidence={
                     kind="JOB_EPISODE_DEPENDENCY_CEASED",
                     commitmentId=record.identity,
-                    encounterIdentity=basis.dependentEncounterId,
+                    pairReferenceKey=basis.dependentPairReferenceKey,
                     endedJobEpisodeId=endedDependentEpisodeId,
                     dependentJobEpisodeIds=basis.dependentJobEpisodeIds,
                     observationSnapshotId=snapshot and snapshot.identity or episodeResult.observationSnapshotId,
@@ -584,12 +584,12 @@ function Lifecycle.collapseEndedJobEpisodeDependencies(runtime,episodeResult,sna
                 local settling=runtime.terminalSettlementEvaluator:enterSettling(record.identity,verdict)
                 local terminal=runtime.terminalSettlementEvaluator:attemptTerminal(record.identity,settlementEvidence)
                 collapsed[#collapsed+1]={
-                    commitmentId=record.identity,terminalState=terminal.state,encounterIdentity=basis.dependentEncounterId,
+                    commitmentId=record.identity,terminalState=terminal.state,pairReferenceKey=basis.dependentPairReferenceKey,
                     endedJobEpisodeId=endedDependentEpisodeId,settledObligationIds=settledIds,
                     releasedAuthorityTokenIds=settling.releasedAuthorityTokenIds or {}
                 }
-                logInfo("JOB_EPISODE_DEPENDENCY_COLLAPSE commitment=%s encounter=%s endedEpisode=%s obligations=%d releasedAuthority=%d terminal=%s",
-                    tostring(record.identity),tostring(basis.dependentEncounterId or "NONE"),tostring(endedDependentEpisodeId),
+                logInfo("JOB_EPISODE_DEPENDENCY_COLLAPSE commitment=%s pair=%s endedEpisode=%s obligations=%d releasedAuthority=%d terminal=%s",
+                    tostring(record.identity),tostring(basis.dependentPairReferenceKey or "NONE"),tostring(endedDependentEpisodeId),
                     #settledIds,#(settling.releasedAuthorityTokenIds or {}),tostring(terminal.state))
             end
         end

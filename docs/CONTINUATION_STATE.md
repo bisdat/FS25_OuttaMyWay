@@ -6,11 +6,11 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline: `main` after PR #108 merge, commit
-  `b7e236955fd63b06d2b054bd25e8faaebbd78107`.
+- Accepted Repository State baseline: `main` after PR #111 merge, commit
+  `40c3a3f01b9d691b8b6b95d007be59173640cdea`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted executable identity is
-  **`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`**.
+- This Engineering Increment carries
+  **`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
@@ -76,20 +76,38 @@ diagnostic directionality and live documentation responsibility.
 
 ### Remaining reconciliation Issues
 
-- **#100 — Encounter reconciliation**
+- **#100 — Current Pair Assessment Scope reconciliation**
   - **Current Pair Assessment Scope != Persistent Pair History**.
-  - Current architecture rejects Persistent Pair-First / Encounter History,
-    while `EncounterRegistry` remains a retained pair object carrying
-    last-positive relationship evidence.
-  - The audit disproved the unsafe interpretation that retained positive
-    interaction evidence creates fresh Passage authority. Reconciliation must
-    preserve unresolved-evidence safety while removing the rejected concept.
+  - **Evidence Continuity != Evidence Freshness**.
+  - **Absence Is Not Separation**.
+  - **Unresolved Evidence Is Non-Authority, Not Universal Prohibition**.
+  - Accepted design rebuilds current pair scope from the active Operation and
+    exact active Job Episodes on every Operational Picture.
+  - Generic interaction evidence is current `POSITIVE` or `UNRESOLVED`; no
+    last-positive pair state survives.
+  - Accepted Regulation/Resolution responsibility owns justified continuity
+    after admission; Passage Bubble remains post-commit pairwise owner.
+  - `.41` implements this design. Protected Structural and Lua offline
+    behavioural contracts are green, and owner-run GIANTS Reality produced an
+    apparent PASS in both a cold-start and warm-start smoke run.
+  - Warm Reality directly exercised positive -> `UNRESOLVED` pair evidence,
+    Regulation QUIESCENT -> REACTIVATED continuity, purpose-specific Passage
+    admission while generic pair evidence was unresolved, two successful
+    Cooperative Passages, and current pair-scope disappearance after one Job
+    Episode ended while the surviving committed Passage Leg completed normally.
+  - No known merge-blocking #100 contradiction remains; PR #113 is still
+    unmerged and requires explicit owner acceptance.
 
 - **#101 — orphaned / stranded semantic residue**
   - Guarded Recovery compatibility has no demonstrated live production ingress.
   - A stale completed-obstruction Control-observation consumer remains.
   - `FOLLOWER_OWNS_CLOSURE` remains stranded Constraint semantics.
   - Obstruction RTA API naming remains stale defensive/naming debt.
+  - `.41` Reality/log review additionally found two stranded Runtime reads of
+    retired `bridge.encounterIdentity`: an inert Passage Control-target field
+    and the `COOPERATIVE_CONSTRAINT_VERDICT encounter=n/a` diagnostic. They
+    carry no demonstrated authority and are recorded on #101 for dependency-
+    proven retirement rather than reopening #100.
   - These are retirement/naming questions, not demonstrated gameplay defects.
 
 ### Disproven audit finding
@@ -158,23 +176,19 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Begin **Issue #100 — Encounter reconciliation** with architecture/design before
-implementation.
+Complete the **owner acceptance decision for PR #113 / Issue #100**.
 
-Protect the audit distinction:
+`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION` now has green protected
+offline validation and targeted cold/warm GIANTS Reality evidence supporting the
+Current Pair Assessment Scope architecture. No known merge-blocking #100
+contradiction remains. The Reality claim remains smoke/two-worker bounded rather
+than whole-Supported-Envelope proof.
 
-> **Current Pair Assessment Scope != Persistent Pair History**
+Do not merge automatically. If the repository owner explicitly accepts and
+merges PR #113, that merge advances Accepted Repository State but does not
+canonicalise a release.
 
-and the evidence distinction:
-
-> **Evidence Continuity != Evidence Freshness**
-
-The current question is not whether `EncounterRegistry` can be deleted. It is
-which minimum current concept preserves truthful unresolved pair assessment
-without republishing last-positive evidence as fresh Reality and without
-manufacturing safe separation.
-
-After #100, unless new Reality changes the order:
+After #100 acceptance, unless new Reality changes the order:
 
 1. #101 — dependency-proven retirement/naming cleanup.
 

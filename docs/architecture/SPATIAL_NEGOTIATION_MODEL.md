@@ -14,6 +14,44 @@ Spatial Negotiation manages temporary competition for space among active support
 
 GIANTS retains AI jobs, productive routing/navigation, native turning and productive work. Spatial Negotiation does not become a route planner, agronomic scheduler or same-agronomy fleet coordinator. Least intervention is preferred; player intervention remains a legitimate final outcome when no supported autonomous resolution remains.
 
+### Current Pair Assessment Scope
+
+Within one current Local Operation, Situation Assessment enumerates unordered pairs
+from the exact currently active Job Episodes. This is **Current Pair Assessment
+Scope**: ephemeral scope for pairwise Situation questions, not a persistent
+relationship object.
+
+The scope is rebuilt from current Operation membership and exact active Job
+Episodes for every Operational Picture. It may carry current Operation, assembly
+and exact Job Episode provenance so purpose-specific assessments ask questions
+about the same current subjects.
+
+It does **not** retain a generic pair lifecycle, last-positive relationship,
+cooldown, right-of-way, responsibility or future-route ownership. When positive
+interaction evidence disappears and the relevant representation owns no negative
+conclusion, the current relationship is **UNRESOLVED**. Historical positive
+evidence is not republished as current Reality.
+
+> **Current Pair Assessment Scope != Persistent Pair History**
+
+> **Evidence Continuity != Evidence Freshness**
+
+> **Absence Is Not Separation**
+
+> **Unresolved Evidence Is Non-Authority, Not Universal Prohibition**
+
+Unresolved generic pair evidence cannot manufacture safe separation or authorise
+movement. It also does not veto an independently supported purpose-specific
+Candidate merely because the generic representation lacks negative-clearance
+authority. Fresh positive current-space interaction may conservatively block
+pre-contact Passage planning; Cooperative Passage permission remains owned by
+its purpose-specific representation, geometry and mandatory constraints.
+
+Once Regulation or Resolution has been accepted, justified continuity belongs to
+that Current Responsibility and its obligations. A Cooperative Passage Bubble
+remains the post-commit pairwise persistence owner; Current Pair Assessment Scope
+does not survive as a parallel lifecycle object.
+
 ## 2. Spatial governing constraints
 
 1. **Partial observability is permanent.** Future GIANTS intent is not generally known while a worker is `TURNING`.

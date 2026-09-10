@@ -42,7 +42,7 @@ local function picture(ids, epochs, values)
         identity=values.identity or ids:issue("PICTURE"),
         epoch=values.epoch or epochs:next(),
         observationSnapshotId=values.observationSnapshotId or "OS-TEST",
-        situations={},encounters={},identities={assemblies={},components={},jobEpisodes={active={},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
+        situations={},currentPairAssessmentScope={},identities={assemblies={},components={},jobEpisodes={active={},admitted={},ended={}},operations={active={"OR-1"},ended={}}},
         currentSpace={},futureSpace={},
         demand={committedDemand={},potentialDemand={},temporarySlack={}},
         responsibilityRelations={},uncertainty={},representationFitness={},

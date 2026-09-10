@@ -23,7 +23,6 @@ end
 local function situationDependencies(picture)
     local result = {}
     for _, situation in OuttaMyWay.ValueRecord.ipairs(picture.situations or {}) do result[#result+1] = situation.identity end
-    for _, encounter in OuttaMyWay.ValueRecord.ipairs(picture.encounters or {}) do result[#result+1] = encounter.identity end
     table.sort(result)
     return result
 end

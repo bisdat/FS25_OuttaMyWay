@@ -20,7 +20,7 @@ function Support:buildProjectedGroup(picture,snapshot,targetPictureId,targetEpoc
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
     OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
     if type(targetPictureId)~="string" or targetPictureId=="" then return nil,"TARGET_OPERATIONAL_PICTURE_ID_REQUIRED" end
-    local observe=OuttaMyWay.ValueRecord.length(snapshot.assemblies)>0 or OuttaMyWay.ValueRecord.length(snapshot.unavailableSources)>0 or OuttaMyWay.ValueRecord.length(picture.encounters)>0 or OuttaMyWay.ValueRecord.length(picture.uncertainty)>0
+    local observe=OuttaMyWay.ValueRecord.length(snapshot.assemblies)>0 or OuttaMyWay.ValueRecord.length(snapshot.unavailableSources)>0 or OuttaMyWay.ValueRecord.length(picture.currentPairAssessmentScope)>0 or OuttaMyWay.ValueRecord.length(picture.uncertainty)>0
     local capability=observe and "CONTINUE_OBSERVATION" or "CONTINUE_UNCHANGED"
     local evidence={constraintEvidence={},governingBasis={responsibilityKey="passive-live:"..targetPictureId,sourceIntentIds=picture.identities.jobEpisodes.active,operationIds=picture.identities.operations.active}}
     for _,id in OuttaMyWay.ValueRecord.ipairs(mandatory) do evidence.constraintEvidence[id]=packet("Non-actuating passive validation candidate",false) end
@@ -49,7 +49,7 @@ end
 function Support:attach(picture,snapshot)
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
     OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
-    local observe=OuttaMyWay.ValueRecord.length(snapshot.assemblies)>0 or OuttaMyWay.ValueRecord.length(snapshot.unavailableSources)>0 or OuttaMyWay.ValueRecord.length(picture.encounters)>0 or OuttaMyWay.ValueRecord.length(picture.uncertainty)>0
+    local observe=OuttaMyWay.ValueRecord.length(snapshot.assemblies)>0 or OuttaMyWay.ValueRecord.length(snapshot.unavailableSources)>0 or OuttaMyWay.ValueRecord.length(picture.currentPairAssessmentScope)>0 or OuttaMyWay.ValueRecord.length(picture.uncertainty)>0
     local capability=observe and "CONTINUE_OBSERVATION" or "CONTINUE_UNCHANGED"
     local evidence={constraintEvidence={},governingBasis={responsibilityKey="passive-live:"..picture.identity,sourceIntentIds=picture.identities.jobEpisodes.active,operationIds=picture.identities.operations.active}}
     for _,id in OuttaMyWay.ValueRecord.ipairs(mandatory) do evidence.constraintEvidence[id]=packet("Non-actuating passive validation candidate",false) end

@@ -21,11 +21,11 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline: `main` after PR #108 merge, commit
-  `b7e236955fd63b06d2b054bd25e8faaebbd78107`.
+- Accepted Repository State baseline: `main` after PR #111 merge, commit
+  `40c3a3f01b9d691b8b6b95d007be59173640cdea`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted executable identity is
-  **`0.3.0.39 TEST — FOLLOWER MAGNITUDE AUTHORITY`**.
+- This Engineering Increment carries
+  **`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 - No new TEST identity exists merely for audit closure.
@@ -44,7 +44,7 @@ Architectural meaning remains owned by the
 | Generic current physical conflict | `CurrentPhysicalConflictRepresentation.lua` | PRESERVE positive-only / no generic negative-clearance authority |
 | Passage-specific geometry | `AssemblyRepresentationCache.lua`, `PairSpecificPassageClearance.lua`, `LocalPassagePlanner.lua` | PRESERVE directional Transit Passage contract for non-truncated complete assemblies |
 | Situation Assessment | `scripts/assessment/SituationAssessment.lua` and focused assessment collaborators | PRESERVE current interpreted relationship ownership except listed drift |
-| Encounter continuity | `scripts/assessment/EncounterRegistry.lua` plus `SituationAssessment.lua` | **DRIFT #100** — persistent pair-history implementation concept rejected by current architecture |
+| Current Pair Assessment Scope | `scripts/assessment/CurrentPairAssessmentScope.lua` plus `SituationAssessment.lua` | **RECONCILIATION #100** — ephemeral current Operation/exact-Job-Episode pair scope; protected CI and targeted cold/warm GIANTS Reality apparent PASS; owner acceptance pending |
 | Follower Boundary evidence | `scripts/assessment/FollowerBoundaryDemandAssessment.lua` | PRESERVE admissible magnitude evidence/envelope; no requested Control target (#98 / PR #108) |
 | Forward Intersection / Action-Space evidence | `SpatialConstraintAssessment.lua`, `TrajectoryConflictAssessment.lua` | PRESERVE current positive/unresolved/negative semantics |
 | Causal Obstruction | `CausalObstructionAssessment.lua` | PRESERVE positive current obstruction semantics |
@@ -67,7 +67,7 @@ Architectural meaning remains owned by the
 | Terminal Egress Control | `TerminalEgressControl.lua`, `NonJobActuationMechanism.lua` | PRESERVE shared provenance-neutral executor for warm/cold obstruction movement |
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting D-0147/D-0218 movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | `GuardedRecoveryCompatibility.lua` plus synthetic test topology | **RETIRE/PROVE #101** — no demonstrated live production ingress |
-| Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality |
+| Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; retired `bridge.encounterIdentity` verdict/target consumers tracked by #101 |
 | Mixed runtime constants | `scripts/config.lua` | **SEPARATE #87** — ownership decomposition / player-developer-internal boundary |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
 
@@ -129,8 +129,8 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #100 | confirmed concept mismatch | rejected persistent pair-history concept remains as `EncounterRegistry` |
-| #101 | behaviour-preserving retirement/naming debt | orphaned Guarded Recovery, stale Control consumer, stranded Constraint semantics, defensive naming |
+| #100 | validated implementation reconciliation awaiting owner acceptance | `.41` replaces persistent Encounter lifecycle with ephemeral Current Pair Assessment Scope; protected CI and targeted cold/warm GIANTS Reality apparent PASS; PR #113 remains unmerged |
+| #101 | behaviour-preserving retirement/naming debt | orphaned Guarded Recovery, stale Control consumer, stranded Constraint semantics, defensive naming, and two non-authoritative Runtime reads of retired `bridge.encounterIdentity` exposed by `.41` Reality/log review |
 
 ## Separate accepted work / explicit limits
 
@@ -156,15 +156,17 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Begin **#100 — Encounter reconciliation** with architecture/design before
-implementation. Account for every legitimate service of `EncounterRegistry`
-before changing or removing the implementation concept.
+Complete the **owner acceptance decision for PR #113 / Issue #100**.
 
-The correction must preserve unresolved-evidence safety while establishing that
-last-positive evidence is not fresh current Reality and missing positive evidence
-does not manufacture safe separation.
+`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION` has green protected
+offline validation and targeted cold/warm GIANTS Reality evidence. No known
+merge-blocking #100 contradiction remains. The Reality claim is deliberately
+smoke/two-worker bounded rather than whole-Supported-Envelope proof.
 
-After #100, unless new Reality changes the order:
+Do not merge automatically. If the owner explicitly accepts and merges PR #113,
+Accepted Repository State advances without canonicalising a release.
+
+After #100 acceptance, unless new Reality changes the order:
 
 1. #101 — dependency-proven retirement/naming cleanup.
 

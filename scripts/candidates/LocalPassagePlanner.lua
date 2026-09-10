@@ -113,12 +113,13 @@ local function establishedConflicts(picture)
     return result
 end
 
-local function currentInteraction(picture,aId,bId)
-    for _,encounter in OuttaMyWay.ValueRecord.ipairs(picture.encounters or {}) do
-        local same=(encounter.subjectAssemblyId==aId and encounter.otherAssemblyId==bId) or (encounter.subjectAssemblyId==bId and encounter.otherAssemblyId==aId)
-        if same and encounter.evidence and encounter.evidence.currentSpaceIntersects==true then return true,encounter.identity end
+local function currentPairScope(picture,aId,bId)
+    for _,pair in OuttaMyWay.ValueRecord.ipairs(picture.currentPairAssessmentScope or {}) do
+        local same=(pair.subjectAssemblyId==aId and pair.otherAssemblyId==bId)
+            or (pair.subjectAssemblyId==bId and pair.otherAssemblyId==aId)
+        if same then return pair end
     end
-    return false,nil
+    return nil
 end
 
 local function operationMembers(picture,operationId)
@@ -704,8 +705,9 @@ local function planConflict(picture,snapshot,conflict)
     local maxSeparation=OuttaMyWay.COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M or 80.0
     if separation==nil then return nil,"CURRENT_PAIR_SEPARATION_UNRESOLVED" end
     if separation>maxSeparation then return nil,"ESTABLISHED_CONFLICT_NOT_YET_LOCAL" end
-    local interacting,encounterIdentity=currentInteraction(picture,conflict.subjectAssemblyId,conflict.otherAssemblyId)
-    if interacting then return nil,"CURRENT_PHYSICAL_INTERACTION_ALREADY_BEGUN" end
+    local pairScope=currentPairScope(picture,conflict.subjectAssemblyId,conflict.otherAssemblyId)
+    if pairScope==nil then return nil,"CURRENT_PAIR_ASSESSMENT_SCOPE_UNAVAILABLE" end
+    if pairScope.currentSpaceStatus=="POSITIVE" then return nil,"CURRENT_PHYSICAL_INTERACTION_ALREADY_BEGUN" end
     local overlap=conflict.supportedCorridorOverlap or {}
     local rightX,rightZ=tonumber(overlap.sharedRightX),tonumber(overlap.sharedRightZ)
     if rightX==nil or rightZ==nil then return nil,"SHARED_PASSAGE_FRAME_UNAVAILABLE" end
@@ -756,7 +758,7 @@ local function planConflict(picture,snapshot,conflict)
                 return {
                     status="SUPPORTED",reason="COOPERATIVE_PASSAGE_SUFFICIENT_LOCAL_ARRANGEMENT_FOUND",
                     authority="COOPERATIVE_PASSAGE_CANDIDATE_SUPPORT",
-                    conflictIdentity=conflict.identity,operationId=conflict.operationId,encounterIdentity=encounterIdentity,
+                    conflictIdentity=conflict.identity,operationId=conflict.operationId,pairReferenceKey=pairScope.pairReferenceKey,
                     assemblyIds={conflict.subjectAssemblyId,conflict.otherAssemblyId},
                     subjectAssemblyId=conflict.subjectAssemblyId,otherAssemblyId=conflict.otherAssemblyId,
                     subjectReferenceKey=aTrajectory.assemblyReferenceKey,otherReferenceKey=bTrajectory.assemblyReferenceKey,
