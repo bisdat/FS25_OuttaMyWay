@@ -118,16 +118,7 @@ function Assessment:markRetreatCompleted(terminalEpisodeId,continuationWitnessAs
     end
     self.yieldRenewalState[terminalEpisodeId]={continuationWitnessAssemblyIds=ids,continuationObserved=false}
 end
-function Assessment:_consumeControlOutcomes(snapshot)
-    for _,outcome in OuttaMyWay.ValueRecord.ipairs(snapshot.controlOutcomes or {}) do
-        if outcome.kind=="D0147_TERMINAL_EGRESS_CONTROL_OBSERVATION" and type(outcome.terminalEpisodeId)=="string" then
-            if outcome.playerClaimed==true then self.playerClaimed[outcome.terminalEpisodeId]=true end
-            if outcome.exhausted==true then self.exhausted[outcome.terminalEpisodeId]=true end
-        end
-    end
-end
 function Assessment:assess(snapshot,currentSpace,futureSpace,physicalSpaceEvidence,commitmentContext)
-    self:_consumeControlOutcomes(snapshot)
     local physical=physicalByAssembly(physicalSpaceEvidence); local future=futureByAssembly(futureSpace); local current=currentByAssembly(currentSpace); local refs=referenceByAssembly(snapshot); local motion=motionByReference(snapshot); local aiStates=aiStateByReference(snapshot)
     local activeSet={}; for _,episode in OuttaMyWay.ValueRecord.ipairs(self.jobEpisodes:list()) do if episode.status=="ACTIVE" then activeSet[episode.assemblyId]=episode end end
     local liveTerminalCommitmentByEpisode={}

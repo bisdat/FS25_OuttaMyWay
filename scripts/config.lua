@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.42 TEST — GUARDED RECOVERY ORPHAN RETIREMENT.
+-- FS25_OuttaMyWay v0.3.0.43 TEST — STRANDED LEAF SEMANTIC RETIREMENT.
 -- Completed Obstruction and current Causal Obstruction remain distinct upstream responsibilities.
 -- One provenance-neutral Terminal Egress executor consumes only current physical subject, objective and current Bounded Authority.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.42"
+OuttaMyWay.VERSION = "0.3.0.43"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -162,7 +162,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.42 TEST — GUARDED RECOVERY ORPHAN RETIREMENT"
+OuttaMyWay.BUILD_LABEL = "0.3.0.43 TEST — STRANDED LEAF SEMANTIC RETIREMENT"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985

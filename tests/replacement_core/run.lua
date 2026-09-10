@@ -963,29 +963,6 @@ test("autonomous head-on support remains passive without positive Productive Con
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"PASSIVE_LIVE_ZERO_CONTROL")
 end)
 
-test("Follower Owns Closure rejects generic Leader reposition",function()
-    local reposition=candidateSpec("leader-reposition","REPOSITION",1,"AS-00001")
-    reposition.representationFitness={requirements={{representationId="REP-A",acceptedStates={"CURRENTLY_FIT"}}}}
-    reposition.evidenceBasis.effectiveActuationComposition={identity="EC-R",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00001",commitmentId="CM-R",capability="REPOSITION",progressActuation=true}}}
-    local picture=decisionPicture({reposition},{responsibilityRelations={{relation="FOLLOWER_OWNS_CLOSURE",followerAssemblyId="AS-00002",leaderAssemblyId="AS-00001",closingRate=1,horizon=5,provenance={}}},representationFitness={{representationId="REP-A",assemblyId="AS-00001",question="REPOSITION",assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"REPOSITION"},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}}}})
-    local result=newDecisionRuntime():evaluateSealedOperationalPicture(picture)
-    local candidate=result.candidates[1]
-    equal(findVerdict(result,candidate.identity,"RESPONSIBILITY_COMPATIBILITY").result,"FAIL")
-    equal(result.decision.commitmentAction,"SETTLE")
-end)
-
-test("Candidate responsibility self-attestation cannot override Follower Owns Closure",function()
-    local reposition=candidateSpec("leader-reposition-exception","REPOSITION",1,"AS-00001")
-    reposition.evidenceBasis.responsibilityException={result="PASS",reason="explicit transfer evidence",evidence={accepted=true},provenance={source="fixture"}}
-    reposition.representationFitness={requirements={{representationId="REP-A",acceptedStates={"CURRENTLY_FIT"}}}}
-    reposition.evidenceBasis.effectiveActuationComposition={identity="EC-R2",epoch=1,relevantAssemblyIds={"AS-00001","AS-00002"},entries={{assemblyId="AS-00001",commitmentId="CM-R",capability="REPOSITION",progressActuation=true}}}
-    local picture=decisionPicture({reposition},{responsibilityRelations={{relation="FOLLOWER_OWNS_CLOSURE",followerAssemblyId="AS-00002",leaderAssemblyId="AS-00001",closingRate=1,horizon=5,provenance={}}},representationFitness={{representationId="REP-A",assemblyId="AS-00001",question="REPOSITION",assessmentHorizon=5,state="CURRENTLY_FIT",claimPermissions={"REPOSITION"},coverage={complete=true,conservative=true},uncertainty={},validityDependencies={},provenance={}}}})
-    local result=newDecisionRuntime():evaluateSealedOperationalPicture(picture)
-    equal(findVerdict(result,result.candidates[1].identity,"RESPONSIBILITY_COMPATIBILITY").result,"FAIL")
-    equal(result.decision.selectedCandidateId,nil)
-    equal(result.decision.commitmentAction,"SETTLE")
-end)
-
 test("purpose-specific Representation Fitness withholds unsupported authority",function()
     local hold=candidateSpec("hold","HOLD",1)
     hold.representationFitness={requirements={{representationId="REP-A",acceptedStates={"CURRENTLY_FIT"}}}}

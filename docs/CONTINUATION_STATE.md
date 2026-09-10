@@ -6,13 +6,15 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #114 merge, commit
-  `97bdc75f75e069678313908bff481314d15c79fc`.
+- Accepted Repository State baseline for this increment: `main` after PR #115 merge,
+  commit `9159424fcc15b7a9873b50cf9817ff35636a64e3`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
+  **`0.3.0.42 TEST — GUARDED RECOVERY ORPHAN RETIREMENT`**.
 - Current Issue #101 executable candidate is
-  **`0.3.0.42 TEST — GUARDED RECOVERY ORPHAN RETIREMENT`**; it is not accepted until CI, review, applicable Reality validation and owner merge.
+  **`0.3.0.43 TEST — STRANDED LEAF SEMANTIC RETIREMENT`**; it is not accepted
+  until independent CI, engineering review, any applicable Reality challenge
+  and owner merge.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
@@ -97,16 +99,27 @@ diagnostic directionality and live documentation responsibility.
 ### Remaining reconciliation Issue
 
 - **#101 — orphaned / stranded semantic residue**
-  - Guarded Recovery compatibility is dependency-proven as **loaded topology without production reachability**; `.42` removes that orphan implementation generation while preserving current Passage recovery/restoration obligations and shared Regulation lifecycle machinery.
-  - A stale completed-obstruction Control-observation consumer remains.
-  - `FOLLOWER_OWNS_CLOSURE` remains stranded Constraint semantics.
-  - Obstruction RTA API naming remains stale defensive/naming debt.
-  - `.41` Reality/log review additionally found two stranded Runtime reads of
-    retired `bridge.encounterIdentity`: an inert Passage Control-target field
-    and the `COOPERATIVE_CONSTRAINT_VERDICT encounter=n/a` diagnostic. They
-    carry no demonstrated authority and are recorded on #101 for dependency-
-    proven retirement rather than reopening #100.
-  - These are retirement/naming questions, not demonstrated gameplay defects.
+  - `.42` Guarded Recovery orphan-chain retirement is **ACCEPTED** by PR #115.
+    Production composition no longer carries that dependency-proven unreachable
+    implementation generation; shared Passage recovery/restoration and supporting
+    Regulation lifecycle machinery remain current.
+  - `.43` is the remaining leaf-semantic retirement candidate:
+    - delete the stale D-0147-specific Terminal Occupancy Control-observation
+      consumer without rebinding it to the current provenance-neutral producer;
+    - retire the production-unreachable `FOLLOWER_OWNS_CLOSURE`
+      Responsibility Compatibility prohibition while preserving the live
+      Situation relation; CI #291 exposed additional stale validation consumers,
+      including RF-TS016, which are reconciled to current Follower Regulation
+      semantics rather than used to restore the unreachable production rule;
+    - remove the dead Cooperative Passage `bridge.encounterIdentity` target field
+      and report the existing current `conflictIdentity` in the verdict diagnostic.
+  - The live obstruction RTA seam remains current. Its stale method name belongs
+    to **#112**, not to #101.
+  - The accidental `.42` Crossing-Window Passage jam is independently tracked by
+    **#116** and is not evidence that Guarded Recovery retirement caused a regression.
+
+These are behaviour-preserving retirement questions, not permission to redesign
+Passage, Regulation, obstruction or responsibility semantics.
 
 ### Disproven audit finding
 
@@ -174,23 +187,28 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Validate **Issue #101 `.42 — Guarded Recovery Orphan Retirement`**.
+Implement and validate **Issue #101 `.43 — Stranded Leaf Semantic Retirement`**.
 
-Dependency proof established:
+The dependency proof is complete:
 
-> **Loaded Topology != Production Reachability**
+> **Retired Producer Kind != Rename Permission**
 
-> **Recovery Debt != Guarded-Recovery Compatibility**
+> **Synthetic Constraint Witness != Production Consumer**
 
-The `.42` candidate removes only the orphan Guarded-Recovery Situation / Candidate / compatibility-Control generation and its synthetic contracts. It deliberately preserves Cooperative Passage recovery/restoration debt, shared supporting-Regulation lifecycle helpers, Follower Boundary, Forward Intersection / Action-Space Regulation, obstruction responsibilities, Current Pair Assessment Scope and all GIANTS job ownership.
+The `.43` candidate removes only stranded consumers/authority assertions whose
+current producer or production-reachable Candidate shape is absent. It preserves
+current `FOLLOWER_OWNS_CLOSURE` Situation Knowledge, Follower Boundary,
+Cooperative Passage, Terminal/Causal Obstruction responsibilities, all GIANTS job
+ownership, and the live obstruction RTA seam.
 
 Validation order:
 
 1. implementation-local syntax/static/diff checks only;
 2. independent GitHub `Structural contracts` and `Lua offline behavioural contracts`;
-3. targeted GIANTS Reality smoke adequate to challenge unintended current-behaviour change;
-4. owner review/merge before `.42` becomes Accepted Repository State.
+3. engineering review of the exact leaf-retirement diff;
+4. targeted GIANTS Reality only if the actual diff, CI or review exposes a
+   runtime-dependent uncertainty not already bounded by the dependency proof;
+5. owner review/merge before `.43` becomes Accepted Repository State.
 
-After `.42` acceptance, continue Issue #101 with the separate leaf-residue increment: stale D-0147 Control-observation consumer, structurally unreachable `FOLLOWER_OWNS_CLOSURE` Constraint branch, and the two non-authoritative `bridge.encounterIdentity` Runtime consumers. Keep the live obstruction RTA seam unchanged; its stale method name belongs to Issue #112.
-
-Do not combine #45, #87, #89 or #112 with this retirement work.
+Issue #116 remains an independent Passage investigation. Do not combine #45,
+#87, #89, #112 or #116 with this retirement work.
