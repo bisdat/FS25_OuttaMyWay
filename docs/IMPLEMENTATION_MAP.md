@@ -21,10 +21,10 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline: `main` after PR #111 merge, commit
-  `40c3a3f01b9d691b8b6b95d007be59173640cdea`.
+- Accepted Repository State baseline: `main` after PR #113 merge, commit
+  `41e24b68ada5ad8e236c0a44ba6c52393b9e1c7e`.
 - Canonical authority remains **v0.3.0.0**.
-- This Engineering Increment carries
+- Accepted executable identity is
   **`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
@@ -44,7 +44,7 @@ Architectural meaning remains owned by the
 | Generic current physical conflict | `CurrentPhysicalConflictRepresentation.lua` | PRESERVE positive-only / no generic negative-clearance authority |
 | Passage-specific geometry | `AssemblyRepresentationCache.lua`, `PairSpecificPassageClearance.lua`, `LocalPassagePlanner.lua` | PRESERVE directional Transit Passage contract for non-truncated complete assemblies |
 | Situation Assessment | `scripts/assessment/SituationAssessment.lua` and focused assessment collaborators | PRESERVE current interpreted relationship ownership except listed drift |
-| Current Pair Assessment Scope | `scripts/assessment/CurrentPairAssessmentScope.lua` plus `SituationAssessment.lua` | **RECONCILIATION #100** — ephemeral current Operation/exact-Job-Episode pair scope; protected CI and targeted cold/warm GIANTS Reality apparent PASS; owner acceptance pending |
+| Current Pair Assessment Scope | `scripts/assessment/CurrentPairAssessmentScope.lua` plus `SituationAssessment.lua` | PRESERVE — accepted by #100 / PR #113; ephemeral current Operation/exact-Job-Episode pair scope with no generic pair lifecycle or last-positive truth |
 | Follower Boundary evidence | `scripts/assessment/FollowerBoundaryDemandAssessment.lua` | PRESERVE admissible magnitude evidence/envelope; no requested Control target (#98 / PR #108) |
 | Forward Intersection / Action-Space evidence | `SpatialConstraintAssessment.lua`, `TrajectoryConflictAssessment.lua` | PRESERVE current positive/unresolved/negative semantics |
 | Causal Obstruction | `CausalObstructionAssessment.lua` | PRESERVE positive current obstruction semantics |
@@ -129,8 +129,11 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #100 | validated implementation reconciliation awaiting owner acceptance | `.41` replaces persistent Encounter lifecycle with ephemeral Current Pair Assessment Scope; protected CI and targeted cold/warm GIANTS Reality apparent PASS; PR #113 remains unmerged |
 | #101 | behaviour-preserving retirement/naming debt | orphaned Guarded Recovery, stale Control consumer, stranded Constraint semantics, defensive naming, and two non-authoritative Runtime reads of retired `bridge.encounterIdentity` exposed by `.41` Reality/log review |
+
+Issue #100 is no longer current drift. PR #113 accepted the Current Pair
+Assessment Scope reconciliation and merged to Accepted Repository State as
+`41e24b68ada5ad8e236c0a44ba6c52393b9e1c7e`.
 
 ## Separate accepted work / explicit limits
 
@@ -156,23 +159,21 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Complete the **owner acceptance decision for PR #113 / Issue #100**.
+Begin **#101 — dependency-proven retirement/naming cleanup** from accepted `main`
+at `41e24b68ada5ad8e236c0a44ba6c52393b9e1c7e`.
 
-`0.3.0.41 TEST — CURRENT PAIR ASSESSMENT CORRECTION` has green protected
-offline validation and targeted cold/warm GIANTS Reality evidence. No known
-merge-blocking #100 contradiction remains. The Reality claim is deliberately
-smoke/two-worker bounded rather than whole-Supported-Envelope proof.
+For each retained surface, first prove production reachability or absence and
+separate synthetic compatibility coverage from current production responsibility.
+Retire only orphaned/stranded surfaces whose current responsibility is absent.
+Preserve accepted gameplay behaviour and the existing fail-closed boundaries.
 
-Do not merge automatically. If the owner explicitly accepts and merges PR #113,
-Accepted Repository State advances without canonicalising a release.
-
-After #100 acceptance, unless new Reality changes the order:
-
-1. #101 — dependency-proven retirement/naming cleanup.
+The two inert Runtime reads of retired `bridge.encounterIdentity` discovered
+while validating `.41` belong to this #101 review; they are not evidence for a
+persistent pair lifecycle and do not reopen #100.
 
 Issue #97 is not current drift: PR #103 validation exposed that accepted `main`
 already refreshes retained Field World relevance through existing-Snapshot
 `resolve()` semantics. Preserve that implementation unless new Reality
 contradicts it.
 
-Do not combine these independent responsibilities into one executable tranche.
+Do not combine independent #45, #87, #89, #112 or other work into #101.
