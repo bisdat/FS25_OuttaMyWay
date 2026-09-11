@@ -6,16 +6,15 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State: `main` after PR #128 merge,
-  `dc965df3612efa4587dadfb5cd684cfbabb4adc4`.
+- Accepted Repository State: `main` after PR #129 merge,
+  `c58c7a4fcfecf7fc38745147d6eb76eeedf75a4c`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.54 TEST — RUNTIME CADENCE OWNERSHIP`**.
-- Protected post-merge Offline Validation run #317 passed on the exact PR #128
+  **`0.3.0.55 TEST — ASSEMBLY DISCOVERY BOUND OWNERSHIP`**.
+- Protected post-merge Offline Validation run #319 passed on the exact PR #129
   merge commit.
-- Issue #87 remains open. `.54` separated Runtime cadence, passive diagnostic
-  throttling and the Bounded Observation reassessment horizon according to their
-  current owners without retuning any live value.
+- Owner in-game smoke validation also passed `.55`.
+- Issue #87 remains open.
 
 ## Current workstream — Issue #87
 
@@ -23,49 +22,56 @@ Engineering Journal preserve chronology.
 decomposition proceeds family-by-family from current semantics rather than
 historical location, naming or equal literals.
 
-The current Representation findings are:
+The post-`.55` Representation census establishes:
 
-> **Shared Literal != Proven Shared Owner**
+> **Same Literal != Same Budget Domain**
 
-> **Repeated Calibration Coupling May Reveal a Missing Concept**
+> **Same Literal != Same Validity Horizon**
 
-> **Test Fixture Coupling != Runtime Ownership**
+> **Shared Evidence Predicate != Shared Representation Product**
 
-> **Implementation-Following Expectation != Independent Regression Contract**
+The two `2200` hierarchy scans have different domains:
 
-The first `.55` preflight disproved the hypothesis that five Representation
-foundation values belonged solely to `AssemblyRepresentationCache`.
-`CurrentPhysicalConflictRepresentation` also consumes the hierarchy-scan budget,
-5 s revalidation cadence, geometry-coherence tolerance and root-alias tolerance.
+- `AssemblyRepresentationCache` scans each Physical Assembly member separately
+  while building catalogue geometry;
+- `CurrentPhysicalConflictRepresentation` applies one aggregate scan budget
+  across the whole current Physical Assembly candidate discovery.
 
-Only the accepted **32-member Physical Assembly discovery bound** is currently
-proven Cache-only. The Lua truncation witness also reads that production global
-and uses the same value as its expected member count, allowing implementation
-and expectation to move together.
+The two `5 s` values likewise answer different validity questions:
 
-The four shared values remain unresolved. In particular, the duplicated
-geometry-coherence/root-alias checks may indicate a missing shared Shape
-Resolution Evidence concept; constant relocation must not decide that
-architecture prematurely.
+- `AssemblyRepresentationCache` periodically rechecks Job-scoped Physical
+  Assembly membership fingerprint validity;
+- `CurrentPhysicalConflictRepresentation` refreshes its cached candidate-node
+  discovery, while current membership/participation remains rechecked every
+  Observation independently.
+
+The `0.05 m` geometry-coherence and `0.0001 m` root-alias tolerances are
+different. Both representation products apply those values to substantially the
+same physical-shape Resolution Evidence predicate. They therefore remain shared
+and unresolved pending explicit Shape Resolution Evidence concept ownership.
 
 ## Next bounded increment
 
-Implement **`0.3.0.55 TEST — ASSEMBLY DISCOVERY BOUND OWNERSHIP`**:
+Implement **`0.3.0.56 TEST — REPRESENTATION CACHE BOUND OWNERSHIP`**:
 
-1. preserve the accepted **32-member** discovery bound exactly;
-2. localise only that bound to `AssemblyRepresentationCache`;
-3. remove only `OuttaMyWay.REPRESENTATION_ASSEMBLY_MEMBER_BUDGET` from the root
-   mixed constants surface;
-4. make the Lua truncation witness independently expect **32** members;
-5. add and wire a focused structural ownership contract;
-6. leave the hierarchy budget, revalidation cadence, geometry-coherence
-   tolerance and root-alias tolerance untouched and explicitly unresolved.
+1. preserve all accepted numeric values exactly;
+2. localise `2200` in `AssemblyRepresentationCache` as a per-member hierarchy
+   discovery budget;
+3. localise `2200` in `CurrentPhysicalConflictRepresentation` as a whole-current-
+   assembly candidate hierarchy scan budget;
+4. localise `5 s` in `AssemblyRepresentationCache` as the Job-scoped assembly
+   membership revalidation horizon;
+5. localise `5 s` in `CurrentPhysicalConflictRepresentation` as the cached
+   candidate-discovery refresh horizon;
+6. remove only the historical root hierarchy/revalidation names;
+7. leave the `0.05 m` and `0.0001 m` Shape Resolution Evidence tolerances
+   untouched on the mixed root surface;
+8. add and wire focused structural ownership protection.
 
-This is placement and regression-strengthening only. It does not redesign
-Physical Representation, alter Coverage or Resolution authority, retune shared
-Representation calibration, change Transit Passage geometry, move fold-settlement
-mechanics, or perform the broader Player / Developer-Debug / Internal config
-presentation restructuring.
+This is ownership decomposition only. It does not change Representation
+algorithms, evidence authority, cache strategy, discovery breadth, cadence,
+Resolution semantics, Transit Passage geometry, fold-settlement mechanics or
+broader Configuration presentation.
 
 ## Separate open work
 

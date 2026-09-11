@@ -17,14 +17,12 @@ def test_issue87_assembly_member_discovery_bound_belongs_to_representation_cache
     assert cache.count("discoverAssembly(worker,ASSEMBLY_MEMBER_BUDGET)") == 2
 
 
-def test_issue87_shared_representation_values_remain_unresolved_in_this_tranche():
+def test_issue87_shape_resolution_tolerances_remain_shared_pending_concept_design():
     config = read("scripts/config.lua")
     cache = read("scripts/representation/AssemblyRepresentationCache.lua")
     current = read("scripts/representation/CurrentPhysicalConflictRepresentation.lua")
 
     shared = (
-        "REPRESENTATION_HIERARCHY_SCAN_BUDGET",
-        "REPRESENTATION_ASSEMBLY_REVALIDATION_INTERVAL_SECONDS",
         "REPRESENTATION_GEOMETRY_COHERENCE_TOLERANCE_METRES",
         "REPRESENTATION_ROOT_ALIAS_TOLERANCE_METRES",
     )

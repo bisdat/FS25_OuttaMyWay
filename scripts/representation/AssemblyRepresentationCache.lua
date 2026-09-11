@@ -6,6 +6,12 @@ Cache.__index=Cache
 -- Representation-cache-owned Physical Assembly discovery capacity. This is a
 -- safety/resource bound on catalogue membership discovery, not player Configuration.
 local ASSEMBLY_MEMBER_BUDGET=32
+-- Catalogue geometry discovery scans each Physical Assembly member independently;
+-- this is a per-member budget, not a whole-assembly current-conflict budget.
+local MEMBER_HIERARCHY_DISCOVERY_SCAN_BUDGET=2200
+-- Job-scoped catalogue membership is periodically revalidated against the
+-- Physical Assembly fingerprint; this is not candidate-node cache freshness.
+local ASSEMBLY_MEMBERSHIP_REVALIDATION_INTERVAL_SECONDS=5
 
 local function safeCall(object,methodName,...)
     if object==nil or type(object[methodName])~="function" then return false,nil end
@@ -413,7 +419,7 @@ function Cache:_discoverMemberGeometry(member)
         end
     end
     member.donorConfigurationEvidence=donorConfigurationEvidence(member.object,donor)
-    local scanned,scannedCount,truncated=self:_scanHierarchy(member.object.rootNode,OuttaMyWay.REPRESENTATION_HIERARCHY_SCAN_BUDGET or 2200,wanted,donor==nil)
+    local scanned,scannedCount,truncated=self:_scanHierarchy(member.object.rootNode,MEMBER_HIERARCHY_DISCOVERY_SCAN_BUDGET,wanted,donor==nil)
     stats.hierarchyNodesScanned=scannedCount; stats.scanTruncated=truncated
     for _,candidate in ipairs(scanned) do
         if byNode[candidate.node]==nil then
@@ -786,7 +792,7 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
     local record=self.records[key]
     local cacheHit=record~=nil
     if record==nil then record=self:_build(worker,assemblyReferenceKey,sourceJobToken,nowSeconds); self.records[key]=record end
-    local interval=OuttaMyWay.REPRESENTATION_ASSEMBLY_REVALIDATION_INTERVAL_SECONDS or 5
+    local interval=ASSEMBLY_MEMBERSHIP_REVALIDATION_INTERVAL_SECONDS
     if record.lastAssemblyValidationAt==nil or nowSeconds-record.lastAssemblyValidationAt>=interval then
         record.lastAssemblyValidationAt=nowSeconds
         local members,_,fingerprint=discoverAssembly(worker,ASSEMBLY_MEMBER_BUDGET)

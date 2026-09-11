@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.55 TEST — ASSEMBLY DISCOVERY BOUND OWNERSHIP.
--- Physical Assembly member-discovery capacity is owned by the Representation
--- cache that performs that bounded discovery; shared Representation values remain unresolved.
+-- FS25_OuttaMyWay v0.3.0.56 TEST — REPRESENTATION CACHE BOUND OWNERSHIP.
+-- Representation cache scan/resource bounds live with the cache whose budget or
+-- validity domain they govern; shared Shape Resolution Evidence tolerances remain unresolved.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.55"
+OuttaMyWay.VERSION = "0.3.0.56"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -20,10 +20,8 @@ OuttaMyWay.TRANSITION_HUD_TITLE_SIZE = 0.016
 OuttaMyWay.TRANSITION_HUD_TEXT_SIZE = 0.014
 OuttaMyWay.TRANSITION_HUD_LINE_HEIGHT = 0.022
 
--- Passive representation-foundation limits. Geometry discovery is Job Episode
--- scoped; only current transforms and configuration selection repeat per sample.
-OuttaMyWay.REPRESENTATION_HIERARCHY_SCAN_BUDGET = 2200
-OuttaMyWay.REPRESENTATION_ASSEMBLY_REVALIDATION_INTERVAL_SECONDS = 5
+-- Shared Shape Resolution Evidence tolerances. These remain on the mixed root
+-- surface pending explicit ownership of the common physical-shape acceptance predicate.
 OuttaMyWay.REPRESENTATION_GEOMETRY_COHERENCE_TOLERANCE_METRES = 0.05
 OuttaMyWay.REPRESENTATION_ROOT_ALIAS_TOLERANCE_METRES = 0.0001
 
@@ -154,7 +152,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.55 TEST — ASSEMBLY DISCOVERY BOUND OWNERSHIP"
+OuttaMyWay.BUILD_LABEL = "0.3.0.56 TEST — REPRESENTATION CACHE BOUND OWNERSHIP"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
