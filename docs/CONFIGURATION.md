@@ -256,7 +256,7 @@ evidence does not establish a responsible owner.
 | SYSTEM / RELEASE IDENTITY | `MOD_NAME`; `VERSION`, `BUILD_LABEL` | `MOD_NAME` identifies the system/mod. `VERSION` and `BUILD_LABEL` carry release/build identity. None is player Configuration. |
 | ARCHITECTURAL / RESPONSIBILITY POLICY | `COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M`, `COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO`, `RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION`, exact `RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH` | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
 | IMPLEMENTATION CALIBRATION | representation coherence/root-alias tolerances; follower alignment, retention and clearance factors; trajectory sampling/coherence/supersession values; Passage development and gate geometry; Control effect-speed calibration | Empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
-| SAFETY / RESOURCE BOUND | representation member/hierarchy budgets and revalidation cadence; `LIVE_RUNTIME_CONTROL_INTERVAL_MS`; Passage sweep sample count and phase watchdog; fold-settlement bounds; Obstruction Relocation movement distance and watchdog; Field World generation/comparison/resolution budgets | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
+| SAFETY / RESOURCE BOUND | representation member/hierarchy budgets and revalidation cadence; `LIVE_RUNTIME_CONTROL_INTERVAL_MS`; Passage sweep sample count and phase watchdog; fold-settlement bounds; Field World generation/comparison/resolution budgets | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
 | DIAGNOSTIC | passive sampling, heartbeat and pair-log limits; Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre, progression and other Probe flags/intervals; lifecycle/transition/future-space and version/follower HUD flags and coordinates | Diagnostic instruments and their cadence/layout remain internal. Normal Logging and Debug are higher-level player choices, not exposure of each switch. |
 | VALIDATION / EXPERIMENTAL | `CONTROL_AUTHORITY_ENABLED`; follower maturation test controls; `COOPERATIVE_PASSAGE_ENABLED` | Current gates and test values are implementation or validation evidence. They do not define the master enabled setting and grant no production authority by location. |
 | HUD IMPLEMENTATION | `TRANSITION_HUD_*`, `VERSION_HUD_*`, `FOLLOWER_PACING_HUD_*` | Coordinates, sizes, rows and diagnostic display flags belong to HUD/diagnostic implementation, not Configuration architecture. |
@@ -266,11 +266,12 @@ evidence does not establish a responsible owner.
 Field World fingerprint/equivalence calibration, including quantisation, sampling,
 area/perimeter/centroid/bounds/boundary/Jaccard tolerances and comparison limits,
 belongs across implementation calibration and safety/resource bounds; it is not
-player Configuration. Fold-settlement and Obstruction Relocation watchdogs are
-likewise internal safety/control bounds. The inventory is descriptive. Phase
-14.6C removes positively retired/unsourced residue and graduates current
-production vocabulary without retuning values; Issue #87 owns later
-decomposition of the remaining live mixed surface.
+player Configuration. The Obstruction Relocation 60 m per-actuation calibration
+and 45 s bounded-move watchdog are now owned directly by Candidate Support and
+Control respectively rather than the root mixed surface. Fold-settlement bounds
+remain internal safety/control values. The inventory is descriptive; Issue #87
+continues ownership-family decomposition without retuning values merely because
+their placement changes.
 
 ## Implementation boundary
 

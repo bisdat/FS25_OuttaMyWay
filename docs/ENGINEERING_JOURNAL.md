@@ -1,3 +1,30 @@
+## 2026-09-11 — #87 localises Obstruction Relocation bounds to Candidate and Control
+
+**Observe:** after `.52`, the two surviving historical `TERMINAL_*` values no
+longer form a shared semantic family. The 60 m value is read only while
+`ObstructionRelocationCandidateSupport` constructs one bounded inward objective.
+The 45 s value is read only by `ObstructionRelocationControl` as the physical
+move watchdog.
+
+> **Policy Concept != Shared Global Constant**
+
+> **Watchdog Bound Belongs to the Actuator It Protects**
+
+**Decision:** `.53` preserves both accepted numeric values exactly while removing
+their historical root/global identities. Candidate Support owns the
+per-actuation relocation-distance calibration; Control owns the watchdog
+protecting its already-authorised physical actuation.
+
+This is a placement and vocabulary correction, not policy retuning. The
+architecture continues to require geometry-bounded relocation, release of
+physical authority after each actuation, fresh Reality reassessment and fail-safe
+Control cleanup. Moving a constant does not change those responsibilities.
+
+**Validation boundary:** existing focused Lua behaviour remains the witness for
+the accepted 60 m objective and recurrence semantics. Structural contracts prove
+the historical `TERMINAL_*` root names are absent and each value is held by its
+narrow owner. Protected GitHub Actions owns full offline validation.
+
 ## 2026-09-11 — #87 core Obstruction Relocation capability retires optional consent scaffolding
 
 **Observe:** after #121 / PR #125, `AUTOMATIC_TERMINAL_EGRESS` no longer gates a

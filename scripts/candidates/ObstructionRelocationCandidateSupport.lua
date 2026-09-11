@@ -2,6 +2,11 @@ OuttaMyWay.ObstructionRelocationCandidateSupport={}
 local Support=OuttaMyWay.ObstructionRelocationCandidateSupport
 Support.__index=Support
 
+-- Candidate-owned calibration for one bounded inward relocation objective.
+-- Architecture requires a per-actuation maximum; Reality remains the authority
+-- for whether fresh positive obstruction justifies any later actuation.
+local BOUNDED_INWARD_RELOCATION_MAX_DISTANCE_M=60.0
+
 local mandatory={"FIELD_WORLD_CONTAINMENT","TRANSITION_CLEARANCE","REPRESENTATION_FITNESS","CONTROL_CAPABILITY_AVAILABILITY","CONTINUING_INTENT_PRIORITY","PROGRESS_PRESERVATION","RESPONSIBILITY_COMPATIBILITY","OBLIGATION_COMPATIBILITY","COMMITMENT_PRECONDITIONS","EFFECTIVE_ACTUATION_COMPOSITION","SAFE_RELEASE_HANDOVER"}
 
 local function packet(reason,evidence,applicable)
@@ -92,7 +97,7 @@ local function boundedInwardObjective(snapshot,pose)
     local distance=math.sqrt(dx*dx+dz*dz)
     if distance<=0.05 then return nil,"CENTROID_BEARING_DEGENERATE" end
     local directionX,directionZ=dx/distance,dz/distance
-    local cap=math.max(0,tonumber(OuttaMyWay.TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M) or 60.0)
+    local cap=BOUNDED_INWARD_RELOCATION_MAX_DISTANCE_M
     local progress=math.min(distance,cap)
     if progress<=0.05 then return nil,"BOUNDED_RELOCATION_PROGRESS_UNAVAILABLE" end
     return {
