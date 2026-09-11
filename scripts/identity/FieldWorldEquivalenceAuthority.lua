@@ -2,6 +2,10 @@ OuttaMyWay.FieldWorldEquivalenceAuthority = {}
 local Authority = OuttaMyWay.FieldWorldEquivalenceAuthority
 Authority.__index = Authority
 
+-- Retained Field World equivalence evidence-history ownership.
+local COMPARISON_RECORD_RETENTION_LIMIT=128
+local RESOLUTION_RECORD_RETENTION_LIMIT=128
+
 local function logInfo(message)
     if Logging ~= nil and type(Logging.info) == "function" then
         Logging.info("[FS25_OuttaMyWay][FIELD-WORLD-AUTHORITY] %s", message)
@@ -54,13 +58,13 @@ end
 
 function Authority:_appendComparison(record)
     self.comparisonRecords[#self.comparisonRecords+1]=record
-    local maximum=OuttaMyWay.FIELD_WORLD_EQUIVALENCE_MAX_COMPARISONS or 128
+    local maximum=COMPARISON_RECORD_RETENTION_LIMIT
     while #self.comparisonRecords>maximum do table.remove(self.comparisonRecords,1) end
 end
 
 function Authority:_appendResolution(record)
     self.resolutionRecords[#self.resolutionRecords+1]=record
-    local maximum=OuttaMyWay.FIELD_WORLD_EQUIVALENCE_MAX_RESOLUTIONS or 128
+    local maximum=RESOLUTION_RECORD_RETENTION_LIMIT
     while #self.resolutionRecords>maximum do table.remove(self.resolutionRecords,1) end
 end
 

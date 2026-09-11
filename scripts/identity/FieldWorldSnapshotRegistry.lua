@@ -2,6 +2,11 @@ OuttaMyWay.FieldWorldSnapshotRegistry = {}
 local Registry = OuttaMyWay.FieldWorldSnapshotRegistry
 Registry.__index = Registry
 
+-- Field World Snapshot/fingerprint production ownership.
+local SNAPSHOT_GENERATION_BUDGET=0.00025
+local FINGERPRINT_QUANTIZATION_METRES=0.1
+local FINGERPRINT_SCHEMA_VERSION="FWG1"
+
 local function logInfo(message)
     if Logging ~= nil and type(Logging.info) == "function" then
         Logging.info("[FS25_OuttaMyWay][FIELD-WORLD] %s", message)
@@ -456,7 +461,7 @@ function Registry.canonicalizeBoundary(boundary, islands, quantum)
         boundaryPointCount=#rootPoints,
         islandCount=#islandRings,
         quantizationMetres=quantum,
-        canonicalizationVersion=OuttaMyWay.FIELD_WORLD_FINGERPRINT_VERSION or "FWG1"
+        canonicalizationVersion=FINGERPRINT_SCHEMA_VERSION
     }, nil
 end
 
@@ -494,7 +499,7 @@ function Registry:_complete(state, result, success)
     local canonical, reason = Registry.canonicalizeBoundary(
         result.fieldRootBoundary.boundaryLine,
         result.islands or {},
-        OuttaMyWay.FIELD_WORLD_FINGERPRINT_QUANTIZATION_METRES or 0.1
+        FINGERPRINT_QUANTIZATION_METRES
     )
     if canonical==nil then
         state.error=reason
@@ -601,7 +606,7 @@ end
 function Registry:update(dt,mission)
     for _,state in OuttaMyWay.ValueRecord.pairs(self.states) do
         if state.pending and state.courseField~=nil and type(state.courseField.update)=="function" then
-            local ok,stillRunning=pcall(state.courseField.update,state.courseField,dt or 0,OuttaMyWay.FIELD_WORLD_SNAPSHOT_GENERATION_BUDGET or 0.00025)
+            local ok,stillRunning=pcall(state.courseField.update,state.courseField,dt or 0,SNAPSHOT_GENERATION_BUDGET)
             state.updates=(state.updates or 0)+1
             if not ok then state.pending=false; state.error="FIELD_COURSE_UPDATE_FAILED" end
             if stillRunning==false and state.pending and (tonumber(g_time) or 0)-(state.startedAt or 0)>5000 then

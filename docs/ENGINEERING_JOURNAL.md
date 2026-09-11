@@ -1,3 +1,35 @@
+## 2026-09-11 — #87 Field World value ownership split
+
+After `.57`, fourteen `FIELD_WORLD_*` values remained on the mixed root surface,
+but their common prefix did not reflect one owner.
+
+> **Shared Prefix != Shared Owner**
+
+> **Evaluation Thresholds Belong to the Evaluator That Interprets Them**
+
+> **Retention Bound != Equivalence Meaning**
+
+> **Schema Version Belongs to the Evidence Producer**
+
+`.58` localises Snapshot/fingerprint production values to
+`FieldWorldSnapshotRegistry`, spatial interpretation thresholds to
+`FieldWorldEquivalenceEvaluator`, and evidence-history retention bounds to
+`FieldWorldEquivalenceAuthority`. All literals and algorithms remain unchanged.
+Existing Field World Lua witnesses remain the behavioural oracle; a focused
+structural contract protects placement.
+
+Protected CI then exposed one v4.7.14 structural clause that still required four
+equivalence identifiers to remain in `scripts/config.lua`. All semantic topology
+checks and the full Lua behavioural suite passed; only that historical placement
+assertion failed.
+
+> **Historical Structural Contract != Permanent Placement Freeze**
+
+The `.58` correction preserves the v4.7.14 test's active/conservative Field World
+checks but makes those four presence assertions follow
+`FieldWorldEquivalenceEvaluator`, their current semantic owner. No runtime code,
+literal, algorithm or build identity changes.
+
 ## 2026-09-11 — #87 discovers Entity-Local Shape Evidence ownership
 
 **Observe:** after `.56`, only two Representation calibration globals remained:
