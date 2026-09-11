@@ -21,16 +21,17 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State: `main` after PR #126 merge,
-  `3863982e0f9ad18c25a497e3f3014ce69f8b105e`.
+- Accepted Repository State: `main` after PR #127 merge,
+  `df3493e1cdbb3770287ed1cfba88ec60b0ee7813`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.52 TEST — OBSTRUCTION RELOCATION CORE CAPABILITY`**.
-- Protected post-merge Offline Validation run #312 passed on the exact merge
-  commit; owner-run short GIANTS Reality smoke also passed.
+  **`0.3.0.53 TEST — OBSTRUCTION RELOCATION BOUND OWNERSHIP`**.
+- Protected post-merge Offline Validation run #314 passed on the exact merge
+  commit.
 - Issue #112 remains closed completed.
-- Issue #87 is active: the obsolete Obstruction Relocation consent gate is
-  retired and remaining mixed constants are being decomposed by current owner.
+- Issue #87 is active: `.52` retired the obsolete Obstruction Relocation consent
+  gate; `.53` localised its distance/watchdog bounds; remaining mixed constants
+  continue family-by-family ownership review.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -72,7 +73,7 @@ Architectural meaning remains owned by the
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting Obstruction Relocation movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.43` removes the dead Passage target field and reports current `conflictIdentity` in the verdict trace |
-| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52` retired obsolete Obstruction Relocation consent; `.53` localises its remaining distance/watchdog bounds to Candidate Support and Control; broader owner-family decomposition remains incremental |
+| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52` retired obsolete Obstruction Relocation consent; `.53` localised relocation distance/watchdog bounds; `.54` localises Runtime cadence, diagnostic throttling and the Candidate reassessment horizon; broader owner-family decomposition remains incremental |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
 
 ## Boundary findings worth protecting
@@ -131,7 +132,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #87 | mixed runtime constants / Configuration ownership | `scripts/config.lua` still centralises unrelated diagnostic, policy, calibration, watchdog and identity values. `.52` removed obsolete Obstruction Relocation consent. The next bounded ownership correction localises its remaining 60 m Candidate calibration and 45 s Control watchdog without retuning either value. Remaining constants continue family-by-family review. |
+| #87 | mixed runtime constants / Configuration ownership | `scripts/config.lua` still centralises unrelated diagnostic, policy, calibration, watchdog and identity values. `.53` removed the Obstruction Relocation distance/watchdog pair from the root surface. The next bounded correction separates the 250 ms authoritative Runtime-cycle clock, passive diagnostic heartbeat/log limit, and the 1 s Bounded Observation reassessment horizon according to their three current owners. Remaining constants continue family-by-family review. |
 
 Issue #112 is closed completed. Issue #116 independently owns the Cooperative
 Passage crossing-window jam investigation. #123 owns deferred GIANTS Reality
@@ -161,27 +162,29 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Implement and validate **#87 `.53 — OBSTRUCTION RELOCATION BOUND OWNERSHIP`**
-from accepted `main` at
-`3863982e0f9ad18c25a497e3f3014ce69f8b105e`.
+Implement and validate **#87 `.54 — RUNTIME CADENCE OWNERSHIP`** from accepted
+`main` at `df3493e1cdbb3770287ed1cfba88ec60b0ee7813`.
 
-The bounded question is placement, not behaviour: do the accepted 60 m
-per-actuation maximum and 45 s move watchdog have any current reason to remain
-shared root constants?
+The first `.54` preflight disproved the hypothesis that
+`PASSIVE_SAMPLE_INTERVAL_MS` was dead residue. It is consumed by
+`PassiveLiveCandidateSupport` to construct the Bounded Observation Contract
+`reassessmentDeadline`.
 
-Current evidence says no:
+Current evidence therefore identifies three owners rather than one cadence
+family:
 
-- Candidate Support alone gives the 60 m calibration meaning while constructing
-  the bounded inward objective;
-- Obstruction Relocation Control alone gives the 45 s watchdog meaning while
-  protecting physical actuation.
+- `LiveRuntimeCoordinator`: **250 ms** complete live Runtime-cycle cadence;
+- `PassiveLiveValidator`: **10 s** diagnostic heartbeat and **8-line** pair-log
+  publication limit;
+- `PassiveLiveCandidateSupport`: **1 s** Bounded Observation reassessment horizon.
 
-The increment therefore preserves both numeric values exactly, removes their
-historical `TERMINAL_*` root identities, places them with their narrow owners,
-and adds structural protection against re-globalising them.
+The increment preserves every numeric value exactly and changes placement/name
+only. `NEXT_PASSIVE_SAMPLE` contract vocabulary remains untouched pending a
+separate semantic review.
 
-No relocation-policy retune, Configuration redesign, broad config reordering,
-#123 Reality challenge, #116 Passage work, #45 Bullet Time or #89 HUD work belongs
-in this increment.
+No scheduling redesign, cadence retune, Bounded Observation semantic change,
+probe-specific interval work, Configuration redesign, broad config reordering,
+#123 Reality challenge, #116 Passage work, #45 Bullet Time or #89 HUD work
+belongs in this increment.
 
 Protected CI remains the independent offline behavioural authority.

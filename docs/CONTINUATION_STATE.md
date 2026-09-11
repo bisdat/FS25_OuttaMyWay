@@ -6,17 +6,16 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State: `main` after PR #126 merge,
-  `3863982e0f9ad18c25a497e3f3014ce69f8b105e`.
+- Accepted Repository State: `main` after PR #127 merge,
+  `df3493e1cdbb3770287ed1cfba88ec60b0ee7813`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.52 TEST — OBSTRUCTION RELOCATION CORE CAPABILITY`**.
-- Protected post-merge Offline Validation run #312 passed on the exact PR #126
+  **`0.3.0.53 TEST — OBSTRUCTION RELOCATION BOUND OWNERSHIP`**.
+- Protected post-merge Offline Validation run #314 passed on the exact PR #127
   merge commit.
-- Owner-run short GIANTS Reality smoke also passed for `.52`.
-- Issue #87 remains open; `.52` retired `AUTOMATIC_TERMINAL_EGRESS` and established
-  supported non-active, unclaimed Causal Obstruction relocation as a core
-  OuttaMyWay capability rather than a separate consent option.
+- Issue #87 remains open. `.53` localised the Obstruction Relocation 60 m
+  per-actuation calibration to Candidate Support and the 45 s physical move
+  watchdog to Control without retuning either value.
 
 ## Current workstream — Issue #87
 
@@ -24,38 +23,49 @@ Engineering Journal preserve chronology.
 decomposition proceeds family-by-family from current semantics rather than
 historical location or naming.
 
-The next resolved ownership finding is:
+The resolved cadence-family findings are:
 
-> **Policy Concept != Shared Global Constant**
+> **Similar Cadence Values != Shared Scheduling Responsibility**
 
-> **Watchdog Bound Belongs to the Actuator It Protects**
+> **Diagnostic Observer Has No Independent Sampling Clock**
 
-The historical `TERMINAL_*` pair is not one current family:
+> **Sampling Cadence != Bounded Observation Deadline**
 
-- the **60 m** per-actuation maximum is consumed only while
-  `ObstructionRelocationCandidateSupport` constructs the bounded inward objective;
-- the **45 s** bounded-move watchdog is consumed only by
-  `ObstructionRelocationControl` while executing an already-authorised actuation.
+The first `.54` preflight disproved the hypothesis that
+`PASSIVE_SAMPLE_INTERVAL_MS = 1000` was orphan residue. Current source instead
+establishes four live values with three owners:
 
-The architecture requires a bounded inward actuation and safe physical fail-safe,
-but current evidence does not justify root/global ownership of either numeric
-calibration.
+- `LiveRuntimeCoordinator` schedules the complete live
+  Observation -> Situation -> Decision -> bounded Control cycle at **250 ms**;
+- `PassiveLiveValidator` owns diagnostic publication/throttling only:
+  **10 s** heartbeat and **8** pair-log lines per sample;
+- `PassiveLiveCandidateSupport` uses the historical **1 s** "sample interval"
+  solely to construct the `CONTINUE_OBSERVATION` Bounded Observation Contract
+  `reassessmentDeadline`.
+
+`CommitmentPreconditionsConstraint` requires that deadline and exposes its
+exhaustion as `BOUNDED_OBSERVATION_EXHAUSTION`. The 1 s value is therefore live
+evidence-contract calibration, not a scheduling clock.
 
 ## Next bounded increment
 
-Implement **`0.3.0.53 TEST — OBSTRUCTION RELOCATION BOUND OWNERSHIP`**:
+Implement **`0.3.0.54 TEST — RUNTIME CADENCE OWNERSHIP`**:
 
-1. preserve the accepted 60 m and 45 s values exactly;
-2. move the 60 m calibration into `ObstructionRelocationCandidateSupport.lua`;
-3. move the 45 s watchdog into `ObstructionRelocationControl.lua`;
-4. remove `TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M` and
-   `TERMINAL_EGRESS_MOVE_TIMEOUT_MS` from `scripts/config.lua`;
-5. structurally protect those narrow ownership boundaries;
-6. preserve all `.52` Candidate, responsibility, authority, recurrence,
-   Player Claim/new-Job and Control semantics.
+1. preserve **250 ms** exactly and localise it to `LiveRuntimeCoordinator`;
+2. preserve **10 s** and **8** exactly and localise them to
+   `PassiveLiveValidator`;
+3. preserve **1 s** exactly, rename it as a Candidate-owned Bounded Observation
+   reassessment horizon, and localise it to `PassiveLiveCandidateSupport`;
+4. remove all four values from the root mixed constants surface;
+5. structurally protect the three ownership boundaries.
 
-This increment is ownership/name reconciliation only. It does not retune the
-relocation distance or watchdog duration and does not perform the broader
+The contract vocabulary `NEXT_PASSIVE_SAMPLE` remains unchanged in this tranche.
+Its truthfulness is a separate semantic question and must not be casually renamed
+as part of constant placement.
+
+This is ownership/name reconciliation only. It does not redesign scheduling,
+retune any value, alter Bounded Observation semantics, create player
+Configuration, change probe-specific cadences, or perform the broader
 Player / Developer-Debug / Internal presentation reordering.
 
 ## Separate open work

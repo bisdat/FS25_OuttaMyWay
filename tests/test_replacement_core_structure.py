@@ -918,7 +918,9 @@ def test_d0141_aligned_follower_boundary_regulation_uses_current_knowledge_and_c
     assert 'ELASTIC_REGULATION_MAGNITUDE_UPDATED' in control
     assert 'CAP_RELAXATION_REJECTED_PURPOSE_PERSISTS' not in control
     assert 'FOLLOWER_MATURATION_TRANSITION_CLEARANCE_FACTOR' not in control
-    assert 'LIVE_RUNTIME_CONTROL_INTERVAL_MS or 250' in coordinator
+    assert 'local LIVE_RUNTIME_CONTROL_INTERVAL_MS=250' in coordinator
+    assert 'local interval=LIVE_RUNTIME_CONTROL_INTERVAL_MS' in coordinator
+    assert 'OuttaMyWay.LIVE_RUNTIME_CONTROL_INTERVAL_MS' not in coordinator
     assert 'PASSIVE_SAMPLE_INTERVAL_MS' not in coordinator
     assert 'FollowerMaturationCompressionProbe' not in assessment
     assert 'FollowerMaturationCompressionProbe' not in support

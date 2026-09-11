@@ -6,6 +6,10 @@ OuttaMyWay.LiveRuntimeCoordinator={}
 local Coordinator=OuttaMyWay.LiveRuntimeCoordinator
 Coordinator.__index=Coordinator
 
+-- Runtime-owned cadence for one complete live Observation -> Situation -> Decision ->
+-- bounded Control cycle. Diagnostics observe completed cycles; they do not own this clock.
+local LIVE_RUNTIME_CONTROL_INTERVAL_MS=250
+
 local function logError(message)
     if Logging~=nil and type(Logging.error)=="function" then Logging.error("[FS25_OuttaMyWay][LIVE-RUNTIME] %s",message) else print("[FS25_OuttaMyWay][LIVE-RUNTIME][ERROR] "..message) end
 end
@@ -56,7 +60,7 @@ function Coordinator:update(dt)
     if g_client~=nil and g_server==nil then return end
     if self.fieldWorldSnapshots~=nil then self.fieldWorldSnapshots:update(dt or 0,g_currentMission) end
     self.elapsed=self.elapsed+(dt or 0)
-    local interval=OuttaMyWay.LIVE_RUNTIME_CONTROL_INTERVAL_MS or 250
+    local interval=LIVE_RUNTIME_CONTROL_INTERVAL_MS
     if self.elapsed<interval then return end
     self.elapsed=self.elapsed%interval
     local now=(tonumber(g_time) or 0)/1000

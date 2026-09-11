@@ -2,6 +2,11 @@ OuttaMyWay.PassiveLiveCandidateSupport = {}
 local Support = OuttaMyWay.PassiveLiveCandidateSupport
 Support.__index = Support
 
+-- Candidate-owned Bounded Observation Contract horizon. This is not a Runtime
+-- or diagnostic sampling clock: it limits how long unresolved evidence may wait
+-- before reassessment is required.
+local BOUNDED_OBSERVATION_REASSESSMENT_HORIZON_SECONDS=1.0
+
 local mandatory={"FIELD_WORLD_CONTAINMENT","TRANSITION_CLEARANCE","REPRESENTATION_FITNESS","CONTROL_CAPABILITY_AVAILABILITY","CONTINUING_INTENT_PRIORITY","PROGRESS_PRESERVATION","RESPONSIBILITY_COMPATIBILITY","OBLIGATION_COMPATIBILITY","COMMITMENT_PRECONDITIONS","EFFECTIVE_ACTUATION_COMPOSITION","SAFE_RELEASE_HANDOVER"}
 
 local function packet(reason,applicable)
@@ -26,7 +31,7 @@ function Support:buildProjectedGroup(picture,snapshot,targetPictureId,targetEpoc
     for _,id in OuttaMyWay.ValueRecord.ipairs(mandatory) do evidence.constraintEvidence[id]=packet("Non-actuating passive validation candidate",false) end
     local preconditions={evidenceContracts={}}
     if observe then
-        preconditions.boundedObservationContract={knowledgeGap="LIVE_ADMISSION_OR_REPRESENTATION_EVIDENCE_REMAINS_INCOMPLETE",expectedRealityEvolution="NEXT_PASSIVE_SAMPLE",preservedUsefulAction="GIANTS_NATIVE_PROGRESS_UNCHANGED",exhaustionCondition="MATERIAL_TRACE_CHANGE_OR_REASSESSMENT_DEADLINE",reassessmentDeadline=snapshot.timestamp+((OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS or 1000)/1000),progressParticipantId=picture.identities.assemblies[1] or picture.identities.jobEpisodes.active[1] or "PASSIVE_FIELD_WORLD"}
+        preconditions.boundedObservationContract={knowledgeGap="LIVE_ADMISSION_OR_REPRESENTATION_EVIDENCE_REMAINS_INCOMPLETE",expectedRealityEvolution="NEXT_PASSIVE_SAMPLE",preservedUsefulAction="GIANTS_NATIVE_PROGRESS_UNCHANGED",exhaustionCondition="MATERIAL_TRACE_CHANGE_OR_REASSESSMENT_DEADLINE",reassessmentDeadline=snapshot.timestamp+BOUNDED_OBSERVATION_REASSESSMENT_HORIZON_SECONDS,progressParticipantId=picture.identities.assemblies[1] or picture.identities.jobEpisodes.active[1] or "PASSIVE_FIELD_WORLD"}
     end
     local specification={
         referenceKey="passive:"..targetPictureId..":"..capability,
@@ -55,7 +60,7 @@ function Support:attach(picture,snapshot)
     for _,id in OuttaMyWay.ValueRecord.ipairs(mandatory) do evidence.constraintEvidence[id]=packet("Non-actuating passive validation candidate",false) end
     local preconditions={evidenceContracts={}}
     if observe then
-        preconditions.boundedObservationContract={knowledgeGap="LIVE_ADMISSION_OR_REPRESENTATION_EVIDENCE_REMAINS_INCOMPLETE",expectedRealityEvolution="NEXT_PASSIVE_SAMPLE",preservedUsefulAction="GIANTS_NATIVE_PROGRESS_UNCHANGED",exhaustionCondition="MATERIAL_TRACE_CHANGE_OR_REASSESSMENT_DEADLINE",reassessmentDeadline=snapshot.timestamp+((OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS or 1000)/1000),progressParticipantId=picture.identities.assemblies[1] or picture.identities.jobEpisodes.active[1] or "PASSIVE_FIELD_WORLD"}
+        preconditions.boundedObservationContract={knowledgeGap="LIVE_ADMISSION_OR_REPRESENTATION_EVIDENCE_REMAINS_INCOMPLETE",expectedRealityEvolution="NEXT_PASSIVE_SAMPLE",preservedUsefulAction="GIANTS_NATIVE_PROGRESS_UNCHANGED",exhaustionCondition="MATERIAL_TRACE_CHANGE_OR_REASSESSMENT_DEADLINE",reassessmentDeadline=snapshot.timestamp+BOUNDED_OBSERVATION_REASSESSMENT_HORIZON_SECONDS,progressParticipantId=picture.identities.assemblies[1] or picture.identities.jobEpisodes.active[1] or "PASSIVE_FIELD_WORLD"}
     end
     local specification={
         referenceKey="passive:"..picture.identity..":"..capability,
