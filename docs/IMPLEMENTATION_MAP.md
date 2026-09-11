@@ -21,17 +21,18 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State: `main` after PR #127 merge,
-  `df3493e1cdbb3770287ed1cfba88ec60b0ee7813`.
+- Accepted Repository State: `main` after PR #128 merge,
+  `dc965df3612efa4587dadfb5cd684cfbabb4adc4`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.53 TEST — OBSTRUCTION RELOCATION BOUND OWNERSHIP`**.
-- Protected post-merge Offline Validation run #314 passed on the exact merge
+  **`0.3.0.54 TEST — RUNTIME CADENCE OWNERSHIP`**.
+- Protected post-merge Offline Validation run #317 passed on the exact merge
   commit.
 - Issue #112 remains closed completed.
-- Issue #87 is active: `.52` retired the obsolete Obstruction Relocation consent
-  gate; `.53` localised its distance/watchdog bounds; remaining mixed constants
-  continue family-by-family ownership review.
+- Issue #87 is active: `.52` retired obsolete Obstruction Relocation consent,
+  `.53` localised relocation distance/watchdog bounds, and `.54` separated
+  Runtime cadence, diagnostic throttling and Candidate reassessment calibration.
+  Remaining mixed constants continue family-by-family ownership review.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -45,7 +46,7 @@ Architectural meaning remains owned by the
 | Field World snapshots/equivalence | `FieldWorldSnapshotRegistry.lua`, `FieldWorldEquivalenceEvaluator.lua`, `FieldWorldEquivalenceAuthority.lua`, `LiveObservationSource.lua` | PRESERVE — retained tracks resolve their existing immutable Snapshot assignment, which refreshes Field World relevance without stale geometry re-evaluation |
 | Current Physical Assembly acquisition | `scripts/observation/CurrentPhysicalAssemblySource.lua` | PRESERVE mission-root addressability; no semantic authority |
 | Current pose / live Observation | `CurrentPhysicalPoseSource.lua`, `LiveObservationSource.lua`, `LiveInteractionObservation.lua` | PRESERVE factual/provenance boundary |
-| Physical representation cache | `scripts/representation/AssemblyRepresentationCache.lua` | PRESERVE — member-discovery truncation revokes Transit complete-assembly authority at representation construction (#99 / PR #106) |
+| Physical representation cache | `scripts/representation/AssemblyRepresentationCache.lua` | PRESERVE — member-discovery truncation revokes Transit complete-assembly authority at representation construction (#99 / PR #106); `.55` localises the accepted 32-member discovery bound to this owner |
 | Generic current physical conflict | `CurrentPhysicalConflictRepresentation.lua` | PRESERVE positive-only / no generic negative-clearance authority |
 | Passage-specific geometry | `AssemblyRepresentationCache.lua`, `PairSpecificPassageClearance.lua`, `LocalPassagePlanner.lua` | PRESERVE directional Transit Passage contract for non-truncated complete assemblies |
 | Situation Assessment | `scripts/assessment/SituationAssessment.lua` and focused assessment collaborators | PRESERVE current interpreted relationship ownership except listed drift |
@@ -73,7 +74,7 @@ Architectural meaning remains owned by the
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting Obstruction Relocation movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.43` removes the dead Passage target field and reports current `conflictIdentity` in the verdict trace |
-| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52` retired obsolete Obstruction Relocation consent; `.53` localised relocation distance/watchdog bounds; `.54` localises Runtime cadence, diagnostic throttling and the Candidate reassessment horizon; broader owner-family decomposition remains incremental |
+| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52` retired obsolete Obstruction Relocation consent; `.53` localised relocation distance/watchdog bounds; `.54` localised Runtime/diagnostic/Candidate cadence semantics; `.55` localises only the proven Cache-owned assembly member bound while four shared Representation values remain unresolved |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
 
 ## Boundary findings worth protecting
@@ -132,7 +133,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #87 | mixed runtime constants / Configuration ownership | `scripts/config.lua` still centralises unrelated diagnostic, policy, calibration, watchdog and identity values. `.53` removed the Obstruction Relocation distance/watchdog pair from the root surface. The next bounded correction separates the 250 ms authoritative Runtime-cycle clock, passive diagnostic heartbeat/log limit, and the 1 s Bounded Observation reassessment horizon according to their three current owners. Remaining constants continue family-by-family review. |
+| #87 | mixed runtime constants / Configuration ownership | `scripts/config.lua` still centralises unrelated diagnostic, policy, calibration, watchdog and identity values. `.54` removed Runtime-cycle cadence, passive diagnostic throttling and Candidate reassessment calibration from the root surface. The next bounded correction moves only the proven Cache-owned 32-member Physical Assembly discovery bound and strengthens its truncation regression oracle. Four other Representation values remain shared between `AssemblyRepresentationCache` and `CurrentPhysicalConflictRepresentation`; their ownership is deliberately unresolved. |
 
 Issue #112 is closed completed. Issue #116 independently owns the Cooperative
 Passage crossing-window jam investigation. #123 owns deferred GIANTS Reality
@@ -162,29 +163,27 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Implement and validate **#87 `.54 — RUNTIME CADENCE OWNERSHIP`** from accepted
-`main` at `df3493e1cdbb3770287ed1cfba88ec60b0ee7813`.
+Implement and validate **#87 `.55 — ASSEMBLY DISCOVERY BOUND OWNERSHIP`** from
+accepted `main` at `dc965df3612efa4587dadfb5cd684cfbabb4adc4`.
 
-The first `.54` preflight disproved the hypothesis that
-`PASSIVE_SAMPLE_INTERVAL_MS` was dead residue. It is consumed by
-`PassiveLiveCandidateSupport` to construct the Bounded Observation Contract
-`reassessmentDeadline`.
+The first `.55` preflight disproved the proposed five-value
+`AssemblyRepresentationCache` ownership model. Four values are also consumed by
+`CurrentPhysicalConflictRepresentation`: hierarchy scan budget, 5 s revalidation
+cadence, geometry-coherence tolerance and root-alias tolerance.
 
-Current evidence therefore identifies three owners rather than one cadence
-family:
+Only the **32-member Physical Assembly discovery bound** is proven Cache-only.
+`.55` therefore preserves 32 exactly, localises only that bound to
+`AssemblyRepresentationCache`, and changes the Lua truncation fixture to
+independently expect 32 rather than reading production state.
 
-- `LiveRuntimeCoordinator`: **250 ms** complete live Runtime-cycle cadence;
-- `PassiveLiveValidator`: **10 s** diagnostic heartbeat and **8-line** pair-log
-  publication limit;
-- `PassiveLiveCandidateSupport`: **1 s** Bounded Observation reassessment horizon.
+The four shared Representation values remain unchanged and explicitly
+unresolved. Their equal literals are not evidence of one owner; duplicated
+geometry-coherence/root-alias checks may instead indicate a missing shared Shape
+Resolution Evidence concept requiring separate architectural investigation.
 
-The increment preserves every numeric value exactly and changes placement/name
-only. `NEXT_PASSIVE_SAMPLE` contract vocabulary remains untouched pending a
-separate semantic review.
-
-No scheduling redesign, cadence retune, Bounded Observation semantic change,
-probe-specific interval work, Configuration redesign, broad config reordering,
-#123 Reality challenge, #116 Passage work, #45 Bullet Time or #89 HUD work
-belongs in this increment.
+No Representation algorithm, authority, shared calibration, Transit Passage
+geometry, fold-settlement mechanics, broader Configuration presentation, #123
+Reality challenge, #116 Passage work, #45 Bullet Time or #89 HUD work belongs in
+this increment.
 
 Protected CI remains the independent offline behavioural authority.

@@ -1,3 +1,42 @@
+## 2026-09-11 — #87 narrows Physical Representation ownership after preflight counterexample
+
+**Observe:** the first `.55` preflight rejected the hypothesis that all five
+Representation foundation values belonged solely to `AssemblyRepresentationCache`.
+`CurrentPhysicalConflictRepresentation` also consumes the hierarchy-scan budget,
+5 s revalidation cadence, geometry-coherence tolerance and root-alias tolerance.
+
+> **Shared Literal != Proven Shared Owner**
+
+> **Repeated Calibration Coupling May Reveal a Missing Concept**
+
+History shows those globals predate `CurrentPhysicalConflictRepresentation`; the
+later positive-only representation reused four existing values. Current evidence
+does not establish whether hierarchy/revalidation equality is deliberate policy
+or inherited calibration coupling. The duplicated geometry-coherence/root-alias
+tests may indicate a missing shared Shape Resolution Evidence concept.
+
+Only the 32-member Physical Assembly discovery bound is currently proven
+Cache-only.
+
+The Lua truncation fixture also reads that production global and uses it as its
+expected count.
+
+> **Test Fixture Coupling != Runtime Ownership**
+
+> **Implementation-Following Expectation != Independent Regression Contract**
+
+**Decision:** `.55` localises only the accepted 32-member discovery bound to
+`AssemblyRepresentationCache` and changes the behavioural witness to independently
+expect 32. The four shared Representation values remain untouched and unresolved.
+
+This is placement and regression-strengthening only. No Representation algorithm,
+claim permission, geometry calibration or authority changes.
+
+**Validation boundary:** a focused structural contract protects Cache ownership,
+the independent 32-member oracle and deliberate non-movement of the four shared
+values. Protected GitHub Actions owns full structural and Lua behavioural
+validation.
+
 ## 2026-09-11 — #87 cadence preflight discovers Candidate-owned reassessment horizon
 
 **Observe:** the first `.54` implementation preflight rejected the proposed
