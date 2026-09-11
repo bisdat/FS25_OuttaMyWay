@@ -610,36 +610,6 @@ def test_v4742_traffic_policeman_decision_policy_current_implementation_contract
 
 
 
-def test_v4753_d0124_persistent_follower_boundary_demand_lifecycle_is_bounded_test_only():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    probe=(ROOT/"scripts"/"diagnostics"/"FollowerMaturationCompressionProbe.lua").read_text(encoding="utf-8")
-    assert "FOLLOWER_MATURATION_REGULATION_TEST_ENABLED = false" in config
-    assert "boundaryDemandFitness" in probe and "UNRESOLVED" in probe
-    assert "boundaryDemandAuthority=false" in probe
-    assert "control=false" in probe
-    for token in ("setDriveAuthoritySource", "setRegulationLease", "_applyOrUpdate"):
-        assert token not in probe
-
-
-
-def test_v4754_resolution_strategy_succession_contract():
-    probe=(ROOT/"scripts"/"diagnostics"/"FollowerMaturationCompressionProbe.lua").read_text(encoding="utf-8")
-    assert "RESOLUTION_STRATEGY_SUPERSEDED_BY_" not in probe
-    assert "PROGRESS_PASSAGE" not in probe
-    assert not (ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").exists()
-    assert "PRESERVE_BOUNDARY_TRANSITION_CLEARANCE_SHADOW" in probe
-
-
-
-def test_v4755_transition_clearance_factor_and_hud_consolidation_are_bounded():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    probe=(ROOT/"scripts"/"diagnostics"/"FollowerMaturationCompressionProbe.lua").read_text(encoding="utf-8")
-    hud=(ROOT/"scripts"/"diagnostics"/"FollowerPacingHud.lua").read_text(encoding="utf-8")
-    assert "FOLLOWER_MATURATION_TRANSITION_CLEARANCE_FACTOR = 0.90" in config
-    assert "hypotheticalAfterTestFactor" in probe
-    assert "boundaryDemandAuthority=false" in probe
-    assert "control=false" in probe
-    assert "Follower" in hud or "follower" in hud
 
 
 
@@ -697,15 +667,6 @@ def test_v4758_progression_preservation_probe_is_passive_and_knowledge_backed():
     assert 'WITNESS_OPEN' in probe and 'consumedFromBaseline' in probe and 'WITNESS_INVALIDATED' in probe
     assert 'MATURATION_WITNESS' in probe and 'COMMITTED_DEMAND' in probe and 'CURRENT_SPACE' in probe
 
-
-
-def test_v4759_d0130_purpose_preserving_regulation_catchup():
-    probe=(ROOT/"scripts"/"diagnostics"/"FollowerMaturationCompressionProbe.lua").read_text(encoding="utf-8")
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert "CAP_RELAXATION_REJECTED_PURPOSE_PERSISTS" not in probe
-    assert "FOLLOWER_MATURATION_REGULATION_TEST_ENABLED = false" in config
-    assert "hypotheticalCapKmh" in probe
-    assert "setRegulationLease" not in probe
 
 
 
@@ -804,13 +765,6 @@ def test_v4768_d0136_settlement_future_space_uses_explicit_observation_adapter()
     assert 'track.activeObserved=' not in residual
     assert 'settlementFutureSpaceInput=PERSISTENT_TRACK_TO_OBSERVATION_ADAPTER' in residual
     assert 'general production Control authority disabled' in runtime
-
-
-def test_v4769_d0139_refuge_progress_passage_succeeds_old_follower_compression_purpose():
-    follower=(ROOT/"scripts"/"diagnostics"/"FollowerMaturationCompressionProbe.lua").read_text(encoding="utf-8")
-    assert not (ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").exists()
-    assert "setPurposeSuccessionSource" not in follower
-    assert "_retireForProgressPassage" not in follower
 
 
 
@@ -923,12 +877,10 @@ def test_d0141_aligned_follower_boundary_regulation_uses_current_knowledge_and_c
     assert 'local interval=LIVE_RUNTIME_CONTROL_INTERVAL_MS' in coordinator
     assert 'OuttaMyWay.LIVE_RUNTIME_CONTROL_INTERVAL_MS' not in coordinator
     assert 'PASSIVE_SAMPLE_INTERVAL_MS' not in coordinator
-    assert 'FollowerMaturationCompressionProbe' not in assessment
-    assert 'FollowerMaturationCompressionProbe' not in support
-    assert 'FollowerMaturationCompressionProbe' not in control
     assert 'Follower regulation ALIGNED' in hud
-    assert 'legacy follower SHADOW' in hud
-    assert 'FollowerPacingHud.new(OuttaMyWay.runtime.regulationBoundedAuthority,OuttaMyWay.followerMaturationCompressionProbe)' in main
+    assert 'legacy follower SHADOW' not in hud
+    assert 'FollowerPacingHud.new(OuttaMyWay.runtime.regulationBoundedAuthority)' in main
+    assert 'followerMaturationCompressionProbe' not in main
 
 
 def test_v47100_d0146_step1_remains_situation_owned_knowledge_under_step2_consumption():

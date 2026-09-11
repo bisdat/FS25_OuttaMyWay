@@ -21,14 +21,13 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State: `main` after PR #131 merge,
-  `3f984364de1cb93b1c0682a35992c25d9087f97c`.
+- Accepted Repository State: `main` after PR #132 merge,
+  `c91c8da75536f438eee8a2f37e8ec3b854c5bea6`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.57 TEST — ENTITY-LOCAL SHAPE EVIDENCE OWNERSHIP`**.
-- Post-merge Offline Validation run #324 passed on exact `main`; corroborating
-  run #325 passed on the identical SHA.
-- Issue #87 is active through the `.58` Field World ownership tranche.
+  **`0.3.0.58 TEST — FIELD WORLD VALUE OWNERSHIP`**.
+- Post-merge Offline Validation run #328 passed on the exact merge commit.
+- Issue #87 remains active through the `.59` legacy follower-shadow retirement.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -70,8 +69,8 @@ Architectural meaning remains owned by the
 | Obstruction Relocation Control | `ObstructionRelocationControl.lua`, `NonJobActuationMechanism.lua` | PRESERVE one provenance-neutral physical executor beneath one Causal Obstruction / Obstruction Relocation responsibility; `.51` retires the already-uninstantiated D-0147 donor topology around it |
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting Obstruction Relocation movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
-| Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.43` removes the dead Passage target field and reports current `conflictIdentity` in the verdict trace |
-| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.57 localised prior consent, relocation, cadence and Representation families; `.58` removes the Field World value family into its three existing owners |
+| Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality for current instruments; `.59` retires the legacy follower-maturation forensic shadow because it no longer answers a current engineering question |
+| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.58 resolve prior consent, relocation, cadence, Representation and Field World families; `.59` retires all obsolete `FOLLOWER_MATURATION_*` shadow residue rather than assigning it a false current owner |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
 
 ## Boundary findings worth protecting
@@ -130,7 +129,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #87 | mixed runtime constants / Configuration ownership | `.58` resolves Field World production, interpretation and evidence-history values into existing semantic owners. Remaining #87 work concerns follower/trajectory, Cooperative Passage/Resolution Space, diagnostics/HUD, identity/validation values, and the required Player / Developer-Debug / Internal presentation boundary. |
+| #87 | mixed runtime constants / Configuration ownership | `.58` resolves Field World values. `.59` retires the obsolete follower-maturation forensic shadow and its root residue while preserving aligned Follower Boundary production semantics. Remaining #87 work concerns genuinely live diagnostics/HUD, follower/trajectory ownership, Cooperative Passage/Resolution Space, identity/validation values, and the required Player / Developer-Debug / Internal presentation boundary. |
 
 Issue #112 is closed completed. Issue #116 and #123 remain separate.
 
@@ -158,14 +157,21 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Implement and validate **#87 `.58 — FIELD WORLD VALUE OWNERSHIP`** from accepted
-`main` at `3f984364de1cb93b1c0682a35992c25d9087f97c`.
+Implement and validate **#87 `.59 — LEGACY FOLLOWER SHADOW RETIREMENT`** from
+accepted `main` at `c91c8da75536f438eee8a2f37e8ec3b854c5bea6`.
 
-Localise fourteen existing Field World values to the three modules that already
-own their meaning. Preserve every literal and all behaviour. Existing Field World
-Lua witnesses remain the behavioural oracle; add focused structural ownership
-protection.
+Delete the obsolete `FollowerMaturationCompressionProbe` rather than localising
+its constants. Remove all `FOLLOWER_MATURATION_*` root residue and the diagnostic
+HUD fallback that exists only to display that shadow.
 
-No Field World redesign, fingerprint migration, threshold retune, Job
-Episode/Operation change, broader Configuration presentation, #123, #116, #45 or
-#89 work belongs in this increment.
+Preserve the aligned Follower Boundary production chain, including
+`FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR = 0.90`, Situation-owned
+`FollowerBoundaryDemandAssessment`, Authority-owned magnitude materialisation,
+Regulation Bounded Authority and Control. Preserve Native Manoeuvre Observation
+and Progression Preservation as separate current responsibilities.
+
+Existing aligned follower behavioural witnesses remain the independent oracle;
+focused structural protection proves the retired shadow is no longer shipped.
+
+No follower-policy retune, Passage redesign, #123, #116, #45 or #89 work belongs
+in this increment.

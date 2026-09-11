@@ -2,39 +2,46 @@
 
 ## Repository authority
 
-- Accepted Repository State: `main` after PR #131 merge,
-  `3f984364de1cb93b1c0682a35992c25d9087f97c`.
+- Accepted Repository State: `main` after PR #132 merge,
+  `c91c8da75536f438eee8a2f37e8ec3b854c5bea6`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.57 TEST — ENTITY-LOCAL SHAPE EVIDENCE OWNERSHIP`**.
-- Post-merge Offline Validation run #324 passed on exact `main`; corroborating
-  run #325 passed on the identical SHA after #323 suffered GitHub teardown fault.
+  **`0.3.0.58 TEST — FIELD WORLD VALUE OWNERSHIP`**.
+- Post-merge Offline Validation run #328 passed on that exact merge commit.
 - Issue #87 remains open.
 
 ## Current workstream — Issue #87
 
-The next bounded ownership split is Field World.
+The proposed broad diagnostic-localisation tranche was narrowed after asking
+whether the historical follower-maturation shadow still has a current purpose.
 
-> **Shared Prefix != Shared Owner**
+Historical records show that the D-0124–D-0130 follower path was retained after
+the authority reset only for forensic comparison while aligned D-0141 Follower
+Boundary Regulation matured. The aligned path now owns independent Situation,
+Candidate, Responsibility, Bounded Authority, Control and regression coverage.
 
-> **Evaluation Thresholds Belong to the Evaluator That Interprets Them**
+> **Historical Forensic Value != Current Runtime Responsibility**
 
-> **Retention Bound != Equivalence Meaning**
+> **Shadow Without an Active Question Is Historical Residue**
 
-> **Schema Version Belongs to the Evidence Producer**
-
-`FieldWorldSnapshotRegistry` produces Snapshot/fingerprint evidence;
-`FieldWorldEquivalenceEvaluator` interprets SAME/DIFFERENT/UNRESOLVED spatial
-evidence; `FieldWorldEquivalenceAuthority` owns class assignment and retained
-comparison/resolution evidence history.
+The shadow has no current semantic consumer. Its remaining dependencies are
+self-referential loader/listener wiring, fallback HUD text and historical tests.
 
 ## Next bounded increment
 
-Implement **`0.3.0.58 TEST — FIELD WORLD VALUE OWNERSHIP`** by localising the
-fourteen accepted Field World values to those three existing owners without
-changing literals, algorithms, reason vocabulary, Snapshot identity, class
-lifecycle or retention semantics. Existing Field World behavioural witnesses
-remain the independent oracle; focused structural protection owns placement.
+Implement **`0.3.0.59 TEST — LEGACY FOLLOWER SHADOW RETIREMENT`**:
+
+1. delete `FollowerMaturationCompressionProbe.lua`;
+2. remove module/instance/listener wiring;
+3. remove the follower HUD shadow fallback while retaining aligned status;
+4. remove all seven `FOLLOWER_MATURATION_*` root values;
+5. retire historical fixtures that exist only to prove the shadow is neutral;
+6. preserve independent aligned Follower Boundary behavioural witnesses;
+7. preserve `FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR = 0.90` and all
+   aligned assessment/authority/Control semantics;
+8. retain `NativeManoeuvreObservationSource` and `ProgressionPreservationProbe`.
+
+After `.59`, return to ownership localisation of genuinely live diagnostics.
 
 ## Separate open work
 

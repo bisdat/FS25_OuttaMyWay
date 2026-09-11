@@ -1,3 +1,38 @@
+## 2026-09-11 — #87 retires the legacy follower-maturation forensic shadow
+
+**Observe:** the post-`.58` diagnostic census initially suggested localising
+`FOLLOWER_MATURATION_*` values to `FollowerMaturationCompressionProbe`. Review
+then asked the higher-level question: does that shadow still serve a current
+engineering purpose?
+
+History shows the D-0124–D-0130 path was retained after the D-0140 authority
+reset only as a diagnostic/forensic comparison while aligned D-0141 Follower
+Boundary Regulation matured. The current aligned path now has independent
+assessment, Candidate, Responsibility, Bounded Authority, Control and regression
+coverage. The shadow has no semantic consumer; its surviving dependencies are
+its own loader/listener wiring, fallback HUD line and historical neutralisation
+fixtures. Preflight also found an Issue #112 vocabulary contract that deliberately
+preserved it as a "true shadow"; that contract protected the then-current
+classification, not an architectural requirement that the shadow exist forever.
+
+> **Historical "True Shadow" Classification != Perpetual Runtime Obligation**
+
+> **Historical Forensic Value != Current Runtime Responsibility**
+
+> **Shadow Without an Active Question Is Historical Residue**
+
+**Decision:** `.59` deletes the follower-maturation shadow instead of assigning
+its historical calibration a new owner. All seven `FOLLOWER_MATURATION_*` root
+values retire with it, including already-orphaned validation controls. The
+aligned `FOLLOWER_BOUNDARY_*` production path and its 0.90 transition-clearance
+factor remain unchanged. Native Manoeuvre Observation and Progression
+Preservation remain separate current responsibilities.
+
+**Validation boundary:** historical shadow fixtures retire or are rewritten to
+protect current facts. Existing aligned follower behavioural tests remain the
+behavioural oracle, and a focused structural contract proves the shadow is no
+longer shipped while the aligned chain remains present.
+
 ## 2026-09-11 — #87 Field World value ownership split
 
 After `.57`, fourteen `FIELD_WORLD_*` values remained on the mixed root surface,

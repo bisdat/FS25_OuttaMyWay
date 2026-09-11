@@ -41,7 +41,7 @@ def test_primary_live_vocabulary_uses_current_responsibilities():
         assert stale not in config + support + capability + authority + runtime
 
 
-def test_issue112_graduated_physical_representation_uses_current_names_without_erasing_true_shadow():
+def test_issue112_graduated_physical_representation_uses_current_names_without_erasing_distinct_evidence_contracts():
     current_paths = (
         ROOT / "scripts" / "observation" / "LiveObservationSource.lua",
         ROOT / "scripts" / "observation" / "FieldBoundedFutureSpace.lua",
@@ -81,13 +81,11 @@ def test_issue112_graduated_physical_representation_uses_current_names_without_e
     # Current Interface Identity != Historical Evidence Identity.
     residual = (ROOT / "scripts" / "diagnostics" / "ProductiveCoverageResidualProbe.lua").read_text(encoding="utf-8")
     refuge = (ROOT / "scripts" / "diagnostics" / "RefugeQualificationShadowProbe.lua").read_text(encoding="utf-8")
-    follower = (ROOT / "scripts" / "diagnostics" / "FollowerMaturationCompressionProbe.lua").read_text(encoding="utf-8")
     native_drive = (ROOT / "scripts" / "diagnostics" / "NativeFieldWorkerDriveCommandProbe.lua").read_text(encoding="utf-8")
 
     assert "assemblyRepresentation=track.shadowRepresentation" in residual
     assert "track.shadowRepresentation" in residual
     assert "track.shadowRepresentation" in refuge
-    assert "PASSIVE_SHADOW_ONLY" in follower
     assert "PASSIVE_SHADOW_ONLY" in native_drive
 
 

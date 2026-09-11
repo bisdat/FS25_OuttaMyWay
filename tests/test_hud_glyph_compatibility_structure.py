@@ -19,6 +19,6 @@ def test_follower_hud_uses_reality_proven_ascii_separators():
     follower = read("scripts/diagnostics/FollowerPacingHud.lua")
 
     assert "Follower regulation ALIGNED%s | %s for %s | cap %s / native %s km/h" in follower
-    assert "legacy follower SHADOW for %s | would-cap %s km/h | no Control" in follower
+    assert "legacy follower SHADOW" not in follower
     # Deliberately no generic non-ASCII assertion: current Reality evidence
     # establishes U+2022 as unsupported, not a complete Unicode prohibition.
