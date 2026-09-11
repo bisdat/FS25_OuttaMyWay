@@ -2,6 +2,13 @@ OuttaMyWay.CurrentPhysicalConflictRepresentation = {}
 local Representation = OuttaMyWay.CurrentPhysicalConflictRepresentation
 Representation.__index = Representation
 
+-- Positive current-conflict candidate discovery scans one current Physical
+-- Assembly under one aggregate hierarchy budget.
+local CURRENT_ASSEMBLY_CANDIDATE_HIERARCHY_SCAN_BUDGET=2200
+-- Cached candidate-node discovery is refreshed on this horizon. Current member
+-- participation is still rechecked every observation independently of this cache.
+local CANDIDATE_DISCOVERY_REFRESH_INTERVAL_SECONDS=5
+
 local function finite(value)
     return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
 end
@@ -118,7 +125,7 @@ local function discoverCandidates(root)
     local seenNodes={}
     local scanned=0
     local truncated=false
-    local budget=OuttaMyWay.REPRESENTATION_HIERARCHY_SCAN_BUDGET or 256
+    local budget=CURRENT_ASSEMBLY_CANDIDATE_HIERARCHY_SCAN_BUDGET
     local getCount=api("getNumOfChildren")
     local getChild=api("getChildAt")
 
@@ -181,7 +188,7 @@ end
 function Representation:observe(root,assemblyReferenceKey,nowSeconds)
     if not usableVehicle(root) then return nil end
     local now=tonumber(nowSeconds) or 0
-    local interval=tonumber(OuttaMyWay.REPRESENTATION_ASSEMBLY_REVALIDATION_INTERVAL_SECONDS) or 5
+    local interval=CANDIDATE_DISCOVERY_REFRESH_INTERVAL_SECONDS
     local record=self.records[assemblyReferenceKey]
 
     if record==nil

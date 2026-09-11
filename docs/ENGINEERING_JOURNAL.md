@@ -1,3 +1,41 @@
+## 2026-09-11 — #87 splits Representation cache bounds by actual domain
+
+**Observe:** after `.55`, four Representation globals remained shared between
+`AssemblyRepresentationCache` and `CurrentPhysicalConflictRepresentation`.
+
+The two `2200` hierarchy-scan uses are not one budget. The Cache applies the bound
+per Physical Assembly member while constructing catalogue geometry; the current
+positive-conflict representation applies one aggregate bound across current
+assembly candidate discovery.
+
+> **Same Literal != Same Budget Domain**
+
+The two `5 s` uses are not one validity horizon. The Cache periodically rechecks
+Job-scoped Physical Assembly membership fingerprint validity. The current
+positive-conflict representation refreshes cached candidate-node discovery, while
+current member participation is rechecked every Observation.
+
+> **Same Literal != Same Validity Horizon**
+
+The remaining `0.05 m` geometry-coherence and `0.0001 m` root-alias tolerances
+are materially different: both products apply the same physical-shape acceptance
+predicate required by the Resolution Contract.
+
+> **Shared Evidence Predicate != Shared Representation Product**
+
+**Decision:** `.56` preserves all numeric values exactly, localises hierarchy-scan
+and refresh/revalidation bounds to their distinct cache domains, and leaves the
+two Shape Resolution Evidence tolerances untouched on the mixed root surface
+pending explicit shared-concept ownership.
+
+This is ownership decomposition only; no Representation algorithm, authority,
+scan breadth, cadence or Resolution semantics change.
+
+**Validation boundary:** the `.55` structural contract advances to protect only
+the two still-shared Shape Resolution Evidence tolerances, and a new `.56`
+contract protects the four local cache-bound owners. Protected GitHub Actions owns
+full structural and Lua behavioural validation.
+
 ## 2026-09-11 — #87 narrows Physical Representation ownership after preflight counterexample
 
 **Observe:** the first `.55` preflight rejected the hypothesis that all five
