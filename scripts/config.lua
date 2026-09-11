@@ -1,11 +1,11 @@
--- FS25_OuttaMyWay v0.3.0.48 TEST — ENDED JOB OBSTRUCTION EVIDENCE.
+-- FS25_OuttaMyWay v0.3.0.49 TEST — ENDED JOB OBSTRUCTION EVIDENCE.
 -- A positively ENDED Job Episode may establish non-active status for the same
 -- provenance-neutral Causal Obstruction / Obstruction Relocation responsibility.
 -- Fresh ACTIVE Job evidence returns the assembly to ordinary GIANTS worker mechanics.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.48"
+OuttaMyWay.VERSION = "0.3.0.49"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -163,7 +163,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.47 TEST — OBSTRUCTION RELOCATION RESPONSIBILITY CONSOLIDATION"
+OuttaMyWay.BUILD_LABEL = "0.3.0.49 TEST — ENDED JOB OBSTRUCTION EVIDENCE"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985

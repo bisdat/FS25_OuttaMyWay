@@ -27,7 +27,7 @@ Architectural meaning remains owned by the
 - Accepted executable identity is
   **`0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING`**.
 - Current Issue #121 executable candidate is
-  **`0.3.0.48 TEST — ENDED JOB OBSTRUCTION EVIDENCE`**.
+  **`0.3.0.49 TEST — ENDED JOB OBSTRUCTION EVIDENCE`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -161,18 +161,17 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Validate **#121 `.48 — ENDED JOB OBSTRUCTION EVIDENCE`** on PR #122 from
-the `.47` strangler head. `.47` passed protected CI and the cold GIANTS Reality
-challenge but failed the required warm challenge: the same-runtime completed
-Condor remained `ACTIVITY_UNRESOLVED` and never relocated.
+Validate **#121 `.49 — ENDED JOB OBSTRUCTION EVIDENCE`** on PR #122.
+`.48` passed all behavioural contracts (**340/0 main; 12/0 focused**) and failed
+only the dynamic Build Identity Contract because `BUILD_LABEL` remained `.47`
+while `VERSION` and `modDesc` were `.48`.
 
-`.48` preserves the `.47` responsibility consolidation and corrects only the
-evidence seam exposed by Reality: an existing positively ENDED Job Episode may
-resolve warm non-active activity, while cold blockers still require current
-inactivity observation. Fresh ACTIVE Job evidence returns the assembly to
-ordinary worker Situation mechanics and invalidates non-active relocation.
+`.49` is an identity-coherence correction only: no intended Causal Obstruction,
+Obstruction Relocation, Observation, Candidate, Control or lifecycle behaviour
+changes from `.48`. The ENDED-Job evidence correction remains the candidate
+behaviour requiring warm GIANTS Reality validation.
 
-Protected CI must pass before repeating the warm GIANTS Reality challenge. Donor
-source deletion plus `POST_JOB_ACTUATION` retirement remains blocked until this
+Protected CI must pass before repeating that warm challenge. Donor source
+deletion plus `POST_JOB_ACTUATION` retirement remains blocked until the
 replacement path passes Reality. Do not fold #87, #116, #45 or #89 into this
 increment.

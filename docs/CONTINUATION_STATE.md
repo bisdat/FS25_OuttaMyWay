@@ -12,7 +12,7 @@ Engineering Journal preserve chronology.
 - Accepted executable identity is
   **`0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING`**.
 - Current Issue #121 executable candidate is
-  **`0.3.0.48 TEST — ENDED JOB OBSTRUCTION EVIDENCE`**; `.47` passed protected CI and cold Reality but failed the required warm Reality challenge, so it is superseded as a candidate and remains unmerged.
+  **`0.3.0.49 TEST — ENDED JOB OBSTRUCTION EVIDENCE`**; `.48` passed all behavioural CI but failed the dynamic Build Identity Contract because its `BUILD_LABEL` remained `.47`, so `.49` is the identity-coherent candidate with no intended behavioural change.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
@@ -187,25 +187,21 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Implement and validate **#121 `.48 — ENDED JOB OBSTRUCTION EVIDENCE`** on
-PR #122. `.47` successfully strangled the separate warm production responsibility,
-passed protected CI, and passed the cold GIANTS obstruction challenge, but failed
-the warm same-runtime completed-worker challenge because Condor remained
-`ACTIVITY_UNRESOLVED`.
+Validate **#121 `.49 — ENDED JOB OBSTRUCTION EVIDENCE`** on PR #122.
+`.48` implemented the ENDED-Job evidence correction and protected Lua behavioural
+validation passed **340/0 main** and **12/0 focused Obstruction Relocation**.
+Structural validation was **190/1** solely because `VERSION`/`modDesc` were `.48`
+while `BUILD_LABEL` accidentally remained `.47`.
 
-Reality established that the Job layer had already positively ENDED Condor's Job
-Episode before the later blockage. `.48` therefore keeps the same
-provenance-neutral Obstruction Relocation responsibility but allows ENDED Job
-Episode evidence to resolve the activity side of warm non-active classification.
-Cold blockers continue to require current observed GIANTS inactivity. Current
-Player Claim remains a separate veto.
+`.49` changes no intended obstruction behaviour. It makes the two build-version
+source owners coherent with one fresh TEST identity and preserves the `.48`
+evidence model: ENDED Job Episode may resolve warm non-active activity; cold
+blockers still require current observed GIANTS inactivity; Current Player Claim
+remains a veto; fresh ACTIVE Job evidence returns the assembly to ordinary
+GIANTS / Regulation / Passage mechanics.
 
-> **Provenance-Neutral Responsibility != Evidence-Neutral Assessment**
+> **Behavioural Validation PASS != Build Identity Coherence PASS**
 
-> **Job Activation Is Situation Change, Not Relocation Supersession Logic**
-
-A later fresh ACTIVE Job Episode simply makes the assembly a worker again and
-returns conflict handling to ordinary GIANTS / Regulation / Passage mechanics.
 Protected CI must pass before repeating the warm GIANTS Reality challenge. Donor
 retirement remains blocked; #87 follows after reconciliation closes and #116
 remains parked.

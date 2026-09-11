@@ -1,3 +1,24 @@
+## 2026-09-11 — `.48` behavioural CI passes; build identity mismatch selects `.49`
+
+**Validate:** protected Offline Validation #303 on
+`aa1e939bf8d73b4c40629c3e7a8c827da8bbf7be` passed all executable behaviour:
+main replacement-core **340/0** and focused Obstruction Relocation **12/0**,
+including warm ENDED evidence, cold fail-closed activity observation,
+ACTIVE-over-ENDED precedence, Current Player Claim and active-job re-entry.
+
+Structural contracts were **190/1**. The sole failure was the dynamic Build
+Identity Contract: `OuttaMyWay.VERSION` and `modDesc.xml` were `0.3.0.48`, but
+`OuttaMyWay.BUILD_LABEL` still named `.47`.
+
+> **Behavioural Validation PASS != Build Identity Coherence PASS**
+
+Because `.48` executable code was already pushed, correcting the executable
+version-source owner cannot silently rewrite that TEST identity. `.49` therefore
+carries **no intended behavioural change**: it advances `VERSION`, `BUILD_LABEL`
+and `modDesc` coherently to
+**`0.3.0.49 TEST — ENDED JOB OBSTRUCTION EVIDENCE`** and updates only
+present-state documentation. Historical `.48` evidence remains recorded.
+
 ## 2026-09-11 — `.47` warm Reality failure selects `.48` ENDED Job evidence correction
 
 **Observe:** two owner-run GIANTS `.47` challenges produced a discriminating split.
