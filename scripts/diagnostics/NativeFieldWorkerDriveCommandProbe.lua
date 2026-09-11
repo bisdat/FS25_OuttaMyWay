@@ -19,6 +19,11 @@ OuttaMyWay.NativeFieldWorkerDriveCommandProbe={}
 local Probe=OuttaMyWay.NativeFieldWorkerDriveCommandProbe
 Probe.__index=Probe
 
+-- Instrument-private controls for the passive native-command observer.
+local NATIVE_FIELD_WORKER_DRIVE_COMMAND_ENABLED=true
+local NATIVE_FIELD_WORKER_DRIVE_COMMAND_SAMPLE_INTERVAL_MS=250
+local NATIVE_FIELD_WORKER_DRIVE_COMMAND_HEARTBEAT_MS=1000
+
 local function logInfo(formatText,...)
     local message=string.format(formatText,...)
     if Logging~=nil and type(Logging.info)=="function" then
@@ -167,7 +172,7 @@ function Probe:_logSample(event,command)
 end
 
 function Probe:logEvent(event,vehicle)
-    if OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_ENABLED~=true or vehicle==nil then return nil end
+    if NATIVE_FIELD_WORKER_DRIVE_COMMAND_ENABLED~=true or vehicle==nil then return nil end
     local command=self:sampleVehicle(vehicle)
     self.latest[command.referenceKey]=command
     self:_logSample(event or "EVENT",command)
@@ -177,14 +182,14 @@ end
 function Probe:getLatest(ref) return self.latest[ref] end
 
 function Probe:update(dt)
-    if OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_ENABLED~=true or g_currentMission==nil then return end
+    if NATIVE_FIELD_WORKER_DRIVE_COMMAND_ENABLED~=true or g_currentMission==nil then return end
     if g_client~=nil and g_server==nil then return end
     self.elapsed=self.elapsed+(dt or 0)
-    local interval=OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_INTERVAL_MS or 250
+    local interval=NATIVE_FIELD_WORKER_DRIVE_COMMAND_SAMPLE_INTERVAL_MS
     if self.elapsed<interval then return end
     self.elapsed=self.elapsed%interval
     local nowMs=tonumber(g_time) or 0
-    local heartbeat=OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_HEARTBEAT_MS or 1000
+    local heartbeat=NATIVE_FIELD_WORKER_DRIVE_COMMAND_HEARTBEAT_MS
     for _,vehicle in OuttaMyWay.ValueRecord.ipairs(OuttaMyWay.LiveAIJobEvidence.activeJobVehicles(g_currentMission)) do
         local command=self:sampleVehicle(vehicle)
         self.latest[command.referenceKey]=command

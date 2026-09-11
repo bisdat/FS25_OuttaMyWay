@@ -645,14 +645,13 @@ def test_d0181_d0143_runtime_literals_and_resurrection_switch_are_retired():
     assert 'kind="COOPERATIVE_PASSAGE"' in runtime
 
 def test_v4758_progression_preservation_probe_is_passive_and_knowledge_backed():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
     op=(ROOT/"scripts"/"contracts"/"OperationalPicture.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"ProgressionPreservationProbe.lua").read_text(encoding="utf-8")
-    assert 'PROGRESSION_PRESERVATION_PROBE_ENABLED = true' in config
+    assert 'local PROGRESSION_PRESERVATION_ENABLED=true' in probe
     assert 'scripts/diagnostics/ProgressionPreservationProbe.lua' in main
     assert 'progressionEvidence = {}' in source
     assert 'LIVE_MOTION_DIAGNOSTIC_PLUS_GIANTS_LOCAL_INTENT' in source
@@ -721,7 +720,6 @@ def test_v4798_d0144_unsources_chessboard_productive_history_and_refuge_shadow_f
     assert (ROOT/"scripts"/"diagnostics"/"RefugeQualificationShadowProbe.lua").is_file()
 
 def test_v4767_d0138_native_field_worker_drive_command_probe_is_passive_and_sdk_aligned():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"NativeFieldWorkerDriveCommandProbe.lua").read_text(encoding="utf-8")
     refuge=(ROOT/"scripts"/"diagnostics"/"RefugeQualificationShadowProbe.lua").read_text(encoding="utf-8")
@@ -729,7 +727,7 @@ def test_v4767_d0138_native_field_worker_drive_command_probe_is_passive_and_sdk_
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     d0137=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_32_NATIVE_AI_DRIVE_SIGNAL_SHADOW.md").read_text(encoding="utf-8")
     d0138=(ROOT/"docs"/"research"/"prototypes"/"PROTOTYPE_33_NATIVE_FIELD_WORKER_DRIVE_COMMAND_SHADOW.md").read_text(encoding="utf-8")
-    assert 'NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_ENABLED = true' in config
+    assert 'local NATIVE_FIELD_WORKER_DRIVE_COMMAND_ENABLED=true' in probe
     assert 'scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua' in main
     assert 'addModEventListener(OuttaMyWay.nativeFieldWorkerDriveCommandProbe)' in main
     assert 'spec_aiFieldWorker' in probe and 'aiDriveParams' in probe

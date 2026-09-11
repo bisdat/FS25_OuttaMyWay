@@ -2,6 +2,10 @@ OuttaMyWay.ProgressionPreservationProbe = {}
 local Probe=OuttaMyWay.ProgressionPreservationProbe
 Probe.__index=Probe
 
+-- Instrument-private diagnostic controls; Situation/Decision/Control authority is unchanged.
+local PROGRESSION_PRESERVATION_ENABLED=true
+local PROGRESSION_PRESERVATION_HEARTBEAT_MS=1000
+
 local function logInfo(message)
     if Logging~=nil and type(Logging.info)=="function" then
         Logging.info("[FS25_OuttaMyWay][PROGRESSION-PRESERVATION] %s",message)
@@ -239,7 +243,7 @@ function Probe:_logWitness(subject,region,result,picture,evaluated,timestampMs)
             tostring(subject.name),tostring(subject.referenceKey),tostring(subject.intentEpoch),tostring(region.targetName),tostring(region.class),tostring(stableWitness),tostring(region.purpose),
             result.knownWitnessEntryM or -1,result.projectionLimitM or -1,tostring(region.authority)))
     end
-    local heartbeat=OuttaMyWay.PROGRESSION_PRESERVATION_PROBE_HEARTBEAT_MS or 1000
+    local heartbeat=PROGRESSION_PRESERVATION_HEARTBEAT_MS
     if timestampMs-(self.lastLogAt[key] or -math.huge)>=heartbeat then
         self.lastLogAt[key]=timestampMs
         local consumed=(record.baselineWitnessEntryM or 0)-(result.knownWitnessEntryM or 0)
@@ -253,7 +257,7 @@ function Probe:_logWitness(subject,region,result,picture,evaluated,timestampMs)
 end
 
 function Probe:observe(snapshot,picture,evaluated,timestampSeconds)
-    if OuttaMyWay.PROGRESSION_PRESERVATION_PROBE_ENABLED~=true then return end
+    if PROGRESSION_PRESERVATION_ENABLED~=true then return end
     if picture==nil then return end
     local timestampMs=(tonumber(timestampSeconds) or 0)*1000
     local idx=indexPicture(picture)
@@ -277,7 +281,7 @@ function Probe:observe(snapshot,picture,evaluated,timestampSeconds)
             end
             for _,item in pairs(classBest) do seen[self:_logWitness(subject,item.region,item.result,picture,evaluated,timestampMs)]=true end
             local summaryKey=tostring(subject.referenceKey).."|"..tostring(subject.intentEpoch)
-            local heartbeat=OuttaMyWay.PROGRESSION_PRESERVATION_PROBE_HEARTBEAT_MS or 1000
+            local heartbeat=PROGRESSION_PRESERVATION_HEARTBEAT_MS
             if timestampMs-(self.lastSummaryAt[summaryKey] or -math.huge)>=heartbeat then
                 self.lastSummaryAt[summaryKey]=timestampMs
                 local parts={}; for class,item in pairs(classBest) do parts[#parts+1]=class.."="..string.format("%.2fm",item.result.knownWitnessEntryM) end; table.sort(parts)
@@ -287,7 +291,7 @@ function Probe:observe(snapshot,picture,evaluated,timestampSeconds)
         else
             local motion=idx.motion[assemblyId]
             local summaryKey="UNRESOLVED|"..tostring(motion and motion.assemblyReferenceKey or assemblyId).."|"..tostring(motion and motion.intentEpoch or "na")
-            local heartbeat=OuttaMyWay.PROGRESSION_PRESERVATION_PROBE_HEARTBEAT_MS or 1000
+            local heartbeat=PROGRESSION_PRESERVATION_HEARTBEAT_MS
             if timestampMs-(self.lastSummaryAt[summaryKey] or -math.huge)>=heartbeat then
                 self.lastSummaryAt[summaryKey]=timestampMs
                 logInfo(string.format("SUBJECT_UNRESOLVED subject=%s subjectRef=%s intentEpoch=%s reason=%s decisionAuthority=false speedAuthority=false controlAuthority=false",

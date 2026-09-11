@@ -2,6 +2,9 @@ OuttaMyWay.TargetedFieldIdentityProbe = {}
 local Probe = OuttaMyWay.TargetedFieldIdentityProbe
 Probe.__index = Probe
 
+-- Instrument-private publication cadence; Runtime invocation remains separately owned.
+local FIELD_IDENTITY_HEARTBEAT_INTERVAL_MS=10000
+
 local function logInfo(message)
     if Logging ~= nil and type(Logging.info) == "function" then
         Logging.info("[FS25_OuttaMyWay][FIELD-PROBE] %s", message)
@@ -101,7 +104,7 @@ end
 function Probe:update(mission, nowSeconds, nowMs)
     local captured = self:capture(mission, nowSeconds)
     self.samples = self.samples + 1
-    local due = (nowMs or 0) - self.lastHeartbeatMs >= (OuttaMyWay.FIELD_IDENTITY_PROBE_HEARTBEAT_INTERVAL_MS or 10000)
+    local due = (nowMs or 0) - self.lastHeartbeatMs >= FIELD_IDENTITY_HEARTBEAT_INTERVAL_MS
     local emitted = false
     for _, record in OuttaMyWay.ValueRecord.ipairs(captured.records) do
         local current = signature(record)

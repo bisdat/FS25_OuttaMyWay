@@ -6,6 +6,11 @@ OuttaMyWay.ProductiveContinuationProbe = {}
 local Probe=OuttaMyWay.ProductiveContinuationProbe
 Probe.__index=Probe
 
+-- Instrument-private controls; none grants semantic or Control authority.
+local PRODUCTIVE_CONTINUATION_ENABLED=true
+local PRODUCTIVE_CONTINUATION_SAMPLE_INTERVAL_MS=250
+local PRODUCTIVE_CONTINUATION_HEARTBEAT_MS=2000
+
 local function logInfo(message)
     if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][PROBE21] %s",message) else print("[FS25_OuttaMyWay][PROBE21] "..message) end
 end
@@ -31,10 +36,10 @@ function Probe:keyEvent() end
 function Probe:mouseEvent() end
 function Probe:draw() end
 function Probe:update(dt)
-    if OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_ENABLED~=true or self.assessment==nil then return end
+    if PRODUCTIVE_CONTINUATION_ENABLED~=true or self.assessment==nil then return end
     if g_client~=nil and g_server==nil then return end
     self.elapsed=self.elapsed+(dt or 0)
-    local interval=OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_INTERVAL_MS or 250
+    local interval=PRODUCTIVE_CONTINUATION_SAMPLE_INTERVAL_MS
     if self.elapsed<interval then return end
     self.elapsed=self.elapsed%interval
     local now=tonumber(g_time) or 0
@@ -43,7 +48,7 @@ function Probe:update(dt)
     for ref,evidence in OuttaMyWay.ValueRecord.pairs(evidenceMap) do
         seen[ref]=true
         local signature=table.concat({tostring(evidence.jobToken),tostring(evidence.evidenceClass),tostring(evidence.productivePositive),tostring(evidence.isTurn),tostring(evidence.implementLineClassification),tostring(evidence.movingDirection)},"|")
-        local heartbeat=OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_HEARTBEAT_MS or 2000
+        local heartbeat=PRODUCTIVE_CONTINUATION_HEARTBEAT_MS
         if self.signatures[ref]~=signature or self.lastHeartbeatAt[ref]==nil or now-self.lastHeartbeatAt[ref]>=heartbeat then
             self.signatures[ref]=signature; self.lastHeartbeatAt[ref]=now
             logInfo(string.format("worker=%s ref=%s job=%s knowledge=%s productivePositive=%s turn=%s line=%s direction=%s representationFitness=%s source=SituationAssessment diagnosticOnly=true",
