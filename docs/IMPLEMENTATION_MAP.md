@@ -21,13 +21,13 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State: `main` after PR #134 merge,
-  `b06f78a74443a5b547affcb8eca91e0fa3579d1c`.
+- Accepted Repository State: `main` after PR #135 merge,
+  `b04cc98cb4d66aeccb77fd146205903d89b35d09`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.60 TEST — LIVE DIAGNOSTIC VALUE OWNERSHIP`**.
-- Post-merge Offline Validation run #332 passed on the exact merge commit.
-- Issue #87 remains active through the `.61` Trajectory Assessment value-ownership tranche.
+  **`0.3.0.61 TEST — TRAJECTORY ASSESSMENT VALUE OWNERSHIP`**.
+- Post-merge Offline Validation run #334 passed on the exact merge commit.
+- Issue #87 remains active through the `.62` Follower Boundary assessment value-ownership tranche.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -47,7 +47,7 @@ Architectural meaning remains owned by the
 | Passage-specific geometry | `AssemblyRepresentationCache.lua`, `PairSpecificPassageClearance.lua`, `LocalPassagePlanner.lua` | PRESERVE directional Transit Passage contract for non-truncated complete assemblies |
 | Situation Assessment | `scripts/assessment/SituationAssessment.lua` and focused assessment collaborators | PRESERVE current interpreted relationship ownership except listed drift |
 | Current Pair Assessment Scope | `scripts/assessment/CurrentPairAssessmentScope.lua` plus `SituationAssessment.lua` | PRESERVE — accepted by #100 / PR #113; ephemeral current Operation/exact-Job-Episode pair scope with no generic pair lifecycle or last-positive truth |
-| Follower Boundary evidence | `scripts/assessment/FollowerBoundaryDemandAssessment.lua` | PRESERVE admissible magnitude evidence/envelope; no requested Control target (#98 / PR #108) |
+| Follower Boundary evidence | `scripts/assessment/FollowerBoundaryDemandAssessment.lua` | PRESERVE admissible magnitude evidence/envelope; `.62` makes the evaluator explicit owner of its six alignment/retention/clearance/temporal-seed calibrations; no requested Control target (#98 / PR #108) |
 | Forward Intersection / Action-Space evidence | `SpatialConstraintAssessment.lua`, `TrajectoryConflictAssessment.lua` | PRESERVE current positive/unresolved/negative semantics; `.61` makes Trajectory Conflict Assessment the explicit owner of its ten sampling/persistence/opposed-current calibrations while Passage Action-Space separation remains external context |
 | Causal Obstruction | `CausalObstructionAssessment.lua` | PRESERVE: current GIANTS inactivity observation and ENDED Job Episode are two evidence routes into the same non-active classification; no provenance-specific downstream responsibility |
 | Candidate construction / planning | `scripts/candidates/` | PRESERVE feasible option/support/planning ownership |
@@ -70,7 +70,7 @@ Architectural meaning remains owned by the
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting Obstruction Relocation movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.59` retires the expired follower-maturation shadow and `.60` localises five live instruments' enablement/publication controls without moving semantic authority |
-| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.60 resolve prior ownership/retirement families; `.61` removes ten Trajectory Conflict Assessment calibrations from the mixed root without retuning behaviour |
+| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.61 resolve prior ownership/retirement families; `.62` removes six Follower Boundary assessment calibrations while preserving the distinct Candidate-expression enable gate |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
 
 ## Boundary findings worth protecting
@@ -129,7 +129,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #87 | mixed runtime constants / Configuration ownership | `.61` localises ten Trajectory Conflict Assessment calibrations and removes `SituationAssessment` as their parameter courier while retaining external Passage Action-Space context. Remaining #87 work concerns HUD/#89 boundaries, Follower Boundary ownership, Cooperative Passage/Resolution Space, identity/validation values, and the required Player / Developer-Debug / Internal presentation boundary. |
+| #87 | mixed runtime constants / Configuration ownership | `.62` localises six Follower Boundary assessment calibrations and removes `SituationAssessment` as their parameter courier. The similarly named aligned-Regulation enable gate remains a separate Candidate-expression responsibility pending later classification. Remaining #87 work concerns that gate, HUD/#89 boundaries, Cooperative Passage/Resolution Space, identity/validation values, and the required Player / Developer-Debug / Internal presentation boundary. |
 
 Issue #112 is closed completed. Issue #116 and #123 remain separate.
 
@@ -157,21 +157,26 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Implement and validate **#87 `.61 — TRAJECTORY ASSESSMENT VALUE OWNERSHIP`** from
-accepted `main` at `b06f78a74443a5b547affcb8eca91e0fa3579d1c`.
+Implement and validate **#87 `.62 — FOLLOWER BOUNDARY ASSESSMENT VALUE OWNERSHIP`**
+from accepted `main` at `b04cc98cb4d66aeccb77fd146205903d89b35d09`.
 
-Localise exactly ten trajectory/opposed-current implementation calibrations to
-`TrajectoryConflictAssessment`. Preserve every literal and all current Trajectory
-Conflict Assessment semantics exactly. Production `SituationAssessment` continues
-to supply evidence and the separate Passage Action-Space maximum, but no longer
-couriers evaluator-private calibration.
+Localise exactly six Follower Boundary assessment calibrations to
+`FollowerBoundaryDemandAssessment`: clearance factor, current alignment,
+established lateral retention, established alignment retention, opposed-succession
+retention and provisional temporal-seed duration. Preserve every literal and all
+current assessment semantics exactly.
 
-Retain optional context overrides in `TrajectoryConflictAssessment` because the
-offline behavioural harness already uses explicit fixture values as an independent
-oracle. Do not rewrite those behavioural fixtures to follow production placement.
+Production `SituationAssessment` continues to supply evidence and commitment /
+operation context, but no longer couriers evaluator-private calibration. Direct
+options/values remain supported as focused-test override seams.
 
-`COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M = 80` remains external
-Passage/Action-Space policy context and must not move in this tranche.
+`FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true` remains untouched in
+`scripts/config.lua` and remains consumed by `LiveTrafficCandidateSupport` as a
+separate Candidate-expression gate.
 
-HUD/#89, Follower Boundary, Passage/Resolution-Space policy, #123, #116 and #45
-are outside this increment.
+Reconcile only historical tests that froze the former root placement. Preserve
+their aligned-production meaning and the independent Lua D-0141 behavioural
+fixtures.
+
+Enable-gate ownership, speed retuning, HUD/#89, Passage/Resolution-Space policy,
+#123, #116 and #45 are outside this increment.

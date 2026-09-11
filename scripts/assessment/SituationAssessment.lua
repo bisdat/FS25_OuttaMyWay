@@ -528,13 +528,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     local followerBoundaryKnowledge=OuttaMyWay.FollowerBoundaryDemandAssessment.buildKnowledge({
         currentSpace=currentSpace,futureSpace=futureSpace,motionEvidence=motionEvidence,productiveKnowledge=productiveKnowledge,
         opposedCorridorKnowledge=opposedCorridorKnowledge,
-        commitmentContext=commitmentContext,operationByAssembly=operationByAssembly,
-        minHeadingDot=OuttaMyWay.FOLLOWER_BOUNDARY_CURRENT_ALIGNMENT_MIN_DOT or 0.99,
-        provisionalDurationSec=OuttaMyWay.FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC or 13.0,
-        establishedLateralRetentionM=OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_LATERAL_RETENTION_M or 1.0,
-        establishedAlignmentMinDot=OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_ALIGNMENT_MIN_DOT or 0.95,
-        establishedOpposedSuccessionMaxDot=OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_OPPOSED_SUCCESSION_MAX_DOT or -0.95,
-        clearanceFactor=OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR or 0.90
+        commitmentContext=commitmentContext,operationByAssembly=operationByAssembly
     })
 
     -- Established follower relationships are assessed first. Prospective
