@@ -21,13 +21,13 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline for this increment: `main` after PR #120 merge,
-  commit `487620178d75f333e6decdb47f6466f65effbd15`.
+- Accepted Repository State baseline for this increment: `main` after PR #122 merge,
+  commit `6d87d02933b4d97e16161f73ca20e3aaa1daa2bc`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING`**.
-- Current Issue #121 executable candidate is
   **`0.3.0.50 TEST — CURRENT PHYSICAL RELOCATION REFERENCE COVERAGE`**.
+- Issue #121 is closed completed; `.50` GIANTS Reality validated both non-active
+  evidence routes through the same generic Obstruction Relocation mechanism.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -65,8 +65,8 @@ Architectural meaning remains owned by the
 | Control routing | `LiveControlDispatcher.lua` | PRESERVE authorised typed routing |
 | Regulation Control | `RegulationControl.lua`, `NativeDriveMechanism.lua` | PRESERVE production speed executor |
 | Cooperative Passage Control | `CooperativePassageControl.lua` plus shared mechanisms | PRESERVE validated mechanics and participant-specific handback |
-| Obstruction Relocation Control | `ObstructionRelocationControl.lua`, `NonJobActuationMechanism.lua` | `.47` candidate: PRESERVE one physical executor beneath one production Causal Obstruction / Obstruction Relocation responsibility; historical D-0147 donor modules remain loaded but production-uninstantiated pending separate retirement |
-| Relocation Serialization | `RegulationBoundedAuthority.lua` supporting D-0147/D-0218 movement | PRESERVE current beneficiary protection |
+| Obstruction Relocation Control | `ObstructionRelocationControl.lua`, `NonJobActuationMechanism.lua` | PRESERVE one provenance-neutral physical executor beneath one Causal Obstruction / Obstruction Relocation responsibility; `.51` retires the already-uninstantiated D-0147 donor topology around it |
+| Relocation Serialization | `RegulationBoundedAuthority.lua` supporting Obstruction Relocation movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.43` removes the dead Passage target field and reports current `conflictIdentity` in the verdict trace |
 | Mixed runtime constants | `scripts/config.lua` | **SEPARATE #87** — ownership decomposition / player-developer-internal boundary |
@@ -100,20 +100,18 @@ The generic multi-context Commitment application boundary remains an accepted
 fail-closed current limit. Revisit it only for a concrete supported consumer,
 not merely because a quiescent purpose exists.
 
-### Terminal / obstruction Resolution
+### Commitment terminal settlement / Obstruction Relocation
 
-Current D-0147, D-0218 and Cooperative Passage settlement semantics are
-purpose-specific and should not be flattened into one generic completion rule.
+`TerminalSettlementEvaluator` and terminal Commitment states remain truthful
+generic lifecycle vocabulary. **Terminal Commitment State != Terminal Worker
+Vocabulary**: the retired D-0147 completed-worker responsibility must not be
+recreated merely to preserve its historical names.
 
-- D-0147 courtesy completion can discharge the current courtesy obligation.
-- D-0218 movement completion requires fresh Situation evidence before semantic
-  obstruction success.
-- Passage `HANDED_BACK` can discharge one already-authorised participant leg.
+Current Obstruction Relocation releases physical Bounded Authority after each
+actuation and returns to fresh Situation Assessment. `MANOEUVRE_COMPLETE` does
+not itself establish semantic obstruction success.
 
 > **Execution Settlement != Strategic Reassessment**
-
-Physical Bounded Authority is released independently of semantic Resolution
-persistence.
 
 > **Resolution Persistence After Actuation != Authority Persistence**
 
@@ -130,7 +128,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #112 | naming-conformance debt | `.44` and `.45` are accepted by PRs #118/#119. `.46` renames the one consolidated shared physical executor from donor-era `TerminalEgressControl` to current `ObstructionRelocationControl` vocabulary without recreating the retired duplicate Control topology. Later independently proved families remain completed-obstruction donor-specific names/tokens, Candidate Support public verbs, and current Runtime telemetry / rolling history headers. Configuration identifier movement remains coordinated with #87. |
+| #112 | naming-conformance / retired-topology debt | `.44`–`.46` are accepted naming closures. #121 / PR #122 established one provenance-neutral Obstruction Relocation responsibility and `.50` GIANTS Reality validated both non-active evidence routes. `.51` therefore retires the loaded-but-uninstantiated D-0147 donor modules, `POST_JOB_ACTUATION`, dormant Terminal Occupancy contract surface and donor compatibility fields instead of renaming them into a false second responsibility. Configuration ownership remains #87. |
 
 Issue #101 is no longer current drift. PR #117 accepted `.43` and closed the
 Phase-15 orphan/stranded semantic retirement work. Issue #100 likewise remains
@@ -161,20 +159,23 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Validate **#121 `.50 — CURRENT PHYSICAL RELOCATION REFERENCE COVERAGE`**
-on PR #122. `.49` GIANTS Reality confirmed that ENDED Job evidence now produces
-the same `NON_ACTIVE_UNCLAIMED | RELOCATION_ELIGIBLE` classification as the
-current-observation evidence route. The remaining failure is downstream:
-purpose-scoped current physical relocation-reference evidence was selected by
-Observation source provenance, so the generic Candidate was never published for
-the formerly job-owned assembly.
+Implement and validate **#112 `.51 — DONOR TOPOLOGY RETIREMENT`** from accepted
+`main` at `6d87d02933b4d97e16161f73ca20e3aaa1daa2bc`.
 
-`.50` changes only Observation/reference coverage: current object + current pose
-+ current positive-only physical representation become provenance-neutral
-inputs. Causal Obstruction, Candidate semantics, Responsibility, Authority and
-Control remain unchanged.
+The implementation boundary is deletion/contract retirement, not a new traffic
+policy:
 
-Protected CI must pass before another GIANTS Reality challenge. Donor source
-deletion plus `POST_JOB_ACTUATION` retirement remains blocked until the generic
-replacement path passes Reality. Do not fold #87, #116, #45 or #89 into this
-increment.
+- remove the four D-0147/completed-worker donor modules from shipped source;
+- retire `POST_JOB_ACTUATION` and dormant `terminalOccupancyKnowledge` plumbing;
+- remove `terminalEpisodeId`, courtesy-count and donor `COMPACT` compatibility
+  from the generic Obstruction Relocation executor;
+- preserve generic geometry-bounded recurrence, Player Claim / source-AI
+  precedence, relocation serialization, current settlement and physical cleanup;
+- migrate still-useful physical mechanics tests to the generic fixture and retire
+  tests whose expected behaviour is the obsolete two-courtesy/boundary-away
+  architecture;
+- leave live #87-owned configuration names in place, except the donor-only
+  compaction watchdog that becomes unsourced with `COMPACT` retirement.
+
+Protected CI remains the behavioural authority. Do not fold #87, #116, #45 or
+#89 into this increment.

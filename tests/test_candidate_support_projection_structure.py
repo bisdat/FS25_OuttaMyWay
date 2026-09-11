@@ -26,7 +26,6 @@ def test_projection_materializes_exactly_one_portfolio_picture_and_no_support_vi
 def test_projection_builders_return_groups_without_publishing_operational_pictures():
     paths_and_tokens = (
         ("scripts/candidates/PassiveLiveCandidateSupport.lua", "function Support:buildProjectedGroup"),
-        ("scripts/candidates/TerminalEgressCandidateSupport.lua", "function Support:buildProjectedGroup"),
         ("scripts/candidates/ObstructionRelocationCandidateSupport.lua", "function Support:buildFreshProjectedGroup"),
         ("scripts/candidates/LiveTrafficCandidateSupport.lua", "function Support:buildProjectedGroup"),
     )
@@ -61,9 +60,8 @@ def test_same_picture_traffic_exhaustion_contract_remains_strict():
 
 def test_projection_uses_one_obstruction_family_without_control_mechanics():
     portfolio=read("scripts/candidates/ProspectiveDecisionPortfolioSupport.lua")
-    terminal=read("scripts/candidates/TerminalEgressCandidateSupport.lua")
     obstruction=read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
-    assert "buildProjectedGroup" in terminal
+    assert not (ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").exists()
     assert "buildFreshProjectedGroup" in obstruction
     assert "WARM_D0147" not in portfolio
     assert "terminalSupport" not in portfolio

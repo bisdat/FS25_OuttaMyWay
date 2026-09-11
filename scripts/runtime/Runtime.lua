@@ -101,7 +101,7 @@ function Runtime.new()
     local runtime=setmetatable({
         identities=identities,epochs=epochs,observationAdapter=OuttaMyWay.RuntimeObservationAdapter.new(identities,epochs),jobEpisodes=jobEpisodes,operations=operations,
         commitments=commitments,obligations=obligations,authorities=authorities,boundedAuthority=nil,commitmentAdmission=admission,governingBasisEvaluator=governingBasis,terminalSettlementEvaluator=terminalSettlement,currentResponsibilityAssessment=OuttaMyWay.CurrentResponsibilityAssessment.new(),
-        situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,commitments,obligations,nil,causalObstructionAssessment),
+        situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,commitments,obligations,causalObstructionAssessment),
         candidateSpace=OuttaMyWay.CandidateSpace.new(identities,epochs),constraintEngine=OuttaMyWay.ConstraintEngine.new(identities,epochs),decisionSelector=OuttaMyWay.DecisionSelector.new(identities,epochs),
         targetedFieldIdentityProbe=OuttaMyWay.TargetedFieldIdentityProbe.new(),fieldWorldSnapshots=fieldWorldSnapshots,fieldWorldEquivalenceEvaluator=fieldWorldEquivalenceEvaluator,fieldWorldEquivalenceAuthority=fieldWorldEquivalenceAuthority,assemblyRepresentationCache=assemblyRepresentationCache,currentPhysicalAssemblySource=currentPhysicalAssemblySource,currentPhysicalConflictRepresentation=currentPhysicalConflictRepresentation,causalObstructionAssessment=causalObstructionAssessment,passiveCandidateSupport=OuttaMyWay.PassiveLiveCandidateSupport.new(identities,epochs),
         trace=OuttaMyWay.ArchitectureTrace.new(),initialized=false,runtimeMode=OuttaMyWay.RUNTIME_MODE,controlAuthorityEnabled=false,generalControlAuthorityEnabled=false,cooperativeVerdictTraceKey=nil
@@ -135,8 +135,8 @@ function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
     -- Structural continuity markers: general production Control authority disabled; Control authority disabled.
     -- D-0146 Step-1 Situation Knowledge is live-validated and Step-2 Established Conflict -> Candidate-owned Local Passage Search -> Passage Guide -> Commitment/Control is ACTIVE.
-    self.trace:append("PROGRESSIVE_SITUATIONAL_SUFFICIENCY_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";obstructionRelocationResponsibilityConsolidated=true;geometryBoundedRelocation=true;legacyAutomaticRelocationConsent="..tostring(OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS==true)..";d0146Step1SituationKnowledge=true;trajectoryPersistence=true;opposedCorridorClassification=true;d0146Step2OperationAware=true;d0143CooperativePassage=false;d0143MechanicalDonorHistoricalOnly=true;d0141FollowerRegulation=true;turningRankAwarenessRetained=true;successorRookRetired=true;continuousProductiveHistoryRetired=true;kingRetired=true;continuousRefugeRetired=true;runtimeOwnedCycle=true;situationOwnsCurrentKnowledge=true;diagnosticsAuthority=false;generalControl=false")
-    print(string.format("FS25_OuttaMyWay %s loaded; Obstruction Relocation responsibility consolidation TEST: non-active unclaimed blockers relocate <=60 m toward Field World centroid per actuation while fresh positive Causal Obstruction persists; no move-count courtesy budget; D-0192/D-0188/D-0186 remain active; legacy automatic-relocation consent=%s",tostring(OuttaMyWay.BUILD_LABEL or ("v"..tostring(OuttaMyWay.VERSION))),tostring(OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS==true)))
+    self.trace:append("PROGRESSIVE_SITUATIONAL_SUFFICIENCY_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";obstructionRelocationResponsibilityConsolidated=true;geometryBoundedRelocation=true;obstructionRelocationConsent="..tostring(OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS==true)..";d0146Step1SituationKnowledge=true;trajectoryPersistence=true;opposedCorridorClassification=true;d0146Step2OperationAware=true;d0143CooperativePassage=false;d0143MechanicalDonorHistoricalOnly=true;d0141FollowerRegulation=true;turningRankAwarenessRetained=true;successorRookRetired=true;continuousProductiveHistoryRetired=true;kingRetired=true;continuousRefugeRetired=true;runtimeOwnedCycle=true;situationOwnsCurrentKnowledge=true;diagnosticsAuthority=false;generalControl=false")
+    print(string.format("FS25_OuttaMyWay %s loaded; Obstruction Relocation responsibility consolidation TEST: non-active unclaimed blockers relocate <=60 m toward Field World centroid per actuation while fresh positive Causal Obstruction persists; no move-count courtesy budget; D-0192/D-0188/D-0186 remain active; obstruction-relocation consent=%s",tostring(OuttaMyWay.BUILD_LABEL or ("v"..tostring(OuttaMyWay.VERSION))),tostring(OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS==true)))
 end
 
 function Runtime:setRegulationControl(control)
@@ -517,9 +517,8 @@ function Runtime:_dispatchObstructionRelocation(picture,evaluated,candidate,brid
     if type(control.isActive)=="function" and control:isActive() then return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_CONTROL_ALREADY_ACTIVE",obstructionRelocation=true} end
 
     local readiness={status="OBSTRUCTION_RELOCATION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,relocationKey=bridge.relocationKey}
-    -- Shared obstruction-relocation Resolution exposure seam. It supplies only
-    -- RS identity/current-responsibility ownership; the supplied purpose-specific
-    -- transition owns Completed Obstruction versus current Causal Obstruction semantics.
+    -- Obstruction Relocation Resolution exposure seam. RS identity/current-responsibility
+    -- ownership and the single provenance-neutral transition are aligned before dispatch.
     local applied,reason=self.responsibilityTransitionAuthority:transitionObstructionRelocationResolution(
         picture,evaluated,readiness,self.obstructionRelocationResponsibilityTransition)
     if applied==nil then

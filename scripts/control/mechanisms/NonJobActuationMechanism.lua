@@ -1,7 +1,7 @@
--- Shared non-job physical actuation mechanism for warm D-0147 and cold D-0218.
+-- Shared non-job physical actuation mechanism for provenance-neutral Obstruction Relocation.
 -- Mechanical safety boundary only: semantic movement permission remains in the
--- purpose-specific authority/Responsibility/Control path. This mechanism neither
--- infers completed-Job provenance nor creates relocation purpose.
+-- current Responsibility / Bounded Authority / Control path. This mechanism neither
+-- infers historical Job provenance nor creates relocation purpose.
 -- Player Claim and source-AI reactivation remain higher-priority Reality boundaries.
 
 OuttaMyWay.NonJobActuationMechanism={}

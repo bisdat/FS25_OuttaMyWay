@@ -63,18 +63,17 @@ def test_mechanical_surface_is_preserved():
     ):
         assert token in mechanism
 
-def test_trigger_authorities_remain_separate_upstream_of_shared_executor():
-    terminal = read("scripts/control/ObstructionRelocationControl.lua")
-    completed = read("scripts/candidates/TerminalEgressCandidateSupport.lua")
+def test_single_generic_obstruction_relocation_authority_uses_shared_non_job_mechanism():
+    control = read("scripts/control/ObstructionRelocationControl.lua")
     current = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
 
-    assert '"POST_JOB_ACTUATION"' in completed
     assert '"OBSTRUCTION_RELOCATION_ACTUATION"' in current
-    assert "POST_JOB_ACTUATION" not in terminal
-    assert "OBSTRUCTION_RELOCATION_ACTUATION" not in terminal
-    assert "actuationMechanism=OuttaMyWay.NonJobActuationMechanism.new()" in terminal
-    assert (ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").is_file()
-    assert not (ROOT/"scripts"/"control"/"TerminalEgressControl.lua").exists()
+    assert "POST_JOB_ACTUATION" not in current
+    assert "POST_JOB_ACTUATION" not in control
+    assert "actuationMechanism=OuttaMyWay.NonJobActuationMechanism.new()" in control
+    assert (ROOT / "scripts" / "control" / "ObstructionRelocationControl.lua").is_file()
+    assert not (ROOT / "scripts" / "candidates" / "TerminalEgressCandidateSupport.lua").exists()
+
 
 def test_current_causal_obstruction_is_provenance_neutral_and_geometry_bounded():
     terminal = read("scripts/control/ObstructionRelocationControl.lua")
@@ -88,15 +87,6 @@ def test_current_causal_obstruction_is_provenance_neutral_and_geometry_bounded()
     assert 'secondCourtesyNotAuthorised=true' not in candidate
     assert 'tonumber(objective.courtesyStage)~=1' not in terminal
     assert "CURRENT_CAUSAL_OBSTRUCTION" not in terminal
-
-def test_completed_obstruction_retains_double_courtesy_semantics_upstream():
-    terminal_candidate = read("scripts/candidates/TerminalEgressCandidateSupport.lua")
-    terminal_control = read("scripts/control/ObstructionRelocationControl.lua")
-
-    assert "TERMINAL_FINAL_BOUNDARY_SETTLEMENT" in terminal_candidate
-    assert "maximumCourtesyMovesPerEpisode=2" in terminal_candidate
-    assert "POST_JOB_ACTUATION" not in terminal_control
-    assert 'target.kind~="OBSTRUCTION_RELOCATION"' in terminal_control
 
 def test_non_job_failure_reason_vocabulary_is_provenance_neutral():
     mechanism = read("scripts/control/mechanisms/NonJobActuationMechanism.lua")

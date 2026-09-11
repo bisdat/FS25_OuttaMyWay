@@ -63,13 +63,14 @@ jobs:
             scripts/authority/EffectiveActuationComposition.lua \
             scripts/authority/RegulationBoundedAuthority.lua \
             scripts/assessment/CurrentResponsibilityAssessment.lua \
+            scripts/assessment/SituationAssessment.lua \
             scripts/candidates/ObstructionRelocationCandidateSupport.lua \
             scripts/candidates/ProspectiveDecisionPortfolioSupport.lua \
             scripts/candidates/LiveTrafficCandidateSupport.lua \
             scripts/candidates/LocalPassagePlanner.lua \
             scripts/candidates/PassiveLiveCandidateSupport.lua \
-            scripts/candidates/TerminalEgressCandidateSupport.lua \
             scripts/commitment/CommitmentAdmission.lua \
+            scripts/commitment/CommitmentRegistry.lua \
             scripts/commitment/DecisionCommitmentBoundary.lua \
             scripts/commitment/LiveTrafficCommitmentLifecycle.lua \
             scripts/commitment/ObstructionRelocationCommitmentLifecycle.lua \
@@ -83,6 +84,7 @@ jobs:
             scripts/constraints/evaluators/CommitmentPreconditions.lua \
             scripts/constraints/evaluators/EffectiveActuationComposition.lua \
             scripts/contracts/CommitmentRecord.lua \
+            scripts/contracts/OperationalPicture.lua \
             scripts/control/mechanisms/FieldWorkHoldMechanism.lua \
             scripts/control/mechanisms/NativeDriveMechanism.lua \
             scripts/control/mechanisms/TransitConfigurationMechanism.lua \

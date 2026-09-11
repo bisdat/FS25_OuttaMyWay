@@ -12,7 +12,7 @@ local function candidateMetadata(specification,family,groupKey,ordinal,boundary,
     local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.obstructionRelocationBridge or {}
     local metadata={
         groupKey=groupKey,family=family,enumerationOrdinal=ordinal,supportBoundary=boundary,
-        conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,terminalEpisodeId=bridge.terminalEpisodeId,
+        conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,
         admissionKind=bridge.admissionKind,initialSeparationM=bridge.initialSeparationM,
         leaderAssemblyId=bridge.leaderAssemblyId,followerAssemblyId=bridge.followerAssemblyId,
         assemblyIds=bridge.assemblyIds
@@ -33,7 +33,7 @@ local function descriptorFromSpecification(specification,family,groupKey,ordinal
     local bridge=evidence.cooperativePassageBridge or evidence.followerBoundaryBridge or evidence.actionSpaceRegulationBridge or evidence.obstructionRelocationBridge or {}
     local descriptor={
         groupKey=groupKey,family=family,enumerationOrdinal=ordinal,supportBoundary=boundary,
-        conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,terminalEpisodeId=bridge.terminalEpisodeId,
+        conflictIdentity=bridge.conflictIdentity,relocationKey=bridge.relocationKey,
         admissionKind=bridge.admissionKind,initialSeparationM=bridge.initialSeparationM,
         leaderAssemblyId=bridge.leaderAssemblyId,followerAssemblyId=bridge.followerAssemblyId,
         assemblyIds=bridge.assemblyIds

@@ -1,8 +1,8 @@
 -- Provenance-neutral physical Obstruction Relocation execution.
--- Completed Obstruction and current Causal Obstruction remain distinct upstream
--- Responsibility/Commitment lifecycles. This Control consumes only an authorised
--- Obstruction Relocation objective, current physical subject and current Bounded Authority.
--- Player Claim and source-AI reactivation remain higher-priority Reality boundaries.
+-- This Control consumes only an authorised current Obstruction Relocation objective,
+-- current physical subject and current Bounded Authority. Historical Job provenance
+-- does not select a different executor. Player Claim and source-AI reactivation remain
+-- higher-priority Reality boundaries.
 
 OuttaMyWay.ObstructionRelocationControl={}
 local Control=OuttaMyWay.ObstructionRelocationControl
@@ -45,7 +45,7 @@ end
 local function requestTarget(request)
     local target=request and request.target or nil
     if type(target)~="table" or target.kind~="OBSTRUCTION_RELOCATION" then return nil end
-    if target.phase~="COMPACT" and target.phase~="INFIELD" then return nil end
+    if target.phase~="INFIELD" then return nil end
     if type(target.assemblyReferenceKey)~="string" then return nil end
     return target
 end
@@ -75,7 +75,6 @@ function Control:_publish(state,status,extra)
         phase=state and state.phase or nil,
         status=status,
         active=self.active~=nil,
-        terminalEpisodeId=context and context.terminalEpisodeId or nil,
         relocationKey=context and context.relocationKey or nil,
         completionContext=context,
         directDriveCalls=self.actuationMechanism:getDirectDriveCallCount(),
@@ -163,7 +162,6 @@ function Control:_complete(status,evidence)
         self.completionHandler({
             status=finalStatus,
             commitmentId=state.commitmentId,
-            terminalEpisodeId=context.terminalEpisodeId,
             relocationKey=context.relocationKey,
             completionContext=context,
             assemblyId=state.assemblyId,
@@ -226,27 +224,6 @@ function Control:executeControlRequest(request,candidate)
     self.active=state
     self.startedCount=self.startedCount+1
 
-    if state.phase=="COMPACT" then
-        local evidence=self.configurationMechanism:getEvidence(vehicle)
-        if evidence.foldableCount==0 or evidence.allFolded==true then
-            self:_complete("COMPACTION_COMPLETE",{kind="OBSTRUCTION_RELOCATION_COMPACTION",mode="RETAIN_CURRENT",configurationEvidence=evidence})
-            return true,"COMPACTION_RETAIN_CURRENT"
-        end
-        if evidence.transitionCount>0 and evidence.unknownCount==0 then
-            state.waitingExistingCompaction=true
-            self:_publish(state,"COMPACTION_IN_PROGRESS",{existingMotion=true,configurationEvidence=evidence})
-            return true,"COMPACTION_ALREADY_IN_PROGRESS"
-        end
-        if not evidence.allDeployed or evidence.unknownCount>0 then
-            return self:_rejectBeforeStart(request,target,"FAILED","SUPPORTED_COMPACTION_UNAVAILABLE")
-        end
-        local ok,result=self.configurationMechanism:prepareCompact(vehicle)
-        if not ok then return self:_rejectBeforeStart(request,target,"FAILED","COMPACTION_COMMAND_REJECTED:"..tostring(result)) end
-        state.configurationOwned=true
-        self:_publish(state,"COMPACTION_IN_PROGRESS",{existingMotion=false,configurationEvidence=evidence})
-        return true,"COMPACTION_STARTED"
-    end
-
     local objective=state.objective
     if type(objective)~="table"
         or tonumber(objective.infieldDirectionX)==nil
@@ -256,10 +233,6 @@ function Control:executeControlRequest(request,candidate)
         or tonumber(objective.targetZ)==nil then
         return self:_rejectBeforeStart(request,target,"FAILED","OBSTRUCTION_RELOCATION_OBJECTIVE_INCOMPLETE")
     end
-    if objective.courtesyExhausted==true then
-        return self:_rejectBeforeStart(request,target,"FAILED","COURTESY_ALREADY_EXHAUSTED")
-    end
-
     local position=self.actuationMechanism:position(vehicle)
     if position==nil then return self:_rejectBeforeStart(request,target,"FAILED","NON_JOB_POSE_UNAVAILABLE") end
     local activityOk,activityContext=self.actuationMechanism:acquireVehicleActivityContext(vehicle)
@@ -293,14 +266,12 @@ function Control:executeControlRequest(request,candidate)
     state.infieldDirectionX=tonumber(objective.infieldDirectionX); state.infieldDirectionZ=tonumber(objective.infieldDirectionZ)
     state.targetX=tonumber(objective.targetX); state.targetZ=tonumber(objective.targetZ)
     state.targetProgressM=tonumber(objective.targetProgressM)
-    state.retreatDistanceM=tonumber(objective.retreatDistanceM) or state.targetProgressM
-    state.courtesyStage=tonumber(objective.courtesyStage) or 1
     state.destinationKind=objective.destinationKind
     state.objectiveKind=objective.objectiveKind
     state.speedKmh=maximumSpeedKmh
 
     self:_publish(state,"MANOEUVRE_IN_PROGRESS",{
-        courtesyStage=state.courtesyStage,destinationKind=state.destinationKind,
+        destinationKind=state.destinationKind,
         fixedDirectionX=state.infieldDirectionX,fixedDirectionZ=state.infieldDirectionZ,
         targetX=state.targetX,targetZ=state.targetZ,targetProgressM=state.targetProgressM,
         speedKmh=state.speedKmh,speedPolicy="NATIVE_MAX_FORWARD",continuousCourseCorrection=false,
@@ -341,22 +312,6 @@ function Control:update(dt)
     end
 
     local elapsed=(tonumber(g_time) or 0)-state.startedAt
-    if state.phase=="COMPACT" then
-        local evidence=self.configurationMechanism:getEvidence(vehicle)
-        if evidence.allFolded==true then
-            self:_releaseConfigurationOwnership(vehicle,state)
-            self:_complete("COMPACTION_COMPLETE",{kind="OBSTRUCTION_RELOCATION_COMPACTION",mode="COMPACTED",configurationEvidence=evidence})
-            return
-        end
-        if elapsed>(tonumber(OuttaMyWay.TERMINAL_EGRESS_COMPACTION_TIMEOUT_MS) or 25000) then
-            self:_releaseConfigurationOwnership(vehicle,state)
-            self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="COMPACTION_WATCHDOG_EXPIRED",configurationEvidence=evidence})
-            return
-        end
-        self:_publish(state,"COMPACTION_IN_PROGRESS",{configurationEvidence=evidence})
-        return
-    end
-
     local position=self.actuationMechanism:position(vehicle)
     if position==nil then self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="NON_JOB_POSE_LOST"}); return end
     local dx,dz=position.x-state.startX,position.z-state.startZ
@@ -364,7 +319,7 @@ function Control:update(dt)
     local targetDistance=distanceTo(position.x,position.z,state.targetX,state.targetZ)
     if realisedProgress>=state.targetProgressM then
         self:_complete("MANOEUVRE_COMPLETE",{
-            kind="OBSTRUCTION_RELOCATION_MANOEUVRE_COMPLETE",courtesyStage=state.courtesyStage,
+            kind="OBSTRUCTION_RELOCATION_MANOEUVRE_COMPLETE",
             destinationKind=state.destinationKind,targetX=state.targetX,targetZ=state.targetZ,
             targetProgressM=state.targetProgressM,realisedProgressM=realisedProgress,
             finalTargetDistanceM=targetDistance,fixedDirectionX=state.infieldDirectionX,fixedDirectionZ=state.infieldDirectionZ,
@@ -373,7 +328,7 @@ function Control:update(dt)
         return
     end
     if elapsed>(tonumber(OuttaMyWay.TERMINAL_EGRESS_MOVE_TIMEOUT_MS) or 45000) then
-        self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="BOUNDED_MOVE_WATCHDOG_EXPIRED",courtesyStage=state.courtesyStage,realisedProgressM=realisedProgress,targetProgressM=state.targetProgressM})
+        self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="BOUNDED_MOVE_WATCHDOG_EXPIRED",realisedProgressM=realisedProgress,targetProgressM=state.targetProgressM})
         return
     end
 
@@ -398,7 +353,7 @@ function Control:update(dt)
             steeringTelemetryText(result.postCommandSteering))
     end
     self:_publish(state,"MANOEUVRE_IN_PROGRESS",{
-        courtesyStage=state.courtesyStage,destinationKind=state.destinationKind,
+        destinationKind=state.destinationKind,
         realisedProgressM=realisedProgress,targetProgressM=state.targetProgressM,currentTargetDistanceM=targetDistance,
         fixedDirectionX=state.infieldDirectionX,fixedDirectionZ=state.infieldDirectionZ,
         continuousCourseCorrection=false,directionEvidence=result,configurationResult=state.configurationResult

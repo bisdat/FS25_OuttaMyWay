@@ -8,7 +8,6 @@ local Token = OuttaMyWay.ValueRecord.register(
 )
 
 local PROGRESS="PROGRESS_ACTUATION"
-local POST_JOB="POST_JOB_ACTUATION"
 local OBSTRUCTION_RELOCATION="OBSTRUCTION_RELOCATION_ACTUATION"
 
 function Registry.new(identityRegistry, epochSequence, commitmentRegistry)
@@ -17,7 +16,7 @@ end
 
 function Registry:_acquire(assemblyId,commitmentId,authorityClass)
     if type(assemblyId)~="string" or assemblyId=="" then error("assembly identity required",2) end
-    if authorityClass~=PROGRESS and authorityClass~=POST_JOB and authorityClass~=OBSTRUCTION_RELOCATION then error("unsupported authority class",2) end
+    if authorityClass~=PROGRESS and authorityClass~=OBSTRUCTION_RELOCATION then error("unsupported authority class",2) end
     local commitment=self.commitments:get(commitmentId)
     if commitment==nil or commitment.state~="ACTIVE" then error("only an ACTIVE Commitment may own actuation authority",2) end
     if self.byAssembly[assemblyId]~=nil then error("assembly already has an OuttaMyWay actuation owner",2) end
@@ -27,7 +26,6 @@ function Registry:_acquire(assemblyId,commitmentId,authorityClass)
     return token
 end
 function Registry:acquireProgress(assemblyId,commitmentId) return self:_acquire(assemblyId,commitmentId,PROGRESS) end
-function Registry:acquirePostJob(assemblyId,commitmentId) return self:_acquire(assemblyId,commitmentId,POST_JOB) end
 function Registry:acquireObstructionRelocation(assemblyId,commitmentId) return self:_acquire(assemblyId,commitmentId,OBSTRUCTION_RELOCATION) end
 function Registry:ownerOf(assemblyId) local token=self.byAssembly[assemblyId]; return token and token.commitmentId or nil end
 function Registry:classOf(assemblyId) local token=self.byAssembly[assemblyId]; return token and token.authorityClass or nil end
@@ -43,7 +41,6 @@ local function hasClass(self,commitmentId,class)
     return false
 end
 function Registry:hasProgressAuthority(commitmentId) return hasClass(self,commitmentId,PROGRESS) end
-function Registry:hasPostJobAuthority(commitmentId) return hasClass(self,commitmentId,POST_JOB) end
 function Registry:hasObstructionRelocationAuthority(commitmentId) return hasClass(self,commitmentId,OBSTRUCTION_RELOCATION) end
 function Registry:hasAnyAuthority(commitmentId) return #self:tokensForCommitment(commitmentId)>0 end
 function Registry:releaseForCommitment(commitmentId)
