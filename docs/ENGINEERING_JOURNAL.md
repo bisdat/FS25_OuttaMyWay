@@ -1,3 +1,27 @@
+## 2026-09-11 — `.50` CI #305 exposes a validation-contract mismatch, not a production failure
+
+**Validate:** protected Offline Validation #305 on
+`cd24524f3e884c294c90c8eae6b3e33806ab48e7` passed Structural contracts and the
+focused Obstruction Relocation suite (**12/0**). The main replacement-core suite
+reported **340/1**.
+
+The sole failure was the new `.50` regression asserting a top-level
+`negativeClearanceAuthority=false` field on purpose-scoped relocation
+Representation Fitness evidence. Production never published that field there.
+The actual contract remains explicit and narrower:
+`permittedConclusions={"CURRENT_RELOCATION_REFERENCE_POSE","POSITIVE_CONFLICT_SUPPORT"}`,
+`uncertainty={{kind="NO_NEGATIVE_CLEARANCE_AUTHORITY"}}`,
+`coverageComplete=false`, and `conservative=false`.
+
+**Interpret:** the test incorrectly asserted an implementation shape that was not
+part of the Representation Fitness contract. No `.50` production source,
+build-identity source, Candidate, Responsibility, Authority or Control correction
+is selected.
+
+**Correction:** update only the regression assertion to validate the actual
+positive-only/no-negative-clearance contract. `.50` executable identity remains
+unchanged.
+
 ## 2026-09-11 — `.49` Reality moves failure downstream; `.50` removes relocation-reference provenance leak
 
 **Observe:** owner-run `.49` GIANTS Reality repeated the same externally visible

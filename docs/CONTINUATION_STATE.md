@@ -15,6 +15,12 @@ Engineering Journal preserve chronology.
   **`0.3.0.50 TEST — CURRENT PHYSICAL RELOCATION REFERENCE COVERAGE`**; `.49` proved ENDED Job evidence reaches `NON_ACTIVE_UNCLAIMED` in GIANTS Reality, but relocation Candidate publication still depended on Observation provenance because the purpose-scoped current physical reference covered only physical-census assemblies.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
+- `.50` protected Offline Validation #305 reached Structural PASS and focused
+  Obstruction Relocation **12/0**; main Lua was **340/1** solely because the new
+  regression asserted a non-contract top-level `negativeClearanceAuthority`
+  field. A tests/docs-only correction now checks the actual
+  `NO_NEGATIVE_CLEARANCE_AUTHORITY` uncertainty/permitted-conclusion contract;
+  `.50` executable identity is unchanged.
 - Phase 14 is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 

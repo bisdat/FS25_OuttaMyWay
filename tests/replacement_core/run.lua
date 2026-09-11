@@ -1485,7 +1485,10 @@ test("current physical relocation reference coverage is independent of observati
         for _,evidence in OuttaMyWay.ValueRecord.ipairs(raw.physicalRepresentationEvidence) do
             equal(evidence.structurallyValid,true)
             equal(evidence.coverageComplete,false)
-            equal(evidence.negativeClearanceAuthority,false)
+            equal(evidence.conservative,false)
+            equal(evidence.uncertainty[1].kind,"NO_NEGATIVE_CLEARANCE_AUTHORITY")
+            equal(evidence.permittedConclusions[1],"CURRENT_RELOCATION_REFERENCE_POSE")
+            equal(evidence.permittedConclusions[2],"POSITIVE_CONFLICT_SUPPORT")
             equal(evidence.provenance.historicalJobProvenanceRequired,false)
             equal(evidence.provenance.observationSourceProvenanceRequired,false)
         end
