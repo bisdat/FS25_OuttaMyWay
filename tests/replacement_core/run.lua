@@ -28,6 +28,7 @@ load("scripts/contracts/PassiveLiveTraceRecord.lua")
 load("scripts/identity/EpochSequence.lua")
 load("scripts/representation/catalogues/CondorEndurance2Donor.lua")
 load("scripts/representation/PlanViewFootprint.lua")
+load("scripts/representation/EntityLocalShapeEvidence.lua")
 load("scripts/representation/AssemblyRepresentationCache.lua")
 load("scripts/representation/CurrentPhysicalConflictRepresentation.lua")
 load("scripts/representation/PairSpecificPassageClearance.lua")
@@ -139,6 +140,35 @@ local function permittedFollowerCap(evidence)
     local permission=OuttaMyWay.FollowerBoundaryMagnitudePolicy.materialize(evidence)
     return permission and permission.permittedFollowerCapKmh or nil
 end
+
+test("Entity-Local Shape Evidence preserves coherence and root-alias discrimination", function()
+    local localSphere={valid=true,x=0,y=0,z=0,radius=2.0}
+    local predicted={valid=true,x=10,y=0,z=20,radius=2.0}
+    local coherentWorld={valid=true,x=10.04,y=0,z=20,radius=2.04}
+    local distinctRoot={valid=true,x=100,y=0,z=100,radius=8.0}
+
+    local admitted=OuttaMyWay.EntityLocalShapeEvidence.evaluate(
+        100,100,localSphere,predicted,coherentWorld,distinctRoot
+    )
+    equal(admitted.coherent,true)
+    equal(admitted.rootAlias,false)
+    equal(admitted.accepted,true)
+
+    local incoherentWorld={valid=true,x=10.20,y=0,z=20,radius=2.0}
+    local incoherent=OuttaMyWay.EntityLocalShapeEvidence.evaluate(
+        100,100,localSphere,predicted,incoherentWorld,distinctRoot
+    )
+    equal(incoherent.coherent,false)
+    equal(incoherent.accepted,false)
+
+    local aliasWorld={valid=true,x=10,y=0,z=20,radius=2.0}
+    local alias=OuttaMyWay.EntityLocalShapeEvidence.evaluate(
+        100,200,localSphere,predicted,aliasWorld,aliasWorld
+    )
+    equal(alias.coherent,true)
+    equal(alias.rootAlias,true)
+    equal(alias.accepted,false)
+end)
 
 local function newKernel()
     local ids=OuttaMyWay.IdentityRegistry.new()

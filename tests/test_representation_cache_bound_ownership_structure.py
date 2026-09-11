@@ -41,18 +41,3 @@ def test_issue87_revalidation_horizons_belong_to_distinct_validity_domains():
     assert "for _,member in OuttaMyWay.ValueRecord.ipairs(currentMembers(root)) do" in current
     assert "currentMemberSet[member]=true" in current
     assert "local memberCurrent=currentMemberSet[candidate.member]==true" in current
-
-
-def test_issue87_shape_resolution_evidence_tolerances_are_not_moved_by_cache_bound_split():
-    config = read("scripts/config.lua")
-    cache = read("scripts/representation/AssemblyRepresentationCache.lua")
-    current = read("scripts/representation/CurrentPhysicalConflictRepresentation.lua")
-
-    expected = {
-        "REPRESENTATION_GEOMETRY_COHERENCE_TOLERANCE_METRES": "0.05",
-        "REPRESENTATION_ROOT_ALIAS_TOLERANCE_METRES": "0.0001",
-    }
-    for name, value in expected.items():
-        assert f"OuttaMyWay.{name} = {value}" in config
-        assert f"OuttaMyWay.{name}" in cache
-        assert f"OuttaMyWay.{name}" in current

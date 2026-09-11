@@ -255,7 +255,7 @@ evidence does not establish a responsible owner.
 | PLAYER CONFIGURATION CANDIDATE | no unified player-setting key is currently implemented in this file | The accepted player concepts are master enablement, HUD visibility, Logging and Debug. Internal gates or constants must not be promoted merely because they are editable. |
 | SYSTEM / RELEASE IDENTITY | `MOD_NAME`; `VERSION`, `BUILD_LABEL` | `MOD_NAME` identifies the system/mod. `VERSION` and `BUILD_LABEL` carry release/build identity. None is player Configuration. |
 | ARCHITECTURAL / RESPONSIBILITY POLICY | `COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M`, `COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO`, `RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION`, exact `RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH` | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
-| IMPLEMENTATION CALIBRATION | shared Shape Resolution Evidence coherence/root-alias tolerances; follower alignment, retention and clearance factors; trajectory sampling/coherence/supersession values; Passage development and gate geometry; Control effect-speed calibration | Empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
+| IMPLEMENTATION CALIBRATION | Entity-Local Shape Evidence coherence/root-alias calibration; follower alignment, retention and clearance factors; trajectory sampling/coherence/supersession values; Passage development and gate geometry; Control effect-speed calibration | Entity-local shape calibration is owned by its shared Resolution evidence predicate; other empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
 | SAFETY / RESOURCE BOUND | Passage sweep sample count and phase watchdog; fold-settlement bounds; Field World generation/comparison/resolution budgets | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
 | DIAGNOSTIC | Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre, progression and other Probe flags/intervals; lifecycle/transition/future-space and version/follower HUD flags and coordinates | Diagnostic instruments and their cadence/layout remain internal. Normal Logging and Debug are higher-level player choices, not exposure of each switch. |
 | VALIDATION / EXPERIMENTAL | `CONTROL_AUTHORITY_ENABLED`; follower maturation test controls; `COOPERATIVE_PASSAGE_ENABLED` | Current gates and test values are implementation or validation evidence. They do not define the master enabled setting and grant no production authority by location. |
@@ -270,18 +270,16 @@ player Configuration. The Obstruction Relocation 60 m per-actuation calibration
 and 45 s bounded-move watchdog are owned directly by Candidate Support and
 Control. Runtime cadence and passive diagnostic throttling are likewise held by
 their narrow runtime/diagnostic owners. Physical Assembly member discovery owns
-its accepted 32-member bound in `AssemblyRepresentationCache`. Representation
-hierarchy budgets and refresh/revalidation horizons are now owned independently
-by the cache whose budget/validity domain they govern: per-member catalogue
-discovery and Job-scoped membership revalidation in `AssemblyRepresentationCache`,
-whole-current-assembly candidate scanning and candidate-discovery refresh in
-`CurrentPhysicalConflictRepresentation`. The 0.05 m geometry-coherence and
-0.0001 m root-alias tolerances remain shared on the mixed root surface because
-both products apply the same Shape Resolution Evidence predicate; explicit
-shared-concept ownership remains unresolved. Fold-settlement bounds remain
-internal safety/control values. The inventory is descriptive; Issue #87 continues
-ownership-family decomposition without retuning values merely because their
-placement changes.
+its accepted 32-member bound in `AssemblyRepresentationCache`; Representation
+hierarchy budgets and refresh/revalidation horizons are owned independently by
+the cache whose budget or validity domain they govern. The accepted 0.05 m
+geometry/world coherence and 0.0001 m descendant/root alias calibrations are now
+owned by `EntityLocalShapeEvidence`, the shared Resolution evidence predicate
+consumed by both Representation products. They are no longer root mixed-surface
+constants and grant no product authority by themselves. Fold-settlement bounds
+remain internal safety/control values. The inventory is descriptive; Issue #87
+continues ownership-family decomposition without retuning values merely because
+their placement changes.
 
 ## Implementation boundary
 
