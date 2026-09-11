@@ -153,7 +153,7 @@ local function normalizeDemand(values, map)
     return result
 end
 
-function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, commitments, obligations, terminalOccupancyAssessment, causalObstructionAssessment)
+function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations, commitments, obligations, causalObstructionAssessment)
     local self = setmetatable({}, Assessment)
     self.identities = identityRegistry
     self.epochs = epochSequence
@@ -161,7 +161,6 @@ function Assessment.new(identityRegistry, epochSequence, jobEpisodes, operations
     self.operations = operations
     self.commitments = commitments
     self.obligations = obligations
-    self.terminalOccupancyAssessment=terminalOccupancyAssessment
     self.causalObstructionAssessment=causalObstructionAssessment
     self.spatialConstraintAssessment=OuttaMyWay.SpatialConstraintAssessment.new()
     self.publishedCount = 0
@@ -500,7 +499,6 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
                 obligationIds=commitment.obligationIds,
                 openObligations=openObligations,
                 progressActuationOwnership=commitment.progressActuationOwnership,
-                postJobActuationOwnership=commitment.postJobActuationOwnership,
                 capabilityReservations=commitment.capabilityReservations,
                 effectiveActuationCompositionId=commitment.effectiveActuationCompositionId,
                 evidenceContracts=commitment.evidenceContracts
@@ -577,11 +575,6 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     -- Production Situation Assessment publishes no D-0143 knowledge or fitness;
     -- D-0146 owns current Cooperative Passage fitness.
     local cooperativePassageKnowledge={}
-    local terminalOccupancyKnowledge,terminalOccupancyFitness={},{}
-    if self.terminalOccupancyAssessment~=nil then
-        terminalOccupancyKnowledge,terminalOccupancyFitness=self.terminalOccupancyAssessment:assess(snapshot,currentSpace,futureSpace,physicalSpaceEvidence,commitmentContext)
-        for _,fitness in OuttaMyWay.ValueRecord.ipairs(terminalOccupancyFitness or {}) do representationFitness[#representationFitness+1]=fitness end
-    end
     table.sort(representationFitness,function(a,b) return tostring(a.representationId)<tostring(b.representationId) end)
 
     local candidateSupportEvidence = {
@@ -618,7 +611,6 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         spatialConstraintKnowledge=spatialConstraintKnowledge,
         cooperativePassageKnowledge=cooperativePassageKnowledge,
         causalObstructionKnowledge=causalObstructionKnowledge,
-        terminalOccupancyKnowledge=terminalOccupancyKnowledge,
         uncertainty=uncertainty,
         representationFitness=representationFitness,
         provenance={source="SituationAssessment", observationSnapshotId=snapshot.identity, observationEpoch=snapshot.epoch},
@@ -636,7 +628,6 @@ function Assessment:resetSituationKnowledge()
     self.trajectoryTracks={}
     self.latestProductiveContinuationByReference={}
     if self.spatialConstraintAssessment~=nil then self.spatialConstraintAssessment:reset() end
-    if self.terminalOccupancyAssessment and type(self.terminalOccupancyAssessment.reset)=="function" then self.terminalOccupancyAssessment:reset() end
 end
 
 function Assessment:getEvidence(referenceKeyValue, jobToken)

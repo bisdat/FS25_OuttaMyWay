@@ -47,7 +47,6 @@ def test_issue112_graduated_physical_representation_uses_current_names_without_e
         ROOT / "scripts" / "observation" / "FieldBoundedFutureSpace.lua",
         ROOT / "scripts" / "observation" / "CurrentPhysicalPoseSource.lua",
         ROOT / "scripts" / "assessment" / "SituationAssessment.lua",
-        ROOT / "scripts" / "candidates" / "TerminalEgressCandidateSupport.lua",
         ROOT / "scripts" / "diagnostics" / "PassiveLiveValidator.lua",
     )
     current = "\n".join(path.read_text(encoding="utf-8") for path in current_paths)

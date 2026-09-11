@@ -6,21 +6,19 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #120 merge,
-  commit `487620178d75f333e6decdb47f6466f65effbd15`.
+- Accepted Repository State baseline for this increment: `main` after PR #122 merge,
+  commit `6d87d02933b4d97e16161f73ca20e3aaa1daa2bc`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING`**.
-- Current Issue #121 executable candidate is
-  **`0.3.0.50 TEST — CURRENT PHYSICAL RELOCATION REFERENCE COVERAGE`**; `.49` proved ENDED Job evidence reaches `NON_ACTIVE_UNCLAIMED` in GIANTS Reality, but relocation Candidate publication still depended on Observation provenance because the purpose-scoped current physical reference covered only physical-census assemblies.
+  **`0.3.0.50 TEST — CURRENT PHYSICAL RELOCATION REFERENCE COVERAGE`**.
+- Issue #121 is **closed completed** by PR #122. The owner-run `.50` GIANTS Reality
+  challenge exercised both current-observation and ENDED-Job non-active evidence
+  routes and both converged on the same generic Causal Obstruction / Obstruction
+  Relocation responsibility and Control.
+- Protected post-merge Offline Validation #307 passed on the exact PR #122 merge
+  commit.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
-- `.50` protected Offline Validation #305 reached Structural PASS and focused
-  Obstruction Relocation **12/0**; main Lua was **340/1** solely because the new
-  regression asserted a non-contract top-level `negativeClearanceAuthority`
-  field. A tests/docs-only correction now checks the actual
-  `NO_NEGATIVE_CLEARANCE_AUTHORITY` uncertainty/permitted-conclusion contract;
-  `.50` executable identity is unchanged.
 - Phase 14 is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -112,20 +110,21 @@ diagnostic directionality and live documentation responsibility.
     its stale validation consumers, and dead Encounter-provenance Runtime reads.
     Current Follower, Passage and obstruction responsibilities remain current.
 - **#112 — active-code naming conformance** is the current bounded workstream.
-  - `.44` is accepted by PR #118; the shared Responsibility Transition Authority
-    obstruction-relocation seam now uses current **Obstruction Relocation**
-    vocabulary. PR #118 merged as
-    `6c19920c51af93ee727d55b329a1634ca5b5565d`.
-  - `.45` is the selected **Physical Representation naming closure**:
-    graduated current `shadowRepresentation` identity becomes **Assembly
-    Representation**, and current `shadowPlanViewEvidence` becomes **Plan-View
-    Occupancy Evidence**.
-  - `.45` preserves `physicalRepresentationEvidence` as a distinct
-    question/fitness/permission contract and preserves genuinely passive or
-    historical Shadow probes/evidence.
-  - `TerminalEgress*`, D-0147 donor semantic tokens, broad public verbs, rolling
-    historical headers and Configuration identifiers remain separate later
-    questions; Configuration ownership remains coordinated with #87.
+  - `.44`, `.45` and `.46` are accepted naming closures.
+  - #121 / PR #122 then resolved the architecture question that had blocked the
+    remaining completed-worker donor family: there is one provenance-neutral
+    non-active Obstruction Relocation responsibility.
+  - The post-`.50` producer-consumer census classifies
+    `TerminalOccupancyAssessment`, `TerminalEgressCandidateSupport`,
+    `TerminalEgressCommitmentLifecycle` and
+    `CompletedObstructionResponsibilityTransition` as already-strangled donor
+    topology, not rename candidates.
+  - Shared `POST_JOB_ACTUATION`, dormant `terminalOccupancyKnowledge` and
+    courtesy/episode compatibility fields are corresponding retirement residue.
+  - The next bounded executable increment is **`.51 — DONOR TOPOLOGY
+    RETIREMENT`**. Configuration ownership/name migration remains coordinated
+    with #87.
+
 
 ### Disproven audit finding
 
@@ -148,7 +147,7 @@ diagnostic directionality and live documentation responsibility.
 
 The audit does **not** justify reopening these accepted behaviours:
 
-- D-0147 / D-0218 / Cooperative Passage terminal-resolution work;
+- current Causal Obstruction / Obstruction Relocation and Cooperative Passage resolution work;
 - participant-scoped Passage Leg handback/vacatur and Last-Leg Dissolution;
 - cold Causal Obstruction's bounded human-simple relocation policy;
 - multiple cold-blocker enumeration and deterministic Decision tie-break;
@@ -193,24 +192,29 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Validate **#121 `.50 — CURRENT PHYSICAL RELOCATION REFERENCE COVERAGE`**
-on PR #122. Protected `.49` CI passed, and GIANTS Reality proved the ENDED Job
-evidence correction itself: the former worker reached
-`NON_ACTIVE_UNCLAIMED | RELOCATION_ELIGIBLE`. The failure moved downstream:
-Candidate Support published no relocation because `CurrentPhysicalPoseSource`
-only issued the purpose-scoped relocation reference to assemblies carrying the
-physical-census Observation source label.
+Implement and independently validate **Issue #112 `.51 — DONOR TOPOLOGY
+RETIREMENT`** from accepted `main` at
+`6d87d02933b4d97e16161f73ca20e3aaa1daa2bc`.
 
-`.50` removes that provenance leak only. Every assembly present in the sealed raw
-Observation may receive the same purpose-scoped current physical relocation
-reference when the current GIANTS mission object and positive-only physical
-representation are available. Classification remains the sole semantic gate.
+The bounded hypothesis is:
 
-> **Two Evidence Routes Into One Classification; One Generic Mechanism Thereafter**
+> **Strangled Responsibility != Retired Topology**
 
-> **There Is One Non-Active Obstruction**
+> **Historical Fixture Dependency != Production Dependency**
 
-Protected CI must prove both evidence routes converge on the same generic
-Candidate/Control prerequisites before the owner repeats the GIANTS Reality
-challenge. Donor retirement remains blocked; #87 follows after reconciliation
-closes and #116 remains parked.
+Production already has one provenance-neutral non-active Obstruction Relocation
+path. `.51` therefore removes the four loaded-but-uninstantiated D-0147 donor
+modules, retires `POST_JOB_ACTUATION` and dormant Terminal Occupancy contract
+surface, and removes donor compatibility fields from the current generic
+executor. It must not change the `.50` Causal Obstruction classification,
+geometry-bounded recurrence, current Player Claim/source-AI handover, beneficiary
+serialization or semantic settlement rules.
+
+Useful physical-mechanics coverage is migrated onto the generic Obstruction
+Relocation fixture. Tests whose asserted contract is the retired two-courtesy /
+boundary-away topology are removed because tests protect current accepted
+contracts, not historical topology.
+
+#87-owned live configuration identifiers remain unchanged except the now-unsourced
+donor-only compaction watchdog, which retires with the dedicated historical
+`COMPACT` lifecycle. #116, #45 and #89 remain separate.

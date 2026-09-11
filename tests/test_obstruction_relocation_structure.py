@@ -119,25 +119,34 @@ def test_phase13_obstruction_control_is_addressed_from_current_reality_and_fails
     assert "getObstructionRelocationObservation" in coordinator
 
 
-def test_phase13_completed_worker_provenance_no_longer_selects_a_second_production_responsibility():
-    generic = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
-    runtime = read("scripts/runtime/Runtime.lua")
+def test_issue112_donor_topology_is_retired_after_generic_reality_validation():
     main = read("scripts/main.lua")
-    terminal_assessment = read("scripts/assessment/TerminalOccupancyAssessment.lua")
-    terminal_candidate = read("scripts/candidates/TerminalEgressCandidateSupport.lua")
-    relocation_control = read("scripts/control/ObstructionRelocationControl.lua")
-    assert "aiState.blocked==true" not in generic
-    assert "terminalOwnedAssemblies" not in generic
-    assert "terminalEpisodeId" not in generic
-    assert "runtime.terminalEgressCandidateSupport=" not in runtime
-    assert "runtime.completedObstructionResponsibilityTransition=" not in runtime
-    assert "function Runtime:onTerminalEgressCompletion" not in runtime
-    assert "scripts/assessment/TerminalOccupancyAssessment.lua" in main
-    assert "scripts/candidates/TerminalEgressCandidateSupport.lua" in main
-    assert "aiState.blocked==true" in terminal_assessment
-    assert "TERMINAL_OCCUPANCY" in terminal_candidate
-    assert "POST_JOB_ACTUATION" not in relocation_control
-    assert 'target.kind=="OBSTRUCTION_RELOCATION"' in read("scripts/control/LiveControlDispatcher.lua")
+    runtime = read("scripts/runtime/Runtime.lua")
+    control = read("scripts/control/ObstructionRelocationControl.lua")
+    active = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (ROOT / "scripts").rglob("*.lua")
+    )
+    for relative in (
+        "scripts/assessment/TerminalOccupancyAssessment.lua",
+        "scripts/candidates/TerminalEgressCandidateSupport.lua",
+        "scripts/commitment/TerminalEgressCommitmentLifecycle.lua",
+        "scripts/responsibility/CompletedObstructionResponsibilityTransition.lua",
+    ):
+        assert not (ROOT / relative).exists()
+        assert relative not in main
+    for stale in (
+        "POST_JOB_ACTUATION",
+        "postJobActuationOwnership",
+        "postJobAssemblyIds",
+        "terminalOccupancyKnowledge",
+    ):
+        assert stale not in active
+    for stale in ("terminalEpisodeId", "courtesyStage", "courtesyExhausted", "COURTESY_ALREADY_EXHAUSTED", 'phase=="COMPACT"'):
+        assert stale not in control
+    assert "obstructionRelocationResponsibilityTransition" in runtime
+    assert "OBSTRUCTION_RELOCATION_ACTUATION" in runtime
+
 
 def test_issue121_ended_job_evidence_resolves_activity_without_creating_provenance_specific_responsibility():
     assessment = read("scripts/assessment/CausalObstructionAssessment.lua")

@@ -6,6 +6,7 @@ load("scripts/config.lua")
 load("scripts/contracts/ValueRecord.lua")
 load("scripts/contracts/OperationalPicture.lua")
 load("scripts/contracts/CommitmentRecord.lua")
+load("scripts/contracts/ControlRequest.lua")
 load("scripts/identity/EpochSequence.lua")
 load("scripts/identity/IdentityRegistry.lua")
 load("scripts/commitment/CommitmentStateMachine.lua")
@@ -52,8 +53,7 @@ local function picture(ids, epochs, values)
         commitmentContext=values.commitmentContext or {},
         motionEvidence=values.motionEvidence or {},
         productiveContinuationKnowledge=values.productiveContinuationKnowledge or {},
-        causalObstructionKnowledge=values.causalObstructionKnowledge or {},
-        terminalOccupancyKnowledge=values.terminalOccupancyKnowledge or {}
+        causalObstructionKnowledge=values.causalObstructionKnowledge or {}
     })
 end
 
@@ -165,14 +165,16 @@ test("pairwise causal relations aggregate to one geometry-bounded blocker reloca
     equal(supported.candidateSupportEvidence.supportBoundary.moveCountBudget,false)
 end)
 
-test("former terminal provenance does not exclude a current causal blocker", function()
+test("generic Causal Obstruction relocation requires no historical Job provenance field", function()
     local ids=OuttaMyWay.IdentityRegistry.new()
     local epochs=OuttaMyWay.EpochSequence.new()
     local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
-    local base=picture(ids,epochs,{causalObstructionKnowledge={relation("AS-A","REF-A")},terminalOccupancyKnowledge={{assemblyId="AS-BLOCKER",terminalEpisodeId="JE-OLD"}}})
+    local base=picture(ids,epochs,{causalObstructionKnowledge={relation("AS-A","REF-A")}})
     local supported=support:attach(base,snapshot())
-    if supported==nil then error("historical terminal provenance incorrectly gated current Causal Obstruction") end
-    equal(supported.candidateSupportEvidence.candidateSpecifications[1].subject.assemblyId,"AS-BLOCKER")
+    if supported==nil then error("expected generic relocation support") end
+    local bridge=supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.obstructionRelocationBridge
+    equal(bridge.historicalJobProvenanceRequired,false)
+    equal(bridge.blockerAssemblyId,"AS-BLOCKER")
 end)
 
 test("observable parked assembly without causal obstruction creates no relocation candidate", function()
@@ -252,6 +254,98 @@ test("active Job re-entry terminates retained obstruction relocation responsibil
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.capability,"CONTINUE_UNCHANGED")
     equal(specification.evidenceBasis.obstructionRelocationBridge.terminalEvent,"NEW_AUTHORITATIVE_INTENT")
+end)
+
+local function genericControlFixture()
+    local ids=OuttaMyWay.IdentityRegistry.new()
+    local epochs=OuttaMyWay.EpochSequence.new()
+    local commitments=OuttaMyWay.CommitmentRegistry.new(ids,epochs)
+    local authorities=OuttaMyWay.AuthorityRegistry.new(ids,epochs,commitments)
+    local commitment=commitments:create({objective={kind="CAUSAL_OBSTRUCTION_RELOCATION"},governingBasis={responsibilityKey="obstruction-relocation:OR-1:AS-BLOCKER"}})
+    local token=authorities:acquireObstructionRelocation("AS-BLOCKER",commitment.identity)
+    local runtime={
+        identities=ids,epochs=epochs,commitments=commitments,authorities=authorities,
+        boundedAuthority={
+            validateRequest=function(_,request) return request.boundedAuthorityId=="BA-TEST",nil end,
+            isCurrent=function(_,identity) return identity=="BA-TEST" end
+        }
+    }
+    local vehicle={rootNode=9901,forceIsActive=false,rotatedTime=0}
+    local entered=false
+    function vehicle:getAISteeringNode() return self.rootNode end
+    function vehicle:getIsEntered() return entered end
+    function vehicle:getIsAIActive() return false end
+    function vehicle:getMotor() return {getMaximumForwardSpeed=function() return 10 end} end
+    function vehicle:getCruiseControlState() return 0 end
+    local source={getCurrentPhysicalObject=function(_,referenceKey) if referenceKey=="REF-BLOCKER" then return vehicle end return nil end}
+    local control=OuttaMyWay.ObstructionRelocationControl.new(runtime,source)
+    local completion=nil
+    control:setCompletionHandler(function(result) completion=result end)
+    local request=OuttaMyWay.ControlRequest.new({
+        identity="CR-GENERIC",commitmentId=commitment.identity,assemblyId="AS-BLOCKER",capability="REPOSITION",
+        target={
+            kind="OBSTRUCTION_RELOCATION",phase="INFIELD",assemblyReferenceKey="REF-BLOCKER",
+            objective={infieldDirectionX=1,infieldDirectionZ=0,targetProgressM=20,targetX=20,targetZ=0,destinationKind="CENTROID_BEARING_DISTANCE_CAP",objectiveKind="CAUSAL_OBSTRUCTION_BOUNDED_INWARD_RELOCATION"},
+            configurationPolicy="RETAIN_CURRENT",cleanupFailurePolicy="FAIL_COMPLETION",
+            completionContext={triggerKind="CURRENT_CAUSAL_OBSTRUCTION",relocationKey="obstruction-relocation:OR-1:AS-BLOCKER"}
+        },
+        authorityToken=token.identity,boundedAuthorityId="BA-TEST",operationalPictureEpoch=1,evidenceEpoch=1,
+        effectiveActuationCompositionId="EC-GENERIC",preconditions={},invalidationConditions={}
+    })
+    return control,request,vehicle,function(value) entered=value end,function() return completion end
+end
+
+test("generic Obstruction Relocation Player Claim relinquishes activity context without post-claim actuation", function()
+    local oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal
+    local driveCalls,neutralizeCalls=0,0
+    AIVehicleUtil={driveInDirection=function() driveCalls=driveCalls+1; return true end}
+    WheelsUtil={updateWheelsPhysics=function() neutralizeCalls=neutralizeCalls+1; return true end}
+    getWorldTranslation=function() return 0,0,0 end
+    worldDirectionToLocal=function(_,x,y,z) return x,y,z end
+
+    local control,request,vehicle,setEntered,completion=genericControlFixture()
+    local started=control:executeControlRequest(request,nil)
+    equal(started,true)
+    equal(vehicle.forceIsActive,true)
+    setEntered(true)
+    control:update(16)
+    equal(completion().status,"PLAYER_CLAIM")
+    equal(vehicle.forceIsActive,false)
+    equal(driveCalls,0)
+    equal(neutralizeCalls,0)
+    equal(completion().evidence.activityContext.released,true)
+
+    AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal=oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection
+end)
+
+test("generic Obstruction Relocation owned drive failure neutralizes propulsion before releasing activity context", function()
+    local oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection=AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal
+    local driveCalls,neutralizeCalls=0,0
+    local failDrive=false
+    AIVehicleUtil={driveInDirection=function()
+        driveCalls=driveCalls+1
+        if failDrive then error("synthetic direction actuation failure") end
+        return true
+    end}
+    WheelsUtil={updateWheelsPhysics=function() neutralizeCalls=neutralizeCalls+1; return true end}
+    getWorldTranslation=function() return 0,0,0 end
+    worldDirectionToLocal=function(_,x,y,z) return x,y,z end
+
+    local control,request,vehicle,_,completion=genericControlFixture()
+    local started=control:executeControlRequest(request,nil)
+    equal(started,true)
+    control:update(16)
+    equal(driveCalls,1)
+    equal(completion(),nil)
+    failDrive=true
+    control:update(16)
+    equal(completion().status,"FAILED")
+    equal(neutralizeCalls,1)
+    equal(completion().evidence.neutralization.performed,true)
+    equal(completion().evidence.activityContext.released,true)
+    equal(vehicle.forceIsActive,false)
+
+    AIVehicleUtil,WheelsUtil,getWorldTranslation,worldDirectionToLocal=oldAIVehicleUtil,oldWheelsUtil,oldTranslation,oldWorldDirection
 end)
 
 print(string.format("obstruction relocation focused validation: %d passed, %d failed",passed,failed))

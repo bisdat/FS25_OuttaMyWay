@@ -365,21 +365,6 @@ def test_v4711_parallel_validation_reports_global_operation_count():
     assert "decisionCommitmentBoundary:apply" not in validator
 
 
-def test_source_job_end_is_positive_giants_evidence_and_not_a_parallel_terminal_cause():
-    evidence=(ROOT/"scripts"/"observation"/"LiveAIJobEvidence.lua").read_text(encoding="utf-8")
-    for token in ("spec_aiJobVehicle.lastJob","jobActiveInMission","PREVIOUS_JOB_RETAINED_AS_LAST_JOB_AND_NO_LONGER_ACTIVE","sourceJobEndEvidence"):
-        assert token in evidence
-    source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
-    assert "sourceJobEndEvidence" in source
-    admission=(ROOT/"scripts"/"identity"/"JobEpisodeAdmission.lua").read_text(encoding="utf-8")
-    assert "sourceJobEnded" in admission
-    terminal=(ROOT/"scripts"/"assessment"/"TerminalOccupancyAssessment.lua").read_text(encoding="utf-8")
-    assert 'terminalCause=="SOURCE_INTENT_TERMINATION"' not in terminal
-    live_code="\n".join(p.read_text(encoding="utf-8") for p in (ROOT/"scripts").rglob("*.lua"))
-    assert "sourceIntentTerminationObserved" not in live_code
-    assert 'cause="SOURCE_INTENT_TERMINATION"' not in live_code
-
-
 def test_v4714_field_world_equivalence_authority_is_active_and_conservative():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     for rel in ("scripts/identity/FieldWorldSnapshotRegistry.lua","scripts/identity/FieldWorldEquivalenceEvaluator.lua","scripts/identity/FieldWorldEquivalenceAuthority.lua"):
@@ -1207,25 +1192,6 @@ def test_v47108_settled_relationship_dissolution_requires_positive_non_turn_cont
 
 
 
-def test_v47117_d0147_value_record_boundary_accessors_remain_after_fixed_point_controller_retirement():
-    authority=(ROOT/"scripts"/"control"/"mechanisms"/"NonJobActuationMechanism.lua").read_text(encoding="utf-8")
-    candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
-
-    # v4.7.117 fixed-point curvature was live-tested then retired by v4.7.120's
-    # Exit Vector / Exit Heading correction. No stale fixed-target actuator remains.
-    assert 'POST_JOB_FIXED_TARGET_NO_LONGER_FORWARD_REACHABLE' not in authority
-    assert 'targetCurvature=(2*lx)/localDenominator' not in authority
-    assert 'driveToWorldTarget' not in authority
-
-    # v4.7.122 retires outer-boundary egress traversal from the live D-0147 path.
-    assert 'ValueRecord.ipairs(boundary)' not in candidate
-    assert 'ValueRecord.length(boundary)' not in candidate
-    assert 'positiveRepresentedFieldExit' not in control
-    assert 'geometryMetrics' in candidate
-    assert 'centroidX' in candidate and 'centroidZ' in candidate
-
-
 def test_v47118_d0147_diagnostic_steering_telemetry_and_owned_exit_neutralization():
     authority=(ROOT/"scripts"/"control"/"mechanisms"/"NonJobActuationMechanism.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
@@ -1278,228 +1244,6 @@ def test_v47119_d0147_vehicle_activity_context_is_bounded_and_restored():
     # Positive Field-Exit Settlement from the live D-0147 courtesy path.
     assert "positiveRepresentedFieldExit" not in control
     assert 'state.phase=="INFIELD" and state.activityContext~=nil' in control
-
-def test_v47120_d0147_exit_alignment_is_direction_locked_and_positive_exit_terminated():
-    authority=(ROOT/"scripts"/"control"/"mechanisms"/"NonJobActuationMechanism.lua").read_text(encoding="utf-8")
-    candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
-
-    for token in (
-        "driveInWorldDirection",
-        "worldDirectionToLocal",
-        "AIVehicleUtil.driveInDirection",
-        "NON_JOB_DIRECTION_DRIVE_CALL_FAILED",
-        "steeringAngleLimitDeg",
-    ):
-        assert token in authority
-    assert "AIVehicleUtil.driveAlongCurvature" not in authority
-    assert "driveToWorldTarget" not in authority
-
-    # v4.7.122 preserves the validated fixed-direction actuator but points it once
-    # toward the immutable Field World centroid instead of an outer-boundary exit.
-    assert 'alignmentMode="FIXED_INITIAL_CENTRE_BEARING"' in candidate
-    assert 'continuousCourseCorrection=false' in candidate
-    assert 'fieldCentreIsDestination=not capped' in candidate
-    assert 'targetX,targetZ=occupancy.x+dirX*targetProgress,occupancy.z+dirZ*targetProgress' in candidate
-    assert 'targetProgress=math.min(distance,distanceCap)' in candidate
-    assert 'settlement="POSITIVE_FIELD_EXIT_ONLY"' not in candidate
-
-    for token in (
-        "state.infieldDirectionX=tonumber(objective.infieldDirectionX)",
-        "state.infieldDirectionZ=tonumber(objective.infieldDirectionZ)",
-        "driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)",
-        "INFIELD_ALIGNMENT_ACTUATION",
-        "continuousCourseCorrection=false",
-    ):
-        assert token in control
-    assert "positiveRepresentedFieldExit" not in control
-    assert "state.targetX=tonumber(objective.targetX)" in control
-    assert "state.targetZ=tonumber(objective.targetZ)" in control
-    assert "driveToWorldTarget" not in control
-
-
-
-def test_v47122_d0147_bounded_infield_retreat_is_one_shot_and_reactive():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
-    assessment=(ROOT/"scripts"/"assessment"/"TerminalOccupancyAssessment.lua").read_text(encoding="utf-8")
-    candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    harness=(ROOT/"tests"/"replacement_core"/"run.lua").read_text(encoding="utf-8")
-
-    assert 'TERMINAL_INFIELD_RETREAT_DISTANCE_M' not in config
-    assert 'TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M = 60.0' in config
-    assert 'geometryMetrics=representative and representative.geometryMetrics or nil' in source
-    assert 'alignmentMode="FIXED_INITIAL_CENTRE_BEARING"' in candidate
-    assert 'continuousCourseCorrection=false' in candidate
-    assert 'fieldCentreIsDestination=not capped' in candidate
-    assert 'dirX,dirZ=dx/distance,dz/distance' in candidate
-    assert 'targetProgress=math.min(distance,distanceCap)' in candidate
-    assert 'CENTROID_BEARING_DISTANCE_CAP' in candidate
-    assert 'phase="INFIELD"' in candidate
-    assert 'positiveRepresentedFieldExit' not in control
-    assert 'driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)' in control
-    assert 'local realisedProgress=dx*state.infieldDirectionX+dz*state.infieldDirectionZ' in control
-    assert 'realisedProgress>=state.targetProgressM' in control
-    assert 'continuousCourseCorrection=false' in control
-
-    assert 'yieldRenewalState' in assessment
-    assert 'continuationWitnessAssemblyIds' in assessment
-    assert 'authorizing[assemblyId]' not in assessment
-    assert 'markRetreatCompleted' in assessment
-    assert 'positivePhysicalProgress' in assessment
-    assert 'renewal.continuationObserved=true' in assessment
-    assert 'aiState.blocked==true' in assessment
-    assert 'record.yieldAwaitingContinuation~=true' in candidate
-    assert 'markRetreatCompleted(result.terminalEpisodeId,serializedBeneficiaryAssemblyIds,courtesyStage)' not in runtime
-    assert 'TerminalEgressCommitmentLifecycle.settle(self,result.commitmentId,"OBJECTIVE_SATISFIED"' not in runtime
-    assert "newHistoricalD0147DonorTestRuntime" in harness
-    assert 'COURTESY_ALREADY_EXHAUSTED' in control
-
-
-def test_v01131_d0194_two_stage_terminal_courtesy_is_bounded_and_geometry_derived():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assessment=(ROOT/"scripts"/"assessment"/"TerminalOccupancyAssessment.lua").read_text(encoding="utf-8")
-    candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'TERMINAL_INFIELD_RETREAT_DISTANCE_M' not in config
-    assert 'TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M = 60.0' in config
-    for token in ('TERMINAL_INTERIOR_SETTLEMENT','FIELD_CENTROID','CENTROID_BEARING_DISTANCE_CAP','TERMINAL_FINAL_BOUNDARY_SETTLEMENT','OUTER_BOUNDARY_AWAY_FROM_PROTECTED_DEMAND','forwardBoundaryPoint','maximumContainedProgress','protectedOccupancyTransitionClearanceSupported=true'):
-        assert token in candidate
-    for token in ('courtesyMoveCount','completed>=2','DOUBLE_COURTESY_EXHAUSTED','noThirdAutomaticRelocation=true'):
-        assert token in assessment
-    assert 'courtesyStage=result.evidence and tonumber(result.evidence.courtesyStage) or nil' not in runtime
-    assert 'markRetreatCompleted(result.terminalEpisodeId,serializedBeneficiaryAssemblyIds,courtesyStage)' not in runtime
-    assert 'realisedProgress>=state.targetProgressM' in control
-    assert 'BOUNDED_MOVE_WATCHDOG_EXPIRED' in control
-    assert 'driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)' in control
-
-
-
-
-def test_v01144_d0199_courtesy_budget_belongs_to_moved_obstacle_and_centroid_is_capped():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assessment=(ROOT/"scripts"/"assessment"/"TerminalOccupancyAssessment.lua").read_text(encoding="utf-8")
-    candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
-    assert 'TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M = 60.0' in config
-    assert 'targetProgress=math.min(distance,distanceCap)' in candidate
-    assert 'maximumCourtesyDistanceM=distanceCap' in candidate
-    assert 'fieldCentreIsDestination=not capped' in candidate
-    assert 'continuationWitnessAssemblyIds' in assessment
-    assert 'blockedAttributedToMovedAssembly=true' in assessment
-    assert 'blockerIdentityUnbound=true' in assessment
-    assert 'authorizing[assemblyId]' not in assessment
-    assert 'courtesyBudgetOwner="MOVED_COMPLETED_JOB_EPISODE"' in candidate
-
-def test_relocation_serialization_uses_valuerecord_traversal_and_sequences_beneficiary_hold():
-    candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
-    boundary=(ROOT/"scripts"/"commitment"/"DecisionCommitmentBoundary.lua").read_text(encoding="utf-8")
-    drive=(ROOT/"scripts"/"control"/"mechanisms"/"NativeDriveMechanism.lua").read_text(encoding="utf-8")
-
-    for token in (
-        "relocationSerializationBeneficiaries",
-        "authorizingDemandAssemblyIds",
-        "progressActuationOwnership={assemblyIds=protectedIds}",
-        'capability="REGULATE_SPEED",effectClass="HOLD",progressActuation=true',
-        'controlAuthority="D0147_POST_JOB_PLUS_RELOCATION_SERIALIZATION"',
-    ):
-        assert token in candidate
-    for token in (
-        'RELOCATION_SERIALIZATION_OWNER_TAG="RELOCATION_SERIALIZATION"',
-        "_applyRelocationSerialization",
-        "_releaseRelocationSerialization",
-        'bridge.phase~="INFIELD"',
-        '"APPLY",RELOCATION_SERIALIZATION_OWNER_TAG,0.0',
-        'RELOCATION_SERIALIZATION_APPLIED',
-    ):
-        assert token in authority
-    assert 'self.regulationBoundedAuthority:_releaseRelocationSerialization(result.commitmentId,"OBSTRUCTION_RELOCATION_CONTROL_"..tostring(result.status))' in runtime
-    assert '"TERMINAL_CONTROL_"' not in runtime
-    assert "physical selected Candidate must select one actuation authority class" not in boundary
-    assert "one assembly cannot simultaneously own multiple actuation classes" in boundary
-    assert "D-0186 Regulation–Hold Boundary" in drive
-    assert "local outputAllowedToDrive = isAllowedToDrive == true and outputMax > 0" in drive
-    assert "state.lastOutputAllowed = outputAllowedToDrive" in drive
-
-    # v4.7.124: relocationSerializationBeneficiaries is a sealed nested ValueRecord in GIANTS.
-    # Native #/ipairs silently skipped the collection in v4.7.123, so the hold was never applied.
-    assert 'OuttaMyWay.ValueRecord.length(protected)==0' in authority
-    assert 'for _,item in OuttaMyWay.ValueRecord.ipairs(protected) do' in authority
-    assert 'if #protected==0' not in authority
-    assert 'for _,item in ipairs(protected) do' not in authority
-
-
-def test_v47125_d0147_continuation_renewal_requires_progress_then_later_block():
-    assessment=(ROOT/"scripts"/"assessment"/"TerminalOccupancyAssessment.lua").read_text(encoding="utf-8")
-    candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    harness=(ROOT/"tests"/"replacement_core"/"run.lua").read_text(encoding="utf-8")
-    for token in (
-        "yieldRenewalState",
-        "continuationWitnessAssemblyIds",
-        "positivePhysicalProgress",
-        'class=="STABLE_FORWARD" or class=="TURNING" or class=="REVERSING_OR_OPPOSED_TRAVEL"',
-        "renewal.continuationObserved=true",
-        "repeatBlockedPositive",
-        'aiState.blocked==true',
-    ):
-        assert token in assessment
-    assert "not obstructionPositive" not in assessment.split("-- Continuation Renewal:",1)[1].split("local representationId",1)[0]
-    assert 'record.yieldAwaitingContinuation~=true' in candidate
-    assert 'repeatRequiresContinuationRenewal=true' in candidate
-    assert 'laterRetryRequiresContinuationRenewal=true' in candidate
-    assert 'markRetreatCompleted(result.terminalEpisodeId,serializedBeneficiaryAssemblyIds,courtesyStage)' not in runtime
-    assert 'continuationRenewalRequired=true' not in runtime
-    assert "newHistoricalD0147DonorTestRuntime" in harness
-
-
-def test_v47127_d0147_courtesy_constraint_and_valuerecord_regression_contract():
-    candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
-    boundary=(ROOT/"scripts"/"commitment"/"DecisionCommitmentBoundary.lua").read_text(encoding="utf-8")
-    lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
-    planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
-    passage_control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
-    capability_assessment=(ROOT/"scripts"/"assessment"/"PassageCapabilityAssessment.lua").read_text(encoding="utf-8")
-
-    # Courtesy Evidence Gap is resolved by an explicit D-0147-only N/A contract,
-    # not by inventing geometry evidence or weakening mandatory constraints globally.
-    assert 'local function courtesyExemption' in candidate
-    assert 'applicable=false' in candidate
-    assert 'D0147_COURTESY_CONSTRAINT_EXCEPTION' in candidate
-    assert 'stageTwoClearance' in candidate
-    assert 'protectedOccupancyTransitionClearanceSupported' in candidate
-    assert 'exemptMandatoryConstraintIds=stageTwoClearance and {"FIELD_WORLD_CONTAINMENT"} or {"FIELD_WORLD_CONTAINMENT","TRANSITION_CLEARANCE"}' in candidate
-    assert 'constraints.FIELD_WORLD_CONTAINMENT=courtesyExemption' in candidate
-    assert 'constraints.TRANSITION_CLEARANCE=courtesyExemption' in candidate
-    assert 'constraints.TRANSITION_CLEARANCE=packet' in candidate
-    assert 'constraints.FIELD_WORLD_CONTAINMENT=packet' not in candidate
-
-    # Standing-order audit: proven sealed ValueRecord collections use explicit length accessors.
-    assert 'OuttaMyWay.ValueRecord.length(contexts)==0' in candidate
-    assert 'if #contexts==0' not in candidate
-    assert 'OuttaMyWay.ValueRecord.length(contexts) == 0' in boundary
-    assert 'OuttaMyWay.ValueRecord.length(progressOwnership.assemblyIds)' in boundary
-    assert 'OuttaMyWay.ValueRecord.length(postJobOwnership.assemblyIds)' in boundary
-    assert '#progressOwnership.assemblyIds' not in boundary
-    assert '#postJobOwnership.assemblyIds' not in boundary
-    assert 'OuttaMyWay.ValueRecord.length(candidate.evidenceBasis.progressActuationOwnership and candidate.evidenceBasis.progressActuationOwnership.assemblyIds or {})' in lifecycle
-    assert 'OuttaMyWay.ValueRecord.length(ring)<3' in planner
-    assert 'OuttaMyWay.ValueRecord.length(fieldWorld.boundary)<3' in planner
-    assert 'OuttaMyWay.ValueRecord.length(run.guide.gates)<1' in passage_control
-    assert 'OuttaMyWay.ValueRecord.length(run.thirdPartyConstraints or {})' in passage_control
-    assert 'OuttaMyWay.ValueRecord.length(item.primitives)<1' in capability_assessment
-
-    # The live-validated courtesy calibration remains frozen in this audit tranche.
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
-    assert 'TERMINAL_INFIELD_RETREAT_DISTANCE_M' not in config
-    assert 'driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)' in control
-    assert 'continuousCourseCorrection=false' in control
-
 
 def test_v0181_transit_base_missing_evidence_fails_closed_without_legacy_configuration_authority():
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
@@ -1884,110 +1628,6 @@ def test_cooperative_passage_responsibility_transition_is_upstream_and_singular(
     assert '_authorizeBoundedAuthority(currentResponsibility,commitment,token' in runtime
 
 
-def test_completed_obstruction_responsibility_transition_is_retained_test_donor_not_production_runtime():
-    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    harness=(ROOT/"tests"/"replacement_core"/"run.lua").read_text(encoding="utf-8")
-    transition_path=ROOT/"scripts"/"responsibility"/"CompletedObstructionResponsibilityTransition.lua"
-    transition=transition_path.read_text(encoding="utf-8")
-
-    # .47 preserves donor source for direct historical mechanical validation,
-    # but production Runtime no longer instantiates or dispatches that responsibility.
-    assert transition_path.is_file()
-    assert "scripts/responsibility/CompletedObstructionResponsibilityTransition.lua" in main
-    assert "CompletedObstructionResponsibilityTransition.new(runtime)" not in runtime
-    assert "COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED" not in runtime
-    assert "_continueCompletedObstruction" not in runtime
-    assert "_completedObstructionRequest" not in runtime
-    assert "local terminalBridge=terminalEgressBridge(candidate)" not in runtime
-    assert "TerminalEgressCommitmentLifecycle.settle" not in runtime
-
-    # Historical Behaviour Contract != Historical Production Topology Contract.
-    assert "newHistoricalD0147DonorTestRuntime" in harness
-    assert "runtime.completedObstructionResponsibilityTransition=OuttaMyWay.CompletedObstructionResponsibilityTransition.new(runtime)" in harness
-    assert transition.count("TerminalEgressCommitmentLifecycle.applyDecision") == 1
-
-def test_explicit_resolution_commitment_is_a_read_only_view_at_both_transition_boundaries():
-    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    contract=(ROOT/"scripts"/"contracts"/"ResolutionCommitment.lua").read_text(encoding="utf-8")
-    adapter=(ROOT/"scripts"/"responsibility"/"ResolutionCommitmentAdapter.lua").read_text(encoding="utf-8")
-    authority=(ROOT/"scripts"/"responsibility"/"ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
-    cooperative=(ROOT/"scripts"/"responsibility"/"CooperativePassageResponsibilityTransition.lua").read_text(encoding="utf-8")
-    completed=(ROOT/"scripts"/"responsibility"/"CompletedObstructionResponsibilityTransition.lua").read_text(encoding="utf-8")
-    regulation_authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
-
-    assert "scripts/contracts/ResolutionCommitment.lua" in main
-    assert "scripts/responsibility/ResolutionCommitmentAdapter.lua" in main
-    assert main.index("scripts/contracts/ResolutionCommitment.lua") < main.index("scripts/responsibility/ResolutionCommitmentAdapter.lua")
-    assert 'kind="RESOLUTION_COMMITMENT"' in adapter
-    assert "local responsibilityIdentity=semantics.responsibilityIdentity" in adapter
-    assert "semantics.responsibilityIdentity or commitment.identity" not in adapter
-    assert "resolutionsByCommitmentId" in authority
-    assert 'identities:issue("RESPONSIBILITY")' in authority
-    assert "transitionCooperativePassageResolution" in authority
-    assert "transitionObstructionRelocationResolution" in authority
-    assert "terminateSemanticResponsibilitiesForTerminalCommitment" in authority
-    assert "application.commitmentId~=commitment.identity" in adapter
-    assert "openResolutionObligationIds" in contract and "openForOwner" in adapter
-    for forbidden in ("CommitmentRegistry.new", "ObligationLedger.new", "AuthorityRegistry.new", "function Adapter.admit", "function Adapter.settle", "function Adapter.authorize", "function Adapter.execute"):
-        assert forbidden not in adapter
-    assert "ResolutionCommitmentAdapter.build" in cooperative
-    assert "ResolutionCommitmentAdapter.build" in completed
-    assert "bridge.assemblyIds" in cooperative
-    assert "progressActuationOwnership" not in cooperative
-    assert "authorizingDemandAssemblyIds" in completed
-    assert "progressActuationOwnership" not in completed and "postJobActuationOwnership" not in completed
-    assert "responsibilityAlreadyCurrent" in completed
-    assert 'applied.application.action=="MAINTAIN"' not in completed
-    assert "RESOLUTION_COMMITMENT_PERSISTED" in completed
-    assert "LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision" not in regulation_authority
-    assert "TerminalEgressCommitmentLifecycle.applyDecision" not in regulation_authority
-    assert "applyActionSpaceRegulationDecision" not in regulation_authority
-    assert "ResolutionCommitmentAdapter.build" in cooperative
-    assert "ResolutionCommitmentAdapter.build" in completed
-
-
-def test_follower_boundary_regulation_application_is_upstream_and_singular():
-    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    regulation_authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
-    lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
-    transition_path=ROOT/"scripts"/"responsibility"/"FollowerBoundaryResponsibilityTransition.lua"
-    transition=transition_path.read_text(encoding="utf-8")
-
-    assert transition_path.is_file()
-    assert "scripts/responsibility/FollowerBoundaryResponsibilityTransition.lua" in main
-    assert "FollowerBoundaryResponsibilityTransition.new(runtime)" in runtime
-    orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
-    assert orchestration.index("assessFollowerBoundaryPermission") < orchestration.index("followerBoundaryResponsibilityTransition:transition")
-    assert orchestration.index("followerBoundaryResponsibilityTransition:transition") < orchestration.index("regulationBoundedAuthority:continueFollowerBoundary")
-    readiness=regulation_authority[regulation_authority.index("function Authority:assessFollowerBoundaryPermission"):regulation_authority.index("function Authority:continueFollowerBoundary")]
-    assert 'semanticAssessment.disposition=="TERMINATE"' in readiness
-    assert readiness.index('bridge.action=="PRESERVE"') < readiness.index('bridge.action~="APPLY"')
-    assert readiness.index('candidate.capability~="REGULATE_SPEED"') < readiness.index('self.regulationControl==nil')
-    assert readiness.index('self.regulationControl==nil') < readiness.index('status="FOLLOWER_BOUNDARY_RESPONSIBILITY_TRANSITION_REQUIRED"')
-    assert "LiveTrafficCommitmentLifecycle.applyFollowerBoundaryDecision" not in regulation_authority
-    assert transition.count("LiveTrafficCommitmentLifecycle.applyFollowerBoundaryDecision") == 1
-    assert "function Authority:continueFollowerBoundary" in regulation_authority
-    continuation=regulation_authority[regulation_authority.index("function Authority:continueFollowerBoundary"):regulation_authority.index("function Authority:getFollowerBoundaryStatus")]
-    assert continuation.index("authorities:validate") < continuation.index("_regulationRequest")
-    assert continuation.index("_regulationRequest") < continuation.index("self.runtime.liveControlDispatcher:dispatch")
-    assert 'ownerTag=FOLLOWER_BOUNDARY_OWNER_TAG' not in continuation  # owner tag is supplied as the existing request argument
-    assert "FOLLOWER_BOUNDARY_OWNER_TAG" in continuation and "permittedFollowerCapKmh" in continuation
-    assert "applyFollowerBoundaryRetirementDecision" in runtime
-    assert "settleFollowerBoundaryPurpose" in runtime
-    assert "applyFollowerBoundaryRetirementDecision" not in regulation_authority
-    assert "settleFollowerBoundaryPurpose" not in regulation_authority
-    assert "applyActionSpaceRegulationDecision" not in regulation_authority
-    assert "FOLLOWER_BOUNDARY_TRANSITION_UPSTREAM" in transition
-    assert "beforePhysicalDispatch=true" in transition
-    for forbidden in ("RegulationAdapter.lua", "RegulationRegistry", "RegulationStateMachine"):
-        assert forbidden not in main
-    assert "applyFollowerBoundaryDecision" in lifecycle
-    assert "CooperativePassageResponsibilityTransition" in main
-    assert "CompletedObstructionResponsibilityTransition" in main
-
-
 def test_responsibility_transition_authority_owns_action_space_passage_replacement():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
@@ -2022,44 +1662,6 @@ def test_responsibility_transition_authority_owns_action_space_passage_replaceme
     assert "_supersedeActionSpaceRegulationForCooperativePassage" not in regulation_authority
     continuation=runtime[runtime.index("function Runtime:_continueCooperativePassage"):runtime.index("function Runtime:_assessCurrentActionSpaceRegulation")]
     assert "self.liveControlDispatcher:dispatchJoint" in continuation
-
-
-def test_action_space_regulation_application_is_upstream_and_singular():
-    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    regulation_authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
-    lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
-    transition_path=ROOT/"scripts"/"responsibility"/"ActionSpaceRegulationResponsibilityTransition.lua"
-    transition=transition_path.read_text(encoding="utf-8")
-
-    assert transition_path.is_file()
-    assert "scripts/responsibility/ActionSpaceRegulationResponsibilityTransition.lua" in main
-    assert "ActionSpaceRegulationResponsibilityTransition.new(runtime)" in runtime
-    orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
-    assert orchestration.index("assessActionSpaceRegulationPermission") < orchestration.index("actionSpaceRegulationResponsibilityTransition:transition")
-    assert orchestration.index("actionSpaceRegulationResponsibilityTransition:transition") < orchestration.index("regulationBoundedAuthority:continueActionSpaceRegulation")
-    assert "LiveTrafficCommitmentLifecycle.applyActionSpaceRegulationDecision" not in regulation_authority
-    assert transition.count("LiveTrafficCommitmentLifecycle.applyActionSpaceRegulationDecision") == 1
-    assert 'status="ACTION_SPACE_REGULATION_RESPONSIBILITY_TRANSITION_REQUIRED"' in regulation_authority
-    for context in ('applicationContext="INITIAL"', 'applicationContext="REACTIVATION"', 'applicationContext="ROLE_MIGRATION"'):
-        assert context in regulation_authority
-    continuation=regulation_authority[regulation_authority.index("function Authority:continueActionSpaceRegulation"):regulation_authority.index("function Authority:retireTrafficLeasesForCommitment")]
-    assert "ResolutionSpaceProgressionEnvelope" in regulation_authority
-    assert "_quiesceActionSpaceRegulationActuation" in regulation_authority
-    assert "settleActionSpaceRegulationPurpose" not in regulation_authority
-    assert "settleActionSpaceRegulationPurpose" in runtime and "settleActionSpaceRegulationPurpose" in (ROOT/"scripts"/"responsibility"/"ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
-    assert "ControlRequest" in regulation_authority
-    assert "applyActionSpaceRegulationDecision" not in continuation
-    assert "ACTION_SPACE_REGULATION_TRANSITION_UPSTREAM" in transition
-    assert "beforePhysicalDispatch=true" in transition
-    assert "ESTABLISHED" in transition and "REVALIDATED" in transition
-    assert "applyFollowerBoundaryDecision" not in regulation_authority
-    assert "FollowerBoundaryResponsibilityTransition" in main
-    assert "CooperativePassageResponsibilityTransition" in main
-    assert "CompletedObstructionResponsibilityTransition" in main
-    assert "applyActionSpaceRegulationDecision" in lifecycle
-    for forbidden in ("RegulationAdapter.lua", "RegulationRegistry", "RegulationStateMachine"):
-        assert forbidden not in main
 
 
 def test_forward_intersection_is_situation_owned_and_consumed_without_geometry_rederivation():
@@ -2225,63 +1827,6 @@ def test_phase10_bounded_authority_cleanup_precedes_terminal_or_successor_contro
     assert "releaseForCommitment" in settlement
 
 
-def test_phase11_live_control_dispatcher_is_authorised_routing_only():
-    main=(ROOT/"scripts/main.lua").read_text(encoding="utf-8")
-    runtime=(ROOT/"scripts/runtime/Runtime.lua").read_text(encoding="utf-8")
-    dispatcher=(ROOT/"scripts/control/LiveControlDispatcher.lua").read_text(encoding="utf-8")
-    authority=(ROOT/"scripts/authority/RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
-    bounded=(ROOT/"scripts/authority/BoundedAuthority.lua").read_text(encoding="utf-8")
-    envelope=(ROOT/"scripts/authority/ResolutionSpaceProgressionEnvelope.lua").read_text(encoding="utf-8")
-
-    assert "scripts/assessment/CurrentResponsibilityAssessment.lua" in main
-    assert "scripts/authority/RegulationBoundedAuthority.lua" in main
-    assert "scripts/authority/ResolutionSpaceProgressionEnvelope.lua" in main
-    assert main.index("scripts/authority/ResolutionSpaceProgressionEnvelope.lua") < main.index("scripts/authority/RegulationBoundedAuthority.lua")
-    assert main.index("scripts/authority/RegulationBoundedAuthority.lua") < main.index("scripts/control/LiveControlDispatcher.lua")
-
-    assert "RegulationBoundedAuthority.new(runtime)" in runtime
-    orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
-    assert "regulationBoundedAuthority:dispatch(picture,evaluated)" not in orchestration
-    assert "currentResponsibilityAssessment:assessActionSpaceRegulation" in orchestration
-    assert "currentResponsibilityAssessment:assessFollowerBoundary" in orchestration
-    assert orchestration.index("currentResponsibilityAssessment:assessActionSpaceRegulation") < orchestration.index("assessActionSpaceRegulationPermission")
-    assert "neutralizeActionSpaceRegulationPhysical" in runtime
-    assert "neutralizeFollowerBoundaryPhysical" in runtime
-    assert "regulationBoundedAuthority:continueFollowerBoundary" in orchestration
-    assert "regulationBoundedAuthority:continueActionSpaceRegulation" in orchestration
-    assert "regulationBoundedAuthority:continueCooperativePassage" not in orchestration
-    assert "regulationBoundedAuthority:continueCompletedObstruction" not in orchestration
-    assert "_continueCooperativePassage" in orchestration
-    assert "_continueCompletedObstruction" not in orchestration
-    assert "_dispatchObstructionRelocation" in orchestration
-
-    for forbidden in (
-        "followerBoundaryLease","actionSpaceRegulationLease","relocationSerializationLeases",
-        "_authorizeBoundedAuthority","boundedAuthority:authorize","ResolutionSpaceProgressionEnvelope",
-        "terminateRegulation","terminateActionSpaceRegulation",
-        "settleFollowerBoundaryPurpose","settleActionSpaceRegulationPurpose",
-        "TerminalEgressCommitmentLifecycle.settle","completeCooperativePassage",
-    ):
-        assert forbidden not in dispatcher
-    for required in ("function Dispatcher:dispatch(request,candidate)", "function Dispatcher:dispatchJoint", "executeControlRequest", "executeJointRequests", "recordOutcome"):
-        assert required in dispatcher
-
-    assert "function Authority:materializeRequest" in bounded
-    assert "targetMatchesGrant" in bounded
-    assert "RegulationBoundedAuthority" in authority
-    assert "boundedAuthority:materializeRequest" in authority
-    assert "self.runtime.liveControlDispatcher:dispatch(request,candidate)" in authority
-    assert "self.capability:executeControlRequest(" not in authority
-    assert "self.runtime.liveControlDispatcher:dispatchJoint" not in authority
-    assert 'capability="REPOSITION"' not in authority
-    assert "guardedRecoveryLease" not in authority
-    assert "settleActionSpaceRegulationPurpose" not in authority
-    assert "settleFollowerBoundaryPurpose" not in authority
-    assert "TerminalEgressCommitmentLifecycle.settle" not in authority
-    assert "completeCooperativePassage" not in authority
-    assert "Bounded-Authority magnitude policy" in envelope
-    assert not (ROOT/"scripts"/"prototypes"/"Prototype22CapabilityGate.lua").exists()
-
 def test_phase12_superseded_pre_d0146_recovery_lifecycle_remains_retired():
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
 
@@ -2297,56 +1842,6 @@ def test_phase12_superseded_pre_d0146_recovery_lifecycle_remains_retired():
         "markNativeReacquisition",
     ):
         assert retired not in lifecycle
-
-def test_phase13_responsibility_semantics_remove_only_proven_commitment_action_duplication():
-    authority=(ROOT/"scripts"/"responsibility"/"ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
-    action_transition=(ROOT/"scripts"/"responsibility"/"ActionSpaceRegulationResponsibilityTransition.lua").read_text(encoding="utf-8")
-    cooperative=(ROOT/"scripts"/"responsibility"/"CooperativePassageResponsibilityTransition.lua").read_text(encoding="utf-8")
-    completed=(ROOT/"scripts"/"responsibility"/"CompletedObstructionResponsibilityTransition.lua").read_text(encoding="utf-8")
-    selector=(ROOT/"scripts"/"decision"/"DecisionSelector.lua").read_text(encoding="utf-8")
-    boundary=(ROOT/"scripts"/"commitment"/"DecisionCommitmentBoundary.lua").read_text(encoding="utf-8")
-    lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
-
-    # Phase 13 does not remove retained generic Commitment orchestration.
-    assert "commitmentAction" in selector
-    assert "decision.commitmentAction" in boundary
-    assert "decision.commitmentAction" in lifecycle
-
-    # Regulation -> Passage semantic replacement is already positively
-    # witnessed by explicit predecessor, targeted substrate and preflight
-    # obligation/participant evidence. CM REVISE is not transition authority.
-    action_replacement=authority[
-        authority.index("function Authority:replaceActionSpaceRegulationWithCooperativePassage"):
-        authority.index("function Authority:replaceRegulationWithCooperativePassage")
-    ]
-    follower_replacement=authority[
-        authority.index("function Authority:replaceFollowerRegulationWithCooperativePassage"):
-        authority.index("function Authority:preflightActionSpaceRegulationForCooperativePassage")
-    ]
-    assert "commitmentAction" not in action_replacement
-    assert "commitmentAction" not in follower_replacement
-
-    # Action-Space establishment/revalidation is owned by RTA preflight
-    # Current Responsibility evidence, not by CREATE versus MAINTAIN.
-    assert 'preflight.current==nil and "ESTABLISHED" or "REVALIDATED"' in action_transition
-    assert 'evaluated.decision.commitmentAction=="CREATE"' not in action_transition
-
-    # Resolution exposure diagnostics consume semantic continuity supplied
-    # by RTA; retained CM application action remains provenance only.
-    assert "responsibilityAlreadyCurrent" in cooperative
-    assert "responsibilityAlreadyCurrent" in completed
-    assert 'applied.application.action=="MAINTAIN"' not in cooperative
-    assert 'applied.application.action=="MAINTAIN"' not in completed
-
-    # Direct Resolution continuity still lacks a separate Situation-owned
-    # witness when a retained CM exists but no RS-* is visible. Preserve
-    # that fail-safe guard until a later Phase-13 discovery replaces it.
-    identity_section=authority[
-        authority.index("function Authority:resolutionIdentityForCommitment"):
-        authority.index("function Authority:transitionCooperativePassageResolution")
-    ]
-    assert 'action=="MAINTAIN" or action=="REVISE"' in identity_section
-    assert "RESOLUTION_RESPONSIBILITY_CONTINUITY_MISSING" in identity_section
 
 def test_phase13_direct_cooperative_passage_targets_substrate_by_purpose_and_job_episode():
     authority=(ROOT/"scripts"/"responsibility"/"ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
@@ -2445,55 +1940,25 @@ def test_follower_boundary_permissible_magnitude_is_bounded_authority_owned():
     )
     assert "requestedFollowerCapKmh" not in active_lua
 
-
-def test_issue101_stranded_leaf_semantics_are_retired_without_erasing_current_knowledge():
-    terminal = (ROOT / "scripts" / "assessment" / "TerminalOccupancyAssessment.lua").read_text(encoding="utf-8")
-    terminal_control = (ROOT / "scripts" / "control" / "ObstructionRelocationControl.lua").read_text(encoding="utf-8")
-    coordinator = (ROOT / "scripts" / "runtime" / "LiveRuntimeCoordinator.lua").read_text(encoding="utf-8")
-    compatibility = (ROOT / "scripts" / "constraints" / "evaluators" / "ResponsibilityCompatibility.lua").read_text(encoding="utf-8")
-    situation = (ROOT / "scripts" / "assessment" / "SituationAssessment.lua").read_text(encoding="utf-8")
-    runtime = (ROOT / "scripts" / "runtime" / "Runtime.lua").read_text(encoding="utf-8")
-    rta = (ROOT / "scripts" / "responsibility" / "ResponsibilityTransitionAuthority.lua").read_text(encoding="utf-8")
-    harness = (ROOT / "tests" / "replacement_core" / "run.lua").read_text(encoding="utf-8")
-    replay = (ROOT / "tests" / "replay" / "HistoricalFixtures.lua").read_text(encoding="utf-8")
-
-    # Retired producer kind is deleted rather than rebound onto the current
-    # provenance-neutral Obstruction Relocation observation path.
-    assert "D0147_TERMINAL_EGRESS_CONTROL_OBSERVATION" not in terminal
-    assert "_consumeControlOutcomes" not in terminal
-    assert 'kind="OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION"' in terminal_control
-    assert 'observation.kind~="OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION"' in coordinator
-
-    # Situation Knowledge remains current; only its unreachable singular-Leader
-    # REPOSITION Constraint authority and synthetic witnesses retire.
-    assert "FOLLOWER_OWNS_CLOSURE" in situation
-    assert "FOLLOWER_OWNS_CLOSURE" not in compatibility
-    assert 'Evaluator.id="RESPONSIBILITY_COMPATIBILITY"' in compatibility
-    assert 'test("Follower Owns Closure is Knowledge not a selected role"' in harness
-    assert 'test("Follower Owns Closure rejects generic Leader reposition"' not in harness
-    assert 'test("Candidate responsibility self-attestation cannot override Follower Owns Closure"' not in harness
-
-    # Historical replay provenance does not restore retired Constraint authority.
-    # Preserve RF-TS016 while removing the production-unreachable synthetic
-    # singular-Leader REPOSITION alternative and stale verdict expectation.
-    start = replay.index('identity="RF-TS016"')
-    end = replay.index('identity="RF-PLAYER-TAKEOVER"', start)
-    ts016 = replay[start:end]
-    assert 'candidate("leader-reposition","REPOSITION"' not in ts016
-    assert 'candidate("follower-regulate","REGULATE_SPEED"' in ts016
-    assert 'purpose="FOLLOWER_BOUNDARY_DEMAND_PROTECTION"' in ts016
-    assert '["verdicts.leader-reposition:RESPONSIBILITY_COMPATIBILITY"]="FAIL"' not in ts016
-    assert 'selectedCapability="REGULATE_SPEED"' in ts016
-
-    # Encounter history is not recreated. Passage Control targets retain current
-    # conflict identity and the diagnostic reports that truthful current identity.
-    assert "bridge.encounterIdentity" not in runtime
-    assert "COOPERATIVE_CONSTRAINT_VERDICT encounter=%s" not in runtime
-    assert "COOPERATIVE_CONSTRAINT_VERDICT conflict=%s" in runtime
-    assert "conflictIdentity=bridge.conflictIdentity" in runtime
-
-    # Live obstruction transition substrate is current. Its public seam names
-    # the shared Obstruction Relocation responsibility rather than one donor caller.
-    assert "function Authority:transitionObstructionRelocationResolution" in rta
-    stale_api = "transition" + "CompletedObstructionResolution"
-    assert stale_api not in rta + runtime
+def test_issue112_retired_completed_worker_donor_is_not_active_source_topology():
+    main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
+    active="\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (ROOT/"scripts").rglob("*.lua")
+        if "archive" not in path.parts
+    )
+    for relative in (
+        "scripts/assessment/TerminalOccupancyAssessment.lua",
+        "scripts/candidates/TerminalEgressCandidateSupport.lua",
+        "scripts/commitment/TerminalEgressCommitmentLifecycle.lua",
+        "scripts/responsibility/CompletedObstructionResponsibilityTransition.lua",
+    ):
+        assert not (ROOT/relative).exists()
+        assert relative not in main
+    for stale in (
+        "POST_JOB_ACTUATION",
+        "postJobActuationOwnership",
+        "postJobAssemblyIds",
+        "terminalOccupancyKnowledge",
+    ):
+        assert stale not in active

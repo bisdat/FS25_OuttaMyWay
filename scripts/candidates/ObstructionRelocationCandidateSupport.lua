@@ -103,7 +103,7 @@ local function boundedInwardObjective(snapshot,pose)
         fieldCentreX=cx,fieldCentreZ=cz,
         initialDistanceToCentreM=distance,
         infieldDirectionX=directionX,infieldDirectionZ=directionZ,
-        targetProgressM=progress,retreatDistanceM=progress,
+        targetProgressM=progress,
         targetX=pose.x+directionX*progress,targetZ=pose.z+directionZ*progress,
         maximumRelocationDistanceM=cap,
         distanceCapped=progress+0.000001<distance,

@@ -1,3 +1,44 @@
+## 2026-09-11 — #112 census selects donor topology retirement after #121 Reality closure
+
+**Observe:** PR #122 removed the warm completed-worker D-0147 path from production
+Runtime selection but deliberately left its source loaded so historical fixtures
+could still execute. `.50` GIANTS Reality then exercised both current-observation
+and ENDED-Job non-active evidence routes through the same generic Causal
+Obstruction / Obstruction Relocation path.
+
+**Classify:** the surviving `TerminalOccupancyAssessment`,
+`TerminalEgressCandidateSupport`, `TerminalEgressCommitmentLifecycle` and
+`CompletedObstructionResponsibilityTransition` modules are not current
+responsibilities with stale names. They are already-strangled donor topology.
+`POST_JOB_ACTUATION`, `terminalOccupancyKnowledge`, courtesy-count fields,
+`terminalEpisodeId` routing and the dedicated donor `COMPACT` phase are
+corresponding compatibility residue.
+
+> **Strangled Responsibility != Retired Topology**
+
+> **Historical Fixture Dependency != Production Dependency**
+
+> **Terminal State Vocabulary != Terminal Worker Vocabulary**
+
+**Decision:** #112 `.51 — DONOR TOPOLOGY RETIREMENT` removes the obsolete donor
+topology rather than renaming it. Generic `TerminalSettlementEvaluator` /
+terminal Commitment-state vocabulary remains current. Useful mechanical
+regressions are migrated to the generic Obstruction Relocation fixture; tests
+whose asserted behaviour is the retired two-courtesy / boundary-away lifecycle
+are historical evidence and no longer current contracts.
+
+The #87 configuration migration remains separate. The live development consent,
+60 m per-actuation cap and move watchdog keep their existing identifiers for that
+later ownership pass. The donor-only compaction watchdog retires now because the
+dedicated historical `COMPACT` lifecycle is removed and no current consumer
+remains.
+
+**Validation boundary:** `.51` is intended as behaviour-preserving structural
+retirement around the already Reality-validated `.50` generic path. Protected
+GitHub Structural and Lua behavioural contracts remain the independent offline
+authority; GIANTS Reality is required only if CI/review exposes a runtime-dependent
+uncertainty or owner review selects an additional smoke challenge.
+
 ## 2026-09-11 — `.50` CI #305 exposes a validation-contract mismatch, not a production failure
 
 **Validate:** protected Offline Validation #305 on
