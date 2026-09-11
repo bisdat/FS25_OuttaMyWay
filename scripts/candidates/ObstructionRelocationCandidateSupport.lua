@@ -217,7 +217,9 @@ end
 
 local function currentSourceAi(snapshot,referenceKey)
     local state=snapshot and snapshot.aiStates and snapshot.aiStates[referenceKey] or nil
-    return type(state)=="table" and state.aiActiveObserved==true and state.aiActive==true
+    return type(state)=="table"
+        and (state.observedActive==true
+            or (state.aiActiveObserved==true and state.aiActive==true))
 end
 
 local function terminalSpec(context,eventKind,blockerAssemblyId,referenceKey,terminalReason)

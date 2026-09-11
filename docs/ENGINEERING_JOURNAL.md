@@ -1,3 +1,45 @@
+## 2026-09-11 — `.47` warm Reality failure selects `.48` ENDED Job evidence correction
+
+**Observe:** two owner-run GIANTS `.47` challenges produced a discriminating split.
+The cold Condor passed the generic Causal Obstruction -> Obstruction Relocation
+path. The same-runtime warm Condor failed: after its Job Episode positively ended,
+later positive obstruction remained `ACTIVITY_UNRESOLVED|NO_RELOCATION` and the
+parked assembly never moved.
+
+The warm log showed `activeJobMember=false` and `ended=1` before the later
+obstruction. Therefore the missing fact was not Job completion. Code inspection
+showed `CausalObstructionAssessment` consumed only ACTIVE Job Episodes and required
+a fresh negative `aiActiveObserved` sample for every non-active blocker. The
+retained warm Observation path also discarded the successful
+`getIsEntered()` observation-completeness flag, while the cold physical census
+preserved it.
+
+**Interpret:** Causal Obstruction responsibility remains provenance-neutral, but
+its evidence need not be. A positively ENDED Job Episode is sufficient evidence
+that the assembly is no longer an active worker for that former Job. Cold blockers
+with no lifecycle history still require current observed GIANTS inactivity.
+Current positive GIANTS activity / a fresh ACTIVE Job Episode outranks old ENDED
+evidence. Current Player Claim remains an independent present-tense veto.
+
+> **Provenance-Neutral Responsibility != Evidence-Neutral Assessment**
+
+> **Job Activation Is Situation Change, Not Relocation Supersession Logic**
+
+> **Ended Worker Becomes an Obstacle; New Job Makes It a Worker Again**
+
+**Hypothesis / implement `.48`:** consume ENDED Job Episode evidence in Causal
+Obstruction activity classification; preserve retained AI/player observation
+completeness; treat active-job membership as fresh authoritative intent when
+reassessing an existing relocation. Do not add a release ledger, resurrection
+state, warm responsibility or relocation-specific supersession lifecycle.
+`NonJobActuationMechanism` already rejects live Player Claim / source-AI
+reactivation during physical actuation.
+
+Because `.47` executable code was pushed and then disproved in GIANTS Reality,
+the corrected executable identity is
+**`0.3.0.48 TEST — ENDED JOB OBSTRUCTION EVIDENCE`**. Donor retirement moves to a
+later build and remains blocked until the warm Reality challenge passes.
+
 ## 2026-09-10 — PR #122 protected CI #301 validation-consumer reconciliation
 
 **Validate / disproven expectation:** `.47` production topology reached protected CI on

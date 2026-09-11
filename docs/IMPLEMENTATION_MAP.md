@@ -27,7 +27,7 @@ Architectural meaning remains owned by the
 - Accepted executable identity is
   **`0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING`**.
 - Current Issue #121 executable candidate is
-  **`0.3.0.47 TEST — OBSTRUCTION RELOCATION RESPONSIBILITY CONSOLIDATION`**.
+  **`0.3.0.48 TEST — ENDED JOB OBSTRUCTION EVIDENCE`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -48,7 +48,7 @@ Architectural meaning remains owned by the
 | Current Pair Assessment Scope | `scripts/assessment/CurrentPairAssessmentScope.lua` plus `SituationAssessment.lua` | PRESERVE — accepted by #100 / PR #113; ephemeral current Operation/exact-Job-Episode pair scope with no generic pair lifecycle or last-positive truth |
 | Follower Boundary evidence | `scripts/assessment/FollowerBoundaryDemandAssessment.lua` | PRESERVE admissible magnitude evidence/envelope; no requested Control target (#98 / PR #108) |
 | Forward Intersection / Action-Space evidence | `SpatialConstraintAssessment.lua`, `TrajectoryConflictAssessment.lua` | PRESERVE current positive/unresolved/negative semantics |
-| Causal Obstruction | `CausalObstructionAssessment.lua` | PRESERVE positive current obstruction semantics |
+| Causal Obstruction | `CausalObstructionAssessment.lua` | `.48` candidate: PRESERVE positive obstruction semantics; ACTIVE Job evidence owns worker classification, ENDED Job evidence may resolve warm non-activity, and cold non-activity remains current-observation based |
 | Candidate construction / planning | `scripts/candidates/` | PRESERVE feasible option/support/planning ownership |
 | Prospective Candidate portfolio | `ProspectiveDecisionPortfolioSupport.lua` | PRESERVE complete fresh group enumeration on one Decision picture |
 | Constraint evaluation | `scripts/constraints/ConstraintEngine.lua` plus four canonical evaluators | PRESERVE independently owned mandatory verdicts; `.43` retires only the production-unreachable historical Follower Owns Closure prohibition |
@@ -161,17 +161,18 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Validate **#121 `.47 — Obstruction Relocation Responsibility Consolidation`**
-from accepted `main` at `487620178d75f333e6decdb47f6466f65effbd15`.
+Validate **#121 `.48 — ENDED JOB OBSTRUCTION EVIDENCE`** on PR #122 from
+the `.47` strangler head. `.47` passed protected CI and the cold GIANTS Reality
+challenge but failed the required warm challenge: the same-runtime completed
+Condor remained `ACTIVITY_UNRESOLVED` and never relocated.
 
-This strangler increment removes completed-worker provenance as a production
-responsibility selector, permits repeated centroid-directed Obstruction
-Relocation only from fresh positive Causal Obstruction, and leaves historical
-D-0147 donor modules physically present but production-uninstantiated. Donor
-source deletion plus `POST_JOB_ACTUATION` retirement belongs to a later increment.
+`.48` preserves the `.47` responsibility consolidation and corrects only the
+evidence seam exposed by Reality: an existing positively ENDED Job Episode may
+resolve warm non-active activity, while cold blockers still require current
+inactivity observation. Fresh ACTIVE Job evidence returns the assembly to
+ordinary worker Situation mechanics and invalidates non-active relocation.
 
-Independent protected CI is the ordinary offline execution authority. Because
-`.47` changes executable responsibility composition and repeated-relocation
-behaviour, owner acceptance additionally requires a targeted GIANTS
-warm-completed-worker Reality test. Do not fold #87, #116, #45 or #89 into this
+Protected CI must pass before repeating the warm GIANTS Reality challenge. Donor
+source deletion plus `POST_JOB_ACTUATION` retirement remains blocked until this
+replacement path passes Reality. Do not fold #87, #116, #45 or #89 into this
 increment.

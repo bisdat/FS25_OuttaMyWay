@@ -63,6 +63,27 @@ No parking, tidying, ownership-management, historical pair memory or general
 vehicle-management responsibility is created. Once the beneficiary is no longer
 positively blocked by that subject, the obstruction purpose is discharged.
 
+**Owner clarification — ENDED Job Episode as non-active evidence.** A positively
+`ENDED` GIANTS Job Episode is sufficient evidence that the assembly is no longer
+an active worker for that Job. This does not create a completed-worker
+responsibility and does not make Job history a prerequisite for Causal
+Obstruction or relocation: a cold blocker may establish non-activity from
+current GIANTS observation instead. Warm and cold blockers converge on the same
+`NON_ACTIVE_*` classification and the same Obstruction Relocation responsibility.
+
+Current positive GIANTS activity or a fresh qualifying `ACTIVE` Job Episode
+outranks older ENDED evidence. If the physical assembly later begins another
+GIANTS Job, Job Episode admission and Situation Assessment simply make it an
+active worker again; any existing non-active obstruction relocation is
+invalidated and subsequent conflict uses ordinary GIANTS AI / Regulation /
+Passage mechanics.
+
+> **Provenance-Neutral Responsibility != Evidence-Neutral Assessment**
+
+> **Job Activation Is Situation Change, Not Relocation Supersession Logic**
+
+> **Ended Worker Becomes an Obstacle; New Job Makes It a Worker Again**
+
 **Reason:** Issue #33 demonstrated a cold-start Physical Relevance gap: a
 stationary Condor physically blocked an active worker but remained invisible
 because current Observation enumerated only active vehicles and previously

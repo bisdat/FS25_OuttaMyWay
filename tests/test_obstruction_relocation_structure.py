@@ -135,3 +135,22 @@ def test_phase13_completed_worker_provenance_no_longer_selects_a_second_producti
     assert "TERMINAL_OCCUPANCY" in terminal_candidate
     assert "POST_JOB_ACTUATION" not in relocation_control
     assert 'target.kind=="OBSTRUCTION_RELOCATION"' in read("scripts/control/LiveControlDispatcher.lua")
+
+def test_issue121_ended_job_evidence_resolves_activity_without_creating_warm_responsibility():
+    assessment = read("scripts/assessment/CausalObstructionAssessment.lua")
+    observation = read("scripts/observation/LiveObservationSource.lua")
+    candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
+
+    assert 'elseif episode.status=="ENDED"' in assessment
+    assert 'local activeEpisodes,endedEpisodes=jobEpisodesByAssembly(self.jobEpisodes)' in assessment
+    assert 'local endedEpisode=endedEpisodes[blockerAssemblyId]' in assessment
+    assert 'local nonActiveActivityResolved=endedEpisode~=nil or currentAiInactiveObserved' in assessment
+    assert 'endedJobEpisodeMayResolveNonActiveActivity=true' in assessment
+    assert 'historicalJobProvenanceRequired=false' in assessment
+    assert 'aiState.observedActive==true' in assessment
+
+    assert 'playerEnteredObserved=okEntered' in observation
+    assert 'aiActiveObserved=worker.aiActiveObserved==true' in observation
+
+    assert 'state.observedActive==true' in candidate
+    assert 'terminalSpec(context,"NEW_AUTHORITATIVE_INTENT"' in candidate

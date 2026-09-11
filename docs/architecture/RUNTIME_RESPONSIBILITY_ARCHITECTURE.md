@@ -202,6 +202,21 @@ response is permitted. The non-active, unclaimed branch is sufficient to make
 the blocker eligible for bounded relocation; historical Job Episode provenance
 does not add a further permission prerequisite.
 
+**Non-Active Evidence Is Source-Aware; Responsibility Is Not.** A blocker with a
+current qualifying `ACTIVE` Job Episode is an active worker. Otherwise, a
+positively `ENDED` Job Episode may establish that the same physical assembly is
+non-active for that former Job without requiring a redundant negative
+`getIsAIActive()` sample. A cold blocker with no Job lifecycle evidence instead
+requires current observed GIANTS inactivity before non-active relocation may be
+considered. These are different evidence routes to the same non-active
+classification, not different obstruction responsibilities.
+
+If the same assembly later begins a fresh GIANTS Job, that is an ordinary
+Situation change: a new ACTIVE Job Episode is admitted, the assembly returns to
+GIANTS-owned worker mechanics, and any prior non-active relocation purpose loses
+its basis. Obstruction Relocation does not maintain a separate resurrection or
+supersession lifecycle.
+
 **Player Entry Is a Claim Boundary, Not a Vehicle Classification.** While the
 blocker remains an active GIANTS AI participant, `getIsEntered()` is player
 presence evidence only and has no independent Job Episode or responsibility

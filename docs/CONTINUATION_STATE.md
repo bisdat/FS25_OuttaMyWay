@@ -12,8 +12,7 @@ Engineering Journal preserve chronology.
 - Accepted executable identity is
   **`0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING`**.
 - Current Issue #121 executable candidate is
-  **`0.3.0.47 TEST — OBSTRUCTION RELOCATION RESPONSIBILITY CONSOLIDATION`**; it is not accepted until independent CI, engineering
-  review, targeted GIANTS Reality challenge and owner merge.
+  **`0.3.0.48 TEST — ENDED JOB OBSTRUCTION EVIDENCE`**; `.47` passed protected CI and cold Reality but failed the required warm Reality challenge, so it is superseded as a candidate and remains unmerged.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
 - Phase 14 is **CLOSED**.
@@ -188,28 +187,25 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Implement and validate **#121 `.47 — Obstruction Relocation Responsibility
-Consolidation`** from accepted `main`
-`487620178d75f333e6decdb47f6466f65effbd15`.
+Implement and validate **#121 `.48 — ENDED JOB OBSTRUCTION EVIDENCE`** on
+PR #122. `.47` successfully strangled the separate warm production responsibility,
+passed protected CI, and passed the cold GIANTS obstruction challenge, but failed
+the warm same-runtime completed-worker challenge because Condor remained
+`ACTIVITY_UNRESOLVED`.
 
-Current owner-selected architecture is fresh positive Causal Obstruction -> one
-bounded inward relocation toward the Field World centroid (nearer of centroid or
-60 m) -> release physical authority -> fresh Reality. Another actuation requires
-fresh positive obstruction and meaningful inward space. No positive obstruction
-stops further movement but does not manufacture negative-clearance authority.
+Reality established that the Job layer had already positively ENDED Condor's Job
+Episode before the later blockage. `.48` therefore keeps the same
+provenance-neutral Obstruction Relocation responsibility but allows ENDED Job
+Episode evidence to resolve the activity side of warm non-active classification.
+Cold blockers continue to require current observed GIANTS inactivity. Current
+Player Claim remains a separate veto.
 
-> **Relocation Is Geometry-Bounded, Not Count-Bounded**
+> **Provenance-Neutral Responsibility != Evidence-Neutral Assessment**
 
-> **Actuation Recurrence != Resolution Settlement Evidence**
+> **Job Activation Is Situation Change, Not Relocation Supersession Logic**
 
-`.47` must strangle the warm completed-worker D-0147 responsibility selector:
-production Runtime must no longer instantiate, enumerate or dispatch its donor
-Assessment/Candidate/Commitment/Responsibility path. Donor source and
-`POST_JOB_ACTUATION` remain for a later dependency-closed retirement after the
-replacement has been validated.
-
-Protected CI must pass before Reality testing. Because this increment changes
-runtime composition and repeated-relocation behaviour, perform a targeted GIANTS
-warm-completed-worker Reality test before owner merge. Issue #112 remains the
-upstream naming context; #87 follows after reconciliation is sufficiently closed.
-#116 remains parked.
+A later fresh ACTIVE Job Episode simply makes the assembly a worker again and
+returns conflict handling to ordinary GIANTS / Regulation / Passage mechanics.
+Protected CI must pass before repeating the warm GIANTS Reality challenge. Donor
+retirement remains blocked; #87 follows after reconciliation closes and #116
+remains parked.

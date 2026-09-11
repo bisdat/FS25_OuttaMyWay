@@ -1,10 +1,11 @@
--- FS25_OuttaMyWay v0.3.0.47 TEST — OBSTRUCTION RELOCATION RESPONSIBILITY CONSOLIDATION.
--- Non-active unclaimed Causal Obstructions share one provenance-neutral relocation responsibility.
--- Relocation is geometry-bounded by current centroid-directed space, not by a courtesy move count.
+-- FS25_OuttaMyWay v0.3.0.48 TEST — ENDED JOB OBSTRUCTION EVIDENCE.
+-- A positively ENDED Job Episode may establish non-active status for the same
+-- provenance-neutral Causal Obstruction / Obstruction Relocation responsibility.
+-- Fresh ACTIVE Job evidence returns the assembly to ordinary GIANTS worker mechanics.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.47"
+OuttaMyWay.VERSION = "0.3.0.48"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false

@@ -39,12 +39,19 @@ local function referencesByAssembly(snapshot)
     return result
 end
 
-local function activeEpisodesByAssembly(jobEpisodes)
-    local result={}
+local function jobEpisodesByAssembly(jobEpisodes)
+    local active,ended={},{}
     for _,episode in OuttaMyWay.ValueRecord.ipairs(jobEpisodes and jobEpisodes:list() or {}) do
-        if episode.status=="ACTIVE" then result[episode.assemblyId]=episode end
+        if episode.status=="ACTIVE" then
+            active[episode.assemblyId]=episode
+        elseif episode.status=="ENDED" then
+            local current=ended[episode.assemblyId]
+            local currentEpoch=current and tonumber(current.endedEpoch) or -math.huge
+            local candidateEpoch=tonumber(episode.endedEpoch) or -math.huge
+            if current==nil or candidateEpoch>=currentEpoch then ended[episode.assemblyId]=episode end
+        end
     end
-    return result
+    return active,ended
 end
 
 local function pointSegmentDistance(px,pz,ax,az,bx,bz)
@@ -150,7 +157,7 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
     local physical=physicalByAssembly(physicalSpaceEvidence)
     local future=futureByAssembly(futureSpace)
     local references=referencesByAssembly(snapshot)
-    local activeEpisodes=activeEpisodesByAssembly(self.jobEpisodes)
+    local activeEpisodes,endedEpisodes=jobEpisodesByAssembly(self.jobEpisodes)
     local records={}
 
     for _,beneficiaryAssemblyId in OuttaMyWay.ValueRecord.ipairs(sortedKeys(activeOperationMemberSet)) do
@@ -176,18 +183,25 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                             and snapshot.playerControl[blockerReferenceKey]
                             or nil
                         local activeEpisode=activeEpisodes[blockerAssemblyId]
+                        local endedEpisode=endedEpisodes[blockerAssemblyId]
+                        local currentAiPositive=type(aiState)=="table"
+                            and (aiState.observedActive==true
+                                or (aiState.aiActiveObserved==true and aiState.aiActive==true))
+                        local currentAiInactiveObserved=type(aiState)=="table"
+                            and aiState.aiActiveObserved==true
+                            and aiState.aiActive~=true
+                        local nonActiveActivityResolved=endedEpisode~=nil or currentAiInactiveObserved
 
                         local classification
                         local relocationEligible=false
                         if activeEpisode~=nil then
                             classification="ACTIVE_GIANTS_AI"
-                        elseif type(aiState)~="table" or aiState.aiActiveObserved~=true then
-                            classification="ACTIVITY_UNRESOLVED"
-                        elseif aiState.aiActive==true then
-                            -- Raw GIANTS activity is sufficient to withhold non-active
-                            -- relocation, but without a qualifying current Job Episode it
-                            -- does not manufacture supported active spatial negotiation.
+                        elseif currentAiPositive then
+                            -- Current positive GIANTS activity outranks any older ENDED
+                            -- Episode while fresh Job Episode admission catches up.
                             classification="GIANTS_AI_ACTIVE_UNRESOLVED"
+                        elseif not nonActiveActivityResolved then
+                            classification="ACTIVITY_UNRESOLVED"
                         elseif type(player)~="table" or player.playerEnteredObserved~=true then
                             classification="PLAYER_CLAIM_UNRESOLVED"
                         elseif player.playerEntered==true then
@@ -210,11 +224,16 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                             blockerClassification=classification,
                             relocationEligible=relocationEligible,
                             activeBlockerJobEpisodeId=activeEpisode and activeEpisode.identity or nil,
+                            endedBlockerJobEpisodeId=endedEpisode and endedEpisode.identity or nil,
                             activityEvidence={
                                 aiActive=type(aiState)=="table" and aiState.aiActive==true or false,
                                 aiActiveObserved=type(aiState)=="table" and aiState.aiActiveObserved==true or false,
+                                activeJobVehicleMembership=type(aiState)=="table" and aiState.observedActive==true or false,
                                 qualifyingJobEpisodeId=activeEpisode and activeEpisode.identity or nil,
-                                source="ObservationSnapshot.aiStates+JobEpisodeAdmission"
+                                endedJobEpisodeId=endedEpisode and endedEpisode.identity or nil,
+                                nonActiveResolvedBy=endedEpisode~=nil and "ENDED_JOB_EPISODE"
+                                    or (currentAiInactiveObserved and "CURRENT_GIANTS_INACTIVITY_OBSERVATION" or nil),
+                                source="JobEpisodeAdmission+ObservationSnapshot.aiStates"
                             },
                             playerClaimEvidence={
                                 playerEntered=type(player)=="table" and player.playerEntered==true or false,
@@ -226,6 +245,7 @@ function Assessment:assess(snapshot,futureSpace,physicalSpaceEvidence,activeOper
                                 source="CausalObstructionAssessment",
                                 authority="CURRENT_POSITIVE_CAUSAL_OBSTRUCTION",
                                 historicalJobProvenanceRequired=false,
+                                endedJobEpisodeMayResolveNonActiveActivity=true,
                                 currentQualifyingJobEpisodeRequiredForActiveSpatialNegotiation=true,
                                 nativeBlockedRequired=false
                             }

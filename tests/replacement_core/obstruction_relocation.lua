@@ -241,5 +241,18 @@ test("positive obstruction at centroid exhausts inward strategy instead of inven
     equal(specification.evidenceBasis.obstructionRelocationBridge.terminalReason,"POSITIVE_CAUSAL_OBSTRUCTION_WITHOUT_MEANINGFUL_INWARD_RELOCATION_SPACE")
 end)
 
+test("active Job re-entry terminates retained obstruction relocation responsibility", function()
+    local ids=OuttaMyWay.IdentityRegistry.new()
+    local epochs=OuttaMyWay.EpochSequence.new()
+    local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
+    local current=snapshot()
+    current.aiStates["REF-BLOCKER"]={observedActive=true,aiActive=false,aiActiveObserved=false}
+    local supported=support:attach(reassessmentPicture(ids,epochs,false,true),current)
+    if supported==nil then error("expected new authoritative intent settlement") end
+    local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
+    equal(specification.capability,"CONTINUE_UNCHANGED")
+    equal(specification.evidenceBasis.obstructionRelocationBridge.terminalEvent,"NEW_AUTHORITATIVE_INTENT")
+end)
+
 print(string.format("obstruction relocation focused validation: %d passed, %d failed",passed,failed))
 if failed>0 then os.exit(1) end

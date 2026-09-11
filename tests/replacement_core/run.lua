@@ -6745,6 +6745,9 @@ local function causalObstructionAssessmentFixture(options)
     if options.activeBlocker==true then
         activeRecords[#activeRecords+1]={identity="JE-BLOCKER",assemblyId="AS-BLOCKER",status="ACTIVE"}
     end
+    if options.endedBlocker==true then
+        activeRecords[#activeRecords+1]={identity="JE-BLOCKER-ENDED",assemblyId="AS-BLOCKER",status="ENDED",endedEpoch=2}
+    end
     local jobs={}
     function jobs:list() return activeRecords end
 
@@ -6757,9 +6760,9 @@ local function causalObstructionAssessmentFixture(options)
         },
         aiStates={
             ["vehicle-root:beneficiary"]={aiActive=true,aiActiveObserved=true,blocked=false},
-            ["vehicle-root:blocker"]={aiActive=options.activeBlocker==true,aiActiveObserved=true,blocked=false}
+            ["vehicle-root:blocker"]={aiActive=(options.rawAiActive==true or options.activeBlocker==true),aiActiveObserved=options.aiObserved~=false,observedActive=(options.activeJobObserved==true or options.activeBlocker==true),blocked=false}
         },
-        playerControl={["vehicle-root:blocker"]={playerEntered=options.playerEntered==true,playerEnteredObserved=true}}
+        playerControl={["vehicle-root:blocker"]={playerEntered=options.playerEntered==true,playerEnteredObserved=options.playerObserved~=false}}
     }
     local futureSpace={{assemblyId="AS-BENEFICIARY",alternatives={{startX=0,startZ=0,endX=20,endZ=0}}}}
     local physicalSpace={
@@ -6799,6 +6802,44 @@ test("D0218 active GIANTS AI blocker remains outside non-active relocation eligi
     equal(records[1].blockerClassification,"ACTIVE_GIANTS_AI")
     equal(records[1].relocationEligible,false)
     equal(records[1].activeBlockerJobEpisodeId,"JE-BLOCKER")
+end)
+
+test("D0218 warm ENDED blocker resolves non-active activity without negative AI re-proof",function()
+    local records=causalObstructionAssessmentFixture({endedBlocker=true,aiObserved=false})
+    equal(#records,1)
+    equal(records[1].blockerClassification,"NON_ACTIVE_UNCLAIMED")
+    equal(records[1].relocationEligible,true)
+    equal(records[1].endedBlockerJobEpisodeId,"JE-BLOCKER-ENDED")
+    equal(records[1].activityEvidence.nonActiveResolvedBy,"ENDED_JOB_EPISODE")
+end)
+
+test("D0218 cold blocker without current activity observation remains fail-closed",function()
+    local records=causalObstructionAssessmentFixture({aiObserved=false})
+    equal(#records,1)
+    equal(records[1].blockerClassification,"ACTIVITY_UNRESOLVED")
+    equal(records[1].relocationEligible,false)
+end)
+
+test("D0218 current positive GIANTS activity outranks an older ENDED Episode",function()
+    local records=causalObstructionAssessmentFixture({endedBlocker=true,rawAiActive=true})
+    equal(#records,1)
+    equal(records[1].blockerClassification,"GIANTS_AI_ACTIVE_UNRESOLVED")
+    equal(records[1].relocationEligible,false)
+end)
+
+test("D0218 fresh ACTIVE Job Episode outranks older ENDED Episode",function()
+    local records=causalObstructionAssessmentFixture({endedBlocker=true,activeBlocker=true})
+    equal(#records,1)
+    equal(records[1].blockerClassification,"ACTIVE_GIANTS_AI")
+    equal(records[1].relocationEligible,false)
+    equal(records[1].activeBlockerJobEpisodeId,"JE-BLOCKER")
+end)
+
+test("D0218 warm ENDED blocker still requires current Player Claim evidence",function()
+    local records=causalObstructionAssessmentFixture({endedBlocker=true,aiObserved=false,playerObserved=false})
+    equal(#records,1)
+    equal(records[1].blockerClassification,"PLAYER_CLAIM_UNRESOLVED")
+    equal(records[1].relocationEligible,false)
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))
