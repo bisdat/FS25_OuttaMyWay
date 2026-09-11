@@ -78,15 +78,12 @@ def test_phase13_runtime_uses_portfolio_only_for_fresh_scope_and_projects_dispat
     assert "runtime.terminalEgressCandidateSupport=" not in runtime
 
 
-def test_phase13_trigger_and_passage_semantics_survive_shared_obstruction_relocation_execution():
-    completed=read("scripts/candidates/TerminalEgressCandidateSupport.lua")
+def test_phase13_trigger_and_passage_semantics_survive_generic_obstruction_relocation_execution():
     current=read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
+    assert not (ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").exists()
     passage=read("scripts/candidates/LocalPassagePlanner.lua")
     terminal_control=read("scripts/control/ObstructionRelocationControl.lua")
 
-    assert "local function selectRecord(picture,context)" in completed
-    assert "TERMINAL_FINAL_BOUNDARY_SETTLEMENT" in completed  # historical donor remains testable in .47
-    assert "maximumCourtesyMovesPerEpisode=2" in completed
     assert 'objectiveKind="CAUSAL_OBSTRUCTION_BOUNDED_INWARD_RELOCATION"' in current
     assert "repeatedActuationRequiresFreshPositiveObstruction=true" in current
     assert "function Planner.plan(picture,snapshot)" in passage
