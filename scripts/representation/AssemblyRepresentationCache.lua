@@ -3,6 +3,10 @@ OuttaMyWay.AssemblyRepresentationCache = {}
 local Cache=OuttaMyWay.AssemblyRepresentationCache
 Cache.__index=Cache
 
+-- Representation-cache-owned Physical Assembly discovery capacity. This is a
+-- safety/resource bound on catalogue membership discovery, not player Configuration.
+local ASSEMBLY_MEMBER_BUDGET=32
+
 local function safeCall(object,methodName,...)
     if object==nil or type(object[methodName])~="function" then return false,nil end
     return pcall(object[methodName],object,...)
@@ -444,7 +448,7 @@ function Cache:_discoverMemberGeometry(member)
     return primitives,rejections,stats,donor
 end
 function Cache:_build(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
-    local members,edges,fingerprint,truncated=discoverAssembly(worker,OuttaMyWay.REPRESENTATION_ASSEMBLY_MEMBER_BUDGET or 32)
+    local members,edges,fingerprint,truncated=discoverAssembly(worker,ASSEMBLY_MEMBER_BUDGET)
     local record={
         episodeKey=assemblyReferenceKey.."|"..tostring(sourceJobToken),assemblyReferenceKey=assemblyReferenceKey,sourceJobToken=sourceJobToken,
         createdAt=nowSeconds,members=members,edges=edges,assemblyFingerprint=fingerprint,assemblyDiscoveryTruncated=truncated,
@@ -785,7 +789,7 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
     local interval=OuttaMyWay.REPRESENTATION_ASSEMBLY_REVALIDATION_INTERVAL_SECONDS or 5
     if record.lastAssemblyValidationAt==nil or nowSeconds-record.lastAssemblyValidationAt>=interval then
         record.lastAssemblyValidationAt=nowSeconds
-        local members,_,fingerprint=discoverAssembly(worker,OuttaMyWay.REPRESENTATION_ASSEMBLY_MEMBER_BUDGET or 32)
+        local members,_,fingerprint=discoverAssembly(worker,ASSEMBLY_MEMBER_BUDGET)
         record.lastObservedMemberCount=#members
         if fingerprint~=record.assemblyFingerprint then record.membershipChanged=true; record.structurallyValid=false; record.membershipChangeObservedAt=nowSeconds end
     end

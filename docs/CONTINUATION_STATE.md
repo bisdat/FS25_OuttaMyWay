@@ -6,67 +6,66 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State: `main` after PR #127 merge,
-  `df3493e1cdbb3770287ed1cfba88ec60b0ee7813`.
+- Accepted Repository State: `main` after PR #128 merge,
+  `dc965df3612efa4587dadfb5cd684cfbabb4adc4`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.53 TEST — OBSTRUCTION RELOCATION BOUND OWNERSHIP`**.
-- Protected post-merge Offline Validation run #314 passed on the exact PR #127
+  **`0.3.0.54 TEST — RUNTIME CADENCE OWNERSHIP`**.
+- Protected post-merge Offline Validation run #317 passed on the exact PR #128
   merge commit.
-- Issue #87 remains open. `.53` localised the Obstruction Relocation 60 m
-  per-actuation calibration to Candidate Support and the 45 s physical move
-  watchdog to Control without retuning either value.
+- Issue #87 remains open. `.54` separated Runtime cadence, passive diagnostic
+  throttling and the Bounded Observation reassessment horizon according to their
+  current owners without retuning any live value.
 
 ## Current workstream — Issue #87
 
 `scripts/config.lua` remains a **Mixed Runtime Constants Surface**. Ownership
 decomposition proceeds family-by-family from current semantics rather than
-historical location or naming.
+historical location, naming or equal literals.
 
-The resolved cadence-family findings are:
+The current Representation findings are:
 
-> **Similar Cadence Values != Shared Scheduling Responsibility**
+> **Shared Literal != Proven Shared Owner**
 
-> **Diagnostic Observer Has No Independent Sampling Clock**
+> **Repeated Calibration Coupling May Reveal a Missing Concept**
 
-> **Sampling Cadence != Bounded Observation Deadline**
+> **Test Fixture Coupling != Runtime Ownership**
 
-The first `.54` preflight disproved the hypothesis that
-`PASSIVE_SAMPLE_INTERVAL_MS = 1000` was orphan residue. Current source instead
-establishes four live values with three owners:
+> **Implementation-Following Expectation != Independent Regression Contract**
 
-- `LiveRuntimeCoordinator` schedules the complete live
-  Observation -> Situation -> Decision -> bounded Control cycle at **250 ms**;
-- `PassiveLiveValidator` owns diagnostic publication/throttling only:
-  **10 s** heartbeat and **8** pair-log lines per sample;
-- `PassiveLiveCandidateSupport` uses the historical **1 s** "sample interval"
-  solely to construct the `CONTINUE_OBSERVATION` Bounded Observation Contract
-  `reassessmentDeadline`.
+The first `.55` preflight disproved the hypothesis that five Representation
+foundation values belonged solely to `AssemblyRepresentationCache`.
+`CurrentPhysicalConflictRepresentation` also consumes the hierarchy-scan budget,
+5 s revalidation cadence, geometry-coherence tolerance and root-alias tolerance.
 
-`CommitmentPreconditionsConstraint` requires that deadline and exposes its
-exhaustion as `BOUNDED_OBSERVATION_EXHAUSTION`. The 1 s value is therefore live
-evidence-contract calibration, not a scheduling clock.
+Only the accepted **32-member Physical Assembly discovery bound** is currently
+proven Cache-only. The Lua truncation witness also reads that production global
+and uses the same value as its expected member count, allowing implementation
+and expectation to move together.
+
+The four shared values remain unresolved. In particular, the duplicated
+geometry-coherence/root-alias checks may indicate a missing shared Shape
+Resolution Evidence concept; constant relocation must not decide that
+architecture prematurely.
 
 ## Next bounded increment
 
-Implement **`0.3.0.54 TEST — RUNTIME CADENCE OWNERSHIP`**:
+Implement **`0.3.0.55 TEST — ASSEMBLY DISCOVERY BOUND OWNERSHIP`**:
 
-1. preserve **250 ms** exactly and localise it to `LiveRuntimeCoordinator`;
-2. preserve **10 s** and **8** exactly and localise them to
-   `PassiveLiveValidator`;
-3. preserve **1 s** exactly, rename it as a Candidate-owned Bounded Observation
-   reassessment horizon, and localise it to `PassiveLiveCandidateSupport`;
-4. remove all four values from the root mixed constants surface;
-5. structurally protect the three ownership boundaries.
+1. preserve the accepted **32-member** discovery bound exactly;
+2. localise only that bound to `AssemblyRepresentationCache`;
+3. remove only `OuttaMyWay.REPRESENTATION_ASSEMBLY_MEMBER_BUDGET` from the root
+   mixed constants surface;
+4. make the Lua truncation witness independently expect **32** members;
+5. add and wire a focused structural ownership contract;
+6. leave the hierarchy budget, revalidation cadence, geometry-coherence
+   tolerance and root-alias tolerance untouched and explicitly unresolved.
 
-The contract vocabulary `NEXT_PASSIVE_SAMPLE` remains unchanged in this tranche.
-Its truthfulness is a separate semantic question and must not be casually renamed
-as part of constant placement.
-
-This is ownership/name reconciliation only. It does not redesign scheduling,
-retune any value, alter Bounded Observation semantics, create player
-Configuration, change probe-specific cadences, or perform the broader
-Player / Developer-Debug / Internal presentation reordering.
+This is placement and regression-strengthening only. It does not redesign
+Physical Representation, alter Coverage or Resolution authority, retune shared
+Representation calibration, change Transit Passage geometry, move fold-settlement
+mechanics, or perform the broader Player / Developer-Debug / Internal config
+presentation restructuring.
 
 ## Separate open work
 

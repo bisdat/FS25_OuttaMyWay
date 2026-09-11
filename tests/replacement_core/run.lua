@@ -3531,10 +3531,12 @@ test("Transit Passage authority is revoked when assembly member discovery trunca
     local oldWorldTranslation=getWorldTranslation
     local oldLocalDirectionToWorld=localDirectionToWorld
     local evidence=nil
+    -- Independent regression oracle: fixture and expected result must not follow
+    -- an accidental production retune together.
+    local expectedMemberBudget=32
 
     local ok,err=pcall(function()
-        local budget=OuttaMyWay.REPRESENTATION_ASSEMBLY_MEMBER_BUDGET
-        if type(budget)~="number" or budget<2 then error("invalid representation assembly member budget") end
+        local budget=expectedMemberBudget
 
         local positions={[1]={0,0,0}}
         local function xml()
@@ -3603,7 +3605,7 @@ test("Transit Passage authority is revoked when assembly member discovery trunca
     if not ok then error(err) end
 
     equal(evidence.assemblyDiscoveryTruncated,true)
-    equal(evidence.memberCount,OuttaMyWay.REPRESENTATION_ASSEMBLY_MEMBER_BUDGET)
+    equal(evidence.memberCount,expectedMemberBudget)
     equal(evidence.transitPassageEnvelope,nil)
     equal(evidence.transitPassageReason,"TRANSIT_ASSEMBLY_MEMBERSHIP_TRUNCATED")
 end)
