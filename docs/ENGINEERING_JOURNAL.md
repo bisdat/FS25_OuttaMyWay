@@ -1,3 +1,40 @@
+## 2026-09-11 — #87 core Obstruction Relocation capability retires optional consent scaffolding
+
+**Observe:** after #121 / PR #125, `AUTOMATIC_TERMINAL_EGRESS` no longer gates a
+purpose-specific completed-worker path. Its only production consumer is the
+generic provenance-neutral `ObstructionRelocationCandidateSupport`, where it
+blocks otherwise-supported relocation of any `NON_ACTIVE_UNCLAIMED` Causal
+Obstruction.
+
+**Discuss:** the useful question is therefore not what to rename the historical
+boolean, but whether a separate player choice still represents a meaningful
+supported product distinction. Current architecture already prevents arbitrary
+movement through Causal Obstruction relevance, current Player Claim, active
+GIANTS Job precedence, Bounded Authority, bounded Control and fresh
+reassessment. Making relocation separately optional would create another
+supported operating mode without evidence of corresponding player benefit.
+
+> **Core Resolution Capability != Optional Configuration**
+
+> **Master Enablement Is Sufficient Consent for Core Obstruction Relocation**
+
+**Decision:** retire `AUTOMATIC_TERMINAL_EGRESS` rather than rename it, and remove
+Completed-obstruction assistance consent from the planned player Configuration
+surface. Supported non-active, unclaimed Causal Obstruction relocation is normal
+OuttaMyWay behaviour when its independent evidence and authority contracts are
+satisfied.
+
+The remaining `TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M` and
+`TERMINAL_EGRESS_MOVE_TIMEOUT_MS` values are not retired with the gate. They
+still encode distinct live relocation-distance policy and Control-watchdog
+responsibilities and remain separate #87 ownership/name work.
+
+**Validation boundary:** `.52` changes Candidate admission only by deleting the
+redundant development veto. Focused contracts must prove that generic relocation
+support exists without the flag while all existing no-obstruction, Player Claim,
+active-Job, recurrence, exhaustion, authority and cleanup boundaries remain
+intact. Protected GitHub Actions owns ordinary offline suite execution.
+
 ## 2026-09-11 — #112 census selects donor topology retirement after #121 Reality closure
 
 **Observe:** PR #122 removed the warm completed-worker D-0147 path from production

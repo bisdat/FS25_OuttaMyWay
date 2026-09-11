@@ -177,6 +177,18 @@ test("generic Causal Obstruction relocation requires no historical Job provenanc
     equal(bridge.blockerAssemblyId,"AS-BLOCKER")
 end)
 
+test("generic Causal Obstruction relocation is a core capability without a configuration consent gate", function()
+    local ids=OuttaMyWay.IdentityRegistry.new()
+    local epochs=OuttaMyWay.EpochSequence.new()
+    local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
+    OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS=nil
+    local base=picture(ids,epochs,{causalObstructionKnowledge={relation("AS-A","REF-A")}})
+    local supported=support:attach(base,snapshot())
+    if supported==nil then error("expected generic relocation support without optional consent gate") end
+    local constraints=supported.candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.constraintEvidence
+    equal(constraints.COMMITMENT_PRECONDITIONS.evidence.configurationConsentRequired,false)
+end)
+
 test("observable parked assembly without causal obstruction creates no relocation candidate", function()
     local ids=OuttaMyWay.IdentityRegistry.new()
     local epochs=OuttaMyWay.EpochSequence.new()

@@ -128,7 +128,7 @@ local function physicalSpec(picture,snapshot,group,context,references,pose)
     constraints.PROGRESS_PRESERVATION=packet("The non-active blocker has no supported productive progress to preserve; movement exists only to remove current Causal Obstruction",{parking=false,tidying=false})
     constraints.RESPONSIBILITY_COMPATIBILITY=packet("One relocation responsibility is keyed by Local Operation plus blocker Physical Assembly, aggregating pairwise beneficiaries",{relocationKey=group.relocationKey,blockerAssemblyId=group.blockerAssemblyId})
     constraints.OBLIGATION_COMPATIBILITY=packet("The same unresolved obstruction responsibility may authorise another bounded inward actuation only from fresh positive Causal Obstruction; no move-count budget or boundary-away stage exists",{repeatedActuationRequiresFreshPositiveObstruction=true,moveCountBudget=false,boundaryAwayStage=false})
-    constraints.COMMITMENT_PRECONDITIONS=packet("Current Causal Obstruction, NON_ACTIVE_UNCLAIMED classification, current relocation pose and development consent are independently present",{relocationEligible=true,historicalJobProvenanceRequired=false,developmentConsent=OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS==true})
+    constraints.COMMITMENT_PRECONDITIONS=packet("Current Causal Obstruction, NON_ACTIVE_UNCLAIMED classification and current relocation pose independently establish relocation eligibility",{relocationEligible=true,historicalJobProvenanceRequired=false,configurationConsentRequired=false})
     constraints.EFFECTIVE_ACTUATION_COMPOSITION=packet("One retained Commitment owns OBSTRUCTION_RELOCATION_ACTUATION for the blocker and PROGRESS_ACTUATION only to protect active beneficiaries",{blockerAuthorityClass="OBSTRUCTION_RELOCATION_ACTUATION",serializedBeneficiaryAssemblyIds=group.beneficiaryIds})
     constraints.SAFE_RELEASE_HANDOVER=packet("Current Player Claim or source AI reactivation immediately outranks relocation; owned completion neutralises actuation before releasing Vehicle Activity Context",{playerClaimCurrentNotSticky=true,actuationNeutralisation=true,relocationSerializationRelease=true})
 
@@ -311,13 +311,12 @@ function Support.new(identityRegistry,epochSequence)
 end
 
 
--- Fresh-only Candidate Support Projection seam. It reuses the accepted cold
--- blocker classification and first-courtesy specification while binding the
--- group's generated composition evidence to the caller-owned target picture.
+-- Fresh-only Candidate Support Projection seam. It reuses the accepted current
+-- blocker classification and geometry-bounded relocation specification while
+-- binding the group's generated composition evidence to the caller-owned target picture.
 function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targetEpoch)
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
     OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
-    if OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS~=true then return nil,"DEVELOPMENT_CONSENT_DISABLED" end
     if type(targetPictureId)~="string" or targetPictureId=="" or type(targetEpoch)~="number" then
         return nil,"TARGET_DECISION_PICTURE_REQUIRED"
     end
@@ -351,7 +350,6 @@ function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targe
 end
 
 function Support:attach(picture,snapshot)
-    if OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS~=true then self.lastStatus="DEVELOPMENT_CONSENT_DISABLED"; return nil end
     local context,contextReason=genericContext(picture)
     if contextReason~=nil then self.lastStatus=contextReason; return nil end
     local references=referencesByAssembly(snapshot)

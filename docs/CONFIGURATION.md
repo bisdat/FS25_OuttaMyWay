@@ -125,23 +125,22 @@ and instrumentation controls remain internal implementation details. The later
 implementation may refine the relationship between Debug and Logging; this
 architecture does not require unnecessary coupling between them.
 
-### Completed-obstruction assistance consent
+### Core resolution capabilities are not separate player options
 
-This semantic setting allows or disallows OuttaMyWay intervention that physically
-changes a completed AI assembly when fresh architecture independently establishes
-a legitimate responsibility on behalf of an active productive beneficiary.
+A supported non-active, unclaimed Causal Obstruction is handled through normal
+OuttaMyWay Obstruction Relocation when current Situation, responsibility,
+Bounded Authority and Control evidence justify that response.
 
-- Enabling it does not grant responsibility or movement authority.
-- Completion creates no parking, tidying or cleanup duty.
-- A harmless completed assembly remains where GIANTS left it.
-- Configuration may withhold consent for this intervention class but cannot
-  manufacture its governing basis.
+Obstruction Relocation is therefore a core resolution capability, not a separate
+player consent setting. Enabling OuttaMyWay as a whole is sufficient product
+consent for that capability. This does not make arbitrary parked vehicles
+movable: harmless occupancy creates no responsibility, current Player Claim is
+hands-off, active GIANTS workers remain under active spatial negotiation, and
+unsupported or unsafe relocation still fails closed or escalates.
 
-This is a semantic name, not a final player-facing label. Legacy Terminal Egress,
-Terminal Yield Consent, D-number and implementation terminology do not determine
-that label; later localisation and GUI work does. The development value
-`AUTOMATIC_TERMINAL_EGRESS = true` provides no evidence for an eventual release
-default.
+> **Core Resolution Capability != Optional Configuration**
+
+> **Master Enablement Is Sufficient Consent for Core Obstruction Relocation**
 
 ## Configuration and authority
 
@@ -171,23 +170,21 @@ relevant to each setting:
 
 ```text
 Configuration
-    |-- intervention consent
-    |      -> may prohibit acquisition of an otherwise-supported optional
-    |         intervention; never supplies its governing basis or authority
+    |-- master enablement
+    |      -> permits or prevents normal OuttaMyWay operation subject to all
+    |         independent evidence, responsibility, authority and Control bounds
     |
     `-- HUD / Logging / Debug
            -> presentation and instrumentation only
 ```
 
 Configuration does not establish Reality, Observation evidence or Situation
-meaning. Consent settings may constrain whether an optional intervention already
-supported by independent evidence can be acquired. HUD, Logging and Debug
-settings affect presentation or instrumentation, not Responsibility Transition.
-Configuration never enlarges responsibility or Bounded Authority.
+meaning. Master enablement governs whether OuttaMyWay operates as a product; it
+does not selectively grant or veto individual core resolution capabilities.
+HUD, Logging and Debug affect presentation or instrumentation, not Responsibility
+Transition. Configuration never enlarges responsibility or Bounded Authority.
 
-Configuration may prohibit a class of optional behaviour within architectural
-bounds. Absence of a prohibition is not a grant of authority. Configuration does
-not:
+Configuration does not:
 
 - prove Reality;
 - establish Observation evidence;
@@ -198,11 +195,6 @@ not:
 - override representation fitness or safety evidence;
 - override GIANTS job ownership or player takeover; or
 - turn an unsupported action into a supported one.
-
-For example, `completed-obstruction assistance = enabled` means only that player
-consent does not prohibit that intervention when all independent architectural
-conditions establish it. It does not permit OuttaMyWay to move completed
-vehicles whenever it chooses.
 
 ## Advanced Configuration
 
@@ -260,7 +252,7 @@ evidence does not establish a responsible owner.
 
 | Likely kind | Representative current values or families | Boundary indicated by current evidence |
 | --- | --- | --- |
-| PLAYER CONFIGURATION CANDIDATE | `AUTOMATIC_TERMINAL_EGRESS` | Candidate only for completed-obstruction assistance consent semantics. Its development value is not a release default. The other initial concepts have no equivalent unified setting in this file. |
+| PLAYER CONFIGURATION CANDIDATE | no unified player-setting key is currently implemented in this file | The accepted player concepts are master enablement, HUD visibility, Logging and Debug. Internal gates or constants must not be promoted merely because they are editable. |
 | SYSTEM / RELEASE IDENTITY | `MOD_NAME`; `VERSION`, `BUILD_LABEL` | `MOD_NAME` identifies the system/mod. `VERSION` and `BUILD_LABEL` carry release/build identity. None is player Configuration. |
 | ARCHITECTURAL / RESPONSIBILITY POLICY | `COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M`, `COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO`, `RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION`, exact `RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH` | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
 | IMPLEMENTATION CALIBRATION | representation coherence/root-alias tolerances; follower alignment, retention and clearance factors; trajectory sampling/coherence/supersession values; Passage development and gate geometry; Control effect-speed calibration | Empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
