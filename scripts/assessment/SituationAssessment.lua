@@ -508,19 +508,11 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
 
     local trajectoryKnowledge=OuttaMyWay.TrajectoryConflictAssessment.updateTrajectories(self.trajectoryTracks,{
         observationSnapshotId=snapshot.identity,timestamp=snapshot.timestamp,
-        motionEvidence=motionEvidence,currentSpace=currentSpace,productiveKnowledge=productiveKnowledge,
-        minSampleDistanceM=OuttaMyWay.TRAJECTORY_MIN_SAMPLE_DISTANCE_M,
-        establishDistanceM=OuttaMyWay.TRAJECTORY_ESTABLISH_DISTANCE_M,
-        coherenceMinDot=OuttaMyWay.TRAJECTORY_COHERENCE_MIN_DOT,
-        persistenceAlignmentMinDot=OuttaMyWay.TRAJECTORY_PERSISTENCE_ALIGNMENT_MIN_DOT,
-        supersessionDistanceM=OuttaMyWay.TRAJECTORY_SUPERSESSION_DISTANCE_M,
-        stableMemoryDistanceM=OuttaMyWay.TRAJECTORY_STABLE_MEMORY_DISTANCE_M
+        motionEvidence=motionEvidence,currentSpace=currentSpace,productiveKnowledge=productiveKnowledge
     })
     local opposedCorridorKnowledge=OuttaMyWay.TrajectoryConflictAssessment.classifyPairs({
         situations=situations,trajectoryKnowledge=trajectoryKnowledge,motionEvidence=motionEvidence,currentSpace=currentSpace,
-        physicalSpaceEvidence=physicalSpaceEvidence,opposedMaxDot=OuttaMyWay.OPPOSED_TRAJECTORY_MAX_DOT,
-        currentOpposedMaxDot=OuttaMyWay.OPPOSED_CURRENT_MAX_DOT,persistenceAlignmentMinDot=OuttaMyWay.TRAJECTORY_PERSISTENCE_ALIGNMENT_MIN_DOT,
-        currentStableDistanceM=OuttaMyWay.OPPOSED_CURRENT_STABLE_DISTANCE_M,minClosingRateMps=OuttaMyWay.OPPOSED_MIN_CLOSING_RATE_MPS,
+        physicalSpaceEvidence=physicalSpaceEvidence,
         actionSpaceMaxSeparationM=OuttaMyWay.COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M
     })
     for _,relation in OuttaMyWay.ValueRecord.ipairs(opposedCorridorKnowledge) do

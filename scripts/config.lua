@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.60 TEST — LIVE DIAGNOSTIC VALUE OWNERSHIP.
--- Live diagnostic enablement/publication cadences are owned by the instruments
--- that give them meaning; Runtime and semantic authority remain unchanged.
+-- FS25_OuttaMyWay v0.3.0.61 TEST — TRAJECTORY ASSESSMENT VALUE OWNERSHIP.
+-- Trajectory and opposed-current calibration is owned by the evaluator that
+-- interprets it; Situation Assessment no longer acts as a parameter courier.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.60"
+OuttaMyWay.VERSION = "0.3.0.61"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -43,18 +43,8 @@ OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_OPPOSED_SUCCESSION_MAX_DOT = -0.95
 OuttaMyWay.FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC = 13.0
 
 
--- D-0146 Step-1 implementation calibration. These are empirical filtering/measurement
--- mechanics, not architecture. Step-2 may consume the resulting sealed Situation Knowledge.
-OuttaMyWay.TRAJECTORY_MIN_SAMPLE_DISTANCE_M = 0.10
-OuttaMyWay.TRAJECTORY_ESTABLISH_DISTANCE_M = 3.0
-OuttaMyWay.TRAJECTORY_COHERENCE_MIN_DOT = 0.94
-OuttaMyWay.TRAJECTORY_PERSISTENCE_ALIGNMENT_MIN_DOT = 0.85
-OuttaMyWay.TRAJECTORY_SUPERSESSION_DISTANCE_M = 4.0
-OuttaMyWay.TRAJECTORY_STABLE_MEMORY_DISTANCE_M = 12.0
-OuttaMyWay.OPPOSED_TRAJECTORY_MAX_DOT = -0.85
-OuttaMyWay.OPPOSED_CURRENT_MAX_DOT = -0.85
-OuttaMyWay.OPPOSED_CURRENT_STABLE_DISTANCE_M = 1.0
-OuttaMyWay.OPPOSED_MIN_CLOSING_RATE_MPS = 0.05
+-- Trajectory Conflict Assessment owns its sampling, persistence and opposed-current
+-- interpretation calibration locally. Passage Action-Space policy remains external.
 
 
 -- Cooperative Passage policy and implementation calibration.
@@ -109,7 +99,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.60 TEST — LIVE DIAGNOSTIC VALUE OWNERSHIP"
+OuttaMyWay.BUILD_LABEL = "0.3.0.61 TEST — TRAJECTORY ASSESSMENT VALUE OWNERSHIP"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985

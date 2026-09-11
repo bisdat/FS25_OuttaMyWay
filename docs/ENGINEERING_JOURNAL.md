@@ -1,3 +1,31 @@
+## 2026-09-11 — #87 Trajectory Conflict Assessment value ownership
+
+**Observe:** after `.60`, the mixed-root census showed that HUD values intersect
+deferred #89 work and Follower Boundary values span more than one responsibility.
+The trajectory family is cleaner: ten sampling/persistence/opposed-current values
+are interpreted by `TrajectoryConflictAssessment`, while `SituationAssessment`
+only forwards them from the historical root.
+
+> **Parameter Courier != Semantic Owner**
+
+`TrajectoryConflictAssessment` already contains the same accepted values as
+fallback defaults, and the Lua behavioural harness independently supplies those
+thresholds as fixture inputs.
+
+**Decision:** `.61` preserves all ten literals exactly, names them as module-local
+Trajectory Conflict Assessment calibration, and removes their `OuttaMyWay.*`
+definitions plus production courier arguments. Focused-test context overrides
+remain supported.
+
+The separate `COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M = 80` remains an
+external Passage/Action-Space input to trajectory classification. Shared use does
+not transfer its ownership into Trajectory Conflict Assessment.
+
+**Validation boundary:** production must contain no old trajectory/opposed-current
+root access, the evaluator must own the exact accepted defaults, external Passage
+context must remain wired, and the existing Lua fixture thresholds remain
+unchanged as the independent behavioural oracle.
+
 ## 2026-09-11 — #87 live diagnostic value ownership
 
 **Observe:** after `.59` retired the follower-maturation forensic shadow, twelve
