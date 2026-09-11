@@ -8,6 +8,10 @@ OuttaMyWay.ObstructionRelocationControl={}
 local Control=OuttaMyWay.ObstructionRelocationControl
 Control.__index=Control
 
+-- Control-owned fail-safe for one already-authorised bounded relocation actuation.
+-- Expiry reports physical execution failure; it does not prove semantic obstruction state.
+local BOUNDED_MOVE_WATCHDOG_MS=45000
+
 local function logInfo(formatText,...)
     local message=string.format(formatText,...)
     if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION-CONTROL] %s",message) else print("[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION-CONTROL] "..message) end
@@ -327,7 +331,7 @@ function Control:update(dt)
         })
         return
     end
-    if elapsed>(tonumber(OuttaMyWay.TERMINAL_EGRESS_MOVE_TIMEOUT_MS) or 45000) then
+    if elapsed>BOUNDED_MOVE_WATCHDOG_MS then
         self:_complete("FAILED",{kind="OBSTRUCTION_RELOCATION_CONTROL_FAILURE",reason="BOUNDED_MOVE_WATCHDOG_EXPIRED",realisedProgressM=realisedProgress,targetProgressM=state.targetProgressM})
         return
     end

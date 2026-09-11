@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.52 TEST — OBSTRUCTION RELOCATION CORE CAPABILITY.
--- Supported non-active, unclaimed Causal Obstruction relocation is normal
--- OuttaMyWay resolution behaviour, bounded by current evidence and authority.
+-- FS25_OuttaMyWay v0.3.0.53 TEST — OBSTRUCTION RELOCATION BOUND OWNERSHIP.
+-- Obstruction Relocation distance policy and Control watchdog values are owned by
+-- the narrowest implementation responsibility that gives each bound meaning.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.52"
+OuttaMyWay.VERSION = "0.3.0.53"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -162,7 +162,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.52 TEST — OBSTRUCTION RELOCATION CORE CAPABILITY"
+OuttaMyWay.BUILD_LABEL = "0.3.0.53 TEST — OBSTRUCTION RELOCATION BOUND OWNERSHIP"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
@@ -173,14 +173,6 @@ OuttaMyWay.FOLLOWER_PACING_HUD_X = 0.985
 OuttaMyWay.FOLLOWER_PACING_HUD_Y = 0.697
 OuttaMyWay.FOLLOWER_PACING_HUD_TEXT_SIZE = 0.013
 OuttaMyWay.FOLLOWER_PACING_HUD_MAX_ROWS = 3
-
--- Maximum progress of one bounded inward Obstruction Relocation actuation.
--- This legacy identifier remains for later #87 ownership/name reconciliation. Each fresh
--- positive Causal Obstruction may authorise another actuation while meaningful
--- centroid-directed space remains; there is no architectural move-count budget.
-OuttaMyWay.TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M = 60.0
-OuttaMyWay.TERMINAL_EGRESS_MOVE_TIMEOUT_MS = 45000 -- watchdog only; one bounded relocation actuation
-
 
 OuttaMyWay.FIELD_WORLD_SNAPSHOT_GENERATION_BUDGET = 0.00025
 OuttaMyWay.FIELD_WORLD_FINGERPRINT_QUANTIZATION_METRES = 0.1

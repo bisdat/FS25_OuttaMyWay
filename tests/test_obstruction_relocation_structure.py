@@ -185,3 +185,19 @@ def test_issue87_obstruction_relocation_is_core_capability_not_optional_configur
     assert 'historicalJobProvenanceRequired=false' in candidate
     assert '"PLAYER_CLAIM"' in candidate
     assert '"SOURCE_AI_REACTIVATION"' in candidate
+
+def test_issue87_obstruction_relocation_bounds_live_with_their_narrowest_owners():
+    config = read("scripts/config.lua")
+    candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")
+    control = read("scripts/control/ObstructionRelocationControl.lua")
+
+    assert "TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M" not in config
+    assert "TERMINAL_EGRESS_MOVE_TIMEOUT_MS" not in config
+    assert "TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M" not in candidate
+    assert "TERMINAL_EGRESS_MOVE_TIMEOUT_MS" not in control
+
+    assert "local BOUNDED_INWARD_RELOCATION_MAX_DISTANCE_M=60.0" in candidate
+    assert "local cap=BOUNDED_INWARD_RELOCATION_MAX_DISTANCE_M" in candidate
+    assert "local BOUNDED_MOVE_WATCHDOG_MS=45000" in control
+    assert "if elapsed>BOUNDED_MOVE_WATCHDOG_MS then" in control
+    assert 'reason="BOUNDED_MOVE_WATCHDOG_EXPIRED"' in control
