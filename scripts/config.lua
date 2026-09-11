@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.58 TEST — FIELD WORLD VALUE OWNERSHIP.
--- Field World production, interpretation and evidence-history values now live
--- with the three implementation responsibilities that give them meaning.
+-- FS25_OuttaMyWay v0.3.0.59 TEST — LEGACY FOLLOWER SHADOW RETIREMENT.
+-- The obsolete follower-maturation forensic shadow is no longer shipped;
+-- aligned Follower Boundary assessment and Regulation remain authoritative.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.58"
+OuttaMyWay.VERSION = "0.3.0.59"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -44,24 +44,12 @@ OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_HEARTBEAT_MS = 1000
 OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_ENABLED = true
 OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_INTERVAL_MS = 100
 OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_LOG_INTERVAL_MS = 250
-OuttaMyWay.FOLLOWER_MATURATION_COMPRESSION_PROBE_ENABLED = true
-OuttaMyWay.FOLLOWER_MATURATION_COMPRESSION_PROBE_INTERVAL_MS = 100
-OuttaMyWay.FOLLOWER_MATURATION_COMPRESSION_PROBE_HEARTBEAT_MS = 500
-
 -- D-0129 passive progression-preservation probe. This publishes/consumes motion and
 -- obligation Knowledge and records positive demand-witness geometry only. It has no
 -- Decision, speed, clearance or Control authority; response-adjusted progression is unresolved.
 OuttaMyWay.PROGRESSION_PRESERVATION_PROBE_ENABLED = true
 OuttaMyWay.PROGRESSION_PRESERVATION_PROBE_HEARTBEAT_MS = 1000
 
--- Bounded active test authority. The cap is derived from live geometry plus
--- uncontaminated demonstrated demand. 0.99/3 are admission Representation-
--- Fitness test mechanics only and are not policy.
-OuttaMyWay.FOLLOWER_MATURATION_REGULATION_TEST_ENABLED = false
-OuttaMyWay.FOLLOWER_MATURATION_TEST_MIN_HEADING_DOT = 0.99
-OuttaMyWay.FOLLOWER_MATURATION_TEST_REQUIRED_COHERENT_SAMPLES = 3
--- Historical follower-shadow calibration remains available for forensic comparison.
-OuttaMyWay.FOLLOWER_MATURATION_TRANSITION_CLEARANCE_FACTOR = 0.90
 OuttaMyWay.FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true
 -- Live D-0141 clearance margin. Applied only after the unscaled calculation has
 -- already established that Regulation is required, so it cannot manufacture a
@@ -147,7 +135,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.58 TEST — FIELD WORLD VALUE OWNERSHIP"
+OuttaMyWay.BUILD_LABEL = "0.3.0.59 TEST — LEGACY FOLLOWER SHADOW RETIREMENT"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985

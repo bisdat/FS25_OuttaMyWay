@@ -2,8 +2,8 @@ OuttaMyWay.FollowerPacingHud={}
 local Hud=OuttaMyWay.FollowerPacingHud
 Hud.__index=Hud
 
-function Hud.new(activeSource,shadowSource)
-    return setmetatable({activeSource=activeSource,shadowSource=shadowSource},Hud)
+function Hud.new(activeSource)
+    return setmetatable({activeSource=activeSource},Hud)
 end
 function Hud:loadMap() end
 function Hud:deleteMap() end
@@ -24,13 +24,6 @@ function Hud:draw()
         lines[#lines+1]=string.format("Follower regulation ALIGNED%s | %s for %s | cap %s / native %s km/h",
             active.transitionPreservation==true and " TRANSITION" or "",
             tostring(active.followerName or "Follower"),tostring(active.leaderName or "leader"),numberText(active.currentCapKmh),numberText(active.nativeUnrestrictedFollowerKmh))
-    else
-        local records=self.shadowSource and self.shadowSource.getActivePacingRecords and self.shadowSource:getActivePacingRecords() or {}
-        for i=1,#records do
-            local record=records[i]
-            lines[#lines+1]=string.format("%s — legacy follower SHADOW for %s | would-cap %s km/h | no Control",
-                tostring(record.followerName or "Follower"),tostring(record.leaderName or "leader"),numberText(record.hypotheticalCapKmh))
-        end
     end
     if #lines==0 then return end
     local x=OuttaMyWay.FOLLOWER_PACING_HUD_X or 0.985

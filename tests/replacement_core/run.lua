@@ -97,7 +97,6 @@ load("scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua")
 load("scripts/diagnostics/ProductiveCoverageResidualProbe.lua")
 load("scripts/diagnostics/RefugeQualificationShadowProbe.lua")
 load("scripts/observation/NativeManoeuvreObservationSource.lua")
-load("scripts/diagnostics/FollowerMaturationCompressionProbe.lua")
 load("scripts/diagnostics/ProgressionPreservationProbe.lua")
 load("scripts/control/mechanisms/FieldWorkHoldMechanism.lua")
 load("scripts/control/mechanisms/NativeDriveMechanism.lua")
@@ -2788,49 +2787,13 @@ test("D-0141 follower Regulation retains current responsibility and physical aut
     equal(runtime.authorities:ownerOf("AS-P"),commitmentId)
 end)
 
-test("D-0124 follower shadow derives a lower cap when unrestricted demand would be consumed", function()
-    local leader={x=0,z=0,dx=1,dz=0}
-    local follower={x=-10,z=0,dx=1,dz=0}
-    local rep={worldPrimitives={{kind="DISC",positiveConflictSupport=true,x=-10,z=0,radius=2}}}
-    local demand={entryBoundaryDistanceM=28,durationMs=12000,sweep={minForward=-18,maxForward=23,minLateral=-20,maxLateral=54}}
-    local r=OuttaMyWay.FollowerMaturationCompressionProbe.evaluateShadow(leader,100,25,follower,rep,25,demand)
-    equal(r.status,"REGULATE_SUPPORTED")
-    equal(r.maxAdmissibleFollowerKmh < 25,true)
-end)
-
-test("D-0124 follower maturation is shadow-only and owns no drive authority", function()
-    local probe=OuttaMyWay.FollowerMaturationCompressionProbe.new({},nil,nil)
-    equal(probe.setDriveAuthoritySource,nil)
-    equal(probe._applyOrUpdate,nil)
-    equal(OuttaMyWay.FOLLOWER_MATURATION_REGULATION_TEST_ENABLED,false)
-end)
 
 
-test("D-0130 tighten-only follower cap implementation is removed from active diagnostic path", function()
-    local probe=OuttaMyWay.FollowerMaturationCompressionProbe.new({},nil,nil)
-    equal(probe._applyOrUpdate,nil)
-    equal(probe.activeByFollower,nil)
-    equal(type(probe.shadowByFollower),"table")
-end)
 
 
-test("D-0124 unresolved boundary demand cannot acquire Control authority", function()
-    local leader={x=0,z=0,dx=1,dz=0}
-    local follower={x=-10,z=0,dx=1,dz=0}
-    local r=OuttaMyWay.FollowerMaturationCompressionProbe.evaluateShadow(leader,100,25,follower,nil,25,{entryBoundaryDistanceM=28,durationMs=12000,sweep={minForward=-18,maxForward=23,minLateral=-20,maxLateral=54}})
-    equal(r.status,"UNRESOLVED")
-    equal(r.reason,"FOLLOWER_REPRESENTATION_UNAVAILABLE")
-end)
 
 
-test("D-0124 opposed or non-trailing geometry is descriptive non-applicability only", function()
-    local rep={worldPrimitives={{kind="DISC",positiveConflictSupport=true,x=-10,z=0,radius=2}}}
-    local demand={entryBoundaryDistanceM=28,durationMs=12000,sweep={minForward=-18,maxForward=23,minLateral=-20,maxLateral=54}}
-    local opposed=OuttaMyWay.FollowerMaturationCompressionProbe.evaluateShadow({x=0,z=0,dx=1,dz=0},100,25,{x=-10,z=0,dx=-1,dz=0},rep,25,demand)
-    equal(opposed.status,"NOT_APPLICABLE"); equal(opposed.reason,"CONTINUATIONS_NOT_POSITIVELY_ALIGNED")
-    local ahead=OuttaMyWay.FollowerMaturationCompressionProbe.evaluateShadow({x=0,z=0,dx=1,dz=0},100,25,{x=10,z=0,dx=1,dz=0},rep,25,demand)
-    equal(ahead.status,"NOT_APPLICABLE"); equal(ahead.reason,"NO_TRAILING_RELATIONSHIP")
-end)
+
 
 
 test("D-0130 regulation leases compose by least-permissive cap and release independently", function()
@@ -2891,28 +2854,10 @@ test("D-0186 Regulation-Hold Boundary maps zero cap to GIANTS no-drive permissio
 end)
 
 
-test("D-0130 follower strategy succession no longer lives in the diagnostic probe", function()
-    local probe=OuttaMyWay.FollowerMaturationCompressionProbe.new({},nil,nil)
-    equal(probe._strategySupersessionReason,nil)
-    equal(probe._positiveRetirementReason,nil)
-end)
 
 
-test("D-0139 Progress Passage semantics are removed from P22 capability ownership", function()
-    equal(OuttaMyWay.Prototype22CapabilityGate,nil)
-    local probe=OuttaMyWay.FollowerMaturationCompressionProbe.new({},nil,nil)
-    equal(probe.setPurposeSuccessionSource,nil)
-    equal(probe._retireForProgressPassage,nil)
-end)
 
 
-test("D-0139 authority reset prevents any follower-compression lease from existing", function()
-    local probe=OuttaMyWay.FollowerMaturationCompressionProbe.new({},nil,nil)
-    equal(OuttaMyWay.FOLLOWER_MATURATION_REGULATION_TEST_ENABLED,false)
-    equal(probe.setDriveAuthoritySource,nil)
-    equal(probe.activeByFollower,nil)
-    equal(type(probe.shadowByFollower),"table")
-end)
 
 
 test("D-0127 deferred native manoeuvre closure freezes measurement while boundary-demand fitness stays unresolved", function()
@@ -2954,13 +2899,6 @@ test("D-0127 new turn before settled continuation cannot promote a native manoeu
 end)
 
 
-test("D-0126 empirical Transition-Clearance factor remains visible in legacy shadow and is restored explicitly to aligned D-0141", function()
-    equal(OuttaMyWay.FOLLOWER_MATURATION_TRANSITION_CLEARANCE_FACTOR,0.90)
-    equal(OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR,0.90)
-    equal(OuttaMyWay.FOLLOWER_MATURATION_REGULATION_TEST_ENABLED,false)
-    local probe=OuttaMyWay.FollowerMaturationCompressionProbe.new({},nil,nil)
-    equal(probe._applyOrUpdate,nil)
-end)
 
 
 test("D-0129 ray-capsule witness distance is geometric and positive-only", function()
@@ -6406,6 +6344,16 @@ test("D0218 ENDED Job evidence still requires current Player Claim evidence",fun
     equal(#records,1)
     equal(records[1].blockerClassification,"PLAYER_CLAIM_UNRESOLVED")
     equal(records[1].relocationEligible,false)
+end)
+
+test("legacy follower shadow retirement preserves aligned production clearance factor", function()
+    equal(OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR,0.90)
+    equal(type(OuttaMyWay.FollowerBoundaryDemandAssessment),"table")
+    equal(type(OuttaMyWay.FollowerBoundaryMagnitudePolicy),"table")
+end)
+
+test("legacy follower shadow retirement preserves P22 capability retirement", function()
+    equal(OuttaMyWay.Prototype22CapabilityGate,nil)
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

@@ -257,10 +257,10 @@ evidence does not establish a responsible owner.
 | ARCHITECTURAL / RESPONSIBILITY POLICY | `COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M`, `COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO`, `RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION`, exact `RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH` | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
 | IMPLEMENTATION CALIBRATION | Entity-Local Shape Evidence coherence/root-alias calibration; follower alignment, retention and clearance factors; trajectory sampling/coherence/supersession values; Passage development and gate geometry; Control effect-speed calibration | Entity-local shape calibration is owned by its shared Resolution evidence predicate; other empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
 | SAFETY / RESOURCE BOUND | Passage sweep sample count and phase watchdog; fold-settlement bounds | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
-| DIAGNOSTIC | Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre, progression and other Probe flags/intervals; lifecycle/transition/future-space and version/follower HUD flags and coordinates | Diagnostic instruments and their cadence/layout remain internal. Normal Logging and Debug are higher-level player choices, not exposure of each switch. |
-| VALIDATION / EXPERIMENTAL | `CONTROL_AUTHORITY_ENABLED`; follower maturation test controls; `COOPERATIVE_PASSAGE_ENABLED` | Current gates and test values are implementation or validation evidence. They do not define the master enabled setting and grant no production authority by location. |
+| DIAGNOSTIC | Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre and progression Probe flags/intervals; lifecycle/transition/future-space and version/follower HUD flags and coordinates | Live diagnostic instruments and their cadence/layout remain internal. Normal Logging and Debug are higher-level player choices, not exposure of each switch. The retired follower-maturation forensic shadow is not a current diagnostic responsibility. |
+| VALIDATION / EXPERIMENTAL | `CONTROL_AUTHORITY_ENABLED`; `COOPERATIVE_PASSAGE_ENABLED` | Current gates and test values are implementation or validation evidence. They do not define the master enabled setting and grant no production authority by location. |
 | HUD IMPLEMENTATION | `TRANSITION_HUD_*`, `VERSION_HUD_*`, `FOLLOWER_PACING_HUD_*` | Coordinates, sizes, rows and diagnostic display flags belong to HUD/diagnostic implementation, not Configuration architecture. |
-| HISTORICAL RESIDUE | historical follower-shadow values and any other evidence-only remnants still awaiting ownership review | Positively retired/unsourced Demonstrated Productive Coverage, Productive Coverage Residual, Refuge Qualification and Headland Manoeuvre Sweep values are no longer retained in `scripts/config.lua`; Git/research/unsourced donor files own that history. Any remaining residue is not Configuration and remains subject to Issue #87 ownership review. |
+| HISTORICAL RESIDUE | evidence-only remnants whose owning responsibility has expired | Demonstrated Productive Coverage, Productive Coverage Residual, Refuge Qualification, Headland Manoeuvre Sweep and the legacy follower-maturation forensic shadow are retired from shipped runtime/configuration; Git and durable engineering records own that history. Any remaining residue is not Configuration and remains subject to Issue #87 ownership review. |
 | UNRESOLVED | `ARCHITECTURE_VERSION`; `RUNTIME_MODE`; `FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED`; some Cooperative Passage development/traversal/reacquisition and hold/heartbeat values | Current placement and comments do not establish whether each is identity, policy, calibration, compatibility or residue. Later bounded investigation should resolve ownership without assuming that common location or numeric equality supplies it. |
 
 Field World ownership is now decomposed by meaning rather than common prefix:
@@ -271,9 +271,12 @@ owns retained comparison/resolution evidence-history bounds. Those values are
 internal implementation evidence, not player Configuration, and no longer
 occupy the mixed root surface. Existing Obstruction Relocation, Runtime,
 Representation and Entity-Local Shape Evidence ownership remains unchanged.
-Fold-settlement bounds remain internal safety/control values. The inventory is
-descriptive; Issue #87 continues ownership-family decomposition without retuning
-values merely because their placement changes.
+Fold-settlement bounds remain internal safety/control values. `.59` retires the
+legacy follower-maturation forensic shadow and all `FOLLOWER_MATURATION_*`
+root residue because that diagnostic no longer answers a current engineering
+question; the aligned `FOLLOWER_BOUNDARY_*` production path remains unchanged.
+The inventory is descriptive; Issue #87 continues ownership-family decomposition
+without retuning values merely because their placement changes.
 
 ## Implementation boundary
 
