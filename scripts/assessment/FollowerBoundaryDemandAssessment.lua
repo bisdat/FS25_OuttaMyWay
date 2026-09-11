@@ -12,6 +12,15 @@
 OuttaMyWay.FollowerBoundaryDemandAssessment = {}
 local Assessment=OuttaMyWay.FollowerBoundaryDemandAssessment
 
+-- Assessment-owned implementation calibration. Direct options/values remain
+-- focused-test overrides; production Situation Assessment does not courier them.
+local FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR=0.90
+local FOLLOWER_BOUNDARY_CURRENT_ALIGNMENT_MIN_DOT=0.99
+local FOLLOWER_BOUNDARY_ESTABLISHED_LATERAL_RETENTION_M=1.0
+local FOLLOWER_BOUNDARY_ESTABLISHED_ALIGNMENT_MIN_DOT=0.95
+local FOLLOWER_BOUNDARY_ESTABLISHED_OPPOSED_SUCCESSION_MAX_DOT=-0.95
+local FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC=13.0
+
 local function finite(value)
     return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
 end
@@ -49,7 +58,7 @@ local function currentRelationship(leader,follower,minHeadingDot)
     local lateral=rx*(-leader.dz)+rz*leader.dx
     local corridorHalfWidth=0.5*(leader.workingWidthM+follower.workingWidthM)
     local corridorOverlap=math.abs(lateral)<=corridorHalfWidth
-    if dot<(minHeadingDot or 0.99) then
+    if dot<(minHeadingDot or FOLLOWER_BOUNDARY_CURRENT_ALIGNMENT_MIN_DOT) then
         return {status="NEGATIVE",reason="CURRENT_PRODUCTIVE_CONTINUATIONS_NOT_COHERENTLY_CO_DIRECTIONAL",headingDot=dot,leaderToFollowerForwardM=forward,lateralOffsetM=lateral,corridorHalfWidthM=corridorHalfWidth,corridorOverlap=corridorOverlap}
     end
     if forward>=0 then
@@ -205,7 +214,7 @@ Assessment.transitionPreservationMagnitude=transitionPreservationMagnitude
 local function applyEstablishedPurposeRetention(relation,options)
     if type(relation)~="table" or relation.status~="NEGATIVE" then return relation end
     if relation.reason=="CURRENT_PRODUCTIVE_WORK_CORRIDORS_DO_NOT_OVERLAP" then
-        local margin=tonumber(options.establishedLateralRetentionM) or 1.0
+        local margin=tonumber(options.establishedLateralRetentionM) or FOLLOWER_BOUNDARY_ESTABLISHED_LATERAL_RETENTION_M
         local lateral=math.abs(tonumber(relation.lateralOffsetM) or math.huge)
         local half=tonumber(relation.corridorHalfWidthM) or -math.huge
         if lateral<=half+margin then
@@ -215,8 +224,8 @@ local function applyEstablishedPurposeRetention(relation,options)
             return relation
         end
     elseif relation.reason=="CURRENT_PRODUCTIVE_CONTINUATIONS_NOT_COHERENTLY_CO_DIRECTIONAL" then
-        local retainDot=tonumber(options.establishedAlignmentMinDot) or 0.95
-        local opposedDot=tonumber(options.establishedOpposedSuccessionMaxDot) or -0.95
+        local retainDot=tonumber(options.establishedAlignmentMinDot) or FOLLOWER_BOUNDARY_ESTABLISHED_ALIGNMENT_MIN_DOT
+        local opposedDot=tonumber(options.establishedOpposedSuccessionMaxDot) or FOLLOWER_BOUNDARY_ESTABLISHED_OPPOSED_SUCCESSION_MAX_DOT
         if finite(relation.headingDot) and relation.headingDot>=retainDot then
             relation.status="UNRESOLVED"
             relation.reason="ESTABLISHED_FOLLOWER_ALIGNMENT_WITHIN_RETENTION_BAND"
@@ -242,8 +251,8 @@ end
 function Assessment.evaluatePair(leader,follower,options)
     options=options or {}
     local existingPurpose=options.existingPurpose==true
-    local clearanceFactor=options.clearanceFactor or OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR or 0.90
-    local relation=currentRelationship(leader,follower,options.minHeadingDot or 0.99)
+    local clearanceFactor=options.clearanceFactor or FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR
+    local relation=currentRelationship(leader,follower,options.minHeadingDot or FOLLOWER_BOUNDARY_CURRENT_ALIGNMENT_MIN_DOT)
     if existingPurpose then relation=applyEstablishedPurposeRetention(relation,options) end
 
     -- D-0146 is a stronger current relationship witness than the historical
@@ -314,7 +323,7 @@ function Assessment.evaluatePair(leader,follower,options)
         }
     end
 
-    local seed=provisionalDemandSeed(leader,follower,options.provisionalDurationSec or 13.0)
+    local seed=provisionalDemandSeed(leader,follower,options.provisionalDurationSec or FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC)
     local controlMagnitude=magnitude(leader,follower,seed,clearanceFactor)
     if controlMagnitude.status~="SUPPORTED" then
         return {

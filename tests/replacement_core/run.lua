@@ -6346,10 +6346,12 @@ test("D0218 ENDED Job evidence still requires current Player Claim evidence",fun
     equal(records[1].relocationEligible,false)
 end)
 
-test("legacy follower shadow retirement preserves aligned production clearance factor", function()
-    equal(OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR,0.90)
+test("legacy follower shadow retirement preserves aligned production clearance behaviour", function()
     equal(type(OuttaMyWay.FollowerBoundaryDemandAssessment),"table")
     equal(type(OuttaMyWay.FollowerBoundaryMagnitudePolicy),"table")
+    local cap,applied=OuttaMyWay.FollowerBoundaryDemandAssessment.applyClearanceFactor(25,10,0.90)
+    equal(cap,9)
+    equal(applied,true)
 end)
 
 test("legacy follower shadow retirement preserves P22 capability retirement", function()

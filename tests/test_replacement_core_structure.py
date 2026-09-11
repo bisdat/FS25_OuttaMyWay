@@ -838,13 +838,13 @@ def test_d0141_aligned_follower_boundary_regulation_uses_current_knowledge_and_c
 
     assert 'scripts/assessment/FollowerBoundaryDemandAssessment.lua' in main
     assert 'FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true' in config
-    assert 'FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC = 13.0' in config
+    assert 'local FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC=13.0' in assessment
     assert 'LIVE_RUNTIME_CONTROL_INTERVAL_MS' not in config
     assert 'local LIVE_RUNTIME_CONTROL_INTERVAL_MS=250' in coordinator
-    assert 'FOLLOWER_BOUNDARY_ESTABLISHED_LATERAL_RETENTION_M = 1.0' in config
-    assert 'FOLLOWER_BOUNDARY_ESTABLISHED_ALIGNMENT_MIN_DOT = 0.95' in config
-    assert 'FOLLOWER_BOUNDARY_ESTABLISHED_OPPOSED_SUCCESSION_MAX_DOT = -0.95' in config
-    assert 'FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR = 0.90' in config
+    assert 'local FOLLOWER_BOUNDARY_ESTABLISHED_LATERAL_RETENTION_M=1.0' in assessment
+    assert 'local FOLLOWER_BOUNDARY_ESTABLISHED_ALIGNMENT_MIN_DOT=0.95' in assessment
+    assert 'local FOLLOWER_BOUNDARY_ESTABLISHED_OPPOSED_SUCCESSION_MAX_DOT=-0.95' in assessment
+    assert 'local FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR=0.90' in assessment
     assert 'workingWidth=workingWidth' in observation
     assert 'nativeDriveCommand=nativeDriveCommand' in observation
     assert 'followerBoundaryKnowledge' in situation and '"followerBoundaryKnowledge"' in operational

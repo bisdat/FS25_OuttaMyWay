@@ -2,47 +2,52 @@
 
 ## Repository authority
 
-- Accepted Repository State: `main` after PR #134 merge,
-  `b06f78a74443a5b547affcb8eca91e0fa3579d1c`.
+- Accepted Repository State: `main` after PR #135 merge,
+  `b04cc98cb4d66aeccb77fd146205903d89b35d09`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.60 TEST — LIVE DIAGNOSTIC VALUE OWNERSHIP`**.
-- Post-merge Offline Validation run #332 passed on that exact merge commit.
+  **`0.3.0.61 TEST — TRAJECTORY ASSESSMENT VALUE OWNERSHIP`**.
+- Post-merge Offline Validation run #334 passed on that exact merge commit.
 - Issue #87 remains open.
 
 ## Current workstream — Issue #87
 
-The remaining mixed-root families were re-evaluated by responsibility rather than
-prefix. HUD ownership is intentionally deferred because #89 owns later player/HUD
-work. Follower Boundary is not one ownership family: assessment calibration and
-the production enable gate have different meanings.
+After `.61`, Follower Boundary was examined by responsibility rather than prefix.
+Six values govern Situation-level Follower Boundary assessment: current alignment,
+provisional temporal seed, established-purpose retention and clearance-factor
+calibration. `SituationAssessment` currently forwards them from the historical
+mixed root, while `FollowerBoundaryDemandAssessment` is the module that gives
+them meaning.
 
-Trajectory is cleaner. Ten trajectory/opposed-current values are interpreted by
-`TrajectoryConflictAssessment`; `SituationAssessment` currently forwards them
-only because they historically live in `scripts/config.lua`.
+A seventh similarly named value is different:
+`FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED` is consumed later by
+`LiveTrafficCandidateSupport` as a Candidate-expression gate.
+
+> **Capability Gate != Assessment Calibration**
 
 > **Parameter Courier != Semantic Owner**
 
-The Lua behavioural harness already supplies these thresholds directly as focused
-fixture inputs, so behavioural regression evidence is independent of root placement.
+The Lua behavioural harness already supplies the accepted assessment values
+directly in focused D-0141 fixtures, so behavioural regression evidence remains
+independent of root placement.
 
 ## Next bounded increment
 
-Implement **`0.3.0.61 TEST — TRAJECTORY ASSESSMENT VALUE OWNERSHIP`**:
+Implement **`0.3.0.62 TEST — FOLLOWER BOUNDARY ASSESSMENT VALUE OWNERSHIP`**:
 
-1. preserve all ten accepted trajectory/opposed-current literals exactly;
-2. make `TrajectoryConflictAssessment` their explicit module-local owner;
-3. retain optional context overrides for focused tests/fixtures;
-4. remove only those ten historical root definitions from `scripts/config.lua`;
-5. stop production `SituationAssessment` forwarding evaluator-private calibration;
-6. preserve all current Trajectory Conflict Assessment semantics;
-7. retain `COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M = 80` as external
-   Passage/Action-Space context supplied by `SituationAssessment`;
-8. add focused structural ownership protection while preserving the existing
-   independent Lua behavioural fixtures unchanged.
+1. preserve the six accepted assessment calibrations exactly;
+2. make `FollowerBoundaryDemandAssessment` their explicit module-local owner;
+3. retain direct options/values as focused-test override seams;
+4. remove only those six historical root definitions from `scripts/config.lua`;
+5. stop production `SituationAssessment` couriering evaluator-private calibration;
+6. preserve all current Follower Boundary assessment semantics and reason/provenance vocabulary;
+7. preserve `FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true` unchanged as
+   the separate Candidate-expression gate in `LiveTrafficCandidateSupport`;
+8. reconcile historical tests that froze the old root placement while preserving
+   their substantive aligned-production and behavioural witnesses.
 
-No HUD/#89, Follower Boundary, Passage/Resolution-Space policy, #123, #116 or #45
-work belongs in this increment.
+No speed retune, enable-gate ownership, HUD/#89, Passage/Resolution-Space policy,
+#123, #116 or #45 work belongs in this increment.
 
 ## Separate open work
 

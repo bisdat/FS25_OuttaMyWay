@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.61 TEST — TRAJECTORY ASSESSMENT VALUE OWNERSHIP.
--- Trajectory and opposed-current calibration is owned by the evaluator that
--- interprets it; Situation Assessment no longer acts as a parameter courier.
+-- FS25_OuttaMyWay v0.3.0.62 TEST — FOLLOWER BOUNDARY ASSESSMENT VALUE OWNERSHIP.
+-- Follower Boundary assessment calibration is owned by the evaluator that
+-- interprets it; the separate Candidate-expression enable gate is unchanged.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.61"
+OuttaMyWay.VERSION = "0.3.0.62"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -25,22 +25,8 @@ OuttaMyWay.TRANSITION_HUD_LINE_HEIGHT = 0.022
 -- they are not player Configuration and do not define Runtime scheduling.
 
 OuttaMyWay.FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true
--- Live D-0141 clearance margin. Applied only after the unscaled calculation has
--- already established that Regulation is required, so it cannot manufacture a
--- restriction for an otherwise naturally safe/distant follower.
-OuttaMyWay.FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR = 0.90
--- Representation-Fitness test threshold for "coherent line-astern", not architectural policy.
-OuttaMyWay.FOLLOWER_BOUNDARY_CURRENT_ALIGNMENT_MIN_DOT = 0.99
--- Existing-purpose hysteresis only: a sub-metre corridor/near-threshold heading fluctuation
--- is insufficient positive evidence to retire an already-admitted follower obligation.
-OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_LATERAL_RETENTION_M = 1.0
-OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_ALIGNMENT_MIN_DOT = 0.95
--- Existing-purpose strategy succession retention. A clean near-opposed continuation
--- is not positive retirement evidence; the admitted lease remains until the existing
--- lifecycle supplies a stronger event such as Progress Passage.
-OuttaMyWay.FOLLOWER_BOUNDARY_ESTABLISHED_OPPOSED_SUCCESSION_MAX_DOT = -0.95
--- Provisional Demand Seed temporal component. Evidence/test mechanic only; D-0124 explicitly denies fixed-value authority.
-OuttaMyWay.FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC = 13.0
+-- Follower Boundary Situation-assessment calibration is module-owned. This root
+-- retains only the distinct Candidate-expression enable gate.
 
 
 -- Trajectory Conflict Assessment owns its sampling, persistence and opposed-current
@@ -99,7 +85,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.61 TEST — TRAJECTORY ASSESSMENT VALUE OWNERSHIP"
+OuttaMyWay.BUILD_LABEL = "0.3.0.62 TEST — FOLLOWER BOUNDARY ASSESSMENT VALUE OWNERSHIP"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985

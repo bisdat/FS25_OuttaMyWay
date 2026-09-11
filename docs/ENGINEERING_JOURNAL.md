@@ -1,3 +1,33 @@
+## 2026-09-11 — #87 Follower Boundary assessment value ownership
+
+**Observe:** after `.61`, the `FOLLOWER_BOUNDARY_*` prefix proved to contain two
+different responsibilities. Six values are interpreted by
+`FollowerBoundaryDemandAssessment` as Situation-level assessment calibration.
+`SituationAssessment` merely forwards them from the mixed root.
+
+The seventh similarly named value,
+`FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED`, is consumed later by
+`LiveTrafficCandidateSupport` as a Candidate-expression gate.
+
+> **Capability Gate != Assessment Calibration**
+
+> **Parameter Courier != Semantic Owner**
+
+The Lua D-0141 behavioural fixtures already inject the accepted assessment
+calibrations directly. Historical structural tests and one shadow-retirement
+behavioural assertion did, however, freeze the former root placement.
+
+**Decision:** `.62` preserves all six assessment literals exactly, makes them
+module-local to `FollowerBoundaryDemandAssessment`, removes their root definitions
+and production courier arguments, and retains direct options/values as focused
+override seams. The Candidate-expression enable gate remains untouched.
+
+**Validation boundary:** reconcile only the historical placement clauses while
+retaining their substantive aligned-production witnesses. The focused ownership
+contract must protect exact local defaults, absence of old root/Situation access,
+continued focused overrides, independent D-0141 fixture literals, and the separate
+Candidate-expression gate.
+
 ## 2026-09-11 — #87 Trajectory Conflict Assessment value ownership
 
 **Observe:** after `.60`, the mixed-root census showed that HUD values intersect
