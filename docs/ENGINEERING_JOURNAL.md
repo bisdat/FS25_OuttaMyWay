@@ -1,3 +1,49 @@
+## 2026-09-11 — #87 discovers Entity-Local Shape Evidence ownership
+
+**Observe:** after `.56`, only two Representation calibration globals remained:
+0.05 m geometry/world coherence and 0.0001 m descendant/root alias
+discrimination. Both `AssemblyRepresentationCache` and
+`CurrentPhysicalConflictRepresentation` execute materially the same judgement in
+the same order, despite producing different Representation products with
+different authority.
+
+The Physical Representation Resolution Contract already requires Entity-local
+geometry attribution and coherent current pose. The duplicated tolerance use is
+therefore evidence of one shared Resolution predicate, not evidence that either
+Representation product owns the other.
+
+> **Shared Resolution Predicate != Shared Representation Product**
+
+> **Evidence Ownership May Be Shared Even When Product Authority Is Not**
+
+> **Shared Constants Holder Is Not a Missing Concept**
+
+The discovered concept is **Entity-Local Shape Evidence**: given already-acquired
+local geometry, predicted world geometry, observed world geometry and member-root
+world geometry, decide whether the shape is coherent and is not merely a
+descendant alias of the root.
+
+It explicitly does not own Physical Assembly membership, hierarchy/candidate
+discovery, cache lifetime, Inventory or Coverage Closure, Representation product
+authority, Situation meaning, Responsibility, Bounded Authority or Control.
+
+**Decision:** `.57` extracts that judgement into
+`EntityLocalShapeEvidence.lua`, preserving 0.05 m and 0.0001 m exactly. Both
+Representation products retain their existing acquisition and downstream
+semantics and consume only the shared evidence result.
+
+The `.55` and `.56` structural assertions that froze those tolerances on the root
+surface were appropriate while ownership was unresolved, but they are not
+permanent architectural authority.
+
+> **Historical Structural Contract != Permanent Placement Freeze**
+
+**Validation boundary:** direct Lua witnesses independently prove coherent
+admission, incoherent rejection and descendant-root-alias rejection. A focused
+structural contract protects calibration ownership, loader order and the absence
+of Representation-product authority from the shared evidence module. Protected
+GitHub Actions remains the full offline validation authority.
+
 ## 2026-09-11 — #87 splits Representation cache bounds by actual domain
 
 **Observe:** after `.55`, four Representation globals remained shared between

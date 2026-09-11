@@ -68,12 +68,6 @@ local function sphere(name,node)
     return {available=true,valid=valid,x=x,y=y,z=z,radius=r,error=valid and nil or "INVALID_RETURN"}
 end
 
-local function sphereDifference(a,b)
-    if a==nil or b==nil or a.valid~=true or b.valid~=true then return nil,nil end
-    local dx,dy,dz=a.x-b.x,a.y-b.y,a.z-b.z
-    return math.sqrt(dx*dx+dy*dy+dz*dz),math.abs(a.radius-b.radius)
-end
-
 local function predictedWorld(node,localSphere)
     local fn=api("localToWorld")
     if fn==nil or localSphere==nil or localSphere.valid~=true then return nil end
@@ -99,20 +93,11 @@ local function measure(member,node,rootWorld)
     local world=sphere("getShapeWorldBoundingSphere",node)
     local localSphere=geometry.valid and geometry or (fallback.valid and fallback or nil)
     local predicted=predictedWorld(node,localSphere)
-    local centreError,radiusError=sphereDifference(predicted,world)
-    local tolerance=OuttaMyWay.REPRESENTATION_GEOMETRY_COHERENCE_TOLERANCE_METRES or 0.05
-    local coherent=localSphere~=nil
-        and world.valid==true
-        and centreError~=nil and centreError<=tolerance
-        and radiusError~=nil and radiusError<=tolerance
-    if not coherent then return nil,"GEOMETRY_WORLD_COHERENCE_UNRESOLVED" end
-
-    local aliasCentre,aliasRadius=sphereDifference(world,rootWorld)
-    local aliasTolerance=OuttaMyWay.REPRESENTATION_ROOT_ALIAS_TOLERANCE_METRES or 0.0001
-    local rootAlias=node~=member.rootNode
-        and aliasCentre~=nil and aliasRadius~=nil
-        and aliasCentre<=aliasTolerance and aliasRadius<=aliasTolerance
-    if rootAlias then return nil,"DESCENDANT_ROOT_ALIAS_REJECTED" end
+    local entityLocalEvidence=OuttaMyWay.EntityLocalShapeEvidence.evaluate(
+        member.rootNode,node,localSphere,predicted,world,rootWorld
+    )
+    if not entityLocalEvidence.coherent then return nil,"GEOMETRY_WORLD_COHERENCE_UNRESOLVED" end
+    if entityLocalEvidence.rootAlias then return nil,"DESCENDANT_ROOT_ALIAS_REJECTED" end
 
     return {
         x=world.x,y=world.y,z=world.z,radius=world.radius,

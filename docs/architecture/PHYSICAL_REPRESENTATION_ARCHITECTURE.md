@@ -236,6 +236,37 @@ Evidence supports distinct claims: existence supports availability; assembly, co
 
 This **Evidence Contribution Separation** prevents weak corroboration from defeating a mandatory contradiction. **Claim-Specific Confidence** keeps identity, geometry, pose freshness, path corroboration and completeness separate rather than collapsing them into one score.
 
+### Entity-Local Shape Evidence
+
+**Entity-Local Shape Evidence** is the shared Resolution evidence judgement that
+asks whether already-acquired runtime shape measurements are attributable and
+pose-coherent enough to be admitted as Entity-local physical evidence.
+
+It contributes only two bounded tests:
+
+- **Geometry–World Coherence** — Entity-local geometry transformed into world
+  space must agree with the observed world geometry within the accepted
+  coherence calibration; and
+- **Descendant–Root Alias Discrimination** — a descendant whose observed world
+  geometry is indistinguishable from its Physical Assembly member root is not
+  accepted as independent Entity-local geometry.
+
+This evidence responsibility does not discover Physical Assembly members, scan
+hierarchies, choose candidate shapes, own cache lifetime, establish Inventory or
+Coverage Closure, create generic negative-clearance authority, interpret
+Situation meaning, acquire responsibility or authorise Control. Shape-class and
+membership evidence remain caller prerequisites. Representation products retain
+their own provenance, completeness, conservatism and fitness semantics after
+consuming the shared evidence judgement.
+
+> **Shared Resolution Predicate != Shared Representation Product**
+
+> **Evidence Ownership May Be Shared Even When Product Authority Is Not**
+
+The accepted implementation calibration is currently 0.05 m for geometry/world
+coherence and 0.0001 m for descendant/root alias discrimination. These are
+internal Resolution-evidence calibrations, not player Configuration.
+
 ### Discovery Independence and Resolution Path provenance
 
 Resolution Path provenance records how a candidate was proposed, not what conclusions it permits. **Discovery Independence** allows Situation Assessment to consume the resulting claims and limits without reconstructing discovery mechanics; provenance remains attached for audit and reassessment.

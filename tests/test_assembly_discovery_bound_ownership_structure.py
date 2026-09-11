@@ -17,21 +17,6 @@ def test_issue87_assembly_member_discovery_bound_belongs_to_representation_cache
     assert cache.count("discoverAssembly(worker,ASSEMBLY_MEMBER_BUDGET)") == 2
 
 
-def test_issue87_shape_resolution_tolerances_remain_shared_pending_concept_design():
-    config = read("scripts/config.lua")
-    cache = read("scripts/representation/AssemblyRepresentationCache.lua")
-    current = read("scripts/representation/CurrentPhysicalConflictRepresentation.lua")
-
-    shared = (
-        "REPRESENTATION_GEOMETRY_COHERENCE_TOLERANCE_METRES",
-        "REPRESENTATION_ROOT_ALIAS_TOLERANCE_METRES",
-    )
-    for name in shared:
-        assert f"OuttaMyWay.{name}" in config
-        assert f"OuttaMyWay.{name}" in cache
-        assert f"OuttaMyWay.{name}" in current
-
-
 def test_issue87_member_budget_regression_oracle_is_independent_from_production_state():
     harness = read("tests/replacement_core/run.lua")
 

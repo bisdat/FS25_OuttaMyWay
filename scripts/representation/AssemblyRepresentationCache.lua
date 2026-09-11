@@ -41,11 +41,6 @@ local function functionOrGlobal(overrides,name)
 end
 local function finite(value) return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge end
 local function validSphere(x,y,z,r) return finite(x) and finite(y) and finite(z) and finite(r) and r>0.0001 and r<500 end
-local function sphereDifference(a,b)
-    if a==nil or b==nil or a.valid~=true or b.valid~=true then return nil,nil end
-    local dx=a.x-b.x; local dy=a.y-b.y; local dz=a.z-b.z
-    return math.sqrt(dx*dx+dy*dy+dz*dz),math.abs(a.radius-b.radius)
-end
 local function countKeys(value) local n=0; for _ in pairs(value or {}) do n=n+1 end; return n end
 
 local function collectChildren(object)
@@ -385,14 +380,13 @@ function Cache:_measurePrimitive(member,node,name,source,class,rootWorld,donorEn
     local world=self:_callSphere("getShapeWorldBoundingSphere",node,true)
     local localSphere=geometry.valid and geometry or (shape.valid and shape or nil)
     local predicted=self:_worldFromLocal(node,localSphere)
-    local centreError,radiusError=sphereDifference(predicted,world)
-    local tolerance=OuttaMyWay.REPRESENTATION_GEOMETRY_COHERENCE_TOLERANCE_METRES or 0.05
-    local coherent=localSphere~=nil and world.valid==true and centreError~=nil and centreError<=tolerance and radiusError~=nil and radiusError<=tolerance
-    local aliasCentre,aliasRadius=sphereDifference(world,rootWorld)
-    local aliasTolerance=OuttaMyWay.REPRESENTATION_ROOT_ALIAS_TOLERANCE_METRES or 0.0001
-    local rootAlias=node~=member.object.rootNode and aliasCentre~=nil and aliasRadius~=nil and aliasCentre<=aliasTolerance and aliasRadius<=aliasTolerance
-    if not coherent or rootAlias then
-        return nil,{name=name,node=node,source=source,coherent=coherent,rootAlias=rootAlias,centreError=centreError,radiusError=radiusError,geometryError=geometry.error,shapeError=shape.error,worldError=world.error},3
+    local entityLocalEvidence=OuttaMyWay.EntityLocalShapeEvidence.evaluate(
+        member.object.rootNode,node,localSphere,predicted,world,rootWorld
+    )
+    local coherent=entityLocalEvidence.coherent
+    local rootAlias=entityLocalEvidence.rootAlias
+    if not entityLocalEvidence.accepted then
+        return nil,{name=name,node=node,source=source,coherent=coherent,rootAlias=rootAlias,centreError=entityLocalEvidence.centreError,radiusError=entityLocalEvidence.radiusError,geometryError=geometry.error,shapeError=shape.error,worldError=world.error},3
     end
     return {
         identity=member.referenceKey..":sphere:"..tostring(node),kind="DISC",memberReferenceKey=member.referenceKey,node=node,nodeName=name,

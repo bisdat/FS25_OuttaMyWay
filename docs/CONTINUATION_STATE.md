@@ -6,14 +6,13 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State: `main` after PR #129 merge,
-  `c58c7a4fcfecf7fc38745147d6eb76eeedf75a4c`.
+- Accepted Repository State: `main` after PR #130 merge,
+  `ff20699e2b83fa7e5d476efd7373168f96be2861`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.55 TEST — ASSEMBLY DISCOVERY BOUND OWNERSHIP`**.
-- Protected post-merge Offline Validation run #319 passed on the exact PR #129
+  **`0.3.0.56 TEST — REPRESENTATION CACHE BOUND OWNERSHIP`**.
+- Protected post-merge Offline Validation run #321 passed on the exact PR #130
   merge commit.
-- Owner in-game smoke validation also passed `.55`.
 - Issue #87 remains open.
 
 ## Current workstream — Issue #87
@@ -22,56 +21,52 @@ Engineering Journal preserve chronology.
 decomposition proceeds family-by-family from current semantics rather than
 historical location, naming or equal literals.
 
-The post-`.55` Representation census establishes:
+The post-`.56` Representation review establishes:
 
-> **Same Literal != Same Budget Domain**
+> **Shared Resolution Predicate != Shared Representation Product**
 
-> **Same Literal != Same Validity Horizon**
+> **Evidence Ownership May Be Shared Even When Product Authority Is Not**
 
-> **Shared Evidence Predicate != Shared Representation Product**
+> **Shared Constants Holder Is Not a Missing Concept**
 
-The two `2200` hierarchy scans have different domains:
+The remaining `0.05 m` geometry/world coherence and `0.0001 m`
+descendant/root-alias calibrations are used by two different Representation
+products for one shared Resolution evidence question: whether already-acquired
+runtime shape measurements are attributable and pose-coherent enough to be
+admitted as Entity-local physical evidence.
 
-- `AssemblyRepresentationCache` scans each Physical Assembly member separately
-  while building catalogue geometry;
-- `CurrentPhysicalConflictRepresentation` applies one aggregate scan budget
-  across the whole current Physical Assembly candidate discovery.
+That shared question is now named **Entity-Local Shape Evidence**. It does not
+own candidate discovery, Physical Assembly membership, hierarchy scanning, cache
+lifetime, Inventory or Coverage Closure, generic negative-clearance authority,
+Situation meaning, Responsibility, Bounded Authority or Control.
 
-The two `5 s` values likewise answer different validity questions:
-
-- `AssemblyRepresentationCache` periodically rechecks Job-scoped Physical
-  Assembly membership fingerprint validity;
-- `CurrentPhysicalConflictRepresentation` refreshes its cached candidate-node
-  discovery, while current membership/participation remains rechecked every
-  Observation independently.
-
-The `0.05 m` geometry-coherence and `0.0001 m` root-alias tolerances are
-different. Both representation products apply those values to substantially the
-same physical-shape Resolution Evidence predicate. They therefore remain shared
-and unresolved pending explicit Shape Resolution Evidence concept ownership.
+`AssemblyRepresentationCache` remains the Job-scoped catalogue product.
+`CurrentPhysicalConflictRepresentation` remains the incomplete positive-only
+current-conflict product. Each retains its own GIANTS measurement acquisition and
+product semantics; only the coherence/root-alias evidence judgement is shared.
 
 ## Next bounded increment
 
-Implement **`0.3.0.56 TEST — REPRESENTATION CACHE BOUND OWNERSHIP`**:
+Implement **`0.3.0.57 TEST — ENTITY-LOCAL SHAPE EVIDENCE OWNERSHIP`**:
 
-1. preserve all accepted numeric values exactly;
-2. localise `2200` in `AssemblyRepresentationCache` as a per-member hierarchy
-   discovery budget;
-3. localise `2200` in `CurrentPhysicalConflictRepresentation` as a whole-current-
-   assembly candidate hierarchy scan budget;
-4. localise `5 s` in `AssemblyRepresentationCache` as the Job-scoped assembly
-   membership revalidation horizon;
-5. localise `5 s` in `CurrentPhysicalConflictRepresentation` as the cached
-   candidate-discovery refresh horizon;
-6. remove only the historical root hierarchy/revalidation names;
-7. leave the `0.05 m` and `0.0001 m` Shape Resolution Evidence tolerances
-   untouched on the mixed root surface;
-8. add and wire focused structural ownership protection.
+1. preserve the accepted `0.05 m` coherence and `0.0001 m` alias values exactly;
+2. introduce `scripts/representation/EntityLocalShapeEvidence.lua`;
+3. make that predicate the sole owner of those two calibrations;
+4. have both Representation products consume the shared judgement while retaining
+   their current discovery, caching, provenance, completeness and authority;
+5. remove only the two historical root `REPRESENTATION_*` calibration names;
+6. add independent behavioural witnesses for coherent admission, incoherent
+   rejection and descendant-root-alias rejection;
+7. add and wire focused structural ownership protection;
+8. retire historical `.55`/`.56` assertions whose only purpose was to prevent
+   premature movement of the then-unresolved tolerances;
+9. document the concept and its explicit limits in Physical Representation
+   architecture.
 
-This is ownership decomposition only. It does not change Representation
-algorithms, evidence authority, cache strategy, discovery breadth, cadence,
-Resolution semantics, Transit Passage geometry, fold-settlement mechanics or
-broader Configuration presentation.
+This is Resolution-evidence ownership extraction only. It does not change
+candidate discovery, cache lifecycle, Physical Assembly membership, Coverage
+Closure, Representation authority, negative-clearance semantics, Passage
+geometry, calibration values or broader Configuration presentation.
 
 ## Separate open work
 
