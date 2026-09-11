@@ -1,20 +1,13 @@
--- FS25_OuttaMyWay v0.3.0.53 TEST — OBSTRUCTION RELOCATION BOUND OWNERSHIP.
--- Obstruction Relocation distance policy and Control watchdog values are owned by
--- the narrowest implementation responsibility that gives each bound meaning.
+-- FS25_OuttaMyWay v0.3.0.54 TEST — RUNTIME CADENCE OWNERSHIP.
+-- Runtime cadence, diagnostic throttling and bounded-observation horizon values
+-- are owned by the narrowest responsibility that gives each value meaning.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.53"
+OuttaMyWay.VERSION = "0.3.0.54"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
-OuttaMyWay.PASSIVE_SAMPLE_INTERVAL_MS = 1000
--- Active live traffic/control reassessment cadence. Kept separate from passive logging cadence so
--- bounded Control can react to GIANTS native rate changes before a boundary transition matures.
-OuttaMyWay.LIVE_RUNTIME_CONTROL_INTERVAL_MS = 250
-OuttaMyWay.PASSIVE_HEARTBEAT_INTERVAL_MS = 10000
-OuttaMyWay.PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE = 8
-
 -- Temporary live-gate HUDs. Diagnostic instrumentation only.
 -- v4.7.24 retains the lifecycle gate only to verify cleanup causes no behavioural change
 -- to Future-Space admission, termination precedence or fresh-Episode identity.
@@ -162,7 +155,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.53 TEST — OBSTRUCTION RELOCATION BOUND OWNERSHIP"
+OuttaMyWay.BUILD_LABEL = "0.3.0.54 TEST — RUNTIME CADENCE OWNERSHIP"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985

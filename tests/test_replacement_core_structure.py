@@ -411,7 +411,8 @@ def test_v4715_bounded_interaction_diagnostics_are_multi_worker_and_passive():
     for retired in ("encounterCreatedCount","ENCOUNTER lifecycle=CREATED","ENCOUNTER lifecycle=RETAINED","ENCOUNTER lifecycle=TERMINATED","PAIR_OPERATION_CHANGED_DURING_JOB_EPISODE","PAIR_DISAPPEARED_WHILE_BOTH_WORKERS_ACTIVE"):
         assert retired not in validator
     assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
-    assert "PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE" in config
+    assert "PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE" not in config
+    assert "local PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE=8" in validator
     for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
         assert forbidden not in diagnostics
         assert forbidden not in source
@@ -887,7 +888,8 @@ def test_d0141_aligned_follower_boundary_regulation_uses_current_knowledge_and_c
     assert 'scripts/assessment/FollowerBoundaryDemandAssessment.lua' in main
     assert 'FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true' in config
     assert 'FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC = 13.0' in config
-    assert 'LIVE_RUNTIME_CONTROL_INTERVAL_MS = 250' in config
+    assert 'LIVE_RUNTIME_CONTROL_INTERVAL_MS' not in config
+    assert 'local LIVE_RUNTIME_CONTROL_INTERVAL_MS=250' in coordinator
     assert 'FOLLOWER_BOUNDARY_ESTABLISHED_LATERAL_RETENTION_M = 1.0' in config
     assert 'FOLLOWER_BOUNDARY_ESTABLISHED_ALIGNMENT_MIN_DOT = 0.95' in config
     assert 'FOLLOWER_BOUNDARY_ESTABLISHED_OPPOSED_SUCCESSION_MAX_DOT = -0.95' in config
@@ -918,7 +920,9 @@ def test_d0141_aligned_follower_boundary_regulation_uses_current_knowledge_and_c
     assert 'ELASTIC_REGULATION_MAGNITUDE_UPDATED' in control
     assert 'CAP_RELAXATION_REJECTED_PURPOSE_PERSISTS' not in control
     assert 'FOLLOWER_MATURATION_TRANSITION_CLEARANCE_FACTOR' not in control
-    assert 'LIVE_RUNTIME_CONTROL_INTERVAL_MS or 250' in coordinator
+    assert 'local LIVE_RUNTIME_CONTROL_INTERVAL_MS=250' in coordinator
+    assert 'local interval=LIVE_RUNTIME_CONTROL_INTERVAL_MS' in coordinator
+    assert 'OuttaMyWay.LIVE_RUNTIME_CONTROL_INTERVAL_MS' not in coordinator
     assert 'PASSIVE_SAMPLE_INTERVAL_MS' not in coordinator
     assert 'FollowerMaturationCompressionProbe' not in assessment
     assert 'FollowerMaturationCompressionProbe' not in support

@@ -1,3 +1,36 @@
+## 2026-09-11 — #87 cadence preflight discovers Candidate-owned reassessment horizon
+
+**Observe:** the first `.54` implementation preflight rejected the proposed
+retirement of `PASSIVE_SAMPLE_INTERVAL_MS`. The value has two live consumers in
+`PassiveLiveCandidateSupport`: both `CONTINUE_OBSERVATION` construction paths use
+it to set the Bounded Observation Contract `reassessmentDeadline`.
+`CommitmentPreconditionsConstraint` requires that deadline and revalidates through
+`BOUNDED_OBSERVATION_EXHAUSTION`.
+
+The orphan-clock hypothesis is therefore disproved.
+
+> **Sampling Cadence != Bounded Observation Deadline**
+
+Together with the preceding census:
+
+> **Similar Cadence Values != Shared Scheduling Responsibility**
+
+> **Diagnostic Observer Has No Independent Sampling Clock**
+
+**Decision:** `.54` preserves all four live values while placing each with the
+responsibility that gives it meaning: 250 ms in `LiveRuntimeCoordinator`, 10 s
+and eight diagnostic lines in `PassiveLiveValidator`, and a renamed 1 s Bounded
+Observation reassessment horizon in `PassiveLiveCandidateSupport`.
+
+The `NEXT_PASSIVE_SAMPLE` contract term is intentionally unchanged. Its semantic
+truthfulness is now an explicit later question rather than being silently
+rewritten during constant ownership cleanup.
+
+**Validation boundary:** preflight proves the reviewed consumer topology before
+mutation. Structural contracts protect local ownership and the unchanged
+Candidate contract vocabulary. Protected GitHub Actions owns full offline
+validation.
+
 ## 2026-09-11 — #87 localises Obstruction Relocation bounds to Candidate and Control
 
 **Observe:** after `.52`, the two surviving historical `TERMINAL_*` values no

@@ -2,6 +2,11 @@ OuttaMyWay.PassiveLiveValidator = {}
 local Validator=OuttaMyWay.PassiveLiveValidator
 Validator.__index=Validator
 
+-- Diagnostic-only publication/throttling values. PassiveLiveValidator has no
+-- independent sampling clock; Runtime invokes it after each completed live cycle.
+local PASSIVE_HEARTBEAT_INTERVAL_MS=10000
+local PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE=8
+
 local function logInfo(message)
     if Logging~=nil and type(Logging.info)=="function" then Logging.info("[FS25_OuttaMyWay][PASSIVE] %s",message) else print("[FS25_OuttaMyWay][PASSIVE] "..message) end
 end
@@ -89,7 +94,7 @@ function Validator:draw() self.futureSpaceHud:draw() end
 function Validator:_warn(code,details,nowMilliseconds)
     local pair=details and (details.pairReferenceKey or details.assemblyReferenceKey or details.encounterIdentity) or nil
     local key=tostring(code).."|"..tostring(pair or "global")
-    local heartbeat=OuttaMyWay.PASSIVE_HEARTBEAT_INTERVAL_MS or 10000
+    local heartbeat=PASSIVE_HEARTBEAT_INTERVAL_MS
     local last=self.warningLastAt[key]
     if last==nil or nowMilliseconds-last>=heartbeat then
         self.warningLastAt[key]=nowMilliseconds
@@ -154,7 +159,7 @@ function Validator:_logRecordDiagnostics(record,due,nowMilliseconds)
         end
     end
 
-    local maximum=OuttaMyWay.PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE or 8
+    local maximum=PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE
     local logged,eligibleToLog=0,0
     for _,pair in OuttaMyWay.ValueRecord.ipairs(record.pairDiagnostics or {}) do
         local signature=table.concat({tostring(pair.operationId),tostring(pair.episodeSignature),tostring(pair.eligible),tostring(pair.evaluated),tostring(pair.exclusionReason),tostring(pair.principalOutcome),tostring(pair.currentFootprintOutcome),tostring(pair.interactionEvidenceEmitted),tostring(pair.interactionEvidenceReceived),tostring(pair.currentPairScopePresent),tostring(pair.currentPairRelationshipStatus),tostring(pair.currentSpaceStatus),tostring(pair.futureSpaceStatus),tostring(pair.subjectBlocked),tostring(pair.otherBlocked)},"|")
@@ -265,7 +270,7 @@ function Validator:_logTrajectoryConflictKnowledge(picture,due)
 end
 
 function Validator:beginRuntimeCycle(cycleDiagnostics,nowMilliseconds)
-    local due=nowMilliseconds-self.lastLogAt >= (OuttaMyWay.PASSIVE_HEARTBEAT_INTERVAL_MS or 10000)
+    local due=nowMilliseconds-self.lastLogAt >= (PASSIVE_HEARTBEAT_INTERVAL_MS)
     self:_logCycleDiagnostics(cycleDiagnostics or {},due,nowMilliseconds)
     return due
 end
