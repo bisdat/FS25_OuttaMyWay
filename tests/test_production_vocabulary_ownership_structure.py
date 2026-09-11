@@ -20,7 +20,7 @@ def test_primary_live_vocabulary_uses_current_responsibilities():
         "actionSpaceRegulationBridge",
         "FOLLOWER_BOUNDARY_OWNER_TAG",
         "ACTION_SPACE_REGULATION_OWNER_TAG",
-        "completedObstructionCandidateSupport",
+        "obstructionRelocationCandidateSupport",
     ):
         assert token in config + support + capability + authority + runtime
 
@@ -36,6 +36,7 @@ def test_primary_live_vocabulary_uses_current_responsibilities():
         "D0123_OWNER_TAG",
         "_legacyRegulationRequest",
         "legacyTerminalEgressCandidateSupport",
+        "completedObstructionCandidateSupport",
     ):
         assert stale not in config + support + capability + authority + runtime
 

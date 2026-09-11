@@ -55,9 +55,13 @@ local function activityCorroboration(object)
     local ok, value = safeCall(object, "getIsFieldWorkActive")
     if ok and value == true then fieldActive = true end
     local aiActive = false
+    local aiActiveObserved = false
     ok, value = safeCall(object, "getIsAIActive")
-    if ok and value == true then aiActive = true end
-    return fieldActive, aiActive, hasFieldWorker
+    if ok then
+        aiActiveObserved = true
+        if value == true then aiActive = true end
+    end
+    return fieldActive, aiActive, hasFieldWorker, aiActiveObserved
 end
 
 local function blockedState(object)
@@ -264,7 +268,7 @@ function Source:capture(mission, nowSeconds)
                 nodeSource=poseDiagnostic.nodeSource
             })
         end
-        local fieldActive, aiActive, hasFieldWorker = activityCorroboration(object)
+        local fieldActive, aiActive, hasFieldWorker, aiActiveObserved = activityCorroboration(object)
         local track = self.tracks[ref]
         local job, jobSource = OuttaMyWay.LiveAIJobEvidence.currentJob(object)
         local nativeToken = OuttaMyWay.LiveAIJobEvidence.jobToken(job)
@@ -318,16 +322,16 @@ function Source:capture(mission, nowSeconds)
             track.diagnosticPose=copyPose(pose); track.diagnosticTimestamp=nowSeconds; track.poseDiagnostic=poseDiagnostic; track.motionDiagnostic=motionDiagnostic
             track.fieldId = field.fieldId or 0; track.fieldResolved = field.resolved == true; track.fieldEvidence = field
             track.name = objectName(object); track.components = components; track.radius = radius; track.width = width; track.length = length
-            track.fieldActive = fieldActive; track.aiActive = aiActive; track.hasFieldWorker = hasFieldWorker
+            track.fieldActive = fieldActive; track.aiActive = aiActive; track.aiActiveObserved=aiActiveObserved; track.hasFieldWorker = hasFieldWorker
             track.nativeJob = job; track.nativeJobSource = jobSource; track.nativeJobToken = nativeToken; track.sourceJobToken = sourceToken
             local okEnteredActive,enteredActive=safeCall(object,"getIsEntered")
             local activePlayerPresent=(mission.controlledVehicle==object) or (okEnteredActive and enteredActive==true)
             addToGroup(groups, {
                 object = object, referenceKey = ref, name = track.name, pose = pose, poseDiagnostic=poseDiagnostic, motionDiagnostic=motionDiagnostic,
                 fieldId = track.fieldId, fieldResolved = track.fieldResolved, fieldEvidence = field,
-                fieldActive = fieldActive, aiActive = aiActive, hasFieldWorker = hasFieldWorker, activeObserved = true,
+                fieldActive = fieldActive, aiActive = aiActive, aiActiveObserved=aiActiveObserved, hasFieldWorker = hasFieldWorker, activeObserved = true,
                 restartObserved = reactivated and not replacementObserved, replacementObserved = replacementObserved,
-                playerPresent = activePlayerPresent, playerControlled = false, blocked = blockedState(object),
+                playerPresent = activePlayerPresent, playerEntered=activePlayerPresent, playerEnteredObserved=okEnteredActive, playerControlled = false, blocked = blockedState(object),
                 speedMps = speedMps, radius = radius, width = width, length = length,
                 sourceJobToken = sourceToken, nativeJobToken = nativeToken, nativeJobTokenSource = jobSource, components = track.components, assemblyRepresentation=track.assemblyRepresentation, localIntent=track.localIntent,
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
@@ -349,7 +353,7 @@ function Source:capture(mission, nowSeconds)
                 track.poseDiagnostic=poseDiagnostic
             end
             if field.resolved then track.fieldId = field.fieldId; track.fieldResolved = true; track.fieldEvidence = field end
-            track.active = false; track.object = object; track.fieldActive = fieldActive; track.aiActive = aiActive
+            track.active = false; track.object = object; track.fieldActive = fieldActive; track.aiActive = aiActive; track.aiActiveObserved=aiActiveObserved
             if track.fieldWorldSnapshot ~= nil and self.fieldWorldEquivalenceAuthority ~= nil then
                 track.fieldWorldResolution = self.fieldWorldEquivalenceAuthority:resolve(track.fieldWorldSnapshot)
             end
@@ -359,8 +363,8 @@ function Source:capture(mission, nowSeconds)
             addToGroup(groups, {
                 object = object, referenceKey = ref, name = track.name or objectName(object), pose = track.pose, poseDiagnostic=track.poseDiagnostic, motionDiagnostic=track.motionDiagnostic,
                 fieldId = track.fieldId or 0, fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence,
-                fieldActive = fieldActive, aiActive = aiActive, hasFieldWorker = hasFieldWorker, activeObserved = false,
-                playerControlled = playerControlled, playerPresent=playerEntered, playerEntered=playerEntered,
+                fieldActive = fieldActive, aiActive = aiActive, aiActiveObserved=aiActiveObserved, hasFieldWorker = hasFieldWorker, activeObserved = false,
+                playerControlled = playerControlled, playerPresent=playerEntered, playerEntered=playerEntered, playerEnteredObserved=okEntered,
                 sourceJobEndEvidence = sourceJobEndEvidence,
                 unresolvedTermination = sourceJobEndEvidence.observed ~= true,
                 blocked = blockedState(object), speedMps = math.abs(tonumber(object.lastSpeedReal) or 0) * 1000,
@@ -408,8 +412,8 @@ function Source:capture(mission, nowSeconds)
                 runtimeRemovalEvidence=removalEvidence,
                 object = nil, referenceKey = ref, name = track.name or "AI vehicle",
                 pose = retainedPose, poseDiagnostic=retainedPoseDiagnostic, motionDiagnostic=retainedMotionDiagnostic, fieldId = track.fieldId or 0,
-                fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence, fieldActive = false, aiActive = false,
-                hasFieldWorker = true, activeObserved = false, playerControlled = false, unresolvedTermination = not removed, objectUnavailable = not removed,
+                fieldResolved = track.fieldResolved == true, fieldEvidence = track.fieldEvidence, fieldActive = false, aiActive = false, aiActiveObserved=false,
+                hasFieldWorker = true, activeObserved = false, playerControlled = false, playerPresent=false, playerEntered=false, playerEnteredObserved=false, unresolvedTermination = not removed, objectUnavailable = not removed,
                 blocked = false, speedMps = 0, radius = track.radius, width = track.width, length = track.length,
                 sourceJobToken = track.sourceJobToken, components = track.components or {}, assemblyRepresentation=retainedAssemblyRepresentation,
                 localIntent={classification="UNRESOLVED",intentEpoch=track.localIntentEpoch or 0,intentValid=false,reason=removed and "RUNTIME_OBJECT_REMOVED" or "RUNTIME_OBJECT_UNAVAILABLE",source="RETAINED_TRACK"},
@@ -541,10 +545,10 @@ function Source:capture(mission, nowSeconds)
                 source = {kind = worker.activeObserved and "LIVE_AI_ACTIVE_JOB_VEHICLE" or "RETAINED_AI_ASSEMBLY", name = worker.name}
             }
             raw.aiStates[worker.referenceKey] = {
-                fieldActive = worker.fieldActive, aiActive = worker.aiActive, observedActive = worker.activeObserved,
+                fieldActive = worker.fieldActive, aiActive = worker.aiActive, aiActiveObserved=worker.aiActiveObserved==true, observedActive = worker.activeObserved,
                 blocked = worker.blocked == true, speedMps = worker.speedMps, name = worker.name
             }
-            raw.playerControl[worker.referenceKey] = {playerControlled = worker.playerControlled, playerPresent = worker.playerPresent == true, playerEntered=worker.playerEntered==true}
+            raw.playerControl[worker.referenceKey] = {playerControlled = worker.playerControlled, playerPresent = worker.playerPresent == true, playerEntered=worker.playerEntered==true, playerEnteredObserved=worker.playerEnteredObserved==true}
             local md=worker.motionDiagnostic or {}
             local li=worker.localIntent or {}
             local nativeFieldWork=nil
@@ -1047,6 +1051,15 @@ end
 function Source:getCurrentPhysicalObject(referenceKeyValue)
     if self.currentPhysicalAssemblySource==nil then return nil end
     return self.currentPhysicalAssemblySource:getObject(referenceKeyValue)
+end
+
+function Source:getCurrentPhysicalRelocationRepresentation(referenceKeyValue,nowSeconds)
+    if self.currentPhysicalConflictRepresentation==nil then return nil end
+    local object=self:getCurrentPhysicalObject(referenceKeyValue)
+    if object==nil then return nil end
+    return self.currentPhysicalConflictRepresentation:observe(
+        object,referenceKeyValue,tonumber(nowSeconds) or 0
+    )
 end
 
 function Source:getTrackedObject(referenceKeyValue)

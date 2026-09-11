@@ -43,12 +43,6 @@ local function cooperativePassageBridge(candidate)
     if type(bridge.subjectReferenceKey)=="string" and type(bridge.otherReferenceKey)=="string" and type(bridge.passageGuide)=="table" then return bridge end
     return nil
 end
-local function terminalEgressBridge(candidate)
-    local evidence=candidate and candidate.evidenceBasis or nil
-    local bridge=evidence and evidence.terminalEgressBridge or nil
-    if type(bridge)=="table" and bridge.architecture=="D0147" and type(bridge.terminalEpisodeId)=="string" then return bridge end
-    return nil
-end
 local function ownershipAssemblyIds(candidate)
     local ownership=candidate and candidate.evidenceBasis and candidate.evidenceBasis.progressActuationOwnership or nil
     local ids={}
@@ -78,25 +72,6 @@ local function relocationBridge(candidate)
     return nil
 end
 
-local CompositeCandidateSupport={}
-CompositeCandidateSupport.__index=CompositeCandidateSupport
-function CompositeCandidateSupport.new(causalObstructionSupport,completedObstructionSupport)
-    return setmetatable({causalObstructionSupport=causalObstructionSupport,completedObstructionSupport=completedObstructionSupport},CompositeCandidateSupport)
-end
-function CompositeCandidateSupport:attach(picture,snapshot)
-    local generic=self.causalObstructionSupport and self.causalObstructionSupport:attach(picture,snapshot) or nil
-    if generic~=nil then return generic end
-    return self.completedObstructionSupport and self.completedObstructionSupport:attach(picture,snapshot) or nil
-end
-function CompositeCandidateSupport:getPublishedCount()
-    return (self.causalObstructionSupport and self.causalObstructionSupport:getPublishedCount() or 0)+(self.completedObstructionSupport and self.completedObstructionSupport:getPublishedCount() or 0)
-end
-function CompositeCandidateSupport:getLastStatus()
-    local genericStatus=self.causalObstructionSupport and self.causalObstructionSupport:getLastStatus() or nil
-    if genericStatus~=nil and genericStatus~="INACTIVE" and genericStatus~="NO_GENERIC_CAUSAL_OBSTRUCTION_ACTION" then return genericStatus end
-    return self.completedObstructionSupport and self.completedObstructionSupport:getLastStatus() or genericStatus
-end
-
 local function selectedGroupBoundary(evaluated)
     local inventory=evaluated and evaluated.candidateInventory or nil
     local boundary=inventory and inventory.supportBoundary or nil
@@ -122,12 +97,11 @@ function Runtime.new()
     local admission=OuttaMyWay.CommitmentAdmission.new(identities,epochs,commitments,obligations,authorities)
     local governingBasis=OuttaMyWay.GoverningBasisEvaluator.new(identities,epochs)
     local terminalSettlement=OuttaMyWay.TerminalSettlementEvaluator.new(epochs,commitments,obligations,authorities)
-    local terminalOccupancyAssessment=OuttaMyWay.TerminalOccupancyAssessment.new(jobEpisodes)
     local causalObstructionAssessment=OuttaMyWay.CausalObstructionAssessment.new(jobEpisodes)
     local runtime=setmetatable({
         identities=identities,epochs=epochs,observationAdapter=OuttaMyWay.RuntimeObservationAdapter.new(identities,epochs),jobEpisodes=jobEpisodes,operations=operations,
-        commitments=commitments,obligations=obligations,authorities=authorities,boundedAuthority=nil,commitmentAdmission=admission,governingBasisEvaluator=governingBasis,terminalSettlementEvaluator=terminalSettlement,terminalOccupancyAssessment=terminalOccupancyAssessment,currentResponsibilityAssessment=OuttaMyWay.CurrentResponsibilityAssessment.new(),
-        situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,commitments,obligations,terminalOccupancyAssessment,causalObstructionAssessment),
+        commitments=commitments,obligations=obligations,authorities=authorities,boundedAuthority=nil,commitmentAdmission=admission,governingBasisEvaluator=governingBasis,terminalSettlementEvaluator=terminalSettlement,currentResponsibilityAssessment=OuttaMyWay.CurrentResponsibilityAssessment.new(),
+        situationAssessment=OuttaMyWay.SituationAssessment.new(identities,epochs,jobEpisodes,operations,commitments,obligations,nil,causalObstructionAssessment),
         candidateSpace=OuttaMyWay.CandidateSpace.new(identities,epochs),constraintEngine=OuttaMyWay.ConstraintEngine.new(identities,epochs),decisionSelector=OuttaMyWay.DecisionSelector.new(identities,epochs),
         targetedFieldIdentityProbe=OuttaMyWay.TargetedFieldIdentityProbe.new(),fieldWorldSnapshots=fieldWorldSnapshots,fieldWorldEquivalenceEvaluator=fieldWorldEquivalenceEvaluator,fieldWorldEquivalenceAuthority=fieldWorldEquivalenceAuthority,assemblyRepresentationCache=assemblyRepresentationCache,currentPhysicalAssemblySource=currentPhysicalAssemblySource,currentPhysicalConflictRepresentation=currentPhysicalConflictRepresentation,causalObstructionAssessment=causalObstructionAssessment,passiveCandidateSupport=OuttaMyWay.PassiveLiveCandidateSupport.new(identities,epochs),
         trace=OuttaMyWay.ArchitectureTrace.new(),initialized=false,runtimeMode=OuttaMyWay.RUNTIME_MODE,controlAuthorityEnabled=false,generalControlAuthorityEnabled=false,cooperativeVerdictTraceKey=nil
@@ -135,7 +109,6 @@ function Runtime.new()
     runtime.liveObservationSource=OuttaMyWay.LiveObservationSource.new(runtime.fieldWorldSnapshots,runtime.fieldWorldEquivalenceAuthority,runtime.assemblyRepresentationCache,runtime.currentPhysicalAssemblySource,runtime.currentPhysicalConflictRepresentation)
     runtime.boundedAuthority=OuttaMyWay.BoundedAuthority.new(runtime)
     terminalSettlement.boundedAuthority=runtime.boundedAuthority
-    runtime.terminalEgressCandidateSupport=OuttaMyWay.TerminalEgressCandidateSupport.new(identities,epochs)
     runtime.liveTrafficCandidateSupport=OuttaMyWay.LiveTrafficCandidateSupport.new(identities,epochs,runtime.passiveCandidateSupport)
     runtime.liveControlDispatcher=OuttaMyWay.LiveControlDispatcher.new(runtime)
     runtime.regulationBoundedAuthority=OuttaMyWay.RegulationBoundedAuthority.new(runtime)
@@ -145,19 +118,15 @@ function Runtime.new()
     runtime.followerBoundaryResponsibilityTransition=OuttaMyWay.FollowerBoundaryResponsibilityTransition.new(runtime)
     runtime.actionSpaceRegulationResponsibilityTransition=OuttaMyWay.ActionSpaceRegulationResponsibilityTransition.new(runtime)
     runtime.cooperativePassageResponsibilityTransition=OuttaMyWay.CooperativePassageResponsibilityTransition.new(runtime)
-    runtime.completedObstructionResponsibilityTransition=OuttaMyWay.CompletedObstructionResponsibilityTransition.new(runtime)
     runtime.replayRunner=OuttaMyWay.ReplayRunner.new(runtime)
     runtime.passiveLiveValidator=OuttaMyWay.PassiveLiveValidator.new(runtime)
     runtime.currentPhysicalPoseSource=OuttaMyWay.CurrentPhysicalPoseSource.new()
     runtime.liveObservationSource.currentPhysicalPoseSource=runtime.currentPhysicalPoseSource
     runtime.obstructionRelocationCandidateSupport=OuttaMyWay.ObstructionRelocationCandidateSupport.new(runtime.identities,runtime.epochs)
-    runtime.completedObstructionCandidateSupport=runtime.terminalEgressCandidateSupport
-    runtime.terminalEgressCandidateSupport=CompositeCandidateSupport.new(runtime.obstructionRelocationCandidateSupport,runtime.completedObstructionCandidateSupport)
     runtime.obstructionRelocationResponsibilityTransition=OuttaMyWay.ObstructionRelocationResponsibilityTransition.new(runtime)
     runtime.prospectiveDecisionPortfolioSupport=OuttaMyWay.ProspectiveDecisionPortfolioSupport.new(
         runtime.identities,runtime.epochs,
         runtime.obstructionRelocationCandidateSupport,
-        runtime.completedObstructionCandidateSupport,
         runtime.liveTrafficCandidateSupport,
         runtime.passiveCandidateSupport)
     return runtime
@@ -166,8 +135,8 @@ function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
     -- Structural continuity markers: general production Control authority disabled; Control authority disabled.
     -- D-0146 Step-1 Situation Knowledge is live-validated and Step-2 Established Conflict -> Candidate-owned Local Passage Search -> Passage Guide -> Commitment/Control is ACTIVE.
-    self.trace:append("PROGRESSIVE_SITUATIONAL_SUFFICIENCY_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";d0147TerminalYieldArchitecture=true;d0147BoundedInfieldRetreatImplementation=v4.7.126-60m-native-max-test;automaticTerminalEgress="..tostring(OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS==true)..";d0146Step1SituationKnowledge=true;trajectoryPersistence=true;opposedCorridorClassification=true;d0146Step2OperationAware=true;d0143CooperativePassage=false;d0143MechanicalDonorHistoricalOnly=true;d0141FollowerRegulation=true;turningRankAwarenessRetained=true;successorRookRetired=true;continuousProductiveHistoryRetired=true;kingRetired=true;continuousRefugeRetired=true;runtimeOwnedCycle=true;situationOwnsCurrentKnowledge=true;diagnosticsAuthority=false;generalControl=false")
-    print(string.format("FS25_OuttaMyWay %s loaded; D-0195 Assembly Axis Settlement + D-0194 Two-Stage Terminal Courtesy TEST: Phase-8A settles on captured axis without reproducing Phase-5 articulation; terminal first obstruction -> centroid, renewed obstruction -> one final boundary settlement; no third automatic relocation; D-0192/D-0188/D-0186 remain active; automatic terminal-yield gate=%s",tostring(OuttaMyWay.BUILD_LABEL or ("v"..tostring(OuttaMyWay.VERSION))),tostring(OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS==true)))
+    self.trace:append("PROGRESSIVE_SITUATIONAL_SUFFICIENCY_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";obstructionRelocationResponsibilityConsolidated=true;geometryBoundedRelocation=true;legacyAutomaticRelocationConsent="..tostring(OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS==true)..";d0146Step1SituationKnowledge=true;trajectoryPersistence=true;opposedCorridorClassification=true;d0146Step2OperationAware=true;d0143CooperativePassage=false;d0143MechanicalDonorHistoricalOnly=true;d0141FollowerRegulation=true;turningRankAwarenessRetained=true;successorRookRetired=true;continuousProductiveHistoryRetired=true;kingRetired=true;continuousRefugeRetired=true;runtimeOwnedCycle=true;situationOwnsCurrentKnowledge=true;diagnosticsAuthority=false;generalControl=false")
+    print(string.format("FS25_OuttaMyWay %s loaded; Obstruction Relocation responsibility consolidation TEST: non-active unclaimed blockers relocate <=60 m toward Field World centroid per actuation while fresh positive Causal Obstruction persists; no move-count courtesy budget; D-0192/D-0188/D-0186 remain active; legacy automatic-relocation consent=%s",tostring(OuttaMyWay.BUILD_LABEL or ("v"..tostring(OuttaMyWay.VERSION))),tostring(OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS==true)))
 end
 
 function Runtime:setRegulationControl(control)
@@ -374,50 +343,6 @@ function Runtime:_continueCooperativePassage(picture,evaluated,applied)
     return {status="ACCEPTED",requests=requests,outcomes=outcomes,commitment=applied.commitment,candidate=candidate,result=result}
 end
 
-function Runtime:_completedObstructionRequest(picture,evaluated,candidate,applied,bridge)
-    local target={
-        kind="OBSTRUCTION_RELOCATION",phase=bridge.phase,assemblyReferenceKey=bridge.assemblyReferenceKey,objective=bridge.objective,
-        configurationPolicy=bridge.phase=="COMPACT" and "SETTLED_COMPACTION" or "RETAIN_CURRENT",cleanupFailurePolicy="REPORT_ONLY",
-        completionContext={triggerKind="COMPLETED_OBSTRUCTION",terminalEpisodeId=bridge.terminalEpisodeId}
-    }
-    local grant,grantReason=self:_authorizeBoundedAuthority(applied.currentResponsibility,applied.commitment,applied.authorityToken,{
-        assemblyId=bridge.assemblyId,capability="REPOSITION",target=target,operationalPictureEpoch=picture.epoch,evidenceEpoch=evaluated.decision.epoch,
-        preconditions=candidate.preconditions or {},invalidationConditions=candidate.invalidationConditions or {},
-        provenance={source="Runtime",exemplar="COMPLETED_OBSTRUCTION",candidateId=candidate.identity,phase=bridge.phase}
-    })
-    if grant==nil then return nil,grantReason end
-    return self:_materializeBoundedAuthorityRequest(picture,evaluated,candidate,grant,target)
-end
-
-function Runtime:_continueCompletedObstruction(picture,evaluated,applied)
-    local candidate=selectedCandidate(evaluated)
-    local bridge=terminalEgressBridge(candidate)
-    if bridge==nil or bridge.terminalEvent~=nil or candidate.capability~="REPOSITION" or type(applied)~="table" or applied.commitment==nil or applied.authorityToken==nil then
-        return {status="NO_DISPATCH",reason="COMPLETED_OBSTRUCTION_ESTABLISHED_RESPONSIBILITY_MISMATCH",terminalEgress=true}
-    end
-    if bridge.phase=="INFIELD" then
-        local protected,protectedReason=self.regulationBoundedAuthority:_applyRelocationSerialization(picture,evaluated,candidate,applied.commitment,applied.currentResponsibility,bridge)
-        if protected~=true then
-            self.regulationBoundedAuthority:_releaseRelocationSerialization(applied.commitment.identity,"RELOCATION_SERIALIZATION_START_FAILED")
-            local terminal,settleReason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self,applied.commitment.identity,"OBJECTIVE_FAILED",{kind="COMPLETED_OBSTRUCTION_RELOCATION_SERIALIZATION_START_FAILED",reason=protectedReason},bridge.terminalEpisodeId)
-            runtimeLogWarning("COMPLETED_OBSTRUCTION_RELOCATION_SERIALIZATION_REJECTED commitment=%s episode=%s reason=%s settlement=%s",tostring(applied.commitment.identity),tostring(bridge.terminalEpisodeId),tostring(protectedReason),tostring(settleReason))
-            return {status="REJECTED",reason=protectedReason,terminalEgress=true,commitment=terminal or applied.commitment}
-        end
-    end
-    local request,requestReason=self:_completedObstructionRequest(picture,evaluated,candidate,applied,bridge)
-    if request==nil then return {status="NO_DISPATCH",reason=requestReason,terminalEgress=true,commitment=applied.commitment} end
-    local started,result=self.liveControlDispatcher:dispatch(request,candidate)
-    local outcome=started and self.liveControlDispatcher:notifyAccepted(request,{kind="D0147_POST_JOB_CONTROL_ACCEPTED",phase=bridge.phase,postJobActuation=true})
-        or self.liveControlDispatcher:notifyRejected(request,result,{kind="NO_PHYSICAL_EFFECT_CONFIRMED",phase=bridge.phase,postJobActuation=true})
-    if started then
-        cooperativeLog("D0147_ACCEPTED commitment=%s episode=%s assembly=%s phase=%s request=%s result=%s",tostring(applied.commitment.identity),tostring(bridge.terminalEpisodeId),tostring(bridge.assemblyReferenceKey),tostring(bridge.phase),tostring(request.identity),tostring(result))
-    else
-        self.boundedAuthority:release(request.boundedAuthorityId,"D0147_TERMINAL_START_REJECTED")
-        runtimeLogWarning("D0147_REJECTED commitment=%s episode=%s phase=%s reason=%s",tostring(applied.commitment.identity),tostring(bridge.terminalEpisodeId),tostring(bridge.phase),tostring(result))
-    end
-    return {status=started and "ACCEPTED" or "REJECTED",request=request,outcome=outcome,commitment=applied.commitment,candidate=candidate,result=result,terminalEgress=true}
-end
-
 function Runtime:_assessCurrentActionSpaceRegulation(picture,current)
     if current==nil then return nil,nil end
     return self.currentResponsibilityAssessment:assessActionSpaceRegulation(current,actionSpaceRelation(picture,current)),actionSpaceRelation(picture,current)
@@ -526,48 +451,11 @@ end
 function Runtime:onObstructionRelocationControlCompletion(result)
     if type(result)~="table" then return end
     local context=result.completionContext or {}
-    if context.triggerKind=="CURRENT_CAUSAL_OBSTRUCTION" then
-        self:onObstructionRelocationCompletion(result)
+    if context.triggerKind~="CURRENT_CAUSAL_OBSTRUCTION" then
+        runtimeLogWarning("OBSTRUCTION_RELOCATION_COMPLETION_CONTEXT_UNRESOLVED commitment=%s trigger=%s",tostring(result.commitmentId),tostring(context.triggerKind))
         return
     end
-    if context.triggerKind=="COMPLETED_OBSTRUCTION" then
-        self:onTerminalEgressCompletion(result)
-        return
-    end
-    runtimeLogWarning("OBSTRUCTION_RELOCATION_COMPLETION_CONTEXT_UNRESOLVED commitment=%s trigger=%s",tostring(result.commitmentId),tostring(context.triggerKind))
-end
-
-function Runtime:onTerminalEgressCompletion(result)
-    if type(result)~="table" or type(result.commitmentId)~="string" then return end
-    if result.status=="COMPACTION_COMPLETE" then
-        self.boundedAuthority:release(result.boundedAuthorityId,"D0147_COMPACTION_COMPLETE")
-        cooperativeLog("D0147_COMPACTION_COMPLETE commitment=%s episode=%s freshSituationRequired=true",tostring(result.commitmentId),tostring(result.terminalEpisodeId))
-        return
-    end
-    local serializedBeneficiaryAssemblyIds=self.regulationBoundedAuthority:relocationSerializationAssemblyIds(result.commitmentId)
-    self.regulationBoundedAuthority:_releaseRelocationSerialization(result.commitmentId,"TERMINAL_CONTROL_"..tostring(result.status))
-    self.boundedAuthority:release(result.boundedAuthorityId,"TERMINAL_CONTROL_"..tostring(result.status))
-    if result.status=="MANOEUVRE_COMPLETE" then
-        local courtesyStage=result.evidence and tonumber(result.evidence.courtesyStage) or nil
-        if self.terminalOccupancyAssessment~=nil then self.terminalOccupancyAssessment:markRetreatCompleted(result.terminalEpisodeId,serializedBeneficiaryAssemblyIds,courtesyStage) end
-        local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self,result.commitmentId,"OBJECTIVE_SATISFIED",result.evidence,result.terminalEpisodeId)
-        if terminal==nil then
-            runtimeLogWarning("D0147_INFIELD_RETREAT_SETTLEMENT_FAILED commitment=%s episode=%s reason=%s",tostring(result.commitmentId),tostring(result.terminalEpisodeId),tostring(reason))
-        elseif courtesyStage==2 then
-            cooperativeLog("D0147_FINAL_BOUNDARY_SETTLEMENT_COMPLETE commitment=%s episode=%s doubleCourtesyExhausted=true noThirdAutomaticRelocation=true",tostring(result.commitmentId),tostring(result.terminalEpisodeId))
-        else
-            cooperativeLog("D0147_INTERIOR_SETTLEMENT_COMPLETE commitment=%s episode=%s continuationRenewalRequired=true freshSituationRequired=true",tostring(result.commitmentId),tostring(result.terminalEpisodeId))
-        end
-        return
-    end
-    local eventKind=nil
-    if result.status=="FAILED" then eventKind="OBJECTIVE_FAILED"
-    elseif result.status=="PLAYER_CLAIM" then eventKind="PLAYER_CLAIM"
-    elseif result.status=="SUPERSEDED" then eventKind="NEW_AUTHORITATIVE_INTENT" end
-    if eventKind~=nil then
-        local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self,result.commitmentId,eventKind,result.evidence,result.terminalEpisodeId)
-        if terminal==nil then runtimeLogWarning("D0147_COMPLETION_SETTLEMENT_FAILED commitment=%s event=%s reason=%s",tostring(result.commitmentId),tostring(eventKind),tostring(reason)) end
-    end
+    self:onObstructionRelocationCompletion(result)
 end
 
 function Runtime:_obstructionRelocationRequest(picture,evaluated,candidate,applied,bridge)
@@ -616,7 +504,7 @@ function Runtime:_dispatchObstructionRelocation(picture,evaluated,candidate,brid
         local commitmentId=bridge.existingCommitmentId
         if type(commitmentId)~="string" then return {status="NO_DISPATCH",reason="OBSTRUCTION_RELOCATION_SETTLEMENT_WITHOUT_COMMITMENT"} end
         self.regulationBoundedAuthority:_releaseRelocationSerialization(commitmentId,"OBSTRUCTION_RELOCATION_SITUATION_SETTLEMENT")
-        local terminal,reason=OuttaMyWay.ObstructionRelocationCommitmentLifecycle.settle(self,commitmentId,bridge.terminalEvent,{kind="CAUSAL_OBSTRUCTION_RELOCATION_SITUATION_SETTLEMENT",relocationKey=bridge.relocationKey})
+        local terminal,reason=OuttaMyWay.ObstructionRelocationCommitmentLifecycle.settle(self,commitmentId,bridge.terminalEvent,{kind="CAUSAL_OBSTRUCTION_RELOCATION_SITUATION_SETTLEMENT",relocationKey=bridge.relocationKey,reason=bridge.terminalReason})
         return {status=terminal and "SETTLED" or "NO_DISPATCH",reason=reason,obstructionRelocation=true,terminalEvent=bridge.terminalEvent,commitment=terminal}
     end
 
@@ -694,31 +582,6 @@ function Runtime:dispatchEvaluatedOperationalPicture(picture,evaluated)
     if obstructionBridge~=nil then
         return self:_dispatchObstructionRelocation(picture,evaluated,candidate,obstructionBridge)
     end
-    local terminalBridge=terminalEgressBridge(candidate)
-    if terminalBridge~=nil then
-        local boundary=evaluated.candidateInventory and evaluated.candidateInventory.supportBoundary or nil
-        if type(boundary)~="table" or boundary.mode~="D0147_BOUNDED_TERMINAL_EGRESS" then return {status="NO_DISPATCH",reason="D0147_SUPPORT_BOUNDARY_MISMATCH"} end
-        if terminalBridge.terminalEvent~=nil then
-            local commitmentId=terminalBridge.existingCommitmentId
-            if type(commitmentId)~="string" then return {status="NO_DISPATCH",reason="D0147_SETTLEMENT_WITHOUT_LIVE_COMMITMENT"} end
-            self.regulationBoundedAuthority:_releaseRelocationSerialization(commitmentId,"SITUATION_SETTLEMENT_"..tostring(terminalBridge.terminalEvent))
-            local terminal,reason=OuttaMyWay.TerminalEgressCommitmentLifecycle.settle(self,commitmentId,terminalBridge.terminalEvent,{kind="D0147_SITUATION_SETTLEMENT",terminalEpisodeId=terminalBridge.terminalEpisodeId,playerEscalationRequired=terminalBridge.terminalEvent=="OBJECTIVE_FAILED"},terminalBridge.terminalEpisodeId)
-            return {status=terminal and "SETTLED" or "NO_DISPATCH",reason=reason,terminalEgress=true,terminalEvent=terminalBridge.terminalEvent,commitment=terminal}
-        end
-        if candidate.capability~="REPOSITION" then return {status="NO_DISPATCH",reason="D0147_NON_REPOSITION_PHYSICAL_CANDIDATE",terminalEgress=true} end
-        if self.liveControlDispatcher.obstructionRelocationControl==nil then return {status="NO_DISPATCH",reason="D0147_CONTROL_UNAVAILABLE",terminalEgress=true} end
-        if type(self.liveControlDispatcher.obstructionRelocationControl.isActive)=="function" and self.liveControlDispatcher.obstructionRelocationControl:isActive() then return {status="NO_DISPATCH",reason="D0147_CONTROL_ALREADY_ACTIVE",terminalEgress=true} end
-        local dispatch={status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED",candidateId=candidate.identity,terminalEpisodeId=terminalBridge.terminalEpisodeId,terminalEgress=true}
-        local applied,reason=self.responsibilityTransitionAuthority:transitionObstructionRelocationResolution(
-            picture,evaluated,dispatch,self.completedObstructionResponsibilityTransition)
-        if applied==nil then
-            return {status="NO_DISPATCH",reason="D0147_COMMITMENT_APPLICATION_FAILED",detail=reason,candidateId=dispatch.candidateId,terminalEgress=true}
-        end
-        local continued=self:_continueCompletedObstruction(picture,evaluated,applied)
-        continued.currentResponsibility=applied.currentResponsibility
-        return continued
-    end
-
     local followerBridge=followerBoundaryBridge(candidate)
     local currentFollower=followerBridge and self.responsibilityTransitionAuthority:findRegulation("pairKey",followerBridge.pairKey) or nil
     local followerAssessment=nil
@@ -804,14 +667,14 @@ function Runtime:processLiveObservation(raw)
     local supported=nil
     if OuttaMyWay.ValueRecord.length(processed.picture.commitmentContext or {})>0 then
         -- Incumbent lifecycle gating remains exactly on the accepted path.
-        supported=self.terminalEgressCandidateSupport:attach(processed.picture,processed.snapshot)
+        supported=self.obstructionRelocationCandidateSupport:attach(processed.picture,processed.snapshot)
         if supported==nil then supported=self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot) end
     else
         supported=self.prospectiveDecisionPortfolioSupport:attach(processed.picture,processed.snapshot)
         if supported==nil then
             -- Conservative escape hatch only; a fresh Portfolio helper normally
             -- returns either a Portfolio or the existing passive support.
-            supported=self.terminalEgressCandidateSupport:attach(processed.picture,processed.snapshot)
+            supported=self.obstructionRelocationCandidateSupport:attach(processed.picture,processed.snapshot)
             if supported==nil then supported=self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot) end
         end
     end
@@ -849,5 +712,5 @@ end
 function Runtime:runReplay(fixture) return self.replayRunner:run(fixture) end
 function Runtime:getStatus()
     return {initialized=self.initialized,runtimeMode=self.runtimeMode,controlAuthorityEnabled=self.controlAuthorityEnabled,
-        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),replayRunCount=self.replayRunner:getRunCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportCount=self.liveTrafficCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportStatus=self.liveTrafficCandidateSupport:getLastStatus(),terminalEgressCandidateSupportStatus=self.terminalEgressCandidateSupport:getLastStatus(),terminalEgressCandidateSupportCount=self.terminalEgressCandidateSupport:getPublishedCount(),liveControlDispatchCount=self.liveControlDispatcher:getDispatchCount(),regulationAuthorityDispatchCount=self.regulationBoundedAuthority and self.regulationBoundedAuthority:getDispatchCount() or 0,cooperativePassageControlStatus=(self.liveControlDispatcher.cooperativePassageControl and self.liveControlDispatcher.cooperativePassageControl:getStatus() or nil),obstructionRelocationControlStatus=(self.liveControlDispatcher.obstructionRelocationControl and self.liveControlDispatcher.obstructionRelocationControl:getStatus() or nil),liveRuntimeCoordinatorCycleCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getCycleCount() or 0,liveRuntimeCoordinatorErrorCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getErrorCount() or 0,passiveTraceCount=#self.passiveLiveValidator:getRecords(),passiveErrorCount=self.passiveLiveValidator:getErrorCount(),fieldIdentityProbeSampleCount=self.targetedFieldIdentityProbe:getSampleCount(),fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),representationCacheRetiredCount=self.assemblyRepresentationCache.retiredCount or 0,activeOperationCount=#self.operations:listActive(),commitmentCount=#self.commitments:list(),traceCount=self.trace:count()}
+        observationCount=self.observationAdapter:getPublishedCount(),jobEpisodeCount=#self.jobEpisodes:list(),operationCount=#self.operations:list(),operationalPictureCount=self.situationAssessment:getPublishedCount(),candidateInventoryCount=self.candidateSpace:getPublishedCount(),constraintVerdictSetCount=self.constraintEngine:getPublishedCount(),decisionCount=self.decisionSelector:getPublishedCount(),commitmentApplicationCount=self.decisionCommitmentBoundary:getPublishedCount(),governingBasisVerdictCount=self.governingBasisEvaluator:getPublishedCount(),replayRunCount=self.replayRunner:getRunCount(),passiveCandidateSupportCount=self.passiveCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportCount=self.liveTrafficCandidateSupport:getPublishedCount(),liveTrafficCandidateSupportStatus=self.liveTrafficCandidateSupport:getLastStatus(),obstructionRelocationCandidateSupportStatus=self.obstructionRelocationCandidateSupport:getLastStatus(),obstructionRelocationCandidateSupportCount=self.obstructionRelocationCandidateSupport:getPublishedCount(),liveControlDispatchCount=self.liveControlDispatcher:getDispatchCount(),regulationAuthorityDispatchCount=self.regulationBoundedAuthority and self.regulationBoundedAuthority:getDispatchCount() or 0,cooperativePassageControlStatus=(self.liveControlDispatcher.cooperativePassageControl and self.liveControlDispatcher.cooperativePassageControl:getStatus() or nil),obstructionRelocationControlStatus=(self.liveControlDispatcher.obstructionRelocationControl and self.liveControlDispatcher.obstructionRelocationControl:getStatus() or nil),liveRuntimeCoordinatorCycleCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getCycleCount() or 0,liveRuntimeCoordinatorErrorCount=self.liveRuntimeCoordinator and self.liveRuntimeCoordinator:getErrorCount() or 0,passiveTraceCount=#self.passiveLiveValidator:getRecords(),passiveErrorCount=self.passiveLiveValidator:getErrorCount(),fieldIdentityProbeSampleCount=self.targetedFieldIdentityProbe:getSampleCount(),fieldWorldSnapshotCount=self.fieldWorldSnapshots:getRecordCount(),fieldWorldComparisonCount=self.fieldWorldEquivalenceAuthority:getComparisonRecordCount(),fieldWorldResolutionCount=self.fieldWorldEquivalenceAuthority:getResolutionRecordCount(),activeFieldWorldCount=self.fieldWorldEquivalenceAuthority:getActiveClassCount(),representationCacheRetiredCount=self.assemblyRepresentationCache.retiredCount or 0,activeOperationCount=#self.operations:listActive(),commitmentCount=#self.commitments:list(),traceCount=self.trace:count()}
 end

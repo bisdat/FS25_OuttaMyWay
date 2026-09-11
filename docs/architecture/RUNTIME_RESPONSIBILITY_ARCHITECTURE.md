@@ -202,6 +202,31 @@ response is permitted. The non-active, unclaimed branch is sufficient to make
 the blocker eligible for bounded relocation; historical Job Episode provenance
 does not add a further permission prerequisite.
 
+**Non-Active Evidence Is Source-Aware; Responsibility Is Not.** A blocker with a
+current qualifying `ACTIVE` Job Episode is an active worker. Otherwise, a
+positively `ENDED` Job Episode may establish that the same physical assembly is
+non-active for that former Job without requiring a redundant negative
+`getIsAIActive()` sample. An assembly with no Job lifecycle evidence instead
+requires current observed GIANTS inactivity before non-active relocation may be
+considered. These are different evidence routes to the same non-active
+classification, not different obstruction responsibilities.
+
+If the same assembly later begins a fresh GIANTS Job, that is an ordinary
+Situation change: a new ACTIVE Job Episode is admitted, the assembly returns to
+GIANTS-owned worker mechanics, and any prior non-active relocation purpose loses
+its basis. Obstruction Relocation does not maintain a separate resurrection or
+supersession lifecycle.
+
+**Current Physical Relocation Reference Is Provenance-Neutral.** Once
+classification establishes `NON_ACTIVE_UNCLAIMED`, bounded Obstruction
+Relocation consumes the same current GIANTS mission object, current reference
+pose and current positive-only physical representation regardless of whether
+non-activity was established from current GIANTS observation or an ENDED Job
+Episode. The relocation reference carries no Situation relevance, semantic
+authority, negative-clearance authority or actuation permission by itself.
+
+> **Two Evidence Routes Into One Classification; One Generic Mechanism Thereafter**
+
 **Player Entry Is a Claim Boundary, Not a Vehicle Classification.** While the
 blocker remains an active GIANTS AI participant, `getIsEntered()` is player
 presence evidence only and has no independent Job Episode or responsibility
@@ -306,6 +331,26 @@ OuttaMyWay is not looking after, parking or tidying the blocker. Intervention
 exists only because the current Causal Obstruction prevents supported productive
 continuation. Once that obstruction is removed, OuttaMyWay has no independent
 interest in the subject.
+
+**Relocation Is Geometry-Bounded, Not Count-Bounded.** For a non-active,
+unclaimed blocker whose Causal Obstruction remains positively established,
+Obstruction Relocation may perform one bounded inward actuation toward the Field
+World centroid, limited to the nearer of the centroid or the current per-actuation
+maximum. Control then releases physical authority and Reality is reassessed. A
+fresh positive obstruction may justify another bounded inward actuation under the
+same unresolved responsibility while meaningful centroid-directed space remains.
+
+The architecture does not count first/second courtesies, create a completed-worker
+movement budget, or prescribe a later boundary-away settlement. If the blocker
+remains positively causal but no meaningful inward relocation space remains, this
+autonomous relocation strategy has no further supported actuation.
+
+Generic positive-conflict representation does not gain negative-clearance
+authority from this rule. Absence of a positive obstruction stops further movement
+but does not by itself prove semantic clearance; an accepted positive settlement
+witness remains necessary where the Resolution contract requires it.
+
+> **Actuation Recurrence != Resolution Settlement Evidence**
 
 A formerly completed AI worker is one possible blocker, not the architectural
 definition of the responsibility. A cold-loaded parked vehicle, a vehicle with

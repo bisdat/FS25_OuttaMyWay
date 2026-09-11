@@ -57,7 +57,8 @@ local function picture(ids, epochs, values)
     })
 end
 
-local function snapshot()
+local function snapshot(blockerX)
+    blockerX=blockerX or 10
     return {
         identity="OS-TEST",
         assemblies={
@@ -65,7 +66,7 @@ local function snapshot()
             {assemblyId="AS-A",referenceKey="REF-A"},
             {assemblyId="AS-B",referenceKey="REF-B"}
         },
-        geometry={currentPhysicalPoseEvidence={{assemblyReferenceKey="REF-BLOCKER",x=10,z=10}}},
+        geometry={currentPhysicalPoseEvidence={{assemblyReferenceKey="REF-BLOCKER",x=blockerX,z=10}}},
         fieldWorld={geometryMetrics={centroidX=100,centroidZ=10}},
         playerControl={ ["REF-BLOCKER"]={playerEnteredObserved=true,playerEntered=false} },
         aiStates={ ["REF-BLOCKER"]={aiActiveObserved=true,aiActive=false} }
@@ -143,7 +144,7 @@ test("control observation envelope kind survives terminal outcome evidence", fun
     equal(observed.semanticResolutionNotInferred,true)
 end)
 
-test("pairwise causal relations aggregate to one blocker relocation responsibility", function()
+test("pairwise causal relations aggregate to one geometry-bounded blocker relocation responsibility", function()
     local ids=OuttaMyWay.IdentityRegistry.new()
     local epochs=OuttaMyWay.EpochSequence.new()
     local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
@@ -156,10 +157,22 @@ test("pairwise causal relations aggregate to one blocker relocation responsibili
     equal(specification.evidenceBasis.governingBasis.responsibilityKey,"obstruction-relocation:OR-1:AS-BLOCKER")
     equal(OuttaMyWay.ValueRecord.length(specification.evidenceBasis.governingBasis.authorizingDemandAssemblyIds),2)
     equal(specification.evidenceBasis.obstructionRelocationActuationOwnership.assemblyIds[1],"AS-BLOCKER")
-    equal(specification.expectedEffect.courtesyStage,1)
+    equal(specification.expectedEffect.boundedInwardRelocation,true)
     equal(specification.evidenceBasis.obstructionRelocationBridge.authorityClass,"OBSTRUCTION_RELOCATION_ACTUATION")
-    equal(specification.releaseImplications.noImmediateRepeatMovement,true)
-    equal(supported.candidateSupportEvidence.supportBoundary.secondCourtesyWithheldByEvidence,true)
+    equal(specification.evidenceBasis.obstructionRelocationBridge.objective.objectiveKind,"CAUSAL_OBSTRUCTION_BOUNDED_INWARD_RELOCATION")
+    equal(specification.evidenceBasis.obstructionRelocationBridge.objective.maximumRelocationDistanceM,60)
+    equal(specification.releaseImplications.repeatedActuationRequiresFreshPositiveObstruction,true)
+    equal(supported.candidateSupportEvidence.supportBoundary.moveCountBudget,false)
+end)
+
+test("former terminal provenance does not exclude a current causal blocker", function()
+    local ids=OuttaMyWay.IdentityRegistry.new()
+    local epochs=OuttaMyWay.EpochSequence.new()
+    local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
+    local base=picture(ids,epochs,{causalObstructionKnowledge={relation("AS-A","REF-A")},terminalOccupancyKnowledge={{assemblyId="AS-BLOCKER",terminalEpisodeId="JE-OLD"}}})
+    local supported=support:attach(base,snapshot())
+    if supported==nil then error("historical terminal provenance incorrectly gated current Causal Obstruction") end
+    equal(supported.candidateSupportEvidence.candidateSpecifications[1].subject.assemblyId,"AS-BLOCKER")
 end)
 
 test("observable parked assembly without causal obstruction creates no relocation candidate", function()
@@ -173,7 +186,7 @@ end)
 
 local function reassessmentPicture(ids,epochs,productivePositive,retainRelation)
     local values={
-        commitmentContext={{commitmentId="CM-1",governingBasis={kind="CAUSAL_OBSTRUCTION_RELOCATION",responsibilityKey="obstruction-relocation:OR-1:AS-BLOCKER",blockerAssemblyId="AS-BLOCKER",authorizingDemandAssemblyIds={"AS-A"}}}},
+        commitmentContext={{commitmentId="CM-1",governingBasis={kind="CAUSAL_OBSTRUCTION_RELOCATION",responsibilityKey="obstruction-relocation:OR-1:AS-BLOCKER",operationIds={"OR-1"},blockerAssemblyId="AS-BLOCKER",authorizingDemandAssemblyIds={"AS-A"}}}},
         controlOutcomeEvidence={outcomes={{kind="OBSTRUCTION_RELOCATION_CONTROL_OBSERVATION",commitmentId="CM-1",status="MANOEUVRE_COMPLETE",completionContext={triggerKind="CURRENT_CAUSAL_OBSTRUCTION",relocationKey="obstruction-relocation:OR-1:AS-BLOCKER"}}}},
         motionEvidence={{assemblyId="AS-A",motionClassification="STABLE_FORWARD",reportedSpeedMps=1.0,positionDerivedSpeedMps=1.0}},
         productiveContinuationKnowledge={{assemblyId="AS-A",productivePositive=productivePositive==true,representationFitness=productivePositive==true and "FIT_FOR_LIMITED_HORIZON" or "UNRESOLVED"}},
@@ -203,14 +216,42 @@ test("fresh supported continuation and obstruction cessation settle resolution",
     equal(specification.evidenceBasis.obstructionRelocationBridge.terminalEvent,"OBJECTIVE_SATISFIED")
 end)
 
-test("positive obstruction persistence prevents semantic settlement despite beneficiary motion", function()
+test("fresh positive obstruction after manoeuvre completion authorises another inward actuation", function()
     local ids=OuttaMyWay.IdentityRegistry.new()
     local epochs=OuttaMyWay.EpochSequence.new()
     local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
-    local supported=support:attach(reassessmentPicture(ids,epochs,true,true),snapshot())
-    if supported==nil then error("expected waiting reassessment") end
+    local supported=support:attach(reassessmentPicture(ids,epochs,true,true),snapshot(10))
+    if supported==nil then error("expected repeated relocation candidate") end
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
-    equal(specification.purpose.kind,"CAUSAL_OBSTRUCTION_RELOCATION_REASSESSMENT")
+    equal(specification.capability,"REPOSITION")
+    equal(specification.evidenceBasis.maintainsExistingCommitment,true)
+    equal(specification.evidenceBasis.obstructionRelocationBridge.existingCommitmentId,"CM-1")
+    equal(specification.evidenceBasis.obstructionRelocationBridge.objective.targetProgressM,60)
+end)
+
+test("positive obstruction at centroid exhausts inward strategy instead of inventing another move", function()
+    local ids=OuttaMyWay.IdentityRegistry.new()
+    local epochs=OuttaMyWay.EpochSequence.new()
+    local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
+    local supported=support:attach(reassessmentPicture(ids,epochs,true,true),snapshot(100))
+    if supported==nil then error("expected explicit strategy exhaustion settlement") end
+    local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
+    equal(specification.capability,"ESCALATE")
+    equal(specification.evidenceBasis.obstructionRelocationBridge.terminalEvent,"OBJECTIVE_FAILED")
+    equal(specification.evidenceBasis.obstructionRelocationBridge.terminalReason,"POSITIVE_CAUSAL_OBSTRUCTION_WITHOUT_MEANINGFUL_INWARD_RELOCATION_SPACE")
+end)
+
+test("active Job re-entry terminates retained obstruction relocation responsibility", function()
+    local ids=OuttaMyWay.IdentityRegistry.new()
+    local epochs=OuttaMyWay.EpochSequence.new()
+    local support=OuttaMyWay.ObstructionRelocationCandidateSupport.new(ids,epochs)
+    local current=snapshot()
+    current.aiStates["REF-BLOCKER"]={observedActive=true,aiActive=false,aiActiveObserved=false}
+    local supported=support:attach(reassessmentPicture(ids,epochs,false,true),current)
+    if supported==nil then error("expected new authoritative intent settlement") end
+    local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
+    equal(specification.capability,"CONTINUE_UNCHANGED")
+    equal(specification.evidenceBasis.obstructionRelocationBridge.terminalEvent,"NEW_AUTHORITATIVE_INTENT")
 end)
 
 print(string.format("obstruction relocation focused validation: %d passed, %d failed",passed,failed))

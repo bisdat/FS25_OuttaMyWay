@@ -45,9 +45,57 @@ completion or a separate configuration-settlement lifecycle. Compaction is not
 the Resolution objective; removing the current Causal Obstruction is. Current
 hard-safety evidence and bounded relocation limits remain authoritative.
 
+**Owner clarification — geometry-bounded recurrence.** Obstruction Relocation is
+not limited by a first/second courtesy count. Each actuation moves no farther
+than the current bounded maximum toward the Field World centroid, releases
+physical authority, and returns to fresh Reality. If the same unresolved
+responsibility still has fresh positive Causal Obstruction and meaningful inward
+space remains, another bounded inward actuation may be authorised. A large field
+may therefore require more than two movements; a small field may require one.
+No boundary-away final courtesy is architecture. When the blocker is
+approximately at the centroid, inward relocation has no further supported action.
+
+> **Relocation Is Geometry-Bounded, Not Count-Bounded**
+
+> **Actuation Recurrence != Resolution Settlement Evidence**
+
 No parking, tidying, ownership-management, historical pair memory or general
 vehicle-management responsibility is created. Once the beneficiary is no longer
 positively blocked by that subject, the obstruction purpose is discharged.
+
+**Owner clarification — ENDED Job Episode as non-active evidence.** A positively
+`ENDED` GIANTS Job Episode is sufficient evidence that the assembly is no longer
+an active worker for that Job. This does not create a completed-worker
+responsibility and does not make Job history a prerequisite for Causal
+Obstruction or relocation: an assembly without Job lifecycle evidence may
+establish non-activity from current GIANTS observation instead. Both evidence
+routes converge on the same `NON_ACTIVE_*` classification and the same
+Obstruction Relocation responsibility.
+
+Current positive GIANTS activity or a fresh qualifying `ACTIVE` Job Episode
+outranks older ENDED evidence. If the physical assembly later begins another
+GIANTS Job, Job Episode admission and Situation Assessment simply make it an
+active worker again; any existing non-active obstruction relocation is
+invalidated and subsequent conflict uses ordinary GIANTS AI / Regulation /
+Passage mechanics.
+
+> **Provenance-Neutral Responsibility != Evidence-Neutral Assessment**
+
+> **Job Activation Is Situation Change, Not Relocation Supersession Logic**
+
+> **Ended Worker Becomes an Obstacle; New Job Makes It a Worker Again**
+
+**Owner clarification — provenance ends at classification.** The two accepted
+evidence routes are current GIANTS inactivity observation and a positively
+`ENDED` Job Episode. Once either route supports `NON_ACTIVE_UNCLAIMED` (and
+Current Player Claim does not veto), downstream obstruction handling is one
+generic mechanism. Observation-source history must not select a different
+physical relocation reference, Candidate, Responsibility, Authority, Control or
+settlement path.
+
+> **Two Evidence Routes Into One Classification; One Generic Mechanism Thereafter**
+
+> **There Is One Non-Active Obstruction**
 
 **Reason:** Issue #33 demonstrated a cold-start Physical Relevance gap: a
 stationary Condor physically blocked an active worker but remained invisible

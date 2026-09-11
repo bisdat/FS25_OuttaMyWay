@@ -1447,6 +1447,56 @@ test("inactive assembly without authoritative source-job end evidence preserves 
     end)
 end)
 
+test("current physical relocation reference coverage is independent of observation provenance",function()
+    local oldGetWorldTranslation=getWorldTranslation
+    local ok,err=pcall(function()
+        getWorldTranslation=function(node) return node,0,node+0.5 end
+        local objects={
+            ["REF-A"]={rootNode=101,getAISteeringNode=function(self) return self.rootNode end},
+            ["REF-B"]={rootNode=202,getAISteeringNode=function(self) return self.rootNode end},
+            ["REF-C"]={rootNode=303,getAISteeringNode=function(self) return self.rootNode end}
+        }
+        local currentSource={
+            getCurrentPhysicalObject=function(_,referenceKey) return objects[referenceKey] end,
+            getCurrentPhysicalRelocationRepresentation=function(_,referenceKey,nowSeconds)
+                if objects[referenceKey]==nil then return nil end
+                return {
+                    structurallyValid=true,
+                    positivePrimitiveCount=1,
+                    provenance={source="TEST_CURRENT_PHYSICAL_REPRESENTATION",observedAt=nowSeconds}
+                }
+            end
+        }
+        local raw={
+            timestamp=42,
+            assemblies={
+                {referenceKey="REF-A",source={kind="LIVE_AI_ACTIVE_JOB_VEHICLE"}},
+                {referenceKey="REF-B",source={kind="RETAINED_AI_ASSEMBLY"}},
+                {referenceKey="REF-C",source={kind="CURRENT_MISSION_PHYSICAL_ASSEMBLY_FIELD_WITNESS"}}
+            },
+            geometry={},
+            physicalRepresentationEvidence={},
+            unavailableSources={}
+        }
+        local source=OuttaMyWay.CurrentPhysicalPoseSource.new()
+        equal(source:observe(raw,currentSource),3)
+        equal(#raw.geometry.currentPhysicalPoseEvidence,3)
+        equal(#raw.physicalRepresentationEvidence,3)
+        for _,evidence in OuttaMyWay.ValueRecord.ipairs(raw.physicalRepresentationEvidence) do
+            equal(evidence.structurallyValid,true)
+            equal(evidence.coverageComplete,false)
+            equal(evidence.conservative,false)
+            equal(evidence.uncertainty[1].kind,"NO_NEGATIVE_CLEARANCE_AUTHORITY")
+            equal(evidence.permittedConclusions[1],"CURRENT_RELOCATION_REFERENCE_POSE")
+            equal(evidence.permittedConclusions[2],"POSITIVE_CONFLICT_SUPPORT")
+            equal(evidence.provenance.historicalJobProvenanceRequired,false)
+            equal(evidence.provenance.observationSourceProvenanceRequired,false)
+        end
+    end)
+    getWorldTranslation=oldGetWorldTranslation
+    if not ok then error(err) end
+end)
+
 test("lastJob transition ends the Job Episode without guessing a termination subtype",function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA)
         mission.vehicles={a}; setActiveVehicles(mission,a); mission.aiSystem.activeJobs={jobA}
@@ -5732,6 +5782,16 @@ test("D0194 second courtesy exhausts the completed Job Episode with no third aut
     equal(assessment.courtesyMoveCount["JOB-TERMINAL"],2); equal(assessment.exhausted["JOB-TERMINAL"],true); equal(assessment.yieldRenewalState["JOB-TERMINAL"],nil)
 end)
 
+local function newHistoricalD0147DonorTestRuntime()
+    local runtime=OuttaMyWay.Runtime.new()
+    runtime:initialize()
+    runtime.terminalOccupancyAssessment=OuttaMyWay.TerminalOccupancyAssessment.new(runtime.jobEpisodes)
+    runtime.situationAssessment.terminalOccupancyAssessment=runtime.terminalOccupancyAssessment
+    runtime.terminalEgressCandidateSupport=OuttaMyWay.TerminalEgressCandidateSupport.new(runtime.identities,runtime.epochs)
+    runtime.completedObstructionResponsibilityTransition=OuttaMyWay.CompletedObstructionResponsibilityTransition.new(runtime)
+    return runtime
+end
+
 local function d0147TerminalPicture(runtime,configurationEvidence,options)
     options=options or {}
     local episodeId=options.terminalEpisodeId or "JOB-TERMINAL"
@@ -5821,7 +5881,7 @@ local function completedObstructionTerminalEgressRequest(runtime,identity,admitt
 end
 
 test("D0199 first courtesy reaches the centroid on small fields but caps larger-field travel at 60 m",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local configuration={foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true}
     local smallPicture=d0147TerminalPicture(runtime,configuration,{suffix="CENTROID-SMALL",terminalX=10,terminalZ=10})
     local smallSupported=runtime.terminalEgressCandidateSupport:attach(smallPicture,d0147Snapshot({activeX=20,activeZ=50}))
@@ -5846,7 +5906,7 @@ test("D0199 first courtesy reaches the centroid on small fields but caps larger-
 end)
 
 test("D0196 second courtesy chooses the one outer-boundary ray away from protected productive occupancy",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="BOUNDARY-STAGE",courtesyMoveCount=1,terminalX=30,terminalZ=50})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot({activeX=20,activeZ=50}))
     local candidate=supported.candidateSupportEvidence.candidateSpecifications[1]
@@ -5860,7 +5920,7 @@ test("D0196 second courtesy chooses the one outer-boundary ray away from protect
 end)
 
 test("D0196 second courtesy fails closed when the one protected-away boundary translation crosses current protected occupancy",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="BOUNDARY-BLOCKED",courtesyMoveCount=1,terminalX=30,terminalZ=50})
     -- The protected worker's steering origin is east of the terminal assembly, so the only
     -- authorised boundary ray points west. Its current trailed physical primitive still
@@ -5923,7 +5983,7 @@ test("D0147 direct post-job actuation holds one world Exit Alignment direction a
 end)
 
 test("D0147 supported deployed configuration selects compaction before translation",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=1,transitionCount=0,foldedCount=0,unknownCount=0,allDeployed=true,allFolded=false,retainCurrent=false,compactionSupported=true},{suffix="COMPACT"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     equal(supported.candidateSupportEvidence.supportBoundary.mode,"D0147_BOUNDED_TERMINAL_EGRESS")
@@ -5934,7 +5994,7 @@ test("D0147 supported deployed configuration selects compaction before translati
 end)
 
 test("D0147 first courtesy follows the fixed centroid bearing with the bounded 60 m allowance",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="INFIELD"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
@@ -5951,7 +6011,7 @@ test("D0147 first courtesy follows the fixed centroid bearing with the bounded 6
 end)
 
 test("D0147 Infield Alignment is derived from centre bearing rather than terminal heading",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local a=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="HEADING-A",headingX=-1,headingZ=0})
     local b=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="HEADING-B",headingX=1,headingZ=0})
     local oa=runtime.terminalEgressCandidateSupport:attach(a,d0147Snapshot()).candidateSupportEvidence.candidateSpecifications[1].evidenceBasis.terminalEgressBridge.objective
@@ -5960,7 +6020,7 @@ test("D0147 Infield Alignment is derived from centre bearing rather than termina
 end)
 
 test("D0147 Terminal Resolution Commitment survives transient obstruction loss during compaction",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=1,foldedCount=0,unknownCount=0,allDeployed=false,allFolded=false,retainCurrent=false,compactionSupported=false},{suffix="TS016-INFLIGHT",existingCommitmentId="CM-D0147",obstructionPositive=false})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
@@ -5973,7 +6033,7 @@ test("D0147 Terminal Resolution Commitment survives transient obstruction loss d
 end)
 
 test("D0147 compacted committed assembly proceeds to infield retreat even when initiating obstruction is no longer visible",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="TS016-POST-COMPACT",existingCommitmentId="CM-D0147",obstructionPositive=false})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local spec=supported.candidateSupportEvidence.candidateSpecifications[1]
@@ -5983,17 +6043,17 @@ test("D0147 compacted committed assembly proceeds to infield retreat even when i
 end)
 
 test("D0147 config switch disables admission rather than merely suppressing Control",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=0,retainCurrent=true,compactionSupported=true},{suffix="DISABLED"})
     local previous=OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS; OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS=false
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     OuttaMyWay.AUTOMATIC_TERMINAL_EGRESS=previous
-    equal(supported,nil); equal(runtime.terminalEgressCandidateSupport:getLastStatus(),"DEVELOPMENT_CONSENT_DISABLED")
+    equal(supported,nil); equal(runtime.terminalEgressCandidateSupport:getLastStatus(),"DISABLED")
 end)
 
 
 test("Completed Obstruction Terminal Egress completes first courtesy from derived centroid station progress",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-INFIELD-PROGRESS"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
@@ -6020,7 +6080,7 @@ test("Completed Obstruction Terminal Egress completes first courtesy from derive
 end)
 
 test("Completed Obstruction Terminal Egress owned actuation failure positively neutralizes propulsion before completion",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-NEUTRALIZE"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
@@ -6046,7 +6106,7 @@ test("Completed Obstruction Terminal Egress owned actuation failure positively n
 end)
 
 test("Completed Obstruction Terminal Egress Player Claim relinquishes Vehicle Activity Context without post-claim actuation",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix="CONTROL-CLAIM-ACTIVITY"})
     local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
@@ -6069,7 +6129,7 @@ test("Completed Obstruction Terminal Egress Player Claim relinquishes Vehicle Ac
 end)
 
 test("D0147 compaction-to-infield persistence exposes one Resolution Commitment with post-job plus protected progress authority",function()
-    local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+    local runtime=newHistoricalD0147DonorTestRuntime()
     local compactPicture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=1,transitionCount=0,foldedCount=0,unknownCount=0,allDeployed=true,allFolded=false,retainCurrent=false,compactionSupported=true},{suffix="LIFECYCLE-COMPACT"})
     local compactSupported=runtime.terminalEgressCandidateSupport:attach(compactPicture,d0147Snapshot())
     local compactEvaluated=runtime:evaluateSealedOperationalPicture(compactSupported)
@@ -6117,7 +6177,7 @@ end)
 
 test("D0147 completed-obstruction terminal failure and supersession remove semantic Resolution Commitment",function()
     local function admit(suffix)
-        local runtime=OuttaMyWay.Runtime.new(); runtime:initialize()
+        local runtime=newHistoricalD0147DonorTestRuntime()
         local picture=d0147TerminalPicture(runtime,{foldableCount=1,deployedCount=0,transitionCount=0,foldedCount=1,unknownCount=0,allDeployed=false,allFolded=true,retainCurrent=true,compactionSupported=true},{suffix=suffix})
         local supported=runtime.terminalEgressCandidateSupport:attach(picture,d0147Snapshot())
         local evaluated=runtime:evaluateSealedOperationalPicture(supported)
@@ -6735,6 +6795,9 @@ local function causalObstructionAssessmentFixture(options)
     if options.activeBlocker==true then
         activeRecords[#activeRecords+1]={identity="JE-BLOCKER",assemblyId="AS-BLOCKER",status="ACTIVE"}
     end
+    if options.endedBlocker==true then
+        activeRecords[#activeRecords+1]={identity="JE-BLOCKER-ENDED",assemblyId="AS-BLOCKER",status="ENDED",endedEpoch=2}
+    end
     local jobs={}
     function jobs:list() return activeRecords end
 
@@ -6747,9 +6810,9 @@ local function causalObstructionAssessmentFixture(options)
         },
         aiStates={
             ["vehicle-root:beneficiary"]={aiActive=true,aiActiveObserved=true,blocked=false},
-            ["vehicle-root:blocker"]={aiActive=options.activeBlocker==true,aiActiveObserved=true,blocked=false}
+            ["vehicle-root:blocker"]={aiActive=(options.rawAiActive==true or options.activeBlocker==true),aiActiveObserved=options.aiObserved~=false,observedActive=(options.activeJobObserved==true or options.activeBlocker==true),blocked=false}
         },
-        playerControl={["vehicle-root:blocker"]={playerEntered=options.playerEntered==true,playerEnteredObserved=true}}
+        playerControl={["vehicle-root:blocker"]={playerEntered=options.playerEntered==true,playerEnteredObserved=options.playerObserved~=false}}
     }
     local futureSpace={{assemblyId="AS-BENEFICIARY",alternatives={{startX=0,startZ=0,endX=20,endZ=0}}}}
     local physicalSpace={
@@ -6789,6 +6852,44 @@ test("D0218 active GIANTS AI blocker remains outside non-active relocation eligi
     equal(records[1].blockerClassification,"ACTIVE_GIANTS_AI")
     equal(records[1].relocationEligible,false)
     equal(records[1].activeBlockerJobEpisodeId,"JE-BLOCKER")
+end)
+
+test("D0218 ENDED Job evidence resolves non-active activity without negative AI re-proof",function()
+    local records=causalObstructionAssessmentFixture({endedBlocker=true,aiObserved=false})
+    equal(#records,1)
+    equal(records[1].blockerClassification,"NON_ACTIVE_UNCLAIMED")
+    equal(records[1].relocationEligible,true)
+    equal(records[1].endedBlockerJobEpisodeId,"JE-BLOCKER-ENDED")
+    equal(records[1].activityEvidence.nonActiveResolvedBy,"ENDED_JOB_EPISODE")
+end)
+
+test("D0218 blocker without Job lifecycle or current activity evidence remains fail-closed",function()
+    local records=causalObstructionAssessmentFixture({aiObserved=false})
+    equal(#records,1)
+    equal(records[1].blockerClassification,"ACTIVITY_UNRESOLVED")
+    equal(records[1].relocationEligible,false)
+end)
+
+test("D0218 current positive GIANTS activity outranks an older ENDED Episode",function()
+    local records=causalObstructionAssessmentFixture({endedBlocker=true,rawAiActive=true})
+    equal(#records,1)
+    equal(records[1].blockerClassification,"GIANTS_AI_ACTIVE_UNRESOLVED")
+    equal(records[1].relocationEligible,false)
+end)
+
+test("D0218 fresh ACTIVE Job Episode outranks older ENDED Episode",function()
+    local records=causalObstructionAssessmentFixture({endedBlocker=true,activeBlocker=true})
+    equal(#records,1)
+    equal(records[1].blockerClassification,"ACTIVE_GIANTS_AI")
+    equal(records[1].relocationEligible,false)
+    equal(records[1].activeBlockerJobEpisodeId,"JE-BLOCKER")
+end)
+
+test("D0218 ENDED Job evidence still requires current Player Claim evidence",function()
+    local records=causalObstructionAssessmentFixture({endedBlocker=true,aiObserved=false,playerObserved=false})
+    equal(#records,1)
+    equal(records[1].blockerClassification,"PLAYER_CLAIM_UNRESOLVED")
+    equal(records[1].relocationEligible,false)
 end)
 
 print(string.format("RESULT %d passed, %d failed",passed,failed))

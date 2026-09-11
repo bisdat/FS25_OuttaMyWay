@@ -21,13 +21,13 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline for this increment: `main` after PR #117 merge,
-  commit `35fd9386b7c5403fda5231871cdb53e98168f485`.
+- Accepted Repository State baseline for this increment: `main` after PR #120 merge,
+  commit `487620178d75f333e6decdb47f6466f65effbd15`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.43 TEST — STRANDED LEAF SEMANTIC RETIREMENT`**.
-- Current Issue #112 executable candidate is
-  **`0.3.0.44 TEST — OBSTRUCTION RELOCATION TRANSITION NAMING`**.
+  **`0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING`**.
+- Current Issue #121 executable candidate is
+  **`0.3.0.50 TEST — CURRENT PHYSICAL RELOCATION REFERENCE COVERAGE`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -48,7 +48,7 @@ Architectural meaning remains owned by the
 | Current Pair Assessment Scope | `scripts/assessment/CurrentPairAssessmentScope.lua` plus `SituationAssessment.lua` | PRESERVE — accepted by #100 / PR #113; ephemeral current Operation/exact-Job-Episode pair scope with no generic pair lifecycle or last-positive truth |
 | Follower Boundary evidence | `scripts/assessment/FollowerBoundaryDemandAssessment.lua` | PRESERVE admissible magnitude evidence/envelope; no requested Control target (#98 / PR #108) |
 | Forward Intersection / Action-Space evidence | `SpatialConstraintAssessment.lua`, `TrajectoryConflictAssessment.lua` | PRESERVE current positive/unresolved/negative semantics |
-| Causal Obstruction | `CausalObstructionAssessment.lua` | PRESERVE positive current obstruction semantics |
+| Causal Obstruction | `CausalObstructionAssessment.lua` | PRESERVE: current GIANTS inactivity observation and ENDED Job Episode are two evidence routes into the same non-active classification; no provenance-specific downstream responsibility |
 | Candidate construction / planning | `scripts/candidates/` | PRESERVE feasible option/support/planning ownership |
 | Prospective Candidate portfolio | `ProspectiveDecisionPortfolioSupport.lua` | PRESERVE complete fresh group enumeration on one Decision picture |
 | Constraint evaluation | `scripts/constraints/ConstraintEngine.lua` plus four canonical evaluators | PRESERVE independently owned mandatory verdicts; `.43` retires only the production-unreachable historical Follower Owns Closure prohibition |
@@ -65,7 +65,7 @@ Architectural meaning remains owned by the
 | Control routing | `LiveControlDispatcher.lua` | PRESERVE authorised typed routing |
 | Regulation Control | `RegulationControl.lua`, `NativeDriveMechanism.lua` | PRESERVE production speed executor |
 | Cooperative Passage Control | `CooperativePassageControl.lua` plus shared mechanisms | PRESERVE validated mechanics and participant-specific handback |
-| Obstruction Relocation Control | `ObstructionRelocationControl.lua`, `NonJobActuationMechanism.lua` | PRESERVE one shared provenance-neutral physical executor for Completed Obstruction and current Causal Obstruction relocation; upstream semantics remain distinct |
+| Obstruction Relocation Control | `ObstructionRelocationControl.lua`, `NonJobActuationMechanism.lua` | `.47` candidate: PRESERVE one physical executor beneath one production Causal Obstruction / Obstruction Relocation responsibility; historical D-0147 donor modules remain loaded but production-uninstantiated pending separate retirement |
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting D-0147/D-0218 movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.43` removes the dead Passage target field and reports current `conflictIdentity` in the verdict trace |
@@ -161,17 +161,20 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Validate **#112 `.46 — Obstruction Relocation Control Naming`** from accepted
-`main` at `05aba26a4d91434b69b1ea7e03f872c29c7bcf9e`.
+Validate **#121 `.50 — CURRENT PHYSICAL RELOCATION REFERENCE COVERAGE`**
+on PR #122. `.49` GIANTS Reality confirmed that ENDED Job evidence now produces
+the same `NON_ACTIVE_UNCLAIMED | RELOCATION_ELIGIBLE` classification as the
+current-observation evidence route. The remaining failure is downstream:
+purpose-scoped current physical relocation-reference evidence was selected by
+Observation source provenance, so the generic Candidate was never published for
+the formerly job-owned assembly.
 
-This increment renames the one surviving shared physical relocation Control and
-its execution-facing interfaces only. It must preserve the four-Control-module
-topology established by Phase 14.6A/PR #88, retain completed-obstruction
-Candidate/Assessment/Commitment semantics upstream, and leave #87 Configuration
-identifiers in place.
+`.50` changes only Observation/reference coverage: current object + current pose
++ current positive-only physical representation become provenance-neutral
+inputs. Causal Obstruction, Candidate semantics, Responsibility, Authority and
+Control remain unchanged.
 
-Independent CI remains the ordinary offline execution authority. Escalate to
-targeted GIANTS Reality only if exact diff review or CI identifies a
-runtime-dependent uncertainty beyond the naming/topology closure. Do not fold
-later #112 naming families, #87 Configuration ownership, #116 Passage
-investigation, #45 Bubble Bullet Time or #89 HUD work into this increment.
+Protected CI must pass before another GIANTS Reality challenge. Donor source
+deletion plus `POST_JOB_ACTUATION` retirement remains blocked until the generic
+replacement path passes Reality. Do not fold #87, #116, #45 or #89 into this
+increment.

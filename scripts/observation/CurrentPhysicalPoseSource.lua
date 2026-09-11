@@ -24,28 +24,17 @@ local function referencePose(object)
     return {x=x,y=y,z=z,node=node,nodeSource=source},nil
 end
 
-local function physicalOnlyReferences(raw)
-    local result={}
+local function currentAssemblyReferences(raw)
+    local result,seen={},{}
     for _,assembly in OuttaMyWay.ValueRecord.ipairs(raw and raw.assemblies or {}) do
-        local source=assembly.source or {}
-        if source.kind=="CURRENT_MISSION_PHYSICAL_ASSEMBLY_FIELD_WITNESS" and type(assembly.referenceKey)=="string" then
-            result[#result+1]=assembly.referenceKey
+        local referenceKey=assembly.referenceKey
+        if type(referenceKey)=="string" and seen[referenceKey]~=true then
+            seen[referenceKey]=true
+            result[#result+1]=referenceKey
         end
     end
     table.sort(result)
     return result
-end
-
-local function positivePrimitiveCount(raw,referenceKey)
-    local count=0
-    for _,item in OuttaMyWay.ValueRecord.ipairs(raw and raw.geometry and raw.geometry.planViewOccupancyEvidence or {}) do
-        if item.assemblyReferenceKey==referenceKey then
-            for _,primitive in OuttaMyWay.ValueRecord.ipairs(item.primitives or {}) do
-                if primitive.kind=="DISC" and primitive.positiveConflictSupport==true then count=count+1 end
-            end
-        end
-    end
-    return count
 end
 
 function Source.new()
@@ -61,10 +50,14 @@ function Source:observe(raw,liveObservationSource)
     raw.geometry.currentPhysicalPoseEvidence=raw.geometry.currentPhysicalPoseEvidence or {}
     raw.physicalRepresentationEvidence=raw.physicalRepresentationEvidence or {}
     local published=0
-    for _,referenceKey in OuttaMyWay.ValueRecord.ipairs(physicalOnlyReferences(raw)) do
+    for _,referenceKey in OuttaMyWay.ValueRecord.ipairs(currentAssemblyReferences(raw)) do
         local object=liveObservationSource and liveObservationSource:getCurrentPhysicalObject(referenceKey) or nil
         local pose,reason=referencePose(object)
-        local primitiveCount=positivePrimitiveCount(raw,referenceKey)
+        local currentRepresentation=liveObservationSource
+            and type(liveObservationSource.getCurrentPhysicalRelocationRepresentation)=="function"
+            and liveObservationSource:getCurrentPhysicalRelocationRepresentation(referenceKey,raw.timestamp)
+            or nil
+        local primitiveCount=currentRepresentation and tonumber(currentRepresentation.positivePrimitiveCount) or 0
         if pose~=nil then
             raw.geometry.currentPhysicalPoseEvidence[#raw.geometry.currentPhysicalPoseEvidence+1]={
                 assemblyReferenceKey=referenceKey,x=pose.x,y=pose.y,z=pose.z,
@@ -76,7 +69,7 @@ function Source:observe(raw,liveObservationSource)
                 representationId="current-obstruction-relocation:"..referenceKey,
                 question="CURRENT_CAUSAL_OBSTRUCTION_RELOCATION_REFERENCE",
                 assessmentHorizon=0,
-                structurallyValid=primitiveCount>0,
+                structurallyValid=currentRepresentation~=nil and currentRepresentation.structurallyValid==true,
                 refreshRequired=false,
                 currentForQuestion=true,
                 coversAssessmentHorizon=false,
@@ -87,7 +80,7 @@ function Source:observe(raw,liveObservationSource)
                 uncertainty={{kind="NO_NEGATIVE_CLEARANCE_AUTHORITY"}},
                 refreshNeed={kind="NEXT_LIVE_OBSERVATION"},
                 validityDependencies={"CURRENT_MISSION_PHYSICAL_ASSEMBLY","CURRENT_REFERENCE_POSE","CURRENT_POSITIVE_CONFLICT_REPRESENTATION"},
-                provenance={source="CurrentPhysicalPoseSource",authority="PURPOSE_SCOPED_CURRENT_RELOCATION_REFERENCE",positivePrimitiveCount=primitiveCount,historicalJobProvenanceRequired=false}
+                provenance={source="CurrentPhysicalPoseSource",authority="PURPOSE_SCOPED_CURRENT_RELOCATION_REFERENCE",populationBasis="CURRENT_OBSERVATION_ASSEMBLY_PLUS_CURRENT_GIANTS_MISSION_OBJECT",positivePrimitiveCount=primitiveCount,historicalJobProvenanceRequired=false,observationSourceProvenanceRequired=false}
             }
             published=published+1
         elseif reason~=nil then

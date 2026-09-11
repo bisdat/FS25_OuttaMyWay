@@ -1326,6 +1326,7 @@ def test_v47122_d0147_bounded_infield_retreat_is_one_shot_and_reactive():
     candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+    harness=(ROOT/"tests"/"replacement_core"/"run.lua").read_text(encoding="utf-8")
 
     assert 'TERMINAL_INFIELD_RETREAT_DISTANCE_M' not in config
     assert 'TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M = 60.0' in config
@@ -1351,8 +1352,9 @@ def test_v47122_d0147_bounded_infield_retreat_is_one_shot_and_reactive():
     assert 'renewal.continuationObserved=true' in assessment
     assert 'aiState.blocked==true' in assessment
     assert 'record.yieldAwaitingContinuation~=true' in candidate
-    assert 'markRetreatCompleted(result.terminalEpisodeId,serializedBeneficiaryAssemblyIds,courtesyStage)' in runtime
-    assert 'TerminalEgressCommitmentLifecycle.settle(self,result.commitmentId,"OBJECTIVE_SATISFIED"' in runtime
+    assert 'markRetreatCompleted(result.terminalEpisodeId,serializedBeneficiaryAssemblyIds,courtesyStage)' not in runtime
+    assert 'TerminalEgressCommitmentLifecycle.settle(self,result.commitmentId,"OBJECTIVE_SATISFIED"' not in runtime
+    assert "newHistoricalD0147DonorTestRuntime" in harness
     assert 'COURTESY_ALREADY_EXHAUSTED' in control
 
 
@@ -1368,8 +1370,8 @@ def test_v01131_d0194_two_stage_terminal_courtesy_is_bounded_and_geometry_derive
         assert token in candidate
     for token in ('courtesyMoveCount','completed>=2','DOUBLE_COURTESY_EXHAUSTED','noThirdAutomaticRelocation=true'):
         assert token in assessment
-    assert 'courtesyStage=result.evidence and tonumber(result.evidence.courtesyStage) or nil' in runtime
-    assert 'markRetreatCompleted(result.terminalEpisodeId,serializedBeneficiaryAssemblyIds,courtesyStage)' in runtime
+    assert 'courtesyStage=result.evidence and tonumber(result.evidence.courtesyStage) or nil' not in runtime
+    assert 'markRetreatCompleted(result.terminalEpisodeId,serializedBeneficiaryAssemblyIds,courtesyStage)' not in runtime
     assert 'realisedProgress>=state.targetProgressM' in control
     assert 'BOUNDED_MOVE_WATCHDOG_EXPIRED' in control
     assert 'driveInWorldDirection(vehicle,dt,state.infieldDirectionX,state.infieldDirectionZ,state.speedKmh)' in control
@@ -1415,7 +1417,8 @@ def test_relocation_serialization_uses_valuerecord_traversal_and_sequences_benef
         'RELOCATION_SERIALIZATION_APPLIED',
     ):
         assert token in authority
-    assert 'self.regulationBoundedAuthority:_releaseRelocationSerialization(result.commitmentId,"TERMINAL_CONTROL_"..tostring(result.status))' in runtime
+    assert 'self.regulationBoundedAuthority:_releaseRelocationSerialization(result.commitmentId,"OBSTRUCTION_RELOCATION_CONTROL_"..tostring(result.status))' in runtime
+    assert '"TERMINAL_CONTROL_"' not in runtime
     assert "physical selected Candidate must select one actuation authority class" not in boundary
     assert "one assembly cannot simultaneously own multiple actuation classes" in boundary
     assert "D-0186 Regulation–Hold Boundary" in drive
@@ -1434,6 +1437,7 @@ def test_v47125_d0147_continuation_renewal_requires_progress_then_later_block():
     assessment=(ROOT/"scripts"/"assessment"/"TerminalOccupancyAssessment.lua").read_text(encoding="utf-8")
     candidate=(ROOT/"scripts"/"candidates"/"TerminalEgressCandidateSupport.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+    harness=(ROOT/"tests"/"replacement_core"/"run.lua").read_text(encoding="utf-8")
     for token in (
         "yieldRenewalState",
         "continuationWitnessAssemblyIds",
@@ -1448,8 +1452,9 @@ def test_v47125_d0147_continuation_renewal_requires_progress_then_later_block():
     assert 'record.yieldAwaitingContinuation~=true' in candidate
     assert 'repeatRequiresContinuationRenewal=true' in candidate
     assert 'laterRetryRequiresContinuationRenewal=true' in candidate
-    assert 'markRetreatCompleted(result.terminalEpisodeId,serializedBeneficiaryAssemblyIds,courtesyStage)' in runtime
-    assert 'continuationRenewalRequired=true' in runtime
+    assert 'markRetreatCompleted(result.terminalEpisodeId,serializedBeneficiaryAssemblyIds,courtesyStage)' not in runtime
+    assert 'continuationRenewalRequired=true' not in runtime
+    assert "newHistoricalD0147DonorTestRuntime" in harness
 
 
 def test_v47127_d0147_courtesy_constraint_and_valuerecord_regression_contract():
@@ -1879,37 +1884,28 @@ def test_cooperative_passage_responsibility_transition_is_upstream_and_singular(
     assert '_authorizeBoundedAuthority(currentResponsibility,commitment,token' in runtime
 
 
-def test_completed_obstruction_responsibility_transition_is_upstream_and_singular():
+def test_completed_obstruction_responsibility_transition_is_retained_test_donor_not_production_runtime():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
+    harness=(ROOT/"tests"/"replacement_core"/"run.lua").read_text(encoding="utf-8")
     transition_path=ROOT/"scripts"/"responsibility"/"CompletedObstructionResponsibilityTransition.lua"
     transition=transition_path.read_text(encoding="utf-8")
 
+    # .47 preserves donor source for direct historical mechanical validation,
+    # but production Runtime no longer instantiates or dispatches that responsibility.
     assert transition_path.is_file()
     assert "scripts/responsibility/CompletedObstructionResponsibilityTransition.lua" in main
-    assert "CompletedObstructionResponsibilityTransition.new(runtime)" in runtime
-    orchestration=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
-    assert orchestration.index('status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED"') < orchestration.index("transitionObstructionRelocationResolution")
-    assert orchestration.index("transitionObstructionRelocationResolution") < orchestration.index("_continueCompletedObstruction")
-    readiness=runtime[runtime.index("local terminalBridge=terminalEgressBridge(candidate)"):runtime.index("local followerBridge=followerBoundaryBridge(candidate)")]
-    assert readiness.index('boundary.mode~="D0147_BOUNDED_TERMINAL_EGRESS"') < readiness.index('terminalBridge.terminalEvent~=nil')
-    assert readiness.index('terminalBridge.terminalEvent~=nil') < readiness.index('candidate.capability~="REPOSITION"')
-    assert readiness.index('candidate.capability~="REPOSITION"') < readiness.index('self.liveControlDispatcher.obstructionRelocationControl==nil')
-    assert readiness.index('self.liveControlDispatcher.obstructionRelocationControl==nil') < readiness.index('self.liveControlDispatcher.obstructionRelocationControl:isActive()')
-    assert readiness.index('self.liveControlDispatcher.obstructionRelocationControl:isActive()') < readiness.index('status="COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED"')
-    assert "TerminalEgressCommitmentLifecycle.applyDecision" not in authority
-    assert transition.count("TerminalEgressCommitmentLifecycle.applyDecision") == 1
-    continuation=runtime[runtime.index("function Runtime:_continueCompletedObstruction"):runtime.index("function Runtime:_assessCurrentActionSpaceRegulation")]
-    assert continuation.index("_applyRelocationSerialization") < continuation.index("_completedObstructionRequest")
-    assert continuation.index("_completedObstructionRequest") < continuation.index("self.liveControlDispatcher:dispatch")
-    assert "TerminalEgressCommitmentLifecycle.settle" in runtime
-    assert "TerminalEgressCommitmentLifecycle.settle" not in authority
-    assert "LiveTrafficCommitmentLifecycle.applyCooperativePassageDecision" not in authority
-    assert "applyActionSpaceRegulationDecision" not in authority
-    assert "_completedObstructionRequest" in runtime
-    assert '_authorizeBoundedAuthority(applied.currentResponsibility,applied.commitment,applied.authorityToken' in runtime
+    assert "CompletedObstructionResponsibilityTransition.new(runtime)" not in runtime
+    assert "COMPLETED_OBSTRUCTION_RESPONSIBILITY_TRANSITION_REQUIRED" not in runtime
+    assert "_continueCompletedObstruction" not in runtime
+    assert "_completedObstructionRequest" not in runtime
+    assert "local terminalBridge=terminalEgressBridge(candidate)" not in runtime
+    assert "TerminalEgressCommitmentLifecycle.settle" not in runtime
 
+    # Historical Behaviour Contract != Historical Production Topology Contract.
+    assert "newHistoricalD0147DonorTestRuntime" in harness
+    assert "runtime.completedObstructionResponsibilityTransition=OuttaMyWay.CompletedObstructionResponsibilityTransition.new(runtime)" in harness
+    assert transition.count("TerminalEgressCommitmentLifecycle.applyDecision") == 1
 
 def test_explicit_resolution_commitment_is_a_read_only_view_at_both_transition_boundaries():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
@@ -2024,7 +2020,7 @@ def test_responsibility_transition_authority_owns_action_space_passage_replaceme
     action_transition=(ROOT/"scripts"/"responsibility"/"ActionSpaceRegulationResponsibilityTransition.lua").read_text(encoding="utf-8")
     assert action_transition.index("preflightActionSpaceRegulation") < action_transition.index("applyActionSpaceRegulationDecision")
     assert "_supersedeActionSpaceRegulationForCooperativePassage" not in regulation_authority
-    continuation=runtime[runtime.index("function Runtime:_continueCooperativePassage"):runtime.index("function Runtime:_completedObstructionRequest")]
+    continuation=runtime[runtime.index("function Runtime:_continueCooperativePassage"):runtime.index("function Runtime:_assessCurrentActionSpaceRegulation")]
     assert "self.liveControlDispatcher:dispatchJoint" in continuation
 
 
@@ -2122,7 +2118,7 @@ def test_follower_regulation_uses_semantic_authority_before_control_and_terminal
     assert orchestration.index("replaceFollowerRegulationWithCooperativePassage") < orchestration.index("_continueCooperativePassage")
     replacement=authority[authority.index("function Authority:replaceFollowerRegulationWithCooperativePassage"):]
     assert replacement.index("preflightFollowerRegulationForCooperativePassage") < replacement.index("replaceRegulationWithCooperativePassage")
-    continuation=runtime[runtime.index("function Runtime:_continueCooperativePassage"):runtime.index("function Runtime:_completedObstructionRequest")]
+    continuation=runtime[runtime.index("function Runtime:_continueCooperativePassage"):runtime.index("function Runtime:_assessCurrentActionSpaceRegulation")]
     assert "_supersedeFollowerBoundaryForCooperativePassage" not in continuation
     assert "terminalSettlement.responsibilityTransitionAuthority=runtime.responsibilityTransitionAuthority" in runtime
     assert terminal.index("self.commitments:save(terminal)") < terminal.index("terminateSemanticResponsibilitiesForTerminalCommitment")
@@ -2187,11 +2183,13 @@ def test_phase10_migrated_control_requests_require_bounded_authority():
     assert 'exemplar="COOPERATIVE_PASSAGE"' in passage
     assert "_authorizeBoundedAuthority(currentResponsibility" in passage
 
-    completed=runtime[runtime.index("function Runtime:_continueCompletedObstruction"):runtime.index("function Runtime:_assessCurrentActionSpaceRegulation")]
-    assert completed.index("_applyRelocationSerialization") < completed.index("_completedObstructionRequest")
-    completed_request=runtime[runtime.index("function Runtime:_completedObstructionRequest"):runtime.index("function Runtime:_continueCompletedObstruction")]
-    assert 'exemplar="COMPLETED_OBSTRUCTION"' in completed_request
-    assert "self.liveControlDispatcher:dispatch" in completed
+    obstruction_dispatch=runtime[runtime.index("function Runtime:_dispatchObstructionRelocation"):runtime.index("function Runtime:dispatchEvaluatedOperationalPicture")]
+    assert obstruction_dispatch.index("_applyRelocationSerialization") < obstruction_dispatch.index("_obstructionRelocationRequest")
+    assert obstruction_dispatch.index("_obstructionRelocationRequest") < obstruction_dispatch.index("self.liveControlDispatcher:dispatch")
+    obstruction_request=runtime[runtime.index("function Runtime:_obstructionRelocationRequest"):runtime.index("function Runtime:onObstructionRelocationCompletion")]
+    assert 'authorityClass="OBSTRUCTION_RELOCATION_ACTUATION"' in obstruction_request
+    assert "_authorizeBoundedAuthority(applied.currentResponsibility,applied.commitment,applied.authorityToken" in obstruction_request
+    assert "_materializeBoundedAuthorityRequest" in obstruction_request
 
     assert "boundedAuthority:validateRequest(request)" in regulation_control
     assert "boundedAuthorityRequiredOwnerTags" in regulation_control
@@ -2254,7 +2252,8 @@ def test_phase11_live_control_dispatcher_is_authorised_routing_only():
     assert "regulationBoundedAuthority:continueCooperativePassage" not in orchestration
     assert "regulationBoundedAuthority:continueCompletedObstruction" not in orchestration
     assert "_continueCooperativePassage" in orchestration
-    assert "_continueCompletedObstruction" in orchestration
+    assert "_continueCompletedObstruction" not in orchestration
+    assert "_dispatchObstructionRelocation" in orchestration
 
     for forbidden in (
         "followerBoundaryLease","actionSpaceRegulationLease","relocationSerializationLeases",

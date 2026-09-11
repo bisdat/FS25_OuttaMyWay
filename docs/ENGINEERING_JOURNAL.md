@@ -1,3 +1,176 @@
+## 2026-09-11 — `.50` CI #305 exposes a validation-contract mismatch, not a production failure
+
+**Validate:** protected Offline Validation #305 on
+`cd24524f3e884c294c90c8eae6b3e33806ab48e7` passed Structural contracts and the
+focused Obstruction Relocation suite (**12/0**). The main replacement-core suite
+reported **340/1**.
+
+The sole failure was the new `.50` regression asserting a top-level
+`negativeClearanceAuthority=false` field on purpose-scoped relocation
+Representation Fitness evidence. Production never published that field there.
+The actual contract remains explicit and narrower:
+`permittedConclusions={"CURRENT_RELOCATION_REFERENCE_POSE","POSITIVE_CONFLICT_SUPPORT"}`,
+`uncertainty={{kind="NO_NEGATIVE_CLEARANCE_AUTHORITY"}}`,
+`coverageComplete=false`, and `conservative=false`.
+
+**Interpret:** the test incorrectly asserted an implementation shape that was not
+part of the Representation Fitness contract. No `.50` production source,
+build-identity source, Candidate, Responsibility, Authority or Control correction
+is selected.
+
+**Correction:** update only the regression assertion to validate the actual
+positive-only/no-negative-clearance contract. `.50` executable identity remains
+unchanged.
+
+## 2026-09-11 — `.49` Reality moves failure downstream; `.50` removes relocation-reference provenance leak
+
+**Observe:** owner-run `.49` GIANTS Reality repeated the same externally visible
+pass/fail split, but the internal evidence changed materially. The formerly
+job-owned Condor now reached
+`NON_ACTIVE_UNCLAIMED | RELOCATION_ELIGIBLE`, proving the ENDED Job Episode
+classification correction. No relocation Commitment or Control followed.
+
+The unaffected physical-census route progressed from Causal Obstruction through
+Resolution Commitment, beneficiary serialization and
+`OBSTRUCTION_RELOCATION_CONTROL`. The failing route stopped before Candidate
+publication.
+
+**Inspect:** `CurrentPhysicalPoseSource` selected only raw assemblies whose
+Observation source kind was `CURRENT_MISSION_PHYSICAL_ASSEMBLY_FIELD_WITNESS`.
+A formerly job-owned assembly remained represented as `RETAINED_AI_ASSEMBLY`,
+even though `LiveObservationSource:getCurrentPhysicalObject()` already defines
+current physical addressability as independent of worker history and Field World
+census membership. Candidate Support requires the resulting
+`currentPhysicalPoseEvidence` and purpose-specific Representation Fitness record,
+so source provenance suppressed a generic relocation prerequisite.
+
+**Decision:** retire source-provenance distinction below non-active
+classification.
+
+> **Two Evidence Routes Into One Classification; One Generic Mechanism Thereafter**
+
+> **There Is One Non-Active Obstruction**
+
+`.50` broadens only the Current Physical Relocation Reference population:
+assemblies already present in raw Observation may receive current mission
+object/pose/current positive-only physical-representation evidence independent of
+their Observation source label. That evidence remains non-semantic,
+positive-only, without negative-clearance or actuation authority. Causal
+Obstruction, Candidate Support semantics, Responsibility, Authority and Control
+are deliberately unchanged.
+
+Current architecture/test terminology names the evidence routes directly; the
+previous `warm` / `cold` shorthand is retired outside historical records.
+
+## 2026-09-11 — `.48` behavioural CI passes; build identity mismatch selects `.49`
+
+**Validate:** protected Offline Validation #303 on
+`aa1e939bf8d73b4c40629c3e7a8c827da8bbf7be` passed all executable behaviour:
+main replacement-core **340/0** and focused Obstruction Relocation **12/0**,
+including warm ENDED evidence, cold fail-closed activity observation,
+ACTIVE-over-ENDED precedence, Current Player Claim and active-job re-entry.
+
+Structural contracts were **190/1**. The sole failure was the dynamic Build
+Identity Contract: `OuttaMyWay.VERSION` and `modDesc.xml` were `0.3.0.48`, but
+`OuttaMyWay.BUILD_LABEL` still named `.47`.
+
+> **Behavioural Validation PASS != Build Identity Coherence PASS**
+
+Because `.48` executable code was already pushed, correcting the executable
+version-source owner cannot silently rewrite that TEST identity. `.49` therefore
+carries **no intended behavioural change**: it advances `VERSION`, `BUILD_LABEL`
+and `modDesc` coherently to
+**`0.3.0.49 TEST — ENDED JOB OBSTRUCTION EVIDENCE`** and updates only
+present-state documentation. Historical `.48` evidence remains recorded.
+
+## 2026-09-11 — `.47` warm Reality failure selects `.48` ENDED Job evidence correction
+
+**Observe:** two owner-run GIANTS `.47` challenges produced a discriminating split.
+The cold Condor passed the generic Causal Obstruction -> Obstruction Relocation
+path. The same-runtime warm Condor failed: after its Job Episode positively ended,
+later positive obstruction remained `ACTIVITY_UNRESOLVED|NO_RELOCATION` and the
+parked assembly never moved.
+
+The warm log showed `activeJobMember=false` and `ended=1` before the later
+obstruction. Therefore the missing fact was not Job completion. Code inspection
+showed `CausalObstructionAssessment` consumed only ACTIVE Job Episodes and required
+a fresh negative `aiActiveObserved` sample for every non-active blocker. The
+retained warm Observation path also discarded the successful
+`getIsEntered()` observation-completeness flag, while the cold physical census
+preserved it.
+
+**Interpret:** Causal Obstruction responsibility remains provenance-neutral, but
+its evidence need not be. A positively ENDED Job Episode is sufficient evidence
+that the assembly is no longer an active worker for that former Job. Cold blockers
+with no lifecycle history still require current observed GIANTS inactivity.
+Current positive GIANTS activity / a fresh ACTIVE Job Episode outranks old ENDED
+evidence. Current Player Claim remains an independent present-tense veto.
+
+> **Provenance-Neutral Responsibility != Evidence-Neutral Assessment**
+
+> **Job Activation Is Situation Change, Not Relocation Supersession Logic**
+
+> **Ended Worker Becomes an Obstacle; New Job Makes It a Worker Again**
+
+**Hypothesis / implement `.48`:** consume ENDED Job Episode evidence in Causal
+Obstruction activity classification; preserve retained AI/player observation
+completeness; treat active-job membership as fresh authoritative intent when
+reassessing an existing relocation. Do not add a release ledger, resurrection
+state, warm responsibility or relocation-specific supersession lifecycle.
+`NonJobActuationMechanism` already rejects live Player Claim / source-AI
+reactivation during physical actuation.
+
+Because `.47` executable code was pushed and then disproved in GIANTS Reality,
+the corrected executable identity is
+**`0.3.0.48 TEST — ENDED JOB OBSTRUCTION EVIDENCE`**. Donor retirement moves to a
+later build and remains blocked until the warm Reality challenge passes.
+
+## 2026-09-10 — PR #122 protected CI #301 validation-consumer reconciliation
+
+**Validate / disproven expectation:** `.47` production topology reached protected CI on
+head `68e5607c65d4703d89fec39ec7e19a84641ca1df`. Focused Obstruction Relocation
+contracts passed **11/11** and replay remained deterministic, while the main Lua
+harness reported one historical donor-fixture failure and Structural contracts
+reported eleven failures.
+
+The failures did not identify a missing production relocation behaviour. They
+identified validation consumers that still treated retired donor Runtime topology
+as part of the historical behaviour contract. The direct
+`TerminalEgressCandidateSupport` consent-disabled status is `DISABLED`; the
+previously expected `DEVELOPMENT_CONSENT_DISABLED` came from the now-strangled
+generic-first `CompositeCandidateSupport` wrapper. Structural consumers likewise
+still required donor callbacks, donor Responsibility Transition instantiation,
+`_continueCompletedObstruction`, two production relocation-serialization call
+sites, first/second courtesy fields, or used the removed donor function merely as
+a lexical slice delimiter.
+
+> **Historical Behaviour Contract != Historical Production Topology Contract**
+
+**Correction boundary:** tests now preserve historical D-0147 mechanics in their
+retained donor source and explicit test-only donor composition, while production
+structure contracts require those donor seams to be absent from `Runtime.lua`.
+Generic production contracts protect geometry-bounded recurrence, one Obstruction
+Relocation serialization path, retained Commitment/Bounded Authority separation,
+and the provenance-neutral shared physical executor.
+
+This correction changes tests and this Journal entry only. It does **not** change
+production Lua, XML or build identity; candidate remains
+**`0.3.0.47 TEST — OBSTRUCTION RELOCATION RESPONSIBILITY CONSOLIDATION`**.
+
+## 2026-09-10 — Issue #121 `.47` Obstruction Relocation responsibility consolidation candidate
+
+**Observe / architecture:** post-`.46` naming review exposed that completed-worker provenance still selected a separate warm D-0147 responsibility even though D-0218 defines Causal Obstruction from current Reality. Owner review simplified the policy further: there is no architectural first/second courtesy count. A non-active unclaimed blocker moves only because it is positively blocking, and each actuation moves no farther than the nearer of the Field World centroid or the existing 60 m per-actuation maximum.
+
+> **Relocation Is Geometry-Bounded, Not Count-Bounded**
+
+Fresh positive Causal Obstruction may authorise another actuation after `MANOEUVRE_COMPLETE`, while relation absence stops movement without manufacturing negative-clearance authority. Positive supported continuation remains the conservative current settlement witness.
+
+> **Actuation Recurrence != Resolution Settlement Evidence**
+
+**Implement `.47`:** production Runtime stops instantiating/enumerating/dispatching the warm D-0147 responsibility path. `ObstructionRelocationCandidateSupport` admits formerly completed blockers like other non-active unclaimed Causal Obstructions and may issue another centroid-directed actuation under the same retained Commitment/Current Responsibility only from fresh positive obstruction involving already-authorised beneficiaries. At approximately the centroid, fresh positive obstruction exhausts this inward strategy rather than inventing another move. Historical D-0147 donor source remains loaded and direct donor fixtures use explicit test-only composition until separate retirement.
+
+**Validate next:** implementation-local syntax/static checks only, then protected Structural and Lua behavioural CI. Because executable responsibility composition and repeated-relocation behaviour change, targeted GIANTS warm-completed-worker Reality is required before owner acceptance. Candidate identity is **`0.3.0.47 TEST — OBSTRUCTION RELOCATION RESPONSIBILITY CONSOLIDATION`**; canonical authority remains v0.3.0.0.
+
 ## 2026-09-10 — Issue #101 `.42` Guarded-Recovery orphan-chain retirement candidate
 
 **Observe / dependency proof:** current production still loaded and composed `GuardedRecoveryThreatAssessment`, `GuardedRecoveryConvergenceProbe` and `GuardedRecoveryCompatibility`, but Situation could originate Guarded-Recovery Knowledge only from `GUARDED_RECOVERY_CONTROL_EXECUTION_OBSERVATION`. The current live Observation / Regulation / Terminal-Egress composition has no producer of that exact observation kind. Existing Lua contracts reached the path only by manufacturing Guarded-Recovery Knowledge or legacy recovery ownership synthetically.

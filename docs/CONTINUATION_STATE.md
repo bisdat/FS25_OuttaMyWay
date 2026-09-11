@@ -6,16 +6,21 @@ Engineering Journal preserve chronology.
 
 ## Repository authority
 
-- Accepted Repository State baseline for this increment: `main` after PR #119 merge,
-  commit `05aba26a4d91434b69b1ea7e03f872c29c7bcf9e`.
+- Accepted Repository State baseline for this increment: `main` after PR #120 merge,
+  commit `487620178d75f333e6decdb47f6466f65effbd15`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.45 TEST — PHYSICAL REPRESENTATION NAMING CLOSURE`**.
-- Current Issue #112 executable candidate is
-  **`0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING`**; it is not accepted until independent CI, engineering
-  review, any applicable Reality challenge and owner merge.
+  **`0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING`**.
+- Current Issue #121 executable candidate is
+  **`0.3.0.50 TEST — CURRENT PHYSICAL RELOCATION REFERENCE COVERAGE`**; `.49` proved ENDED Job evidence reaches `NON_ACTIVE_UNCLAIMED` in GIANTS Reality, but relocation Candidate publication still depended on Observation provenance because the purpose-scoped current physical reference covered only physical-census assemblies.
 - Protected `main` requires both `Structural contracts` and
   `Lua offline behavioural contracts`.
+- `.50` protected Offline Validation #305 reached Structural PASS and focused
+  Obstruction Relocation **12/0**; main Lua was **340/1** solely because the new
+  regression asserted a non-contract top-level `negativeClearanceAuthority`
+  field. A tests/docs-only correction now checks the actual
+  `NO_NEGATIVE_CLEARANCE_AUTHORITY` uncertainty/permitted-conclusion contract;
+  `.50` executable identity is unchanged.
 - Phase 14 is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -188,45 +193,24 @@ constitute Phase-15 runtime defects.
 
 ## Next
 
-Implement and validate **Issue #112 `.46 — Obstruction Relocation Control Naming`**
-from accepted `main` at
-`05aba26a4d91434b69b1ea7e03f872c29c7bcf9e`.
+Validate **#121 `.50 — CURRENT PHYSICAL RELOCATION REFERENCE COVERAGE`**
+on PR #122. Protected `.49` CI passed, and GIANTS Reality proved the ENDED Job
+evidence correction itself: the former worker reached
+`NON_ACTIVE_UNCLAIMED | RELOCATION_ELIGIBLE`. The failure moved downstream:
+Candidate Support published no relocation because `CurrentPhysicalPoseSource`
+only issued the purpose-scoped relocation reference to assemblies carrying the
+physical-census Observation source label.
 
-The bounded hypothesis is:
+`.50` removes that provenance leak only. Every assembly present in the sealed raw
+Observation may receive the same purpose-scoped current physical relocation
+reference when the current GIANTS mission object and positive-only physical
+representation are available. Classification remains the sole semantic gate.
 
-> **Execution Mechanism Identity != Upstream Responsibility Identity**
+> **Two Evidence Routes Into One Classification; One Generic Mechanism Thereafter**
 
-PR #88 already established one provenance-neutral physical executor for both
-Completed Obstruction and current Causal Obstruction and retired the duplicate
-Phase-13 `ObstructionRelocationControl`. `.46` does **not** recreate that
-five-Control-module topology. It renames the one surviving executor from
-`TerminalEgressControl` to `ObstructionRelocationControl` and migrates only its
-shared execution interface / target / observation vocabulary.
+> **There Is One Non-Active Obstruction**
 
-Preserve:
-
-- exactly four root Control modules;
-- `TerminalOccupancyAssessment`, `TerminalEgressCandidateSupport`,
-  `TerminalEgressCommitmentLifecycle`, `terminalEgressBridge`,
-  `onTerminalEgressCompletion(...)`, `terminalEpisodeId` and D-0147 courtesy
-  semantics as completed-obstruction-specific;
-- #87-owned `AUTOMATIC_TERMINAL_EGRESS`,
-  `TERMINAL_INTERIOR_SETTLEMENT_MAX_DISTANCE_M`,
-  `TERMINAL_EGRESS_COMPACTION_TIMEOUT_MS` and
-  `TERMINAL_EGRESS_MOVE_TIMEOUT_MS` unchanged in this tranche;
-- all Control mechanics, authority classes, cleanup, Player Claim, source-AI
-  reactivation and completion-context routing.
-
-Validation order:
-
-1. exact transformation / four-Control topology / protected-name guards;
-2. syntax/static checks and `git diff --check`;
-3. independent GitHub Structural and Lua offline behavioural contracts;
-4. engineering review of the exact rename;
-5. targeted GIANTS Reality only if CI/review exposes a runtime-dependent
-   uncertainty beyond the closed-world naming/topology proof;
-6. owner review/merge before `.46` becomes Accepted Repository State.
-
-Do not fold later #112 donor naming, Runtime telemetry/header work, #87
-Configuration decomposition, #116 Passage investigation, #45 Bubble Bullet Time
-or #89 HUD work into this increment.
+Protected CI must prove both evidence routes converge on the same generic
+Candidate/Control prerequisites before the owner repeats the GIANTS Reality
+challenge. Donor retirement remains blocked; #87 follows after reconciliation
+closes and #116 remains parked.
