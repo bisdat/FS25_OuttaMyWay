@@ -21,13 +21,16 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State baseline for this increment: `main` after PR #122 merge,
-  commit `6d87d02933b4d97e16161f73ca20e3aaa1daa2bc`.
+- Accepted Repository State: `main` after PR #125 merge,
+  `308e27b465a887a065c944d5937f66aae01a1420`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.50 TEST — CURRENT PHYSICAL RELOCATION REFERENCE COVERAGE`**.
-- Issue #121 is closed completed; `.50` GIANTS Reality validated both non-active
-  evidence routes through the same generic Obstruction Relocation mechanism.
+  **`0.3.0.51 TEST — DONOR TOPOLOGY RETIREMENT`**.
+- Protected post-merge Offline Validation run #310 passed on the exact merge
+  commit.
+- Issue #112 is closed completed; the historical D-0147 donor topology is
+  retired and current production has one provenance-neutral Obstruction
+  Relocation responsibility.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -69,7 +72,7 @@ Architectural meaning remains owned by the
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting Obstruction Relocation movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.43` removes the dead Passage target field and reports current `conflictIdentity` in the verdict trace |
-| Mixed runtime constants | `scripts/config.lua` | **SEPARATE #87** — ownership decomposition / player-developer-internal boundary |
+| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — first bounded tranche retires obsolete Obstruction Relocation development consent; broader owner-family decomposition remains incremental |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
 
 ## Boundary findings worth protecting
@@ -128,18 +131,17 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #112 | naming-conformance / retired-topology debt | `.44`–`.46` are accepted naming closures. #121 / PR #122 established one provenance-neutral Obstruction Relocation responsibility and `.50` GIANTS Reality validated both non-active evidence routes. `.51` therefore retires the loaded-but-uninstantiated D-0147 donor modules, `POST_JOB_ACTUATION`, dormant Terminal Occupancy contract surface and donor compatibility fields instead of renaming them into a false second responsibility. Configuration ownership remains #87. |
+| #87 | mixed runtime constants / Configuration ownership | `scripts/config.lua` still centralises unrelated player, diagnostic, policy, calibration, watchdog and identity values. First bounded tranche retires `AUTOMATIC_TERMINAL_EGRESS`: current Obstruction Relocation is a core provenance-neutral resolution capability, not an optional completed-worker consent class. Remaining constants continue to be decomposed family-by-family by actual owner. |
 
-Issue #101 is no longer current drift. PR #117 accepted `.43` and closed the
-Phase-15 orphan/stranded semantic retirement work. Issue #100 likewise remains
-closed by PR #113. Issue #116 separately owns the accidental `.42`
-Crossing-Window Passage jam investigation and is not part of #112.
+Issue #112 is closed completed by PR #125. Issue #116 independently owns the
+Cooperative Passage crossing-window jam investigation. #123 owns deferred GIANTS
+Reality validation for new Job / Player Claim during Obstruction Relocation.
 
 ## Separate accepted work / explicit limits
 
 - **#45** — Bubble Bullet Time remains accepted but unimplemented.
-- **#87** — decompose the remaining live `scripts/config.lua` Mixed Runtime
-  Constants Surface.
+- **#87** — ACTIVE: decompose the remaining live `scripts/config.lua` Mixed Runtime
+  Constants Surface ownership-family by ownership-family.
 - Generic multi-context Commitment application remains an acceptable fail-closed
   limit until a concrete supported consumer requires broader cardinality.
 - The maximum-three-active-AI-worker rule is a supported claim/validation
@@ -159,23 +161,25 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Implement and validate **#112 `.51 — DONOR TOPOLOGY RETIREMENT`** from accepted
-`main` at `6d87d02933b4d97e16161f73ca20e3aaa1daa2bc`.
+Implement and validate **#87 `.52 — OBSTRUCTION RELOCATION CORE CAPABILITY`**
+from accepted `main` at
+`308e27b465a887a065c944d5937f66aae01a1420`.
 
-The implementation boundary is deletion/contract retirement, not a new traffic
-policy:
+The bounded implementation question is whether the historical development consent
+gate can be deleted while every real Obstruction Relocation eligibility and
+safety boundary remains unchanged.
 
-- remove the four D-0147/completed-worker donor modules from shipped source;
-- retire `POST_JOB_ACTUATION` and dormant `terminalOccupancyKnowledge` plumbing;
-- remove `terminalEpisodeId`, courtesy-count and donor `COMPACT` compatibility
-  from the generic Obstruction Relocation executor;
-- preserve generic geometry-bounded recurrence, Player Claim / source-AI
-  precedence, relocation serialization, current settlement and physical cleanup;
-- migrate still-useful physical mechanics tests to the generic fixture and retire
-  tests whose expected behaviour is the obsolete two-courtesy/boundary-away
-  architecture;
-- leave live #87-owned configuration names in place, except the donor-only
-  compaction watchdog that becomes unsourced with `COMPACT` retirement.
+The increment therefore:
 
-Protected CI remains the behavioural authority. Do not fold #87, #116, #45 or
-#89 into this increment.
+- removes `AUTOMATIC_TERMINAL_EGRESS` and both Candidate admission checks;
+- records that no separate Configuration consent is required for this core
+  resolution capability;
+- preserves current `NON_ACTIVE_UNCLAIMED`, Player Claim, active-Job,
+  current-reference, authority, serialization, bounded-inward recurrence,
+  centroid-exhaustion and Control-cleanup semantics;
+- leaves the live relocation-distance and move-watchdog legacy names for later
+  #87 ownership/name reconciliation;
+- does not perform the broad Player / Developer-Debug / Internal reordering yet;
+- does not fold #123, #116, #45 or #89 into this increment.
+
+Protected CI remains the independent offline behavioural authority.
