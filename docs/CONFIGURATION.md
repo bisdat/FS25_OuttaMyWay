@@ -255,7 +255,7 @@ evidence does not establish a responsible owner.
 | PLAYER CONFIGURATION CANDIDATE | no unified player-setting key is currently implemented in this file | The accepted player concepts are master enablement, HUD visibility, Logging and Debug. Internal gates or constants must not be promoted merely because they are editable. |
 | SYSTEM / RELEASE IDENTITY | `MOD_NAME`; `VERSION`, `BUILD_LABEL` | `MOD_NAME` identifies the system/mod. `VERSION` and `BUILD_LABEL` carry release/build identity. None is player Configuration. |
 | ARCHITECTURAL / RESPONSIBILITY POLICY | `COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M`, `COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO`, `RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION`, exact `RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH` | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
-| IMPLEMENTATION CALIBRATION | Entity-Local Shape Evidence coherence/root-alias calibration; follower alignment, retention and clearance factors; trajectory sampling/coherence/supersession values; Passage development and gate geometry; Control effect-speed calibration | Entity-local shape calibration is owned by its shared Resolution evidence predicate; other empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
+| IMPLEMENTATION CALIBRATION | Entity-Local Shape Evidence coherence/root-alias calibration; follower alignment, retention and clearance factors; Trajectory Conflict Assessment sampling/coherence/supersession/opposed-current values; Passage development and gate geometry; Control effect-speed calibration | Entity-local shape calibration is owned by its shared Resolution evidence predicate; `.61` localises Trajectory Conflict Assessment calibration to that evaluator; other empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
 | SAFETY / RESOURCE BOUND | Passage sweep sample count and phase watchdog; fold-settlement bounds | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
 | DIAGNOSTIC | Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre and Progression Preservation instrument controls; lifecycle/transition/future-space and version/follower HUD flags and coordinates | `.60` localises the five live instrument enablement/publication cadences to their owning modules. They remain internal diagnostics, not Player Configuration. Normal Logging and Debug are higher-level player choices, not exposure of each switch. |
 | VALIDATION / EXPERIMENTAL | `CONTROL_AUTHORITY_ENABLED`; `COOPERATIVE_PASSAGE_ENABLED` | Current gates and test values are implementation or validation evidence. They do not define the master enabled setting and grant no production authority by location. |
@@ -280,6 +280,10 @@ root surface without changing their booleans or cadences: Field Identity,
 Productive Continuation, Native Drive Command, Native Manoeuvre and Progression
 Preservation each own the controls that only govern their own observation or
 publication. Runtime's 250 ms cycle remains independently owned.
+`.61` removes the ten trajectory/opposed-current calibration values from the
+mixed root and makes `TrajectoryConflictAssessment` their explicit owner.
+`SituationAssessment` supplies evidence and external Passage Action-Space context,
+but no longer couriers evaluator-private calibration.
 The inventory is descriptive; Issue #87 continues ownership-family decomposition
 without retuning values merely because their placement changes.
 

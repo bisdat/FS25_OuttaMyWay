@@ -5,6 +5,19 @@
 OuttaMyWay.TrajectoryConflictAssessment = {}
 local Assessment = OuttaMyWay.TrajectoryConflictAssessment
 
+-- Evaluator-owned implementation calibration. Context values are optional
+-- focused-test overrides; production Situation Assessment does not courier them.
+local TRAJECTORY_MIN_SAMPLE_DISTANCE_M=0.10
+local TRAJECTORY_ESTABLISH_DISTANCE_M=3.0
+local TRAJECTORY_COHERENCE_MIN_DOT=0.94
+local TRAJECTORY_PERSISTENCE_ALIGNMENT_MIN_DOT=0.85
+local TRAJECTORY_SUPERSESSION_DISTANCE_M=4.0
+local TRAJECTORY_STABLE_MEMORY_DISTANCE_M=12.0
+local OPPOSED_TRAJECTORY_MAX_DOT=-0.85
+local OPPOSED_CURRENT_MAX_DOT=-0.85
+local OPPOSED_CURRENT_STABLE_DISTANCE_M=1.0
+local OPPOSED_MIN_CLOSING_RATE_MPS=0.05
+
 local function finite(value)
     return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
 end
@@ -136,12 +149,12 @@ local function updateEstablishedDirection(track,dx,dz,distanceM,memoryDistanceM)
 end
 
 local function updateTrack(track,motion,space,productive,context)
-    local minSampleDistanceM=threshold(context,"minSampleDistanceM",0.10)
-    local establishDistanceM=threshold(context,"establishDistanceM",3.0)
-    local coherenceMinDot=threshold(context,"coherenceMinDot",0.94)
-    local persistenceAlignmentMinDot=threshold(context,"persistenceAlignmentMinDot",0.85)
-    local supersessionDistanceM=threshold(context,"supersessionDistanceM",4.0)
-    local stableMemoryDistanceM=threshold(context,"stableMemoryDistanceM",12.0)
+    local minSampleDistanceM=threshold(context,"minSampleDistanceM",TRAJECTORY_MIN_SAMPLE_DISTANCE_M)
+    local establishDistanceM=threshold(context,"establishDistanceM",TRAJECTORY_ESTABLISH_DISTANCE_M)
+    local coherenceMinDot=threshold(context,"coherenceMinDot",TRAJECTORY_COHERENCE_MIN_DOT)
+    local persistenceAlignmentMinDot=threshold(context,"persistenceAlignmentMinDot",TRAJECTORY_PERSISTENCE_ALIGNMENT_MIN_DOT)
+    local supersessionDistanceM=threshold(context,"supersessionDistanceM",TRAJECTORY_SUPERSESSION_DISTANCE_M)
+    local stableMemoryDistanceM=threshold(context,"stableMemoryDistanceM",TRAJECTORY_STABLE_MEMORY_DISTANCE_M)
     local snapshotId=context.observationSnapshotId
     local timestamp=context.timestamp
     local sample=currentMotionSample(motion,minSampleDistanceM)
@@ -418,8 +431,8 @@ local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,a
     result.excursionAssemblyId=excursionTrajectory and excursionTrajectory.assemblyId or nil
     result.excursionReferenceKey=excursionTrajectory and excursionTrajectory.assemblyReferenceKey or nil
 
-    local persistenceAlignmentMinDot=threshold(context,"persistenceAlignmentMinDot",0.85)
-    local currentStableDistanceM=threshold(context,"currentStableDistanceM",1.0)
+    local persistenceAlignmentMinDot=threshold(context,"persistenceAlignmentMinDot",TRAJECTORY_PERSISTENCE_ALIGNMENT_MIN_DOT)
+    local currentStableDistanceM=threshold(context,"currentStableDistanceM",OPPOSED_CURRENT_STABLE_DISTANCE_M)
     local stableCurrentDot=stableTrajectory and stableTrajectory.currentToEstablishedDot or nil
     local stableCurrent=stableTrajectory~=nil and stableTrajectory.currentExcursion~=true
         and tonumber(stableTrajectory.currentAlignedDistanceM or 0)>=currentStableDistanceM
@@ -428,7 +441,7 @@ local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,a
 
     local closing=currentClosing(excursionMotion,stableMotion,excursionSpace,stableSpace)
     result.currentClosing=copy(closing)
-    local minClosingRateMps=threshold(context,"minClosingRateMps",0.05)
+    local minClosingRateMps=threshold(context,"minClosingRateMps",OPPOSED_MIN_CLOSING_RATE_MPS)
     if closing.resolved~=true or not finite(tonumber(closing.closingRateMps)) or closing.closingRateMps<minClosingRateMps then
         result.reason="CURRENT_EXCURSION_PAIR_NOT_POSITIVELY_CLOSING"
         return result
@@ -783,11 +796,11 @@ function Assessment.classifyPairs(context)
     local motionByAssembly=byAssembly(context.motionEvidence)
     local spaceByAssembly=byAssembly(context.currentSpace)
     local physicalByAssembly=byAssembly(context.physicalSpaceEvidence)
-    local opposedMaxDot=threshold(context,"opposedMaxDot",-0.85)
-    local currentOpposedMaxDot=threshold(context,"currentOpposedMaxDot",-0.85)
-    local persistenceAlignmentMinDot=threshold(context,"persistenceAlignmentMinDot",0.85)
-    local currentStableDistanceM=threshold(context,"currentStableDistanceM",1.0)
-    local minClosingRateMps=threshold(context,"minClosingRateMps",0.05)
+    local opposedMaxDot=threshold(context,"opposedMaxDot",OPPOSED_TRAJECTORY_MAX_DOT)
+    local currentOpposedMaxDot=threshold(context,"currentOpposedMaxDot",OPPOSED_CURRENT_MAX_DOT)
+    local persistenceAlignmentMinDot=threshold(context,"persistenceAlignmentMinDot",TRAJECTORY_PERSISTENCE_ALIGNMENT_MIN_DOT)
+    local currentStableDistanceM=threshold(context,"currentStableDistanceM",OPPOSED_CURRENT_STABLE_DISTANCE_M)
+    local minClosingRateMps=threshold(context,"minClosingRateMps",OPPOSED_MIN_CLOSING_RATE_MPS)
     local result={}
 
     for _,situation in OuttaMyWay.ValueRecord.ipairs(context.situations or {}) do
