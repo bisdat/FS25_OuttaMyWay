@@ -2,26 +2,32 @@ OuttaMyWay.FieldWorldEquivalenceEvaluator = {}
 local Evaluator = OuttaMyWay.FieldWorldEquivalenceEvaluator
 Evaluator.__index = Evaluator
 
-local function threshold(name, fallback)
-    local value = tonumber(OuttaMyWay[name])
-    return value ~= nil and value or fallback
-end
+-- Field World equivalence interpretation ownership.
+local EQUIVALENCE_SAMPLE_SIDE=31
+local SAME_MAX_AREA_RELATIVE_DELTA=0.005
+local SAME_MAX_PERIMETER_RELATIVE_DELTA=0.002
+local SAME_MAX_CENTROID_DISTANCE_METRES=0.5
+local SAME_MAX_BOUNDS_DELTA_METRES=0.5
+local SAME_MAX_BOUNDARY_MEAN_DISTANCE_METRES=0.5
+local SAME_MAX_BOUNDARY_MAX_DISTANCE_METRES=2.0
+local SAME_MIN_SAMPLED_JACCARD=0.995
+local DIFFERENT_MIN_BOUNDARY_SEPARATION_METRES=0.2
 
 local function sameEnvelope(comparison)
     return comparison.sameIslandTopology == true
-        and comparison.areaRelativeDelta <= threshold("FIELD_WORLD_EQUIVALENCE_SAME_MAX_AREA_RELATIVE_DELTA", 0.005)
-        and comparison.perimeterRelativeDelta <= threshold("FIELD_WORLD_EQUIVALENCE_SAME_MAX_PERIMETER_RELATIVE_DELTA", 0.002)
-        and comparison.centroidDistanceMetres <= threshold("FIELD_WORLD_EQUIVALENCE_SAME_MAX_CENTROID_DISTANCE_METRES", 0.5)
-        and comparison.boundsMaxDeltaMetres <= threshold("FIELD_WORLD_EQUIVALENCE_SAME_MAX_BOUNDS_DELTA_METRES", 0.5)
-        and comparison.symmetricBoundaryMeanDistanceMetres <= threshold("FIELD_WORLD_EQUIVALENCE_SAME_MAX_BOUNDARY_MEAN_DISTANCE_METRES", 0.5)
-        and comparison.symmetricBoundaryMaxDistanceMetres <= threshold("FIELD_WORLD_EQUIVALENCE_SAME_MAX_BOUNDARY_MAX_DISTANCE_METRES", 2.0)
-        and comparison.sampledJaccard >= threshold("FIELD_WORLD_EQUIVALENCE_SAME_MIN_SAMPLED_JACCARD", 0.995)
+        and comparison.areaRelativeDelta <= SAME_MAX_AREA_RELATIVE_DELTA
+        and comparison.perimeterRelativeDelta <= SAME_MAX_PERIMETER_RELATIVE_DELTA
+        and comparison.centroidDistanceMetres <= SAME_MAX_CENTROID_DISTANCE_METRES
+        and comparison.boundsMaxDeltaMetres <= SAME_MAX_BOUNDS_DELTA_METRES
+        and comparison.symmetricBoundaryMeanDistanceMetres <= SAME_MAX_BOUNDARY_MEAN_DISTANCE_METRES
+        and comparison.symmetricBoundaryMaxDistanceMetres <= SAME_MAX_BOUNDARY_MAX_DISTANCE_METRES
+        and comparison.sampledJaccard >= SAME_MIN_SAMPLED_JACCARD
 end
 
 local function positivelyDifferent(comparison)
     return comparison.occupiedRegionsDisjoint == true
         and comparison.outerBoundariesIntersect == false
-        and comparison.minimumBoundaryDistanceMetres > threshold("FIELD_WORLD_EQUIVALENCE_DIFFERENT_MIN_BOUNDARY_SEPARATION_METRES", 0.2)
+        and comparison.minimumBoundaryDistanceMetres > DIFFERENT_MIN_BOUNDARY_SEPARATION_METRES
         and comparison.sampledIntersection == 0
         and comparison.verticesAInsideBFraction == 0
         and comparison.verticesBInsideAFraction == 0
@@ -41,7 +47,7 @@ function Evaluator:evaluate(a, b)
     local comparison = OuttaMyWay.FieldWorldSnapshotRegistry.compareGeometry(
         a.geometryMetrics,
         b.geometryMetrics,
-        OuttaMyWay.FIELD_WORLD_EQUIVALENCE_SAMPLE_SIDE or 31
+        EQUIVALENCE_SAMPLE_SIDE
     )
     local outcome, reason
     if exactCanonicalGeometry then

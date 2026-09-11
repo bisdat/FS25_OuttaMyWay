@@ -21,19 +21,14 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State: `main` after PR #130 merge,
-  `ff20699e2b83fa7e5d476efd7373168f96be2861`.
+- Accepted Repository State: `main` after PR #131 merge,
+  `3f984364de1cb93b1c0682a35992c25d9087f97c`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.56 TEST — REPRESENTATION CACHE BOUND OWNERSHIP`**.
-- Protected post-merge Offline Validation run #321 passed on the exact merge
-  commit.
-- Issue #112 remains closed completed.
-- Issue #87 is active: `.52` retired obsolete Obstruction Relocation consent,
-  `.53` localised relocation distance/watchdog bounds, `.54` separated
-  Runtime/diagnostic/Candidate cadence semantics, `.55` localised the Cache-only
-  32-member Physical Assembly discovery bound, and `.56` split Representation
-  hierarchy/revalidation bounds by their actual cache domains.
+  **`0.3.0.57 TEST — ENTITY-LOCAL SHAPE EVIDENCE OWNERSHIP`**.
+- Post-merge Offline Validation run #324 passed on exact `main`; corroborating
+  run #325 passed on the identical SHA.
+- Issue #87 is active through the `.58` Field World ownership tranche.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -44,7 +39,7 @@ Architectural meaning remains owned by the
 | Runtime composition | `scripts/main.lua`, `scripts/runtime/Runtime.lua`, `LiveRuntimeCoordinator.lua` | PRESERVE explicit production composition |
 | Job Episode identity | `scripts/identity/JobEpisodeAdmission.lua` | PRESERVE Lifecycle Evidence Asymmetry |
 | Local Operation identity/membership | `scripts/identity/OperationAdmission.lua` | PRESERVE lifecycle context; not traffic controller |
-| Field World snapshots/equivalence | `FieldWorldSnapshotRegistry.lua`, `FieldWorldEquivalenceEvaluator.lua`, `FieldWorldEquivalenceAuthority.lua`, `LiveObservationSource.lua` | PRESERVE — retained tracks resolve their existing immutable Snapshot assignment, which refreshes Field World relevance without stale geometry re-evaluation |
+| Field World snapshots/equivalence | `FieldWorldSnapshotRegistry.lua`, `FieldWorldEquivalenceEvaluator.lua`, `FieldWorldEquivalenceAuthority.lua`, `LiveObservationSource.lua` | PRESERVE — `.58` localises Snapshot/fingerprint production values to the Registry, interpretation thresholds to the Evaluator, and evidence-history retention bounds to the Authority; retained tracks keep immutable Snapshot assignment semantics |
 | Current Physical Assembly acquisition | `scripts/observation/CurrentPhysicalAssemblySource.lua` | PRESERVE mission-root addressability; no semantic authority |
 | Current pose / live Observation | `CurrentPhysicalPoseSource.lua`, `LiveObservationSource.lua`, `LiveInteractionObservation.lua` | PRESERVE factual/provenance boundary |
 | Physical representation cache | `scripts/representation/AssemblyRepresentationCache.lua` | PRESERVE — member-discovery truncation revokes Transit complete-assembly authority at representation construction (#99 / PR #106); `.55` localises the 32-member bound and `.56` owns its per-member hierarchy-discovery and Job-scoped membership-revalidation bounds locally |
@@ -76,7 +71,7 @@ Architectural meaning remains owned by the
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting Obstruction Relocation movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.43` removes the dead Passage target field and reports current `conflictIdentity` in the verdict trace |
-| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52` retired obsolete Obstruction Relocation consent; `.53` localised relocation distance/watchdog bounds; `.54` localised Runtime/diagnostic/Candidate cadence semantics; `.55` localised the Cache-owned assembly member bound; `.56` split hierarchy/revalidation bounds by cache domain; `.57` removes the final Representation calibration globals into Entity-Local Shape Evidence |
+| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.57 localised prior consent, relocation, cadence and Representation families; `.58` removes the Field World value family into its three existing owners |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
 
 ## Boundary findings worth protecting
@@ -135,11 +130,9 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #87 | mixed runtime constants / Configuration ownership | `scripts/config.lua` still centralises unrelated diagnostic, policy, calibration, watchdog and identity values. Representation ownership is now conceptually resolved through `.57`: Cache-only bounds live with their caches, while the genuinely shared 0.05 m coherence and 0.0001 m root-alias calibrations belong to Entity-Local Shape Evidence. Remaining #87 work concerns other value families and the required Player / Developer-Debug / Internal presentation boundary. |
+| #87 | mixed runtime constants / Configuration ownership | `.58` resolves Field World production, interpretation and evidence-history values into existing semantic owners. Remaining #87 work concerns follower/trajectory, Cooperative Passage/Resolution Space, diagnostics/HUD, identity/validation values, and the required Player / Developer-Debug / Internal presentation boundary. |
 
-Issue #112 is closed completed. Issue #116 independently owns the Cooperative
-Passage crossing-window jam investigation. #123 owns deferred GIANTS Reality
-validation for new Job / Player Claim during Obstruction Relocation.
+Issue #112 is closed completed. Issue #116 and #123 remain separate.
 
 ## Separate accepted work / explicit limits
 
@@ -165,29 +158,14 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Implement and validate **#87 `.57 — ENTITY-LOCAL SHAPE EVIDENCE OWNERSHIP`** from
-accepted `main` at `ff20699e2b83fa7e5d476efd7373168f96be2861`.
+Implement and validate **#87 `.58 — FIELD WORLD VALUE OWNERSHIP`** from accepted
+`main` at `3f984364de1cb93b1c0682a35992c25d9087f97c`.
 
-The post-`.56` review established that the remaining 0.05 m geometry/world
-coherence and 0.0001 m descendant/root-alias values are not merely shared
-literals. Both Representation products use them to answer one bounded Resolution
-evidence question: whether already-acquired runtime shape measurements are
-attributable and pose-coherent enough to be admitted as Entity-local physical
-evidence.
+Localise fourteen existing Field World values to the three modules that already
+own their meaning. Preserve every literal and all behaviour. Existing Field World
+Lua witnesses remain the behavioural oracle; add focused structural ownership
+protection.
 
-`.57` introduces `EntityLocalShapeEvidence` as that shared predicate. The
-predicate owns only coherence/root-alias judgement and the unchanged calibration.
-`AssemblyRepresentationCache` and `CurrentPhysicalConflictRepresentation` retain
-their own shape acquisition, candidate discovery, cache lifetime, provenance,
-coverage and authority semantics.
-
-Historical `.55`/`.56` structural assertions that only froze the then-unresolved
-placement are retired rather than converted into permanent placement authority.
-
-No candidate-discovery redesign, cache-lifecycle change, Physical Assembly
-membership change, Coverage Closure change, negative-clearance expansion,
-Passage geometry change, calibration retune, broader Configuration presentation,
-#123 Reality challenge, #116 Passage work, #45 Bullet Time or #89 HUD work
-belongs in this increment.
-
-Protected CI remains the independent offline behavioural authority.
+No Field World redesign, fingerprint migration, threshold retune, Job
+Episode/Operation change, broader Configuration presentation, #123, #116, #45 or
+#89 work belongs in this increment.
