@@ -1447,6 +1447,53 @@ test("inactive assembly without authoritative source-job end evidence preserves 
     end)
 end)
 
+test("current physical relocation reference coverage is independent of observation provenance",function()
+    local oldGetWorldTranslation=getWorldTranslation
+    local ok,err=pcall(function()
+        getWorldTranslation=function(node) return node,0,node+0.5 end
+        local objects={
+            ["REF-A"]={rootNode=101,getAISteeringNode=function(self) return self.rootNode end},
+            ["REF-B"]={rootNode=202,getAISteeringNode=function(self) return self.rootNode end},
+            ["REF-C"]={rootNode=303,getAISteeringNode=function(self) return self.rootNode end}
+        }
+        local currentSource={
+            getCurrentPhysicalObject=function(_,referenceKey) return objects[referenceKey] end,
+            getCurrentPhysicalRelocationRepresentation=function(_,referenceKey,nowSeconds)
+                if objects[referenceKey]==nil then return nil end
+                return {
+                    structurallyValid=true,
+                    positivePrimitiveCount=1,
+                    provenance={source="TEST_CURRENT_PHYSICAL_REPRESENTATION",observedAt=nowSeconds}
+                }
+            end
+        }
+        local raw={
+            timestamp=42,
+            assemblies={
+                {referenceKey="REF-A",source={kind="LIVE_AI_ACTIVE_JOB_VEHICLE"}},
+                {referenceKey="REF-B",source={kind="RETAINED_AI_ASSEMBLY"}},
+                {referenceKey="REF-C",source={kind="CURRENT_MISSION_PHYSICAL_ASSEMBLY_FIELD_WITNESS"}}
+            },
+            geometry={},
+            physicalRepresentationEvidence={},
+            unavailableSources={}
+        }
+        local source=OuttaMyWay.CurrentPhysicalPoseSource.new()
+        equal(source:observe(raw,currentSource),3)
+        equal(#raw.geometry.currentPhysicalPoseEvidence,3)
+        equal(#raw.physicalRepresentationEvidence,3)
+        for _,evidence in OuttaMyWay.ValueRecord.ipairs(raw.physicalRepresentationEvidence) do
+            equal(evidence.structurallyValid,true)
+            equal(evidence.coverageComplete,false)
+            equal(evidence.negativeClearanceAuthority,false)
+            equal(evidence.provenance.historicalJobProvenanceRequired,false)
+            equal(evidence.provenance.observationSourceProvenanceRequired,false)
+        end
+    end)
+    getWorldTranslation=oldGetWorldTranslation
+    if not ok then error(err) end
+end)
+
 test("lastJob transition ends the Job Episode without guessing a termination subtype",function()
     withFakeLiveGlobals(function(mission,a,b,positions,jobA)
         mission.vehicles={a}; setActiveVehicles(mission,a); mission.aiSystem.activeJobs={jobA}
@@ -6804,7 +6851,7 @@ test("D0218 active GIANTS AI blocker remains outside non-active relocation eligi
     equal(records[1].activeBlockerJobEpisodeId,"JE-BLOCKER")
 end)
 
-test("D0218 warm ENDED blocker resolves non-active activity without negative AI re-proof",function()
+test("D0218 ENDED Job evidence resolves non-active activity without negative AI re-proof",function()
     local records=causalObstructionAssessmentFixture({endedBlocker=true,aiObserved=false})
     equal(#records,1)
     equal(records[1].blockerClassification,"NON_ACTIVE_UNCLAIMED")
@@ -6813,7 +6860,7 @@ test("D0218 warm ENDED blocker resolves non-active activity without negative AI 
     equal(records[1].activityEvidence.nonActiveResolvedBy,"ENDED_JOB_EPISODE")
 end)
 
-test("D0218 cold blocker without current activity observation remains fail-closed",function()
+test("D0218 blocker without Job lifecycle or current activity evidence remains fail-closed",function()
     local records=causalObstructionAssessmentFixture({aiObserved=false})
     equal(#records,1)
     equal(records[1].blockerClassification,"ACTIVITY_UNRESOLVED")
@@ -6835,7 +6882,7 @@ test("D0218 fresh ACTIVE Job Episode outranks older ENDED Episode",function()
     equal(records[1].activeBlockerJobEpisodeId,"JE-BLOCKER")
 end)
 
-test("D0218 warm ENDED blocker still requires current Player Claim evidence",function()
+test("D0218 ENDED Job evidence still requires current Player Claim evidence",function()
     local records=causalObstructionAssessmentFixture({endedBlocker=true,aiObserved=false,playerObserved=false})
     equal(#records,1)
     equal(records[1].blockerClassification,"PLAYER_CLAIM_UNRESOLVED")

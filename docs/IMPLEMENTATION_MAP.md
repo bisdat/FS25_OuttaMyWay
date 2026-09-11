@@ -27,7 +27,7 @@ Architectural meaning remains owned by the
 - Accepted executable identity is
   **`0.3.0.46 TEST — OBSTRUCTION RELOCATION CONTROL NAMING`**.
 - Current Issue #121 executable candidate is
-  **`0.3.0.49 TEST — ENDED JOB OBSTRUCTION EVIDENCE`**.
+  **`0.3.0.50 TEST — CURRENT PHYSICAL RELOCATION REFERENCE COVERAGE`**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -48,7 +48,7 @@ Architectural meaning remains owned by the
 | Current Pair Assessment Scope | `scripts/assessment/CurrentPairAssessmentScope.lua` plus `SituationAssessment.lua` | PRESERVE — accepted by #100 / PR #113; ephemeral current Operation/exact-Job-Episode pair scope with no generic pair lifecycle or last-positive truth |
 | Follower Boundary evidence | `scripts/assessment/FollowerBoundaryDemandAssessment.lua` | PRESERVE admissible magnitude evidence/envelope; no requested Control target (#98 / PR #108) |
 | Forward Intersection / Action-Space evidence | `SpatialConstraintAssessment.lua`, `TrajectoryConflictAssessment.lua` | PRESERVE current positive/unresolved/negative semantics |
-| Causal Obstruction | `CausalObstructionAssessment.lua` | `.48` candidate: PRESERVE positive obstruction semantics; ACTIVE Job evidence owns worker classification, ENDED Job evidence may resolve warm non-activity, and cold non-activity remains current-observation based |
+| Causal Obstruction | `CausalObstructionAssessment.lua` | PRESERVE: current GIANTS inactivity observation and ENDED Job Episode are two evidence routes into the same non-active classification; no provenance-specific downstream responsibility |
 | Candidate construction / planning | `scripts/candidates/` | PRESERVE feasible option/support/planning ownership |
 | Prospective Candidate portfolio | `ProspectiveDecisionPortfolioSupport.lua` | PRESERVE complete fresh group enumeration on one Decision picture |
 | Constraint evaluation | `scripts/constraints/ConstraintEngine.lua` plus four canonical evaluators | PRESERVE independently owned mandatory verdicts; `.43` retires only the production-unreachable historical Follower Owns Closure prohibition |
@@ -161,17 +161,20 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Validate **#121 `.49 — ENDED JOB OBSTRUCTION EVIDENCE`** on PR #122.
-`.48` passed all behavioural contracts (**340/0 main; 12/0 focused**) and failed
-only the dynamic Build Identity Contract because `BUILD_LABEL` remained `.47`
-while `VERSION` and `modDesc` were `.48`.
+Validate **#121 `.50 — CURRENT PHYSICAL RELOCATION REFERENCE COVERAGE`**
+on PR #122. `.49` GIANTS Reality confirmed that ENDED Job evidence now produces
+the same `NON_ACTIVE_UNCLAIMED | RELOCATION_ELIGIBLE` classification as the
+current-observation evidence route. The remaining failure is downstream:
+purpose-scoped current physical relocation-reference evidence was selected by
+Observation source provenance, so the generic Candidate was never published for
+the formerly job-owned assembly.
 
-`.49` is an identity-coherence correction only: no intended Causal Obstruction,
-Obstruction Relocation, Observation, Candidate, Control or lifecycle behaviour
-changes from `.48`. The ENDED-Job evidence correction remains the candidate
-behaviour requiring warm GIANTS Reality validation.
+`.50` changes only Observation/reference coverage: current object + current pose
++ current positive-only physical representation become provenance-neutral
+inputs. Causal Obstruction, Candidate semantics, Responsibility, Authority and
+Control remain unchanged.
 
-Protected CI must pass before repeating that warm challenge. Donor source
-deletion plus `POST_JOB_ACTUATION` retirement remains blocked until the
+Protected CI must pass before another GIANTS Reality challenge. Donor source
+deletion plus `POST_JOB_ACTUATION` retirement remains blocked until the generic
 replacement path passes Reality. Do not fold #87, #116, #45 or #89 into this
 increment.

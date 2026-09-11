@@ -1053,6 +1053,15 @@ function Source:getCurrentPhysicalObject(referenceKeyValue)
     return self.currentPhysicalAssemblySource:getObject(referenceKeyValue)
 end
 
+function Source:getCurrentPhysicalRelocationRepresentation(referenceKeyValue,nowSeconds)
+    if self.currentPhysicalConflictRepresentation==nil then return nil end
+    local object=self:getCurrentPhysicalObject(referenceKeyValue)
+    if object==nil then return nil end
+    return self.currentPhysicalConflictRepresentation:observe(
+        object,referenceKeyValue,tonumber(nowSeconds) or 0
+    )
+end
+
 function Source:getTrackedObject(referenceKeyValue)
     local track=self.tracks and self.tracks[referenceKeyValue] or nil
     local object=track and track.object or nil

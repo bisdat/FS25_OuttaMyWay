@@ -7,7 +7,7 @@ def read(relative):
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
-def test_phase13_obstruction_relocation_is_explicitly_loaded_and_current_physical_only():
+def test_phase13_obstruction_relocation_uses_provenance_neutral_current_physical_reference():
     main = read("scripts/main.lua")
     pose = read("scripts/observation/CurrentPhysicalPoseSource.lua")
     source = read("scripts/observation/LiveObservationSource.lua")
@@ -22,12 +22,15 @@ def test_phase13_obstruction_relocation_is_explicitly_loaded_and_current_physica
     ):
         assert relative in main
 
-    assert 'source.kind=="CURRENT_MISSION_PHYSICAL_ASSEMBLY_FIELD_WITNESS"' in pose
+    assert "currentAssemblyReferences" in pose
+    assert 'source.kind=="CURRENT_MISSION_PHYSICAL_ASSEMBLY_FIELD_WITNESS"' not in pose
+    assert "getCurrentPhysicalRelocationRepresentation(referenceKey" in pose
     assert "getCurrentPhysicalObject(referenceKey)" in pose
     assert 'negativeClearanceAuthority=false' in pose
     assert 'semanticAuthority=false' in pose
     assert 'historicalJobProvenanceRequired=false' in pose
     assert "currentPhysicalPoseSource:observe" in source
+    assert "function Source:getCurrentPhysicalRelocationRepresentation" in source
 
 
 def test_phase13_obstruction_relocation_identity_aggregates_pairwise_cause_by_operation_and_blocker():
@@ -136,7 +139,7 @@ def test_phase13_completed_worker_provenance_no_longer_selects_a_second_producti
     assert "POST_JOB_ACTUATION" not in relocation_control
     assert 'target.kind=="OBSTRUCTION_RELOCATION"' in read("scripts/control/LiveControlDispatcher.lua")
 
-def test_issue121_ended_job_evidence_resolves_activity_without_creating_warm_responsibility():
+def test_issue121_ended_job_evidence_resolves_activity_without_creating_provenance_specific_responsibility():
     assessment = read("scripts/assessment/CausalObstructionAssessment.lua")
     observation = read("scripts/observation/LiveObservationSource.lua")
     candidate = read("scripts/candidates/ObstructionRelocationCandidateSupport.lua")

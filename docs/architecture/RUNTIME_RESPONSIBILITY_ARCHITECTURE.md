@@ -206,7 +206,7 @@ does not add a further permission prerequisite.
 current qualifying `ACTIVE` Job Episode is an active worker. Otherwise, a
 positively `ENDED` Job Episode may establish that the same physical assembly is
 non-active for that former Job without requiring a redundant negative
-`getIsAIActive()` sample. A cold blocker with no Job lifecycle evidence instead
+`getIsAIActive()` sample. An assembly with no Job lifecycle evidence instead
 requires current observed GIANTS inactivity before non-active relocation may be
 considered. These are different evidence routes to the same non-active
 classification, not different obstruction responsibilities.
@@ -216,6 +216,16 @@ Situation change: a new ACTIVE Job Episode is admitted, the assembly returns to
 GIANTS-owned worker mechanics, and any prior non-active relocation purpose loses
 its basis. Obstruction Relocation does not maintain a separate resurrection or
 supersession lifecycle.
+
+**Current Physical Relocation Reference Is Provenance-Neutral.** Once
+classification establishes `NON_ACTIVE_UNCLAIMED`, bounded Obstruction
+Relocation consumes the same current GIANTS mission object, current reference
+pose and current positive-only physical representation regardless of whether
+non-activity was established from current GIANTS observation or an ENDED Job
+Episode. The relocation reference carries no Situation relevance, semantic
+authority, negative-clearance authority or actuation permission by itself.
+
+> **Two Evidence Routes Into One Classification; One Generic Mechanism Thereafter**
 
 **Player Entry Is a Claim Boundary, Not a Vehicle Classification.** While the
 blocker remains an active GIANTS AI participant, `getIsEntered()` is player

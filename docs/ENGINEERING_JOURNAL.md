@@ -1,3 +1,43 @@
+## 2026-09-11 — `.49` Reality moves failure downstream; `.50` removes relocation-reference provenance leak
+
+**Observe:** owner-run `.49` GIANTS Reality repeated the same externally visible
+pass/fail split, but the internal evidence changed materially. The formerly
+job-owned Condor now reached
+`NON_ACTIVE_UNCLAIMED | RELOCATION_ELIGIBLE`, proving the ENDED Job Episode
+classification correction. No relocation Commitment or Control followed.
+
+The unaffected physical-census route progressed from Causal Obstruction through
+Resolution Commitment, beneficiary serialization and
+`OBSTRUCTION_RELOCATION_CONTROL`. The failing route stopped before Candidate
+publication.
+
+**Inspect:** `CurrentPhysicalPoseSource` selected only raw assemblies whose
+Observation source kind was `CURRENT_MISSION_PHYSICAL_ASSEMBLY_FIELD_WITNESS`.
+A formerly job-owned assembly remained represented as `RETAINED_AI_ASSEMBLY`,
+even though `LiveObservationSource:getCurrentPhysicalObject()` already defines
+current physical addressability as independent of worker history and Field World
+census membership. Candidate Support requires the resulting
+`currentPhysicalPoseEvidence` and purpose-specific Representation Fitness record,
+so source provenance suppressed a generic relocation prerequisite.
+
+**Decision:** retire source-provenance distinction below non-active
+classification.
+
+> **Two Evidence Routes Into One Classification; One Generic Mechanism Thereafter**
+
+> **There Is One Non-Active Obstruction**
+
+`.50` broadens only the Current Physical Relocation Reference population:
+assemblies already present in raw Observation may receive current mission
+object/pose/current positive-only physical-representation evidence independent of
+their Observation source label. That evidence remains non-semantic,
+positive-only, without negative-clearance or actuation authority. Causal
+Obstruction, Candidate Support semantics, Responsibility, Authority and Control
+are deliberately unchanged.
+
+Current architecture/test terminology names the evidence routes directly; the
+previous `warm` / `cold` shorthand is retired outside historical records.
+
 ## 2026-09-11 — `.48` behavioural CI passes; build identity mismatch selects `.49`
 
 **Validate:** protected Offline Validation #303 on

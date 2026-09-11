@@ -67,9 +67,10 @@ positively blocked by that subject, the obstruction purpose is discharged.
 `ENDED` GIANTS Job Episode is sufficient evidence that the assembly is no longer
 an active worker for that Job. This does not create a completed-worker
 responsibility and does not make Job history a prerequisite for Causal
-Obstruction or relocation: a cold blocker may establish non-activity from
-current GIANTS observation instead. Warm and cold blockers converge on the same
-`NON_ACTIVE_*` classification and the same Obstruction Relocation responsibility.
+Obstruction or relocation: an assembly without Job lifecycle evidence may
+establish non-activity from current GIANTS observation instead. Both evidence
+routes converge on the same `NON_ACTIVE_*` classification and the same
+Obstruction Relocation responsibility.
 
 Current positive GIANTS activity or a fresh qualifying `ACTIVE` Job Episode
 outranks older ENDED evidence. If the physical assembly later begins another
@@ -83,6 +84,18 @@ Passage mechanics.
 > **Job Activation Is Situation Change, Not Relocation Supersession Logic**
 
 > **Ended Worker Becomes an Obstacle; New Job Makes It a Worker Again**
+
+**Owner clarification — provenance ends at classification.** The two accepted
+evidence routes are current GIANTS inactivity observation and a positively
+`ENDED` Job Episode. Once either route supports `NON_ACTIVE_UNCLAIMED` (and
+Current Player Claim does not veto), downstream obstruction handling is one
+generic mechanism. Observation-source history must not select a different
+physical relocation reference, Candidate, Responsibility, Authority, Control or
+settlement path.
+
+> **Two Evidence Routes Into One Classification; One Generic Mechanism Thereafter**
+
+> **There Is One Non-Active Obstruction**
 
 **Reason:** Issue #33 demonstrated a cold-start Physical Relevance gap: a
 stationary Condor physically blocked an active worker but remained invisible
