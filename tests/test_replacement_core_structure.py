@@ -381,9 +381,8 @@ def test_v4714_field_world_equivalence_authority_is_active_and_conservative():
     operation=(ROOT/"scripts"/"identity"/"OperationAdmission.lua").read_text(encoding="utf-8")
     for token in ("memberFieldWorldSnapshotReferenceKeys","memberFieldPolygonReferenceKeys","resolved Field World identity"):
         assert token in operation
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    for token in ("FIELD_WORLD_EQUIVALENCE_SAMPLE_SIDE","FIELD_WORLD_EQUIVALENCE_SAME_MAX_AREA_RELATIVE_DELTA","FIELD_WORLD_EQUIVALENCE_SAME_MIN_SAMPLED_JACCARD","FIELD_WORLD_EQUIVALENCE_DIFFERENT_MIN_BOUNDARY_SEPARATION_METRES"):
-        assert token in config
+    for token in ("EQUIVALENCE_SAMPLE_SIDE","SAME_MAX_AREA_RELATIVE_DELTA","SAME_MIN_SAMPLED_JACCARD","DIFFERENT_MIN_BOUNDARY_SEPARATION_METRES"):
+        assert token in evaluator
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     assert "D-0146 Step-1 Situation Knowledge is live-validated and Step-2 Established Conflict -> Candidate-owned Local Passage Search -> Passage Guide -> Commitment/Control is ACTIVE" in runtime
     assert "Control authority disabled" in runtime
