@@ -311,9 +311,9 @@ function Support.new(identityRegistry,epochSequence)
 end
 
 
--- Fresh-only Candidate Support Projection seam. It reuses the accepted cold
--- blocker classification and first-courtesy specification while binding the
--- group's generated composition evidence to the caller-owned target picture.
+-- Fresh-only Candidate Support Projection seam. It reuses the accepted current
+-- blocker classification and geometry-bounded relocation specification while
+-- binding the group's generated composition evidence to the caller-owned target picture.
 function Support:buildFreshProjectedGroup(picture,snapshot,targetPictureId,targetEpoch)
     OuttaMyWay.ValueRecord.assertType(picture,"OperationalPicture")
     OuttaMyWay.ValueRecord.assertType(snapshot,"ObservationSnapshot")
