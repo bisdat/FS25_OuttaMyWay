@@ -257,7 +257,7 @@ evidence does not establish a responsible owner.
 | ARCHITECTURAL / RESPONSIBILITY POLICY | `COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M`, `COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO`, `RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION`, exact `RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH` | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
 | IMPLEMENTATION CALIBRATION | Entity-Local Shape Evidence coherence/root-alias calibration; follower alignment, retention and clearance factors; trajectory sampling/coherence/supersession values; Passage development and gate geometry; Control effect-speed calibration | Entity-local shape calibration is owned by its shared Resolution evidence predicate; other empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
 | SAFETY / RESOURCE BOUND | Passage sweep sample count and phase watchdog; fold-settlement bounds | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
-| DIAGNOSTIC | Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre and progression Probe flags/intervals; lifecycle/transition/future-space and version/follower HUD flags and coordinates | Live diagnostic instruments and their cadence/layout remain internal. Normal Logging and Debug are higher-level player choices, not exposure of each switch. The retired follower-maturation forensic shadow is not a current diagnostic responsibility. |
+| DIAGNOSTIC | Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre and Progression Preservation instrument controls; lifecycle/transition/future-space and version/follower HUD flags and coordinates | `.60` localises the five live instrument enablement/publication cadences to their owning modules. They remain internal diagnostics, not Player Configuration. Normal Logging and Debug are higher-level player choices, not exposure of each switch. |
 | VALIDATION / EXPERIMENTAL | `CONTROL_AUTHORITY_ENABLED`; `COOPERATIVE_PASSAGE_ENABLED` | Current gates and test values are implementation or validation evidence. They do not define the master enabled setting and grant no production authority by location. |
 | HUD IMPLEMENTATION | `TRANSITION_HUD_*`, `VERSION_HUD_*`, `FOLLOWER_PACING_HUD_*` | Coordinates, sizes, rows and diagnostic display flags belong to HUD/diagnostic implementation, not Configuration architecture. |
 | HISTORICAL RESIDUE | evidence-only remnants whose owning responsibility has expired | Demonstrated Productive Coverage, Productive Coverage Residual, Refuge Qualification, Headland Manoeuvre Sweep and the legacy follower-maturation forensic shadow are retired from shipped runtime/configuration; Git and durable engineering records own that history. Any remaining residue is not Configuration and remains subject to Issue #87 ownership review. |
@@ -275,6 +275,11 @@ Fold-settlement bounds remain internal safety/control values. `.59` retires the
 legacy follower-maturation forensic shadow and all `FOLLOWER_MATURATION_*`
 root residue because that diagnostic no longer answers a current engineering
 question; the aligned `FOLLOWER_BOUNDARY_*` production path remains unchanged.
+`.60` further removes the twelve live diagnostic instrument values from the mixed
+root surface without changing their booleans or cadences: Field Identity,
+Productive Continuation, Native Drive Command, Native Manoeuvre and Progression
+Preservation each own the controls that only govern their own observation or
+publication. Runtime's 250 ms cycle remains independently owned.
 The inventory is descriptive; Issue #87 continues ownership-family decomposition
 without retuning values merely because their placement changes.
 

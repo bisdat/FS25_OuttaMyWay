@@ -1,10 +1,10 @@
--- FS25_OuttaMyWay v0.3.0.59 TEST — LEGACY FOLLOWER SHADOW RETIREMENT.
--- The obsolete follower-maturation forensic shadow is no longer shipped;
--- aligned Follower Boundary assessment and Regulation remain authoritative.
+-- FS25_OuttaMyWay v0.3.0.60 TEST — LIVE DIAGNOSTIC VALUE OWNERSHIP.
+-- Live diagnostic enablement/publication cadences are owned by the instruments
+-- that give them meaning; Runtime and semantic authority remain unchanged.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.59"
+OuttaMyWay.VERSION = "0.3.0.60"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
 OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
@@ -20,35 +20,9 @@ OuttaMyWay.TRANSITION_HUD_TITLE_SIZE = 0.016
 OuttaMyWay.TRANSITION_HUD_TEXT_SIZE = 0.014
 OuttaMyWay.TRANSITION_HUD_LINE_HEIGHT = 0.022
 
-OuttaMyWay.FIELD_IDENTITY_PROBE_HEARTBEAT_INTERVAL_MS = 10000
-
--- Prototype 21: passive Productive Continuation evidence discovery. These are
--- diagnostic sampling/logging intervals only; speed values are observations and
--- carry no Productive/Transitional classification authority.
-OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_ENABLED = true
-OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_INTERVAL_MS = 250
-OuttaMyWay.PRODUCTIVE_CONTINUATION_PROBE_HEARTBEAT_MS = 2000
-
-
--- D-0138 passive GIANTS Native Field-Worker Drive Command shadow probe.
--- Reads spec_aiFieldWorker.aiDriveParams only after GIANTS has populated it;
--- the observer never calls getDriveData() and never changes driveToPoint input.
-OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_ENABLED = true
-OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_INTERVAL_MS = 250
-OuttaMyWay.NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_HEARTBEAT_MS = 1000
-
-
-
--- Native manoeuvre observation is retained, but TURNING/head-reversal does not
--- qualify boundary-demand authority.
-OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_ENABLED = true
-OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_INTERVAL_MS = 100
-OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_LOG_INTERVAL_MS = 250
--- D-0129 passive progression-preservation probe. This publishes/consumes motion and
--- obligation Knowledge and records positive demand-witness geometry only. It has no
--- Decision, speed, clearance or Control authority; response-adjusted progression is unresolved.
-OuttaMyWay.PROGRESSION_PRESERVATION_PROBE_ENABLED = true
-OuttaMyWay.PROGRESSION_PRESERVATION_PROBE_HEARTBEAT_MS = 1000
+-- Live diagnostic instrument controls are module-owned. Their exact accepted
+-- enablement and publication/sample cadences live with the five instruments;
+-- they are not player Configuration and do not define Runtime scheduling.
 
 OuttaMyWay.FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true
 -- Live D-0141 clearance margin. Applied only after the unscaled calculation has
@@ -135,7 +109,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.59 TEST — LEGACY FOLLOWER SHADOW RETIREMENT"
+OuttaMyWay.BUILD_LABEL = "0.3.0.60 TEST — LIVE DIAGNOSTIC VALUE OWNERSHIP"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985

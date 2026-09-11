@@ -2,6 +2,11 @@ OuttaMyWay.NativeManoeuvreObservationSource = {}
 local Probe = OuttaMyWay.NativeManoeuvreObservationSource
 Probe.__index = Probe
 
+-- Forensic/raw-observation controls only; no boundary-demand or Control authority.
+local NATIVE_MANOEUVRE_OBSERVATION_ENABLED=true
+local NATIVE_MANOEUVRE_OBSERVATION_SAMPLE_INTERVAL_MS=100
+local NATIVE_MANOEUVRE_OBSERVATION_LOG_INTERVAL_MS=250
+
 local function logInfo(message)
     if Logging~=nil and type(Logging.info)=="function" then
         Logging.info("[FS25_OuttaMyWay][NATIVE-MANOEUVRE] %s",message)
@@ -213,7 +218,7 @@ function Probe:_sample(state,nowMs,currentPose,representation,observed)
     local sample={elapsedMs=elapsed,pose=currentPose,representation=representation,localEnvelope=envelope,speedKmh=speedKmh(state.vehicle),headingDeltaDeg=headingDeg,headingDot=headingDot}
     state.samples[#state.samples+1]=sample
     state.sweep=mergeEnvelope(state.sweep,envelope)
-    local logInterval=OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_LOG_INTERVAL_MS or 250
+    local logInterval=NATIVE_MANOEUVRE_OBSERVATION_LOG_INTERVAL_MS
     if nowMs-(state.lastSampleLogAt or -math.huge)>=logInterval then
         state.lastSampleLogAt=nowMs
         logInfo(string.format(
@@ -284,11 +289,11 @@ function Probe.forensicDemandEnvelope(observations)
 end
 
 function Probe:update(dt)
-    if OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_ENABLED~=true then return end
+    if NATIVE_MANOEUVRE_OBSERVATION_ENABLED~=true then return end
     if g_currentMission==nil then return end
     if g_client~=nil and g_server==nil then return end
     self.elapsed=self.elapsed+(dt or 0)
-    local interval=OuttaMyWay.NATIVE_MANOEUVRE_OBSERVATION_INTERVAL_MS or 100
+    local interval=NATIVE_MANOEUVRE_OBSERVATION_SAMPLE_INTERVAL_MS
     if self.elapsed<interval then return end
     self.elapsed=self.elapsed%interval
     local nowMs=tonumber(g_time) or 0

@@ -1,3 +1,33 @@
+## 2026-09-11 — #87 live diagnostic value ownership
+
+**Observe:** after `.59` retired the follower-maturation forensic shadow, twelve
+root values remained for five genuinely live diagnostic instruments. Unlike the
+retired shadow, current Configuration architecture positively classifies these as
+live diagnostics. Runtime invokes some instruments from its own 250 ms cycle, but
+their local sampling/publication cadence does not define that Runtime clock.
+
+> **Invocation Cadence != Diagnostic Publication Cadence**
+
+> **Diagnostic Dependency != Shared Configuration Ownership**
+
+> **Live Diagnostic != Semantic Authority**
+
+The five owners are `TargetedFieldIdentityProbe`, `ProductiveContinuationProbe`,
+`NativeFieldWorkerDriveCommandProbe`, `NativeManoeuvreObservationSource` and
+`ProgressionPreservationProbe`.
+
+**Decision:** `.60` preserves all twelve booleans/literals exactly and moves them
+to those existing owners. It removes only the historical root identifiers from
+`scripts/config.lua`. No diagnostic retirement, cadence retune, output/provenance
+change, Runtime scheduling change or semantic/physical authority movement is
+included.
+
+**Validation boundary:** two historical structural clauses that asserted Native
+Drive / Progression enablement specifically in `config.lua` now follow the
+instrument that owns the value while preserving all substantive passivity and
+evidence assertions. A focused ownership contract protects root absence, exact
+owner-local values, unchanged Runtime cadence and unchanged diagnostic wiring.
+
 ## 2026-09-11 — #87 retires the legacy follower-maturation forensic shadow
 
 **Observe:** the post-`.58` diagnostic census initially suggested localising

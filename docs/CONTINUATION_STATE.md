@@ -2,46 +2,52 @@
 
 ## Repository authority
 
-- Accepted Repository State: `main` after PR #132 merge,
-  `c91c8da75536f438eee8a2f37e8ec3b854c5bea6`.
+- Accepted Repository State: `main` after PR #133 merge,
+  `a5e001955a4a0fc9b133625f550a78c1c09879c5`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.58 TEST — FIELD WORLD VALUE OWNERSHIP`**.
-- Post-merge Offline Validation run #328 passed on that exact merge commit.
+  **`0.3.0.59 TEST — LEGACY FOLLOWER SHADOW RETIREMENT`**.
+- Post-merge Offline Validation run #330 passed on that exact merge commit.
+- Owner in-game `.59` smoke also passed for the exercised scope.
 - Issue #87 remains open.
 
 ## Current workstream — Issue #87
 
-The proposed broad diagnostic-localisation tranche was narrowed after asking
-whether the historical follower-maturation shadow still has a current purpose.
+After `.59` removed the expired follower-maturation forensic shadow, the surviving
+diagnostic families were re-examined before localising their values.
 
-Historical records show that the D-0124–D-0130 follower path was retained after
-the authority reset only for forensic comparison while aligned D-0141 Follower
-Boundary Regulation matured. The aligned path now owns independent Situation,
-Candidate, Responsibility, Bounded Authority, Control and regression coverage.
+Current architecture positively classifies Field Identity, Productive Continuation,
+Native Drive Command, Native Manoeuvre and Progression Preservation as live
+diagnostic responsibilities. Their controls govern only their own enablement,
+sample/publication cadence or heartbeat; they do not establish Runtime scheduling,
+Situation meaning, Responsibility, Bounded Authority or Control.
 
-> **Historical Forensic Value != Current Runtime Responsibility**
+> **Invocation Cadence != Diagnostic Publication Cadence**
 
-> **Shadow Without an Active Question Is Historical Residue**
+> **Diagnostic Dependency != Shared Configuration Ownership**
 
-The shadow has no current semantic consumer. Its remaining dependencies are
-self-referential loader/listener wiring, fallback HUD text and historical tests.
+> **Live Diagnostic != Semantic Authority**
+
+The Runtime-owned live cycle remains independently fixed at 250 ms.
 
 ## Next bounded increment
 
-Implement **`0.3.0.59 TEST — LEGACY FOLLOWER SHADOW RETIREMENT`**:
+Implement **`0.3.0.60 TEST — LIVE DIAGNOSTIC VALUE OWNERSHIP`**:
 
-1. delete `FollowerMaturationCompressionProbe.lua`;
-2. remove module/instance/listener wiring;
-3. remove the follower HUD shadow fallback while retaining aligned status;
-4. remove all seven `FOLLOWER_MATURATION_*` root values;
-5. retire historical fixtures that exist only to prove the shadow is neutral;
-6. preserve independent aligned Follower Boundary behavioural witnesses;
-7. preserve `FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR = 0.90` and all
-   aligned assessment/authority/Control semantics;
-8. retain `NativeManoeuvreObservationSource` and `ProgressionPreservationProbe`.
+1. preserve all twelve accepted diagnostic booleans/literals exactly;
+2. localise Field Identity heartbeat to `TargetedFieldIdentityProbe`;
+3. localise Productive Continuation enable/sample/heartbeat to its probe;
+4. localise Native Drive Command enable/sample/heartbeat to its probe;
+5. localise Native Manoeuvre enable/sample/log cadence to its observation source;
+6. localise Progression Preservation enable/heartbeat to its probe;
+7. remove only those twelve historical root identifiers from `scripts/config.lua`;
+8. preserve Runtime cadence, diagnostic outputs, provenance/reason vocabulary and
+   all semantic/physical authority boundaries;
+9. reconcile historical structural placement assertions while retaining their
+   substantive passivity/evidence contracts.
 
-After `.59`, return to ownership localisation of genuinely live diagnostics.
+HUD layout/visibility, follower/trajectory values, Cooperative Passage/Resolution
+Space, Player Logging/Debug integration and validation gates remain separate.
 
 ## Separate open work
 

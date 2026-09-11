@@ -21,13 +21,14 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State: `main` after PR #132 merge,
-  `c91c8da75536f438eee8a2f37e8ec3b854c5bea6`.
+- Accepted Repository State: `main` after PR #133 merge,
+  `a5e001955a4a0fc9b133625f550a78c1c09879c5`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.58 TEST — FIELD WORLD VALUE OWNERSHIP`**.
-- Post-merge Offline Validation run #328 passed on the exact merge commit.
-- Issue #87 remains active through the `.59` legacy follower-shadow retirement.
+  **`0.3.0.59 TEST — LEGACY FOLLOWER SHADOW RETIREMENT`**.
+- Post-merge Offline Validation run #330 passed on the exact merge commit.
+- Owner in-game `.59` smoke passed for the exercised scope.
+- Issue #87 remains active through the `.60` live diagnostic value-ownership tranche.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -69,8 +70,8 @@ Architectural meaning remains owned by the
 | Obstruction Relocation Control | `ObstructionRelocationControl.lua`, `NonJobActuationMechanism.lua` | PRESERVE one provenance-neutral physical executor beneath one Causal Obstruction / Obstruction Relocation responsibility; `.51` retires the already-uninstantiated D-0147 donor topology around it |
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting Obstruction Relocation movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
-| Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality for current instruments; `.59` retires the legacy follower-maturation forensic shadow because it no longer answers a current engineering question |
-| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.58 resolve prior consent, relocation, cadence, Representation and Field World families; `.59` retires all obsolete `FOLLOWER_MATURATION_*` shadow residue rather than assigning it a false current owner |
+| Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.59` retires the expired follower-maturation shadow and `.60` localises five live instruments' enablement/publication controls without moving semantic authority |
+| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.59 resolve prior ownership/retirement families; `.60` removes the twelve live diagnostic instrument controls into their existing owners with no cadence retune |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
 
 ## Boundary findings worth protecting
@@ -129,7 +130,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #87 | mixed runtime constants / Configuration ownership | `.58` resolves Field World values. `.59` retires the obsolete follower-maturation forensic shadow and its root residue while preserving aligned Follower Boundary production semantics. Remaining #87 work concerns genuinely live diagnostics/HUD, follower/trajectory ownership, Cooperative Passage/Resolution Space, identity/validation values, and the required Player / Developer-Debug / Internal presentation boundary. |
+| #87 | mixed runtime constants / Configuration ownership | `.60` localises the five current diagnostic instruments' twelve enablement/publication values while preserving Runtime scheduling and semantic authority. Remaining #87 work concerns HUD, follower/trajectory ownership, Cooperative Passage/Resolution Space, identity/validation values, and the required Player / Developer-Debug / Internal presentation boundary. |
 
 Issue #112 is closed completed. Issue #116 and #123 remain separate.
 
@@ -157,21 +158,24 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Implement and validate **#87 `.59 — LEGACY FOLLOWER SHADOW RETIREMENT`** from
-accepted `main` at `c91c8da75536f438eee8a2f37e8ec3b854c5bea6`.
+Implement and validate **#87 `.60 — LIVE DIAGNOSTIC VALUE OWNERSHIP`** from
+accepted `main` at `a5e001955a4a0fc9b133625f550a78c1c09879c5`.
 
-Delete the obsolete `FollowerMaturationCompressionProbe` rather than localising
-its constants. Remove all `FOLLOWER_MATURATION_*` root residue and the diagnostic
-HUD fallback that exists only to display that shadow.
+Localise exactly twelve current diagnostic values to the five instruments that
+give them meaning: Targeted Field Identity, Productive Continuation, Native
+Field-Worker Drive Command, Native Manoeuvre Observation and Progression
+Preservation.
 
-Preserve the aligned Follower Boundary production chain, including
-`FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR = 0.90`, Situation-owned
-`FollowerBoundaryDemandAssessment`, Authority-owned magnitude materialisation,
-Regulation Bounded Authority and Control. Preserve Native Manoeuvre Observation
-and Progression Preservation as separate current responsibilities.
+Preserve all literals and booleans exactly. Runtime continues to invoke diagnostic
+work from its independently owned 250 ms cycle; module-local sample/publication
+cadences do not become Runtime scheduling. Preserve each instrument's existing
+passive/forensic contract and all Situation, Responsibility, Bounded Authority and
+Control boundaries.
 
-Existing aligned follower behavioural witnesses remain the independent oracle;
-focused structural protection proves the retired shadow is no longer shipped.
+Existing semantic/passivity tests remain the independent oracle. A focused
+structural contract protects the new ownership placement without converting
+comment wording into a contract.
 
-No follower-policy retune, Passage redesign, #123, #116, #45 or #89 work belongs
-in this increment.
+HUD layout/visibility, follower/trajectory values, Cooperative Passage/Resolution
+Space, Player Logging/Debug integration, validation gates, #123, #116, #45 and
+#89 are outside this increment.
