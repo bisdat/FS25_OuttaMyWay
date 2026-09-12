@@ -1,11 +1,8 @@
--- FS25_OuttaMyWay v0.1.3.6 TEST — D-0164 Passage rejection telemetry.
--- FS25_OuttaMyWay v0.1.1.0 CANONICAL CANDIDATE — D-0146 Resolution-Space Candidate contract inherited unchanged from v0.1.0.14 TEST.
--- FS25_OuttaMyWay v4.7.112 CANONICAL CANDIDATE — v4.7.109 D-0146 Candidate behaviour preserved; D-0147 is architecture-only.
---
--- Situation Assessment owns recognition of the supported encounter.  This
--- D-0181 production publishes only D-0146 Local Passage candidates; D-0143 is historical donor/test evidence.
--- REPOSITION Candidate.  It does not re-derive head-on meaning and contains no
--- King/Refuge selection or unilateral Yield/Progress role assignment.
+-- Live traffic Candidate Support consumes Situation-owned encounter meaning and
+-- publishes current Follower Boundary, Action-Space Regulation and Cooperative
+-- Passage candidate contracts. Cooperative Passage is a REPOSITION Candidate;
+-- it does not re-derive encounter meaning or invent King/Refuge or unilateral
+-- Yield/Progress roles. Historical donor identity has no production authority.
 
 OuttaMyWay.LiveTrafficCandidateSupport = {}
 local Support = OuttaMyWay.LiveTrafficCandidateSupport
@@ -36,8 +33,8 @@ function Support.new(identityRegistry,epochSequence,passiveSupport)
     return setmetatable({identities=identityRegistry,epochs=epochSequence,passiveSupport=passiveSupport,publishedCount=0,lastStatus="PASSIVE",lastCooperativeTraceKey=nil,lastPassageRejectionTraceKey=nil},Support)
 end
 
--- Retained API for LiveRuntimeCoordinator compatibility.  D-0143 no longer
--- consumes a one-shot autonomous-head-on marker; current Situation evidence is
+-- Retained API for LiveRuntimeCoordinator compatibility. The retired prototype
+-- one-shot autonomous-head-on marker has no authority; current Situation evidence is
 -- authoritative on each live cycle.
 function Support:markAutonomousHeadOnDispatched(governingRequirementKey)
     if type(governingRequirementKey)=="string" and governingRequirementKey~="" then
@@ -47,7 +44,7 @@ end
 function Support:resetAutonomousState() self.lastStatus="PASSIVE" end
 function Support:getLastStatus() return self.lastStatus end
 
--- D-0146 Step-2 active Candidate expression.  Established conflict meaning is
+-- Cooperative Passage Candidate expression.  Established conflict meaning is
 -- consumed, not re-derived. LocalPassagePlanner owns the progressive local
 -- search and returns one sufficient Arrangement/Guide plus its bounded
 -- mechanical Representation Fitness requirements.
@@ -55,8 +52,9 @@ local function cooperativePassageRequirementKey(plan)
     return "cooperative-passage:"..tostring(plan.conflictIdentity)
 end
 
--- D-0200 dependency provenance is pair-specific. Current Pair Assessment Scope
--- supplies exact current Job Episodes; no persistent generic pair identity is required.
+-- Job Episode Dependency Collapse provenance is pair-specific. Current Pair
+-- Assessment Scope supplies exact current Job Episodes; no persistent generic
+-- pair identity is required.
 local function currentPairDependency(pictureValues,subjectAssemblyId,otherAssemblyId,preferredPairReferenceKey)
     for _,pair in OuttaMyWay.ValueRecord.ipairs(pictureValues.currentPairAssessmentScope or {}) do
         local samePair=(pair.subjectAssemblyId==subjectAssemblyId and pair.otherAssemblyId==otherAssemblyId)
@@ -130,7 +128,7 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
         local jobToken=assemblyId==plan.subjectAssemblyId and plan.subjectJobToken or plan.otherJobToken
         local jobEpisodeId=dependentJobEpisodeIdByAssembly and dependentJobEpisodeIdByAssembly[assemblyId] or nil
         passageLegObligations[#passageLegObligations+1]={
-            origin={kind="OTM_MATERIAL_DISPLACEMENT",decision="D-0146",conflictIdentity=plan.conflictIdentity,passageLegAssemblyId=assemblyId},
+            origin={kind="OTM_MATERIAL_DISPLACEMENT",decision="COOPERATIVE_PASSAGE",conflictIdentity=plan.conflictIdentity,passageLegAssemblyId=assemblyId},
             basis={kind="COOPERATIVE_PASSAGE_LEG",assemblyId=assemblyId,originalAssemblyIds=plan.assemblyIds,jobEpisodeId=jobEpisodeId,jobToken=jobToken},
             requiredOutcome={kind="COOPERATIVE_PASSAGE_LEG_HANDED_BACK",assemblyId=assemblyId},
             requiredAuthority={capabilities={"REPOSITION","RESTORE_CONFIGURATION","HANDOVER_TO_GIANTS"}},
@@ -179,11 +177,11 @@ local function makeCooperativePassageCandidate(pictureId,pictureValues,plan,gove
     }
 end
 
--- D-0146 Resolution-Space Conservation. Situation owns admission evidence and
+-- Resolution-Space Conservation. Situation owns admission evidence and
 -- temporary role assignment. Candidate does not re-derive raw GIANTS state.
 -- Current Excursion can justify early Potential-conflict admission; an already
--- Established conflict may also justify Regulation when Step-2 has not yet found
--- a supported Passage expression.
+-- Established conflict may also justify Regulation when Local Passage Search
+-- has not yet found a supported Passage expression.
 local function actionSpaceRegulationRecord(picture)
     local actionable={}
     for _,relation in OuttaMyWay.ValueRecord.ipairs(picture.opposedCorridorKnowledge or {}) do
@@ -289,7 +287,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         forward and "Fixed 1 km/h Intent-Revelation Creep maximises practical revelation time while fresh Situation owns prompt release" or "Supportable Progression is the greatest present conflict-consuming progression that preserves the required next resolution opportunity; Bounded Authority owns its elastic integer magnitude and withholds Reverse-Created Resolution Reserve from ordinary progression",
         {nativeUnrestrictedKmh=action.nativeUnrestrictedKmh,progressionEnvelope="ZERO_TERMINAL_POLICY_TRAJECTORY",reverseCreatedReserveSpendable=false,reposition=false})
     constraints.RESPONSIBILITY_COMPATIBILITY=actionSpaceRegulationPacket(
-        "The bounded Regulation and any later Established-conflict Passage share one pair-scoped D-0146 governing requirement",
+        "The bounded Regulation and any later Established-conflict Passage share one pair-scoped conflict governing requirement",
         {conflictIdentity=relation.identity,governingRequirementKey=governingRequirementKey})
     constraints.OBLIGATION_COMPATIBILITY=actionSpaceRegulationPacket(
         "One terminal-dependent Action-Space preservation obligation remains open only until the relationship dissolves or succeeds into Passage",
@@ -347,7 +345,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
         invalidationConditions={{kind="POSITIVE_RELATIONSHIP_DISSOLUTION"},{kind="COOPERATIVE_PASSAGE_SUCCESSION"},{kind="JOB_EPISODE_CHANGE"}},
         reversibility={physicalEffect=true,releaseOnPurposeExpiry=true},
         obligationsCreated={{
-            origin={kind="TRAFFIC_INTERVENTION",decision=forward and "FORWARD_INTERSECTION" or "D-0146",conflictIdentity=relation.identity},
+            origin={kind="TRAFFIC_INTERVENTION",decision=forward and "FORWARD_INTERSECTION" or "ACTION_SPACE_REGULATION",conflictIdentity=relation.identity},
             basis={kind=forward and "FORWARD_INTERSECTION_INTENT_REVELATION" or "ACTION_SPACE_REGULATION",conflictIdentity=relation.identity,admissionKind=action.admissionKind,roleAssignmentMutable=not forward},
             requiredOutcome={kind=forward and "FORWARD_INTERSECTION_DISSOLVED_OR_SUCCEEDED" or "ACTION_SPACE_REGULATION_PRESERVED_UNTIL_RELATIONSHIP_MATURES_OR_DISSOLVES",conflictIdentity=relation.identity},
             requiredAuthority={capabilities={"REGULATE_SPEED"},trafficPoliceman=true},
@@ -355,7 +353,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
             ownershipClass="CONTINUITY",transferPolicy={allowed=false},terminalDependency=true
         }},
         releaseImplications={releaseOnlyPurposeBoundRegulation=true,trafficSettlement=false,sameCommitmentPassageSuccession=true,currentRoleMayMigrateWithoutSettlingObligation=true},
-        uncertainty={"D0155_CONTINGENCY_RESERVE_FRACTION_IS_PROVISIONAL_POLICY_CALIBRATION","NO_ROUTE_OR_PASSAGE_GEOMETRY_AUTHORITY","PRE_PRODUCTIVE_ACTIVE_JOB_REMAINS_GIANTS_OWNED_UNTIL_POSITIVE_PRODUCTIVE_COMMENCEMENT"},comparisonCost=0
+        uncertainty={"CONTINGENCY_RESERVE_FRACTION_IS_PROVISIONAL_POLICY_CALIBRATION","NO_ROUTE_OR_PASSAGE_GEOMETRY_AUTHORITY","PRE_PRODUCTIVE_ACTIVE_JOB_REMAINS_GIANTS_OWNED_UNTIL_POSITIVE_PRODUCTIVE_COMMENCEMENT"},comparisonCost=0
     }
 end
 
@@ -375,7 +373,7 @@ local function attachActionSpaceRegulation(self,picture,snapshot,item)
         candidateSpecifications={specification},provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,authority="ACTION_SPACE_REGULATION"}
     }
     local action=item.action
-    logInfo("D0146_ACTION_SPACE_REGULATION_SUPPORTED conflict=%s classification=%s admission=%s regulated=%s protected=%s role=%s separation=%.2f overlap=%.2f native=%.2fkmh closureContribution=%.2fkmh moveForwards=%s envelope=BOUNDED_AUTHORITY_OWNED existingCommitment=%s",
+    logInfo("ACTION_SPACE_REGULATION_SUPPORTED conflict=%s classification=%s admission=%s regulated=%s protected=%s role=%s separation=%.2f overlap=%.2f native=%.2fkmh closureContribution=%.2fkmh moveForwards=%s envelope=BOUNDED_AUTHORITY_OWNED existingCommitment=%s",
         tostring(item.relation.identity),tostring(item.relation.classification),tostring(action.admissionKind or "CURRENT_EXCURSION"),tostring(action.regulatedReferenceKey or action.regulatedAssemblyId),tostring(action.protectedReferenceKey or action.excursionReferenceKey or action.protectedAssemblyId or action.excursionAssemblyId),tostring(action.roleBasis or "CURRENT_EXCURSION_STABLE_PARTICIPANT"),
         tonumber(action.separationM) or -1,tonumber(action.currentCorridorOverlap and action.currentCorridorOverlap.overlapM) or -1,
         tonumber(action.nativeUnrestrictedKmh) or -1,tonumber(action.nativeClosureContributionKmh) or -1,tostring(action.nativeMoveForwards),tostring(existing or "NONE"))
@@ -384,7 +382,7 @@ local function attachActionSpaceRegulation(self,picture,snapshot,item)
     return OuttaMyWay.OperationalPicture.new(values)
 end
 
--- D-0141 aligned follower-boundary candidate support.  The Situation layer has
+-- Aligned Follower Boundary Candidate support.  The Situation layer has
 -- already decided whether current topology + a Provisional Demand Seed are
 -- Representation-Fit enough to support follower protection.  Candidate support
 -- does not inspect raw GIANTS state or historical manoeuvre probes.
@@ -415,7 +413,7 @@ end
 local function followerPacket(reason,evidence)
     return {
         result="PASS",applicable=true,evidence=evidence or {},reason=reason,
-        provenance={source="LiveTrafficCandidateSupport",authority="D0141_ALIGNED_FOLLOWER_BOUNDARY"},
+        provenance={source="LiveTrafficCandidateSupport",authority="FOLLOWER_BOUNDARY"},
         revalidationTrigger={kind="NEXT_LIVE_OPERATIONAL_PICTURE"}
     }
 end
@@ -423,7 +421,7 @@ end
 local function followerConstraints(record,physicalCandidate)
     local constraints={}
     local transition=record.transitionPreservation==true
-    for _,id in ipairs(mandatory) do constraints[id]=followerPacket("D-0141 aligned follower-boundary candidate constraint",{pairKey=record.pairKey}) end
+    for _,id in ipairs(mandatory) do constraints[id]=followerPacket("Follower Boundary candidate constraint",{pairKey=record.pairKey}) end
     constraints.FIELD_WORLD_CONTAINMENT=followerPacket("The protected pair remains inside the same active Field World Operation",{operationId=record.operationId})
     constraints.TRANSITION_CLEARANCE=followerPacket(transition and "An already-admitted follower purpose is being rate-bounded by the leader's current GIANTS native transition command" or "Regulation preserves ordering before follower boundary demand matures; it does not invent a route or manoeuvre pose",{provisionalDemandSeed=not transition,transitionPreservation=transition})
     constraints.REPRESENTATION_FITNESS=followerPacket(transition and "Existing follower purpose plus a positive immediate GIANTS transition-rate observation support magnitude maintenance only" or "Current Adjacent Following topology and the explicit Provisional Demand Seed are the only active follower-demand representations",{representationFitness=record.representationFitness,historicalNativeManoeuvreAuthority=false,transitionPreservation=transition})
@@ -439,7 +437,7 @@ local function followerConstraints(record,physicalCandidate)
 end
 
 local function followerRepresentation(values,pictureId,record)
-    local representationId="d0141-follower-demand:"..tostring(record.pairKey)..":"..tostring(pictureId)
+    local representationId="follower-boundary-demand:"..tostring(record.pairKey)..":"..tostring(pictureId)
     values.representationFitness=values.representationFitness or {}
     values.representationFitness[#values.representationFitness+1]={
         representationId=representationId,
@@ -458,7 +456,7 @@ end
 
 local function followerObligation(record)
     return {
-        origin={kind="TRAFFIC_INTERVENTION",decision="D-0141",pairKey=record.pairKey},
+        origin={kind="TRAFFIC_INTERVENTION",decision="FOLLOWER_BOUNDARY",pairKey=record.pairKey},
         basis={kind="FOLLOWER_BOUNDARY_PROTECTION",pairKey=record.pairKey,
             leaderAssemblyId=record.leaderAssemblyId,followerAssemblyId=record.followerAssemblyId,
             leaderName=record.leaderName,followerName=record.followerName,
@@ -489,7 +487,7 @@ local function followerSpecification(pictureId,pictureValues,record,representati
             result="PASS",operationalPictureId=pictureId,governingRequirementKey=requirement,capability="CONTINUE_OBSERVATION",
             reason=exhaustionReason,
             evidence={pairKey=record.pairKey,relationship=record.relationship,demandSeed=record.demandSeed,controlMagnitude=record.controlMagnitude,existingPurpose=existing,currentMagnitudeRestrictive=currentlyRestrictive},
-            provenance={source="FollowerBoundaryDemandAssessment",authority="D0141_OBSERVE_EXHAUSTION"}
+            provenance={source="FollowerBoundaryDemandAssessment",authority="FOLLOWER_BOUNDARY_OBSERVATION_EXHAUSTION"}
         }
     end
     local constraints=followerConstraints(record,physicalCandidate)
@@ -528,13 +526,13 @@ local function followerSpecification(pictureId,pictureValues,record,representati
     if physicalCandidate then
         evidence.progressActuationOwnership={assemblyIds={record.followerAssemblyId}}
         evidence.effectiveActuationComposition={
-            identity="d0141-composition:"..tostring(record.pairKey)..":"..tostring(pictureId),epoch=pictureValues.epoch,
+            identity="follower-boundary-composition:"..tostring(record.pairKey)..":"..tostring(pictureId),epoch=pictureValues.epoch,
             relevantAssemblyIds={record.leaderAssemblyId,record.followerAssemblyId},
             entries={{assemblyId=record.followerAssemblyId,commitmentId=record.existingCommitmentId or "$NEW_COMMITMENT",capability="REGULATE_SPEED",effectClass="SPEED_LIMIT_OR_HOLD",progressActuation=true}}
         }
     end
     return {
-        referenceKey="d0141:"..string.lower(capability)..":"..tostring(record.pairKey),
+        referenceKey="follower-boundary:"..string.lower(capability)..":"..tostring(record.pairKey),
         purpose={kind="FOLLOWER_BOUNDARY_DEMAND_PROTECTION",result=operation=="RETIRE" and "RETIRE_SUPERSEDED_OR_SATISFIED_FOLLOWER_PURPOSE" or "PRESERVE_BOUNDARY_TRANSITION_ORDERING"},
         subject={assemblyId=record.followerAssemblyId,assemblyIds={record.followerAssemblyId}},capability=capability,
         expectedEffect=physicalCandidate and {physicalChange=true,speedCeilingOnly=true,giantsRoute=true,giantsSteering=true,giantsDirection=true,elasticMagnitude=true} or {physicalChange=false,existingProgressMayContinue=true},
@@ -555,7 +553,7 @@ local function attachFollowerBoundary(self,picture,snapshot,record)
     local values=OuttaMyWay.ValueRecord.toTable(picture)
     local pictureId=self.identities:issue("PICTURE")
     values.identity=pictureId; values.epoch=self.epochs:next()
-    values.provenance={source="LiveTrafficCandidateSupport",parentOperationalPictureId=picture.identity,observationSnapshotId=snapshot.identity,authority="D0141_ALIGNED_FOLLOWER_BOUNDARY"}
+    values.provenance={source="LiveTrafficCandidateSupport",parentOperationalPictureId=picture.identity,observationSnapshotId=snapshot.identity,authority="FOLLOWER_BOUNDARY"}
     local representationId=followerRepresentation(values,pictureId,record)
     local specification,requirement=followerSpecification(pictureId,values,record,representationId)
     local decisionPolicy=nil
@@ -564,7 +562,7 @@ local function attachFollowerBoundary(self,picture,snapshot,record)
         complete=true,
         supportBoundary={mode="FOLLOWER_BOUNDARY",supportedCandidateClasses={specification.capability},physicalCapabilitiesImplemented=specification.capability=="REGULATE_SPEED",controlAuthority=false,boundedScope="CURRENT_ADJACENT_FOLLOWING_WITH_PROVISIONAL_DEMAND_SEED",decisionPolicy=decisionPolicy},
         candidateSpecifications={specification},
-        provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,authority="D0141_ALIGNED_FOLLOWER_BOUNDARY"}
+        provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,authority="FOLLOWER_BOUNDARY"}
     }
     self.publishedCount=self.publishedCount+1
     self.lastStatus="FOLLOWER_BOUNDARY_"..tostring(record.status).."_CANDIDATE_PUBLISHED"
@@ -619,11 +617,11 @@ local function clearanceTraceCandidate(candidate)
     }
 end
 
--- v0.1.4.6 telemetry retained.  This consumes evidence already computed by the
+-- Clearance telemetry consumes evidence already computed by the
 -- ordinary LocalPassagePlanner pass.  It does not call the planner, sweep, or
 -- geometry functions again.  The trace is intentionally limited to the local
 -- 40 m approach so the field comparison exposes NO -> YES -> NO clearance
--- behaviour without recreating v0.1.4.5 Candidate Search Amplification.
+-- behaviour without recreating Candidate Search Amplification.
 local function passageClearanceRejectionTelemetry(allRejected)
     local lines={}
     if type(allRejected)~="table" then return lines end
@@ -653,7 +651,7 @@ local function passageClearanceRejectionTelemetry(allRejected)
             local floor=best and best.floor or tonumber(sweep and sweep.acceptedNominalClearanceFloorM)
             local floorResidue=best and best.floorResidue or ((finiteNumber(crossing) and finiteNumber(floor)) and (crossing-floor) or nil)
             lines[#lines+1]=string.format(
-                "D0146_PASSAGE_CLEARANCE_TRACE conflict=%s outcome=REJECTED separation=%.2f longitudinal=%.2f lateral=%.3f bestIndex=%s crossing=%s nominal=%s nominalResidue=%s floor=%s floorResidue=%s outside=%s minimum=%s contact=%.3f offsets=%+.3f/%+.3f relation=%s configuration=%s/%s geometry=%s sweepReason=%s residues=%s",
+                "COOPERATIVE_PASSAGE_CLEARANCE_TRACE conflict=%s outcome=REJECTED separation=%.2f longitudinal=%.2f lateral=%.3f bestIndex=%s crossing=%s nominal=%s nominalResidue=%s floor=%s floorResidue=%s outside=%s minimum=%s contact=%.3f offsets=%+.3f/%+.3f relation=%s configuration=%s/%s geometry=%s sweepReason=%s residues=%s",
                 tostring(conflict.conflictIdentity or "n/a"),separation,tonumber(c and c.longitudinalSeparationM) or -1,tonumber(c and c.currentLateralSeparationM) or -1,
                 tostring(c and c.index or "n/a"),finiteNumber(crossing) and string.format("%.3f",crossing) or "n/a",finiteNumber(required) and string.format("%.3f",required) or "n/a",
                 finiteNumber(residue) and string.format("%+.3f",residue) or "n/a",finiteNumber(floor) and string.format("%.3f",floor) or "n/a",finiteNumber(floorResidue) and string.format("%+.3f",floorResidue) or "n/a",finiteNumber(outside) and string.format("%.3f",outside) or "n/a",finiteNumber(minimum) and string.format("%.3f",minimum) or "n/a",
@@ -683,7 +681,7 @@ local function passageClearanceSelectedTelemetry(plan)
     local participants=config.participants or {}
     local c1,c2=participants[1] or {},participants[2] or {}
     return string.format(
-        "D0146_PASSAGE_CLEARANCE_TRACE conflict=%s outcome=SELECTED separation=%.2f longitudinal=%.2f lateral=%.3f selectedIndex=%s crossing=%s nominal=%s nominalResidue=%s floor=%s floorResidue=%s outside=%s minimum=%s contact=%.3f offsets=%+.3f/%+.3f relation=%s configuration=%s/%s geometry=%s",
+        "COOPERATIVE_PASSAGE_CLEARANCE_TRACE conflict=%s outcome=SELECTED separation=%.2f longitudinal=%.2f lateral=%.3f selectedIndex=%s crossing=%s nominal=%s nominalResidue=%s floor=%s floorResidue=%s outside=%s minimum=%s contact=%.3f offsets=%+.3f/%+.3f relation=%s configuration=%s/%s geometry=%s",
         tostring(plan.conflictIdentity or "n/a"),separation,tonumber(plan.longitudinalSeparationM) or -1,tonumber(arrangement.currentLateralSeparationM) or -1,
         tostring(plan.progressiveSearch and plan.progressiveSearch.selectedIndex or "n/a"),finiteNumber(crossing) and string.format("%.3f",crossing) or "n/a",finiteNumber(required) and string.format("%.3f",required) or "n/a",
         finiteNumber(residue) and string.format("%+.3f",residue) or "n/a",finiteNumber(floor) and string.format("%.3f",floor) or "n/a",finiteNumber(floorResidue) and string.format("%+.3f",floorResidue) or "n/a",finiteNumber(outside) and string.format("%.3f",outside) or "n/a",finiteNumber(minimum) and string.format("%.3f",minimum) or "n/a",
@@ -721,7 +719,7 @@ local function projectedActionSpaceGroup(self,picture,snapshot,values,targetPict
     local representationId=actionSpaceRegulationRepresentation(values,targetPictureId,item)
     local specification=makeActionSpaceRegulationCandidate(targetPictureId,values,item,requirement,existing,representationId)
     local action=item.action
-    logInfo("D0146_ACTION_SPACE_REGULATION_SUPPORTED conflict=%s classification=%s admission=%s regulated=%s protected=%s role=%s separation=%.2f overlap=%.2f native=%.2fkmh closureContribution=%.2fkmh moveForwards=%s envelope=BOUNDED_AUTHORITY_OWNED existingCommitment=%s",
+    logInfo("ACTION_SPACE_REGULATION_SUPPORTED conflict=%s classification=%s admission=%s regulated=%s protected=%s role=%s separation=%.2f overlap=%.2f native=%.2fkmh closureContribution=%.2fkmh moveForwards=%s envelope=BOUNDED_AUTHORITY_OWNED existingCommitment=%s",
         tostring(item.relation.identity),tostring(item.relation.classification),tostring(action.admissionKind or "CURRENT_EXCURSION"),tostring(action.regulatedReferenceKey or action.regulatedAssemblyId),tostring(action.protectedReferenceKey or action.excursionReferenceKey or action.protectedAssemblyId or action.excursionAssemblyId),tostring(action.roleBasis or "CURRENT_EXCURSION_STABLE_PARTICIPANT"),
         tonumber(action.separationM) or -1,tonumber(action.currentCorridorOverlap and action.currentCorridorOverlap.overlapM) or -1,
         tonumber(action.nativeUnrestrictedKmh) or -1,tonumber(action.nativeClosureContributionKmh) or -1,tostring(action.nativeMoveForwards),tostring(existing or "NONE"))
@@ -760,7 +758,7 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
             supportBoundary={mode="FOLLOWER_BOUNDARY",supportedCandidateClasses={specification.capability},physicalCapabilitiesImplemented=specification.capability=="REGULATE_SPEED",controlAuthority=false,boundedScope="CURRENT_ADJACENT_FOLLOWING_WITH_PROVISIONAL_DEMAND_SEED",decisionPolicy=decisionPolicy},
             candidateSpecifications={specification},
             representationFitness=projectedFitnessAdditions(values,baseline),
-            provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,authority="D0141_ALIGNED_FOLLOWER_BOUNDARY"}
+            provenance={source="LiveTrafficCandidateSupport",observationSnapshotId=snapshot.identity,targetOperationalPictureId=targetPictureId,candidateSupportProjection=true,authority="FOLLOWER_BOUNDARY"}
         },nil
     end
 
@@ -785,7 +783,7 @@ function Support:buildProjectedGroup(picture,snapshot,projection,targetPictureId
                 end
                 local governingRequirementKey=cooperativePassageRequirementKey(plan)
                 local specification=makeCooperativePassageCandidate(targetPictureId,values,plan,governingRequirementKey)
-                logInfo("D0146_PASSAGE_SUPPORTED conflict=%s separation=%.2f entryReady=%s targetPicture=%s projection=true",
+                logInfo("COOPERATIVE_PASSAGE_SUPPORTED conflict=%s separation=%.2f entryReady=%s targetPicture=%s projection=true",
                     tostring(plan.conflictIdentity),tonumber(plan.separationM) or -1,tostring(plan.passageEntry and plan.passageEntry.ready==true),tostring(targetPictureId))
                 return {
                     supportBoundary={mode="COOPERATIVE_PASSAGE",supportedCandidateClasses={"REPOSITION"},physicalCapabilitiesImplemented=true,controlAuthority="COOPERATIVE_PASSAGE_BOUNDED_CONTROL",boundedScope="ESTABLISHED_CONFLICT_CONFIGURATION_FIRST_PAIR_SPECIFIC_CLEARANCE_WITH_OPERATION_AWARE_LOCAL_SPACE",king=false,refuge=false,vehicleNameAdmissionGate=false,generalVehicleAuthority=false,decisionPolicy={kind=OuttaMyWay.TrafficPolicemanDecisionPolicy.KIND,governingRequirementKey=governingRequirementKey}},
@@ -823,15 +821,15 @@ function Support:attach(picture,snapshot)
         if forwardReason~=nil then self.lastStatus=forwardReason; return self.passiveSupport:attach(picture,snapshot) end
     end
 
-    -- D-0181: D-0146 is the single production Cooperative Passage authority.
-    -- There is no feature switch or D-0143 fallback path to resurrect.
+    -- Cooperative Passage has a single production Candidate path.
+    -- There is no feature switch or retired prototype fallback path to resurrect.
         local plan,reason,rejected=OuttaMyWay.LocalPassagePlanner.plan(picture,snapshot)
         if plan==nil then
             for _,clearanceTrace in ipairs(passageClearanceRejectionTelemetry(rejected)) do logInfo("%s",clearanceTrace) end
             local rejectionKey,rejectionText=passageRejectionTelemetry(rejected)
             if rejectionKey~=nil and rejectionKey~=self.lastPassageRejectionTraceKey then
                 self.lastPassageRejectionTraceKey=rejectionKey
-                logInfo("D0146_PASSAGE_REJECTED %s",rejectionText)
+                logInfo("COOPERATIVE_PASSAGE_REJECTED %s",rejectionText)
             end
             local actionSpace,actionReason=actionSpaceRegulationRecord(picture)
             if actionSpace~=nil then return attachActionSpaceRegulation(self,picture,snapshot,actionSpace) end
@@ -848,10 +846,10 @@ function Support:attach(picture,snapshot)
             return attachFollowerBoundary(self,picture,snapshot,follower)
         end
 
-        -- D-0159 corrective boundary: Passage Selection immediately restores the
-        -- proven v0.1.3.0 Resolution-to-Passage authority handoff.  Physical
-        -- Passage Entry may still be delayed, but that delay is owned inside
-        -- Cooperative Passage execution rather than by retaining D-0155.
+        -- Passage Selection immediately hands authority from Action-Space Regulation
+        -- to Cooperative Passage. Physical Passage Entry may still be delayed,
+        -- but that delay is owned inside Cooperative Passage execution rather
+        -- than by retaining Action-Space Regulation.
 
         local values=OuttaMyWay.ValueRecord.toTable(picture)
         local pictureId=self.identities:issue("PICTURE")
@@ -865,7 +863,7 @@ function Support:attach(picture,snapshot)
             local arrangement=plan.passageArrangement or {}; local guide=plan.passageGuide or {}; local sweep=guide.pairSweepSupport or {}
             local config=plan.passageConfiguration or {}; local participants=config.participants or {}
             local c1=participants[1] or {}; local c2=participants[2] or {}
-            logInfo("D0146_PASSAGE_SELECTED conflict=%s separation=%.2f entryReady=%s entryBoundary=%.2f lateral=%.2f contact=%.2f nominal=%.2f required=%.2f reserve=%+.2f envelopeBasis=%s sweepBasis=%s crossingBasis=%s arrangement=%s offsets=%+.2f/%+.2f deficit=%.2f configuration=%s/%s release=%.2f profiles=%s/%s guide=%s gates=%d development=%.2f crossingForward=%.2f recovery=%.2f minimumRepresentedClearance=%.2f searchIndex=%s",
+            logInfo("COOPERATIVE_PASSAGE_SELECTED conflict=%s separation=%.2f entryReady=%s entryBoundary=%.2f lateral=%.2f contact=%.2f nominal=%.2f required=%.2f reserve=%+.2f envelopeBasis=%s sweepBasis=%s crossingBasis=%s arrangement=%s offsets=%+.2f/%+.2f deficit=%.2f configuration=%s/%s release=%.2f profiles=%s/%s guide=%s gates=%d development=%.2f crossingForward=%.2f recovery=%.2f minimumRepresentedClearance=%.2f searchIndex=%s",
                 tostring(plan.conflictIdentity),tonumber(plan.separationM) or -1,tostring(plan.passageEntry and plan.passageEntry.ready==true),tonumber(plan.passageEntry and plan.passageEntry.boundarySeparationM) or -1,tonumber(arrangement.currentLateralSeparationM) or -1,tonumber(arrangement.physicalContactThresholdM) or -1,tonumber(arrangement.nominalInterAssemblyClearanceM) or -1,tonumber(arrangement.policyRequiredSeparationM) or -1,tonumber(arrangement.currentPolicyReserveM) or -1,
                 tostring(arrangement.directionalPassageEnvelopeBasis or "DISC_FALLBACK"),tostring(sweep.supportBasis or "n/a"),tostring(plan.passageExcursion and plan.passageExcursion.crossingWindowBasis or "n/a"),tostring(arrangement.identity),tonumber(arrangement.subjectLateralOffsetM) or 0,tonumber(arrangement.otherLateralOffsetM) or 0,tonumber(plan.passageExcursion and plan.passageExcursion.clearanceDeficitM) or 0,
                 tostring(c1.mode or "n/a"),tostring(c2.mode or "n/a"),tonumber(config.totalConfigurationReleasedSpaceM) or 0,tostring(c1.expectedCompactConfigurationProfileId or c1.currentConfigurationProfileId or "n/a"),tostring(c2.expectedCompactConfigurationProfileId or c2.currentConfigurationProfileId or "n/a"),

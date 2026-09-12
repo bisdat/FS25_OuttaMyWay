@@ -1,22 +1,11 @@
--- FS25_OuttaMyWay v0.1.8.0 CANONICAL CANDIDATE — D-0181 Legacy Authority Closure A; TRANSIT_BASE planning fails closed.
--- Candidate-owned Local Passage planning remains vehicle-name independent: Local Passage Space, Progressive Passage Search, Passage Arrangement and Passage Guide remain the governing Candidate concepts.
---
--- Passage Selection may precede physical Passage Entry.  Selection immediately
--- commits Cooperative Passage and supersedes D-0155, restoring the proven
--- v0.1.3.0 authority handoff.  The derived Entry Boundary is consumed later by
--- Cooperative Passage Control's PASSAGE_APPROACH phase; Candidate does not
--- retain uncertainty regulation after the resolution is known.
--- TRANSIT_BASE planning now carries one uniform Transit obligation; legacy
--- configuration-conditioned selection remains only as the existing geometry
--- fallback when Native Base Transit Geometry is unavailable. From the selected
--- represented geometry the planner derives a
--- non-negative Clearance Deficit, participant excursion, physical Crossing
--- Window from longitudinal extents, and Recovery toward the native lateral
--- axis.  The old P23 12/8/12 guide distances are donor evidence, not geometry.
---
--- Current represented discs remain bounded evidence: translated-disc sweep
--- does not claim exact articulated swept-envelope closure.  Third parties and
--- Field World remain constraints on the pair plan, not hidden participants.
+-- Candidate-owned Local Passage planning is vehicle-name independent. Local
+-- Passage Space, Progressive Passage Search, Passage Arrangement and Passage
+-- Guide are the governing Candidate concepts. Selection may precede physical
+-- Passage Entry; the derived Entry Boundary is consumed later by Cooperative
+-- Passage Control. TRANSIT_BASE planning carries one uniform Transit obligation.
+-- Current represented geometry is bounded evidence rather than exact articulated
+-- swept-envelope closure; third parties and Field World remain constraints, not
+-- hidden participants.
 
 OuttaMyWay.LocalPassagePlanner={}
 local Planner=OuttaMyWay.LocalPassagePlanner
@@ -411,7 +400,7 @@ local function pairSweepSupport(guide,aSpace,bSpace,aDiscs,bDiscs,nominalClearan
     local acceptanceRatio=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO) or 1.0
     acceptanceRatio=math.max(0,acceptanceRatio)
     local acceptedFloor=required*acceptanceRatio
-    -- D-0165 + v0.1.4.7 TEST: Nominal Passage Clearance remains the Crossing-Window construction target, not an exact Boolean equality. The policy floor admits a bounded undershoot while represented non-contact remains hard. Development may build toward the target and Recovery may relinquish it once the physical crossing is positively complete, but represented overlap is never authorised outside the window.
+    -- Nominal Passage Clearance remains the Crossing-Window construction target, not an exact Boolean equality. The policy floor admits a bounded undershoot while represented non-contact remains hard. Development may build toward the target and Recovery may relinquish it once the physical crossing is positively complete, but represented overlap is never authorised outside the window.
     local function evidence()
         return {minimumRepresentedClearanceM=minimum,minimumOutsideCrossingClearanceM=minimumOutsideCrossing,minimumCrossingWindowClearanceM=minimumCrossing,requiredNominalClearanceM=required,acceptedNominalClearanceFloorM=acceptedFloor,clearanceAcceptanceRatio=acceptanceRatio}
     end
@@ -584,8 +573,8 @@ local function currentParticipantGeometry(physical,space,rightX,rightZ)
     return {discs=discs,support=support,directionalEnvelope=directional,configurationProfileId=physical.configurationProfileId},nil
 end
 
--- D-0181: superseded configuration-conditioned Passage selection removed.
--- Missing cached Transit geometry now fails closed; no legacy configuration
+-- Passage selection requires cached Transit geometry and fails closed when
+-- that evidence is missing; no legacy configuration
 -- mode can acquire Cooperative Passage authority.
 
 local function transitConditionedPair(pairClearance,aPhysical,aSpace,bPhysical,bSpace,rightX,rightZ,nominalClearanceM)
@@ -651,7 +640,7 @@ local function passageConfigurationPlan(conflict,arrangement)
         participants={participant(conflict.subjectAssemblyId,arrangement.subjectConfiguration),participant(conflict.otherAssemblyId,arrangement.otherConfiguration)},
         selectedRelationSign=arrangement.relationSign,configurationReleasedSpaceEvaluated=true,
         totalConfigurationReleasedSpaceM=(arrangement.subjectConfiguration.releaseM or 0)+(arrangement.otherConfiguration.releaseM or 0),
-        negativeClearanceAuthority=false,authority="D0179_JOB_START_PHYSICAL_CAPABILITY_RECORD"
+        negativeClearanceAuthority=false,authority="JOB_EPISODE_BOOTSTRAP_TRANSIT_CAPABILITY"
     },nil
 end
 
@@ -793,7 +782,7 @@ local function planConflict(picture,snapshot,conflict)
                     provenance={source="LocalPassagePlanner",layer="CANDIDATE_SUPPORT",decisionAuthority=false,controlAuthority=false,generalVehicleAuthority=false,globalOptimisation=false,vehicleNameAdmissionGate=false}
                 },nil
             end
-            -- v0.1.4.6 telemetry retained: evidence already computed by the
+            -- Clearance telemetry uses evidence already computed by the
             -- normal Candidate pass so diagnostics can expose NO -> YES -> NO
             -- clearance behaviour without repeating any geometric work.
             rejected[#rejected+1]={

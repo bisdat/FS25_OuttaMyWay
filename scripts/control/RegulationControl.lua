@@ -1,5 +1,5 @@
--- FS25_OuttaMyWay v0.3.0.21 TEST — REGULATION CONTROL BOUNDARY.
--- Phase 14.1 production boundary for already-authorised REGULATE_SPEED requests.
+-- Regulation Control boundary.
+-- Production boundary for already-authorised REGULATE_SPEED requests.
 -- Physical drive mechanics are supplied by the production NativeDriveMechanism;
 -- this module owns request validation, lease execution/cleanup and raw execution
 -- observation only. It owns no Decision, Regulation magnitude or GIANTS routing.

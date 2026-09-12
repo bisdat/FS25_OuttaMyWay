@@ -219,7 +219,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         -- positive productive-commencement witness is not yet a cooperative Operation
         -- participant, but it may already constrain a productive member of this Field
         -- World.  Keep GIANTS in control of that unrevealed job-entry intent while
-        -- allowing D-0146 Resolution-Space Conservation to regulate/hold the known
+        -- allowing Resolution-Space Conservation to regulate/hold the known
         -- productive member. Completed/non-active workers are excluded from this class.
         for assemblyId,evidence in OuttaMyWay.ValueRecord.pairs(operationEvidenceByAssembly) do
             local details=evidence.evidence or {}
@@ -520,8 +520,8 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         if situation~=nil then situation.opposedCorridorRelationships[#situation.opposedCorridorRelationships+1]=copyValue(relation) end
     end
 
-    -- D-0141 follower-purpose reassessment consumes the stronger D-0146
-    -- trajectory relationship witness.  This ordering is intentional: stale
+    -- Follower Boundary reassessment consumes the stronger Established Trajectory
+    -- relationship witness.  This ordering is intentional: stale
     -- follower Regulation must retire before Candidate selection when current
     -- Reality has succeeded into Established Opposed Corridor Conflict or has
     -- positively passed the former follower relationship.
@@ -547,7 +547,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         end
     end
 
-    -- D-0146 Step 2: Situation owns only purpose-specific mechanical
+    -- For Cooperative Passage, Situation owns only purpose-specific mechanical
     -- Representation Fitness. Candidate responsibility later searches Local
     -- Passage Space and chooses the sufficient Arrangement/Guide.
     local cooperativePassageFitness=OuttaMyWay.PassageCapabilityAssessment.buildFitness({
@@ -557,9 +557,9 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
         representationFitness[#representationFitness+1]=fitness
     end
 
-    -- D-0184: retired D-0143 CooperativePassageAssessment implementation is deleted.
-    -- Production Situation Assessment publishes no D-0143 knowledge or fitness;
-    -- D-0146 owns current Cooperative Passage fitness.
+    -- The retired prototype assessment supplies no production knowledge or fitness.
+    -- PassageCapabilityAssessment owns current Cooperative Passage fitness;
+    -- the compatibility knowledge collection remains empty.
     local cooperativePassageKnowledge={}
     table.sort(representationFitness,function(a,b) return tostring(a.representationId)<tostring(b.representationId) end)
 

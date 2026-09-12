@@ -1,8 +1,6 @@
--- FS25_OuttaMyWay v0.1.10.0 CANONICAL CANDIDATE — D-0184 removes stale D-0143 live provenance; D-0146 lifecycle authority unchanged.
--- Bounded live Commitment lifecycle catch-up for the autonomous initial-head-on
--- test path. It uses the replacement-core Commitment/Obligation/Authority
--- kernel; it does not introduce production Refuge Region or Durable Separation
--- authority.
+-- Live traffic Commitment lifecycle over the replacement-core
+-- Commitment/Obligation/Authority kernel. It introduces no Refuge Region or
+-- Durable Separation authority.
 
 OuttaMyWay.LiveTrafficCommitmentLifecycle = {}
 local Lifecycle = OuttaMyWay.LiveTrafficCommitmentLifecycle
@@ -149,7 +147,7 @@ function Lifecycle.ensureFollowerBoundaryObligation(runtime,commitmentId,bridge,
     local existing=findFollowerBoundaryObligation(runtime,commitmentId,bridge.pairKey)
     if existing~=nil then return {commitment=record,obligation=existing,created=false},nil end
     local obligation=runtime.obligations:create({
-        origin={kind="TRAFFIC_INTERVENTION",decision="D-0141",pairKey=bridge.pairKey},
+        origin={kind="TRAFFIC_INTERVENTION",decision="FOLLOWER_BOUNDARY",pairKey=bridge.pairKey},
         basis={kind="FOLLOWER_BOUNDARY_PROTECTION",pairKey=bridge.pairKey,
             leaderAssemblyId=bridge.leaderAssemblyId,followerAssemblyId=bridge.followerAssemblyId,
             leaderReferenceKey=bridge.leaderReferenceKey,followerReferenceKey=bridge.followerReferenceKey,
@@ -322,7 +320,7 @@ function Lifecycle.applyActionSpaceRegulationDecision(runtime,picture,evaluated)
         record=result.commitment; token=result.authorityToken; acquired=true
     end
     if token==nil or runtime.authorities:validate(token)~=true then return nil,"ACTION_SPACE_REGULATION_VALID_AUTHORITY_TOKEN_UNAVAILABLE" end
-    logInfo("D0146_ACTION_SPACE_DECISION_APPLIED decision=%s commitment=%s conflict=%s admission=%s regulated=%s protected=%s obligation=%s token=%s acquired=%s magnitudeAuthority=BOUNDED_AUTHORITY",
+    logInfo("ACTION_SPACE_REGULATION_DECISION_APPLIED decision=%s commitment=%s conflict=%s admission=%s regulated=%s protected=%s obligation=%s token=%s acquired=%s magnitudeAuthority=BOUNDED_AUTHORITY",
         tostring(evaluated.decision.identity),tostring(record.identity),tostring(bridge.conflictIdentity),tostring(bridge.admissionKind or "CURRENT_EXCURSION"),tostring(bridge.regulatedAssemblyId),tostring(bridge.protectedAssemblyId or bridge.excursionAssemblyId),
         tostring(obligation.identity),tostring(token.identity),tostring(acquired))
     return {application=applied,commitment=record,obligation=obligation,authorityToken=token,authorityAcquired=acquired,bridge=bridge},nil
@@ -372,12 +370,12 @@ function Lifecycle.settleActionSpaceRegulationPurpose(runtime,commitmentId,bridg
         terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,{kind=terminalEvidenceKind,conflictIdentity=bridge.conflictIdentity,reason=bridge.reason})
         record=terminal
     end
-    logInfo("D0146_ACTION_SPACE_PURPOSE_SETTLED commitment=%s conflict=%s obligation=%s remainingObligations=%d terminal=%s reason=%s",
+    logInfo("ACTION_SPACE_REGULATION_PURPOSE_SETTLED commitment=%s conflict=%s obligation=%s remainingObligations=%d terminal=%s reason=%s",
         tostring(commitmentId),tostring(bridge.conflictIdentity),tostring(settledId or "NONE"),#remaining,tostring(terminal and terminal.state or "NO"),tostring(bridge.reason))
     return {commitment=record,settledObligationId=settledId,remainingObligations=remaining,terminal=terminal},nil
 end
 
--- D-0217 Cooperative Passage participant loss is participant-scoped. A sealed
+-- Cooperative Passage participant loss is participant-scoped. A sealed
 -- observation first establishes the complete set of still-open Passage Legs
 -- whose exact original GIANTS Job Episode has authoritatively ended. Why the
 -- Job Episode ended is provenance, not a second Passage lifecycle: player entry
@@ -543,8 +541,8 @@ function Lifecycle.applyCooperativePassageParticipantLosses(runtime,episodeResul
     return outcomes
 end
 
--- D-0200 Job Episode Dependency Collapse remains the whole-purpose collapse
--- path for non-Passage D-0146 traffic responsibilities. Cooperative Passage
+-- Job Episode Dependency Collapse remains the whole-purpose collapse
+-- path for non-Passage Job-founded traffic responsibilities. Cooperative Passage
 -- participant loss is reconciled above at Passage-Leg scope and must never be
 -- promoted back into whole-Commitment basis cessation.
 function Lifecycle.collapseEndedJobEpisodeDependencies(runtime,episodeResult,snapshot)
@@ -576,7 +574,7 @@ function Lifecycle.collapseEndedJobEpisodeDependencies(runtime,episodeResult,sna
                 end
                 local verdict=runtime.governingBasisEvaluator:evaluate(record,{
                     kind="OBJECTIVE_SATISFIED",evidence=settlementEvidence,
-                    provenance={source="LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies",authority="D0200_JOB_EPISODE_DEPENDENCY_COLLAPSE"}
+                    provenance={source="LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies",authority="JOB_EPISODE_DEPENDENCY_COLLAPSE"}
                 })
                 if runtime.regulationBoundedAuthority~=nil and type(runtime.regulationBoundedAuthority.retireTrafficLeasesForCommitment)=="function" then
                     runtime.regulationBoundedAuthority:retireTrafficLeasesForCommitment(record.identity,"JOB_EPISODE_DEPENDENCY_CEASED")
@@ -688,7 +686,7 @@ function Lifecycle.settleCooperativePassageLeg(runtime,commitmentId,assemblyId,d
     local remaining=runtime.obligations:openForOwner(commitmentId)
     local terminal=nil
     if #remaining==0 then
-        local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=settlementEvidence,provenance={source="LiveTrafficCommitmentLifecycle.settleCooperativePassageLeg",decision="D-0146"}})
+        local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=settlementEvidence,provenance={source="LiveTrafficCommitmentLifecycle.settleCooperativePassageLeg",decision="COOPERATIVE_PASSAGE"}})
         local settling=runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
         terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,settlementEvidence)
         record=terminal
@@ -699,9 +697,9 @@ function Lifecycle.settleCooperativePassageLeg(runtime,commitmentId,assemblyId,d
     return {commitment=record,settledObligationId=obligation.identity,remainingObligations=remaining,releasedAuthorityTokenIds=releasedTokens,releasedBoundedAuthorityGrantIds=releasedBounded,terminal=terminal,composition=composition},nil
 end
 
--- D-0146 joint Cooperative Passage admission/revision. CREATE uses the normal
+-- Joint Cooperative Passage admission/revision. CREATE uses the normal
 -- DecisionCommitmentBoundary. REVISE is needed only when an already-live traffic
--- purpose (for example D-0141 follower protection) is succeeded by the joint
+-- purpose (for example Follower Boundary protection) is succeeded by the joint
 -- TS015 Reposition; the fresh restoration/handoff obligation and both progress
 -- authority tokens are then attached to that same Commitment.
 function Lifecycle.applyCooperativePassageDecision(runtime,picture,evaluated)
@@ -797,7 +795,7 @@ function Lifecycle.completeCooperativePassage(runtime,commitmentId,evidence)
     if #remaining>0 then
         return nil,"COOPERATIVE_PASSAGE_COMPLETION_BLOCKED_BY_OTHER_OPEN_OBLIGATIONS"
     end
-    local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {},provenance={source="LiveTrafficCommitmentLifecycle.completeCooperativePassage",decision="D-0146"}})
+    local verdict=runtime.governingBasisEvaluator:evaluate(record,{kind="OBJECTIVE_SATISFIED",evidence=evidence or {},provenance={source="LiveTrafficCommitmentLifecycle.completeCooperativePassage",decision="COOPERATIVE_PASSAGE"}})
     local settling=runtime.terminalSettlementEvaluator:enterSettling(commitmentId,verdict)
     local terminal=runtime.terminalSettlementEvaluator:attemptTerminal(commitmentId,evidence or {kind="COOPERATIVE_PASSAGE_POSITIVE_RESTORATION_AND_HANDOFF"})
     logInfo("COOPERATIVE_PASSAGE_SETTLED commitment=%s terminal=%s settledObligations=%d releasedAuthorityTokens=%d cooldown=false",tostring(commitmentId),tostring(terminal.state),#settled,#(settling.releasedAuthorityTokenIds or {}))

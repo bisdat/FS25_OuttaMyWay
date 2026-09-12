@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.0.4 TEST — D-0146 Pair-Specific Passage Clearance helper.
+-- Pair-Specific Passage Clearance geometry support.
 --
 -- This representation adapter derives one-sided Facing Clearance Extents and
 -- translated represented-DISC clearance from current Situation-owned physical

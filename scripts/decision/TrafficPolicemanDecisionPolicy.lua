@@ -1,5 +1,5 @@
--- FS25_OuttaMyWay v4.7.42 Traffic Policeman sequential Decision policy.
--- Implements settled D-0115 ordering only. It does not derive traffic evidence,
+-- Traffic Policeman sequential Decision policy.
+-- Implements the settled sequential Decision ordering only. It does not derive traffic evidence,
 -- assign roles, construct Vulnerable Space/Convergent Projection or actuate Control.
 
 OuttaMyWay.TrafficPolicemanDecisionPolicy = {}

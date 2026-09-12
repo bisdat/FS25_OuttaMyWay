@@ -1,4 +1,4 @@
--- FS25_OuttaMyWay v0.1.1.0 CANONICAL CANDIDATE — Job-Episode productive commencement / pre-productive relevance semantics inherited unchanged from v0.1.0.14 TEST.
+-- Live Job-Episode, productive commencement and physical relevance observation.
 OuttaMyWay.LiveObservationSource = {}
 local Source = OuttaMyWay.LiveObservationSource
 Source.__index = Source
@@ -343,7 +343,7 @@ function Source:capture(mission, nowSeconds)
             -- The retained track supplies one raw GIANTS lifecycle proof: whether
             -- the admitted source job is now conclusively ended. Job Episode
             -- admission consumes that proof directly; no parallel termination-cause
-            -- flag is retained. Post-completion player control remains D-0147 Player Claim.
+            -- flag is retained. Post-completion player control remains subject to the Player Claim boundary.
             local playerControlled = playerEntered
             local sourceJobEndEvidence = OuttaMyWay.LiveAIJobEvidence.sourceJobEndEvidence(mission, object, track.sourceJobToken)
             if pose ~= nil then
@@ -373,7 +373,7 @@ function Source:capture(mission, nowSeconds)
                 fieldWorldSnapshot = track.fieldWorldSnapshot, fieldWorldResolution=track.fieldWorldResolution, fieldWorldError = track.fieldWorldError, fieldWorldCaptureToken=track.fieldWorldCaptureToken,
                 playerFacingFieldId = track.playerFacingFieldId, playerFacingLocatorSource = track.playerFacingLocatorSource
             })
-            -- D-0147: genuine source completion ends Operation membership but not
+            -- Genuine source completion ends Operation membership but not
             -- physical observability. Retain the completed assembly until Player
             -- Claim or a fresh GIANTS activation supersedes this terminal episode.
             if playerEntered and sourceJobEndEvidence.observed==true then removeAfterCapture[ref] = true end
@@ -1069,7 +1069,7 @@ function Source:getTrackedObject(referenceKeyValue)
     return object
 end
 
--- D-0147 Control consumes the same passively observed physical representation
+-- Obstruction Relocation Control consumes the same passively observed physical representation
 -- already owned by Observation. It does not rediscover assembly geometry or
 -- create a second representation cache lifetime after Job Episode completion.
 function Source:getTrackedRepresentation(referenceKeyValue)

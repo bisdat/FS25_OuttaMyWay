@@ -2,77 +2,84 @@
 
 ## Repository authority
 
-- Accepted Repository State: `main` after PR #136 merge,
-  `bbb23dfee0b2b5c55e241d54e2f66bfef64d6a40`.
+- Accepted Repository State: `main` after PR #137 merge,
+  `7874314b69a168e83770092c026afe49506e18dc`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.62 TEST — FOLLOWER BOUNDARY ASSESSMENT VALUE OWNERSHIP`**.
-- Post-merge Offline Validation run #336 passed on that exact merge commit.
-- Issue #87 remains open.
+  **`0.3.0.63 TEST — CORE CAPABILITY GATE RETIREMENT`**.
+- Post-merge Offline Validation run #339 passed structural and Lua behavioural contracts.
+- Issue #87 remains open for Root Surface Closure.
+- Issue #139 separately owns supported player Configuration.
 
 ## Current workstream — Issue #87
 
-Post-`.62`, review of three apparent capability booleans exposed a deeper
-architectural mismatch. Two guarded `.63` preflights aborted before mutation and
-proved that the historical gates were more deeply embedded than root constants:
-Cooperative Passage was checked in planning and active Control, while the old
-Control flag was duplicated into PassiveLiveValidator.
+`.63` retired the remaining core-capability/pseudo-authority enable-state layer.
+Current core behaviour is governed by Reality / Situation, Responsibility,
+Bounded Authority and typed Control rather than per-capability booleans.
 
-That evidence changed the question from **where should these flags live?** to
-**should a core capability or architectural prohibition have a boolean state at
-all?**
+The subsequent Root Surface Closure census exposed a distinct surviving debt:
+historical decision identifiers still appeared in sourced production
+provenance, authority labels, evidence/outcome kinds, addressability keys,
+telemetry and comments. The Phase-14 strangler corrected authority topology but
+its naming contract explicitly allowed historical provenance, and the structural
+test suite encoded that exception.
 
-> **Core Capability Has No Enable State**
+> **Production Vocabulary Closure != Validation Vocabulary Closure**
 
-> **Master Enablement != Per-Capability Enablement**
+> **Source Topology Defines Production Surface**
 
-> **Committed Responsibility Cannot Be Revoked by a Feature Flag**
+Git owns chronology. Historical decision identity may remain in research/history
+and, temporarily, validation fixtures, but it must not appear anywhere in
+`scripts/main.lua` or the production Lua modules it sources, including comments.
 
-> **Architectural Prohibition Has No Disable Flag**
+## Current bounded increment
 
-> **Diagnostic Assertion != Enforcement Mechanism**
+Implement **`0.3.0.64 TEST — PRODUCTION VOCABULARY CLOSURE`**:
 
-> **Negative Authority Annotation != Capability Enable State**
+1. replace sourced-production D-number provenance, authority, evidence/outcome,
+   runtime identity/addressability, telemetry and comments with current
+   architectural responsibility vocabulary;
+2. reverse the structural production-vocabulary contract so it rejects
+   historical decision identity across the complete `scripts/main.lua` source
+   topology, including comments, rather than preserving selected exceptions;
+3. remove rolling version/decision-history headers from production modules
+   touched by the tranche where Git already owns that chronology;
+4. preserve runtime behaviour, policy/calibration, geometry, lifecycle,
+   authority boundaries and Control semantics;
+5. update positive structural assertions consuming renamed current production
+   contracts while leaving historical fixture/test-title vocabulary and negative
+   retirement assertions for a separate behaviour-neutral Validation Vocabulary
+   Closure increment.
 
-Master OuttaMyWay enablement is the accepted product-level consent boundary.
-Below it, Situation / Responsibility / Bounded Authority determine whether a
-supported core action exists. Typed Control realises that action. Unsupported or
-generic Control has no authorised route rather than a boolean set to false.
+PR #140 review and Offline Validation run #340 exposed two closure gaps: the
+production guard stripped comments, and 13 structural tests still positively
+asserted historical production labels. The review correction scans full sourced
+file text and reconciles those contract consumers. Contract consumers are not
+validation fixtures; preserving deferred fixture vocabulary does not preserve
+obsolete positive assertions. Independent CI validation of the correction remains
+pending publication; local scans and syntax checks do not establish suite or
+in-game validation.
 
-The three Field World identity/equivalence modules retain their explicit
-`controlAuthorityEnabled=false` evidence annotations. Those values scope the
-authority of the evidence product itself; they are not Runtime capability state
-and are not consumed as a rollout veto.
+This tranche does **not** relocate the remaining `scripts/config.lua` constants,
+retire `BUILD_LABEL` / `ARCHITECTURE_VERSION` / `RUNTIME_MODE`, implement player
+Configuration, redesign HUD behaviour, retune Passage/Regulation policy or touch
+the separate Condor donor investigation.
 
-## Next bounded increment
+## Root Surface Closure after `.64`
 
-Implement **`0.3.0.63 TEST — CORE CAPABILITY GATE RETIREMENT`**:
+After Production Vocabulary Closure:
 
-1. retire root `COOPERATIVE_PASSAGE_ENABLED`,
-   `FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED` and
-   `CONTROL_AUTHORITY_ENABLED`;
-2. remove the Follower Candidate-expression rollout veto;
-3. remove Cooperative Passage planner/admission/active-Commitment feature-gate
-   checks and gate-only `COOPERATIVE_PASSAGE_DISABLED*` reasons;
-4. remove Runtime `controlAuthorityEnabled` /
-   `generalControlAuthorityEnabled` pseudo-state and status publication while
-   preserving the Field World evidence-level `controlAuthorityEnabled=false`
-   annotations;
-5. remove PassiveLiveValidator / PassiveLiveTraceRecord general-Control boolean
-   assertion/publication/schema state;
-6. preserve actual authority and safety topology: current evidence, Responsibility,
-   Bounded Authority, typed dispatcher, executor availability and current
-   Control/safety evidence;
-7. reconcile historical tests from boolean placement/state to those architectural
-   invariants and remove test setup that merely forces core Passage enabled;
-8. preserve Passage geometry/policy/calibration, Follower assessment/magnitude
-   and all supported Control behaviour.
-
-Master enablement implementation itself remains deferred player Configuration and
-is outside `.63`. HUD/#89, #123, #116 and #45 remain separate.
+1. close validation-only historical vocabulary separately;
+2. resume #87 ownership movement/retirement from the closed consumer census;
+3. preserve the accepted **Two Root Identities; Everything Else Must Earn an
+   Owner** direction;
+4. keep player-facing Configuration under #139 and HUD/player communication
+   under #89.
 
 ## Separate open work
 
+- **#139** — supported player Configuration surface.
+- **#138** — Condor representation donor catalogue/fallback investigation.
 - **#123** — deferred GIANTS Reality validation.
 - **#116** — Cooperative Passage crossing-window jam investigation.
 - **#45** — Bubble Bullet Time accepted architecture, not implemented.

@@ -1,27 +1,12 @@
--- FS25_OuttaMyWay v0.1.14.0 CANONICAL CANDIDATE — D-0192 Passage + validated D-0195 Assembly Axis Settlement.
---
--- Situation/Candidate/Decision/Commitment establish the pair meaning and the
--- bounded Passage plan before this module is invoked. Passage Selection now
--- immediately owns the encounter, restoring the v0.1.3.0 authority handoff.
--- Control may remain in PASSAGE_APPROACH until the Candidate Entry Boundary is
--- reached, then settles/configures the pair and instantiates the participant
--- guide from actual execution origins before forward-only point pursuit.
--- Passage geometry, Entry timing and guide semantics remain unchanged. For
--- TRANSIT_BASE plans every participant carries one TRANSIT_REQUIRED obligation:
--- always request Transit, then wait only while GIANTS reports native fold actuation
--- still moving. D-0178 Transit Motion Settlement does not interpret allFolded,
--- allDeployed, configuration profiles, current-vs-Transit geometry, or command return
--- as execution authority. Inert/unsupported requests are non-veto; real folding stays
--- held until native foldMoveDirection settles to zero. D-0192 leaves Phases 1-7
--- unchanged, strengthens final Recovery into whole-assembly axis alignment, then
--- adds one-at-a-time straight Axis Return before participant-specific restore/handoff.
--- D-0195 corrects one D-0192 evidence error exposed by the extended TS010
--- run: the Phase-5 member pose is a Passage origin, not a target articulation
--- shape.  Recovery Alignment now requires the vehicle to regain the captured
--- axis and all observed member headings to settle parallel/anti-parallel to
--- that axis; fixed side offsets are not treated as unsettled translation.
--- Positive current occupancy transfers the return token; unsupported return falls
--- back to safe restore/handoff rather than soft-locking or point-seeking in reverse.
+-- Cooperative Passage bounded Control executes an already-established pair plan.
+-- It may remain in PASSAGE_APPROACH until the Candidate Entry Boundary, then
+-- settles/configures the pair and instantiates the guide from actual execution
+-- origins before forward-only point pursuit. TRANSIT_BASE participants always
+-- request Transit and wait only for positive native fold-motion settlement. Final
+-- Recovery restores whole-assembly axis alignment, performs one-at-a-time Axis
+-- Return, then completes participant-specific restore/handoff. The captured member
+-- pose is an execution origin, not a target articulation shape. Unsupported return
+-- fails safely to restore/handoff rather than reverse point-seeking.
 
 OuttaMyWay.CooperativePassageControl={}
 local Control=OuttaMyWay.CooperativePassageControl
@@ -167,7 +152,7 @@ function Control:mouseEvent() end
 
 function Control:loadMap()
     local ok,reason=self.driveMechanism:install()
-    logInfo("LOAD architecture=COOPERATIVE_PASSAGE transitGeometry=REQUIRED_FAIL_CLOSED mechanicalProfile=JOB_START_CAPABILITY_GUIDED_PASSAGE vehicleNameGate=false legacyD0143=false driveHook=%s reason=%s king=false refuge=false cooldown=false generalVehicleAuthority=false",
+    logInfo("LOAD architecture=COOPERATIVE_PASSAGE transitGeometry=REQUIRED_FAIL_CLOSED mechanicalProfile=JOB_START_CAPABILITY_GUIDED_PASSAGE vehicleNameGate=false driveHook=%s reason=%s king=false refuge=false cooldown=false generalVehicleAuthority=false",
         tostring(ok),tostring(reason or "ready"))
 end
 
@@ -388,7 +373,7 @@ function Control:_beginPassageSettling(run,reason)
     end
     self:_setPhase(run,"SETTLING",g_time or 0)
     local separation=self:_passageLongitudinalSeparation(run)
-    logInfo("D0146_PASSAGE_ENTRY_TRIGGER commitment=%s reason=%s longitudinalSeparation=%s entryBoundary=%.2fm action=HOLD_THEN_CONFIGURE",
+    logInfo("COOPERATIVE_PASSAGE_ENTRY_TRIGGER commitment=%s reason=%s longitudinalSeparation=%s entryBoundary=%.2fm action=HOLD_THEN_CONFIGURE",
         tostring(run.commitmentId),tostring(reason or "ENTRY_BOUNDARY"),separation and string.format("%.2fm",separation) or "n/a",tonumber(run.passageEntry and run.passageEntry.boundarySeparationM) or -1)
     return true,nil
 end
@@ -566,7 +551,7 @@ function Control:_rebasePassageGuide(run)
     end
     local cache=self.runtime and self.runtime.assemblyRepresentationCache or nil
     if cache==nil or type(cache.getAssemblyAlignmentSnapshot)~="function" then return false,"ASSEMBLY_ALIGNMENT_CACHE_UNAVAILABLE" end
-    -- D-0195: Phase-5 pose is the Axis Return reference frame, not an
+    -- The captured Passage execution pose is the Axis Return reference frame, not an
     -- articulation pose which Recovery must reproduce.  Alignment is observed
     -- later against this captured axis; do not freeze member lateral offsets or
     -- member headings here as an execution target.
@@ -574,7 +559,7 @@ function Control:_rebasePassageGuide(run)
     local ok,reason=self:_preflightPassageGuide(run)
     if not ok then return false,"EXECUTION_REBASE_PREFLIGHT:"..tostring(reason) end
     local oldSubject=oldOrigins.subject or {}; local oldOther=oldOrigins.other or {}
-    logInfo("D0146_EXECUTION_ORIGIN_CAPTURE commitment=%s subject=%s origin=(%.2f,%.2f) planned=(%s,%s) other=%s origin=(%.2f,%.2f) planned=(%s,%s) guideRebased=true geometryUnchanged=true",
+    logInfo("COOPERATIVE_PASSAGE_EXECUTION_ORIGIN_CAPTURE commitment=%s subject=%s origin=(%.2f,%.2f) planned=(%s,%s) other=%s origin=(%.2f,%.2f) planned=(%s,%s) guideRebased=true geometryUnchanged=true",
         tostring(run.commitmentId),subjectParticipant and subjectParticipant.name or tostring(run.subjectAssemblyId),subjectPose and subjectPose.x or 0,subjectPose and subjectPose.z or 0,
         oldSubject.x and string.format("%.2f",oldSubject.x) or "n/a",oldSubject.z and string.format("%.2f",oldSubject.z) or "n/a",
         otherParticipant and otherParticipant.name or tostring(run.otherAssemblyId),otherPose and otherPose.x or 0,otherPose and otherPose.z or 0,
@@ -886,7 +871,7 @@ end
 function Control:_passageConfigurationReady(run)
     for _,participant in OuttaMyWay.ValueRecord.ipairs(liveParticipants(run)) do
         if participant.configurationMode~="TRANSIT_REQUIRED" then return false end
-        -- D-0179 + D-0181: only Job-Episode cached Transit actuator settlement
+        -- Only Job-Episode cached Transit actuator settlement
         -- owns configuration waiting on the single production Passage path.
         if participant.passageTransitFoldExpected==true and participant.passageTransitCompactionActive==true then
             local settlement=self.configurationMechanism:getCachedTransitSettlement(participant.vehicle)
@@ -1115,7 +1100,7 @@ function Control:_executeCooperativePassageJointRequests(requestA,requestB,candi
         local settleOk,settleReason=self:_beginPassageSettling(run,"ENTRY_READY_AT_SELECTION")
         if not settleOk then self.run=nil; return false,settleReason end
     else
-        logInfo("D0146_PASSAGE_APPROACH_START commitment=%s resolutionSpaceSuperseded=true nativeProductiveApproach=true longitudinalSeparation=%.2fm entryBoundary=%.2fm",
+        logInfo("COOPERATIVE_PASSAGE_APPROACH_START commitment=%s resolutionSpaceSuperseded=true nativeProductiveApproach=true longitudinalSeparation=%.2fm entryBoundary=%.2fm",
             tostring(run.commitmentId),tonumber(bridge.passageEntry and bridge.passageEntry.selectionLongitudinalSeparationM) or -1,tonumber(bridge.passageEntry and bridge.passageEntry.boundarySeparationM) or -1)
     end
     local arrangement=bridge.passageArrangement or {}
@@ -1208,7 +1193,7 @@ function Control:update(dt)
             self:_stopLeg(run)
             logInfo("GUIDE_REACHED commitment=%s guide=%s gate=%d/%d kind=%s",tostring(run.commitmentId),tostring(run.guide and run.guide.identity),completedIndex,OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}),tostring(gate and gate.kind or "n/a"))
             if completedIndex>=OuttaMyWay.ValueRecord.length(run.guide and run.guide.gates or {}) then
-                logInfo("D0146_PASSAGE_GUIDE_COMPLETE commitment=%s guide=%s next=RECOVERY_ALIGNMENT_THEN_AXIS_RETURN secondWhistle=false",tostring(run.commitmentId),tostring(run.guide and run.guide.identity))
+                logInfo("COOPERATIVE_PASSAGE_GUIDE_COMPLETE commitment=%s guide=%s next=RECOVERY_ALIGNMENT_THEN_AXIS_RETURN secondWhistle=false",tostring(run.commitmentId),tostring(run.guide and run.guide.identity))
                 local ok,reason=self:_beginAlignmentRunout(run); if not ok then self:_failHeld("ALIGNMENT_RUNOUT_START:"..tostring(reason)) end
             else
                 local ok,reason=self:_startGuideGate(run,completedIndex+1); if not ok then self:_failHeld(tostring(reason)) end

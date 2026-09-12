@@ -133,10 +133,10 @@ function Runtime.new()
 end
 function Runtime:initialize()
     if self.initialized then return end; self.initialized=true
-    -- Structural continuity marker: physical Control remains typed, responsibility-bound and Bounded-Authority-gated; no generic Control path exists.
-    -- D-0146 Step-1 Situation Knowledge is live-validated and Step-2 Established Conflict -> Candidate-owned Local Passage Search -> Passage Guide -> Commitment/Control is ACTIVE.
-    self.trace:append("PROGRESSIVE_SITUATIONAL_SUFFICIENCY_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";obstructionRelocationResponsibilityConsolidated=true;geometryBoundedRelocation=true;obstructionRelocationCoreCapability=true;d0146Step1SituationKnowledge=true;trajectoryPersistence=true;opposedCorridorClassification=true;d0146Step2OperationAware=true;d0143CooperativePassage=false;d0143MechanicalDonorHistoricalOnly=true;d0141FollowerRegulation=true;turningRankAwarenessRetained=true;successorRookRetired=true;continuousProductiveHistoryRetired=true;kingRetired=true;continuousRefugeRetired=true;runtimeOwnedCycle=true;situationOwnsCurrentKnowledge=true;diagnosticsAuthority=false;typedBoundedControl=true")
-    print(string.format("FS25_OuttaMyWay %s loaded; Obstruction Relocation core capability: non-active unclaimed blockers relocate <=60 m toward Field World centroid per actuation while fresh positive Causal Obstruction persists; no move-count courtesy budget; D-0192/D-0188/D-0186 remain active",tostring(OuttaMyWay.BUILD_LABEL or ("v"..tostring(OuttaMyWay.VERSION)))))
+    -- Physical Control remains typed, responsibility-bound and Bounded-Authority-gated; no generic Control path exists.
+    -- Trajectory Situation Knowledge and Established Opposed Conflict feed Candidate-owned Local Passage Search, Passage Guide, Commitment and Control.
+    self.trace:append("PROGRESSIVE_SITUATIONAL_SUFFICIENCY_INITIALIZED",self.epochs:next(),"architecture="..OuttaMyWay.ARCHITECTURE_VERSION..";obstructionRelocationResponsibilityConsolidated=true;geometryBoundedRelocation=true;obstructionRelocationCoreCapability=true;trajectorySituationKnowledge=true;trajectoryPersistence=true;opposedCorridorClassification=true;cooperativePassageOperationAware=true;retiredPrototypePassageSourced=false;followerBoundaryRegulation=true;turningRankAwarenessRetained=true;successorRookRetired=true;continuousProductiveHistoryRetired=true;kingRetired=true;continuousRefugeRetired=true;runtimeOwnedCycle=true;situationOwnsCurrentKnowledge=true;diagnosticsAuthority=false;typedBoundedControl=true")
+    print(string.format("FS25_OuttaMyWay %s loaded; Obstruction Relocation core capability: non-active unclaimed blockers relocate <=60 m toward Field World centroid per actuation while fresh positive Causal Obstruction persists; no move-count courtesy budget",tostring(OuttaMyWay.BUILD_LABEL or ("v"..tostring(OuttaMyWay.VERSION)))))
 end
 
 function Runtime:setRegulationControl(control)
@@ -160,14 +160,13 @@ function Runtime:processSealedObservation(raw)
     local snapshot=self:publishObservation(raw)
     local episodes=self:admitJobEpisodes(snapshot)
     local operation=self:admitOperation(snapshot,episodes)
-    -- D-0217: reconcile the complete sealed Cooperative Passage participant-loss
-    -- set at Passage-Leg scope before D-0200 considers non-Passage traffic
-    -- responsibilities. This prevents one lost participant from collapsing the
-    -- survivor and prevents same-observation dual loss from transiently restarting
-    -- a doomed survivor.
+    -- Reconcile the complete sealed Cooperative Passage participant-loss set at
+    -- Passage-Leg scope before whole-purpose Job Episode dependency collapse handles
+    -- non-Passage traffic responsibilities. This prevents one lost participant from
+    -- collapsing the survivor and prevents same-observation dual loss from transiently
+    -- restarting a doomed survivor.
     local passageParticipantVacatur=OuttaMyWay.LiveTrafficCommitmentLifecycle.applyCooperativePassageParticipantLosses(self,episodes,snapshot)
-    -- D-0200 remains whole-purpose Job Episode dependency collapse for non-Passage
-    -- D-0146 traffic responsibilities.
+    -- Whole-purpose Job Episode dependency collapse applies only to non-Passage traffic responsibilities.
     local trafficCommitmentCollapse=OuttaMyWay.LiveTrafficCommitmentLifecycle.collapseEndedJobEpisodeDependencies(self,episodes,snapshot)
     local picture=self:assessOperationalPicture(snapshot,episodes,operation)
     return {snapshot=snapshot,jobEpisodes=episodes,operation=operation,picture=picture,passageParticipantVacatur=passageParticipantVacatur,trafficCommitmentCollapse=trafficCommitmentCollapse}
@@ -318,14 +317,14 @@ function Runtime:_continueCooperativePassage(picture,evaluated,applied)
     end
     local requests,requestReason=self:_jointCooperativePassageRequests(picture,evaluated,candidate,applied.commitment,applied.currentResponsibility,bridge)
     if requests==nil then
-        self:onCooperativePassageCompletion({status="FAILED",commitmentId=applied.commitment.identity,evidence={kind="D0146_JOINT_CONTROL_REQUEST_CREATION_FAILED",reason=requestReason}})
+        self:onCooperativePassageCompletion({status="FAILED",commitmentId=applied.commitment.identity,evidence={kind="COOPERATIVE_PASSAGE_JOINT_CONTROL_REQUEST_CREATION_FAILED",reason=requestReason}})
         return {status="NO_DISPATCH",reason=requestReason,candidateId=candidate.identity,commitmentId=applied.commitment.identity}
     end
     local started,result=self.liveControlDispatcher:dispatchJoint(requests[1],requests[2],candidate)
     if started~=true then
         self.boundedAuthority:release(requests[1].boundedAuthorityId,"COOPERATIVE_PASSAGE_START_REJECTED")
         self.boundedAuthority:release(requests[2].boundedAuthorityId,"COOPERATIVE_PASSAGE_START_REJECTED")
-        self:onCooperativePassageCompletion({status="FAILED",commitmentId=applied.commitment.identity,evidence={kind="D0146_COOPERATIVE_CONTROL_START_REJECTED",reason=tostring(result)}})
+        self:onCooperativePassageCompletion({status="FAILED",commitmentId=applied.commitment.identity,evidence={kind="COOPERATIVE_PASSAGE_CONTROL_START_REJECTED",reason=tostring(result)}})
         local outcomes={
             self.liveControlDispatcher:notifyRejected(requests[1],result,{kind="NO_PHYSICAL_EFFECT_OBSERVED"}),
             self.liveControlDispatcher:notifyRejected(requests[2],result,{kind="NO_PHYSICAL_EFFECT_OBSERVED"})
@@ -334,8 +333,8 @@ function Runtime:_continueCooperativePassage(picture,evaluated,applied)
         return {status="REJECTED",reason=tostring(result),requests=requests,outcomes=outcomes,commitment=applied.commitment,candidate=candidate}
     end
     local outcomes={
-        self.liveControlDispatcher:notifyAccepted(requests[1],{kind="D0146_JOINT_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"}),
-        self.liveControlDispatcher:notifyAccepted(requests[2],{kind="D0146_JOINT_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"})
+        self.liveControlDispatcher:notifyAccepted(requests[1],{kind="COOPERATIVE_PASSAGE_JOINT_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"}),
+        self.liveControlDispatcher:notifyAccepted(requests[2],{kind="COOPERATIVE_PASSAGE_JOINT_REPOSITION_DISPATCH_ACCEPTED",capability="REPOSITION"})
     }
     cooperativeLog("COOPERATIVE_ACCEPTED architecture=%s decision=%s candidate=%s commitment=%s requestA=%s requestB=%s subject=%s other=%s result=%s",
         tostring(bridge.architecture),tostring(evaluated.decision.identity),tostring(candidate.identity),tostring(applied.commitment.identity),tostring(requests[1].identity),tostring(requests[2].identity),
@@ -370,7 +369,7 @@ function Runtime:_terminateActionSpaceRegulation(picture,evaluated,current,asses
     local commitment=self.commitments:get(commitmentId)
     if commitment~=nil and not OuttaMyWay.CommitmentStateMachine.isTerminal(commitment.state) then
         OuttaMyWay.LiveTrafficCommitmentLifecycle.releaseSupportingRegulationAuthority(self,commitmentId,status and status.regulatedAssemblyId,{reason=assessment.reason,preserveAuthority=false})
-        local settlementKind=forward and assessment.terminationEvidenceKind or "D0146_ACTION_SPACE_POSITIVE_PURPOSE_EXPIRY"
+        local settlementKind=forward and assessment.terminationEvidenceKind or "ACTION_SPACE_REGULATION_POSITIVE_PURPOSE_EXPIRY"
         OuttaMyWay.LiveTrafficCommitmentLifecycle.settleActionSpaceRegulationPurpose(self,commitmentId,{conflictIdentity=conflictIdentity,reason=assessment.reason},{
             kind=settlementKind,
             reason=assessment.reason,

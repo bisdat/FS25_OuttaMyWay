@@ -383,7 +383,7 @@ def test_v4714_field_world_equivalence_authority_is_active_and_conservative():
     for token in ("EQUIVALENCE_SAMPLE_SIDE","SAME_MAX_AREA_RELATIVE_DELTA","SAME_MIN_SAMPLED_JACCARD","DIFFERENT_MIN_BOUNDARY_SEPARATION_METRES"):
         assert token in evaluator
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert "D-0146 Step-1 Situation Knowledge is live-validated and Step-2 Established Conflict -> Candidate-owned Local Passage Search -> Passage Guide -> Commitment/Control is ACTIVE" in runtime
+    assert "trajectorySituationKnowledge=true" in runtime
     assert "runtime.boundedAuthority=OuttaMyWay.BoundedAuthority.new(runtime)" in runtime
     assert "decisionCommitmentBoundary:apply" not in (ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
 
@@ -530,7 +530,7 @@ def test_v4721_future_space_conformance_recovers_existing_local_intent_architect
     for token in ("OTM FUTURE SPACE","FUTURE SPACES INTERSECT","UNRESOLVED WHILE MANOEUVRING","FUTURE-SPACE HUD"):
         assert token in hud
     assert "FUTURE_SPACE pair=%s classification=%s" in validator
-    assert "D-0146 Step-1 Situation Knowledge is live-validated and Step-2 Established Conflict -> Candidate-owned Local Passage Search -> Passage Guide -> Commitment/Control is ACTIVE" in runtime
+    assert "trajectorySituationKnowledge=true" in runtime
     for text in (source,intent,future,assessment,hud,validator,runtime):
         for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
             assert forbidden not in text
@@ -565,7 +565,7 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     assert "currentPairAssessmentScope" in assessment
     assert "futureSpaceStatus" in scope and "relationshipStatus" in scope
     assert "futureSpacePositive=%s" in validator
-    assert "d0143CooperativePassage=false" in runtime and "d0143MechanicalDonorHistoricalOnly=true" in runtime and "kingRetired=true" in runtime and "typedBoundedControl=true" in runtime
+    assert "retiredPrototypePassageSourced=false" in runtime and "kingRetired=true" in runtime and "typedBoundedControl=true" in runtime
     for text in (source,assessment,scope,validator,runtime):
         for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
             assert forbidden not in text
@@ -732,7 +732,9 @@ def test_v4767_d0138_native_field_worker_drive_command_probe_is_passive_and_sdk_
     assert 'params.moveForwards' in probe and 'params.tX' in probe and 'params.tZ' in probe and 'params.maxSpeed' in probe
     assert 'getDriveData()' in probe and 'never calls' in probe
     assert 'driveToPoint' in probe and 'never' in probe
-    assert 'vehicle.aiDriveDirection' in probe and 'falsified' in probe
+    assert 'vehicle.aiDriveDirection' in probe
+    assert 'initialization/default fields' in probe
+    assert 'deliberately not observed here' in probe
     assert 'routePrediction=false' in probe and 'futureSpaceAuthority=false' in probe
     assert 'refugeSelectionAuthority=false' in probe and 'controlAuthority=false' in probe
     assert 'candidateRelation' in probe and 'nativeCommandTargetDelta' in refuge and 'nativeCommandTargetDistance' in refuge
@@ -893,7 +895,7 @@ def test_v47100_d0146_step1_remains_situation_owned_knowledge_under_step2_consum
 
     assert "scripts/assessment/TrajectoryConflictAssessment.lua" in main
     assert main.index("scripts/assessment/TrajectoryConflictAssessment.lua") < main.index("scripts/assessment/SituationAssessment.lua")
-    for token in ("updateTrajectories","classifyPairs","ESTABLISHED_TRAJECTORY","CURRENT_EXCURSION","POTENTIAL_OPPOSED_CORRIDOR_CONFLICT","ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT","D0146_SITUATION_KNOWLEDGE"):
+    for token in ("updateTrajectories","classifyPairs","ESTABLISHED_TRAJECTORY","CURRENT_EXCURSION","POTENTIAL_OPPOSED_CORRIDOR_CONFLICT","ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT","TRAJECTORY_CONFLICT_ASSESSMENT"):
         assert token in module
     for token in ("trajectoryKnowledge","opposedCorridorKnowledge","trajectoryTracks"):
         assert token in assessment
@@ -961,7 +963,7 @@ def test_v47103_d0146_relationship_succession_retires_stale_follower_and_local_p
     assert "opposedCorridorKnowledge=opposedCorridorKnowledge" in situation
     assert "ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT_SUPERSEDES_FOLLOWER_BOUNDARY_PROTECTION" in follower
     assert "ESTABLISHED_OPPOSED_PASSAGE_INVALIDATES_FOLLOWER_BOUNDARY_PROTECTION" in follower
-    assert "D0146_POSITIVE_RELATIONSHIP_SUCCESSION" in follower
+    assert "OPPOSED_RELATIONSHIP_SUCCESSION" in follower
     assert "operationMembers" in planner and "thirdPartyGuideSupport" in planner
     assert "thirdPartyConstraints" in planner and "thirdPartyConstraints" in control
     assert "PASSAGE_SUPPORT_LOSS_THIRD_PARTY_ACTIVE_LEG" in control
@@ -1068,7 +1070,7 @@ def test_v47106_d0146_current_excursion_conserves_action_space_before_establishe
     assert 'requestedCapKmh' not in support
     assert 'acceptedStates={"USABLE_WITH_UNCERTAINTY"}' in support
 
-    for token in ("applyActionSpaceRegulationDecision", "settleActionSpaceRegulationPurpose", "D0146_ACTION_SPACE_PURPOSE_SETTLED"):
+    for token in ("applyActionSpaceRegulationDecision", "settleActionSpaceRegulationPurpose", "ACTION_SPACE_REGULATION_PURPOSE_SETTLED"):
         assert token in lifecycle
     for token in (
         'function Envelope.establish', 'function Envelope.update', 'function Envelope.rebaseRole',
@@ -1078,8 +1080,8 @@ def test_v47106_d0146_current_excursion_conserves_action_space_before_establishe
     for token in (
         'ACTION_SPACE_REGULATION_OWNER_TAG="ACTION_SPACE_REGULATION"',
         "assessActionSpaceRegulationPermission", "neutralizeActionSpaceRegulationPhysical", "_updateActionSpaceRegulationEnvelope",
-        "D0155_ENVELOPE_UPDATE", "D0155_ROLE_REBASE",
-        "actionSpaceCurrentPoseSeparation", "D0155_INTENT_REVELATION_CREEP",
+        "RESOLUTION_SPACE_PROGRESSION_ENVELOPE_UPDATE", "ACTION_SPACE_REGULATION_ROLE_REBASE",
+        "actionSpaceCurrentPoseSeparation", "INTENT_REVELATION_CREEP",
     ):
         assert token in authority
     assert "positiveDissolution" in current_assessment
@@ -1106,9 +1108,9 @@ def test_v01141_d0197_obligation_persistence_is_not_actuation_persistence():
         "_continueActionSpaceRegulationReactivation",
         'action.status=="NOT_REQUIRED"',
         'action.status=="REGULATE_SUPPORTED"',
-        "D0155_ACTUATION_QUIESCENT",
+        "ACTION_SPACE_REGULATION_ACTUATION_QUIESCENT",
         "ACTION_SPACE_REGULATION_ACTUATION_REACTIVATED",
-        "D0197_ACTION_SPACE_NOT_REQUIRED_ACTUATION_QUIESCENCE",
+        "ACTION_SPACE_REGULATION_NOT_REQUIRED_ACTUATION_QUIESCENCE",
         "relationshipRetained=true",
         "envelopeRebased=true",
     ):
@@ -1290,13 +1292,13 @@ def test_v0132_d0159_passage_excursion_restores_selection_handoff_and_rebases_ex
         assert token in planner
     assert "longitudinalSupportFromRelativeDiscs" in clearance
     assert "D0146_PASSAGE_SELECTED_APPROACH_RESOLUTION_SPACE_RETAINED" not in support
-    assert "D0146_PASSAGE_SELECTED" in support
+    assert "COOPERATIVE_PASSAGE_SELECTED" in support
     assert "PASSAGE_APPROACH" in control
-    assert "D0146_PASSAGE_APPROACH_START" in control
-    assert "D0146_PASSAGE_ENTRY_TRIGGER" in control
-    assert "D0146_EXECUTION_ORIGIN_CAPTURE" in control
+    assert "COOPERATIVE_PASSAGE_APPROACH_START" in control
+    assert "COOPERATIVE_PASSAGE_ENTRY_TRIGGER" in control
+    assert "COOPERATIVE_PASSAGE_EXECUTION_ORIGIN_CAPTURE" in control
     assert "executionFrame" in planner
-    assert "D0146_PASSAGE_GUIDE_COMPLETE" in control
+    assert "COOPERATIVE_PASSAGE_GUIDE_COMPLETE" in control
     assert "D0146_PASSAGE_SECOND_WHISTLE" not in control
     assert "COOPERATIVE_PASSAGE_EXCURSION" in control
     # Isolation guardrails for the first field experiment.
@@ -1356,7 +1358,6 @@ def test_d0164_mechanical_foldability_does_not_bypass_passage_configuration_reac
     cache=(ROOT/"scripts"/"representation"/"AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
     assert "allowUnfoldingByAI" in cache
     assert "MECHANICAL_ONLY_FOLDABILITY_AI_DISABLED" in cache
-    assert "raw mechanical foldability is not Passage-configuration authority" in cache
     # Deployed foldable members without positive AI-disabled evidence remain conservative.
     assert 'member.currentConfiguration and member.currentConfiguration.foldState=="FOLDED"' in cache
     assert 'reachability.aiUnfoldingAllowed==false' in cache
@@ -1366,7 +1367,7 @@ def test_d0164_passage_rejection_telemetry_reports_candidate_failure_class_witho
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     assert "passageRejectionTelemetry" in support
-    assert "D0146_PASSAGE_REJECTED" in support
+    assert "COOPERATIVE_PASSAGE_REJECTED" in support
     for token in ("geometry=%d","field=%d","sweep=%d","thirdParty=%d","other=%d"):
         assert token in support
     assert "rejected[#rejected+1]" in planner
@@ -1392,7 +1393,7 @@ def test_v0146_clearance_telemetry_reuses_existing_sweep_evidence_without_extra_
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert "D0146_PASSAGE_CLEARANCE_TRACE" in support
+    assert "COOPERATIVE_PASSAGE_CLEARANCE_TRACE" in support
     assert "passageClearanceRejectionTelemetry" in support
     assert "passageClearanceSelectedTelemetry" in support
     assert "candidate.sweepEvidence" in support
@@ -1479,14 +1480,14 @@ def test_v01124_d0192_bounded_axis_return_is_isolated_after_canonical_passage_gu
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     # Phases 1-7 retain the v0.1.12.0 locality/regulation/planner behaviour.
     assert 'COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M = 80.0' in config
-    assert 'PASSAGE_APPROACH' in control and 'D0146_PASSAGE_APPROACH_START' in control
-    assert 'D0146_ACTION_SPACE_REGULATION_SUPPORTED' in support
+    assert 'PASSAGE_APPROACH' in control and 'COOPERATIVE_PASSAGE_APPROACH_START' in control
+    assert 'ACTION_SPACE_REGULATION_SUPPORTED' in support
     assert 'COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M' in planner
     assert 'COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M' in situation
     assert 'COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG' in planner
     assert 'COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M' in planner
     # D-0192 begins only after the existing guide completes.
-    assert 'D0146_PASSAGE_GUIDE_COMPLETE' in control
+    assert 'COOPERATIVE_PASSAGE_GUIDE_COMPLETE' in control
     assert 'RECOVERY_ALIGNMENT_START' in control
     assert 'RETURN_STAGING_READY' in control
     assert 'AXIS_RETURN_START' in control
@@ -1512,11 +1513,11 @@ def test_v01143_d0198_regulation_authority_semantics():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     for token in (
         "_quiesceFollowerBoundaryActuation",
-        "D0141_ACTUATION_QUIESCENT",
+        "FOLLOWER_BOUNDARY_ACTUATION_QUIESCENT",
         "FOLLOWER_BOUNDARY_ACTUATION_REACTIVATED",
         "purposeRetained=true",
         "actionSpaceRegulationQuiescenceSupported",
-        "D0198_NO_CURRENT_EXCURSION_PROTECTED_INTENT_REVELATION_REMAINS_LOCAL",
+        "NO_CURRENT_EXCURSION_PROTECTED_INTENT_REVELATION_REMAINS_LOCAL",
         "intentRevelationQuiescenceVeto",
         'action.reason~="NO_CURRENT_EXCURSION"',
     ):
@@ -1557,7 +1558,7 @@ def test_v01145_d0200_job_episode_dependency_collapse_precedes_terminal_candidat
     assert process.index('collapseEndedJobEpisodeDependencies') < process.index('assessOperationalPicture')
     assert 'trafficCommitmentCollapse=trafficCommitmentCollapse' in process
     assert 'function Authority:retireTrafficLeasesForCommitment' in regulation_authority
-    for token in ('D0155_DEPENDENT_COMMITMENT_TERMINATED','D0141_DEPENDENT_COMMITMENT_TERMINATED'):
+    for token in ('ACTION_SPACE_REGULATION_DEPENDENT_COMMITMENT_TERMINATED','FOLLOWER_BOUNDARY_DEPENDENT_COMMITMENT_TERMINATED'):
         assert token in regulation_authority
 
 
