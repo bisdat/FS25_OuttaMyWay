@@ -14,9 +14,6 @@ ROOT_NAMES = (
     "NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_ENABLED",
     "NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_INTERVAL_MS",
     "NATIVE_FIELD_WORKER_DRIVE_COMMAND_PROBE_HEARTBEAT_MS",
-    "NATIVE_MANOEUVRE_OBSERVATION_ENABLED",
-    "NATIVE_MANOEUVRE_OBSERVATION_INTERVAL_MS",
-    "NATIVE_MANOEUVRE_OBSERVATION_LOG_INTERVAL_MS",
     "PROGRESSION_PRESERVATION_PROBE_ENABLED",
     "PROGRESSION_PRESERVATION_PROBE_HEARTBEAT_MS",
 )
@@ -119,7 +116,6 @@ def test_issue87_live_diagnostic_instruments_own_exact_accepted_values():
     field = read("scripts/diagnostics/TargetedFieldIdentityProbe.lua")
     productive = read("scripts/diagnostics/ProductiveContinuationProbe.lua")
     native = read("scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua")
-    manoeuvre = read("scripts/observation/NativeManoeuvreObservationSource.lua")
     progression = read("scripts/diagnostics/ProgressionPreservationProbe.lua")
 
     for token in (
@@ -147,21 +143,12 @@ def test_issue87_live_diagnostic_instruments_own_exact_accepted_values():
         assert token in native
 
     for token in (
-        "local NATIVE_MANOEUVRE_OBSERVATION_ENABLED=true",
-        "local NATIVE_MANOEUVRE_OBSERVATION_SAMPLE_INTERVAL_MS=100",
-        "local NATIVE_MANOEUVRE_OBSERVATION_LOG_INTERVAL_MS=250",
-        "local interval=NATIVE_MANOEUVRE_OBSERVATION_SAMPLE_INTERVAL_MS",
-        "local logInterval=NATIVE_MANOEUVRE_OBSERVATION_LOG_INTERVAL_MS",
-    ):
-        assert token in manoeuvre
-
-    for token in (
         "local PROGRESSION_PRESERVATION_ENABLED=true",
         "local PROGRESSION_PRESERVATION_HEARTBEAT_MS=1000",
     ):
         assert token in progression
 
-    for owner in (field, productive, native, manoeuvre, progression):
+    for owner in (field, productive, native, progression):
         for token in ROOT_NAMES:
             assert f"OuttaMyWay.{token}" not in owner
 
@@ -170,7 +157,6 @@ def test_issue87_diagnostic_localisation_does_not_move_runtime_or_semantic_autho
     coordinator = read("scripts/runtime/LiveRuntimeCoordinator.lua")
     productive = read("scripts/diagnostics/ProductiveContinuationProbe.lua")
     native = read("scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua")
-    manoeuvre = read("scripts/observation/NativeManoeuvreObservationSource.lua")
     progression = read("scripts/diagnostics/ProgressionPreservationProbe.lua")
 
     assert "local LIVE_RUNTIME_CONTROL_INTERVAL_MS=250" in coordinator
@@ -178,13 +164,34 @@ def test_issue87_diagnostic_localisation_does_not_move_runtime_or_semantic_autho
     for token in (
         "addModEventListener(OuttaMyWay.productiveContinuationProbe)",
         "addModEventListener(OuttaMyWay.nativeFieldWorkerDriveCommandProbe)",
-        "addModEventListener(OuttaMyWay.nativeManoeuvreObservationSource)",
         "setProgressionPreservationProbe(OuttaMyWay.progressionPreservationProbe)",
     ):
         assert token in main
 
     assert "no Decision or Control authority" in productive
     assert "controlAuthority=false" in native
-    assert "boundaryDemandAuthority=false" in manoeuvre
     assert 'responseAdjustedSupportableProgression="UNRESOLVED"' in progression
     assert "controlAuthority=false" in progression
+
+
+def test_progression_diagnostic_uses_current_picture_without_historical_maturation():
+    main = read("scripts/main.lua")
+    progression = read("scripts/diagnostics/ProgressionPreservationProbe.lua")
+    assert "ProgressionPreservationProbe.new(OuttaMyWay.runtime)" in main
+    assert "function Probe.new(runtime)" in progression
+    assert "OuttaMyWay.ProgressionGeometry.rayCapsuleEntry(" in progression
+    for token in (
+        "headlandProbe", "maturationRegions", "MATURATION_WITNESS",
+        "COARSE_UNCONTAMINATED_DEMONSTRATED_DEMAND_WITNESS",
+        "PRESERVE_NATIVE_BOUNDARY_MATURATION", "forensicDemandEnvelope",
+        "getObservations(", "function Probe.rayCapsuleEntry",
+    ):
+        assert token not in progression
+    for relative in (
+        "scripts/diagnostics/DemonstratedProductiveCoverageProbe.lua",
+        "scripts/diagnostics/ProductiveCoverageResidualProbe.lua",
+        "scripts/diagnostics/RefugeQualificationShadowProbe.lua",
+        "scripts/observation/NativeManoeuvreObservationSource.lua",
+    ):
+        assert not (ROOT / relative).exists()
+        assert relative not in main
