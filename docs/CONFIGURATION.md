@@ -52,9 +52,9 @@ HUD/GUI layout mechanics
 ```
 
 [`scripts/config.lua`](../scripts/config.lua) is not the architectural definition
-of Configuration. It is currently a **Mixed Runtime Constants Surface**
-containing unrelated responsibilities. Its centrality is implementation evidence,
-not desired architecture.
+of Configuration. It is identity-only: namespace initialisation followed by
+`MOD_NAME` and `VERSION`. It contains no policy, calibration or comments.
+There is no generic runtime settings/constants warehouse.
 
 Place a value in the narrowest responsibility that legitimately owns it. Promote
 it to shared scope only when multiple components genuinely share the same
@@ -116,7 +116,7 @@ does not establish a shared Passage tolerance owner.
 literals do not establish shared policy. Neither value is player Configuration.
 
 Local Passage fixed construction values have the Planner owner described below.
-Forward Intersection Regulation policy remains separate Issue #87 ownership work.
+Forward Intersection policy has the Situation owner described below.
 
 ## Local Passage Planner policy and calibration ownership
 
@@ -144,10 +144,46 @@ Mutability/Injection Seam != Contract Requirement**. A counterfactual floor in
 validation does not require production policy configurability. The accepted
 0.95 floor is fixed Planner-owned policy, not a runtime experiment seam.
 
-Two non-identity roots remain unresolved: the 80.0 m local Passage entry/search
-bound also supplies Situation/Trajectory Conflict Assessment Action-Space context;
-Forward Intersection retains its separate
-1 km/h policy. **Value Reuse != Concept Reuse** continues to govern these boundaries.
+## Local Passage Action-Space Boundary ownership
+
+**Assessment Owns Boundary; Candidate Consumes Evidence.**
+`TrajectoryConflictAssessment` owns the fixed 80.0 m Local Passage Action-Space
+Boundary as `LOCAL_PASSAGE_ACTION_SPACE_MAX_SEPARATION_M`. Its native-intent
+revelation quiescence veto, Current-Excursion Resolution-Space Conservation and
+Established-conflict Resolution-Space Conservation use this same boundary.
+Established conflict publishes `actionSpaceConservation.maxSeparationM` as
+Situation evidence, including when separation exceeds the boundary.
+
+`SituationAssessment` supplies evidence without a boundary policy argument.
+`LocalPassagePlanner` consumes `conflict.actionSpaceConservation.maxSeparationM`;
+missing or invalid positive finite boundary evidence fails closed. Separation
+above the published boundary retains `ESTABLISHED_CONFLICT_NOT_YET_LOCAL`.
+Candidate does not select another boundary or supply a fallback.
+
+The former `actionSpaceMaxSeparationM` fixture parameter is removed. Other
+focused assessment calibration overrides remain internal validation
+parameterisation, not player Configuration or supported runtime variability.
+
+## Forward Intersection Intent-Revelation Creep ownership
+
+**Situation Owns Magnitude; Authority Materialises It**, consistent with
+**Policy Owner != Materialisation Site**. `SpatialConstraintAssessment` owns
+fixed 1 km/h policy as `FORWARD_INTERSECTION_INTENT_REVELATION_CREEP_KMH`
+for `MAXIMISE_FORWARD_INTERSECTION_INTENT_REVELATION_TIME`. It publishes
+`regulationSpeedKmh` and `actionSpaceConservation.fixedRegulationSpeedKmh`.
+
+`LiveTrafficCandidateSupport` carries the established magnitude unchanged in
+`actionSpaceRegulationBridge.fixedRegulationSpeedKmh`.
+`RegulationBoundedAuthority` consumes that Candidate evidence to materialise
+Forward Intersection admission and rejects missing or invalid positive finite
+magnitudes. Neither Candidate nor Authority independently derives this policy
+or supplies a literal fallback.
+
+Ordinary Action-Space Regulation continues through
+`ResolutionSpaceProgressionEnvelope`. Forward Intersection
+`WAITING_FOR_EVIDENCE` retains its existing fixed-creep authority, with no new
+timeout. Temporal allocation, incumbent Follower Boundary precedence and
+positive dissolution/supersession semantics are unchanged.
 
 ## Transit fold settlement ownership
 
@@ -167,8 +203,6 @@ establish shared policy: **Defensive Fallback != Shared Policy Owner** and
 
 These values are not player Configuration. Cooperative Passage Control consumes
 cached capability and settlement results without independently deriving timing.
-Forward Intersection ownership and the local Action-Space / entry bound remain
-separate Issue #87 work.
 
 ## Clearance trace diagnostic publication ownership
 
@@ -185,8 +219,6 @@ admission distance, Nominal Inter-Assembly Clearance or Crossing-Window acceptan
 policy, or Control actuation policy.
 
 Diagnostic publication owns none of the Planner construction values described above.
-Forward Intersection Regulation policy and the local Action-Space / entry bound
-remain separate Issue #87 ownership work.
 
 ## Resolution-Space Regulation magnitude policy ownership
 
@@ -205,9 +237,9 @@ accepted pair and established no alternate-policy contract. **Test
 Mutability/Injection Seam != Contract Requirement** likewise applies to the
 former offline fixture arguments.
 
-Forward Intersection deliberately bypasses this envelope and retains its
-separate fixed 1 km/h root cap. Its deeper ownership relationship remains
-unresolved. **Value Reuse != Concept Reuse:** equal literals do not establish
+Forward Intersection deliberately bypasses this envelope and consumes its
+separate Situation-owned fixed 1 km/h magnitude described above.
+**Value Reuse != Concept Reuse:** equal literals do not establish
 common ownership between these policies or authorise their unification.
 
 ## Configuration admission test
@@ -385,59 +417,21 @@ no universal requirement that all changes take effect immediately. Safety and
 responsibility boundaries outrank UI immediacy; exact mechanisms remain deferred
 to implementation.
 
-## Current Mixed Runtime Constants Surface
+## Current root surface
 
-The following inventory is implementation evidence, not a rename, relocation or
-migration backlog. Categories describe likely current architectural kind; they
-do not bless historical names or values. `UNRESOLVED` is deliberate where source
-evidence does not establish a responsible owner.
+Issue #87 mixed-runtime ownership decomposition has no remaining unresolved
+root constant in current architecture. `scripts/config.lua` contains exactly
+the namespace initialisation and two root assignments:
 
-| Likely kind | Representative current values or families | Boundary indicated by current evidence |
-| --- | --- | --- |
-| PLAYER CONFIGURATION CANDIDATE | no unified player-setting key is currently implemented in this file | The accepted player concepts are master enablement, HUD visibility, Logging and Debug. Internal gates or constants must not be promoted merely because they are editable. |
-| SYSTEM / RELEASE IDENTITY | `MOD_NAME`; `VERSION` | These are the only root identities: `MOD_NAME` identifies the system/mod and `VERSION` identifies the executable build. Neither is player Configuration. |
-| ARCHITECTURAL / RESPONSIBILITY POLICY | `FORWARD_INTERSECTION_REGULATION_SPEED_KMH`; fixed Passage policy is Planner-local | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
-| IMPLEMENTATION CALIBRATION | Entity-Local Shape Evidence coherence/root-alias calibration; Follower Boundary alignment/retention/clearance/temporal-seed calibration; Trajectory Conflict Assessment sampling/coherence/supersession/opposed-current values; Planner-owned Passage development and guide gate geometry | Entity-local shape calibration is owned by its shared Resolution evidence predicate; `.61` localises Trajectory Conflict Assessment calibration and `.62` localises Follower Boundary assessment calibration to their evaluators; other empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
-| EVIDENCE DISCRETISATION | Planner-local Field World and pair/third-party sweep sampling | LocalPassagePlanner owns fixed sampling under [Local Passage Planner policy and calibration ownership](#local-passage-planner-policy-and-calibration-ownership); no sweep values remain at root. |
-| DIAGNOSTIC | Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre and Progression Preservation instrument controls | `.60` localises the five live instrument enablement/publication cadences to their owning modules. They remain internal diagnostics, not Player Configuration. Normal Logging and Debug are higher-level player choices, not exposure of each switch. |
-| VALIDATION / EXPERIMENTAL | no retained per-capability runtime enable/disable gate | `.63` retires the historical Control, Cooperative Passage and aligned-Follower pseudo-state gates. Core capability availability and prohibition are enforced by Responsibility / Bounded Authority / typed Control topology, not booleans. |
-| HUD IMPLEMENTATION | no diagnostic HUD values remain in the mixed root | FutureSpaceHud, VersionHud and FollowerPacingHud independently own their local presentation values under [Diagnostic HUD implementation ownership](#diagnostic-hud-implementation-ownership). Unconsumed lifecycle/transition gates are deleted, not relocated. |
-| HISTORICAL RESIDUE | evidence-only remnants whose owning responsibility has expired | Demonstrated Productive Coverage, Productive Coverage Residual, Refuge Qualification, Headland Manoeuvre Sweep and the legacy follower-maturation forensic shadow are retired from shipped runtime/configuration; Git and durable engineering records own that history. Any remaining residue is not Configuration and remains subject to Issue #87 ownership review. |
-| UNRESOLVED | `COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M = 80.0`; `FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1` | Exactly two non-identity roots remain: cross-layer local Action-Space / entry policy and separate Forward Intersection policy. Fixed Planner construction and calibration ownership does not resolve these concepts. |
+| Identity | Responsibility |
+| --- | --- |
+| `MOD_NAME` | System/mod identity |
+| `VERSION` | Executable build identity, coherent with `modDesc.xml` |
 
-Field World ownership is now decomposed by meaning rather than common prefix:
-`FieldWorldSnapshotRegistry` owns Snapshot-generation budget plus fingerprint
-quantisation/schema; `FieldWorldEquivalenceEvaluator` owns the spatial
-equivalence interpretation thresholds; and `FieldWorldEquivalenceAuthority`
-owns retained comparison/resolution evidence-history bounds. Those values are
-internal implementation evidence, not player Configuration, and no longer
-occupy the mixed root surface. Existing Obstruction Relocation, Runtime,
-Representation and Entity-Local Shape Evidence ownership remains unchanged.
-Fold-settlement derivation and defensive fallback are separately module-owned
-under [Transit fold settlement ownership](#transit-fold-settlement-ownership). `.59` retires the
-legacy follower-maturation forensic shadow and all `FOLLOWER_MATURATION_*`
-root residue because that diagnostic no longer answers a current engineering
-question; the aligned `FOLLOWER_BOUNDARY_*` production path remains unchanged.
-`.60` further removes the twelve live diagnostic instrument values from the mixed
-root surface without changing their booleans or cadences: Field Identity,
-Productive Continuation, Native Drive Command, Native Manoeuvre and Progression
-Preservation each own the controls that only govern their own observation or
-publication. Runtime's 250 ms cycle remains independently owned.
-`.61` removes the ten trajectory/opposed-current calibration values from the
-mixed root and makes `TrajectoryConflictAssessment` their explicit owner.
-`SituationAssessment` supplies evidence and external Passage Action-Space context,
-but no longer couriers evaluator-private calibration.
-`.62` likewise removes six Follower Boundary assessment calibrations from the
-mixed root and makes `FollowerBoundaryDemandAssessment` their explicit owner.
-`.63` follows the existing **Core Resolution Capability != Optional
-Configuration** rule through the live traffic stack: Cooperative Passage and
-aligned Follower Boundary have no independent enable state beneath master
-OuttaMyWay enablement, while unsupported/general Control is prohibited by the
-absence of an authorised typed path rather than by a false flag. Passive
-diagnostics record actual bounded dispatch outcomes instead of pseudo-authority
-state.
-The inventory is descriptive; Issue #87 continues ownership-family decomposition
-without retuning values merely because their placement changes.
+Every surviving internal value belongs to its responsible module or subsystem;
+there is no generic settings/constants module. The
+[Implementation Map](IMPLEMENTATION_MAP.md) owns source placement.
+Supported player Configuration remains separate work under Issue #139.
 
 ## Implementation boundary
 

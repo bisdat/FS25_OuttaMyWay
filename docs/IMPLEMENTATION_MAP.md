@@ -22,13 +22,12 @@ Architectural meaning remains owned by the
 ## Repository state
 
 - Accepted Repository State: `main` at
-  `53c0b9c094e0bebfed65b92bab1b8c955f20ea15`.
+  `5f09f93a90efc47caa3d418fa443005e50d0cb5f`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity remains
-  **`0.3.0.65`**.
-- Issue #87 remains active through Root Surface Closure. The working Diagnostic
-  HUD Ownership increment uses `0.3.0.66 TEST — DIAGNOSTIC HUD OWNERSHIP`;
-  independent CI validation and owner review remain pending.
+  **`0.3.0.72`**.
+- Issue #87 root ownership is fully decomposed in the working `.73` candidate;
+  independent CI validation and owner review remain pending. Player Configuration is #139.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -52,7 +51,7 @@ Architectural meaning remains owned by the
 | Situation Assessment | `scripts/assessment/SituationAssessment.lua` and focused assessment collaborators | PRESERVE current interpreted relationship ownership except listed drift |
 | Current Pair Assessment Scope | `scripts/assessment/CurrentPairAssessmentScope.lua` plus `SituationAssessment.lua` | PRESERVE — accepted by #100 / PR #113; ephemeral current Operation/exact-Job-Episode pair scope with no generic pair lifecycle or last-positive truth |
 | Follower Boundary evidence | `scripts/assessment/FollowerBoundaryDemandAssessment.lua` | PRESERVE admissible magnitude evidence/envelope; `.62` makes the evaluator explicit owner of its six alignment/retention/clearance/temporal-seed calibrations; no requested Control target (#98 / PR #108) |
-| Forward Intersection / Action-Space evidence | `SpatialConstraintAssessment.lua`, `TrajectoryConflictAssessment.lua` | PRESERVE current positive/unresolved/negative semantics; `.61` makes Trajectory Conflict Assessment the explicit owner of its ten sampling/persistence/opposed-current calibrations while Passage Action-Space separation remains external context |
+| Forward Intersection / Action-Space evidence | `SpatialConstraintAssessment.lua`, `TrajectoryConflictAssessment.lua` | TrajectoryConflictAssessment owns `LOCAL_PASSAGE_ACTION_SPACE_MAX_SEPARATION_M = 80.0` and publishes `actionSpaceConservation.maxSeparationM`; LocalPassagePlanner consumes it. Assessment Owns Boundary; Candidate Consumes Evidence. SpatialConstraintAssessment owns `FORWARD_INTERSECTION_INTENT_REVELATION_CREEP_KMH = 1` and publishes relationship `regulationSpeedKmh` plus `actionSpaceConservation.fixedRegulationSpeedKmh`. See [Configuration architecture](CONFIGURATION.md#local-passage-action-space-boundary-ownership). |
 | Causal Obstruction | `CausalObstructionAssessment.lua` | PRESERVE: current GIANTS inactivity observation and ENDED Job Episode are two evidence routes into the same non-active classification; no provenance-specific downstream responsibility |
 | Candidate construction / planning | `scripts/candidates/` | PRESERVE feasible option/support/planning ownership; `.63` removes per-capability Follower/Passage rollout vetoes so Candidate support is governed by current evidence and responsibility architecture |
 | Prospective Candidate portfolio | `ProspectiveDecisionPortfolioSupport.lua` | PRESERVE complete fresh group enumeration on one Decision picture |
@@ -64,7 +63,7 @@ Architectural meaning remains owned by the
 | Resolution semantic responsibility | `ResolutionCommitment.lua`, `ResolutionCommitmentAdapter.lua`, purpose-specific transition/lifecycle modules | PRESERVE obligation-backed strong persistence |
 | Passage Leg lifecycle | `LiveTrafficCommitmentLifecycle.lua`, Passage obligations and Control callbacks | PRESERVE Survivor Invariance / participant handback-vacatur / Last-Leg Dissolution |
 | Bounded Authority | `scripts/authority/BoundedAuthority.lua` | PRESERVE semantic permission distinct from `AU-*` exclusivity |
-| Regulation Bounded Authority | `RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua`, `FollowerBoundaryMagnitudePolicy.lua` | ResolutionSpaceProgressionEnvelope owns fixed reserve/creep policy; RegulationBoundedAuthority materialises it through the two-evidence-argument establish contract under [Configuration architecture](CONFIGURATION.md#resolution-space-regulation-magnitude-policy-ownership). Forward Intersection retains its separate direct fixed cap. PRESERVE authority-owned final follower speed permission from accepted admissible evidence (#98 / PR #108) |
+| Regulation Bounded Authority | `RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua`, `FollowerBoundaryMagnitudePolicy.lua` | ResolutionSpaceProgressionEnvelope owns fixed reserve/creep policy; RegulationBoundedAuthority materialises it through the two-evidence-argument establish contract under [Configuration architecture](CONFIGURATION.md#resolution-space-regulation-magnitude-policy-ownership). LiveTrafficCandidateSupport carries Situation-owned `fixedRegulationSpeedKmh` through `actionSpaceRegulationBridge`; RegulationBoundedAuthority validates and materialises it. Situation Owns Magnitude; Authority Materialises It. PRESERVE authority-owned final follower speed permission from accepted admissible evidence (#98 / PR #108) |
 | Effective actuation composition | `EffectiveActuationComposition.lua` | PRESERVE |
 | Mechanical exclusivity | `AuthorityRegistry.lua` | PRESERVE; exclusivity is not permission |
 | Control routing | `LiveControlDispatcher.lua` | PRESERVE authorised typed routing; `.63` makes this topology, downstream of Bounded Authority, the actual capability boundary rather than Control pseudo-state booleans |
@@ -74,9 +73,9 @@ Architectural meaning remains owned by the
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting Obstruction Relocation movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.59` retires the expired follower-maturation shadow and `.60` localises five live instruments' enablement/publication controls without moving semantic authority |
-| Clearance trace publication | `scripts/candidates/LiveTrafficCandidateSupport.lua` | Owns the local 40.0 m window for rejected/selected already-computed clearance telemetry under [Configuration architecture](CONFIGURATION.md#clearance-trace-diagnostic-publication-ownership). Diagnostic publication does not own Passage search or construction policy; the local Action-Space / entry bound remains unresolved. |
+| Clearance trace publication | `scripts/candidates/LiveTrafficCandidateSupport.lua` | Owns the local 40.0 m window for rejected/selected already-computed clearance telemetry under [Configuration architecture](CONFIGURATION.md#clearance-trace-diagnostic-publication-ownership). Diagnostic publication does not own Passage search or construction policy; TrajectoryConflictAssessment owns the local Action-Space boundary. |
 | Diagnostic HUD presentation | `scripts/diagnostics/FutureSpaceHud.lua`, `VersionHud.lua`, `FollowerPacingHud.lua` | Each instrument owns its enablement/layout literals locally under [Configuration architecture](CONFIGURATION.md#diagnostic-hud-implementation-ownership). FutureSpaceHud remains constructed, observed and drawn by PassiveLiveValidator; VersionHud reads root `VERSION`. Dead lifecycle/transition gates are deleted without replacement; future player HUD visibility remains separate and unimplemented. |
-| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.62 resolve prior ownership/retirement families; `.63` retires the remaining core-capability/control pseudo-state gates. Root identity retirement leaves only `MOD_NAME` and `VERSION`; diagnostic HUD values are now module-local or retired; Cooperative Passage Control owns its seven internal calibrations. Resolution-Space reserve/creep policy is module-owned by ResolutionSpaceProgressionEnvelope. Transit settlement derivation and defensive fallback have separate module owners. LocalPassagePlanner owns its ten fixed construction/sweep values. Spatial Gate Radius != Axis Station Tolerance: the two 1.0 m calibrations have independent Planner and Control owners under [Configuration architecture](CONFIGURATION.md#cooperative-passage-control-implementation-ownership). Exactly two non-identity roots remain: the 80 m local Action-Space / entry bound and Forward Intersection 1 km/h policy. Their deeper ownership remains unresolved. |
+| Root identity surface | `scripts/config.lua` | Identity-only namespace initialisation plus `MOD_NAME` and `VERSION`, without comments. Issue #87 has no remaining unresolved root constant. No generic runtime settings/constants warehouse exists. Other assessment fixture overrides are internal validation parameterisation, not player Configuration or supported runtime variability; the Passage boundary injection is removed. |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
 
 ## Boundary findings worth protecting
@@ -135,15 +134,15 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #87 | mixed runtime constants / Root Surface Closure | **Two Root Identities; Everything Else Must Earn an Owner** remains the direction for value ownership/retirement. Production and validation vocabulary closure are in the accepted baseline. Diagnostic HUD ownership removes this presentation family from the mixed root while preserving accepted literals and behaviour. Player Configuration is split to #139 and HUD/player communication remains #89. |
+| #87 | mixed-runtime ownership closure | Root decomposition is complete in the working tree. Independent CI and owner acceptance remain pending. Player Configuration is #139; HUD/player communication is #89. |
 
 Issue #112 is closed completed. Issue #116 and #123 remain separate.
 
 ## Separate accepted work / explicit limits
 
 - **#45** — Bubble Bullet Time remains accepted but unimplemented.
-- **#87** — ACTIVE: decompose the remaining live `scripts/config.lua` Mixed Runtime
-  Constants Surface ownership-family by ownership-family.
+- **#87** — no unresolved root constant remains; validation and owner review
+  of the ownership closure remain pending.
 - Generic multi-context Commitment application remains an acceptable fail-closed
   limit until a concrete supported consumer requires broader cardinality.
 - The maximum-three-active-AI-worker rule is a supported claim/validation

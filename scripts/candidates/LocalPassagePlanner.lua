@@ -710,7 +710,8 @@ local function planConflict(picture,snapshot,conflict)
     if not aTrajectory or not bTrajectory or not aSpace or not bSpace or not aMotion or not bMotion or not aPhysical or not bPhysical then return nil,"PASSAGE_INPUT_KNOWLEDGE_INCOMPLETE" end
     local closing=conflict.currentClosing or {}
     local separation=tonumber(closing.separationM)
-    local maxSeparation=OuttaMyWay.COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M or 80.0
+    local maxSeparation=conflict.actionSpaceConservation and conflict.actionSpaceConservation.maxSeparationM
+    if not finite(maxSeparation) or maxSeparation<=0 then return nil,"LOCAL_PASSAGE_ACTION_SPACE_BOUNDARY_UNAVAILABLE" end
     if separation==nil then return nil,"CURRENT_PAIR_SEPARATION_UNRESOLVED" end
     if separation>maxSeparation then return nil,"ESTABLISHED_CONFLICT_NOT_YET_LOCAL" end
     local pairScope=currentPairScope(picture,conflict.subjectAssemblyId,conflict.otherAssemblyId)

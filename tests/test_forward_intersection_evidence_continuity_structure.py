@@ -33,6 +33,23 @@ def test_forward_intersection_waiting_reuses_existing_fixed_creep_authority_with
 
     assert 'if lease.admissionKind=="FORWARD_INTERSECTION" then' in authority
     assert 'FORWARD_INTERSECTION_FIXED_CREEP_REMAINS_ACTIVE' in authority
-    assert 'OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1' in config
+    assert 'FORWARD_INTERSECTION_REGULATION_SPEED_KMH' not in config
     assert "FORWARD_INTERSECTION_TIMEOUT" not in config
     assert "FORWARD_INTERSECTION_TIMEOUT" not in assessment
+
+
+def test_situation_owns_fixed_creep_and_authority_requires_candidate_evidence():
+    spatial = (ROOT / "scripts/assessment/SpatialConstraintAssessment.lua").read_text()
+    candidate = (ROOT / "scripts/candidates/LiveTrafficCandidateSupport.lua").read_text()
+    authority = (ROOT / "scripts/authority/RegulationBoundedAuthority.lua").read_text()
+    assert "local FORWARD_INTERSECTION_INTENT_REVELATION_CREEP_KMH = 1" in spatial
+    assert "r.regulationSpeedKmh=FORWARD_INTERSECTION_INTENT_REVELATION_CREEP_KMH" in spatial
+    assert "fixedRegulationSpeedKmh=r.regulationSpeedKmh" in spatial
+    assert "fixedRegulationSpeedKmh=action.fixedRegulationSpeedKmh" in candidate
+    assert candidate.count("fixedRegulationSpeedKmh") == 2
+    assert "local magnitude=bridge.fixedRegulationSpeedKmh" in authority
+    assert 'if type(magnitude)~="number" or magnitude~=magnitude or magnitude<=0 or magnitude==math.huge then return nil end' in authority
+    assert "local initialCap=fixedForwardIntersection and bridge.fixedRegulationSpeedKmh or (tonumber(envelope.capKmh) or 0)" in authority
+    for path in (ROOT / "scripts").rglob("*.lua"):
+        assert "FORWARD_INTERSECTION_REGULATION_SPEED_KMH" not in path.read_text(), path
+    assert "FORWARD_INTERSECTION_TIMEOUT" not in authority

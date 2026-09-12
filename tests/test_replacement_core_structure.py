@@ -830,7 +830,7 @@ def test_transit_settlement_derivation_and_defensive_fallback_have_separate_owne
     assert "expectedFoldDurationMs" not in mechanism
     assert "maxFoldAnimDuration" not in mechanism + control
     assert not re.search(r"settlementTimeoutMs\s*=(?!=)", control)
-    assert "OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1\n" in config
+    assert "FORWARD_INTERSECTION_REGULATION_SPEED_KMH" not in config
 
     # Closed production ownership excludes a shared mutable/global timing holder.
     main = (ROOT / "scripts/main.lua").read_text(encoding="utf-8")
@@ -1097,12 +1097,12 @@ def test_v47106_current_excursion_conserves_action_space_before_established_pass
     initial = authority.split("function Authority:_continueActionSpaceRegulationInitial(", 1)[1].split("\nfunction ", 1)[0]
     assert establish_call in reactivate
     assert establish_call in initial
-    assert "OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1" in config.splitlines()
+    assert "FORWARD_INTERSECTION_REGULATION_SPEED_KMH" not in config
     assert 'local fixedForwardIntersection=bridge.admissionKind=="FORWARD_INTERSECTION"' in initial
     assert f"if not fixedForwardIntersection then\n        envelope,envelopeReason={establish_call}\n    end" in initial
-    assert "local initialCap=fixedForwardIntersection and (OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH or 1) or (tonumber(envelope.capKmh) or 0)" in initial
+    assert "local initialCap=fixedForwardIntersection and bridge.fixedRegulationSpeedKmh or (tonumber(envelope.capKmh) or 0)" in initial
     assert 'D0146_RESOLUTION_SPACE_REGULATION_KMH' not in config
-    assert 'actionSpaceMaxSeparationM=OuttaMyWay.COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M' in situation
+    assert 'actionSpaceMaxSeparationM' not in situation
     assert 'actionSpaceRegulationKmh' not in situation
 
     for token in (
@@ -1558,11 +1558,11 @@ def test_v01124_bounded_axis_return_is_isolated_after_canonical_passage_guide():
     situation=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     # Phases 1-7 retain the v0.1.12.0 locality/regulation/planner behaviour.
-    assert 'COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M = 80.0' in config
+    assert 'COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M' not in config
     assert 'PASSAGE_APPROACH' in control and 'COOPERATIVE_PASSAGE_APPROACH_START' in control
     assert 'ACTION_SPACE_REGULATION_SUPPORTED' in support
-    assert 'COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M' in planner
-    assert 'COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M' in situation
+    assert 'conflict.actionSpaceConservation.maxSeparationM' in planner
+    assert 'COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M' not in situation
     assert 'COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG' in planner
     assert 'COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M' in planner
     # Bounded Axis Return begins only after the existing guide completes.
@@ -1734,7 +1734,7 @@ def test_forward_intersection_is_situation_owned_and_consumed_without_geometry_r
     assert "currentResponsibilityAssessment:assessActionSpaceRegulation(currentAction,actionSpaceRelation(picture,currentAction))" in runtime
     assert 'current.provenance and current.provenance.admissionKind=="FORWARD_INTERSECTION"' in current_assessment
     assert 'relation.classification=="FORWARD_INTERSECTION"' in current_assessment
-    assert "FORWARD_INTERSECTION_REGULATION_SPEED_KMH" in authority
+    assert "bridge.fixedRegulationSpeedKmh" in authority
     assert "FORWARD_INTERSECTION_REGULATION_ADMITTED" in authority
     assert "pointSegmentDistance" not in candidates
     assert "pointSegmentDistance" not in authority
@@ -1814,7 +1814,7 @@ def test_phase10_migrated_control_requests_require_bounded_authority():
     action=regulation_authority[regulation_authority.index("function Authority:_continueActionSpaceRegulationInitial"):regulation_authority.index("function Authority:actionSpaceRegulationTransitionFailed")]
     assert "applied.currentResponsibility" in action
     assert "boundedAuthorityId=request.boundedAuthorityId" in action
-    assert "FORWARD_INTERSECTION_REGULATION_SPEED_KMH" in action
+    assert "bridge.fixedRegulationSpeedKmh" in action
 
     passage=runtime[runtime.index("function Runtime:_jointCooperativePassageRequests"):runtime.index("function Runtime:_continueCooperativePassage")]
     assert 'capability="REPOSITION"' in passage

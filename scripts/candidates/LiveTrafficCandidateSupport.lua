@@ -336,6 +336,7 @@ local function makeActionSpaceRegulationCandidate(pictureId,pictureValues,item,g
                 protectedAssemblyId=protectedAssemblyId,protectedReferenceKey=protectedReferenceKey,
                 excursionAssemblyId=action.excursionAssemblyId,excursionReferenceKey=action.excursionReferenceKey,admissionKind=action.admissionKind,
                 nativeUnrestrictedKmh=action.nativeUnrestrictedKmh,
+                fixedRegulationSpeedKmh=action.fixedRegulationSpeedKmh,
                 nativeClosureContributionKmh=action.nativeClosureContributionKmh,nativeSignedClosureContributionKmh=action.nativeSignedClosureContributionKmh,nativeMoveForwards=action.nativeMoveForwards,
                 governingPurpose=action.governingPurpose,separationM=action.separationM,actionSpaceReason=action.reason,
                 cooperativePassageEligible=relation.cooperativePassageEligible~=false,
