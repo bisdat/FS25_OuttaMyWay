@@ -31,6 +31,7 @@ observation is classified as new.
 
 - [Decision Log](DECISION_LOG.md) — chronological accepted decisions and their rationale.
 - [Engineering Journal](ENGINEERING_JOURNAL.md) — observations, investigations, failed hypotheses, validation evidence, and engineering evolution.
+- [Documentation Standards](DOCUMENT_STANDARDS.md) — normative authoring, ownership, traceability, and live-architecture standards for engineering knowledge.
 - [Naming Conventions](NAMING_CONVENTIONS.md) — authoritative rules for semantically truthful repository, code, architecture, identity, state, and user-facing names.
 - [Localisation Policy](LOCALISATION.md) — live user-facing language and localisation rules.
 - [Research](research/README.md) — bounded studies, experiments, prototypes, audits, corpus work, representation investigations, and historical investigative evidence.
