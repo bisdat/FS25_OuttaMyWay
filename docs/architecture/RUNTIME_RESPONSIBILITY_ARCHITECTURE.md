@@ -763,6 +763,39 @@ Control outcomes. It does not create Bounded Authority, choose Regulation
 magnitude, decide responsibility persistence or settlement, or mirror semantic
 authority state.
 
+### Core capability availability is structural
+
+A core runtime capability has no independent enabled/disabled state beneath the
+product-level OuttaMyWay master enablement boundary. Once current evidence,
+Responsibility Transition and Bounded Authority establish a supported action,
+the existence of its typed Control executor is part of the supported runtime
+topology rather than a second consent or feature decision.
+
+> **Core Capability Has No Enable State**
+
+> **Master Enablement != Per-Capability Enablement**
+
+Unsupported or generic/unbounded Control is absent because no Current
+Responsibility, Bounded Authority grant or typed dispatcher route can authorise
+it. A boolean set to `false` is not an architectural prohibition and cannot be
+the enforcement mechanism.
+
+> **Architectural Prohibition Has No Disable Flag**
+
+Diagnostic records may report actual dispatch requests, outcomes and failures,
+but a diagnostic boolean asserting that a class of Control is disabled neither
+creates nor strengthens the authority boundary.
+
+> **Diagnostic Assertion != Enforcement Mechanism**
+
+An evidence product may still carry an explicit negative authority annotation
+when that annotation scopes what the evidence can prove. Field World Snapshot
+and equivalence products record `controlAuthorityEnabled=false` to make clear
+that identity evidence grants no Control authority. That is evidence-scope
+metadata, not mutable capability state or a runtime rollout gate.
+
+> **Negative Authority Annotation != Capability Enable State**
+
 ## 18. Downstream Authority Monotonicity
 
 A downstream responsibility may narrow, refuse, stop or terminate an authorised action when current safety or feasibility evidence no longer supports it. It may never enlarge strategic authority granted upstream.

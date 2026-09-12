@@ -283,9 +283,9 @@ test("terminal disposition must match the intended disposition", function()
     expectError(function() OuttaMyWay.CommitmentStateMachine.transition(settling,"SUCCEEDED",{terminalSettlementEvidence={ok=true}},ledger) end)
 end)
 
-test("runtime is passive and inactive before the live listener runs", function()
+test("runtime is inactive before the live listener runs", function()
     local runtime=OuttaMyWay.Runtime.new(); runtime:initialize(); local status=runtime:getStatus()
-    equal(status.runtimeMode,"ARCHITECTURE_AUTHORITY_ALIGNMENT"); equal(status.controlAuthorityEnabled,false); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
+    equal(status.runtimeMode,"ARCHITECTURE_AUTHORITY_ALIGNMENT"); equal(status.commitmentCount,0); equal(status.observationCount,0); equal(status.jobEpisodeCount,0); equal(status.operationCount,0); equal(status.operationalPictureCount,0); equal(status.candidateInventoryCount,0); equal(status.constraintVerdictSetCount,0); equal(status.decisionCount,0); equal(status.passiveTraceCount,0)
 end)
 
 
@@ -1177,12 +1177,6 @@ test("SETTLE directive cannot contradict canonical Governing Basis event",functi
 end)
 
 
-
-test("PassiveLiveTraceRecord rejects enabled Control",function()
-    expectError(function() OuttaMyWay.PassiveLiveTraceRecord.new({identity="LT-X",epoch=1,timestamp=1,status="TRACE",activeAssemblyCount=0,activeJobEpisodeCount=0,activeOperationCount=0,situationCount=0,currentPairAssessmentCount=0,generalControlAuthorityEnabled=true,provenance={}}) end)
-end)
-
-
 local function withFakeLiveGlobals(fn)
     local oldTranslation,oldDirection=getWorldTranslation,localDirectionToWorld
     local oldFieldManager,oldFarmlandManager=g_fieldManager,g_farmlandManager
@@ -1449,7 +1443,6 @@ test("active Job Episodes with unresolved field identity wait rather than exhaus
         if evaluated.decision.nonIntervention.classification=="COMPLETE_SUPPORTABLE_SPACE_EXHAUSTED" then
             error("unresolved field identity falsely exhausted supportable space")
         end
-        equal(runtime:getStatus().controlAuthorityEnabled,false)
     end)
 end)
 
@@ -1633,7 +1626,7 @@ test("passive validator publishes admitted episodes Operation and candidate diag
         runtime.liveRuntimeCoordinator=coordinator; coordinator:loadMap(); coordinator:update(1000)
         local record=runtime.passiveLiveValidator:getRecords()[1]
         if record==nil then error("runtime-owned coordinator did not publish diagnostic record") end
-        equal(record.generalControlAuthorityEnabled,false); equal(record.activeAssemblyCount,2); equal(record.activeJobEpisodeCount,2); equal(record.activeOperationCount,1); equal(record.globalActiveOperationCount,1)
+        equal(record.activeAssemblyCount,2); equal(record.activeJobEpisodeCount,2); equal(record.activeOperationCount,1); equal(record.globalActiveOperationCount,1)
         equal(record.candidateCount,1); equal(record.allPassCandidateCount,1); equal(record.unresolvedCandidateCount,0); equal(record.failedCandidateCount,0)
         equal(record.selectedCapability,"CONTINUE_OBSERVATION"); equal(record.nonIntervention.classification,"CONTINUE_OBSERVATION")
         equal(#runtime.commitments:list(),0); equal(runtime.decisionCommitmentBoundary:getPublishedCount(),0)
@@ -1795,7 +1788,6 @@ test("targeted field identity probe is diagnostic-only and does not affect admis
         equal(#runtime.jobEpisodes:list(),0)
         equal(#runtime.operations:list(),0)
         equal(#runtime.commitments:list(),0)
-        equal(runtime.controlAuthorityEnabled,false)
     end)
 end)
 
@@ -3074,10 +3066,7 @@ test("D0146 protects pre-productive native intent while regulating the known Ope
     equal(relation.actionSpaceConservation.roleBasis,"PRESERVE_PRE_PRODUCTIVE_NATIVE_INTENT_REVELATION")
     equal(relation.actionSpaceConservation.requestedCapKmh,nil)
 
-    local previousPassageEnabled=OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED
-    OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED=true
     local plan,reason=OuttaMyWay.LocalPassagePlanner.plan({opposedCorridorKnowledge={relation}}, {})
-    OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED=previousPassageEnabled
     equal(plan,nil); equal(reason,"NO_ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
 
     local productiveRelation=OuttaMyWay.TrajectoryConflictAssessment.classifyPairs({
@@ -3405,7 +3394,6 @@ end)
 
 
 local function d0146Step2Fixture(fieldMinX,fieldMaxX,longitudinalSeparationM)
-    OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED=true
     fieldMinX=fieldMinX or -40; fieldMaxX=fieldMaxX or 40
     longitudinalSeparationM=longitudinalSeparationM or 60
     local conflict={
@@ -5253,14 +5241,13 @@ test("D0217 transient unavailable raw Job token does not vacate a live Passage L
         participants={},thirdPartyConstraints={}}
     control.run.participants={control.run.a,control.run.b}
     control.nextHeartbeatMs=math.huge; control._thirdPartySupport=function() return true,nil end
-    local oldEnabled=OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED
-    local oldTime=g_time; g_time=1000; OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED=true
+    local oldTime=g_time; g_time=1000
     control:update(16)
     equal(control.run.a.vacated~=true,true)
     equal(control.run.b.vacated~=true,true)
     equal(control.run.failureReason,nil)
     equal(notified,0)
-    g_time=oldTime; OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED=oldEnabled
+    g_time=oldTime
     OuttaMyWay.LiveAIJobEvidence.currentJob,OuttaMyWay.LiveAIJobEvidence.jobToken=oldCurrentJob,oldJobToken
 end)
 
@@ -5642,9 +5629,7 @@ test("D0146 native blocked signal does not independently abort an active guide",
         a={vehicle=vehicleA,name="A",assemblyId="AS-A"},b={vehicle=vehicleB,name="B",assemblyId="AS-B"},
         participants={{vehicle=vehicleA,name="A",assemblyId="AS-A"},{vehicle=vehicleB,name="B",assemblyId="AS-B"}},thirdPartyConstraints={}
     }
-    local oldEnabled=OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED
     local oldWatchdog=OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS
-    OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED=true
     OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS=45000
     local oldTime=g_time; g_time=1000
     control:update(16)
@@ -5652,7 +5637,6 @@ test("D0146 native blocked signal does not independently abort an active guide",
     equal(control.run.phase,"GUIDE_TRAVERSAL")
     equal(restoreRequests,0)
     g_time=oldTime
-    OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED=oldEnabled
     OuttaMyWay.COOPERATIVE_PASSAGE_PHASE_WATCHDOG_MS=oldWatchdog
 end)
 

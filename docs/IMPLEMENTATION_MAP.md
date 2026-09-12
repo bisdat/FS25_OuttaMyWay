@@ -21,13 +21,13 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State: `main` after PR #135 merge,
-  `b04cc98cb4d66aeccb77fd146205903d89b35d09`.
+- Accepted Repository State: `main` after PR #136 merge,
+  `bbb23dfee0b2b5c55e241d54e2f66bfef64d6a40`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity is
-  **`0.3.0.61 TEST — TRAJECTORY ASSESSMENT VALUE OWNERSHIP`**.
-- Post-merge Offline Validation run #334 passed on the exact merge commit.
-- Issue #87 remains active through the `.62` Follower Boundary assessment value-ownership tranche.
+  **`0.3.0.62 TEST — FOLLOWER BOUNDARY ASSESSMENT VALUE OWNERSHIP`**.
+- Post-merge Offline Validation run #336 passed on the exact merge commit.
+- Issue #87 remains active through the `.63` Core Capability Gate Retirement tranche.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -50,7 +50,7 @@ Architectural meaning remains owned by the
 | Follower Boundary evidence | `scripts/assessment/FollowerBoundaryDemandAssessment.lua` | PRESERVE admissible magnitude evidence/envelope; `.62` makes the evaluator explicit owner of its six alignment/retention/clearance/temporal-seed calibrations; no requested Control target (#98 / PR #108) |
 | Forward Intersection / Action-Space evidence | `SpatialConstraintAssessment.lua`, `TrajectoryConflictAssessment.lua` | PRESERVE current positive/unresolved/negative semantics; `.61` makes Trajectory Conflict Assessment the explicit owner of its ten sampling/persistence/opposed-current calibrations while Passage Action-Space separation remains external context |
 | Causal Obstruction | `CausalObstructionAssessment.lua` | PRESERVE: current GIANTS inactivity observation and ENDED Job Episode are two evidence routes into the same non-active classification; no provenance-specific downstream responsibility |
-| Candidate construction / planning | `scripts/candidates/` | PRESERVE feasible option/support/planning ownership |
+| Candidate construction / planning | `scripts/candidates/` | PRESERVE feasible option/support/planning ownership; `.63` removes per-capability Follower/Passage rollout vetoes so Candidate support is governed by current evidence and responsibility architecture |
 | Prospective Candidate portfolio | `ProspectiveDecisionPortfolioSupport.lua` | PRESERVE complete fresh group enumeration on one Decision picture |
 | Constraint evaluation | `scripts/constraints/ConstraintEngine.lua` plus four canonical evaluators | PRESERVE independently owned mandatory verdicts; `.43` retires only the production-unreachable historical Follower Owns Closure prohibition |
 | Decision / policy | `DecisionSelector.lua`, `TrafficPolicemanDecisionPolicy.lua`, `ProspectivePortfolioDecisionPolicy.lua` | PRESERVE supported choice / compatibility policy |
@@ -63,14 +63,14 @@ Architectural meaning remains owned by the
 | Regulation Bounded Authority | `RegulationBoundedAuthority.lua`, `ResolutionSpaceProgressionEnvelope.lua`, `FollowerBoundaryMagnitudePolicy.lua` | PRESERVE authority-owned final follower speed permission from accepted admissible evidence (#98 / PR #108) |
 | Effective actuation composition | `EffectiveActuationComposition.lua` | PRESERVE |
 | Mechanical exclusivity | `AuthorityRegistry.lua` | PRESERVE; exclusivity is not permission |
-| Control routing | `LiveControlDispatcher.lua` | PRESERVE authorised typed routing |
+| Control routing | `LiveControlDispatcher.lua` | PRESERVE authorised typed routing; `.63` makes this topology, downstream of Bounded Authority, the actual capability boundary rather than Control pseudo-state booleans |
 | Regulation Control | `RegulationControl.lua`, `NativeDriveMechanism.lua` | PRESERVE production speed executor |
-| Cooperative Passage Control | `CooperativePassageControl.lua` plus shared mechanisms | PRESERVE validated mechanics and participant-specific handback |
+| Cooperative Passage Control | `CooperativePassageControl.lua` plus shared mechanisms | PRESERVE validated mechanics and participant-specific handback; `.63` removes feature-gate admission/revocation so committed Passage ends only through accepted lifecycle/safety/feasibility evidence |
 | Obstruction Relocation Control | `ObstructionRelocationControl.lua`, `NonJobActuationMechanism.lua` | PRESERVE one provenance-neutral physical executor beneath one Causal Obstruction / Obstruction Relocation responsibility; `.51` retires the already-uninstantiated D-0147 donor topology around it |
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting Obstruction Relocation movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.59` retires the expired follower-maturation shadow and `.60` localises five live instruments' enablement/publication controls without moving semantic authority |
-| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.61 resolve prior ownership/retirement families; `.62` removes six Follower Boundary assessment calibrations while preserving the distinct Candidate-expression enable gate |
+| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.62 resolve prior ownership/retirement families; `.63` retires the remaining core-capability/control pseudo-state gates rather than assigning them false owners |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
 
 ## Boundary findings worth protecting
@@ -129,7 +129,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #87 | mixed runtime constants / Configuration ownership | `.62` localises six Follower Boundary assessment calibrations and removes `SituationAssessment` as their parameter courier. The similarly named aligned-Regulation enable gate remains a separate Candidate-expression responsibility pending later classification. Remaining #87 work concerns that gate, HUD/#89 boundaries, Cooperative Passage/Resolution Space, identity/validation values, and the required Player / Developer-Debug / Internal presentation boundary. |
+| #87 | mixed runtime constants / Configuration ownership | `.63` removes the historical per-capability/pseudo-authority boolean layer for Cooperative Passage, aligned Follower Boundary and Control. Master OuttaMyWay enablement remains the sole accepted product-level capability switch concept; implementation remains deferred. Remaining #87 work concerns Cooperative Passage / Resolution-Space value ownership, identity/release values, HUD/#89 boundaries, validation/diagnostic presentation and the required Player / Developer-Debug / Internal presentation boundary. |
 
 Issue #112 is closed completed. Issue #116 and #123 remain separate.
 
@@ -157,26 +157,28 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Implement and validate **#87 `.62 — FOLLOWER BOUNDARY ASSESSMENT VALUE OWNERSHIP`**
-from accepted `main` at `b04cc98cb4d66aeccb77fd146205903d89b35d09`.
+Implement and validate **#87 `.63 — CORE CAPABILITY GATE RETIREMENT`** from
+accepted `main` at `bbb23dfee0b2b5c55e241d54e2f66bfef64d6a40`.
 
-Localise exactly six Follower Boundary assessment calibrations to
-`FollowerBoundaryDemandAssessment`: clearance factor, current alignment,
-established lateral retention, established alignment retention, opposed-succession
-retention and provisional temporal-seed duration. Preserve every literal and all
-current assessment semantics exactly.
+Remove the historical pseudo-state layer rather than moving it:
 
-Production `SituationAssessment` continues to supply evidence and commitment /
-operation context, but no longer couriers evaluator-private calibration. Direct
-options/values remain supported as focused-test override seams.
+- root `COOPERATIVE_PASSAGE_ENABLED`, `CONTROL_AUTHORITY_ENABLED` and
+  `FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED`;
+- Follower Candidate rollout veto;
+- Cooperative Passage planner/admission/active-Commitment feature-gate checks and
+  gate-only `COOPERATIVE_PASSAGE_DISABLED*` reasons;
+- Runtime `controlAuthorityEnabled` / `generalControlAuthorityEnabled` fields and
+  status publication, while preserving Field World evidence-level
+  `controlAuthorityEnabled=false` annotations;
+- PassiveLiveValidator / PassiveLiveTraceRecord general-Control boolean
+  assertion/publication/schema field.
 
-`FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true` remains untouched in
-`scripts/config.lua` and remains consumed by `LiveTrafficCandidateSupport` as a
-separate Candidate-expression gate.
+Preserve current Situation, Candidate, Decision, Responsibility, Bounded Authority
+and typed Control topology. Preserve all Passage geometry/policy/calibration,
+Follower assessment/magnitude and current safety/feasibility handling. Historical
+tests must be re-anchored to these actual invariants rather than deleted or
+weakened.
 
-Reconcile only historical tests that froze the former root placement. Preserve
-their aligned-production meaning and the independent Lua D-0141 behavioural
-fixtures.
-
-Enable-gate ownership, speed retuning, HUD/#89, Passage/Resolution-Space policy,
-#123, #116 and #45 are outside this increment.
+Master OuttaMyWay enablement is the accepted product-level switch concept but its
+implementation is outside this tranche. HUD/#89, #123, #116 and #45 remain
+separate.

@@ -1059,7 +1059,6 @@ function Control:_continueAfterParticipantVacatur(run,vacated)
 end
 
 function Control:_executeCooperativePassageJointRequests(requestA,requestB,candidate,bridge)
-    if OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED~=true then return false,"COOPERATIVE_PASSAGE_DISABLED" end
     if self.run~=nil then return false,"COOPERATIVE_PASSAGE_CONTROL_ALREADY_ACTIVE" end
     if requestA==nil or requestB==nil or candidate==nil then return false,"MISSING_JOINT_CONTROL_CONTEXT" end
     OuttaMyWay.ValueRecord.assertType(requestA,"ControlRequest"); OuttaMyWay.ValueRecord.assertType(requestB,"ControlRequest")
@@ -1146,7 +1145,6 @@ function Control:update(dt)
             if participant.request~=nil and boundedAuthority:isCurrent(participant.request.boundedAuthorityId)~=true then self:_failHeld("BOUNDED_AUTHORITY_LOST"); return end
         end
     end
-    if OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED~=true then self:_failHeld("COOPERATIVE_PASSAGE_DISABLED_DURING_ACTIVE_COMMITMENT"); return end
     local nowMs=g_time or 0
     local sameJob,changed=self:_allSameJob(run)
     if not sameJob then

@@ -245,7 +245,7 @@ def test_v475_passive_live_modules_are_active_and_zero_control():
     assert "addModEventListener(OuttaMyWay.runtime.passiveLiveValidator)" in main
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     assert "decisionCommitmentBoundary:apply" not in validator
-    assert "Control authority disabled" in (ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
+    assert "bounded Control dispatch are already complete before trace publication" in validator
 
 
 def test_v475_live_source_does_not_import_archive_or_control():
@@ -266,7 +266,6 @@ def test_v475_candidate_support_is_non_actuating_only():
 def test_v476_admission_correction_remains_present_under_later_probe_builds():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
-    assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert "OBSERVED_NATIVE_AI_ACTIVITY_EPISODE" in source
     assert "JOB_EPISODE_END_EVIDENCE" in source
 
@@ -385,7 +384,7 @@ def test_v4714_field_world_equivalence_authority_is_active_and_conservative():
         assert token in evaluator
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     assert "D-0146 Step-1 Situation Knowledge is live-validated and Step-2 Established Conflict -> Candidate-owned Local Passage Search -> Passage Guide -> Commitment/Control is ACTIVE" in runtime
-    assert "Control authority disabled" in runtime
+    assert "runtime.boundedAuthority=OuttaMyWay.BoundedAuthority.new(runtime)" in runtime
     assert "decisionCommitmentBoundary:apply" not in (ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
 
 
@@ -566,7 +565,7 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     assert "currentPairAssessmentScope" in assessment
     assert "futureSpaceStatus" in scope and "relationshipStatus" in scope
     assert "futureSpacePositive=%s" in validator
-    assert "d0143CooperativePassage=false" in runtime and "d0143MechanicalDonorHistoricalOnly=true" in runtime and "kingRetired=true" in runtime and "generalControl=false" in runtime
+    assert "d0143CooperativePassage=false" in runtime and "d0143MechanicalDonorHistoricalOnly=true" in runtime and "kingRetired=true" in runtime and "typedBoundedControl=true" in runtime
     for text in (source,assessment,scope,validator,runtime):
         for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
             assert forbidden not in text
@@ -595,7 +594,6 @@ def test_v4742_traffic_policeman_decision_policy_current_implementation_contract
     policy=(ROOT/"scripts"/"decision"/"TrafficPolicemanDecisionPolicy.lua").read_text(encoding="utf-8")
     passive=(ROOT/"scripts"/"candidates"/"PassiveLiveCandidateSupport.lua").read_text(encoding="utf-8")
 
-    assert 'CONTROL_AUTHORITY_ENABLED = false' in config
     assert 'TrafficPolicemanDecisionPolicy.lua' in main
     assert main.index('TrafficPolicemanDecisionPolicy.lua') < main.index('DecisionSelector.lua')
     assert 'TRAFFIC_POLICEMAN_SEQUENTIAL_PRIMARY' in policy
@@ -762,7 +760,7 @@ def test_v4768_d0136_settlement_future_space_uses_explicit_observation_adapter()
     assert 'FieldBoundedFutureSpace.build(otherTrack)' not in residual
     assert 'track.activeObserved=' not in residual
     assert 'settlementFutureSpaceInput=PERSISTENT_TRACK_TO_OBSERVATION_ADAPTER' in residual
-    assert 'general production Control authority disabled' in runtime
+    assert "runtime.boundedAuthority=OuttaMyWay.BoundedAuthority.new(runtime)" in runtime
 
 
 
@@ -837,7 +835,7 @@ def test_d0141_aligned_follower_boundary_regulation_uses_current_knowledge_and_c
     hud=(ROOT/"scripts"/"diagnostics"/"FollowerPacingHud.lua").read_text(encoding="utf-8")
 
     assert 'scripts/assessment/FollowerBoundaryDemandAssessment.lua' in main
-    assert 'FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true' in config
+    assert 'FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED' not in config
     assert 'local FOLLOWER_BOUNDARY_PROVISIONAL_DURATION_SEC=13.0' in assessment
     assert 'LIVE_RUNTIME_CONTROL_INTERVAL_MS' not in config
     assert 'local LIVE_RUNTIME_CONTROL_INTERVAL_MS=250' in coordinator
@@ -863,7 +861,8 @@ def test_d0141_aligned_follower_boundary_regulation_uses_current_knowledge_and_c
     assert 'forensicDemandEnvelope' not in assessment
     assert 'FOLLOWER_BOUNDARY_TRANSITION_CLEARANCE_FACTOR' in assessment
     assert 'FOLLOWER_BOUNDARY' in support
-    assert 'FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED~=true' in support
+    assert 'FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED' not in support
+    assert 'local function followerBoundaryRecord(picture)' in support
     assert 'FOLLOWER_BOUNDARY_PROTECTION' in support
     assert 'applyFollowerBoundaryDecision' in lifecycle
     assert 'settleFollowerBoundaryPurpose' in lifecycle
@@ -923,7 +922,11 @@ def test_v47101_d0146_step2_is_active_candidate_owned_and_control_executes_only_
 
     assert "scripts/assessment/PassageCapabilityAssessment.lua" in main
     assert "scripts/candidates/LocalPassagePlanner.lua" in main
-    assert 'COOPERATIVE_PASSAGE_ENABLED = true' in config
+    assert 'COOPERATIVE_PASSAGE_ENABLED' not in config
+    assert 'COOPERATIVE_PASSAGE_ENABLED' not in planner
+    assert 'COOPERATIVE_PASSAGE_ENABLED' not in control
+    assert 'COOPERATIVE_PASSAGE_DISABLED' not in planner
+    assert 'COOPERATIVE_PASSAGE_DISABLED' not in control
     assert "COOPERATIVE_PASSAGE_EXCURSION" in fitness
     assert "vehicleNameAdmissionGate=false" in fitness
     assert "Condor Endurance II" not in fitness and "Patriot 4450" not in fitness

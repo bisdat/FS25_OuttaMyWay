@@ -42,7 +42,7 @@ def test_issue87_follower_boundary_assessment_owns_exact_accepted_values():
     for token in ROOT_NAMES:
         assert f"OuttaMyWay.{token}" not in assessment
 
-def test_issue87_focused_overrides_remain_but_candidate_expression_gate_stays_separate():
+def test_issue87_focused_overrides_remain_and_aligned_candidate_expression_is_unconditional():
     assessment = read("scripts/assessment/FollowerBoundaryDemandAssessment.lua")
     config = read("scripts/config.lua")
     support = read("scripts/candidates/LiveTrafficCandidateSupport.lua")
@@ -58,8 +58,10 @@ def test_issue87_focused_overrides_remain_but_candidate_expression_gate_stays_se
     ):
         assert token in assessment
 
-    assert "FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true" in config
-    assert "FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED~=true" in support
+    assert "FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED" not in config
+    assert "FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED" not in support
+    assert "local function followerBoundaryRecord(picture)" in support
+    assert "local follower,followerReason=followerBoundaryRecord(picture)" in support
 
     # Independent behavioural fixtures continue to inject accepted values directly.
     for token in (

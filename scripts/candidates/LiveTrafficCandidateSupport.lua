@@ -389,7 +389,6 @@ end
 -- Representation-Fit enough to support follower protection.  Candidate support
 -- does not inspect raw GIANTS state or historical manoeuvre probes.
 local function followerBoundaryRecord(picture)
-    if OuttaMyWay.FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED~=true then return nil,nil end
     local actionable={}
     for _,record in OuttaMyWay.ValueRecord.ipairs(picture.followerBoundaryKnowledge or {}) do
         local existing=type(record.existingCommitmentId)=="string"

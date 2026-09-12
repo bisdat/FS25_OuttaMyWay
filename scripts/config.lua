@@ -1,13 +1,12 @@
--- FS25_OuttaMyWay v0.3.0.62 TEST — FOLLOWER BOUNDARY ASSESSMENT VALUE OWNERSHIP.
--- Follower Boundary assessment calibration is owned by the evaluator that
--- interprets it; the separate Candidate-expression enable gate is unchanged.
+-- FS25_OuttaMyWay v0.3.0.63 TEST — CORE CAPABILITY GATE RETIREMENT.
+-- Core capability availability is established by current responsibility,
+-- Bounded Authority and typed Control topology, not per-capability booleans.
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.62"
+OuttaMyWay.VERSION = "0.3.0.63"
 OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
 OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
-OuttaMyWay.CONTROL_AUTHORITY_ENABLED = false
 -- Temporary live-gate HUDs. Diagnostic instrumentation only.
 -- v4.7.24 retains the lifecycle gate only to verify cleanup causes no behavioural change
 -- to Future-Space admission, termination precedence or fresh-Episode identity.
@@ -24,9 +23,8 @@ OuttaMyWay.TRANSITION_HUD_LINE_HEIGHT = 0.022
 -- enablement and publication/sample cadences live with the five instruments;
 -- they are not player Configuration and do not define Runtime scheduling.
 
-OuttaMyWay.FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true
--- Follower Boundary Situation-assessment calibration is module-owned. This root
--- retains only the distinct Candidate-expression enable gate.
+-- Follower Boundary Situation-assessment calibration is module-owned; aligned
+-- Candidate expression is a core production path with no separate capability gate.
 
 
 -- Trajectory Conflict Assessment owns its sampling, persistence and opposed-current
@@ -37,7 +35,6 @@ OuttaMyWay.FOLLOWER_BOUNDARY_ALIGNED_REGULATION_ENABLED = true
 -- The nominal 1 m Inter-Assembly Clearance is empirical policy rather than an
 -- exact collision calculation. Cached complete-assembly Transit geometry
 -- constructs Passage; Reality remains the calibration authority.
-OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED = true
 OuttaMyWay.COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M = 80.0
 OuttaMyWay.COOPERATIVE_PASSAGE_CLEARANCE_TRACE_MAX_SEPARATION_M = 40.0 -- TEST telemetry only; does not alter Candidate evaluation.
 OuttaMyWay.COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M = 1.0
@@ -85,7 +82,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
 -- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.62 TEST — FOLLOWER BOUNDARY ASSESSMENT VALUE OWNERSHIP"
+OuttaMyWay.BUILD_LABEL = "0.3.0.63 TEST — CORE CAPABILITY GATE RETIREMENT"
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985

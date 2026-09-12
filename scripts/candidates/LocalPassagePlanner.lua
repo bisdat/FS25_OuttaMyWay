@@ -826,7 +826,6 @@ end
 -- bounded support question while retaining the complete parent Operational
 -- Picture as the evidence universe. It owns no inter-conflict selection.
 function Planner.planConflict(picture,snapshot,conflict)
-    if OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED~=true then return nil,"COOPERATIVE_PASSAGE_DISABLED" end
     if type(conflict)~="table" or conflict.classification~="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" then
         return nil,"PROJECTED_RELATIONSHIP_NOT_ESTABLISHED_OPPOSED_CONFLICT"
     end
@@ -835,7 +834,6 @@ function Planner.planConflict(picture,snapshot,conflict)
 end
 
 function Planner.plan(picture,snapshot)
-    if OuttaMyWay.COOPERATIVE_PASSAGE_ENABLED~=true then return nil,"COOPERATIVE_PASSAGE_DISABLED" end
     local conflicts=establishedConflicts(picture)
     if #conflicts==0 then return nil,"NO_ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" end
     local firstReason=nil
