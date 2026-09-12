@@ -2,79 +2,49 @@
 
 ## Repository authority
 
-- Accepted Repository State: `main` after PR #137 merge,
-  `7874314b69a168e83770092c026afe49506e18dc`.
+- Accepted Repository State: `main` at
+  `c80c7de32fed74204efd593b53eeb04649ee032a`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted executable identity is
-  **`0.3.0.63 TEST — CORE CAPABILITY GATE RETIREMENT`**.
-- Post-merge Offline Validation run #339 passed structural and Lua behavioural contracts.
+- Accepted executable identity remains
+  **`0.3.0.64 TEST — PRODUCTION VOCABULARY CLOSURE`**.
 - Issue #87 remains open for Root Surface Closure.
 - Issue #139 separately owns supported player Configuration.
 
 ## Current workstream — Issue #87
 
-`.63` retired the remaining core-capability/pseudo-authority enable-state layer.
 Current core behaviour is governed by Reality / Situation, Responsibility,
 Bounded Authority and typed Control rather than per-capability booleans.
-
-The subsequent Root Surface Closure census exposed a distinct surviving debt:
-historical decision identifiers still appeared in sourced production
-provenance, authority labels, evidence/outcome kinds, addressability keys,
-telemetry and comments. The Phase-14 strangler corrected authority topology but
-its naming contract explicitly allowed historical provenance, and the structural
-test suite encoded that exception.
-
-> **Production Vocabulary Closure != Validation Vocabulary Closure**
-
-> **Source Topology Defines Production Surface**
-
-Git owns chronology. Historical decision identity may remain in research/history
-and, temporarily, validation fixtures, but it must not appear anywhere in
-`scripts/main.lua` or the production Lua modules it sources, including comments.
+Sourced production uses current architectural vocabulary throughout the complete
+`scripts/main.lua` source topology, including comments.
 
 ## Current bounded increment
 
-Implement **`0.3.0.64 TEST — PRODUCTION VOCABULARY CLOSURE`**:
+Validation Vocabulary Closure is implemented in the working tree on
+`refactor/validation-vocabulary-closure`, based on the accepted commit above.
+It changes tests and documentation only; executable identity remains unchanged.
+Current validation titles, helpers, synthetic identities/provenance and comments
+use current concepts. Exact negative historical-token assertions and deliberate
+historical replay/probe evidence remain intact under the durable
+[Naming Conventions](NAMING_CONVENTIONS.md#validation-vocabulary).
 
-1. replace sourced-production D-number provenance, authority, evidence/outcome,
-   runtime identity/addressability, telemetry and comments with current
-   architectural responsibility vocabulary;
-2. reverse the structural production-vocabulary contract so it rejects
-   historical decision identity across the complete `scripts/main.lua` source
-   topology, including comments, rather than preserving selected exceptions;
-3. remove rolling version/decision-history headers from production modules
-   touched by the tranche where Git already owns that chronology;
-4. preserve runtime behaviour, policy/calibration, geometry, lifecycle,
-   authority boundaries and Control semantics;
-5. update positive structural assertions consuming renamed current production
-   contracts while leaving historical fixture/test-title vocabulary and negative
-   retirement assertions for a separate behaviour-neutral Validation Vocabulary
-   Closure increment.
+The replacement-core vocabulary contract permits only the deliberately retained
+historical Productive Coverage / settlement probe decision families. This narrow
+boundary does not prohibit historical assertion payload elsewhere in `/tests`.
 
-PR #140 review and Offline Validation run #340 exposed two closure gaps: the
-production guard stripped comments, and 13 structural tests still positively
-asserted historical production labels. The review correction scans full sourced
-file text and reconciles those contract consumers. Contract consumers are not
-validation fixtures; preserving deferred fixture vocabulary does not preserve
-obsolete positive assertions. Independent CI validation of the correction remains
-pending publication; local scans and syntax checks do not establish suite or
-in-game validation.
+Independent CI validation and owner review of this increment remain pending.
+Local census, static review and syntax checks do not establish suite or in-game
+validation. No commit or push is part of this working-tree increment.
 
-This tranche does **not** relocate the remaining `scripts/config.lua` constants,
-retire `BUILD_LABEL` / `ARCHITECTURE_VERSION` / `RUNTIME_MODE`, implement player
-Configuration, redesign HUD behaviour, retune Passage/Regulation policy or touch
-the separate Condor donor investigation.
+## Next engineering boundary
 
-## Root Surface Closure after `.64`
-
-After Production Vocabulary Closure:
-
-1. close validation-only historical vocabulary separately;
-2. resume #87 ownership movement/retirement from the closed consumer census;
-3. preserve the accepted **Two Root Identities; Everything Else Must Earn an
-   Owner** direction;
-4. keep player-facing Configuration under #139 and HUD/player communication
+1. Obtain independent validation and owner review of the prepared vocabulary closure.
+2. Resume #87 ownership movement/retirement from the closed consumer census.
+3. Preserve **Two Root Identities; Everything Else Must Earn an Owner**.
+4. Keep player-facing Configuration under #139 and HUD/player communication
    under #89.
+
+Root constant relocation/retirement, player Configuration, HUD redesign,
+Passage/Regulation policy and calibration remain outside this increment.
 
 ## Separate open work
 

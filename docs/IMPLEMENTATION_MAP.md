@@ -21,14 +21,15 @@ Architectural meaning remains owned by the
 
 ## Repository state
 
-- Accepted Repository State: `main` after PR #137 merge,
-  `7874314b69a168e83770092c026afe49506e18dc`.
+- Accepted Repository State: `main` at
+  `c80c7de32fed74204efd593b53eeb04649ee032a`.
 - Canonical authority remains **v0.3.0.0**.
-- Accepted executable identity is
-  **`0.3.0.63 TEST — CORE CAPABILITY GATE RETIREMENT`**.
-- Post-merge Offline Validation run #339 passed structural and Lua behavioural contracts.
-- Issue #87 remains active through Root Surface Closure; `.64` is the current
-  Production Vocabulary Closure implementation increment.
+- Accepted executable identity remains
+  **`0.3.0.64 TEST — PRODUCTION VOCABULARY CLOSURE`**.
+- Issue #87 remains active through Root Surface Closure; the prepared Validation
+  Vocabulary Closure increment changes tests and documentation only. Independent
+  validation and owner review remain pending as recorded in
+  [Continuation State](CONTINUATION_STATE.md).
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -130,7 +131,7 @@ inventory cannot materialise complete-assembly Transit Passage authority.
 
 | Issue | Classification | Material mismatch |
 |---|---|---|
-| #87 | mixed runtime constants / Root Surface Closure | `.63` removes the historical per-capability/pseudo-authority boolean layer. The post-`.63` census establishes **Two Root Identities; Everything Else Must Earn an Owner** and exposes historical D-number identity still embedded in surviving sourced production provenance/telemetry/addressability and comments. `.64` closes that production vocabulary first; validation-only historical fixture vocabulary follows separately before remaining value ownership/retirement. Player Configuration is split to #139 and HUD/player communication remains #89. |
+| #87 | mixed runtime constants / Root Surface Closure | **Two Root Identities; Everything Else Must Earn an Owner** remains the direction for value ownership/retirement. Accepted `.64` closes sourced-production vocabulary; the prepared test/documentation-only increment reconciles current validation vocabulary while preserving historical assertion payload and deliberate evidence. Player Configuration is split to #139 and HUD/player communication remains #89. |
 
 Issue #112 is closed completed. Issue #116 and #123 remain separate.
 
@@ -158,24 +159,16 @@ Git and PR #71 preserve its evidence.
 
 ## Immediate engineering boundary
 
-Implement and validate **#87 `.64 — PRODUCTION VOCABULARY CLOSURE`** from
-accepted `main` at `7874314b69a168e83770092c026afe49506e18dc`.
+The prepared Validation Vocabulary Closure increment uses accepted `main` at
+`c80c7de32fed74204efd593b53eeb04649ee032a` and leaves executable `.64` unchanged.
 
-The bounded purpose is semantic identity closure, not behavioural redesign:
+Current validation fixtures, helpers, test titles and comments use architectural
+vocabulary. Exact negative historical tokens and deliberate historical evidence
+remain under the [Naming Conventions](NAMING_CONVENTIONS.md#validation-vocabulary).
+The narrow replacement-core structural guard permits only retained historical
+probe decision families; it does not prohibit historical payload across `/tests`.
 
-- current sourced production provenance, authority labels, evidence/outcome
-  kinds, addressability keys, telemetry and comments use current responsibility
-  vocabulary;
-- `scripts/main.lua` defines the shipped/sourced production topology and the
-  structural contract rejects historical `D-####` / `D####` identity across that
-  complete sourced surface, including comments;
-- positive structural assertions consume the current production contract;
-  negative retirement assertions retain their historical names;
-- historical validation fixture/helper/test-title vocabulary is explicitly
-  deferred to a separate behaviour-neutral Validation Vocabulary Closure tranche;
-- root constant relocation/retirement, player Configuration, HUD redesign and
-  policy/calibration changes remain outside `.64`.
-
-> **Production Vocabulary Closure != Validation Vocabulary Closure**
-
-> **Source Topology Defines Production Surface**
+Independent validation and owner review precede resumption of remaining root
+value ownership/retirement. Player Configuration, HUD redesign and
+policy/calibration changes remain outside this increment. The
+[Continuation State](CONTINUATION_STATE.md) owns the current review boundary.
