@@ -551,10 +551,15 @@ def test_local_passage_planner_owns_fixed_construction_policy_and_calibration():
     for path in (ROOT / "tests").rglob("*.lua"):
         assert "COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO" not in path.read_text(encoding="utf-8"), path
 
-    remaining = dict(re.findall(r"^OuttaMyWay\.(\w+) = ([^\n]+)$", config, re.M))
-    assert set(remaining) == {
-        "MOD_NAME", "VERSION", "COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M",
-        "FORWARD_INTERSECTION_REGULATION_SPEED_KMH",
-    }
-    assert remaining["COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M"] == "80.0"
-    assert remaining["FORWARD_INTERSECTION_REGULATION_SPEED_KMH"] == "1"
+
+def test_config_root_is_comment_free_identity_only():
+    config = (ROOT / "scripts/config.lua").read_text(encoding="utf-8")
+    assignments = re.findall(r"^OuttaMyWay\.(\w+)\s*=\s*([^\n]+)$", config, re.M)
+    assert [name for name, _ in assignments] == ["MOD_NAME", "VERSION"]
+    assert config.splitlines() == [
+        "OuttaMyWay = OuttaMyWay or {}",
+        'OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"',
+        f"OuttaMyWay.VERSION = {dict(assignments)['VERSION']}",
+    ]
+    assert config.endswith("\n")
+    assert "--" not in config

@@ -17,6 +17,9 @@ local OPPOSED_CURRENT_MAX_DOT=-0.85
 local OPPOSED_CURRENT_STABLE_DISTANCE_M=1.0
 local OPPOSED_MIN_CLOSING_RATE_MPS=0.05
 
+-- Fixed Passage Action-Space policy shared by the assessment paths below.
+local LOCAL_PASSAGE_ACTION_SPACE_MAX_SEPARATION_M = 80.0
+
 local function finite(value)
     return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
 end
@@ -391,7 +394,7 @@ local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,a
         -- Situation publishes that semantic veto; Control does not inspect raw
         -- GIANTS intent evidence.
         if not aExcursion then
-            local maxSeparationM=threshold(context,"actionSpaceMaxSeparationM",80.0)
+            local maxSeparationM=LOCAL_PASSAGE_ACTION_SPACE_MAX_SEPARATION_M
             local aOcc=aSpace and aSpace.occupancy or nil
             local bOcc=bSpace and bSpace.occupancy or nil
             local ax,az=tonumber(aOcc and aOcc.x),tonumber(aOcc and aOcc.z)
@@ -445,7 +448,7 @@ local function actionSpaceConservation(aTrajectory,bTrajectory,aMotion,bMotion,a
         result.reason="CURRENT_EXCURSION_PAIR_NOT_POSITIVELY_CLOSING"
         return result
     end
-    local maxSeparationM=threshold(context,"actionSpaceMaxSeparationM",80.0)
+    local maxSeparationM=LOCAL_PASSAGE_ACTION_SPACE_MAX_SEPARATION_M
     result.maxSeparationM=maxSeparationM
     result.separationM=closing.separationM
     if not finite(tonumber(closing.separationM)) or closing.separationM>maxSeparationM then
@@ -541,7 +544,7 @@ local function establishedConflictConservation(record,aTrajectory,bTrajectory,aM
     if record==nil or record.classification~="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT" then return result end
     local closing=record.currentClosing or {}
     local separation=tonumber(closing.separationM)
-    local maxSeparationM=threshold(context,"actionSpaceMaxSeparationM",80.0)
+    local maxSeparationM=LOCAL_PASSAGE_ACTION_SPACE_MAX_SEPARATION_M
     result.maxSeparationM=maxSeparationM; result.separationM=separation; result.currentClosing=copy(closing)
     if not finite(separation) or separation>maxSeparationM then
         result.reason="ESTABLISHED_CONFLICT_PAIR_OUTSIDE_LOCAL_PASSAGE_ACTION_SPACE_ENVELOPE"

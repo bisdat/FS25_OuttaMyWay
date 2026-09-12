@@ -512,8 +512,7 @@ function Assessment:assess(snapshot, episodeResult, operationResult)
     })
     local opposedCorridorKnowledge=OuttaMyWay.TrajectoryConflictAssessment.classifyPairs({
         situations=situations,trajectoryKnowledge=trajectoryKnowledge,motionEvidence=motionEvidence,currentSpace=currentSpace,
-        physicalSpaceEvidence=physicalSpaceEvidence,
-        actionSpaceMaxSeparationM=OuttaMyWay.COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M
+        physicalSpaceEvidence=physicalSpaceEvidence
     })
     for _,relation in OuttaMyWay.ValueRecord.ipairs(opposedCorridorKnowledge) do
         local situation=situationByOperation[relation.operationId]

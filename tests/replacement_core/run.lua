@@ -3053,11 +3053,11 @@ test("Trajectory Conflict: protects pre-productive native intent while regulatin
                 ["AS-B"]={class="ACTIVE_JOB_INTENT_REVELATION_PENDING",operationMember=false,productiveCommencementPending=true}
             }
         }},
-        opposedMaxDot=-0.85,currentOpposedMaxDot=-0.85,persistenceAlignmentMinDot=0.85,currentStableDistanceM=1.0,minClosingRateMps=0.05,
-        actionSpaceMaxSeparationM=80
+        opposedMaxDot=-0.85,currentOpposedMaxDot=-0.85,persistenceAlignmentMinDot=0.85,currentStableDistanceM=1.0,minClosingRateMps=0.05
     })[1]
     equal(relation.classification,"ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT")
     equal(relation.cooperativePassageEligible,false)
+    equal(relation.actionSpaceConservation.maxSeparationM,80)
     equal(relation.subjectOperationMember,true); equal(relation.otherOperationMember,false)
     equal(relation.otherProductiveCommencementPending,true)
     equal(relation.actionSpaceConservation.status,"REGULATE_SUPPORTED")
@@ -3075,8 +3075,7 @@ test("Trajectory Conflict: protects pre-productive native intent while regulatin
             ["AS-A"]={class="OPERATION_MEMBER",operationMember=true,productiveCommencementPending=false},
             ["AS-B"]={class="OPERATION_MEMBER",operationMember=true,productiveCommencementPending=false}
         }}},
-        opposedMaxDot=-0.85,currentOpposedMaxDot=-0.85,persistenceAlignmentMinDot=0.85,currentStableDistanceM=1.0,minClosingRateMps=0.05,
-        actionSpaceMaxSeparationM=80
+        opposedMaxDot=-0.85,currentOpposedMaxDot=-0.85,persistenceAlignmentMinDot=0.85,currentStableDistanceM=1.0,minClosingRateMps=0.05
     })[1]
     equal(productiveRelation.identity,relation.identity)
     equal(productiveRelation.cooperativePassageEligible,true)
@@ -3401,6 +3400,7 @@ local function buildCooperativePassageFixture(fieldMinX,fieldMaxX,longitudinalSe
         status="SUPPORTED",classification="ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT",reason="PERSISTENT_CURRENT_MOTION_SUBSTANTIATES_ESTABLISHED_OPPOSED_CORRIDOR_CONFLICT",
         trajectoryDot=-1,mutuallyFacing=true,currentOpposed=true,currentClosingPositive=true,subjectCurrentStable=true,otherCurrentStable=true,subjectCurrentExcursion=false,otherCurrentExcursion=false,
         currentClosing={separationM=longitudinalSeparationM,currentDirectionDot=-1,closingRateMps=10},
+        actionSpaceConservation={admissionKind="ESTABLISHED_CONFLICT",maxSeparationM=80},
         supportedCorridorOverlap={status="SUPPORTED",positive=true,overlapM=4,sharedRightX=1,sharedRightZ=0,subjectPhysicalPrimitiveCount=2,otherPhysicalPrimitiveCount=2}
     }
     local trajectories={
@@ -3435,6 +3435,27 @@ local function buildCooperativePassageFixture(fieldMinX,fieldMaxX,longitudinalSe
     })
     return picture,snapshot
 end
+
+test("Cooperative Passage requires the published Situation boundary and rejects separation above it",function()
+    local picture,snapshot=buildCooperativePassageFixture(nil,nil,60)
+    local values=OuttaMyWay.ValueRecord.toTable(picture)
+    local conflict=values.opposedCorridorKnowledge[1]
+    for _,invalid in ipairs({false,0,-1,math.huge,-math.huge,0/0,"80"}) do
+        conflict.actionSpaceConservation.maxSeparationM=invalid
+        local plan,reason=OuttaMyWay.LocalPassagePlanner.planConflict(values,snapshot,conflict)
+        equal(plan,nil); equal(reason,"LOCAL_PASSAGE_ACTION_SPACE_BOUNDARY_UNAVAILABLE")
+    end
+    conflict.actionSpaceConservation=nil
+    local plan,reason=OuttaMyWay.LocalPassagePlanner.planConflict(values,snapshot,conflict)
+    equal(plan,nil); equal(reason,"LOCAL_PASSAGE_ACTION_SPACE_BOUNDARY_UNAVAILABLE")
+    -- Counterfactual evidence proves Candidate consumes the published boundary.
+    conflict.actionSpaceConservation={maxSeparationM=59}
+    plan,reason=OuttaMyWay.LocalPassagePlanner.planConflict(values,snapshot,conflict)
+    equal(plan,nil); equal(reason,"ESTABLISHED_CONFLICT_NOT_YET_LOCAL")
+    conflict.actionSpaceConservation.maxSeparationM=80
+    plan,reason=OuttaMyWay.LocalPassagePlanner.planConflict(values,snapshot,conflict)
+    equal(reason,nil); equal(plan.status,"SUPPORTED")
+end)
 
 test("Cooperative Passage: Pair-Specific Passage Clearance uses conflict-facing one-sided extents rather than whole represented width",function()
     local aSpace={occupancy={x=0,z=0}}
@@ -3830,6 +3851,22 @@ local function forwardIntersectionPicture(positive)
     return OuttaMyWay.OperationalPicture.new(values)
 end
 
+test("Forward Intersection admission fails closed without a positive finite Candidate magnitude",function()
+    local runtime=autonomousHeadOnRuntime()
+    runtime:setRegulationControl({})
+    local authority=runtime.regulationBoundedAuthority
+    local bridge={conflictIdentity="FI-BOUNDARY",regulatedAssemblyId="AS-B",admissionKind="FORWARD_INTERSECTION"}
+    local candidate={identity="CA-FI-BOUNDARY",capability="REGULATE_SPEED",evidenceBasis={actionSpaceRegulationBridge=bridge}}
+    equal(authority:assessActionSpaceRegulationPermission({},nil,candidate,nil),nil)
+    for _,invalid in ipairs({false,0,-1,math.huge,-math.huge,0/0,"1"}) do
+        bridge.fixedRegulationSpeedKmh=invalid
+        equal(authority:assessActionSpaceRegulationPermission({},nil,candidate,nil),nil)
+    end
+    equal(authority:getDispatchCount(),0)
+    bridge.fixedRegulationSpeedKmh=1
+    equal(authority:assessActionSpaceRegulationPermission({},nil,candidate,nil).applicationContext,"INITIAL")
+end)
+
 test("Forward Intersection applies fixed one kilometre per hour and releases on fresh dissolution",function()
     local runtime=autonomousHeadOnRuntime(); local requests={}; local cleared=0
     local capability={}
@@ -3841,6 +3878,7 @@ test("Forward Intersection applies fixed one kilometre per hour and releases on 
     local supported=runtime.liveTrafficCandidateSupport:attach(picture,headOnTestSnapshot())
     local specification=supported.candidateSupportEvidence.candidateSpecifications[1]
     equal(specification.evidenceBasis.actionSpaceRegulationBridge.admissionKind,"FORWARD_INTERSECTION")
+    equal(specification.evidenceBasis.actionSpaceRegulationBridge.fixedRegulationSpeedKmh,1)
     local evaluated=runtime:evaluateSealedOperationalPicture(supported)
     local admitted=runtime:dispatchEvaluatedOperationalPicture(supported,evaluated)
     equal(admitted.status,"ACCEPTED"); equal(admitted.forwardIntersection,true)

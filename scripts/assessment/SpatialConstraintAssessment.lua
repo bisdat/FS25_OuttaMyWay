@@ -6,6 +6,7 @@ OuttaMyWay.SpatialConstraintAssessment={}
 local Assessment=OuttaMyWay.SpatialConstraintAssessment
 Assessment.__index=Assessment
 local EPSILON_M=0.00001
+local FORWARD_INTERSECTION_INTENT_REVELATION_CREEP_KMH = 1
 
 local function finite(v) return type(v)=="number" and v==v and v~=math.huge and v~=-math.huge end
 local function point(v)
@@ -134,7 +135,7 @@ local function pairRecord(operationId,a,b,followerKnowledge)
     r.temporalAllocationStatus="SUPPORTED"; r.actionable=true
     r.temporalYielderAssemblyId=subjectYields and a.assemblyId or b.assemblyId; r.temporalYielderReferenceKey=subjectYields and a.assemblyReferenceKey or b.assemblyReferenceKey
     r.continuingAssemblyId=subjectYields and b.assemblyId or a.assemblyId; r.continuingReferenceKey=subjectYields and b.assemblyReferenceKey or a.assemblyReferenceKey
-    r.regulationSpeedKmh=OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH or 1
+    r.regulationSpeedKmh=FORWARD_INTERSECTION_INTENT_REVELATION_CREEP_KMH
     r.actionSpaceConservation={status="REGULATE_SUPPORTED",supported=true,admissionKind="FORWARD_INTERSECTION",
         regulatedAssemblyId=r.temporalYielderAssemblyId,regulatedReferenceKey=r.temporalYielderReferenceKey,
         protectedAssemblyId=r.continuingAssemblyId,protectedReferenceKey=r.continuingReferenceKey,

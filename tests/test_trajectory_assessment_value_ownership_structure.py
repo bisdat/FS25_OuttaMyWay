@@ -18,7 +18,7 @@ ROOT_NAMES = (
     "OPPOSED_MIN_CLOSING_RATE_MPS",
 )
 
-def test_issue87_trajectory_calibration_leaves_mixed_root_and_situation_courier():
+def test_trajectory_conflict_calibration_is_module_owned_without_situation_courier():
     config = read("scripts/config.lua")
     situation = read("scripts/assessment/SituationAssessment.lua")
     for token in ROOT_NAMES:
@@ -57,15 +57,25 @@ def test_issue87_trajectory_conflict_assessment_owns_exact_accepted_values():
     for token in defaults:
         assert token in assessment
 
-def test_issue87_focused_override_contract_and_passage_context_remain_separate():
+def test_assessment_owns_fixed_passage_boundary_without_context_override():
     assessment = read("scripts/assessment/TrajectoryConflictAssessment.lua")
     situation = read("scripts/assessment/SituationAssessment.lua")
     harness = read("tests/replacement_core/run.lua")
 
     assert 'local value=context and context[name] or nil' in assessment
-    assert 'threshold(context,"actionSpaceMaxSeparationM",80.0)' in assessment
-    assert "actionSpaceMaxSeparationM=OuttaMyWay.COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M" in situation
-    assert "COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M" in read("scripts/config.lua")
+    assert "local LOCAL_PASSAGE_ACTION_SPACE_MAX_SEPARATION_M = 80.0" in assessment
+    assert assessment.count("local maxSeparationM=LOCAL_PASSAGE_ACTION_SPACE_MAX_SEPARATION_M") == 3
+    assert "result.maxSeparationM=maxSeparationM" in assessment
+    for path in (ROOT / "scripts").rglob("*.lua"):
+        source = path.read_text(encoding="utf-8")
+        assert "actionSpaceMaxSeparationM" not in source, path
+        assert "COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M" not in source, path
+    assert "actionSpaceMaxSeparationM" not in harness
+    planner = read("scripts/candidates/LocalPassagePlanner.lua")
+    assert "conflict.actionSpaceConservation.maxSeparationM" in planner
+    assert 'if not finite(maxSeparation) or maxSeparation<=0 then return nil,"LOCAL_PASSAGE_ACTION_SPACE_BOUNDARY_UNAVAILABLE" end' in planner
+    assert 'if separation>maxSeparation then return nil,"ESTABLISHED_CONFLICT_NOT_YET_LOCAL" end' in planner
+    assert "80.0" not in planner
 
     # Behavioural fixtures remain independent of production root placement.
     for token in (
