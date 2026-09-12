@@ -1,136 +1,319 @@
 # Physical Representation Architecture
 
-## Purpose
+## Purpose and architectural boundary
 
-This document defines how OuttaMyWay represents collision-relevant plan-view occupancy and what conclusions those representations may support. It separates exact physical identity from useful occupancy, preserves uncertainty, and prevents implementation convenience from becoming architectural truth.
+This document defines how OuttaMyWay establishes defensible collision-relevant plan-view knowledge about a Physical Assembly and what scoped conclusions that knowledge may support.
 
-## Architectural Boundary
+It separates physical identity from occupancy knowledge, preserves uncertainty and claim limits, and prevents implementation convenience or geometric precision from becoming authority that the evidence does not support.
 
-Physical Representation observes and constructs defensible spatial knowledge about a Physical Assembly. It supplies evidence, validity limits and claim permissions to Situation Assessment.
+This is current Architecture. It defines responsibilities, concepts, evidence rules, constraints and lifecycle boundaries; it does not define source modules, helper topology, implementation calibration or validation history.
 
-Representation does not acquire Current Responsibility, choose Regulation, create Resolution Commitment, enlarge Bounded Authority or issue Control. Situation Assessment interprets representation fitness and current Reality but likewise does not acquire responsibility or actuate. Those responsibilities belong to the boundaries defined by [Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md).
+The [Runtime Responsibility Architecture](RUNTIME_RESPONSIBILITY_ARCHITECTURE.md) owns Observation, Situation Assessment, Responsibility Transition, Bounded Authority and Control. The [Spatial Negotiation Architecture](SPATIAL_NEGOTIATION_MODEL.md) owns Cooperative Passage semantics. Physical Representation supplies bounded spatial knowledge to those consumers without acquiring traffic responsibility or actuation authority.
 
-## Planar Collision Semantics
+## Specification Jurisdictions
 
-OuttaMyWay reasons in plan view. Height is not a clearance dimension because GIANTS AI does not exploit hypothetical vertical underpass clearance beneath raised or folded machinery. A physical change matters when it materially changes the ground-plane projection or sweep required by collision reasoning.
+Physical Representation is an architectural subject, not one monolithic Specification Jurisdiction.
 
-This is **Planar Collision Semantics**: represent the obstruction world GIANTS AI can use rather than three-dimensional clearance it cannot realise.
+It declares two cohesive Jurisdictions:
 
-## Exact Identity and Occupancy Continuity
+| Specification Jurisdiction | Primary architectural responsibility |
+| --- | --- |
+| **Physical Identity Resolution** | Determine which runtime physical entity, geometry authority and pose authority can be defensibly associated with observed source physical evidence. |
+| **Assessment Representation** | Construct, maintain and publish scoped occupancy knowledge, uncertainty, coverage and claim permissions for downstream assessment. |
 
-Exact physical identity and useful occupancy are separate claims. A runtime Entity is an authoritatively resolved current physical collision shape only when source collision membership, current configuration membership, assembly-member ownership and distinct runtime identity form one coherent evidence chain.
+Physical Identity Resolution may support Assessment Representation, but identity success does not by itself establish complete occupancy, and occupancy knowledge does not require exact identity when a conservative fallback remains defensible.
 
-Failure to establish exact identity does not require discarding all occupancy knowledge. A clearly identified conservative fallback may preserve occupancy continuity without claiming exact collision-shape identity. Fallbacks reduce precision and retain their uncertainty; they must not silently change the meaning or permissions of the result.
+Planar Collision Semantics, Purpose-Scoped Geometry Authority, Coverage Closure, Configuration Footprint Authority, Representation Passport, Deployment Sweep, Manoeuvre Sweep and related terms are Concepts, Evidence Rules, Constraints or lifecycle elements inside these Jurisdictions. They do not create additional Specification Jurisdictions merely by being separately named.
 
-## Physical Representation Portfolio
+The primary `/spec` routes are **pending migration** under the bounded standards-adoption exception in [`../DOCUMENT_STANDARDS.md`](../DOCUMENT_STANDARDS.md). Issue #141 owns the active repository migration.
 
-One Physical Assembly may expose several simultaneous representations:
+## 1. Cross-jurisdiction representation flow
 
-1. **Component Footprint Set** — positioned plan-view footprints for physical components.
-2. **Convex Planar Envelope** — a conservative simplified polygon between component composition and a full rectangle.
-3. **Member-Level Rectangle** — a conservative rectangle for one assembly member.
-4. **Assembly-Level Rectangle** — the coarsest useful complete-assembly fallback.
-5. **Unknown Occupancy** — explicit absence of trustworthy representation.
+```text
+Reality
+   |
+   v
+Observation
+   |
+   +-----------------------------+
+   |                             |
+   v                             v
+Physical Identity          direct / conservative
+Resolution                 occupancy evidence
+   |                             |
+   +-------------+---------------+
+                 |
+                 v
+       Assessment Representation
+       geometry + validity +
+       coverage + claim permissions
+                 |
+                 v
+        Situation Assessment
+                 |
+                 v
+        downstream responsibility
+```
 
-The portfolio is not a universal ranking. Fitness depends on the assessment question: a coarse complete representation may be safer for exclusion than a precise incomplete one. Purpose-specific geometry remains purpose-specific and does not supersede component representations, uncertainty layers or sweep representations.
+Observation acquires evidence from Reality. Physical Identity Resolution answers what physical entity and local geometry can be defensibly identified. Assessment Representation composes the most informative defensible occupancy account for downstream questions. Situation Assessment determines what that representation means for the current Situation.
 
-A representation must preserve directional extents when Reality supports asymmetric occupancy. Total width must not be assumed symmetrically centred on the powered vehicle or an arbitrary assembly origin. Geometry and its passport preserve the reference, directional extents and pose validity needed to interpret such occupancy.
+No representation product establishes Regulation, Resolution Commitment, Bounded Authority or Control permission by itself.
 
-### Convex Planar Envelope
+---
 
-The Convex Planar Envelope is an accepted conservative fallback. It reduces the empty-corner cost of a full bounding rectangle while remaining simpler than an exact component union.
+## 2. Cross-cutting representation principles
 
-**Envelope Anchor Selection is Deferred.** Candidate constructions may use extremities and a declared anchor or a convex hull of positioned component footprints. No universal anchor is selected until evidence establishes containment, false occupied area, state stability and evidence cost.
+### Planar Collision Semantics
 
-## Representation Contract
+OuttaMyWay reasons about collision-relevant occupancy in plan view.
 
-Every representation separates Spatial Core, Validity Context and Evidence Quality.
+Height is not a clearance dimension merely because machinery can raise or fold. GIANTS AI does not exploit hypothetical vertical underpass clearance beneath raised or folded equipment. A physical change matters to collision representation when it materially changes the ground-plane projection or sweep relevant to the question.
 
-### Spatial Core
+> **Represent the obstruction world GIANTS AI can use, not three-dimensional clearance it cannot realise.**
 
-- **Geometry** — the asserted plan-view shape, including any directional extents.
-- **Ownership** — the component, family, member or assembly represented.
-- **Pose** — the current position and orientation of that geometry relative to its declared reference.
+### Exact identity and occupancy continuity
 
-The Spatial Core states what and where the representation is. Geometry may be directly observed or conservatively constructed; it is not automatically exact physical truth.
+Exact physical identity and useful occupancy are different claims.
 
-### Validity Context
+Failure to establish exact runtime shape identity does not require discarding all occupancy knowledge. A conservative fallback may preserve bounded occupancy knowledge without claiming exact collision-shape identity.
 
-Validity Context records applicable physical state, ownership and assembly membership, pose freshness, dependencies, and any state or evidence condition that limits use. It states when the representation may still describe its subject.
-
-### Evidence Quality
-
-Evidence Quality records:
-
-- **Provenance** — how the geometry was obtained;
-- **Completeness** — which portion of the stated subject is covered;
-- **Conservatism** — whether it contains, approximates or may underestimate Reality; and
-- **Fitness Profile** — which assessment classes it may safely support.
-
-Evidence Quality controls conclusions. Confidence cannot transform working-width metadata, an origin, or internally complete geometry for known members into complete collision occupancy.
+Fallbacks must retain their uncertainty and claim limits. They must not silently gain stronger authority merely because they are easier to construct.
 
 ### Purpose-Scoped Geometry Authority
 
-**Purpose-Scoped Geometry Authority** means that representation authority belongs to a declared claim scope, not merely to a geometry object. That scope identifies the subject, physical state or configuration, geometric question or purpose, horizon, coverage basis, validity dependencies and permitted conclusions. A Representation Passport must distinguish purposes equivalent to generic current collision occupancy, current working or productive corridor geometry, Transit Passage geometry, deployment-transition geometry and manoeuvre-sweep geometry; implementations need not encode these as literal universal enumerations.
+Representation authority belongs to a declared claim scope, not merely to a geometry object.
 
-Authority for one purpose does not silently transfer to another. In particular, a representation may have no generic negative-clearance authority while independently possessing purpose-specific Transit Passage geometry authority. That narrower authority establishes only the stated Transit Passage conclusion; it does not claim that the same geometry completely represents current-working collision occupancy.
+The scope must identify, as applicable:
 
-## Job-Scoped Representation Catalogue
+- subject and ownership;
+- relevant physical state or configuration;
+- geometric question or purpose;
+- spatial or temporal horizon;
+- coverage basis;
+- validity dependencies; and
+- permitted conclusions.
 
-A **Job-Scoped Representation Catalogue** is constructed at the start of a GIANTS AI Job Episode and expires when that Episode ends. It describes equipment selection, purchased configuration, assembly structure and the representation templates justified for that scope. A later Episode receives a new catalogue.
+Authority for one purpose must not silently transfer to another.
 
-Normal pose and state changes do not require rebuilding stable structure. Unexpected evidence that structure or configuration membership no longer matches the catalogue invalidates only affected catalogue claims; it is a defensive contradiction, not permission to preserve stale structure.
+A representation may, for example, have no generic negative-clearance authority while independently possessing purpose-specific Transit Passage geometry authority. That narrower authority establishes only the stated Passage conclusion; it does not prove complete generic current-working collision occupancy.
+
+### Directional asymmetry
+
+A representation must preserve directional extents when Reality supports asymmetric occupancy.
+
+Total width must not be assumed to be symmetrically centred on the powered vehicle or an arbitrary assembly origin. Geometry must retain the reference and directional extents required to interpret the represented occupancy correctly.
+
+---
+
+## 3. Specification Jurisdiction — Physical Identity Resolution
+
+**Owns:** defensible correspondence between source physical evidence and a runtime physical entity, including entity identity, geometry authority, pose authority, contradictions and explicit claim limits.
+
+**Does not own:** Physical Assembly inventory closure, occupancy coverage closure, Situation meaning, Regulation, Resolution Commitment, Bounded Authority or Control.
+
+**Primary Specification:** pending `/spec` migration under Issue #141.
+
+Physical Identity Resolution answers:
+
+> **What runtime physical thing can this evidence defensibly identify?**
+
+### Resolution Path
+
+A **Resolution Path** is a method of proposing a runtime candidate from source, component, mapping and Physical Assembly relationships.
+
+Resolution Path provenance records how a candidate was proposed. It does not itself establish physical authority, navigation authority, occupancy completeness or downstream assessment permission.
+
+`Route` remains reserved for navigable worker path semantics.
+
+### Resolution Contract
+
+A source physical shape is resolved only when the evidence coherently supports the required correspondence. This includes, as applicable:
+
+1. the candidate runtime Entity exists and is addressable;
+2. it belongs to the expected Physical Assembly member;
+3. component and hierarchy relationships are compatible with source evidence;
+4. geometry evidence is attributable to that Entity rather than an unrelated or shared alias;
+5. current pose can be observed coherently within the assembly; and
+6. no unresolved contradiction establishes a competing coherent identity.
+
+A successful result emits a **Resolution Claim Set** containing the identity, geometry authority, pose authority, supporting evidence, contradictory evidence, validity dependencies and explicit limits that were actually established.
+
+Resolution success does not establish Inventory Closure, Coverage Closure, footprint correctness beyond the admitted claim, or downstream responsibility.
+
+### Evidence Contribution Separation
+
+Different evidence supports different claims.
+
+Existence supports availability. Assembly, component and hierarchy coherence support correspondence. Entity-local geometry supports geometry authority. Current transform supports pose authority. Independent Resolution Paths may corroborate identity. Negative controls may demonstrate discrimination.
+
+These contributions must remain separable.
+
+> **Weak corroboration must not defeat a mandatory contradiction.**
+
+**Claim-Specific Confidence** keeps identity, geometry, pose freshness, path corroboration and completeness separate rather than collapsing them into one universal score.
+
+### Entity-Local Shape Evidence
+
+**Entity-Local Shape Evidence** asks whether already-acquired runtime shape measurements are attributable and pose-coherent enough to be admitted as Entity-local physical evidence.
+
+Its bounded evidence questions include:
+
+- **Geometry–World Coherence** — whether Entity-local geometry transformed into world space agrees sufficiently with observed world geometry; and
+- **Descendant–Root Alias Discrimination** — whether an apparent descendant shape is distinguishable from an alias of its Physical Assembly member root.
+
+This evidence responsibility does not discover Physical Assembly members, choose candidate shapes, own cache lifetime, establish Coverage Closure, create negative-clearance authority, interpret Situation meaning, acquire responsibility or authorise Control.
+
+> **Shared Resolution Predicate != Shared Representation Product**
+
+> **Evidence Ownership May Be Shared Even When Product Authority Is Not**
+
+Numerical tolerances used to evaluate these evidence questions are implementation and validation concerns, not Architecture.
+
+### Discovery Independence
+
+Downstream consumers must be able to use admitted identity and geometry claims without reconstructing the discovery mechanics that produced them.
+
+Resolution provenance remains attached for audit, contradiction and reassessment, but discovery mechanism is not downstream semantic authority.
+
+### Functional Class–Structural Representation Separation
+
+Gameplay or functional class cannot establish physical structure, collision mapping, articulation, coverage or Resolution Path.
+
+Functional class may guide operational questions or candidate priorities. Structural representation claims require physical evidence.
+
+---
+
+## 4. Specification Jurisdiction — Assessment Representation
+
+**Owns:** construction, maintenance and publication of the most informative defensible occupancy account for downstream assessment, including geometry, physical-state validity, coverage, uncertainty, provenance, claim permissions, refresh boundaries and purpose scope.
+
+**Does not own:** Situation interpretation, strategic Candidate choice, Responsibility Transition, Regulation, Resolution Commitment, Bounded Authority or Control.
+
+**Primary Specification:** pending `/spec` migration under Issue #141.
+
+Assessment Representation answers:
+
+> **What spatial account is defensible for this subject and question, and what may that account legitimately prove?**
+
+### Representation Portfolio
+
+One Physical Assembly may expose several simultaneous representations, including:
+
+1. **Component Footprint Set** — positioned plan-view footprints for physical components;
+2. **Convex Planar Envelope** — a conservative simplified polygon;
+3. **Member-Level Rectangle** — a conservative rectangle for one assembly member;
+4. **Assembly-Level Rectangle** — the coarsest useful complete-assembly fallback; and
+5. **Unknown Occupancy** — explicit absence of trustworthy representation.
+
+The portfolio is not a universal precision ranking.
+
+Fitness depends on the question. A coarse complete representation may support a conclusion that a more precise but incomplete representation cannot. Purpose-specific geometry remains purpose-specific and does not supersede unrelated representation layers.
+
+### Convex Planar Envelope
+
+The **Convex Planar Envelope** is an accepted conservative fallback between component composition and a full bounding rectangle.
+
+**Envelope Anchor Selection** remains Deferred. No universal anchor or construction is selected until evidence establishes the required containment, false occupied area, state stability and evidence cost.
+
+### Representation Contract
+
+Every representation separates three kinds of knowledge.
+
+#### Spatial Core
+
+The Spatial Core describes what and where the representation claims to describe:
+
+- geometry, including directional extents where required;
+- ownership and represented subject; and
+- current pose relative to its declared reference.
+
+Geometry may be directly observed or conservatively constructed. It is not automatically exact physical truth.
+
+#### Validity Context
+
+Validity Context states when the representation may still describe its subject.
+
+It may include physical state, ownership, assembly membership, pose freshness, dependencies and any other condition that limits use.
+
+#### Evidence Quality
+
+Evidence Quality describes how strongly the representation supports downstream conclusions, including:
+
+- provenance;
+- completeness;
+- conservatism and underestimation risk; and
+- the classes of conclusion it is permitted to support.
+
+Evidence quality controls claim permissions. Confidence cannot transform incomplete or unrelated metadata into complete collision occupancy.
+
+### Representation Passport
+
+Every downstream representation carries a **Representation Passport** sufficient to describe its physical scope, ownership, provenance, validity dependencies, directional reference, pose validity, coverage, underestimation risk, observation/refresh age, cost characteristics and permitted conclusions.
+
+The passport is the self-description that prevents evidence absence, cheap approximation or discovery provenance from silently acquiring authority.
+
+### Job-Scoped Representation Catalogue
+
+A **Job-Scoped Representation Catalogue** captures stable representation knowledge for one GIANTS AI Job Episode and expires with that Episode.
+
+It may describe equipment selection, purchased configuration, Physical Assembly structure and representation templates justified for the Job scope.
+
+Normal pose and state changes do not require rebuilding stable structure. Unexpected evidence that structure or configuration membership no longer matches the catalogue invalidates the affected claims; it is not permission to preserve stale structure.
+
+The catalogue is representation knowledge. It grants no traffic responsibility.
 
 ### Representation Templates and Pose Realisation
 
-The catalogue contains stable **Representation Templates**, not a polygon for every possible world pose. A template declares contributors, local geometry and placement, construction and pose methods, applicability, provenance, completeness, conservatism and fitness.
+A catalogue contains stable **Representation Templates**, not one world-space polygon for every possible pose.
 
-**Pose Realisation** applies current physical state and pose to applicable templates to produce world-space occupancy. This creates **Stable Structure–Dynamic Pose Separation**:
+A template may declare contributors, local geometry, construction method, placement method, applicability, provenance, completeness, conservatism and fitness.
+
+**Pose Realisation** combines stable structure with current physical state and pose:
 
 ```text
 job-scoped structure and templates
         +
-current multidimensional state and plan-view pose
-        ->
+current physical state and plan-view pose
+        |
+        v
 current realised occupancy
 ```
 
-### Configuration Footprint Authority and alternating working sides
+This is **Stable Structure–Dynamic Pose Separation**.
 
-Job-time physical configuration may change without changing the Job Episode. An implementation token or profile ordinal is diagnostic provenance only; it has no universal physical semantics without independent evidence.
+### Configuration Footprint Authority
 
-**Configuration Footprint Authority** rests in:
+Job-time physical configuration may change without changing the Job Episode.
 
-- the current realised component footprint;
-- the evidence quality and fitness of that footprint;
-- the transition sweep between materially different footprints; and
-- the equivalent footprint domain to which earlier traversability or clearance evidence applies.
+**Configuration Footprint Authority** rests in the current realised footprint, its evidence quality and purpose fitness, any required transition sweep, and the equivalent footprint domain to which earlier traversability or clearance evidence legitimately transfers.
 
-Evidence for one working-side footprint does not automatically establish admissibility for an opposite or mirrored footprint, or for the sweep between them. A rotating, reversing, raised or functionally inactive implement remains spatially relevant while its configuration changes.
+Evidence for one working-side footprint does not automatically establish admissibility for an opposite or mirrored footprint, or for the sweep between them.
 
-## Component Families
+Implementation tokens, profile ordinals or animation values have no universal physical semantics without independent evidence.
 
-Homologous components may share one representation strategy while retaining individual dimensions, identity, placement and pose. This is **Family Strategy–Member Parameter Separation**. A failed member degrades locally unless evidence disproves the family strategy itself.
+### Component families and heterogeneous composition
 
-## Heterogeneous Footprint Composition
+Homologous components may share one representation strategy while retaining individual dimensions, identity, placement and pose.
+
+> **Family Strategy–Member Parameter Separation**
+
+A failed member degrades locally unless evidence disproves the family strategy itself.
 
 A realised assembly may mix representation methods and pose authorities. One weak component does not force the entire assembly into its coarsest fallback.
 
-The governing rules are:
+The governing composition rules are:
 
 - **Coverage-First Composition** — prioritise trustworthy coverage before uniform precision;
 - **Smallest-Scope Fallback** — add fallback only where unresolved occupancy requires it;
 - **Localised Uncertainty** — keep uncertainty attached to affected regions;
 - **Precision–Coverage Separation** — treat geometric detail and subject coverage independently; and
-- **Layer-Preserving Composition** — retain the provenance and permissions of contributing layers rather than flattening them into anonymous geometry.
+- **Layer-Preserving Composition** — retain the provenance and permissions of contributing layers.
 
-## Physical State and Configuration Motion
+### Physical state is multidimensional
 
-Physical state is multidimensional. Folded and working may describe useful configurations for a particular implement, but they are not a universal state axis and cannot replace current pose evidence.
+Folded and working may describe useful configurations for particular implements, but they are not a universal physical-state axis.
 
-### Orthogonal Physical State Dimensions
-
-The independently meaningful dimensions are:
+Independently meaningful dimensions may include:
 
 - **Deployment State** — folded, extended or unknown;
 - **Vertical Configuration** — raised, lowered, intermediate or unknown;
@@ -138,243 +321,236 @@ The independently meaningful dimensions are:
 - **Functional Engagement** — engaged, disengaged, not applicable or unknown; and
 - **Operational Phase** — GIANTS AI activity such as manoeuvring or working.
 
-These dimensions may correlate for a particular implement but are not universally equivalent. One animation or command may encode several dimensions, and an interior animation value may be a stable pose. Runtime physical pose is authoritative; implementation values and Operational Phase are supporting evidence only. Operational Phase does not establish physical state or pose.
+These dimensions may correlate for a particular implement but are not universally equivalent.
 
-### Raise/Lower Semantic Diversity
+Runtime physical pose is authoritative for representation. Operational Phase and implementation state values are supporting evidence only.
 
-This architecture preserves **Configuration–Function Separation**: configuration or pose does not universally establish function. For direct-soil-contact implements, realised Terrain Contact is required before ground operation can be treated as functionally engaged; this is **Contact-Dependent Functional Engagement**. A lower command states intended motion but does not prove realised contact or engagement; this is **Commanded State–Realised Contact Separation**.
+### Configuration–Function Separation
 
-The Planar Relevance Test remains decisive. A vertical or functional change matters to collision representation only when realised pose or transition materially changes plan-view occupancy or sweep.
+Configuration or pose does not universally establish function.
 
-### Stable States and Deployment
+For direct-soil-contact implements, realised Terrain Contact may be required before ground operation can be treated as functionally engaged. A lower command states intended motion; it does not prove realised contact or engagement.
 
-Configuration motion may occur while the powered or base vehicle remains stationary. This is **Stationary Configuration Motion**; the moving implement continues to consume space.
+> **Commanded State != Realised Contact**
 
-Before such motion, Situation Assessment evaluates a **Deployment Clearance Envelope**: the plan-view area potentially occupied between the relevant configuration endpoints. The **Deployment Commitment Point** is the pre-motion point at which sufficient transition-clearance knowledge must exist for the intended conclusion.
+The **Planar Relevance Test** determines whether a vertical, functional or configuration change matters to collision representation: it matters only when the realised pose or transition materially changes plan-view occupancy or sweep for the question.
 
-Endpoint occupancy need not contain intermediate occupancy. This **Endpoint–Sweep Distinction** means stable endpoint footprints cannot stand in for the transition sweep. Current motion observations may refresh knowledge, but do not retroactively manufacture pre-commitment clearance.
+### Configuration motion and Deployment Sweep
 
-### Planar Rigidity and Envelope Lifecycle
+Configuration motion may occur while the base vehicle remains stationary. The moving implement continues to consume space.
 
-A structure is **Planarly Rigid** while its relative plan-view geometry remains effectively constant, even if it moves vertically over terrain. It is planarly articulated when relative plan-view poses change.
+A **Deployment Sweep** is the plan-view occupancy created by configuration motion while the base vehicle is stationary.
 
-Local envelope geometry may be reused while all contributors remain planarly rigid. It must be regenerated when relevant relative poses change materially. The **Planar Relevance Test** asks whether a change materially alters ground-plane projection or sweep; irrelevant vertical movement alone does not require regeneration.
+Endpoint occupancy need not contain intermediate occupancy.
 
-## Deployment Sweep and Manoeuvre Sweep
+> **Endpoint Occupancy != Transition Sweep**
 
-A **Deployment Sweep** results from configuration motion while the base vehicle is stationary. A **Manoeuvre Sweep** results from translation, steering and articulation. They are distinct even when an assessment composes both.
+A **Deployment Commitment Point** is the pre-motion boundary at which sufficient transition-clearance knowledge must already exist for the intended conclusion. Observation during the movement may refresh knowledge but cannot retroactively manufacture pre-commitment clearance.
 
-Manoeuvre Sweep must not assume midpoint pivoting. **Steering-Mode Sweep Dependency** requires the sweep to reflect the active steering mode and defensible kinematics.
+### Planar rigidity and envelope lifecycle
 
-**Detailed Manoeuvre Sweep Construction is Deferred.** Turning centre, radius, articulation and steering-kinematics construction remain evidence questions; no universal construction or implementation is authorised.
+A structure is **Planarly Rigid** while its relative plan-view geometry remains effectively constant. It is planarly articulated when relevant relative plan-view poses change.
 
-Deployment Sweep and Manoeuvre Sweep remain accepted concepts for assessments that genuinely require them. Cooperative Passage does not currently require sophisticated articulated Manoeuvre Sweep, animation swept-volume closure or longitudinal-arc reconstruction when its accepted purpose-specific Transit Passage contract supplies the crossing geometry. This does not reject or resolve Deferred Detailed Manoeuvre Sweep Construction, and Passage must not make that Deferred construction a prerequisite.
+Local envelope geometry may be reused while all contributors remain planarly rigid. It must be refreshed or regenerated when relevant relative poses materially change.
 
-## Coverage Closure
+Vertical movement alone does not require regeneration when it does not materially alter the plan-view projection or relevant sweep.
 
-**Inventory Closure** means all collision-relevant components for the stated subject and state are known. Geometry completeness for known or discovered members is not Inventory Closure and does not imply that the Physical Assembly is complete.
+### Manoeuvre Sweep
 
-**Coverage Closure** means the relevant plan-view occupancy is represented for a stated subject, physical state and intended conclusion. It may be established by:
+A **Manoeuvre Sweep** results from translation, steering and articulation rather than stationary configuration motion.
 
-- **Enumerative Closure** — authoritative inventory plus representation and pose for every relevant active component;
+Manoeuvre Sweep must not assume midpoint pivoting. **Steering-Mode Sweep Dependency** requires any accepted sweep to reflect the active steering mode and defensible kinematics.
+
+**Detailed Manoeuvre Sweep Construction** remains Deferred. No universal turning-centre, radius, articulation or steering-kinematics construction is authorised by this architecture.
+
+Deployment Sweep and Manoeuvre Sweep remain available concepts for assessments that genuinely require them. A specialised consumer must not promote detailed sweep construction into a prerequisite when its own accepted purpose-specific representation already supplies sufficient authority.
+
+### Inventory Closure and Coverage Closure
+
+**Inventory Closure** means all collision-relevant components for the stated subject and state are known.
+
+Geometry completeness for every discovered member is not Inventory Closure and does not prove that no member remains undiscovered.
+
+> **Known Coverage != Inventory Closure**
+
+**Coverage Closure** means the relevant plan-view occupancy is represented for a stated subject, physical state and intended conclusion.
+
+It may be established through:
+
+- **Enumerative Closure** — authoritative inventory plus representation and pose for every relevant component;
 - **Enclosing Closure** — independently proven conservative geometry containing the complete subject; or
-- **Hybrid Closure** — precise representations plus smallest-scope fallback covering the unresolved remainder.
+- **Hybrid Closure** — precise representations plus smallest-scope fallback covering unresolved remainder.
 
-The **Known-Coverage Trap** is the error of treating representation of every discovered member as proof that none remain undiscovered. Complete generic collision geometry is not required for every geometric question: an independently justified enclosing or parametric representation may establish conclusion-relative closure for its declared purpose while remaining insufficient for other purposes. This does not weaken the Known-Coverage Trap. A purpose-specific geometry representation inherits unresolved assembly-membership uncertainty, and any purpose claiming complete-assembly geometry still requires complete Physical Assembly membership. Generic negative-clearance authority requires relevant generic collision Coverage Closure; local or discovered-member geometry completeness cannot supply it.
+A purpose-specific representation may establish conclusion-relative closure for its declared purpose while remaining insufficient for another purpose.
+
+Any purpose claiming complete-assembly geometry still requires complete Physical Assembly membership. Generic negative-clearance authority requires relevant generic collision Coverage Closure; completeness of known or local geometry cannot supply it.
 
 ### Structural and Realised Coverage Closure
 
-**Structural Coverage Closure** states that catalogue templates cover all relevant occupancy for a declared subject and physical state. **Realised Coverage Closure** additionally requires every applicable template to have a current valid pose.
+**Structural Coverage Closure** states that representation templates cover all relevant occupancy for a declared subject and physical state.
 
-Assembly closure may compose independently closed members whose closure methods differ, or use one independently proven whole-assembly enclosure. A **Coverage Ledger** records subject and state, closure scope and basis, contributors, unresolved regions, underestimation risk, pose authority and freshness, and closure status.
+**Realised Coverage Closure** additionally requires every applicable representation to have a current valid pose.
 
-## Layered Occupancy Claims
+Assembly closure may compose independently closed members whose closure methods differ, or use an independently proven whole-assembly enclosure.
 
-Situation Assessment preserves a portfolio rather than selecting one universal geometry. Each representation declares its permitted assessment classes, such as screening, confirmation, containment, clearance and attribution.
+A **Coverage Ledger** may record closure scope, basis, contributors, unresolved regions, underestimation risk, pose authority, freshness and closure status.
 
-Occupancy knowledge uses these claims:
+### Layered occupancy claims
+
+Representation remains layered rather than collapsing to one universal geometry.
+
+Permitted knowledge claims include:
 
 - **Conflict Excluded** — current, relevant, non-underestimating closed coverage supports scoped separation;
 - **Conflict Supported** — geometry positively supports overlap or convergence;
 - **Conflict Possible** — conservative or incomplete coverage leaves a credible conflict route; and
 - **Clearance Unresolved** — evidence establishes neither conflict nor safe separation.
 
-Missing, unavailable or non-positive representation evidence cannot establish safe clearance. Where Realised Coverage Closure is incomplete, partial knowledge remains usable, but the gap withholds an all-clear wherever it can affect the scoped assessment. This is **Scope-Local Non-Exclusion**.
+Missing, unavailable or non-positive representation evidence cannot establish safe clearance.
 
-> Uncertainty prevents clearance; it does not manufacture collision or separation.
+Where Realised Coverage Closure is incomplete, partial knowledge remains usable, but the unresolved gap withholds an all-clear wherever that gap can affect the scoped conclusion. This is **Scope-Local Non-Exclusion**.
 
-These are knowledge claims, not Regulation, Resolution Commitment, Bounded Authority or Control decisions.
+> **Uncertainty prevents clearance; it does not manufacture collision or separation.**
 
-### Player Obstacle Boundary
+These are representation claims, not Regulation, Resolution Commitment, Bounded Authority or Control decisions.
 
-Player-controlled assemblies are outside cooperative-worker behavioural modelling. Their physical occupancy may be observed where it can affect an AI worker, but OuttaMyWay does not infer, optimise or correct player operating policy.
+### Minimum Sufficient Defensible Portfolio
 
-## Resolution Contract
+Assessment Representation seeks the **Minimum Sufficient Defensible Portfolio**, not maximum detail or minimum cost in isolation.
 
-Resolution establishes whether a source physical shape can be defensibly identified as a corresponding runtime Entity. It does not establish Inventory Closure, Coverage Closure, footprint correctness or downstream authority.
+Sufficiency is conclusion-relative. Known overlap may suffice for Conflict Supported. Conservative or incomplete evidence may support Conflict Possible. Only current relevant non-underestimating closed coverage may support Conflict Excluded. Otherwise clearance remains unresolved.
 
-### Resolution Path terminology
-
-A **Resolution Path** is a method of proposing a runtime candidate from source, component, mapping and assembly relationships. Candidate provenance grants no physical, navigation or assessment authority. `Route` remains reserved for a worker's navigable path.
-
-### Resolution Contract and Claim Set
-
-A source physical shape is resolved only when:
-
-1. the candidate runtime Entity exists and is addressable;
-2. it belongs to the expected Physical Assembly member;
-3. its component and hierarchy relationships are compatible with source evidence;
-4. geometry queries are attributable to that Entity rather than an unrelated or shared root alias;
-5. a current pose can be observed coherently within the assembly; and
-6. no unresolved contradiction establishes a competing coherent identity.
-
-A successful result emits a **Resolution Claim Set** containing source identity, runtime Entity identity, geometry authority, pose authority, supporting and contradictory evidence, validity dependencies and explicit limits.
-
-### Resolution Evidence Model
-
-Evidence supports distinct claims: existence supports availability; assembly, component and hierarchy coherence support correspondence; Entity-local geometry supports geometry authority; current transform supports pose authority; independent Resolution Paths may corroborate identity; and negative controls may demonstrate discrimination.
-
-This **Evidence Contribution Separation** prevents weak corroboration from defeating a mandatory contradiction. **Claim-Specific Confidence** keeps identity, geometry, pose freshness, path corroboration and completeness separate rather than collapsing them into one score.
-
-### Entity-Local Shape Evidence
-
-**Entity-Local Shape Evidence** is the shared Resolution evidence judgement that
-asks whether already-acquired runtime shape measurements are attributable and
-pose-coherent enough to be admitted as Entity-local physical evidence.
-
-It contributes only two bounded tests:
-
-- **Geometry–World Coherence** — Entity-local geometry transformed into world
-  space must agree with the observed world geometry within the accepted
-  coherence calibration; and
-- **Descendant–Root Alias Discrimination** — a descendant whose observed world
-  geometry is indistinguishable from its Physical Assembly member root is not
-  accepted as independent Entity-local geometry.
-
-This evidence responsibility does not discover Physical Assembly members, scan
-hierarchies, choose candidate shapes, own cache lifetime, establish Inventory or
-Coverage Closure, create generic negative-clearance authority, interpret
-Situation meaning, acquire responsibility or authorise Control. Shape-class and
-membership evidence remain caller prerequisites. Representation products retain
-their own provenance, completeness, conservatism and fitness semantics after
-consuming the shared evidence judgement.
-
-> **Shared Resolution Predicate != Shared Representation Product**
-
-> **Evidence Ownership May Be Shared Even When Product Authority Is Not**
-
-The accepted implementation calibration is currently 0.05 m for geometry/world
-coherence and 0.0001 m for descendant/root alias discrimination. These are
-internal Resolution-evidence calibrations, not player Configuration.
-
-### Discovery Independence and Resolution Path provenance
-
-Resolution Path provenance records how a candidate was proposed, not what conclusions it permits. **Discovery Independence** allows Situation Assessment to consume the resulting claims and limits without reconstructing discovery mechanics; provenance remains attached for audit and reassessment.
-
-### Functional Class–Structural Representation Separation
-
-**Functional Class–Structural Representation Separation** means gameplay or functional class cannot establish physical structure, collision mapping, articulation, coverage or Resolution Path. Class may guide operational questions or candidate priorities, but asset-specific evidence must establish structural representation claims.
-
-## Assessment Representation Contract
-
-Resolution answers what can be defensibly identified. The **Assessment Representation Contract** supplies Situation Assessment with the most informative defensible spatial account achievable within the assessment budget, fit for relevant plausible futures and horizon, while preserving coverage limits, age and uncertainty.
-
-### Assessment Representation Portfolio
-
-The **Assessment Representation Portfolio** composes representations and explicit unknown remainder at the smallest useful scope: physical region, member, plausible future and horizon. It seeks a **Minimum Sufficient Defensible Portfolio**, not maximum detail or minimum cost in isolation.
-
-Sufficiency is conclusion-relative. Known overlap may suffice for Conflict Supported; incomplete or conservative evidence may support Conflict Possible; only current relevant non-underestimating closed coverage may support Conflict Excluded; otherwise clearance remains unresolved. This is **Conclusion-Relative Sufficiency**.
-
-### Representation Passport and self-description
-
-Every downstream representation carries a **Representation Passport** describing physical scope and ownership, evidence authority and provenance, validity dependencies, directional reference and pose validity, coverage and underestimation risk, observation and refresh time, cost profile and permitted conclusions.
-
-These explicit **Representation Claim Permissions** prevent evidence absence, cheap approximation or discovery provenance from silently gaining clearance authority.
+This is **Conclusion-Relative Sufficiency**.
 
 ### Demonstrated Traversability
 
-**Demonstrated Traversability** is Reality-derived positive local evidence:
-actual successful occupation or traversal by the real Physical Assembly may
-show that the local space physically accommodated that assembly under the
-materially relevant configuration, environment and movement conditions
-actually experienced.
+**Demonstrated Traversability** is bounded positive Reality-derived evidence that the real Physical Assembly successfully occupied or traversed a local spatial domain under materially relevant conditions.
 
-Its permission is subject-, state-, purpose- and domain-specific. Transfer to a
-proposed conclusion requires a materially equivalent Physical Assembly and
-configuration, a materially compatible local Field World/environment, and a
-proposed local spatial domain contained within the demonstrated domain.
-Materially different articulation, configuration sweep, steering or kinematic
-demand, or movement direction may invalidate transfer. New dynamic occupancy
-and claims are assessed independently. This preserves Configuration Footprint
-Authority and equivalent-footprint-domain limits.
+Its authority is subject-, state-, purpose- and domain-specific.
 
-Demonstrated Traversability establishes neither universal Inventory Closure nor
-Coverage Closure, exact collision-shape identity, arbitrary reverse
-feasibility, arbitrary turns or future manoeuvres, permanent release of space,
-nor current availability against another participant. It contributes only to
-conclusions for which the bounded evidence is fit, under the same
-Purpose-Scoped Geometry Authority and Conclusion-Relative Sufficiency rules as
-other representation evidence.
+Transfer to another conclusion requires materially equivalent Physical Assembly and configuration, compatible local environment, and a proposed spatial domain contained within what was actually demonstrated. Materially different articulation, configuration sweep, steering, kinematics or movement direction may invalidate transfer.
 
-For Cooperative Passage, current working-configuration geometry and directional extents support current occupancy, productive-corridor competition and Passage recognition. When a prospective Passage Candidate requires Transit as its geometry basis, cached directional Transit dimensions for the complete Physical Assembly may construct and test facing extents, Passage arrangement, clearance, Development burden and crossing-window geometry before Candidate selection or Resolution Commitment. Selection and commitment require a supported Candidate and Transit-conditioned arrangement. Physical movement relying on the selected plan waits for the existing supported configuration/settlement boundary, where fresh Reality may validate or adapt execution geometry and origins. Crossing that boundary does not universally require successful folding: the established handling of non-foldable, unsupported and settlement-exhausted cases remains authoritative. Generic DISC/component geometry remains useful for current obstacle and boundary reasoning. Transit geometry does not supersede current working geometry or make a deployed assembly artificially narrow for Passage recognition; greater detail in current working geometry likewise does not turn it into the Transit Passage envelope. Directional asymmetry remains authoritative and must not be recentered without evidence. [Spatial Negotiation owns the specialised lifecycle contract](SPATIAL_NEGOTIATION_MODEL.md#passage-geometry-contract).
+Demonstrated Traversability does not establish universal Inventory Closure or Coverage Closure, exact collision-shape identity, arbitrary reverse feasibility, arbitrary turns, permanent release of space or current availability against another participant.
 
-### Representation Cost Profile
+It contributes only to conclusions for which the bounded evidence is fit.
 
-A **Representation Cost Profile** separates acquisition latency, refresh cost, future-projection cost, volatility and expected invalidation, portfolio composition and synchronisation, and assessment-delay exposure.
+### Representation cost
 
-Cost remains separate from fitness and evidence quality. **Admissibility Before Optimisation** requires evidence to be defensible for the intended claim before cost can influence selection. No universal scalar cost or weighting is selected here.
+A **Representation Cost Profile** may separate acquisition latency, refresh cost, future-projection cost, volatility, expected invalidation, portfolio composition/synchronisation and assessment-delay exposure.
 
-### Situation Assessment as Representation-Fitness Arbiter
+Cost remains separate from evidence fitness.
 
-Representations report evidence, dependencies, age and observed change. **Situation Assessment as Representation-Fitness Arbiter** determines whether each representation remains fit for the current question, plausible futures and horizon.
+> **Admissibility Before Optimisation**
 
-**Assessment-Relative Staleness** means age restricts claim permissions according to the question; it does not force universal discard. Situation Assessment may identify a refresh need, while observation and representation maintenance perform routine refresh. Representation fitness does not create responsibility or active response policy.
+Evidence must be defensible for the intended claim before cost may influence representation selection. No universal scalar cost or weighting is selected here.
 
 ### Dependency-Scoped Invalidation
 
-**Dependency-Scoped Invalidation** invalidates only claims that depended on changed Reality. Translation or rotation refreshes pose while stable identity may remain valid; articulation invalidates affected pose, footprint and sweep; attachment or configuration change may invalidate structure or catalogue claims; job completion invalidates active membership and motion expectation while preserving supported physical identity and obstacle relevance.
+A change in Reality invalidates only claims that depended on what changed.
 
-**Smallest-Scope Refresh** refreshes only the affected identity, pose, footprint, sweep, structure or projection. Implementation tolerances for material change remain implementation and validation work.
+Examples include:
 
-## Completion and persistent obstacle boundary
+- translation or rotation refreshing pose while stable identity remains valid;
+- articulation invalidating affected pose, footprint or sweep;
+- attachment/configuration change invalidating affected structure or catalogue claims; and
+- Job completion invalidating active-role expectations while preserving still-supported physical identity and obstacle relevance.
 
-### GIANTS Completion Acceptance Boundary
+**Smallest-Scope Refresh** refreshes only the affected identity, pose, footprint, sweep, structure or projection.
 
-Wherever and however GIANTS AI finishes an original job is accepted as final disposition. OuttaMyWay does not choose a parking position, continue productive navigation or create a post-job relocation duty.
+Implementation tolerances for material change remain implementation and validation concerns.
 
-Completion ends the Job Episode and active cooperative membership, but does not erase the Physical Assembly:
+---
+
+## 5. Boundary to Situation Assessment
+
+Assessment Representation publishes evidence, uncertainty, dependencies, age and permitted conclusions.
+
+**Situation Assessment remains the Representation-Fitness Arbiter for the current question.** It determines whether a representation remains fit for the current Situation, plausible futures and horizon.
+
+Assessment Representation does not decide traffic purpose merely because it publishes a geometry or claim permission.
+
+**Assessment-Relative Staleness** means age restricts claim permission according to the question; age does not create a universal discard rule.
+
+Situation Assessment may identify a refresh need. Observation and representation maintenance perform the refresh. Representation fitness does not create Current Responsibility.
+
+---
+
+## 6. Boundary to Cooperative Passage
+
+Cooperative Passage consumes representation but owns its own purpose-specific Resolution contract.
+
+For Passage:
+
+- current working-configuration geometry and directional extents may support current occupancy, productive-corridor competition and Passage recognition;
+- a prospective Passage Candidate may use supported complete-assembly compact/Transit geometry for its declared Passage purpose before physical configuration realisation;
+- compact/Transit geometry does not supersede current working geometry or make a deployed assembly artificially narrow for recognition;
+- current working geometry does not automatically become the compact/Transit Passage envelope;
+- complete-assembly claims require complete Physical Assembly membership; and
+- directional asymmetry must remain preserved.
+
+The [Spatial Negotiation Architecture](SPATIAL_NEGOTIATION_MODEL.md#candidate-and-commitment-boundary) owns the specialised Candidate/commitment lifecycle and [Reality-verified execution boundary](SPATIAL_NEGOTIATION_MODEL.md#reality-verified-execution). Physical Representation owns only the representation authority those contracts consume.
+
+---
+
+## 7. Player and completion boundaries
+
+### Player obstacle boundary
+
+Player-controlled assemblies are outside cooperative-worker behavioural modelling.
+
+Their physical occupancy may still be represented where it can affect active AI work. Physical relevance does not grant authority to infer, optimise or correct player operating policy.
+
+### Completion and persistent obstacle relevance
+
+GIANTS Job completion ends active Job Episode participation; it does not erase the Physical Assembly from Reality.
 
 ```text
 active cooperative worker
-        ->
-completed nonmember obstacle
+        |
+        v
+completed nonmember physical subject
 ```
 
-This is **Operational Membership–Spatial Relevance Separation**. **Role-State Invalidation** invalidates active role and future-motion expectations while preserving any still-supported identity, geometry and final pose. A **Persistent Completed-Worker Obstacle** remains spatially relevant for as long as its occupancy can affect active work.
+This is **Operational Membership–Spatial Relevance Separation**.
 
-### Deferred Post-Job Configuration Normalisation
+**Role-State Invalidation** invalidates active-role and future-motion expectations while preserving any still-supported identity, geometry and final pose.
 
-**Deferred Post-Job Configuration Normalisation is Deferred.** Safe in-place raising or folding may later be examined as footprint reduction without relocation. No behaviour is authorised; any future decision requires evidence for available control, correct sequence, clear configuration sweep, useful footprint reduction and safe failure conditions.
+A completed assembly remains spatially relevant only for as long as current Reality supports its relevance to active work. Physical Representation does not create a post-job parking, tidying or relocation duty.
 
-### Parked Assessment Deadline Escalation
+The Runtime architecture owns any later Causal Obstruction and Obstruction Relocation responsibility.
 
-**Parked Assessment Deadline Escalation is Deferred.** When useful representation cannot be refreshed before an assessment deadline, Situation Assessment reports the insufficiency. No timeout, all-stop, emergency freeze or escalation policy is selected or authorised here.
+---
 
-## Deferred Questions
+## 8. Deferred questions
 
-The following registered Physical Representation questions remain Deferred:
+The following Physical Representation questions remain Deferred:
 
-- **Envelope Anchor Selection** — no universal conservative-envelope anchor is selected.
-- **Detailed Manoeuvre Sweep Construction** — no universal turning or articulation construction is selected.
-- **Deferred Post-Job Configuration Normalisation** — no post-job configuration behaviour is authorised.
-- **Parked Assessment Deadline Escalation** — no response policy for unrefreshable knowledge is selected.
+- **Envelope Anchor Selection** — no universal conservative-envelope anchor is selected;
+- **Detailed Manoeuvre Sweep Construction** — no universal turning or articulation construction is selected;
+- **Post-Job Configuration Normalisation** — no post-job configuration behaviour is authorised; and
+- **Parked Assessment Deadline Escalation** — no timeout or escalation policy for unrefreshable representation is selected.
 
-Deferral preserves the question without promoting it into architecture or implementation authority.
+These are deferred questions, not implemented responsibilities or Specification Jurisdictions.
 
-## Current Architectural Boundary
+Deferral preserves the question without granting architectural or implementation authority.
 
-Physical Representation defines how collision-relevant plan-view occupancy is represented and which scoped conclusions those representations may support. It is observational and knowledge-producing. Representation and Situation Assessment neither acquire responsibility nor authorise or issue Control.
+---
 
-Runtime implementation may lag this accepted architecture. Reconstructing implementation against the accepted representation responsibilities is subsequent engineering work and is not prescribed here. The four registered Physical Representation questions listed above remain Deferred.
+## 9. Architectural invariants and non-goals
 
-Reality remains authoritative. New evidence that contradicts these semantics requires explicit architectural review and revision rather than silent implementation accommodation.
+Physical Representation does not:
+
+- convert geometric precision into authority without evidence;
+- treat discovered-member completeness as proof of complete Physical Assembly inventory;
+- allow one purpose-specific representation to silently inherit another purpose's claim permissions;
+- infer safe clearance from missing or unresolved evidence;
+- flatten provenance, uncertainty or claim permissions when composing representations;
+- treat Operational Phase as authoritative physical configuration;
+- treat endpoint footprints as proof of configuration-transition clearance;
+- require detailed Manoeuvre Sweep construction for consumers already supported by a narrower accepted representation;
+- make player-controlled equipment a cooperative worker;
+- create post-job parking or tidying responsibility;
+- acquire Regulation, Resolution Commitment, Bounded Authority or Control authority; or
+- let implementation calibration become architectural policy merely because it currently works.
+
+Reality remains authoritative. New evidence that contradicts these semantics requires explicit architectural review rather than silent implementation accommodation.
