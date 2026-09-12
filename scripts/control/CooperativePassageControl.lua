@@ -21,6 +21,8 @@ local COOPERATIVE_PASSAGE_ALIGNMENT_LATERAL_TOLERANCE_M = 0.50
 local COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT = 0.995
 local COOPERATIVE_PASSAGE_HOLD_EFFECT_SPEED_KMH = 0.25
 local COOPERATIVE_PASSAGE_HEARTBEAT_MS = 1000
+-- Longitudinal completion on the captured axis, not a Passage Guide target radius.
+local COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M = 1.0
 
 local function logInfo(formatText,...)
     local message=string.format(formatText,...)
@@ -675,7 +677,7 @@ function Control:_startRunoutChunk(run,participant)
     local inside,fieldReason=fieldResolvedAt(tx,tz)
     if not inside then return false,"ALIGNMENT_RUNOUT_FIELD_TARGET:"..tostring(fieldReason) end
     local progress=(pp.x-participant.executionOriginX)*participant.axisForwardX+(pp.z-participant.executionOriginZ)*participant.axisForwardZ
-    local tolerance=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M) or 1.0
+    local tolerance=COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M
     local ok,reason=self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,progress+length,run.speedKmh,true,tolerance)
     if not ok then return false,"ALIGNMENT_RUNOUT_ACTUATION:"..tostring(reason) end
     participant.runoutActive=true
@@ -730,7 +732,7 @@ function Control:_beginAxisReturn(run,participant,other,requiresReleasedClearanc
     local pp=pose(participant.vehicle)
     if pp==nil then return false,"AXIS_RETURN_POSE_UNAVAILABLE" end
     local progress=(pp.x-participant.executionOriginX)*participant.axisForwardX+(pp.z-participant.executionOriginZ)*participant.axisForwardZ
-    local tolerance=tonumber(OuttaMyWay.COOPERATIVE_PASSAGE_TRAVERSAL_GATE_RADIUS_M) or 1.0
+    local tolerance=COOPERATIVE_PASSAGE_AXIS_TRAVEL_STATION_TOLERANCE_M
     local ok,reason=self.driveMechanism:setAxisTravel(participant.vehicle,participant.executionOriginX,participant.executionOriginZ,participant.axisForwardX,participant.axisForwardZ,0,run.speedKmh,false,tolerance)
     if not ok then return false,"AXIS_RETURN_ACTUATION:"..tostring(reason) end
     run.activeReturnParticipant=participant; run.waitingParticipant=other; run.returnRequiresReleasedClearance=requiresReleasedClearance==true
