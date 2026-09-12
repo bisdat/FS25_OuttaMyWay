@@ -133,18 +133,15 @@ def test_test_build_identity_has_two_dynamic_source_owners():
     moddesc = (ROOT / "modDesc.xml").read_text(encoding="utf-8")
 
     version_match = re.search(r'OuttaMyWay\.VERSION = "([^"]+)"', config)
-    label_match = re.search(r'OuttaMyWay\.BUILD_LABEL = "([^"]+)"', config)
     moddesc_match = re.search(r'<version value="([^"]+)">([^<]+)</version>', moddesc)
 
     assert version_match is not None
-    assert label_match is not None
     assert moddesc_match is not None
 
     version = version_match.group(1)
-    build_label = label_match.group(1)
+    assert re.fullmatch(r"0\.\d+\.\d+\.\d+", version)
     assert moddesc_match.group(1) == version
     assert moddesc_match.group(2) == version
-    assert build_label.startswith(version + " TEST — ")
 
     # Build Identity Contract != Behaviour Regression Contract.
     assert version not in main
@@ -230,6 +227,24 @@ def _loaded_production_lua_paths():
         assert path.is_file(), relative
         paths.append(path)
     return paths
+
+
+def test_sourced_production_has_no_retired_root_identity():
+    # Match identifiers, not substrings of distinct Passage rejection reasons.
+    retired_identity = re.compile(
+        r"\b(?:BUILD_LABEL|ARCHITECTURE_VERSION|RUNTIME_MODE|runtimeMode)\b"
+    )
+    paths = set(_loaded_production_lua_paths())
+    paths.add(ROOT / "scripts" / "config.lua")
+    offenders = []
+    for path in sorted(paths):
+        text = path.read_text(encoding="utf-8")
+        for match in retired_identity.finditer(text):
+            line = text.count("\n", 0, match.start()) + 1
+            offenders.append(
+                f"{path.relative_to(ROOT).as_posix()}:{line}:{match.group(0)}"
+            )
+    assert offenders == []
 
 
 def test_sourced_production_vocabulary_has_no_historical_decision_identity():
