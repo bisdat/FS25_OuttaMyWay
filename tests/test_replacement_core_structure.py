@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -717,7 +718,7 @@ def test_v4798_d0144_unsources_chessboard_productive_history_and_refuge_shadow_f
     assert (ROOT/"scripts"/"diagnostics"/"ProductiveCoverageResidualProbe.lua").is_file()
     assert (ROOT/"scripts"/"diagnostics"/"RefugeQualificationShadowProbe.lua").is_file()
 
-def test_v4767_d0138_native_field_worker_drive_command_probe_is_passive_and_sdk_aligned():
+def test_v4767_native_field_worker_drive_command_probe_is_passive_and_sdk_aligned():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     probe=(ROOT/"scripts"/"diagnostics"/"NativeFieldWorkerDriveCommandProbe.lua").read_text(encoding="utf-8")
     refuge=(ROOT/"scripts"/"diagnostics"/"RefugeQualificationShadowProbe.lua").read_text(encoding="utf-8")
@@ -766,7 +767,7 @@ def test_v4768_d0136_settlement_future_space_uses_explicit_observation_adapter()
 
 
 
-def test_v4769_lua_harness_uses_d0138_probe_not_falsified_d0137_probe():
+def test_v4769_lua_harness_uses_native_field_worker_drive_command_probe_not_falsified_native_ai_drive_signal_probe():
     harness=(ROOT/"tests"/"replacement_core"/"run.lua").read_text(encoding="utf-8")
     assert 'load("scripts/diagnostics/NativeFieldWorkerDriveCommandProbe.lua")' in harness
     assert 'load("scripts/diagnostics/NativeAIDriveSignalProbe.lua")' not in harness
@@ -775,7 +776,7 @@ def test_v4769_lua_harness_uses_d0138_probe_not_falsified_d0137_probe():
 
 
 
-def test_v0165_d0179_transit_base_uses_job_start_cached_capability_and_bounded_settlement():
+def test_v0165_transit_base_uses_job_start_cached_capability_and_bounded_settlement():
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     authority=(ROOT/"scripts"/"control"/"mechanisms"/"TransitConfigurationMechanism.lua").read_text(encoding="utf-8")
     cache=(ROOT/"scripts"/"representation"/"AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
@@ -822,7 +823,7 @@ def test_alignment_authority_surface_is_central_and_diagnostics_are_downstream_o
     assert main.index('addModEventListener(OuttaMyWay.liveRuntimeCoordinator)') < main.index('addModEventListener(OuttaMyWay.runtime.passiveLiveValidator)')
 
 
-def test_d0141_aligned_follower_boundary_regulation_uses_current_knowledge_and_central_control_only():
+def test_aligned_follower_boundary_regulation_uses_current_knowledge_and_central_control_only():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     observation=(ROOT/"scripts"/"observation"/"NativeFieldWorkObservation.lua").read_text(encoding="utf-8")
@@ -882,7 +883,7 @@ def test_d0141_aligned_follower_boundary_regulation_uses_current_knowledge_and_c
     assert 'followerMaturationCompressionProbe' not in main
 
 
-def test_v47100_d0146_step1_remains_situation_owned_knowledge_under_step2_consumption():
+def test_v47100_trajectory_conflict_remains_situation_owned_knowledge_under_cooperative_passage_consumption():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     module=(ROOT/"scripts"/"assessment"/"TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
@@ -912,7 +913,7 @@ def test_v47100_d0146_step1_remains_situation_owned_knowledge_under_step2_consum
     assert "trajectoryKnowledge" not in control and "opposedCorridorKnowledge" not in control
 
 
-def test_v47101_d0146_step2_is_active_candidate_owned_and_control_executes_only_supplied_guide():
+def test_v47101_cooperative_passage_is_active_candidate_owned_and_control_executes_only_supplied_guide():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     fitness=(ROOT/"scripts"/"assessment"/"PassageCapabilityAssessment.lua").read_text(encoding="utf-8")
@@ -952,7 +953,7 @@ def test_v47101_d0146_step2_is_active_candidate_owned_and_control_executes_only_
 
 
 
-def test_v47103_d0146_relationship_succession_retires_stale_follower_and_local_passage_is_operation_aware():
+def test_v47103_relationship_succession_retires_stale_follower_and_local_passage_is_operation_aware():
     situation=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
     follower=(ROOT/"scripts"/"assessment"/"FollowerBoundaryDemandAssessment.lua").read_text(encoding="utf-8")
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
@@ -974,7 +975,7 @@ def test_v47103_d0146_relationship_succession_retires_stale_follower_and_local_p
         assert forbidden not in planner and forbidden not in fitness
 
 
-def test_v0104_d0146_pair_specific_clearance_is_transit_only_and_has_no_configuration_conditioned_fallback():
+def test_v0104_pair_specific_clearance_is_transit_only_and_has_no_configuration_conditioned_fallback():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     helper=(ROOT/"scripts"/"representation"/"PairSpecificPassageClearance.lua").read_text(encoding="utf-8")
@@ -1009,7 +1010,7 @@ def test_v0104_d0146_pair_specific_clearance_is_transit_only_and_has_no_configur
     assert 'run.phase=="RESTORING_PARTICIPANT"' in control
     assert 'run.phase=="RESTORING"' not in control
 
-def test_v47105_d0146_control_uses_giants_safe_value_record_traversal_for_candidate_collections():
+def test_v47105_cooperative_passage_control_uses_giants_safe_value_record_traversal_for_candidate_collections():
     control = (ROOT / "scripts/control/CooperativePassageControl.lua").read_text()
     assert "for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.participants)" in control
     assert "for _,constraint in OuttaMyWay.ValueRecord.ipairs(run.thirdPartyConstraints or {})" in control
@@ -1019,7 +1020,7 @@ def test_v47105_d0146_control_uses_giants_safe_value_record_traversal_for_candid
     assert "for index,gate in ipairs(run.guide.gates)" not in control
 
 
-def test_v47106_d0146_current_excursion_conserves_action_space_before_established_passage():
+def test_v47106_current_excursion_conserves_action_space_before_established_passage():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     situation=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
@@ -1098,7 +1099,7 @@ def test_v47106_d0146_current_excursion_conserves_action_space_before_establishe
     assert "for _,entry in OuttaMyWay.ValueRecord.ipairs(plan.participants)" in control
     assert "for index,gate in OuttaMyWay.ValueRecord.ipairs(run.guide.gates)" in control
 
-def test_v01141_d0197_obligation_persistence_is_not_actuation_persistence():
+def test_v01141_action_space_regulation_obligation_persistence_is_not_actuation_persistence():
     authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
 
@@ -1150,7 +1151,7 @@ def test_v47108_settled_relationship_dissolution_requires_positive_non_turn_cont
 
 
 
-def test_v47118_d0147_diagnostic_steering_telemetry_and_owned_exit_neutralization():
+def test_v47118_obstruction_relocation_diagnostic_steering_telemetry_and_owned_exit_neutralization():
     authority=(ROOT/"scripts"/"control"/"mechanisms"/"NonJobActuationMechanism.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
     for token in (
@@ -1176,7 +1177,7 @@ def test_v47118_d0147_diagnostic_steering_telemetry_and_owned_exit_neutralizatio
     assert 'state.phase=="INFIELD" and state.actuationIssued==true' in control
 
 
-def test_v47119_d0147_vehicle_activity_context_is_bounded_and_restored():
+def test_v47119_obstruction_relocation_vehicle_activity_context_is_bounded_and_restored():
     authority=(ROOT/"scripts"/"control"/"mechanisms"/"NonJobActuationMechanism.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"ObstructionRelocationControl.lua").read_text(encoding="utf-8")
     for token in (
@@ -1199,7 +1200,7 @@ def test_v47119_d0147_vehicle_activity_context_is_bounded_and_restored():
     ):
         assert token in control
     # Vehicle Activity Context remains intact while v4.7.122 deliberately retires
-    # Positive Field-Exit Settlement from the live D-0147 courtesy path.
+    # Positive Field-Exit Settlement from the live Obstruction Relocation path.
     assert "positiveRepresentedFieldExit" not in control
     assert 'state.phase=="INFIELD" and state.activityContext~=nil' in control
 
@@ -1231,7 +1232,7 @@ def test_v0100_pre_1_0_versioning_epoch_contract():
     assert 'Historical `4.7.x` identities remain immutable provenance and are not renumbered.' in " ".join(engineering.split())
 
 
-def test_v0107_d0146_transit_first_preserves_native_blocked_as_observation_not_passage_abort_authority():
+def test_v0107_transit_first_preserves_native_blocked_as_observation_not_passage_abort_authority():
     cache=(ROOT/"scripts"/"representation"/"AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
@@ -1239,7 +1240,7 @@ def test_v0107_d0146_transit_first_preserves_native_blocked_as_observation_not_p
     for token in ("nativeObservationCount","outtaMyWayObservationCount","beginOuttaMyWayConfigurationAuthority","endOuttaMyWayConfigurationAuthority","configurationAlternatives"):
         assert token in cache
     assert "OBSERVED_WITHOUT_OUTTAMYWAY_CONFIGURATION_AUTHORITY" in cache
-    # Configuration history remains representation evidence but has no D-0146 planner authority.
+    # Configuration history remains representation evidence but has no Cooperative Passage planner authority.
     assert "configurationConditionedPair" not in planner
     assert "COMPACT_REQUIRED" not in planner and "RETAIN_CURRENT" not in planner
     assert "COOPERATIVE_PASSAGE_EXCURSION" in planner and "COOPERATIVE_PASSAGE_EXCURSION" in control
@@ -1248,7 +1249,7 @@ def test_v0107_d0146_transit_first_preserves_native_blocked_as_observation_not_p
     assert "configurationPreserved=true" in control
     assert 'if run.mode~="COOPERATIVE_PASSAGE_GUIDE" then self:_failHeld("NON_COOPERATIVE_PASSAGE_RUNTIME_MODE_REJECTED")' in control
 
-def test_v01013_d0146_safe_release_vetoes_blocked_or_positive_future_space_false_dissolution():
+def test_v01013_safe_release_vetoes_blocked_or_positive_future_space_false_dissolution():
     assessment=(ROOT/"scripts"/"assessment"/"TrajectoryConflictAssessment.lua").read_text(encoding="utf-8")
     for token in (
         "BLOCKED_PARTICIPANT_VETOES_POSITIVE_RELATIONSHIP_DISSOLUTION",
@@ -1261,7 +1262,7 @@ def test_v01013_d0146_safe_release_vetoes_blocked_or_positive_future_space_false
     assert assessment.index('if record.subjectBlocked==true or record.otherBlocked==true') < assessment.index('POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION')
     assert assessment.index('if record.relevantFutureSpacePositive==true') < assessment.index('POSITIVE_SETTLED_TRAJECTORY_RELATIONSHIP_DISSOLUTION')
 
-def test_v0132_d0159_passage_excursion_restores_selection_handoff_and_rebases_execution_origin():
+def test_v0132_passage_excursion_restores_selection_handoff_and_rebases_execution_origin():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
@@ -1340,7 +1341,7 @@ def test_v0134_passage_settling_uses_owned_hold_plus_physical_stationary_not_per
     assert "getCallCount" not in block
     assert "GIANTS may already refuse native continuation" in block
 
-def test_d0163_generic_directional_member_union_passage_envelope_is_vehicle_independent():
+def test_generic_directional_member_union_passage_envelope_is_vehicle_independent():
     cache=(ROOT/"scripts"/"representation"/"AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     assert "GIANTS_DIRECTIONAL_MEMBER_UNION_PASSAGE_GEOMETRY" in cache
@@ -1354,7 +1355,7 @@ def test_d0163_generic_directional_member_union_passage_envelope_is_vehicle_inde
     assert "plough" not in cache.lower() and "mower" not in cache.lower()
 
 
-def test_d0164_mechanical_foldability_does_not_bypass_passage_configuration_reachability():
+def test_mechanical_foldability_does_not_bypass_passage_configuration_reachability():
     cache=(ROOT/"scripts"/"representation"/"AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
     assert "allowUnfoldingByAI" in cache
     assert "MECHANICAL_ONLY_FOLDABILITY_AI_DISABLED" in cache
@@ -1363,7 +1364,7 @@ def test_d0164_mechanical_foldability_does_not_bypass_passage_configuration_reac
     assert 'reachability.aiUnfoldingAllowed==false' in cache
 
 
-def test_d0164_passage_rejection_telemetry_reports_candidate_failure_class_without_changing_planner_policy():
+def test_passage_rejection_telemetry_reports_candidate_failure_class_without_changing_planner_policy():
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     assert "passageRejectionTelemetry" in support
@@ -1374,7 +1375,7 @@ def test_d0164_passage_rejection_telemetry_reports_candidate_failure_class_witho
     assert 'return nil,"LOCAL_PASSAGE_SPACE_EXHAUSTED_WITHIN_SUPPORTED_PROFILE",rejected' in planner
 
 
-def test_d0165_nominal_passage_clearance_is_crossing_window_scoped_not_global():
+def test_nominal_passage_clearance_is_crossing_window_scoped_not_global():
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     assert "minimumCrossingWindowClearanceM" in planner
     assert "minimumOutsideCrossingClearanceM" in planner
@@ -1413,7 +1414,7 @@ def test_v0146_clearance_telemetry_reuses_existing_sweep_evidence_without_extra_
     assert "thirdPartyGuideSupport(" not in telemetry
 
 
-def test_d0173_transit_passage_geometry_is_owned_by_representation_from_cached_giants_base_size():
+def test_transit_passage_geometry_is_owned_by_representation_from_cached_giants_base_size():
     cache=(ROOT/"scripts"/"representation"/"AssemblyRepresentationCache.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     assessment=(ROOT/"scripts"/"assessment"/"SituationAssessment.lua").read_text(encoding="utf-8")
@@ -1430,7 +1431,7 @@ def test_d0173_transit_passage_geometry_is_owned_by_representation_from_cached_g
     assert cache.index('local xmlFile=object.xmlFile') < cache.index('local width,length=tonumber(object.sizeWidth)')
 
 
-def test_d0181_local_passage_requires_cached_transit_base_and_has_no_legacy_fallback():
+def test_local_passage_requires_cached_transit_base_and_has_no_legacy_fallback():
     planner=(ROOT/"scripts"/"candidates"/"LocalPassagePlanner.lua").read_text(encoding="utf-8")
     support=(ROOT/"scripts"/"candidates"/"LiveTrafficCandidateSupport.lua").read_text(encoding="utf-8")
     assert "local function transitConditionedPair" in planner
@@ -1444,7 +1445,7 @@ def test_d0181_local_passage_requires_cached_transit_base_and_has_no_legacy_fall
 
 
 
-def test_v0181_d0182_d0146_restore_uses_cached_actuator_symmetry_only():
+def test_v0181_cooperative_passage_restore_uses_cached_actuator_symmetry_only():
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     authority=(ROOT/"scripts"/"control"/"mechanisms"/"TransitConfigurationMechanism.lua").read_text(encoding="utf-8")
     start=control.index('function Control:_beginParticipantRestore(run,participant)')
@@ -1470,7 +1471,7 @@ def test_v0181_d0182_d0146_restore_uses_cached_actuator_symmetry_only():
     assert 'function Mechanism:finishCachedTransitRestore(vehicle)' in authority
 
 
-def test_v01124_d0192_bounded_axis_return_is_isolated_after_canonical_passage_guide():
+def test_v01124_bounded_axis_return_is_isolated_after_canonical_passage_guide():
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     control=(ROOT/"scripts"/"control"/"CooperativePassageControl.lua").read_text(encoding="utf-8")
     drive=(ROOT/"scripts"/"control"/"mechanisms"/"NativeDriveMechanism.lua").read_text(encoding="utf-8")
@@ -1486,7 +1487,7 @@ def test_v01124_d0192_bounded_axis_return_is_isolated_after_canonical_passage_gu
     assert 'COOPERATIVE_PASSAGE_LOCAL_MAX_ENTRY_SEPARATION_M' in situation
     assert 'COOPERATIVE_PASSAGE_PAIR_SWEEP_SAMPLES_PER_LEG' in planner
     assert 'COOPERATIVE_PASSAGE_FIELD_SWEEP_SAMPLE_M' in planner
-    # D-0192 begins only after the existing guide completes.
+    # Bounded Axis Return begins only after the existing guide completes.
     assert 'COOPERATIVE_PASSAGE_GUIDE_COMPLETE' in control
     assert 'RECOVERY_ALIGNMENT_START' in control
     assert 'RETURN_STAGING_READY' in control
@@ -1508,7 +1509,7 @@ def test_v01124_d0192_bounded_axis_return_is_isolated_after_canonical_passage_gu
     assert 'COOPERATIVE_PASSAGE_ALIGNMENT_HEADING_MIN_DOT = 0.995' in config
 
 
-def test_v01143_d0198_regulation_authority_semantics():
+def test_v01143_regulation_authority_semantics():
     authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
     config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     for token in (
@@ -1527,7 +1528,7 @@ def test_v01143_d0198_regulation_authority_semantics():
     assert "releaseSupportingRegulationAuthority" in q
     assert "settleFollowerBoundaryPurpose" not in q
     assert "g_time" not in q and "timeout" not in q.lower() and "hysteresis" not in q.lower()
-    # Quiescent D0155 must not monopolise Runtime sequencing before D0141.
+    # Quiescent Action-Space Regulation must not monopolise Runtime sequencing before Follower Boundary.
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     dispatch=runtime[runtime.index("function Runtime:dispatchEvaluatedOperationalPicture"):runtime.index("function Runtime:processLiveObservation")]
     assert 'dispatch==nil or dispatch.status=="QUIESCENT"' in dispatch
@@ -1538,7 +1539,7 @@ def test_v01143_d0198_regulation_authority_semantics():
     assert "D0141_AUTHORITY_DIAG" not in authority
 
 
-def test_v01145_d0200_job_episode_dependency_collapse_precedes_terminal_candidate_context():
+def test_v01145_job_episode_dependency_collapse_precedes_terminal_candidate_context():
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     regulation_authority=(ROOT/"scripts"/"authority"/"RegulationBoundedAuthority.lua").read_text(encoding="utf-8")
@@ -1788,7 +1789,8 @@ def test_phase12_superseded_pre_d0146_recovery_lifecycle_remains_retired():
     lifecycle=(ROOT/"scripts"/"commitment"/"LiveTrafficCommitmentLifecycle.lua").read_text(encoding="utf-8")
 
     # Phase 12 retired only the historical pre-D0146 generic head-on/recovery
-    # API. Current D0141, D0146, D0200 and Guarded-Recovery substrate remains.
+    # API. Current Follower Boundary, Cooperative Passage, Job-Episode dependency
+    # collapse and Guarded Recovery substrate remains.
     for retired in (
         "isRecoverySpecification",
         "hasOpenDurableSeparation",
@@ -1830,7 +1832,7 @@ def test_phase13_direct_cooperative_passage_targets_substrate_by_purpose_and_job
     assert "commitmentAction" not in direct
     assert "COOPERATIVE_PASSAGE_RETAINED_SUBSTRATE_CONTEXT_AMBIGUOUS" not in authority
 
-    # D0147 is intentionally outside this increment. Its unresolved direct
+    # Obstruction Relocation is intentionally outside this increment. Its unresolved direct
     # Resolution continuity guard remains on the retained generic action until
     # that exemplar is separately investigated.
     completed=authority[
@@ -1841,7 +1843,7 @@ def test_phase13_direct_cooperative_passage_targets_substrate_by_purpose_and_job
     assert "commitmentAction" in completed
 
 
-def test_d0218_causal_obstruction_recognition_stays_upstream_of_control():
+def test_causal_obstruction_recognition_stays_upstream_of_control():
     main=(ROOT/"scripts"/"main.lua").read_text(encoding="utf-8")
     live=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     causal=(ROOT/"scripts"/"assessment"/"CausalObstructionAssessment.lua").read_text(encoding="utf-8")
@@ -1919,3 +1921,13 @@ def test_issue112_retired_completed_worker_donor_is_not_active_source_topology()
         "terminalOccupancyKnowledge",
     ):
         assert stale not in active
+
+
+def test_current_validation_vocabulary_preserves_only_historical_probe_decision_families():
+    harness = (ROOT / "tests" / "replacement_core" / "run.lua").read_text(encoding="utf-8")
+    decision_families = {
+        match.upper().replace("-", "")
+        for match in re.findall(r"d-?\d{4}", harness, re.IGNORECASE)
+    }
+    # Deliberately unsourced Productive Coverage / settlement probe evidence.
+    assert decision_families == {"D0134", "D0136", "D0137"}

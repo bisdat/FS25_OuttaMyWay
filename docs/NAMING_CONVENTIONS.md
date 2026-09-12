@@ -210,9 +210,29 @@ Useful historical explanation may remain when it materially explains a current
 constraint or discovered GIANTS behaviour needed to change the code safely.
 Sourced production explains that constraint in current concepts; the D-number
 itself belongs in Git, `DECISION_LOG.md` or engineering history. Deliberately
-unsourced historical evidence and deferred validation fixtures may retain
-D-numbers until their later closure tranche. They do not remain in the
-`scripts/main.lua` sourced production surface, including comments.
+unsourced historical evidence may retain D-numbers where they remain materially
+useful provenance. They do not remain in the `scripts/main.lua` sourced
+production surface, including comments.
+
+## Validation vocabulary
+
+**Current Validation Contract != Historical Assertion Payload.**
+
+Current validation test names, helpers, local concept identifiers, synthetic
+fixture identity/provenance and explanatory comments use current architectural
+vocabulary. A decision number that merely identifies development origin does
+not name the present contract.
+
+Exact historical identifiers may remain when validation intentionally asserts
+that a retired production token is absent, preserves deliberately historical
+fixture/evidence provenance, or examines a deliberately unsourced historical
+probe whose identity remains materially meaningful. Historical text inside an
+assertion is payload, not automatically current validation identity.
+
+**Validation Vocabulary Closure != Historical Evidence Erasure.** Apply this
+distinction by validation purpose; do not remove historical identifiers through
+a blanket test-tree prohibition or cosmetically promote historical probes into
+current production concepts.
 
 ## User-facing terminology
 
@@ -232,7 +252,7 @@ execution-mechanism and traffic-purpose vocabulary as those responsibilities
 become current. Phase 14.6C specifically reconciles the remaining primary
 Cooperative Passage, Regulation, Guarded Recovery and runtime-composition
 identifiers. Historical decision numbers remain only outside sourced production,
-in the historical evidence and deferred validation surfaces described above.
+in deliberately historical evidence and assertion payload as described above.
 
 Track any remaining divergence through architecture and implementation review
 and the [Implementation Map](IMPLEMENTATION_MAP.md), not by turning this document

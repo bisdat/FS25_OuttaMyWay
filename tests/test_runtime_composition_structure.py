@@ -60,7 +60,7 @@ def test_fresh_and_incumbent_live_cycle_split_is_preserved():
     assert "self.terminalEgressCandidateSupport" not in process
     assert "self.liveTrafficCandidateSupport:attach(processed.picture,processed.snapshot)" in process
 
-def test_d0218_semantics_survive_shared_obstruction_relocation_execution():
+def test_obstruction_relocation_semantics_survive_shared_execution():
     runtime=read("scripts/runtime/Runtime.lua")
     assert "function Runtime:setObstructionRelocationControl" in runtime
     assert "function Runtime:setTerminalEgressControl" not in runtime
@@ -78,19 +78,19 @@ def test_d0218_semantics_survive_shared_obstruction_relocation_execution():
     ):
         assert token in runtime
 
-def test_absorbed_d0218_methods_retain_lexical_logging_dependencies():
+def test_obstruction_relocation_methods_retain_lexical_logging_dependencies():
     runtime=read("scripts/runtime/Runtime.lua")
     assert "local function logInfo(formatText,...)" in runtime
     assert "local function logWarning(formatText,...)" in runtime
     assert '[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION] %s' in runtime
     assert '[FS25_OuttaMyWay][OBSTRUCTION-RELOCATION][WARNING] ' in runtime
 
-    d0218=runtime[
+    obstruction_relocation=runtime[
         runtime.index("function Runtime:_obstructionRelocationRequest"):
         runtime.index("function Runtime:dispatchEvaluatedOperationalPicture")
     ]
-    assert "logInfo(" in d0218
-    assert "logWarning(" in d0218
+    assert "logInfo(" in obstruction_relocation
+    assert "logWarning(" in obstruction_relocation
 
 def test_runtime_still_does_not_physically_actuate():
     runtime=read("scripts/runtime/Runtime.lua")
