@@ -2,6 +2,14 @@ OuttaMyWay.FollowerPacingHud={}
 local Hud=OuttaMyWay.FollowerPacingHud
 Hud.__index=Hud
 
+-- Diagnostic implementation values owned by this instrument, not player Configuration.
+local FOLLOWER_PACING_HUD_ENABLED=true
+local FOLLOWER_PACING_HUD_X=0.985
+local FOLLOWER_PACING_HUD_Y=0.697
+local FOLLOWER_PACING_HUD_TEXT_SIZE=0.013
+local FOLLOWER_PACING_HUD_MAX_ROWS=3
+
+
 function Hud.new(activeSource)
     return setmetatable({activeSource=activeSource},Hud)
 end
@@ -17,7 +25,7 @@ local function numberText(v)
 end
 
 function Hud:draw()
-    if OuttaMyWay.FOLLOWER_PACING_HUD_ENABLED~=true or g_currentMission==nil or renderText==nil then return end
+    if FOLLOWER_PACING_HUD_ENABLED~=true or g_currentMission==nil or renderText==nil then return end
     local lines={}
     local active=self.activeSource and self.activeSource.getFollowerBoundaryStatus and self.activeSource:getFollowerBoundaryStatus() or nil
     if type(active)=="table" and active.active==true then
@@ -26,10 +34,10 @@ function Hud:draw()
             tostring(active.followerName or "Follower"),tostring(active.leaderName or "leader"),numberText(active.currentCapKmh),numberText(active.nativeUnrestrictedFollowerKmh))
     end
     if #lines==0 then return end
-    local x=OuttaMyWay.FOLLOWER_PACING_HUD_X or 0.985
-    local y=OuttaMyWay.FOLLOWER_PACING_HUD_Y or 0.697
-    local size=OuttaMyWay.FOLLOWER_PACING_HUD_TEXT_SIZE or 0.013
-    local maxRows=OuttaMyWay.FOLLOWER_PACING_HUD_MAX_ROWS or 3
+    local x=FOLLOWER_PACING_HUD_X
+    local y=FOLLOWER_PACING_HUD_Y
+    local size=FOLLOWER_PACING_HUD_TEXT_SIZE
+    local maxRows=FOLLOWER_PACING_HUD_MAX_ROWS
     if setTextAlignment~=nil then setTextAlignment((RenderText and RenderText.ALIGN_RIGHT) or 2) end
     for i=1,math.min(#lines,maxRows) do
         local line=lines[i]

@@ -74,6 +74,25 @@ Architecture is repository knowledge, not runtime identity; the one accepted
 Runtime requires no mode identity. These values are not relocated into settings,
 local aliases or another metadata holder.
 
+## Diagnostic HUD implementation ownership
+
+Diagnostic HUD enablement and layout are module-owned implementation values,
+not player Configuration. Future Space, Version and Follower Pacing are independent
+instrument owners: `FutureSpaceHud`, `VersionHud` and `FollowerPacingHud` each
+own their own diagnostic switch, coordinates and presentation sizes; Future Space
+also owns line height and Follower Pacing owns its row bound. Equal coordinates
+or sizes do not establish shared HUD authority.
+
+Future Space layout uses current Future Space vocabulary. The obsolete lifecycle
+and transition HUD gates are deleted without replacement: neither has a current
+production consumer or validation contract requiring retention. FutureSpaceHud
+itself remains live through PassiveLiveValidator's construction, observation and
+draw path. VersionHud continues to consume the legitimate root `VERSION` identity.
+
+The future player HUD visibility concept below remains separate and unimplemented
+by these diagnostic switches. No shared diagnostic settings holder or player
+setting is introduced by this ownership boundary.
+
 ## Configuration admission test
 
 A value belongs in player Configuration only when every condition below holds:
@@ -263,9 +282,9 @@ evidence does not establish a responsible owner.
 | ARCHITECTURAL / RESPONSIBILITY POLICY | `COOPERATIVE_PASSAGE_NOMINAL_INTER_ASSEMBLY_CLEARANCE_M`, `COOPERATIVE_PASSAGE_CLEARANCE_ACCEPTANCE_RATIO`, `RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION`, exact `RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH` | Policy concepts belong with the responsibility that gives them meaning. D-number provenance is not semantic ownership, and accepted exact policy must not become player tuning. |
 | IMPLEMENTATION CALIBRATION | Entity-Local Shape Evidence coherence/root-alias calibration; Follower Boundary alignment/retention/clearance/temporal-seed calibration; Trajectory Conflict Assessment sampling/coherence/supersession/opposed-current values; Passage development and gate geometry; Control effect-speed calibration | Entity-local shape calibration is owned by its shared Resolution evidence predicate; `.61` localises Trajectory Conflict Assessment calibration and `.62` localises Follower Boundary assessment calibration to their evaluators; other empirical mechanics belong with their implementing module or subsystem unless later evidence establishes genuinely shared meaning. |
 | SAFETY / RESOURCE BOUND | Passage sweep sample count and phase watchdog; fold-settlement bounds | Bounds constrain resource use, responsiveness or physical intervention. They are not player-granted authority. Exact owning implementation/control responsibility may require later decomposition. |
-| DIAGNOSTIC | Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre and Progression Preservation instrument controls; lifecycle/transition/future-space and version/follower HUD flags and coordinates | `.60` localises the five live instrument enablement/publication cadences to their owning modules. They remain internal diagnostics, not Player Configuration. Normal Logging and Debug are higher-level player choices, not exposure of each switch. |
+| DIAGNOSTIC | Field Identity, Productive Continuation, Native Drive Command, Native Manoeuvre and Progression Preservation instrument controls | `.60` localises the five live instrument enablement/publication cadences to their owning modules. They remain internal diagnostics, not Player Configuration. Normal Logging and Debug are higher-level player choices, not exposure of each switch. |
 | VALIDATION / EXPERIMENTAL | no retained per-capability runtime enable/disable gate | `.63` retires the historical Control, Cooperative Passage and aligned-Follower pseudo-state gates. Core capability availability and prohibition are enforced by Responsibility / Bounded Authority / typed Control topology, not booleans. |
-| HUD IMPLEMENTATION | `TRANSITION_HUD_*`, `VERSION_HUD_*`, `FOLLOWER_PACING_HUD_*` | Coordinates, sizes, rows and diagnostic display flags belong to HUD/diagnostic implementation, not Configuration architecture. |
+| HUD IMPLEMENTATION | no diagnostic HUD values remain in the mixed root | FutureSpaceHud, VersionHud and FollowerPacingHud independently own their local presentation values under [Diagnostic HUD implementation ownership](#diagnostic-hud-implementation-ownership). Unconsumed lifecycle/transition gates are deleted, not relocated. |
 | HISTORICAL RESIDUE | evidence-only remnants whose owning responsibility has expired | Demonstrated Productive Coverage, Productive Coverage Residual, Refuge Qualification, Headland Manoeuvre Sweep and the legacy follower-maturation forensic shadow are retired from shipped runtime/configuration; Git and durable engineering records own that history. Any remaining residue is not Configuration and remains subject to Issue #87 ownership review. |
 | UNRESOLVED | some Cooperative Passage development/traversal/reacquisition and hold/heartbeat values | `.63` resolves the per-capability gate question by retirement. Remaining values still require bounded ownership investigation rather than prefix-based movement. |
 

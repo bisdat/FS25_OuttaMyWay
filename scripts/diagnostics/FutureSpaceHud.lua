@@ -2,6 +2,15 @@ OuttaMyWay.FutureSpaceHud = {}
 local Hud=OuttaMyWay.FutureSpaceHud
 Hud.__index=Hud
 
+-- Diagnostic implementation values owned by this instrument, not player Configuration.
+local FUTURE_SPACE_HUD_ENABLED=false
+local FUTURE_SPACE_HUD_X=0.985
+local FUTURE_SPACE_HUD_Y=0.720
+local FUTURE_SPACE_HUD_TITLE_SIZE=0.016
+local FUTURE_SPACE_HUD_TEXT_SIZE=0.014
+local FUTURE_SPACE_HUD_LINE_HEIGHT=0.022
+
+
 local function gateLog(message)
     if Logging~=nil and type(Logging.info)=="function" then
         Logging.info("[FS25_OuttaMyWay][FUTURE-SPACE HUD] %s",message)
@@ -82,13 +91,13 @@ local function renderLine(x,y,size,text)
 end
 
 function Hud:draw()
-    if OuttaMyWay.FUTURE_SPACE_HUD_ENABLED~=true or g_currentMission==nil or renderText==nil then return end
-    local x=OuttaMyWay.TRANSITION_HUD_X or 0.985
-    local y=OuttaMyWay.TRANSITION_HUD_Y or 0.720
-    local lineHeight=OuttaMyWay.TRANSITION_HUD_LINE_HEIGHT or 0.022
-    renderLine(x,y,OuttaMyWay.TRANSITION_HUD_TITLE_SIZE or 0.016,self.lines[1])
-    renderLine(x,y-lineHeight,OuttaMyWay.TRANSITION_HUD_TEXT_SIZE or 0.014,self.lines[2])
-    renderLine(x,y-lineHeight*2,OuttaMyWay.TRANSITION_HUD_TEXT_SIZE or 0.014,self.lines[3])
-    renderLine(x,y-lineHeight*3,OuttaMyWay.TRANSITION_HUD_TEXT_SIZE or 0.014,self.lines[4])
+    if FUTURE_SPACE_HUD_ENABLED~=true or g_currentMission==nil or renderText==nil then return end
+    local x=FUTURE_SPACE_HUD_X
+    local y=FUTURE_SPACE_HUD_Y
+    local lineHeight=FUTURE_SPACE_HUD_LINE_HEIGHT
+    renderLine(x,y,FUTURE_SPACE_HUD_TITLE_SIZE,self.lines[1])
+    renderLine(x,y-lineHeight,FUTURE_SPACE_HUD_TEXT_SIZE,self.lines[2])
+    renderLine(x,y-lineHeight*2,FUTURE_SPACE_HUD_TEXT_SIZE,self.lines[3])
+    renderLine(x,y-lineHeight*3,FUTURE_SPACE_HUD_TEXT_SIZE,self.lines[4])
     if setTextColor~=nil then setTextColor(1,1,1,1) end
 end
