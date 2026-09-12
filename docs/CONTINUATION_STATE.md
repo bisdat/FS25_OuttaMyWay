@@ -19,7 +19,7 @@ Sourced production uses current architectural vocabulary throughout the complete
 
 ## Current bounded increment
 
-Validation Vocabulary Closure is implemented in the working tree on
+Validation Vocabulary Closure is implemented on
 `refactor/validation-vocabulary-closure`, based on the accepted commit above.
 It changes tests and documentation only; executable identity remains unchanged.
 Current validation titles, helpers, synthetic identities/provenance and comments
@@ -33,7 +33,7 @@ boundary does not prohibit historical assertion payload elsewhere in `/tests`.
 
 Independent CI validation and owner review of this increment remain pending.
 Local census, static review and syntax checks do not establish suite or in-game
-validation. No commit or push is part of this working-tree increment.
+validation.
 
 ## Next engineering boundary
 
