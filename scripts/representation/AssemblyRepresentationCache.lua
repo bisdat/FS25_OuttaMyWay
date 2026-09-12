@@ -4,12 +4,12 @@ local Cache=OuttaMyWay.AssemblyRepresentationCache
 Cache.__index=Cache
 
 -- Representation-cache-owned Physical Assembly discovery capacity. This is a
--- safety/resource bound on catalogue membership discovery, not player Configuration.
+-- safety/resource bound on assembly membership discovery, not player Configuration.
 local ASSEMBLY_MEMBER_BUDGET=32
--- Catalogue geometry discovery scans each Physical Assembly member independently;
+-- Generic hierarchy geometry discovery scans each Physical Assembly member independently;
 -- this is a per-member budget, not a whole-assembly current-conflict budget.
 local MEMBER_HIERARCHY_DISCOVERY_SCAN_BUDGET=2200
--- Job-scoped catalogue membership is periodically revalidated against the
+-- Job-scoped assembly membership is periodically revalidated against the
 -- Physical Assembly fingerprint; this is not candidate-node cache freshness.
 local ASSEMBLY_MEMBERSHIP_REVALIDATION_INTERVAL_SECONDS=5
 
@@ -25,7 +25,6 @@ local function safeCall(object,methodName,...)
 end
 local function isDeleted(object) return object==nil or object.isDeleted==true or object.rootNode==nil or object.rootNode==0 end
 local function normaliseAsset(value) return string.lower(string.gsub(tostring(value or ""),"\\","/")) end
-local function endsWith(value,suffix) return suffix~="" and string.sub(value,-string.len(suffix))==suffix end
 local function asObject(value)
     if type(value)~="table" then return nil end
     if value.rootNode~=nil then return value end
@@ -92,37 +91,6 @@ local function discoverAssembly(worker,budget)
     return members,edges,table.concat(values,";"),#members>=budget and head<=#queue
 end
 
-local function asNode(value)
-    if type(value)=="number" and value~=0 then return value end
-    if type(value)=="table" then for _,key in ipairs({"node","nodeId","object","id","rootNode","componentNode"}) do local node=value[key]; if type(node)=="number" and node~=0 then return node end end end
-    return nil
-end
-local function mappingNode(object,key)
-    for _,field in ipairs({"i3dMappings","i3dMapping"}) do
-        local mappings=object and object[field] or nil
-        if type(mappings)=="table" then local node=asNode(mappings[key]); if node~=nil then return node,field end end
-    end
-    local ok,value=safeCall(object,"getI3DMapping",key); local node=ok and asNode(value) or nil
-    return node,node and "getI3DMapping" or nil
-end
-local function donorFor(object)
-    local asset=assetName(object)
-    for _,catalogue in pairs(OuttaMyWay.RepresentationDonorCatalogues or {}) do if endsWith(asset,normaliseAsset(catalogue.assetSuffix)) then return catalogue end end
-    return nil
-end
-local function donorPathNode(object,path)
-    if path==nil or I3DUtil==nil or type(I3DUtil.indexToObject)~="function" then return nil,nil end
-    local attempts={
-        function() return I3DUtil.indexToObject(object.components,path,object.i3dMappings) end,
-        function() return I3DUtil.indexToObject(object.components,path) end,
-        function() return I3DUtil.indexToObject(object,path,object.i3dMappings) end
-    }
-    for index,attempt in ipairs(attempts) do
-        local ok,value=pcall(attempt); local node=ok and asNode(value) or nil
-        if node~=nil then return node,"I3DUtil.indexToObject#"..tostring(index) end
-    end
-    return nil,nil
-end
 local function collisionCandidateName(name)
     local lower=string.lower(tostring(name or ""))
     return string.find(lower,"collision",1,true)~=nil
@@ -293,18 +261,6 @@ local function directionalSizeMetadata(object)
     return nil
 end
 
-local function donorConfigurationEvidence(object,donor)
-    if donor==nil then return {status="NOT_APPLICABLE",selector="n/a",selected=nil,expected=nil} end
-    local name=donor.configurationName
-    local selected=type(object and object.configurations)=="table" and object.configurations[name] or nil
-    local expected=donor.configurationId
-    local status
-    if selected==nil then status="UNRESOLVED"
-    elseif tonumber(selected)==tonumber(expected) then status="MATCHED"
-    else status="MISMATCH" end
-    return {status=status,selector=tostring(name or "n/a"),selected=selected,expected=expected,geometryFamily=donor.geometryFamily}
-end
-
 function Cache.new(options)
     return setmetatable({records={},seen={},options=options or {},retiredCount=0,configurationAuthorityWindows={}},Cache)
 end
@@ -358,22 +314,20 @@ function Cache:_runtimeName(node)
     local fn=self:_api("getName"); if fn==nil then return nil end
     local ok,value=pcall(fn,node); return ok and value~=nil and tostring(value) or nil
 end
-function Cache:_scanHierarchy(rootNode,budget,wanted,allowGeneric)
+function Cache:_scanHierarchy(rootNode,budget)
     local getCount=self:_api("getNumOfChildren"); local getChild=self:_api("getChildAt"); local getName=self:_api("getName")
     if rootNode==nil or getCount==nil or getChild==nil then return {},0,false end
     local found,queue,head,scanned={},{rootNode},1,0
     while head<=#queue and scanned<budget do
         local node=queue[head]; head=head+1; scanned=scanned+1
         local name=nil; if getName~=nil then local ok,value=pcall(getName,node); if ok and value~=nil then name=tostring(value) end end
-        local donorEntry=wanted and wanted[name] or nil
-        local candidate=donorEntry~=nil or (allowGeneric==true and collisionCandidateName(name))
-        if candidate then found[#found+1]={node=node,name=name or "unnamed",source=donorEntry and "DONOR_NAME_SCAN" or "GENERIC_COLLISION_NAME_SCAN",entry=donorEntry} end
+        if collisionCandidateName(name) then found[#found+1]={node=node,name=name or "unnamed",source="GENERIC_COLLISION_NAME_SCAN"} end
         local ok,count=pcall(getCount,node)
         if ok and type(count)=="number" then for index=0,count-1 do local okChild,child=pcall(getChild,node,index); if okChild and child~=nil and child~=0 then queue[#queue+1]=child end end end
     end
     return found,scanned,head<=#queue
 end
-function Cache:_measurePrimitive(member,node,name,source,class,rootWorld,donorEntry)
+function Cache:_measurePrimitive(member,node,name,source,class,rootWorld)
     local isShape,shapeReason=self:_shapeClassEvidence(node)
     if isShape~=true then
         return nil,{name=name,node=node,source=source,coherent=false,rootAlias=false,shapeReason=shapeReason or "SHAPE_CLASS_UNRESOLVED"},0
@@ -395,37 +349,23 @@ function Cache:_measurePrimitive(member,node,name,source,class,rootWorld,donorEn
         identity=member.referenceKey..":sphere:"..tostring(node),kind="DISC",memberReferenceKey=member.referenceKey,node=node,nodeName=name,
         localCentre={x=localSphere.x,y=localSphere.y,z=localSphere.z},radius=localSphere.radius,
         source=source,class=class or "DISCOVERED_COLLISION_COMPONENT",positiveConflictSupport=false,negativeClearanceSupport=false,
-        donorCurrentPhysical=donorEntry and donorEntry.donorCurrentPhysical or nil,
         provenance={geometryAPI=geometry.valid and "getShapeGeometryBoundingSphere" or "getShapeBoundingSphere",worldCoherence=true,rootAliasRejected=true,shapeClassVerified=true}
     },nil,3
 end
 function Cache:_discoverMemberGeometry(member)
-    local stats={apiMeasurements=0,shapeClassChecks=1,hierarchyNodesScanned=0,scanTruncated=false,candidates=0,resolved=0,rejected=0,rejectedAliases=0,nonShapeRejected=0,shapeClassUnresolved=0,donorCandidates=0,genericCandidates=0}
+    local stats={apiMeasurements=0,shapeClassChecks=1,hierarchyNodesScanned=0,scanTruncated=false,candidates=0,resolved=0,rejected=0,rejectedAliases=0,nonShapeRejected=0,shapeClassUnresolved=0,genericCandidates=0}
     local primitives,rejections={},{}
     local rootWorld=self:_callSphere("getShapeWorldBoundingSphere",member.object.rootNode)
     if rootWorld.available==true then stats.apiMeasurements=stats.apiMeasurements+1 end
     local candidates,byNode={},{}
-    local donor=donorFor(member.object)
-    local wanted={}
-    if donor~=nil then
-        for _,entry in ipairs(donor.components or {}) do
-            wanted[entry.name]=entry
-            local node,source=mappingNode(member.object,entry.name)
-            if node==nil then node,source=donorPathNode(member.object,entry.mappingPath); if node~=nil then source="DONOR_DECLARED_PATH:"..tostring(source) end end
-            if node~=nil and byNode[node]==nil then byNode[node]=true; candidates[#candidates+1]={node=node,name=entry.name,source=(string.find(tostring(source),"DONOR_DECLARED_PATH",1,true) and tostring(source) or "DONOR_DIRECT_MAPPING:"..tostring(source)),class=entry.class,entry=entry}; stats.donorCandidates=stats.donorCandidates+1 end
-        end
-    end
-    member.donorConfigurationEvidence=donorConfigurationEvidence(member.object,donor)
-    local scanned,scannedCount,truncated=self:_scanHierarchy(member.object.rootNode,MEMBER_HIERARCHY_DISCOVERY_SCAN_BUDGET,wanted,donor==nil)
+    local scanned,scannedCount,truncated=self:_scanHierarchy(member.object.rootNode,MEMBER_HIERARCHY_DISCOVERY_SCAN_BUDGET)
     stats.hierarchyNodesScanned=scannedCount; stats.scanTruncated=truncated
     for _,candidate in ipairs(scanned) do
         if byNode[candidate.node]==nil then
             byNode[candidate.node]=true
-            local entry=candidate.entry or wanted[candidate.name]
-            candidate.entry=entry
-            candidate.class=entry and entry.class or "DISCOVERED_COLLISION_COMPONENT"
+            candidate.class="DISCOVERED_COLLISION_COMPONENT"
             candidates[#candidates+1]=candidate
-            if entry then stats.donorCandidates=stats.donorCandidates+1 else stats.genericCandidates=stats.genericCandidates+1 end
+            stats.genericCandidates=stats.genericCandidates+1
         end
     end
     -- The member-root sphere is retained as partial physical evidence when coherent.
@@ -436,7 +376,7 @@ function Cache:_discoverMemberGeometry(member)
     stats.candidates=#candidates
     for _,candidate in ipairs(candidates) do
         stats.shapeClassChecks=stats.shapeClassChecks+1
-        local primitive,rejection,apiMeasurements=self:_measurePrimitive(member,candidate.node,candidate.name,candidate.source,candidate.class,rootWorld,candidate.entry)
+        local primitive,rejection,apiMeasurements=self:_measurePrimitive(member,candidate.node,candidate.name,candidate.source,candidate.class,rootWorld)
         stats.apiMeasurements=stats.apiMeasurements+(apiMeasurements or 0)
         if primitive~=nil then primitives[#primitives+1]=primitive; stats.resolved=stats.resolved+1
         else rejections[#rejections+1]=rejection; stats.rejected=stats.rejected+1; if rejection.rootAlias then stats.rejectedAliases=stats.rejectedAliases+1 end; if rejection.shapeReason=="NOT_SHAPE" then stats.nonShapeRejected=stats.nonShapeRejected+1 elseif rejection.shapeReason~=nil then stats.shapeClassUnresolved=stats.shapeClassUnresolved+1 end end
@@ -448,21 +388,21 @@ function Cache:_discoverMemberGeometry(member)
     if width~=nil and width>0 and length~=nil and length>0 then
         primitives[#primitives+1]={identity=member.referenceKey..":metadata-rectangle",kind="LOCAL_RECTANGLE",memberReferenceKey=member.referenceKey,node=member.object.rootNode,halfWidth=width/2,halfLength=length/2,widthOffsetM=tonumber(sizeMetadata.widthOffsetM) or 0,lengthOffsetM=tonumber(sizeMetadata.lengthOffsetM) or 0,source="DIRECTIONAL_SIZE_METADATA:"..tostring(sizeMetadata.source),positiveConflictSupport=false,negativeClearanceSupport=false}
     end
-    return primitives,rejections,stats,donor
+    return primitives,rejections,stats
 end
 function Cache:_build(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
     local members,edges,fingerprint,truncated=discoverAssembly(worker,ASSEMBLY_MEMBER_BUDGET)
     local record={
         episodeKey=assemblyReferenceKey.."|"..tostring(sourceJobToken),assemblyReferenceKey=assemblyReferenceKey,sourceJobToken=sourceJobToken,
         createdAt=nowSeconds,members=members,edges=edges,assemblyFingerprint=fingerprint,assemblyDiscoveryTruncated=truncated,
-        localPrimitives={},primitiveById={},memberByReference={},rejections={},profiles={},geometryStats={apiMeasurements=0,shapeClassChecks=0,hierarchyNodesScanned=0,candidates=0,resolved=0,rejected=0,rejectedAliases=0,nonShapeRejected=0,shapeClassUnresolved=0,donorMembers=0,genericMembers=0,runtimeActivityChecks=0},
+        localPrimitives={},primitiveById={},memberByReference={},rejections={},profiles={},geometryStats={apiMeasurements=0,shapeClassChecks=0,hierarchyNodesScanned=0,candidates=0,resolved=0,rejected=0,rejectedAliases=0,nonShapeRejected=0,shapeClassUnresolved=0,genericMembers=0,runtimeActivityChecks=0},
         structurallyValid=true,coverageComplete=false,conservativeForRepresentedComponents=true,negativeClearanceAuthority=false
     }
     for _,member in ipairs(members) do
-        local primitives,rejections,stats,donor=self:_discoverMemberGeometry(member)
-        member.localPrimitiveCount=#primitives; member.geometryStats=stats; member.donorCatalogue=donor and donor.sourceEvidence or nil
+        local primitives,rejections,stats=self:_discoverMemberGeometry(member)
+        member.localPrimitiveCount=#primitives; member.geometryStats=stats
         record.memberByReference[member.referenceKey]=member
-        if donor then record.geometryStats.donorMembers=record.geometryStats.donorMembers+1 else record.geometryStats.genericMembers=record.geometryStats.genericMembers+1 end
+        record.geometryStats.genericMembers=record.geometryStats.genericMembers+1
         for _,primitive in ipairs(primitives) do record.localPrimitives[#record.localPrimitives+1]=primitive; record.primitiveById[primitive.identity]=primitive end
         for _,rejection in ipairs(rejections) do record.rejections[#record.rejections+1]=rejection end
         for key,value in pairs(stats) do if type(value)=="number" and record.geometryStats[key]~=nil then record.geometryStats[key]=record.geometryStats[key]+value end end
@@ -492,7 +432,7 @@ function Cache:_worldPrimitive(localPrimitive,participation)
         if localToWorldFn==nil then return nil,"LOCAL_TO_WORLD_UNAVAILABLE" end
         local c=localPrimitive.localCentre; local ok,x,y,z=pcall(localToWorldFn,localPrimitive.node,c.x,c.y,c.z)
         if not ok or not finite(x) or not finite(z) then return nil,"WORLD_TRANSFORM_FAILED" end
-        return {identity=localPrimitive.identity,kind="DISC",x=x,y=y,z=z,radius=localPrimitive.radius,memberReferenceKey=localPrimitive.memberReferenceKey,nodeName=localPrimitive.nodeName,source=localPrimitive.source,class=localPrimitive.class,positiveConflictSupport=positive,negativeClearanceSupport=false,participationStatus=participation and participation.status or "UNRESOLVED",runtimeCompoundChild=participation and participation.runtimeCompoundChild or nil,donorCurrentPhysical=localPrimitive.donorCurrentPhysical},nil
+        return {identity=localPrimitive.identity,kind="DISC",x=x,y=y,z=z,radius=localPrimitive.radius,memberReferenceKey=localPrimitive.memberReferenceKey,nodeName=localPrimitive.nodeName,source=localPrimitive.source,class=localPrimitive.class,positiveConflictSupport=positive,negativeClearanceSupport=false,participationStatus=participation and participation.status or "UNRESOLVED",runtimeCompoundChild=participation and participation.runtimeCompoundChild or nil},nil
     end
     if localPrimitive.kind=="LOCAL_RECTANGLE" then
         if localToWorldFn==nil then return nil,"LOCAL_TO_WORLD_UNAVAILABLE" end
@@ -727,17 +667,9 @@ function Cache:getAssemblyAlignmentSnapshot(assemblyReferenceKey,sourceJobToken,
 end
 
 function Cache:_buildProfile(record,key,config,nowSeconds)
-    local profile={identity=key..":configuration:"..tostring(countKeys(record.profiles)+1),configurationKey=config,firstObservedAt=nowSeconds,observations=0,nativeObservationCount=0,outtaMyWayObservationCount=0,configurationEvidence=foldConfigurationEvidence(record.members),relativeDiscs=nil,participationById={},includedPrimitiveIds={},participatingPrimitiveNames={},inactivePrimitiveNames={},unresolvedPrimitiveNames={},diagnosticPrimitiveNames={},runtimeConfirmedCount=0,donorFallbackCount=0}
-    local selectors={}
-    for _,member in ipairs(record.members or {}) do
-        local evidence=member.donorConfigurationEvidence
-        if evidence and evidence.status~="NOT_APPLICABLE" then selectors[#selectors+1]=member.referenceKey..":"..evidence.selector.."="..tostring(evidence.selected or "n/a").."/"..tostring(evidence.expected or "n/a")..":"..evidence.status end
-    end
-    table.sort(selectors); profile.configurationSelectorSummary=#selectors>0 and table.concat(selectors,",") or "NO_DONOR_SELECTOR"
+    local profile={identity=key..":configuration:"..tostring(countKeys(record.profiles)+1),configurationKey=config,firstObservedAt=nowSeconds,observations=0,nativeObservationCount=0,outtaMyWayObservationCount=0,configurationEvidence=foldConfigurationEvidence(record.members),relativeDiscs=nil,participationById={},includedPrimitiveIds={},participatingPrimitiveNames={},inactivePrimitiveNames={},unresolvedPrimitiveNames={},diagnosticPrimitiveNames={},runtimeConfirmedCount=0}
     for _,primitive in ipairs(record.localPrimitives) do
         local participation={status="UNRESOLVED",positiveConflictSupport=false,runtimeCompoundChild=nil}
-        local member=record.memberByReference[primitive.memberReferenceKey]
-        local configEvidence=member and member.donorConfigurationEvidence or nil
         if primitive.kind=="LOCAL_RECTANGLE" then
             participation.status="DIAGNOSTIC_ONLY"; profile.includedPrimitiveIds[#profile.includedPrimitiveIds+1]=primitive.identity; profile.diagnosticPrimitiveNames[#profile.diagnosticPrimitiveNames+1]=primitive.nodeName or primitive.identity
         elseif primitive.class=="MEMBER_ROOT_PARTIAL" then
@@ -750,9 +682,6 @@ function Cache:_buildProfile(record,key,config,nowSeconds)
                 profile.includedPrimitiveIds[#profile.includedPrimitiveIds+1]=primitive.identity; profile.participatingPrimitiveNames[#profile.participatingPrimitiveNames+1]=primitive.nodeName or primitive.identity
             elseif compoundChild==false then
                 participation.status="RUNTIME_COMPOUND_CHILD_INACTIVE"; profile.inactivePrimitiveNames[#profile.inactivePrimitiveNames+1]=primitive.nodeName or primitive.identity
-            elseif primitive.donorCurrentPhysical==true and configEvidence and configEvidence.status=="MATCHED" then
-                participation.status="MATCHED_DONOR_FALLBACK"; participation.positiveConflictSupport=true; profile.donorFallbackCount=profile.donorFallbackCount+1
-                profile.includedPrimitiveIds[#profile.includedPrimitiveIds+1]=primitive.identity; profile.participatingPrimitiveNames[#profile.participatingPrimitiveNames+1]=primitive.nodeName or primitive.identity
             else
                 profile.unresolvedPrimitiveNames[#profile.unresolvedPrimitiveNames+1]=primitive.nodeName or primitive.identity
             end
@@ -839,7 +768,7 @@ function Cache:observe(worker,assemblyReferenceKey,sourceJobToken,nowSeconds)
         assemblyFingerprint=record.assemblyFingerprint,membershipChanged=record.membershipChanged==true,memberCount=#record.members,edgeCount=#record.edges,
         assemblyDiscoveryTruncated=record.assemblyDiscoveryTruncated,localPrimitiveCount=#record.localPrimitives,worldPrimitiveCount=#worldPrimitives,
         inventoryPrimitiveCount=profile.inventoryPrimitiveCount,participatingPrimitiveCount=profile.participatingPrimitiveCount,inactivePrimitiveCount=profile.inactivePrimitiveCount,unresolvedPrimitiveCount=profile.unresolvedPrimitiveCount,
-        runtimeConfirmedPrimitiveCount=profile.runtimeConfirmedCount,donorFallbackPrimitiveCount=profile.donorFallbackCount,configurationSelectorSummary=profile.configurationSelectorSummary,
+        runtimeConfirmedPrimitiveCount=profile.runtimeConfirmedCount,
         participatingPrimitiveNames=profile.participatingPrimitiveNames,inactivePrimitiveNames=profile.inactivePrimitiveNames,unresolvedPrimitiveNames=profile.unresolvedPrimitiveNames,
         physicalPrimitiveCount=summary.physicalPrimitiveCount,diagnosticPrimitiveCount=summary.diagnosticPrimitiveCount,
         configurationKey=config,configurationEvidence=foldConfigurationEvidence(record.members),configurationProfileId=profile.identity,configurationProfileCacheHit=profileCacheHit,configurationProfileCount=countKeys(record.profiles),configurationAlternatives=self:_configurationAlternatives(record,profile.identity),directionalPassageEnvelope=profile.directionalPassageEnvelope,transitPassageEnvelope=transitPassageEnvelope,transitPassageReason=transitPassageReason,transitFoldCapability={isFoldable=record.transitFoldCapability and record.transitFoldCapability.isFoldable==true or false,actuatorCount=record.transitFoldCapability and record.transitFoldCapability.actuatorCount or 0,expectedFoldDurationMs=record.transitFoldCapability and record.transitFoldCapability.expectedFoldDurationMs or 0,settlementTimeoutMs=record.transitFoldCapability and record.transitFoldCapability.settlementTimeoutMs or 0,source=record.transitFoldCapability and record.transitFoldCapability.source or "UNAVAILABLE"},outtaMyWayConfigurationAuthorityActive=underOuttaMyWayAuthority,

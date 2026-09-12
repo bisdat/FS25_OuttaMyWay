@@ -26,7 +26,6 @@ load("scripts/contracts/GoverningBasisVerdict.lua")
 load("scripts/contracts/CommitmentApplicationRecord.lua")
 load("scripts/contracts/PassiveLiveTraceRecord.lua")
 load("scripts/identity/EpochSequence.lua")
-load("scripts/representation/catalogues/CondorEndurance2Donor.lua")
 load("scripts/representation/PlanViewFootprint.lua")
 load("scripts/representation/EntityLocalShapeEvidence.lua")
 load("scripts/representation/AssemblyRepresentationCache.lua")
@@ -2257,8 +2256,8 @@ end)
 test("configuration profile excludes inactive alternative shop geometry",function()
     local positions={[1]={0,0,0},[2]={-15,0,-4},[3]={15,0,-4},[4]={-27,0,-4},[5]={27,0,-4}}
     local children={[1]={2,3,4,5},[2]={},[3]={},[4]={},[5]={}}
-    local names={[1]="condorRoot",[2]="boom01ArmLeftCol03",[3]="boom01ArmRightCol03",[4]="boom03ArmLeftCol03",[5]="boom03ArmRightCol03"}
-    local worker={rootNode=1,configFileName="data/vehicles/agrifac/condorEndurance2/condorEndurance2.xml",configurations={folding=1},components={{node=1}},getName=function() return "Condor" end,getAttachedImplements=function() return {} end}
+    local names={[1]="assemblyRoot",[2]="innerLeft_collision",[3]="innerRight_collision",[4]="outerLeft_collision",[5]="outerRight_collision"}
+    local worker={rootNode=1,components={{node=1}},getName=function() return "Generic Assembly" end,getAttachedImplements=function() return {} end}
     local function localSphere(node) return 0,0,0,node==1 and 2 or 1,true end
     local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={
         getNumOfChildren=function(node) return #(children[node] or {}) end,getChildAt=function(node,index) return children[node][index+1] end,getName=function(node) return names[node] end,
@@ -2272,15 +2271,16 @@ test("configuration profile excludes inactive alternative shop geometry",functio
     equal(result.inactivePrimitiveCount,2)
     equal(result.unresolvedPrimitiveCount,0)
     equal(result.runtimeConfirmedPrimitiveCount,2)
-    if result.planViewSummary.bounds.width>40 then error("inactive 54 m alternative geometry contaminated 36 m profile") end
-    if result.planViewSummary.bounds.width<31 then error("active 36 m component span was lost") end
+    equal(result.negativeClearanceAuthority,false); equal(result.coverageComplete,false)
+    if result.planViewSummary.bounds.width>40 then error("inactive alternative geometry contaminated current profile") end
+    if result.planViewSummary.bounds.width<31 then error("active component span was lost") end
 end)
 
-test("runtime compound-child evidence can select a different purchased geometry family",function()
+test("runtime compound-child evidence selects alternative geometry and preserves unresolved participation",function()
     local positions={[1]={0,0,0},[2]={-15,0,-4},[3]={15,0,-4},[4]={-27,0,-4},[5]={27,0,-4}}
     local children={[1]={2,3,4,5},[2]={},[3]={},[4]={},[5]={}}
-    local names={[1]="condorRoot",[2]="boom01ArmLeftCol03",[3]="boom01ArmRightCol03",[4]="boom03ArmLeftCol03",[5]="boom03ArmRightCol03"}
-    local worker={rootNode=1,configFileName="data/vehicles/agrifac/condorEndurance2/condorEndurance2.xml",configurations={folding=3},components={{node=1}},getName=function() return "Condor" end,getAttachedImplements=function() return {} end}
+    local names={[1]="assemblyRoot",[2]="innerLeft_collision",[3]="innerRight_collision",[4]="outerLeft_collision",[5]="outerRight_collision"}
+    local worker={rootNode=1,components={{node=1}},getName=function() return "Generic Assembly" end,getAttachedImplements=function() return {} end}
     local function localSphere(node) return 0,0,0,node==1 and 2 or 1,true end
     local cache=OuttaMyWay.AssemblyRepresentationCache.new({api={
         getNumOfChildren=function(node) return #(children[node] or {}) end,getChildAt=function(node,index) return children[node][index+1] end,getName=function(node) return names[node] end,
@@ -2292,7 +2292,28 @@ test("runtime compound-child evidence can select a different purchased geometry 
     equal(result.participatingPrimitiveCount,3)
     equal(result.runtimeConfirmedPrimitiveCount,2)
     if result.planViewSummary.bounds.width<55 then error("runtime-active alternative geometry was not selected") end
-    if string.find(result.configurationSelectorSummary,"MISMATCH",1,true)==nil then error("donor selector mismatch was not exposed") end
+    equal(result.inactivePrimitiveCount,2); equal(result.unresolvedPrimitiveCount,0)
+    equal(result.negativeClearanceAuthority,false); equal(result.coverageComplete,false)
+    for _,primitive in ipairs(result.worldPrimitives) do
+        equal(primitive.positiveConflictSupport,true)
+        equal(primitive.negativeClearanceSupport,false)
+        if primitive.nodeName~="MEMBER_ROOT" then
+            equal(primitive.source,"GENERIC_COLLISION_NAME_SCAN")
+            equal(primitive.participationStatus,"RUNTIME_COMPOUND_CHILD_CONFIRMED")
+        end
+    end
+
+    -- A fresh Job Episode with unavailable participation evidence must not
+    -- promote discovered geometry into current positive support.
+    cache.options.api.getIsCompoundChild=function() return nil end
+    cache:beginObservationCycle(); local unresolved=cache:observe(worker,"vehicle-root:1","episode-unresolved",1); cache:endObservationCycle()
+    equal(unresolved.inventoryPrimitiveCount,5); equal(unresolved.unresolvedPrimitiveCount,4)
+    equal(unresolved.runtimeConfirmedPrimitiveCount,0); equal(unresolved.inactivePrimitiveCount,0)
+    equal(unresolved.participatingPrimitiveCount,1); equal(unresolved.worldPrimitiveCount,1)
+    equal(unresolved.worldPrimitives[1].participationStatus,"MEMBER_ROOT_PARTIAL")
+    equal(unresolved.worldPrimitives[1].positiveConflictSupport,true)
+    equal(unresolved.worldPrimitives[1].negativeClearanceSupport,false)
+    equal(unresolved.negativeClearanceAuthority,false); equal(unresolved.coverageComplete,false)
 end)
 
 

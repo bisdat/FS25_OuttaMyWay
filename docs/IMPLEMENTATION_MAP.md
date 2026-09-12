@@ -22,12 +22,12 @@ Architectural meaning remains owned by the
 ## Repository state
 
 - Accepted Repository State: `main` at
-  `bd93b1d922187d46138dbd722862c8ed9a8322e5`.
+  `6c17e19648437b9b776e06ab8ede8fdf995e34a4`.
 - Canonical authority remains **v0.3.0.0**.
 - Accepted executable identity remains
-  **`0.3.0.73`**.
+  **`0.3.0.74` TEST**.
 - Issue #87 root ownership closure is completed and closed. Player Configuration is #139.
-- Working candidate: **`0.3.0.74` historical-probe retirement**.
+- Working candidate: **`0.3.0.75` generic runtime representation**.
 - Phase 14 strangler is **CLOSED**.
 - Phase 15 whole-system architecture <-> code audit is **COMPLETE**.
 
@@ -122,6 +122,17 @@ not itself establish semantic obstruction success.
 > **Resolution Persistence After Actuation != Authority Persistence**
 
 ### Representation
+
+Issue #138 owns retirement of the asset-specific Condor representation donor
+catalogue, selection and fallback. The working candidate removes that production
+path and its loader; `AssemblyRepresentationCache` uses bounded generic
+collision-name hierarchy discovery, runtime Shape validation, Entity-Local Shape
+Evidence and runtime compound-child participation for every assembly.
+**Generic Runtime Representation Is the Control Case.** Inactive alternatives
+remain excluded, unresolved participation remains unresolved, and member-root
+partial evidence and diagnostic rectangles retain their separate permissions.
+Generic configuration-profile caching and fold/capability evidence remain.
+No new negative-clearance authority is introduced.
 
 Generic current physical-conflict primitives remain positive-only. Purpose-specific
 Transit Passage geometry may establish narrower Passage conclusions, but complete-
