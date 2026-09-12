@@ -249,6 +249,12 @@ Historical `4.7.x` identities remain immutable provenance and are not
 renumbered. Version identity does not itself establish accepted or canonical
 authority.
 
+Runtime system/build identity is limited to `OuttaMyWay.MOD_NAME` and
+`OuttaMyWay.VERSION`, as defined by the root-identity boundary in
+[Configuration architecture](CONFIGURATION.md#configuration-and-other-value-responsibilities).
+Architecture remains repository knowledge rather than a separately versioned
+runtime identity. TEST build prose belongs in engineering provenance.
+
 ## Git Owns Document Chronology
 
 Git owns when a file changed, what it contained at a commit, its authorship and history, comparisons between accepted and release states, and the exact source associated with a release checkpoint.

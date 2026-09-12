@@ -332,8 +332,6 @@ def test_v479_polygon_field_identity_fallback_is_read_only():
         assert token in text
     for forbidden in ("driveToPoint(","stopCurrentAIJob(","setCruiseControlState("):
         assert forbidden not in text
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
 
 
 def test_v4711_job_seeded_snapshot_capture_remains_active_under_equivalence_authority():
@@ -353,8 +351,6 @@ def test_v4711_field_world_snapshot_is_bound_once_to_job_episode():
     admission=(ROOT/"scripts"/"identity"/"JobEpisodeAdmission.lua").read_text(encoding="utf-8")
     assert "_bindFieldWorld" in admission
     assert "cannot change after capture" in admission
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
 
 
 def test_v4711_parallel_validation_reports_global_operation_count():
@@ -409,7 +405,6 @@ def test_v4715_bounded_interaction_diagnostics_are_multi_worker_and_passive():
         assert token in validator
     for retired in ("encounterCreatedCount","ENCOUNTER lifecycle=CREATED","ENCOUNTER lifecycle=RETAINED","ENCOUNTER lifecycle=TERMINATED","PAIR_OPERATION_CHANGED_DURING_JOB_EPISODE","PAIR_DISAPPEARED_WHILE_BOTH_WORKERS_ACTIVE"):
         assert retired not in validator
-    assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
     assert "PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE" not in config
     assert "local PASSIVE_DIAGNOSTIC_MAX_PAIR_LOG_LINES_PER_SAMPLE=8" in validator
     for forbidden in ("stopCurrentAIJob(","driveToPoint(","setCruiseControlState(","decisionCommitmentBoundary:apply"):
@@ -431,7 +426,6 @@ def test_v4717_plan_view_representation_foundation_remains_active():
     donor=(ROOT/"scripts"/"representation"/"catalogues"/"CondorEndurance2Donor.lua").read_text(encoding="utf-8")
     source=(ROOT/"scripts"/"observation"/"LiveObservationSource.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
     for token in ("discoverAssembly","assemblyFingerprint","configurationProfileCacheHit","getShapeGeometryBoundingSphere","getShapeWorldBoundingSphere","rootAlias"):
         assert token in cache
     for token in ("convexHull","CURRENT_FOOTPRINT_INTERACTION_POSITIVE","CURRENT_FOOTPRINT_INTERACTION_UNRESOLVED","NO_NEGATIVE_CLEARANCE_AUTHORITY","evaluateCurrentOverlap"):
@@ -444,7 +438,6 @@ def test_v4717_plan_view_representation_foundation_remains_active():
         assert token in source
     for token in ("assemblyRepresentationInventoryPrimitives","assemblyRepresentationParticipatingPrimitives","assemblyRepresentationInactivePrimitives","assemblyRepresentationProfileCacheHit","currentFootprintOutcome"):
         assert token in validator
-    assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
     assert "POTENTIAL_INTERACTION_FROM_REPRESENTED_COMPONENTS" in cache
     assert "negativeClearanceAuthority=false" in cache
     for text in (cache,footprint,source,validator):
@@ -517,7 +510,6 @@ def test_v4721_future_space_conformance_recovers_existing_local_intent_architect
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
     for rel in ("scripts/observation/LocalIntentObservation.lua","scripts/observation/FieldBoundedFutureSpace.lua","scripts/diagnostics/FutureSpaceHud.lua"):
         assert rel in main
-    assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
     assert "PASSIVE_FUTURE_HORIZON_SECONDS" not in config
     assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" not in config
     for token in ("FIELD_WORLD_BOUNDED_LOCAL_CONTINUATION","futureSpaceRelationshipEvidence","NEXT_MATERIAL_MANOEUVRE"):
@@ -555,7 +547,6 @@ def test_v4724_removes_legacy_future_predictor_without_changing_future_space_adm
     scope=(ROOT/"scripts"/"assessment"/"CurrentPairAssessmentScope.lua").read_text(encoding="utf-8")
     validator=(ROOT/"scripts"/"diagnostics"/"PassiveLiveValidator.lua").read_text(encoding="utf-8")
     runtime=(ROOT/"scripts"/"runtime"/"Runtime.lua").read_text(encoding="utf-8")
-    assert 'RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"' in config
     assert "LEGACY_SHADOW_INTERACTION_PROBE_HORIZON_SECONDS" not in config
     for forbidden in ("predictPair(", "evaluateShadowPair(", "composePositiveEvidence(", "legacyShadowPositive", "legacyTCPA", "legacyDCPA"):
         assert forbidden not in source + diagnostics + footprint + validator
@@ -1220,11 +1211,8 @@ def test_v0181_transit_base_missing_evidence_fails_closed_without_legacy_configu
     assert 'TRANSIT_REALISATION_DIRECTIONAL_TOLERANCE_RATIO' not in config
 
 def test_v0100_pre_1_0_versioning_epoch_contract():
-    config=(ROOT/"scripts"/"config.lua").read_text(encoding="utf-8")
-    moddesc=(ROOT/"modDesc.xml").read_text(encoding="utf-8")
     decision=(ROOT/"docs"/"DECISION_LOG.md").read_text(encoding="utf-8")
     engineering=(ROOT/"docs"/"ENGINEERING_ARCHITECTURE.md").read_text(encoding="utf-8")
-    assert 'OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"' in config
     for token in ('0.MINOR.PATCH.BUILD','canonical releases use `BUILD=0`','TEST iterations increment BUILD','first public release is `1.0.0.0`'):
         assert token in decision
     for token in ('0.MINOR.PATCH.BUILD','Canonical named releases use `BUILD=0`','non-canonical TEST iterations','first public release is reserved'):

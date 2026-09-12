@@ -116,8 +116,7 @@ version.
 
 Current non-canonical TEST build version has exactly two source owners:
 
-- `scripts/config.lua` owns `OuttaMyWay.VERSION` and the corresponding
-  `OuttaMyWay.BUILD_LABEL`;
+- `scripts/config.lua` owns `OuttaMyWay.VERSION`;
 - `modDesc.xml` owns the equal mod version value/text consumed by GIANTS.
 
 `scripts/main.lua` has runtime-entry responsibility and does not own a current
@@ -125,7 +124,7 @@ build-version literal. Historical regression tests likewise do not own the
 current version.
 
 One dedicated structural **Build Identity Contract** dynamically reads the two
-owner files and proves version equality, BUILD_LABEL coherence and absence of
+owner files and proves version equality and absence of
 the current version literal from runtime/test surfaces that do not own it.
 Historical documentation and evidence may truthfully retain earlier or current
 build identities because provenance is not Build Identity ownership.

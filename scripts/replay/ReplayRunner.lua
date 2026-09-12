@@ -107,7 +107,7 @@ function Runner:run(fixture)
         identity=self.runtime.identities:issue("REPLAY_RUN"),epoch=self.runtime.epochs:next(),fixtureId=fixture.identity,
         stepResults=stepResults,conformance=divergence and "FAIL" or "PASS",earliestDivergence=divergence,
         fingerprints={fixture=fingerprint,steps=OuttaMyWay.ValueRecord.canonical(OuttaMyWay.ReplayFixture.new(OuttaMyWay.ValueRecord.toTable(fixture)))},
-        provenance={source="ReplayRunner",architectureVersion=OuttaMyWay.ARCHITECTURE_VERSION}
+        provenance={source="ReplayRunner"}
     })
 end
 function Runner:getRunCount() return self.runCount end

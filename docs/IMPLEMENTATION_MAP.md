@@ -37,6 +37,7 @@ Architectural meaning remains owned by the
 
 | Architectural responsibility | Principal current source placement | Current disposition |
 |---|---|---|
+| Root system/build identity | `scripts/config.lua`, `modDesc.xml`; consumers in `Runtime.lua` and `VersionHud.lua` | Only `MOD_NAME` and `VERSION` remain root identities under [Configuration architecture](CONFIGURATION.md#configuration-and-other-value-responsibilities). Startup/HUD use `VERSION`; Runtime state/status and initialization trace carry no mode or architecture-version identity. ReplayRunner provenance retains its source without architecture-version decoration. |
 | Runtime composition | `scripts/main.lua`, `scripts/runtime/Runtime.lua`, `LiveRuntimeCoordinator.lua` | PRESERVE explicit production composition |
 | Job Episode identity | `scripts/identity/JobEpisodeAdmission.lua` | PRESERVE Lifecycle Evidence Asymmetry |
 | Local Operation identity/membership | `scripts/identity/OperationAdmission.lua` | PRESERVE lifecycle context; not traffic controller |
@@ -72,7 +73,7 @@ Architectural meaning remains owned by the
 | Relocation Serialization | `RegulationBoundedAuthority.lua` supporting Obstruction Relocation movement | PRESERVE current beneficiary protection |
 | Guarded Recovery compatibility | no current production placement | **RETIRED / ACCEPTED #101 / PR #115** — dependency-proven orphan generation removed in `.42`; current Passage recovery/restoration remains elsewhere |
 | Diagnostics / probes | `scripts/diagnostics/` and passive observation probes | PRESERVE downstream-only diagnostic directionality; `.59` retires the expired follower-maturation shadow and `.60` localises five live instruments' enablement/publication controls without moving semantic authority |
-| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.62 resolve prior ownership/retirement families; `.63` retires the remaining core-capability/control pseudo-state gates. Root Surface Closure now targets only two root identities (`MOD_NAME`, `VERSION`); `.64` first closes historical decision identity on the sourced production surface before further value ownership movement. |
+| Mixed runtime constants | `scripts/config.lua` | **ACTIVE #87** — `.52`-.62 resolve prior ownership/retirement families; `.63` retires the remaining core-capability/control pseudo-state gates. Root identity retirement leaves only `MOD_NAME` and `VERSION`; remaining non-identity families still require responsibility-owned decomposition. |
 | Bubble Bullet Time | not implemented | **SEPARATE #45** — accepted architecture, missing implementation |
 
 ## Boundary findings worth protecting

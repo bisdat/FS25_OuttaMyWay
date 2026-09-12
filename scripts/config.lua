@@ -4,9 +4,7 @@
 
 OuttaMyWay = OuttaMyWay or {}
 OuttaMyWay.MOD_NAME = g_currentModName or "FS25_OuttaMyWay"
-OuttaMyWay.VERSION = "0.3.0.64"
-OuttaMyWay.ARCHITECTURE_VERSION = "0.1.2.0"
-OuttaMyWay.RUNTIME_MODE = "ARCHITECTURE_AUTHORITY_ALIGNMENT"
+OuttaMyWay.VERSION = "0.3.0.65"
 -- Temporary live-gate HUDs. Diagnostic instrumentation only.
 -- v4.7.24 retains the lifecycle gate only to verify cleanup causes no behavioural change
 -- to Future-Space admission, termination precedence or fresh-Episode identity.
@@ -81,8 +79,7 @@ OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MARGIN_MS = 2000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_FALLBACK_MS = 30000
 OuttaMyWay.COOPERATIVE_PASSAGE_TRANSIT_FOLD_SETTLEMENT_MAX_MS = 35000
 
--- Development build identity plus explanatory test HUD.
-OuttaMyWay.BUILD_LABEL = "0.3.0.64 TEST — PRODUCTION VOCABULARY CLOSURE"
+-- Forward Intersection Regulation policy and diagnostic HUD presentation.
 OuttaMyWay.FORWARD_INTERSECTION_REGULATION_SPEED_KMH = 1
 OuttaMyWay.VERSION_HUD_ENABLED = true
 OuttaMyWay.VERSION_HUD_X = 0.985
