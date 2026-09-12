@@ -765,7 +765,7 @@ end)
 test("Rejected Bounded Authority update removes successor while predecessor remains current",function()
     local runtime,commitment,token,current=boundedAuthorityRegulationFixture()
     local oldGrant=activeGrant(runtime,current,commitment,token,{kind="REGULATION_LEASE",vehicleReferenceKey="ref:ba-a",ownerTag="ACTION_SPACE_REGULATION",maxSpeedKmh=20,governingPurpose="BA_TEST_REGULATION"})
-    local envelope=OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(100,20,0.75,1)
+    local envelope=OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(100,20)
     local lease={commitmentId=commitment.identity,conflictIdentity="REL-BA",regulatedAssemblyId=token.assemblyId,regulatedReferenceKey="ref:ba-a",
         protectedAssemblyId="AS-BA-B",protectedReferenceKey="ref:ba-b",governingPurpose="BA_TEST_REGULATION",authorityTokenId=token.identity,
         boundedAuthorityId=oldGrant.identity,currentCapKmh=20,progressionEnvelope=envelope,actuationActive=true}
@@ -788,7 +788,7 @@ end)
 test("Accepted Bounded Authority update retires predecessor only after successor Control acceptance",function()
     local runtime,commitment,token,current=boundedAuthorityRegulationFixture()
     local oldGrant=activeGrant(runtime,current,commitment,token,{kind="REGULATION_LEASE",vehicleReferenceKey="ref:ba-a",ownerTag="ACTION_SPACE_REGULATION",maxSpeedKmh=20,governingPurpose="BA_TEST_REGULATION"})
-    local envelope=OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(100,20,0.75,1)
+    local envelope=OuttaMyWay.ResolutionSpaceProgressionEnvelope.establish(100,20)
     local lease={commitmentId=commitment.identity,conflictIdentity="REL-BA",regulatedAssemblyId=token.assemblyId,regulatedReferenceKey="ref:ba-a",
         protectedAssemblyId="AS-BA-B",protectedReferenceKey="ref:ba-b",governingPurpose="BA_TEST_REGULATION",authorityTokenId=token.identity,
         boundedAuthorityId=oldGrant.identity,currentCapKmh=20,progressionEnvelope=envelope,actuationActive=true}

@@ -5,6 +5,16 @@
 OuttaMyWay.ResolutionSpaceProgressionEnvelope = {}
 local Envelope = OuttaMyWay.ResolutionSpaceProgressionEnvelope
 
+-- Resolution-Space Progression Envelope fixed accepted magnitude policy.
+-- The reserve is a withheld fraction of positively established usable Resolution
+-- Space, not a claimed GIANTS braking distance.
+local RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION = 0.75
+
+-- When ordinary Resolution Space is exhausted while intent remains unresolved,
+-- retain minimal positive progression rather than Hold so fresh native intent can
+-- continue to reveal without spending ordinary Resolution Space authority.
+local RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH = 1
+
 local function finite(value)
     return type(value)=="number" and value==value and value~=math.huge and value~=-math.huge
 end
@@ -32,19 +42,19 @@ local function derive(state,separationM)
     end
     state.rawCapKmh=raw
     local integerCap=math.max(0,math.floor(raw+0.0000001))
-    local creep=tonumber(state.intentRevelationCreepKmh) or 1
-    if not finite(creep) or creep<1 then creep=1 end
+    local creep=tonumber(state.intentRevelationCreepKmh) or RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH
+    if not finite(creep) or creep<RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH then creep=RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH end
     creep=math.floor(creep)
     state.capKmh=math.max(creep,integerCap)
     state.effectClass=integerCap<creep and "INTENT_REVELATION_CREEP" or "REGULATE"
     return state
 end
 
-function Envelope.establish(distanceM,speedKmh,reserveFraction,intentRevelationCreepKmh)
+function Envelope.establish(distanceM,speedKmh)
     local distance=tonumber(distanceM)
     local speed=tonumber(speedKmh)
-    local reserve=tonumber(reserveFraction)
-    local creep=tonumber(intentRevelationCreepKmh) or 1
+    local reserve=tonumber(RESOLUTION_SPACE_CONTINGENCY_RESERVE_FRACTION)
+    local creep=tonumber(RESOLUTION_SPACE_INTENT_REVELATION_CREEP_KMH)
     if not finite(distance) or distance<=0 then return nil,"RESOLUTION_SPACE_INITIAL_DISTANCE_UNAVAILABLE" end
     if not finite(speed) or speed<0 then return nil,"RESOLUTION_SPACE_INITIAL_SPEED_UNAVAILABLE" end
     if not finite(reserve) or reserve<0 or reserve>=1 then return nil,"RESOLUTION_SPACE_RESERVE_FRACTION_INVALID" end
